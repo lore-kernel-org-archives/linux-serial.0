@@ -2,233 +2,299 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C53F7C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Sep 2022 14:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85442C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Sep 2022 14:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234934AbiI2O0u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Sep 2022 10:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
+        id S235111AbiI2OoZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Sep 2022 10:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234535AbiI2O0t (ORCPT
+        with ESMTP id S233904AbiI2OoX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Sep 2022 10:26:49 -0400
-X-Greylist: delayed 438 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 29 Sep 2022 07:26:44 PDT
-Received: from mx3.securetransport.de (mx3.securetransport.de [IPv6:2a01:4f8:c0c:92be::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3DA4D143
-        for <linux-serial@vger.kernel.org>; Thu, 29 Sep 2022 07:26:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1664461110;
-        bh=AwiFn7ECY/ufwQvHxZeyUVtG3QY3QXt51r8FcaarO0U=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=d+ORmbYpz6J55Yrq/pUiPLKAvNJ6U8hPIcuw9s2+uwwkLy0LcJfMLSuKop7S5T5Bk
-         MglkYrN8tEs1FcpZjUh7zgWriEPVL2NylxNZgkiGblEZE+jwJolYO+m7+A6uxGRGya
-         PoGepZmNdKZQ+t/2uQPAo5KWaE5m6Y0zOVX9WnhDMjNk+qBV1QOX3vdO3wHsoyGPMW
-         v2DkLzXBw7nxo5oNFgc7hpUOctSU9yFOEcof/uNUIoVMYaZRxsFXEezTtrtVgPaumx
-         UYRbK7lVgWHNnoDmo9vW116WNJ+UVcgXhjW4dZ8E+C7zg4jfNiw072ixlELFQ/1lJi
-         DpU+lay+69JFQ==
-X-secureTransport-forwarded: yes
-From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To:     Marek Vasut <marex@denx.de>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "Fabio Estevam" <festevam@denx.de>,
+        Thu, 29 Sep 2022 10:44:23 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009867A766
+        for <linux-serial@vger.kernel.org>; Thu, 29 Sep 2022 07:44:19 -0700 (PDT)
+Received: from tr.lan (ip-86-49-12-201.bb.vodafone.cz [86.49.12.201])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 2E7D384964;
+        Thu, 29 Sep 2022 16:44:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1664462657;
+        bh=lZsVWdlDp87zr6YxO2r4mdR91XLTEDgddJ2RcHb0Od0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YJq6OoeeScGaiSZkJoLqDu561k5KGYxnTeWJtlKx9mBb9tRPsjIRBLfSrK2ift3vo
+         +WiNSHOU4KtgfmAgV4dWHCgj62IHGyEpFO67lspee8Mz6lbAFxVw9U+qV0k/2hs1D1
+         AG6k3DUO8sUs8wetdnlbm2MSKRGWNwH/7VdsS77H8svgxrG3IxUd9/gsFldT7sqHnr
+         r6QwcllaQNmIyYXm8oAU1ESuqHC1P1ZGVq5AwI7dCPzjmW0KUBSddrWqS8hm6JucCu
+         UZmwvowgU1w/Tzw9mMla/EwJXinz5p7dY4gKBdln/fLjB56tuBLiKTIRnEorkLgYmh
+         QDJrbO+Uc8nQQ==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-serial@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Fabio Estevam <festevam@denx.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
-        "Peng Fan" <peng.fan@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
-        kernel <kernel@dh-electronics.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH] tty: serial: imx: Handle RS485 DE signal active high
-Thread-Topic: [PATCH] tty: serial: imx: Handle RS485 DE signal active high
-Thread-Index: AQHY0vRzG7gh2J3cq0u4h1BlAPYZiq32dZqw
-Date:   Thu, 29 Sep 2022 14:18:12 +0000
-Message-ID: <91ecdcb2525e451cb47a1d238932e83f@dh-electronics.com>
-References: <20220928044037.605217-1-marex@denx.de>
-In-Reply-To: <20220928044037.605217-1-marex@denx.de>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, kernel@dh-electronics.com,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] tty: serial: imx: Handle RS485 DE signal active high
+Date:   Thu, 29 Sep 2022 16:44:00 +0200
+Message-Id: <20220929144400.13571-1-marex@denx.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogTWFyZWsgVmFzdXQgW21haWx0bzptYXJleEBkZW54LmRlXQ0KU2VudDogV2VkbmVzZGF5
-LCBTZXB0ZW1iZXIgMjgsIDIwMjIgNjo0MSBBTQ0KPiBUaGUgZGVmYXVsdCBwb2xhcml0eSBvZiBS
-UzQ4NSBERSBzaWduYWwgaXMgYWN0aXZlIGhpZ2guIFRoaXMgZHJpdmVyIGRvZXMNCj4gbm90IGhh
-bmRsZSBzdWNoIGNhc2UgcHJvcGVybHkuIEN1cnJlbnRseSwgd2hlbiBhIHBpbiBpcyBtdWx0aXBs
-ZXhlZCBhcyBhDQo+IFVBUlQgQ1RTX0Igb24gYm9vdCwgdGhpcyBwaW4gaXMgcHVsbGVkIEhJR0gg
-YnkgdGhlIGkuTVggVUFSVCBDVFMgY2lyY3VpdCwNCj4gd2hpY2ggYWN0aXZhdGVzIERFIHNpZ25h
-bCBvbiB0aGUgUlM0ODUgdHJhbnNjZWl2ZXIgYW5kIHRodXMgYmVoYXZlIGFzIGlmDQo+IHRoZSBS
-UzQ4NSB3YXMgdHJhbnNtaXR0aW5nIGRhdGEsIHNvIHRoZSBzeXN0ZW0gYmxvY2tzIHRoZSBSUzQ4
-NSBidXMgd2hlbg0KPiBpdCBzdGFydHMgYW5kIHVudGlsIHVzZXIgYXBwbGljYXRpb24gdGFrZXMg
-b3Zlci4gVGhpcyBiZWhhdmlvciBpcyBub3QgT0suDQo+IFRoZSBwcm9ibGVtIGNvbnNpc3RzIG9m
-IHR3byBzZXBhcmF0ZSBwYXJ0cy4NCj4gDQo+IEZpcnN0LCB0aGUgaS5NWCBVQVJUIElQIHJlcXVp
-cmVzIFVDUjEgVUFSVEVOIGFuZCBVQ1IyIFJYRU4gdG8gYmUgc2V0IGZvcg0KPiBVQ1IyIENUU0Mg
-YW5kIENUUyBiaXRzIHRvIGhhdmUgYW55IGVmZmVjdC4gVGhlIFVDUjIgQ1RTQyBiaXQgcGVybWl0
-cyB0aGUNCj4gZHJpdmVyIHRvIHNldCBDVFMgKFJUU19CIG9yIFJTNDg1IERFIHNpZ25hbCkgdG8g
-ZWl0aGVyIGxldmVsIHN5Y2hyb25vdXMNCj4gdG8gdGhlIGludGVybmFsIFVBUlQgSVAgY2xvY2su
-IENvbXBhcmVkIHRvIG90aGVyIG9wdGlvbnMsIGxpa2UgR1BJTyBDVFMNCj4gY29udHJvbCwgdGhp
-cyBoYXMgdGhlIGJlbmVmaXQgb2YgYmVpbmcgc3luY2hyb25vdXMgdG8gdGhlIFVBUlQgSVAgY2xv
-Y2sNCj4gYW5kIHRodXMgd2l0aG91dCBnbGl0Y2hlcyBvciBidXMgZGVsYXlzLiBUaGUgcmVhc29u
-IGZvciB0aGUgQ1RTIGRlc2lnbg0KPiBpcyBsaWtlbHkgYmVjYXVzZSB3aGVuIHRoZSBSZWNlaXZl
-ciBpcyBkaXNhYmxlZCwgdGhlIFVBUlQgSVAgY2FuIG5ldmVyDQo+IGluZGljYXRlIHRoYXQgaXQg
-aXMgcmVhZHkgdG8gcmVjZWl2ZSBkYXRhIGJ5IGFzc2VyaW5nIENUUyBzaWduYWwsIHNvDQo+IHRo
-ZSBDVFMgaXMgYWx3YXlzIHB1bGxlZCBISUdIIGJ5IGRlZmF1bHQuDQo+IA0KPiBXaGVuIHRoZSBw
-b3J0IGlzIGNsb3NlZCBieSB1c2VyIHNwYWNlLCBpbXhfdWFydF9zdG9wX3J4KCkgY2xlYXJzIFVD
-UjINCj4gUlhFTiBiaXQsIGFuZCBpbXhfdWFydF9zaHV0ZG93bigpIGNsZWFycyBVQ1IxIFVBUlRF
-TiBiaXQuIFRoaXMgZGlzYWJsZXMNCj4gVUFSVCBSZWNlaXZlciBhbmQgVUFSVCBpdHNlbGYsIGFu
-ZCBmb3JjZXMgQ1RTIHNpZ25hbCBISUdILCB3aGljaCBsZWFkcw0KPiB0byB0aGUgUlM0ODUgYnVz
-IGJlaW5nIGJsb2NrZWQgYmVjYXVzZSBSUzQ4NSBERSBpcyBpbmNvcnJlY3RseSBhY3RpdmUuDQo+
-IA0KPiBUaGUgcHJvcG9zZWQgc29sdXRpb24gZm9yIHRoaXMgcHJvYmxlbSBpcyB0byBrZWVwIHRo
-ZSBSZWNlaXZlciBydW5uaW5nDQo+IGV2ZW4gYWZ0ZXIgdGhlIHBvcnQgaXMgY2xvc2VkLCBidXQg
-aW4gbG9vcGJhY2sgbW9kZS4gVGhpcyBkaXNjb25uZWN0cw0KPiB0aGUgUlggRklGTyBpbnB1dCBm
-cm9tIHRoZSBSWEQgZXh0ZXJuYWwgc2lnbmFsLCBhbmQgc2luY2UgVUNSMiBUWEVOIGlzDQo+IGNs
-ZWFyZWQsIHRoZSBVQVJUIFRyYW5zbWl0dGVyIGlzIGRpc2FibGVkLCBzbyBub3RoaW5nIGNhbiBm
-ZWVkIGRhdGEgaW4NCj4gdGhlIFJYIEZJRk8uIEJlY2F1c2UgdGhlIFJlY2VpdmVyIGlzIHN0aWxs
-IGVuYWJsZWQsIHRoZSBVQ1IyIENUU0MgYW5kDQo+IENUUyBiaXRzIHN0aWxsIGhhdmUgZWZmZWN0
-IGFuZCB0aGUgQ1RTIChSUzQ4NSBERSkgY29udHJvbCBpcyByZXRhaW5lZC4NCj4gDQo+IE5vdGUg
-dGhhdCBpbiBjYXNlIG9mIFJTNDg1IERFIHNpZ25hbCBhY3RpdmUgbG93LCB0aGVyZSBpcyBubyBw
-cm9ibGVtIGFuZA0KPiBubyBzcGVjaWFsIGhhbmRsaW5nIGlzIG5lY2Vzc2FyeS4gVGhlIENUUyBz
-aWduYWwgZGVmYXVsdHMgdG8gSElHSCwgdGh1cw0KPiB0aGUgUlM0ODUgaXMgYnkgZGVmYXVsdCBz
-ZXQgdG8gUmVjZWl2ZSBhbmQgdGhlIGJ1cyBpcyBub3QgYmxvY2tlZC4NCj4gDQo+IE5vdGUgdGhh
-dCB3aGlsZSB0aGVyZSBpcyB0aGUgcG9zc2liaWxpdHkgdG8gY29udHJvbCBDVFMgdXNpbmcgR1BJ
-TyB3aXRoDQo+IGVpdGhlciBDVFMgcG9sYXJpdHksIHRoaXMgaGFzIHRoZSBkb3duc2lkZSBvZiBu
-b3QgYmVpbmcgc3luY2hyb25vdXMgdG8NCj4gdGhlIFVBUlQgSVAgY2xvY2sgYW5kIHRodXMgZ2xp
-dGNoeSBhbmQgc3VzY2VwdGlibGUgdG8gc2xvdyBERSBzd2l0Y2hpbmcuDQo+IA0KPiBTZWNvbmQs
-IG9uIGJvb3QsIGJlZm9yZSB0aGUgVUFSVCBkcml2ZXIgcHJvYmUgY2FsbGJhY2sgaXMgY2FsbGVk
-LCB0aGUNCj4gZHJpdmVyIGNvcmUgdHJpZ2dlcnMgcGluY3RybF9pbml0X2RvbmUoKSBhbmQgY29u
-ZmlndXJlcyB0aGUgSU9NVVhDIHRvDQo+IGRlZmF1bHQgc3RhdGUuIEF0IHRoaXMgcG9pbnQsIFVD
-UjEgVUFSVEVOIGFuZCBVQ1IyIFJYRU4gYXJlIGJvdGggc3RpbGwNCj4gY2xlYXJlZCwgYnV0IFVB
-UlQgQ1RTX0IgKFJTNDg1IERFKSBpcyBjb25maWd1cmVkIGFzIENUUyBmdW5jdGlvbiwgdGh1cw0K
-PiB0aGUgUlRTIHNpZ25hbCBpcyBwdWxsZWQgSElHSCBieSB0aGUgVUFSVCBJUCBDVFMgY2lyY3Vp
-dC4NCj4gDQo+IE9uZSBwYXJ0IG9mIHRoZSBzb2x1dGlvbiBoZXJlIGlzIHRvIGVuYWJsZSBVQ1Ix
-IFVBUlRFTiBhbmQgVUNSMiBSWEVOIGFuZA0KPiBVVFMgbG9vcGJhY2sgaW4gdGhpcyBkcml2ZXIg
-cHJvYmUgY2FsbGJhY2ssIHRodXMgdW5ibG9ja2luZyB0aGUgQ1RTQyBhbmQNCj4gQ1RTIGNvbnRy
-b2wgZWFybHkgb24uIEJ1dCB0aGlzIGlzIHN0aWxsIHRvbyBsYXRlLCBzaW5jZSB0aGUgcGluIGNv
-bnRyb2wNCj4gaXMgYWxyZWFkeSBjb25maWd1cmVkIGFuZCBDVFMgaGFzIGJlZW4gcHVsbGVkIEhJ
-R0ggZm9yIGEgc2hvcnQgcGVyaW9kDQo+IG9mIHRpbWUuDQo+IA0KPiBXaGVuIExpbnV4IGtlcm5l
-bCBib290cyBhbmQgdGhpcyBkcml2ZXIgaXMgYm91bmQsIHRoZSBwaW4gY29udHJvbCBpcyBzZXQN
-Cj4gdG8gc3BlY2lhbCAiaW5pdCIgc3RhdGUgaWYgdGhlIHN0YXRlIGlzIGF2YWlsYWJsZSwgYW5k
-IGRyaXZlciBjYW4gc3dpdGNoDQo+IHRoZSAiZGVmYXVsdCIgc3RhdGUgYWZ0ZXJ3YXJkIHdoZW4g
-cmVhZHkuIFRoaXMgc3RhdGUgY2FuIGJlIHVzZWQgdG8gc2V0DQo+IHRoZSBDVFMgbGluZSBhcyBh
-IEdQSU8gaW4gRFQgdGVtcG9yYXJpbHksIGFuZCBhIEdQSU8gaG9nIGNhbiBmb3JjZSBzdWNoDQo+
-IEdQSU8gdG8gTE9XLCB0aHVzIGtlZXBpbmcgdGhlIFJTNDg1IERFIGxpbmUgTE9XIGVhcmx5IG9u
-IGJvb3QuIE9uY2UgdGhlDQo+IGRyaXZlciB0YWtlcyBvdmVyIGFuZCBVQ1IxIFVBUlRFTiBhbmQg
-VUNSMiBSWEVOIGFuZCBVVFMgbG9vcGJhY2sgYXJlIGFsbA0KPiBlbmFibGVkLCB0aGUgZHJpdmVy
-IGNhbiBzd2l0Y2ggdG8gImRlZmF1bHQiIHBpbiBjb250cm9sIHN0YXRlIGFuZCBjb250cm9sDQo+
-IHRoZSBDVFMgbGluZSBhcyBmdW5jdGlvbiBpbnN0ZWFkLiBEVCBiaW5kaW5nIGV4YW1wbGUgaXMg
-YmVsb3c6DQo+IA0KPiAiDQo+ICZncGlvNiB7DQo+ICAgcnRzLWluaXQtaG9nIHsNCj4gICAgIGdw
-aW8taG9nOw0KPiAgICAgZ3Bpb3MgPSA8NSAwPjsNCj4gICAgIG91dHB1dC1sb3c7DQo+ICAgICBs
-aW5lLW5hbWUgPSAicnM0ODUtZGUiOw0KPiAgIH07DQo+IH07DQo+IA0KPiAmdWFydDUgeyAvKiBE
-SENPTSBVQVJUMiAqLw0KPiAgIHBpbmN0cmwtMCA9IDwmcGluY3RybF91YXJ0NT47DQo+ICAgcGlu
-Y3RybC0xID0gPCZwaW5jdHJsX3VhcnQ1X2luaXQ+Ow0KPiAgIHBpbmN0cmwtbmFtZXMgPSAiZGVm
-YXVsdCIsICJpbml0IjsNCj4gICAuLi4NCj4gfTsNCj4gcGluY3RybF91YXJ0NV9pbml0OiB1YXJ0
-NS1pbml0LWdycCB7DQo+ICAgZnNsLHBpbnMgPSA8DQo+IC4uLg0KPiAgICAgTVg2UURMX1BBRF9D
-U0kwX0RBVDE5X19HUElPNl9JTzA1ICAgICAgIDB4MzBiMQ0KPiAgID47DQo+IH07DQo+IA0KPiBw
-aW5jdHJsX3VhcnQ1OiB1YXJ0NS1ncnAgew0KPiAgIGZzbCxwaW5zID0gPA0KPiAuLi4NCj4gICAg
-IE1YNlFETF9QQURfQ1NJMF9EQVQxOV9fVUFSVDVfQ1RTX0IgICAgICAweDMwYjENCj4gICA+Ow0K
-PiB9Ow0KPiAiDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBNYXJlayBWYXN1dCA8bWFyZXhAZGVueC5k
-ZT4NCj4gLS0tDQo+IENjOiBDaHJpc3RvcGggTmllZGVybWFpZXIgPGNuaWVkZXJtYWllckBkaC1l
-bGVjdHJvbmljcy5jb20+DQo+IENjOiBGYWJpbyBFc3RldmFtIDxmZXN0ZXZhbUBkZW54LmRlPg0K
-PiBDYzogR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4NCj4g
-Q2M6IEppcmkgU2xhYnkgPGppcmlzbGFieUBrZXJuZWwub3JnPg0KPiBDYzogTlhQIExpbnV4IFRl
-YW0gPGxpbnV4LWlteEBueHAuY29tPg0KPiBDYzogUGVuZyBGYW4gPHBlbmcuZmFuQG54cC5jb20+
-DQo+IENjOiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+DQo+IENjOiBTaGF3
-biBHdW8gPHNoYXduZ3VvQGtlcm5lbC5vcmc+DQo+IENjOiBrZXJuZWxAZGgtZWxlY3Ryb25pY3Mu
-Y29tDQo+IENjOiBrZXJuZWxAcGVuZ3V0cm9uaXguZGUNCj4gQ2M6IGxpbnV4LWFybS1rZXJuZWxA
-bGlzdHMuaW5mcmFkZWFkLm9yZw0KPiBUbzogbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0K
-PiAtLS0NCj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDUxICsrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA0NSBpbnNlcnRpb25z
-KCspLCA2IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nlcmlh
-bC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYw0KPiBpbmRleCAwNWI0MzJkYzdhODVj
-Li4xNDRmMWNlZGQ0YjY0IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMN
-Cj4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jDQo+IEBAIC00ODksNyArNDg5LDcgQEAg
-c3RhdGljIHZvaWQgaW14X3VhcnRfc3RvcF90eChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiAg
-c3RhdGljIHZvaWQgaW14X3VhcnRfc3RvcF9yeChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiAg
-ew0KPiAgICAgICAgIHN0cnVjdCBpbXhfcG9ydCAqc3BvcnQgPSAoc3RydWN0IGlteF9wb3J0ICop
-cG9ydDsNCj4gLSAgICAgICB1MzIgdWNyMSwgdWNyMiwgdWNyNDsNCj4gKyAgICAgICB1MzIgdWNy
-MSwgdWNyMiwgdWNyNCwgdXRzOw0KPiANCj4gICAgICAgICB1Y3IxID0gaW14X3VhcnRfcmVhZGwo
-c3BvcnQsIFVDUjEpOw0KPiAgICAgICAgIHVjcjIgPSBpbXhfdWFydF9yZWFkbChzcG9ydCwgVUNS
-Mik7DQo+IEBAIC01MDUsNyArNTA1LDE3IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3N0b3Bfcngo
-c3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4gICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQs
-IHVjcjEsIFVDUjEpOw0KPiAgICAgICAgIGlteF91YXJ0X3dyaXRlbChzcG9ydCwgdWNyNCwgVUNS
-NCk7DQo+IA0KPiAtICAgICAgIHVjcjIgJj0gflVDUjJfUlhFTjsNCj4gKyAgICAgICBpZiAocG9y
-dC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxFRCAmJg0KPiArICAgICAgICAgICBwb3J0
-LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9SVFNfT05fU0VORCAmJg0KPiArICAgICAgICAgICBz
-cG9ydC0+aGF2ZV9ydHNjdHMgJiYgIXNwb3J0LT5oYXZlX3J0c2dwaW8pIHsNCj4gKyAgICAgICAg
-ICAgICAgIHV0cyA9IGlteF91YXJ0X3JlYWRsKHNwb3J0LCBpbXhfdWFydF91dHNfcmVnKHNwb3J0
-KSk7DQo+ICsgICAgICAgICAgICAgICB1dHMgfD0gVVRTX0xPT1A7DQo+ICsgICAgICAgICAgICAg
-ICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHV0cywgaW14X3VhcnRfdXRzX3JlZyhzcG9ydCkpOw0K
-PiArICAgICAgICAgICAgICAgdWNyMiB8PSBVQ1IyX1JYRU47DQo+ICsgICAgICAgfSBlbHNlIHsN
-Cj4gKyAgICAgICAgICAgICAgIHVjcjIgJj0gflVDUjJfUlhFTjsNCj4gKyAgICAgICB9DQo+ICsN
-Cj4gICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHVjcjIsIFVDUjIpOw0KPiAgfQ0KPiAN
-Cj4gQEAgLTEzOTMsNyArMTQwMyw3IEBAIHN0YXRpYyBpbnQgaW14X3VhcnRfc3RhcnR1cChzdHJ1
-Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiAgICAgICAgIGludCByZXR2YWwsIGk7DQo+ICAgICAgICAg
-dW5zaWduZWQgbG9uZyBmbGFnczsNCj4gICAgICAgICBpbnQgZG1hX2lzX2luaXRlZCA9IDA7DQo+
-IC0gICAgICAgdTMyIHVjcjEsIHVjcjIsIHVjcjMsIHVjcjQ7DQo+ICsgICAgICAgdTMyIHVjcjEs
-IHVjcjIsIHVjcjMsIHVjcjQsIHV0czsNCj4gDQo+ICAgICAgICAgcmV0dmFsID0gY2xrX3ByZXBh
-cmVfZW5hYmxlKHNwb3J0LT5jbGtfcGVyKTsNCj4gICAgICAgICBpZiAocmV0dmFsKQ0KPiBAQCAt
-MTQ5OCw2ICsxNTA4LDEwIEBAIHN0YXRpYyBpbnQgaW14X3VhcnRfc3RhcnR1cChzdHJ1Y3QgdWFy
-dF9wb3J0ICpwb3J0KQ0KPiAgICAgICAgICAgICAgICAgaW14X3VhcnRfd3JpdGVsKHNwb3J0LCB1
-Y3IyLCBVQ1IyKTsNCj4gICAgICAgICB9DQo+IA0KPiArICAgICAgIHV0cyA9IGlteF91YXJ0X3Jl
-YWRsKHNwb3J0LCBpbXhfdWFydF91dHNfcmVnKHNwb3J0KSk7DQo+ICsgICAgICAgdXRzICY9IH5V
-VFNfTE9PUDsNCj4gKyAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHV0cywgaW14X3VhcnRf
-dXRzX3JlZyhzcG9ydCkpOw0KPiArDQo+ICAgICAgICAgc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgm
-c3BvcnQtPnBvcnQubG9jaywgZmxhZ3MpOw0KPiANCj4gICAgICAgICByZXR1cm4gMDsNCj4gQEAg
-LTE1MDcsNyArMTUyMSw3IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3NodXRkb3duKHN0cnVjdCB1
-YXJ0X3BvcnQgKnBvcnQpDQo+ICB7DQo+ICAgICAgICAgc3RydWN0IGlteF9wb3J0ICpzcG9ydCA9
-IChzdHJ1Y3QgaW14X3BvcnQgKilwb3J0Ow0KPiAgICAgICAgIHVuc2lnbmVkIGxvbmcgZmxhZ3M7
-DQo+IC0gICAgICAgdTMyIHVjcjEsIHVjcjIsIHVjcjQ7DQo+ICsgICAgICAgdTMyIHVjcjEsIHVj
-cjIsIHVjcjQsIHV0czsNCj4gDQo+ICAgICAgICAgaWYgKHNwb3J0LT5kbWFfaXNfZW5hYmxlZCkg
-ew0KPiAgICAgICAgICAgICAgICAgZG1hZW5naW5lX3Rlcm1pbmF0ZV9zeW5jKHNwb3J0LT5kbWFf
-Y2hhbl90eCk7DQo+IEBAIC0xNTUxLDcgKzE1NjUsMTcgQEAgc3RhdGljIHZvaWQgaW14X3VhcnRf
-c2h1dGRvd24oc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4gICAgICAgICBzcGluX2xvY2tfaXJx
-c2F2ZSgmc3BvcnQtPnBvcnQubG9jaywgZmxhZ3MpOw0KPiANCj4gICAgICAgICB1Y3IxID0gaW14
-X3VhcnRfcmVhZGwoc3BvcnQsIFVDUjEpOw0KPiAtICAgICAgIHVjcjEgJj0gfihVQ1IxX1RSRFlF
-TiB8IFVDUjFfUlJEWUVOIHwgVUNSMV9SVFNERU4gfCBVQ1IxX1VBUlRFTiB8IFVDUjFfUlhETUFF
-TiB8DQo+IFVDUjFfQVRETUFFTik7DQo+ICsgICAgICAgdWNyMSAmPSB+KFVDUjFfVFJEWUVOIHwg
-VUNSMV9SUkRZRU4gfCBVQ1IxX1JUU0RFTiB8IFVDUjFfUlhETUFFTiB8IFVDUjFfQVRETUFFTik7
-DQo+ICsgICAgICAgaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQgJiYN
-Cj4gKyAgICAgICAgICAgcG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlRTX09OX1NFTkQg
-JiYNCj4gKyAgICAgICAgICAgc3BvcnQtPmhhdmVfcnRzY3RzICYmICFzcG9ydC0+aGF2ZV9ydHNn
-cGlvKSB7DQo+ICsgICAgICAgICAgICAgICB1dHMgPSBpbXhfdWFydF9yZWFkbChzcG9ydCwgaW14
-X3VhcnRfdXRzX3JlZyhzcG9ydCkpOw0KPiArICAgICAgICAgICAgICAgdXRzIHw9IFVUU19MT09Q
-Ow0KPiArICAgICAgICAgICAgICAgaW14X3VhcnRfd3JpdGVsKHNwb3J0LCB1dHMsIGlteF91YXJ0
-X3V0c19yZWcoc3BvcnQpKTsNCj4gKyAgICAgICAgICAgICAgIHVjcjEgfD0gVUNSMV9VQVJURU47
-DQo+ICsgICAgICAgfSBlbHNlIHsNCj4gKyAgICAgICAgICAgICAgIHVjcjEgJj0gflVDUjFfVUFS
-VEVOOw0KPiArICAgICAgIH0NCj4gICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHVjcjEs
-IFVDUjEpOw0KPiANCj4gICAgICAgICB1Y3I0ID0gaW14X3VhcnRfcmVhZGwoc3BvcnQsIFVDUjQp
-Ow0KPiBAQCAtMjIxMyw3ICsyMjM3LDcgQEAgc3RhdGljIGludCBpbXhfdWFydF9wcm9iZShzdHJ1
-Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgICAgICAgIHZvaWQgX19pb21lbSAqYmFzZTsN
-Cj4gICAgICAgICB1MzIgZG1hX2J1Zl9jb25mWzJdOw0KPiAgICAgICAgIGludCByZXQgPSAwOw0K
-PiAtICAgICAgIHUzMiB1Y3IxOw0KPiArICAgICAgIHUzMiB1Y3IxLCB1Y3IyLCB1dHM7DQo+ICAg
-ICAgICAgc3RydWN0IHJlc291cmNlICpyZXM7DQo+ICAgICAgICAgaW50IHR4aXJxLCByeGlycSwg
-cnRzaXJxOw0KPiANCj4gQEAgLTIzNTAsNiArMjM3NCwyMSBAQCBzdGF0aWMgaW50IGlteF91YXJ0
-X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICAgICAgICAgdWNyMSAmPSB+
-KFVDUjFfQURFTiB8IFVDUjFfVFJEWUVOIHwgVUNSMV9JREVOIHwgVUNSMV9SUkRZRU4gfCBVQ1Ix
-X1JUU0RFTik7DQo+ICAgICAgICAgaW14X3VhcnRfd3JpdGVsKHNwb3J0LCB1Y3IxLCBVQ1IxKTsN
-Cj4gDQo+ICsgICAgICAgaWYgKHNwb3J0LT5wb3J0LnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VO
-QUJMRUQgJiYNCj4gKyAgICAgICAgICAgc3BvcnQtPmhhdmVfcnRzY3RzICYmICFzcG9ydC0+aGF2
-ZV9ydHNncGlvKSB7DQo+ICsgICAgICAgICAgICAgICB1dHMgPSBpbXhfdWFydF9yZWFkbChzcG9y
-dCwgaW14X3VhcnRfdXRzX3JlZyhzcG9ydCkpOw0KPiArICAgICAgICAgICAgICAgdXRzIHw9IFVU
-U19MT09QOw0KPiArICAgICAgICAgICAgICAgaW14X3VhcnRfd3JpdGVsKHNwb3J0LCB1dHMsIGlt
-eF91YXJ0X3V0c19yZWcoc3BvcnQpKTsNCj4gKw0KPiArICAgICAgICAgICAgICAgdWNyMSA9IGlt
-eF91YXJ0X3JlYWRsKHNwb3J0LCBVQ1IxKTsNCj4gKyAgICAgICAgICAgICAgIHVjcjEgfD0gVUNS
-MV9VQVJURU47DQo+ICsgICAgICAgICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHVjcjEs
-IFVDUjEpOw0KPiArDQo+ICsgICAgICAgICAgICAgICB1Y3IyID0gaW14X3VhcnRfcmVhZGwoc3Bv
-cnQsIFVDUjIpOw0KPiArICAgICAgICAgICAgICAgdWNyMiB8PSBVQ1IyX1JYRU47DQo+ICsgICAg
-ICAgICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHVjcjIsIFVDUjIpOw0KPiArICAgICAg
-IH0NCj4gKw0KPiAgICAgICAgIGlmICghaW14X3VhcnRfaXNfaW14MShzcG9ydCkgJiYgc3BvcnQt
-PmR0ZV9tb2RlKSB7DQo+ICAgICAgICAgICAgICAgICAvKg0KPiAgICAgICAgICAgICAgICAgICog
-VGhlIERDRURURSBiaXQgY2hhbmdlcyB0aGUgZGlyZWN0aW9uIG9mIERTUiwgRENELCBEVFIgYW5k
-IFJJDQo+IC0tDQo+IDIuMzUuMQ0KDQpUZXN0ZWQtYnk6IENocmlzdG9waCBOaWVkZXJtYWllciA8
-Y25pZWRlcm1haWVyQGRoLWVsZWN0cm9uaWNzLmNvbT4NCg0KDQpSZWdhcmRzDQpDaHJpc3RvcGgN
-Cg==
+The default polarity of RS485 DE signal is active high. This driver does
+not handle such case properly. Currently, when a pin is multiplexed as a
+UART CTS_B on boot, this pin is pulled HIGH by the i.MX UART CTS circuit,
+which activates DE signal on the RS485 transceiver and thus behave as if
+the RS485 was transmitting data, so the system blocks the RS485 bus when
+it starts and until user application takes over. This behavior is not OK.
+The problem consists of two separate parts.
+
+First, the i.MX UART IP requires UCR1 UARTEN and UCR2 RXEN to be set for
+UCR2 CTSC and CTS bits to have any effect. The UCR2 CTSC bit permits the
+driver to set CTS (RTS_B or RS485 DE signal) to either level sychronous
+to the internal UART IP clock. Compared to other options, like GPIO CTS
+control, this has the benefit of being synchronous to the UART IP clock
+and thus without glitches or bus delays. The reason for the CTS design
+is likely because when the Receiver is disabled, the UART IP can never
+indicate that it is ready to receive data by assering CTS signal, so
+the CTS is always pulled HIGH by default.
+
+When the port is closed by user space, imx_uart_stop_rx() clears UCR2
+RXEN bit, and imx_uart_shutdown() clears UCR1 UARTEN bit. This disables
+UART Receiver and UART itself, and forces CTS signal HIGH, which leads
+to the RS485 bus being blocked because RS485 DE is incorrectly active.
+
+The proposed solution for this problem is to keep the Receiver running
+even after the port is closed, but in loopback mode. This disconnects
+the RX FIFO input from the RXD external signal, and since UCR2 TXEN is
+cleared, the UART Transmitter is disabled, so nothing can feed data in
+the RX FIFO. Because the Receiver is still enabled, the UCR2 CTSC and
+CTS bits still have effect and the CTS (RS485 DE) control is retained.
+
+Note that in case of RS485 DE signal active low, there is no problem and
+no special handling is necessary. The CTS signal defaults to HIGH, thus
+the RS485 is by default set to Receive and the bus is not blocked.
+
+Note that while there is the possibility to control CTS using GPIO with
+either CTS polarity, this has the downside of not being synchronous to
+the UART IP clock and thus glitchy and susceptible to slow DE switching.
+
+Second, on boot, before the UART driver probe callback is called, the
+driver core triggers pinctrl_init_done() and configures the IOMUXC to
+default state. At this point, UCR1 UARTEN and UCR2 RXEN are both still
+cleared, but UART CTS_B (RS485 DE) is configured as CTS function, thus
+the RTS signal is pulled HIGH by the UART IP CTS circuit.
+
+One part of the solution here is to enable UCR1 UARTEN and UCR2 RXEN and
+UTS loopback in this driver probe callback, thus unblocking the CTSC and
+CTS control early on. But this is still too late, since the pin control
+is already configured and CTS has been pulled HIGH for a short period
+of time.
+
+When Linux kernel boots and this driver is bound, the pin control is set
+to special "init" state if the state is available, and driver can switch
+the "default" state afterward when ready. This state can be used to set
+the CTS line as a GPIO in DT temporarily, and a GPIO hog can force such
+GPIO to LOW, thus keeping the RS485 DE line LOW early on boot. Once the
+driver takes over and UCR1 UARTEN and UCR2 RXEN and UTS loopback are all
+enabled, the driver can switch to "default" pin control state and control
+the CTS line as function instead. DT binding example is below:
+
+"
+&gpio6 {
+  rts-init-hog {
+    gpio-hog;
+    gpios = <5 0>;
+    output-low;
+    line-name = "rs485-de";
+  };
+};
+
+&uart5 { /* DHCOM UART2 */
+  pinctrl-0 = <&pinctrl_uart5>;
+  pinctrl-1 = <&pinctrl_uart5_init>;
+  pinctrl-names = "default", "init";
+  ...
+};
+pinctrl_uart5_init: uart5-init-grp {
+  fsl,pins = <
+...
+    MX6QDL_PAD_CSI0_DAT19__GPIO6_IO05       0x30b1
+  >;
+};
+
+pinctrl_uart5: uart5-grp {
+  fsl,pins = <
+...
+    MX6QDL_PAD_CSI0_DAT19__UART5_CTS_B      0x30b1
+  >;
+};
+"
+
+Tested-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Fabio Estevam <festevam@denx.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Peng Fan <peng.fan@nxp.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Cc: kernel@dh-electronics.com
+Cc: kernel@pengutronix.de
+Cc: linux-arm-kernel@lists.infradead.org
+To: linux-serial@vger.kernel.org
+---
+V2: - Add code comments per input from Uwe
+    - Add TB from Christoph
+---
+ drivers/tty/serial/imx.c | 64 ++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 58 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 05b432dc7a85c..18f5da561f4a1 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -489,7 +489,7 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ static void imx_uart_stop_rx(struct uart_port *port)
+ {
+ 	struct imx_port *sport = (struct imx_port *)port;
+-	u32 ucr1, ucr2, ucr4;
++	u32 ucr1, ucr2, ucr4, uts;
+ 
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+ 	ucr2 = imx_uart_readl(sport, UCR2);
+@@ -505,7 +505,18 @@ static void imx_uart_stop_rx(struct uart_port *port)
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 	imx_uart_writel(sport, ucr4, UCR4);
+ 
+-	ucr2 &= ~UCR2_RXEN;
++	/* See SER_RS485_ENABLED/UTS_LOOP comment in imx_uart_probe() */
++	if (port->rs485.flags & SER_RS485_ENABLED &&
++	    port->rs485.flags & SER_RS485_RTS_ON_SEND &&
++	    sport->have_rtscts && !sport->have_rtsgpio) {
++		uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
++		uts |= UTS_LOOP;
++		imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
++		ucr2 |= UCR2_RXEN;
++	} else {
++		ucr2 &= ~UCR2_RXEN;
++	}
++
+ 	imx_uart_writel(sport, ucr2, UCR2);
+ }
+ 
+@@ -1393,7 +1404,7 @@ static int imx_uart_startup(struct uart_port *port)
+ 	int retval, i;
+ 	unsigned long flags;
+ 	int dma_is_inited = 0;
+-	u32 ucr1, ucr2, ucr3, ucr4;
++	u32 ucr1, ucr2, ucr3, ucr4, uts;
+ 
+ 	retval = clk_prepare_enable(sport->clk_per);
+ 	if (retval)
+@@ -1498,6 +1509,11 @@ static int imx_uart_startup(struct uart_port *port)
+ 		imx_uart_writel(sport, ucr2, UCR2);
+ 	}
+ 
++	/* See SER_RS485_ENABLED/UTS_LOOP comment in imx_uart_probe() */
++	uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
++	uts &= ~UTS_LOOP;
++	imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
++
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	return 0;
+@@ -1507,7 +1523,7 @@ static void imx_uart_shutdown(struct uart_port *port)
+ {
+ 	struct imx_port *sport = (struct imx_port *)port;
+ 	unsigned long flags;
+-	u32 ucr1, ucr2, ucr4;
++	u32 ucr1, ucr2, ucr4, uts;
+ 
+ 	if (sport->dma_is_enabled) {
+ 		dmaengine_terminate_sync(sport->dma_chan_tx);
+@@ -1551,7 +1567,18 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+-	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN | UCR1_RXDMAEN | UCR1_ATDMAEN);
++	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_RXDMAEN | UCR1_ATDMAEN);
++	/* See SER_RS485_ENABLED/UTS_LOOP comment in imx_uart_probe() */
++	if (port->rs485.flags & SER_RS485_ENABLED &&
++	    port->rs485.flags & SER_RS485_RTS_ON_SEND &&
++	    sport->have_rtscts && !sport->have_rtsgpio) {
++		uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
++		uts |= UTS_LOOP;
++		imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
++		ucr1 |= UCR1_UARTEN;
++	} else {
++		ucr1 &= ~UCR1_UARTEN;
++	}
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
+ 	ucr4 = imx_uart_readl(sport, UCR4);
+@@ -2213,7 +2240,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	void __iomem *base;
+ 	u32 dma_buf_conf[2];
+ 	int ret = 0;
+-	u32 ucr1;
++	u32 ucr1, ucr2, uts;
+ 	struct resource *res;
+ 	int txirq, rxirq, rtsirq;
+ 
+@@ -2350,6 +2377,31 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	ucr1 &= ~(UCR1_ADEN | UCR1_TRDYEN | UCR1_IDEN | UCR1_RRDYEN | UCR1_RTSDEN);
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
++	/*
++	 * In case RS485 is enabled without GPIO RTS control, the UART IP
++	 * is used to control CTS signal. Keep both the UART and Receiver
++	 * enabled, otherwise the UART IP pulls CTS signal always HIGH no
++	 * matter how the UCR2 CTSC and CTS bits are set. To prevent any
++	 * data from being fed into the RX FIFO, enable loopback mode in
++	 * UTS register, which disconnects the RX path from external RXD
++	 * pin and connects it to the Transceiver, which is disabled, so
++	 * no data can be fed to the RX FIFO that way.
++	 */
++	if (sport->port.rs485.flags & SER_RS485_ENABLED &&
++	    sport->have_rtscts && !sport->have_rtsgpio) {
++		uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
++		uts |= UTS_LOOP;
++		imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
++
++		ucr1 = imx_uart_readl(sport, UCR1);
++		ucr1 |= UCR1_UARTEN;
++		imx_uart_writel(sport, ucr1, UCR1);
++
++		ucr2 = imx_uart_readl(sport, UCR2);
++		ucr2 |= UCR2_RXEN;
++		imx_uart_writel(sport, ucr2, UCR2);
++	}
++
+ 	if (!imx_uart_is_imx1(sport) && sport->dte_mode) {
+ 		/*
+ 		 * The DCEDTE bit changes the direction of DSR, DCD, DTR and RI
+-- 
+2.35.1
+
