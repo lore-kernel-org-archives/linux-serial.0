@@ -2,115 +2,230 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4558EC43219
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Sep 2022 16:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD0CC433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Sep 2022 03:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234708AbiI2Qdy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Sep 2022 12:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54116 "EHLO
+        id S229502AbiI3Dhg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Sep 2022 23:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235201AbiI2Qdm (ORCPT
+        with ESMTP id S229696AbiI3Dhe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Sep 2022 12:33:42 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A1355A4;
-        Thu, 29 Sep 2022 09:33:41 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 019CD1F8BE;
-        Thu, 29 Sep 2022 16:33:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1664469220; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8eShIPYqu7E10XqA1YXAoCftbC0rFatAmpe4+4vsscI=;
-        b=HrytoeWsHGUIH5VJtyPUoJbyv0xaregBL9fpxSePMNf0cHw5nf+aDFmL36YJQ3Jn1YmQyx
-        eW5zw2346C+FqG7Q8ICq/meKC/T4wcj0j0RThkBCrDcJvCJ2tPtNO0Qoh6JhVRHBOSmqte
-        nBCLwjNhPnV0W1Yoa/c5AWzNQtWFceo=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E2A212C14E;
-        Thu, 29 Sep 2022 16:33:38 +0000 (UTC)
-Date:   Thu, 29 Sep 2022 18:33:35 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Sven Schnelle <svens@stackframe.org>,
-        John David Anglin <dave.anglin@bell.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        linux-parisc@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH printk 00/18] preparation for threaded/atomic printing
-Message-ID: <YzXI3ztt3kpMbFt1@alley>
-References: <20220924000454.3319186-1-john.ogness@linutronix.de>
+        Thu, 29 Sep 2022 23:37:34 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2EA118B1D;
+        Thu, 29 Sep 2022 20:37:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664509053; x=1696045053;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/t5PvzkP5CnfVfh6FXwUHOhMRJZQfg+GbB0zWgJE51E=;
+  b=To2DeY+Tjm5gldKvOE8kNdGTSx3OMsNt+gVL/aaGIDgnXHeByunqxrUq
+   f0xnmIEZzAc1BfSKGtOffAHQ0AEFGThGz/yTbT1xCVHl5/B9TQhghXBfp
+   opRZERiiRj6fd+vL6+Y3Q7RP7pBG/j6TU0tdNa7MO96qbhzGBfHyV/gOY
+   qa5NguRMZ9iYwbz3rjXXX/JPA4ifwGCgyQavlxKScsVBQ4r6p8t0qH3BN
+   T+IKlpMy8lgLUNVthVWRQf6e+kwIWHvGtGPOtOWPX89T4Dke+05HhxCVg
+   qzcTY2h8GjRCGz4d4jxVc82+rN0Yxnoh/2r+Q1lfZVFzv7g4QfkDqjVCz
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="303006236"
+X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
+   d="scan'208";a="303006236"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 20:37:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="685122739"
+X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
+   d="scan'208";a="685122739"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Sep 2022 20:37:27 -0700
+Date:   Fri, 30 Sep 2022 11:28:38 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Subject: Re: [PATCH v2 4/6] fpga: dfl: add generic support for MSIX interrupts
+Message-ID: <YzZiZsc3X0Iy6Z5S@yilunxu-OptiPlex-7050>
+References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com>
+ <20220923121745.129167-5-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220924000454.3319186-1-john.ogness@linutronix.de>
+In-Reply-To: <20220923121745.129167-5-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat 2022-09-24 02:10:36, John Ogness wrote:
-> Hi,
+On 2022-09-23 at 05:17:43 -0700, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 > 
-> This series is essentially the first 18 patches of tglx's RFC series
-> [0] with only minor changes in comments and commit messages. It's
-> purpose is to lay the groundwork for the upcoming threaded/atomic
-> console printing posted as the RFC series and demonstrated at
-> LPC2022 [1].
+> Define and use a DFHv1 parameter to add generic support for MSIX
+> interrupts for DFL devices.
 > 
-> This series is interesting for mainline because it cleans up various
-> code and documentation quirks discovered while working on the new
-> console printing implementation.
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> ---
+> v2: fix kernel doc
+>     clarify use of DFH_VERSION field
+> ---
+>  drivers/fpga/dfl.c  | 60 +++++++++++++++++++++++++++++++++++++++++----
+>  include/linux/dfl.h | 14 +++++++++++
+>  2 files changed, 69 insertions(+), 5 deletions(-)
 > 
-> Aside from cleanups, the main features introduced here are:
-> 
-> - Converts the console's DIY linked list implementation to hlist.
-> 
-> - Introduces a console list lock (mutex) so that readers (such as
->   /proc/consoles) can safely iterate the consoles without blocking
->   console printing.
-> 
-> - Adds SRCU support to the console list to prepare for safe console
->   list iterating from any context.
-> 
-> - Refactors buffer handling to prepare for per-console, per-cpu,
->   per-context atomic printing.
-> 
-> The series has the following parts:
-> 
->    Patches  1 - 5:   Cleanups
-> 
->    Patches  6 - 12:  Locking and list conversion
-> 
->    Patches 13 - 18:  Improved output buffer handling to prepare for
->                      code sharing
-> 
-> Thomas Gleixner (18):
->   printk: Make pr_flush() static
->   printk: Declare log_wait properly
->   printk: Remove write only variable nr_ext_console_drivers
->   printk: Remove bogus comment vs. boot consoles
->   printk: Mark __printk percpu data ready __ro_after_init
+> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+> index 1132f3c10440..dfd3f563c92d 100644
+> --- a/drivers/fpga/dfl.c
+> +++ b/drivers/fpga/dfl.c
+> @@ -941,23 +941,22 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
+>  	void __iomem *base = binfo->ioaddr + ofst;
+>  	unsigned int i, ibase, inr = 0;
+>  	enum dfl_id_type type;
+> -	int virq;
+> +	int virq, off;
+>  	u64 v;
+>  
+>  	type = feature_dev_id_type(binfo->feature_dev);
+>  
+>  	/*
+>  	 * Ideally DFL framework should only read info from DFL header, but
+> -	 * current version DFL only provides mmio resources information for
+> +	 * current version, DFHv0, only provides mmio resources information for
 
-JFYI, I have pushed the first 5 cleanup patches into printk/linux.git,
-branch rework/kthreads. The aim is to get them into 6.1.
+With this patchset, it's not 'current version' anymore.
 
-The rest of the patchset is still being discussed.
+>  	 * each feature in DFL Header, no field for interrupt resources.
+>  	 * Interrupt resource information is provided by specific mmio
+>  	 * registers of each private feature which supports interrupt. So in
+>  	 * order to parse and assign irq resources, DFL framework has to look
+>  	 * into specific capability registers of these private features.
+>  	 *
+> -	 * Once future DFL version supports generic interrupt resource
+> -	 * information in common DFL headers, the generic interrupt parsing
+> -	 * code will be added. But in order to be compatible to old version
+> +	 * DFHv1 supports generic interrupt resource information in DFHv1
+> +	 * parameter blocks. But in order to be compatible to old version
+>  	 * DFL, the driver may still fall back to these quirks.
+>  	 */
+>  	if (type == PORT_ID) {
+> @@ -981,6 +980,36 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
+>  		}
+>  	}
+>  
+> +	if (fid != FEATURE_ID_AFU && fid != PORT_FEATURE_ID_ERROR &&
+> +	    fid != PORT_FEATURE_ID_UINT && fid != FME_FEATURE_ID_GLOBAL_ERR) {
+> +
+> +		v = FIELD_GET(DFH_VERSION, readq(base));
+> +		switch (v) {
+> +		case 0:
+> +			break;
 
-Best Regards,
-Petr
+In last version, you mentioned that there will be no quirk for DFLv1, so
+how about:
+
+  v = FIELD_GET(DFH_VERSION, readq(base));
+
+  if (v == 0) {
+	/* quirks */
+  } else {
+	/* parse PARAM MSIX  */
+  }
+
+No need to check specific feature ids again.
+
+Thanks,
+Yilun
+
+> +
+> +		case 1:
+> +			v =  readq(base + DFHv1_CSR_SIZE_GRP);
+> +			if (FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS, v)) {
+> +				off = dfl_find_param(base + DFHv1_PARAM_HDR, ofst,
+> +						     DFHv1_PARAM_ID_MSIX);
+> +				if (off >= 0) {
+> +					ibase = readl(base + DFHv1_PARAM_HDR +
+> +						      off + DFHv1_PARAM_MSIX_STARTV);
+> +					inr = readl(base + DFHv1_PARAM_HDR +
+> +						    off + DFHv1_PARAM_MSIX_NUMV);
+> +					dev_dbg(binfo->dev, "start %d num %d fid 0x%x\n",
+> +						ibase, inr, fid);
+> +				}
+> +			}
+> +			break;
+> +
+> +		default:
+> +			dev_warn(binfo->dev, "unexpected DFH version %lld\n", v);
+> +			break;
+> +		}
+> +	}
+> +
+>  	if (!inr) {
+>  		*irq_base = 0;
+>  		*nr_irqs = 0;
+> @@ -1879,6 +1908,27 @@ long dfl_feature_ioctl_set_irq(struct platform_device *pdev,
+>  }
+>  EXPORT_SYMBOL_GPL(dfl_feature_ioctl_set_irq);
+>  
+> +int dfl_find_param(void __iomem *base, resource_size_t max, int param)
+> +{
+> +	int off = 0;
+> +	u64 v, next;
+> +
+> +	while (off < max) {
+> +		v = readq(base + off);
+> +		if (param == FIELD_GET(DFHv1_PARAM_HDR_ID, v))
+> +			return off;
+> +
+> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
+> +		if (!next)
+> +			break;
+> +
+> +		off += next;
+> +	}
+> +
+> +	return -ENOENT;
+> +}
+> +EXPORT_SYMBOL_GPL(dfl_find_param);
+> +
+>  static void __exit dfl_fpga_exit(void)
+>  {
+>  	dfl_chardev_uinit();
+> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
+> index 1e53468ba8d8..33e21c360671 100644
+> --- a/include/linux/dfl.h
+> +++ b/include/linux/dfl.h
+> @@ -63,6 +63,10 @@
+>  #define DFHv1_PARAM_HDR_VERSION		GENMASK_ULL(31, 16) /* Version Param */
+>  #define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 32) /* Offset of next Param */
+>  
+> +#define DFHv1_PARAM_ID_MSIX	0x1
+> +#define DFHv1_PARAM_MSIX_STARTV	0x8
+> +#define DFHv1_PARAM_MSIX_NUMV	0xc
+> +
+>  /**
+>   * enum dfl_id_type - define the DFL FIU types
+>   */
+> @@ -136,4 +140,14 @@ void dfl_driver_unregister(struct dfl_driver *dfl_drv);
+>  	module_driver(__dfl_driver, dfl_driver_register, \
+>  		      dfl_driver_unregister)
+>  
+> +/**
+> + * dfl_find_param() - find the offset of the given parameter
+> + * @base: base pointer to start of dfl parameters in DFH
+> + * @max: maximum offset to search
+> + * @param: id of dfl parameter
+> + *
+> + * Return: positive offset on success, negative error code otherwise.
+> + */
+> +int dfl_find_param(void __iomem *base, resource_size_t max, int param);
+> +
+>  #endif /* __LINUX_DFL_H */
+> -- 
+> 2.25.1
+> 
