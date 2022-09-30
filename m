@@ -2,78 +2,156 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F8DC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Sep 2022 08:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2736EC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Sep 2022 08:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiI3IHw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Sep 2022 04:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        id S231136AbiI3IkH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Sep 2022 04:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbiI3IHv (ORCPT
+        with ESMTP id S229530AbiI3IkF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Sep 2022 04:07:51 -0400
+        Fri, 30 Sep 2022 04:40:05 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C18129FDE;
-        Fri, 30 Sep 2022 01:07:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8EE4F39F;
+        Fri, 30 Sep 2022 01:40:00 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 994041F8CA;
-        Fri, 30 Sep 2022 08:07:48 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 202781F88D;
+        Fri, 30 Sep 2022 08:39:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1664525268; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1664527199; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=mBNuBx7p4zWFfPy4deHXA3HcsMwaAOAXCFunK8Xif5k=;
-        b=BSR8neqz3BpAFGFBTVg2CCGqAaYv8EYiK5BtMQIFh/QCewhQrL71CMojiimvqgHgRqLN3/
-        Vy5u99mkTaHs0WPAhNOtcLXiqbP7lC2NT5x9u4TYpkO5aG3mD8/pK22eFTOeYaobEWqQHJ
-        21BHANgcrkjvh5rPHs8w/fTIlNRdZxI=
+        bh=yvMtSmGbUu03O8o8mZRaHkMNTqo368k0r4sUED/TlJ8=;
+        b=IyayJPEEbLvzJ4Rc92dtdCpsLu/52+b8aMJMvDtsLBG1HhKYAb8GDlAMcmFhVxJCK1mZK3
+        dJVgn+1MMxkClqD6SXEyZd+GsXxMSNDmZFRLj5HQy0+1ZCAtuwoFUZ+PBvc9tEddwFAu4H
+        XS/oueVOcuhmQB+m58RQQ1F7+P3ttaM=
 Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 488412C15F;
-        Fri, 30 Sep 2022 08:07:48 +0000 (UTC)
-Date:   Fri, 30 Sep 2022 10:07:47 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 970C92C178;
+        Fri, 30 Sep 2022 08:39:58 +0000 (UTC)
+Date:   Fri, 30 Sep 2022 10:39:58 +0200
 From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
         Jason Wessel <jason.wessel@windriver.com>,
         Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk 09/18] serial: kgdboc: Lock console list in probe
- function
-Message-ID: <Yzaj0wBz8uRXU5S/@alley>
+Subject: Re: [PATCH printk 10/18] kgbd: Pretend that console list walk is safe
+Message-ID: <YzarXlj1NyFGTC08@alley>
 References: <20220924000454.3319186-1-john.ogness@linutronix.de>
- <20220924000454.3319186-10-john.ogness@linutronix.de>
+ <20220924000454.3319186-11-john.ogness@linutronix.de>
+ <CAD=FV=U3m_mVLpWna3pgi4=b7OCzUxmKh666g62zPNaB+6QHUA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220924000454.3319186-10-john.ogness@linutronix.de>
+In-Reply-To: <CAD=FV=U3m_mVLpWna3pgi4=b7OCzUxmKh666g62zPNaB+6QHUA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat 2022-09-24 02:10:45, John Ogness wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
+On Wed 2022-09-28 16:32:15, Doug Anderson wrote:
+> Hi,
 > 
-> Unprotected list walks are not necessarily safe.
+> On Fri, Sep 23, 2022 at 5:05 PM John Ogness <john.ogness@linutronix.de> wrote:
+> >
+> > From: Thomas Gleixner <tglx@linutronix.de>
+> >
+> > Provide a special list iterator macro for KGDB to allow unprotected list
+> > walks and add a few comments to explain the hope based approach.
+> >
+> > Preperatory change for changing the console list to hlist and adding
 > 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+> s/Preperatory/Preparatory
+> 
+> > lockdep asserts to regular list walks.
+> >
+> > diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> > index af2aa76bae15..57a5fd27dffe 100644
+> > --- a/drivers/tty/serial/kgdboc.c
+> > +++ b/drivers/tty/serial/kgdboc.c
+> > @@ -462,10 +462,13 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+> >          * we have no other choice so we keep using it.  Since not all
+> >          * serial drivers might be OK with this, print a warning once per
+> >          * boot if we detect this case.
+> > +        *
+> > +        * Pretend that walking the console list is safe...
+> 
+> To be fair, this is not quite as unsafe as your comment makes it
+> sound. kgdb is a "stop the world" debugger and when this function is
+> executing then all of the other CPUs in the system should have been
+> rounded up and idle (or, perhaps, busy looping). Essentially as long
+> as console list manipulation is always made in a way that each
+> instruction keeps the list in a reasonable state then what kgdb is
+> doing is actually "safe". Said another way: we could drop into the
+> debugger at any point when a task is manipulating the console list,
+> but once we're in the debugger and are executing the "pre_exp_handler"
+> then all the other CPUs have been frozen in time.
 
-It looks correct in principle. There is still a discussion [1] whether
-to introduce console_list_lock() or use the existing console_lock(),
-see https://lore.kernel.org/r/20220924000454.3319186-7-john.ogness@linutronix.de
+The code in register_console()/unregister_console() seems to
+manipulate the list in the right order. But the correctness
+is not guaranteed because there are neither compiler nor
+memory barriers.
 
-Depending on the result of the discussion, with either
-console_list_lock() or console_lock():
+That said, later patches add for_each_console_srcu(). IMHO,
+the SRCU walk should be safe here.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+> 
+> >          */
+> > -       for_each_console(con)
+> > +       for_each_console_kgdb(con) {
+> >                 if (con == kgdboc_earlycon_io_ops.cons)
+> >                         return;
+> > +       }
+> >
+> >         already_warned = true;
+> >         pr_warn("kgdboc_earlycon is still using bootconsole\n");
+> > --- a/kernel/debug/kdb/kdb_io.c
+> > +++ b/kernel/debug/kdb/kdb_io.c
+> > @@ -558,7 +558,12 @@ static void kdb_msg_write(const char *msg, int msg_len)
+> >                 cp++;
+> >         }
+> >
+> > -       for_each_console(c) {
+> > +       /*
+> > +        * This is a completely unprotected list walk designed by the
+> > +        * wishful thinking department. See the oops_in_progress comment
+> > +        * below - especially the encourage section...
+> 
+> The reality is also a little less dire here than the comment suggests.
+> IMO this is actually not the same as the "oops_in_progress" case that
+> the comment refers to.
+>
+> Specifically, the "oops_in_progress" is referring to the fact that
+> it's not uncommon to drop into the debugger when a serial driver (the
+> same one you're using for kgdb) is holding its lock. Possibly it's
+> printing something to the tty running on the UART dumping stuff out
+> from the kernel's console. That's not great and I won't pretend that
+> the kgdb design is amazing here, but...
+>
+> Just like above, I don't feel like iterating through the console list
+> here without holding the lock is necessarily unsafe. Just like above,
+> all the rest of the CPUs in the system are in a holding pattern and
+> aren't actively executing any code. While we may have interrupted them
+> at any given instruction, they won't execute any more instruction
+> until we leave kgdb and resume running.
+
+The atomic consoles might improve the situation. Well, the hand shake
+will not really work because the current owner might be stopped.
+But we will at least know that the port is not in a safe state.
+
+Anyway, what about using the later added SRCU walk here?
+After all, this is exactly what RCU is for, isn't it?
 
 Best Regards,
 Petr
+
