@@ -2,156 +2,296 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2736EC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Sep 2022 08:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B901C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Sep 2022 09:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231136AbiI3IkH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Sep 2022 04:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S231356AbiI3J2Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Sep 2022 05:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiI3IkF (ORCPT
+        with ESMTP id S231249AbiI3J2L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Sep 2022 04:40:05 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8EE4F39F;
-        Fri, 30 Sep 2022 01:40:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 202781F88D;
-        Fri, 30 Sep 2022 08:39:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1664527199; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yvMtSmGbUu03O8o8mZRaHkMNTqo368k0r4sUED/TlJ8=;
-        b=IyayJPEEbLvzJ4Rc92dtdCpsLu/52+b8aMJMvDtsLBG1HhKYAb8GDlAMcmFhVxJCK1mZK3
-        dJVgn+1MMxkClqD6SXEyZd+GsXxMSNDmZFRLj5HQy0+1ZCAtuwoFUZ+PBvc9tEddwFAu4H
-        XS/oueVOcuhmQB+m58RQQ1F7+P3ttaM=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 970C92C178;
-        Fri, 30 Sep 2022 08:39:58 +0000 (UTC)
-Date:   Fri, 30 Sep 2022 10:39:58 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 30 Sep 2022 05:28:11 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F01E319C;
+        Fri, 30 Sep 2022 02:28:03 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id d1-20020a17090a6a4100b002095b319b9aso2588909pjm.0;
+        Fri, 30 Sep 2022 02:28:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=3IXMulE4oFMGsJB0VDcz6W+21SMNhKUHzpPjIK+JEMc=;
+        b=YLOneGW8Z02gT3eKcFzrAOlWOgEd5Jv6jNt2xbYgjz1qZmSvfcmi1WCtdw9DbxQKTd
+         USUmM7C6VJ6AVyHhRAdWm/lubv8yu7b2c4ZVtRO4Vi/AxVtZs9z986+vbWDnK64I5fGt
+         RDGhXk38uOujQfpoFno9ic7j4mNQ/ljrLsvckqXjS2M6x3qjO6LeF6cvMq5W3+hFCfoJ
+         gDqH+p9tX1Qu0DrAtakDYGsFRoTu/w7EGxwXNpAwIZ3nDj+RPU8RdD1UZSbtCWAzKY/X
+         II5is/EG3kM6IhDz7KDkwxGjpS5qJzxLSacdkptY0o+WCORfOmCTEa+NwcSX4eH3acyF
+         HnTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=3IXMulE4oFMGsJB0VDcz6W+21SMNhKUHzpPjIK+JEMc=;
+        b=tINqrsLWiOZHG8g/E8MaWo8bpGzAyglLfIhQkSb4bAn/wa+UM1WY9FZ9AreV7mnBCO
+         PJbeQVz6KY0FknYtUZkYz/579kyJuQpIq23LzpVyfo8LRepPsFc0eB9IUa9YF+pI8JkY
+         gl2rfa7u/b4NUl3af2YJqOXdqTNAnKAtoMdgXhmpP618QRRSp/BsQjYvfYLW35s2lq6O
+         Ly+2v3h3B7kHgF55GVl8O9Lg2/G64x8YPtDJMsMPUqSIe0s8ptbTDEDbeg5H1PSfDRtL
+         IWE+0lDB5niPDPMCuZMcmf08NlYjt6QRoNgawKg6QHD/S8fEISZ5M9UmUYkOPpiraI6n
+         0p9Q==
+X-Gm-Message-State: ACrzQf105eDLbOwPRiwEbJ37eznl4jShKPyixljOxTcSRVmm+EWnvcPB
+        RMdOWmKzwRzcUcou2v9CVwk=
+X-Google-Smtp-Source: AMsMyM5tqchW9FvTPDXBlJifjVF8ehV7gN5OeYKFlTPY4u2M6ro5MhWj/+kT3X5fI0yLOWlUZiOZWA==
+X-Received: by 2002:a17:902:76c7:b0:178:ab0a:19af with SMTP id j7-20020a17090276c700b00178ab0a19afmr7872056plt.164.1664530082627;
+        Fri, 30 Sep 2022 02:28:02 -0700 (PDT)
+Received: from debian.me (subs32-116-206-28-35.three.co.id. [116.206.28.35])
+        by smtp.gmail.com with ESMTPSA id u12-20020a170902714c00b00178323e689fsm1384487plm.171.2022.09.30.02.28.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Sep 2022 02:28:01 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id EA57B1005BB; Fri, 30 Sep 2022 16:27:57 +0700 (WIB)
+Date:   Fri, 30 Sep 2022 16:27:57 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk 10/18] kgbd: Pretend that console list walk is safe
-Message-ID: <YzarXlj1NyFGTC08@alley>
-References: <20220924000454.3319186-1-john.ogness@linutronix.de>
- <20220924000454.3319186-11-john.ogness@linutronix.de>
- <CAD=FV=U3m_mVLpWna3pgi4=b7OCzUxmKh666g62zPNaB+6QHUA@mail.gmail.com>
+        linux-serial <linux-serial@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/4] serial: Convert serial_rs485 to kernel doc
+Message-ID: <Yza2nRxJ6MXWy/xa@debian.me>
+References: <20220929093148.9468-1-ilpo.jarvinen@linux.intel.com>
+ <20220929093148.9468-2-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="tzHsB+Sj21QVvgtY"
 Content-Disposition: inline
-In-Reply-To: <CAD=FV=U3m_mVLpWna3pgi4=b7OCzUxmKh666g62zPNaB+6QHUA@mail.gmail.com>
+In-Reply-To: <20220929093148.9468-2-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed 2022-09-28 16:32:15, Doug Anderson wrote:
-> Hi,
-> 
-> On Fri, Sep 23, 2022 at 5:05 PM John Ogness <john.ogness@linutronix.de> wrote:
-> >
-> > From: Thomas Gleixner <tglx@linutronix.de>
-> >
-> > Provide a special list iterator macro for KGDB to allow unprotected list
-> > walks and add a few comments to explain the hope based approach.
-> >
-> > Preperatory change for changing the console list to hlist and adding
-> 
-> s/Preperatory/Preparatory
-> 
-> > lockdep asserts to regular list walks.
-> >
-> > diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> > index af2aa76bae15..57a5fd27dffe 100644
-> > --- a/drivers/tty/serial/kgdboc.c
-> > +++ b/drivers/tty/serial/kgdboc.c
-> > @@ -462,10 +462,13 @@ static void kgdboc_earlycon_pre_exp_handler(void)
-> >          * we have no other choice so we keep using it.  Since not all
-> >          * serial drivers might be OK with this, print a warning once per
-> >          * boot if we detect this case.
-> > +        *
-> > +        * Pretend that walking the console list is safe...
-> 
-> To be fair, this is not quite as unsafe as your comment makes it
-> sound. kgdb is a "stop the world" debugger and when this function is
-> executing then all of the other CPUs in the system should have been
-> rounded up and idle (or, perhaps, busy looping). Essentially as long
-> as console list manipulation is always made in a way that each
-> instruction keeps the list in a reasonable state then what kgdb is
-> doing is actually "safe". Said another way: we could drop into the
-> debugger at any point when a task is manipulating the console list,
-> but once we're in the debugger and are executing the "pre_exp_handler"
-> then all the other CPUs have been frozen in time.
 
-The code in register_console()/unregister_console() seems to
-manipulate the list in the right order. But the correctness
-is not guaranteed because there are neither compiler nor
-memory barriers.
+--tzHsB+Sj21QVvgtY
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-That said, later patches add for_each_console_srcu(). IMHO,
-the SRCU walk should be safe here.
+On Thu, Sep 29, 2022 at 12:31:45PM +0300, Ilpo J=C3=A4rvinen wrote:
+> diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documenta=
+tion/driver-api/serial/serial-rs485.rst
+> index 6ebad75c74ed..264e4b753713 100644
+> --- a/Documentation/driver-api/serial/serial-rs485.rst
+> +++ b/Documentation/driver-api/serial/serial-rs485.rst
+> @@ -29,11 +29,11 @@ RS485 Serial Communications
+>  3. Data Structures Already Available in the Kernel
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+> =20
+> -   The Linux kernel provides the serial_rs485 structure (see [1]) to han=
+dle
+> -   RS485 communications. This data structure is used to set and configur=
+e RS485
+> +   The Linux kernel provides the serial_rs485 structure to handle RS485
+> +   communications. This data structure is used to set and configure RS485
+>     parameters in the platform data and in ioctls.
+> =20
+> -   The device tree can also provide RS485 boot time parameters (see [2]
+> +   The device tree can also provide RS485 boot time parameters (see [1]
+>     for bindings). The driver is in charge of filling this data structure=
+ from
+>     the values given by the device tree.
+> =20
+> @@ -47,6 +47,9 @@ RS485 Serial Communications
+>     for the uart_port. TIOCGRS485 ioctl can be used to read back the
+>     serial_rs485 structure matching to the current configuration.
+> =20
+> +.. kernel-doc:: include/uapi/linux/serial.h
+> +   :identifiers: serial_rs485
+> +
+>  4. Usage from user-level
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =20
+> @@ -126,6 +129,4 @@ RS485 Serial Communications
+>  6. References
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =20
+> - [1]	include/uapi/linux/serial.h
+> -
+> - [2]	Documentation/devicetree/bindings/serial/rs485.txt
+> + [1]	Documentation/devicetree/bindings/serial/rs485.txt
 
-> 
-> >          */
-> > -       for_each_console(con)
-> > +       for_each_console_kgdb(con) {
-> >                 if (con == kgdboc_earlycon_io_ops.cons)
-> >                         return;
-> > +       }
-> >
-> >         already_warned = true;
-> >         pr_warn("kgdboc_earlycon is still using bootconsole\n");
-> > --- a/kernel/debug/kdb/kdb_io.c
-> > +++ b/kernel/debug/kdb/kdb_io.c
-> > @@ -558,7 +558,12 @@ static void kdb_msg_write(const char *msg, int msg_len)
-> >                 cp++;
-> >         }
-> >
-> > -       for_each_console(c) {
-> > +       /*
-> > +        * This is a completely unprotected list walk designed by the
-> > +        * wishful thinking department. See the oops_in_progress comment
-> > +        * below - especially the encourage section...
-> 
-> The reality is also a little less dire here than the comment suggests.
-> IMO this is actually not the same as the "oops_in_progress" case that
-> the comment refers to.
->
-> Specifically, the "oops_in_progress" is referring to the fact that
-> it's not uncommon to drop into the debugger when a serial driver (the
-> same one you're using for kgdb) is holding its lock. Possibly it's
-> printing something to the tty running on the UART dumping stuff out
-> from the kernel's console. That's not great and I won't pretend that
-> the kgdb design is amazing here, but...
->
-> Just like above, I don't feel like iterating through the console list
-> here without holding the lock is necessarily unsafe. Just like above,
-> all the rest of the CPUs in the system are in a holding pattern and
-> aren't actively executing any code. While we may have interrupted them
-> at any given instruction, they won't execute any more instruction
-> until we leave kgdb and resume running.
+For formatting consistency with kernel-doc comment of the struct below,
+the code keywords should be in inline code samples:
 
-The atomic consoles might improve the situation. Well, the hand shake
-will not really work because the current owner might be stopped.
-But we will at least know that the port is not in a safe state.
+---- >8 ----
+diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentati=
+on/driver-api/serial/serial-rs485.rst
+index e53aa291bcd7df..3d48c8b5a3e6f8 100644
+--- a/Documentation/driver-api/serial/serial-rs485.rst
++++ b/Documentation/driver-api/serial/serial-rs485.rst
+@@ -39,15 +39,15 @@ RS485 Serial Communications
+    uart_get_rs485_mode().
+=20
+    Any driver for devices capable of working both as RS232 and RS485 should
+-   implement the rs485_config callback and provide rs485_supported in the
+-   struct uart_port. The serial core calls rs485_config to do the device
+-   specific part in response to TIOCSRS485 ioctl (see below). The
+-   rs485_config callback receives a pointer to a sanitizated struct
++   implement the ``rs485_config`` callback and provide ``rs485_supported``=
+ in
++   the ``struct uart_port``. The serial core calls ``rs485_config`` to do =
+the
++   device specific part in response to TIOCSRS485 ioctl (see below). The
++   ``rs485_config`` callback receives a pointer to a sanitizated struct
+    serial_rs485. The struct serial_rs485 userspace provides is sanitized
+-   before calling rs485_config using rs485_supported that indicates what
+-   RS485 features the driver supports for the struct uart_port. TIOCGRS485
+-   ioctl can be used to read back the struct serial_rs485 matching to the
+-   current configuration.
++   before calling ``rs485_config`` using ``rs485_supported`` that indicates
++   what RS485 features the driver supports for the struct uart_port.
++   TIOCGRS485 ioctl can be used to read back the struct serial_rs485 match=
+ing
++   to the current configuration.
+=20
+ .. kernel-doc:: include/uapi/linux/serial.h
+    :identifiers: serial_rs485 uart_get_rs485_mode
+@@ -108,23 +108,26 @@ RS485 Serial Communications
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+    The Linux kernel provides addressing mode for multipoint RS-485 serial
+-   communications line. The addressing mode is enabled with SER_RS485_ADDRB
++   communications line. The addressing mode is enabled with ``SER_RS485_AD=
+DRB``
+    flag in struct serial_rs485. The struct serial_rs485 has two additional
+    flags and fields for enabling receive and destination addresses.
+=20
+    Address mode flags:
+-	- SER_RS485_ADDRB: Enabled addressing mode (sets also ADDRB in termios).
+-	- SER_RS485_ADDR_RECV: Receive (filter) address enabled.
+-	- SER_RS485_ADDR_DEST: Set destination address.
+=20
+-   Address fields (enabled with corresponding SER_RS485_ADDR_* flag):
+-	- addr_recv: Receive address.
+-	- addr_dest: Destination address.
++	- ``SER_RS485_ADDRB``: Enabled addressing mode (sets also ADDRB in
++          termios).
++	- ``SER_RS485_ADDR_RECV``: Receive (filter) address enabled.
++	- ``SER_RS485_ADDR_DEST``: Set destination address.
++
++   Address fields (enabled with corresponding ``SER_RS485_ADDR_*`` flag):
++
++	- ``addr_recv``: Receive address.
++	- ``addr_dest``: Destination address.
+=20
+    Once a receive address is set, the communication can occur only with the
+    particular device and other peers are filtered out. It is left up to the
+    receiver side to enforce the filtering. Receive address will be cleared
+-   if SER_RS485_ADDR_RECV is not set.
++   if ``SER_RS485_ADDR_RECV`` is not set.
+=20
+    Note: not all devices supporting RS485 support multipoint addressing.
+=20
 
-Anyway, what about using the later added SRCU walk here?
-After all, this is exactly what RCU is for, isn't it?
+> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+> index cea06924b295..4634c913f16a 100644
+> --- a/include/uapi/linux/serial.h
+> +++ b/include/uapi/linux/serial.h
+> @@ -107,33 +107,50 @@ struct serial_icounter_struct {
+>  	int reserved[9];
+>  };
+> =20
+> -/*
+> +/**
+> + * struct serial_rs485 - serial interface for controlling RS485 settings.
+> + * @flags:			RS485 feature flags.
+> + * @delay_rts_before_send:	Delay before send (milliseconds).
+> + * @delay_rts_after_send:	Delay after send (milliseconds).
+> + * @addr_recv:			Receive filter for RS485 addressing mode
+> + *				(used only when %SER_RS485_ADDR_RECV is set).
+> + * @addr_dest:			Destination address for RS485 addressing mode
+> + *				(used only when %SER_RS485_ADDR_DEST is set).
+> + * @padding0:			Padding (set to zero).
+> + * @padding1:			Padding (set to zero).
+> + * @padding:			Deprecated, use @padding0 and @padding1 instead.
+> + *				Do not use with @addr_recv and @addr_dest (due to
+> + *				overlap).
+> + *
+>   * Serial interface for controlling RS485 settings on chips with suitable
+>   * support. Set with TIOCSRS485 and get with TIOCGRS485 if supported by =
+your
+>   * platform. The set function returns the new state, with any unsupporte=
+d bits
+>   * reverted appropriately.
+> + *
+> + * serial_rs485::flags bits are:
+> + *
 
-Best Regards,
-Petr
+Maybe better say "The flag bits are:"?
 
+> + * * %SER_RS485_ENABLED		- RS485 enabled.
+> + * * %SER_RS485_RTS_ON_SEND	- Logical level for RTS pin when sending.
+> + * * %SER_RS485_RTS_AFTER_SEND	- Logical level for RTS pin after sent.
+> + * * %SER_RS485_RX_DURING_TX	- Full-duplex RS485 line.
+> + * * %SER_RS485_TERMINATE_BUS	- Enable bus termination (if supported).
+> + * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
+> + * * %SER_RS485_ADDR_RECV - Receive address filter (enables @addr_recv).=
+ Requires %SER_RS485_ADDRB.
+> + * * %SER_RS485_ADDR_DEST - Destination address (enables @addr_dest). Re=
+quires %SER_RS485_ADDRB.
+>   */
+> -
+>  struct serial_rs485 {
+> -	__u32	flags;			/* RS485 feature flags */
+> -#define SER_RS485_ENABLED		(1 << 0)	/* If enabled */
+> -#define SER_RS485_RTS_ON_SEND		(1 << 1)	/* Logical level for
+> -							   RTS pin when
+> -							   sending */
+> -#define SER_RS485_RTS_AFTER_SEND	(1 << 2)	/* Logical level for
+> -							   RTS pin after sent*/
+> +	__u32	flags;
+> +#define SER_RS485_ENABLED		(1 << 0)
+> +#define SER_RS485_RTS_ON_SEND		(1 << 1)
+> +#define SER_RS485_RTS_AFTER_SEND	(1 << 2)
+>  #define SER_RS485_RX_DURING_TX		(1 << 4)
+> -#define SER_RS485_TERMINATE_BUS		(1 << 5)	/* Enable bus
+> -							   termination
+> -							   (if supported) */
+> -
+> -/* RS-485 addressing mode */
+> -#define SER_RS485_ADDRB			(1 << 6)	/* Enable addressing mode */
+> -#define SER_RS485_ADDR_RECV		(1 << 7)	/* Receive address filter */
+> -#define SER_RS485_ADDR_DEST		(1 << 8)	/* Destination address */
+> +#define SER_RS485_TERMINATE_BUS		(1 << 5)
+> +#define SER_RS485_ADDRB			(1 << 6)
+> +#define SER_RS485_ADDR_RECV		(1 << 7)
+> +#define SER_RS485_ADDR_DEST		(1 << 8)
+> =20
+> -	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
+> -	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
+> +	__u32	delay_rts_before_send;
+> +	__u32	delay_rts_after_send;
+> =20
+>  	/* The fields below are defined by flags */
+>  	union {
+
+All struct members are described in htmldocs output, thanks.=20
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--tzHsB+Sj21QVvgtY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYza2lgAKCRD2uYlJVVFO
+o2cZAQDE3tRS/nbiVvgR9eWjEEXbu5ozDBpWZf/ULFFvdygNXgD+LXn3FlB5jZx+
+GEJ8TJwz3a75J120ey+R3f9gCNJC7wI=
+=fkEH
+-----END PGP SIGNATURE-----
+
+--tzHsB+Sj21QVvgtY--
