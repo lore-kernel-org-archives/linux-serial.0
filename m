@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A60E1C433FE
-	for <linux-serial@archiver.kernel.org>; Sat,  1 Oct 2022 06:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F7DC433F5
+	for <linux-serial@archiver.kernel.org>; Sat,  1 Oct 2022 06:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiJAGRh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 1 Oct 2022 02:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
+        id S229563AbiJAGRi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 1 Oct 2022 02:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiJAGRg (ORCPT
+        with ESMTP id S229512AbiJAGRg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sat, 1 Oct 2022 02:17:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFD610D67B;
-        Fri, 30 Sep 2022 23:16:53 -0700 (PDT)
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B516710ED8C;
+        Fri, 30 Sep 2022 23:16:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1664605013; x=1696141013;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dRIqUrYVwtMkvvZEu/bX9DedHrUPU6grLy3XTjixO1Y=;
-  b=ncJjwXS0cZ3H/mOhpV5etnpCwpE5emWwLhmqV7tA1Di8qK4lk5vzdlnK
-   g4cswTYD+7vxDCDDfj1xM9ddc/4obtl/RhZhZN3tfNrOTXNueC3PibU2Q
-   4Dbph1ax2aQjQpQNUuceygpWLadrO7IBfiiwOnRjtGPlhFbNwkrs31zv+
-   N/qjsAg4dDH7H9e9ZR0KIxjLj3yAvf4QNnXLVaL9tvt59yx7Knb6DNXCn
-   vLNKmLhSUc6I/NIfb9E/doQQXQu90FmMA9US21omQ+P75wd3V2cYzuOIi
-   64lBL+kVwVgNTkrzZFbeFJ3ioBQLUjlbB5xiQRd8vPE/LeS88gYkO+GWW
-   Q==;
+  t=1664605016; x=1696141016;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=t/YWdSEiWY+uTuC+27pnC4fxAatDyZxJkBTz60ecTr4=;
+  b=0K61zAo9AyGjdEfuHRgXMXAjTNHdS4DaZsAYFi5uxgYvflob1P0/SRHS
+   YJ6IShzKi22YH8jhHGZTKbPErkK/SwjpVvJMM0MyJN+X8OBfvHcrG5bMe
+   ffGlTTYA/9iHOIFHSv/laLw/+ojvVv9u1bhXAwGHe3Wda8ka8C9LCJrrM
+   moaCLxhIxL+E0JW5FTMknF84Lx4wPRlCE4zyNJsGh5eM5VvvKn0gwGoF1
+   MqWbX2xhbpIGhveyX9n96JeJV/DjoXwexSBiPFe0cAI7ARrsTWCv6Whzr
+   qCkaBc2JtjNJtniKf5cTGkbr1kjA/xMpTv3IropgV7ETvuYFIfuv1cF+f
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,360,1654585200"; 
-   d="scan'208";a="182901787"
+   d="scan'208";a="176561499"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Sep 2022 23:15:04 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Sep 2022 23:15:19 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 30 Sep 2022 23:15:04 -0700
+ 15.1.2507.12; Fri, 30 Sep 2022 23:15:18 -0700
 Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 30 Sep 2022 23:14:59 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 30 Sep 2022 23:15:13 -0700
 From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
 To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
         <ilpo.jarvinen@linux.intel.com>, <andy.shevchenko@gmail.com>,
@@ -48,10 +48,12 @@ To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
         <phil.edworthy@renesas.com>, <lukas@wunner.de>
 CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v2 tty-next 0/3] 8250: microchip: pci1xxxx: Add driver for the pci1xxxx's quad-uart function.
-Date:   Sat, 1 Oct 2022 11:45:04 +0530
-Message-ID: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+Subject: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485 support to quad-uart driver.
+Date:   Sat, 1 Oct 2022 11:45:06 +0530
+Message-ID: <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -59,32 +61,94 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
-downstream ports. Quad-uart is one of the functions in the multi-function
-endpoint. This patch adds device driver for the quad-uart function and
-enumerates between 1 to 4 instances of uarts based on the PCIe subsystem
-device ID.
+pci1xxxx uart supports rs485 mode of operation in the hardware with
+auto-direction control with configurable delay for releasing RTS after
+the transmission. This patch adds support for the rs485 mode.
 
-The changes from v1 are mentioned in each patch in the patchset.
+Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+---
+Changes in v2:
+- move pci1xxxx_rs485_config to a separate patch with
+  pci1xxxx_rs485_supported.
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 57 +++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
 
-Thanks to Andy Shevchenko, Ilpo Jarvinen, Geert Uytterhoeven for their
-review comments for v1.
-
-Kumaravel Thiagarajan (3):
-  8250: microchip: pci1xxxx: Add driver for quad-uart support.
-  8250: microchip: pci1xxxx: Add rs485 support to quad-uart driver.
-  8250: microchip: pci1xxxx: Add power management functions to quad-uart
-    driver.
-
- MAINTAINERS                             |   6 +
- drivers/tty/serial/8250/8250_pci1xxxx.c | 563 ++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c     |   8 +
- drivers/tty/serial/8250/Kconfig         |  10 +
- drivers/tty/serial/8250/Makefile        |   1 +
- include/uapi/linux/serial_core.h        |   3 +
- 6 files changed, 591 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_pci1xxxx.c
-
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index 41a4b94f52b4..999e5a284266 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -137,6 +137,61 @@ static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
+ 	writel((quot << 8) | frac, (port->membase + CLK_DIVISOR_REG));
+ }
+ 
++static const struct serial_rs485 pci1xxxx_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
++	.delay_rts_after_send = 1,
++	/* Delay RTS before send is not supported */
++};
++
++static int pci1xxxx_rs485_config(struct uart_port *port,
++				 struct ktermios *termios,
++				 struct serial_rs485 *rs485)
++{
++	u32 clock_div = readl(port->membase + CLK_DIVISOR_REG);
++	u8 delay_in_baud_periods = 0;
++	u32 baud_period_in_ns = 0;
++	u8 data = 0;
++
++	/* pci1xxxx's uart hardware supports only RTS delay after
++	 * Tx and in units of bit times to a maximum of 15
++	 */
++
++	rs485->flags &= SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
++			SER_RS485_RTS_AFTER_SEND;
++
++	if (rs485->flags & SER_RS485_ENABLED) {
++		memset(rs485->padding, 0, sizeof(rs485->padding));
++
++		data = ADCL_CFG_EN | ADCL_CFG_PIN_SEL;
++
++		if (!(rs485->flags & SER_RS485_RTS_ON_SEND)) {
++			data |= ADCL_CFG_POL_SEL;
++			rs485->flags |=  SER_RS485_RTS_AFTER_SEND;
++		} else {
++			rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
++		}
++
++		if (rs485->delay_rts_after_send) {
++			baud_period_in_ns = ((clock_div >> 8) * 16);
++			delay_in_baud_periods = (rs485->delay_rts_after_send * 1000000) /
++						baud_period_in_ns;
++			if (delay_in_baud_periods > 0xF)
++				delay_in_baud_periods = 0xF;
++			data |= delay_in_baud_periods << 8;
++			rs485->delay_rts_after_send = (baud_period_in_ns * delay_in_baud_periods) /
++						      1000000;
++			rs485->delay_rts_before_send = 0;
++		}
++	} else {
++		memset(rs485, 0, sizeof(*rs485));
++	}
++
++	writeb(data, (port->membase + ADCL_CFG_REG));
++	port->rs485 = *rs485;
++
++	return 0;
++}
++
+ static int pci1xxxx_get_num_ports(struct pci_dev *dev)
+ {
+ 	int nr_ports = 1;
+@@ -217,6 +272,8 @@ static int pci1xxxx_setup(struct pci1xxxx_8250 *priv,
+ 	port->port.set_termios = serial8250_do_set_termios;
+ 	port->port.get_divisor = pci1xxxx_get_divisor;
+ 	port->port.set_divisor = pci1xxxx_set_divisor;
++	port->port.rs485_config = pci1xxxx_rs485_config;
++	port->port.rs485_supported = pci1xxxx_rs485_supported;
+ 	ret = pci1xxxx_setup_port(priv, port, offset);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.25.1
 
