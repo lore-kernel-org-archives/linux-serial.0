@@ -2,101 +2,152 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68329C43217
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Oct 2022 09:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4EEC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Oct 2022 09:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiJCJb5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Oct 2022 05:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
+        id S229846AbiJCJvp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Oct 2022 05:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbiJCJ3z (ORCPT
+        with ESMTP id S230055AbiJCJv2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Oct 2022 05:29:55 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E3553D23;
-        Mon,  3 Oct 2022 02:27:50 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id c11so6007000qtw.8;
-        Mon, 03 Oct 2022 02:27:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=Yfsi/AGFVq9lMy2xlrpaeIIHTsRKifHh6klZq85Xypg=;
-        b=G88CZIoY5HgbeaRNhHCrdL7Sz4aXBPVFgxdqhTSuBcABcBFGHmVfI/KwpbCR2zTYyN
-         RBhnc/zF0mk43Xm95haEK7sQUNckYZBD+kZpNjk0pyHVA1BvvY1gliZxwiXTtTqoygjI
-         qDZ/XMPNZnBSn6Hfwifs3ZafhOpOQcStmvLesP25NsOlWnNaMNaJtxNVTwT+ObUwG2tn
-         h1lfG/1Yo4koe4ulEDrKPQZqsjx6lNJ3B5jCWWgbIsel4n/wtPvU90w1WaISwWPEKstK
-         4gkCsZ9hhNw6v+8O8KPMQkkeMfjHm5pZz8ytLycVZtWz8SyUzpScPRIEW60jfcRKknwA
-         N+Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=Yfsi/AGFVq9lMy2xlrpaeIIHTsRKifHh6klZq85Xypg=;
-        b=Ol1CznoXUFrJYFEaAqEL0XcUi9zTlZ3j6E4CVHlEdmjI5HET/ujmB3zIN0MFRO17bx
-         0Ko+KSNcYAVleIfJZSyqJz2B5GY4dHgE8Hq3xxJv1b2P1aycdWcDgT64CxP8z837y2UM
-         8MUKTQbczgZtD2x5s+NKoE6df0KJ2EEIb/VfqDWhQ6MsruXK20pPo+/AqCxBjG1pseWm
-         sA+Gi5fbXk8xAhszX6hFdmFS1X13bUaSbu6SuA8oJWRFtaVyXXwIw7+ig2/PbFFpn38j
-         vrNI7wBypEoo3U6qPSF/NKAr3unLW++gIx1YzocjQD3bFOIff3e2H7lV2MPAf7Q4VwHL
-         jeXw==
-X-Gm-Message-State: ACrzQf0g4LdMrSukl1QecGMaKd7I/ybHEziIM4hCQT9Kv50XIU3PTYS1
-        1n9S6QJnmtcbOsIQJMK1Kmfz2UfaJxt+KwQpNLQ=
-X-Google-Smtp-Source: AMsMyM7jk43Kfgt286DP3f4IMvWzyljl4n/WAwK48BJjejvzs8aYQ3SnB3Jjei0sqL6y21KuFkNx9yWu+HxG7QoIbb0=
-X-Received: by 2002:a05:622a:1701:b0:35b:b3bb:7c4e with SMTP id
- h1-20020a05622a170100b0035bb3bb7c4emr14800250qtk.195.1664789247473; Mon, 03
- Oct 2022 02:27:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com> <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
-In-Reply-To: <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 3 Oct 2022 12:26:51 +0300
-Message-ID: <CAHp75VdEJvG=BQvS2KVNY8BnjfHyOCO6ww0S4_gxVZNuhXaURg@mail.gmail.com>
+        Mon, 3 Oct 2022 05:51:28 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8932225A;
+        Mon,  3 Oct 2022 02:51:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664790687; x=1696326687;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=0eSz7DO9mySO5jeTWFNlmR0B7bVjcdWTwf4B5JeJd14=;
+  b=H9D9cK+NErNt5WNrJXG5/Kqp+VrSKsmBW4wY+WIlxhDiE/xrsSYm61z6
+   NKu+VfmWAqpAd4hCsngVYJgczfxQBaNbbYUL6QnGYntdCHXJwdpcSAKUu
+   oLumA7mrfmzhnyikruat6zGOUzeFs9uMjc0+feUWFVDT5nEQzBst4vQxd
+   DJTGg53IeHgB96Q/f8N2BT8+5zFg3+y8kz0R+/3jb6W5Mcqoe+o6E7Pot
+   CTDx4lSl7Ish6Jndt5rHCZJX1ZpgsaFwsanu8bZwdohPINbl9IB1+neR5
+   2ud6KyUNP3Jvm+xMNgRunPgZuYWX+eg9x+Tl2km4NnkHdwLJgjl2NW6fE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10488"; a="366636289"
+X-IronPort-AV: E=Sophos;i="5.93,365,1654585200"; 
+   d="scan'208";a="366636289"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2022 02:51:27 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10488"; a="623472682"
+X-IronPort-AV: E=Sophos;i="5.93,365,1654585200"; 
+   d="scan'208";a="623472682"
+Received: from rladysz-mobl2.ger.corp.intel.com ([10.252.38.50])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Oct 2022 02:51:22 -0700
+Date:   Mon, 3 Oct 2022 12:51:23 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, andy.shevchenko@gmail.com,
+        u.kleine-koenig@pengutronix.de, johan@kernel.org,
+        wander@redhat.com, etremblay@distech-controls.com,
+        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
+        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        UNGLinuxDriver@microchip.com
 Subject: Re: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
  management functions to quad-uart driver.
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
-        johan@kernel.org, wander@redhat.com,
-        etremblay@distech-controls.com, macro@orcam.me.uk,
-        geert+renesas@glider.be, jk@ozlabs.org, phil.edworthy@renesas.com,
-        lukas@wunner.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, UNGLinuxDriver@microchip.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
+Message-ID: <7892467b-c2de-c62-e977-62761dc5cbb@linux.intel.com>
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com> <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Oct 1, 2022 at 9:15 AM Kumaravel Thiagarajan
-<kumaravel.thiagarajan@microchip.com> wrote:
->
+On Sat, 1 Oct 2022, Kumaravel Thiagarajan wrote:
+
 > pci1xxxx's quad-uart function has the capability to wake up the host from
 > suspend state. Enable wakeup before entering into suspend and disable
 > wakeup on resume.
-
-...
-
-> +       port->suspended == 0
-
-How is this check race-protected?
-
-...
-
+> 
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> ---
+> Changes in v2:
+> - Use DEFINE_SIMPLE_DEV_PM_OPS instead of SIMPLE_DEV_PM_OPS.
+> - Use pm_sleep_ptr instead of CONFIG_PM_SLEEP.
+> - Change the return data type of pci1xxxx_port_suspend to bool from int.
+> ---
+>  drivers/tty/serial/8250/8250_pci1xxxx.c | 112 ++++++++++++++++++++++++
+>  1 file changed, 112 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> index 999e5a284266..0a0459f66177 100644
+> --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
+> +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> @@ -352,6 +352,112 @@ static void pci1xxxx_irq_assign(struct pci1xxxx_8250 *priv,
+>  	}
+>  }
+>  
+> +static bool pci1xxxx_port_suspend(int line)
+> +{
+> +	struct uart_8250_port *up = serial8250_get_port(line);
+> +	struct uart_port *port = &up->port;
+> +	unsigned long flags;
+> +	u8 wakeup_mask;
+> +	bool ret = false;
+> +
+> +	if (port->suspended == 0 && port->dev) {
+> +		wakeup_mask = readb(up->port.membase + UART_WAKE_MASK_REG);
+> +
+> +		spin_lock_irqsave(&port->lock, flags);
+> +		port->mctrl &= ~TIOCM_OUT2;
+> +		port->ops->set_mctrl(port, port->mctrl);
+> +		spin_unlock_irqrestore(&port->lock, flags);
+> +
+> +		if ((wakeup_mask & UART_WAKE_SRCS) != UART_WAKE_SRCS)
+> +			ret = true;
+> +	}
+> +
+> +	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
+> +
+> +	return ret;
+> +}
+> +
 > +static void pci1xxxx_port_resume(int line)
 > +{
+> +	struct uart_8250_port *up = serial8250_get_port(line);
+> +	struct uart_port *port = &up->port;
+> +	unsigned long flags;
+> +
+> +	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
+> +
+> +	if (port->suspended == 0) {
 
-> +       if (port->suspended == 0) {
+Is this check the right way around?
 
-Ditto.
-
-> +       }
+> +		spin_lock_irqsave(&port->lock, flags);
+> +		port->mctrl |= TIOCM_OUT2;
+> +		port->ops->set_mctrl(port, port->mctrl);
+> +		spin_unlock_irqrestore(&port->lock, flags);
+> +	}
 > +}
+> +
+> +static int pci1xxxx_suspend(struct device *dev)
+> +{
+> +	struct pci1xxxx_8250 *priv = dev_get_drvdata(dev);
+> +	struct pci_dev *pcidev = to_pci_dev(dev);
+> +	unsigned int data;
+> +	void __iomem *p;
+> +	bool wakeup = false;
+> +	int i;
+> +
+> +	for (i = 0; i < priv->nr; i++) {
+> +		if (priv->line[i] >= 0) {
+> +			serial8250_suspend_port(priv->line[i]);
+> +			wakeup |= pci1xxxx_port_suspend(priv->line[i]);
 
-...
+So first serial8250_suspend_port() calls into uart_suspend_port() that
+sets port->suspended to 1, then pci1xxxx_port_suspend() checks if it's 0.
+Is this intentional?
 
-If you have similarities with 8250_pci, probably you need to split it
-to 8250_pcilib.c and share. (See how 8250_dw /8250_lpss are done in
-that sense.)
 
---
-With Best Regards,
-Andy Shevchenko
+-- 
+ i.
+
