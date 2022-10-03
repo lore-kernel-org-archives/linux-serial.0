@@ -2,87 +2,180 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B16DC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Oct 2022 19:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6164EC433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Oct 2022 19:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbiJCTme (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Oct 2022 15:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
+        id S229876AbiJCToo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Oct 2022 15:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiJCTmb (ORCPT
+        with ESMTP id S229880AbiJCToa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Oct 2022 15:42:31 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B5548E84
-        for <linux-serial@vger.kernel.org>; Mon,  3 Oct 2022 12:42:27 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id ABBAD100D941D;
-        Mon,  3 Oct 2022 21:42:24 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 7A18159769; Mon,  3 Oct 2022 21:42:24 +0200 (CEST)
-Date:   Mon, 3 Oct 2022 21:42:24 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Bin Liu <b-liu@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250: 8250_omap: Support native RS485
-Message-ID: <20221003194224.GC12171@wunner.de>
-References: <b9f5e4b01f10bb692fc78df668f686dd33d8c036.1664279959.git.lukas@wunner.de>
- <20221003151059.mypganj25awuxc2d@iaqt7>
+        Mon, 3 Oct 2022 15:44:30 -0400
+Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D4BD49B4E
+        for <linux-serial@vger.kernel.org>; Mon,  3 Oct 2022 12:44:29 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.100.34])
+        by smtp.orange.fr with ESMTPA
+        id fRFEoZmqSkifIfRFFokRMU; Mon, 03 Oct 2022 21:36:57 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 03 Oct 2022 21:36:57 +0200
+X-ME-IP: 86.243.100.34
+Message-ID: <676c5723-a9b7-9f28-fbb4-27a5c6f6145b@wanadoo.fr>
+Date:   Mon, 3 Oct 2022 21:36:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221003151059.mypganj25awuxc2d@iaqt7>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver for
+ quad-uart support.
+Content-Language: fr
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, andy.shevchenko@gmail.com,
+        u.kleine-koenig@pengutronix.de, johan@kernel.org,
+        wander@redhat.com, etremblay@distech-controls.com,
+        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
+        phil.edworthy@renesas.com, lukas@wunner.de
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+ <20221001061507.3508603-2-kumaravel.thiagarajan@microchip.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20221001061507.3508603-2-kumaravel.thiagarajan@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 03, 2022 at 10:10:59AM -0500, Bin Liu wrote:
-> On Tue, Sep 27, 2022 at 02:10:01PM +0200, Lukas Wunner wrote:
-> > Recent TI Sitara SoCs such as AM64/AM65 have gained the ability to
-> > automatically assert RTS when data is transmitted, obviating the need
-> > to emulate this functionality in software.
-> > 
-> > The feature is controlled through new DIR_EN and DIR_POL bits in the
-> > Mode Definition Register 3.  For details see page 8783 and 8890 of the
-> > AM65 TRM:  https://www.ti.com/lit/ug/spruid7e/spruid7e.pdf
+Le 01/10/2022 à 08:15, Kumaravel Thiagarajan a écrit :
+> pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+> downstream ports. Quad-uart is one of the functions in the
+> multi-function endpoint. This driver loads for the quad-uart and
+> enumerates single or multiple instances of uart based on the PCIe
+> subsystem device ID.
+> 
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> ---
+
 [...]
-> > -	if (up->port.rs485.flags & SER_RS485_ENABLED)
-> > +	if (priv->habit & UART_HAS_NATIVE_RS485)
-> > +		serial_out(up, UART_OMAP_MDR3, priv->mdr3);
-> 
-> This makes the NATIVE_RS485 always used if the SoC supports it, but
-> 
-> > +	else if (up->port.rs485.flags & SER_RS485_ENABLED)
-> >  		serial8250_em485_stop_tx(up);
-> 
-> there are cases em485 should be used even if SoC supports NATIVE_RS485.
-> For example:
-> - the design has pinmux conflict and the RTS pin has to be used for
->   something else. Then a GPIO pin would be used for RS485 DE control;
-> - the design requires customized delay_rts_before_send or
->   delay_rts_after_send which NATIVE_RS485 doesn't support;
-> 
-> So we might need an option for such usecases. A device tree flag?
 
-I expect those cases to be rare, hence do not see the need to
-address them right from the start.  Support for falling back
-to software emulation can easily be added later.  Indeed a
-device tree property might be an appropriate way to trigger
-such a fallback.
+> +static int pci1xxxx_setup_port(struct pci1xxxx_8250 *priv, struct uart_8250_port *port,
+> +			       int offset)
+> +{
+> +	struct pci_dev *dev = priv->dev;
+> +
+> +	if (pci_resource_flags(dev, 0) & IORESOURCE_MEM) {
+> +		if (!pcim_iomap(dev, 0, 0) && !pcim_iomap_table(dev))
+> +			return -ENOMEM;
+> +
+> +		port->port.iotype = UPIO_MEM;
+> +		port->port.iobase = 0;
+> +		port->port.mapbase = pci_resource_start(dev, 0) + offset;
+> +		port->port.membase = pcim_iomap_table(dev)[0] + offset;
 
-Thanks,
+Hi,
 
-Lukas
+Is it needed to call pcim_iomap_table(dev) twice? (here and a few lines 
+above in the 'if')
+
+> +		port->port.regshift = 0;
+> +	} else {
+> +		port->port.iotype = UPIO_PORT;
+> +		port->port.iobase = pci_resource_start(dev, 0) + offset;
+> +		port->port.mapbase = 0;
+> +		port->port.membase = NULL;
+> +		port->port.regshift = 0;
+> +	}
+> +
+> +	return 0;
+> +}
+
+[...]
+
+> +static int pci1xxxx_serial_probe(struct pci_dev *dev,
+> +				 const struct pci_device_id *ent)
+> +{
+> +	struct pci1xxxx_8250 *priv;
+> +	struct uart_8250_port uart;
+> +	unsigned int nr_ports, i;
+> +	int num_vectors = 0;
+> +	int rc;
+> +
+> +	rc = pcim_enable_device(dev);
+> +	if (rc)
+> +		return rc;
+> +
+> +	nr_ports = pci1xxxx_get_num_ports(dev);
+> +
+> +	priv = devm_kzalloc(&dev->dev, struct_size(priv, line, nr_ports), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	priv->membase = pcim_iomap(dev, 0, 0);
+> +	priv->dev = dev;
+> +	priv->nr =  nr_ports;
+> +
+> +	pci_set_master(dev);
+> +
+> +	num_vectors  = pci_alloc_irq_vectors(dev, 1, 4, PCI_IRQ_ALL_TYPES);
+> +	if (num_vectors < 0)
+> +		return num_vectors;
+> +
+> +	memset(&uart, 0, sizeof(uart));
+> +	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_TYPE | UPF_FIXED_PORT;
+> +	uart.port.uartclk = 62500000;
+> +	uart.port.dev = &dev->dev;
+> +
+> +	if (num_vectors == 4)
+> +		writeb(UART_PCI_CTRL_SET_MULTIPLE_MSI, (priv->membase + UART_PCI_CTRL_REG));
+> +	else
+> +		uart.port.irq = pci_irq_vector(dev, 0);
+> +
+> +	for (i = 0; i < nr_ports; i++) {
+> +		if (num_vectors == 4)
+> +			pci1xxxx_irq_assign(priv, &uart, i);
+> +		priv->line[i] = -ENOSPC;
+> +		rc = pci1xxxx_setup(priv, &uart, i);
+> +		if (rc) {
+> +			dev_err(&dev->dev, "Failed to setup port %u\n", i);
+> +			break;
+> +		}
+> +		priv->line[i] = serial8250_register_8250_port(&uart);
+
+In case of error, this should be undone in an error handling path in the 
+probe, as done in the remove() function below.
+
+If we break, we still continue and return success. But the last 
+priv->line[i] are still 0. Is it an issue when pci1xxxx_serial_remove() 
+is called?
+
+> +
+> +		if (priv->line[i] < 0) {
+> +			dev_err(&dev->dev,
+> +				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
+> +				uart.port.iobase, uart.port.irq,
+> +				uart.port.iotype, priv->line[i]);
+> +			break;
+> +		}
+> +	}
+> +
+> +	pci_set_drvdata(dev, priv);
+> +
+> +	return 0;
+> +}
+> +
+> +static void pci1xxxx_serial_remove(struct pci_dev *dev)
+> +{
+> +	struct pci1xxxx_8250 *priv = pci_get_drvdata(dev);
+> +	int i;
+> +
+> +	for (i = 0; i < priv->nr; i++) {
+> +		if (priv->line[i] >= 0)
+> +			serial8250_unregister_port(priv->line[i]);
+> +	}
+> +}
+> +
+
+[...]
