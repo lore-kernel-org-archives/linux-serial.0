@@ -2,106 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AA9C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 11:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E67C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 13:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229532AbiJDLWc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Oct 2022 07:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
+        id S229464AbiJDNqI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Oct 2022 09:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiJDLW1 (ORCPT
+        with ESMTP id S229463AbiJDNqH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Oct 2022 07:22:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675A829374;
-        Tue,  4 Oct 2022 04:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664882546; x=1696418546;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=zV6XaQw7cFV+W0fZ4qt53I+U/j7E5pxnhTY/GN5mI2c=;
-  b=FfK6gHFLfqWK3EtfEhy4oTNPvVUHY29mC98YH+DJGoZrm/DVRRyojCS7
-   jywZSSVVuSumK20I57wTlhtS+qKbm2yyYTBrT6cd/cQyNbCIYk7MQoTfl
-   cC+/LqtkQAhhDSR17OvjPZpTH41hIqQFsy8tVqUcWAOvaTJ66I/g1RE+N
-   VCeU9D482MsWUm9AqlhX9o7ibjxzeGi56lDO4VstZsXG4ms9xxVcUZnG6
-   MOPKN5c9HTkirEMrPM2olxWW0iGedRVo4Waar5fDf1vVWJ8UzRg1yoqez
-   UHAY65LUeMYPjiba1iaqjOwqYCD1kH05GKsgQZHv0P5tXiTM7vJOd66Z5
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10489"; a="290105399"
-X-IronPort-AV: E=Sophos;i="5.93,367,1654585200"; 
-   d="scan'208";a="290105399"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 04:22:26 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10489"; a="654737955"
-X-IronPort-AV: E=Sophos;i="5.93,367,1654585200"; 
-   d="scan'208";a="654737955"
-Received: from kmreisi-mobl.ger.corp.intel.com ([10.252.39.196])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 04:22:19 -0700
-Date:   Tue, 4 Oct 2022 14:22:17 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v5 3/3] tty: serial: use uart_port_tx_limited()
-In-Reply-To: <20221004104927.14361-4-jirislaby@kernel.org>
-Message-ID: <ac4a5f21-fd2d-6981-eedd-1bca72a9237a@linux.intel.com>
-References: <20221004104927.14361-1-jirislaby@kernel.org> <20221004104927.14361-4-jirislaby@kernel.org>
+        Tue, 4 Oct 2022 09:46:07 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9B627FFC
+        for <linux-serial@vger.kernel.org>; Tue,  4 Oct 2022 06:46:05 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 294DjfhD101902;
+        Tue, 4 Oct 2022 08:45:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1664891142;
+        bh=qGEgLi8PAPicD/dFOB9lp0VwytmygF0zy1EMs1ZPHRU=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=jwXDUQ/EtdNRMA5WGZK9Tjk0ewxRtUaivjJnTZ1RUIF9ZzknmqaUpjtyviqhoMS0/
+         VmHaDez0DDoMUxLEvJirt3Q/9bZbsCVyXKkdBHQJSVKmrNjP/cakGyfYkmZet7ZPQZ
+         4gBGnyM2px3R5gmhiWpoLBK4xAS8WbL0qiHsCmQo=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 294DjfVe067382
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 4 Oct 2022 08:45:41 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 4 Oct
+ 2022 08:45:41 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 4 Oct 2022 08:45:41 -0500
+Received: from localhost (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 294DjfGj022787;
+        Tue, 4 Oct 2022 08:45:41 -0500
+Date:   Tue, 4 Oct 2022 08:45:41 -0500
+From:   Bin Liu <b-liu@ti.com>
+To:     Lukas Wunner <lukas@wunner.de>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-serial@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Nishanth Menon <nm@ti.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250: 8250_omap: Support native RS485
+Message-ID: <20221004134541.pnp6ts26p22rcwra@iaqt7>
+Mail-Followup-To: Bin Liu <b-liu@ti.com>, Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+References: <b9f5e4b01f10bb692fc78df668f686dd33d8c036.1664279959.git.lukas@wunner.de>
+ <20221003151059.mypganj25awuxc2d@iaqt7>
+ <20221003194224.GC12171@wunner.de>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2081053952-1664882543=:1585"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20221003194224.GC12171@wunner.de>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi,
 
---8323329-2081053952-1664882543=:1585
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 4 Oct 2022, Jiri Slaby (SUSE) wrote:
-
-> uart_port_tx_limited() is a new helper to send characters to the device.
-> Use it in these drivers.
+On Mon, Oct 03, 2022 at 09:42:24PM +0200, Lukas Wunner wrote:
+> On Mon, Oct 03, 2022 at 10:10:59AM -0500, Bin Liu wrote:
+> > On Tue, Sep 27, 2022 at 02:10:01PM +0200, Lukas Wunner wrote:
+> > > Recent TI Sitara SoCs such as AM64/AM65 have gained the ability to
+> > > automatically assert RTS when data is transmitted, obviating the need
+> > > to emulate this functionality in software.
+> > > 
+> > > The feature is controlled through new DIR_EN and DIR_POL bits in the
+> > > Mode Definition Register 3.  For details see page 8783 and 8890 of the
+> > > AM65 TRM:  https://www.ti.com/lit/ug/spruid7e/spruid7e.pdf
+> [...]
+> > > -	if (up->port.rs485.flags & SER_RS485_ENABLED)
+> > > +	if (priv->habit & UART_HAS_NATIVE_RS485)
+> > > +		serial_out(up, UART_OMAP_MDR3, priv->mdr3);
+> > 
+> > This makes the NATIVE_RS485 always used if the SoC supports it, but
+> > 
+> > > +	else if (up->port.rs485.flags & SER_RS485_ENABLED)
+> > >  		serial8250_em485_stop_tx(up);
+> > 
+> > there are cases em485 should be used even if SoC supports NATIVE_RS485.
+> > For example:
+> > - the design has pinmux conflict and the RTS pin has to be used for
+> >   something else. Then a GPIO pin would be used for RS485 DE control;
+> > - the design requires customized delay_rts_before_send or
+> >   delay_rts_after_send which NATIVE_RS485 doesn't support;
+> > 
+> > So we might need an option for such usecases. A device tree flag?
 > 
-> mux.c also needs to define tx_done(). But I'm not sure if the driver
-> really wants to wait for all the characters to dismiss from the HW fifo
-> at this code point. Hence I marked this as FIXME.
+> I expect those cases to be rare, hence do not see the need to
+
+Maybe rare, but I know some projects use GPIO for DE control.
+
+> address them right from the start.  Support for falling back
+
+So I think missing it is a regression, because this patch forces to
+use the RTS pin for DE control, this breaks the existing projects which
+use GPIO for RTS/DE or have customized delay_rts_{before,after}_send.
+
+-Bin.
+
+> to software emulation can easily be added later.  Indeed a
+> device tree property might be an appropriate way to trigger
+> such a fallback.
 > 
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: "Pali Rohár" <pali@kernel.org>
-> Cc: Kevin Cernekee <cernekee@gmail.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: linux-riscv@lists.infradead.org
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-
-Perhaps you missed this one in the earlier mail. ...Anyway, here it's 
-again:
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
--- 
- i.
-
---8323329-2081053952-1664882543=:1585--
+> Thanks,
+> 
+> Lukas
