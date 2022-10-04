@@ -2,106 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD877C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 09:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5A7C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 10:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbiJDJu3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Oct 2022 05:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S229462AbiJDKtg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Oct 2022 06:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiJDJuM (ORCPT
+        with ESMTP id S229587AbiJDKtf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Oct 2022 05:50:12 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B525722A;
-        Tue,  4 Oct 2022 02:47:16 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id df9so4716732qvb.9;
-        Tue, 04 Oct 2022 02:47:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=cg+ic1dqefBboQUI3t8RLTnTt/zeTAWLuZiAOGzzklc=;
-        b=BC0ZfqpGbTpSy43rLVl0DvH4aaF7G3bhB/Zb1bamlhy+ECgSUnTYuNrIrHKyx6wjbm
-         ZoMGy942eI1oM0idFzpeDUnp1YHsCTbKIxxSlthIOPQNII4UemBCzdE6dHt6Q1xwO3Ad
-         g1L4gyiAy8SnOtXHYRp4/aoYHtQMvipG9YlvQW4lH9DDBqc2dO85p9ZM+NK5ys4ViQZZ
-         zC7VzpEnAAmFZ9yKiwpiU+1ZHdo9kaZXLI4wmrCPUZGI8EQ5TraqvnDGuypt5QqvpnT9
-         VxTN0rYHyboLEfh0xTPXITSVDHDFWxSZ/s+Zq3fNQYe0Q+5IGW7nQ780mMjXw6Bhf32h
-         YZSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=cg+ic1dqefBboQUI3t8RLTnTt/zeTAWLuZiAOGzzklc=;
-        b=vdKeoysb5o9qVjFEvHNKTohfiME/IMqTNvZe9BgVdnUDo3kYd9IP/FYtBcSESo1Z85
-         WtaGPm1p6J0CfEya73+cjoi/3ISLm1s07wNXMdI5sTdj7/NDBlweTCZwzpb+YciNfoE/
-         cIZ3RFdA1C2WwrawSCn/B2t64pK51o71dkof2YVpnjF2UiG7Ib4ApLt7iVLrSi8itOBB
-         AvSfVDMzvTSeJouultNrYPWAGUenfn8qwoyeGFcAF3a7lDgwVXMHnJngW5yfPsGf2fFt
-         skdQzQQy2RGj/eA85G6191xZaOXNHx9fCQkg7Nu3kAY9Z8fdQI37Yn+Zz4vJUN6yxm8X
-         fYoA==
-X-Gm-Message-State: ACrzQf2aM/NBRyHNz1Vf6pbZ2Uh1WLZKs5qUL3TQBC4jHoFQO6rX+GRm
-        6mlxrNQSU0rFggIde9QE9sS40kqGSq775ljYEYE=
-X-Google-Smtp-Source: AMsMyM6PFSFHrXBkEhFdIbz41omtTcLa5ZjrlfYWDlHGRTIGF3OH3hvWU6pgKx/D+W32nCb1biGp/I1X5LOEn6XGZ2U=
-X-Received: by 2002:a05:6214:19cf:b0:4a9:4241:2399 with SMTP id
- j15-20020a05621419cf00b004a942412399mr19167543qvc.64.1664876835575; Tue, 04
- Oct 2022 02:47:15 -0700 (PDT)
+        Tue, 4 Oct 2022 06:49:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3B151A01;
+        Tue,  4 Oct 2022 03:49:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 428166134B;
+        Tue,  4 Oct 2022 10:49:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCED1C433D6;
+        Tue,  4 Oct 2022 10:49:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664880571;
+        bh=WZx3AhQrruYVU5EgWjYJvAbXRAVCAsaIDGGDmZIucpo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VAjkUhgd3x8zs1ewkJYK7XyeNOLa/ggmf8wTXTot8aHUbgaQ/NkjBzxQ3ZaDYv3Aq
+         sXvkNSp0PkoA6E03p51EliEiVi1wYOr5dUOdTFevFv56MQ2dfju5ZVrHr2T3LSPj6a
+         4ULiAeqU/04Cs5ofOvjB6DaWbMOP0EHLX/Coig89y7iflAWfBi9NSFdqEybZuyMM/L
+         3Mkr7abpplpF4c4jB8l423gmgHw2G2fHc5QI6uXIx06bGZ7orqA918R4xDOiKIE0Kc
+         rqdIBW4/EyIFBz5tlgeytCJQWqiS9fa1EIhgQSoO5cNN7posgzM8COa/EL2RcuNyKQ
+         VZ8AqE/50xroA==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Johan Hovold <johan@kernel.org>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v5 0/3] tty: TX helpers
+Date:   Tue,  4 Oct 2022 12:49:24 +0200
+Message-Id: <20221004104927.14361-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
- <20221001061507.3508603-2-kumaravel.thiagarajan@microchip.com> <676c5723-a9b7-9f28-fbb4-27a5c6f6145b@wanadoo.fr>
-In-Reply-To: <676c5723-a9b7-9f28-fbb4-27a5c6f6145b@wanadoo.fr>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 4 Oct 2022 12:46:39 +0300
-Message-ID: <CAHp75VeS5oA6mOrmXGX2u=x1fL3ZqHZDURYHhA8J1hBpXm-KSQ@mail.gmail.com>
-Subject: Re: [PATCH v2 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver for
- quad-uart support.
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, u.kleine-koenig@pengutronix.de,
-        johan@kernel.org, wander@redhat.com,
-        etremblay@distech-controls.com, macro@orcam.me.uk,
-        geert+renesas@glider.be, jk@ozlabs.org, phil.edworthy@renesas.com,
-        lukas@wunner.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, UNGLinuxDriver@microchip.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 3, 2022 at 10:36 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
-> Le 01/10/2022 =C3=A0 08:15, Kumaravel Thiagarajan a =C3=A9crit :
+This series introduces uart_port_tx() + uart_port_tx_limited() TX
+helpers. See PATCH 1/3 for the details.
 
-...
+The preparatory cleanups were already merged, so only the helpers above
+and the switch: first, to uart_port_tx() in 2/3 and then
+uart_port_tx_limited() in 3/3.
 
-> > +     if (pci_resource_flags(dev, 0) & IORESOURCE_MEM) {
-> > +             if (!pcim_iomap(dev, 0, 0) && !pcim_iomap_table(dev))
-> > +                     return -ENOMEM;
-> > +
-> > +             port->port.iotype =3D UPIO_MEM;
-> > +             port->port.iobase =3D 0;
-> > +             port->port.mapbase =3D pci_resource_start(dev, 0) + offse=
-t;
-> > +             port->port.membase =3D pcim_iomap_table(dev)[0] + offset;
+I know it's pre-rc1 time now. But there is no rush. Maybe
+non-maintainers can take time to review now ;).
 
-> Is it needed to call pcim_iomap_table(dev) twice? (here and a few lines
-> above in the 'if')
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Yes. But the main question I asked (if we really need IO ports
-support) still remains.
+Jiri Slaby (SUSE) (3):
+  tty: serial: introduce transmit helpers
+  tty: serial: use uart_port_tx() helper
+  tty: serial: use uart_port_tx_limited()
 
-> > +             port->port.regshift =3D 0;
-> > +     } else {
-> > +             port->port.iotype =3D UPIO_PORT;
-> > +             port->port.iobase =3D pci_resource_start(dev, 0) + offset=
-;
-> > +             port->port.mapbase =3D 0;
-> > +             port->port.membase =3D NULL;
-> > +             port->port.regshift =3D 0;
-> > +     }
+ Documentation/driver-api/serial/driver.rst |  3 +
+ drivers/tty/serial/21285.c                 | 32 ++-------
+ drivers/tty/serial/altera_jtaguart.c       | 36 ++--------
+ drivers/tty/serial/altera_uart.c           | 29 ++------
+ drivers/tty/serial/amba-pl010.c            | 32 ++-------
+ drivers/tty/serial/apbuart.c               | 34 ++-------
+ drivers/tty/serial/atmel_serial.c          | 28 ++------
+ drivers/tty/serial/bcm63xx_uart.c          | 47 +++----------
+ drivers/tty/serial/fsl_lpuart.c            | 30 ++------
+ drivers/tty/serial/lantiq.c                | 36 ++--------
+ drivers/tty/serial/lpc32xx_hs.c            | 33 ++-------
+ drivers/tty/serial/mcf.c                   | 34 +++------
+ drivers/tty/serial/mpc52xx_uart.c          | 39 ++---------
+ drivers/tty/serial/mps2-uart.c             | 26 ++-----
+ drivers/tty/serial/mux.c                   | 45 ++++--------
+ drivers/tty/serial/mvebu-uart.c            | 38 ++--------
+ drivers/tty/serial/mxs-auart.c             | 32 +++------
+ drivers/tty/serial/omap-serial.c           | 32 ++-------
+ drivers/tty/serial/owl-uart.c              | 32 ++-------
+ drivers/tty/serial/pxa.c                   | 33 ++-------
+ drivers/tty/serial/rp2.c                   | 31 ++-------
+ drivers/tty/serial/sa1100.c                | 34 ++-------
+ drivers/tty/serial/serial_txx9.c           | 32 ++-------
+ drivers/tty/serial/sifive.c                | 31 ++-------
+ drivers/tty/serial/sprd_serial.c           | 33 ++-------
+ drivers/tty/serial/st-asc.c                | 48 ++-----------
+ drivers/tty/serial/vt8500_serial.c         | 30 ++------
+ include/linux/serial_core.h                | 80 ++++++++++++++++++++++
+ 28 files changed, 228 insertions(+), 742 deletions(-)
 
---=20
-With Best Regards,
-Andy Shevchenko
+-- 
+2.37.3
+
