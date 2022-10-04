@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2F0C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 17:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FFBC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 19:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbiJDRwT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Oct 2022 13:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
+        id S229526AbiJDTB2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Oct 2022 15:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbiJDRwR (ORCPT
+        with ESMTP id S229468AbiJDTB1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Oct 2022 13:52:17 -0400
+        Tue, 4 Oct 2022 15:01:27 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8195D59255;
-        Tue,  4 Oct 2022 10:52:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5096419025;
+        Tue,  4 Oct 2022 12:01:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1664905936; x=1696441936;
+  t=1664910086; x=1696446086;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=tZcChzk0UlMUEZ8OJRXPwbaasiI7Bjgz1LQIlrAWB4s=;
-  b=H+Lm/niAfubRtDyML/GRxkLqp3NYgW05CQafPFJrCyQzdGM2I+VXNlew
-   j4i93c96cy/KVUeUNw2e3TdONS2IjPV/KfMq4979ftDqE7cwKx0w5KSYF
-   TWfbINJy2Ny8v9PemyFX/3BN4fQTVn0rL9eSNIN9jri+2DYwfCBmEsTnI
-   FVXgM4JjEz9cXjTw2BhHNPQ/HeZLeuH/sqm42MIxYuvSldPgLtjrxVn2W
-   ZHTvy8NYBOhAE/Vdn9q5ipGXPxDkXRjVwVVCAl8bdCEOF9FWQMPrPk7/T
-   bYA4g65k+PTkoUAe/u4TDEj8oZ9+vCzha6A05Ylnp2yLkLy8mjHCl1nB5
-   g==;
+  bh=/eknUNIydhSChasmFc8DvDEHr0kIEMM+AFdoYt3B/d8=;
+  b=smFvIyIzvQJwcXlm4GbIVWZweYk8YN5a2wKgEFtJ6cNZSSPzX+fHfYYc
+   R0hQt5jAqHfuzf1ZI4zwJg56StaSMefP/YWoVfkqBnVcL3JXquaA9eybb
+   UOoobxEvDsz7tQeZpAFX0rDRxsBnX47SmpQpLIbFDOIcSlwsqVfoa3RE7
+   GmBCG0FMih0kwTMOhOdSfHgXiD1hBEO5qbkaIw4yilHispZ83B5ZZTdye
+   mhzinynvEh6hEJAIrNCS5sZpkssLO0boxZj4g6WBx7qy1pOPNxDN+wsMf
+   qHYdhFPySU0rSWFAukI2EtDJ3zKhEPDHgNOSgPqizlMb25cKKHKtXzzjt
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.95,158,1661842800"; 
-   d="scan'208";a="193775894"
+   d="scan'208";a="183299928"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Oct 2022 10:52:15 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Oct 2022 12:01:24 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 4 Oct 2022 10:52:01 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ 15.1.2507.12; Tue, 4 Oct 2022 12:01:24 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
  email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
- Transport; Tue, 4 Oct 2022 10:52:01 -0700
+ Transport; Tue, 4 Oct 2022 12:01:24 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GBVrvZhLXIAJYFh0Zhs9h4njZ78BHmAJrIs6pR1ngRxZRrLQd1RvBHRaO3MZMGPRxXbyiM5fEgdz9w/kipeB5fn726aBd4kVVw61YsPqA+2+WSxk5fIdOaLRiScOQEDQQLjF9eL0Naan7R678sgnyKVng+M3qaOFecXQd6Xjf/HGZ+llP/SfIvZooBMR3phLMHOCI1zXHO+p958Uvqtkn5RinMQgKP5h3R36YNBlKf4tNb0BG5SLLp6YuY+Qv1JrKTxGHgSxQ2nXj3RC/C0vb0OgxJNfIQ0dhsfJSzOivWd0UZHvTfclT8Fu3yWnNxqp5CS3fCL4fbgrQimT3qyKHw==
+ b=JSu+1k8cwmigbKJnbxF44VG8NnVo0fh9PyBqMphLgzc2tS/mLfBG4D5Huq7LoDDLTvwuLweXMt69uICGZl3dtpVYqiIm2zCkrY878ca36OJ3lERYDcjMotGYm02HkPIuuM6i6ke2lL+BKko9o+2jXs6FCj6D0REDVJEyfbZMoDuP/kRWYhY3+bIkQBfvF8v0Qw1fLWRHz8LYu5DIDmLv3zP9XdClvTCJ8ax4Bg/NnRsBpuGFZDlEh3dkdqycIDNEXN694tJJdXv4P1kiyd0RgbxZXg/PE/2+qgdJniV3xSDBgQcDA+gupIWmb14tU5YdNli13ReIAK4H5LaV9Cmv5w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=60CWsiShWhxvyyjbX5+gH92KsZyAa78/57caSU0jCtM=;
- b=Aph5JiYa7NFE0rPxxfkMIHyRsx9Zen4jJCAUM96sj69lyrwWHSMP7v12cdVq7sK9S8XK7WjAWE/2O01df8ArI1Q0/E1z6wOT5NxGPkBGG49H7i3RmiU4vl+SRl1Ng70UKOzONJB3+w8N/RrNwfpZCkvSfVGiqbaM3fNy28qd56K2P/LcqWNx0/NKgvRhvW0+cv/7Ww3XyF1Z0B0lKSX4JBlBLVLFu2pvObNeYc4f9ATVBoYpbbm8YMKt12RRjcjy/edZ1KZpiiw90mFmF4AVkVv/1CUz6HkVzOgu5k+TvtItWOZKe0bUfkdo5KR/ay6Bzwv1YAsx2EsT7BAnYRs2cQ==
+ bh=Jfy2k2HzSuwDbGuCvDLidWYhjn6SHVfdghhYRrPS8Us=;
+ b=nUM9JdlDVvc8rNtjzbTVWoHfgkPv/5VWUD1XAWYzMVOtuwtPOzRP3Ub3wXMBXIMg9+MWailcHEuIan2CLAYMFbNFS+1Bwcsqu+cbNAXHByIZL/CV6gz9GBRF0lRuh9yiyozYo0IASdBaHU+4rN23+NWUIYKia2PwWlLUWN+ycjLEGcdE28skIySBFZBD3MYy++uK2+sYANUTlAjixHqniS7kl8z121OXxt+tv8Y87dr2olAMOq6HEdXwu3x/SVRVjCMc1NLrsY4q1PZkVl4poO13FHltCS2OE9sLSrfloHytG3ISSQk7lQxhc5PfVhXrhYNTgNiSC7mfY2G6RbLMIA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microchip.com; dmarc=pass action=none
  header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
@@ -54,17 +54,17 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=microchiptechnology.onmicrosoft.com;
  s=selector2-microchiptechnology-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=60CWsiShWhxvyyjbX5+gH92KsZyAa78/57caSU0jCtM=;
- b=DsdY4w3zmsWNMAvoYQeYk4tkgXmx8H56HkVL7iH+GR+RGwTPEqTC+yHStV7LrdPJSM3/G2GQvOd4OrOyiS0cJkqpfqvp+Cendlfm49tn8nGsqcnKvcv8DebUrpSjnul0srOXdGaL5D6K8GmMHV0E0liznwpLwzHas1cTTpnCDts=
+ bh=Jfy2k2HzSuwDbGuCvDLidWYhjn6SHVfdghhYRrPS8Us=;
+ b=AViNyNlN+B4iqpvpkl+cMkVJBfkYYHixuSnOnW3yrjvT/NFvpMvUUTE/sXk6QqZs+Pm/D/lbxbiZb/A8XFKjesXOtjOnP+FiW+RIIh9nM7s1xgey53C2tXlkYYcYRa5hQpL6DefqFMpD5rVLdbDzHmjVlJGjhGhWl9JWL5FwDZs=
 Received: from BN8PR11MB3668.namprd11.prod.outlook.com (2603:10b6:408:81::24)
- by CH3PR11MB7276.namprd11.prod.outlook.com (2603:10b6:610:14b::15) with
+ by BL1PR11MB5302.namprd11.prod.outlook.com (2603:10b6:208:312::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Tue, 4 Oct
- 2022 17:51:56 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.24; Tue, 4 Oct
+ 2022 19:01:19 +0000
 Received: from BN8PR11MB3668.namprd11.prod.outlook.com
  ([fe80::6c5b:82e0:522d:6a2c]) by BN8PR11MB3668.namprd11.prod.outlook.com
  ([fe80::6c5b:82e0:522d:6a2c%7]) with mapi id 15.20.5676.031; Tue, 4 Oct 2022
- 17:51:56 +0000
+ 19:01:19 +0000
 From:   <Kumaravel.Thiagarajan@microchip.com>
 To:     <ilpo.jarvinen@linux.intel.com>
 CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
@@ -75,17 +75,17 @@ CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
         <phil.edworthy@renesas.com>, <lukas@wunner.de>,
         <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <UNGLinuxDriver@microchip.com>
-Subject: RE: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
- support to quad-uart driver.
-Thread-Topic: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
- support to quad-uart driver.
-Thread-Index: AQHY1V0xNl764Wi+W0ymRRIbNpbBhK38aB2AgAIZh1A=
-Date:   Tue, 4 Oct 2022 17:51:56 +0000
-Message-ID: <BN8PR11MB3668B169D079C3F9D1C3BB72E95A9@BN8PR11MB3668.namprd11.prod.outlook.com>
+Subject: RE: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
+ management functions to quad-uart driver.
+Thread-Topic: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
+ management functions to quad-uart driver.
+Thread-Index: AQHY1V0267YcXgrzdEqBqc2LceMdk638cKmAgAImnGA=
+Date:   Tue, 4 Oct 2022 19:01:19 +0000
+Message-ID: <BN8PR11MB3668A5B77A0514EAD23800BCE95A9@BN8PR11MB3668.namprd11.prod.outlook.com>
 References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
- <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com>
- <d184aa6d-23e-edf6-4cee-f5f4ad6bf90@linux.intel.com>
-In-Reply-To: <d184aa6d-23e-edf6-4cee-f5f4ad6bf90@linux.intel.com>
+ <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
+ <7892467b-c2de-c62-e977-62761dc5cbb@linux.intel.com>
+In-Reply-To: <7892467b-c2de-c62-e977-62761dc5cbb@linux.intel.com>
 Accept-Language: en-IN, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -93,96 +93,164 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microchip.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN8PR11MB3668:EE_|CH3PR11MB7276:EE_
-x-ms-office365-filtering-correlation-id: 97131f46-8ff0-4832-d73c-08daa63120f7
+x-ms-traffictypediagnostic: BN8PR11MB3668:EE_|BL1PR11MB5302:EE_
+x-ms-office365-filtering-correlation-id: c7349b5f-bbb2-4279-5475-08daa63ad260
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kznhDj/oVbrCzF2oYCnD3ftNQ3PuWLuhHnGUWtJfcvjyI64jU4l8KNor7k7ZxoYe73yJm4zMaxvua9kAKvsOPuIJzayQHHSzoy4C3DEKKhiOIdG29g8v23KLyA37PiUnyzoWK6+gmRR8mOASVoCxxdGhPPtN6b8bdFl17PWOX80/40QfKvhhlMfdJp8cKY0uMssSf64Kn19xmKa3jAd5+b+E37+OJ/tgXnwlyFdeXt/RQp9EwSRu4J5cpWMktGBCbeUxVSA0eydcntiQ7yTyonPxkSLrC6uUTAJvBpyqeOTaAZwgnnani4vBuZHUng1A7QuxoKMcMhF3zUoHOimTaft80RyuZDZ+U6x4JLWpuvwybjIDr+wiSBxKnDOHfArBXMw9DdhjyVu9J1jUpSjCirwyZZfp2ykgDbblBZnsi2kyDGLLjNoqjXPXeHgy51+3hhkXdeUNTPAQBGy3RVeFSHhCeDtrEzldkZfKyGMkSAyBk9kteFc+vntxXYN3n3PeZpT/PQ1CL3cOMqXpdSQNyM5+XlK5/YHR/jwR1nuy0VpMHXxG2aYXrLD7f5NLyRcNl4X4RPV7ld8YR4tKnoXCqAUfPPYUwXm5U2XRp03NKwbwbt2ylU3Fx71fjHulgYa+t5vX364hQUvY/6qmJ4VG8dOWrZ77QgG0UaSd1B8vugnNoDXOLk1I0qbICCvEjTpz8l4hmXliIV1IDv1r9gl1Vo4pxVybD+5FANk6ReTOjc+W75tMHulSVzZh4UbSzbM4xnKgO+2rbrnoENgeWjZRjAeIsUA6yhCiRmdJ4X8tpZTqwelojKkxVo+ubCs9EvUlCJ6hDlBLew+dlXkv9oMCsQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3668.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(366004)(396003)(39860400002)(136003)(376002)(451199015)(4326008)(38100700002)(122000001)(86362001)(33656002)(38070700005)(186003)(26005)(7416002)(2906002)(7696005)(55016003)(41300700001)(478600001)(6506007)(52536014)(71200400001)(53546011)(107886003)(5660300002)(316002)(9686003)(66446008)(54906003)(66946007)(83380400001)(64756008)(8936002)(6916009)(66556008)(66476007)(76116006)(8676002)(32563001)(414714003)(473944003);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: oAgkc1br4DwSEBk8lTkwplvA2ISK5mBqQ91f8zvfV8Dv007OIstb65gJgrxE3H3bq0jQMytHblPzWuz/3IIh4HkRA5ysu/agiuG4bmiFE3vpGU4pgNcuHqDavZ3/y+kIu4/7k8xRAvN922YyscHZyNzGRDX6l3//TylqytxmyY4ImUXlBwA3BLCfdnpDjO49CanFJg1HuYsG1VXw0TwKcrAgGIgepwhQaQim8tS1q0tvqQdfh7QuaTWTK8usA4TTFCboNJN05Hp00MKIz617tzKj3ybj6zVuzGxGcnLcNHOnywcv9TgkR8d9rA49US060jDjej+9BWS7ukR9hj7WOkk8WzaiDq6wKIFkM1iWkZpkXEAhY8ZvQ0yFld8NyOjvDnzOVTcAtcNpU1zwuGPm/QqwwKTU7Uwkxc+1saj242jdcTCg9/0n8NFTONZP81FHVtf7QydF3ZB45LSngaPkdIQqKQy2vwZ4YOnVj+bn6FiForwLCY+8I+7Q8TJhQbZK3NRJ7asnE9+u6rpoZXcKnQdoH/7ogpfLf7TS5tTAJTK82McReNrvik3HFw7ye1aBRNu4apMv+Z4O3Xkcgy1nXqX7DQ0RsGv93V687Xz5qBvWB8eQFEfv09J7/koF7x9gphvgCI+fYZOpe0qpmiXRcF/MW9Bat0hy4d/4qI6VtRHEIe9gEFXAa9oKg07mwutDU+IOec4pYJ4ZqpUbNv/lgKQYT8nhTvzDx5a2WfLh0j81H8RhsGoKRuCLK+X4/aF9I5lS79qwjr0P6Hjmr3TAsZTaRI2mTc1d/VvaOazbDfunXggMSgcYy27CYWWEVg2x6hIqDhEZRiv92OGaL8uZRQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3668.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(366004)(39860400002)(396003)(346002)(136003)(451199015)(66556008)(7696005)(66476007)(64756008)(66446008)(8676002)(4326008)(76116006)(53546011)(6506007)(26005)(66946007)(54906003)(9686003)(316002)(2906002)(186003)(33656002)(66574015)(38070700005)(5660300002)(122000001)(8936002)(38100700002)(41300700001)(86362001)(52536014)(55016003)(83380400001)(6916009)(7416002)(71200400001)(107886003)(478600001)(32563001)(414714003)(473944003);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?3TPrfErxkSmWgByuJ6+oON5g9QKRcRWlLp9g+UN0pOOXQm4QB18Zx5NgSH?=
- =?iso-8859-1?Q?DOtxKsGfbhNUQXoD9yDoTz93x05sm8d4OeaCHpYTBkk4JcFNGV7ljL5n7T?=
- =?iso-8859-1?Q?zJmcCXbL4cWirnDQBzUo5sR2/nYJcDoZqQxTjwyu6LGzNI/O0Igf5T7hTb?=
- =?iso-8859-1?Q?Bv2fz6lrOv1646ZmXDEtw5K7ZuUNVfiT71jTX2Lx2Yk2umyr4opVsIFsTI?=
- =?iso-8859-1?Q?MZvndOAUjFhrQAJdPYDllO7zIJ04586klTSBOkNgNbOd773pqkDUgp/3Tm?=
- =?iso-8859-1?Q?ku0llj2dZ54VsVqalLyKwn8LwWZPkasjFsl9HSSDsVOyIS3YiySwit//D8?=
- =?iso-8859-1?Q?7WWCKusQZ543kAr5i5PAbXBc5+lKkYRj/bVvtMOPoUYMcrWkv9SL3ujtys?=
- =?iso-8859-1?Q?z7ElCWQ8mjABe5QDEOOOMtVVQh6txFsHYhvTPrbzqH/g75x7/rRTweWg40?=
- =?iso-8859-1?Q?88BLd+loBqvdvLK3A/YgGpP8OW+oi1lYm1xMaXt5YAaSCr/AFV9RALVRE0?=
- =?iso-8859-1?Q?IERfvHUJ/VR2AiKIeILpK8+kvyPNiRh1DJUiwHBnf1vYREpah9LmIMaVzi?=
- =?iso-8859-1?Q?bsDMylGHv9hZltrxBaJtZzAexSFl3zXyvR/AF56avt/cBUudZmHbtDxm7x?=
- =?iso-8859-1?Q?Zc1btq9PUMufCxiq8/uAH0aS2nzGaMq23iE0gm5aK1EcpfvrK+WA4b9JU9?=
- =?iso-8859-1?Q?EGzvhmBO+HDiLQBhoMh9vA+ZxylWKajfC5WqWtPtp4SgxTRQ7IstIEnQQE?=
- =?iso-8859-1?Q?io5cLtsF8qBWaQABB+f6sF7d/ac4Wia8Jsm7LfmbRrfk0uwk2KUW/af+e+?=
- =?iso-8859-1?Q?XJbflPu1fNbZLeBxYmepyx5J+DFLLIUcnfUI9l/lYu2pzG5VPoOMBuP0+E?=
- =?iso-8859-1?Q?0HyOrLFgqEgIIBm0W7b03W9LjJopKz3Ddt8zAUVhwnWdtkAwQiU2KDa5g1?=
- =?iso-8859-1?Q?qwZtV/0Hi1qYjnYWi3WOHIFzPu17g1raYaQ7qZ26YPBpVMwQAbkv1iPXWo?=
- =?iso-8859-1?Q?6MTFsjw2rE9QvQFsi6MaZ/ME1MQV10t4XqfnHiGg6CzYkzltRUPFBRpHAD?=
- =?iso-8859-1?Q?yrL1Afgh5fP7ed3LijxscZ3OB/HVBxqxmlznFCrD34VJYGla+ZablYRs5k?=
- =?iso-8859-1?Q?ZSmaR28i8loxZv4ECJ/S7/FIMmWhHu7eFK51LxLpaQ+Vpg6F4S+lZAHDmK?=
- =?iso-8859-1?Q?NsVgG+A7CqI1SqiPTpLYYW2MzuSRMCfzOGG+UYndSSk0TqpkqoIq1A8F1g?=
- =?iso-8859-1?Q?ZPq358+/vJmoqj60h3t7ay+SWUajXwOaY1M3z+mJh+6wzNpB1D63PInb9p?=
- =?iso-8859-1?Q?KJZ905wK2VeBw9tNy4oAcMESm27HsZHGeR0m9dkKUOXhfAdbRFK8/g+1fd?=
- =?iso-8859-1?Q?r64MyvKeEHDMj2R9XQbqnBvqF9yusSJpb/mQvLWBZ4v8RsF3SiP3eAsFmm?=
- =?iso-8859-1?Q?dRPUYe2peJQwpxRgmsbZNI7TGLb0jLO5zVF8FX/aRPk5xqExWp50uZKF2b?=
- =?iso-8859-1?Q?nBONRBOrDwDihOSUuG9ZcVJ518FBtgtqqrgCO4qqNmZRsSCY1prNBWWGZO?=
- =?iso-8859-1?Q?dGx3sM8zuBqrMX+xVAxggi2JZYsw1kvZXHrxCYyNMXEVDULig5kho8IVZc?=
- =?iso-8859-1?Q?vcs+tfFuQiwxBd4bPIk0Ivle4jZi70uGxzBaSjlcRXfwp+3Kn84VpOsEFF?=
- =?iso-8859-1?Q?fRONVID5resKnt5NCgI=3D?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?r703EHdYBPBklx8YFj0yqfqAWAlXiaqqy4I7Tfo/NWyCU+MJeC8tlNLD3m?=
+ =?iso-8859-1?Q?WN+iy72hxOccFhk8yGzC2lFv/C/Uii9B7S2kYc1tGpfCZdphx6W9WE+mae?=
+ =?iso-8859-1?Q?ccXVgYjb7qBgbasroFOAt2nSJUV7Sa2k0+VzTNUCU245CiMaMGVKxgFin6?=
+ =?iso-8859-1?Q?GmoB7DHv1nO9fPDNNg9qPXzHataBN8VhUIZWO69yZEqEc69zbjeYVDxvB8?=
+ =?iso-8859-1?Q?/rKM0ZWKXdV5N02yz83SnqN3W6kAcChpfBAvQzBIJPFIimInDPzMVNcBNE?=
+ =?iso-8859-1?Q?y3fG8CUHg+xzka6ywTJmDMrPQH1b5PHUAv0HVODOf/uTXAMw6AW0+GwyXs?=
+ =?iso-8859-1?Q?9qtMEPF3w4ul05orhJ3t/24fbip8rG3xcEUOA0GdwY44TZJ4gPB7mL3/El?=
+ =?iso-8859-1?Q?MqzT7u8ElWEuQwnLhfkEzDGPfVWCHESmGsSJkc3hVUKZvYHPrBRjw0aU9c?=
+ =?iso-8859-1?Q?X9/TlLTfLRMYviPwUqHgANKNHMwXjBVdxbqweyQvTzRMFwJQcnlomCD76K?=
+ =?iso-8859-1?Q?Ye2Uxm3pSQ0Gv/W/PGNdrnSQyz9AI0kMh4wwotRL60l6T53Jz7x0cZnW6Y?=
+ =?iso-8859-1?Q?bgbLedqrAOgnK2qkT6cZ8nmthE5MQo3ReiisTdUNBoTJNqfMHzaGG3uvX0?=
+ =?iso-8859-1?Q?PvdYiwigOuWXy7k6xAEozB7exVNaQKg2qx64Pn1sBTUdhRFIDCPal7vUnf?=
+ =?iso-8859-1?Q?BhXh0DvPwrdrfGqeRv7O6QYDnQfjfjRYs6Nl2qcalWjEsjj8ThW+DlqGF/?=
+ =?iso-8859-1?Q?YydlY+TYCmg2a9w3ln4SotkK0oXZEvUlnSoqpklw0Q/7zmJ/MM1gDoZRXO?=
+ =?iso-8859-1?Q?lluPRJKTwdVlKLkpFjIpu5wtn8kmyqKXaxhvBTsuPWmODbc6pDNgnjjbSK?=
+ =?iso-8859-1?Q?U/nmBUH6fbNXX2ydagB6O/TQ+hK3vzEnUldLeeAhr1aOTJW+ulLUgZdMO8?=
+ =?iso-8859-1?Q?xTLcidzjQbRQGFQLt9VSdldWgLpnKKtfKdguP7gY5d7ASgxhqqQATE5j0+?=
+ =?iso-8859-1?Q?diemWcSL2y2PsD8Jp9P/iFfikPfVUsRQEcTIysnhxlE8rrsPPWZlhwhm3K?=
+ =?iso-8859-1?Q?Ev3w5xVALAd+Hh12rVHpXrRSKbMIZ3z2w7vrDAhLcApdixuqjWhvufMVu9?=
+ =?iso-8859-1?Q?A1ooFBTfU6jnwH6WZiRNvFwC243wvNCVvzzW8/HCQwnGhFu8z0iqoxe4+1?=
+ =?iso-8859-1?Q?4ai7YZAnOJM3dC4e15rc2RPchURcUXH+5ZcaAZRTxPpYlXZi5vWMtm2IH5?=
+ =?iso-8859-1?Q?H+NKFjWfEenu1po52N0o86GGn4egeEnpRFyxFVDSKf6t+kjSrx6VuJwgm9?=
+ =?iso-8859-1?Q?US+FLT6tlV9bRn0pgqkXEBiEHq5ikaC8X8Po3HqXIbTwIwiLG3oOtdmaaD?=
+ =?iso-8859-1?Q?vKkC/CHJISoo0hQAugXZFdcn/Fj9ZfUlZ+jdM+W2mXzsY/oQoNK9EWrAaw?=
+ =?iso-8859-1?Q?FzxApHHbevlVIDTWJo8xneM5YeLrrXjkTErr/TZtOBObkqNK8PROd28cfA?=
+ =?iso-8859-1?Q?6AF0QpraBtVpapid08eul3pipU6LHFpbY0tp19YVI/ao7PwOBmM4AkwutQ?=
+ =?iso-8859-1?Q?mrAlyGEJg1gPcHwWXtla03ZLNUI/VcmA2ERksnbgsJ+3waBiq9a9DQyWsG?=
+ =?iso-8859-1?Q?F6YmT8apLgcuhwPUjptObROln+6EhkRQKrp8cJYHyzcK2Ok02WynHBYW0P?=
+ =?iso-8859-1?Q?vlc+Ng94NLiaP6rOtfs=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3668.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97131f46-8ff0-4832-d73c-08daa63120f7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2022 17:51:56.2599
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7349b5f-bbb2-4279-5475-08daa63ad260
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2022 19:01:19.3876
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rqBho3jZ1sk+XeF83L4pgLJpRxHPF6D7xyt7vusifHOMeEDG9QFW+mkPzkGCbE9gTZj/VLbHxiXQoM4CUJ3nORo6ZEcBFXpLb9+4clQ1s6pn2ELi5RT/fGxzb1x5FE1S
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7276
+X-MS-Exchange-CrossTenant-userprincipalname: aOLjvAGHsamKTZs4oyY+1eCzJMzyPOUm7LyN9KDPU23J9mpOj9ebGWo8AWhIWfpqscugZ3ocA7ToF0UuDkzWp83D4hREftTqPZLk7G5Wq8uIgUXB3u9qarC7hA4L1nbb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5302
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 > -----Original Message-----
 > From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> Sent: Monday, October 3, 2022 2:51 PM
+> Sent: Monday, October 3, 2022 3:21 PM
 > To: Kumaravel Thiagarajan - I21417 <Kumaravel.Thiagarajan@microchip.com>
-> Subject: Re: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
-> support to quad-uart driver.
->=20
+> Subject: Re: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
+> management functions to quad-uart driver.
+> =20
 > On Sat, 1 Oct 2022, Kumaravel Thiagarajan wrote:
 >=20
-> > pci1xxxx uart supports rs485 mode of operation in the hardware with
-> > auto-direction control with configurable delay for releasing RTS after
-> > the transmission. This patch adds support for the rs485 mode.
+> > pci1xxxx's quad-uart function has the capability to wake up the host
+> > from suspend state. Enable wakeup before entering into suspend and
+> > disable wakeup on resume.
 > >
 > > Signed-off-by: Kumaravel Thiagarajan
 > > <kumaravel.thiagarajan@microchip.com>
 > > ---
 > > Changes in v2:
-> > - move pci1xxxx_rs485_config to a separate patch with
-> >   pci1xxxx_rs485_supported.
+> > - Use DEFINE_SIMPLE_DEV_PM_OPS instead of SIMPLE_DEV_PM_OPS.
+> > - Use pm_sleep_ptr instead of CONFIG_PM_SLEEP.
+> > - Change the return data type of pci1xxxx_port_suspend to bool from int=
+.
 > > ---
-> >  drivers/tty/serial/8250/8250_pci1xxxx.c | 57
-> > +++++++++++++++++++++++++
-> >  1 file changed, 57 insertions(+)
+> >  drivers/tty/serial/8250/8250_pci1xxxx.c | 112
+> > ++++++++++++++++++++++++
+> >  1 file changed, 112 insertions(+)
 > >
 > > diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c
 > > b/drivers/tty/serial/8250/8250_pci1xxxx.c
-> > index 41a4b94f52b4..999e5a284266 100644
+> > index 999e5a284266..0a0459f66177 100644
 > > --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
 > > +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> > @@ -352,6 +352,112 @@ static void pci1xxxx_irq_assign(struct
+> pci1xxxx_8250 *priv,
+> >       }
+> >  }
+> >
+> > +static bool pci1xxxx_port_suspend(int line) {
+> > +     struct uart_8250_port *up =3D serial8250_get_port(line);
+> > +     struct uart_port *port =3D &up->port;
+> > +     unsigned long flags;
+> > +     u8 wakeup_mask;
+> > +     bool ret =3D false;
 > > +
-> > +             if (rs485->delay_rts_after_send) {
-> > +                     baud_period_in_ns =3D ((clock_div >> 8) * 16);
+> > +     if (port->suspended =3D=3D 0 && port->dev) {
+> > +             wakeup_mask =3D readb(up->port.membase +
+> > + UART_WAKE_MASK_REG);
+> > +
+> > +             spin_lock_irqsave(&port->lock, flags);
+> > +             port->mctrl &=3D ~TIOCM_OUT2;
+> > +             port->ops->set_mctrl(port, port->mctrl);
+> > +             spin_unlock_irqrestore(&port->lock, flags);
+> > +
+> > +             if ((wakeup_mask & UART_WAKE_SRCS) !=3D UART_WAKE_SRCS)
+> > +                     ret =3D true;
+> > +     }
+> > +
+> > +     writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static void pci1xxxx_port_resume(int line) {
+> > +     struct uart_8250_port *up =3D serial8250_get_port(line);
+> > +     struct uart_port *port =3D &up->port;
+> > +     unsigned long flags;
+> > +
+> > +     writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
+> > +
+> > +     if (port->suspended =3D=3D 0) {
 >=20
-> Is this 16 perhaps UART_BIT_SAMPLE_CNT?
-Yes. Is there any macro definition for that? I could not find any definitio=
-n in the above name.
+> Is this check the right way around?
+Yes. I think port->suspended is not set for wake-up capable ports and the c=
+ode in this if block gets executed for those ports.
+I will check this again.
+>=20
+> > +             spin_lock_irqsave(&port->lock, flags);
+> > +             port->mctrl |=3D TIOCM_OUT2;
+> > +             port->ops->set_mctrl(port, port->mctrl);
+> > +             spin_unlock_irqrestore(&port->lock, flags);
+> > +     }
+> > +}
+> > +
+> > +static int pci1xxxx_suspend(struct device *dev) {
+> > +     struct pci1xxxx_8250 *priv =3D dev_get_drvdata(dev);
+> > +     struct pci_dev *pcidev =3D to_pci_dev(dev);
+> > +     unsigned int data;
+> > +     void __iomem *p;
+> > +     bool wakeup =3D false;
+> > +     int i;
+> > +
+> > +     for (i =3D 0; i < priv->nr; i++) {
+> > +             if (priv->line[i] >=3D 0) {
+> > +                     serial8250_suspend_port(priv->line[i]);
+> > +                     wakeup |=3D pci1xxxx_port_suspend(priv->line[i]);
+>=20
+> So first serial8250_suspend_port() calls into uart_suspend_port() that se=
+ts
+> port->suspended to 1, then pci1xxxx_port_suspend() checks if it's 0.
+> Is this intentional?
+Yes. I think port->suspended does not seem to be set for wake-up capable po=
+rts and only=20
+for those ports, inside pci1xxxx_port_suspend, TIOCM_OUT2 is cleared.
+But I must check for the race condition as Andy had pointed out.
+Please let me know if there are any questions.
 
 Thank You.
 
