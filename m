@@ -2,127 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E67C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 13:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7EA1C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 14:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229464AbiJDNqI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Oct 2022 09:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        id S229916AbiJDOhT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Oct 2022 10:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiJDNqH (ORCPT
+        with ESMTP id S229881AbiJDOhP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Oct 2022 09:46:07 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9B627FFC
-        for <linux-serial@vger.kernel.org>; Tue,  4 Oct 2022 06:46:05 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 294DjfhD101902;
-        Tue, 4 Oct 2022 08:45:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1664891142;
-        bh=qGEgLi8PAPicD/dFOB9lp0VwytmygF0zy1EMs1ZPHRU=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=jwXDUQ/EtdNRMA5WGZK9Tjk0ewxRtUaivjJnTZ1RUIF9ZzknmqaUpjtyviqhoMS0/
-         VmHaDez0DDoMUxLEvJirt3Q/9bZbsCVyXKkdBHQJSVKmrNjP/cakGyfYkmZet7ZPQZ
-         4gBGnyM2px3R5gmhiWpoLBK4xAS8WbL0qiHsCmQo=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 294DjfVe067382
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 4 Oct 2022 08:45:41 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 4 Oct
- 2022 08:45:41 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Tue, 4 Oct 2022 08:45:41 -0500
-Received: from localhost (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 294DjfGj022787;
-        Tue, 4 Oct 2022 08:45:41 -0500
-Date:   Tue, 4 Oct 2022 08:45:41 -0500
-From:   Bin Liu <b-liu@ti.com>
-To:     Lukas Wunner <lukas@wunner.de>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-serial@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250: 8250_omap: Support native RS485
-Message-ID: <20221004134541.pnp6ts26p22rcwra@iaqt7>
-Mail-Followup-To: Bin Liu <b-liu@ti.com>, Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-References: <b9f5e4b01f10bb692fc78df668f686dd33d8c036.1664279959.git.lukas@wunner.de>
- <20221003151059.mypganj25awuxc2d@iaqt7>
- <20221003194224.GC12171@wunner.de>
+        Tue, 4 Oct 2022 10:37:15 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C6961B1F;
+        Tue,  4 Oct 2022 07:37:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664894226; x=1696430226;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8Y07a6qOR/uzhewFM1S2xVDneV0ThAx4VOhUtCZe2ro=;
+  b=McnmCOx7FcTnqJDjmK+z/HIG2Vb77YzkUeWo95RzXKYr5GXudZm+ptrD
+   lkfowaiOW6mZMdMeKn0REYmTDPQC2vc/A+9BhGTwFuG2MT6d/hT4Vde1H
+   koOtX2bP4Xpn3CvPRxqJ2sAaTHXFRZfW3us91LvS+t3L/6HXFeCoj84B1
+   tVFGfpbjataZBIBzSTA82+zRfl6UsmJZAYHDmi5O9r1pYwAZZ2iJZwkdI
+   00QErVxcL+PCGrDzHDb55WqxRS9SlCCqKig5hgBaIQp2MNJG4X52992Dq
+   kjqxEMG+Wja0SgpLQlGCNgOStLab6AnLecwt+HGSH88cBCriMkBC0vCt0
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="389215860"
+X-IronPort-AV: E=Sophos;i="5.95,158,1661842800"; 
+   d="scan'208";a="389215860"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 07:37:04 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="869021618"
+X-IronPort-AV: E=Sophos;i="5.95,158,1661842800"; 
+   d="scan'208";a="869021618"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 07:37:03 -0700
+From:   matthew.gerlach@linux.intel.com
+To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de
+Cc:     Matthew Gerlach <matthew.gerlach@intel.com>
+Subject: [PATCH v3 0/4] Enhance definition of DFH and use enhancements for uart driver
+Date:   Tue,  4 Oct 2022 07:37:14 -0700
+Message-Id: <20221004143718.1076710-1-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20221003194224.GC12171@wunner.de>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+From: Matthew Gerlach <matthew.gerlach@intel.com>
 
-On Mon, Oct 03, 2022 at 09:42:24PM +0200, Lukas Wunner wrote:
-> On Mon, Oct 03, 2022 at 10:10:59AM -0500, Bin Liu wrote:
-> > On Tue, Sep 27, 2022 at 02:10:01PM +0200, Lukas Wunner wrote:
-> > > Recent TI Sitara SoCs such as AM64/AM65 have gained the ability to
-> > > automatically assert RTS when data is transmitted, obviating the need
-> > > to emulate this functionality in software.
-> > > 
-> > > The feature is controlled through new DIR_EN and DIR_POL bits in the
-> > > Mode Definition Register 3.  For details see page 8783 and 8890 of the
-> > > AM65 TRM:  https://www.ti.com/lit/ug/spruid7e/spruid7e.pdf
-> [...]
-> > > -	if (up->port.rs485.flags & SER_RS485_ENABLED)
-> > > +	if (priv->habit & UART_HAS_NATIVE_RS485)
-> > > +		serial_out(up, UART_OMAP_MDR3, priv->mdr3);
-> > 
-> > This makes the NATIVE_RS485 always used if the SoC supports it, but
-> > 
-> > > +	else if (up->port.rs485.flags & SER_RS485_ENABLED)
-> > >  		serial8250_em485_stop_tx(up);
-> > 
-> > there are cases em485 should be used even if SoC supports NATIVE_RS485.
-> > For example:
-> > - the design has pinmux conflict and the RTS pin has to be used for
-> >   something else. Then a GPIO pin would be used for RS485 DE control;
-> > - the design requires customized delay_rts_before_send or
-> >   delay_rts_after_send which NATIVE_RS485 doesn't support;
-> > 
-> > So we might need an option for such usecases. A device tree flag?
-> 
-> I expect those cases to be rare, hence do not see the need to
+This patchset enhances the definition of the Device Feature Header (DFH) used by
+the Device Feature List (DFL) bus and then uses the new enhancements in a uart
+driver.
 
-Maybe rare, but I know some projects use GPIO for DE control.
+Patch 1 updates the DFL documentation to provide the motivation behind the 
+enhancements to the definition of the DFH.
 
-> address them right from the start.  Support for falling back
+Patch 2 adds the definitions for DFHv1.
 
-So I think missing it is a regression, because this patch forces to
-use the RTS pin for DE control, this breaks the existing projects which
-use GPIO for RTS/DE or have customized delay_rts_{before,after}_send.
+Patch 3 adds basic support DFHv1. It provides a generic mechanism for
+describing MSIX interrupts used by a particular feature instance, and
+it gets the location and size of the feature's register set from DFHv1.
 
--Bin.
+Patch 4 adds a DFL uart driver that makes use of the new features of DFHv1.
 
-> to software emulation can easily be added later.  Indeed a
-> device tree property might be an appropriate way to trigger
-> such a fallback.
-> 
-> Thanks,
-> 
-> Lukas
+Basheer Ahmed Muddebihal (1):
+  fpga: dfl: Add DFHv1 Register Definitions
+
+Matthew Gerlach (3):
+  Documentation: fpga: dfl: Add documentation for DFHv1
+  fpga: dfl: add basic support for DFHv1
+  tty: serial: 8250: add DFL bus driver for Altera 16550.
+
+ Documentation/fpga/dfl.rst         |  49 ++++++++
+ drivers/fpga/dfl.c                 | 150 +++++++++++++++++-------
+ drivers/fpga/dfl.h                 |  36 +++++-
+ drivers/tty/serial/8250/8250_dfl.c | 177 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig    |   9 ++
+ drivers/tty/serial/8250/Makefile   |   1 +
+ include/linux/dfl.h                |  33 +++++-
+ 7 files changed, 414 insertions(+), 41 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+
+-- 
+2.25.1
+
