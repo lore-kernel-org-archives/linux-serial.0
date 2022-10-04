@@ -2,208 +2,178 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58449C4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 15:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9BAC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 17:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbiJDPb3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Oct 2022 11:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S229571AbiJDRV3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Oct 2022 13:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiJDPb2 (ORCPT
+        with ESMTP id S229997AbiJDRVK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Oct 2022 11:31:28 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A9025E9E;
-        Tue,  4 Oct 2022 08:31:26 -0700 (PDT)
+        Tue, 4 Oct 2022 13:21:10 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F9966134;
+        Tue,  4 Oct 2022 10:21:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664897487; x=1696433487;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iFOChYJvoxzaLLOQbDuDmgouBoECtc1KKTUSJu34ImU=;
-  b=cSoz2exaR56+6DewyZYFSazw+rPhjPbGws0VKXp00vkyUuIsSDzpnzHj
-   gCMCyZa4+n0fEbBkVb3coFaxUO0fUmcUBMlDrh7++qA5N3iEaHdfdQbjE
-   oV+JFb2/yEzD0HuY4JYKlUJchaTvN6wFMtN2FtibkpCAeAQ/ppKejwq6t
-   gUavRS4c1kbQxLXN+G4RUQduaI7FFGpyKQlrauHH6KeTme9KJHTIhJZey
-   j+nA91d5AwnTQO7Oz/iu1GPhqMNfqGtmdUatggtxaeW0w63uB5XS0QqYR
-   L5oQgqlCUJLNmkmB4u3sskVlQDqEZCHO3lk3YFkb/ybf+rpR2U+cGHQyC
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1664904066; x=1696440066;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Eky2VmCIOvhTVGv7iussPk+XedZ+6pJr9z84y3W+qUg=;
+  b=gfL7VY6nQsoPGA5MSFJIjO8q3yA4fBcrdHW+XP2KmWCCwHOwkALGggSc
+   kxE6XMVwssypoZZqOqNrUmEm9+G2UDHzqZEJ0ENxB3m8zYQfF8v61s3SP
+   jt3N81bWNhD8Qu+CXQlpFaI8j99VCikWmWxqUk7nnz/B7nYGyhRydkHE/
+   eH2XXaybohJW5HycjXOfdBU5+EzcdJK7PN6CmukQLRAiuMW/AAkR+ecrs
+   Z6WjK34UY3jApv1tl4T4LnmYfEPEqGWqFVfQze57outuA+WpYyUx4S2TH
+   63EOZdPpx2QQucsM6ydDJY+LHQhA97IEn3TU8IMMFnqfyP9Xh2hE5wGPk
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="286130565"
 X-IronPort-AV: E=Sophos;i="5.95,158,1661842800"; 
-   d="scan'208";a="286130565"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 08:31:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="799152794"
-X-IronPort-AV: E=Sophos;i="5.95,158,1661842800"; 
-   d="scan'208";a="799152794"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 04 Oct 2022 08:31:20 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ofjt8-0028VQ-28;
-        Tue, 04 Oct 2022 18:31:18 +0300
-Date:   Tue, 4 Oct 2022 18:31:18 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v3 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-Message-ID: <YzxRxo8jL7rB1+px@smile.fi.intel.com>
-References: <20221004143718.1076710-1-matthew.gerlach@linux.intel.com>
- <20221004143718.1076710-5-matthew.gerlach@linux.intel.com>
+   d="scan'208";a="193770569"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Oct 2022 10:21:04 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 4 Oct 2022 10:20:58 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Tue, 4 Oct 2022 10:20:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CWAhHat6lLUdlPirquDkDiim+nY7JJvdi2ahTzg1v1XBY3b2yyaJ5mGpIrE/DxGotS9lUHwtkOlE/TkfIiAycS3Y4FG42UfBLUwvf324xLqEN1pWhWfpZzrEhnixH1yTgXR4zC1uNoxxeF0EUm62R/13VjVe7h6asNTDNlkqIZ/iLR2RxNVQ0YTcuGFpKoHWXXgVZ0b9O3xmns6J/RqWGkZz/Wru4j6F0AlwX6hBBRq7dchAsNh9OZh0VCjr8up/ywvIciHy/uSMnZov740s7n2yf9HaawG72X5jVJMtX+u7X42g4PFY5ONt8VtNfzopqCe0OupD0Tc0ly6i2uz7Nw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Eky2VmCIOvhTVGv7iussPk+XedZ+6pJr9z84y3W+qUg=;
+ b=GaW5ez0mJXM1TYcdJzED2M9RsLEhLRLyffXJ99tJ/2so9NbB43LviS9eitgKi5n1wWZqNUcFujr6jDV5+0RXPH3GJvkhq8rJgueWjwUGcBdgrLyBGsu4BPN9RSV633/CAlw5btX+d2BRsw+MRB/6vmOBxoGBKPfVSCOkTgiuGBw0JXRGuZ4lcePxHAqPpQFCYE0a8nbfZyD0ohQOK6Ik0BYBy9I/eMABWTGtM2Sg61hC3rVayDO9Iengjgbzt+G+GtM5v28VlgeSXrhg41+EE3EY72dQUy9qg2s0m6K1sa2QEqoXnU7D7wOa4kfbpPyym7va6LsHq/xljz4U43JsWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Eky2VmCIOvhTVGv7iussPk+XedZ+6pJr9z84y3W+qUg=;
+ b=kLAwatdrQN7K1rQUJF8qNbC+ceHcTQdMXM3CSfAicm/ur1R8BNyn+6wsV1RVWNb8MN+5MPubnU+rVaz4lvCdTxEMqT03b9jmSGyAMq0AZ1b9WByKTTtdtxJ36WqLtWwuz4CRIUfmF88/pAu/XkNFjwKLkYoUFSIIqcmoobEOp7A=
+Received: from BN8PR11MB3668.namprd11.prod.outlook.com (2603:10b6:408:81::24)
+ by MN2PR11MB4758.namprd11.prod.outlook.com (2603:10b6:208:260::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Tue, 4 Oct
+ 2022 17:20:52 +0000
+Received: from BN8PR11MB3668.namprd11.prod.outlook.com
+ ([fe80::6c5b:82e0:522d:6a2c]) by BN8PR11MB3668.namprd11.prod.outlook.com
+ ([fe80::6c5b:82e0:522d:6a2c%7]) with mapi id 15.20.5676.031; Tue, 4 Oct 2022
+ 17:20:52 +0000
+From:   <Kumaravel.Thiagarajan@microchip.com>
+To:     <andy.shevchenko@gmail.com>
+CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ilpo.jarvinen@linux.intel.com>, <u.kleine-koenig@pengutronix.de>,
+        <johan@kernel.org>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <macro@orcam.me.uk>,
+        <geert+renesas@glider.be>, <jk@ozlabs.org>,
+        <phil.edworthy@renesas.com>, <lukas@wunner.de>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
+ management functions to quad-uart driver.
+Thread-Topic: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
+ management functions to quad-uart driver.
+Thread-Index: AQHY1V0267YcXgrzdEqBqc2LceMdk638ac+AgAIWKRA=
+Date:   Tue, 4 Oct 2022 17:20:52 +0000
+Message-ID: <BN8PR11MB36685EB059FE972D0C3CF860E95A9@BN8PR11MB3668.namprd11.prod.outlook.com>
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+ <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
+ <CAHp75VdEJvG=BQvS2KVNY8BnjfHyOCO6ww0S4_gxVZNuhXaURg@mail.gmail.com>
+In-Reply-To: <CAHp75VdEJvG=BQvS2KVNY8BnjfHyOCO6ww0S4_gxVZNuhXaURg@mail.gmail.com>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN8PR11MB3668:EE_|MN2PR11MB4758:EE_
+x-ms-office365-filtering-correlation-id: 20754d11-b92d-4fff-78bc-08daa62cc9f1
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: V/yA2vk2FqmLrkQElov/zqyRGOUgwb2ACW3bI03zUf25hl5vCP0XEZzGHMgqgLZSWYF2wM8BKye+1Bv79JVg05Dv1vOvvZ1w9W1+eDINiQz3zouhYcBmRGvn/OU9mhCRGLjn6d963nqcsSVvpH+2l9ofFcRaUrSyv9e1wulYmUtYqc/cMsJ+Z4sL0Yi0HULjxrsjecwUV1E/nOV71/tQYUkhg/18CQ/sYSN9meT4jo3BsKUNYVKfQXBtsPbhOH6kndVtmzwfZ2JUePXjzf8S0Gw0wJFDpsEGlxKNTRz1dXuwA4QQSNwoUhbNf2oXM5eBfDHwSkVgzjolAV1ryQ0MdG9mSX63qK0i3VUHul3kOlAnvPFbTdTEyabgTaMeCkWK2JVwypE2U0/NTXqyir2JlFrlRrCgCMaCGPLs/W0ysLGvUMQOHocmgEKSGUthuV1AtuHxDOt6mTk9ErhfHfV+wAgVf+bzopq4bJSSeL6MAxfh4vPbjuY63jzk4S0bHjO4Oh4pez1E67GIrC4CizShb8KjOzj3vhGNWhCfwpHSsQU6gEQCG2/AxpG5/q5MBU/YqX5Fn3cyLxP77zGgUR8mor9YQqcee7tSIXaLMh/cHL7Gviuznyb1oevWKVE1H6zhxaFEY49w05h0tr0QJtdlVxj21fatFkWon0D+cBf02iouxsQi1wDHKTJ67fZDgwOWa58x7dDfbxA+cpG2CYYziqmEHP/qEfJRA4B3JkxODIwhyiuVvLJpUzGssc8vRwlz4hnSL0k45lXoHX5/uLpZU0msmdCFNcwzpUnQ0jqUASBGPVoZ2UH+dkG3l3/rxOrMlOiiorQJpvHJOXpLcWeHcuEQKAlP4CSkxXbIoafgfLs=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3668.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(396003)(136003)(39860400002)(376002)(366004)(451199015)(86362001)(7416002)(8936002)(52536014)(2906002)(5660300002)(41300700001)(38100700002)(33656002)(53546011)(186003)(66946007)(316002)(55016003)(76116006)(122000001)(6916009)(54906003)(38070700005)(66476007)(66446008)(66556008)(4326008)(8676002)(64756008)(71200400001)(478600001)(83380400001)(6506007)(7696005)(107886003)(9686003)(26005)(32563001)(414714003)(473944003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q3RtVHhYRm1IdWlyeXcxUkJVN3g5OGJ2VjJyL2NESkgvcFJCblIybEphU1F2?=
+ =?utf-8?B?cFA5b0d3R1p4QTdvQy94c0ZTa3FPWmFpQ2g5L1JkWTdNWUgwMUwyTElYcHlZ?=
+ =?utf-8?B?dVd5cUtibHljWjQ1bFV6eDhwN0ZHRlZzZE9ia3BCNWt1N1ZwbUxya244bXUw?=
+ =?utf-8?B?TnpZaU1TZWVSSG5Td0FOUkxmN3FKWHpJNDZsN3Vzc1BhTTFWT1RvZlZZa3RL?=
+ =?utf-8?B?NndORFQ2a1B2Mk5iVkhITU9TVHZzaVpHb0JwZ2xZMGtCSkIzQ3BUd283MUZW?=
+ =?utf-8?B?Z2dEYjNHOEJaRDBSY1BjWUpMaDIvSVBtRXJpOHFEYUczbkRTc0dHTjdNYjRT?=
+ =?utf-8?B?YnlueG5jZjRnQklMUHVIdzVWMnh1TloxZ2JPUldyRmFtM1dzY3Bzb1RaZ0ZG?=
+ =?utf-8?B?NmZybzBBa2t5Wkc4ZnhFWW5oaUpEb3ZXWVZDYyt2bVEvRkpEaUYyUVIzTWlG?=
+ =?utf-8?B?bi9oUzdLYjNEazZ4eEI3ekEzNm9peHVJS0Q4aTlyU2ZDVmx6M2poamU3MTQv?=
+ =?utf-8?B?QmZJeDA0TTNYbFhIc0U5MmxBY1Nkd0JlTFFvMjJSRnB2RWI4dmY0Y1kzODNE?=
+ =?utf-8?B?TVRZVVFUN2JCRmR0bitEVGJXR2dCa2Y1NHdIUkEwYmEvMWZTU3I0V3FUOC9Y?=
+ =?utf-8?B?eGpSMDVRU3pBbzFVUEtVeDYvVC84QXdGR2xXRE5rRlF3YVEvUG16bEFvd05a?=
+ =?utf-8?B?aHczdXdDdDhwYTAvVTZSNWNKWU9jemdUYlZJcm5oejdQcHVPRWNrM2xoYTF6?=
+ =?utf-8?B?QWhTUzYwTXdsbjBTRVZ1dzFYdW0rSmdCNTA2S3J6VTNTd0ZOb05tYzVMQzh5?=
+ =?utf-8?B?WDFtQlNGTzFyM0pQakswYWU3a0ZDYk1EVTgyMHEvdU5lTWNJZzE1bDg3Z1J1?=
+ =?utf-8?B?NEk1QUUrd09ramxvWU10RjMyWVhXR0NtbnFaSUZscTVETGpRZ2hDNnZyVkxz?=
+ =?utf-8?B?OXg1NWw2QXVabTBybytCU2FTeUJ5SEljczUrOVpjSjJTMXFCS2ZndTh3VW5M?=
+ =?utf-8?B?Vkd1b2pEUE9VcHFGdDNjc0RBYXpPSGtjdXQzck5uM1JEeWFJakRtcm1vSFZK?=
+ =?utf-8?B?VTBKb3JjN1JXcHdFRmpOQlpaYVBidnUxMzdKaGJiVGZFRTlGYVdOYjZaMk1I?=
+ =?utf-8?B?TWNBV09PS0xxdkx3SXF5Ry9zbHpRUkJRVXZtSHczNmZqc0FzS2VXZkVjYjVV?=
+ =?utf-8?B?TzJZc1VySjZFYUVXc2JkaTQ0MndYU2MrcmFkNkVIVzE3bEZGNkVsejdMb3dz?=
+ =?utf-8?B?WjBzTFVMS2hJRlI2WGoyaGZnd0VqekNqUjNtN1AvTThuQmo3WENBT2JVY043?=
+ =?utf-8?B?dFVkaTFiNjR0aUVLYVRlNVh0OEVhaERkNW5aL0hRejV6NmJ0a2ZmMHM5RWt3?=
+ =?utf-8?B?YjBXN09vcGV5UktzK050MXRvTzJYZm52N0hvTnMvYU5vMVhPaU41L2Exa3Vl?=
+ =?utf-8?B?Uk0yL3F0UjZJVVUrQXVGa1FWMXduUlU1Mm9veHFkTmg3NkpQSGJtMTdtMnU3?=
+ =?utf-8?B?SzBDVTR5dFpKUzdVaGdieG9ua3VYcmNHLzBlTHJLUFZORUFXeHRxU3hWZjA4?=
+ =?utf-8?B?Mk1IeHpwejBhMlNDL1ZrMS84eWVmR1dVY3dGeXoyeXFsTmhXWlNYR2dqWE5a?=
+ =?utf-8?B?VmFldE4yTEZTdkNBc252MTIrR2ttdkhkSjlOQXczMTBFUkR5UUlZbnpvVzdT?=
+ =?utf-8?B?VVVFbjZGQVJuL0lVYTdQaHl2ZzBINkVOM1VuVzlvakRHVVkyWEpaK2liUlFE?=
+ =?utf-8?B?cWwzY2Z1VXZIUVNONVVrY1lqS1lZdm9OMmR2aGtENmlVTGl5U0pOUVFVYnNv?=
+ =?utf-8?B?YVRBbUtHY3l3QStEWVNNZHcyNk9EMTR0UmIyQXJiaElPNUlkc2dwUk9sMFZa?=
+ =?utf-8?B?ZTU1bDl2MXRLWDR1Q2c2NDZMZEZSRGFlRXEyaWdnRXZ1QlNPLzBxZFBQWnF2?=
+ =?utf-8?B?UVpISVc5bUNyY3phU2Z4WWRUc0J2OG1mc25QTENmSWhDcGJuSlNZSkpVMWRN?=
+ =?utf-8?B?NG00TnpKQU1wZkRTM3ljVkxtQ3BCNlgxdUdjVm5XQURTSkhVU2hGR3pBN1Fa?=
+ =?utf-8?B?N013YU5KNGR5c3E5UGFPSGZydDAyR0xUS1ZaNHJSbUMrZjdDWGhadjNnOUxD?=
+ =?utf-8?B?aWV3bVQ1Ym43SFhmR2J5bkozVUg5L2lHYkdTaUpMWm82M3JIYXd5MGJDclBq?=
+ =?utf-8?Q?OlOH9PpIv77NF8nBv8lhQxg=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221004143718.1076710-5-matthew.gerlach@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3668.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20754d11-b92d-4fff-78bc-08daa62cc9f1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2022 17:20:52.3007
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EBnDYYAoUfzbOCtS9RvaCsoFe7dIocCxe52WqnzqecYkCOfqnpwG+FgkAHh2wOPApIek+2CArvVS7wwuzpPfQxTHTz2xTHiQQkJHXzeEXGiSqVmH/DB1Q2ZbdE8dzwaR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4758
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 04, 2022 at 07:37:18AM -0700, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add a Device Feature List (DFL) bus driver for the Altera
-> 16550 implementation of UART.
-
-...
-
-> Reported-by: kernel test robot <lkp@intel.com>
-
-https://docs.kernel.org/process/submitting-patches.html?highlight=reported#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
-
-"The Reported-by tag gives credit to people who find bugs and report them and it
-hopefully inspires them to help us again in the future. Please note that if the
-bug was reported in private, then ask for permission first before using the
-Reported-by tag. The tag is intended for bugs; please do not use it to credit
-feature requests."
-
-
-...
-
-> +	if (!dfhv1_has_params(dfh_base)) {
-> +		dev_err(dev, "missing required DFH parameters\n");
-> +		return -EINVAL;
-> +	}
-
-Why not use dev_err_probe() everywhere since this is called only at ->probe()
-stage?
-
-...
-
-> +	off = dfhv1_find_param(dfh_base, max, DFHv1_PARAM_ID_CLK_FRQ);
-> +	if (off < 0) {
-> +		dev_err(dev, "missing CLK_FRQ param\n");
-
-> +		return -EINVAL;
-
-Why error code is being shadowed?
-
-> +	}
-
-...
-
-> +	off = dfhv1_find_param(dfh_base, max, DFHv1_PARAM_ID_FIFO_LEN);
-> +	if (off < 0) {
-> +		dev_err(dev, "missing FIFO_LEN param\n");
-> +		return -EINVAL;
-
-Ditto.
-
-> +	}
-
-...
-
-> +	off = dfhv1_find_param(dfh_base, max, DFHv1_PARAM_ID_REG_LAYOUT);
-> +	if (off < 0) {
-> +		dev_err(dev, "missing REG_LAYOUT param\n");
-> +		return -EINVAL;
-> +	}
-
-Ditto.
-
-...
-
-> +	dev_dbg(dev, "UART_LAYOUT_ID width %lld shift %d\n",
-> +		FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v), (int)uart->port.regshift);
-
-Casting in printf() in kernel in 99% shows the wrong specifier in use. Try to
-select the best suitable one.
-
-...
-
-> +	dfh_base = devm_ioremap_resource(dev, &dfl_dev->mmio_res);
-> +	if (IS_ERR(dfh_base))
-> +		return PTR_ERR(dfh_base);
-> +
-> +	res_size = resource_size(&dfl_dev->mmio_res);
-> +
-> +	ret = dfl_uart_get_params(dev, dfh_base, res_size, &uart);
-
-> +	devm_iounmap(dev, dfh_base);
-> +	devm_release_mem_region(dev, dfl_dev->mmio_res.start, res_size);
-
-If it's temporary, may be you shouldn't even consider devm_ioremap_resource()
-to begin with? The devm_* release type of functions in 99% of the cases
-indicate of the abusing devm_.
-
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "failed uart feature walk\n");
-
-...
-
-> +	dev_info(dev, "serial8250_register_8250_port %d\n", dfluart->line);
-
-Why do we need this noise?
-
-...
-
-> +	if (dfluart->line >= 0)
-
-When this can be false?
-
-> +		serial8250_unregister_port(dfluart->line);
-
-...
-
-> +config SERIAL_8250_DFL
-> +	tristate "DFL bus driver for Altera 16550 UART"
-> +	depends on SERIAL_8250 && FPGA_DFL
-> +	help
-> +	  This option enables support for a Device Feature List (DFL) bus
-> +	  driver for the Altera 16650 UART.  One or more Altera 16650 UARTs
-> +	  can be instantiated in a FPGA and then be discovered during
-> +	  enumeration of the DFL bus.
-
-When m, what be the module name?
-
-...
-
->  obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
->  obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
->  obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
-> +obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
-
-This group of drivers for the 4 UARTs on the board or so, does FPGA belong to
-it? (Same Q, btw, for the Kconfig section. And yes, I know that some of the
-entries are not properly placed there and in Makefile.)
-
->  obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
->  obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
->  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNoZXZjaGVua28gPGFu
+ZHkuc2hldmNoZW5rb0BnbWFpbC5jb20+DQo+IFNlbnQ6IE1vbmRheSwgT2N0b2JlciAzLCAyMDIy
+IDI6NTcgUE0NCj4gVG86IEt1bWFyYXZlbCBUaGlhZ2FyYWphbiAtIEkyMTQxNyA8S3VtYXJhdmVs
+LlRoaWFnYXJhamFuQG1pY3JvY2hpcC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgdHR5
+LW5leHQgMy8zXSA4MjUwOiBtaWNyb2NoaXA6IHBjaTF4eHh4OiBBZGQgcG93ZXINCj4gbWFuYWdl
+bWVudCBmdW5jdGlvbnMgdG8gcXVhZC11YXJ0IGRyaXZlci4NCj4gDQo+IEVYVEVSTkFMIEVNQUlM
+OiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cg
+dGhlDQo+IGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gT24gU2F0LCBPY3QgMSwgMjAyMiBhdCA5OjE1
+IEFNIEt1bWFyYXZlbCBUaGlhZ2FyYWphbg0KPiA8a3VtYXJhdmVsLnRoaWFnYXJhamFuQG1pY3Jv
+Y2hpcC5jb20+IHdyb3RlOg0KPiA+DQo+ID4gcGNpMXh4eHgncyBxdWFkLXVhcnQgZnVuY3Rpb24g
+aGFzIHRoZSBjYXBhYmlsaXR5IHRvIHdha2UgdXAgdGhlIGhvc3QNCj4gPiBmcm9tIHN1c3BlbmQg
+c3RhdGUuIEVuYWJsZSB3YWtldXAgYmVmb3JlIGVudGVyaW5nIGludG8gc3VzcGVuZCBhbmQNCj4g
+PiBkaXNhYmxlIHdha2V1cCBvbiByZXN1bWUuDQo+IA0KPiAuLi4NCj4gDQo+ID4gKyAgICAgICBw
+b3J0LT5zdXNwZW5kZWQgPT0gMA0KPiANCj4gSG93IGlzIHRoaXMgY2hlY2sgcmFjZS1wcm90ZWN0
+ZWQ/DQo+IA0KPiAuLi4NCj4gDQo+ID4gK3N0YXRpYyB2b2lkIHBjaTF4eHh4X3BvcnRfcmVzdW1l
+KGludCBsaW5lKSB7DQo+IA0KPiA+ICsgICAgICAgaWYgKHBvcnQtPnN1c3BlbmRlZCA9PSAwKSB7
+DQo+IA0KPiBEaXR0by4NCj4gDQo+ID4gKyAgICAgICB9DQo+ID4gK30NCj4gDQo+IC4uLg0KPiAN
+Cj4gSWYgeW91IGhhdmUgc2ltaWxhcml0aWVzIHdpdGggODI1MF9wY2ksIHByb2JhYmx5IHlvdSBu
+ZWVkIHRvIHNwbGl0IGl0IHRvDQo+IDgyNTBfcGNpbGliLmMgYW5kIHNoYXJlLiAoU2VlIGhvdyA4
+MjUwX2R3IC84MjUwX2xwc3MgYXJlIGRvbmUgaW4gdGhhdA0KPiBzZW5zZS4pDQpJIHdpbGwgcmV2
+aWV3IG15IGNvZGUgYWdhaW5zdCBhbGwgdGhlIGFib3ZlIGNvbW1lbnRzIGFuZCBnZXQgYmFjayB0
+byB5b3UuDQoNClRoYW5rIFlvdS4NCg0KUmVnYXJkcywNCkt1bWFyDQo=
