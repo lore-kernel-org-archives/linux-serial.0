@@ -2,70 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247CDC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Oct 2022 21:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DEBC433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Oct 2022 09:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiJDVOm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Oct 2022 17:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
+        id S229505AbiJEJoM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Oct 2022 05:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiJDVOk (ORCPT
+        with ESMTP id S229472AbiJEJoL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Oct 2022 17:14:40 -0400
-Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D9A190
-        for <linux-serial@vger.kernel.org>; Tue,  4 Oct 2022 14:14:34 -0700 (PDT)
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <lnx-linux-serial-6@m.gmane-mx.org>)
-        id 1ofpFI-000847-Me
-        for linux-serial@vger.kernel.org; Tue, 04 Oct 2022 23:14:32 +0200
-X-Injected-Via-Gmane: http://gmane.org/
-To:     linux-serial@vger.kernel.org
-From:   Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
- 950 UART" gets wrong baudrate (PCI ID 1415:c158)
-Date:   Tue, 4 Oct 2022 21:14:28 -0000 (UTC)
-Message-ID: <thi7nk$tpq$1@ciao.gmane.io>
-References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se>
- <YyA9maUOlPIExIUd@kroah.com>
- <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se>
- <thi5m6$j7r$1@ciao.gmane.io>
-User-Agent: slrn/1.0.3 (Linux)
+        Wed, 5 Oct 2022 05:44:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0B828E24;
+        Wed,  5 Oct 2022 02:44:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664963050; x=1696499050;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=IG4eeVo0o0ZX8usM5+UZ5ju6UZk+OfIU4VkFCt8UokQ=;
+  b=Qq/nA1bDuL2ewBO9qQYxrMvi1CaD8ISZ2C4p16F73zEQS5Ssz0wEM8cf
+   k++ciVzmIvMoPvaqOJKCa16y/dCf/qPCUZnsdMcOYaZzYz48nI3xzrFgE
+   h0fcm9ed34nET7FqgbedAzO+rijTtTVOZG9a2w7ImipQZ6yTKUl9EJN3l
+   MEXaHjeXNZ3DJcSh17m4plcfR3QYLjsqC3m1SUzwCaMZ68UsgykV8ktER
+   S8xmw9GJzCitArWtQQ2f8LG/RmAlRqL7Dv+fBns0srhz5Chof+lXREPRj
+   adVNLpg6/42cz7BB24EKlNOz41hczCRiFMn577YVvGE0ybdM4TS7D25Ra
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="303097975"
+X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
+   d="scan'208";a="303097975"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2022 02:44:09 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="624259828"
+X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
+   d="scan'208";a="624259828"
+Received: from mtantera-mobl3.ger.corp.intel.com (HELO refaase-MOBL1.ger.corp.intel.com) ([10.252.39.164])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2022 02:44:04 -0700
+Date:   Wed, 5 Oct 2022 12:43:44 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Kumaravel.Thiagarajan@microchip.com
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, andy.shevchenko@gmail.com,
+        u.kleine-koenig@pengutronix.de, johan@kernel.org,
+        wander@redhat.com, etremblay@distech-controls.com,
+        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
+        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        UNGLinuxDriver@microchip.com
+Subject: RE: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
+ support to quad-uart driver.
+In-Reply-To: <BN8PR11MB3668B169D079C3F9D1C3BB72E95A9@BN8PR11MB3668.namprd11.prod.outlook.com>
+Message-ID: <10e3e06c-10b2-1e65-2f4-32a5f0965c8@linux.intel.com>
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com> <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com> <d184aa6d-23e-edf6-4cee-f5f4ad6bf90@linux.intel.com>
+ <BN8PR11MB3668B169D079C3F9D1C3BB72E95A9@BN8PR11MB3668.namprd11.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-2055571603-1664963048=:1580"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-10-04, Grant Edwards <grant.b.edwards@gmail.com> wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> I just ran into what I think is the same problem when upgrading from
-> 5.10.76 to 5.15.68 (sorry I don't have any intermediate kernel
-> versions to test with). This is an oxford quad 950 board that has
-> worked flawlessly for many years. Now the baud rates are all wrong.
->
-> [...]
+--8323329-2055571603-1664963048=:1580
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 
-After reading through the thread a third time, I tried enabling
-CONFIG_SERIAL_8250_16550A_VARIANTS in my 6.15.69 kernel, and my	quad
-Oxford board works again.
+On Tue, 4 Oct 2022, Kumaravel.Thiagarajan@microchip.com wrote:
 
-The first two times I read through the thread I misunderstood the statement
+> > -----Original Message-----
+> > From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > Sent: Monday, October 3, 2022 2:51 PM
+> > To: Kumaravel Thiagarajan - I21417 <Kumaravel.Thiagarajan@microchip.com>
+> > Subject: Re: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
+> > support to quad-uart driver.
+> > 
+> > On Sat, 1 Oct 2022, Kumaravel Thiagarajan wrote:
+> > 
+> > > pci1xxxx uart supports rs485 mode of operation in the hardware with
+> > > auto-direction control with configurable delay for releasing RTS after
+> > > the transmission. This patch adds support for the rs485 mode.
+> > >
+> > > Signed-off-by: Kumaravel Thiagarajan
+> > > <kumaravel.thiagarajan@microchip.com>
+> > > ---
+> > > Changes in v2:
+> > > - move pci1xxxx_rs485_config to a separate patch with
+> > >   pci1xxxx_rs485_supported.
+> > > ---
+> > >  drivers/tty/serial/8250/8250_pci1xxxx.c | 57
+> > > +++++++++++++++++++++++++
+> > >  1 file changed, 57 insertions(+)
+> > >
+> > > diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c
+> > > b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> > > index 41a4b94f52b4..999e5a284266 100644
+> > > --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
+> > > +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> > > +
+> > > +             if (rs485->delay_rts_after_send) {
+> > > +                     baud_period_in_ns = ((clock_div >> 8) * 16);
+> > 
+> > Is this 16 perhaps UART_BIT_SAMPLE_CNT?
+> Yes. Is there any macro definition for that? I could not find any 
+> definition in the above name. 
 
-    Can you please confirm that you have the
-    CONFIG_SERIAL_8250_16550A_VARIANTS option disabled (default to
-    "off" for x86 only)?
+You're adding it in your 1/3 patch :-).
 
-as meaning that you should disable that option as a prerequisite to
-making it work. So I checked to make sure it was disabled (it
-was). Yes, it's obvious now what was meant was that having it disabled
-explains the previous observations.
+-- 
+ i.
 
---
-Grant
-
-
-
-
-
-
-
-
+--8323329-2055571603-1664963048=:1580--
