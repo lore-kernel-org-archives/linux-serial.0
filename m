@@ -2,111 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91EFC433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  7 Oct 2022 12:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 723D5C433FE
+	for <linux-serial@archiver.kernel.org>; Fri,  7 Oct 2022 13:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiJGMCT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 Oct 2022 08:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
+        id S229700AbiJGNbH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 7 Oct 2022 09:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiJGMCT (ORCPT
+        with ESMTP id S229964AbiJGNbB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 Oct 2022 08:02:19 -0400
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B712D0CE1
-        for <linux-serial@vger.kernel.org>; Fri,  7 Oct 2022 05:02:17 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 9C597280015C2;
-        Fri,  7 Oct 2022 14:02:14 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 89CE2210EC; Fri,  7 Oct 2022 14:02:14 +0200 (CEST)
-Date:   Fri, 7 Oct 2022 14:02:14 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc:     Roosen Henri <Henri.Roosen@ginzinger.com>,
-        linux-serial@vger.kernel.org,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        David Laight <David.Laight@aculab.com>,
-        Maarten Brock <m.brock@vanmierlo.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        Chao Zeng <chao.zeng@siemens.com>,
-        Peter Hung <hpeter+linux_kernel@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        "Codrin.Ciubotariu@microchip.com" <Codrin.Ciubotariu@microchip.com>,
-        Sherry Sun <sherry.sun@nxp.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Dario Binacchi <dariobin@libero.it>,
-        Bich Hemon <bich.hemon@st.com>, Marek Vasut <marex@denx.de>,
-        Vicente Bergas <vicencb@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2] serial: Deassert Transmit Enable on probe in
- driver-specific way
-Message-ID: <20221007120214.GA11466@wunner.de>
-References: <e688f63bc28827b0e8c9d8e2319e688aee412d24.1663733425.git.lukas@wunner.de>
- <Yyx0p4d5vcjt2XNB@kroah.com>
- <20220922154353.GA3559@wunner.de>
- <YyyIIIpPZD1gOToi@kroah.com>
- <20220922163042.GA12887@wunner.de>
- <07a4612c38cc9ab1bcaf01e5daf0ec1c53db7755.camel@ew.tq-group.com>
+        Fri, 7 Oct 2022 09:31:01 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F84B114DCE;
+        Fri,  7 Oct 2022 06:30:59 -0700 (PDT)
+Received: from [192.168.0.7] (ip5f5aef11.dynamic.kabel-deutschland.de [95.90.239.17])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 3449A61EA1929;
+        Fri,  7 Oct 2022 15:30:57 +0200 (CEST)
+Message-ID: <9af98779-6964-e971-41ba-667c9cd34e60@molgen.mpg.de>
+Date:   Fri, 7 Oct 2022 15:30:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <07a4612c38cc9ab1bcaf01e5daf0ec1c53db7755.camel@ew.tq-group.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: How to trace serial console init during boot-time?
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 07, 2022 at 01:34:19PM +0200, Matthias Schiffer wrote:
-> On Thu, 2022-09-22 at 18:30 +0200, Lukas Wunner wrote:
-> > Here's a v4 with full changelog:
-> > 
-> > https://lore.kernel.org/linux-serial/2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de/
-> 
-> I've noticed that this patch (well, the version that was applied to
-> tty.git) also changed the setting of the DTR flag in the MCR register.
-> Without your patch, I can see that the values passed to
-> serial8250_out_MCR() alternate between 0x03 and 0x01 when switching
-> between tx and rx, but with your patch, the values become 0x02 and
-> 0x00.
-> 
-> I'm not sure if setups RS485 exist where the DTR flag is relevant, but
-> as this was not mentioned in the commit message, I suspect that the
-> change might have been unintended.
+Dear Linux folks,
 
-That's intentional and documented in the following paragraph of the
-commit message:
 
-  Skip any invocation of ->set_mctrl() if RS485 is enabled.  RS485 has no
-  hardware flow control, so the modem control lines are irrelevant and
-  need not be touched.  When leaving RS485 mode, reset the modem control
-  lines to the state stored in port->mctrl.  That way, UARTs which are
-  muxed between RS485 and RS232 transceivers drive the lines correctly
-  when switched to RS232.  (serial8250_do_startup() historically raises
-  the OUT1 modem signal because otherwise interrupts are not signaled on
-  ancient PC UARTs, but I believe that no longer applies to modern,
-  RS485-capable UARTs and is thus safe to be skipped.)
+I am trying to do boot-time tracing of `univ8250_console_init()`:
 
-I think that the Siemens IOT20x0 series muxes the UART between RS232
-and RS485 transceivers, though I'm not sure if that applies both to
-the contemporary AM6548-based IOT2050 and to the older Intel-based
-machines.
+     [    0.126636] ftrace: allocating 41793 entries in 164 pages
+     [    0.132446] ftrace: allocated 164 pages with 3 groups
+     […]
+     [    0.167334] calling  con_init+0x0/0x239 @ 0
+     [    0.170217] Console: colour VGA+ 80x25
+     [    0.190381] printk: console [tty0] enabled
+     [    0.190484] initcall con_init+0x0/0x239 returned 0 after 0 usecs
+     [    0.190487] calling  hvc_console_init+0x0/0x18 @ 0
+     [    0.190489] initcall hvc_console_init+0x0/0x18 returned 0 after 
+0 usecs
+     [    0.190491] calling  univ8250_console_init+0x0/0x2b @ 0
+     [    1.488645] printk: console [ttyS0] enabled
+     [    1.492945] initcall univ8250_console_init+0x0/0x2b returned 0 
+after 0 usecs
+     […]
+     [    1.670397] calling  trace_init_perf_perm_irq_work_exit+0x0/0x17 @ 1
+     [    1.670399] initcall trace_init_perf_perm_irq_work_exit+0x0/0x17 
+returned 0 after 0 usecs
+     […]
+     [    1.673339] calling  trace_init_flags_sys_enter+0x0/0x13 @ 1
+     [    1.673342] initcall trace_init_flags_sys_enter+0x0/0x13 
+returned 0 after 0 usecs
+     [    1.673344] calling  trace_init_flags_sys_exit+0x0/0x13 @ 1
+     [    1.673346] initcall trace_init_flags_sys_exit+0x0/0x13 returned 
+0 after 0 usecs
+     [    1.673348] calling  cpu_stop_init+0x0/0x87 @ 1
+     [    1.673364] initcall cpu_stop_init+0x0/0x87 returned 0 after 0 usecs
+     [    1.673366] calling  init_kprobes+0x0/0x149 @ 1
+     [    1.673495] initcall init_kprobes+0x0/0x149 returned 0 after 0 usecs
+     [    1.673497] calling  init_events+0x0/0x4d @ 1
+     [    1.673502] initcall init_events+0x0/0x4d returned 0 after 0 usecs
+     [    1.673504] calling  init_trace_printk+0x0/0xc @ 1
+     [    1.673505] initcall init_trace_printk+0x0/0xc returned 0 after 
+0 usecs
+     [    1.673507] calling  event_trace_enable_again+0x0/0x23 @ 1
+     [    1.673508] initcall event_trace_enable_again+0x0/0x23 returned 
+0 after 0 usecs
 
-In RS485 mode, the DTR signal should be completely irrelevant as
-the transceiver is only attached to RX, TX and RTS pins.
+The function `univ8250_console_init()` is not available in 
+`/sys/kernel/debug/tracing/available_filter_functions`, so I’d like to 
+trace `univ8250_console_setup()`:
 
-When switching from RS485 to RS232 mode, the patch ensures that the
-modem signals are reset to what's been saved in port->mctrl.  So DTR
-will be raised once the UART is switched to RS232.
+     initcall_debug log_buf_len=32M trace_buf_size=262144K 
+trace_clock=global 
+trace_options=nooverwrite,funcgraph-abstime,funcgraph-cpu,funcgraph-duration,funcgraph-proc,funcgraph-tail,nofuncgraph-overhead,context-info,graph-time 
+ftrace=fun
+ction_graph ftrace_graph_max_depth=2 
+ftrace_graph_filter=univ8250_console_setup tp_printk
 
-Thanks,
+Unfortunately, `/sys/kernel/debug/tracing/trace` is empty, so I guess 
+the console happens before ftrace is available?
 
-Lukas
+Is there another way to trace the serial console init, without having to 
+add print statements?
+
+
+Kind regards,
+
+Paul
+
+
+PS: We boot our systems generally with the serial console enabled 
+`console=ttyS0`, and noticed that initializing the console takes at 
+least one second.
+
+$ dmesg | grep -e 'DMI:' -e 'printk: console'
+[    0.000000] DMI: Dell Inc. PowerEdge R7525/05Y13N, BIOS 2.7.3 03/30/2022
+[    2.691432] printk: console [tty0] enabled
+[    5.414384] printk: console [ttyS0] enabled
+
+$ dmesg | grep -e 'DMI:' -e 'printk:'
+[    0.000000] DMI: Dell Inc. Precision Tower 3620/0MWYPT, BIOS 2.22.0 
+07/13/2022
+[    0.146953] printk: console [tty0] enabled
+[    1.374382] printk: console [ttyS0] enabled
+
+$ dmesg | grep -e 'DMI:' -e 'printk: console'
+[    0.000000] DMI: Dell Inc. PowerEdge R7425/08V001, BIOS 1.6.7 10/29/2018
+[    1.589543] printk: console [tty0] enabled
+[    3.057770] printk: console [ttyS0] enabled
+
+$ dmesg | grep -e 'DMI:' -e 'printk: console'
+[    0.000000] DMI: HPE ProLiant DL385 Gen10 Plus/ProLiant DL385 Gen10 
+Plus, BIOS A42 12/03/2021
+[    5.171202] printk: console [tty0] enabled
+[    8.066602] printk: console [ttyS0] enabled
