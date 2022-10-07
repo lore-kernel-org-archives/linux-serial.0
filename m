@@ -2,134 +2,173 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 723D5C433FE
-	for <linux-serial@archiver.kernel.org>; Fri,  7 Oct 2022 13:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B506FC43219
+	for <linux-serial@archiver.kernel.org>; Fri,  7 Oct 2022 15:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiJGNbH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 Oct 2022 09:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
+        id S229975AbiJGPK1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 7 Oct 2022 11:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229964AbiJGNbB (ORCPT
+        with ESMTP id S230020AbiJGPKX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 Oct 2022 09:31:01 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F84B114DCE;
-        Fri,  7 Oct 2022 06:30:59 -0700 (PDT)
-Received: from [192.168.0.7] (ip5f5aef11.dynamic.kabel-deutschland.de [95.90.239.17])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 3449A61EA1929;
-        Fri,  7 Oct 2022 15:30:57 +0200 (CEST)
-Message-ID: <9af98779-6964-e971-41ba-667c9cd34e60@molgen.mpg.de>
-Date:   Fri, 7 Oct 2022 15:30:56 +0200
+        Fri, 7 Oct 2022 11:10:23 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53DF688AD;
+        Fri,  7 Oct 2022 08:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1665155422; x=1696691422;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=ozz4dRjKrdNdv2whvmeTudwuPMNq3KNa5u3HQ0DA55k=;
+  b=fxm0p9vbv2DsUj+QclJeFLNEAVnUabjzLMkecQq8xppr3R4lLRx1TeOU
+   E4eW8yXINhubRyRTrbFXHorhhWAYxkpu1wbbwYDBgICnYBNmd/oopOuk3
+   GTOPpCF7M7K6vNQBlNhZzY8/cByFkjPgjMx95Ua0gLkS3jD9MAKZUALA7
+   sYr4gdTTX5hQx3aIo1sjysSZOEGSaxoSQXCnFqVcF5rYe8awlqOKDNz4A
+   AUQeZy/qpTV3vxTa2RVOXNMkgoiadVo4pD3aIG6oC2Lt2mbvHKRDLNDSJ
+   5AmRzJBqgd6ANRGzbyqiqVHG2t0e+xUBrpCYfnikVGjqq7jINHXrPnOwe
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10493"; a="301357183"
+X-IronPort-AV: E=Sophos;i="5.95,167,1661842800"; 
+   d="scan'208";a="301357183"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2022 08:10:22 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10493"; a="625173439"
+X-IronPort-AV: E=Sophos;i="5.95,167,1661842800"; 
+   d="scan'208";a="625173439"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2022 08:10:21 -0700
+Date:   Fri, 7 Oct 2022 08:10:34 -0700 (PDT)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v3 4/4] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+In-Reply-To: <Yz/uTGeNaOP4Btli@smile.fi.intel.com>
+Message-ID: <alpine.DEB.2.22.394.2210070807340.2155700@rhweight-WRK1>
+References: <20221004143718.1076710-1-matthew.gerlach@linux.intel.com> <20221004143718.1076710-5-matthew.gerlach@linux.intel.com> <YzxRxo8jL7rB1+px@smile.fi.intel.com> <alpine.DEB.2.22.394.2210060940150.1988353@rhweight-WRK1> <Yz8T8GdzMLyAKIMb@smile.fi.intel.com>
+ <alpine.DEB.2.22.394.2210061517300.1772307@rhweight-WRK1> <Yz/uTGeNaOP4Btli@smile.fi.intel.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: How to trace serial console init during boot-time?
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Linux folks,
 
 
-I am trying to do boot-time tracing of `univ8250_console_init()`:
+On Fri, 7 Oct 2022, Andy Shevchenko wrote:
 
-     [    0.126636] ftrace: allocating 41793 entries in 164 pages
-     [    0.132446] ftrace: allocated 164 pages with 3 groups
-     […]
-     [    0.167334] calling  con_init+0x0/0x239 @ 0
-     [    0.170217] Console: colour VGA+ 80x25
-     [    0.190381] printk: console [tty0] enabled
-     [    0.190484] initcall con_init+0x0/0x239 returned 0 after 0 usecs
-     [    0.190487] calling  hvc_console_init+0x0/0x18 @ 0
-     [    0.190489] initcall hvc_console_init+0x0/0x18 returned 0 after 
-0 usecs
-     [    0.190491] calling  univ8250_console_init+0x0/0x2b @ 0
-     [    1.488645] printk: console [ttyS0] enabled
-     [    1.492945] initcall univ8250_console_init+0x0/0x2b returned 0 
-after 0 usecs
-     […]
-     [    1.670397] calling  trace_init_perf_perm_irq_work_exit+0x0/0x17 @ 1
-     [    1.670399] initcall trace_init_perf_perm_irq_work_exit+0x0/0x17 
-returned 0 after 0 usecs
-     […]
-     [    1.673339] calling  trace_init_flags_sys_enter+0x0/0x13 @ 1
-     [    1.673342] initcall trace_init_flags_sys_enter+0x0/0x13 
-returned 0 after 0 usecs
-     [    1.673344] calling  trace_init_flags_sys_exit+0x0/0x13 @ 1
-     [    1.673346] initcall trace_init_flags_sys_exit+0x0/0x13 returned 
-0 after 0 usecs
-     [    1.673348] calling  cpu_stop_init+0x0/0x87 @ 1
-     [    1.673364] initcall cpu_stop_init+0x0/0x87 returned 0 after 0 usecs
-     [    1.673366] calling  init_kprobes+0x0/0x149 @ 1
-     [    1.673495] initcall init_kprobes+0x0/0x149 returned 0 after 0 usecs
-     [    1.673497] calling  init_events+0x0/0x4d @ 1
-     [    1.673502] initcall init_events+0x0/0x4d returned 0 after 0 usecs
-     [    1.673504] calling  init_trace_printk+0x0/0xc @ 1
-     [    1.673505] initcall init_trace_printk+0x0/0xc returned 0 after 
-0 usecs
-     [    1.673507] calling  event_trace_enable_again+0x0/0x23 @ 1
-     [    1.673508] initcall event_trace_enable_again+0x0/0x23 returned 
-0 after 0 usecs
+> On Thu, Oct 06, 2022 at 03:24:16PM -0700, matthew.gerlach@linux.intel.com wrote:
+>> On Thu, 6 Oct 2022, Andy Shevchenko wrote:
+>>> On Thu, Oct 06, 2022 at 10:00:43AM -0700, matthew.gerlach@linux.intel.com wrote:
+>>>> On Tue, 4 Oct 2022, Andy Shevchenko wrote:
+>>>>> On Tue, Oct 04, 2022 at 07:37:18AM -0700, matthew.gerlach@linux.intel.com wrote:
+>
+> ...
+>
+>>>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>>>
+>>>>> https://docs.kernel.org/process/submitting-patches.html?highlight=reported#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
+>>>>>
+>>>>> "The Reported-by tag gives credit to people who find bugs and report them and it
+>>>>> hopefully inspires them to help us again in the future. Please note that if the
+>>>>> bug was reported in private, then ask for permission first before using the
+>>>>> Reported-by tag. The tag is intended for bugs; please do not use it to credit
+>>>>> feature requests."
+>>>>
+>>>> The kernel test robot did find a bug in my v1 submission.  I was missing the
+>>>> static keyword for a function declaration.  Should I remove the tag?
+>>>
+>>> What's yours take from the above documentation?
+>>
+>> Since the kernel test robot did find a bug. The tag should stay.
+>
+> I suggest otherwise because of the last sentence in the cited excerpt: "please
+> do not use it to credit feature requests". To distinguish "feature request" you
+> can ask yourself "Am I fixing _existing_ code or adding a new one?" And the
+> answer here is crystal clear (at least to me).
+>
+> ...
+>
+>>>>>> +config SERIAL_8250_DFL
+>>>>>> +	tristate "DFL bus driver for Altera 16550 UART"
+>>>>>> +	depends on SERIAL_8250 && FPGA_DFL
+>>>>>> +	help
+>>>>>> +	  This option enables support for a Device Feature List (DFL) bus
+>>>>>> +	  driver for the Altera 16650 UART.  One or more Altera 16650 UARTs
+>>>>>> +	  can be instantiated in a FPGA and then be discovered during
+>>>>>> +	  enumeration of the DFL bus.
+>>>>>
+>>>>> When m, what be the module name?
+>>>>
+>>>> I see the file, kernel/drivers/tty/serial/8250/8250_dfl.ko, installed into
+>>>> /lib/modules/...  I also see "alias dfl:t0000f0024* 8250_dfl" in
+>>>> modules.alias
+>>>
+>>> My point is that user who will run `make menuconfig` will read this and have
+>>> no clue after the kernel build if the module was built or not. Look into other
+>>> (recent) sections of the Kconfig for drivers in the kernel for how they inform
+>>> user about the module name (this more or less standard pattern you just need
+>>> to copy'n'paste'n'edit carefully).
+>>
+>> I think this should be added:
+>>           To compile this driver as a module, chose M here: the
+>>           module will be called 8250_dfl.
+>
+> Looks good to me!
+>
+>
+>>>>>>  obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
+>>>>>>  obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
+>>>>>>  obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
+>>>>>> +obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
+>>>>>
+>>>>> This group of drivers for the 4 UARTs on the board or so, does FPGA belong to
+>>>>> it? (Same Q, btw, for the Kconfig section. And yes, I know that some of the
+>>>>> entries are not properly placed there and in Makefile.)
+>>>>
+>>>> Since 8250_dfl results in its own module, and my kernel config doesn't have
+>>>> FOURPORT, ACCENT, nor BOCA, I guess I don't understand the problem.
+>>>
+>>> The Makefile is a bit chaotic, but try to find the sorted (more or less)
+>>> group of drivers that are not 4 ports and squeeze your entry there
+>>> (I expect somewhere between the LPSS/MID lines).
+>>>
+>>> It will help to sort out that mess in the future.
+>>
+>> I will move 8250_dfl between LPSS and MID lines in the Makefile.  Should I
+>> move the definition in Kconfig to be between LPSS and MID to be consistent?
+>
+> D is not ordered if put between L and M, I meant not to literally put it there
+> but think about it a bit.
+>
+> Kconfig is another story because it has different approach in ordering (seems
+> so), try to find the best compromise there.
 
-The function `univ8250_console_init()` is not available in 
-`/sys/kernel/debug/tracing/available_filter_functions`, so I’d like to 
-trace `univ8250_console_setup()`:
+In the Kconfig, I think the driver fits into the section, Misc. 
+options/drivers.  Within this section, I think SERIAL_8250_DFL should go 
+before SERIAL_8250_DW to approximate alphabetical ordering.  Similarly, I 
+think 8250_dfl.o should go above 8250_dw.o in the Makefile.
 
-     initcall_debug log_buf_len=32M trace_buf_size=262144K 
-trace_clock=global 
-trace_options=nooverwrite,funcgraph-abstime,funcgraph-cpu,funcgraph-duration,funcgraph-proc,funcgraph-tail,nofuncgraph-overhead,context-info,graph-time 
-ftrace=fun
-ction_graph ftrace_graph_max_depth=2 
-ftrace_graph_filter=univ8250_console_setup tp_printk
-
-Unfortunately, `/sys/kernel/debug/tracing/trace` is empty, so I guess 
-the console happens before ftrace is available?
-
-Is there another way to trace the serial console init, without having to 
-add print statements?
-
-
-Kind regards,
-
-Paul
-
-
-PS: We boot our systems generally with the serial console enabled 
-`console=ttyS0`, and noticed that initializing the console takes at 
-least one second.
-
-$ dmesg | grep -e 'DMI:' -e 'printk: console'
-[    0.000000] DMI: Dell Inc. PowerEdge R7525/05Y13N, BIOS 2.7.3 03/30/2022
-[    2.691432] printk: console [tty0] enabled
-[    5.414384] printk: console [ttyS0] enabled
-
-$ dmesg | grep -e 'DMI:' -e 'printk:'
-[    0.000000] DMI: Dell Inc. Precision Tower 3620/0MWYPT, BIOS 2.22.0 
-07/13/2022
-[    0.146953] printk: console [tty0] enabled
-[    1.374382] printk: console [ttyS0] enabled
-
-$ dmesg | grep -e 'DMI:' -e 'printk: console'
-[    0.000000] DMI: Dell Inc. PowerEdge R7425/08V001, BIOS 1.6.7 10/29/2018
-[    1.589543] printk: console [tty0] enabled
-[    3.057770] printk: console [ttyS0] enabled
-
-$ dmesg | grep -e 'DMI:' -e 'printk: console'
-[    0.000000] DMI: HPE ProLiant DL385 Gen10 Plus/ProLiant DL385 Gen10 
-Plus, BIOS A42 12/03/2021
-[    5.171202] printk: console [tty0] enabled
-[    8.066602] printk: console [ttyS0] enabled
+>
+>>>>>>  obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
+>>>>>>  obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
+>>>>>>  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
+>
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+>
+>
+>
