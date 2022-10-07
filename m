@@ -2,171 +2,159 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042DEC433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  7 Oct 2022 09:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89048C433FE
+	for <linux-serial@archiver.kernel.org>; Fri,  7 Oct 2022 11:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbiJGJQM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 Oct 2022 05:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        id S229680AbiJGLe2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 7 Oct 2022 07:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiJGJQJ (ORCPT
+        with ESMTP id S229579AbiJGLe2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 Oct 2022 05:16:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7087604B8;
-        Fri,  7 Oct 2022 02:16:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1665134166; x=1696670166;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GyaM9hscOs5oX6hGaW6P+tfsLJKjYS0PaLHclmRMdhw=;
-  b=CEdysKroLN70Zizci7hX9RPs/H7k4Sfjz1E/zwEBuVmYSUbiA/v5CNy/
-   vI7bG+OL5AWar2hNPEeN8s1V0aSGtxIgu8hkDe+ElgHbXzmdEHMgQYEmP
-   gJqTa5eVCOUqFLyrYyTVdXD/gYrSKp2bkzKuh0a4iABbuoMfX9nAKhZK2
-   rtniNnIomqz+f7CT6bDryrV28cKNrPpBpmfpOpV4VsneSdng4NKjxaSu6
-   dkMIMxuUTHhjkUqVK2TCbSlVTLUSva3SKUydSYeZkbiv14VYXFi52LvPj
-   JColZo4s14I2c8U7oOMMtuCeuJ6HRQVNfMnxyZgcvv8mhfuctgZewLFfe
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10492"; a="367820098"
-X-IronPort-AV: E=Sophos;i="5.95,166,1661842800"; 
-   d="scan'208";a="367820098"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2022 02:16:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10492"; a="729536728"
-X-IronPort-AV: E=Sophos;i="5.95,166,1661842800"; 
-   d="scan'208";a="729536728"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Oct 2022 02:15:59 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ogjSX-003Xtt-03;
-        Fri, 07 Oct 2022 12:15:57 +0300
-Date:   Fri, 7 Oct 2022 12:15:56 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v3 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-Message-ID: <Yz/uTGeNaOP4Btli@smile.fi.intel.com>
-References: <20221004143718.1076710-1-matthew.gerlach@linux.intel.com>
- <20221004143718.1076710-5-matthew.gerlach@linux.intel.com>
- <YzxRxo8jL7rB1+px@smile.fi.intel.com>
- <alpine.DEB.2.22.394.2210060940150.1988353@rhweight-WRK1>
- <Yz8T8GdzMLyAKIMb@smile.fi.intel.com>
- <alpine.DEB.2.22.394.2210061517300.1772307@rhweight-WRK1>
+        Fri, 7 Oct 2022 07:34:28 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E56D0CD8
+        for <linux-serial@vger.kernel.org>; Fri,  7 Oct 2022 04:34:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1665142465; x=1696678465;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=l2K7nGYVWt28o43ZKNwJyveq1AoUokbsCpcDflZDZZU=;
+  b=Wf2L6dCrFRm2E4N+7FJ7w+pyOFp19XdE/TOClGvI8pz1kQToWgQhV57K
+   12vqEORRUWDfs3hzZYNgvA8YafhTkKm+oOdsyXhCP5+/tAKB9zwu5S8za
+   ezJcMzIqBqD+r7xC579NPQEENABAC85U59FOYfgzK1+UHnCB6TUZpPExS
+   rgE1c5bukGVam+4vfyJffywYzphw63LECvvbKGRE8KuAT/lFQ9PTWZUri
+   i0v/9G677qkGuOg/ye/bCDXM783OF+7N6nTQyExvK8YEl0vCtRjnnRv5P
+   O4xvp46kmEOd9swyV3LI8KkC/zFosxXf7pC/7KuN8XhGGgXRyADLN3R/1
+   g==;
+X-IronPort-AV: E=Sophos;i="5.95,166,1661810400"; 
+   d="scan'208";a="26618452"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 07 Oct 2022 13:34:22 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 07 Oct 2022 13:34:22 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 07 Oct 2022 13:34:22 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1665142462; x=1696678462;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=l2K7nGYVWt28o43ZKNwJyveq1AoUokbsCpcDflZDZZU=;
+  b=iR5DhFvSRrG/4v0i36QRLEpTqnkB2NXSXe3vDbqbTvO1vwbmLsRXrff3
+   pfCvumXwnmPzTTNuJ/6qLVzhVe7SzRWLdoWXQ1jpEsoE3B5fZ2yKQI/GU
+   Qh4551/anXC0Lc9ezGc5Nhd9pzuzNAczsT7EyNgY8m/WCtFwmYGA4tv8V
+   0H9wiLnJRNH6ctP/acxvvqS13G8ferY8agKVLCJfFr8Gr1quSGQ4Z0hot
+   V9RzMmh3aArizekHdL6xyJ25EBMGFayh0KZiMWZV5vsBKDEU6ce/Kim/p
+   bbugGMt71/17ePYODVl8fW1hrRBAQ7YQC4CdYbi9P0NSoSTwYeUOynopL
+   A==;
+X-IronPort-AV: E=Sophos;i="5.95,166,1661810400"; 
+   d="scan'208";a="26618451"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 07 Oct 2022 13:34:22 +0200
+Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.49.14])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 03B80280056;
+        Fri,  7 Oct 2022 13:34:22 +0200 (CEST)
+Message-ID: <07a4612c38cc9ab1bcaf01e5daf0ec1c53db7755.camel@ew.tq-group.com>
+Subject: Re: [PATCH v2] serial: Deassert Transmit Enable on probe in
+ driver-specific way
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Roosen Henri <Henri.Roosen@ginzinger.com>,
+        linux-serial@vger.kernel.org,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        David Laight <David.Laight@aculab.com>,
+        Maarten Brock <m.brock@vanmierlo.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Chao Zeng <chao.zeng@siemens.com>,
+        Peter Hung <hpeter+linux_kernel@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        "Codrin.Ciubotariu@microchip.com" <Codrin.Ciubotariu@microchip.com>,
+        Sherry Sun <sherry.sun@nxp.com>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Dario Binacchi <dariobin@libero.it>,
+        Bich Hemon <bich.hemon@st.com>, Marek Vasut <marex@denx.de>,
+        Vicente Bergas <vicencb@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Fri, 07 Oct 2022 13:34:19 +0200
+In-Reply-To: <20220922163042.GA12887@wunner.de>
+References: <e688f63bc28827b0e8c9d8e2319e688aee412d24.1663733425.git.lukas@wunner.de>
+         <Yyx0p4d5vcjt2XNB@kroah.com> <20220922154353.GA3559@wunner.de>
+         <YyyIIIpPZD1gOToi@kroah.com> <20220922163042.GA12887@wunner.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2210061517300.1772307@rhweight-WRK1>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 06, 2022 at 03:24:16PM -0700, matthew.gerlach@linux.intel.com wrote:
-> On Thu, 6 Oct 2022, Andy Shevchenko wrote:
-> > On Thu, Oct 06, 2022 at 10:00:43AM -0700, matthew.gerlach@linux.intel.com wrote:
-> > > On Tue, 4 Oct 2022, Andy Shevchenko wrote:
-> > > > On Tue, Oct 04, 2022 at 07:37:18AM -0700, matthew.gerlach@linux.intel.com wrote:
-
-...
-
-> > > > > Reported-by: kernel test robot <lkp@intel.com>
+On Thu, 2022-09-22 at 18:30 +0200, Lukas Wunner wrote:
+> On Thu, Sep 22, 2022 at 06:06:56PM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Sep 22, 2022 at 05:43:53PM +0200, Lukas Wunner wrote:
+> > > On Thu, Sep 22, 2022 at 04:43:51PM +0200, Greg Kroah-Hartman wrote:
+> > > > On Wed, Sep 21, 2022 at 06:39:33AM +0200, Lukas Wunner wrote:
+> > > > > When a UART port is newly registered, uart_configure_port() seeks to
+> > > > > deassert RS485 Transmit Enable by setting the RTS bit in port->mctrl.
+> > > > > However a number of UART drivers interpret a set RTS bit as *assertion*
+> > > > > instead of deassertion:  Affected drivers include those using
+> > > > > serial8250_em485_config() (except 8250_bcm2835aux.c) and some using
+> > > > > mctrl_gpio (e.g. imx.c).
+> > > > > 
+> > > > > Since the interpretation of the RTS bit is driver-specific, it is not
+> > > > > suitable as a means to centrally deassert Transmit Enable in the serial
+> > > > > core.  Instead, the serial core must call on drivers to deassert it in
+> > > > > their driver-specific way.  One way to achieve that is to call
+> > > > > ->rs485_config().  It implicitly deasserts Transmit Enable.
+> > > > > 
+> > > > > So amend uart_configure_port() and uart_resume_port() to invoke
+> > > > > uart_rs485_config().  That allows removing calls to uart_rs485_config()
+> > > > > from drivers' ->probe() hooks and declaring the function static.
+> > > [...]
+> > > > This message never made it to lore.kernel.org, so I can't seem to apply
+> > > > it using `b4`.
 > > > > 
-> > > > https://docs.kernel.org/process/submitting-patches.html?highlight=reported#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
-> > > > 
-> > > > "The Reported-by tag gives credit to people who find bugs and report them and it
-> > > > hopefully inspires them to help us again in the future. Please note that if the
-> > > > bug was reported in private, then ask for permission first before using the
-> > > > Reported-by tag. The tag is intended for bugs; please do not use it to credit
-> > > > feature requests."
+> > > > Can you resend it so that it does make it to the public archives?
 > > > 
-> > > The kernel test robot did find a bug in my v1 submission.  I was missing the
-> > > static keyword for a function declaration.  Should I remove the tag?
-> > 
-> > What's yours take from the above documentation?
-> 
-> Since the kernel test robot did find a bug. The tag should stay.
-
-I suggest otherwise because of the last sentence in the cited excerpt: "please
-do not use it to credit feature requests". To distinguish "feature request" you
-can ask yourself "Am I fixing _existing_ code or adding a new one?" And the
-answer here is crystal clear (at least to me).
-
-...
-
-> > > > > +config SERIAL_8250_DFL
-> > > > > +	tristate "DFL bus driver for Altera 16550 UART"
-> > > > > +	depends on SERIAL_8250 && FPGA_DFL
-> > > > > +	help
-> > > > > +	  This option enables support for a Device Feature List (DFL) bus
-> > > > > +	  driver for the Altera 16650 UART.  One or more Altera 16650 UARTs
-> > > > > +	  can be instantiated in a FPGA and then be discovered during
-> > > > > +	  enumeration of the DFL bus.
-> > > > 
-> > > > When m, what be the module name?
+> > > Yes, both v1 and v2 didn't make it to the mailing list archive.
+> > > My suspicion is that the Cc: line was probably too long.
 > > > 
-> > > I see the file, kernel/drivers/tty/serial/8250/8250_dfl.ko, installed into
-> > > /lib/modules/...  I also see "alias dfl:t0000f0024* 8250_dfl" in
-> > > modules.alias
-> > 
-> > My point is that user who will run `make menuconfig` will read this and have
-> > no clue after the kernel build if the module was built or not. Look into other
-> > (recent) sections of the Kconfig for drivers in the kernel for how they inform
-> > user about the module name (this more or less standard pattern you just need
-> > to copy'n'paste'n'edit carefully).
-> 
-> I think this should be added:
->           To compile this driver as a module, chose M here: the
->           module will be called 8250_dfl.
-
-Looks good to me!
-
-
-> > > > >  obj-$(CONFIG_SERIAL_8250_FOURPORT)	+= 8250_fourport.o
-> > > > >  obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
-> > > > >  obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
-> > > > > +obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
-> > > > 
-> > > > This group of drivers for the 4 UARTs on the board or so, does FPGA belong to
-> > > > it? (Same Q, btw, for the Kconfig section. And yes, I know that some of the
-> > > > entries are not properly placed there and in Makefile.)
+> > > I resent as v3 with only you in To: and the mailing list in Cc: and
+> > > this time it went through:
 > > > 
-> > > Since 8250_dfl results in its own module, and my kernel config doesn't have
-> > > FOURPORT, ACCENT, nor BOCA, I guess I don't understand the problem.
+> > > https://lore.kernel.org/linux-serial/2de36eba3fbe11278d5002e4e501afe0ceaca039.1663860626.git.lukas@wunner.de/
+> > > 
+> > > On the bright side, v2 contained an embarrassing checkpatch issue
+> > > (superfluous newline) and resending as v3 provided a welcome
+> > > opportunity to fix that. :)
 > > 
-> > The Makefile is a bit chaotic, but try to find the sorted (more or less)
-> > group of drivers that are not 4 ports and squeeze your entry there
-> > (I expect somewhere between the LPSS/MID lines).
+> > v3 did not have a changelog :(
 > > 
-> > It will help to sort out that mess in the future.
+> > v4?
 > 
-> I will move 8250_dfl between LPSS and MID lines in the Makefile.  Should I
-> move the definition in Kconfig to be between LPSS and MID to be consistent?
+> Well, the changelog is above.  (Only the superfluous newline was removed
+> in v3 vis-à-vis v2.)
+> 
+> Here's a v4 with full changelog:
+> 
+> https://lore.kernel.org/linux-serial/2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de/
 
-D is not ordered if put between L and M, I meant not to literally put it there
-but think about it a bit.
+Hi Lukas,
 
-Kconfig is another story because it has different approach in ordering (seems
-so), try to find the best compromise there.
+I've noticed that this patch (well, the version that was applied to
+tty.git) also changed the setting of the DTR flag in the MCR register.
+Without your patch, I can see that the values passed to
+serial8250_out_MCR() alternate between 0x03 and 0x01 when switching
+between tx and rx, but with your patch, the values become 0x02 and
+0x00.
 
-> > > > >  obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
-> > > > >  obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
-> > > > >  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+I'm not sure if setups RS485 exist where the DTR flag is relevant, but
+as this was not mentioned in the commit message, I suspect that the
+change might have been unintended.
 
