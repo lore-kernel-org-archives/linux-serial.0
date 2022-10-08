@@ -2,71 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533FAC433FE
-	for <linux-serial@archiver.kernel.org>; Sat,  8 Oct 2022 00:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F74C433FE
+	for <linux-serial@archiver.kernel.org>; Sat,  8 Oct 2022 20:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbiJHA20 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 Oct 2022 20:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        id S229538AbiJHUni convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 8 Oct 2022 16:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiJHA2H (ORCPT
+        with ESMTP id S229592AbiJHUnh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 Oct 2022 20:28:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF5FBEAF0;
-        Fri,  7 Oct 2022 17:28:03 -0700 (PDT)
+        Sat, 8 Oct 2022 16:43:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4807D36408;
+        Sat,  8 Oct 2022 13:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12582B8248D;
-        Sat,  8 Oct 2022 00:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C45CCC433C1;
-        Sat,  8 Oct 2022 00:28:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1665188880;
-        bh=tSKxD+7DM97US3J5vjTOfbW2UmoEfcSMZd6+WVTErD0=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=YpQ/q/sFKeQ6DaNnD1j8uA5T5CK94zPrwSuAS/FS8hakWhf7pFu4xeq/rr08ORCja
-         bYxsmc+sM+2ssD3c0XJzgzQeIr7W3Hts33Fa64zZjOSDf1k1CNxE4HulKOslFZ9ofW
-         0QT3jstb0Sq9A50rO2mi/qHzi7nLDh/4qh9sjSMQPNjcfornAkYWdbmQiVEGj13UMy
-         USVFe77UfmM7u7O8M0wPgZnRWXiishoQYaBncEuY5Mp8m+11jRN6ePRp5tRv33qbbg
-         bcjn3ix9iu7lGzF/YxDphwSwsBaUS6xibSeNwr6GtAnjKDEoMCnxrd+sqWMu6yerE3
-         yYfzIDqli0TSQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B4684E2A05C;
-        Sat,  8 Oct 2022 00:28:00 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver changes for 6.1-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Y0BVfL9lPd7jz5/s@kroah.com>
-References: <Y0BVfL9lPd7jz5/s@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Y0BVfL9lPd7jz5/s@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc1
-X-PR-Tracked-Commit-Id: 30963b2f75bfdbbcf1cc5d80bf88fec7aaba808d
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6181073dd6a7e5deafc60e7981bd765b6c93da8c
-Message-Id: <166518888073.15803.6158125558399199781.pr-tracker-bot@kernel.org>
-Date:   Sat, 08 Oct 2022 00:28:00 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BD9AB80BA9;
+        Sat,  8 Oct 2022 20:43:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83C03C433C1;
+        Sat,  8 Oct 2022 20:43:30 +0000 (UTC)
+Date:   Sat, 8 Oct 2022 16:43:26 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: How to trace serial console init during boot-time?
+Message-ID: <20221008164326.00b70ee4@rorschach.local.home>
+In-Reply-To: <9af98779-6964-e971-41ba-667c9cd34e60@molgen.mpg.de>
+References: <9af98779-6964-e971-41ba-667c9cd34e60@molgen.mpg.de>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Fri, 7 Oct 2022 18:36:12 +0200:
+On Fri, 7 Oct 2022 15:30:56 +0200
+Paul Menzel <pmenzel@molgen.mpg.de> wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc1
+> Dear Linux folks,
+> 
+> 
+> I am trying to do boot-time tracing of `univ8250_console_init()`:
+> 
+>      [    0.126636] ftrace: allocating 41793 entries in 164 pages
+>      [    0.132446] ftrace: allocated 164 pages with 3 groups
+>      […]
+>      [    0.167334] calling  con_init+0x0/0x239 @ 0
+>      [    0.170217] Console: colour VGA+ 80x25
+>      [    0.190381] printk: console [tty0] enabled
+>      [    0.190484] initcall con_init+0x0/0x239 returned 0 after 0 usecs
+>      [    0.190487] calling  hvc_console_init+0x0/0x18 @ 0
+>      [    0.190489] initcall hvc_console_init+0x0/0x18 returned 0 after 
+> 0 usecs
+>      [    0.190491] calling  univ8250_console_init+0x0/0x2b @ 0
+>      [    1.488645] printk: console [ttyS0] enabled
+>      [    1.492945] initcall univ8250_console_init+0x0/0x2b returned 0 
+> after 0 usecs
+>      […]
+>      [    1.670397] calling  trace_init_perf_perm_irq_work_exit+0x0/0x17 @ 1
+>      [    1.670399] initcall trace_init_perf_perm_irq_work_exit+0x0/0x17 
+> returned 0 after 0 usecs
+>      […]
+>      [    1.673339] calling  trace_init_flags_sys_enter+0x0/0x13 @ 1
+>      [    1.673342] initcall trace_init_flags_sys_enter+0x0/0x13 
+> returned 0 after 0 usecs
+>      [    1.673344] calling  trace_init_flags_sys_exit+0x0/0x13 @ 1
+>      [    1.673346] initcall trace_init_flags_sys_exit+0x0/0x13 returned 
+> 0 after 0 usecs
+>      [    1.673348] calling  cpu_stop_init+0x0/0x87 @ 1
+>      [    1.673364] initcall cpu_stop_init+0x0/0x87 returned 0 after 0 usecs
+>      [    1.673366] calling  init_kprobes+0x0/0x149 @ 1
+>      [    1.673495] initcall init_kprobes+0x0/0x149 returned 0 after 0 usecs
+>      [    1.673497] calling  init_events+0x0/0x4d @ 1
+>      [    1.673502] initcall init_events+0x0/0x4d returned 0 after 0 usecs
+>      [    1.673504] calling  init_trace_printk+0x0/0xc @ 1
+>      [    1.673505] initcall init_trace_printk+0x0/0xc returned 0 after 
+> 0 usecs
+>      [    1.673507] calling  event_trace_enable_again+0x0/0x23 @ 1
+>      [    1.673508] initcall event_trace_enable_again+0x0/0x23 returned 
+> 0 after 0 usecs
+> 
+> The function `univ8250_console_init()` is not available in 
+> `/sys/kernel/debug/tracing/available_filter_functions`, so I’d like to 
+> trace `univ8250_console_setup()`:
+> 
+>      initcall_debug log_buf_len=32M trace_buf_size=262144K 
+> trace_clock=global 
+> trace_options=nooverwrite,funcgraph-abstime,funcgraph-cpu,funcgraph-duration,funcgraph-proc,funcgraph-tail,nofuncgraph-overhead,context-info,graph-time 
+> ftrace=fun
+> ction_graph ftrace_graph_max_depth=2 
+> ftrace_graph_filter=univ8250_console_setup tp_printk
+> 
+> Unfortunately, `/sys/kernel/debug/tracing/trace` is empty, so I guess 
+> the console happens before ftrace is available?
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6181073dd6a7e5deafc60e7981bd765b6c93da8c
+"function" tracing is enabled by then (I just tested it), but
+"function_graph" is not. Function graph requires trace events enabled,
+but I could see what happens if I do enabled it ;-)
 
-Thank you!
+> 
+> Is there another way to trace the serial console init, without having to 
+> add print statements?
+> 
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Use "ftrace=function" but then you will get everything. You could add a
+"set_filter=<func>:traceoff" to set a trigger that would disable
+tracing, if you can find a function that would be good to stop tracing
+with.
+
+Otherwise, I could take a look to see what it takes to get function
+graph tracing working that early.
+
+-- Steve
