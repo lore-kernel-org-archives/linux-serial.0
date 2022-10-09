@@ -2,293 +2,209 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E09B1C433FE
-	for <linux-serial@archiver.kernel.org>; Sun,  9 Oct 2022 04:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5884DC433F5
+	for <linux-serial@archiver.kernel.org>; Sun,  9 Oct 2022 10:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiJIECl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 9 Oct 2022 00:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        id S229853AbiJIKXS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 9 Oct 2022 06:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiJIECh (ORCPT
+        with ESMTP id S229788AbiJIKXR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 9 Oct 2022 00:02:37 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085D32C67A
-        for <linux-serial@vger.kernel.org>; Sat,  8 Oct 2022 21:02:36 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id a15-20020a6b660f000000b006a0d0794ad1so5513800ioc.6
-        for <linux-serial@vger.kernel.org>; Sat, 08 Oct 2022 21:02:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MjonKB7Cox5ddbxvLzkC7WeBgWTjD7oc5peAzW7M//0=;
-        b=f84NGW2ARujjGKrHwilz+Um0kdsVVisQTCLszgxnNhPNVPMFGFFpo0Nkz+9ffPJn7b
-         +QHVLu40BLCsvnG4OY2ACffhvmMUO+s8tLivdxwSgXaRKpaMBiEjZlGsa6DnZTqF+Zec
-         No3ZMzAZU7L8Ut12xhK9N8+AX868EdQRqTCAO1DOqyFPVY6yMwIGjqsSgLkOZK9McaLD
-         WB8FYpTDBWqKvWzAbpkvquzuH/rn3udGS4RqnDudlv5WTpc2zU+3z5ul74VXRvkn6d7p
-         mSubqa+W2nCS0MVhjyAlVchbZEJ+ozRgkvJXRVKzf3dLrgYgrMVI6muWT9QexCg6YaEp
-         SzOQ==
-X-Gm-Message-State: ACrzQf0Hx+9eoVt3CM7f3anaF9lzy3ZDtSUgEcxERaMtsd0zfd2i21VH
-        xj5TK+HgrwcjlPPlg2mXQ5jtSbFschwvrjp6afc0DXToOrhZ
-X-Google-Smtp-Source: AMsMyM4ai8nRbdvuC9lMSdBEk8gN3El0esCdsNUGDQALcz/rheywJVKMIM5Pic1ueQtM9WMLIaxFE4s44iEVDlQ83buxEo7zzEKl
+        Sun, 9 Oct 2022 06:23:17 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50081.outbound.protection.outlook.com [40.107.5.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE8B2D746;
+        Sun,  9 Oct 2022 03:23:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QcJP6kxsTfU9wkki8w5kQR9dzoaCNjUU0zzpEuiH/tSy10ULfkKs4b20Ws3wsRBoVL0i2Y4h+s/V8gE7D5Rer0yk3sA0wphqrVNpFBrJLSET6kZrbLubXTkTRpMFf12nb/Q35j5G3R6o25P15fT4IvBzFnurARuDRHpccgGlE4INYn1+CNefxvw8eUxajARfx48aeJFwfekot5u2o7et+0CkqEnEirv01NS0DMu1QoyidL4dmi2ahg7oXfN342EhOWInWLaLN77L3dqH6P5TKgC2A8fZjcuE1721XUxp1m/ZXJgwxoKiot4y2tsGQJCN9LPHRScTf4eG+/J0nP1byg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Tx0Equ7osQEaX5u4gzFBsvhxH6P/pWr0VX/tpNlpIPs=;
+ b=DarI8k1PhHUz92GfOnJ6M5Otrrr9exZ5qWvOt0AtnuAbuItNVObhgqsd3wPSBVwLs7LmZfEpb3BE71zdbu+QHdKCulJtM8lI0L8t3GP1sV8QPb/ZQXivUpkY47sIcsHGDRf5CCy+sz2IOtYacxVPRggkrkU6k7/+neVCZTAyrkEsNaQgoun+QYkOALocdUq4NBZGblO3uRIu3sRqVuid6oISSq0ohGRHLCs8NEi6dSVKi5WcQ5e8Chlv14zUbhlqbZiQCLKY0n6nW6z4rISThXgSdZrDpzEmRskuO/YrjiYENqdijL1qNiZcDF4aId1fVIORLrQmHC4yEzho7C9WIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Tx0Equ7osQEaX5u4gzFBsvhxH6P/pWr0VX/tpNlpIPs=;
+ b=VVfVAYvmbHR4TL1phJdPv+xHFQr9zjc5oxHAzVXrYsKio9mK+31UpXL0uNL0g1DQ5ChN9nmX4O81m2qZQJL7u4Ioyj5Wv3bXpm73FAQn7l2O7dwpsjdVC4gNynJLxRSXEoCTCgmwDKNmOG1OMRpq9G/SiSjNEVhxqUl9FynObnM=
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by AS8PR04MB8134.eurprd04.prod.outlook.com (2603:10a6:20b:3f1::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.28; Sun, 9 Oct
+ 2022 10:23:13 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::6a46:130:6b95:645]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::6a46:130:6b95:645%6]) with mapi id 15.20.5676.034; Sun, 9 Oct 2022
+ 10:23:13 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     =?utf-8?B?SWxwbyBKw6RydmluZW4=?= <ilpo.jarvinen@linux.intel.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH] Revert "serial: fsl_lpuart: Reset prior to registration"
+Thread-Topic: [PATCH] Revert "serial: fsl_lpuart: Reset prior to registration"
+Thread-Index: AQHY0+EeaAH9c/DrIUi1YG5YmLZWk632OyYAgAAB3mCAAAXMAIABWEgQgABV9gCADfVVEA==
+Date:   Sun, 9 Oct 2022 10:23:13 +0000
+Message-ID: <AS8PR04MB84047F39CD10C00CEE29213F92219@AS8PR04MB8404.eurprd04.prod.outlook.com>
+References: <20220929085318.5268-1-sherry.sun@nxp.com>
+ <1265873d-28f9-d39c-5cce-858dbed1e8e8@linux.intel.com>
+ <AS8PR04MB84044F397918A3475B5D8D1D92579@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <39c68295-947-2353-d9b-3bd654c38c7@linux.intel.com>
+ <AS8PR04MB8404FAD25C9881FAD2754FB192569@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <b4779edd-200-c7df-4bde-7f434fdefa@linux.intel.com>
+In-Reply-To: <b4779edd-200-c7df-4bde-7f434fdefa@linux.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AS8PR04MB8404:EE_|AS8PR04MB8134:EE_
+x-ms-office365-filtering-correlation-id: a430429d-abcb-42d9-7560-08daa9e045b2
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zUiUMJpwtnGA2TokRrpxYm2uZnKhF2dOacMWUj5SEuAs7ctfIJhpmPBQIrLdXIb8D6cMl9KfPhkkphlgZsBxgfzCVUvjz+/bjmMDJ4WgJeGbk+QHlUZUwaZDM506r95jSDnItk5XSzBKUEDpw7ykGrrTM3Sp1VFx3ikj2BMk53Z2pPQu8FtEk9d9gk+PCnti5eoZ1yuAAW3UU8Ivy1Fs8FI0Jso5T/K+uw7ZhFtWftQ0RFBGmTsMvD1rsHrEumdC8WY1vdZr6QmvkTC0CcYrau0HiFFHcfiAkGKjG6xaTXYau04Dra2ttSW0UzdiTrXdWUj1zrpMC1xeSV5JYoIXofGDmTUMfA+wwfgotRdL3mUxYw36XUWdiEozEpext33jicyGIRwJ/p5WbhHQL4Jzzun3nd1o+fHMxc4+vId6DTVXZeHdnWmoLycwF9AyzaUusgyaNDm2jX4lp8RV+LV4QUrDXVGmaeUzLxxEf/MCoHmNkgpe1SNw4OXu+qXmBsAO/bus6ti1E/QHMUXH39kVRKcRdxD9mA29vkechNU0bJAizOya8PsdggojoxuJAxakbVeMSD4SWsWJFnItRIMogz7mGh5VipDQ7GgUizjD+MBz3DLUXBPZH7oUS72sz6hp7n4hKPFpnOR2Wsbl+w5nJcV9qo1wTAtOqxpthrMR/aGPkmfsApPWuh9E0LEG8J0ROwR2Mw5ybbnhH2pqQTcEWzxU+25A2TpfXRlusvlM7ZHNPSc3aNzf1KuoOlYDH/Clkfhklp6pncFo4qBxpFbNlg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(451199015)(66946007)(4326008)(66446008)(66556008)(66574015)(8676002)(76116006)(38100700002)(44832011)(2906002)(122000001)(64756008)(186003)(41300700001)(66476007)(8936002)(33656002)(9686003)(83380400001)(26005)(52536014)(7696005)(86362001)(55016003)(5660300002)(38070700005)(53546011)(6506007)(71200400001)(478600001)(6916009)(54906003)(316002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RVdndGV1allmNUs3dEZIYW96T2FOeFNKamliaXh2d3dUWWtkeWVwMWJxZWpB?=
+ =?utf-8?B?Ky8yNSt5QnZKRUJ2WVA0bXZBaUgzQTB2NmtQdHJwQTB2cURSTTlTMmVqbStH?=
+ =?utf-8?B?UkxnQ0M5RTVHd2dXUWxvMUZ5Q0Z0OThzYW5zSW96UVozMTF2WnA4UTEySnJD?=
+ =?utf-8?B?WnNEcWU3aHdhU2hFWktHbmpmZTVxMEtqQit0cEExclMyeEpmUEhRU2cwNXBX?=
+ =?utf-8?B?ejJJektFRWNHbVNVU1BOd3JuR0JCSVI4NStKVjl5R2IvWmRLZyttNVJQaGk4?=
+ =?utf-8?B?WVhtbzlXaXJ4NkV5ekpDdzVlSWV0eUl6b3p0c0I5VGRReGZYNlVkY1dhV2R4?=
+ =?utf-8?B?d1FQK0g4aWJQZVB0TlpsOFNkbm5LelNhWlhRL1ZPMy80dE9kVnVhWW5qcXp3?=
+ =?utf-8?B?TmxiZEE1eDd0YnVVcDd5QWw1UEc0UnRBaTB6NnhrVGVjVE92SXN1QTE4cW9p?=
+ =?utf-8?B?SGhHOFBuYllsb2xYeEtjcjdzZ3BjbWJ2V0g0dmdpeVo5ZFNhNDhDU082dTho?=
+ =?utf-8?B?SUp2Q0FuZ2xNaGNDUERVc1dGbDdZd1dyMTdHR1dBNW9OcmNOU2M2UmhRS3Jt?=
+ =?utf-8?B?NDRmeitCVUxreFRvT3VnNlRsb2FjTjhUOW9GTDAwWVVlakJiUmw3L0pyZ2NU?=
+ =?utf-8?B?UEQ0WGFPYXNlMEFjNDlaVGkxWlJndEZzbnp4UkdSM0FaQzMyYlcxelZUMG04?=
+ =?utf-8?B?UzZ2K0t3T1VsSGt4RDZ3QnZpN21rbUpGRWhIbkY3ZWQ2WXN6SEE4ci9DVmpk?=
+ =?utf-8?B?R0dCSWFVd3pXNCs0bXBvYmFwODJ4ZUt3UmR2U2pOZFYrQjBRODdPR2pKRlY2?=
+ =?utf-8?B?eGdQa1Q1c21VMXBCcXZ3UTZZaXpvd0tEVDkyTkVYcDhIaDM4Nm10MDlDdTlN?=
+ =?utf-8?B?bFdNQkNXY1ZzamlSVHpkRWpSczUvM1hZQUxiYU1nRkxuYkFEcDBpYkt2WnpQ?=
+ =?utf-8?B?aVcrczNCWHdDRU9mZnBzemlESUdCbFV2WjlXcmhzZTFpcnlJL1RLekZOYWxx?=
+ =?utf-8?B?ZWNiQUl4SUhWQTZSaDIxU25ESnlLZnpMNVJMZUxPak15aE1TMFRtcEhpU0F6?=
+ =?utf-8?B?bmRrTWJ5V3RxdEVTT3A1T2JlYktwTFVNUS9MVXZpRDhvRXJQVWtLZkFsa3lm?=
+ =?utf-8?B?VWRNeU0yVDZ6WEx3dzR4NFRPRHpjTnlKSE14ZDlTVnpYMEdmSUFzMlBWWVNT?=
+ =?utf-8?B?emdpeVBqTHlRaElIT25XSnF3dDg2blVQejI3S1R0TkJKRFEvUWxUeEl0WXZ1?=
+ =?utf-8?B?dW1sQnJRNW4rSzJkdGVuaWtkYzExaG51V3duUU91a0NTS24xcnF0Y1Z1bVc5?=
+ =?utf-8?B?Y1JWVEVMdGdYT09UZmtid0dSVWlzUUZOb3J2aVorV2pMMUltN3h5UFpTMnpS?=
+ =?utf-8?B?amd3aURma0wvQlZXcU5GZCthYkE1bVZPQ1ZzdXZ0MzBmUmFOd2I5WFdMYlVS?=
+ =?utf-8?B?Q2FENXhiekRIT3Y3MHJNMDV1U0QwL09RK0x4bGx5M3ZIVm9PM2Z3Tjd5MjlX?=
+ =?utf-8?B?dk9MUU1nSXFka3hEUmVTdFhKUllia0prQ3lINmhCZVY3b1l5TXBYNG1weVk4?=
+ =?utf-8?B?dWJQRU9Vd1RSUE5wdU15OWVyZXpkYWxtYWRZTkJIbUxWTzdFMFBLSmp4U3Q0?=
+ =?utf-8?B?WUMrME16VW4vV1kyZTVKTlBEOCtiekd6bitFZyt6ZlpuZkhGRnV1WTJ6bmNK?=
+ =?utf-8?B?d3NrVlZBK3NVeGV5c1lHM2Y0TmtJUjB3elZYMS91ZzZIWmtNdUE1Y1hIWW1Q?=
+ =?utf-8?B?WU8yR05VMjd3VG5TcWxMc2NZanJBN0VZeFV3Y1BCYWFNU3ZnbnFnRnJvY2Fm?=
+ =?utf-8?B?ZlJoSHlmZmJuNGhuK1dqZFd0UVJCMWdwbnhzMmFmMVYxaHBjQ2NBcFNEdFdL?=
+ =?utf-8?B?RmFSRFdJamY5NU13R3dXNVAzNzZGWW1zNFgzenFEMzhtSGVNbHNqeHRzQjNJ?=
+ =?utf-8?B?YTZvTjgyelB6TXdOVFYzMDluVHhmUHBqRmJNeWdZaE8vVjlURUdoTTUrUE5w?=
+ =?utf-8?B?bDJTenppTFFpN1NYMjVoc3NTa1dOZXY5NUg2c2hzTmNvQklmRStNWUdPeXBG?=
+ =?utf-8?B?clF1OWE2bGpaN1Bmb2c2cGRxd0ZmaWZ5dWJ2N1JISXZpa0VxSXJZcVZ1akpS?=
+ =?utf-8?Q?aDfYhDeuzEeK5lZAW3IZDW3TI?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a92:c8d0:0:b0:2f9:a4b6:3856 with SMTP id
- c16-20020a92c8d0000000b002f9a4b63856mr5993044ilq.231.1665288154847; Sat, 08
- Oct 2022 21:02:34 -0700 (PDT)
-Date:   Sat, 08 Oct 2022 21:02:34 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000eb1e9405ea921c80@google.com>
-Subject: [syzbot] possible deadlock in __queue_work (3)
-From:   syzbot <syzbot+4f8fc6e7d55c70fcd959@syzkaller.appspotmail.com>
-To:     andy.shevchenko@gmail.com, etremblay@distech-controls.com,
-        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
-        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a430429d-abcb-42d9-7560-08daa9e045b2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2022 10:23:13.3125
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jNgUcPeUE0pghi5szJA2psvwH82VuZI6/H0KwxmEdiRMQRy59Kl+OMBkN4lbJi08PvpAXkLZpABXZUV5R4xs9A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8134
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    0326074ff465 Merge tag 'net-next-6.1' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11b815b8880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=74aee1ba981d846
-dashboard link: https://syzkaller.appspot.com/bug?extid=4f8fc6e7d55c70fcd959
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4f8fc6e7d55c70fcd959@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-6.0.0-syzkaller-02734-g0326074ff465 #0 Not tainted
-------------------------------------------------------
-kworker/3:18/4289 is trying to acquire lock:
-ffff88802c839898 (&pool->lock){-.-.}-{2:2}, at: __queue_work+0x216/0x1200 kernel/workqueue.c:1462
-
-but task is already holding lock:
-ffff888000932528 (&tty->write_wait){-.-.}-{2:2}, at: __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:136
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #4 (&tty->write_wait){-.-.}-{2:2}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
-       __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:136
-       tty_port_default_wakeup+0x26/0x40 drivers/tty/tty_port.c:71
-       serial8250_tx_chars+0x4f6/0xd90 drivers/tty/serial/8250/8250_port.c:1851
-       serial8250_handle_irq.part.0+0x440/0x820 drivers/tty/serial/8250/8250_port.c:1938
-       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1911 [inline]
-       serial8250_default_handle_irq+0xb2/0x220 drivers/tty/serial/8250/8250_port.c:1958
-       serial8250_interrupt+0xf8/0x200 drivers/tty/serial/8250/8250_core.c:126
-       __handle_irq_event_percpu+0x227/0x870 kernel/irq/handle.c:158
-       handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
-       handle_irq_event+0xa7/0x1e0 kernel/irq/handle.c:210
-       handle_edge_irq+0x25f/0xd00 kernel/irq/chip.c:819
-       generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
-       handle_irq arch/x86/kernel/irq.c:231 [inline]
-       __common_interrupt+0x9d/0x210 arch/x86/kernel/irq.c:250
-       common_interrupt+0xa4/0xc0 arch/x86/kernel/irq.c:240
-       asm_common_interrupt+0x22/0x40 arch/x86/include/asm/idtentry.h:640
-       native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
-       arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
-       default_idle+0xb/0x10 arch/x86/kernel/process.c:730
-       default_idle_call+0x80/0xc0 kernel/sched/idle.c:109
-       cpuidle_idle_call kernel/sched/idle.c:191 [inline]
-       do_idle+0x401/0x590 kernel/sched/idle.c:303
-       cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:400
-       start_secondary+0x21d/0x2b0 arch/x86/kernel/smpboot.c:262
-       secondary_startup_64_no_verify+0xce/0xdb
-
--> #3 (&port_lock_key){-.-.}-{2:2}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
-       serial8250_console_write+0x975/0xfe0 drivers/tty/serial/8250/8250_port.c:3380
-       call_console_driver kernel/printk/printk.c:1945 [inline]
-       console_emit_next_record.constprop.0+0x3de/0x840 kernel/printk/printk.c:2732
-       console_flush_all kernel/printk/printk.c:2794 [inline]
-       console_unlock+0x37a/0x5a0 kernel/printk/printk.c:2861
-       vprintk_emit+0x1b9/0x5f0 kernel/printk/printk.c:2271
-       vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
-       _printk+0xba/0xed kernel/printk/printk.c:2292
-       register_console kernel/printk/printk.c:3212 [inline]
-       register_console+0x482/0x840 kernel/printk/printk.c:3104
-       univ8250_console_init+0x3a/0x46 drivers/tty/serial/8250/8250_core.c:681
-       console_init+0x3b7/0x57e kernel/printk/printk.c:3308
-       start_kernel+0x2fa/0x48f init/main.c:1066
-       secondary_startup_64_no_verify+0xce/0xdb
-
--> #2 (console_owner){....}-{0:0}:
-       console_lock_spinning_enable kernel/printk/printk.c:1808 [inline]
-       console_emit_next_record.constprop.0+0x2dd/0x840 kernel/printk/printk.c:2729
-       console_flush_all kernel/printk/printk.c:2794 [inline]
-       console_unlock+0x37a/0x5a0 kernel/printk/printk.c:2861
-       vprintk_emit+0x1b9/0x5f0 kernel/printk/printk.c:2271
-       vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
-       _printk+0xba/0xed kernel/printk/printk.c:2292
-       build_zonelists.cold+0xe5/0x11f mm/page_alloc.c:6471
-       __build_all_zonelists+0x122/0x180 mm/page_alloc.c:6584
-       build_all_zonelists_init+0x2f/0x104 mm/page_alloc.c:6609
-       build_all_zonelists+0x11f/0x140 mm/page_alloc.c:6642
-       start_kernel+0xb9/0x48f init/main.c:960
-       secondary_startup_64_no_verify+0xce/0xdb
-
--> #1 (zonelist_update_seq.seqcount){...-}-{0:0}:
-       seqcount_lockdep_reader_access include/linux/seqlock.h:102 [inline]
-       read_seqbegin include/linux/seqlock.h:836 [inline]
-       zonelist_iter_begin mm/page_alloc.c:4722 [inline]
-       __alloc_pages_slowpath.constprop.0+0x1a5/0x2300 mm/page_alloc.c:5044
-       __alloc_pages+0x43d/0x510 mm/page_alloc.c:5562
-       __alloc_pages_node include/linux/gfp.h:243 [inline]
-       kmem_getpages mm/slab.c:1363 [inline]
-       cache_grow_begin+0x75/0x360 mm/slab.c:2569
-       cache_alloc_refill+0x27f/0x380 mm/slab.c:2942
-       ____cache_alloc mm/slab.c:3018 [inline]
-       ____cache_alloc mm/slab.c:3001 [inline]
-       __do_cache_alloc mm/slab.c:3246 [inline]
-       slab_alloc mm/slab.c:3287 [inline]
-       __kmem_cache_alloc_lru mm/slab.c:3471 [inline]
-       kmem_cache_alloc+0x433/0x520 mm/slab.c:3491
-       kmem_cache_zalloc include/linux/slab.h:723 [inline]
-       fill_pool+0x264/0x5c0 lib/debugobjects.c:168
-       __debug_object_init+0x7a/0xd10 lib/debugobjects.c:562
-       debug_object_init lib/debugobjects.c:617 [inline]
-       debug_object_activate+0x32c/0x3e0 lib/debugobjects.c:703
-       debug_work_activate kernel/workqueue.c:510 [inline]
-       __queue_work+0x614/0x1200 kernel/workqueue.c:1516
-       queue_work_on+0xee/0x110 kernel/workqueue.c:1545
-       queue_work include/linux/workqueue.h:503 [inline]
-       schedule_work include/linux/workqueue.h:564 [inline]
-       key_put.part.0+0x95/0xd0 security/keys/key.c:653
-       key_put+0x1b/0x30 security/keys/key.c:649
-       put_cred_rcu+0x19a/0x520 kernel/cred.c:118
-       rcu_do_batch kernel/rcu/tree.c:2248 [inline]
-       rcu_core+0x7b5/0x1890 kernel/rcu/tree.c:2508
-       __do_softirq+0x1d0/0x9c8 kernel/softirq.c:571
-       invoke_softirq kernel/softirq.c:445 [inline]
-       __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
-       irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
-       sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1107
-       asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-       jbd2_journal_write_revoke_records+0x7cc/0xb20 fs/jbd2/revoke.c:548
-       jbd2_journal_commit_transaction+0x13cc/0x6a30 fs/jbd2/commit.c:587
-       kjournald2+0x1d0/0x930 fs/jbd2/journal.c:210
-       kthread+0x2e4/0x3a0 kernel/kthread.c:376
-       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
--> #0 (&pool->lock){-.-.}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:3095 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
-       validate_chain kernel/locking/lockdep.c:3829 [inline]
-       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
-       lock_acquire kernel/locking/lockdep.c:5666 [inline]
-       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
-       __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
-       _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
-       __queue_work+0x216/0x1200 kernel/workqueue.c:1462
-       queue_work_on+0xee/0x110 kernel/workqueue.c:1545
-       queue_work include/linux/workqueue.h:503 [inline]
-       schedule_work include/linux/workqueue.h:564 [inline]
-       p9_pollwake+0xbd/0x1c0 net/9p/trans_fd.c:535
-       __wake_up_common+0x147/0x650 kernel/sched/wait.c:107
-       __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:137
-       tty_write_unlock drivers/tty/tty_io.c:945 [inline]
-       do_tty_write drivers/tty/tty_io.c:1049 [inline]
-       file_tty_write.constprop.0+0x54c/0x8f0 drivers/tty/tty_io.c:1095
-       __kernel_write_iter+0x25e/0x730 fs/read_write.c:517
-       __kernel_write fs/read_write.c:537 [inline]
-       kernel_write fs/read_write.c:558 [inline]
-       kernel_write+0x1bd/0x630 fs/read_write.c:548
-       p9_fd_write net/9p/trans_fd.c:429 [inline]
-       p9_write_work+0x25e/0xce0 net/9p/trans_fd.c:480
-       process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-       kthread+0x2e4/0x3a0 kernel/kthread.c:376
-       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
-other info that might help us debug this:
-
-Chain exists of:
-  &pool->lock --> &port_lock_key --> &tty->write_wait
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&tty->write_wait);
-                               lock(&port_lock_key);
-                               lock(&tty->write_wait);
-  lock(&pool->lock);
-
- *** DEADLOCK ***
-
-5 locks held by kworker/3:18/4289:
- #0: ffff888011867d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888011867d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888011867d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888011867d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888011867d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888011867d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc9000201fda8 ((work_completion)(&m->wq)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888000932098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
- #3: ffff888000932528 (&tty->write_wait){-.-.}-{2:2}, at: __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:136
- #4: ffffffff8bf83940 (rcu_read_lock){....}-{1:2}, at: __queue_work+0xca/0x1200 kernel/workqueue.c:1437
-
-stack backtrace:
-CPU: 3 PID: 4289 Comm: kworker/3:18 Not tainted 6.0.0-syzkaller-02734-g0326074ff465 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: events p9_write_work
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
- check_prev_add kernel/locking/lockdep.c:3095 [inline]
- check_prevs_add kernel/locking/lockdep.c:3214 [inline]
- validate_chain kernel/locking/lockdep.c:3829 [inline]
- __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
- __queue_work+0x216/0x1200 kernel/workqueue.c:1462
- queue_work_on+0xee/0x110 kernel/workqueue.c:1545
- queue_work include/linux/workqueue.h:503 [inline]
- schedule_work include/linux/workqueue.h:564 [inline]
- p9_pollwake+0xbd/0x1c0 net/9p/trans_fd.c:535
- __wake_up_common+0x147/0x650 kernel/sched/wait.c:107
- __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:137
- tty_write_unlock drivers/tty/tty_io.c:945 [inline]
- do_tty_write drivers/tty/tty_io.c:1049 [inline]
- file_tty_write.constprop.0+0x54c/0x8f0 drivers/tty/tty_io.c:1095
- __kernel_write_iter+0x25e/0x730 fs/read_write.c:517
- __kernel_write fs/read_write.c:537 [inline]
- kernel_write fs/read_write.c:558 [inline]
- kernel_write+0x1bd/0x630 fs/read_write.c:548
- p9_fd_write net/9p/trans_fd.c:429 [inline]
- p9_write_work+0x25e/0xce0 net/9p/trans_fd.c:480
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSWxwbyBKw6RydmluZW4g
+PGlscG8uamFydmluZW5AbGludXguaW50ZWwuY29tPg0KPiBTZW50OiAyMDIy5bm0OeaciDMw5pel
+IDIwOjU5DQo+IFRvOiBTaGVycnkgU3VuIDxzaGVycnkuc3VuQG54cC5jb20+DQo+IENjOiBHcmVn
+IEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPjsgSmlyaSBTbGFieQ0K
+PiA8amlyaXNsYWJ5QGtlcm5lbC5vcmc+OyBMdWthcyBXdW5uZXIgPGx1a2FzQHd1bm5lci5kZT47
+IGxpbnV4LXNlcmlhbA0KPiA8bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZz47IExLTUwgPGxp
+bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyBkbC0NCj4gbGludXgtaW14IDxsaW51eC1pbXhA
+bnhwLmNvbT4NCj4gU3ViamVjdDogUkU6IFtQQVRDSF0gUmV2ZXJ0ICJzZXJpYWw6IGZzbF9scHVh
+cnQ6IFJlc2V0IHByaW9yIHRvIHJlZ2lzdHJhdGlvbiINCj4gDQo+IE9uIEZyaSwgMzAgU2VwIDIw
+MjIsIFNoZXJyeSBTdW4gd3JvdGU6DQo+ID4gPiBPbiBUaHUsIDI5IFNlcCAyMDIyLCBTaGVycnkg
+U3VuIHdyb3RlOg0KPiA+ID4NCj4gPiA+ID4gPiA+IFRoaXMgcmV2ZXJ0cyBjb21taXQgNjBmMzYx
+NzIyYWQyYWU1ZWU2NjdkMGIwNTQ1ZDQwYzQyZjc1NGRhZi4NCj4gPiA+ID4gPiA+DQo+ID4gPiA+
+ID4gPiBjb21taXQgNjBmMzYxNzIyYWQyICgic2VyaWFsOiBmc2xfbHB1YXJ0OiBSZXNldCBwcmlv
+ciB0bw0KPiA+ID4gPiA+ID4gcmVnaXN0cmF0aW9uIikgY2F1c2VzIHRoZSBscHVhcnQgY29uc29s
+ZSBjYW5ub3Qgd29yayBhbnkgbW9yZS4NCj4gPiA+ID4gPiA+IFNpbmNlIHRoZSBjb25zb2xlIGlz
+IHJlZ2lzdGVyZWQgaW4gdGhlIHVhcnRfYWRkX29uZV9wb3J0KCksDQo+ID4gPiA+ID4gPiB0aGUg
+ZHJpdmVyIGNhbm5vdCBpZGVudGlmeSB0aGUgY29uc29sZSBwb3J0IGJlZm9yZSBjYWxsDQo+ID4g
+PiA+ID4gPiB1YXJ0X2FkZF9vbmVfcG9ydCgpLCB3aGljaCBjYXVzZXMgYWxsIHRoZSB1YXJ0IHBv
+cnRzIGluY2x1ZGluZw0KPiA+ID4gPiA+ID4gdGhlIGNvbnNvbGUgcG9ydCB3aWxsIGJlIGdsb2Jh
+bA0KPiA+ID4gPiA+IHJlc2V0Lg0KPiA+ID4gPiA+ID4gU28gbmVlZCB0byByZXZlcnQgdGhpcyBw
+YXRjaCB0byBhdm9pZCBicmVha2luZyB0aGUgbHB1YXJ0IGNvbnNvbGUuDQo+ID4gPiA+ID4gPg0K
+PiA+ID4gPiA+ID4gU2lnbmVkLW9mZi1ieTogU2hlcnJ5IFN1biA8c2hlcnJ5LnN1bkBueHAuY29t
+Pg0KPiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiAgZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9s
+cHVhcnQuYyB8IDEwICsrKysrLS0tLS0NCj4gPiA+ID4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgNSBp
+bnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygtKQ0KPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+IGRp
+ZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jDQo+ID4gPiA+ID4gPiBi
+L2RyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgaW5kZXgNCj4gPiA+ID4gPiA+IDY3ZmEx
+MTNmNzdkNC4uN2RhNDY1NTdmY2IzDQo+ID4gPiA+ID4gPiAxMDA2NDQNCj4gPiA+ID4gPiA+IC0t
+LSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMNCj4gPiA+ID4gPiA+ICsrKyBiL2Ry
+aXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMNCj4gPiA+ID4gPiA+IEBAIC0yNzIyLDEwICsy
+NzIyLDYgQEAgc3RhdGljIGludCBscHVhcnRfcHJvYmUoc3RydWN0DQo+ID4gPiA+ID4gPiBwbGF0
+Zm9ybV9kZXZpY2UNCj4gPiA+ID4gPiAqcGRldikNCj4gPiA+ID4gPiA+ICAJCWhhbmRsZXIgPSBs
+cHVhcnRfaW50Ow0KPiA+ID4gPiA+ID4gIAl9DQo+ID4gPiA+ID4gPg0KPiA+ID4gPiA+ID4gLQly
+ZXQgPSBscHVhcnRfZ2xvYmFsX3Jlc2V0KHNwb3J0KTsNCj4gPiA+ID4gPiA+IC0JaWYgKHJldCkN
+Cj4gPiA+ID4gPiA+IC0JCWdvdG8gZmFpbGVkX3Jlc2V0Ow0KPiA+ID4gPiA+ID4gLQ0KPiA+ID4g
+PiA+DQo+ID4gPiA+ID4gU28gdGhlIHByb2JsZW0gd2l0aCB0aGlzIGJlaW5nIHNvIGVhcmx5IGlz
+IHVhcnRfY29uc29sZSgpIGluDQo+ID4gPiA+ID4gbHB1YXJ0X2dsb2JhbF9yZXNldCgpIHRoYXQg
+ZG9lc24ndCBkZXRlY3QgYSBjb25zb2xlIGJlY2F1c2UNCj4gPiA+ID4gPiBzcG9ydC0+Y29ucyBp
+cyBub3QgeWV0IGFzc2lnbmVkPyBDb3VsZG4ndCB0aGF0IGJlIHdvcmtlZCBhcm91bmQNCj4gPiA+
+IGRpZmZlcmVudGx5Pw0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gT3IgaXMgdGhlcmUgc29tZXRoaW5n
+IGVsc2UgaW4gYWRkaXRpb24gdG8gdGhhdCBJJ20gbWlzc2luZz8NCj4gPiA+ID4gPg0KPiA+ID4g
+PiBIaSBJbHBvLA0KPiA+ID4gPg0KPiA+ID4gPiBZZXMsIHRoZSByb290IGNhdXNlIG9mIHRoZSBj
+b25zb2xlIGNhbm5vdCB3b3JrIGFmdGVyIGFwcGx5IHRoZQ0KPiA+ID4gPiBjb21taXQNCj4gPiA+
+ID4gNjBmMzYxNzIyYWQyICgic2VyaWFsOiBmc2xfbHB1YXJ0OiBSZXNldCBwcmlvciB0byByZWdp
+c3RyYXRpb24iKQ0KPiA+ID4gPiBpcw0KPiA+ID4gPiBscHVhcnRfZ2xvYmFsX3Jlc2V0KCkgY2Fu
+bm90IGlkZW50aWZ5IHRoZSBjb25zb2xlIHBvcnQsIHNvIHJlc2V0DQo+ID4gPiA+IGFsbCB1YXJ0
+IHBvcnRzLg0KPiA+ID4NCj4gPiA+IFRoaXMgZGlkbid0IGFuc3dlciBteSBxdWVzdGlvbi4gSXMg
+dGhlIG1haW4gY2F1c2UganVzdCBsYWNraW5nIHRoZQ0KPiA+ID4gLT5jb25zIGZyb20gc3BvcnQg
+YXQgdGhpcyBwb2ludCB3aGljaCwgSSBndWVzcywgY291bGQgYmUganVzdA0KPiA+ID4gYXNzaWdu
+ZWQgZnJvbSBscHVhcnRfcmVnIHNpbWlsYXIgdG8gd2hhdCB1YXJ0X2FkZF9vbmVfcG9ydCgpIGRv
+ZXMNCj4gYmVmb3JlIGNhbGxpbmcgdG8gcmVzZXQ/DQo+ID4gPg0KPiA+DQo+ID4gSGkgSWxwbywN
+Cj4gPg0KPiA+IEFjdHVhbGx5IG5vdCBvbmx5IHRoZSAocG9ydCktPmNvbnMgbmVlZCB0byBiZSBh
+c3NpZ25lZCwgYnV0IGFsc28gdG8gZ2V0IHRoZQ0KPiByaWdodCAocG9ydCktPmNvbnMtPmluZGV4
+Lg0KPiA+IDIzICNkZWZpbmUgdWFydF9jb25zb2xlKHBvcnQpIFwNCj4gPiAyNCAgICAgKChwb3J0
+KS0+Y29ucyAmJiAocG9ydCktPmNvbnMtPmluZGV4ID09IChwb3J0KS0+bGluZSkNCj4gPg0KPiA+
+IFRoZSAocG9ydCktPmNvbnMgaXMgYXNzaWduZWQgaW4gdWFydF9hZGRfb25lX3BvcnQoKSwgcXVp
+dGUgc2ltcGxlLg0KPiA+IDMwNzYgICAgIHVwb3J0LT5jb25zID0gZHJ2LT5jb25zOw0KPiA+DQo+
+ID4gQnV0IHRoZSAocG9ydCktPmNvbnMtPmluZGV4IGlzIG5vdCB0aGF0IGVhc3kgdG8gZ2V0IGlu
+IGxwdWFydCBkcml2ZXIsDQo+ID4gbm93IHRoZSB2YWx1ZSBpcyBhc3NpZ25lZCBieSBjYWxsaW5n
+IHJlZ2lzdGVyX2NvbnNvbGUoKSBmcm9tDQo+ID4gdWFydF9jb25maWd1cmVfcG9ydCgpLg0KPiAN
+Cj4gSSd2ZSBzb21lIHNrZXB0aWNpc20gdG8gdGhpcyBjbGFpbS4gSSBub3cgcGxheWVkIHdpdGgg
+ODI1MCBteXNlbGYgYW5kDQo+IGNvbmZpcm1lZCBpdCBkb2VzIGhhdmUgbm9uLU5VTEwgLT5jb25z
+IGZvciB0aGUgY29uc29sZSBwb3J0cyBiZWZvcmUgdG8gY2FsbHMNCj4gdG8gdWFydF9hZGRfb25l
+X3BvcnQoKSBhbmQgaW5kZXggaXMgc2V0dXAgdXAgY29ycmVjdGx5IGZvciBjb25zIHRvbyENCj4g
+DQo+IFRoZSByZWFzb24gZm9yIHRoZSBjb25zIGJlaW5nIHNldHVwIGlzIHRoaXMgYmVpbmcgZG9u
+ZSBpbg0KPiB1bml2ODI1MF9jb25zb2xlX3NldHVwKCk6DQo+IA0KPiAJLyogbGluayBwb3J0IHRv
+IGNvbnNvbGUgKi8NCj4gCXBvcnQtPmNvbnMgPSBjbzsNCj4gDQo+ICh3aGljaCBJIHRoaW5rIGNv
+dWxkIGJlIGVhc2lseSBiZSBkb25lIGluIGxwdWFydF9jb25zb2xlX3NldHVwKCkgdG9vKS4NCg0K
+SGkgSWxwbywNCg0KSSBhbSBub3QgZmFtaWxpYXIgd2l0aCA4MjUwIHNlcmlhbCwgYnV0IGF0IGxl
+YXN0IGZvciBpbXggdWFydCBkcml2ZXIgYW5kIGxwdWFydCBkcml2ZXIsIHRoZSBmb2xsb3dpbmcg
+YmVoYXZpb3IgaXMgc2FtZS4NCkZvciB0aGUgInJlYWwiIGNvbnNvbGVzIChldmVyeXRoaW5nIHdo
+aWNoIGlzIG5vdCBhIGJvb3Rjb25zb2xlKSwgdGhlIChwb3J0KS0+Y29ucyBhbmQgKHBvcnQpLT5j
+b25zLT5pbmRleCBhcmUgaW5pdGlhbGl6ZWQgdGhyb3VnaCB1YXJ0X2FkZF9vbmVfcG9ydCgpLT51
+YXJ0X2NvbmZpZ3VyZV9wb3J0KCktPnJlZ2lzdGVyX2NvbnNvbGUoKS0+dHJ5X2VuYWJsZV9uZXdf
+Y29uc29sZSgpLCBoZXJlIHRoZSBjb25zb2xlIGluZGV4IGlzIGFzc2lnbmVkIGJ5IHRoZSBjb25z
+b2xlIGNtZGxpbmUgcGFyYW1ldGVycy4NCg0KSSBhbHNvIHRyaWVkIHRoZSBzYW1lIHdheSBvZiA4
+MjUwLCBpdCBkb2Vzbid0IHdvcmssIGxwdWFydCBjb25zb2xlIHN0aWxsIGNhbm5vdCB3b3JrLCBh
+cyB0aGUgbHB1YXJ0X2NvbnNvbGVfc2V0dXAoKSBpcyBvbmx5IGNhbGxlZCB0aHJvdWdoIHVhcnRf
+YWRkX29uZV9wb3J0KCkgYWZ0ZXIgdGhlIGNvbnNvbGUgaW5kZXggaXMgaW5pdGlhbGl6ZWQsIHRv
+IHNldHVwIHRoZSAicmVhbCIgY29uc29sZXMuDQo+IAkvKiBsaW5rIHBvcnQgdG8gY29uc29sZSAq
+Lw0KPiAJcG9ydC0+Y29ucyA9IGNvOw0KDQpCZXN0IFJlZ2FyZHMNClNoZXJyeQ0KDQoNCg==
