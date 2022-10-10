@@ -2,82 +2,113 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406ADC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 09:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C79C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 11:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231627AbiJJJJg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Oct 2022 05:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
+        id S231690AbiJJLHE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Oct 2022 07:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231637AbiJJJJe (ORCPT
+        with ESMTP id S230294AbiJJLHE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Oct 2022 05:09:34 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2211C543F2;
-        Mon, 10 Oct 2022 02:09:34 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id F26D3100E5F31;
-        Mon, 10 Oct 2022 11:09:30 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id CB85D60DC1; Mon, 10 Oct 2022 11:09:30 +0200 (CEST)
-Date:   Mon, 10 Oct 2022 11:09:30 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] Revert "serial: fsl_lpuart: Reset prior to registration"
-Message-ID: <20221010090930.GA23968@wunner.de>
-References: <20220929085318.5268-1-sherry.sun@nxp.com>
- <1265873d-28f9-d39c-5cce-858dbed1e8e8@linux.intel.com>
- <AS8PR04MB84044F397918A3475B5D8D1D92579@AS8PR04MB8404.eurprd04.prod.outlook.com>
- <39c68295-947-2353-d9b-3bd654c38c7@linux.intel.com>
- <AS8PR04MB8404FAD25C9881FAD2754FB192569@AS8PR04MB8404.eurprd04.prod.outlook.com>
- <b4779edd-200-c7df-4bde-7f434fdefa@linux.intel.com>
- <AS8PR04MB84047F39CD10C00CEE29213F92219@AS8PR04MB8404.eurprd04.prod.outlook.com>
+        Mon, 10 Oct 2022 07:07:04 -0400
+Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51A65D124
+        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 04:07:01 -0700 (PDT)
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+        by gw.atmark-techno.com (Postfix) with ESMTPS id 736FB60105
+        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 20:07:00 +0900 (JST)
+Received: by mail-pg1-f197.google.com with SMTP id k64-20020a638443000000b004620970e0dbso1349879pgd.6
+        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 04:07:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6kaXrUY3ds3NT80yBeO+dgFMn3QrJP1rbt9Y4guB0fU=;
+        b=qLDLljq8JVX0a3ObANhPALIpNeu/+pbjGOk+fA6Fd2CY9xJb2N/7pfKnGdW7yxsIuo
+         hmtknBSmP6tv2lCpDghxALBUhVcIuSver6vb0BCWNbAk7j9R1z2oZAK+LZGhKYYNVvgx
+         49gd8kJTb/Uzq0l0eBa86j1LqNiIQPTJw5f0UG2GMF5rs3GPNqGVcARXLmj0MWi18RA+
+         jzRtyp4BjNRiU0FU3Pmf27lXJkIkUYzgtfjkufUa1fItadtK47Ckiq5k7gJtqDhVIPA7
+         C2d03uBvPQASRX2gPjUBgXuQcTdCFLd5mwJVmtG9mR5281WoW6RAs2gvNztIpCdH99gK
+         b81A==
+X-Gm-Message-State: ACrzQf3ERLrfT1G0UQJtxLh9j22qjxT53ng6ckpDAndN94eslrQq6C9a
+        ntKZqSm4S6DguNsvsGZqu3qVhfpCDgx0PtMpPs/qrJRU3fcALaeRUv2rvMwCPDshSyKHjbz+WS3
+        cxTZeSdKIlhJcG6UEQpa/XcAljp34
+X-Received: by 2002:a17:90a:4e48:b0:209:a883:7f45 with SMTP id t8-20020a17090a4e4800b00209a8837f45mr30957429pjl.106.1665400019463;
+        Mon, 10 Oct 2022 04:06:59 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5G4l8W/f4N1dU2rep4UW9rNCshL05qc75JiwYwqqkanqV4pUPmLY9S5B35hpMChnd5mm4YDg==
+X-Received: by 2002:a17:90a:4e48:b0:209:a883:7f45 with SMTP id t8-20020a17090a4e4800b00209a8837f45mr30957408pjl.106.1665400019198;
+        Mon, 10 Oct 2022 04:06:59 -0700 (PDT)
+Received: from pc-zest.atmarktech (145.82.198.104.bc.googleusercontent.com. [104.198.82.145])
+        by smtp.gmail.com with ESMTPSA id nm12-20020a17090b19cc00b0020a9af6bb1asm5907067pjb.32.2022.10.10.04.06.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Oct 2022 04:06:58 -0700 (PDT)
+Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
+        (envelope-from <martinet@pc-zest>)
+        id 1ohqca-008nSX-06;
+        Mon, 10 Oct 2022 20:06:56 +0900
+Date:   Mon, 10 Oct 2022 20:06:46 +0900
+From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v4] serial: Deassert Transmit Enable on probe in
+ driver-specific way
+Message-ID: <Y0P8xle/cw3cRkGv@atmark-techno.com>
+References: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
+ <Y0O46rcQap99fZVC@atmark-techno.com>
+ <20221010085305.GA32599@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <AS8PR04MB84047F39CD10C00CEE29213F92219@AS8PR04MB8404.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20221010085305.GA32599@wunner.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Oct 09, 2022 at 10:23:13AM +0000, Sherry Sun wrote:
-> I am not familiar with 8250 serial, but at least for imx uart driver
-> and lpuart driver, the following behavior is same.
-> For the "real" consoles (everything which is not a bootconsole),
-> the (port)->cons and (port)->cons->index are initialized through
-> uart_add_one_port()->uart_configure_port()->register_console()->
-> try_enable_new_console(), here the console index is assigned by
-> the console cmdline parameters.
+Lukas Wunner wrote on Mon, Oct 10, 2022 at 10:53:05AM +0200:
+> > Unfortunately you've marked this for v4.14+ stable, but it doesn't even
+> > apply to 5.19.14
+> [...]
+> > What would you like to do for stable branches?
+> > Would you be able to send a patch that applies on older 5.10 and 5.15
+> > where commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart
+> > open") has been backported?
+> 
+> Greg will try to apply it to stable kernels (probably after the merge
+> window closes) and send an e-mail that it failed.  I was going to wait
+> for that to happen and then look into backporting the patch.
 
-Hm, uart_add_one_port() does the following *before* calling
-uart_configure_port():
+Ah, sorry for rushing you here -- I got tricked by the git committer
+date but that doesn't mean the merge commit was that old, I hadn't
+noticed this just got in.
 
-	/*
-	 * If this port is in use as a console then the spinlock is already
-	 * initialised.
-	 */
-	if (!uart_console_enabled(uport))
-		uart_port_spin_lock_init(uport);
+> Basically what needs to be done is replace calls to uart_rs485_config()
+> with a direct invocation of port->rs485_config().  Plus carefully checking
+> that nothing is missing or breaks.  That's probably simpler than just
+> backporting additional patches or reverting stuff.  If you want to take
+> a stab at it, go ahead. :)
 
-It sounds like in the case of fsl_lpuart.c, the spin lock is *always*
-initialized, even though a concurrent lpuart_console_write() may be
-holding it.  That's not solved by moving lpuart_global_reset() around.
+The only hardware I have is ims and your patch touches at quite a few of
+the drivers, I'm not really in a good position to check anything there
+but I can give it a stab tomorrow or Wed
 
-The problem with performing lpuart_global_reset() after UART registration
-is that as soon as uart_add_one_port() returns, the port is available
-for user space to use.  So resetting it is a no-go.
+
+By the way that just made me check the imx code, but if I am to trust
+that set_mctrl is never called with RS485 enabled and rs485_config is
+only called when it is enabled should the SER_RS485_ENABLED checks be
+removed there, or did I misunderstand something and it's still useful?
+
+(I wouldn't know if the rs232 hardware flags have any impact on rs485
+actual control but I'll trust you on this and that nothing ever calls
+set_mctrl when rs485 is enabled... I would actually have said that
+rts_active/inactive should keep setting port->mctrl precisely for the
+cases where both are muxed as you'll otherwise unreliably enable/disable
+RTS based on the state the last time was when get_mctrl was called; but
+I haven't seen this done so it doesn't really matter to me)
+
 
 Thanks,
-
-Lukas
+-- 
+Dominique
