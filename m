@@ -2,543 +2,432 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB0B3C43217
-	for <linux-serial@archiver.kernel.org>; Sun,  9 Oct 2022 18:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91A2C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 06:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbiJISPn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 9 Oct 2022 14:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
+        id S231545AbiJJGYI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Oct 2022 02:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiJISOy (ORCPT
+        with ESMTP id S231629AbiJJGYG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 9 Oct 2022 14:14:54 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C262DC;
-        Sun,  9 Oct 2022 11:14:35 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id r13so14082460wrj.11;
-        Sun, 09 Oct 2022 11:14:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6gl5E4rKbJFpFDbpqJhrmR71zChEONYs60mlVSNxv7Q=;
-        b=Hf9xV59KNbiJmIeFb0v3W7hbvyktDzOgWDut5dkFFR/ntdnFPdjwz7lqmem2b8qvBl
-         ialUKm9BQi1bglOo0qQJk38aY2KzDdk2LF+yp9YPP+pkUmVcq3Lv1nSz4Mhkq5h26Wfy
-         WZQv9AOo5pL+lfeTTj5JiwBeX8qt12JspyIHE1AOwvv4zdnf3WrijB6JzxRKJDCNE8fU
-         wkZNyTMfbr99mctiICPPaIdofvcyFEfzx33X4qFuWKfDPHjZq4hIUYF6sY+oTH+U+X8w
-         7/l/pxlpSWue3AxzRqnOPa0Yf7MspZoYV7RfHtjDUNjlFON84pmWecpB+60kjclXvDlS
-         Wi5g==
+        Mon, 10 Oct 2022 02:24:06 -0400
+X-Greylist: delayed 392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 09 Oct 2022 23:24:02 PDT
+Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3E5550BD
+        for <linux-serial@vger.kernel.org>; Sun,  9 Oct 2022 23:24:02 -0700 (PDT)
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+        by gw.atmark-techno.com (Postfix) with ESMTPS id ADC8060105
+        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 15:17:28 +0900 (JST)
+Received: by mail-pl1-f199.google.com with SMTP id c12-20020a170903234c00b0017f695bf8f0so7382950plh.6
+        for <linux-serial@vger.kernel.org>; Sun, 09 Oct 2022 23:17:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6gl5E4rKbJFpFDbpqJhrmR71zChEONYs60mlVSNxv7Q=;
-        b=Qmbq9grrwr0Q2b/V+GHygLCYED0crjKAkZaCRdax03qc6gebW+RqqURB9HWovP89OC
-         WSy4dZ6HSRMBc/taAd6F1rlQKAIk6uFbDWFWAkiZ212qfCGO2+xoA6Nl1qGDhl/bWHvC
-         wEgOy2uKjZGhd/59PSGmT/5fFZnj+39pNMMWfCx/IwTa0mQz8APcPAh59oSHKuymc7Jq
-         f8bsVWiUFDmzLtqXHjpHlYjKQfjBOQ9VNDDx8fDcPyxusjGDdyOc1tnR2E2ng96NpyVR
-         LvNugsAJ5UHVEUtjN6bOGfXwSQKWwToS7+BQFsagggZnBORHUsNtQe+ekTtPD/EMZb97
-         ndkA==
-X-Gm-Message-State: ACrzQf3Cu4NqZym/fv5SdlhhkFLPat1jOleLw9i+xylp9pWbLynRoB/Y
-        xCa7pQN70eXdHxTO1rOaVp4=
-X-Google-Smtp-Source: AMsMyM4/vuN5Kazlk+Wovuvb1wFgsBiEW7cVEXIFXI645ABmIMQKTxjbIbuy7UceELlyuplkY/LJBw==
-X-Received: by 2002:a5d:6384:0:b0:22e:6027:9da4 with SMTP id p4-20020a5d6384000000b0022e60279da4mr8859991wru.686.1665339273441;
-        Sun, 09 Oct 2022 11:14:33 -0700 (PDT)
-Received: from hp-power-15.localdomain (mm-190-37-212-37.vitebsk.dynamic.pppoe.byfly.by. [37.212.37.190])
-        by smtp.gmail.com with ESMTPSA id k16-20020adfe8d0000000b0022cd0c8c696sm6860581wrn.103.2022.10.09.11.14.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Oct 2022 11:14:33 -0700 (PDT)
-From:   Siarhei Volkau <lis8215@gmail.com>
-Cc:     Siarhei Volkau <lis8215@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: [PATCH 8/8] MIPS: DTS: Ingenic: Add support for the JZ4755 SoC
-Date:   Sun,  9 Oct 2022 21:13:37 +0300
-Message-Id: <20221009181338.2896660-9-lis8215@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20221009181338.2896660-1-lis8215@gmail.com>
-References: <20221009181338.2896660-1-lis8215@gmail.com>
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XhY/YBolv8hSqOo4abkV8XSXC2M5ryJYicZWaAOYbjY=;
+        b=AGdmrWuUtKxbX+OCH6UpJrYKNx+VDvb5OA9n57gM3tVTGBNppsjYPnyfFAmU1yz7kn
+         TDRtKjZzuWtNG2ZRlw+UWLowpCfKyVii2xuTE1aUHNCpnYAMdYQRhvZSLHwTulMtmxhg
+         ek9zsM8J62JT9Us3/74M1EPUpszK3+ezA1AH9KqYuDBfaihxmDsfdohBdaXO/K/nBUTe
+         R/LU9e0Rtth6k4SJOrXyXPOalcZMumcLnwwu88C5J17ZFuyOXnelhW7w6jaj3+mEh1Af
+         l/oz59wNC28ll8befxwyng5VFi55qmglKFKxvn0AvpYMdAG/wEeUwosmDqm0KPxBUR4/
+         8Aog==
+X-Gm-Message-State: ACrzQf0bWfeIgsoir98Y3oPjRw3JDjzOJzkucshJFR70S47m807KNIL9
+        M5o9ccV16on9D3gl+zC+rjnjA87EkeuWLrNjeaJ0Bl2xowTl/x8592Yal+bUpq36o7n9NYyH+Pl
+        6YIl/rwXMjAiaBDrSUKzUizE5TAtb
+X-Received: by 2002:a17:903:22c8:b0:17f:7039:a2d4 with SMTP id y8-20020a17090322c800b0017f7039a2d4mr17774191plg.2.1665382647641;
+        Sun, 09 Oct 2022 23:17:27 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7wCJtVEObVEUdWCWNNYw39aS08xIF7xSWA9UN1W/C+mlmVKBmLQW4p7XQbRpgO7YTJkMZoHQ==
+X-Received: by 2002:a17:903:22c8:b0:17f:7039:a2d4 with SMTP id y8-20020a17090322c800b0017f7039a2d4mr17774173plg.2.1665382647220;
+        Sun, 09 Oct 2022 23:17:27 -0700 (PDT)
+Received: from pc-zest.atmarktech (117.209.187.35.bc.googleusercontent.com. [35.187.209.117])
+        by smtp.gmail.com with ESMTPSA id m9-20020a17090a2c0900b00202fbd9c21dsm5322580pjd.48.2022.10.09.23.17.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 09 Oct 2022 23:17:26 -0700 (PDT)
+Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
+        (envelope-from <martinet@pc-zest>)
+        id 1ohm6O-007qTx-1V;
+        Mon, 10 Oct 2022 15:17:24 +0900
+Date:   Mon, 10 Oct 2022 15:17:14 +0900
+From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v4] serial: Deassert Transmit Enable on probe in
+ driver-specific way
+Message-ID: <Y0O46rcQap99fZVC@atmark-techno.com>
+References: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add preliminary support for boards based on the JZ4755 SoC from
-Ingenic.
++Cc stable
 
-It is a low-power SoC with a MIPS32r1 SoC running at ~432 MHz, and no
-FPU.
+Lukas Wunner wrote on Thu, Sep 22, 2022 at 06:27:33PM +0200:
+> When a UART port is newly registered, uart_configure_port() seeks to
+> deassert RS485 Transmit Enable by setting the RTS bit in port->mctrl.
+> However a number of UART drivers interpret a set RTS bit as *assertion*
+> instead of deassertion:  Affected drivers include those using
+> serial8250_em485_config() (except 8250_bcm2835aux.c) and some using
+> mctrl_gpio (e.g. imx.c).
+> 
+> Since the interpretation of the RTS bit is driver-specific, it is not
+> suitable as a means to centrally deassert Transmit Enable in the serial
+> core.  Instead, the serial core must call on drivers to deassert it in
+> their driver-specific way.  One way to achieve that is to call
+> ->rs485_config().  It implicitly deasserts Transmit Enable.
+> 
+> So amend uart_configure_port() and uart_resume_port() to invoke
+> uart_rs485_config().  That allows removing calls to uart_rs485_config()
+> from drivers' ->probe() hooks and declaring the function static.
+> 
+> Skip any invocation of ->set_mctrl() if RS485 is enabled.  RS485 has no
+> hardware flow control, so the modem control lines are irrelevant and
+> need not be touched.  When leaving RS485 mode, reset the modem control
+> lines to the state stored in port->mctrl.  That way, UARTs which are
+> muxed between RS485 and RS232 transceivers drive the lines correctly
+> when switched to RS232.  (serial8250_do_startup() historically raises
+> the OUT1 modem signal because otherwise interrupts are not signaled on
+> ancient PC UARTs, but I believe that no longer applies to modern,
+> RS485-capable UARTs and is thus safe to be skipped.)
+> 
+> imx.c modifies port->mctrl whenever Transmit Enable is asserted and
+> deasserted.  Stop it from doing that so port->mctrl reflects the RS232
+> line state.
+> 
+> 8250_omap.c deasserts Transmit Enable on ->runtime_resume() by calling
+> ->set_mctrl().  Because that is now a no-op in RS485 mode, amend the
+> function to call serial8250_em485_stop_tx().
+> 
+> fsl_lpuart.c retrieves and applies the RS485 device tree properties
+> after registering the UART port.  Because applying now happens on
+> registration in uart_configure_port(), move retrieval of the properties
+> ahead of uart_add_one_port().
+> 
+> Fixes: d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
 
-The JZ4755 SoC is supposed to be newer than the JZ4725B SoC, but its
-internals are very close to each other. So JZ4755 DT is reusing many
-JZ4725b drivers because JZ4725b support in the kernel appears earlier.
+Thanks for this fix!
+We also noticed rs485 DE was initially wrong last week and I noticed
+this when I was about to send a patch that just inverted the
+SER_RS485_RTS_AFTER_SEND check in uart_configure_port, but after reading
+the commit message here it's a lot more complicated than that depending
+on the serial driver...
+(fixing commit 2dd8a74fddd2 ("serial: core: Initialize rs485 RTS
+polarity already on probe"), but it's actually the same problem in the
+opposite direction)
 
-Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
----
- arch/mips/boot/dts/ingenic/jz4755.dtsi | 439 +++++++++++++++++++++++++
- 1 file changed, 439 insertions(+)
- create mode 100644 arch/mips/boot/dts/ingenic/jz4755.dtsi
 
-diff --git a/arch/mips/boot/dts/ingenic/jz4755.dtsi b/arch/mips/boot/dts/ingenic/jz4755.dtsi
-new file mode 100644
-index 000000000..e1630e0fe
---- /dev/null
-+++ b/arch/mips/boot/dts/ingenic/jz4755.dtsi
-@@ -0,0 +1,439 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <dt-bindings/clock/ingenic,jz4755-cgu.h>
-+#include <dt-bindings/clock/ingenic,tcu.h>
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+	compatible = "ingenic,jz4755";
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "ingenic,xburst-mxu1.1";
-+			reg = <0>;
-+
-+			clocks = <&cgu JZ4755_CLK_CCLK>;
-+			clock-names = "cpu";
-+		};
-+	};
-+
-+	cpuintc: interrupt-controller {
-+		#address-cells = <0>;
-+		#interrupt-cells = <1>;
-+		interrupt-controller;
-+		compatible = "mti,cpu-interrupt-controller";
-+	};
-+
-+	intc: interrupt-controller@10001000 {
-+		compatible = "ingenic,jz4725b-intc", "ingenic,jz4740-intc";
-+		reg = <0x10001000 0x14>;
-+
-+		interrupt-controller;
-+		#interrupt-cells = <1>;
-+
-+		interrupt-parent = <&cpuintc>;
-+		interrupts = <2>;
-+	};
-+
-+	ext: ext {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+	};
-+
-+	osc32k: osc32k {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <32768>;
-+	};
-+
-+	cgu: clock-controller@10000000 {
-+		compatible = "ingenic,jz4755-cgu";
-+		reg = <0x10000000 0x100>;
-+
-+		clocks = <&ext>, <&osc32k>;
-+		clock-names = "ext", "osc32k";
-+
-+		#clock-cells = <1>;
-+	};
-+
-+	uart0: serial@10030000 {
-+		compatible = "ingenic,jz4755-uart", "ingenic,jz4750-uart";
-+		reg = <0x10030000 0x100>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <9>;
-+
-+		clocks = <&cgu JZ4755_CLK_EXT_HALF>, <&cgu JZ4755_CLK_UART0>;
-+		clock-names = "baud", "module";
-+
-+		status = "disabled";
-+	};
-+
-+	uart1: serial@10031000 {
-+		compatible = "ingenic,jz4755-uart", "ingenic,jz4750-uart";
-+		reg = <0x10031000 0x100>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <8>;
-+
-+		clocks = <&cgu JZ4755_CLK_EXT_HALF>, <&cgu JZ4755_CLK_UART1>;
-+		clock-names = "baud", "module";
-+
-+		status = "disabled";
-+	};
-+
-+	uart2: serial@10032000 {
-+		compatible = "ingenic,jz4755-uart", "ingenic,jz4750-uart";
-+		reg = <0x10032000 0x100>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <7>;
-+
-+		clocks = <&cgu JZ4755_CLK_EXT_HALF>, <&cgu JZ4755_CLK_UART2>;
-+		clock-names = "baud", "module";
-+
-+		status = "disabled";
-+	};
-+
-+	rtc_dev: rtc@10003000 {
-+		compatible = "ingenic,jz4725b-rtc", "ingenic,jz4740-rtc";
-+		reg = <0x10003000 0x40>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <6>;
-+
-+		clocks = <&cgu JZ4755_CLK_RTC>;
-+		clock-names = "rtc";
-+	};
-+
-+	pinctrl: pinctrl@10010000 {
-+		compatible = "ingenic,jz4755-pinctrl";
-+		reg = <0x10010000 0x600>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		gpa: gpio@0 {
-+			compatible = "ingenic,jz4755-gpio";
-+			reg = <0>;
-+
-+			gpio-controller;
-+			gpio-ranges = <&pinctrl 0 0 32>;
-+			#gpio-cells = <2>;
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+
-+			interrupt-parent = <&intc>;
-+			interrupts = <16>;
-+		};
-+
-+		gpb: gpio@1 {
-+			compatible = "ingenic,jz4755-gpio";
-+			reg = <1>;
-+
-+			gpio-controller;
-+			gpio-ranges = <&pinctrl 0 32 32>;
-+			#gpio-cells = <2>;
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+
-+			interrupt-parent = <&intc>;
-+			interrupts = <15>;
-+		};
-+
-+		gpc: gpio@2 {
-+			compatible = "ingenic,jz4755-gpio";
-+			reg = <2>;
-+
-+			gpio-controller;
-+			gpio-ranges = <&pinctrl 0 64 32>;
-+			#gpio-cells = <2>;
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+
-+			interrupt-parent = <&intc>;
-+			interrupts = <14>;
-+		};
-+
-+		gpd: gpio@3 {
-+			compatible = "ingenic,jz4755-gpio";
-+			reg = <3>;
-+
-+			gpio-controller;
-+			gpio-ranges = <&pinctrl 0 96 32>;
-+			#gpio-cells = <2>;
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+
-+			interrupt-parent = <&intc>;
-+			interrupts = <13>;
-+		};
-+
-+		gpe: gpio@4 {
-+			compatible = "ingenic,jz4755-gpio";
-+			reg = <4>;
-+
-+			gpio-controller;
-+			gpio-ranges = <&pinctrl 0 128 32>;
-+			#gpio-cells = <2>;
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+
-+			interrupt-parent = <&intc>;
-+			interrupts = <12>;
-+		};
-+
-+		gpf: gpio@5 {
-+			compatible = "ingenic,jz4755-gpio";
-+			reg = <5>;
-+
-+			gpio-controller;
-+			gpio-ranges = <&pinctrl 0 160 32>;
-+			#gpio-cells = <2>;
-+
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+
-+			interrupt-parent = <&intc>;
-+			interrupts = <11>;
-+		};
-+	};
-+
-+	mmc0: mmc@10021000 {
-+		compatible = "ingenic,jz4725b-mmc";
-+		reg = <0x10021000 0x1000>;
-+
-+		clocks = <&cgu JZ4755_CLK_MMC0>;
-+		clock-names = "mmc";
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <25>;
-+
-+		dmas = <&dmac1 27 0xffffffff>, <&dmac1 26 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
-+		cap-sd-highspeed;
-+		cap-mmc-highspeed;
-+		cap-sdio-irq;
-+	};
-+
-+	mmc1: mmc@10022000 {
-+		compatible = "ingenic,jz4725b-mmc";
-+		reg = <0x10022000 0x1000>;
-+
-+		clocks = <&cgu JZ4755_CLK_MMC1>;
-+		clock-names = "mmc";
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <24>;
-+
-+		dmas = <&dmac1 31 0xffffffff>, <&dmac1 30 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
-+		cap-sd-highspeed;
-+		cap-mmc-highspeed;
-+		cap-sdio-irq;
-+	};
-+
-+	dmac0: dma-controller@13020000 {
-+		compatible = "ingenic,jz4755-dma";
-+		reg = <0x13020000 0xd0>, <0x13020300 0x14>;
-+
-+		#dma-cells = <2>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <29>;
-+
-+		clocks = <&cgu JZ4755_CLK_DMA>;
-+	};
-+
-+	dmac1: dma-controller@13020100 {
-+		compatible = "ingenic,jz4755-dma";
-+		reg = <0x13020100 0xd0>, <0x13020400 0x14>;
-+
-+		#dma-cells = <2>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <28>;
-+
-+		clocks = <&cgu JZ4755_CLK_DMA>;
-+	};
-+
-+	tcu: timer@10002000 {
-+		compatible = "ingenic,jz4725b-tcu", "simple-mfd";
-+		reg = <0x10002000 0x1000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x10002000 0x1000>;
-+
-+		#clock-cells = <1>;
-+
-+		clocks = <&cgu JZ4755_CLK_RTC>,
-+			 <&cgu JZ4755_CLK_EXT>,
-+			 <&cgu JZ4755_CLK_PCLK>,
-+			 <&cgu JZ4755_CLK_TCU>;
-+		clock-names = "rtc", "ext", "pclk", "tcu";
-+
-+		interrupt-controller;
-+		#interrupt-cells = <1>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <23>, <22>, <21>;
-+
-+		watchdog: watchdog@0 {
-+			compatible = "ingenic,jz4725b-watchdog", "ingenic,jz4740-watchdog";
-+			reg = <0x0 0xc>;
-+
-+			clocks = <&tcu TCU_CLK_WDT>;
-+			clock-names = "wdt";
-+		};
-+
-+		pwm: pwm@60 {
-+			compatible = "ingenic,jz4725b-pwm";
-+			reg = <0x60 0x40>;
-+
-+			#pwm-cells = <3>;
-+
-+			clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>,
-+				 <&tcu TCU_CLK_TIMER2>, <&tcu TCU_CLK_TIMER3>,
-+				 <&tcu TCU_CLK_TIMER4>, <&tcu TCU_CLK_TIMER5>;
-+			clock-names = "timer0", "timer1", "timer2",
-+				      "timer3", "timer4", "timer5";
-+		};
-+
-+		ost: timer@e0 {
-+			compatible = "ingenic,jz4725b-ost";
-+			reg = <0xe0 0x20>;
-+
-+			clocks = <&tcu TCU_CLK_OST>;
-+			clock-names = "ost";
-+
-+			interrupts = <15>;
-+		};
-+	};
-+
-+	aic: audio-controller@10020000 {
-+		compatible = "ingenic,jz4725b-i2s", "ingenic,jz4740-i2s";
-+		reg = <0x10020000 0x38>;
-+
-+		#sound-dai-cells = <0>;
-+
-+		clocks = <&cgu JZ4755_CLK_AIC>,
-+			 <&cgu JZ4755_CLK_I2S>,
-+			 <&cgu JZ4755_CLK_EXT>,
-+			 <&cgu JZ4755_CLK_PLL_HALF>;
-+		clock-names = "aic", "i2s", "ext", "pll half";
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <10>;
-+
-+		dmas = <&dmac0 25 0xffffffff>, <&dmac0 24 0xffffffff>;
-+		dma-names = "rx", "tx";
-+	};
-+
-+	codec: audio-codec@100200a4 {
-+		compatible = "ingenic,jz4725b-codec";
-+		reg = <0x100200a4 0x8>;
-+
-+		#sound-dai-cells = <0>;
-+
-+		clocks = <&cgu JZ4755_CLK_AIC>;
-+		clock-names = "aic";
-+	};
-+
-+	adc: adc@10070000 {
-+		compatible = "ingenic,jz4725b-adc";
-+		#io-channel-cells = <1>;
-+
-+		reg = <0x10070000 0x30>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x10070000 0x30>;
-+
-+		clocks = <&cgu JZ4755_CLK_ADC>;
-+		clock-names = "adc";
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <18>;
-+	};
-+
-+	nemc: memory-controller@13010000 {
-+		compatible = "ingenic,jz4725b-nemc", "ingenic,jz4740-nemc";
-+		reg = <0x13010000 0x10000>;
-+		#address-cells = <2>;
-+		#size-cells = <1>;
-+		ranges = <1 0 0x18000000 0x4000000>, <2 0 0x14000000 0x4000000>,
-+			 <3 0 0x0c000000 0x4000000>, <4 0 0x08000000 0x4000000>;
-+
-+		clocks = <&cgu JZ4755_CLK_MCLK>;
-+	};
-+
-+	udc: usb@13040000 {
-+		compatible = "ingenic,jz4725b-musb", "ingenic,jz4740-musb";
-+		reg = <0x13040000 0x10000>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <27>;
-+		interrupt-names = "mc";
-+
-+		clocks = <&cgu JZ4755_CLK_UDC>;
-+		clock-names = "udc";
-+	};
-+
-+	lcd: lcd-controller@13050000 {
-+		compatible = "ingenic,jz4725b-lcd";
-+		reg = <0x13050000 0x1000>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <31>;
-+
-+		clocks = <&cgu JZ4755_CLK_LCD>;
-+		clock-names = "lcd_pclk";
-+
-+		lcd_ports: ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@8 {
-+				reg = <8>;
-+
-+				ipu_output: endpoint {
-+					remote-endpoint = <&ipu_input>;
-+				};
-+			};
-+		};
-+	};
-+
-+	ipu: ipu@13080000 {
-+		compatible = "ingenic,jz4725b-ipu";
-+		reg = <0x13080000 0x64>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <30>;
-+
-+		clocks = <&cgu JZ4755_CLK_IPU>;
-+		clock-names = "ipu";
-+
-+		port {
-+			ipu_input: endpoint {
-+				remote-endpoint = <&ipu_output>;
-+			};
-+		};
-+	};
-+
-+	bch: ecc-controller@130d0000 {
-+		compatible = "ingenic,jz4725b-bch";
-+		reg = <0x130d0000 0x44>;
-+
-+		clocks = <&cgu JZ4755_CLK_BCH>;
-+	};
-+};
+Unfortunately you've marked this for v4.14+ stable, but it doesn't even
+apply to 5.19.14 due to (at least) commit d8fcd9cfbde5 ("serial: core:
+move sanitizing of RS485 delays into own function"), so it hasn't been
+picked up yet; since quite a bit of code was cleaned up/moved one will
+need to pay a bit attention when doing that.
+
+What would you like to do for stable branches?
+Would you be able to send a patch that applies on older 5.10 and 5.15
+where commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart
+open") has been backported?
+
+If that sounds too complicated we could probably just revert a handful
+of serial_core/rs485 commits, but going forward sounds more future-proof
+to me.
+
+Thanks!
+(nothing below, leaving quote for stable@)
+
+> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Tested-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Link: https://lore.kernel.org/all/20220329085050.311408-1-matthias.schiffer@ew.tq-group.com/
+> Reported-by: Roosen Henri <Henri.Roosen@ginzinger.com>
+> Link: https://lore.kernel.org/all/8f538a8903795f22f9acc94a9a31b03c9c4ccacb.camel@ginzinger.com/
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: stable@vger.kernel.org # v4.14+
+> ---
+>  v1 -> v2:
+>  Deassert RTS in serial8250_em485_init() only if no transmission is
+>  currently ongoing (Ilpo)
+> 
+>  v2 -> v3:
+>  Drop superfluous newline
+> 
+>  v3 -> v4:
+>  Resend with changelog at maintainer's request
+> 
+>  drivers/tty/serial/8250/8250_omap.c |  3 +++
+>  drivers/tty/serial/8250/8250_pci.c  |  9 +--------
+>  drivers/tty/serial/8250/8250_port.c | 12 +++++++-----
+>  drivers/tty/serial/fsl_lpuart.c     | 10 ++++------
+>  drivers/tty/serial/imx.c            |  8 ++------
+>  drivers/tty/serial/serial_core.c    | 36 ++++++++++++++++++++----------------
+>  include/linux/serial_core.h         |  1 -
+>  7 files changed, 37 insertions(+), 42 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index b43894e..2e67754 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -342,6 +342,9 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+>  	omap8250_update_mdr1(up, priv);
+>  
+>  	up->port.ops->set_mctrl(&up->port, up->port.mctrl);
+> +
+> +	if (up->port.rs485.flags & SER_RS485_ENABLED)
+> +		serial8250_em485_stop_tx(up);
+>  }
+>  
+>  /*
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 6f66dc2..b260c55 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1627,7 +1627,6 @@ static int pci_fintek_init(struct pci_dev *dev)
+>  	resource_size_t bar_data[3];
+>  	u8 config_base;
+>  	struct serial_private *priv = pci_get_drvdata(dev);
+> -	struct uart_8250_port *port;
+>  
+>  	if (!(pci_resource_flags(dev, 5) & IORESOURCE_IO) ||
+>  			!(pci_resource_flags(dev, 4) & IORESOURCE_IO) ||
+> @@ -1674,13 +1673,7 @@ static int pci_fintek_init(struct pci_dev *dev)
+>  
+>  		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
+>  
+> -		if (priv) {
+> -			/* re-apply RS232/485 mode when
+> -			 * pciserial_resume_ports()
+> -			 */
+> -			port = serial8250_get_port(priv->line[i]);
+> -			uart_rs485_config(&port->port);
+> -		} else {
+> +		if (!priv) {
+>  			/* First init without port data
+>  			 * force init to RS232 Mode
+>  			 */
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 907c5ff..b21550c 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -600,7 +600,7 @@ void serial8250_rpm_put(struct uart_8250_port *p)
+>  static int serial8250_em485_init(struct uart_8250_port *p)
+>  {
+>  	if (p->em485)
+> -		return 0;
+> +		goto deassert_rts;
+>  
+>  	p->em485 = kmalloc(sizeof(struct uart_8250_em485), GFP_ATOMIC);
+>  	if (!p->em485)
+> @@ -616,7 +616,9 @@ static int serial8250_em485_init(struct uart_8250_port *p)
+>  	p->em485->active_timer = NULL;
+>  	p->em485->tx_stopped = true;
+>  
+> -	p->rs485_stop_tx(p);
+> +deassert_rts:
+> +	if (p->em485->tx_stopped)
+> +		p->rs485_stop_tx(p);
+>  
+>  	return 0;
+>  }
+> @@ -2047,6 +2049,9 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  
+>  static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  {
+> +	if (port->rs485.flags & SER_RS485_ENABLED)
+> +		return;
+> +
+>  	if (port->set_mctrl)
+>  		port->set_mctrl(port, mctrl);
+>  	else
+> @@ -3189,9 +3194,6 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+>  	if (flags & UART_CONFIG_TYPE)
+>  		autoconfig(up);
+>  
+> -	if (port->rs485.flags & SER_RS485_ENABLED)
+> -		uart_rs485_config(port);
+> -
+>  	/* if access method is AU, it is a 16550 with a quirk */
+>  	if (port->type == PORT_16550A && port->iotype == UPIO_AU)
+>  		up->bugs |= UART_BUG_NOMSR;
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index e9d5b48..dfc73fe 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -2724,15 +2724,13 @@ static int lpuart_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto failed_reset;
+>  
+> -	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+> -	if (ret)
+> -		goto failed_attach_port;
+> -
+>  	ret = uart_get_rs485_mode(&sport->port);
+>  	if (ret)
+>  		goto failed_get_rs485;
+>  
+> -	uart_rs485_config(&sport->port);
+> +	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+> +	if (ret)
+> +		goto failed_attach_port;
+>  
+>  	ret = devm_request_irq(&pdev->dev, sport->port.irq, handler, 0,
+>  				DRIVER_NAME, sport);
+> @@ -2742,9 +2740,9 @@ static int lpuart_probe(struct platform_device *pdev)
+>  	return 0;
+>  
+>  failed_irq_request:
+> -failed_get_rs485:
+>  	uart_remove_one_port(&lpuart_reg, &sport->port);
+>  failed_attach_port:
+> +failed_get_rs485:
+>  failed_reset:
+>  	lpuart_disable_clks(sport);
+>  	return ret;
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 5875ee6..05b432d 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -380,8 +380,7 @@ static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
+>  {
+>  	*ucr2 &= ~(UCR2_CTSC | UCR2_CTS);
+>  
+> -	sport->port.mctrl |= TIOCM_RTS;
+> -	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+> +	mctrl_gpio_set(sport->gpios, sport->port.mctrl | TIOCM_RTS);
+>  }
+>  
+>  /* called with port.lock taken and irqs caller dependent */
+> @@ -390,8 +389,7 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+>  	*ucr2 &= ~UCR2_CTSC;
+>  	*ucr2 |= UCR2_CTS;
+>  
+> -	sport->port.mctrl &= ~TIOCM_RTS;
+> -	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+> +	mctrl_gpio_set(sport->gpios, sport->port.mctrl & ~TIOCM_RTS);
+>  }
+>  
+>  static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
+> @@ -2347,8 +2345,6 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  		dev_err(&pdev->dev,
+>  			"low-active RTS not possible when receiver is off, enabling receiver\n");
+>  
+> -	uart_rs485_config(&sport->port);
+> -
+>  	/* Disable interrupts before requesting them */
+>  	ucr1 = imx_uart_readl(sport, UCR1);
+>  	ucr1 &= ~(UCR1_ADEN | UCR1_TRDYEN | UCR1_IDEN | UCR1_RRDYEN | UCR1_RTSDEN);
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index c711318..179ee19 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -158,15 +158,10 @@ static void uart_start(struct tty_struct *tty)
+>  	unsigned long flags;
+>  	unsigned int old;
+>  
+> -	if (port->rs485.flags & SER_RS485_ENABLED) {
+> -		set &= ~TIOCM_RTS;
+> -		clear &= ~TIOCM_RTS;
+> -	}
+> -
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	old = port->mctrl;
+>  	port->mctrl = (old & ~clear) | set;
+> -	if (old != port->mctrl)
+> +	if (old != port->mctrl && !(port->rs485.flags & SER_RS485_ENABLED))
+>  		port->ops->set_mctrl(port, port->mctrl);
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  }
+> @@ -1391,7 +1386,7 @@ static void uart_set_rs485_termination(struct uart_port *port,
+>  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+>  }
+>  
+> -int uart_rs485_config(struct uart_port *port)
+> +static int uart_rs485_config(struct uart_port *port)
+>  {
+>  	struct serial_rs485 *rs485 = &port->rs485;
+>  	int ret;
+> @@ -1405,7 +1400,6 @@ int uart_rs485_config(struct uart_port *port)
+>  
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL_GPL(uart_rs485_config);
+>  
+>  static int uart_get_rs485_config(struct uart_port *port,
+>  			 struct serial_rs485 __user *rs485)
+> @@ -1444,8 +1438,13 @@ static int uart_set_rs485_config(struct tty_struct *tty, struct uart_port *port,
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	ret = port->rs485_config(port, &tty->termios, &rs485);
+> -	if (!ret)
+> +	if (!ret) {
+>  		port->rs485 = rs485;
+> +
+> +		/* Reset RTS and other mctrl lines when disabling RS485 */
+> +		if (!(rs485.flags & SER_RS485_ENABLED))
+> +			port->ops->set_mctrl(port, port->mctrl);
+> +	}
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  	if (ret)
+>  		return ret;
+> @@ -2352,7 +2351,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+>  
+>  		spin_lock_irq(&uport->lock);
+>  		ops->stop_tx(uport);
+> -		ops->set_mctrl(uport, 0);
+> +		if (!(uport->rs485.flags & SER_RS485_ENABLED))
+> +			ops->set_mctrl(uport, 0);
+>  		/* save mctrl so it can be restored on resume */
+>  		mctrl = uport->mctrl;
+>  		uport->mctrl = 0;
+> @@ -2440,7 +2440,8 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  
+>  		uart_change_pm(state, UART_PM_STATE_ON);
+>  		spin_lock_irq(&uport->lock);
+> -		ops->set_mctrl(uport, 0);
+> +		if (!(uport->rs485.flags & SER_RS485_ENABLED))
+> +			ops->set_mctrl(uport, 0);
+>  		spin_unlock_irq(&uport->lock);
+>  		if (console_suspend_enabled || !uart_console(uport)) {
+>  			/* Protected by port mutex for now */
+> @@ -2451,7 +2452,10 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  				if (tty)
+>  					uart_change_speed(tty, state, NULL);
+>  				spin_lock_irq(&uport->lock);
+> -				ops->set_mctrl(uport, uport->mctrl);
+> +				if (!(uport->rs485.flags & SER_RS485_ENABLED))
+> +					ops->set_mctrl(uport, uport->mctrl);
+> +				else
+> +					uart_rs485_config(uport);
+>  				ops->start_tx(uport);
+>  				spin_unlock_irq(&uport->lock);
+>  				tty_port_set_initialized(port, 1);
+> @@ -2558,10 +2562,10 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  		 */
+>  		spin_lock_irqsave(&port->lock, flags);
+>  		port->mctrl &= TIOCM_DTR;
+> -		if (port->rs485.flags & SER_RS485_ENABLED &&
+> -		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
+> -			port->mctrl |= TIOCM_RTS;
+> -		port->ops->set_mctrl(port, port->mctrl);
+> +		if (!(port->rs485.flags & SER_RS485_ENABLED))
+> +			port->ops->set_mctrl(port, port->mctrl);
+> +		else
+> +			uart_rs485_config(port);
+>  		spin_unlock_irqrestore(&port->lock, flags);
+>  
+>  		/*
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 02a4299..0354369 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -933,5 +933,4 @@ static inline int uart_handle_break(struct uart_port *port)
+>  					 !((cflag) & CLOCAL))
+>  
+>  int uart_get_rs485_mode(struct uart_port *port);
+> -int uart_rs485_config(struct uart_port *port);
+>  #endif /* LINUX_SERIAL_CORE_H */
 -- 
-2.36.1
-
+Dominique Martinet
