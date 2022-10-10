@@ -2,113 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C79C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 11:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD28C43219
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 13:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiJJLHE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Oct 2022 07:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S230188AbiJJNFh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Oct 2022 09:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230294AbiJJLHE (ORCPT
+        with ESMTP id S229831AbiJJNF3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Oct 2022 07:07:04 -0400
-Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51A65D124
-        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 04:07:01 -0700 (PDT)
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id 736FB60105
-        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 20:07:00 +0900 (JST)
-Received: by mail-pg1-f197.google.com with SMTP id k64-20020a638443000000b004620970e0dbso1349879pgd.6
-        for <linux-serial@vger.kernel.org>; Mon, 10 Oct 2022 04:07:00 -0700 (PDT)
+        Mon, 10 Oct 2022 09:05:29 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD015A179;
+        Mon, 10 Oct 2022 06:05:20 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-1322d768ba7so12387753fac.5;
+        Mon, 10 Oct 2022 06:05:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6kaXrUY3ds3NT80yBeO+dgFMn3QrJP1rbt9Y4guB0fU=;
-        b=qLDLljq8JVX0a3ObANhPALIpNeu/+pbjGOk+fA6Fd2CY9xJb2N/7pfKnGdW7yxsIuo
-         hmtknBSmP6tv2lCpDghxALBUhVcIuSver6vb0BCWNbAk7j9R1z2oZAK+LZGhKYYNVvgx
-         49gd8kJTb/Uzq0l0eBa86j1LqNiIQPTJw5f0UG2GMF5rs3GPNqGVcARXLmj0MWi18RA+
-         jzRtyp4BjNRiU0FU3Pmf27lXJkIkUYzgtfjkufUa1fItadtK47Ckiq5k7gJtqDhVIPA7
-         C2d03uBvPQASRX2gPjUBgXuQcTdCFLd5mwJVmtG9mR5281WoW6RAs2gvNztIpCdH99gK
-         b81A==
-X-Gm-Message-State: ACrzQf3ERLrfT1G0UQJtxLh9j22qjxT53ng6ckpDAndN94eslrQq6C9a
-        ntKZqSm4S6DguNsvsGZqu3qVhfpCDgx0PtMpPs/qrJRU3fcALaeRUv2rvMwCPDshSyKHjbz+WS3
-        cxTZeSdKIlhJcG6UEQpa/XcAljp34
-X-Received: by 2002:a17:90a:4e48:b0:209:a883:7f45 with SMTP id t8-20020a17090a4e4800b00209a8837f45mr30957429pjl.106.1665400019463;
-        Mon, 10 Oct 2022 04:06:59 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5G4l8W/f4N1dU2rep4UW9rNCshL05qc75JiwYwqqkanqV4pUPmLY9S5B35hpMChnd5mm4YDg==
-X-Received: by 2002:a17:90a:4e48:b0:209:a883:7f45 with SMTP id t8-20020a17090a4e4800b00209a8837f45mr30957408pjl.106.1665400019198;
-        Mon, 10 Oct 2022 04:06:59 -0700 (PDT)
-Received: from pc-zest.atmarktech (145.82.198.104.bc.googleusercontent.com. [104.198.82.145])
-        by smtp.gmail.com with ESMTPSA id nm12-20020a17090b19cc00b0020a9af6bb1asm5907067pjb.32.2022.10.10.04.06.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 Oct 2022 04:06:58 -0700 (PDT)
-Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
-        (envelope-from <martinet@pc-zest>)
-        id 1ohqca-008nSX-06;
-        Mon, 10 Oct 2022 20:06:56 +0900
-Date:   Mon, 10 Oct 2022 20:06:46 +0900
-From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v4] serial: Deassert Transmit Enable on probe in
- driver-specific way
-Message-ID: <Y0P8xle/cw3cRkGv@atmark-techno.com>
-References: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
- <Y0O46rcQap99fZVC@atmark-techno.com>
- <20221010085305.GA32599@wunner.de>
+        bh=VruSYQjKdMW+9AMlTXLz+TveQk1ca9C/k1+WiztK+/I=;
+        b=EbZipuHk8TAvoakJ/gV8l9R/eIftQb6NyPPl/eaPKgzSAGDOXhkey0qiv/iBJnRhQX
+         QfeesXB2iffBHZwPbsGxzgiHkJC7C4LZ9TNbTh7Mnxx9ChBGZhOyFmf/RpmdHQYAOdDV
+         vayQoOdljZaoFuXocw3npU/rhs4PeNsk1r2utOOjReEpKCXzUoKLAKt1zzndjXZnuaol
+         Pqzr3NrlC2GnRsYnQp1UHYaR+0MX0HUsjw3aF1GsiGp6IdJ61ybLPBCsuilcv+HNeyuL
+         ELtXpi/H+iaZOHxmieqvtRczjLi82RWLya2aH6bhSusPfY/wENaRMJ/I7BlIlnbES+MW
+         k6rw==
+X-Gm-Message-State: ACrzQf1VF7ikArZbrduNcg5RmHI3ZeL6k1CN/uTfDA3TG94lZj2uLRIm
+        3tkhuJEjyIVNm6HTaYQ9nA==
+X-Google-Smtp-Source: AMsMyM75zf+8TClOT4cW/V7W8q/hu0USA4JeuORJpzDvRkM7YoHsWw73tnh6JVor2AZBpVPgMznlJA==
+X-Received: by 2002:a05:6870:5808:b0:128:afd5:491f with SMTP id r8-20020a056870580800b00128afd5491fmr10232253oap.136.1665407119374;
+        Mon, 10 Oct 2022 06:05:19 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bo7-20020a056808228700b0035465a615e1sm2282821oib.30.2022.10.10.06.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 06:05:18 -0700 (PDT)
+Received: (nullmailer pid 493117 invoked by uid 1000);
+        Mon, 10 Oct 2022 13:05:19 -0000
+Date:   Mon, 10 Oct 2022 08:05:19 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Siarhei Volkau <lis8215@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH 3/8] dt-bindings: clock: Add Ingenic JZ4755 CGU header
+Message-ID: <20221010130519.GA488861-robh@kernel.org>
+References: <20221009181338.2896660-1-lis8215@gmail.com>
+ <20221009181338.2896660-4-lis8215@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221010085305.GA32599@wunner.de>
+In-Reply-To: <20221009181338.2896660-4-lis8215@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Lukas Wunner wrote on Mon, Oct 10, 2022 at 10:53:05AM +0200:
-> > Unfortunately you've marked this for v4.14+ stable, but it doesn't even
-> > apply to 5.19.14
-> [...]
-> > What would you like to do for stable branches?
-> > Would you be able to send a patch that applies on older 5.10 and 5.15
-> > where commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart
-> > open") has been backported?
+On Sun, Oct 09, 2022 at 09:13:32PM +0300, Siarhei Volkau wrote:
+> This will be used from the devicetree bindings to specify the clocks
+> that should be obtained from the jz4755-cgu driver.
 > 
-> Greg will try to apply it to stable kernels (probably after the merge
-> window closes) and send an e-mail that it failed.  I was going to wait
-> for that to happen and then look into backporting the patch.
+> Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
+> ---
+>  .../dt-bindings/clock/ingenic,jz4755-cgu.h    | 49 +++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 include/dt-bindings/clock/ingenic,jz4755-cgu.h
+> 
+> diff --git a/include/dt-bindings/clock/ingenic,jz4755-cgu.h b/include/dt-bindings/clock/ingenic,jz4755-cgu.h
+> new file mode 100644
+> index 000000000..32307f68c
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/ingenic,jz4755-cgu.h
+> @@ -0,0 +1,49 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
 
-Ah, sorry for rushing you here -- I got tricked by the git committer
-date but that doesn't mean the merge commit was that old, I hadn't
-noticed this just got in.
+Dual license please.
 
-> Basically what needs to be done is replace calls to uart_rs485_config()
-> with a direct invocation of port->rs485_config().  Plus carefully checking
-> that nothing is missing or breaks.  That's probably simpler than just
-> backporting additional patches or reverting stuff.  If you want to take
-> a stab at it, go ahead. :)
-
-The only hardware I have is ims and your patch touches at quite a few of
-the drivers, I'm not really in a good position to check anything there
-but I can give it a stab tomorrow or Wed
-
-
-By the way that just made me check the imx code, but if I am to trust
-that set_mctrl is never called with RS485 enabled and rs485_config is
-only called when it is enabled should the SER_RS485_ENABLED checks be
-removed there, or did I misunderstand something and it's still useful?
-
-(I wouldn't know if the rs232 hardware flags have any impact on rs485
-actual control but I'll trust you on this and that nothing ever calls
-set_mctrl when rs485 is enabled... I would actually have said that
-rts_active/inactive should keep setting port->mctrl precisely for the
-cases where both are muxed as you'll otherwise unreliably enable/disable
-RTS based on the state the last time was when get_mctrl was called; but
-I haven't seen this done so it doesn't really matter to me)
-
-
-Thanks,
--- 
-Dominique
+> +/*
+> + * This header provides clock numbers for the ingenic,jz4755-cgu DT binding.
+> + */
+> +
+> +#ifndef __DT_BINDINGS_CLOCK_JZ4755_CGU_H__
+> +#define __DT_BINDINGS_CLOCK_JZ4755_CGU_H__
+> +
+> +#define JZ4755_CLK_EXT		0
+> +#define JZ4755_CLK_OSC32K	1
+> +#define JZ4755_CLK_PLL		2
+> +#define JZ4755_CLK_PLL_HALF	3
+> +#define JZ4755_CLK_EXT_HALF	4
+> +#define JZ4755_CLK_CCLK		5
+> +#define JZ4755_CLK_H0CLK	6
+> +#define JZ4755_CLK_PCLK		7
+> +#define JZ4755_CLK_MCLK		8
+> +#define JZ4755_CLK_H1CLK	9
+> +#define JZ4755_CLK_UDC		10
+> +#define JZ4755_CLK_LCD		11
+> +#define JZ4755_CLK_UART0	12
+> +#define JZ4755_CLK_UART1	13
+> +#define JZ4755_CLK_UART2	14
+> +#define JZ4755_CLK_DMA		15
+> +#define JZ4755_CLK_MMC		16
+> +#define JZ4755_CLK_MMC0		17
+> +#define JZ4755_CLK_MMC1		18
+> +#define JZ4755_CLK_EXT512	19
+> +#define JZ4755_CLK_RTC		20
+> +#define JZ4755_CLK_UDC_PHY	21
+> +#define JZ4755_CLK_I2S		22
+> +#define JZ4755_CLK_SPI		23
+> +#define JZ4755_CLK_AIC		24
+> +#define JZ4755_CLK_ADC		25
+> +#define JZ4755_CLK_TCU		26
+> +#define JZ4755_CLK_BCH		27
+> +#define JZ4755_CLK_I2C		28
+> +#define JZ4755_CLK_TVE		29
+> +#define JZ4755_CLK_CIM		30
+> +#define JZ4755_CLK_AUX_CPU	31
+> +#define JZ4755_CLK_AHB1		32
+> +#define JZ4755_CLK_IDCT		33
+> +#define JZ4755_CLK_DB		34
+> +#define JZ4755_CLK_ME		35
+> +#define JZ4755_CLK_MC		36
+> +#define JZ4755_CLK_TSSI		37
+> +#define JZ4755_CLK_IPU		38
+> +
+> +#endif /* __DT_BINDINGS_CLOCK_JZ4755_CGU_H__ */
+> -- 
+> 2.36.1
+> 
+> 
