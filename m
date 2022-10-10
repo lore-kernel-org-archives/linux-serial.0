@@ -2,91 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA6FC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 08:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 406ADC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Oct 2022 09:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbiJJIxL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Oct 2022 04:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48032 "EHLO
+        id S231627AbiJJJJg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Oct 2022 05:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiJJIxJ (ORCPT
+        with ESMTP id S231637AbiJJJJe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Oct 2022 04:53:09 -0400
+        Mon, 10 Oct 2022 05:09:34 -0400
 Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D18B4DF20;
-        Mon, 10 Oct 2022 01:53:07 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2211C543F2;
+        Mon, 10 Oct 2022 02:09:34 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
          client-signature RSA-PSS (4096 bits) client-digest SHA256)
         (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 3CCCC100DA1C2;
-        Mon, 10 Oct 2022 10:53:06 +0200 (CEST)
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id F26D3100E5F31;
+        Mon, 10 Oct 2022 11:09:30 +0200 (CEST)
 Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id F31103E543; Mon, 10 Oct 2022 10:53:05 +0200 (CEST)
-Date:   Mon, 10 Oct 2022 10:53:05 +0200
+        id CB85D60DC1; Mon, 10 Oct 2022 11:09:30 +0200 (CEST)
+Date:   Mon, 10 Oct 2022 11:09:30 +0200
 From:   Lukas Wunner <lukas@wunner.de>
-To:     Dominique MARTINET <dominique.martinet@atmark-techno.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v4] serial: Deassert Transmit Enable on probe in
- driver-specific way
-Message-ID: <20221010085305.GA32599@wunner.de>
-References: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
- <Y0O46rcQap99fZVC@atmark-techno.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] Revert "serial: fsl_lpuart: Reset prior to registration"
+Message-ID: <20221010090930.GA23968@wunner.de>
+References: <20220929085318.5268-1-sherry.sun@nxp.com>
+ <1265873d-28f9-d39c-5cce-858dbed1e8e8@linux.intel.com>
+ <AS8PR04MB84044F397918A3475B5D8D1D92579@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <39c68295-947-2353-d9b-3bd654c38c7@linux.intel.com>
+ <AS8PR04MB8404FAD25C9881FAD2754FB192569@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <b4779edd-200-c7df-4bde-7f434fdefa@linux.intel.com>
+ <AS8PR04MB84047F39CD10C00CEE29213F92219@AS8PR04MB8404.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y0O46rcQap99fZVC@atmark-techno.com>
+In-Reply-To: <AS8PR04MB84047F39CD10C00CEE29213F92219@AS8PR04MB8404.eurprd04.prod.outlook.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 10, 2022 at 03:17:14PM +0900, Dominique MARTINET wrote:
-> Lukas Wunner wrote on Thu, Sep 22, 2022 at 06:27:33PM +0200:
-> > When a UART port is newly registered, uart_configure_port() seeks to
-> > deassert RS485 Transmit Enable by setting the RTS bit in port->mctrl.
-> > However a number of UART drivers interpret a set RTS bit as *assertion*
-> > instead of deassertion:  Affected drivers include those using
-> > serial8250_em485_config() (except 8250_bcm2835aux.c) and some using
-> > mctrl_gpio (e.g. imx.c).
-> > 
-> > Since the interpretation of the RTS bit is driver-specific, it is not
-> > suitable as a means to centrally deassert Transmit Enable in the serial
-> > core.  Instead, the serial core must call on drivers to deassert it in
-> > their driver-specific way.  One way to achieve that is to call
-> > ->rs485_config().  It implicitly deasserts Transmit Enable.
-> > 
-> > So amend uart_configure_port() and uart_resume_port() to invoke
-> > uart_rs485_config().  That allows removing calls to uart_rs485_config()
-> > from drivers' ->probe() hooks and declaring the function static.
-[...]
-> We also noticed rs485 DE was initially wrong last week and I noticed
-> this when I was about to send a patch that just inverted the
-> SER_RS485_RTS_AFTER_SEND check in uart_configure_port, but after reading
-> the commit message here it's a lot more complicated than that depending
-> on the serial driver...
+On Sun, Oct 09, 2022 at 10:23:13AM +0000, Sherry Sun wrote:
+> I am not familiar with 8250 serial, but at least for imx uart driver
+> and lpuart driver, the following behavior is same.
+> For the "real" consoles (everything which is not a bootconsole),
+> the (port)->cons and (port)->cons->index are initialized through
+> uart_add_one_port()->uart_configure_port()->register_console()->
+> try_enable_new_console(), here the console index is assigned by
+> the console cmdline parameters.
 
-Yes, sorry for the breakage.
+Hm, uart_add_one_port() does the following *before* calling
+uart_configure_port():
 
-> Unfortunately you've marked this for v4.14+ stable, but it doesn't even
-> apply to 5.19.14
-[...]
-> What would you like to do for stable branches?
-> Would you be able to send a patch that applies on older 5.10 and 5.15
-> where commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart
-> open") has been backported?
+	/*
+	 * If this port is in use as a console then the spinlock is already
+	 * initialised.
+	 */
+	if (!uart_console_enabled(uport))
+		uart_port_spin_lock_init(uport);
 
-Greg will try to apply it to stable kernels (probably after the merge
-window closes) and send an e-mail that it failed.  I was going to wait
-for that to happen and then look into backporting the patch.
+It sounds like in the case of fsl_lpuart.c, the spin lock is *always*
+initialized, even though a concurrent lpuart_console_write() may be
+holding it.  That's not solved by moving lpuart_global_reset() around.
 
-Basically what needs to be done is replace calls to uart_rs485_config()
-with a direct invocation of port->rs485_config().  Plus carefully checking
-that nothing is missing or breaks.  That's probably simpler than just
-backporting additional patches or reverting stuff.  If you want to take
-a stab at it, go ahead. :)
+The problem with performing lpuart_global_reset() after UART registration
+is that as soon as uart_add_one_port() returns, the port is available
+for user space to use.  So resetting it is a no-go.
 
 Thanks,
 
