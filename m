@@ -2,82 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 014DDC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Oct 2022 09:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87458C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Oct 2022 12:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiJKJut (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Oct 2022 05:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        id S229672AbiJKMIY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 11 Oct 2022 08:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiJKJua (ORCPT
+        with ESMTP id S229436AbiJKMIW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Oct 2022 05:50:30 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC0267147
-        for <linux-serial@vger.kernel.org>; Tue, 11 Oct 2022 02:50:18 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id d7-20020a17090a2a4700b0020d268b1f02so6061572pjg.1
-        for <linux-serial@vger.kernel.org>; Tue, 11 Oct 2022 02:50:18 -0700 (PDT)
+        Tue, 11 Oct 2022 08:08:22 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CDE51A03
+        for <linux-serial@vger.kernel.org>; Tue, 11 Oct 2022 05:08:20 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id z8so3539846qtv.5
+        for <linux-serial@vger.kernel.org>; Tue, 11 Oct 2022 05:08:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZMcAAyBurX213ms++6fxs5yYshR15LQEWIK6Brhfq2U=;
-        b=E30jldzjDUyedes4Dyz0G7M/yKxEwbf7zvDsjPTux3VYUTaiYNJwgckV4Afjq2WjOR
-         KxgSgvDWZGcXxmegkYa5RqsqnsOFjsNCeN+f/N8/ujUHry2iOrtrN1AZs2RFLbjD4PEv
-         Gois52svXqDPqXy3q+5GtSWlG2iN/KL4ewUZ0=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=d7sQGgcfeLetHsYqqAQzwhlkQO31idzHL2CtdWtj7pI=;
+        b=fFpMQBJU+KIup5rqPl5HSkr/RGGMV7irnqdmJssu6pEBstzv0l8cg2Yyh4W0MSrMjS
+         1UHEW48g9iVzieWXgwHcY2sYLOt8PGh7CZUX15ojxeZ8yjvBxSHv2WSDFYFUduWYP9nw
+         FCg96WFT2ulQ3hmp+VnOAjxmLC62pNPaUoyRZaduPPyWuVZSCJxfQDpFWFu7r13xNirS
+         IKWsSZyCLPIsSGgpTaS94qvR6G4n+kY0wFKw9Gg0jspinDQ/WolzwqymbY8U1sloEBA9
+         A+IPAE5NrQeJUa3snTIDBFMzGx3H7TLwRCa6tpNRmjgaH4XwOlPnKAepUx7845XuTUAP
+         2G7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZMcAAyBurX213ms++6fxs5yYshR15LQEWIK6Brhfq2U=;
-        b=I65D7d/OS++cpZ9W+vb8Xj4qyB5ftrPOUc3rdWP0kJ3Y6sM7DIXPsfsJJvqNfx9oRU
-         MmZvG8AQ0Aqutz5KITYD02shnkOVWq8lhjh+w+jHDZgj9o4k04vAOMgnap8cGi7LwsCv
-         HWv0gGha+FKcAolSJ70XY+SSfyk2odlX7a3rymqugK5iNNvEf3eJoXNbnlUQUcgf8lRu
-         8dVSgjB2Qas5AbEi3N1XVxLsIsXCnT633L9VD1jyQ6rMl68+rgh54FM9x6kA9WroZg5i
-         2Sd5Zm97AS+/ZbA8s+LutJepu+o8gZDmZBbTtYeg8iLqvOhTjU+LX8fy2mnqpRAO1WJr
-         1pkA==
-X-Gm-Message-State: ACrzQf3B7ZfCjdSmOWSsV874JBr/UI4bt2l9iXtQwv2JRBcBfdU0dalX
-        h+KREIqealZwPyuGjtYtCUZKFA==
-X-Google-Smtp-Source: AMsMyM64TKsLAdnHpm8xa6rVVP1WyAAfcvlvUT8VgjoPnhg8b/BQy8D8VLy5xVUWdI1nnoYKHjgoWw==
-X-Received: by 2002:a17:902:d2c6:b0:17f:592b:35dd with SMTP id n6-20020a170902d2c600b0017f592b35ddmr23669488plc.172.1665481817725;
-        Tue, 11 Oct 2022 02:50:17 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:9be2:d006:f7fe:8f60])
-        by smtp.gmail.com with ESMTPSA id u6-20020a17090a3fc600b001faafa42a9esm7559083pjm.26.2022.10.11.02.50.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Oct 2022 02:50:17 -0700 (PDT)
-Date:   Tue, 11 Oct 2022 18:50:12 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: Do not delay boot when printing log to serial console during
- startup?
-Message-ID: <Y0U8VA7z/on3Hdbr@google.com>
-References: <c87cc376-3b0d-8fda-7fc1-555c930faaf1@molgen.mpg.de>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=d7sQGgcfeLetHsYqqAQzwhlkQO31idzHL2CtdWtj7pI=;
+        b=6smvt5dFJNRjU2sqnqTKyaEhjW9nr24Y5OqfsDyXgh3Lr/8zodNcHXBwcCn5kadVxa
+         t8KkvcsKiNTe489d5acBiVrtXLdmANRtCsFzgd5CFUCzuISzwgOlUkwtJ4PbPXpi76U6
+         8ofVoiYgs6QO+D0MeHYjRyJeP5wO+eU5fCZMB9mmryFjiZQIh0An37LLWvEbwXOmP/EK
+         JLiF3qdeDLH9Q5DxITdDK+7OI06vcDM0hOtUBGU2erKDExP8c+Hynx6XOu/y5eMS2nGn
+         Po2eI4cijbFCptCQ3Ufx4lBsPD4WHe/pjaDo0tWf7tfKdvlUTVnhuE3Rb992XIEwkoFu
+         4f3w==
+X-Gm-Message-State: ACrzQf3uWjA+799IqHhKCeYKkO0MT2Q3H76Rz8/nQN7Kj4whyRi4Lp5h
+        UyL+6CX01nuzlAjAJW4Q9FxF8w==
+X-Google-Smtp-Source: AMsMyM4eGhDDIfVAL6kaolpL8+jGYieCca2y9hJwcftMhjyac5scT6NHJ1gngHvyVO3MwMBzC9Cc2A==
+X-Received: by 2002:ac8:7f93:0:b0:35b:bbdd:5699 with SMTP id z19-20020ac87f93000000b0035bbbdd5699mr18616407qtj.46.1665490099267;
+        Tue, 11 Oct 2022 05:08:19 -0700 (PDT)
+Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
+        by smtp.gmail.com with ESMTPSA id c2-20020ac87dc2000000b0039a8b075248sm3987764qte.14.2022.10.11.05.08.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Oct 2022 05:08:18 -0700 (PDT)
+Message-ID: <e64594f9-e5dc-9a79-8240-fa0e749b9655@linaro.org>
+Date:   Tue, 11 Oct 2022 08:08:16 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c87cc376-3b0d-8fda-7fc1-555c930faaf1@molgen.mpg.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: [PATCH 1/8] dt-bindings: ingenic: Add support for the JZ4755 SoC
+Content-Language: en-US
+To:     Siarhei Volkau <lis8215@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org
+References: <20221009181338.2896660-1-lis8215@gmail.com>
+ <20221009181338.2896660-2-lis8215@gmail.com>
+ <84b6dae0-d503-bbd2-d483-80462917afa4@linaro.org>
+ <CAKNVLfZmjfmKb5ybY8NDhV-bQCQn7o_bSVK=aM4byftasW6dLg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAKNVLfZmjfmKb5ybY8NDhV-bQCQn7o_bSVK=aM4byftasW6dLg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On (22/10/11 11:03), Paul Menzel wrote:
+On 10/10/2022 16:18, Siarhei Volkau wrote:
+> пн, 10 окт. 2022 г. в 17:55, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org>:
 > 
-> We boot our systems generally with the serial console enabled
-> `console=ttyS0,115200n8`, and noticed that initializing the console takes at
-> least one second.
+>> How do you plan to merge it? Usually these go via subsystem trees...
+> 
+> It's a new case for me, could you explain the problem a bit more?
+> What things should I bother with in the next patchset version?
+> Thanks in advance.
 
-[..]
+Each binding goes via subsystem maintainer, not via DT bindings tree, so
+keeping all in one patch messes with that.
 
-> So it looks to me like, that the already recorded messages are printed out
-> over the serial console first, before it continues. The documentation of
-> `register_console()` in `kernel/printk/printk.c` confirms that:
+Best regards,
+Krzysztof
 
-I guess your console has CON_PRINTBUFFER flag set, so we flush all
-pending kernel messages on this console after registration. Off the
-top of my head, you might want to play with the default console loglevel
-so that we will suppress printing of most of the messages.
