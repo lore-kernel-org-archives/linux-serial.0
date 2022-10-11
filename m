@@ -2,68 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21B0C43217
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Oct 2022 12:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 948FFC43219
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Oct 2022 18:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbiJKMJK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Oct 2022 08:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
+        id S229683AbiJKSiU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 11 Oct 2022 14:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiJKMJI (ORCPT
+        with ESMTP id S229496AbiJKSiS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Oct 2022 08:09:08 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAC35C35A
-        for <linux-serial@vger.kernel.org>; Tue, 11 Oct 2022 05:09:05 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id z30so8279857qkz.13
-        for <linux-serial@vger.kernel.org>; Tue, 11 Oct 2022 05:09:05 -0700 (PDT)
+        Tue, 11 Oct 2022 14:38:18 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BAA62AA2;
+        Tue, 11 Oct 2022 11:38:16 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id o65so11591632iof.4;
+        Tue, 11 Oct 2022 11:38:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wA2PG1QV5nKHw4b8l0hoDe51fcPxcPalio0IbUmeyTM=;
-        b=FXrqF8s7XtbX/Ycq5jUsbxK5DGdGYyeznM+Y/KtKVTpxB1WEgtBvfXGtmS/mY3Z6QP
-         xTZJNxIlqUEMrPqMRIQg2lU/J2UfnvzpakaYep0KVD439+H4JvQBNEdDUfDC2Z5sJWjd
-         RY2zgbnUiGWHR8vWDuwUHpcUjv2BW7E78N5wbmLogOeltArOPTXSWzoXD5QbJSInup6Y
-         qr8x5sh/Ue5Hr+qbjR0soe72IxM2R1XjMVWfMMrOUFB/UCNqsmEvppyH6bwz0n9MwXzs
-         76IUxf+rLZBn49IgdPDPhnUq4s/TCfJtG4++2/wj2vkldnNK9BLMjX37rBHO2FjAuhbt
-         3+kw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yzz7HPfd9lZbybLpIqjBSIyTMfCLBxbv1l1ZEl4GhoA=;
+        b=Qk8QJCIatrsXIrxE/1a4v6fwYn2G9ANRwZ/uX2kjiTr0NSt5poOiPAzTxoj7e31W5K
+         IxvyMMHhBnGzATsf2wbexpgSf4zz/Wkt0/SEY0PEw2afmrFu0B1UJxD0pEVx8Wy1mHPg
+         lH6Z4XxiwccfnyyEQJYRweI8lQYUEA8DQOpmcsouqwJl7HmSm8uLgjV2FkkljSHscw3T
+         fn6teUcifNDJ7ie9w8jtZ6nqiygnDbEYlU4dNv2o/pTOmZrXH2975YeOdjVmaMZTzrGk
+         yL0XXjeYRtGF47M/8oNKAqys/gANbdBwVKroEMOaKef47BWqV1hbWsW2s9G/kDLIEWE1
+         8dIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wA2PG1QV5nKHw4b8l0hoDe51fcPxcPalio0IbUmeyTM=;
-        b=eMmrx/a+CV6De0KLNDD15AHEkk8JTdESL4eisn5+zISKn8xmxocvJrQ1fNXWq4kgo4
-         C0elR3+AZEObtr/sbZrdbVgiEp4m2B7vF3SqE2FK3TffGp5Ju89GPvsE/iPvolH8uHAu
-         LQn4jQL/0TUTYN+yH6TYTUWrBVslLmZPkfg8t+7FGMvqtoGNWMVwA+hz87JOVbUJcm3P
-         HtFbgC/+jn8TeHKRLWGAwHcy6KTuhNDwPGifzxnDTKvtmdaUOlkAOkp0PlquSfY82/NL
-         FtvRqnZRggcTHOHp0NdLjXasbRN04EjJuJ/alBs6UsWmD+QShNMxV++J384W5iV/t+hk
-         Fclg==
-X-Gm-Message-State: ACrzQf1r2rcWvDGQ+Ttq0EkWVb76eyHXRUcXzAYg6+17C+zD7KT3KLOe
-        gLbo4qLDyHacmzSSmaIZPgr18w==
-X-Google-Smtp-Source: AMsMyM6EDJdIKnBSo3ZfKOacjcSSHQnz7CckztC9dG1sbPnETMw/m0XvV2QlBBo1fJbyvmgZOQSIIg==
-X-Received: by 2002:a05:620a:2909:b0:6ee:6c83:9769 with SMTP id m9-20020a05620a290900b006ee6c839769mr3710909qkp.732.1665490145001;
-        Tue, 11 Oct 2022 05:09:05 -0700 (PDT)
-Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
-        by smtp.gmail.com with ESMTPSA id bm4-20020a05620a198400b006cfc7f9eea0sm12917572qkb.122.2022.10.11.05.09.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Oct 2022 05:09:03 -0700 (PDT)
-Message-ID: <3c516469-8f89-9c4a-e558-5281d07510c7@linaro.org>
-Date:   Tue, 11 Oct 2022 08:09:01 -0400
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yzz7HPfd9lZbybLpIqjBSIyTMfCLBxbv1l1ZEl4GhoA=;
+        b=RBUWEPJncbllp7NdDpzODxwZqNzMpxDciKKcx7eos4OP5dPuvpp3X5NA/jX7pmjz7n
+         tVIQInk9i9OvSUsIoMBWOaGOBshwucSjuxwPhv1zuxGJvvtT9kn2g+SNqiCZuXkoDj+t
+         kFclitraEDBTW8llh3vGyauda/5yiM4L+P+xB+pUYPglMdSVCXYzGlmBf4nt1aIr/Ifb
+         rX+apHaSi7CQ8uYRcHA28oiA62vXfaohXSAx4Eyqm5wzhiS0byPogHKwOuEFPt5SxIHV
+         xUHoPP1zLMSVdxqsDv25/mgMxdFAUmFCeiPLSsOugiHn9u+92y1YeU4zQGSaqWp4GHM8
+         53yQ==
+X-Gm-Message-State: ACrzQf0s2nQOBM6TRf3yrsUjfR5DwUfWM+dhWzAb/7ALLwfDdY3rqcYC
+        HZ+foYn2JZt6o+j7/Wf6UlgeWJBsNZNgAhlyKws=
+X-Google-Smtp-Source: AMsMyM6K6r8LdVzpVWYq8QtcvBsfHdBteWilO2KZnECnX0n0rcAd1mM+RWpr1skNfc7yA9u6pPfyByjCewD57Mlv1r4=
+X-Received: by 2002:a05:6638:2494:b0:363:db4f:c870 with SMTP id
+ x20-20020a056638249400b00363db4fc870mr1579414jat.65.1665513494686; Tue, 11
+ Oct 2022 11:38:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH 8/8] MIPS: DTS: Ingenic: Add support for the JZ4755 SoC
-Content-Language: en-US
-To:     Siarhei Volkau <lis8215@gmail.com>
+References: <20221009181338.2896660-1-lis8215@gmail.com> <20221009181338.2896660-8-lis8215@gmail.com>
+ <Y0R+q7BdxtFqeiT1@kroah.com>
+In-Reply-To: <Y0R+q7BdxtFqeiT1@kroah.com>
+From:   Siarhei Volkau <lis8215@gmail.com>
+Date:   Tue, 11 Oct 2022 21:38:03 +0300
+Message-ID: <CAKNVLfaNJjdVCeVCrOOw5xjsJ=gzJ2uFxAjgMA9tWHE=qFEECA@mail.gmail.com>
+Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755 SoCs
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Paul Cercueil <paul@crapouillou.net>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -71,38 +69,27 @@ Cc:     Michael Turquette <mturquette@baylibre.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org
-References: <20221009181338.2896660-1-lis8215@gmail.com>
- <20221009181338.2896660-9-lis8215@gmail.com>
- <2e89fc3a-bc54-17e7-d352-25db877172ff@linaro.org>
- <CAKNVLfZ4zPdhv=zJOcDk_hnVVoU51L8uAsoXEmzJpecsyc5KmQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAKNVLfZ4zPdhv=zJOcDk_hnVVoU51L8uAsoXEmzJpecsyc5KmQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10/10/2022 16:00, Siarhei Volkau wrote:
->> How do you build it? How do you test it? It's basically non-compillable,
->> dead code. You need a board.
-> 
-> I tested it on a Ritmix RZX-50 handheld, 
+=D0=BF=D0=BD, 10 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 23:20, Greg Kroah-=
+Hartman <gregkh@linuxfoundation.org>:
+> What does "clkdiv" mean here?
 
-You cannot, there is no such DTS.
+That means a clock divisor between the input oscillator and UART
+peripheral clock source. Most Ingenic SoCs don't have that divisor,
+so 1 is always in effect for them.
+However, the JZ4750 and JZ4755 have switchable /2 clock divisor.
 
-> although this patchset doesn't
-> include it as it requires many other changes to be fully functional.
+> If you only have 1 or 2 as an option
 
-Exactly.
+Yes, it is.
 
-> I decided to do this in two steps: add platform first (this patchset) then
-> specific drivers and quirks, in the next patchset, when this one passes.
-> 
-> Of course I can add machine's dts with working parts. What's the usual way?
+> just have 2 functions instead please.
 
-Don't add dead code to the kernel, so DTSI comes with DTS.
+Got it, will do that.
 
-Best regards,
-Krzysztof
-
+Thank you.
