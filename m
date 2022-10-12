@@ -2,81 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5FCC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Oct 2022 06:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E11C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Oct 2022 12:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbiJLGtl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Oct 2022 02:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
+        id S229711AbiJLMOc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Oct 2022 08:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiJLGtk (ORCPT
+        with ESMTP id S229731AbiJLMOa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Oct 2022 02:49:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4B7C27;
-        Tue, 11 Oct 2022 23:49:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92829B8197E;
-        Wed, 12 Oct 2022 06:49:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E813FC433D6;
-        Wed, 12 Oct 2022 06:49:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1665557375;
-        bh=akU7D6EcK/LvpJ9YHAVo+RDeORIVNOj5M3jR41b1ypA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zzzwJ3T3QPyUdhDhiSaAdji5opHMUcCjVCP6kgGVA+fHc6Bs65LjNz1ANzEZZ3Nsa
-         C6xKvxG1CnSqI+hhPGioomAGxEpbqfIGtuwbyv+f6KiTNwSdI9wCnH3IHnod7slezs
-         jw1FwmUhvC7oqpqGrFjfOvpJFg1/vJwqmSfbDshY=
-Date:   Wed, 12 Oct 2022 08:50:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "D. Starke" <daniel.starke@siemens.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] tty: n_gsm: make n_gsm line number configurable
-Message-ID: <Y0Zjqxl/MAivtf02@kroah.com>
-References: <20221012061715.4823-1-daniel.starke@siemens.com>
+        Wed, 12 Oct 2022 08:14:30 -0400
+Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2E1A8CDE
+        for <linux-serial@vger.kernel.org>; Wed, 12 Oct 2022 05:14:28 -0700 (PDT)
+Received: by mail-vk1-xa35.google.com with SMTP id o28so4264371vkn.11
+        for <linux-serial@vger.kernel.org>; Wed, 12 Oct 2022 05:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Pk0mJuYJ+uetlsgCAR2M/DnPNvLXVpY6+d7GL5QMYbk=;
+        b=ZvdRu01hmrSgFO9/Rh33/Yd+y1vZBaRao9GdzK3ZxsZcSWD5nAxGyT/d0SfWtUb1oJ
+         k2elDptzBjtDCJ+4TmgCYwOW8ZeQ74Ed7cHB5PP65Tl0GYS7HSPwd2Pqy59QRyrKxVlN
+         /yBkBsyhqZW2A2vce1Kj5JWSeHOXFLDtHAeCvhApQcB9314nXzCxhwiah+r9qjIbd3tK
+         8GpKUB5mLsxo3YkRyxkRtx8oDn5cn+RqMYyMJdb7JRC9Gu+FST6j6Y8M6tYNCRFdXDYM
+         +xmGk20CGBkmjZldDSIXMMWlxSehnBCaDxQf2EKCHRj0f5xH34agGW4tZRf/2twjhVwx
+         ZIng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Pk0mJuYJ+uetlsgCAR2M/DnPNvLXVpY6+d7GL5QMYbk=;
+        b=VLz0s8r64XGrXFq4eP+vFtfJA5s1PXUZKeBrhtefQvBvDBUNkt+Msd1kXjRUOmjIk+
+         3/HnuxKMPjWeeA77ucD2h/zbItyCntnNR+jzwaoLi91yRqZxxWA/JUVeps4Sxv2Mp8Vo
+         SxuUNc681N46yKtTfBhbk4TYCvsjOdzJf3LodALpJBlSHKmdYjdYpSzKb7TKgrMtnLbx
+         2/Cbror64wruus1wcDk6UkZgyYzCUPZCkolGy2362e2T9f040AOXi51tMxIoQ2sVmpP7
+         fzMB2N0qZiJTVIB0ZTaMmW0imwwwpjGS5ke6UAVJMossRN1ZakAJTY7p+/mNm0/TrI5J
+         qLYQ==
+X-Gm-Message-State: ACrzQf1MMnOu7kzZrCRTqx1j+aQ46FpwJ5//UgAz3IZBE/sELN6gl//i
+        PzTF8UMfoieFGgZf6lVg8zyv1Q2KBNGpnQ==
+X-Google-Smtp-Source: AMsMyM4uG6jpcLDJXYitOq81RNFGH1xslouPo9DAAgEWM0PFk9clcCnutoAgaND4pYP+SBcOxDbcVw==
+X-Received: by 2002:a17:903:31c9:b0:17a:e5c:1332 with SMTP id v9-20020a17090331c900b0017a0e5c1332mr29402552ple.86.1665576847187;
+        Wed, 12 Oct 2022 05:14:07 -0700 (PDT)
+Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id 9-20020a631649000000b00458a0649474sm9438182pgw.11.2022.10.12.05.14.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 05:14:06 -0700 (PDT)
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Martin Kaiser <martin@kaiser.cx>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH] serial: imx: Add missing .thaw_noirq hook
+Date:   Wed, 12 Oct 2022 20:13:53 +0800
+Message-Id: <20221012121353.2346280-1-shawn.guo@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221012061715.4823-1-daniel.starke@siemens.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 08:17:15AM +0200, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> Currently, the n_gsm line number and its derived virtual ttys are assigned
-> in the order of allocations with no means to change this.
+The following warning is seen with non-console UART instance when
+system hibernates.
 
-Which is fine, why do you need this to be changed?  What relies on
-specific line numbers in userspace that can not handle things correctly
-with the normal userspace tools we have for this type of thing?
+[   37.371969] ------------[ cut here ]------------
+[   37.376599] uart3_root_clk already disabled
+[   37.380810] WARNING: CPU: 0 PID: 296 at drivers/clk/clk.c:952 clk_core_disable+0xa4/0xb0
+...
+[   37.506986] Call trace:
+[   37.509432]  clk_core_disable+0xa4/0xb0
+[   37.513270]  clk_disable+0x34/0x50
+[   37.516672]  imx_uart_thaw+0x38/0x5c
+[   37.520250]  platform_pm_thaw+0x30/0x6c
+[   37.524089]  dpm_run_callback.constprop.0+0x3c/0xd4
+[   37.528972]  device_resume+0x7c/0x160
+[   37.532633]  dpm_resume+0xe8/0x230
+[   37.536036]  hibernation_snapshot+0x288/0x430
+[   37.540397]  hibernate+0x10c/0x2e0
+[   37.543798]  state_store+0xc4/0xd0
+[   37.547203]  kobj_attr_store+0x1c/0x30
+[   37.550953]  sysfs_kf_write+0x48/0x60
+[   37.554619]  kernfs_fop_write_iter+0x118/0x1ac
+[   37.559063]  new_sync_write+0xe8/0x184
+[   37.562812]  vfs_write+0x230/0x290
+[   37.566214]  ksys_write+0x68/0xf4
+[   37.569529]  __arm64_sys_write+0x20/0x2c
+[   37.573452]  invoke_syscall.constprop.0+0x50/0xf0
+[   37.578156]  do_el0_svc+0x11c/0x150
+[   37.581648]  el0_svc+0x30/0x140
+[   37.584792]  el0t_64_sync_handler+0xe8/0xf0
+[   37.588976]  el0t_64_sync+0x1a0/0x1a4
+[   37.592639] ---[ end trace 56e22eec54676d75 ]---
 
-> Introduce additional ioctl parameters numValid and num to configure the
-> line number to allow predictable virtual tty allocation and numbering.
-> Especially when using multiple n_gsm instances at the same time.
+On hibernating, pm core calls into related hooks in sequence like:
 
-Ick, please no.  That should never be needed, the kernel number and name
-can be anything random (and people have suggested that we do make them
-random at times).  Don't hard-code numbers in your userspace tools, that
-is just wrong.
+    .freeze
+    .freeze_noirq
+    .thaw_noirq
+    .thaw
 
-> --- a/include/uapi/linux/gsmmux.h
-> +++ b/include/uapi/linux/gsmmux.h
-> @@ -19,7 +19,9 @@ struct gsm_config
->  	unsigned int mtu;
->  	unsigned int k;
->  	unsigned int i;
-> -	unsigned int unused[8];		/* Padding for expansion without
-> +	unsigned short numValid;
-> +	unsigned short num;
+With .thaw_noirq hook being absent, the clock will be disabled in a
+unbalanced call which results the warning above.
 
-This would never work anyway (hint "short" is not a valid uapi data
-type...)
+    imx_uart_freeze()
+        clk_prepare_enable()
+    imx_uart_suspend_noirq()
+        clk_disable()
+    imx_uart_thaw
+        clk_disable_unprepare()
 
-thanks,
+Adding the missing .thaw_noirq hook as imx_uart_resume_noirq() will have
+the call sequence corrected as below and thus fix the warning.
 
-greg k-h
+    imx_uart_freeze()
+        clk_prepare_enable()
+    imx_uart_suspend_noirq()
+        clk_disable()
+    imx_uart_resume_noirq()
+        clk_enable()
+    imx_uart_thaw
+        clk_disable_unprepare()
+
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/tty/serial/imx.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 590a25369531..e5163c2c4169 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2603,6 +2603,7 @@ static const struct dev_pm_ops imx_uart_pm_ops = {
+ 	.suspend_noirq = imx_uart_suspend_noirq,
+ 	.resume_noirq = imx_uart_resume_noirq,
+ 	.freeze_noirq = imx_uart_suspend_noirq,
++	.thaw_noirq = imx_uart_resume_noirq,
+ 	.restore_noirq = imx_uart_resume_noirq,
+ 	.suspend = imx_uart_suspend,
+ 	.resume = imx_uart_resume,
+-- 
+2.25.1
+
