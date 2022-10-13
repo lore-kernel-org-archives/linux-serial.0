@@ -2,71 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F270DC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Oct 2022 12:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE77C43219
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Oct 2022 18:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbiJMM4q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Oct 2022 08:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46032 "EHLO
+        id S230251AbiJMS7b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Oct 2022 14:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiJMM4p (ORCPT
+        with ESMTP id S232355AbiJMS6y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Oct 2022 08:56:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F7AD18EA;
-        Thu, 13 Oct 2022 05:56:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5939E61792;
-        Thu, 13 Oct 2022 12:56:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C46AC433D6;
-        Thu, 13 Oct 2022 12:56:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1665665803;
-        bh=D1v+v+p5tviS9W5Hx32wORn2qM5TjPZ0dBTOY15LvWE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NehBH+mRFL5rjnTuJ8qx3tVjdQy9wFMupEbhtY9d5m10nyRxka6uBNqyfk1RczjBT
-         3ZeaZx2kp7crwP8avFqPp/fm+rGgOaNhtfn6rdBjLXHqa8zzFFbmr3ymPGIKaJI3Cr
-         6ZuLwCbQoORPNPTzRc/8WhcYJmmrJgcCXmK2lEGI=
-Date:   Thu, 13 Oct 2022 14:57:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] tty: n_gsm: make n_gsm line number configurable
-Message-ID: <Y0gLN5b4TH43NhtZ@kroah.com>
-References: <20221012061715.4823-1-daniel.starke@siemens.com>
- <Y0Zjqxl/MAivtf02@kroah.com>
- <DB9PR10MB58818736388F209396CEA749E0259@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+        Thu, 13 Oct 2022 14:58:54 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA30827928;
+        Thu, 13 Oct 2022 11:57:06 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id q11so1431005ilj.10;
+        Thu, 13 Oct 2022 11:57:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aU4v5j25jcA4b2/jV12oaXw7opkB9OVDvdOu4hkOSkY=;
+        b=QhFO5qgSaKUMRml2Jd5VUmeEmiC9AF9BZmoWzw8uxvh3OpKZoYPyVVGYi4p2MDAlFa
+         +hMoMa8jTFYXU93+Kr/LdS9ATml85nFb2/ErVZ6DUkcki6WLco1sdO0u0MUr7zdLcb50
+         U8gM9fCJcsogz5Lw6B9QRyxGaZ8d9HJ75FXki6+24oVpcN9wE3GBgQinDmZm8oG27DKl
+         xfaeeT3GBBYthIwZkrCiBgC8M40Lo3rPe4nJ2ES38QAj1B8OCrI9b5eQNKJsi5wChNTd
+         b60m4fcAQbwUuQngvLcY0Luy7sOWRSIr/XRLCS5wpz0wbDJKImI5VlSnEwoWCcuyaX5y
+         1YLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aU4v5j25jcA4b2/jV12oaXw7opkB9OVDvdOu4hkOSkY=;
+        b=K4VQ24JcmhHFUeTtBBqWcn+HkAA1v3Z0OiUu56pd0rz/g+xDSvNXZo7hV7kxoMIvCF
+         BYZebeejThbZ2ftg78MEZ6seU/N5oUCUEdJ/oOA6faZyr7hKHd+5NSATgqVASKbQsAeR
+         +2fpEUNTpWS9NGcRMF4H0RdXqtwlS96n0ZDs4gBJhSjdvP94QmottMTze+OAk6HnDPjN
+         IRR+JAIAuXKrVDCfa9rTl6nAMspyX9L7uPqGF1qripGfnadyogAr4rjOoFsSVhmZuUEw
+         dGrZRK/xsA4BidXcpOFaK7iygGbwug9gAXeplOKtMQ6I3wuMNDPoRHhFaPUOCSe2M1dK
+         sswQ==
+X-Gm-Message-State: ACrzQf0CddUJX4PziJN2cc9gi4EcyODUXt73ToCo/0WlWWscv8MSmnhO
+        Uq3AB6wLtq1kqWXFO5G7E8WGvQcsjqKHxfKjIDk=
+X-Google-Smtp-Source: AMsMyM4tAkBUHy+Lv4iPEVX7fI3kq/6F/ptm2DyftFBCewja+gWmdmjL6xlLgaH6l9cZUi7njV1AcafirE2fwO2o+eY=
+X-Received: by 2002:a05:6e02:20ea:b0:2fa:bf8:300a with SMTP id
+ q10-20020a056e0220ea00b002fa0bf8300amr696533ilv.309.1665687426081; Thu, 13
+ Oct 2022 11:57:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB9PR10MB58818736388F209396CEA749E0259@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+References: <20221009181338.2896660-8-lis8215@gmail.com> <202210100607.YdxoR0tD-lkp@intel.com>
+ <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
+ <bb9f79d4-82a9-4790-b849-d517333ea2d4@app.fastmail.com> <GSPOJR.M4XZ4D03G60F@crapouillou.net>
+In-Reply-To: <GSPOJR.M4XZ4D03G60F@crapouillou.net>
+From:   Siarhei Volkau <lis8215@gmail.com>
+Date:   Thu, 13 Oct 2022 21:56:54 +0300
+Message-ID: <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
+Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755 SoCs
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        kbuild-all@lists.01.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        GPIO SUBSYSTEM <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 13, 2022 at 11:09:02AM +0000, Starke, Daniel wrote:
-> > > --- a/include/uapi/linux/gsmmux.h
-> > > +++ b/include/uapi/linux/gsmmux.h
-> > > @@ -19,7 +19,9 @@ struct gsm_config
-> > >  	unsigned int mtu;
-> > >  	unsigned int k;
-> > >  	unsigned int i;
-> > > -	unsigned int unused[8];		/* Padding for expansion without
-> > > +	unsigned short numValid;
-> > > +	unsigned short num;
-> > 
-> > This would never work anyway (hint "short" is not a valid uapi data
-> > type...)
-> 
-> I am surprised about this as gsm_netconfig already uses unsigned short.
+=D1=87=D1=82, 13 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 12:17, Paul Cercue=
+il <paul@crapouillou.net>:
+>
+> Just disable the divider in ingenic_fixup_fdt() in
+> arch/mips/generic/board-ingenic.c.
+>
+> Cheers,
+> -Paul
+>
 
-How does netconfig pass data to/from userspace?  Through ioctls or
-netlink?
+Looks reasonable, I hope the bootloader initialized peripherals can handle
+doubled frequency, till re-initialization completes. I'll check that.
 
-thanks,
-
-greg k-h
+Thank you all, guys.
