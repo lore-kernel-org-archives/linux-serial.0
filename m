@@ -2,147 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB75C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Oct 2022 01:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEE1C4167B
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Oct 2022 06:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbiJMBbb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Oct 2022 21:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
+        id S229591AbiJMGhx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Oct 2022 02:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiJMBba (ORCPT
+        with ESMTP id S229454AbiJMGhv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Oct 2022 21:31:30 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972C31BE92
-        for <linux-serial@vger.kernel.org>; Wed, 12 Oct 2022 18:31:29 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id i6so463579pli.12
-        for <linux-serial@vger.kernel.org>; Wed, 12 Oct 2022 18:31:29 -0700 (PDT)
+        Thu, 13 Oct 2022 02:37:51 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04D411D98B;
+        Wed, 12 Oct 2022 23:37:49 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id 187so592717iov.10;
+        Wed, 12 Oct 2022 23:37:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rDg2KrtY+r5hSPNOLM52oF65/4/O8DHcMPpTQZtCzCQ=;
-        b=XbXesjLZ5whYOE7XwY49ypj9z76tPcVopGS2MzJ2IwHGPtQRAvc94Gq6wORsemobTN
-         Q8t2p1mNDYYCX9C/iGOAOYovTO9yTWZvIZcD7QLtcpJKAHn+eJImzIMUWDn1wEj3faEY
-         /Vjvuze4D1e7zqGw+n6IWOF1NgnCgnD8cqQTZ/F5LXfOq2R0BtgDC/itpEkBY55hVj+m
-         F+BHsl2+Ub/IaWnueZ1M3/fBcs2BWA9IGsqcxZLpSi1qaDRGt6M1TwBM6DE7us5YRODg
-         A8h/4ylUh8vyZAytUQLiVo9YkGYgdr2vask6/sdUq4QofXaRyauCg9ZX4moLWXTV3jcr
-         +3xw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eNhamnGFWcGOYQgKBpc4NUk2S/tQUkP2tXcVyRZsw7w=;
+        b=d4aW4wNfEHhNXyr75oI4eP0P0/jj9mS3Yq4Xewq/VAfs/yi+YOj7xR7T9Iifrk8exY
+         qty6B/1u+xVf39efvYVSQ7WElxAW4XbiqGS5W4zhff34t7nKvl4KVxYuiqj05miEa2xK
+         D27giew9e0cP9xobx4bvEhsvPT+Xt4cXVWnLvKGNpm1Hlxxzd7eh+WTtaqabSFpy6+Qo
+         xTJSnEhHPtwptVdrxC1C1DDPqLDaVnb2/H0PmYBOqgUL57wQhMCI4SCoSegDLmoW6Jdg
+         fmW+nBc9qE0HYq0riPMvBowSSW156BKMR+ybHsUDbI0rGSg47Oll+jiikOU3H8me6kq6
+         5qGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rDg2KrtY+r5hSPNOLM52oF65/4/O8DHcMPpTQZtCzCQ=;
-        b=AHPigah9xaIt4IRXTPbHBc5rLoSyUgxf3axPgPdI9QJBKLxtqbER0DYt875xgz+Ldf
-         NC+G+OBxs7kdw0NSY3hMI4CDN49EccWLuys53F9p+LGgSA4ffaT9tdTxWVbT7K32F1fn
-         uE2KvqUblql5971LdGvTaHlxPP0Mvo7TzgE0nkP2jYw7D7KK89yx3tBABLirinuWefe3
-         VFeTuycDP1WhkzfaCGPWFRyLpOvv7xbVCkANdO43+Du/If4AvaI4t6lbPM1fDsSy3mDE
-         GNdb3ZkaQ2onTkK34eWbMh5/GzliRoSjO6lXbwk1sm8KEgdy57knydZkSVaqc+qs7CJC
-         8lKA==
-X-Gm-Message-State: ACrzQf3Khbni8VSZt6Hf9y38MTAuRTx7tMO+2OS2o4QAzMrdKATR2edc
-        scE2wLlFoUJJ/v4gJZeHc3Erlg==
-X-Google-Smtp-Source: AMsMyM4mcjGd6wqA2OV+UDjn06MD9sW/Iu14J1FoveduF0MHp/qblYvX6ElyeN8DV5D2Mox/zgjvZQ==
-X-Received: by 2002:a17:90b:1643:b0:20c:c7c7:d598 with SMTP id il3-20020a17090b164300b0020cc7c7d598mr8385533pjb.97.1665624689152;
-        Wed, 12 Oct 2022 18:31:29 -0700 (PDT)
-Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id ik7-20020a170902ab0700b0016f8e8032c4sm11167699plb.129.2022.10.12.18.31.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Oct 2022 18:31:28 -0700 (PDT)
-Date:   Thu, 13 Oct 2022 09:31:21 +0800
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Martin Kaiser <martin@kaiser.cx>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: imx: Add missing .thaw_noirq hook
-Message-ID: <20221013013121.GA2354004@dragon>
-References: <20221012121353.2346280-1-shawn.guo@linaro.org>
- <Y0bpU51o88u6iH0R@kroah.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eNhamnGFWcGOYQgKBpc4NUk2S/tQUkP2tXcVyRZsw7w=;
+        b=l/7j3OSDWbzKyG42id30dhhGxfM/tdn8fcKw/TKEI1W2dYXeUi9BrChoK3LjUtFAWA
+         dbnI45tZf0vyaEgVzNq8McWZBSi0mW9bzTT28iW+qt+fT1bVe7b7+sJ66jnuvyVrNRS2
+         HvqwqOpC7tBD5KHcujeBkohg4AD+Te8AOgcsv32T+/tKg1q2wVItuc18mlTJjfM+LPk0
+         aM9I+XWG7ZW9GEd3gCKAgsJevLSxXe7XV/jWpEbidcnYjaQh+hIV8KYyBv1w6pOZKi8Y
+         gQKKuX4YXmn8cxdPrqhoOj1qJPzInlywmGPV63B8oSgHaBvQSm24fsC88btKR4rs1vsX
+         fkZw==
+X-Gm-Message-State: ACrzQf3dL//V6AopN72LUbIH+vjd2Mgn4UGFe5MkbJr08bIENwbevN42
+        sVYZozauoiJiT8SFafNfNfE/pOwKPH6PS+Os83g=
+X-Google-Smtp-Source: AMsMyM4ELJz9R9H1jqMfQnPYwPEgtKghQ8aj+Oa+wwS+iJG1Es590FLazGuHIs7ncAaAH0z4hQQdeIryUql3pX9gNE0=
+X-Received: by 2002:a05:6638:2494:b0:363:db4f:c870 with SMTP id
+ x20-20020a056638249400b00363db4fc870mr5703669jat.65.1665643069023; Wed, 12
+ Oct 2022 23:37:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y0bpU51o88u6iH0R@kroah.com>
+References: <20221009181338.2896660-8-lis8215@gmail.com> <202210100607.YdxoR0tD-lkp@intel.com>
+In-Reply-To: <202210100607.YdxoR0tD-lkp@intel.com>
+From:   Siarhei Volkau <lis8215@gmail.com>
+Date:   Thu, 13 Oct 2022 09:37:37 +0300
+Message-ID: <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
+Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755 SoCs
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 12, 2022 at 06:20:35PM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Oct 12, 2022 at 08:13:53PM +0800, Shawn Guo wrote:
-> > The following warning is seen with non-console UART instance when
-> > system hibernates.
-> > 
-> > [   37.371969] ------------[ cut here ]------------
-> > [   37.376599] uart3_root_clk already disabled
-> > [   37.380810] WARNING: CPU: 0 PID: 296 at drivers/clk/clk.c:952 clk_core_disable+0xa4/0xb0
-> > ...
-> > [   37.506986] Call trace:
-> > [   37.509432]  clk_core_disable+0xa4/0xb0
-> > [   37.513270]  clk_disable+0x34/0x50
-> > [   37.516672]  imx_uart_thaw+0x38/0x5c
-> > [   37.520250]  platform_pm_thaw+0x30/0x6c
-> > [   37.524089]  dpm_run_callback.constprop.0+0x3c/0xd4
-> > [   37.528972]  device_resume+0x7c/0x160
-> > [   37.532633]  dpm_resume+0xe8/0x230
-> > [   37.536036]  hibernation_snapshot+0x288/0x430
-> > [   37.540397]  hibernate+0x10c/0x2e0
-> > [   37.543798]  state_store+0xc4/0xd0
-> > [   37.547203]  kobj_attr_store+0x1c/0x30
-> > [   37.550953]  sysfs_kf_write+0x48/0x60
-> > [   37.554619]  kernfs_fop_write_iter+0x118/0x1ac
-> > [   37.559063]  new_sync_write+0xe8/0x184
-> > [   37.562812]  vfs_write+0x230/0x290
-> > [   37.566214]  ksys_write+0x68/0xf4
-> > [   37.569529]  __arm64_sys_write+0x20/0x2c
-> > [   37.573452]  invoke_syscall.constprop.0+0x50/0xf0
-> > [   37.578156]  do_el0_svc+0x11c/0x150
-> > [   37.581648]  el0_svc+0x30/0x140
-> > [   37.584792]  el0t_64_sync_handler+0xe8/0xf0
-> > [   37.588976]  el0t_64_sync+0x1a0/0x1a4
-> > [   37.592639] ---[ end trace 56e22eec54676d75 ]---
-> > 
-> > On hibernating, pm core calls into related hooks in sequence like:
-> > 
-> >     .freeze
-> >     .freeze_noirq
-> >     .thaw_noirq
-> >     .thaw
-> > 
-> > With .thaw_noirq hook being absent, the clock will be disabled in a
-> > unbalanced call which results the warning above.
-> > 
-> >     imx_uart_freeze()
-> >         clk_prepare_enable()
-> >     imx_uart_suspend_noirq()
-> >         clk_disable()
-> >     imx_uart_thaw
-> >         clk_disable_unprepare()
-> > 
-> > Adding the missing .thaw_noirq hook as imx_uart_resume_noirq() will have
-> > the call sequence corrected as below and thus fix the warning.
-> > 
-> >     imx_uart_freeze()
-> >         clk_prepare_enable()
-> >     imx_uart_suspend_noirq()
-> >         clk_disable()
-> >     imx_uart_resume_noirq()
-> >         clk_enable()
-> >     imx_uart_thaw
-> >         clk_disable_unprepare()
-> > 
-> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> 
-> What commit id does this fix, and does it need to go to older/stable
-> kernels?
+=D0=BF=D0=BD, 10 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 01:29, kernel test=
+ robot <lkp@intel.com>:
+> config: ia64-allyesconfig
+> config: arm64-randconfig-r035-20221010
 
-The .thaw_noirq was missing from commit 94be6d74d040 ("serial: imx: add
-hibernation support"), but it did not cause the warning until commit
-09df0b3464e5 ("serial: imx: fix endless loop during suspend") changes
-clock calls.  So I should have added:
+>  > 142  #define CGU_REG_CPCCR   ((void *)CKSEG1ADDR(0x10000000))
 
-Fixes: 09df0b3464e5 ("serial: imx: fix endless loop during suspend")
+> 0-DAY CI Kernel Test Service
 
-Shawn
+I know CKSEG1ADDR is MIPS specific, might be it needed to disable COMPILE_T=
+EST
+on the driver?
+Since early syscon isn't mainlined yet I don't see any other way at the mom=
+ent.
+
+Any suggestions on that, folks?
