@@ -2,105 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADCFC43219
-	for <linux-serial@archiver.kernel.org>; Sun, 16 Oct 2022 18:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C8CC4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 16 Oct 2022 20:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbiJPSkD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 16 Oct 2022 14:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33412 "EHLO
+        id S229694AbiJPUsm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 16 Oct 2022 16:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiJPSkC (ORCPT
+        with ESMTP id S229472AbiJPUsi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 16 Oct 2022 14:40:02 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0565620994;
-        Sun, 16 Oct 2022 11:40:00 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id y80so7580407iof.3;
-        Sun, 16 Oct 2022 11:39:59 -0700 (PDT)
+        Sun, 16 Oct 2022 16:48:38 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A62F2AE32
+        for <linux-serial@vger.kernel.org>; Sun, 16 Oct 2022 13:48:38 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id a13so13523398edj.0
+        for <linux-serial@vger.kernel.org>; Sun, 16 Oct 2022 13:48:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=er//qg/gl4dGP2tGaPp0ROa9zLnweqgMmV1YWZYYP7c=;
-        b=VLlF0F3ix3yIubo5GyNOzrxMT9uWk3plyHN40JmolDouSrQ6S1EkrNOya03i9KYYee
-         Pdev33Tl7wz7AOBvwkIWQLGgDzO0xQkh+PhQREIzD1GZPnPRO/lcMf1VWMop9hq358fl
-         aXOTiHnPm7vzpKXFYAJcnkfoGhLNd0RFOM2wNTECtw4VAB3Z8WkZM6t4+8EN3t5JCW4L
-         0kDq5AgEHKFhEyBJPfvXQmLC4Jb6kCZhJVx/oy7N6XuJqZhwJVR2VkREM2wKA0uzh8Fk
-         UIavRDjcsJugiUVfEo2acS8siEp0mDsbdgjZfIVNnTI51xK3B2T9kTvnL0L4+W4wKQoU
-         tMlA==
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=bhE2uLoEWMKBIV00QYWrd1tXeltihTMqmXbCvTgLTbE=;
+        b=bjaI9eBskkj9NsQHJoR2zD2OpneSjwarcVCqgeyz0IBTxvQqHh9PQiIEJB4qW7ID2V
+         mFjheBNGcrxLmjHR420tOuqpTC2u3WumLbwoDsNhy+aF5ah+BFvJsviQZC9O28taF2Zb
+         Vknwp/CDV927QjcOlchu2UuIuwE50ubKEp6wJqA01ZU1Al9PqO3Uwhs2riak+jBQr/tx
+         xMYghTJLFEPdnVWaui92NwZ39qvosW0iNiyacExEC/AywbkSwcwRaFxTe5qATftMgxF7
+         ERYjH9WPXGwmDOiIhSPUIF66trylPTXSiTUE0gN5j7uEZv1R8YGQpl3KliMupeJcx0O0
+         zjMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=er//qg/gl4dGP2tGaPp0ROa9zLnweqgMmV1YWZYYP7c=;
-        b=mMm23AdkgG1EnOyPnxxR3zgNWvxXWVThECAzYiCnBKBHI4P1kJb3NzA6i4MoP/lMwZ
-         7JhImFN/QqoBXAJDvFKDvRE8LPpgyIETuDJpCWD0QMjtwlAOgb4sOzYI+944OFg2vR1v
-         K5L5Vx7Lc+SG+ofpWwVy7Hwb8T6MqtCZGK+3CGRYqvuDz33bLIpzqOBSNa03IAUb0cuK
-         4/xzn9SsV8M/giTZWHVbz+5WYu1t1cn9EubagMfDP5w/V60Ba6Rbcyuo5GJAvg2nr6/q
-         i8gJP5ztRH2MWFsJXEUUDwO1fe2Hv4cYA10hbDY6S0c2qFUvW6njcP10nOAi0gNZSH0t
-         Frew==
-X-Gm-Message-State: ACrzQf0NAfdEwFvVIzjl/8Zkhf/RGf6li8JtmtP9Y23bXc8eg/b5UADb
-        UnNtauaM8lW9uK2lQ+9kW1aEB3/2GEv5EPnV0Ps=
-X-Google-Smtp-Source: AMsMyM418IYKdUWCL2jLsEzw/ZxVzVBP8CpmwVFc41Ps8SCy1jto6Dznc6/8LG+UqyyPQURKmvlBPoxB8eZ05lpVVqA=
-X-Received: by 2002:a6b:6716:0:b0:6bc:113c:22a2 with SMTP id
- b22-20020a6b6716000000b006bc113c22a2mr3022066ioc.12.1665945599378; Sun, 16
- Oct 2022 11:39:59 -0700 (PDT)
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bhE2uLoEWMKBIV00QYWrd1tXeltihTMqmXbCvTgLTbE=;
+        b=W51tacIEWqBQNbwexXSW1Sc7+vp0XzSVyt6xCDKUzEerK3sQ0to2GQ6noC9GS5FaSG
+         0eEpe9pAiVlV/oq4akWND99/50mbUspuzxT0Fxd1ZvptoU+boUQDbJHWJr9SaIgxBBNn
+         8Vb+zmSNDdQEaW6cqOgFP9z+aLi8EXU43mHubTSZ7ZLwmQGxWUTy7fUGCr+ynH4phY79
+         Kb16cKpFtHS3fZdQ2zgruBtZxsCFUG5HXnpFcNlRxLckQpLTTXHtbl9CpJKa2LjCkQUm
+         xFKakxCWz003GYKqC4/701uAkiXQwhNsBkKf/GtGt+4viEyxIyoVKSJuUEKVqFDz0Y3x
+         iqpw==
+X-Gm-Message-State: ACrzQf2ys9Q1ktT+6eUe87uJ5T3dmFpVgnKa/odJmjiOOUiUM9VAZnsF
+        6JP3prnb883jZkry70bOD7us/khJ2Mjzi2zYjEANViOCg1y2AA==
+X-Google-Smtp-Source: AMsMyM4Se2YP9CAJceXJABfEBDqAzLotNYAPgLJIg4MiDE+oP+kwAOxEcdtUY9q34j7uwaUOWifAakuaB+JCVTJFC1g=
+X-Received: by 2002:aa7:df04:0:b0:45b:cb0d:856a with SMTP id
+ c4-20020aa7df04000000b0045bcb0d856amr7636607edy.180.1665953316353; Sun, 16
+ Oct 2022 13:48:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20221009181338.2896660-8-lis8215@gmail.com> <202210100607.YdxoR0tD-lkp@intel.com>
- <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
- <bb9f79d4-82a9-4790-b849-d517333ea2d4@app.fastmail.com> <GSPOJR.M4XZ4D03G60F@crapouillou.net>
- <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
-In-Reply-To: <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
-From:   Siarhei Volkau <lis8215@gmail.com>
-Date:   Sun, 16 Oct 2022 21:39:48 +0300
-Message-ID: <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com>
-Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
- JZ4750/JZ4755 SoCs
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        kbuild-all@lists.01.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        GPIO SUBSYSTEM <linux-gpio@vger.kernel.org>
+From:   Mike Burnett <mike.burnett.texan@gmail.com>
+Date:   Sun, 16 Oct 2022 15:48:25 -0500
+Message-ID: <CAEeC2hSjvS0dqdBopS5-ebiDObYta5k4zFtiazfh9uyNRnTuWA@mail.gmail.com>
+Subject: Requested Information
+To:     linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-=D1=87=D1=82, 13 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 21:56, Siarhei Vol=
-kau <lis8215@gmail.com>:
+The following information was requested:
 
-> > Just disable the divider in ingenic_fixup_fdt() in
+MosChip Semi is the manufacturer.
 
-> I'll check that.
+9:00.0 Communication controller: MosChip Semiconductor Technology Ltd.
+PCI 9835 Multi-I/O Controller (rev 01)
+Subsystem: Broadcom / LSI PCI 9835 Multi-I/O Controller
+Control: I/O+ Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+Stepping- SERR+ FastB2B- DisINTx-
+Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort-
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+Interrupt: pin A routed to IRQ 17
+Region 0: I/O ports at d0d0 [size=8]
+Region 1: I/O ports at d0c0 [size=8]
+Region 2: I/O ports at d0b0 [size=8]
+Region 3: I/O ports at d0a0 [size=8]
+Region 4: I/O ports at d090 [size=8]
+Region 5: I/O ports at d080 [size=16]
+Kernel modules: parport_serial
 
-I checked that approach: serial seems to be working as expected,
-but not all the time: there's a time period when the CGU driver
-started but serial console driver is still early one.
-In my case UART produces garbage at that period since CGU
-needs to enable clock divider back: ext is 24MHz but 12MHz
-required for audio codec and USB to function properly.
+and when booting the network card does not initialize. Must boot to
+windows before linux:
 
-So I think Arnd's approach:
+65:00.0 Network controller: Intel Corporation Wi-Fi 6
+AX210/AX211/AX411 160MHz (rev 1a)
+Subsystem: Intel Corporation Wi-Fi 6 AX210 160MHz
+Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+Stepping- SERR+ FastB2B- DisINTx+
+Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+Latency: 0, Cache Line Size: 32 bytes
+Interrupt: pin A routed to IRQ 17
+Region 0: Memory at ef100000 (64-bit, non-prefetchable) [size=16K]
+Capabilities: <access denied>
+Kernel driver in use: iwlwifi
+Kernel modules: iwlwifi
 
-> the hardware should already be in a working state,
-> with no need to touch it during early boot.
-
-shall resolve the problem, although I can't check it on all supported
-hardware.
-
-BR,
-Siarhei
+Thx,
+Mike
