@@ -2,107 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FB8C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 09:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0513C4321E
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 09:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230521AbiJQJIu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Oct 2022 05:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
+        id S230509AbiJQJcI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Oct 2022 05:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231124AbiJQJIp (ORCPT
+        with ESMTP id S229796AbiJQJcH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Oct 2022 05:08:45 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5217DCC8;
-        Mon, 17 Oct 2022 02:08:44 -0700 (PDT)
-Date:   Mon, 17 Oct 2022 11:08:41 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1665997722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Mon, 17 Oct 2022 05:32:07 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099E6DFB9;
+        Mon, 17 Oct 2022 02:32:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1665999125; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=e3cvKWVDDXmSC/pi5fBn4+ZGRH5VYnyrxLgb7Uzgxnw=;
-        b=nf2GJcpJytL/HFwfwuN82XbcEzOosVAqnmQbT+Ti4SBMWOLv89ns9xs5skIC8ffgnkNwTW
-        XWJEnJkzFU6di9yby4JjM8SC4NAl9HveO149uSp+8Zwk5Kf/78x32SMPoizA6eem4tMP7u
-        9sd9i5WklPNxXGaAhQLSA1dHXyk/G1/xUfqMc70l6M9ZxjgcBEo9oqIZjRxgbTjnH89G1A
-        v0L+azazxFRfX+NZ9AGh/bNL4AwLSOHiyEKTmJzIFPjBDwEqI5cPeOZQme/JwvC7qqm1+R
-        zjMwAjknyBX/JXMy9jP1qvrHkwtB+xAPXJAOYlTtWpy1/XsccYZOOwaA+pzIWg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1665997722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e3cvKWVDDXmSC/pi5fBn4+ZGRH5VYnyrxLgb7Uzgxnw=;
-        b=Yr3px8mYGxJLV1EKNFbqUB2b3sGLhUz+mXR7RE3LdlJEq1bIDVrI2qmGis6BspKYYa9vMd
-        yxzw1E8yz7q20cCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        bh=rMKReQwIIVROnhNRRcRSrMq5WTBa2N/odX1/c/GVkLg=;
+        b=kJFze+j8yHYKpty5/eK7EP4QDoNyFl8juKwNPQ0r/r00EkgR/UUHdSeWh248/eDbhy5vM9
+        lLtvhNSmJbbkSmtDk9RZnKf9+JDMNgNdtt4b0qpPqp3OiaGUj+dEecyo/3I5vcY+SX5Gi2
+        W/1Zf15YfFPYNw2yS+MHt/IZjc6Zn08=
+Date:   Mon, 17 Oct 2022 10:31:53 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755 SoCs
+To:     Siarhei Volkau <lis8215@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        kbuild-all@lists.01.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_omap: remove wait loop from Errata i202
- workaround
-Message-ID: <Y00bmec4hvWxtnB5@linutronix.de>
-References: <20221013112339.2540767-1-matthias.schiffer@ew.tq-group.com>
- <ea90b0ba-61bf-e56e-5120-9771122838cf@linux.intel.com>
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        GPIO SUBSYSTEM <linux-gpio@vger.kernel.org>
+Message-Id: <555WJR.ESJD0KDHOG3S@crapouillou.net>
+In-Reply-To: <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com>
+References: <20221009181338.2896660-8-lis8215@gmail.com>
+        <202210100607.YdxoR0tD-lkp@intel.com>
+        <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
+        <bb9f79d4-82a9-4790-b849-d517333ea2d4@app.fastmail.com>
+        <GSPOJR.M4XZ4D03G60F@crapouillou.net>
+        <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
+        <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <ea90b0ba-61bf-e56e-5120-9771122838cf@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-10-17 11:12:41 [+0300], Ilpo J=C3=A4rvinen wrote:
-> On Thu, 13 Oct 2022, Matthias Schiffer wrote:
+Hi Siarhei,
+
+Le dim., oct. 16 2022 at 21:39:48 +0300, Siarhei Volkau=20
+<lis8215@gmail.com> a =C3=A9crit :
+> =D1=87=D1=82, 13 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 21:56, Siarhei V=
+olkau=20
+> <lis8215@gmail.com>:
 >=20
-> > We were occasionally seeing the "Errata i202: timedout" on an AM335x
-> > board when repeatedly opening and closing a UART connected to an active
-> > sender. As new input may arrive at any time, it is possible to miss the
-> > "RX FIFO empty" condition, forcing the loop to wait until it times out.
+>>  > Just disable the divider in ingenic_fixup_fdt() in
 >=20
-> I can see this problem could occur and why your patch fixes it.
+>>  I'll check that.
 >=20
-> > Nothing in the i202 Advisory states that such a wait is even necessary;
-> > other FIFO clear functions like serial8250_clear_fifos() do not wait
-> > either. For this reason, it seems safe to remove the wait, fixing the
-> > mentioned issue.
+> I checked that approach: serial seems to be working as expected,
+> but not all the time: there's a time period when the CGU driver
+> started but serial console driver is still early one.
+> In my case UART produces garbage at that period since CGU
+> needs to enable clock divider back: ext is 24MHz but 12MHz
+> required for audio codec and USB to function properly.
+
+What I'd do, is just force-enable it to 12 MHz in ingenic_fixup_fdt(),=20
+since the programming manual basically says that 24 MHz does not work=20
+properly.
+
+Then in the earlycon setup code hardcode the /2 divider with a big fat=20
+comment about why it's there.
+
+Cheers,
+-Paul
+
+> So I think Arnd's approach:
 >=20
-> Checking the commit that added this driver and the loop along with it,=20
-> there was no information why it would be needed there either.
-
-I don't remember all the details but I do remember that I never hit it.
-The idea back then was to document what appears the problem and then
-once there is a reproducer address it _or_ when there is another problem
-check if it aligns with the output here (so that _this_ problem's origin
-could be this). This was part of address all known chip erratas and
-copied from omap-serial at the time so that the 8250 does not miss
-anything.
-Looking closer, this is still part of the omap-serial driver and it was
-introduced in commit
-   0003450964357 ("omap2/3/4: serial: errata i202: fix for MDR1 access")
-
-If someone found a way to trigger this output which is unrelated to the
-expected cause then this is clearly not helping nor intended.
-
-I would prefer to keep the loop and replace the disturbing output with a
-comment describing _why_ the FIFO might remain non-empty after a flush.
-
-In worst cases that loop causes a delay of less than 0.5ms while setting
-a baud rate so I doubt that this is causing a real problem.
-
-Either way I would like to see Tony's ACK before this is getting removed
-as suggested in this patch.
-
-> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+>>  the hardware should already be in a working state,
+>>  with no need to touch it during early boot.
 >=20
-> Thanks.
+> shall resolve the problem, although I can't check it on all supported
+> hardware.
+>=20
+> BR,
+> Siarhei
 
-Sebastian
+
