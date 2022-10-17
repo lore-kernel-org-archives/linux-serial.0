@@ -2,91 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E143C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 17:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C49CC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 17:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiJQRQR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Oct 2022 13:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34478 "EHLO
+        id S230257AbiJQRa3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Oct 2022 13:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbiJQRQQ (ORCPT
+        with ESMTP id S230295AbiJQRaV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Oct 2022 13:16:16 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2906E2C9;
-        Mon, 17 Oct 2022 10:16:16 -0700 (PDT)
+        Mon, 17 Oct 2022 13:30:21 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D863973332;
+        Mon, 17 Oct 2022 10:30:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666026976; x=1697562976;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Oq9lfr47wRzD1O5V9gnT0VqegzfjTTYOexE9V2H6pyw=;
-  b=IFvhxOg2n8YJYpGH16hD9OG/hb4lXoD8/EG4D2azOtN+3vMLUpdDLQvG
-   sKMqkLAthrs9xOLbUKdBWimw9T0nqRudPCN9AW87CJQ7+5H+JPFdcx72w
-   ZbAZpNCuVzaca9Nl09OC9RxoTVsWQTRXylbtZlQTt6fKGqj6n2b/ylXhK
-   a0cyL69w9o+huVNNCudZ0xAwPPJRRXqE1B8aiACDHzREYIimjQwB720jj
-   fbq/+g2UVI19lAJdLoC+63ggP6SlK+XS5c1ZfdFtFMN2vwCbhjJt7QUUG
-   /PRrN4uQaYIVxIa9CMdsd9hb7kYAwnAZE4OItJ2lXAoWpmOIkzASVGH+Q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="286255403"
+  t=1666027817; x=1697563817;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=YZZqcz+hTM5irvObor60il2HCgMD8ArpMwlnBmFroRU=;
+  b=D9RBU1xpDlzpeAXNHGwTLJ98VliD23dni+dXtutnv1CNqEoUuvjQ5KX0
+   MR8v+LZ4IehnVAtEnzN64zqnkK0ni61onOEQPsc18cyC3sWqCytAal3Ez
+   yNhLNOoeCtIUcGABnsQDfOvd5tXar+Wf9ImLR7cVTC+FQwOivs0JhEvKh
+   56d8XzqQjCQnZlQw7OXHAWfppEEnJdlMBiVqqD15/212/YAc99UFgGpUV
+   0zI7QGhY7r5sDOk3GfrdcVCJgKMq21NoFX3JvSrcnwtED3Ejl0EPzw6sd
+   lxNFItHP1CqTmReqGH2daxMRFk7yRVcSZ6ZtMhShnhvono5qLzyAYl+jb
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="307524295"
 X-IronPort-AV: E=Sophos;i="5.95,192,1661842800"; 
-   d="scan'208";a="286255403"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2022 10:16:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="579449586"
+   d="scan'208";a="307524295"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2022 10:27:15 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="717574487"
 X-IronPort-AV: E=Sophos;i="5.95,192,1661842800"; 
-   d="scan'208";a="579449586"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 17 Oct 2022 10:16:13 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3688B26D; Mon, 17 Oct 2022 20:16:34 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_core: Use str_enabled_disabled() helper
-Date:   Mon, 17 Oct 2022 20:16:33 +0300
-Message-Id: <20221017171633.65275-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+   d="scan'208";a="717574487"
+Received: from ohoehne-mobl4.ger.corp.intel.com ([10.251.213.173])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2022 10:27:13 -0700
+Date:   Mon, 17 Oct 2022 20:27:10 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 1/1] serial: 8250_core: Use str_enabled_disabled()
+ helper
+In-Reply-To: <20221017171633.65275-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <2755edbb-7fe2-fbad-f67b-1a2679ef4b3@linux.intel.com>
+References: <20221017171633.65275-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-2129481153-1666027634=:5493"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use str_enabled_disabled() helper instead of open coding the same.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+--8323329-2129481153-1666027634=:5493
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 94fbf0add2ce..80a2fc2fbd4d 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -32,6 +32,7 @@
- #include <linux/nmi.h>
- #include <linux/mutex.h>
- #include <linux/slab.h>
-+#include <linux/string_helpers.h>
- #include <linux/uaccess.h>
- #include <linux/io.h>
- #ifdef CONFIG_SPARC
-@@ -1175,8 +1176,8 @@ static int __init serial8250_init(void)
- 
- 	serial8250_isa_init_ports();
- 
--	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %sabled\n",
--		nr_uarts, share_irqs ? "en" : "dis");
-+	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %s\n",
-+		nr_uarts, str_enabled_disabled(share_irqs));
- 
- #ifdef CONFIG_SPARC
- 	ret = sunserial_register_minors(&serial8250_reg, UART_NR);
+On Mon, 17 Oct 2022, Andy Shevchenko wrote:
+
+> Use str_enabled_disabled() helper instead of open coding the same.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 94fbf0add2ce..80a2fc2fbd4d 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -32,6 +32,7 @@
+>  #include <linux/nmi.h>
+>  #include <linux/mutex.h>
+>  #include <linux/slab.h>
+> +#include <linux/string_helpers.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/io.h>
+>  #ifdef CONFIG_SPARC
+> @@ -1175,8 +1176,8 @@ static int __init serial8250_init(void)
+>  
+>  	serial8250_isa_init_ports();
+>  
+> -	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %sabled\n",
+> -		nr_uarts, share_irqs ? "en" : "dis");
+> +	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %s\n",
+> +		nr_uarts, str_enabled_disabled(share_irqs));
+>  
+>  #ifdef CONFIG_SPARC
+>  	ret = sunserial_register_minors(&serial8250_reg, UART_NR);
+> 
+
+Looks ok.
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+
 -- 
-2.35.1
+ i.
 
+--8323329-2129481153-1666027634=:5493--
