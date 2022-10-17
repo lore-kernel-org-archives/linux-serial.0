@@ -2,103 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0513C4321E
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 09:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF42C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 09:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbiJQJcI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Oct 2022 05:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42358 "EHLO
+        id S229592AbiJQJpP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Oct 2022 05:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiJQJcH (ORCPT
+        with ESMTP id S229776AbiJQJpL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Oct 2022 05:32:07 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099E6DFB9;
-        Mon, 17 Oct 2022 02:32:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1665999125; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rMKReQwIIVROnhNRRcRSrMq5WTBa2N/odX1/c/GVkLg=;
-        b=kJFze+j8yHYKpty5/eK7EP4QDoNyFl8juKwNPQ0r/r00EkgR/UUHdSeWh248/eDbhy5vM9
-        lLtvhNSmJbbkSmtDk9RZnKf9+JDMNgNdtt4b0qpPqp3OiaGUj+dEecyo/3I5vcY+SX5Gi2
-        W/1Zf15YfFPYNw2yS+MHt/IZjc6Zn08=
-Date:   Mon, 17 Oct 2022 10:31:53 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
- JZ4750/JZ4755 SoCs
-To:     Siarhei Volkau <lis8215@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        kbuild-all@lists.01.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        GPIO SUBSYSTEM <linux-gpio@vger.kernel.org>
-Message-Id: <555WJR.ESJD0KDHOG3S@crapouillou.net>
-In-Reply-To: <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com>
-References: <20221009181338.2896660-8-lis8215@gmail.com>
-        <202210100607.YdxoR0tD-lkp@intel.com>
-        <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
-        <bb9f79d4-82a9-4790-b849-d517333ea2d4@app.fastmail.com>
-        <GSPOJR.M4XZ4D03G60F@crapouillou.net>
-        <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
-        <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com>
+        Mon, 17 Oct 2022 05:45:11 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8890831FA9
+        for <linux-serial@vger.kernel.org>; Mon, 17 Oct 2022 02:45:07 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1okMgD-0006ce-TH; Mon, 17 Oct 2022 11:45:05 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1okMgB-00232a-0Q; Mon, 17 Oct 2022 11:45:03 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1okMgA-008Whv-AG; Mon, 17 Oct 2022 11:45:02 +0200
+Date:   Mon, 17 Oct 2022 11:45:00 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-serial@vger.kernel.org, kernel@pengutronix.de,
+        Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: UART on MPC83xx in irq loop
+Message-ID: <20221017094500.3wwd2njnao7rru4n@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7b5g45ydynxhqvqr"
+Content-Disposition: inline
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Siarhei,
 
-Le dim., oct. 16 2022 at 21:39:48 +0300, Siarhei Volkau=20
-<lis8215@gmail.com> a =C3=A9crit :
-> =D1=87=D1=82, 13 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 21:56, Siarhei V=
-olkau=20
-> <lis8215@gmail.com>:
->=20
->>  > Just disable the divider in ingenic_fixup_fdt() in
->=20
->>  I'll check that.
->=20
-> I checked that approach: serial seems to be working as expected,
-> but not all the time: there's a time period when the CGU driver
-> started but serial console driver is still early one.
-> In my case UART produces garbage at that period since CGU
-> needs to enable clock divider back: ext is 24MHz but 12MHz
-> required for audio codec and USB to function properly.
+--7b5g45ydynxhqvqr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-What I'd do, is just force-enable it to 12 MHz in ingenic_fixup_fdt(),=20
-since the programming manual basically says that 24 MHz does not work=20
-properly.
+Hello,
 
-Then in the earlycon setup code hardcode the /2 divider with a big fat=20
-comment about why it's there.
+I have a system based on MPC8313ERDB here that in some situations gets
+stuck in an irq loop. I have a reproducer here that works reliably. A
+workaround is:
 
-Cheers,
--Paul
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/=
+8250_port.c
+index 45b8a59d937c..5ab32b6ba701 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2009,6 +2009,14 @@ int serial8250_handle_irq(struct uart_port *port, un=
+signed int iir)
+=20
+ 	status =3D serial_port_in(port, UART_LSR);
+=20
++	/*
++	 * Sometimes a "Character time-out" (IID3:0 =3D=3D 0xc) happens on MPC831=
+3,
++	 * but LSR doesn't report "Data ready". To clear the former the receive
++	 * buffer must be read. It's unclear if the char read is valid or not.
++	 */
++	if ((iir & UART_IIR_ID) =3D=3D UART_IIR_RX_TIMEOUT)
++		status |=3D UART_LSR_DR;
++
+ 	/*
+ 	 * If port is stopped and there are no error conditions in the
+ 	 * FIFO, then don't drain the FIFO, as this may lead to TTY buffer
 
-> So I think Arnd's approach:
->=20
->>  the hardware should already be in a working state,
->>  with no need to touch it during early boot.
->=20
-> shall resolve the problem, although I can't check it on all supported
-> hardware.
->=20
-> BR,
-> Siarhei
+I havn't debugged that further than written in the comment but I wonder
+if this is a known issue (didn't find it in the errata though) and/or if
+someone with hardware knowledge could confirm this to be a hardware
+fault.
 
+Without feedback from NXP I'd look in more detail into that to for
+example find out the timing and so maybe more hints about the hardware
+and a better SW workaround/fix.
 
+Any input is very welcome.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--7b5g45ydynxhqvqr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmNNJBoACgkQwfwUeK3K
+7AmWywf/XrIf4XHYAD5ADsHKiyhBOcT462A7xg9SyDdTXKIQzRTfzwXKxP1qQd5S
+g/C3AWm6bWrXY/yYkXJJsLzXjvtmCXjy9ZG/HrTFBpermiDxKuWvUgkgY9A2NmA+
+SCNirAxNuZ7LN6GzRWBgB1zhek6pBaBhGfKbk5d/hdjOeD7LBkcXHtRnjhdS29QX
+vf3eoQCA6jPRCRqY6Bohuu9yTs38YMC8r8V8YUdTkB3KH+DTxjE5W7ZmoX1Wc/ty
+5ahtRSQlviHMmH1QhWHtfeddwSPJHUUewcnTocYaE+DvHh7MzswuBThPL5YeL7oa
+yJ3+YMw9cwC/ZwXkTtqDvr8yF3n1Ag==
+=QIHE
+-----END PGP SIGNATURE-----
+
+--7b5g45ydynxhqvqr--
