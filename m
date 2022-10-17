@@ -2,116 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF42C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 09:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82823C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Oct 2022 09:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiJQJpP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Oct 2022 05:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
+        id S231533AbiJQJre (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Oct 2022 05:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiJQJpL (ORCPT
+        with ESMTP id S231534AbiJQJrU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Oct 2022 05:45:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8890831FA9
-        for <linux-serial@vger.kernel.org>; Mon, 17 Oct 2022 02:45:07 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1okMgD-0006ce-TH; Mon, 17 Oct 2022 11:45:05 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1okMgB-00232a-0Q; Mon, 17 Oct 2022 11:45:03 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1okMgA-008Whv-AG; Mon, 17 Oct 2022 11:45:02 +0200
-Date:   Mon, 17 Oct 2022 11:45:00 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     NXP Linux Team <linux-imx@nxp.com>
-Cc:     linux-serial@vger.kernel.org, kernel@pengutronix.de,
-        Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: UART on MPC83xx in irq loop
-Message-ID: <20221017094500.3wwd2njnao7rru4n@pengutronix.de>
+        Mon, 17 Oct 2022 05:47:20 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6C25D721
+        for <linux-serial@vger.kernel.org>; Mon, 17 Oct 2022 02:47:00 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id m23so13269946lji.2
+        for <linux-serial@vger.kernel.org>; Mon, 17 Oct 2022 02:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=m28MxXGYXT4qGN7nik464yL/UhJ82SzVaHoLGkQoTpw=;
+        b=pSF9QYPlsSgNQPRR9XdOhQ9tHnI5i7mpZjMTTlvUq8/jBVi240La3CiktdZ9cpYnbg
+         3gzgPCO57wDjxjV7KwmmBFQaXqWqjRqzXTrCgvh8wcmDIVE8Auov0FvGOGYsRXNhpQuR
+         v0uxqa/yDBhbsp7XhTBM5WkFr41VnSeB1B2KgRUcNxVTYYngf4c2n+TJnNslKA3qbycQ
+         3Mg/Pn05b14TDYhsHc6vl/ddFRe80qxr2PLv4DhzicBjcB9Y4NURWiXK++bV44Pf+VSK
+         HuYAflUusNFJlXHC9YSfpGVok3c6YUgICIPANvYBQ/qXi+g9MokQq0B+0qEWWxPhKkC5
+         GQGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m28MxXGYXT4qGN7nik464yL/UhJ82SzVaHoLGkQoTpw=;
+        b=mRKieI3RMfbch0Vgf8li21VeJ0hTUh+9lDHw+em7PG6oqqKMZuSmzkYos2PJysyRfz
+         E/AQpW/AIvXPqh8bnnOtoUTO88skJU5iTMOp2c9/N5P4u47rE1TvCgts0EVOCKqt//FG
+         o/YLhWL6rhiJBvHIPONgFKe3346B4Ri3yVB3fAHg3nma7Mvz8Y8e0Ol2Y7kAH8Pb77Wj
+         HHcdJ3thd3XkB6OYmTM7EQiUO0unk20bW4FhAVtl3tESpn09jgK5dxH/hgjhou1hEAVP
+         zGccQF5t+EG/pZHJao+02P9UsVGcKl+KcgJOMwTK+mvHkJdRFUEu2NxPVse6IfbEBghZ
+         QWpQ==
+X-Gm-Message-State: ACrzQf2hJ8t10YDz1Tc3aBPdR853RfsD/VhyuTp9/EMblxWDzcXDeCcB
+        vtxxy0V8oa4VZ1vHT1hlRKDoYDioRyLsYhWJxnTxZ87p5Ew=
+X-Google-Smtp-Source: AMsMyM4CGBR28SSkgO6sUfPaGHahhe5lagnYKp+a4Qpc5atANtQAtfZFWQQpanlTqBVMnG93twfz3+YjvG8BYu9pwjI=
+X-Received: by 2002:a17:906:5d04:b0:77f:ca9f:33d1 with SMTP id
+ g4-20020a1709065d0400b0077fca9f33d1mr8038485ejt.526.1666000007686; Mon, 17
+ Oct 2022 02:46:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7b5g45ydynxhqvqr"
-Content-Disposition: inline
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <20221009181338.2896660-1-lis8215@gmail.com> <20221009181338.2896660-6-lis8215@gmail.com>
+In-Reply-To: <20221009181338.2896660-6-lis8215@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 17 Oct 2022 11:46:36 +0200
+Message-ID: <CACRpkdZL9qWPaoRhCt3h8m1it9DaoS3TJrxPHVOzGZWhL45PNw@mail.gmail.com>
+Subject: Re: [PATCH 5/8] pinctrl: ingenic: JZ4755 minor bug fixes
+To:     Siarhei Volkau <lis8215@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sun, Oct 9, 2022 at 8:14 PM Siarhei Volkau <lis8215@gmail.com> wrote:
 
---7b5g45ydynxhqvqr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Fixes UART1 function bits and mmc groups typo.
+>
+> For pins 0x97,0x99 function 0 is designated to PWM3/PWM5
+> respectively, function is 1 designated to the UART1.
+>
+> Tested-by: Siarhei Volkau <lis8215@gmail.com>
+> Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
 
-Hello,
+This patch applied for fixes.
 
-I have a system based on MPC8313ERDB here that in some situations gets
-stuck in an irq loop. I have a reproducer here that works reliably. A
-workaround is:
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/=
-8250_port.c
-index 45b8a59d937c..5ab32b6ba701 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2009,6 +2009,14 @@ int serial8250_handle_irq(struct uart_port *port, un=
-signed int iir)
-=20
- 	status =3D serial_port_in(port, UART_LSR);
-=20
-+	/*
-+	 * Sometimes a "Character time-out" (IID3:0 =3D=3D 0xc) happens on MPC831=
-3,
-+	 * but LSR doesn't report "Data ready". To clear the former the receive
-+	 * buffer must be read. It's unclear if the char read is valid or not.
-+	 */
-+	if ((iir & UART_IIR_ID) =3D=3D UART_IIR_RX_TIMEOUT)
-+		status |=3D UART_LSR_DR;
-+
- 	/*
- 	 * If port is stopped and there are no error conditions in the
- 	 * FIFO, then don't drain the FIFO, as this may lead to TTY buffer
-
-I havn't debugged that further than written in the comment but I wonder
-if this is a known issue (didn't find it in the errata though) and/or if
-someone with hardware knowledge could confirm this to be a hardware
-fault.
-
-Without feedback from NXP I'd look in more detail into that to for
-example find out the timing and so maybe more hints about the hardware
-and a better SW workaround/fix.
-
-Any input is very welcome.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---7b5g45ydynxhqvqr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmNNJBoACgkQwfwUeK3K
-7AmWywf/XrIf4XHYAD5ADsHKiyhBOcT462A7xg9SyDdTXKIQzRTfzwXKxP1qQd5S
-g/C3AWm6bWrXY/yYkXJJsLzXjvtmCXjy9ZG/HrTFBpermiDxKuWvUgkgY9A2NmA+
-SCNirAxNuZ7LN6GzRWBgB1zhek6pBaBhGfKbk5d/hdjOeD7LBkcXHtRnjhdS29QX
-vf3eoQCA6jPRCRqY6Bohuu9yTs38YMC8r8V8YUdTkB3KH+DTxjE5W7ZmoX1Wc/ty
-5ahtRSQlviHMmH1QhWHtfeddwSPJHUUewcnTocYaE+DvHh7MzswuBThPL5YeL7oa
-yJ3+YMw9cwC/ZwXkTtqDvr8yF3n1Ag==
-=QIHE
------END PGP SIGNATURE-----
-
---7b5g45ydynxhqvqr--
+Yours,
+Linus Walleij
