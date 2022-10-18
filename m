@@ -2,118 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E537C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Oct 2022 13:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3F5C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Oct 2022 13:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiJRNeO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Oct 2022 09:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        id S230435AbiJRNem (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Oct 2022 09:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbiJRNeL (ORCPT
+        with ESMTP id S230238AbiJRNek (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Oct 2022 09:34:11 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2058.outbound.protection.outlook.com [40.107.223.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897DECBFCB;
-        Tue, 18 Oct 2022 06:34:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RPtJb6V8+M9tZg2CMmr2ejva2+GRgW96SPJD68BqEtmLt0mvc3Nk/HkWC1HJkEhR9Rt75lH6ksd2bWzb9rbV5GN7ZUSbXNANetjjrf1HLYw+O8V/pAOiHWCkXuFwY2/um62ccZ2I2Klg162bbDoQ1G3aEL0wEHzl3kxZ6EABWzneitkvU/tBZ0atwlp1IBuxYVnRw8un/gMD0eAteGTme/qNzBO9s0KFzi7rVTGYiPM38yfGC3gmfzwu6Fu9QvRPVIGLF/QAciKPpOmSlj1dKBiNIRXJNq+w0jEXZNUff3joqt4JRzz28Ug4BNxc6pieK8b7HXfwAPGOlFuVQdvW1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b13eC+2KuXTPBicsCxSvHT38HKHkd11rtdW3WHLqQaM=;
- b=JAFgI5ZW0/L1VchlB14STPgXaOwBMxbLiVhPgsrKo1iL0iyRByf8K/fiMQpHa6mU+fDPX4rhh19UOK0q8H3hjUlag547SVAIXvUF7t7AO76LCddUxxkKYv9lSG74pAirudecTDGjV4HFJKk6qO3PgJ3cB1CZM1Mj0IjqqFdLHTCGj+biGToQCvxaYAb21BNxjf0Mv2dEmcFEvNWVXZ4vbGs4nF9eL2OrnR2NbrHVyn0WRq7f20PG9ld4ON7p4d1FP3hRTWGkftV2i9JzLRpn2xXW7zwJzwsqQehd0fezosTudmtVrCUof03NAqoMPI0Bzd2W/HzPXgSDI8LzgMu3Eg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=linuxfoundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b13eC+2KuXTPBicsCxSvHT38HKHkd11rtdW3WHLqQaM=;
- b=Q5CqBucuyaGarkLaNLWoB4LE0WFbyF5QihLJzcA19kL8n/gJnqKuF+suDuKIA/3f8EnnIja6DLyqC0jeO6spbQzrf+zV+J2J2sUUSjjZCpdjIbjKRke+9GSf+Ft2ONhoYRnd6X1Prewe9TkS1si7zf+Lv41WaaRS2MzyzT8RrB76W/mpbeo1rGY/PL6u5sFGgsbgAVEHX8C6QlzmLWGKAqX4MKiqfHcbB+aS385fG8le08Wcz4c7GE3pOxQkjXY9WsJVjydytfdntE/yzT334hNJlrOuMVSxaNYqRyEGEanC7mBrcipHC3lyhxeztGY9g7Sd1oa2wyDRMbP+sGTq+A==
-Received: from BN0PR07CA0007.namprd07.prod.outlook.com (2603:10b6:408:141::24)
- by PH7PR12MB5999.namprd12.prod.outlook.com (2603:10b6:510:1db::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.26; Tue, 18 Oct
- 2022 13:34:09 +0000
-Received: from BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:141:cafe::42) by BN0PR07CA0007.outlook.office365.com
- (2603:10b6:408:141::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.30 via Frontend
- Transport; Tue, 18 Oct 2022 13:34:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT096.mail.protection.outlook.com (10.13.177.195) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5723.20 via Frontend Transport; Tue, 18 Oct 2022 13:34:08 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 18 Oct
- 2022 06:33:46 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 18 Oct
- 2022 06:33:46 -0700
-Received: from kkartik-desktop.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Tue, 18 Oct 2022 06:33:42 -0700
-From:   Kartik <kkartik@nvidia.com>
-To:     <jonathanh@nvidia.com>
-CC:     <akhilrajeev@nvidia.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <kkartik@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <swarren@nvidia.com>, <thierry.reding@gmail.com>
-Subject: Re: [PATCH] serial: tegra: read DMA status before terminating
-Date:   Tue, 18 Oct 2022 19:03:41 +0530
-Message-ID: <1666100021-16513-1-git-send-email-kkartik@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <5935afbd-ec39-21f8-1585-57a932261271@nvidia.com>
-References: <5935afbd-ec39-21f8-1585-57a932261271@nvidia.com>
+        Tue, 18 Oct 2022 09:34:40 -0400
+Received: from first.geanix.com (first.geanix.com [116.203.34.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA976567
+        for <linux-serial@vger.kernel.org>; Tue, 18 Oct 2022 06:34:32 -0700 (PDT)
+Received: from xps.skovby (85.184.138.169.dynamic.dhcp.aura-net.dk [85.184.138.169])
+        by first.geanix.com (Postfix) with ESMTPSA id 889B0579A4;
+        Tue, 18 Oct 2022 13:34:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1666100068; bh=IV/De8+ALYMctYGGtVoa1YOHt96F1KUg8Fig3NwI23U=;
+        h=From:To:Cc:Subject:Date;
+        b=A5l09l0jk6bDhPYL2C+WEPnWYOrLuT0T413l3858GzErLg/0Z9VgHfNdpRthuIokj
+         YIExEgSDeo8sOhRfZ49ofIZm33ACsvWDY3T/qGe3LTTFTfTjH9CGeEpy4ArKiWx8XN
+         pVcwky0v1Wk4rBPTQj7M5CsHQUtEnStn3CTTyH393SWoyyAO8LxV1Du4xJLRFNVQWm
+         lF3xmaE2gXUR+BRSQCxw20XQ3KVpvt3rBzSvOgIt2PUopovz9q1l63Ho1kWz6K43v+
+         3wJybGtMMYWjA7SO9q9wBqwRYSYFAqpCFC9kHuzOMqW0HAA2b4+mpree2gEl3a4WU2
+         i9gO5eBK2+x7Q==
+From:   =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>
+To:     linux-serial@vger.kernel.org
+Cc:     =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v2 1/3] serial: 8250: allow use of non-runtime configured uart ports
+Date:   Tue, 18 Oct 2022 15:34:17 +0200
+Message-Id: <20221018133419.134110-1-martin@geanix.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT096:EE_|PH7PR12MB5999:EE_
-X-MS-Office365-Filtering-Correlation-Id: 042f4f41-da87-4902-eea1-08dab10d6f77
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WawO6g9uoU0ZU1GBxpuK0OmYj5/4pL31YFNrHi4o1iKpug5xcYAbaD9HJLhYDuqVgE/pymVJ0NQN8MsyRVJcVJtnyyZNHg4j9LNWVb8y/6TnsB2ZCG1HkYnqtTaXxZKil/mQPgJl1/0nvImglXOHMW2+uh3u85ufnZhcvAlie+IBigJZcHOdrci95H6UI0zkK0hVNlOAoEm8WNXWd3z9S2qkPgtlPvZEU6LYwsmde8E/iy2rJtL0pAUj2lFAAiz1dB7PL993XPZNJMkAUrEWYdlihfCJlKsaX5fKFLW4Ub8+2SjiPWEx5R92EX5UKD8mqx12qq8YzwM1YyUCjPrtyR26nn0S78ktKBpKClyOaTeIS4uzoN/FComE+ZMGEIX1c2rOHTFmskcDsc/GnMtaVL0J1Rv+zO+DASJhxQ+wpBxbN10BF8B6UllC6VqfThpmXZ9bsS5HnXQopCh2BclgVTQfgMPFXDHBzR3km3i2mDYNxKRoxpSuJCsTkm1BAWr8ClFlIff58EJai2+gdOnsBwmhYghCysYOgz1S2/aIhb4d+Ts2C2tRhRj8xXyfydUQuc4WXdk6UdoIR/i92qlZP0nPlqZj3YLM6cDFh8Sg/NJ+Itjb+xLw0CthgNW0TG3XLnZq4sSDLlyjWR4jwGMslFrcwtXCwDqaJQC5UMJLbNAhwXkMBoOxqM0UyatXk08WTVRwz5t2c0JPPbS5xt3K6v4xe0NGawT3SgD3t9mFdhfJfv31bG3MMqDEdk7ThVspTIU1hL0MZeco4T1Msa5I4A==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(396003)(136003)(39860400002)(451199015)(40470700004)(46966006)(36840700001)(82310400005)(47076005)(2616005)(426003)(186003)(356005)(7636003)(86362001)(336012)(82740400003)(4744005)(2906002)(5660300002)(37006003)(4326008)(41300700001)(6862004)(36860700001)(40480700001)(8676002)(40460700003)(8936002)(478600001)(26005)(7696005)(316002)(6636002)(70206006)(70586007)(54906003)(36756003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2022 13:34:08.6824
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 042f4f41-da87-4902-eea1-08dab10d6f77
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5999
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> The change looks fine to me, but on further review of other similar 
-> drivers I see that they pause first ...
-> 
->   dmaengine_pause(tup->tx_dma_chan);
->   dmaengine_tx_status(tup->tx_dma_chan, tup->tx_cookie, &state);
->   dmaengine_terminate_all(tup->tx_dma_chan);
-> 
-> This makes sense so that when we calculate the amount of the data 
-> transferred we get the exact amount. Can we add a pause while we are at it?
-> 
-> Thanks!
-> Jon
+The logic to find unused ports when registering new 8250 uart ports
+searches only up to CONFIG_SERIAL_8250_RUNTIME_UARTS, which forces users
+of external 8250 ports to increase the number of runtime ports
+artificially.
 
-I agree.. I will include this in v2.
+Fix this by initializing each allocated port structure with basic
+settings like line number and uart operation callbacks, and by searching
+the entire array of allocated ports to find an unused one.
 
-Regards,
-Kartik
+Signed-off-by: Martin Hundebøll <martin@geanix.com>
+---
+ drivers/tty/serial/8250/8250_core.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 94fbf0add2ce..a166cc66e7d1 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -500,7 +500,7 @@ static void __init serial8250_isa_init_ports(void)
+ 	if (nr_uarts > UART_NR)
+ 		nr_uarts = UART_NR;
+ 
+-	for (i = 0; i < nr_uarts; i++) {
++	for (i = 0; i < UART_NR; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];
+ 		struct uart_port *port = &up->port;
+ 
+@@ -926,15 +926,16 @@ static struct uart_8250_port *serial8250_find_match_or_unused(const struct uart_
+ 
+ 	/* try line number first if still available */
+ 	i = port->line;
+-	if (i < nr_uarts && serial8250_ports[i].port.type == PORT_UNKNOWN &&
++	if (i < UART_NR && serial8250_ports[i].port.type == PORT_UNKNOWN &&
+ 			serial8250_ports[i].port.iobase == 0)
+ 		return &serial8250_ports[i];
++
+ 	/*
+ 	 * We didn't find a matching entry, so look for the first
+ 	 * free entry.  We look for one which hasn't been previously
+ 	 * used (indicated by zero iobase).
+ 	 */
+-	for (i = 0; i < nr_uarts; i++)
++	for (i = 0; i < UART_NR; i++)
+ 		if (serial8250_ports[i].port.type == PORT_UNKNOWN &&
+ 		    serial8250_ports[i].port.iobase == 0)
+ 			return &serial8250_ports[i];
+@@ -943,7 +944,7 @@ static struct uart_8250_port *serial8250_find_match_or_unused(const struct uart_
+ 	 * That also failed.  Last resort is to find any entry which
+ 	 * doesn't have a real port associated with it.
+ 	 */
+-	for (i = 0; i < nr_uarts; i++)
++	for (i = 0; i < UART_NR; i++)
+ 		if (serial8250_ports[i].port.type == PORT_UNKNOWN)
+ 			return &serial8250_ports[i];
+ 
+-- 
+2.38.0
+
