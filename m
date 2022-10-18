@@ -2,146 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D2AC4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Oct 2022 14:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F81C43217
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Oct 2022 15:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbiJRO6Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Oct 2022 10:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
+        id S229935AbiJRPT0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Oct 2022 11:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiJRO6X (ORCPT
+        with ESMTP id S229552AbiJRPTZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Oct 2022 10:58:23 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2079.outbound.protection.outlook.com [40.107.94.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1274DAC49;
-        Tue, 18 Oct 2022 07:58:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jcNWZwxufyzqhyexizxIE7aNN9l0NAmeOVgVGF2g7GNsIGXnrWQLERzz6w2I+9zq2Wu3XNcJWoPgs4dkP7Pm+LOR8vyr+tA1dX3udGXJ6niTa2uC68HtG6M4IST+r6KeogAm61+GugsDdzm7W7xQHTnE4otq8yR2yKTAvAEcVMxz+PddGNZJoQ6d7r7IVUWm1Y7oF21HGx5ZcsCPP0fLqzBTGlPCs/TmW0DYQSI16T9YCsCa8PTlaETydZD2PLHM4APkdfoAJ/qLiQdG4hHR91ZW3zLUy12+Int2dgJs931p7pq/9qyEPMmGKBHPtOVAMLOv24WQ8JlD/2llzDX9PQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CNQJMUWdUyNpksAtq1QU0JbiYRy4ThfuGCkfcAU58bM=;
- b=l+/KXS/8tFGXSwUYzB4n/pMFYvH0UnwCLZaoMIiIn4ZANkdzt3K4KSBB/MgOClkcjtEvmSewkamKSsSoDUyPR1lCYXCnzao1yIkQ5WuOII6/+HbNHtmpPYiVIdEWlJFQlMQLitS+Fj3Wfj/paa9/GoSigIMdXPuOhsBMCcUpdjz1E2vt2C26gTSn4tBxL989NG6D24nZ/elS4IeaoQZL6BKiD/6fGO8LMBTVWlSwS+JDQeHE2ys5lRv2Jl0iPjTX5c0+jDKH3or2Hy4aJEsaQjNoeWSFZkysWlonD3xaD7ZYF7eoTPeXCIMgM8KOTfdRZxWSXHa8ZqLIvE2MxZnvkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=linuxfoundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CNQJMUWdUyNpksAtq1QU0JbiYRy4ThfuGCkfcAU58bM=;
- b=Wu1fKjMCQwEkcYxQNzHpQaEKc3TCTinWlmoEXtmxG6w5Ht8iExYe8DlW41oj3unXQCso3JCTwdkQjrJ6wQIthhKxqLBG4zifNy7QRtNFRtCBD8bmvzUTgXSo9fwSXoi+9A+FuvO7x+mWnxlACVlrPXO0mwhdtu9UIM3imuirlqCWuhh4hBAAZlTVMd8DumHJBVN1ZwkPu5dDSp5dXPd33oV3Gi8eKajDm+UdCkJPAidnJcHZB7IBKZOZBvuuN851CKvlmGjzTKvZjISP2PD1CRsuE3mKNNcCNseoTM2rJFolYTc1gXoSwjAKwSuWfJDo8frjqthN3T01sSW87Yrzag==
-Received: from MW2PR16CA0004.namprd16.prod.outlook.com (2603:10b6:907::17) by
- DM4PR12MB7502.namprd12.prod.outlook.com (2603:10b6:8:112::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5723.32; Tue, 18 Oct 2022 14:58:21 +0000
-Received: from CO1NAM11FT086.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:0:cafe::15) by MW2PR16CA0004.outlook.office365.com
- (2603:10b6:907::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.17 via Frontend
- Transport; Tue, 18 Oct 2022 14:58:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT086.mail.protection.outlook.com (10.13.175.73) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5723.20 via Frontend Transport; Tue, 18 Oct 2022 14:58:21 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 18 Oct
- 2022 07:58:11 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 18 Oct
- 2022 07:58:11 -0700
-Received: from kkartik-desktop.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Tue, 18 Oct 2022 07:58:07 -0700
-From:   Kartik <kkartik@nvidia.com>
-To:     <ldewangan@nvidia.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <alan@linux.intel.com>,
-        <swarren@nvidia.com>, <akhilrajeev@nvidia.com>,
-        <linux-serial@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] serial: tegra: Read DMA status before terminating
-Date:   Tue, 18 Oct 2022 20:28:06 +0530
-Message-ID: <1666105086-17326-1-git-send-email-kkartik@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-X-NVConfidentiality: public
+        Tue, 18 Oct 2022 11:19:25 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11BAD18C4;
+        Tue, 18 Oct 2022 08:19:18 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id v11so939240wmd.1;
+        Tue, 18 Oct 2022 08:19:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vBaIo106NnMu5MVYhnHg1HZlVjv/pqWACQc2/Rh9K70=;
+        b=ZyQ2qR+lYrjCwN9BuntaHYeFKcS9E/1mIQOxeSq/41Kn02oMdiB953Ms78+IMAYSJp
+         ZfxQKkzrrhkm6ARLmfc4Rah+N60I0gZ42dQ9SR9U/ToB1jyTfzwN+KLimMRU++f0YduA
+         RyQVfvjrtEensuaJSFfCC8pZGmNkRPiflUZajJHxks6lqXQM6UhZXU/8PQvvlfbSFsX1
+         dIt/GBT8diP3m9pH1ADEx6pBd6cGgFdUoVGzcdXi5kJKyHzmGaCbk1HEp9muB+wWCYHX
+         B/0crnU41A7VR4lFD0OzHMVlIFCi0gya7RPgS3szh8LTieYz1z9hzqooL2xdalq7GBXU
+         R8+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vBaIo106NnMu5MVYhnHg1HZlVjv/pqWACQc2/Rh9K70=;
+        b=cCJ8ZGURjoBvwZX/DA6tjTZ0MyZDZmvvcJaAgC3Vwc7BZzfZ2MIQMHbGKdw8wBdlFF
+         UcDKYChbnDeUQuWm7xp0Ul1o/Iq8tjEcSm548zLW13VQiDbQNpK1CW4DXl3cqGtpey3g
+         PmSvBgOqv0WAjNIuYaD5ZeU2Vafxsu3ceb8PNVD0goaCUmx1s9dJXlP6N2PHNJMWSpX+
+         A4FEm07eNVUX9fNfR1VbmxbaQSACGHBabuwlJ6TA90fCKH6cYX0AFO+PerkT3ra1wxL3
+         CftMrHFoDC/vcfac5p60Gfu/GUx4Jm9WHzTsvmNUcilHptADL7FjdE23myc64FKq30qU
+         QVRA==
+X-Gm-Message-State: ACrzQf2OG8QLKCcXewStxJaq0pKzvWlsflF8jNXtwPYULQ/7eMaNP4e1
+        NyGYK8n8L5SmpZxZV4M/J1A=
+X-Google-Smtp-Source: AMsMyM5iYn3fIXe/RenMqtxk3UKsm1373VHjP5tMTGXKlsjnmWhE6jeKDRj03288fCIB0xvq0V9dlQ==
+X-Received: by 2002:a05:600c:1f16:b0:3c6:b6f7:d224 with SMTP id bd22-20020a05600c1f1600b003c6b6f7d224mr2464464wmb.46.1666106357383;
+        Tue, 18 Oct 2022 08:19:17 -0700 (PDT)
+Received: from orome (p200300e41f201d00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f20:1d00:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id i8-20020a05600c2d8800b003c64c186206sm13179153wmg.16.2022.10.18.08.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Oct 2022 08:19:16 -0700 (PDT)
+Date:   Tue, 18 Oct 2022 17:19:14 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Kartik <kkartik@nvidia.com>
+Cc:     ldewangan@nvidia.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, jonathanh@nvidia.com, alan@linux.intel.com,
+        swarren@nvidia.com, akhilrajeev@nvidia.com,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] serial: tegra: Read DMA status before terminating
+Message-ID: <Y07D8qIPJYrwqWPM@orome>
+References: <1666105086-17326-1-git-send-email-kkartik@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT086:EE_|DM4PR12MB7502:EE_
-X-MS-Office365-Filtering-Correlation-Id: fc4f7a00-47ba-4895-152e-08dab1193330
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uZmDflVE8GlCneUTUHT6CdhVgMARyDYqzFgwEZYh4IajzFEiEYLnWIHr1DGs8tpYFsGI0KjGfk8Mzl0DPPf+EcXQ1n6k/kcOsrqncprBkRecFJUbxdO/lYrhBsX00SI1w8wO2Z18gYmmdgEjpcZUIHUN13O+o2H1defYAOdJ23EN7T3oBMNIYdGzb3ONOQFqXvPhbhq6gS3UZJ6/lWpcUrsIin6PvUOCDHLuKjIMbtDW3ne+ZSfJ4/N+9s2r3KL4lnVcnQoLfoWo2KOoVYkHVH3IteNNWj+fYAgMUwA/7IBwVYHFlge0s8RGQ06VyTfi86B2gj7YQHXAtE6bBUo3iijVkPV7tvncL64uHssOhphwK4TkxKk0qSDIBHtZtCz3RiO7zLfVggkKDOeQ9WYzhbuPGSg95ZqpEJIuaqFCATICG43MbUHoi7xBK8G8BZbUJ4eb6hJIFyebXqNB6KSKrx58OI+f3LwIHOx5L4kFtRl+LoxjQYkzsbI5z74sXh0Y9WW/VgWoIuFk8+M6nG9Kv+xWcUszTl4y/Nes0YjBr0k8ef4ZNJOGVAY18frqnVNJcx2LYgzCvRST5zSZwEh4AWFpepg+322hEUBQaz3IPe1LaFzJDKwJWlON0sLFkuO3Unbu2V95LmjN1BOQwgo4SHYyyfuwBiZCTU66fFmLYWWJZMAKEd1JjEUf0VP+G6DVu8i65mvGtj4jknGriKFv5DXRsp05/Ny66stxpOSY2rop4cnwmwZgTj/qpdZHTM3XlTtEAny87wNX1CQKh6isnokcKxtJl4yOw/4oxnXBTM0=
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(346002)(136003)(39860400002)(451199015)(36840700001)(46966006)(40470700004)(5660300002)(316002)(70206006)(336012)(478600001)(110136005)(7696005)(70586007)(41300700001)(8676002)(26005)(186003)(2906002)(8936002)(2616005)(86362001)(83380400001)(47076005)(82740400003)(36756003)(356005)(7636003)(82310400005)(921005)(426003)(36860700001)(40460700003)(40480700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2022 14:58:21.5715
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc4f7a00-47ba-4895-152e-08dab1193330
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT086.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7502
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IHuIGTSViub8/3Tu"
+Content-Disposition: inline
+In-Reply-To: <1666105086-17326-1-git-send-email-kkartik@nvidia.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Read the DMA status before terminating the DMA, as doing so deletes
-the DMA desc.
 
-Also, to get the correct transfer status information, pause the DMA
-using dmaengine_pause() before reading the DMA status.
+--IHuIGTSViub8/3Tu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: e9ea096dd225 ("serial: tegra: add serial driver")
+On Tue, Oct 18, 2022 at 08:28:06PM +0530, Kartik wrote:
+> Read the DMA status before terminating the DMA, as doing so deletes
+> the DMA desc.
+>=20
+> Also, to get the correct transfer status information, pause the DMA
+> using dmaengine_pause() before reading the DMA status.
+>=20
+> Fixes: e9ea096dd225 ("serial: tegra: add serial driver")
+>=20
+> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+> Signed-off-by: Kartik <kkartik@nvidia.com>
+> ---
+> v1->v2:
+>  * Pause the DMA before reading the DMA status.
+>  * Updated commit message.
+>=20
+>  drivers/tty/serial/serial-tegra.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-Signed-off-by: Kartik <kkartik@nvidia.com>
----
-v1->v2:
- * Pause the DMA before reading the DMA status.
- * Updated commit message.
+Seems fine:
 
- drivers/tty/serial/serial-tegra.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index b7170cb9a544..cda9cd4fa92c 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -619,8 +619,9 @@ static void tegra_uart_stop_tx(struct uart_port *u)
- 	if (tup->tx_in_progress != TEGRA_UART_TX_DMA)
- 		return;
- 
--	dmaengine_terminate_all(tup->tx_dma_chan);
-+	dmaengine_pause(tup->tx_dma_chan);
- 	dmaengine_tx_status(tup->tx_dma_chan, tup->tx_cookie, &state);
-+	dmaengine_terminate_all(tup->tx_dma_chan);
- 	count = tup->tx_bytes_requested - state.residue;
- 	async_tx_ack(tup->tx_dma_desc);
- 	uart_xmit_advance(&tup->uport, count);
-@@ -763,8 +764,9 @@ static void tegra_uart_terminate_rx_dma(struct tegra_uart_port *tup)
- 		return;
- 	}
- 
--	dmaengine_terminate_all(tup->rx_dma_chan);
-+	dmaengine_pause(tup->rx_dma_chan);
- 	dmaengine_tx_status(tup->rx_dma_chan, tup->rx_cookie, &state);
-+	dmaengine_terminate_all(tup->rx_dma_chan);
- 
- 	tegra_uart_rx_buffer_push(tup, state.residue);
- 	tup->rx_dma_active = false;
--- 
-2.17.1
+--IHuIGTSViub8/3Tu
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmNOw/IACgkQ3SOs138+
+s6GgFA//fpcMpjiCNE0bjI9gIWfKnoaHklq0pIKH3JzHH4bXoIEXDzpa4lRECS+O
+Vaof0L0kUKBQwjPn87YmWoTc0QGO4YqFSV8OO4eyORk1H7affyY4IxpdcEdKg18y
+dUGRLj0mjMNDs/ZZRIkNK6nJMoplMbjBBaDeBiuhQ1ijBJWwm9AuuNzdEzPTXu8p
+uF8U9jM7dWBJ82JuasuJXnanT+qhyvPGnda4ABTV3fKgBN5XfwnzKLx1ik5mbGti
+LGU65Vm7vokMTrCvWjrnDnMZEGPn8BMJPfrjMhNYWzjnXYM1+vWr1XtpVhOLQoCv
+CxQ4A0eEbKb8E28DhUcJn2VFVIhpAEgL+kcDKB0LtrkRSAwwKKgaZKW8chUEl1kN
+EuHKlfTnuEYIde0U6jUv9cw1Z3tnmVmcca7Iu9w5tXB8au1LqhxscO5XNotlTnJF
+lRuHcGEkjThMET2s9iNrJqhC/fLXidPPuA3lHL8Z6Vp+Bp81cSwKFXbAcp6SEc/H
+jent0tT879mWh5cbsHs6oGRP51CRyiNj7q0YddOsEXPgSEu2V447uPTltZlWk6Jl
+JP+q1ERq48b7zBkt3jTXxeMYzdcxjWW02QWWtODS+nfANoM+aTy8W6X6NVWAZXY+
+prx2rH+b5vL1evw6GamwxFE808z+uXmYBVctt5TH8EUdsOTD410=
+=AAlD
+-----END PGP SIGNATURE-----
+
+--IHuIGTSViub8/3Tu--
