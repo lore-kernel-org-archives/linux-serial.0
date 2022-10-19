@@ -2,56 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F08B3C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 11:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8074AC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 11:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbiJSLrO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 07:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34756 "EHLO
+        id S231834AbiJSLsg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 07:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231187AbiJSLqh (ORCPT
+        with ESMTP id S231187AbiJSLsR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 07:46:37 -0400
+        Wed, 19 Oct 2022 07:48:17 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD3619B67B;
-        Wed, 19 Oct 2022 04:26:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206B425E84;
+        Wed, 19 Oct 2022 04:27:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666178770; x=1697714770;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sDkxUdt2JahFUf77AGEqjEY+CeposhXLpl0kIeK4m2o=;
-  b=huGddRKGBlIobxOltBsBk0I4fA+/mfdPkpENu+1+oaqAlzBzsEa2l9WN
-   RThC+67lxIbsTmBay7JfhxQFDPOQWIab09zG9q+sgN+kaf6bgMzYLEXKV
-   OviYbu+MvnFRMOUwAcrOMj14CK5UbU2Bl/Y+vmn7P13hAsVwvhx98e+NC
-   7FPCQdP9+zTl/+YEtJ4rJRBpclp9F97NK8CzV/f0jY4K0H1HkuMDjcSD/
-   cBhJ09PtX4ylOozBpEKMwhRLsZsTHGqH/hnOu3Ki2+0MWZ1cSwu+M6jVh
-   7M+eJI111Kc6946uoUhkm4Mv4keb42VW9khBPBYBqKUAoFdAYsaZ2KUQC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="392661926"
-X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="392661926"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:34:20 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734127975"
-X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734127975"
+  t=1666178859; x=1697714859;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3qYimSW2UYr0KxKeDsMpOXR+PEhcwfbe9X7/vsmwasQ=;
+  b=FZtaWb5+O+64EKlwoFrRe61JNd07pRCipeJ+jsql7A5vWC8Irhs1vmKF
+   K1MWB1IFdVnhFMMvhsB+FjD6yEL/ddgwoXcNtBkrfA+bOQamnV4jsxNQn
+   UuSLzHEKMQDpDRqZy9t05ynMQzA6dMKYTxm3xWZYajobqgZF6GgUiD3KT
+   pNxwIf7Y4dFg53amVzCR/ZvQRfqCuErJ3y0benMR6Tocp3a9q1Bq8LNCk
+   zJG42Mz2D9uwkBNDMP5cA1FXRAXftgtBYCV7lCSgfN1IAxd3UWtd9B4cC
+   U4O+k9XGdWRqXxTX3AfnhHsFANNgQX+iO/o+ILmYfSFXv5BucdRXBUrrp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="392677091"
+X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
+   d="scan'208";a="392677091"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 03:55:15 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="580282722"
+X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
+   d="scan'208";a="580282722"
 Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:34:17 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 03:55:12 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v5 5/5] Documentation: Make formatting consistent for rs485 docs
-Date:   Wed, 19 Oct 2022 12:33:43 +0300
-Message-Id: <20221019093343.9546-6-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 1/2] tty: Convert tty_buffer flags to bool
+Date:   Wed, 19 Oct 2022 13:55:03 +0300
+Message-Id: <20221019105504.16800-1-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221019093343.9546-1-ilpo.jarvinen@linux.intel.com>
-References: <20221019093343.9546-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -59,77 +53,189 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Tweak styling of names that come directly from the code.
+The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
+There is also a few quite confusing operations for checking the presense
+of TTYB_NORMAL. Simplify things by converting flags to bool.
 
-Suggested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Despite the name remaining the same, the meaning of "flags" is altered
+slightly by this change. Previously it referred to flags of the buffer
+(only TTYB_NORMAL being used as a flag). After this change, flags tell
+whether the buffer contains/should be allocated with flags array along
+with character data array. It is much more suitable name that
+TTYB_NORMAL was for this purpose, thus the name remains.
+
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- .../driver-api/serial/serial-rs485.rst        | 37 ++++++++++---------
- 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
-index e53aa291bcd7..dce061ef7647 100644
---- a/Documentation/driver-api/serial/serial-rs485.rst
-+++ b/Documentation/driver-api/serial/serial-rs485.rst
-@@ -39,15 +39,15 @@ RS485 Serial Communications
-    uart_get_rs485_mode().
+v2:
+- Make it more obvious why flags is not renamed (both in kerneldoc
+  comment and commit message).
+
+ drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
+ include/linux/tty_buffer.h |  5 +----
+ include/linux/tty_flip.h   |  4 ++--
+ 3 files changed, 17 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 5e287dedce01..b408d830fcbc 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
+ 	p->commit = 0;
+ 	p->lookahead = 0;
+ 	p->read = 0;
+-	p->flags = 0;
++	p->flags = true;
+ }
  
-    Any driver for devices capable of working both as RS232 and RS485 should
--   implement the rs485_config callback and provide rs485_supported in the
--   struct uart_port. The serial core calls rs485_config to do the device
--   specific part in response to TIOCSRS485 ioctl (see below). The
--   rs485_config callback receives a pointer to a sanitizated struct
-+   implement the ``rs485_config`` callback and provide ``rs485_supported``
-+   in the ``struct uart_port``. The serial core calls ``rs485_config`` to do
-+   the device specific part in response to TIOCSRS485 ioctl (see below). The
-+   ``rs485_config`` callback receives a pointer to a sanitizated struct
-    serial_rs485. The struct serial_rs485 userspace provides is sanitized
--   before calling rs485_config using rs485_supported that indicates what
--   RS485 features the driver supports for the struct uart_port. TIOCGRS485
--   ioctl can be used to read back the struct serial_rs485 matching to the
--   current configuration.
-+   before calling ``rs485_config`` using ``rs485_supported`` that indicates
-+   what RS485 features the driver supports for the ``struct uart_port``.
-+   TIOCGRS485 ioctl can be used to read back the struct serial_rs485
-+   matching to the current configuration.
+ /**
+@@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+  * __tty_buffer_request_room	-	grow tty buffer if needed
+  * @port: tty port
+  * @size: size desired
+- * @flags: buffer flags if new buffer allocated (default = 0)
++ * @flags: buffer has to store flags along character data
+  *
+  * Make at least @size bytes of linear space available for the tty buffer.
+  *
+@@ -260,19 +260,19 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+  * Returns: the size we managed to find.
+  */
+ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
+-				     int flags)
++				     bool flags)
+ {
+ 	struct tty_bufhead *buf = &port->buf;
+ 	struct tty_buffer *b, *n;
+ 	int left, change;
  
- .. kernel-doc:: include/uapi/linux/serial.h
-    :identifiers: serial_rs485 uart_get_rs485_mode
-@@ -108,23 +108,24 @@ RS485 Serial Communications
- ========================
+ 	b = buf->tail;
+-	if (b->flags & TTYB_NORMAL)
++	if (!b->flags)
+ 		left = 2 * b->size - b->used;
+ 	else
+ 		left = b->size - b->used;
  
-    The Linux kernel provides addressing mode for multipoint RS-485 serial
--   communications line. The addressing mode is enabled with SER_RS485_ADDRB
--   flag in struct serial_rs485. The struct serial_rs485 has two additional
--   flags and fields for enabling receive and destination addresses.
-+   communications line. The addressing mode is enabled with
-+   ``SER_RS485_ADDRB`` flag in struct serial_rs485. The struct serial_rs485
-+   has two additional flags and fields for enabling receive and destination
-+   addresses.
+-	change = (b->flags & TTYB_NORMAL) && (~flags & TTYB_NORMAL);
++	change = !b->flags && flags;
+ 	if (change || left < size) {
+ 		/* This is the slow path - looking for new buffers to use */
+ 		n = tty_buffer_alloc(port, size);
+@@ -300,7 +300,7 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
  
-    Address mode flags:
--	- SER_RS485_ADDRB: Enabled addressing mode (sets also ADDRB in termios).
--	- SER_RS485_ADDR_RECV: Receive (filter) address enabled.
--	- SER_RS485_ADDR_DEST: Set destination address.
-+	- ``SER_RS485_ADDRB``: Enabled addressing mode (sets also ADDRB in termios).
-+	- ``SER_RS485_ADDR_RECV``: Receive (filter) address enabled.
-+	- ``SER_RS485_ADDR_DEST``: Set destination address.
+ int tty_buffer_request_room(struct tty_port *port, size_t size)
+ {
+-	return __tty_buffer_request_room(port, size, 0);
++	return __tty_buffer_request_room(port, size, true);
+ }
+ EXPORT_SYMBOL_GPL(tty_buffer_request_room);
  
--   Address fields (enabled with corresponding SER_RS485_ADDR_* flag):
--	- addr_recv: Receive address.
--	- addr_dest: Destination address.
-+   Address fields (enabled with corresponding ``SER_RS485_ADDR_*`` flag):
-+	- ``addr_recv``: Receive address.
-+	- ``addr_dest``: Destination address.
+@@ -320,17 +320,17 @@ int tty_insert_flip_string_fixed_flag(struct tty_port *port,
+ 		const unsigned char *chars, char flag, size_t size)
+ {
+ 	int copied = 0;
++	bool flags = flag != TTY_NORMAL;
  
-    Once a receive address is set, the communication can occur only with the
-    particular device and other peers are filtered out. It is left up to the
-    receiver side to enforce the filtering. Receive address will be cleared
--   if SER_RS485_ADDR_RECV is not set.
-+   if ``SER_RS485_ADDR_RECV`` is not set.
+ 	do {
+ 		int goal = min_t(size_t, size - copied, TTY_BUFFER_PAGE);
+-		int flags = (flag == TTY_NORMAL) ? TTYB_NORMAL : 0;
+ 		int space = __tty_buffer_request_room(port, goal, flags);
+ 		struct tty_buffer *tb = port->buf.tail;
  
-    Note: not all devices supporting RS485 support multipoint addressing.
+ 		if (unlikely(space == 0))
+ 			break;
+ 		memcpy(char_buf_ptr(tb, tb->used), chars, space);
+-		if (~tb->flags & TTYB_NORMAL)
++		if (tb->flags)
+ 			memset(flag_buf_ptr(tb, tb->used), flag, space);
+ 		tb->used += space;
+ 		copied += space;
+@@ -393,13 +393,13 @@ EXPORT_SYMBOL(tty_insert_flip_string_flags);
+ int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag)
+ {
+ 	struct tty_buffer *tb;
+-	int flags = (flag == TTY_NORMAL) ? TTYB_NORMAL : 0;
++	bool flags = flag != TTY_NORMAL;
  
+ 	if (!__tty_buffer_request_room(port, 1, flags))
+ 		return 0;
+ 
+ 	tb = port->buf.tail;
+-	if (~tb->flags & TTYB_NORMAL)
++	if (tb->flags)
+ 		*flag_buf_ptr(tb, tb->used) = flag;
+ 	*char_buf_ptr(tb, tb->used++) = ch;
+ 
+@@ -424,13 +424,13 @@ EXPORT_SYMBOL(__tty_insert_flip_char);
+ int tty_prepare_flip_string(struct tty_port *port, unsigned char **chars,
+ 		size_t size)
+ {
+-	int space = __tty_buffer_request_room(port, size, TTYB_NORMAL);
++	int space = __tty_buffer_request_room(port, size, false);
+ 
+ 	if (likely(space)) {
+ 		struct tty_buffer *tb = port->buf.tail;
+ 
+ 		*chars = char_buf_ptr(tb, tb->used);
+-		if (~tb->flags & TTYB_NORMAL)
++		if (tb->flags)
+ 			memset(flag_buf_ptr(tb, tb->used), TTY_NORMAL, space);
+ 		tb->used += space;
+ 	}
+@@ -492,7 +492,7 @@ static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
+ 			unsigned char *p, *f = NULL;
+ 
+ 			p = char_buf_ptr(head, head->lookahead);
+-			if (~head->flags & TTYB_NORMAL)
++			if (head->flags)
+ 				f = flag_buf_ptr(head, head->lookahead);
+ 
+ 			port->client_ops->lookahead_buf(port, p, f, count);
+@@ -509,7 +509,7 @@ receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
+ 	const char *f = NULL;
+ 	int n;
+ 
+-	if (~head->flags & TTYB_NORMAL)
++	if (head->flags)
+ 		f = flag_buf_ptr(head, head->read);
+ 
+ 	n = port->client_ops->receive_buf(port, p, f, count);
+diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
+index 1796648c2907..6ceb2789e6c8 100644
+--- a/include/linux/tty_buffer.h
++++ b/include/linux/tty_buffer.h
+@@ -17,14 +17,11 @@ struct tty_buffer {
+ 	int commit;
+ 	int lookahead;		/* Lazy update on recv, can become less than "read" */
+ 	int read;
+-	int flags;
++	bool flags;
+ 	/* Data points here */
+ 	unsigned long data[];
+ };
+ 
+-/* Values for .flags field of tty_buffer */
+-#define TTYB_NORMAL	1	/* buffer has no flags buffer */
+-
+ static inline unsigned char *char_buf_ptr(struct tty_buffer *b, int ofs)
+ {
+ 	return ((unsigned char *)b->data) + ofs;
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index 483d41cbcbb7..bfaaeee61a05 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -25,9 +25,9 @@ static inline int tty_insert_flip_char(struct tty_port *port,
+ 	struct tty_buffer *tb = port->buf.tail;
+ 	int change;
+ 
+-	change = (tb->flags & TTYB_NORMAL) && (flag != TTY_NORMAL);
++	change = !tb->flags && (flag != TTY_NORMAL);
+ 	if (!change && tb->used < tb->size) {
+-		if (~tb->flags & TTYB_NORMAL)
++		if (tb->flags)
+ 			*flag_buf_ptr(tb, tb->used) = flag;
+ 		*char_buf_ptr(tb, tb->used++) = ch;
+ 		return 1;
 -- 
 2.30.2
 
