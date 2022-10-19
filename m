@@ -2,93 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215C2C43219
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 10:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9886CC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 10:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbiJSKcL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 06:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
+        id S231513AbiJSKz0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 06:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbiJSKbg (ORCPT
+        with ESMTP id S234952AbiJSKyh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 06:31:36 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08DBF01B7;
-        Wed, 19 Oct 2022 03:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666174228; x=1697710228;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Uap1H5nY8QhFUnLKuQGsMA8Ds5ys9SXkfxi++zVNE9A=;
-  b=iSHRQhncCe/alRTg0MGmpt0EZLSKGBYOD6Iwas3YExkNeO/ObPzsBYYe
-   8xEktxeXw1sOi2bEkh3GxWOtnK5SUj9ARyWQalEz5opgHJKVuehXRHVVB
-   Zj4dDULjmqYIQlcoTBwfI3jgE098YlpoTgK80h632soecMBSPCPOIE57e
-   2Hz9/j4nREaDPoFEszSH1QADlpSUOk4jgv76MGRBxivfZD+JzYQxY1j+I
-   hXxGKIdg7jhoVLcIHoWIJs6qWKm1mjjTQ2mm5EQlHLAnsMdHUKrczAHck
-   3nkNFNxJolOBl5jGRevZvW8JuvkiSZ4EBx+Rt/BnivUEsvnKsaFdd4BbM
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="368407296"
-X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="368407296"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:29 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734119270"
-X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734119270"
-Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:26 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 37/44] serial: sunsab: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:44 +0300
-Message-Id: <20221019091151.6692-38-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
-References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
+        Wed, 19 Oct 2022 06:54:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055A8696D8;
+        Wed, 19 Oct 2022 03:26:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59036B8229E;
+        Wed, 19 Oct 2022 10:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88169C433D6;
+        Wed, 19 Oct 2022 10:25:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1666175111;
+        bh=RwGyyGPL1pOAzeitY3Ie8HVkAFv9vvGLhWgA2HmbVwg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gFa6Ga7j9yH/OPaFUpNuc1TYDkEOTlwQHSNw0hQ5f8QAJVqPAkPrl9eeisVt1KnsW
+         aAGSV655nT72vJ/uvHpJ2R4b5BFUL9QLn269hVyg6guB1xm7yCcE+bKOSzlTf+HKz6
+         SI4juPHZ/6ipCRjacRDl3Y6EVfKZaMeTBoRpKJgc=
+Date:   Wed, 19 Oct 2022 12:25:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] tty: Convert tty_buffer flags to bool
+Message-ID: <Y0/QhJBW1TapqrjC@kroah.com>
+References: <20221019094241.10870-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221019094241.10870-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Take advantage of the new uart_xmit_advance() helper.
+On Wed, Oct 19, 2022 at 12:42:39PM +0300, Ilpo Järvinen wrote:
+> The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
+> There is also a few quite confusing operations for checking the presense
+> of TTYB_NORMAL. Simplify things by converting flags to bool.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
+>  include/linux/tty_buffer.h |  5 +----
+>  include/linux/tty_flip.h   |  4 ++--
+>  3 files changed, 17 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> index 5e287dedce01..be3431575a19 100644
+> --- a/drivers/tty/tty_buffer.c
+> +++ b/drivers/tty/tty_buffer.c
+> @@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
+>  	p->commit = 0;
+>  	p->lookahead = 0;
+>  	p->read = 0;
+> -	p->flags = 0;
+> +	p->flags = true;
+>  }
+>  
+>  /**
+> @@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+>   * __tty_buffer_request_room	-	grow tty buffer if needed
+>   * @port: tty port
+>   * @size: size desired
+> - * @flags: buffer flags if new buffer allocated (default = 0)
+> + * @flags: buffer flags if new buffer allocated
 
-Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/sunsab.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+If all this does is store TTYB_NORMAL, why not name it "ttyb_normal"?
+Leaving it at "flags" and having that be a boolean is just confusing.
 
-diff --git a/drivers/tty/serial/sunsab.c b/drivers/tty/serial/sunsab.c
-index 99608b2a2b74..94db67f21abf 100644
---- a/drivers/tty/serial/sunsab.c
-+++ b/drivers/tty/serial/sunsab.c
-@@ -266,8 +266,7 @@ static void transmit_chars(struct uart_sunsab_port *up,
- 	for (i = 0; i < up->port.fifosize; i++) {
- 		writeb(xmit->buf[xmit->tail],
- 		       &up->regs->w.xfifo[i]);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		up->port.icount.tx++;
-+		uart_xmit_advance(&up->port, 1);
- 		if (uart_circ_empty(xmit))
- 			break;
- 	}
-@@ -453,8 +452,7 @@ static void sunsab_start_tx(struct uart_port *port)
- 	for (i = 0; i < up->port.fifosize; i++) {
- 		writeb(xmit->buf[xmit->tail],
- 		       &up->regs->w.xfifo[i]);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		up->port.icount.tx++;
-+		uart_xmit_advance(&up->port, 1);
- 		if (uart_circ_empty(xmit))
- 			break;
- 	}
--- 
-2.30.2
+thanks,
 
+greg k-h
