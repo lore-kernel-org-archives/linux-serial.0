@@ -2,105 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83313C43219
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 15:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BB9C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 15:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232265AbiJSP1Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 11:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
+        id S232505AbiJSPrv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 11:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbiJSP1D (ORCPT
+        with ESMTP id S232506AbiJSPrS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 11:27:03 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C75A14C527;
-        Wed, 19 Oct 2022 08:19:53 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id i65so14770074ioa.0;
-        Wed, 19 Oct 2022 08:19:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KiAtnv3O8MX8nL+R91UDkC4RH0kfqHF5HE/wVPNVO9E=;
-        b=j/plf1bJ20J4G8S6RNOuUW/ahXCuyTBOVehUugkYj9HW+bWZp3E288RhnrDTBBLtg5
-         9XHeMaz5bL09MTVZ66Foxxkam2kIGyuF05IHkTbommDvOd2M/KS3nrfyZWnE9ynFfd9l
-         ZDorP9vGnGy/hXRENdDoE27Wi4rpKfO7FnX3k3Ezx5FtwrN/MlaUUrA8jpkV5+kzfRbT
-         nFsTfArSDT1wk8d1GqtiX1lVqrWg/uC0P5JaJ66VouWgEihLxjW5jUNdd/wc9uOaYByT
-         sENKdwS5+l6L4gkskVqUlxLN4ZcQetjAGTlbgMYexcyKNLPPNSF2ZyFpf1DJpYWs5Z+D
-         +WGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KiAtnv3O8MX8nL+R91UDkC4RH0kfqHF5HE/wVPNVO9E=;
-        b=jbjZqL5FXDm/Q3q57sjj+mkK0QCEN7ACC9rmMt4k0v4mjIuhebRYvRLV4pTkBG/jMP
-         1pUwGPMGvbj7O5yXofieqyu9t0tyNOcBwfH/8FSELRNe2kHdp8BZpezZEv+Ad9PGTtFG
-         L0dsOpNCZDp5tPnrmKNdl85lnyOujZLQu7kyzuWsy+IDOvomj01Ly8TkA2+ZYtLMRwfB
-         +vA+RYdnYUj9tsLkfZIBL7QSyFEsFOBNQF9Hg030iUOd9iTu2HW6InIix8lYznVJ74kA
-         7gCxlhlhxv/jGtT4qsZ/fOCHOMEk0jB1dNSYbRilYg7eA8D2g4ecVlEtcyAnkMGVWys7
-         sR/g==
-X-Gm-Message-State: ACrzQf1QYd0C4uHAmM0ynySBTHgLJ7XBuxu/iKWkRIMskRoqhHY0nrCz
-        eN+vEx3NtJ/WL4DGvQRm+Ez1AYwgtiGutolCLyU=
-X-Google-Smtp-Source: AMsMyM5qPsQtuBvKyPQMnBZjaxeLYE52tYSFcHWWnB70BrncG/Hn51NZd/lN2AWIwQJCxd/unWoBGJKg26X7wKRspXA=
-X-Received: by 2002:a05:6638:3452:b0:363:69f8:549f with SMTP id
- q18-20020a056638345200b0036369f8549fmr6938721jav.190.1666192765289; Wed, 19
- Oct 2022 08:19:25 -0700 (PDT)
+        Wed, 19 Oct 2022 11:47:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C21B86824;
+        Wed, 19 Oct 2022 08:41:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A5B4ACE22AF;
+        Wed, 19 Oct 2022 15:41:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6F3C433C1;
+        Wed, 19 Oct 2022 15:41:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1666194097;
+        bh=pp0u8hipLhDrQpM4yh61waqBQ+HKhDl84yhWKQ9AfSc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h1s+6wLnCcSZQDw219lUCDYZT/y2g3M30CfQLQHGJ4FgEHDEubtlKJ3MqSnxemyF+
+         HJdvMXI8I9hLkebNLu9nujeG7K5+0YHxNAtdFSofb/EOE9MYzEjyLxKG1v7Ezsnu/H
+         aPWDWGxxThDCgS0o3xDvY9J81p4lIc+++fMm40DY=
+Date:   Wed, 19 Oct 2022 17:41:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 01/38] serial: kgdboc: Lock console list in
+ probe function
+Message-ID: <Y1Aarp6pv34/cioY@kroah.com>
+References: <20221019145600.1282823-1-john.ogness@linutronix.de>
+ <20221019145600.1282823-2-john.ogness@linutronix.de>
 MIME-Version: 1.0
-References: <20221009181338.2896660-8-lis8215@gmail.com> <202210100607.YdxoR0tD-lkp@intel.com>
- <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
- <bb9f79d4-82a9-4790-b849-d517333ea2d4@app.fastmail.com> <GSPOJR.M4XZ4D03G60F@crapouillou.net>
- <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
- <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com> <555WJR.ESJD0KDHOG3S@crapouillou.net>
-In-Reply-To: <555WJR.ESJD0KDHOG3S@crapouillou.net>
-From:   Siarhei Volkau <lis8215@gmail.com>
-Date:   Wed, 19 Oct 2022 18:19:13 +0300
-Message-ID: <CAKNVLfZ0ndwGUUq0VX3vdvxfDK6Shf61WS_dC5WocChKeYSWJg@mail.gmail.com>
-Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
- JZ4750/JZ4755 SoCs
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        kbuild-all@lists.01.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        GPIO SUBSYSTEM <linux-gpio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221019145600.1282823-2-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-=D0=BF=D0=BD, 17 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 12:32, Paul Cercue=
-il <paul@crapouillou.net>:
-> > I checked that approach: serial seems to be working as expected,
-> > but not all the time: there's a time period when the CGU driver
-> > started but serial console driver is still early one.
-> > In my case UART produces garbage at that period since CGU
-> > needs to enable clock divider back: ext is 24MHz but 12MHz
-> > required for audio codec and USB to function properly.
->
-> What I'd do, is just force-enable it to 12 MHz in ingenic_fixup_fdt(),
-> since the programming manual basically says that 24 MHz does not work
-> properly.
->
-> Then in the earlycon setup code hardcode the /2 divider with a big fat
-> comment about why it's there.
+On Wed, Oct 19, 2022 at 05:01:23PM +0206, John Ogness wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
+> 
+> Unprotected list walks are not necessarily safe.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> ---
+>  drivers/tty/serial/kgdboc.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Agree, the vendor's kernel does that as well.
-
-Also I found that:
-1. Many other drivers compile the early console only when
-CONFIG_SERIAL_8250_CONSOLE is set.
-2. All the early ingenic_ functions can be labeled as __init.
-Shall I fix that while I'm already here?
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
