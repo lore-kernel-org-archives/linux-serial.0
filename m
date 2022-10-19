@@ -2,83 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 656EDC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 11:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1F5C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 11:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbiJSLQV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 07:16:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58828 "EHLO
+        id S230481AbiJSL0J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 07:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiJSLN6 (ORCPT
+        with ESMTP id S231137AbiJSLZz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 07:13:58 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292BA185400;
-        Wed, 19 Oct 2022 03:41:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666176074; x=1697712074;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=B13YA0WwjAgxh8IASNKkr+KfcFMYjEluxjSu647UO1s=;
-  b=W/Of7CV0Bo4HdMgm6UHLg/CiwngaaSiTMkv/x5BZJCD7KiGzcfLWXx9U
-   2L7ZYVoKuapPo/oyy6O9qr9Dil2LDGT5ux5IinXTkk6VM7ESf8qZrPJkt
-   PqqbOrTMXTLWD6ffK2PIpqNMfQCdD3LvNnDw2Xmba9Vqxw/ZH4BFhLguU
-   GoTsO1wA/+WJupchaQa6KNFdAuOJWHoethMtf5couJdhCCwooNcNdY4Qt
-   88mFKDPSq3paF/IKNaawYr4KLMt1QQsD9avWBsuNgpMu1zAi+C0c1VrYH
-   QeOHksqBhhDE12KhIVpgKCQJ6AzPDqX2Of8Pi4bdBPdJzEdiF4CqV1N1j
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="370573956"
-X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="370573956"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:47 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734119348"
-X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734119348"
-Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:44 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Timur Tabi <timur@kernel.org>, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 42/44] serial: ucc_uart: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:49 +0300
-Message-Id: <20221019091151.6692-43-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
-References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
+        Wed, 19 Oct 2022 07:25:55 -0400
+Received: from out199-4.us.a.mail.aliyun.com (out199-4.us.a.mail.aliyun.com [47.90.199.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138F11669A3;
+        Wed, 19 Oct 2022 03:57:43 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VSaOjhM_1666176554;
+Received: from 30.97.48.52(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VSaOjhM_1666176554)
+          by smtp.aliyun-inc.com;
+          Wed, 19 Oct 2022 18:49:15 +0800
+Message-ID: <5ec4a475-b800-7ef9-8edc-605d4d17bbaa@linux.alibaba.com>
+Date:   Wed, 19 Oct 2022 18:49:45 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH 33/44] serial: sprd: Use uart_xmit_advance()
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
+ <20221019091151.6692-34-ilpo.jarvinen@linux.intel.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20221019091151.6692-34-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Take advantage of the new uart_xmit_advance() helper.
+Hi,
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/ucc_uart.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On 10/19/2022 5:11 PM, Ilpo Järvinen wrote:
+> Take advantage of the new uart_xmit_advance() helper.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 82cf14dd3d43..b09b6496ee3e 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -372,8 +372,7 @@ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
- 		p = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
- 		while (count < qe_port->tx_fifosize) {
- 			*p++ = xmit->buf[xmit->tail];
--			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--			port->icount.tx++;
-+			uart_xmit_advance(port, 1);
- 			count++;
- 			if (xmit->head == xmit->tail)
- 				break;
--- 
-2.30.2
+LGTM. Thanks.
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
 
+> ---
+>   drivers/tty/serial/sprd_serial.c | 7 ++-----
+>   1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+> index 342a87967631..eae700809342 100644
+> --- a/drivers/tty/serial/sprd_serial.c
+> +++ b/drivers/tty/serial/sprd_serial.c
+> @@ -206,7 +206,6 @@ static void sprd_stop_tx_dma(struct uart_port *port)
+>   {
+>   	struct sprd_uart_port *sp =
+>   		container_of(port, struct sprd_uart_port, port);
+> -	struct circ_buf *xmit = &port->state->xmit;
+>   	struct dma_tx_state state;
+>   	u32 trans_len;
+>   
+> @@ -215,8 +214,7 @@ static void sprd_stop_tx_dma(struct uart_port *port)
+>   	dmaengine_tx_status(sp->tx_dma.chn, sp->tx_dma.cookie, &state);
+>   	if (state.residue) {
+>   		trans_len = state.residue - sp->tx_dma.phys_addr;
+> -		xmit->tail = (xmit->tail + trans_len) & (UART_XMIT_SIZE - 1);
+> -		port->icount.tx += trans_len;
+> +		uart_xmit_advance(port, trans_len);
+>   		dma_unmap_single(port->dev, sp->tx_dma.phys_addr,
+>   				 sp->tx_dma.trans_len, DMA_TO_DEVICE);
+>   	}
+> @@ -253,8 +251,7 @@ static void sprd_complete_tx_dma(void *data)
+>   	dma_unmap_single(port->dev, sp->tx_dma.phys_addr,
+>   			 sp->tx_dma.trans_len, DMA_TO_DEVICE);
+>   
+> -	xmit->tail = (xmit->tail + sp->tx_dma.trans_len) & (UART_XMIT_SIZE - 1);
+> -	port->icount.tx += sp->tx_dma.trans_len;
+> +	uart_xmit_advance(port, sp->tx_dma.trans_len);
+>   
+>   	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+>   		uart_write_wakeup(port);
