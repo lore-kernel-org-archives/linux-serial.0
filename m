@@ -2,81 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E83BC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E71C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233992AbiJSJmh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 05:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35660 "EHLO
+        id S234296AbiJSJr5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 05:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234820AbiJSJl0 (ORCPT
+        with ESMTP id S234364AbiJSJp4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 05:41:26 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6593CD18DF;
-        Wed, 19 Oct 2022 02:18:08 -0700 (PDT)
+        Wed, 19 Oct 2022 05:45:56 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A1CDD88C;
+        Wed, 19 Oct 2022 02:20:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666171089; x=1697707089;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=N8gWHCU+8cusGblZ4FloORP2XpvV18UIJycDBAa/ghg=;
-  b=ELAHNHWyqjyO/2ovRCL09Vb0Tw189vGC7vbCiugvTuQklBpc+k1T9LFC
-   6PV92LvS6WD4ZbboW0Hogmg04cjHEeEG7URlRx399vJxYj3k3YhAHEQ9+
-   ELwNP0wDVZzFz2FerprmEEIIDTprNZhzlk/3DIFC1uSuuKFabPQ4MWyfC
-   7cZyCTNZo8jQPUmYWs+c/IH+ONd/eLFtH/gA8lFFticIOiK2cjRAr1Ult
-   MsBq0TNwjGgiTjnhWSDnhCZbcz3p6To4ub/ab6sJZTw3qgq9KOayCf711
-   dyit0OsucXLTkmt17u12mkOa6eaWEjKXV7FRim/8rcgJ1UPA9dt8APxHc
+  t=1666171238; x=1697707238;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=euE7pDmRzACLoAO9QxdZAaZkp7WeUhWkpLjl25+pHlk=;
+  b=HXwd6H1CS7rjHE5tmsUyHvLixiWR0GVGUZP8RxAiBju73cWFHvRzz/28
+   hU2zxoE3ynGF0pDz5RdmqGwP1EA9OIPgE8Tm6e4cLY97c7Yvl2qclXb8Y
+   SsPuYgh6sNpOClAokBYRA0RIWk5WuXZI0tqpGOR/XDvOALLaZgkbC3nW3
+   hqzIyrIg/2X9vi4eSR+WnHSVaMpRk43Rjz2ibzb49JBTgjhZYoipPwJmM
+   28xHv4r8TaXTqnI1wbZhzyK8jlceBF/1Pl6J/bEvkLrTWIQYltTP+8QXk
+   12ZYlWm8lCsTMbyEjR76W4GgyMkHiGpkVZoNlRBsaHPCdITzr3mjTRCrW
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="289672415"
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="303973593"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="289672415"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:40 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734119314"
+   d="scan'208";a="303973593"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:19:52 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="660255720"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734119314"
-Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:37 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 40/44] serial: timbuart: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:47 +0300
-Message-Id: <20221019091151.6692-41-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
-References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
+   d="scan'208";a="660255720"
+Received: from sponnura-mobl1.amr.corp.intel.com ([10.251.214.35])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:19:49 -0700
+Date:   Wed, 19 Oct 2022 12:19:46 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-imx@nxp.com
+Subject: Re: [PATCH] tty: serial: fsl_lpuart: don't break the on-going transfer
+ when global reset
+In-Reply-To: <20221019065854.12397-1-sherry.sun@nxp.com>
+Message-ID: <34564f52-cae1-fdc3-8676-ce3d8e645672@linux.intel.com>
+References: <20221019065854.12397-1-sherry.sun@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Take advantage of the new uart_xmit_advance() helper.
+On Wed, 19 Oct 2022, Sherry Sun wrote:
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/timbuart.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> lpuart_global_reset() shouldn't break the on-going transmit engin, need
+> to recover the on-going data transfer after reset.
+> 
+> This can help earlycon here, since commit 60f361722ad2 ("serial:
+> fsl_lpuart: Reset prior to registration") moved lpuart_global_reset()
+> before uart_add_one_port(), earlycon is writing during global reset,
+> as global reset will disable the TX and clear the baud rate register,
+> which caused the earlycon cannot work any more after reset, needs to
+> restore the baud rate and re-enable the transmitter to recover the
+> earlycon write.
+>
+> Fixes: bd5305dcabbc ("tty: serial: fsl_lpuart: do software reset for imx7ulp and imx8qxp")
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 23 ++++++++++++++++++++---
+>  1 file changed, 20 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index 67fa113f77d4..5064fdba1b61 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -408,11 +408,9 @@ static int lpuart_global_reset(struct lpuart_port *sport)
+>  {
+>  	struct uart_port *port = &sport->port;
+>  	void __iomem *global_addr;
+> +	unsigned long tx_enable, bd, stat, sfifo;
+>  	int ret;
+>  
+> -	if (uart_console(port))
+> -		return 0;
+> -
+>  	ret = clk_prepare_enable(sport->ipg_clk);
+>  	if (ret) {
+>  		dev_err(sport->port.dev, "failed to enable uart ipg clk: %d\n", ret);
+> @@ -420,11 +418,30 @@ static int lpuart_global_reset(struct lpuart_port *sport)
+>  	}
+>  
+>  	if (is_imx7ulp_lpuart(sport) || is_imx8qxp_lpuart(sport)) {
+> +		/*
+> +		 * If the transmitter is used by earlycon, wait transmit engin complete
+> +		 * and then reset
+> +		 */
+> +		tx_enable = lpuart32_read(port, UARTCTRL) & UARTCTRL_TE;
+> +		if (tx_enable) {
+> +			bd = lpuart32_read(&sport->port, UARTBAUD);
+> +			stat = lpuart32_read(port, UARTSTAT);
+> +			sfifo = lpuart32_read(port, UARTFIFO);
+> +			while (!(stat & UARTSTAT_TC && sfifo & UARTFIFO_TXEMPT))
+> +				cpu_relax();
 
-diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
-index bb19ed012def..0859394a78cd 100644
---- a/drivers/tty/serial/timbuart.c
-+++ b/drivers/tty/serial/timbuart.c
-@@ -101,8 +101,7 @@ static void timbuart_tx_chars(struct uart_port *port)
- 		!uart_circ_empty(xmit)) {
- 		iowrite8(xmit->buf[xmit->tail],
- 			port->membase + TIMBUART_TXFIFO);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		port->icount.tx++;
-+		uart_xmit_advance(port, 1);
- 	}
- 
- 	dev_dbg(port->dev,
+This loop, if ever taken once, will loop forever as neither stat nor sfifo 
+are reread inside the loop.
+
 -- 
-2.30.2
+ i.
+
+> +		}
+> +
+>  		global_addr = port->membase + UART_GLOBAL - IMX_REG_OFF;
+>  		writel(UART_GLOBAL_RST, global_addr);
+>  		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
+>  		writel(0, global_addr);
+>  		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
+> +
+> +		/* Recover the transmitter for earlycon */
+> +		if (tx_enable) {
+> +			lpuart32_write(port, bd, UARTBAUD);
+> +			lpuart32_write(port, UARTCTRL_TE, UARTCTRL);
+> +		}
+>  	}
+>  
+>  	clk_disable_unprepare(sport->ipg_clk);
+> 
 
