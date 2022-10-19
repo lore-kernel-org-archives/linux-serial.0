@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECABAC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 11:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 913A9C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 11:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbiJSLqk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 07:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
+        id S230053AbiJSLq4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 07:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbiJSLqV (ORCPT
+        with ESMTP id S230331AbiJSLqb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 07:46:21 -0400
+        Wed, 19 Oct 2022 07:46:31 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBDC166980;
-        Wed, 19 Oct 2022 04:26:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89D718F932;
+        Wed, 19 Oct 2022 04:26:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666178770; x=1697714770;
+  t=1666178769; x=1697714769;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xTfXyABtrWPDgEHj2asTRfYPY8Q87jgv7IqP5hzhfFw=;
-  b=Nsg/V9pQPRvMfW49rVnizPChvP0qw3RJxDDmM6POdjiqzRtAkLK3ehsR
-   kCsirhN+YNNvSm2YmcoDe6sx2VrpRbIWBpmY8ZbXYyw35RkLFsQIstzif
-   JTbhbAHxAf4wLl33y98cz0Fn2VYRCw2ulmMO0ZJLPVuNzGDz15r0EAaTf
-   QCoQo7LZDkuZDytQgBs3nxX9+Pq/rQOAuU3BSvR9np7p3cnnHHTezel+M
-   cM6yDNGZStXxb38zS/privpPtRvB/SR5FH5NNnpku3CJ+wZKQ8AZafKJg
-   XHbKDXop1GklnY3pMHM7fXYNAOc3P7cpeKhbdyg3OkIwTxxepeGl1hEM5
+  bh=LbMSsxMcmlMfWsO5riNK7BpBDXgyRdAAcSbOnynbhCA=;
+  b=m2O2yqAmBMChZ+IYtrMxqLV0n3Tf/1oQbzf2VzGj79q0ydpS1I0NJuF5
+   SB9TpJ56AdFyyzYahFhZeSczcj3Ub3gSJ6EuZGGZEWBqyRyc1qQIYaMO0
+   gIpldcU+S4gYhWWckMUfcVkITTxBGY87GkaZPkVA4xkltacP2340Z7h84
+   Kj61nt0wO+NtsIFMSyjeMyGANuM/dvyQZ0NziCuap6InhVLBLHRn9ch3B
+   krDJwBZWoOAW6Y9yhQ6Rfi3leueFe4aRd25gd/CJ+ATvWQKJxR+RhAuMx
+   WyKpaDe1AqbDXytyLtmonxUPDYNpZhzO6bDWHVf0ZEuwj+bseexBmhns6
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="392661911"
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="392661862"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="392661911"
+   d="scan'208";a="392661862"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:34:16 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734127951"
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:34:07 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734127905"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734127951"
+   d="scan'208";a="734127905"
 Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:34:12 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:34:02 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -47,9 +47,9 @@ To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v5 4/5] Documentation: rs485: Fix struct referencing
-Date:   Wed, 19 Oct 2022 12:33:42 +0300
-Message-Id: <20221019093343.9546-5-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v5 2/5] Documentation: rs485: Link reference properly
+Date:   Wed, 19 Oct 2022 12:33:40 +0300
+Message-Id: <20221019093343.9546-3-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221019093343.9546-1-ilpo.jarvinen@linux.intel.com>
 References: <20221019093343.9546-1-ilpo.jarvinen@linux.intel.com>
@@ -60,60 +60,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use "struct serial_rs485" to get the references properly recognized.
+Link DT bindings reference properly.
 
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- .../driver-api/serial/serial-rs485.rst        | 21 ++++++++++---------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ Documentation/driver-api/serial/serial-rs485.rst | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
-index ee34c8e1e56e..e53aa291bcd7 100644
+index 264e4b753713..513758a702a6 100644
 --- a/Documentation/driver-api/serial/serial-rs485.rst
 +++ b/Documentation/driver-api/serial/serial-rs485.rst
-@@ -29,7 +29,7 @@ RS485 Serial Communications
- 3. Data Structures Already Available in the Kernel
- ==================================================
- 
--   The Linux kernel provides the serial_rs485 structure to handle RS485
-+   The Linux kernel provides the struct serial_rs485 to handle RS485
+@@ -33,9 +33,9 @@ RS485 Serial Communications
     communications. This data structure is used to set and configure RS485
     parameters in the platform data and in ioctls.
  
-@@ -40,13 +40,14 @@ RS485 Serial Communications
+-   The device tree can also provide RS485 boot time parameters (see [1]
+-   for bindings). The driver is in charge of filling this data structure from
+-   the values given by the device tree.
++   The device tree can also provide RS485 boot time parameters
++   [#DT-bindings]_. The driver is in charge of filling this data structure
++   from the values given by the device tree.
  
     Any driver for devices capable of working both as RS232 and RS485 should
     implement the rs485_config callback and provide rs485_supported in the
--   uart_port structure. The serial core calls rs485_config to do the device
--   specific part in response to TIOCSRS485 ioctl (see below). The rs485_config
--   callback receives a pointer to a sanitizated serial_rs485 structure. The
--   serial_rs485 userspace provides is sanitized before calling rs485_config
--   using rs485_supported that indicates what RS485 features the driver supports
--   for the uart_port. TIOCGRS485 ioctl can be used to read back the
--   serial_rs485 structure matching to the current configuration.
-+   struct uart_port. The serial core calls rs485_config to do the device
-+   specific part in response to TIOCSRS485 ioctl (see below). The
-+   rs485_config callback receives a pointer to a sanitizated struct
-+   serial_rs485. The struct serial_rs485 userspace provides is sanitized
-+   before calling rs485_config using rs485_supported that indicates what
-+   RS485 features the driver supports for the struct uart_port. TIOCGRS485
-+   ioctl can be used to read back the struct serial_rs485 matching to the
-+   current configuration.
+@@ -129,4 +129,4 @@ RS485 Serial Communications
+ 6. References
+ =============
  
- .. kernel-doc:: include/uapi/linux/serial.h
-    :identifiers: serial_rs485 uart_get_rs485_mode
-@@ -108,8 +109,8 @@ RS485 Serial Communications
- 
-    The Linux kernel provides addressing mode for multipoint RS-485 serial
-    communications line. The addressing mode is enabled with SER_RS485_ADDRB
--   flag in serial_rs485. Struct serial_rs485 has two additional flags and
--   fields for enabling receive and destination addresses.
-+   flag in struct serial_rs485. The struct serial_rs485 has two additional
-+   flags and fields for enabling receive and destination addresses.
- 
-    Address mode flags:
- 	- SER_RS485_ADDRB: Enabled addressing mode (sets also ADDRB in termios).
+- [1]	Documentation/devicetree/bindings/serial/rs485.txt
++.. [#DT-bindings]	Documentation/devicetree/bindings/serial/rs485.txt
 -- 
 2.30.2
 
