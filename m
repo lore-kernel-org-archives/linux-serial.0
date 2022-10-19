@@ -2,53 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C1EC43217
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 15:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37090C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 15:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231841AbiJSPGK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 11:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
+        id S232026AbiJSPGU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 11:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbiJSPFk (ORCPT
+        with ESMTP id S231892AbiJSPFm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 11:05:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8C334993;
-        Wed, 19 Oct 2022 07:59:17 -0700 (PDT)
+        Wed, 19 Oct 2022 11:05:42 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 432F6193EE9;
+        Wed, 19 Oct 2022 07:59:07 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1666191370;
+        s=2020; t=1666191373;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jjpBzMIZil2dmLUT+irfoeemb7oKmLhPxEY4dlNGawQ=;
-        b=SRSJfh36p3UleipLxlUtTUFpPUDmxLS8yo+PBwx959oqjUNw376zK6DIo/TpEECQam0Wav
-        /2i/bDbwVlsuguU4ipVk+E4hAwVZr3ThbxI4eRGPkgdkCfPFhUgsuu/0h07oZavqc7iS6J
-        j2MiWZcfTsr11cF4dBtCFOpcYxI5k3TlsXRagqXz+bBUpm3HMvQNYCWx3izXsjdjez+Q9W
-        wEFLfevTyEeT3C/B5o9VIhitHIt0qyzvN3XoWRCvsHwrp7R5LrgqTxXEsewej4Jm6gnydQ
-        aBuETCfoPiaOSRdbyc7ZRmpDtL6UqKZgreHmyf0z8VczL/og4nKGiDSM/2agug==
+        bh=aHpEExScLzm4b3PGICcqjxP6eSShWDRVil4o7DIdRaU=;
+        b=eDfs/FrHZ7HvnRF4atKhYEZ/pRXno8GEGAkw6IqnyiCmO75Q9sEJ6bqLoRWApu5I/kGcQh
+        KCTzK1MrPYWFQHFbhhZ4ddIBd7thtElTQ1FhTZSvTGr+D/NiY6ja5av6esQrgKRy3JmdV3
+        rrRE8vZ1b74ucDPVRwBFE1RIC+RhuKL5DdLWniGfxLfcajr60p331h+dY6KdEzGysIZMdC
+        yATsOHK/PLnHwsUFjoxiti7aJ0XxaKU0B+KQDroX00sQ4UKCeboef9oWWEJpZprSsCboLS
+        UQL5y2A8i38TojR6bF2UMoVPjjyV/EALMD7ITlxAjhc539biNA5Q3/A88oMp9w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1666191370;
+        s=2020e; t=1666191373;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jjpBzMIZil2dmLUT+irfoeemb7oKmLhPxEY4dlNGawQ=;
-        b=HzSWZdqEZL2J95BBvsCPnMwoU3L+/EMg5oVAvdeTTFj3KSaG3KgrIou7oKqs+PVEiiY/lu
-        WxdYmH+I94CFn5DA==
+        bh=aHpEExScLzm4b3PGICcqjxP6eSShWDRVil4o7DIdRaU=;
+        b=ag8wipmZjScVK96FvYUT41NwW8W8jBS77tduneOJOnLYN8uLmQW8RkuO+x9sTyAf/SfPXA
+        QV5RyDV2N62v9UBQ==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH printk v2 16/38] tty: serial: xilinx_uartps: use console_is_enabled()
-Date:   Wed, 19 Oct 2022 17:01:38 +0206
-Message-Id: <20221019145600.1282823-17-john.ogness@linutronix.de>
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: [PATCH printk v2 21/38] serial: kgdboc: use srcu console list iterator
+Date:   Wed, 19 Oct 2022 17:01:43 +0206
+Message-Id: <20221019145600.1282823-22-john.ogness@linutronix.de>
 In-Reply-To: <20221019145600.1282823-1-john.ogness@linutronix.de>
 References: <20221019145600.1282823-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -57,26 +59,79 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Replace (console->flags & CON_ENABLED) usage with console_is_enabled().
+Use srcu console list iteration for safe console list traversal.
+
+Note that configure_kgdboc() still requires the console_lock in
+order to ensure that no console is in its write() callback when
+its direct() callback is called. Add comments to clarify this.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/kgdboc.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 2eff7cff57c4..e1fe95bd55c1 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1631,7 +1631,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
- 	/* This is not port which is used for console that's why clean it up */
- 	if (console_port == port &&
--	    !(cdns_uart_uart_driver.cons->flags & CON_ENABLED)) {
-+	    !console_is_enabled(cdns_uart_uart_driver.cons)) {
- 		console_port = NULL;
- 		cdns_uart_console.index = -1;
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index b17aa7e49894..e9d3f8c6e3dc 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -171,6 +171,7 @@ static int configure_kgdboc(void)
+ 	int err = -ENODEV;
+ 	char *cptr = config;
+ 	struct console *cons;
++	int cookie;
+ 
+ 	if (!strlen(config) || isspace(config[0])) {
+ 		err = 0;
+@@ -193,8 +194,14 @@ static int configure_kgdboc(void)
+ 	if (!p)
+ 		goto noconfig;
+ 
++	/*
++	 * Stop console printing because the device() callback may
++	 * assume the console is not within its write() callback.
++	 */
+ 	console_lock();
+-	for_each_console(cons) {
++
++	cookie = console_srcu_read_lock();
++	for_each_console_srcu(cons) {
+ 		int idx;
+ 		if (cons->device && cons->device(cons, &idx) == p &&
+ 		    idx == tty_line) {
+@@ -202,6 +209,8 @@ static int configure_kgdboc(void)
+ 			break;
+ 		}
  	}
++	console_srcu_read_unlock(cookie);
++
+ 	console_unlock();
+ 
+ 	kgdb_tty_driver = p;
+@@ -451,6 +460,7 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+ {
+ 	struct console *con;
+ 	static bool already_warned;
++	int cookie;
+ 
+ 	if (already_warned)
+ 		return;
+@@ -463,9 +473,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+ 	 * serial drivers might be OK with this, print a warning once per
+ 	 * boot if we detect this case.
+ 	 */
+-	for_each_console(con)
++	cookie = console_srcu_read_lock();
++	for_each_console_srcu(con) {
+ 		if (con == kgdboc_earlycon_io_ops.cons)
+-			return;
++			break;
++	}
++	console_srcu_read_unlock(cookie);
++	if (con)
++		return;
+ 
+ 	already_warned = true;
+ 	pr_warn("kgdboc_earlycon is still using bootconsole\n");
 -- 
 2.30.2
 
