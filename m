@@ -2,112 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33EB2C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 12:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E562AC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 12:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232438AbiJSMDi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 08:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        id S232959AbiJSMRm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 08:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiJSMDM (ORCPT
+        with ESMTP id S231768AbiJSMRM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 08:03:12 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBD62182B;
-        Wed, 19 Oct 2022 04:39:33 -0700 (PDT)
+        Wed, 19 Oct 2022 08:17:12 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AE61C39DE;
+        Wed, 19 Oct 2022 04:53:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666179573; x=1697715573;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=F4/v5xFdGeutzQlY/uK0xk51209qAd1LVCKjl8ZCvfY=;
-  b=jIDiz0RF/ktVNTvvBBLdrzAOJ4D51jzob7uTrW4thUniVSTp8yerbyrD
-   0RUrfXpAkjIn2q4wMUbYxNshACydiasZFd3jDY3k03DGkSqF+50d8kgVg
-   ijJYHnsS+BTbvNZMfP10U3+LzuUfHu+KqlLTGbwxw5IqFHU36is5zPr4C
-   J9fxHFAAi4rMQG79cn9JPXxdj0iX6/A6rDy8r0ONFH1wFbW+DQx421IvX
-   pn64/1tNlUirdZqf4f2GL/kN/vmaVMt5r/9/JmyiYWHIG3RYUa5GX01Mx
-   1P+c4hCMBVoMsMQTvClrSDH1fLAmUMywGzHfNFuRgIPGi9BTbCAvbTu6L
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="308057632"
+  t=1666180392; x=1697716392;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=9lof7h+dJuOhTRYhOSVZmRonaoMBK895SVZFbgmQEpE=;
+  b=myomo4VHr96geCM6QOq3UUqkc6sEHixhMDiSAH2sW8rwG2rFCMyfgWOo
+   SU+WSm3GBtuhK63bLZVoj3b2OS2GTJNvrhtETcUHTRUTRf80s5A9bq2xt
+   RuAPYDklS0HL6Z4L6PqjiWOJ+Z3UswVuFGN4Ae7gV923s0nCmDw6NN/Ti
+   oYsaSZC47LtSf/8ZZXMgLD4ySq5Ik1Kh/m46psMZ9HGQAkcoyXhWojPu/
+   QZTscY3BO5pjhV9G55x5Lp2p6zaxCAQOVs6T85g+2QvFawXKUNx/UvhRV
+   MNmy1t2bZJV6zhSUEc30ReinJJP7Ef+jE9H12eym7gvG7kKWYtnpJFdPl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="305113736"
 X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
-   d="scan'208";a="308057632"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 03:31:00 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="804236884"
+   d="scan'208";a="305113736"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 04:10:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="698023575"
 X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
-   d="scan'208";a="804236884"
-Received: from sponnura-mobl1.amr.corp.intel.com ([10.251.214.35])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 03:30:58 -0700
-Date:   Wed, 19 Oct 2022 13:30:55 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] tty: Convert tty_buffer flags to bool
-In-Reply-To: <Y0/QhJBW1TapqrjC@kroah.com>
-Message-ID: <7536939f-d46-a4fc-b987-53421849ce5a@linux.intel.com>
-References: <20221019094241.10870-1-ilpo.jarvinen@linux.intel.com> <Y0/QhJBW1TapqrjC@kroah.com>
+   d="scan'208";a="698023575"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Oct 2022 04:10:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ol6xj-009p8g-1K;
+        Wed, 19 Oct 2022 14:10:15 +0300
+Date:   Wed, 19 Oct 2022 14:10:15 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 21/44] serial: max310x: Use uart_xmit_advance()
+Message-ID: <Y0/bF886gWZOXh9X@smile.fi.intel.com>
+References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
+ <20221019091151.6692-22-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-861702288-1666175459=:1619"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221019091151.6692-22-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Wed, Oct 19, 2022 at 12:11:28PM +0300, Ilpo Järvinen wrote:
+> Take advantage of the new uart_xmit_advance() helper.
 
---8323329-861702288-1666175459=:1619
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Wed, 19 Oct 2022, Greg KH wrote:
-
-> On Wed, Oct 19, 2022 at 12:42:39PM +0300, Ilpo Järvinen wrote:
-> > The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
-> > There is also a few quite confusing operations for checking the presense
-> > of TTYB_NORMAL. Simplify things by converting flags to bool.
-> > 
-> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > ---
-> >  drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
-> >  include/linux/tty_buffer.h |  5 +----
-> >  include/linux/tty_flip.h   |  4 ++--
-> >  3 files changed, 17 insertions(+), 20 deletions(-)
-> > 
-> > diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> > index 5e287dedce01..be3431575a19 100644
-> > --- a/drivers/tty/tty_buffer.c
-> > +++ b/drivers/tty/tty_buffer.c
-> > @@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
-> >  	p->commit = 0;
-> >  	p->lookahead = 0;
-> >  	p->read = 0;
-> > -	p->flags = 0;
-> > +	p->flags = true;
-> >  }
-> >  
-> >  /**
-> > @@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
-> >   * __tty_buffer_request_room	-	grow tty buffer if needed
-> >   * @port: tty port
-> >   * @size: size desired
-> > - * @flags: buffer flags if new buffer allocated (default = 0)
-> > + * @flags: buffer flags if new buffer allocated
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/max310x.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
 > 
-> If all this does is store TTYB_NORMAL, why not name it "ttyb_normal"?
-> Leaving it at "flags" and having that be a boolean is just confusing.
-
-No, it's intentional.
-
-"Flags" (as boolean) here refer to whether the buffer stores flag array 
-along with the character data array. Previously it perhaps could be 
-interpreted differently meaning that the member variable itself stored 
-flags such as TTYB_NORMAL.
-
-Flags is much better name than ttyb_normal, IMHO.
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index fbf6e2b3161c..4eb24e3407f8 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -787,10 +787,7 @@ static void max310x_handle_tx(struct uart_port *port)
+>  		} else {
+>  			max310x_batch_write(port, xmit->buf + xmit->tail, to_send);
+>  		}
+> -
+> -		/* Add data to send */
+> -		port->icount.tx += to_send;
+> -		xmit->tail = (xmit->tail + to_send) & (UART_XMIT_SIZE - 1);
+> +		uart_xmit_advance(port, to_send);
+>  	}
+>  
+>  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> -- 
+> 2.30.2
+> 
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
---8323329-861702288-1666175459=:1619--
+
