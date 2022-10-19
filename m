@@ -2,105 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF9DC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 15:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83313C43219
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 15:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232136AbiJSPIs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 11:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49108 "EHLO
+        id S232265AbiJSP1Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 11:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232241AbiJSPII (ORCPT
+        with ESMTP id S232171AbiJSP1D (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 11:08:08 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2883B94A;
-        Wed, 19 Oct 2022 08:00:04 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id s3so11803230qtn.12;
-        Wed, 19 Oct 2022 08:00:04 -0700 (PDT)
+        Wed, 19 Oct 2022 11:27:03 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C75A14C527;
+        Wed, 19 Oct 2022 08:19:53 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id i65so14770074ioa.0;
+        Wed, 19 Oct 2022 08:19:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Cdn1en3TCL697wD1YaDBcq9FxSMHwz0hFmIkA7fa/ok=;
-        b=RDgWmV3rs9DT8G5fm/e9+KmXGAXq3ODB053Ojsc8i2vNeP54Ocoy1LQoRsly0Q/lLV
-         /wdK/UYar+cupAV7w7HMVGPpf4BZJAQ3ZFV0Lh2NtsZumli6rKlo/gYTXdd4XqwCbNWA
-         dQRmL89p/5VAplc0sBQ4khbBUTsiMCDrquYIj7vfQ1kQpHm5xWgMSxNzL6PKD0xECsm0
-         hXbVe3zi1Yui3vjH/j9jUtpv9rBHNRVDk65v1CdFCNiH18fyaUcy7DqktAXSGVL2dbrS
-         Nf+Okkyn3Hqg1XU2PxMR4SXzcc2W5F+xFugK3GDOJZ3Kq/c01/eI/GT7UsVL45UJ9EXq
-         kuoQ==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KiAtnv3O8MX8nL+R91UDkC4RH0kfqHF5HE/wVPNVO9E=;
+        b=j/plf1bJ20J4G8S6RNOuUW/ahXCuyTBOVehUugkYj9HW+bWZp3E288RhnrDTBBLtg5
+         9XHeMaz5bL09MTVZ66Foxxkam2kIGyuF05IHkTbommDvOd2M/KS3nrfyZWnE9ynFfd9l
+         ZDorP9vGnGy/hXRENdDoE27Wi4rpKfO7FnX3k3Ezx5FtwrN/MlaUUrA8jpkV5+kzfRbT
+         nFsTfArSDT1wk8d1GqtiX1lVqrWg/uC0P5JaJ66VouWgEihLxjW5jUNdd/wc9uOaYByT
+         sENKdwS5+l6L4gkskVqUlxLN4ZcQetjAGTlbgMYexcyKNLPPNSF2ZyFpf1DJpYWs5Z+D
+         +WGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Cdn1en3TCL697wD1YaDBcq9FxSMHwz0hFmIkA7fa/ok=;
-        b=ztvfrAa5lrpl1aym5teUNJ+nEdcAr8O24u6WToRRGGumnVIAw0Lzo+X2mdfZmYTXUu
-         lmG1M5NPz7Cy2JDWt+Y8/F/GnoQzMrABvopkCN8vrS03CbNYBT4TpDm1KMn6gjT4FUHF
-         lw2aIFQa7Pni/z3bmgcSzEQKJOWJk71jCN70PNDcL0cVqTbg9eGHyqeIsF1Ic5fdKjpo
-         Y3EvPfWbL87Cckbsq5GH6LfrnlQ9mZXeL7nw5j0LK8tFdwILmxhsHrRLcjviBe8wbwTa
-         669Pk8+/davOYlgD9XMowxBpjeJJuL4o51GbR99S1YUIz5Zo/IuLn59czg6fyuOJxpTl
-         wDlA==
-X-Gm-Message-State: ACrzQf2/8cn5ec4wwFJiBmoTrjw5F96479//P/vBrZZdchZTBGTvp2Fc
-        ylITUSLp0Lacuebx7Xf43K0=
-X-Google-Smtp-Source: AMsMyM7b7RKtw6fYMcmP3GJf8fJkEJDD8E+4RaxLnqAleHS83boBJkoUTEnja4ZGTYnD7XNSrAtrxA==
-X-Received: by 2002:ac8:5981:0:b0:39c:e03e:86ed with SMTP id e1-20020ac85981000000b0039ce03e86edmr6886233qte.503.1666191593368;
-        Wed, 19 Oct 2022 07:59:53 -0700 (PDT)
-Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
-        by smtp.gmail.com with ESMTPSA id x27-20020a05620a0b5b00b006ecdfcf9d81sm4920276qkg.84.2022.10.19.07.59.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Oct 2022 07:59:52 -0700 (PDT)
-Date:   Wed, 19 Oct 2022 10:59:45 -0400
-From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Joel Stanley <joel@jms.id.au>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 19/44] serial: liteuart: Use uart_xmit_advance()
-Message-ID: <Y1AQ4S6csWiVGS0f@glsvmlin.ini.cmu.edu>
-References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
- <20221019091151.6692-20-ilpo.jarvinen@linux.intel.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KiAtnv3O8MX8nL+R91UDkC4RH0kfqHF5HE/wVPNVO9E=;
+        b=jbjZqL5FXDm/Q3q57sjj+mkK0QCEN7ACC9rmMt4k0v4mjIuhebRYvRLV4pTkBG/jMP
+         1pUwGPMGvbj7O5yXofieqyu9t0tyNOcBwfH/8FSELRNe2kHdp8BZpezZEv+Ad9PGTtFG
+         L0dsOpNCZDp5tPnrmKNdl85lnyOujZLQu7kyzuWsy+IDOvomj01Ly8TkA2+ZYtLMRwfB
+         +vA+RYdnYUj9tsLkfZIBL7QSyFEsFOBNQF9Hg030iUOd9iTu2HW6InIix8lYznVJ74kA
+         7gCxlhlhxv/jGtT4qsZ/fOCHOMEk0jB1dNSYbRilYg7eA8D2g4ecVlEtcyAnkMGVWys7
+         sR/g==
+X-Gm-Message-State: ACrzQf1QYd0C4uHAmM0ynySBTHgLJ7XBuxu/iKWkRIMskRoqhHY0nrCz
+        eN+vEx3NtJ/WL4DGvQRm+Ez1AYwgtiGutolCLyU=
+X-Google-Smtp-Source: AMsMyM5qPsQtuBvKyPQMnBZjaxeLYE52tYSFcHWWnB70BrncG/Hn51NZd/lN2AWIwQJCxd/unWoBGJKg26X7wKRspXA=
+X-Received: by 2002:a05:6638:3452:b0:363:69f8:549f with SMTP id
+ q18-20020a056638345200b0036369f8549fmr6938721jav.190.1666192765289; Wed, 19
+ Oct 2022 08:19:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221019091151.6692-20-ilpo.jarvinen@linux.intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
+References: <20221009181338.2896660-8-lis8215@gmail.com> <202210100607.YdxoR0tD-lkp@intel.com>
+ <CAKNVLfaFvge4A8-QUzeq-JManpuYMGvyHXCJi-ew==CWN8-M=A@mail.gmail.com>
+ <bb9f79d4-82a9-4790-b849-d517333ea2d4@app.fastmail.com> <GSPOJR.M4XZ4D03G60F@crapouillou.net>
+ <CAKNVLfZukazKx2yDBrLZc7J9=3cCvMgZbdghtt1YO7WivdPjvw@mail.gmail.com>
+ <CAKNVLfbePJQN07GfhqAs-opm23poWsL0o-DkV=n-f9+H7Y7rpg@mail.gmail.com> <555WJR.ESJD0KDHOG3S@crapouillou.net>
+In-Reply-To: <555WJR.ESJD0KDHOG3S@crapouillou.net>
+From:   Siarhei Volkau <lis8215@gmail.com>
+Date:   Wed, 19 Oct 2022 18:19:13 +0300
+Message-ID: <CAKNVLfZ0ndwGUUq0VX3vdvxfDK6Shf61WS_dC5WocChKeYSWJg@mail.gmail.com>
+Subject: Re: [PATCH 7/8] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755 SoCs
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        kbuild-all@lists.01.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        GPIO SUBSYSTEM <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 12:11:26PM +0300, Ilpo Järvinen wrote:
-> Take advantage of the new uart_xmit_advance() helper.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/liteuart.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 4c0604325ee9..062812fe1b09 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -136,8 +136,7 @@ static void liteuart_start_tx(struct uart_port *port)
->  	} else if (!uart_circ_empty(xmit)) {
->  		while (xmit->head != xmit->tail) {
->  			ch = xmit->buf[xmit->tail];
-> -			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> -			port->icount.tx++;
-> +			uart_xmit_advance(port, 1);
+=D0=BF=D0=BD, 17 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 12:32, Paul Cercue=
+il <paul@crapouillou.net>:
+> > I checked that approach: serial seems to be working as expected,
+> > but not all the time: there's a time period when the CGU driver
+> > started but serial console driver is still early one.
+> > In my case UART produces garbage at that period since CGU
+> > needs to enable clock divider back: ext is 24MHz but 12MHz
+> > required for audio codec and USB to function properly.
+>
+> What I'd do, is just force-enable it to 12 MHz in ingenic_fixup_fdt(),
+> since the programming manual basically says that 24 MHz does not work
+> properly.
+>
+> Then in the earlycon setup code hardcode the /2 divider with a big fat
+> comment about why it's there.
 
-Acked-by: Gabriel Somlo <gsomlo@gmail.com>
+Agree, the vendor's kernel does that as well.
 
-Thanks,
---Gabriel
-
->  			liteuart_putchar(port, ch);
->  		}
->  	}
-> -- 
-> 2.30.2
-> 
+Also I found that:
+1. Many other drivers compile the early console only when
+CONFIG_SERIAL_8250_CONSOLE is set.
+2. All the early ingenic_ functions can be labeled as __init.
+Shall I fix that while I'm already here?
