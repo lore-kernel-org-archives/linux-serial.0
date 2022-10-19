@@ -2,50 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A55BC4321E
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:30:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C46C4167B
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233441AbiJSJaw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 05:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
+        id S233499AbiJSJay (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 05:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233768AbiJSJ3W (ORCPT
+        with ESMTP id S233978AbiJSJaJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 05:29:22 -0400
+        Wed, 19 Oct 2022 05:30:09 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C95E5EDC;
-        Wed, 19 Oct 2022 02:13:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36965EB741;
+        Wed, 19 Oct 2022 02:13:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666170790; x=1697706790;
+  t=1666170835; x=1697706835;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=qrCiMXb9nIBi8SbFsqfFGy4xfI400zKingaQZRHYCPU=;
-  b=drsyqGDt9pDa97KmeOUaVYWP76tXlJ0HRQGywpI5WNTF8SJs42z3TLOV
-   j+HsdxuTOuyuXWzgl69zNKT4SKZ/h8QwMTB+noJBu6rrKo5nNNvJoYMwo
-   ZcavpB+CdaTeBEDIYFFkSrDEjaW1VB+SyC3u+xL8yn1LNk6VarqfIvGt5
-   7K48T+1jBJdiJ2LzxWHRVkkV1im1nGEQQ2073qGBLspslUA68trnvGvdi
-   XtPOc0E4AAj/5wbOucw5e165f1JCJ4Jqv9Xajw48TydzVt4nH96poTtY+
-   3kc15XiU+QgXnsnteDxNFDmOPmgXURzLf8IuRlFl8VoNwDXKY/xLbMpTS
+  bh=KzHpkJi/AhxX/r86weD1fWZDNb+69gyw0uBMHSqrM2Q=;
+  b=CtM1G1Z2z4ab6UTLf7iQkERUd2s9lgcEzYyZlIbxaAc6l6OhGlsbAEgM
+   tJlNK35Q4xliyjyCF3ji+XLFjoB6CIlh0pGH36DkThbODBjRAqbLlznz/
+   2gXhD1g/nloFMgtBqq4NNj3bYJGPlAlsRyoPlpL0SBpIoVcunZiBNF5MW
+   yZr95XaK3D0JDl0MLzLO7oLG13jQoNtp1zsu8ZRVdlFYCASP5P0jjz7sC
+   1aY3TyVY5j1XOgHCGLTKVrzM2swBI1wBgO9VvWcTNTmNkTlT+aIh+mvFg
+   8ZBKnLZqQs7HbpMAQyvjTe2IbLvdzYn0KF4Goor9LF4EJwZYllIyFV7xi
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332910790"
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332910875"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="332910790"
+   d="scan'208";a="332910875"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:26 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734118459"
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:47 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734118587"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734118459"
+   d="scan'208";a="734118587"
 Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:24 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:44 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 02/44] serial: men_z135_uart: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:09 +0300
-Message-Id: <20221019091151.6692-3-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 08/44] serial: pl011: Use uart_xmit_advance()
+Date:   Wed, 19 Oct 2022 12:11:15 +0300
+Message-Id: <20221019091151.6692-9-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
 References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
@@ -60,26 +62,23 @@ Take advantage of the new uart_xmit_advance() helper.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/men_z135_uart.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 3690f5cf0f43..d2502aaa3e8c 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -352,11 +352,8 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
- 	n = min(n, s);
- 
- 	memcpy_toio(port->membase + MEN_Z135_TX_RAM, &xmit->buf[xmit->tail], n);
--	xmit->tail = (xmit->tail + n) & (UART_XMIT_SIZE - 1);
--
- 	iowrite32(n & 0x3ff, port->membase + MEN_Z135_TX_CTRL);
--
--	port->icount.tx += n;
-+	uart_xmit_advance(port, n);
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 5cdced39eafd..6d8552506091 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -677,8 +677,7 @@ static int pl011_dma_tx_refill(struct uart_amba_port *uap)
+ 	 * Now we know that DMA will fire, so advance the ring buffer
+ 	 * with the stuff we just dispatched.
+ 	 */
+-	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
+-	uap->port.icount.tx += count;
++	uart_xmit_advance(&uap->port, count);
  
  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
+ 		uart_write_wakeup(&uap->port);
 -- 
 2.30.2
 
