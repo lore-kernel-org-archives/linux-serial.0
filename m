@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A83A5C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 675EFC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbiJSJfN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 05:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
+        id S233781AbiJSJfO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 05:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231648AbiJSJdl (ORCPT
+        with ESMTP id S233969AbiJSJeP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 05:33:41 -0400
+        Wed, 19 Oct 2022 05:34:15 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861711CFDA;
-        Wed, 19 Oct 2022 02:14:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82783BC6B;
+        Wed, 19 Oct 2022 02:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666170890; x=1697706890;
+  t=1666170907; x=1697706907;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1SnEG++lmkrZFM5w3ZM3z5ZQmAONQeCxSy4cYq4nyY8=;
-  b=nksXm7A0T00mcQlfL2JHJplwSadkfPmz3sjQM7jvi3x0lo3wwBL1muEP
-   ZofP6Ucew1S+pvAtrPbR5UAJGcrsz+wp3rOtwT20T3yFtmyeaFFQmaQQl
-   jcIdWsYHT16GnIEQszatBMdOL3tpDoBVXde9tSKszaRZNFXGUB/Ahjlem
-   Uy8tWBKvwfMbzjTTpb1oUjUSEYCVZXapsoxtwsynPyAAUYnWkE94kOBUK
-   tTqUcVFzlouC/ah+72vAIVimxNW65Q9gkvdEGNLEE/XY3xopxV97zgz9x
-   Cho84nnW/bcbV9FLDWvBuAK0GE/njbdTJTA33b4y4dH42wbGUOyNmC2DB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332911187"
+  bh=GyL/mkBnWw9BwSgBpj4b43K3+WPQ3jqn+0KpOYzRE0M=;
+  b=XP0UX+Ei2CkvB4C19RJtrduq8F6tE3lCoiIxOIltmADxJtlLFqyc2hES
+   TZVazlw41PYIbg0n+ZURc8zPClk3j9czRoC3e8W5Mk+BPX/163AMNKgwc
+   1SwXp0Z3sEPZ8htQmcyn6gZjukzSWbyeeESZE2RQOnEn7edEhhF+HlZJK
+   iNt8ZgtrxI/icsOUuNGAhAY+rcr0cq1GwN7WllK55uE9O+7eIgw0fD9Zy
+   q3WMjn8XYG08wJdPpVUzEiZkgj07kJTzrXKTAii+y3Uu3J2wonu31P9Mn
+   If2orn0Tz1aFrV49oGP+js0ncasVhSuHBwqvutkHfe0wK7tAxdkWF5oNB
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332911244"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="332911187"
+   d="scan'208";a="332911244"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:13:49 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734119003"
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:06 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734119160"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734119003"
+   d="scan'208";a="734119160"
 Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:13:45 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:14:03 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 26/44] serial: pmac_zilog: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:33 +0300
-Message-Id: <20221019091151.6692-27-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 31/44] serial: tegra: Use uart_xmit_advance()
+Date:   Wed, 19 Oct 2022 12:11:38 +0300
+Message-Id: <20221019091151.6692-32-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
 References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
@@ -64,33 +64,23 @@ Take advantage of the new uart_xmit_advance() helper.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/pmac_zilog.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/serial-tegra.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index fe2e4ec423f7..13668ffdb1e7 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -410,8 +410,7 @@ static void pmz_transmit_chars(struct uart_pmac_port *uap)
- 	write_zsdata(uap, xmit->buf[xmit->tail]);
- 	zssync(uap);
- 
--	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--	uap->port.icount.tx++;
-+	uart_xmit_advance(&uap->port, 1);
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&uap->port);
-@@ -627,8 +626,7 @@ static void pmz_start_tx(struct uart_port *port)
- 			return;
- 		write_zsdata(uap, xmit->buf[xmit->tail]);
- 		zssync(uap);
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index b7170cb9a544..4304e3f9307d 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -496,8 +496,7 @@ static void tegra_uart_fill_tx_fifo(struct tegra_uart_port *tup, int max_bytes)
+ 				break;
+ 		}
+ 		tegra_uart_write(tup, xmit->buf[xmit->tail], UART_TX);
 -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		port->icount.tx++;
-+		uart_xmit_advance(port, 1);
+-		tup->uport.icount.tx++;
++		uart_xmit_advance(&tup->uport, 1);
+ 	}
+ }
  
- 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 			uart_write_wakeup(&uap->port);
 -- 
 2.30.2
 
