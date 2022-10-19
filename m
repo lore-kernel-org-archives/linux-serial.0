@@ -2,96 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD370C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 12:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 503DFC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 13:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232919AbiJSMSK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 08:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S229612AbiJSN3l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 09:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbiJSMRj (ORCPT
+        with ESMTP id S231133AbiJSN2v (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 08:17:39 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F71C18E10;
-        Wed, 19 Oct 2022 04:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666180400; x=1697716400;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=anzZUGCfTwAlBfRA91Aooisw1s4dE8/imhQ0dPjnDfo=;
-  b=QQk3HaPhrenq6PrnRE+o7sSp4fQ6BsDNvx+z7S0iIu6tzyhETuNFb1bC
-   aBS8Sl9ei6Gm1Zr8a9lpb3NxZWrQ8Q+bcuPlrnQSw+alEMf1N1MjtlJ8Z
-   3k3ce1JhKDoBWae+d475r9STLGgn+pj5XuPdRDXaj+z6YEIkOsTQpM68i
-   /OsjQnCOoOOVl5q1kijMs7zNWCZ1+/QujbubAkWornFHynOFpVpgMeDxk
-   PXRWhQ89unoNAoR/goyge57doHCBOPwu+AbJweu0qojohfQ+kF6vY5QEx
-   iK+41AaMi0Dsz3PfOe9G6zYe8bQRss2cXeCB1d0jrPkFPzXr03axnXezp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="305114287"
-X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
-   d="scan'208";a="305114287"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 04:12:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="958287210"
-X-IronPort-AV: E=Sophos;i="5.95,196,1661842800"; 
-   d="scan'208";a="958287210"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP; 19 Oct 2022 04:12:44 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ol707-009pCY-12;
-        Wed, 19 Oct 2022 14:12:43 +0300
-Date:   Wed, 19 Oct 2022 14:12:43 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+        Wed, 19 Oct 2022 09:28:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254D8199892
+        for <linux-serial@vger.kernel.org>; Wed, 19 Oct 2022 06:15:36 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ol8u1-0005fK-0B; Wed, 19 Oct 2022 15:14:33 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ol8tz-0008AM-K3; Wed, 19 Oct 2022 15:14:31 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ol8ty-00958M-Nf; Wed, 19 Oct 2022 15:14:30 +0200
+Date:   Wed, 19 Oct 2022 15:14:30 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 07/44] serial: 8250: Use uart_xmit_advance()
-Message-ID: <Y0/bq/CySLFjFRAl@smile.fi.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 17/44] serial: imx: Use uart_xmit_advance()
+Message-ID: <20221019131430.r336etgdzvocuzsx@pengutronix.de>
 References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
- <20221019091151.6692-8-ilpo.jarvinen@linux.intel.com>
+ <20221019091151.6692-18-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="p3rbgh55ahrvus27"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221019091151.6692-8-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20221019091151.6692-18-ilpo.jarvinen@linux.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 12:11:14PM +0300, Ilpo Järvinen wrote:
+
+--p3rbgh55ahrvus27
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Oct 19, 2022 at 12:11:24PM +0300, Ilpo J=E4rvinen wrote:
 > Take advantage of the new uart_xmit_advance() helper.
+>=20
+> Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index fe8662cd9402..b94e60e75326 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1842,8 +1842,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
->  			 */
->  			serial_in(up, UART_SCR);
->  		}
-> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> -		port->icount.tx++;
-> +		uart_xmit_advance(port, 1);
->  		if (uart_circ_empty(xmit))
->  			break;
->  		if ((up->capabilities & UART_CAP_HFIFO) &&
-> -- 
-> 2.30.2
-> 
+Best regards and thanks for adapting the imx driver
+Uwe
 
--- 
-With Best Regards,
-Andy Shevchenko
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
+--p3rbgh55ahrvus27
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmNP+DMACgkQwfwUeK3K
+7AkyiwgAnkTyG3dwTGHFIhxGVuqA0lkV/b1W0WiCAgIgqzW3uHNEz+a12AzplRXI
+Mdzm9NVPSwrotIG8TfB3o0a7tLqrpAANHiXt05sgwVWazN1y6DQ2djtSOsxqxxaa
+lyKvjoHdPLVVVuVGnoE+wQ18HESKtKxDd2cJz1850qQUoZFIFq5u1tMYh6p3tCiT
+CSU2mlHicwaNAklW6flHFPFH8Ox7tKkXnWapbUCQVlm1ijACM2UyVk4oJ9h9/N/U
+7czHK9HZnX0yU9ZLrA09ro7KcPO1kFZyuJQVIATReHdjb6e4f14oKO8bWxlpOEy7
+eIv6/Ahz46eA4WA3UhBEamBKXth34A==
+=U5KG
+-----END PGP SIGNATURE-----
+
+--p3rbgh55ahrvus27--
