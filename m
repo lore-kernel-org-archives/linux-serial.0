@@ -2,50 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FE3C4321E
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2737C4167D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbiJSJbg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 05:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
+        id S233730AbiJSJbn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 05:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234055AbiJSJaa (ORCPT
+        with ESMTP id S234075AbiJSJae (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 05:30:30 -0400
+        Wed, 19 Oct 2022 05:30:34 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A68C97D4;
-        Wed, 19 Oct 2022 02:13:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177C690823;
+        Wed, 19 Oct 2022 02:14:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666170843; x=1697706843;
+  t=1666170846; x=1697706846;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4cl4AhnNeNw4BJarfN1NFenzpHPoBPllDdEre7J9jGg=;
-  b=EYpWsTzeiMUPSWammoSAy3PZlY3z5Y6A6VFGOIdPFeYxJE+Y5j758mRL
-   +wRiUE8m6Ul/XSB/OpM2XclGqTyB7s932vBomyBaO8GtqLqJTh9y3gyH4
-   uf5/jvNiamhWw85oeEj7BNx0raId+Cg/IA6hitU1iKzt3FpVNyiYlqRxf
-   TPVqh4jasts/5WF/mT5Xis3uVOa/F7c8GGZIjxO8vt1CaqQtkUsAaXQJ0
-   CLP6qglwTjTgfl4m5WzCGKWTUW5Vf7g3sCk99+tsPWd2NG3limucxc0I4
-   zB7EsiNTv38sixuXYkO9GgtmHraLDmBvE7yxq+nisiFGONUBGbg9GAeMz
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332910885"
+  bh=eMX93eH2WJp+28L/XNZpc2+/7jkBXPYnsGkOfw2cMDA=;
+  b=RcfQwHG+AW9RfDHWTs4dokGYsiSiedEmdqqgFcZA00nV8BJugz0/Yz9y
+   5NIYPyUIO0KrtTevOa4YnKyimK8LUcB8fy6WsESI1AgR5q+ysvScA8tQY
+   G6p6J6y9xLeQW//4JqnhNFvIuQ85gdBzVvCs3yKs/1udmbRfooYiZuWzF
+   UrrHuz0XY2WetvaQSx6bBPLbhX5tWdhtmoC5o3koA3z+8R8gtw1IGmWrY
+   GyiRrEfG+akoAf7b/YEIhjFetpCWr4kWPgPiV7yh4/mi6ra/JwZOtr8/R
+   qJo3YHpM+OdLdeZci3YIjmMwky8HKo0rTXYcekvwHuAvzMRH4YFp56YZd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332910923"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="332910885"
+   d="scan'208";a="332910923"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:50 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734118606"
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:13:01 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734118685"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734118606"
+   d="scan'208";a="734118685"
 Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:47 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:58 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 09/44] serial: ar933x: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:16 +0300
-Message-Id: <20221019091151.6692-10-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 12/44] serial: clps711x: Use uart_xmit_advance()
+Date:   Wed, 19 Oct 2022 12:11:19 +0300
+Message-Id: <20221019091151.6692-13-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
 References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
@@ -60,23 +62,23 @@ Take advantage of the new uart_xmit_advance() helper.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/ar933x_uart.c | 3 +--
+ drivers/tty/serial/clps711x.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-index 925484a42c82..4c3d04c6826a 100644
---- a/drivers/tty/serial/ar933x_uart.c
-+++ b/drivers/tty/serial/ar933x_uart.c
-@@ -425,8 +425,7 @@ static void ar933x_uart_tx_chars(struct ar933x_uart_port *up)
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index 404b43a5ae33..e190dce58f46 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -166,8 +166,7 @@ static irqreturn_t uart_clps711x_int_tx(int irq, void *dev_id)
+ 		u32 sysflg = 0;
  
- 		ar933x_uart_putc(up, xmit->buf[xmit->tail]);
- 
+ 		writew(xmit->buf[xmit->tail], port->membase + UARTDR_OFFSET);
 -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		up->port.icount.tx++;
-+		uart_xmit_advance(&up->port, 1);
- 	} while (--count > 0);
+-		port->icount.tx++;
++		uart_xmit_advance(port, 1);
  
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		regmap_read(s->syscon, SYSFLG_OFFSET, &sysflg);
+ 		if (sysflg & SYSFLG_UTXFF)
 -- 
 2.30.2
 
