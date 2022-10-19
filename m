@@ -2,55 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E08C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9838FC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Oct 2022 09:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231589AbiJSJc4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 05:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
+        id S233609AbiJSJdB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 05:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233582AbiJSJbG (ORCPT
+        with ESMTP id S233593AbiJSJbK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 05:31:06 -0400
+        Wed, 19 Oct 2022 05:31:10 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4F8C6955;
-        Wed, 19 Oct 2022 02:14:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416133A0D;
+        Wed, 19 Oct 2022 02:14:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666170844; x=1697706844;
+  t=1666170874; x=1697706874;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SVyuluNhKfUl6XPBNwDdqJifQkuYh/oy8JzAs+w5pCs=;
-  b=ViwfHK4Kb2V8QWDfNq5qssNPuvj6xBqQRW7C7ywNKqfIWXiFwV7aQSze
-   iU6RbGQCrXIzAGJIDo3X4u/tmRF2Ewi5HF4O7LqNSycuLN2/h86vIKY80
-   cehmVBuoYpB/xKC4UfLKDzvFfGEBS4EsR6S+dnZkVs2w4XJNQuu2V3vUG
-   DFE82aP90R78d474jeKtuPOJV22PJrcBCdeOVwfMzLkcsJCf+weCcRgMb
-   jdU8V0RR6Arl+5/J0oP5ziYaVMf8eNkkwQx3kqIe6j6KRzvP97eTOzeLZ
-   Swp5Oi8PyQn7RmGSEgpn+gMfFphq+aQOwIgvExYYxjwpm77MvgFShUvAZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332910913"
+  bh=LfL2WHC8lVbuBm2BucTh8bRu07F0VUCsL+ehIqnzvLQ=;
+  b=C1T4Uh848/LNXZCBVMsJ68TyzjgPsMnXDyQjI0quNQj27Ovgl2BmWclx
+   g/sbaiC95w+fGCJ5KGrUFZgFslvQE2vZD5aacuKe77GuyzGi+LTCpm0ew
+   9kScLtqg4zN0RhuD6C8Ey9aDS204swe3pH7SvJbxeFZqtZY+1ExTzpiYu
+   1uyYKV8nsnYZ2X+Kg/mdO//jSCCn9XX+Y4LIX0Gfxxlmxz8Qlhb6ZF3F5
+   WgUA6+fjlZRLPIkugFjxkEmKsmwqbrr6kPjF7D8xP0l91eIIWI79b+Qgw
+   xUZOh2zg13KlxbYVLiAwQY+Po641iqr/modAc2D5NSI/z/Xo/MYWXOcBh
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="332910983"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="332910913"
+   d="scan'208";a="332910983"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:58 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734118651"
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:13:17 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10504"; a="734118794"
 X-IronPort-AV: E=Sophos;i="5.95,195,1661842800"; 
-   d="scan'208";a="734118651"
+   d="scan'208";a="734118794"
 Received: from sponnura-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.35])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:12:54 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2022 02:13:13 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 11/44] serial: atmel: Use uart_xmit_advance()
-Date:   Wed, 19 Oct 2022 12:11:18 +0300
-Message-Id: <20221019091151.6692-12-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 17/44] serial: imx: Use uart_xmit_advance()
+Date:   Wed, 19 Oct 2022 12:11:24 +0300
+Message-Id: <20221019091151.6692-18-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
 References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
@@ -65,38 +66,34 @@ Take advantage of the new uart_xmit_advance() helper.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/atmel_serial.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/tty/serial/imx.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index bd07f79a2df9..4485f2d26b77 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -875,10 +875,7 @@ static void atmel_complete_tx_dma(void *arg)
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 05b432dc7a85..a7548d0a1aee 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -563,8 +563,7 @@ static inline void imx_uart_transmit_buffer(struct imx_port *sport)
+ 		/* send xmit->buf[xmit->tail]
+ 		 * out the port here */
+ 		imx_uart_writel(sport, xmit->buf[xmit->tail], URTX0);
+-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+-		sport->port.icount.tx++;
++		uart_xmit_advance(&sport->port, 1);
+ 	}
  
- 	if (chan)
- 		dmaengine_terminate_all(chan);
--	xmit->tail += atmel_port->tx_len;
--	xmit->tail &= UART_XMIT_SIZE - 1;
--
--	port->icount.tx += atmel_port->tx_len;
-+	uart_xmit_advance(port, atmel_port->tx_len);
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -590,9 +589,7 @@ static void imx_uart_dma_tx_callback(void *data)
+ 	ucr1 &= ~UCR1_TXDMAEN;
+ 	imx_uart_writel(sport, ucr1, UCR1);
  
- 	spin_lock_irq(&atmel_port->lock_tx);
- 	async_tx_ack(atmel_port->desc_tx);
-@@ -1471,11 +1468,7 @@ static void atmel_tx_pdc(struct uart_port *port)
- 	/* nothing left to transmit? */
- 	if (atmel_uart_readl(port, ATMEL_PDC_TCR))
- 		return;
--
--	xmit->tail += pdc->ofs;
--	xmit->tail &= UART_XMIT_SIZE - 1;
--
--	port->icount.tx += pdc->ofs;
-+	uart_xmit_advance(port, pdc->ofs);
- 	pdc->ofs = 0;
+-	/* update the stat */
+-	xmit->tail = (xmit->tail + sport->tx_bytes) & (UART_XMIT_SIZE - 1);
+-	sport->port.icount.tx += sport->tx_bytes;
++	uart_xmit_advance(&sport->port, sport->tx_bytes);
  
- 	/* more to transmit - setup next transfer */
+ 	dev_dbg(sport->port.dev, "we finish the TX DMA.\n");
+ 
 -- 
 2.30.2
 
