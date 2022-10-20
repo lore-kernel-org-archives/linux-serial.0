@@ -2,132 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2167C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Oct 2022 13:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D77CC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Oct 2022 13:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbiJTNBQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Oct 2022 09:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
+        id S230046AbiJTNHD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Oct 2022 09:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiJTNBO (ORCPT
+        with ESMTP id S230315AbiJTNHA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Oct 2022 09:01:14 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1898A1A0FBB
-        for <linux-serial@vger.kernel.org>; Thu, 20 Oct 2022 06:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666270873; x=1697806873;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=ZV2JlxPyNW3ygjq9L80ZL+zVYk6YiEDONcJLz36Rk4Q=;
-  b=FNBMGheTx8HbC2psUMqYS7tIh2Pv7CYSDdI5OolovjIYEOijAEDUeQVX
-   4r1z3hkUXqUf2r18sPKTS00zsFYcDQL40a/wW3q3pHB06LBAyyrLyTdh1
-   eyEwnoCnLGN3V5r3DvYG0IxzISYbaksZP4w+8ucXQUKuhs1XuuNi9C8HQ
-   lJrSE+gCQQU/bf7YbsHlzr2rJrgfdRlcHPHoTytQVRhxdKs6mwCOC9CR3
-   kGANWAZ6TIKN+L7Csxbv7ShQAOOY0OteMdQAh1JwFElzfmrEfDbpi5jWx
-   jWP4fCYrE5yK7k+8ica/ItBO0/WMjHo0weD9SVVd+/yIo1xbWzlVh4Xn2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10505"; a="370910594"
-X-IronPort-AV: E=Sophos;i="5.95,198,1661842800"; 
-   d="scan'208";a="370910594"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 06:00:47 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10505"; a="663028878"
-X-IronPort-AV: E=Sophos;i="5.95,198,1661842800"; 
-   d="scan'208";a="663028878"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.33])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 06:00:45 -0700
-Date:   Thu, 20 Oct 2022 16:00:43 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Martin_Hundeb=F8ll?= <martin@geanix.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 3/3] serial: 8250: skip platform device registration
- with no runtime ports
-In-Reply-To: <20221018133419.134110-3-martin@geanix.com>
-Message-ID: <f2383fb1-9420-c35c-fef1-3c4cc9df368@linux.intel.com>
-References: <20221018133419.134110-1-martin@geanix.com> <20221018133419.134110-3-martin@geanix.com>
+        Thu, 20 Oct 2022 09:07:00 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DA415626B;
+        Thu, 20 Oct 2022 06:06:58 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bk15so34298997wrb.13;
+        Thu, 20 Oct 2022 06:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qeCQ5sM6HGTlxEz4lb3Se+mlZySzK3kfNds/fHnOdZc=;
+        b=Qbw73y6SNk1o/p6Gi96DVqHijWWwGfg9Msc536p4mop7E4RuCRtGF68GHDuH3QQ0tW
+         xKKtFUyJESuAa5oWV5EDj5DF2c464eoWRLz3T6gGix1mQpgkgyswlFXskpwtRPnaYoio
+         e8lz44ee0XzVbHyTz6Anv0OVyjAdeItXV3McjKffRCcMWImZwiY7TpuRXIeQZXz0+PfF
+         dN7JFconqyrTgUhZQQH7IOC1C4aFt4x7VyZ/EHekcTKM7ZN5lniQNBx3d1ZTc6Y2CLnb
+         mF7VD4RnUjpgHWMDQtk71ZJtxR5NZC1nbtg3wowq7D1fXR+tb9iugJG5LlxjnCfQxHgP
+         KnEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qeCQ5sM6HGTlxEz4lb3Se+mlZySzK3kfNds/fHnOdZc=;
+        b=v/V4F3oW6xFvgjo6em42aTYKZicA5/0fXSs4zCa2EDUZ9JWw/EpFqXWYoIH3QMPip6
+         wkOFo7MEyiVm6A/DhIVwRoPJnRzzm3BV/SyLgirSU7OA5zV/nTottgnya2SiH/GocG49
+         YIcuV26uygp79ia5oVziSzWspHfzFx6wnlxhuFCbadTyGfhr+pdbHzkjMo0pb40msLV2
+         KqJtYwdR2yBZwD/QbDcqsjSjyClnkCieh2WPJ3PtBIJqBQSIVpNirta5HPeitJePOO1R
+         Rj96jwQpV2FPfcvuIAKWXq2JkeNzHSi+uQUKZ6zVcj637xKaaaIdgcqlYc5hccWZCsNk
+         z0ew==
+X-Gm-Message-State: ACrzQf3w3Upv5JB9IlO64Tq6ztsjMpmbrklE4A6v8SQhPncgecgHYtI7
+        3ZZMyiE0rKCZfI78RcfO8Le9qCck10E=
+X-Google-Smtp-Source: AMsMyM7idGtKU2t7AczziXN6swq29pC2womUhpL3djCn3hPke4vWhZlCP/hheaf7UUsBIlNC0xVtxQ==
+X-Received: by 2002:a5d:47cd:0:b0:22e:f98e:3b0b with SMTP id o13-20020a5d47cd000000b0022ef98e3b0bmr8481800wrc.556.1666271216358;
+        Thu, 20 Oct 2022 06:06:56 -0700 (PDT)
+Received: from [192.168.2.41] ([46.227.18.67])
+        by smtp.gmail.com with ESMTPSA id w16-20020adf8bd0000000b0022f40a2d06esm16746301wra.35.2022.10.20.06.06.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Oct 2022 06:06:55 -0700 (PDT)
+Message-ID: <f1c0b2e1-3de4-ee24-c91a-6be308b69c56@gmail.com>
+Date:   Thu, 20 Oct 2022 15:06:54 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1511748881-1666270846=:1542"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH 11/44] serial: atmel: Use uart_xmit_advance()
+Content-Language: fr
+To:     Claudiu.Beznea@microchip.com, ilpo.jarvinen@linux.intel.com,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     andriy.shevchenko@linux.intel.com
+References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
+ <20221019091151.6692-12-ilpo.jarvinen@linux.intel.com>
+ <8a47af92-98eb-b2cf-c022-1a1987ff8449@microchip.com>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <8a47af92-98eb-b2cf-c022-1a1987ff8449@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1511748881-1666270846=:1542
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 18 Oct 2022, Martin Hundebøll wrote:
-
-> Skip registration of the platform device used for built-in ports, if no
-> such ports are configured/created.
+Le 20/10/2022 à 11:01, Claudiu.Beznea@microchip.com a écrit :
+> On 19.10.2022 12:11, Ilpo Järvinen wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> Take advantage of the new uart_xmit_advance() helper.
+>>
+>> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 > 
-> Signed-off-by: Martin Hundebøll <martin@geanix.com>
+> Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-For the whole series:
+Acked-By: Richard GENOUD <richard.genoud@gmail.com>
 
-Tested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-> ---
-> 
-> Change since v1:
->  * call serial8250_pnp_init() also when nr_uarts is zero
-> 
->  drivers/tty/serial/8250/8250_core.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index ba48431ec6e2..f4a08fb74c31 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1186,6 +1186,14 @@ static int __init serial8250_init(void)
->  	if (ret)
->  		goto unreg_uart_drv;
->  
-> +	if (nr_uarts == 0) {
-> +		ret = platform_driver_register(&serial8250_isa_driver);
-> +		if (ret)
-> +			goto unreg_pnp;
-> +
-> +		goto out;
-> +	}
-> +
-
-I'd reverse the condition:
-
-	if (nr_uarts) {
-		platform stuff
-	}
-
-	ret = platform_driver_register(&serial8250_isa_driver);
-        if (ret == 0)
-		goto out;
-	if (!nr_uarts)
-		goto unreg_pnp;
-
-I believe the logic would be easier to follow if you do that.
-
--- 
- i.
-
->  	serial8250_isa_devs = platform_device_alloc("serial8250",
->  						    PLAT8250_DEV_LEGACY);
->  	if (!serial8250_isa_devs) {
-> @@ -1230,7 +1238,9 @@ static void __exit serial8250_exit(void)
->  	serial8250_isa_devs = NULL;
->  
->  	platform_driver_unregister(&serial8250_isa_driver);
-> -	platform_device_unregister(isa_dev);
-> +
-> +	if (nr_uarts)
-> +		platform_device_unregister(isa_dev);
->  
->  	serial8250_pnp_exit();
->  
+>> ---
+>>  drivers/tty/serial/atmel_serial.c | 11 ++---------
+>>  1 file changed, 2 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+>> index bd07f79a2df9..4485f2d26b77 100644
+>> --- a/drivers/tty/serial/atmel_serial.c
+>> +++ b/drivers/tty/serial/atmel_serial.c
+>> @@ -875,10 +875,7 @@ static void atmel_complete_tx_dma(void *arg)
+>>
+>>         if (chan)
+>>                 dmaengine_terminate_all(chan);
+>> -       xmit->tail += atmel_port->tx_len;
+>> -       xmit->tail &= UART_XMIT_SIZE - 1;
+>> -
+>> -       port->icount.tx += atmel_port->tx_len;
+>> +       uart_xmit_advance(port, atmel_port->tx_len);
+>>
+>>         spin_lock_irq(&atmel_port->lock_tx);
+>>         async_tx_ack(atmel_port->desc_tx);
+>> @@ -1471,11 +1468,7 @@ static void atmel_tx_pdc(struct uart_port *port)
+>>         /* nothing left to transmit? */
+>>         if (atmel_uart_readl(port, ATMEL_PDC_TCR))
+>>                 return;
+>> -
+>> -       xmit->tail += pdc->ofs;
+>> -       xmit->tail &= UART_XMIT_SIZE - 1;
+>> -
+>> -       port->icount.tx += pdc->ofs;
+>> +       uart_xmit_advance(port, pdc->ofs);
+>>         pdc->ofs = 0;
+>>
+>>         /* more to transmit - setup next transfer */
+>> --
+>> 2.30.2
+>>
 > 
 
---8323329-1511748881-1666270846=:1542--
+Thanks !
