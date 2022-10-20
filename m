@@ -2,84 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB9BC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Oct 2022 20:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41817C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Oct 2022 21:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiJTUMW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Oct 2022 16:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        id S229753AbiJTVZ7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Oct 2022 17:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiJTUMV (ORCPT
+        with ESMTP id S229484AbiJTVZ5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Oct 2022 16:12:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715A317EF31;
-        Thu, 20 Oct 2022 13:12:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 358DAB828B5;
-        Thu, 20 Oct 2022 20:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDDD7C433C1;
-        Thu, 20 Oct 2022 20:12:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666296737;
-        bh=W4KCwra5v9uA4wyjd6DCEjQdx6UQ6XoKLtxXcQdURFU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hz58T+dejJSggZscJtPWjSLesTvggYReaTS+8PY16cH0YJYSIBBPy9psfshW/i99Y
-         QGcsLNoHaqwbvcKryVu2nrZAoHd+fYX2XL7WiZAe+99+WvN6YX5lhbrb6/JP2OeryR
-         rDH3HspA49Z1bSyIOUXqC5gJPXtRafWdsSWdOlT31s7Ts5Wu2ohRFMx4l6J5VXx3TQ
-         B2uTji5kxhTQGqm5Um8A+tG4fQ1h1JQ7H87u4vyYZNBHCLaWGWaaF93TsCIsrEuDMY
-         im77ng3i5ikeVQRxfODPjbJbpaOzvuq0UdzQF62t7UZ+zD9RwOuhnE10JnMTOHRxkv
-         YdDA5V74zFdfA==
-Received: by pali.im (Postfix)
-        id EF16680E; Thu, 20 Oct 2022 22:12:14 +0200 (CEST)
-Date:   Thu, 20 Oct 2022 22:12:14 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 24/44] serial: mvebu-uart: Use uart_xmit_advance()
-Message-ID: <20221020201214.pusagqobdbdpy6ek@pali>
-References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com>
- <20221019091151.6692-25-ilpo.jarvinen@linux.intel.com>
+        Thu, 20 Oct 2022 17:25:57 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A09117E23B;
+        Thu, 20 Oct 2022 14:25:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666301156; x=1697837156;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=U1DYLh1b+Wg7DObvnlquUyu7vJlxjG15w2qXKEefn3s=;
+  b=RTpYZTuJS9JpHLhxzdQwvlx1YQoDAi2Vg83pWoRkv7KOowfbrSwV7dJu
+   IvG3sCHdQJTd+E93ZA8aA3aWj9fuxdrMdm9nnpqt0MOTJ1HJu6/wICLt1
+   erYIf5/PRpCRqEFsij0hBhW+f1Zw8mPrdlJ0tL5+Gupfgi5SG9Pds9cef
+   uZwA1M0gzQZCplpt4ZwHPDdzRDl+nYcRqzS/wnihqwnzvzHDky61VbN8b
+   C5ett6Q9tChnxnXm7IsNP0EXFbDuPOJe/nqs8XElFF7H8rVrXdEZsNUQ/
+   5CnmGy/54RJ/AQN9upK9Wm/7iD7UF4XZ1L4BqZUU3ovOGgWQWAJG+oHUZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="333412429"
+X-IronPort-AV: E=Sophos;i="5.95,199,1661842800"; 
+   d="scan'208";a="333412429"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 14:25:55 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="693260664"
+X-IronPort-AV: E=Sophos;i="5.95,199,1661842800"; 
+   d="scan'208";a="693260664"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2022 14:25:55 -0700
+From:   matthew.gerlach@linux.intel.com
+To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com
+Cc:     Matthew Gerlach <matthew.gerlach@intel.com>
+Subject: [PATCH v4 0/4] Enhance definition of DFH and use enhancements for uart driver
+Date:   Thu, 20 Oct 2022 14:26:06 -0700
+Message-Id: <20221020212610.697729-1-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221019091151.6692-25-ilpo.jarvinen@linux.intel.com>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wednesday 19 October 2022 12:11:31 Ilpo Järvinen wrote:
-> Take advantage of the new uart_xmit_advance() helper.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Matthew Gerlach <matthew.gerlach@intel.com>
 
-Reviewed-by: Pali Rohár <pali@kernel.org>
+This patchset enhances the definition of the Device Feature Header (DFH) used by
+the Device Feature List (DFL) bus and then uses the new enhancements in a uart
+driver.
 
-> ---
->  drivers/tty/serial/mvebu-uart.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index ba16e1da6bd3..ba9a6206daae 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -223,8 +223,7 @@ static void mvebu_uart_start_tx(struct uart_port *port)
->  
->  	if (IS_EXTENDED(port) && !uart_circ_empty(xmit)) {
->  		writel(xmit->buf[xmit->tail], port->membase + UART_TSH(port));
-> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> -		port->icount.tx++;
-> +		uart_xmit_advance(port, 1);
->  	}
->  
->  	ctl = readl(port->membase + UART_INTR(port));
-> -- 
-> 2.30.2
-> 
+Patch 1 updates the DFL documentation to provide the motivation behind the 
+enhancements to the definition of the DFH.
+
+Patch 2 adds the definitions for DFHv1.
+
+Patch 3 adds basic support DFHv1. It provides a generic mechanism for
+describing MSIX interrupts used by a particular feature instance, and
+it gets the location and size of the feature's register set from DFHv1.
+
+Patch 4 adds a DFL uart driver that makes use of the new features of DFHv1.
+
+Basheer Ahmed Muddebihal (1):
+  fpga: dfl: Add DFHv1 Register Definitions
+
+Matthew Gerlach (3):
+  Documentation: fpga: dfl: Add documentation for DFHv1
+  fpga: dfl: add basic support DFHv1
+  tty: serial: 8250: add DFL bus driver for Altera 16550.
+
+ Documentation/fpga/dfl.rst         |  96 ++++++++++++
+ drivers/fpga/dfl.c                 | 234 +++++++++++++++++++++++------
+ drivers/fpga/dfl.h                 |  38 +++++
+ drivers/tty/serial/8250/8250_dfl.c | 149 ++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig    |  12 ++
+ drivers/tty/serial/8250/Makefile   |   1 +
+ include/linux/dfl.h                |  15 ++
+ 7 files changed, 496 insertions(+), 49 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+
+-- 
+2.25.1
+
