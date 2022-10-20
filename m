@@ -2,73 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B92E9C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Oct 2022 02:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4BAC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Oct 2022 03:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbiJTCYY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Oct 2022 22:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        id S229788AbiJTDys (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Oct 2022 23:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbiJTCYX (ORCPT
+        with ESMTP id S229736AbiJTDyq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Oct 2022 22:24:23 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6CD335
-        for <linux-serial@vger.kernel.org>; Wed, 19 Oct 2022 19:24:20 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MtBHV38DdzHv93;
-        Thu, 20 Oct 2022 10:24:06 +0800 (CST)
-Received: from localhost.localdomain (10.175.101.6) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 20 Oct 2022 10:24:02 +0800
-From:   Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
-To:     <zhangxiaoxu5@huawei.com>, <linux-serial@vger.kernel.org>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <robh@kernel.org>, <ztong0001@gmail.com>
-Subject: [PATCH] earlycon: Fix compile error when SERIAL_CORE is m
-Date:   Thu, 20 Oct 2022 11:27:22 +0800
-Message-ID: <20221020032722.3263846-1-zhangxiaoxu5@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 19 Oct 2022 23:54:46 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CBB29C92;
+        Wed, 19 Oct 2022 20:54:44 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id x31-20020a17090a38a200b0020d2afec803so1863807pjb.2;
+        Wed, 19 Oct 2022 20:54:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cls9hPD2bbrQKC1wtXrkJF4y2UlILPEIkviM6fS1b4M=;
+        b=opDupmmzU/oD8a1/HD/V48st6LXQIvxaLoJxuqnkFZaIAYnnxph8RJ5qGQCg5CfU2p
+         P6yEivAwEpoMS6Omy3YHbgYnNPP90Z2WJu4+9cM4zSdPl/STf1y5qitqxogaqg3ZkVLr
+         NUIpIjJTGxVNg2I0ufEztP2yjINBis1s+TaLtuHQLWgyKRSKJpmyHx09HHlWYP5OH+rT
+         pZGARW/SnfgTvIquFWUaUw9/4I0gCOrOUdSPumsMVVHtX3IWIZhj0ju0hUForAxSX1NP
+         4BeGtfcuB7qdEv7SRROIFDBc+Tgsp2Elk6RNB3+3bzYNzFLtmOS2snWNuP3gyJTJV5F7
+         X2zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cls9hPD2bbrQKC1wtXrkJF4y2UlILPEIkviM6fS1b4M=;
+        b=T1AgHpre7vX8xh7Qq6ZR6ILvW64Jk11Jnx+E5rm/BID3wZ+gaH2LtIXYMwA1qCEJtG
+         Qar8Z3ZD8hsJipHdkYp8CAWNExOWcU/7G6anqbkNVgAvtTPjKaeRhSm4aP6zzClH1EeS
+         qYDEHlaeFe69G0fUOGdbj6m8okK13nBfimqaDQBfKMy8xCebRgUQbfBSjrKMQ0FIQK86
+         BGdGRU/RHrQWai1/yQwA7adpYHLDqPZFNu/pKBEvgu8h+WnUdgSW5MG/+LiCAGSw7lVR
+         h/rbDEHptqv5KbrN7XySeSZufIZCw/DXnZmgU5wY2mZgAZx6UndB0J44JmjWUWcC/pkG
+         jFjQ==
+X-Gm-Message-State: ACrzQf3JVNHoxRDDP+UJLP25q8pUAkkmMDMYmILoB5LaEU83M3pgdxlg
+        VBlNQsf/DNVl5ryCQ49uLTQ=
+X-Google-Smtp-Source: AMsMyM7C8fvckchyhYqiVeDNIPQxtK5440sc5fzIo9KHDa6ah0cFoiiDd/OYzTOAAozoOBHcUBLpdw==
+X-Received: by 2002:a17:90a:930b:b0:20b:a5d:35d6 with SMTP id p11-20020a17090a930b00b0020b0a5d35d6mr48789899pjo.146.1666238084014;
+        Wed, 19 Oct 2022 20:54:44 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-92.three.co.id. [180.214.233.92])
+        by smtp.gmail.com with ESMTPSA id w14-20020a17090a5e0e00b0020ad53b5883sm722300pjf.14.2022.10.19.20.54.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Oct 2022 20:54:43 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 509B11032B1; Thu, 20 Oct 2022 10:54:39 +0700 (WIB)
+Date:   Thu, 20 Oct 2022 10:54:38 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/5] serial: RS485 kerneldoc/documentation improvements
+Message-ID: <Y1DGfq8mNI5dc8Hz@debian.me>
+References: <20221019093343.9546-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="g0j7Qa5xVl5Dx7IW"
+Content-Disposition: inline
+In-Reply-To: <20221019093343.9546-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When set CONFIG_SERIAL_EARLYCON=y and CONFIG_SERIAL_CORE=m, there is
-a compile error as below:
 
-  ld: vmlinux.o: in function `parse_options.constprop.0':
-  earlycon.c:(.init.text+0xba5a3): undefined reference to `uart_parse_earlycon'
+--g0j7Qa5xVl5Dx7IW
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Since the SERIAL_EARLYCON use 'uart_parse_earlycon' which defined in
-SERIAL_CORE, so should select rather than depends on.
+On Wed, Oct 19, 2022 at 12:33:38PM +0300, Ilpo J=C3=A4rvinen wrote:
+> RS485 documentation improvements. While doing the kerneldoc conversion,
+> a few other items came up so they're now included in this series.
+>=20
+> v5:
+> - Make formatting of names more consistent
+> - serial_rs485::flags bits are: -> The flag bits are:
+>=20
+> v4:
+> - Remove wrong private: markers
+> - Fix grammar problems
+>=20
+> v3:
+> - More fixes to kernel doc formatting (thanks to Jiri)
+> - Added a few other related improvements
+>=20
+> v2:
+> - Include serial_rs485 into documentation
+> - Add * to multi-line flag descriptions
+>=20
+> Ilpo J=C3=A4rvinen (5):
+>   serial: Convert serial_rs485 to kernel doc
+>   Documentation: rs485: Link reference properly
+>   Documentation: rs485: Mention uart_get_rs485_mode()
+>   Documentation: rs485: Fix struct referencing
+>   Documentation: Make formatting consistent for rs485 docs
+>=20
+>  .../driver-api/serial/serial-rs485.rst        | 56 ++++++++++---------
+>  include/uapi/linux/serial.h                   | 55 +++++++++++-------
+>  2 files changed, 66 insertions(+), 45 deletions(-)
+>=20
 
-Fixes: 9aac5887595b ("tty/serial: add generic serial earlycon")
-Signed-off-by: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The doc LGTM, thanks.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 434f83168546..803f3dae793c 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -8,7 +8,7 @@ menu "Serial drivers"
- 
- config SERIAL_EARLYCON
- 	bool
--	depends on SERIAL_CORE
-+	select SERIAL_CORE
- 	help
- 	  Support for early consoles with the earlycon parameter. This enables
- 	  the console before standard serial driver is probed. The console is
--- 
-2.31.1
+For the series,
 
+Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--g0j7Qa5xVl5Dx7IW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCY1DGdQAKCRD2uYlJVVFO
+oyQtAP4pvAC4qMzXjOMlbzC8eFOqbfWjfJv2EMaZN2YpLeWp4AEA8Iz1+qEtNz6Y
+3N7RWNuRZQZBsT1WkSK5QjKukLQW0AU=
+=9D5b
+-----END PGP SIGNATURE-----
+
+--g0j7Qa5xVl5Dx7IW--
