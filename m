@@ -2,503 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B6CC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 10:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8FE0C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 11:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiJUKK1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Oct 2022 06:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
+        id S230264AbiJULs2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Oct 2022 07:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbiJUKKU (ORCPT
+        with ESMTP id S230190AbiJULs1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Oct 2022 06:10:20 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB64E4C2F;
-        Fri, 21 Oct 2022 03:10:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666347014; x=1697883014;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=oB9l/0o4/yaYsJ9UAMCCcRl4uhdWFkkMsT782/0+1hs=;
-  b=Y4+3SBVr3Q3Y9XCgyJwd/FqIuQ4J/8FjaHsgg2Nk5Pm0w7KJhHRkQBbL
-   iWFuhXHMMho7fkGvX/Au0A8X2qEWmvgqd0vSdyTFYdPvZOppE7M+EAvRd
-   iB5IKq9TanaVty/foX2tjccC1WJNt4NMJN1smtdi5GKTzzSjmSI1+4RSJ
-   MY6uiGQosb/qhtkK1zi6BamNTGcCmrxMGDoEJ69RTfqa++NDiAH91NpwU
-   cdtOiX6PUwswTXBGH7ObMiQ8zQ4n4pr052xCVDtwDwW0vOVfdtX9pEWWG
-   w3NxVfXGzqtgRP6o9xm/oABGu1C5fQaeygUd338Gjt/VB+42V1evFG57T
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="369013035"
-X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="369013035"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 03:10:08 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="735464210"
-X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="735464210"
-Received: from lramir2-mobl1.ger.corp.intel.com ([10.252.44.179])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 03:09:59 -0700
-Date:   Fri, 21 Oct 2022 13:09:57 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "D. Starke" <daniel.starke@siemens.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] tty: n_gsm: add parameter negotiation support
-In-Reply-To: <20221021084315.2306-3-daniel.starke@siemens.com>
-Message-ID: <8c2b9492-caf4-7a48-3a7b-da939a4ac8b6@linux.intel.com>
-References: <20221021084315.2306-1-daniel.starke@siemens.com> <20221021084315.2306-3-daniel.starke@siemens.com>
+        Fri, 21 Oct 2022 07:48:27 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDBE3B96A
+        for <linux-serial@vger.kernel.org>; Fri, 21 Oct 2022 04:48:26 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id p6so2110289plr.7
+        for <linux-serial@vger.kernel.org>; Fri, 21 Oct 2022 04:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gP2ytTs+LAre/BcxYYn7OcjeedfuE4P1v/EP76rYVYc=;
+        b=WWwJKWiyw/cZZLt69AZe42IuxkHicl8eE4lNf+g/G/Oz8Asz/Tkx3rUS2F2ihuW2CE
+         +eu+LmFWryKy7D9NybKfY/jUl8aaXlWe8DgJyo0MPG5v1hT7bsAgcOreYIiMHULOFge2
+         mCrcw54kLSntdpIxCyUN48rGrEyA6o5Js2UbT2xxZnN8fnM3XMRn48Re0EdEl3zUt+ZH
+         SVEruc7G0s8iuEPfcknYbRENySw9InUPeIkMmnUh2NuKk48dMdOP3PXqzZkkFYO4j4CA
+         5Vqkta0XIT6MjlW7TzM16RBe5hyLF9JJbWvYkRR1ZXlUJPN5uhszE4uRI15/kBFoDCQd
+         dNDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gP2ytTs+LAre/BcxYYn7OcjeedfuE4P1v/EP76rYVYc=;
+        b=fbN8uVxdriR3Y+nIlz5Ez1Ijc0uI/93mWowWtbD/53eAnQMRSLkmDJQcXKNE7UPcAT
+         Nf7Tt8KRjMkQLDC6ieq8p0EJ8W8S8DjvF2XXz1pSKqs+lj3Ze4c4yU8LHJBGqzqGqvmg
+         F2iU/D0r5OyxnY4URsYLm5wycGrsJ6ElffkCUbI2LoMaC0xC8YANKpbDa6KBnskgLDee
+         UKo6hqPaU1/rI+xpFbMMbH2ogHKUU9yL3DDyAREF+xzvtbnlDSspIy6a3WShBUOheNqn
+         LpdmOB3+RsmNbwSJ1tKG1D9Yxzx1KOJ2jCQK1nu/2I6s0Q4tyI9Nn7si0IVV5N7wAXQA
+         If8Q==
+X-Gm-Message-State: ACrzQf1djDgIQhXGvu3+ZjN/fQfAuQa5hux/Zo5g4pEsOzWU1C9wdN5K
+        vcXLxmit5TfnaEAh2Np36D9rUS+Zmhxba8CNuTuhqw==
+X-Google-Smtp-Source: AMsMyM4Ln3GENJVVY9y9uUTjBv6QEb5fLuIGqTxCjw4QcCnqPFs6DE+BPvh41R7oPBc3h7Tjvx44bZy9NmwEwWcg40w=
+X-Received: by 2002:a17:90a:64c3:b0:212:d67d:a034 with SMTP id
+ i3-20020a17090a64c300b00212d67da034mr1218159pjm.55.1666352906221; Fri, 21 Oct
+ 2022 04:48:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20221019091151.6692-1-ilpo.jarvinen@linux.intel.com> <20221019091151.6692-29-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20221019091151.6692-29-ilpo.jarvinen@linux.intel.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Fri, 21 Oct 2022 13:48:14 +0200
+Message-ID: <CAPLW+4mFiuuSGq-ucqsif=qhzWz7p87Na_Q0U6VVopmfhh-=Wg@mail.gmail.com>
+Subject: Re: [PATCH 28/44] serial: samsung_tty: Use uart_xmit_advance()
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 21 Oct 2022, D. Starke wrote:
-
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-> See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-> The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-> the newer 27.010 here. Chapter 5.1.8.1.1 describes the parameter negotiation
-> messages and parameters. Chapter 5.4.1 states that the default parameters
-> are to be used if no negotiation is performed. Chapter 5.4.6.3.1 describes
-> the encoding of the parameter negotiation message. The meaning of the
-> parameters and allowed value ranges can be found in chapter 5.7.
-> 
-> Add parameter negotiation support accordingly. DLCI specific parameter
-> configuration by the user requires additional ioctls. This is subject to another
-> patch.
-> 
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+On Wed, 19 Oct 2022 at 11:35, Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> Take advantage of the new uart_xmit_advance() helper.
+>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 > ---
->  drivers/tty/n_gsm.c | 308 ++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 300 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index b6813a134c18..c6fe00afe1b2 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -123,6 +123,7 @@ struct gsm_msg {
->  
->  enum gsm_dlci_state {
->  	DLCI_CLOSED,
-> +	DLCI_CONFIGURE,		/* Sending PN (for adaption > 1) */
->  	DLCI_OPENING,		/* Sending SABM not seen UA */
->  	DLCI_OPEN,		/* SABM/UA complete */
->  	DLCI_CLOSING,		/* Sending DISC not seen UA/DM */
-> @@ -406,6 +407,7 @@ static const u8 gsm_fcs8[256] = {
->  #define INIT_FCS	0xFF
->  #define GOOD_FCS	0xCF
->  
-> +static void gsm_dlci_close(struct gsm_dlci *dlci);
->  static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
->  static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
->  static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
-> @@ -528,6 +530,55 @@ static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
->  	kfree(prefix);
->  }
->  
-> +/**
-> + * gsm_encode_params	-	encode DLCI parameters
-> + * @dlci: DLCI to encode from
-> + * @data: 8 byte buffer for encoded data
-> + * @dlen: length of buffer
-> + *
-> + * Encodes the parameters according to GSM 07.10 section 5.4.6.3.1
-> + * table 3.
-> + */
-> +static int gsm_encode_params(const struct gsm_dlci *dlci, u8 *data,
-> +			     unsigned int dlen)
-> +{
-> +	struct gsm_mux *gsm = dlci->gsm;
-> +
-> +	if (dlen < 8)
-> +		return -EINVAL;
 
-Should this be MIN_MTU?
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-> +	data[0] = dlci->addr;
-> +	data[1] = 0x00; /* UIH, convergence layer type 1 */
-> +	data[2] = dlci->prio;
-> +	data[3] = gsm->t1;
-> +	data[4] = dlci->mtu & 0xFF;
-> +	data[5] = (dlci->mtu >> 8) & 0xFF;
-> +	data[6] = gsm->n2;
-> +	data[7] = dlci->k;
-
-Magic offsets, shouldn't you define a struct and assign to the named 
-fields (and use the correct endian type + accessors for that two-byte 
-field).
-
-> +	if (dlci->ftype == UI) {
-> +		data[1] = 0x01; /* UI */
-> +	} else if (dlci->ftype != UIH) {
-> +		pr_err("%s: unsupported frame type %d\n", __func__,
-> +		       dlci->ftype);
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (dlci->adaption) {
-> +	case 1: /* Unstructured */
-> +		break;
-> +	case 2: /* Unstructured with modem bits. */
-> +		data[1] |= 0x10; /* convergence layer type 2 */
-> +		break;
-> +	default:
-> +		pr_err("%s: unsupported adaption %d\n", __func__,
-> +		       dlci->adaption);
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   *	gsm_register_devices	-	register all tty devices for a given mux index
->   *
-> @@ -1445,6 +1496,122 @@ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
->  	dlci->modem_rx = mlines;
->  }
->  
-> +/**
-> + * gsm_process_negotiation	-	process received parameters
-> + * @gsm: GSM channel
-> + * @addr: DLCI address
-> + * @cr: command/response
-> + * @data: data following command
-> + * @clen: length of data
-> + *
-> + * Used when the response for our parameter negotiation command was
-> + * received.
-> + */
-> +static int gsm_process_negotiation(struct gsm_mux *gsm, unsigned int addr,
-> +				   unsigned int cr, const u8 *data,
-> +				   unsigned int clen)
-> +{
-> +	struct gsm_dlci *dlci = gsm->dlci[addr];
-> +	unsigned int ftype, i, adaption, prio, n1, k;
-> +
-> +	if (clen < 8)
-> +		return -EINVAL;
-> +
-> +	i = data[1] & 0x0F;
-> +	adaption = ((data[1] >> 4) & 0x0F) + 1;
-> +	prio = data[2] & 0x3F;
-> +	/* t1 = data[3]; */
-> +	n1 = data[4] | (data[5] << 8);
-> +	/* n2 = data[6]; */
-> +	k = data[7] & 0x07;
-
-Magic offsets.
-
-Define these fields properly too with names and GENMASK. Use FIELD_GET() 
-to extract values.
-
-> +	if (n1 < MIN_UNIT_SIZE) {
-> +		if (debug & DBG_ERRORS)
-> +			pr_info("%s N1 out of range in PN\n", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (i) {
-> +	case 0x00:
-> +		ftype = UIH;
-> +		break;
-> +	case 0x01:
-> +		ftype = UI;
-> +		break;
-> +	case 0x02: /* I frames are not supported */
-> +		if (debug & DBG_ERRORS)
-> +			pr_info("%s unsupported I frame request in PN\n",
-> +				__func__);
-> +		return -EINVAL;
-> +	default:
-> +		if (debug & DBG_ERRORS)
-> +			pr_info("%s i out of range in PN\n", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!cr && gsm->initiator) {
-> +		if (adaption != dlci->adaption) {
-> +			if (debug & DBG_ERRORS)
-> +				pr_info("%s invalid adaption %d in PN\n",
-> +					__func__, adaption);
-> +			return -EINVAL;
-> +		}
-> +		if (prio != dlci->prio) {
-> +			if (debug & DBG_ERRORS)
-> +				pr_info("%s invalid priority %d in PN",
-> +					__func__, prio);
-> +			return -EINVAL;
-> +		}
-> +		if (n1 > gsm->mru || n1 > dlci->mtu) {
-> +			/* We requested a frame size but the other party wants
-> +			 * to send larger frames. The standard allows only a
-> +			 * smaller response value than requested (5.4.6.3.1).
-> +			 */
-> +			if (debug & DBG_ERRORS)
-> +				pr_info("%s invalid N1 %d in PN\n", __func__,
-> +					n1);
-> +			return -EINVAL;
-> +		}
-> +		dlci->mtu = n1;
-> +		if (ftype != dlci->ftype) {
-> +			if (debug & DBG_ERRORS)
-> +				pr_info("%s invalid i %d in PN\n", __func__, i);
-> +			return -EINVAL;
-> +		}
-> +		if (ftype != UI && ftype != UIH && k > dlci->k) {
-> +			if (debug & DBG_ERRORS)
-> +				pr_info("%s invalid k %d in PN\n", __func__, k);
-> +			return -EINVAL;
-> +		}
-> +		dlci->k = k;
-> +	} else if (cr && !gsm->initiator) {
-> +		/* Only convergence layer type 1 and 2 are supported. */
-> +		if (adaption != 1 && adaption != 2) {
-> +			if (debug & DBG_ERRORS)
-> +				pr_info("%s invalid adaption %d in PN\n",
-> +					__func__, adaption);
-> +			return -EINVAL;
-> +		}
-> +		dlci->adaption = adaption;
-> +		if (n1 > gsm->mru) {
-> +			/* Propose a smaller value */
-> +			dlci->mtu = gsm->mru;
-> +		} else if (n1 > MAX_MTU) {
-> +			/* Propose a smaller value */
-> +			dlci->mtu = MAX_MTU;
-> +		} else {
-> +			dlci->mtu = n1;
-> +		}
-> +		dlci->prio = prio;
-> +		dlci->ftype = ftype;
-> +		dlci->k = k;
-> +	} else {
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   *	gsm_control_modem	-	modem status received
->   *	@gsm: GSM channel
-> @@ -1498,6 +1665,62 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
->  	gsm_control_reply(gsm, CMD_MSC, data, clen);
->  }
->  
-> +/**
-> + * gsm_control_negotiation	-	parameter negotiation received
-> + * @gsm: GSM channel
-> + * @cr: command/response flag
-> + * @data: data following command
-> + * @dlen: data length
-> + *
-> + * We have received a parameter negotiation message. This is used by
-> + * the GSM mux protocol to configure protocol parameters for a new DLCI.
-> + */
-> +static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
-> +				    const u8 *data, unsigned int dlen)
-> +{
-> +	unsigned int addr;
-> +	u8 params[8];
-> +	struct gsm_dlci *dlci;
-> +
-> +	if (dlen < 8)
-> +		return;
-
-MIN_MTU?
-
-> +
-> +	/* Invalid DLCI? */
-> +	addr = data[0] & 0x3F;
-
-#define + FIELD_GET()
-
-> +	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr])
-> +		return;
-> +	dlci = gsm->dlci[addr];
-> +
-> +	/* Too late for parameter negotiation? */
-> +	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN)
-> +		return;
-> +
-> +	/* Process the received parameters */
-> +	if (gsm_process_negotiation(gsm, addr, cr, data, dlen) != 0) {
-> +		/* Negotiation failed. Close the link. */
-> +		if (debug & DBG_ERRORS)
-> +			pr_info("%s PN failed\n", __func__);
-> +		gsm_dlci_close(dlci);
-> +		return;
-> +	}
-> +
-> +	if (cr) {
-> +		/* Reply command with accepted parameters. */
-> +		if (gsm_encode_params(dlci, params, sizeof(params)) == 0)
-> +			gsm_control_reply(gsm, CMD_PN, params, sizeof(params));
-> +		else if (debug & DBG_ERRORS)
-> +			pr_info("%s PN invalid\n", __func__);
-> +	} else if (dlci->state == DLCI_CONFIGURE) {
-> +		/* Proceed with link setup by sending SABM before UA */
-> +		dlci->state = DLCI_OPENING;
-> +		gsm_command(gsm, dlci->addr, SABM|PF);
-> +		mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
-> +	} else {
-> +		if (debug & DBG_ERRORS)
-> +			pr_info("%s PN in invalid state\n", __func__);
-> +	}
-> +}
-> +
->  /**
->   *	gsm_control_rls		-	remote line status
->   *	@gsm: GSM channel
-> @@ -1607,8 +1830,12 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
->  		/* Modem wishes to enter power saving state */
->  		gsm_control_reply(gsm, CMD_PSC, NULL, 0);
->  		break;
-> +		/* Optional commands */
-> +	case CMD_PN:
-> +		/* Modem sends a parameter negotiation command */
-> +		gsm_control_negotiation(gsm, 1, data, clen);
-> +		break;
->  		/* Optional unsupported commands */
-> -	case CMD_PN:	/* Parameter negotiation */
->  	case CMD_RPN:	/* Remote port negotiation */
->  	case CMD_SNC:	/* Service negotiation command */
->  	default:
-> @@ -1641,8 +1868,8 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
->  	spin_lock_irqsave(&gsm->control_lock, flags);
->  
->  	ctrl = gsm->pending_cmd;
-> -	/* Does the reply match our command */
->  	command |= 1;
-> +	/* Does the reply match our command */
->  	if (ctrl != NULL && (command == ctrl->cmd || command == CMD_NSC)) {
->  		/* Our command was replied to, kill the retry timer */
->  		del_timer(&gsm->t2_timer);
-> @@ -1652,6 +1879,9 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
->  			ctrl->error = -EOPNOTSUPP;
->  		ctrl->done = 1;
->  		wake_up(&gsm->event);
-> +	/* Or did we receive the PN response to our PN command */
-> +	} else if (command == CMD_PN) {
-> +		gsm_control_negotiation(gsm, 0, data, clen);
->  	}
->  	spin_unlock_irqrestore(&gsm->control_lock, flags);
->  }
-> @@ -1829,6 +2059,31 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
->  	wake_up(&dlci->gsm->event);
->  }
->  
-> +/**
-> + * gsm_dlci_negotiate	-	start parameter negotiation
-> + * @dlci: DLCI to open
-> + *
-> + * Starts the parameter negotiation for the new DLCI. This needs to be done
-> + * before the DLCI initialized the channel via SABM.
-> + */
-> +static int gsm_dlci_negotiate(struct gsm_dlci *dlci)
-> +{
-> +	struct gsm_mux *gsm = dlci->gsm;
-> +	u8 params[8];
-> +	int ret;
-> +
-> +	ret = gsm_encode_params(dlci, params, sizeof(params));
-> +	if (ret != 0)
-> +		return ret;
-> +
-> +	/* We cannot asynchronous wait for the command response with
-> +	 * gsm_command() and gsm_control_wait() at this point.
-> +	 */
-> +	ret = gsm_control_command(gsm, CMD_PN, params, sizeof(params));
-> +
-> +	return ret;
-> +}
-> +
->  /**
->   *	gsm_dlci_t1		-	T1 timer expiry
->   *	@t: timer contained in the DLCI that opened
-> @@ -1850,6 +2105,14 @@ static void gsm_dlci_t1(struct timer_list *t)
->  	struct gsm_mux *gsm = dlci->gsm;
->  
->  	switch (dlci->state) {
-> +	case DLCI_CONFIGURE:
-> +		if (dlci->retries && gsm_dlci_negotiate(dlci) == 0) {
-> +			dlci->retries--;
-> +			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
-
-I'd tend to think a helper for this wouldn't hurt. There are already a 
-few of them.
-
-> +		} else {
-> +			gsm_dlci_begin_close(dlci); /* prevent half open link */
-> +		}
-> +		break;
->  	case DLCI_OPENING:
->  		if (dlci->retries) {
->  			dlci->retries--;
-> @@ -1888,17 +2151,46 @@ static void gsm_dlci_t1(struct timer_list *t)
->   *	to the modem which should then reply with a UA or ADM, at which point
->   *	we will move into open state. Opening is done asynchronously with retry
->   *	running off timers and the responses.
-> + *	Parameter negotiation is performed before SABM if required.
->   */
->  
->  static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
+>  drivers/tty/serial/samsung_tty.c | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsun=
+g_tty.c
+> index 77d1363029f5..7e34361a1085 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -288,7 +288,6 @@ static void s3c24xx_serial_stop_tx(struct uart_port *=
+port)
 >  {
-> -	struct gsm_mux *gsm = dlci->gsm;
-> -	if (dlci->state == DLCI_OPEN || dlci->state == DLCI_OPENING)
-> +	struct gsm_mux *gsm = dlci ? dlci->gsm : NULL;
-> +	bool need_pn = false;
-> +
-> +	if (!gsm)
->  		return;
-> -	dlci->retries = gsm->n2;
-> -	dlci->state = DLCI_OPENING;
-> -	gsm_command(dlci->gsm, dlci->addr, SABM|PF);
-> -	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
-> +
-> +	if (dlci->addr != 0) {
-> +		if (gsm->adaption != 1 || gsm->adaption != dlci->adaption)
-> +			need_pn = true;
-> +		if (dlci->prio != ((((dlci->addr / 8) + 1) * 8) - 1))
-
-roundup(addr, 8) - 1 again?
-
--- 
- i.
-
-
-> +			need_pn = true;
-> +		if (gsm->ftype != dlci->ftype)
-> +			need_pn = true;
-> +	}
-> +
-> +	switch (dlci->state) {
-> +	case DLCI_CLOSED:
-> +	case DLCI_CLOSING:
-> +		dlci->retries = gsm->n2;
-> +		if (!need_pn) {
-> +			dlci->state = DLCI_OPENING;
-> +			gsm_command(gsm, dlci->addr, SABM|PF);
-> +		} else {
-> +			/* Configure DLCI before setup */
-> +			dlci->state = DLCI_CONFIGURE;
-> +			if (gsm_dlci_negotiate(dlci) != 0) {
-> +				gsm_dlci_close(dlci);
-> +				return;
-> +			}
-> +		}
-> +		mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
-> +		break;
-> +	default:
-> +		break;
-> +	}
->  }
->  
->  /**
-> 
+>         struct s3c24xx_uart_port *ourport =3D to_ourport(port);
+>         struct s3c24xx_uart_dma *dma =3D ourport->dma;
+> -       struct circ_buf *xmit =3D &port->state->xmit;
+>         struct dma_tx_state state;
+>         int count;
+>
+> @@ -316,8 +315,7 @@ static void s3c24xx_serial_stop_tx(struct uart_port *=
+port)
+>                                         DMA_TO_DEVICE);
+>                 async_tx_ack(dma->tx_desc);
+>                 count =3D dma->tx_bytes_requested - state.residue;
+> -               xmit->tail =3D (xmit->tail + count) & (UART_XMIT_SIZE - 1=
+);
+> -               port->icount.tx +=3D count;
+> +               uart_xmit_advance(port, count);
+>         }
+>
+>         ourport->tx_enabled =3D 0;
+> @@ -351,8 +349,7 @@ static void s3c24xx_serial_tx_dma_complete(void *args=
+)
+>
+>         spin_lock_irqsave(&port->lock, flags);
+>
+> -       xmit->tail =3D (xmit->tail + count) & (UART_XMIT_SIZE - 1);
+> -       port->icount.tx +=3D count;
+> +       uart_xmit_advance(port, count);
+>         ourport->tx_in_progress =3D 0;
+>
+>         if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> @@ -916,8 +913,7 @@ static void s3c24xx_serial_tx_chars(struct s3c24xx_ua=
+rt_port *ourport)
+>                         break;
+>
+>                 wr_reg(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+> -               xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> -               port->icount.tx++;
+> +               uart_xmit_advance(port, 1);
+>                 count--;
+>         }
+>
+> --
+> 2.30.2
+>
