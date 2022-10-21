@@ -2,67 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CB5C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 14:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0089C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 14:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231288AbiJUOCn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Oct 2022 10:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
+        id S231355AbiJUOKv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Oct 2022 10:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231339AbiJUOCf (ORCPT
+        with ESMTP id S231329AbiJUOKu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Oct 2022 10:02:35 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ED327A890
-        for <linux-serial@vger.kernel.org>; Fri, 21 Oct 2022 07:02:21 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed10:8c7:6dd8:b0ce:eea6])
-        by albert.telenet-ops.be with bizsmtp
-        id ae2J280065BCT2h06e2Jms; Fri, 21 Oct 2022 16:02:18 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1olsbJ-000et5-M9; Fri, 21 Oct 2022 16:02:17 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1olsbJ-001KuI-12; Fri, 21 Oct 2022 16:02:17 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: serial: renesas,scif: Document r8a779g0 support
-Date:   Fri, 21 Oct 2022 16:02:16 +0200
-Message-Id: <8a2d04651f04a97d652395b4d933af5c3c8d5b5b.1666360789.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Fri, 21 Oct 2022 10:10:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFA1181C82;
+        Fri, 21 Oct 2022 07:10:49 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1D8971F8FA;
+        Fri, 21 Oct 2022 14:10:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1666361448; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dxviNeizqwD0JO9Rsn1EqxA3bVlXhIPZ7oYWMZbtAQw=;
+        b=PzB/XY7PbWY+wevLclVqnetSI+zGW+8APR69S2WkwIyH0i6jKbfEu6j3NUbTER0Xj0C1r2
+        0uKfXMQuanP78xjZUyLlXhbpSaqeS9RJ8AjJ4zx3TwTlEbtLqIy3v4KcGxjtnDs9RR6TyM
+        7YDz0TdXG2uRApIrs1ithz0yt398Gu4=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 9A4772C141;
+        Fri, 21 Oct 2022 14:10:47 +0000 (UTC)
+Date:   Fri, 21 Oct 2022 16:10:47 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 12/38] tty: serial: kgdboc: use
+ console_is_enabled()
+Message-ID: <Y1KoZ1LXVRryFBz5@alley>
+References: <20221019145600.1282823-1-john.ogness@linutronix.de>
+ <20221019145600.1282823-13-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221019145600.1282823-13-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Document support for the Serial Communication Interface with FIFO (SCIF)
-in the Renesas R-Car V4H (R8A779G0) SoC.
+On Wed 2022-10-19 17:01:34, John Ogness wrote:
+> Replace (console->flags & CON_ENABLED) usage with console_is_enabled().
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index f930e7f1349fcea8..f81f2d67a1ed453c 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -67,6 +67,7 @@ properties:
-           - enum:
-               - renesas,scif-r8a779a0     # R-Car V3U
-               - renesas,scif-r8a779f0     # R-Car S4-8
-+              - renesas,scif-r8a779g0     # R-Car V4H
-           - const: renesas,rcar-gen4-scif # R-Car Gen4
-           - const: renesas,scif           # generic SCIF compatible UART
- 
--- 
-2.25.1
-
+Best Regards,
+Petr
