@@ -2,89 +2,152 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F47C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 14:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 087FCC4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 15:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbiJUOXt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Oct 2022 10:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
+        id S229833AbiJUPJg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Oct 2022 11:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiJUOXr (ORCPT
+        with ESMTP id S230119AbiJUPJd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Oct 2022 10:23:47 -0400
+        Fri, 21 Oct 2022 11:09:33 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F1327C95D;
-        Fri, 21 Oct 2022 07:23:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD5615A04;
+        Fri, 21 Oct 2022 08:09:27 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 07D6121C3C;
-        Fri, 21 Oct 2022 14:23:45 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 44CB621AC3;
+        Fri, 21 Oct 2022 15:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1666362225; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1666364966; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=+r+MUYg4L0jiEOtXgDxphdKLvrOHZIrBRHvnZMBKsV8=;
-        b=dA2qrfhIRkyi5E40MTeWY0jF2NdAhbF5yi2wyOMOtqv8DbGbnqIh6OomAAkIeL1nGBbM/9
-        TF2KsRVuOQad+2VxK06MNqoU+GlN4zx2EPzfzkxnooF0fJTX1QoYgAa93qN2IADaKjh0s9
-        T2M97KHe03rUv/R5UXIoAigmwYJBbQw=
+        bh=D2cmZ6BvHBYBb6ewKQViyHi8KNoqJ4RJeLxFa1jRfPU=;
+        b=Z64rxAKDBG/TanlPIBnuQFWm/LX0xgg8bMR9dvDfTuLSMLDAR3+SUqOUHGVFVCf/uVI24I
+        kV9RAoggTaweiqxTo5EH8RKHNMsrJn3elumj0N3Vc8VtltOGywUpSyBPeNClBFEdkL5gW2
+        myMpVZpXF60Gl0Vtf54IlRCCU57GDaA=
 Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A94BA2C141;
-        Fri, 21 Oct 2022 14:23:44 +0000 (UTC)
-Date:   Fri, 21 Oct 2022 16:23:44 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 24A8A2C141;
+        Fri, 21 Oct 2022 15:09:25 +0000 (UTC)
+Date:   Fri, 21 Oct 2022 17:09:24 +0200
 From:   Petr Mladek <pmladek@suse.com>
 To:     John Ogness <john.ogness@linutronix.de>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH printk v2 16/38] tty: serial: xilinx_uartps: use
- console_is_enabled()
-Message-ID: <Y1KrcPBmC0ZNlxKc@alley>
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 21/38] serial: kgdboc: use srcu console list
+ iterator
+Message-ID: <Y1K2JP6LIf8H2Ub5@alley>
 References: <20221019145600.1282823-1-john.ogness@linutronix.de>
- <20221019145600.1282823-17-john.ogness@linutronix.de>
+ <20221019145600.1282823-22-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221019145600.1282823-17-john.ogness@linutronix.de>
+In-Reply-To: <20221019145600.1282823-22-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed 2022-10-19 17:01:38, John Ogness wrote:
-> Replace (console->flags & CON_ENABLED) usage with console_is_enabled().
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 2eff7cff57c4..e1fe95bd55c1 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1631,7 +1631,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
->  #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
->  	/* This is not port which is used for console that's why clean it up */
->  	if (console_port == port &&
-> -	    !(cdns_uart_uart_driver.cons->flags & CON_ENABLED)) {
-> +	    !console_is_enabled(cdns_uart_uart_driver.cons)) {
->  		console_port = NULL;
->  		cdns_uart_console.index = -1;
+On Wed 2022-10-19 17:01:43, John Ogness wrote:
+> Use srcu console list iteration for safe console list traversal.
+>
+> Note that configure_kgdboc() still requires the console_lock in
+> order to ensure that no console is in its write() callback when
+> its direct() callback is called. Add comments to clarify this.
 
-Again, IMHO, we should check here if the console is in console_list.
-We should not clean the port and index when the console is already
-registered.
+s/direct()/device()/
 
-Again, this is old problem that might be fixed later.
+Do you know about such requirements or is it just
+a conservative approach, please?
 
-The change is straightforward. Feel free to use:
+I ask because the comment in the code says "may assume".
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Anyway, this would deserve a comment why the SRCU list iteration is
+needed even when console_lock() is needed as well.
+
+The reason is that further patches are going to synchronize
+console_list manipulation with another lock and console_lock()
+will be used only to serialize accessing con->write() callbacks.
 
 Best Regards,
 Petr
+
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  drivers/tty/serial/kgdboc.c | 21 ++++++++++++++++++---
+>  1 file changed, 18 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index b17aa7e49894..e9d3f8c6e3dc 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -171,6 +171,7 @@ static int configure_kgdboc(void)
+>  	int err = -ENODEV;
+>  	char *cptr = config;
+>  	struct console *cons;
+> +	int cookie;
+>  
+>  	if (!strlen(config) || isspace(config[0])) {
+>  		err = 0;
+> @@ -193,8 +194,14 @@ static int configure_kgdboc(void)
+>  	if (!p)
+>  		goto noconfig;
+>  
+> +	/*
+> +	 * Stop console printing because the device() callback may
+> +	 * assume the console is not within its write() callback.
+> +	 */
+>  	console_lock();
+> -	for_each_console(cons) {
+> +
+> +	cookie = console_srcu_read_lock();
+> +	for_each_console_srcu(cons) {
+>  		int idx;
+>  		if (cons->device && cons->device(cons, &idx) == p &&
+>  		    idx == tty_line) {
+> @@ -202,6 +209,8 @@ static int configure_kgdboc(void)
+>  			break;
+>  		}
+>  	}
+> +	console_srcu_read_unlock(cookie);
+> +
+>  	console_unlock();
+>  
+>  	kgdb_tty_driver = p;
+> @@ -451,6 +460,7 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+>  {
+>  	struct console *con;
+>  	static bool already_warned;
+> +	int cookie;
+>  
+>  	if (already_warned)
+>  		return;
+> @@ -463,9 +473,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+>  	 * serial drivers might be OK with this, print a warning once per
+>  	 * boot if we detect this case.
+>  	 */
+> -	for_each_console(con)
+> +	cookie = console_srcu_read_lock();
+> +	for_each_console_srcu(con) {
+>  		if (con == kgdboc_earlycon_io_ops.cons)
+> -			return;
+> +			break;
+> +	}
+> +	console_srcu_read_unlock(cookie);
+> +	if (con)
+> +		return;
+>  
+>  	already_warned = true;
+>  	pr_warn("kgdboc_earlycon is still using bootconsole\n");
+> -- 
+> 2.30.2
