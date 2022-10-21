@@ -2,92 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F124C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 09:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85094C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 09:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229872AbiJUJYy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Oct 2022 05:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S230256AbiJUJkb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Oct 2022 05:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiJUJYw (ORCPT
+        with ESMTP id S230221AbiJUJka (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Oct 2022 05:24:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DED6275EC;
-        Fri, 21 Oct 2022 02:24:43 -0700 (PDT)
+        Fri, 21 Oct 2022 05:40:30 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF441AFAB3;
+        Fri, 21 Oct 2022 02:40:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666344286; x=1697880286;
+  t=1666345222; x=1697881222;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=jk3GGigshY3ozVIft32XqiGGnJhMw0o6601+Pv/jJHg=;
-  b=mj1BFCVKcskK+BTfao7mXFCM9rgaGB99p6F9MPEms9aSw8UGe/dMMotu
-   d/Q/Q5A9ekMHBlXiEbsDpjT5fgVL51BxL/9Ll8DB0OkAv5AOS2X+DsPuu
-   kMdg65GHe9C96LoKwEo+qL9XLlbUrSLriE5KkBZtjO+LWCa7/VHhOA/wC
-   e6J3Q7JxYQIsHZsVYQ0hI8X9xI6jffmUM6dkPx5adcr+jrPkQ+OnHZ7ld
-   S8v6Nv0/ZOH7QegCL/lv6y1uPKt0JB/IS15z2e0HvIIucVAXN9fbJ63+r
-   ys5O7vOcztCtUydvIcXI2KU7HSQ07CXI+e0Tkr9QF+V8Z3U5vSiNpOfnv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="304572661"
+  bh=znuGfTgdRUioBnYzZ3bDM+BvNiBpmBJVN6eGc6l1et8=;
+  b=NmYb60/FcoQCUlftynAxCSQkkPy8yY1stcn/wmYv3mYYv/GbhTW9+W2U
+   EQ/T0g5nRNcjmvTjPdQcruLq5GXsCAFjOiLHH6jQnitDJqCqI9rePmamZ
+   itgsD3VmLrQGG+hkRJLleR/nqU4uCHNYqFC3LPwCrh0LvMpsn5cbsjcxD
+   8g5+g1jVyGw0eXPW6YVHBZpJSNkr3QC2rQ0do2mhdadGEYnu66s/dLaik
+   n4WrluDKAa5mHqi8CbkJk36tzD8oYuUdCRWlLtiYAc1bFDvGI8nuOxvTk
+   Vgmn8dpRkS8rz/1vEo6dpaOnkmjrURTaPpOx1iRhiFQYrnUoimOrNvKrW
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="305697098"
 X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="304572661"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 02:24:43 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="719621315"
+   d="scan'208";a="305697098"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 02:40:21 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10506"; a="805474071"
 X-IronPort-AV: E=Sophos;i="5.95,200,1661842800"; 
-   d="scan'208";a="719621315"
+   d="scan'208";a="805474071"
 Received: from lramir2-mobl1.ger.corp.intel.com ([10.252.44.179])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 02:24:38 -0700
-Date:   Fri, 21 Oct 2022 12:24:35 +0300 (EEST)
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2022 02:40:19 -0700
+Date:   Fri, 21 Oct 2022 12:40:17 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
-cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        tianfei.zhang@intel.com, corbet@lwn.net,
+To:     "D. Starke" <daniel.starke@siemens.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, Lukas Wunner <lukas@wunner.de>,
-        marpagan@redhat.com
-Subject: Re: [PATCH v4 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-In-Reply-To: <20221020212610.697729-5-matthew.gerlach@linux.intel.com>
-Message-ID: <37342f3-cac7-e127-5bea-27b78dbc31c@linux.intel.com>
-References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com> <20221020212610.697729-5-matthew.gerlach@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] tty: n_gsm: introduce macro for minimal unit size
+In-Reply-To: <20221021084315.2306-1-daniel.starke@siemens.com>
+Message-ID: <fe537e8-7b2-61e2-767d-787b923c7456@linux.intel.com>
+References: <20221021084315.2306-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 20 Oct 2022, matthew.gerlach@linux.intel.com wrote:
+On Fri, 21 Oct 2022, D. Starke wrote:
 
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Add a Device Feature List (DFL) bus driver for the Altera
-> 16550 implementation of UART.
+> n_gsm has a minimal protocol overhead of 7 bytes. The current code already
+> checks whether the configured MRU/MTU size is at least one byte more than
+> this.
 > 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Introduce the macro MIN_UNIT_SIZE to make this value more obvious.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
+>  drivers/tty/n_gsm.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 5e516f5cac5a..8e039f2a0427 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -89,6 +89,7 @@ module_param(debug, int, 0600);
+>   */
+>  #define MAX_MRU 1500
+>  #define MAX_MTU 1500
+> +#define MIN_UNIT_SIZE 8
+>  /* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
+>  #define PROT_OVERHEAD 7
 
-> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_REG_LAYOUT);
-> +	if (!p)
-> +		return dev_err_probe(dev, -EINVAL, "missing REG_LAYOUT param\n");
-> +
-> +	v = *p;
-> +	uart->port.regshift = FIELD_GET(DFHv1_PARAM_ID_REG_SHIFT, v);
-> +	reg_width = FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v);
+Why not call it just MIN_MTU?
 
-Just use *p directly for the FIELD_GETs. I suppose you can drop v after 
-changing it.
+I know you check it also against MRU but that seems so minor problem to me 
+it's not worth even noting because of course MRU is related MTU, it's just 
+the other end of the pipe. To be honest, I don't understand why MAX_MRU is 
+even defined there when is just the same as MAX_MTU :-).
 
-Other than that and what Andy noted, this patch looks good.
+You could do this btw:
 
+#define MIN_MTU	(PROT_OVERHEAD + 1)
+
+To make it even more obvious where it comes from (matching to what you 
+describe in your commit message).
+
+The change looks otherwise ok.
 
 -- 
  i.
+
+
+>  #define	GSM_NET_TX_TIMEOUT (HZ*10)
+> @@ -2712,7 +2713,9 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+>  	if ((c->adaption != 1 && c->adaption != 2) || c->k)
+>  		return -EOPNOTSUPP;
+>  	/* Check the MRU/MTU range looks sane */
+> -	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
+> +	if (c->mru < MIN_UNIT_SIZE || c->mtu < MIN_UNIT_SIZE)
+> +		return -EINVAL;
+> +	if (c->mru > MAX_MRU || c->mtu > MAX_MTU)
+>  		return -EINVAL;
+>  	if (c->n2 > 255)
+>  		return -EINVAL;
+> @@ -3296,7 +3299,7 @@ static int gsm_create_network(struct gsm_dlci *dlci, struct gsm_netconfig *nc)
+>  		return -ENOMEM;
+>  	}
+>  	net->mtu = dlci->gsm->mtu;
+> -	net->min_mtu = 8;
+> +	net->min_mtu = MIN_UNIT_SIZE;
+>  	net->max_mtu = dlci->gsm->mtu;
+>  	mux_net = netdev_priv(net);
+>  	mux_net->dlci = dlci;
+> 
 
