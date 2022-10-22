@@ -2,185 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AF3FA373F
-	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 15:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EBCFA374A
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 15:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbiJVPNM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 22 Oct 2022 11:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        id S229727AbiJVPTH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Oct 2022 11:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiJVPNG (ORCPT
+        with ESMTP id S229679AbiJVPS7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 22 Oct 2022 11:13:06 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675281366A4;
-        Sat, 22 Oct 2022 08:13:04 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id a10so8641337wrm.12;
-        Sat, 22 Oct 2022 08:13:04 -0700 (PDT)
+        Sat, 22 Oct 2022 11:18:59 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51E96747D
+        for <linux-serial@vger.kernel.org>; Sat, 22 Oct 2022 08:18:55 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-13aeccf12fbso7059771fac.11
+        for <linux-serial@vger.kernel.org>; Sat, 22 Oct 2022 08:18:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/tn9ME0TL0Y61oMWgSDpk8x/grA5ek9OA4zh/3kmEPY=;
-        b=GW6/l8Uizmyk8qF8jHpYfz4onM5N4g60uc/bdSTaYk01iniF1ZAx6pIQKcNcUHVvfO
-         oZa3Ug4sBDiPhEV7NJd+arZ2743Nyw9QCdquW6gP3SQRQkoHOox/zVPn85tE1+qPh3SB
-         uPjZeHR9n5Ot9bQW8BbhW24iKUKKJUxsi58ENfKu0p6UoyFY3Mb4bW1lvdWf7ruP/2Ct
-         AK4CvyA2f4/EYH6zQ4t7mroec2yKxVH2HoxTx1JHTPvSB4xIcJe8xVbwYUZl3AxI4nRf
-         YIfLXdyywGGGNKQPOvLuprvdTXN/E/Fkc7auipw3rBa06SwZgdUzEcn+mpN//LTzNJXM
-         H4Tg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gz0LxUsOUlJDcIAW5bPu+WDjpQGro2FyWxGKpu7r8bo=;
+        b=gWrs34NeTJPV2fQ1MVoQY+zpFojHR3D/A6fVxaEOoPyaG1lz86TK/RINtSik3ihs6m
+         epr6PhFlnoD33CCeTfWoNQCRee99kzlwRupaR937A3VU5HU4OTIvs/zluF82SMnywl6D
+         HdEJ7m7PbwxapFaNOFa9ppWW4y91iGtKkwoLpnocgDPBTYKE8ItremNKc8YrHhceRIZp
+         h3VMtehI1AqTwZwEWQcTgFOjDVRQQngjmAnbv2gz4Ef/Bbck+zcB6GCOTs8PKUKrqPeL
+         49sPdfcCEYUyqTEphtRdJczJc984b2NmTshEFvs/XiFALWDOPilFuaMHYm7NR6Fhz+qX
+         X9nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/tn9ME0TL0Y61oMWgSDpk8x/grA5ek9OA4zh/3kmEPY=;
-        b=aANCfTw4+pyTo5kfqsuhmbfYvk9E5bfjisVA6nu6AqLdmwIAB/8+CD/Skq+CKH2Cxr
-         UUpu4xifop4qO89ZQJy1V6sG8zwq9Cgg6aTPi0TnN/bBgjEu3LwYkjeyq8R8cy5KskRf
-         66v6cWAD9hZTkG1sWDyJRpIH6TZX442hcbM2QQF6TWMjRlaxOafYG7PSHOFGoZXkc8+J
-         xprQCvONWt19yyCKQVtG8OWvOlGvdyfQDY4LBMNP6MnYstgUhSIbZ3VtEs9wqpQs/hzh
-         +a7I/loU7Glh6fdqQCnPH9qGwR+Abp+prgSfDXhUInDHdWm0oPYn2p+CfnM2gyPLNtJW
-         tnnw==
-X-Gm-Message-State: ACrzQf1pIgKJ5uq4EtGFjW3Y0W3HfIF1GRLneJAmgM/bTSypQ7XMGOQV
-        +rBM8aisebyp+h//mwVsoNI=
-X-Google-Smtp-Source: AMsMyM5vOXs+oBjgGHsKPd1b4S6qy+roDx3CDdb9OtBvR7J9WzXkYmXr7Y+R5BUL4bb8uBZT5hvsXA==
-X-Received: by 2002:adf:ec03:0:b0:22e:4d3:bb37 with SMTP id x3-20020adfec03000000b0022e04d3bb37mr15469099wrn.665.1666451582570;
-        Sat, 22 Oct 2022 08:13:02 -0700 (PDT)
-Received: from hp-power-15.localdomain (mm-133-18-212-37.vitebsk.dynamic.pppoe.byfly.by. [37.212.18.133])
-        by smtp.gmail.com with ESMTPSA id u11-20020adff88b000000b0022e2eaa2bdcsm21310581wrp.98.2022.10.22.08.13.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Oct 2022 08:13:02 -0700 (PDT)
-From:   Siarhei Volkau <lis8215@gmail.com>
-Cc:     Siarhei Volkau <lis8215@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH v2 2/2] serial: 8250/ingenic: Add support for the JZ4750/JZ4755
-Date:   Sat, 22 Oct 2022 18:12:24 +0300
-Message-Id: <20221022151224.4000238-3-lis8215@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20221022151224.4000238-1-lis8215@gmail.com>
-References: <20221022151224.4000238-1-lis8215@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gz0LxUsOUlJDcIAW5bPu+WDjpQGro2FyWxGKpu7r8bo=;
+        b=KMd6GbyfGkR1SwnL5K8oLhJr4WM4vwsGGQTsbhcilMPQ0gVfL84HNvXt4psR8qj2af
+         HadJimEFMUKa4MgSxLg5SOKTkfGumjBojqnFQNyUyhXLmZA0KQna4SnJICSDJFnB8ybQ
+         iyHF13RxDeW3SESCQdz0+EPD57Je/yLbmdDdEgT99Awv2i8oEEDauiPjXoM4STwB8sEA
+         r7ELFBPG8J+349rtqZvP6eTEsIaqAVx5QeuClY1gYmk1UHb+26nGcH79WqXDmqiqnsiq
+         esql0hz2f18bFZKAL3wkIoaPt51lZWI/RI1OivhwhHO+l+SmNe0f9T9QUanXKQfvemVa
+         /F2w==
+X-Gm-Message-State: ACrzQf2YPXxRbyGMs+rFG8PvBd1PBB4CuP586UynPHWUyKoCQQD7laox
+        FFh7eTgwAiz8DZr4CAbP6WRu/A==
+X-Google-Smtp-Source: AMsMyM4Ums0et6AQMZox+xdB7Wz2plUu78klbaMd0EOzV1OnnwGbhhl8/BymyNDqbBFL+Y+cBT/t0g==
+X-Received: by 2002:a05:6870:f288:b0:131:de71:3eb6 with SMTP id u8-20020a056870f28800b00131de713eb6mr31239483oap.63.1666451935002;
+        Sat, 22 Oct 2022 08:18:55 -0700 (PDT)
+Received: from [10.203.8.70] ([205.153.95.177])
+        by smtp.gmail.com with ESMTPSA id v5-20020a056870310500b00136c20b1c59sm11538284oaa.43.2022.10.22.08.18.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Oct 2022 08:18:54 -0700 (PDT)
+Message-ID: <e7ace68a-98e5-63c8-7dd7-a35d0eba1c6e@linaro.org>
+Date:   Sat, 22 Oct 2022 11:18:49 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 00/21] ARM: s3c: clean out obsolete platforms
+To:     Arnd Bergmann <arnd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        patches@opensource.cirrus.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-watchdog@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-pwm@vger.kernel.org
+References: <20221021202254.4142411-1-arnd@kernel.org>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221021202254.4142411-1-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-JZ4750/55/60 (but not JZ4760b) have an extra divisor in between extclk
-and peripheral clock, called CPCCR.ECS, the driver can't figure out the
-real state of the divisor without dirty hack - peek CGU CPCCR register.
-However, we can rely on a vendor's bootloader (u-boot 1.1.6) behavior:
-if (extclk > 16MHz)
-    the divisor is enabled, so the UART driving clock is extclk/2.
+On 21/10/2022 16:22, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The s3c24xx platform was marked as deprecated a while ago,
+> and for the s3c64xx platform, we marked all except one legacy
+> board file as unused.
+> 
+> This series removes all of those, leaving only s3c64xx support
+> for DT based boots as well as the cragg6410 board file.
+> 
+> About half of the s3c specific drivers were only used on
+> the now removed machines, so these drivers can be retired
+> as well. I can either merge the driver removal patches through
+> the soc tree along with the board file patches, or subsystem
+> maintainers can pick them up into their own trees, whichever
+> they prefer.
 
-This behavior relies on hardware differences: most boards (if not all)
-with those SoCs have 12 or 24 MHz oscillators but many peripherals want
-12Mhz to operate properly (AIC and USB-PHY at least).
+Just to be sure - do you expect me to ack the series, or rather as usual
+pick them up?
 
-The patch doesn't affect JZ4760's behavior as it is subject for another
-patchset with re-classification of all supported ingenic UARTs.
 
-Link: https://github.com/carlos-wong/uboot_jz4755/blob/master/cpu/mips/jz_serial.c#L158
-Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
----
- drivers/tty/serial/8250/8250_ingenic.c | 50 ++++++++++++++++++++++----
- 1 file changed, 43 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index 2b2f5d8d2..3ffa6b722 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -87,24 +87,19 @@ static void __init ingenic_early_console_setup_clock(struct earlycon_device *dev
- 	dev->port.uartclk = be32_to_cpup(prop);
- }
- 
--static int __init ingenic_early_console_setup(struct earlycon_device *dev,
--					      const char *opt)
-+static int __init ingenic_earlycon_setup_tail(struct earlycon_device *dev,
-+					      const char *opt)
- {
- 	struct uart_port *port = &dev->port;
- 	unsigned int divisor;
- 	int baud = 115200;
- 
--	if (!dev->port.membase)
--		return -ENODEV;
--
- 	if (opt) {
- 		unsigned int parity, bits, flow; /* unused for now */
- 
- 		uart_parse_options(opt, &baud, &parity, &bits, &flow);
- 	}
- 
--	ingenic_early_console_setup_clock(dev);
--
- 	if (dev->baud)
- 		baud = dev->baud;
- 	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
-@@ -129,9 +124,49 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
- 	return 0;
- }
- 
-+static int __init ingenic_early_console_setup(struct earlycon_device *dev,
-+					      const char *opt)
-+{
-+	if (!dev->port.membase)
-+		return -ENODEV;
-+
-+	ingenic_early_console_setup_clock(dev);
-+
-+	ingenic_earlycon_setup_tail(dev, opt);
-+}
-+
-+static int __init jz4750_early_console_setup(struct earlycon_device *dev,
-+					     const char *opt)
-+{
-+	if (!dev->port.membase)
-+		return -ENODEV;
-+
-+	/*
-+	 * JZ4750/55/60 (not JZ4760b) have an extra divisor
-+	 * between extclk and peripheral clock, the
-+	 * driver can't figure out the real state of the
-+	 * divisor without dirty hacks (peek CGU register).
-+	 * However, we can rely on a vendor's behavior:
-+	 * if (extclk > 16MHz)
-+	 *   the divisor is enabled.
-+	 * This behavior relies on hardware differences:
-+	 * most boards with those SoCs have 12 or 24 MHz
-+	 * oscillators but many peripherals want 12Mhz
-+	 * to operate properly (AIC and USB-phy at least).
-+	 */
-+	ingenic_early_console_setup_clock(dev);
-+	if (dev->port.uartclk > 16000000)
-+		dev->port.uartclk /= 2;
-+
-+	ingenic_earlycon_setup_tail(dev, opt);
-+}
-+
- OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
- 		    ingenic_early_console_setup);
- 
-+OF_EARLYCON_DECLARE(jz4750_uart, "ingenic,jz4750-uart",
-+		    jz4750_early_console_setup);
-+
- OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
- 		    ingenic_early_console_setup);
- 
-@@ -328,6 +363,7 @@ static const struct ingenic_uart_config x1000_uart_config = {
- 
- static const struct of_device_id of_match[] = {
- 	{ .compatible = "ingenic,jz4740-uart", .data = &jz4740_uart_config },
-+	{ .compatible = "ingenic,jz4750-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4760-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4770-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
--- 
-2.36.1
+Best regards,
+Krzysztof
 
