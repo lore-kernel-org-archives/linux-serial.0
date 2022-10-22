@@ -2,124 +2,192 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECA8C433FE
-	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 19:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFBDC433FE
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 20:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229982AbiJVTsz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 22 Oct 2022 15:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        id S229610AbiJVUHf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Oct 2022 16:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbiJVTsq (ORCPT
+        with ESMTP id S229506AbiJVUHd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 22 Oct 2022 15:48:46 -0400
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F5412D80A;
-        Sat, 22 Oct 2022 12:48:44 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6AD1458012A;
-        Sat, 22 Oct 2022 15:48:41 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Sat, 22 Oct 2022 15:48:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1666468121; x=1666475321; bh=UGS1Mg1RbR
-        rjg7l/C4uODk6tRvKSFxQmBze4CDiRUok=; b=R769R20cvAUvCJzdLxBnDkwPBp
-        EbTpyCnh90ePwkW/W271GgnujcaxKPNlKUZTD1QiMzbOX6UUmX5GBGQy5YnoG3Hz
-        7bIbm4GGSebbV6RK2kBgjxCEhVjRMxNaLgKsw+7i5e4f4W2C2HsQFTmKv8S+gZdE
-        jcEJHfdX99rjFuuQuzOPTEkJYLvC3gJ1f7jx+9U6cwktdP6NSfqNvxTgarEWxD1c
-        GFRrikCndHmtZnFVFspin0GH0nBuno9DFl/vX1YEuWJJ1DmabcJBI+QgW+pFl13L
-        PUlTUh21czWS+IFSiTNJyGJ4p7ipLzCb7UJepNPQ1EVgfsLevgq5To41FFEw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1666468121; x=1666475321; bh=UGS1Mg1RbRrjg7l/C4uODk6tRvKS
-        FxQmBze4CDiRUok=; b=DZdlxJQ1/OPf/Y6KDYWPfdC+mu56NzIOlbXghWxjCj9D
-        9CPMuzFO6wSIpYXaVVKO5ogBmtK5zrRUpai6gPg5qF7aq51p1Tf8zgVV+aEGQIpg
-        Le7lvLJR+05feR3Q+7owk4RsmE3rzpsqGg/UOGa7xGgp5BzvreC3G8OxhZ0WzoTZ
-        kHVkLu1P+KTSJm4dYCrODRLVTVeSHwuFqAuyI9eyO0UD5B3tL3/NipBn2AFumQvr
-        +xjvFjLrJEOmbNOFedB+o0knlGPPR7li0EwNxPvDXhDL0DJhj4plmQqEZJg8uEWZ
-        ljUtVQj8llXCVqwnpTmY8Mpk0y+FjFMyLlNEuZEfiA==
-X-ME-Sender: <xms:GElUY9vt3ItviEp5AJXQjYcX0YyV47YTITTgtkGjjNw0aSie0vzYkg>
-    <xme:GElUY2cknoJTeDpYvjbC4RFS-FtPGbyfFDbbyjNFIChdDqrc0xYFVavFYI99vu8kl
-    0KtHqNspAg1e6vBhwY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedttddgudegtdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
-    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:GElUYwxiXoqPMILm1SZ_32__qu1Q5l_zrlV4KYN9jBrAlex9SwSKIg>
-    <xmx:GElUY0PzOcbbrTlSQkCZ5j1lrS1Cnv1p6FZXhLQlA1lHQyiDXRQGng>
-    <xmx:GElUY9-JQg9pRkXJG00aarf_3pC2T4jG_plPdMl-YxzKsRcEtsxZ9g>
-    <xmx:GUlUYyKFp-5FR5wwM3xl6nutJeKlKU0pfMGHX_pxDvaIG8i-amMB_w>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 90C24B60086; Sat, 22 Oct 2022 15:48:40 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1047-g9e4af4ada4-fm-20221005.001-g9e4af4ad
-Mime-Version: 1.0
-Message-Id: <7c4531b8-a296-4ea3-9564-b094704d10b2@app.fastmail.com>
-In-Reply-To: <e7ace68a-98e5-63c8-7dd7-a35d0eba1c6e@linaro.org>
-References: <20221021202254.4142411-1-arnd@kernel.org>
- <e7ace68a-98e5-63c8-7dd7-a35d0eba1c6e@linaro.org>
-Date:   Sat, 22 Oct 2022 21:48:19 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        "Arnd Bergmann" <arnd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, "Ben Dooks" <ben-linux@fluff.org>,
-        "Simtec Linux Team" <linux@simtec.co.uk>,
-        linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, patches@opensource.cirrus.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        "linux-mmc @ vger . kernel . org" <linux-mmc@vger.kernel.org>,
-        linux-mtd@lists.infradead.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 00/21] ARM: s3c: clean out obsolete platforms
-Content-Type: text/plain
+        Sat, 22 Oct 2022 16:07:33 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1033D1581D;
+        Sat, 22 Oct 2022 13:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1666469251; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I4lDdl2R33Rw3FJFjgrKMP7JH5wxfoEkDuahx5BR0co=;
+        b=afQVdLCmOBgCi8h/em20G7kMEf3Yp1+pF3SrRZRXDez3Zd7pgv78v1yvtNotxzpICEz34a
+        gPnvMEvJe4Vvbyudvt3USgVGsv2H0kaj9VVvoO+j/uTHDkMrTjZycUahkgEeYn58n9tGlK
+        DRoMPymei7Eaag0pF2nXOfn8OKdjsRY=
+Date:   Sat, 22 Oct 2022 21:07:21 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3 2/2] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755
+To:     Siarhei Volkau <lis8215@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Message-Id: <9W76KR.NVDSVG4IWZ3A3@crapouillou.net>
+In-Reply-To: <20221022165047.4020785-3-lis8215@gmail.com>
+References: <20221022165047.4020785-1-lis8215@gmail.com>
+        <20221022165047.4020785-3-lis8215@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Oct 22, 2022, at 17:18, Krzysztof Kozlowski wrote:
-> On 21/10/2022 16:22, Arnd Bergmann wrote:
->> From: Arnd Bergmann <arnd@arndb.de>
->> 
->> The s3c24xx platform was marked as deprecated a while ago,
->> and for the s3c64xx platform, we marked all except one legacy
->> board file as unused.
->> 
->> This series removes all of those, leaving only s3c64xx support
->> for DT based boots as well as the cragg6410 board file.
->> 
->> About half of the s3c specific drivers were only used on
->> the now removed machines, so these drivers can be retired
->> as well. I can either merge the driver removal patches through
->> the soc tree along with the board file patches, or subsystem
->> maintainers can pick them up into their own trees, whichever
->> they prefer.
->
-> Just to be sure - do you expect me to ack the series, or rather as usual
-> pick them up?
+Hi Siarhei,
 
-I think in this case it is easier if I pick them up with your
-Ack along with the other platforms I posted, as there are
-some minor conflicts between Makefile/Kconfig changes where
-I remove adjacent lines.
+Le sam. 22 oct. 2022 =E0 19:50:47 +0300, Siarhei Volkau=20
+<lis8215@gmail.com> a =E9crit :
+> JZ4750/55/60 (but not JZ4760b) have an extra divisor in between extclk
+> and peripheral clock, called CPCCR.ECS, the driver can't figure out=20
+> the
+> real state of the divisor without dirty hack - peek CGU CPCCR=20
+> register.
+> However, we can rely on a vendor's bootloader (u-boot 1.1.6) behavior:
+> if (extclk > 16MHz)
+>     the divisor is enabled, so the UART driving clock is extclk/2.
+>=20
+> This behavior relies on hardware differences: most boards (if not all)
+> with those SoCs have 12 or 24 MHz oscillators but many peripherals=20
+> want
+> 12Mhz to operate properly (AIC and USB-PHY at least).
+>=20
+> The patch doesn't affect JZ4760's behavior as it is subject for=20
+> another
+> patchset with re-classification of all supported ingenic UARTs.
+>=20
+> Link:=20
+> https://github.com/carlos-wong/uboot_jz4755/blob/master/cpu/mips/jz_seria=
+l.c#L158
+> Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_ingenic.c | 48=20
+> ++++++++++++++++++++++----
+>  1 file changed, 42 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_ingenic.c=20
+> b/drivers/tty/serial/8250/8250_ingenic.c
+> index 2b2f5d8d2..744705467 100644
+> --- a/drivers/tty/serial/8250/8250_ingenic.c
+> +++ b/drivers/tty/serial/8250/8250_ingenic.c
+> @@ -87,24 +87,19 @@ static void __init=20
+> ingenic_early_console_setup_clock(struct earlycon_device *dev
+>  	dev->port.uartclk =3D be32_to_cpup(prop);
+>  }
+>=20
+> -static int __init ingenic_early_console_setup(struct earlycon_device=20
+> *dev,
+> +static int __init ingenic_earlycon_setup_tail(struct earlycon_device=20
+> *dev,
+>  					      const char *opt)
+>  {
+>  	struct uart_port *port =3D &dev->port;
+>  	unsigned int divisor;
+>  	int baud =3D 115200;
+>=20
+> -	if (!dev->port.membase)
+> -		return -ENODEV;
+> -
+>  	if (opt) {
+>  		unsigned int parity, bits, flow; /* unused for now */
+>=20
+>  		uart_parse_options(opt, &baud, &parity, &bits, &flow);
+>  	}
+>=20
+> -	ingenic_early_console_setup_clock(dev);
+> -
+>  	if (dev->baud)
+>  		baud =3D dev->baud;
+>  	divisor =3D DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
+> @@ -129,9 +124,49 @@ static int __init=20
+> ingenic_early_console_setup(struct earlycon_device *dev,
+>  	return 0;
+>  }
+>=20
+> +static int __init ingenic_early_console_setup(struct earlycon_device=20
+> *dev,
+> +					      const char *opt)
+> +{
+> +	if (!dev->port.membase)
+> +		return -ENODEV;
+> +
+> +	ingenic_early_console_setup_clock(dev);
+> +
+> +	return ingenic_earlycon_setup_tail(dev, opt);
+> +}
+> +
+> +static int __init jz4750_early_console_setup(struct earlycon_device=20
+> *dev,
+> +					     const char *opt)
+> +{
+> +	if (!dev->port.membase)
+> +		return -ENODEV;
+> +
+> +	/*
+> +	 * JZ4750/55/60 (not JZ4760b) have an extra divisor
+> +	 * between extclk and peripheral clock, the
+> +	 * driver can't figure out the real state of the
+> +	 * divisor without dirty hacks (peek CGU register).
+> +	 * However, we can rely on a vendor's behavior:
+> +	 * if (extclk > 16MHz)
+> +	 *   the divisor is enabled.
+> +	 * This behavior relies on hardware differences:
+> +	 * most boards with those SoCs have 12 or 24 MHz
+> +	 * oscillators but many peripherals want 12Mhz
+> +	 * to operate properly (AIC and USB-phy at least).
+> +	 */
+> +	ingenic_early_console_setup_clock(dev);
+> +	if (dev->port.uartclk > 16000000)
+> +		dev->port.uartclk /=3D 2;
 
-       Arnd
+I don't understand, didn't we came up to the conclusion in your V1 that=20
+it was better to force-enable the EXT/2 divider in the ingenic init=20
+code?
+
+-Paul
+
+> +
+> +	return ingenic_earlycon_setup_tail(dev, opt);
+> +}
+> +
+>  OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
+>  		    ingenic_early_console_setup);
+>=20
+> +OF_EARLYCON_DECLARE(jz4750_uart, "ingenic,jz4750-uart",
+> +		    jz4750_early_console_setup);
+> +
+>  OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
+>  		    ingenic_early_console_setup);
+>=20
+> @@ -328,6 +363,7 @@ static const struct ingenic_uart_config=20
+> x1000_uart_config =3D {
+>=20
+>  static const struct of_device_id of_match[] =3D {
+>  	{ .compatible =3D "ingenic,jz4740-uart", .data =3D &jz4740_uart_config=20
+> },
+> +	{ .compatible =3D "ingenic,jz4750-uart", .data =3D &jz4760_uart_config=20
+> },
+>  	{ .compatible =3D "ingenic,jz4760-uart", .data =3D &jz4760_uart_config=20
+> },
+>  	{ .compatible =3D "ingenic,jz4770-uart", .data =3D &jz4760_uart_config=20
+> },
+>  	{ .compatible =3D "ingenic,jz4775-uart", .data =3D &jz4760_uart_config=20
+> },
+> --
+> 2.36.1
+>=20
+
+
