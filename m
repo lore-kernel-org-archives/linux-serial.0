@@ -2,105 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83052C433FE
-	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 14:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 702C9ECDFA1
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 15:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiJVOCl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 22 Oct 2022 10:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52858 "EHLO
+        id S229808AbiJVPNC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Oct 2022 11:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiJVOCk (ORCPT
+        with ESMTP id S229501AbiJVPNC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 22 Oct 2022 10:02:40 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D9117045D
-        for <linux-serial@vger.kernel.org>; Sat, 22 Oct 2022 07:02:38 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id w8so13427851edc.1
-        for <linux-serial@vger.kernel.org>; Sat, 22 Oct 2022 07:02:38 -0700 (PDT)
+        Sat, 22 Oct 2022 11:13:02 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150D8136421;
+        Sat, 22 Oct 2022 08:13:01 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bu30so9138600wrb.8;
+        Sat, 22 Oct 2022 08:13:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LNVXeM54MuUTzkxW4S+h/avYMDRiH1JNQoeYcnCHBhM=;
-        b=GjMO9bieaHDBelf7XPvp7Mm6+ECuPSqx2R6/8PrakF0zbhlcSTaFXUaHjvuZ2PA8oC
-         6WcjMZS86zeqIwyvNpGwuo6uT7FBWc0z/XIKRCqsdCIqfvsYU5jrdGwZO3AN/Ut8O2PU
-         dVwNs+ZCerEYbOg45w7UYYLixBM2CbHkBDvT80VOQZCglZoEQDqqFHhmGHexg7wLDjKH
-         dwidHE+9u/Qqc/ZjBKywjSP+b7eto8KN5KoUI5cL/eSVRiUi9+a4YNFvdbLp0UHLJ6sl
-         gO3VAnOCQ8U/s+ZJg38eYK/md92XTywwgTsnnIKU+jdNd8yLoqJqnpyW7AhFA1JN3Ctq
-         CMQg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/hsAXJnvDhdGEYHdFVs6ZsPQJBxXOr6Vkrm8tN3jfKA=;
+        b=Tc+9bReccTVcBJtXvSY5mXWo22AMO3N8kNZU9IGYfInuNngCZLGFa+77IyML9bvQap
+         8EbYh6StnB4lQNlNFkXwboIWTGEYJUN+XRd37H4mZvzm8mNjHfhZAP3dzx68H+Ruhtoh
+         To5rioRaL08Mf1VEWMRF6CVw7fHwiJ2VtK8qmnY1wBiYD1vwDaKkvXPULo3j+Bpum0CD
+         /GTmhyScpq+yLip7FgWN+TuGHItcdRtIK55JQLBMS1F7x0yHw6eJDQKlqdduUMq6QQq8
+         ru1ny0Sc/pKdkCXhm6PF7A35Z5CgqbnKBHNbIT3Z8P4dvfVb2wc4K73IeK7N1NhoUFDq
+         uR/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LNVXeM54MuUTzkxW4S+h/avYMDRiH1JNQoeYcnCHBhM=;
-        b=YtF7dpNtfPfZa1SXptYTYL9hcFPrPiSMdUv1BY6KhCEewwa1x91h+fwB6SDxDd9U0H
-         ro57FM+10IY2QsIH4qTCMIAaPlwRaLLLHkSwMO3mstWjl6KG5Fntqj0rgF+b4OLqiaKU
-         IaWVsmcAkgqyZwtOznrlhwaMhgVkGs8OJe5BfQqVNOsyNiBVqpyK1inWITlFWsYh6Hvs
-         16S6RJ+XolwG1pXMqXMyboJln2Togf3rcr+YEiVPPEaNPD1JEOz1fG94peM8T/pTDn1T
-         K9amRwijT11dIEYPL1M7thG0M0scBlx0TKDPsI+keR3TCinkVKWU7yupdzKZBATOY6U3
-         LovQ==
-X-Gm-Message-State: ACrzQf3Zj+37F4kjZsvLcDSDlJySfEou+TW+xL9iTjw6ip//W1QLD/To
-        K9VV+8K/GfN/IuadLruLjMsUzPFQESWwDhpQfNRF1Q==
-X-Google-Smtp-Source: AMsMyM7E0Zchl09puiKKoBotMVhULOKYzE0S/e35EOJ4h3CGvH2Wc0rTF+zAD6m+BsOpLEKYent2ulN8cXV4ms8GFBg=
-X-Received: by 2002:a05:6402:1d55:b0:45f:c87f:c753 with SMTP id
- dz21-20020a0564021d5500b0045fc87fc753mr14243568edb.32.1666447356997; Sat, 22
- Oct 2022 07:02:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221021202254.4142411-1-arnd@kernel.org> <20221021203329.4143397-2-arnd@kernel.org>
-In-Reply-To: <20221021203329.4143397-2-arnd@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 22 Oct 2022 16:02:25 +0200
-Message-ID: <CACRpkdacViTuL_gmhWULNm7HCHQeGBXwkonDxQjubSM0=v8vgw@mail.gmail.com>
-Subject: Re: [PATCH 02/21] ARM: s3c: remove s3c24xx specific hacks
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>,
-        Simtec Linux Team <linux@simtec.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Sylwester Nawrocki <sylvester.nawrocki@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        bh=/hsAXJnvDhdGEYHdFVs6ZsPQJBxXOr6Vkrm8tN3jfKA=;
+        b=22fN4QZtYoLxPlZ3ofXD8lLhyT+fjmLbIYjqQl6SRlBI6rwkx/QiApawJ6t8Jc9ScS
+         P4hX3lCeKtoBB5dFm+0DX97GT8xXop93OUCaWbmGrKd8kFehfqtZprYdrD3tswD7zW06
+         4Oqe1dLMAbQ7pM1KLPkEgTV4c3T5Mlq24jF33oiNP2q7adUGSzT0zcuHe8dNWa3ej7ma
+         Jjew0+oYwWgXnuyXQRupAknvSD3euRRFav425MK1a1dzsP2VZds6/vKgo3f5bQqsc41n
+         zcdfgQYRrYb0q/G0PqZdBKOnicCY/jACqJxqBiVtav4lPgWGD9Ilty/JwvyAY4ZLDJH+
+         1ylg==
+X-Gm-Message-State: ACrzQf2V4otrOJtgMO5cs3Mk1DJzt46m7k4fw4sus2b4bVX7f4Hw+Ouc
+        8zeTQCzpdUt+b2hy9SoWalZfzCU/v+RA8w==
+X-Google-Smtp-Source: AMsMyM4qRLdYWNzPMwjl8hrKdsHi/Oaq15mHY7N4nVs1JJZEkRpfPIotfOL1ELU3HhrVpOqcLmT/lw==
+X-Received: by 2002:adf:e5c3:0:b0:236:5092:7cfc with SMTP id a3-20020adfe5c3000000b0023650927cfcmr6507269wrn.285.1666451579537;
+        Sat, 22 Oct 2022 08:12:59 -0700 (PDT)
+Received: from hp-power-15.localdomain (mm-133-18-212-37.vitebsk.dynamic.pppoe.byfly.by. [37.212.18.133])
+        by smtp.gmail.com with ESMTPSA id u11-20020adff88b000000b0022e2eaa2bdcsm21310581wrp.98.2022.10.22.08.12.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Oct 2022 08:12:59 -0700 (PDT)
+From:   Siarhei Volkau <lis8215@gmail.com>
+Cc:     Siarhei Volkau <lis8215@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: [PATCH v2 0/2] serial: 8250/ingenic: Add support for the JZ4750
+Date:   Sat, 22 Oct 2022 18:12:22 +0300
+Message-Id: <20221022151224.4000238-1-lis8215@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 10:37 PM Arnd Bergmann <arnd@kernel.org> wrote:
+JZ4750 and JZ4755 have an extra clock divisor in CGU called CPCCR.ECS.
+It needs to be handled properly in the early console driver.
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> A number of device drivers reference CONFIG_ARM_S3C24XX_CPUFREQ or
-> similar symbols that are no longer available with the platform gone,
-> though the drivers themselves are still used on newer platforms,
-> so remove these hacks.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+V1 diff:
+ - splitted into separate patchset
+ - code refactored to avoid peek in CGU register
+ - Krzysztof's ack picked
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Siarhei Volkau (2):
+  dt-bindings: serial: ingenic: Add support for the JZ4750/55 SoCs
+  serial: 8250/ingenic: Add support for the JZ4750/JZ4755
 
-Yours,
-Linus Walleij
+ .../bindings/serial/ingenic,uart.yaml         |  4 ++
+ drivers/tty/serial/8250/8250_ingenic.c        | 50 ++++++++++++++++---
+ 2 files changed, 47 insertions(+), 7 deletions(-)
+
+-- 
+2.36.1
+
