@@ -2,86 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5E3ECDFA1
-	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 16:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8736AECDFA1
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 16:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiJVQfz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 22 Oct 2022 12:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        id S229882AbiJVQvB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Oct 2022 12:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiJVQfs (ORCPT
+        with ESMTP id S229449AbiJVQu7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 22 Oct 2022 12:35:48 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01544170DDA
-        for <linux-serial@vger.kernel.org>; Sat, 22 Oct 2022 09:35:44 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id l5so6593369oif.7
-        for <linux-serial@vger.kernel.org>; Sat, 22 Oct 2022 09:35:44 -0700 (PDT)
+        Sat, 22 Oct 2022 12:50:59 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B071863C8;
+        Sat, 22 Oct 2022 09:50:58 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id bp11so8982234wrb.9;
+        Sat, 22 Oct 2022 09:50:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1wTwC4Ee6yw0NAAZ3SkjkNV3Oq2jYBO7PuK3CzZZRGg=;
-        b=HBvmicl1Fwkf7MAHF6WZTpDH21RnSjby85piUzyf1FMvYVRuNRNsMXaPW0Q75DjlGr
-         IM93T0ucFwz1Y3iEYTgTbNraq5+JVZItTmOBBGpPJTxLrSHqwRsf5e9uNMxMeiP1r2Dp
-         VrRGZTQ0pBEKBujkHQhsXE823QFI/+t1tnRMW+B6Lgvxd3EOZwjW88xmGreLn/DiVBvY
-         tikviqf4KA4MNmvHi24AKn0qnqHU0PPPCAag5ZeqOM2w5z53xLMJqw63o2PvMENvjwv/
-         jNOfDSJ99fCTwHzoMzitJDMzFyjgHsgLe8FDKzIQbf7DgeJQzmxbiXvtQviX2sfkkcgC
-         zdbA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OL5w9hmJ5NSe0NhK9baWxvFR9c+SkOOF47EHeGtVWKI=;
+        b=kDnGOGLqU/iKq3uvUZT8yXHDHpzKdqkPUjXULyVdzDgvAr+j8CPsJM8OjEp+lDdwFd
+         GBS1XrXznRRJ1q/6un2m1L1KLxGdGwmciUHhAQcdts/EyNZGGqsYAQ/h8ZkdCLFluASz
+         Nn43F0QKXUl/Zb7nweXzO9tPHe1VBjzc+eYy6s1NOlBgIDC4zvE7iRBME6IfKW13Rthd
+         CQa3YENA9ia9T6vaLw8GMEHF4v8pM7dINo+kUSGgJbtH9V+yPujzpXbIlHISTZYpu7YI
+         0e5A9tudbDId9Xm9QBW2FMW3V86cTnOk6hcYTn/CtGHtLhwk3D5dRT0MTpYqOJPOGaQI
+         0PoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1wTwC4Ee6yw0NAAZ3SkjkNV3Oq2jYBO7PuK3CzZZRGg=;
-        b=BlTx8vUkVf6aom2XcI4G+WMS90xn07nLmDqSsbqEMQoh8va4WHDcFKvGxQdoPZiAvy
-         THglvTAAUIItki/I6cgp8sStz7MLMPxEzPdjSWk1rmWCedtJnQs3q7H9wgzIkBSg0+Tl
-         XOcnzQ8BFDMFvKB9QuRDFOV5d6/q7RtD0ipnF78Ia9cG7cMcbO6JjLY+YCW8GZPTA2Wd
-         UH9SdVCtvh5+rIwpAqYmRDHfC5tm7G9ulUZqZqfNKKZ2DOWN7obNj46DybwM2RP6X+dF
-         D2R0/VK+lKr3F7RQqCjRWwGMdDP+j/WOp3kVWn8S3MQ9rWeSILOWTPcYU93sjdvXRBeY
-         z/KA==
-X-Gm-Message-State: ACrzQf2gvkKF6tBmf8A5LiieCrZIJFffLgBIfvOuyFcPHi3L77R3ZN4k
-        N0BF6QsNFMuAKRUoDOb+cbD9Fg==
-X-Google-Smtp-Source: AMsMyM4o1osNu1n8drC4opFnWuBRqFxagfUvCY9kQrp6vhkVG0J46HyKHZ9MgpJvekJSSjd9/ktGog==
-X-Received: by 2002:a05:6808:1717:b0:334:9342:63f1 with SMTP id bc23-20020a056808171700b00334934263f1mr29244965oib.77.1666456543234;
-        Sat, 22 Oct 2022 09:35:43 -0700 (PDT)
-Received: from [10.203.8.70] ([205.153.95.177])
-        by smtp.gmail.com with ESMTPSA id c6-20020a056830314600b0066195c63f01sm2465033ots.12.2022.10.22.09.35.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 22 Oct 2022 09:35:42 -0700 (PDT)
-Message-ID: <d0a212ad-1f01-a824-594c-78c5424d5648@linaro.org>
-Date:   Sat, 22 Oct 2022 12:35:40 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH] dt-bindings: serial: renesas,scif: Document r8a779g0
- support
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OL5w9hmJ5NSe0NhK9baWxvFR9c+SkOOF47EHeGtVWKI=;
+        b=AcHN+/0cxGZ6rCy7MuwBtjWdokwVl57kVD3kWFTGU5/VuRlpjn1EarU60h8hxOFC++
+         dH0FJFFT3mvaLSQyz35FGqil8Yn7e3r1lXgZbdE+J/xEzzRMFIQ9zKhSsr6AirWL8/VU
+         N3aZwVh4RuQWy5bumNqKvf//O4/tPTi4XZ5H/vcXXG7zAPDZpf5pdydZ0EyRSx+18y8s
+         Kjq2rq/blKbz6Jm7HfatbNbJ1SFNxvpI72ofLNh7DzO4crApiCqUq10rHyl4t4QNHBIx
+         CnzJH1LwHqvIi5YzrNy/Fhu1zDyr6kp+8r3iGMbJ8d9RrDXrxAHZVLi+6/D/VvnmYgVJ
+         R4zQ==
+X-Gm-Message-State: ACrzQf2QNH2ZyWa9+1hCdsVtahPdCBEi8P3gTpVPsE/ZAr952KsXTUga
+        4kZ0EGxXAENXER3n3XiRjvA=
+X-Google-Smtp-Source: AMsMyM58OR9oKXrGb18IoJyXHD00j6PpC8jKGB4e5Z8i7rJAM3+JsmJMsMq6A4A29V5ErDMgfBT7SA==
+X-Received: by 2002:a05:6000:510:b0:235:e5de:8da0 with SMTP id a16-20020a056000051000b00235e5de8da0mr9461523wrf.416.1666457456896;
+        Sat, 22 Oct 2022 09:50:56 -0700 (PDT)
+Received: from hp-power-15.localdomain (mm-133-18-212-37.vitebsk.dynamic.pppoe.byfly.by. [37.212.18.133])
+        by smtp.gmail.com with ESMTPSA id h22-20020a05600c351600b003c7084d072csm3196787wmq.28.2022.10.22.09.50.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Oct 2022 09:50:56 -0700 (PDT)
+From:   Siarhei Volkau <lis8215@gmail.com>
+Cc:     Siarhei Volkau <lis8215@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <8a2d04651f04a97d652395b4d933af5c3c8d5b5b.1666360789.git.geert+renesas@glider.be>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <8a2d04651f04a97d652395b4d933af5c3c8d5b5b.1666360789.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: [PATCH v3 0/2] serial: 8250/ingenic: Add support for the JZ4750
+Date:   Sat, 22 Oct 2022 19:50:45 +0300
+Message-Id: <20221022165047.4020785-1-lis8215@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21/10/2022 10:02, Geert Uytterhoeven wrote:
-> Document support for the Serial Communication Interface with FIFO (SCIF)
-> in the Renesas R-Car V4H (R8A779G0) SoC.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+JZ4750 and JZ4755 have an extra clock divisor in CGU called CPCCR.ECS.
+It needs to be handled properly in the early console driver.
 
+v3:
+ - fix build errors
+v2:
+ - serial moved into separate patchset
+ - code refactored to avoid peek in CGU register
+ - Krzysztof's ack picked
+v1:
+ - big patchset for the whole JZ4755 support
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Siarhei Volkau (2):
+  dt-bindings: serial: ingenic: Add support for the JZ4750/55 SoCs
+  serial: 8250/ingenic: Add support for the JZ4750/JZ4755
 
-Best regards,
-Krzysztof
+ .../bindings/serial/ingenic,uart.yaml         |  4 ++
+ drivers/tty/serial/8250/8250_ingenic.c        | 48 ++++++++++++++++---
+ 2 files changed, 46 insertions(+), 6 deletions(-)
+
+-- 
+2.36.1
 
