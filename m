@@ -2,97 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2632FC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Oct 2022 22:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1059FFA3745
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Oct 2022 11:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbiJUWem (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Oct 2022 18:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        id S230074AbiJVLhz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Oct 2022 07:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbiJUWel (ORCPT
+        with ESMTP id S230020AbiJVLhi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Oct 2022 18:34:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600D8E0D3;
-        Fri, 21 Oct 2022 15:34:39 -0700 (PDT)
+        Sat, 22 Oct 2022 07:37:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F30DF9;
+        Sat, 22 Oct 2022 04:24:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B72CFB82CAD;
-        Fri, 21 Oct 2022 22:34:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91434C433C1;
-        Fri, 21 Oct 2022 22:34:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666391676;
-        bh=prLeAf2ItsWJEmbqEjaM5pwP4sQzp/lQoV0fdaws78s=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3920260D34;
+        Sat, 22 Oct 2022 11:24:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED202C433C1;
+        Sat, 22 Oct 2022 11:24:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1666437854;
+        bh=QlHVwvQAZAIgvjk8abE10EkrdDUL7r/AigVC5ALYQK4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t5TtIhEjokM2OHeKhxVRvBDslLnI7wnxwv6+sYUv3MQaW+ZjTqUQ0f2FnxI3q9CyX
-         Dnt39CIDHgJFtHSZIshbbblKksPyRPY5qIFFzPwCCDpsGD78nnyaXbRzBovAfNjwwV
-         YkBD1oyAOLHsJmyqWMch8Dt6YYGhsKio/fNP/rcOdwrAwOawtmpYjsOT6W2G0TokIP
-         YQqdoM7j6uMHpRA23rNTLnsYf+5UNbkevXw3GFBDeYdd8m97HscCh3eoUHXxjrd22d
-         M/BKDUTJw/FQv0JHA0zkseLf3mNARSm1kb27q4/WXNe7O+cLzqobzi3mnrkug+HRJP
-         NuJIQEpcOHlUw==
-Date:   Sat, 22 Oct 2022 00:34:32 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: renesas,scif: Document r8a779g0
- support
-Message-ID: <Y1MeeKRs+a4J+0zM@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <8a2d04651f04a97d652395b4d933af5c3c8d5b5b.1666360789.git.geert+renesas@glider.be>
+        b=un1PldCoLSJ88cWZRYnjm5Oi1KiCHJHB0LueFTTYXn8D7fIAxS0vK6V48SeMy9VdW
+         ZuWEiHtsrYztxbCEB+Ntyz+QhjY7UYniFteggfYw/ntXKMozNoEsqsq66wk3rOhU3K
+         hzsEaBZQY3uGlKbG/0kkX3FnGtw/tJtrFvWLyT24=
+Date:   Sat, 22 Oct 2022 13:24:12 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Sylwester Nawrocki <sylvester.nawrocki@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: Re: [PATCH 02/21] ARM: s3c: remove s3c24xx specific hacks
+Message-ID: <Y1PS3A75mXIEb+MA@kroah.com>
+References: <20221021202254.4142411-1-arnd@kernel.org>
+ <20221021203329.4143397-2-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="c1Ew6U8+PLXNDYdQ"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8a2d04651f04a97d652395b4d933af5c3c8d5b5b.1666360789.git.geert+renesas@glider.be>
+In-Reply-To: <20221021203329.4143397-2-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Fri, Oct 21, 2022 at 10:27:35PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> A number of device drivers reference CONFIG_ARM_S3C24XX_CPUFREQ or
+> similar symbols that are no longer available with the platform gone,
+> though the drivers themselves are still used on newer platforms,
+> so remove these hacks.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
---c1Ew6U8+PLXNDYdQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Oct 21, 2022 at 04:02:16PM +0200, Geert Uytterhoeven wrote:
-> Document support for the Serial Communication Interface with FIFO (SCIF)
-> in the Renesas R-Car V4H (R8A779G0) SoC.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-
---c1Ew6U8+PLXNDYdQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmNTHngACgkQFA3kzBSg
-KbbYHhAAljl8BJDNghhM24PiJHIK/iAltOMpntNOca1YnWDaemx72fGXMn0DLSTG
-5sSktrXMxYVTopAEimP87lUwe4fKeTTfzQl98DqDTBxZ0Xzmbzb73U/KnoFd7bdj
-PCnal18q6N1v8V/LH+EiDgbl7R4F26oFLwl8BTF1xKtx2GzfUUe+QAiEN3tn0VnR
-fEkICnmBa5NGkXGSoOBRv7rW6lI6g0zzPlCv+Q98Y4tR9fGUw0EZWGv0ENg55sId
-rTVacsC7QssPvK8GgLMtiCL1lG4JDxvZFh1kowR1Vs9c+w50PGEFM1iAeAvEe3X3
-dypmy2BP7uXu23EHsoxnBCRnlVzACCOHpLPAJoch3txchS/4Gji3YVa9fHZmAdW3
-DuhxOkYmBpAlCpkziVLILKY3NQggjrhNuNpwk8Y5FW/c4cGL7OV8W1N3NHdA/vbU
-+J50tlARYwnPbLeLua8TxFQVbAXLokGTEBkRKZUDy/wJY9U0GG/SPzPfJn2nwRDL
-0jO1Lp6L71PG+++E6OtO4oNy9N23N4jJ11ia07ovKyxqna7uco8OtSGqL/g2eIeX
-DQEbc4SV3IPsOyre7c1fxZjCeyoOGhGn4fIGFegy8NQFap2HA+HMGeyQJXeB3y0+
-snomh8MWnUpnEWxwwYwRye839fbgxSmj+/Fc7maSR8oFhtE3FqA=
-=qDQr
------END PGP SIGNATURE-----
-
---c1Ew6U8+PLXNDYdQ--
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
