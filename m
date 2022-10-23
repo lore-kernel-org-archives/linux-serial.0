@@ -2,96 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B536FECAAA1
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Oct 2022 14:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C6DFA373E
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Oct 2022 15:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiJWOFF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Oct 2022 10:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60508 "EHLO
+        id S230136AbiJWPQQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 23 Oct 2022 11:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiJWOFD (ORCPT
+        with ESMTP id S229867AbiJWPQP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Oct 2022 10:05:03 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DDD3CBDB;
-        Sun, 23 Oct 2022 07:05:01 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id q196so5865957iod.8;
-        Sun, 23 Oct 2022 07:05:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=76WT1QUpKp6qzBWxcrAq0oJH066G81f6FsGzE6bBFSs=;
-        b=YCveSy386BWW6vtgM4Gl4qo86kzmCFKxTDd8P8Z/Xff54DECtU+F59LnPAUbUy+hj2
-         n+b7/EZTNnalwh7RFLRSlNrGTyBWrNYbEEjoYGnYJhoDRn2q6XHV3If+3GqW/oRF/Gix
-         tHpUPPjZNri0cjmT2JymTGYvSIHbHH9VjN+bah4iTc+3J0qw00lQ4vxlwDuzhvzY3i07
-         0ZOiApcdkLFcPBGJEMP+PDLJ1SGMNBG5gk65WJmA4H6nO60iFUeFeI9aaCC8hefql2MK
-         hnpb147iTx1v8lem7jcgiJcna4L3BhSJA3z1HR36kUBujRYquM7VAqJz3fBfFv9kvRIX
-         NR/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=76WT1QUpKp6qzBWxcrAq0oJH066G81f6FsGzE6bBFSs=;
-        b=wc7lsKPRq2SH3JXj3iCurm/Vo/fvik4cBtCWmU2WvEhkyQh0gL/9OPcapHsy7WLRf2
-         S5TT1Hvs6RmCB4DxUDSYPpRZukwtxxW3ld91w0PXJv+pAIvvNbfWsmidhEX0do/vYoaq
-         9zJaKFVOfhU2G5UlAqK1Ot94QMbv9xPpnJ+Luqv1Pv43OaUMMpTlkU/bq+CEtWxnaB19
-         /0avBEhG8kxu4tBlv/hWN+5rKqtrqJ+fq0kZRh6wg3RcCRUVQijdut7UcoyH/0ZEz0BE
-         +cMh8S7nGh5qFvsgadDwCwgX3gc5+GwjDMs9/sfJjqw6HsM4OSa4hV8QXutXGeFL9ELE
-         P7ZA==
-X-Gm-Message-State: ACrzQf39ayXc1D7J+GfzzKv7iKSEwKjmfI4oWmRZ0H+F5dgBPGh/GKKK
-        o3K20KtCyMaQSncBJgjjkwDKa/al9Vi2Z5eW4lU=
-X-Google-Smtp-Source: AMsMyM7W3X3wIg3V7xQwyIZDSWHweIf+MTIvPNcn+4KD4Cv8bwRhrdVqGCe6Q0OANw7dZKAyvozgR4ieGXSa+ABXqmM=
-X-Received: by 2002:a6b:6716:0:b0:6bc:113c:22a2 with SMTP id
- b22-20020a6b6716000000b006bc113c22a2mr17383571ioc.12.1666533901020; Sun, 23
- Oct 2022 07:05:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221022165047.4020785-1-lis8215@gmail.com> <20221022165047.4020785-3-lis8215@gmail.com>
- <9W76KR.NVDSVG4IWZ3A3@crapouillou.net> <CAKNVLfZmUpFzKsdzY1e_mUTVsM-jnL65Fi6EXYcF80-oNV+DGQ@mail.gmail.com>
- <YE87KR.VC65A15U1PH41@crapouillou.net>
-In-Reply-To: <YE87KR.VC65A15U1PH41@crapouillou.net>
-From:   Siarhei Volkau <lis8215@gmail.com>
-Date:   Sun, 23 Oct 2022 17:04:49 +0300
-Message-ID: <CAKNVLfbJaGd0t==AzxyT5Q7fVD7PwK75-S5dbb+G9GZUPpagZQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] serial: 8250/ingenic: Add support for the JZ4750/JZ4755
-To:     Paul Cercueil <paul@crapouillou.net>
+        Sun, 23 Oct 2022 11:16:15 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2416556C;
+        Sun, 23 Oct 2022 08:16:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1666538169; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=76gz1YSbuUIA+tLdwL/4i5a5zfRt4Nv9mdTm/uPed3w=;
+        b=UlzyMNfvxSOmsLFTbpmCgLzlm2t9lt6VDAnPrCvAKxKuPoUcNOKhtEwnaboUeHB4d5tTfe
+        C9xIxNS1OEVeLBs8lNjsFdpeW0L+Zd1F04C8HQinUJl2Fl0S/RoInmia/68XJaTXapOIXb
+        tinDxuX0iCncdtoF63UIOpSF9qTqA30=
+Date:   Sun, 23 Oct 2022 16:15:58 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3 2/2] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755
+To:     Siarhei Volkau <lis8215@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Message-Id: <M2P7KR.MNWZYPK0OB5B@crapouillou.net>
+In-Reply-To: <CAKNVLfbJaGd0t==AzxyT5Q7fVD7PwK75-S5dbb+G9GZUPpagZQ@mail.gmail.com>
+References: <20221022165047.4020785-1-lis8215@gmail.com>
+        <20221022165047.4020785-3-lis8215@gmail.com>
+        <9W76KR.NVDSVG4IWZ3A3@crapouillou.net>
+        <CAKNVLfZmUpFzKsdzY1e_mUTVsM-jnL65Fi6EXYcF80-oNV+DGQ@mail.gmail.com>
+        <YE87KR.VC65A15U1PH41@crapouillou.net>
+        <CAKNVLfbJaGd0t==AzxyT5Q7fVD7PwK75-S5dbb+G9GZUPpagZQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-=D0=B2=D1=81, 23 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 12:16, Paul Cercue=
-il <paul@crapouillou.net>:
-> Do you have such hardware?
 
-No
 
-> Don't add support for cases you can't test.
+Le dim. 23 oct. 2022 =C3=A0 17:04:49 +0300, Siarhei Volkau=20
+<lis8215@gmail.com> a =C3=A9crit :
+> =D0=B2=D1=81, 23 =D0=BE=D0=BA=D1=82. 2022 =D0=B3. =D0=B2 12:16, Paul Cerc=
+ueil=20
+> <paul@crapouillou.net>:
+>>  Do you have such hardware?
+>=20
+> No
+>=20
+>>  Don't add support for cases you can't test.
+>=20
+> It's just a side effect of that approach.
+>=20
+>>  For what we know - all JZ475x use a 24 MHz crystal and all JZ4760(B)
+>>  use a 12 MHz crystal, until proven otherwise.
+>=20
+> Ouf course it just confirms the rule but I found one exception:=20
+> JZ4750 & 12MHz
+> Link:=20
+> https://github.com/carlos-wong/uboot_jz4755/blob/master/include/configs/l=
+ib4750.h
 
-It's just a side effect of that approach.
+Then when this board is upstreamed it will declare a 12 MHz oscillator=20
+in its DT, and the ingenic init code won't have to enable the /2=20
+divider for that particular board.
 
-> For what we know - all JZ475x use a 24 MHz crystal and all JZ4760(B)
-> use a 12 MHz crystal, until proven otherwise.
+> Regarding your proposal:
+> In my opinion enabling the divisor unconditionally is a bad practice,
+> as it's already enabled (or not) by the bootloader, with respect to=20
+> the
+> hardware capabilities.I think it's better to keep the driver as it is=20
+> than
+> adding such things.
 
-Ouf course it just confirms the rule but I found one exception: JZ4750 & 12=
-MHz
-Link: https://github.com/carlos-wong/uboot_jz4755/blob/master/include/confi=
-gs/lib4750.h
+Well, I disagree. Linux should not depend on whatever the bootloader=20
+configures.
 
-Regarding your proposal:
-In my opinion enabling the divisor unconditionally is a bad practice,
-as it's already enabled (or not) by the bootloader, with respect to the
-hardware capabilities.I think it's better to keep the driver as it is than
-adding such things.
+-Paul
 
-BR,
-Siarhei
+
