@@ -2,196 +2,201 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F277BFA373F
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 18:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390FDC67871
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 23:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231536AbiJXSS1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 14:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
+        id S230058AbiJXXKH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 19:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbiJXSRx (ORCPT
+        with ESMTP id S230075AbiJXXJn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 14:17:53 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C555227E075;
-        Mon, 24 Oct 2022 09:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666630758; x=1698166758;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=7ZhNkL3lvgkekoLnvkErYGzQcvxtw6NFtK0TosGfS1I=;
-  b=hzq4kgpUkV5wF8WzQiVHWt5FVS47UZa5IYGCU1ikoLFe8L46edqcJJrf
-   0QeUZ+2vkFAvyS28uP/zsIB6GTHajjPh6PA30hVl1l6pL+7tbHlPfsoUo
-   5WG2DBxGbnsPzMS03kXt8UBkbR2Ld94SmlfnzAvyLzpfhWliMqIE0LT1S
-   Ypmxu0iLhl5bQLG2cRqNn9Nehbr+ukm2+gRZ/URi6pp1Ws7fGOUBqlVpc
-   i3ik1EmxiS5vuFeInyX00ez1EMRzgo32xnxQff032kqOZ926m5PmqytGf
-   xEjlhqJ3qGIIiFBHI0fupUq0Nrn1pHLRZj5tBOWHkJO3WDvSX81G0JW7C
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="305050380"
-X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
-   d="scan'208";a="305050380"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 08:03:28 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="582443519"
-X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
-   d="scan'208";a="582443519"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 08:03:28 -0700
-Date:   Mon, 24 Oct 2022 08:03:45 -0700 (PDT)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, Lukas Wunner <lukas@wunner.de>,
-        marpagan@redhat.com,
-        Basheer Ahmed Muddebihal 
-        <basheer.ahmed.muddebihal@linux.intel.com>
-Subject: Re: [PATCH v4 2/4] fpga: dfl: Add DFHv1 Register Definitions
-In-Reply-To: <4d609218-508f-6025-e99-71aac2b01369@linux.intel.com>
-Message-ID: <alpine.DEB.2.22.394.2210240802580.2070724@rhweight-WRK1>
-References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com> <20221020212610.697729-3-matthew.gerlach@linux.intel.com> <4d609218-508f-6025-e99-71aac2b01369@linux.intel.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 24 Oct 2022 19:09:43 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA99E1905CC;
+        Mon, 24 Oct 2022 14:31:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1666645537; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1UD+7xSqDi+aiCecEHlellc6AlNFN+6Hnf+64Mwju04=;
+        b=1/RwB8pLXZAOeHRrHgf4rRHS77BqdNxIP1WQmi34UGYci7+f217kiaTRID++zeaPUCqz3g
+        Ql95hcwli5XhoLHbexC4jHVyRa51yTlAw+MYQLkn2jvjVjrlJXWSljIgvN1fy4gQYC/QdD
+        ZTw2ZfxmFDr4/9eq+to0U3GMC2WEHTc=
+Date:   Mon, 24 Oct 2022 22:05:27 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3 2/2] serial: 8250/ingenic: Add support for the
+ JZ4750/JZ4755
+To:     Siarhei Volkau <lis8215@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Message-Id: <3XZ9KR.KOUPAEJY0VWY2@crapouillou.net>
+In-Reply-To: <20221022165047.4020785-3-lis8215@gmail.com>
+References: <20221022165047.4020785-1-lis8215@gmail.com>
+        <20221022165047.4020785-3-lis8215@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-2133041476-1666623825=:2070724"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Siarhei,
 
---8323328-2133041476-1666623825=:2070724
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 8BIT
+Le sam. 22 oct. 2022 =E0 19:50:47 +0300, Siarhei Volkau=20
+<lis8215@gmail.com> a =E9crit :
+> JZ4750/55/60 (but not JZ4760b) have an extra divisor in between extclk
+> and peripheral clock, called CPCCR.ECS, the driver can't figure out=20
+> the
+> real state of the divisor without dirty hack - peek CGU CPCCR=20
+> register.
+> However, we can rely on a vendor's bootloader (u-boot 1.1.6) behavior:
+> if (extclk > 16MHz)
+>     the divisor is enabled, so the UART driving clock is extclk/2.
+>=20
+> This behavior relies on hardware differences: most boards (if not all)
+> with those SoCs have 12 or 24 MHz oscillators but many peripherals=20
+> want
+> 12Mhz to operate properly (AIC and USB-PHY at least).
+>=20
+> The patch doesn't affect JZ4760's behavior as it is subject for=20
+> another
+> patchset with re-classification of all supported ingenic UARTs.
+>=20
+> Link:=20
+> https://github.com/carlos-wong/uboot_jz4755/blob/master/cpu/mips/jz_seria=
+l.c#L158
+> Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_ingenic.c | 48=20
+> ++++++++++++++++++++++----
+>  1 file changed, 42 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_ingenic.c=20
+> b/drivers/tty/serial/8250/8250_ingenic.c
+> index 2b2f5d8d2..744705467 100644
+> --- a/drivers/tty/serial/8250/8250_ingenic.c
+> +++ b/drivers/tty/serial/8250/8250_ingenic.c
+> @@ -87,24 +87,19 @@ static void __init=20
+> ingenic_early_console_setup_clock(struct earlycon_device *dev
+>  	dev->port.uartclk =3D be32_to_cpup(prop);
+>  }
+>=20
+> -static int __init ingenic_early_console_setup(struct earlycon_device=20
+> *dev,
+> +static int __init ingenic_earlycon_setup_tail(struct earlycon_device=20
+> *dev,
+>  					      const char *opt)
+>  {
+>  	struct uart_port *port =3D &dev->port;
+>  	unsigned int divisor;
+>  	int baud =3D 115200;
+>=20
+> -	if (!dev->port.membase)
+> -		return -ENODEV;
+
+Again, as I said on your v2, you can keep this here. Then you won't=20
+have to duplicate code.
+
+> -
+>  	if (opt) {
+>  		unsigned int parity, bits, flow; /* unused for now */
+>=20
+>  		uart_parse_options(opt, &baud, &parity, &bits, &flow);
+>  	}
+>=20
+> -	ingenic_early_console_setup_clock(dev);
+> -
+>  	if (dev->baud)
+>  		baud =3D dev->baud;
+>  	divisor =3D DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
+> @@ -129,9 +124,49 @@ static int __init=20
+> ingenic_early_console_setup(struct earlycon_device *dev,
+>  	return 0;
+>  }
+>=20
+> +static int __init ingenic_early_console_setup(struct earlycon_device=20
+> *dev,
+> +					      const char *opt)
+> +{
+> +	if (!dev->port.membase)
+> +		return -ENODEV;
+> +
+> +	ingenic_early_console_setup_clock(dev);
+> +
+> +	return ingenic_earlycon_setup_tail(dev, opt);
+> +}
+> +
+> +static int __init jz4750_early_console_setup(struct earlycon_device=20
+> *dev,
+> +					     const char *opt)
+> +{
+> +	if (!dev->port.membase)
+> +		return -ENODEV;
+> +
+> +	/*
+> +	 * JZ4750/55/60 (not JZ4760b) have an extra divisor
+> +	 * between extclk and peripheral clock, the
+> +	 * driver can't figure out the real state of the
+> +	 * divisor without dirty hacks (peek CGU register).
+> +	 * However, we can rely on a vendor's behavior:
+> +	 * if (extclk > 16MHz)
+> +	 *   the divisor is enabled.
+> +	 * This behavior relies on hardware differences:
+> +	 * most boards with those SoCs have 12 or 24 MHz
+> +	 * oscillators but many peripherals want 12Mhz
+> +	 * to operate properly (AIC and USB-phy at least).
+> +	 */
+> +	ingenic_early_console_setup_clock(dev);
+> +	if (dev->port.uartclk > 16000000)
+> +		dev->port.uartclk /=3D 2;
+
+I'm OK with this code, but the comment is not very clear.
+
+What about:
+
+"JZ4750/55/60 have an optional /2 divider between the EXT oscillator=20
+and some peripherals including UART, which will be enabled if using a=20
+24 MHz oscillator, and disabled when using a 12 MHz oscillator."
+
+Cheers,
+-Paul
+
+> +
+> +	return ingenic_earlycon_setup_tail(dev, opt);
+> +}
+> +
+>  OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
+>  		    ingenic_early_console_setup);
+>=20
+> +OF_EARLYCON_DECLARE(jz4750_uart, "ingenic,jz4750-uart",
+> +		    jz4750_early_console_setup);
+> +
+>  OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
+>  		    ingenic_early_console_setup);
+>=20
+> @@ -328,6 +363,7 @@ static const struct ingenic_uart_config=20
+> x1000_uart_config =3D {
+>=20
+>  static const struct of_device_id of_match[] =3D {
+>  	{ .compatible =3D "ingenic,jz4740-uart", .data =3D &jz4740_uart_config=20
+> },
+> +	{ .compatible =3D "ingenic,jz4750-uart", .data =3D &jz4760_uart_config=20
+> },
+>  	{ .compatible =3D "ingenic,jz4760-uart", .data =3D &jz4760_uart_config=20
+> },
+>  	{ .compatible =3D "ingenic,jz4770-uart", .data =3D &jz4760_uart_config=20
+> },
+>  	{ .compatible =3D "ingenic,jz4775-uart", .data =3D &jz4760_uart_config=20
+> },
+> --
+> 2.36.1
+>=20
 
 
-
-On Fri, 21 Oct 2022, Ilpo Järvinen wrote:
-
-> On Thu, 20 Oct 2022, matthew.gerlach@linux.intel.com wrote:
->
->> From: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
->>
->> This patch adds the definitions for DFHv1 header and related register
->> bitfields.
->>
->> Signed-off-by: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
->> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->> ---
->> v4: s/MSIX/MSI_X/g
->>     move kerneldoc to implementation
->>     don't change copyright date
->>
->> v3:
->>     keep DFHv1 definitions "hidden" in drivers/fpga/dfl.h
->>
->> v2: clean up whitespace and one line comments
->>     remove extra space in commit
->>     use uniform number of digits in constants
->>     don't change copyright date because of removed content
->>
->> dfl.h s/MSIX/MSI_X/g move kerneldoc
->> ---
->>  drivers/fpga/dfl.h  | 33 +++++++++++++++++++++++++++++++++
->>  include/linux/dfl.h | 11 +++++++++++
->>  2 files changed, 44 insertions(+)
->>
->> diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
->> index 06cfcd5e84bb..45e6e1359a67 100644
->> --- a/drivers/fpga/dfl.h
->> +++ b/drivers/fpga/dfl.h
->> @@ -74,11 +74,44 @@
->>  #define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
->>  #define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
->>  #define DFH_EOL			BIT_ULL(40)		/* End of list */
->> +#define DFH_VERSION		GENMASK_ULL(59, 52)	/* DFH version */
->>  #define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
->>  #define DFH_TYPE_AFU		1
->>  #define DFH_TYPE_PRIVATE	3
->>  #define DFH_TYPE_FIU		4
->>
->> +/*
->> + * DFHv1 Register Offset definitons
->> + * In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA
->> + * as common header registers
->> + */
->> +#define DFHv1_CSR_ADDR		0x18  /* CSR Register start address */
->> +#define DFHv1_CSR_SIZE_GRP	0x20  /* Size of Reg Block and Group/tag */
->> +#define DFHv1_PARAM_HDR		0x28  /* Optional First Param header */
->> +
->> +/*
->> + * CSR Rel Bit, 1'b0 = relative (offset from feature DFH start),
->> + * 1'b1 = absolute (ARM or other non-PCIe use)
->> + */
->> +#define DFHv1_CSR_ADDR_REL	BIT_ULL(0)
->> +
->> +/* CSR Header Register Bit Definitions */
->> +#define DFHv1_CSR_ADDR_MASK       GENMASK_ULL(63, 1)  /* 63:1 of CSR address */
->> +
->> +/* CSR SIZE Goup Register Bit Definitions */
->> +#define DFHv1_CSR_SIZE_GRP_INSTANCE_ID	GENMASK_ULL(15, 0)	/* Enumeration instantiated IP */
->> +#define DFHv1_CSR_SIZE_GRP_GROUPING_ID	GENMASK_ULL(30, 16)	/* Group Features/interfaces */
->> +#define DFHv1_CSR_SIZE_GRP_HAS_PARAMS	BIT_ULL(31)		/* Presence of Parameters */
->> +#define DFHv1_CSR_SIZE_GRP_SIZE		GENMASK_ULL(63, 32)	/* Size of CSR Block in bytes */
->
-> SIZE -> SZ would remove two letters w/o loss of info (remember to
-> rename the offset too if you make this change).
->
->> +/* PARAM Header Register Bit Definitions */
->> +#define DFHv1_PARAM_HDR_ID		GENMASK_ULL(15, 0) /* Id of this Param  */
->> +#define DFHv1_PARAM_HDR_VERSION		GENMASK_ULL(31, 16) /* Version Param */
->> +#define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 32) /* Offset of next Param */
->> +#define DFHv1_PARAM_HDR_NEXT_EOL	BIT_ULL(0)
->> +#define DFHv1_PARAM_HDR_NEXT_MASK	GENMASK_ULL(1, 0)
->> +#define DFHv1_PARAM_DATA		0x08  /* Offset of Param data from Param header */
->> +
->>  /* Next AFU Register Bitfield */
->>  #define NEXT_AFU_NEXT_DFH_OFST	GENMASK_ULL(23, 0)	/* Offset to next AFU */
->>
->> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
->> index 431636a0dc78..fea9e16d35b6 100644
->> --- a/include/linux/dfl.h
->> +++ b/include/linux/dfl.h
->> @@ -11,6 +11,17 @@
->>  #include <linux/device.h>
->>  #include <linux/mod_devicetable.h>
->>
->> +#define DFHv1_PARAM_ID_MSI_X		0x1
->> +#define DFHv1_PARAM_MSI_X_STARTV	0x0
->> +#define DFHv1_PARAM_MSI_X_NUMV		0x4
->> +
->> +#define DFHv1_PARAM_ID_CLK_FRQ    0x2
->> +#define DFHv1_PARAM_ID_FIFO_LEN   0x3
->> +
->> +#define DFHv1_PARAM_ID_REG_LAYOUT 0x4
->> +#define DFHv1_PARAM_ID_REG_WIDTH  GENMASK_ULL(63, 32)
->> +#define DFHv1_PARAM_ID_REG_SHIFT  GENMASK_ULL(31, 0)
->
-> Any particular reason why MSI_X parameters are given as offsets and
-> these REG_LAYOUT ones as bitfields (both are 32-bit)?
-
-I agree that it would be much better to be consistent.
-
->
-> The naming here would indicate that DFHv1_PARAM_ID_REG_WIDTH is one of the
-> parameters but it's part of param data instead. I suppose you'd want
-> DFHv1_PARAM_REG_LAYOUT_WIDTH instead.
-
-Thanks for the naming suggestions.
-
->
-> -- 
-> i.
->
->
---8323328-2133041476-1666623825=:2070724--
