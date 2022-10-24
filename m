@@ -2,84 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8869BC38A2D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 05:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B467FC38A2D
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 05:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbiJXFWS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 01:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
+        id S229556AbiJXF2g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 01:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiJXFWR (ORCPT
+        with ESMTP id S229562AbiJXF2g (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 01:22:17 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9890647D8
-        for <linux-serial@vger.kernel.org>; Sun, 23 Oct 2022 22:22:14 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso5530052pjc.0
-        for <linux-serial@vger.kernel.org>; Sun, 23 Oct 2022 22:22:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XkglCD++rBAhdxJENjRjV84ieq2zA95yE5d2YHv3MX0=;
-        b=JiBw3jcj5dZjnLXiFYmma44ug6rDhKqzzO2PeInT/NL0kLYWKOAomexSB2z1lQL+CA
-         c+x19Orgq18ANdKDFm60I4FNtW/2TzibSnc/tCubjhP8rVCWMzti4UMe285iZqliuvl0
-         udO1sl4xsvMqikTC7S+p1trak7bUt1GuOZ+BY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XkglCD++rBAhdxJENjRjV84ieq2zA95yE5d2YHv3MX0=;
-        b=Iw1yZqSiP6dW0ArPgmVKz1TfUJzrvdRV8x2bc3gEThsvUlJuYcgdIhIaKAxkAxL6qD
-         OqxkIK9EdcZ6poc8t5C5lKjo5QlaBDwqVWE9E8EaYtdWx8MsmtELqWxnCkPrXTinyyiZ
-         8nH7SBtBZvL8Wb2KcAl7W8NE4oSdsXYyQRbErf0mibGXM8PjZ6HOFbNfPuS6wPuIaHHq
-         9SmJInGxF6+gSFBrmcyayLVmF0RcNeYf4QikBhAg2xAJ4b7enWTdmnEg0MfH/Mp2QAfn
-         7CDjd0VFyt6FDeda5Jyf3y9p8/VmcA6DPe+rgvW2qMI0T8bHS7a2r0S87PmdtxxgclfR
-         p7rA==
-X-Gm-Message-State: ACrzQf3HZO5ajFOGvSmGb+GlnFhxI1BL7IXivitinCtCG+G3/qMv+O9z
-        1IA3oxVZSQUYBanBYrhOfcUsYw==
-X-Google-Smtp-Source: AMsMyM63AapOxi4cQFnaRsxgJpIJLodlUlAw26IgKyPUf7Uk5QLSRVJ5YYvF7MVj77tlMmuvRTVJqA==
-X-Received: by 2002:a17:90b:11d4:b0:212:ee83:481 with SMTP id gv20-20020a17090b11d400b00212ee830481mr9470051pjb.36.1666588934331;
-        Sun, 23 Oct 2022 22:22:14 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:7f0e:f6a4:8d85:37e4])
-        by smtp.gmail.com with ESMTPSA id y26-20020aa79e1a000000b0056203db46ffsm8571912pfq.172.2022.10.23.22.22.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Oct 2022 22:22:13 -0700 (PDT)
-Date:   Mon, 24 Oct 2022 14:22:08 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
+        Mon, 24 Oct 2022 01:28:36 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7DEC7B29E;
+        Sun, 23 Oct 2022 22:28:34 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id F082D822A;
+        Mon, 24 Oct 2022 05:19:19 +0000 (UTC)
+Date:   Mon, 24 Oct 2022 08:28:32 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v2 01/38] serial: kgdboc: Lock console list in
- probe function
-Message-ID: <Y1YhAA9T5edwFnu4@google.com>
-References: <20221019145600.1282823-1-john.ogness@linutronix.de>
- <20221019145600.1282823-2-john.ogness@linutronix.de>
+        Peter Hurley <peter@hurleysoftware.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, Nishanth Menon <nm@ti.com>,
+        linux-omap@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_omap: remove wait loop from Errata i202
+ workaround
+Message-ID: <Y1YigD1lEWRbT8eH@atomide.com>
+References: <20221013112339.2540767-1-matthias.schiffer@ew.tq-group.com>
+ <ea90b0ba-61bf-e56e-5120-9771122838cf@linux.intel.com>
+ <Y00bmec4hvWxtnB5@linutronix.de>
+ <c91216ec-c7e7-df7b-463-ec17c76b7bc2@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20221019145600.1282823-2-john.ogness@linutronix.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c91216ec-c7e7-df7b-463-ec17c76b7bc2@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On (22/10/19 17:01), John Ogness wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Unprotected list walks are not necessarily safe.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
+Hi,
 
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Adding Nishanth to Cc also.
+
+* Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [221017 12:06]:
+> On Mon, 17 Oct 2022, Sebastian Andrzej Siewior wrote:
+> 
+> > On 2022-10-17 11:12:41 [+0300], Ilpo Järvinen wrote:
+> > > On Thu, 13 Oct 2022, Matthias Schiffer wrote:
+> > > 
+> > > > We were occasionally seeing the "Errata i202: timedout" on an AM335x
+> > > > board when repeatedly opening and closing a UART connected to an active
+> > > > sender. As new input may arrive at any time, it is possible to miss the
+> > > > "RX FIFO empty" condition, forcing the loop to wait until it times out.
+> > > 
+> > > I can see this problem could occur and why your patch fixes it.
+> > > 
+> > > > Nothing in the i202 Advisory states that such a wait is even necessary;
+> > > > other FIFO clear functions like serial8250_clear_fifos() do not wait
+> > > > either. For this reason, it seems safe to remove the wait, fixing the
+> > > > mentioned issue.
+> > > 
+> > > Checking the commit that added this driver and the loop along with it, 
+> > > there was no information why it would be needed there either.
+> > 
+> > I don't remember all the details but I do remember that I never hit it.
+> > The idea back then was to document what appears the problem and then
+> > once there is a reproducer address it _or_ when there is another problem
+> > check if it aligns with the output here (so that _this_ problem's origin
+> > could be this). This was part of address all known chip erratas and
+> > copied from omap-serial at the time so that the 8250 does not miss
+> > anything.
+> > Looking closer, this is still part of the omap-serial driver and it was
+> > introduced in commit
+> >    0003450964357 ("omap2/3/4: serial: errata i202: fix for MDR1 access")
+> 
+> I found that one too but it doesn't give any explanation for it either.
+> In fact, the wait for empty is mysteriously missing from the itemized
+> description of the workaround in the commit message.
+> 
+> > If someone found a way to trigger this output which is unrelated to the
+> > expected cause then this is clearly not helping nor intended.
+> > 
+> > I would prefer to keep the loop and replace the disturbing output with a
+> > comment describing _why_ the FIFO might remain non-empty after a flush.
+> > 
+> > In worst cases that loop causes a delay of less than 0.5ms while setting
+> > a baud rate so I doubt that this is causing a real problem.
+
+This sounds like a safe solution for me if it's needed.
+
+> > Either way I would like to see Tony's ACK before this is getting removed
+> > as suggested in this patch.
+> 
+> Thanks for chimming in.
+> 
+> I went to do some lore searching and came across this thread (it should 
+> be added with Link: tag the patch regardless of its final form):
+>   https://lore.kernel.org/linux-omap/4BBF61FE.3060807@ti.com/
+
+Nishanth, do you have any more info on checking for fifo empty here?
+
+Regards,
+
+Tony
