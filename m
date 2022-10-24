@@ -2,152 +2,166 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D026C38A2D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 17:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C7CFA374E
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 18:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbiJXRXX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 13:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S232880AbiJXSM4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 14:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiJXRXD (ORCPT
+        with ESMTP id S231854AbiJXSMU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 13:23:03 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2930B10D695;
-        Mon, 24 Oct 2022 08:58:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666627090; x=1698163090;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=KF8Fkwnt0swwTeTSQoG35DuMH7urFi84yTD7/k3447s=;
-  b=iWcf2MUMOWojkBMgaMng4oDsQaCoa4ey+XKqlKbxAMVfkMf+T64lJbQd
-   w/x95mYR5gWyqnZxHASCkARdEz5jIeAEwyqc65fkb+qK++twUZIe3Clgk
-   CmPpruVORq6oqDWCHqgt2csSRza/a59A/YFZ9HIs44UZ74fbIWubsj6iQ
-   IB1lqQBS1A39oOSo4OCRiumrTE0aKCtusMMq8kA4g7LVNJEfVFArHR0bS
-   o2AflkoayInpGluuQetlhYhWpjXhoC/YHOB+cw5sCnFotN58nA9TSl8b6
-   QVsQmMdyRwy58+vSon45wK+2Uohol+G0jkQp/9RfTu7TfROZvUXEc+SVg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="287840235"
-X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
-   d="scan'208";a="287840235"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 08:09:18 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="773850887"
-X-IronPort-AV: E=Sophos;i="5.95,209,1661842800"; 
-   d="scan'208";a="773850887"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2022 08:09:17 -0700
-Date:   Mon, 24 Oct 2022 08:09:34 -0700 (PDT)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, Lukas Wunner <lukas@wunner.de>,
-        marpagan@redhat.com
-Subject: Re: [PATCH v4 3/4] fpga: dfl: add basic support DFHv1
-In-Reply-To: <97f6047-e364-8ae7-195c-4cf33c4b3ec7@linux.intel.com>
-Message-ID: <alpine.DEB.2.22.394.2210240808400.2070724@rhweight-WRK1>
-References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com> <20221020212610.697729-4-matthew.gerlach@linux.intel.com> <97f6047-e364-8ae7-195c-4cf33c4b3ec7@linux.intel.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-2044127639-1666624175=:2070724"
+        Mon, 24 Oct 2022 14:12:20 -0400
+Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C56126C452;
+        Mon, 24 Oct 2022 09:53:44 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 011D42B066F0;
+        Mon, 24 Oct 2022 09:19:09 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute3.internal (MEProxy); Mon, 24 Oct 2022 09:19:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1666617549; x=1666624749; bh=dNk4I7ELz1
+        Q72dRob/8j+4seSTYFKAZT/RUPASjRJ5c=; b=q+NqZuUcR73y8BnZPPG5dx1Zsk
+        6km9xLqa6tEkJrornmVIrbgVsoTaG0EQRj//U3P/qs5FFUR0kQj3xsDpIMDiHNAP
+        KHymuWr00P67rJl6tNZNMaSvfwBvDXs8mjOeO+DtIb91LFvy9u7IqPZlLBHzDqVY
+        OqQ+UV/5sGJOiUEzmGUI9NOmwTaSDzu4RgOGbpc9QTg1ReluTq9aBn60FamJs6vN
+        DKIJe0X1BrhoAYInvyHnNd5GZdOejs+w4Suvb5ImKHNqRwAYBvpipR0/HvaVLckd
+        CHTLMlrLH5H5bEpdNq1ZJ2ZVvg8gjN0DzzHIiqNjzW420ViiiKKJHNZdB8zg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1666617549; x=1666624749; bh=dNk4I7ELz1Q72dRob/8j+4seSTYF
+        KAZT/RUPASjRJ5c=; b=uYEImk9/JaoBLZkHmS4JMUN51UUW3Adz4NZ33zTXfhfn
+        X2zc+bMCIXUEr4nNHo354GqKRASijikTpJx4FFU+epgcfr8J1IPlgZPNpNiYVB9M
+        w8ihE4tr46Zh/a1sL2xOLJxavoW+rkvJ5mUtViAoLX1JGrLBO17yVcJcaCCL+4DZ
+        U79zEm+ybsbN3XMbJe7XZH2qegoAJbChw5mNkbbe1D33ukaTT9FYQuJEpTpQ+3Cm
+        dcgc9DJADBfxr4sonBlprzuNuFtddjyQxgp5OFhdXtZwXkncp0R9eBa1XvUUpv5H
+        Fai3j/IlJ8ZfnHiUrjBdKzUP8vcWG93GWsi2JgpEew==
+X-ME-Sender: <xms:zZBWY4d6hZdrWDWBmQnXOunjtmGBLNtVOGtYlcpUAkqGnIq3nQ_ULg>
+    <xme:zZBWY6ORVL4inZtEZ347UGYnYKlOyas-DedRgWZhgJSTlHghoiUBMTH5Vdl7j2SlB
+    orGRM2A45E3sznwkiE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedtgedgheelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:zZBWY5jMfpgYOekZ5Xiy1zZWPWGF2N1SaGbKcsqvIIsAoksVTelYew>
+    <xmx:zZBWY98Y0Yr03VdtjC58Vfn64oQoe8znN7FH4bLecym0d8-7ie150w>
+    <xmx:zZBWY0u1N4N4cR6ZhhO6MwuQK8N3p7TbkgEiIMvu0C2hnaFTg0G-QA>
+    <xmx:zZBWY2px7fOBs4XObZs9jNKaCaM5g4TthCLLA4wr0bUEo7pzc_VBCiqJhiU>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 3DDB5B60086; Mon, 24 Oct 2022 09:19:09 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1047-g9e4af4ada4-fm-20221005.001-g9e4af4ad
+Mime-Version: 1.0
+Message-Id: <e5aa233d-526b-45ab-9acb-ab792b8686bc@app.fastmail.com>
+In-Reply-To: <20221024130035.GA1645003-robh@kernel.org>
+References: <20221021202254.4142411-1-arnd@kernel.org>
+ <20221024130035.GA1645003-robh@kernel.org>
+Date:   Mon, 24 Oct 2022 15:18:41 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Rob Herring" <robh@kernel.org>, "Arnd Bergmann" <arnd@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, "Ben Dooks" <ben-linux@fluff.org>,
+        "Simtec Linux Team" <linux@simtec.co.uk>,
+        linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, patches@opensource.cirrus.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        "linux-mmc @ vger . kernel . org" <linux-mmc@vger.kernel.org>,
+        linux-mtd@lists.infradead.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 00/21] ARM: s3c: clean out obsolete platforms
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, Oct 24, 2022, at 15:00, Rob Herring wrote:
+> On Fri, Oct 21, 2022 at 10:22:28PM +0200, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>> 
+>> The s3c24xx platform was marked as deprecated a while ago,
+>> and for the s3c64xx platform, we marked all except one legacy
+>> board file as unused.
+>> 
+>> This series removes all of those, leaving only s3c64xx support
+>> for DT based boots as well as the cragg6410 board file.
+>> 
+>> About half of the s3c specific drivers were only used on
+>> the now removed machines, so these drivers can be retired
+>> as well. I can either merge the driver removal patches through
+>> the soc tree along with the board file patches, or subsystem
+>> maintainers can pick them up into their own trees, whichever
+>> they prefer.
+>
+> [...]
+>
+>>  Documentation/arm/index.rst                   |    1 -
+>>  Documentation/arm/samsung-s3c24xx/cpufreq.rst |   77 -
+>>  .../arm/samsung-s3c24xx/eb2410itx.rst         |   59 -
+>>  Documentation/arm/samsung-s3c24xx/gpio.rst    |  172 --
+>>  Documentation/arm/samsung-s3c24xx/h1940.rst   |   41 -
+>>  Documentation/arm/samsung-s3c24xx/index.rst   |   20 -
+>>  Documentation/arm/samsung-s3c24xx/nand.rst    |   30 -
+>>  .../arm/samsung-s3c24xx/overview.rst          |  311 ---
+>>  Documentation/arm/samsung-s3c24xx/s3c2412.rst |  121 -
+>>  Documentation/arm/samsung-s3c24xx/s3c2413.rst |   22 -
+>>  .../arm/samsung-s3c24xx/smdk2440.rst          |   57 -
+>>  Documentation/arm/samsung-s3c24xx/suspend.rst |  137 --
+>>  .../arm/samsung-s3c24xx/usb-host.rst          |   91 -
+>>  Documentation/arm/samsung/overview.rst        |   13 -
+>
+> What about?:
+>
+> Documentation/devicetree/bindings/clock/samsung,s3c2410-clock.txt
+> Documentation/devicetree/bindings/interrupt-controller/samsung,s3c24xx-irq.txt
+> Documentation/devicetree/bindings/mmc/samsung,s3cmci.txt
 
---8323328-2044127639-1666624175=:2070724
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 8BIT
+Good catch!
 
+I've removed these three now and and will add the removal to
+the same patch, also the related
+samsung,s3c2412-clock.txt and samsung,s3c2443-clock.txt
+files.
 
+> Documentation/devicetree/bindings/mtd/samsung-s3c2410.txt
 
-On Fri, 21 Oct 2022, Ilpo Järvinen wrote:
+samsung,s3c2412-nand is apparently still used on s3c6400,
+and the driver is selectable on that platform, so I think
+that should remain in there until we remove s3c64xx in 2024,
+even if it is not referenced by the dts files in the kernel.
 
-> On Thu, 20 Oct 2022, matthew.gerlach@linux.intel.com wrote:
->
->> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>
->> Add generic support for MSI-X interrupts for DFL devices.
->>
->> The location of a feature's registers is explicitly
->> described in DFHv1 and can be relative to the base of the DFHv1
->> or an absolute address.  Parse the location and pass the information
->> to DFL driver.
->>
->> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->> ---
->> v4: s/MSIX/MSI_X
->>     move kernel doc to implementation
->>     use structure assignment
->>     fix decode of absolute address
->>     clean up comment in parse_feature_irqs
->>     remove use of csr_res
->>
->> v3: remove unneeded blank line
->>     use clearer variable name
->>     pass finfo into parse_feature_irqs()
->>     refactor code for better indentation
->>     use switch statement for irq parsing
->>     squash in code parsing register location
->>
->> v2: fix kernel doc
->>     clarify use of DFH_VERSION field
->> ---
->
->> +static int dfh_get_psize(void __iomem *dfh_base, resource_size_t max)
->> +{
->> +	int size = 0;
->> +	u64 v, next;
->> +
->> +	if (!FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS,
->> +		       readq(dfh_base + DFHv1_CSR_SIZE_GRP)))
->> +		return 0;
->> +
->> +	while (size + DFHv1_PARAM_HDR < max) {
->> +		v = readq(dfh_base + DFHv1_PARAM_HDR + size);
->> +
->> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
->> +		if (!(next & ~DFHv1_PARAM_HDR_NEXT_MASK))
->
-> In general, try to not use inverse logic for defining masks. However here,
-> just change DFHv1_PARAM_HDR_NEXT_OFFSET to not include any extra bits
-> (no rsvd nor eop) and you no longer need this extra masking.
+> Documentation/devicetree/bindings/usb/s3c2410-usb.txt
 
-I agree that defining the fields better and using FIELD_GET would make 
-this code cleaner.
+Similarly, the driver is used on the crag6410 board
+(without DT), and probably just works with the DT based
+boards if one adds a node to s3c64xx.dtsi.
 
->
->> +			return -EINVAL;
->> +
->> +		size += next & ~DFHv1_PARAM_HDR_NEXT_MASK;
->
-> ...Then you can drop this anding too.
->
->> +
->> +		if (next & DFHv1_PARAM_HDR_NEXT_EOL)
->
-> Your docs say EOP, but here you use EOL.
+I've also checked if any of the other removed drivers
+matches of_device_id[] strings to see if there are more
+bindings to kill off, but I don't see any that have
+now become obsolete. It did point me to pxa2xx_ac97_dt_ids,
+which Robert already complained about, this apparently
+is still used with dts files outside of mainline.
 
-Thanks for catching the inconsistency.
-
->
-> Change DFHv1_PARAM_HDR_NEXT_EOL such that this is extracted directly from
-> v.
->
-> -- 
-> i.
->
---8323328-2044127639-1666624175=:2070724--
+      Arnd
