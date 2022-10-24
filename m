@@ -2,206 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EA4FA373D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 23:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C66DC38A2D
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 00:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbiJXXmn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 19:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
+        id S231172AbiJYAXa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 20:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiJXXmY (ORCPT
+        with ESMTP id S229649AbiJYAW4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 19:42:24 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF4A1D73FB;
-        Mon, 24 Oct 2022 15:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1666615860; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6dhnHc0bAedKhrMgs9Dk+4I6+5jfqv63sCgiUYVWOcI=;
-        b=tn1ZvOhDMsL2gp6C/3Ym9t7tzU8xZKvHqGrY4PYZXRWhTkGcKydZ7EkM1OPd+MtYhJbqEU
-        gaeSSUu5ewEavK1O9aX2hgvviFqghRqzkRmSVnUBoMURUYz5BkO4yWfO/2k3UF6FZOwmlk
-        eYlYk1D+4AEN4Q6V/cyZPE1MQ5gYaoA=
-Date:   Mon, 24 Oct 2022 13:50:50 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2 2/2] serial: 8250/ingenic: Add support for the
- JZ4750/JZ4755
-To:     Siarhei Volkau <lis8215@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Message-Id: <Q0D9KR.U3D9MHHH52AZ@crapouillou.net>
-In-Reply-To: <20221022151224.4000238-3-lis8215@gmail.com>
-References: <20221022151224.4000238-1-lis8215@gmail.com>
-        <20221022151224.4000238-3-lis8215@gmail.com>
+        Mon, 24 Oct 2022 20:22:56 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343BB52FEE
+        for <linux-serial@vger.kernel.org>; Mon, 24 Oct 2022 15:46:39 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id e18so33763312edj.3
+        for <linux-serial@vger.kernel.org>; Mon, 24 Oct 2022 15:46:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=oIHl2iCS5umkUQOttHMwOxT4DU4dTXsnDaz+mZRAMKc=;
+        b=oZyDNuZZ8bs6Dd/+bmcm0ORHJLVHkh6oX/lOWkQd7odI9UAqCD7O/wCA/hDvorihH3
+         N9+QLewwBtMtqshKTjtsp9e5sf8Q8V9IMkMUcxglNK13SVPGIcxHiUROeBAQPe//FtdZ
+         MC3KWgqs6B/AegdXOlxhnQfyBH4y0fiqdEFFQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oIHl2iCS5umkUQOttHMwOxT4DU4dTXsnDaz+mZRAMKc=;
+        b=cpqViZA3gG3UmVzFpdNVu9x2HHEJp8Q1g4OsOfoLZV3K9rOHuenD4bzUfFZv1kFBcW
+         E6ByuJK7zbxqJ0TQ10PsGKpf0nCM9qga45Q5gXDKW8qvr1GfyXIwDOo4zYZrBrNj301X
+         bfphqlkxr3yrzfg6/Vl8PYkv+Y82vNNPCD/17kYRDZzsfiQ0A+qug3EMokiRtzvagCym
+         fRQb6hDZ98ks3Rf1GoFUM2A8vLdVf4it65auSg0pQqkWCYcPv/irwnmfkhZtVQVRrUlR
+         kH338qMAvvukDsG9IXjlKlZuG0K6r0eKcalJrdfrTvm4AcFTbYucuMXSLrPQzaLA3Go1
+         2M0g==
+X-Gm-Message-State: ACrzQf2yV1i7za5+Fuq2rv+m+0RxUY0JtLBVXHcowJHxqpE9d032BASG
+        MqOeqn1mXTRe5KLuYQ0Zf7khF6UI37VuW6h3
+X-Google-Smtp-Source: AMsMyM63zfx0aHnYhiAGrDMn8zZqBSWrAoJ1Yb7YegPwrmHsZNTqVbJQkkdP0A/RB5FWJmOisp9AIg==
+X-Received: by 2002:a05:6402:371b:b0:460:ff7d:f511 with SMTP id ek27-20020a056402371b00b00460ff7df511mr22620267edb.148.1666651597415;
+        Mon, 24 Oct 2022 15:46:37 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id w20-20020aa7dcd4000000b004611f5efea8sm531618edu.17.2022.10.24.15.46.35
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Oct 2022 15:46:36 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id g12so5448316wrs.10
+        for <linux-serial@vger.kernel.org>; Mon, 24 Oct 2022 15:46:35 -0700 (PDT)
+X-Received: by 2002:a5d:6488:0:b0:22b:3b0b:5e72 with SMTP id
+ o8-20020a5d6488000000b0022b3b0b5e72mr23635683wri.138.1666651584545; Mon, 24
+ Oct 2022 15:46:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <20221019145600.1282823-1-john.ogness@linutronix.de> <20221019145600.1282823-13-john.ogness@linutronix.de>
+In-Reply-To: <20221019145600.1282823-13-john.ogness@linutronix.de>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 24 Oct 2022 15:46:12 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VFxKL=sOMdhyHrgy2JOtzKJdOe4euwZRRAK7P-rNVjuQ@mail.gmail.com>
+Message-ID: <CAD=FV=VFxKL=sOMdhyHrgy2JOtzKJdOe4euwZRRAK7P-rNVjuQ@mail.gmail.com>
+Subject: Re: [PATCH printk v2 12/38] tty: serial: kgdboc: use console_is_enabled()
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Siarhei,
+Hi,
 
-Le sam. 22 oct. 2022 =E0 18:12:24 +0300, Siarhei Volkau=20
-<lis8215@gmail.com> a =E9crit :
-> JZ4750/55/60 (but not JZ4760b) have an extra divisor in between extclk
-> and peripheral clock, called CPCCR.ECS, the driver can't figure out=20
-> the
-> real state of the divisor without dirty hack - peek CGU CPCCR=20
-> register.
-> However, we can rely on a vendor's bootloader (u-boot 1.1.6) behavior:
-> if (extclk > 16MHz)
->     the divisor is enabled, so the UART driving clock is extclk/2.
->=20
-> This behavior relies on hardware differences: most boards (if not all)
-> with those SoCs have 12 or 24 MHz oscillators but many peripherals=20
-> want
-> 12Mhz to operate properly (AIC and USB-PHY at least).
->=20
-> The patch doesn't affect JZ4760's behavior as it is subject for=20
-> another
-> patchset with re-classification of all supported ingenic UARTs.
->=20
-> Link:=20
-> https://github.com/carlos-wong/uboot_jz4755/blob/master/cpu/mips/jz_seria=
-l.c#L158
-> Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
+On Wed, Oct 19, 2022 at 7:56 AM John Ogness <john.ogness@linutronix.de> wrote:
+>
+> Replace (console->flags & CON_ENABLED) usage with console_is_enabled().
+>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 > ---
->  drivers/tty/serial/8250/8250_ingenic.c | 50=20
-> ++++++++++++++++++++++----
->  1 file changed, 43 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_ingenic.c=20
-> b/drivers/tty/serial/8250/8250_ingenic.c
-> index 2b2f5d8d2..3ffa6b722 100644
-> --- a/drivers/tty/serial/8250/8250_ingenic.c
-> +++ b/drivers/tty/serial/8250/8250_ingenic.c
-> @@ -87,24 +87,19 @@ static void __init=20
-> ingenic_early_console_setup_clock(struct earlycon_device *dev
->  	dev->port.uartclk =3D be32_to_cpup(prop);
->  }
->=20
-> -static int __init ingenic_early_console_setup(struct earlycon_device=20
-> *dev,
-> -					      const char *opt)
-> +static int __init ingenic_earlycon_setup_tail(struct earlycon_device=20
-> *dev,
-> +					      const char *opt)
->  {
->  	struct uart_port *port =3D &dev->port;
->  	unsigned int divisor;
->  	int baud =3D 115200;
->=20
-> -	if (!dev->port.membase)
-> -		return -ENODEV;
+>  drivers/tty/serial/kgdboc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index e76f0186c335..b17aa7e49894 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -533,7 +533,7 @@ static int __init kgdboc_earlycon_init(char *opt)
+>         console_lock();
+>         for_each_console(con) {
+>                 if (con->write && con->read &&
+> -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
+> +                   (console_is_enabled(con) || (con->flags & CON_BOOT)) &&
 
-You can keep this here - no need to move it (and it'd avoid duplicating=20
-code).
+<shrug>. I guess this is OK, but it feels a little pointless. If we're
+still directly looking at the CON_BOOT bit in con->flags it seems
+weird to be accessing CON_ENABLED through a special wrapper that's
+marked as a `data_race`. In our case it's _not_ a data race, right,
+since this function continues to hold the console_lock() even at the
+end of the series? I personally would drop this patch but if you
+really want it I won't object.
 
-> -
->  	if (opt) {
->  		unsigned int parity, bits, flow; /* unused for now */
->=20
->  		uart_parse_options(opt, &baud, &parity, &bits, &flow);
->  	}
->=20
-> -	ingenic_early_console_setup_clock(dev);
-> -
->  	if (dev->baud)
->  		baud =3D dev->baud;
->  	divisor =3D DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
-> @@ -129,9 +124,49 @@ static int __init=20
-> ingenic_early_console_setup(struct earlycon_device *dev,
->  	return 0;
->  }
->=20
-> +static int __init ingenic_early_console_setup(struct earlycon_device=20
-> *dev,
-> +					      const char *opt)
-> +{
-> +	if (!dev->port.membase)
-> +		return -ENODEV;
-> +
-> +	ingenic_early_console_setup_clock(dev);
-> +
-> +	ingenic_earlycon_setup_tail(dev, opt);
-> +}
-> +
-> +static int __init jz4750_early_console_setup(struct earlycon_device=20
-> *dev,
-> +					     const char *opt)
-> +{
-> +	if (!dev->port.membase)
-> +		return -ENODEV;
-> +
-> +	/*
-> +	 * JZ4750/55/60 (not JZ4760b) have an extra divisor
-> +	 * between extclk and peripheral clock, the
-> +	 * driver can't figure out the real state of the
-> +	 * divisor without dirty hacks (peek CGU register).
-> +	 * However, we can rely on a vendor's behavior:
-> +	 * if (extclk > 16MHz)
-> +	 *   the divisor is enabled.
-> +	 * This behavior relies on hardware differences:
-> +	 * most boards with those SoCs have 12 or 24 MHz
-> +	 * oscillators but many peripherals want 12Mhz
-> +	 * to operate properly (AIC and USB-phy at least).
-> +	 */
-> +	ingenic_early_console_setup_clock(dev);
-> +	if (dev->port.uartclk > 16000000)
-> +		dev->port.uartclk /=3D 2;
-
-I would assume you could just do:
-dev->port.uartclk =3D 12000000;
-
-Since you'd always get a 12 MHz clock (either with a 12 MHz oscillator=20
-or a 24 MHz oscillator with a /2 divider).
-
-With that said - I am fine with that code, it would allow to fine-tune=20
-the oscillator value (although I hightly doubt anybody is going to do=20
-that).
-
-The 16 MHz value sounds very arbitrary, but I'll give it a pass.
-
-Cheers,
--Paul
-
-> +
-> +	ingenic_earlycon_setup_tail(dev, opt);
-> +}
-> +
->  OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
->  		    ingenic_early_console_setup);
->=20
-> +OF_EARLYCON_DECLARE(jz4750_uart, "ingenic,jz4750-uart",
-> +		    jz4750_early_console_setup);
-> +
->  OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
->  		    ingenic_early_console_setup);
->=20
-> @@ -328,6 +363,7 @@ static const struct ingenic_uart_config=20
-> x1000_uart_config =3D {
->=20
->  static const struct of_device_id of_match[] =3D {
->  	{ .compatible =3D "ingenic,jz4740-uart", .data =3D &jz4740_uart_config=20
-> },
-> +	{ .compatible =3D "ingenic,jz4750-uart", .data =3D &jz4760_uart_config=20
-> },
->  	{ .compatible =3D "ingenic,jz4760-uart", .data =3D &jz4760_uart_config=20
-> },
->  	{ .compatible =3D "ingenic,jz4770-uart", .data =3D &jz4760_uart_config=20
-> },
->  	{ .compatible =3D "ingenic,jz4775-uart", .data =3D &jz4760_uart_config=20
-> },
-> --
-> 2.36.1
->=20
-
-
+-Doug
