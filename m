@@ -2,246 +2,175 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FE4C38A2D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 09:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B2EFA373E
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 09:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbiJXJA1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 05:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
+        id S230425AbiJXJNN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 05:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiJXJA0 (ORCPT
+        with ESMTP id S230499AbiJXJNM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 05:00:26 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2049.outbound.protection.outlook.com [40.107.20.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFC639BA5;
-        Mon, 24 Oct 2022 02:00:21 -0700 (PDT)
+        Mon, 24 Oct 2022 05:13:12 -0400
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592035AA36;
+        Mon, 24 Oct 2022 02:13:10 -0700 (PDT)
+Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 29O8uWBv001555;
+        Mon, 24 Oct 2022 02:12:40 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : content-transfer-encoding : content-type :
+ mime-version; s=PPS06212021;
+ bh=1i+bnQ+N8ER3goQwjY56qvcmWkfIF2EZs4CgJMd7H30=;
+ b=CDEwInpNrTYy9qsL456H8pCw2ZfRqDBro11dUs6+8sFTk9Omj+hwT3ZEbIB6cqHr2ukf
+ CBGK4XhXHFKlYmKMkNMdl5mkm/z545fHnr5NYulzVKi1UqAWX74CKkAPUDGzN0q3zdgw
+ 8nAnjinKCEPR/QIWCQ7Mb0WSf02Pxxml0W8SQjL4AHw3cAW44oskmxOk7be9nmoHxyIn
+ 36J70AeJS5Xxv8lIhFVJx9utzfvAboeMrqFrQeo2DJ/eRyevyA61hZZvGUmP4CfOZ0xQ
+ 0weTfTATssl+wgrkc69nGxWYTYavBWVtxOOUHPFe4SWLrtHrXPd05BHDgFOUq5Z4k/f+ dA== 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3kcbt51wrd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Oct 2022 02:12:40 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LqUPS0SMCJ1Ts0Pkxxt8nKhr4+BG9tgEhasoyA6xdoTJkEs9FI+F+O9VfJJLkuJmDAE+bQe97hSP7K8LXS0aoIKIaCqcLnUr/bsEXlsP3jg0k6PDfuRsR1WmOk5VTOUucd8KM0fJYxe315cACBjOTRvKTlLrZPFzHvGpawFJ9SN8YYbb3JFMYUrEemuHb51oT7UJM3OcxtKk6XDKpkyKpLfNCCbU/UcvNXMw2250oJ6bDcemyvWgN5OuLPucWdziBFCTckP49A6mw9dxQPTWRKz1LKLCwWb4FyhYROiQks6cpSjPJAbYVxt1fqGz2FdNKA6o0nMhMYulxdMkK4IP7A==
+ b=S/t56r2+jRPpk00B9JFTZQtkwpjgFy9rxHFajZumB44mo6rDNhP+7u4go//m6m+i2wyFVMLdA3YAupofjB6B2TpRonPsdgT3xT6YVskGW+x2SfqocdLLVQKmfFKfLHaX01N5eihTS5oaabHdQcuE37XXhYUvlJvE/1JzNIbK00b0rt4RwbEH3tdfI5i7NX0TjA4UcGALyUDYW75AETaG/3XdMRl3Tpisii9EiIpRAlEEGJwD8BSlS2BO3TF5U90/VahyxfFNWhcZWHPQs0KTLUAjeA/tzkr8qEdvHgsjao3jg7ZZLYZ9g7Yp5wTeF5i7dPARvhfI5YBSyfE1w7vySw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L+KMrE8QvBGWYsBXEjD97/u06LCRPDLmgqZJqB4F/pc=;
- b=fMF37daGkYivoDwZDQoVdV9qK/Yw6WEEaO0Nzd9ZfrkWnpY//RrpYVMcobQQZVJvxPJhSML08zblr4KjFY+ol41nP/8dLxgayRVwOS0ytz2tKWSctcH6HbO51ES0Ff9VaxisbZJNGbqk0b4m55anjEnltuV7j9rxk7ntCEp5TtzXFyLqw0vMjCt1Q+rgmfpXWvz34cRwx8U9AIomamapYtUbsrSqzo2xW6lprRRzMz4HIuhe8BSghwWsfFlbNGESpJIbfEZNsvn2fQKDjMxMyp1M4CzAZl0l5tzfiqTx/H7OjMOsXML4WeKhHjegQ1g783zd2H253bQoAGyVAG0heQ==
+ bh=1i+bnQ+N8ER3goQwjY56qvcmWkfIF2EZs4CgJMd7H30=;
+ b=MXL6c/j9nlvZph77U4UkPq4jHWmyPqIWnq0RAzTOK4YUwV3x2mz7BbnwBbEGSkaEDfyjkEoUpt7ibVIZqkX/RSVsvxBoUCxSFU/LWSpmMn4fqFAnMn84EDXaufgE+uz4+KyHFzaOEOgjcLKwyavl9dqElAliogtnV0unOZxa2BY/6lU4dahqVHAGTrXKA1M5eXP3JZpiYNEvD+YsoXs5CqUfKkFjhhvw0o0b62soq69oWdMp26acGnUrxiYWR8aMX/HLounvB9CPB9TOOTohW3rK07V4KupYw966tVRD0984e1z82KgxcOcgnLsNismWT2B1S97zb0rzs5yluIFfZg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L+KMrE8QvBGWYsBXEjD97/u06LCRPDLmgqZJqB4F/pc=;
- b=C6yh/jhuXDXjvCoi0rEXrLKkVO5oPAdrmMUTwJkL8bdHbATDMNpcMqWa79UaVVzLoPPEALzAR2NXqPBqaxCYOHoTD4r1Mqw3W37Wp3LSDK6sNEUr4fkqqZuW03mftN6+6LHEBtUGCSDMYvLkrY6AmXuXWyNEoQHLpwdUxW8JlYo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AM9PR04MB8177.eurprd04.prod.outlook.com (2603:10a6:20b:3b7::23) with
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Received: from MW5PR11MB5764.namprd11.prod.outlook.com (2603:10b6:303:197::8)
+ by DM6PR11MB4721.namprd11.prod.outlook.com (2603:10b6:5:2a3::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.21; Mon, 24 Oct
- 2022 09:00:19 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::84cf:df3f:2012:79ea]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::84cf:df3f:2012:79ea%5]) with mapi id 15.20.5746.025; Mon, 24 Oct 2022
- 09:00:19 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, lukas@wunner.de,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH V4] tty: serial: fsl_lpuart: don't break the on-going transfer when global reset
-Date:   Mon, 24 Oct 2022 16:58:44 +0800
-Message-Id: <20221024085844.22786-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.27; Mon, 24 Oct
+ 2022 09:12:37 +0000
+Received: from MW5PR11MB5764.namprd11.prod.outlook.com
+ ([fe80::9824:acbc:5799:6cff]) by MW5PR11MB5764.namprd11.prod.outlook.com
+ ([fe80::9824:acbc:5799:6cff%6]) with mapi id 15.20.5723.033; Mon, 24 Oct 2022
+ 09:12:37 +0000
+From:   Xiaolei Wang <xiaolei.wang@windriver.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, lukas@wunner.de
+Cc:     fugang.duan@nxp.com, sherry.sun@nxp.com,
+        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: fsl_lpuart: Skip the reset for the early console port
+Date:   Mon, 24 Oct 2022 17:12:20 +0800
+Message-Id: <20221024091220.1619822-1-xiaolei.wang@windriver.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SI1PR02CA0025.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::13) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
+X-ClientProxiedBy: SL2P216CA0214.KORP216.PROD.OUTLOOK.COM
+ (2603:1096:101:18::20) To MW5PR11MB5764.namprd11.prod.outlook.com
+ (2603:10b6:303:197::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|AM9PR04MB8177:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4eacc91a-be1c-4c71-bf5b-08dab59e2cd2
+X-MS-TrafficTypeDiagnostic: MW5PR11MB5764:EE_|DM6PR11MB4721:EE_
+X-MS-Office365-Filtering-Correlation-Id: ff128b12-dcee-47e6-d3db-08dab59fe52e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xhstw5fANVw1oa8kaIEbUDuHbZRCmWkpkgwvZGW3JOl8mDVf4ie6fK69aOBFuHHnHCCLawUpV0CJ0y2K9wh6f5WtNi1XmqUhovqzbLE7yfpXntKfUs5wSYWFXAxGvXv8QHhz2YrX0/iNQdxj8GfNxyoURS/lhaM02G5Eo5IVMnvNCsM417aV6liCd8sszZdaIevgj93UITM6Uiow/9KqOpse/jlZreYKcRINc4MYxZixBtKrMAb8/X55uUHjYfx/FEEi5WpGrwQPiVnbOuopUazDEv7MDzZFbwHoa+coV672742SCIIpnywg0dISIdTClUFefaOxigxXESYRHTz9dCt1z7yCnDbKqDuq3yzSZrQc1yz4b0plbbVlA5Xkj1PFndQSiQS+E1gWClky11QI5/1V6dMPOP6K6hXN6cdzIyOYYzfjjl2uO8qzPUwVy6uxIkDvVQPIlYlhZS3IIj58v8vega21ueXeP7cwHg3FoTiOTSjNXqg4oLz2l1MF7CohOD71/jQeXf9LO46PZi7wIlAf/ghAG7ItDXt15n0M0aJg19y7FVUk2GTQ2aj5S7s1KDoMHjC1Ndp3VXtVRMPkPexS1Q0LIoNvxc7EuEqtidJgHSHi3FpS/ZlQDg7FLk3S5nLeJz1G9/VbtzQLVG7szmnnnvXasHqUO0nDc7soFZ7c4F0ENw2d1ux0/pVAHYgb5XkAUkW4HK8M+b2sXJU8M/l4H/PfjSlIa+aLbtVymb/UZDLgDs6sIYt8nqywMQmGYJMszXOP3/HRSqTNkOkCsg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(346002)(396003)(366004)(451199015)(36756003)(44832011)(2906002)(5660300002)(8936002)(66946007)(66556008)(66476007)(8676002)(4326008)(41300700001)(86362001)(316002)(6506007)(26005)(6512007)(52116002)(83380400001)(186003)(1076003)(2616005)(38100700002)(38350700002)(6666004)(6486002)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: WefFjpbXWRUrcF0D4WuNVrbuipz9D7ndiK/fk7otRUEQIm2QlS4d+DDZvA2TnzzbydJvuSt+rQtWw17pd+pXFxVuV7IL7hu+r/f3RhNu+cXfiGzs4JpzTSHiaOGLKXsSS7IqetKlMWAjNssvKGdaEGpbP3h8fuY1U7EZmTQV2hqKsBDo2ms5KmctVQ23NEc3FZsOKBJpa6/LxeQNYtyGk5gtUbhAZY50U24XuSyUhSKjjXhpimUDphOxvvRXgn08zBkOMNA02Qth5YYZnJwf9JxOPKN7kpf5kganxAWQBSpOr082wkgIIScC76N6VVIkh9Hg0PhOqCEw1eZQ7fS2zLbJsxmuk/NIhP81dsCnjG/6lw/rZsTImAiLZQn/b/y14JuhCgg6odfdUeDQ2jwVLUBnmlY3htf61A7QCWQhZEbjJIYzFcINlgBBkxSBKYZSWveB58TcovQ3Tjj8BtmUOS3XmP7IRAd/pmETo8U5IvhkF3AYgn4vNXhMoZo1MYd+V5N1k0Yb//Q7HHlM/kRBAmT0puG/d7rkI77P5gfSkHJngrUNc+RP3yEIHQaDlA5i0a9cA06HcqJ+4HvWFVqh7chct/2ThFi5Yo4cLYmc1jy2hfXjVrGT1LXE7FAgkbExgFR6UjDuvtiVyA8NhQQuJ48QQ43VYTen6tTN2sTWud9Ke8x8DlP5qZamgGZIhW1f6h+TxXao4ol5AcfYNKU55HEMlVq+sZgSC/X2qfcNpDyrHgaUT7u/nb0O8cOpX23iORA7ukiJakLuSIzYLBecUg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5764.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39840400004)(346002)(396003)(366004)(451199015)(36756003)(86362001)(44832011)(2906002)(38350700002)(38100700002)(1076003)(186003)(2616005)(83380400001)(6506007)(52116002)(66946007)(4326008)(6486002)(6666004)(6512007)(26005)(66556008)(316002)(8676002)(66476007)(5660300002)(8936002)(41300700001)(478600001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lk21kGdUqZYk2KtWpEvX1MaW2F/koY4vNGJiYRYsSRxuDv96+skWcgk9uT/s?=
- =?us-ascii?Q?wpmk/nBXZDJVNiN5f8rE5hThWGCksQMsvQiXRgLtQ55hYfHSb64Q+8jgmNgE?=
- =?us-ascii?Q?RglWCuiXlJsbnBeYwRMeijYsWljM2fdMXOUlf0Q1+fWFyIkiuu+Asc3TfWqQ?=
- =?us-ascii?Q?XvHWBVGBsj1iVOAQfw0y0raRT05ziMIBCWrxQQTgCemn72mfYYEEWfQGVuJI?=
- =?us-ascii?Q?jzapbFQzrUwYkCs5zJUcwrOVsMUg27d73ejEuCnl0X5jQc3zVjdOmhJ9HYwa?=
- =?us-ascii?Q?/zW3wHpYv20v+uxbipO6vI0aRFE8vThYdC1DypHGty0bEX61hItFK/I6tCMl?=
- =?us-ascii?Q?epXFxqS/yOKYlt2XkLvI7aSg0E3qI7V7Qsn6NgkWVIRJeHvvRadB1WfyEufJ?=
- =?us-ascii?Q?F38ELX6PhGoxolG9CAq4v2+cpjOzGTIYoTmgZu6/pKzJpGZYtA+VPyIXDujr?=
- =?us-ascii?Q?eDFkgKPIfDJ2VKR1/w6O9j31DK52rPMt/kMTl38845bIq+n3Zph4F8K5SwN2?=
- =?us-ascii?Q?QWk4BfZli2jDQjp+fIE+oNBJPStVQBM5AJxJYFe1YJvtVjkEDMTOeAgjP2K2?=
- =?us-ascii?Q?6UovJLchAQQCTLFVw4A+6jyldVJs5fl7M4Zbgbm/zak4qy5z37IAyzsuPrRY?=
- =?us-ascii?Q?rBNG+PTySmhJdyELEr8yj0VmKtPMcZSuBQdWIrtDOT3iMJktoi5Td03lQoji?=
- =?us-ascii?Q?7T82255MLu1UmPOR+eVGWdkXvF8rRmW3hH5hzCU2vJA6ACeVjaOJFL/Cn4Vl?=
- =?us-ascii?Q?wDLYheAn/CM+LU1XhQ3OFslg5z+EPkG4fMDNzrg2ufGTEa9+SOfee50QBQ9w?=
- =?us-ascii?Q?YQeA5KFiPumyAn2vzeWZT+45VoBXw86rLAd0H848PLXioagum+B1z2MVZ5vS?=
- =?us-ascii?Q?R1w4UQ8sqeOc+Av5CF/Nt9d3bXc9wjVuLVOeC/q7/PE84JbZMFZiDKpJZAro?=
- =?us-ascii?Q?600R0pVNKr1KmVktD8zAIoqiU1K0iUPeZ0smlekTvqhZ+4KTUIP/8ayXdFtI?=
- =?us-ascii?Q?xg0KHEne683aoDmcOS9Iz6yxyjFmjHIVWQv01oeJh+TkTrUUAs7D6/ovIbQh?=
- =?us-ascii?Q?NyIQuBUFQq9/vflfqFCUxxnARQ8LDjgNWjcQlBEJ/lGiWfCMZewNePOXSrHu?=
- =?us-ascii?Q?oxKliJTfOhZ6dB/pMajVTX7ccXzHen9W9oOaI6GpSsfS20CKErFSsWAWVOLQ?=
- =?us-ascii?Q?tK3gpHk/JzeWcrWzHm0OMfWjQk9jbXGJ/FZeDpmZVnLqLgq1q8PWUY7qCB+P?=
- =?us-ascii?Q?PjVMH9A8nEPfL+DunGSqTfLsuM/UL1Apxp5NVM5DRyvNmwDwPj4U99qoR3xn?=
- =?us-ascii?Q?kCjQIioqNgg1YCv5UM7+3IyscNJuE0sQNyh59s71oHacuK8f+Fek9xkLN4VF?=
- =?us-ascii?Q?sY+U5IjZOvbAkOYtzTKpMtKdEbCYMEDIQt3faM4xMqzyfMHGL35T7bfe6qkf?=
- =?us-ascii?Q?wOcL191CeJOGOkrxXHg4oRJ6p2ORyA4DecrsZXzwrf9ReIfi9MXCGdXmWQss?=
- =?us-ascii?Q?HxUMnVxQMT/5FmBz4HqEHD2gsM0WYiH1Owq2QOmF3wz3Vcvke69vLw8E9xBB?=
- =?us-ascii?Q?3X+MxzCUxOgKeuOnCbHc8lMJXfwy6ubbfjmDWEjV?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4eacc91a-be1c-4c71-bf5b-08dab59e2cd2
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kLby+DvxTYAmbiePREo5JCpNfKwTEzxRbMJ7NuPe+ny4/sp8E15vx8RThmfZ?=
+ =?us-ascii?Q?/Wz78u2zYZNWN2K0GxEkKlDDdmK8d+EH5btKEZSvziuorTUCTIx+OK9979OM?=
+ =?us-ascii?Q?8i3J96lIoIysvpfFsQB5uQ0YsavrqJf/6+wt4QR3vwpX1CrxWPyoQL4vy7Ob?=
+ =?us-ascii?Q?a+s/afCjc3rxUkzEQAWhplP9muT6VU2aEavn3cbQQILiWptrsU74kQm/eGt5?=
+ =?us-ascii?Q?qrJB9qELF18gy3UZlpfWkLZUTgnjCVwKqRNae5YjmOcieEyCYVtm22ljV5CC?=
+ =?us-ascii?Q?cdbAhS7UmYAWiS6DrVOukmIVFA214EMm5RTa8HOpnPnfSDmtY3YLaBNuApRI?=
+ =?us-ascii?Q?iKmBmrX1O88rfEvMRa7aUO5jlxbDeNoh6HtMZ4rldUZ7+BnfXnp2f7z/xdvt?=
+ =?us-ascii?Q?1hdqHtnNxRiSCPG5CNIukr7aPeAcvikt0ueD5Slh1BMPuIhXLq26WEXbBr8G?=
+ =?us-ascii?Q?W1zzkXrVg27jMbki7pLbUI/bqqpm24mgFvAu5czdUiICtnCKG4g0irFCh1K1?=
+ =?us-ascii?Q?NYTt0p0bgRJdRGPziOk0jObySc6AQMiqtwxeadbx8A0+VuEOOHzxDM788fqA?=
+ =?us-ascii?Q?3p/ZnMx9EMiNA3obLWxd33ExoHVSMINiQqKuiQIz+VYIHkpWsm0AQ1WNCG1N?=
+ =?us-ascii?Q?GNzPhppmD8OFdRBpAAda/p1cvQwrRUrvH2JBF3FpUl16UEJIfVJWjEUZBk+G?=
+ =?us-ascii?Q?I0Lode5Df/CJn/aRnnFo0xBA4m58KdiiXpCc1c2NTwRLGYP0ON0j9pAiTOQj?=
+ =?us-ascii?Q?NpBF1nZkhyC9QsviHIb35HjwIujVivOKGWFc1i4oRNV/gqs3dIjTq/NTznu8?=
+ =?us-ascii?Q?yg2SAfJjA4Kw6n3OhWDHf41IyqHUNn7WRrXhbRMOvjEgliFgmst9eDXyHCnC?=
+ =?us-ascii?Q?59r1F2OeENQGaYCUCpUW/rhtcFWUhW1bG1JflmUM0YReckVhCaJMowZ2xGiX?=
+ =?us-ascii?Q?Doo64hhBW2iH31KEcDQXOhCQTuK80H52mpVZ+EkIfBdafkOfktMO5UyAKjtc?=
+ =?us-ascii?Q?eCzr2ckcqV8rnvtYUfsfkp8/M/vjKd7oP2JQw7usFK9Bd/PHJorzmXqWkSs+?=
+ =?us-ascii?Q?QWrN/GwzSHad4hxrt7NGAWowKkXfDAwdJToAmC/RzGMVRi4Dne1QkQvUbLzu?=
+ =?us-ascii?Q?AD+/dnoniU2Uw9b7qmQkY6FCMbp6bKDAXAyGSOAIW4SxJ9E+otPo2c/egdpI?=
+ =?us-ascii?Q?lg4rmVP1K5sHpto0RnDyMmBmWbF6wQn8F80tqn4OgJYm6lkSFkfhV7nnhNZv?=
+ =?us-ascii?Q?eXK1lP4CtV0e9yqoObHy7Neqs05Bmvssetj4RS2/LxA8wzYocekLq8wMMirx?=
+ =?us-ascii?Q?xtLI7fDr6z6nv7o/F6r+KZNDRe4hIpW3zNDUgWZfQz7IqNscER+PoDns60Bd?=
+ =?us-ascii?Q?9PdIehZNgxlYkTteanF6taka2EXs/4TmbncwJriVRyTP+RxjdwsfazFpuC2/?=
+ =?us-ascii?Q?uUNjhOoU7OIIFVkRREinDVYV+LuvrW9ZKb2uop2gq7keAPVA9jq7S9A9rkSl?=
+ =?us-ascii?Q?tKJFk5/sklHsoceDKSgkSEDStFnVpVcVAloUIdW+N/zlRQ15jXTDZBrgP3GY?=
+ =?us-ascii?Q?fmEpOogzMmkd8nl+acfnYy5guLqCXbww4wtFy3/kPn6IaWDvByFmsVzWYe6u?=
+ =?us-ascii?Q?Lg=3D=3D?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff128b12-dcee-47e6-d3db-08dab59fe52e
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5764.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2022 09:00:19.0315
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2022 09:12:37.8336
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oGmCFUiHtp84Fs5Sk2CP7p0h5joWI6Lh6/vRUVE5Hh+ts+NiqtyO3ugRTn9DSDYsN9VIva/ARblj3/Br5QZ8+w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8177
+X-MS-Exchange-CrossTenant-UserPrincipalName: +k9gL7NVu+/gRkq6NaK1y0ztXZQL1exbdcogg0/jHR6LHFKZYtuhaeU+xSaUltnRbLLXU4F+dlEtOOM8Q+jH55bCH/IystPgfNgDjuGhWHw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4721
+X-Proofpoint-ORIG-GUID: FT9xUM-goo1Gbh8uCJQId4m071VvhU3I
+X-Proofpoint-GUID: FT9xUM-goo1Gbh8uCJQId4m071VvhU3I
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-24_02,2022-10-21_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 clxscore=1011 adultscore=0 phishscore=0 bulkscore=0
+ mlxscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210240058
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-lpuart_global_reset() shouldn't break the on-going transmit engine, need
-to recover the on-going data transfer after reset.
+The commit 60f361722ad2 ("serial: fsl_lpuart: Reset prior to
+registration") has moved the reset before the port registration,
+this change makes the uart_console() in lpuart_global_reset() no sense
+since the port is not registered to the system yet. So drop it.
+But we sill need to check if the port is used as an early console
+before performing the port reset, otherwise the reset will hang the
+system.
 
-This can help earlycon here, since commit 60f361722ad2 ("serial:
-fsl_lpuart: Reset prior to registration") moved lpuart_global_reset()
-before uart_add_one_port(), earlycon is writing during global reset,
-as global reset will disable the TX and clear the baud rate register,
-which caused the earlycon cannot work any more after reset, needs to
-restore the baud rate and re-enable the transmitter to recover the
-earlycon write.
-
-Also move the lpuart_global_reset() down, then we can reuse the
-lpuart32_tx_empty() without declaration.
-
-Fixes: bd5305dcabbc ("tty: serial: fsl_lpuart: do software reset for imx7ulp and imx8qxp")
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Fixes: 60f361722ad2 ("serial: fsl_lpuart: Reset prior to registration")
+Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
 ---
-Changes in V4:
-1. Use read_poll_timeout instead of read_poll_timeout_atomic as we are in the
-non-atomic context.
-
-Changes in V3:
-1. Replace "engin" with "engine".
-2. Use read_poll_timeout_atomic() to add a 100ms timeout when polling the
-transmit engine to complete.
-3. Restore the whole ctrl register after global reset to avoid any confusion. 
-4. Move the lpuart_global_reset() down, then we can reuse lpuart32_tx_empty()
-without declaration.
-
-Changes in V2:
-1. The while loop may never exit as the stat and sfifo are not re-read inside
-the loop, fix that.
----
- drivers/tty/serial/fsl_lpuart.c | 76 +++++++++++++++++++++------------
- 1 file changed, 49 insertions(+), 27 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 67fa113f77d4..888e01fbd9c5 100644
+index 67fa113f77d4..d0efeba5c695 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -12,6 +12,7 @@
- #include <linux/dmaengine.h>
- #include <linux/dmapool.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/irq.h>
- #include <linux/module.h>
- #include <linux/of.h>
-@@ -404,33 +405,6 @@ static unsigned int lpuart_get_baud_clk_rate(struct lpuart_port *sport)
- #define lpuart_enable_clks(x)	__lpuart_enable_clks(x, true)
- #define lpuart_disable_clks(x)	__lpuart_enable_clks(x, false)
+@@ -239,6 +239,8 @@
+ /* IMX lpuart has four extra unused regs located at the beginning */
+ #define IMX_REG_OFF	0x10
  
--static int lpuart_global_reset(struct lpuart_port *sport)
--{
--	struct uart_port *port = &sport->port;
--	void __iomem *global_addr;
--	int ret;
--
++static resource_size_t lpuart_earlycon_mapbase;
++
+ enum lpuart_type {
+ 	VF610_LPUART,
+ 	LS1021A_LPUART,
+@@ -410,7 +412,7 @@ static int lpuart_global_reset(struct lpuart_port *sport)
+ 	void __iomem *global_addr;
+ 	int ret;
+ 
 -	if (uart_console(port))
--		return 0;
--
--	ret = clk_prepare_enable(sport->ipg_clk);
--	if (ret) {
--		dev_err(sport->port.dev, "failed to enable uart ipg clk: %d\n", ret);
--		return ret;
--	}
--
--	if (is_imx7ulp_lpuart(sport) || is_imx8qxp_lpuart(sport)) {
--		global_addr = port->membase + UART_GLOBAL - IMX_REG_OFF;
--		writel(UART_GLOBAL_RST, global_addr);
--		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
--		writel(0, global_addr);
--		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
--	}
--
--	clk_disable_unprepare(sport->ipg_clk);
--	return 0;
--}
--
- static void lpuart_stop_tx(struct uart_port *port)
- {
- 	unsigned char temp;
-@@ -2636,6 +2610,54 @@ static const struct serial_rs485 lpuart_rs485_supported = {
- 	/* delay_rts_* and RX_DURING_TX are not supported */
- };
++	if ((port->mapbase - 0x10) == lpuart_earlycon_mapbase)
+ 		return 0;
  
-+static int lpuart_global_reset(struct lpuart_port *sport)
-+{
-+	struct uart_port *port = &sport->port;
-+	void __iomem *global_addr;
-+	unsigned long ctrl, bd;
-+	unsigned int val = 0;
-+	int ret;
-+
-+	ret = clk_prepare_enable(sport->ipg_clk);
-+	if (ret) {
-+		dev_err(sport->port.dev, "failed to enable uart ipg clk: %d\n", ret);
-+		return ret;
-+	}
-+
-+	if (is_imx7ulp_lpuart(sport) || is_imx8qxp_lpuart(sport)) {
-+		/*
-+		 * If the transmitter is used by earlycon, wait for transmit engine to
-+		 * complete and then reset.
-+		 */
-+		ctrl = lpuart32_read(port, UARTCTRL);
-+		if (ctrl & UARTCTRL_TE) {
-+			bd = lpuart32_read(&sport->port, UARTBAUD);
-+			if (read_poll_timeout(lpuart32_tx_empty, val, val, 1, 100000, false,
-+					      port)) {
-+				dev_warn(sport->port.dev,
-+					 "timeout waiting for transmit engine to complete\n");
-+				clk_disable_unprepare(sport->ipg_clk);
-+				return 0;
-+			}
-+		}
-+
-+		global_addr = port->membase + UART_GLOBAL - IMX_REG_OFF;
-+		writel(UART_GLOBAL_RST, global_addr);
-+		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
-+		writel(0, global_addr);
-+		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
-+
-+		/* Recover the transmitter for earlycon. */
-+		if (ctrl & UARTCTRL_TE) {
-+			lpuart32_write(port, bd, UARTBAUD);
-+			lpuart32_write(port, ctrl, UARTCTRL);
-+		}
-+	}
-+
-+	clk_disable_unprepare(sport->ipg_clk);
-+	return 0;
-+}
-+
- static int lpuart_probe(struct platform_device *pdev)
- {
- 	const struct lpuart_soc_data *sdata = of_device_get_match_data(&pdev->dev);
+ 	ret = clk_prepare_enable(sport->ipg_clk);
+@@ -2604,6 +2606,7 @@ static int __init lpuart32_imx_early_console_setup(struct earlycon_device *devic
+ 	device->port.iotype = UPIO_MEM32;
+ 	device->port.membase += IMX_REG_OFF;
+ 	device->con->write = lpuart32_early_write;
++	lpuart_earlycon_mapbase = device->port.mapbase;
+ 
+ 	return 0;
+ }
 -- 
-2.17.1
+2.25.1
 
