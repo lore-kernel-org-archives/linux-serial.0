@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 390FDC67871
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 23:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EA4FA373D
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 23:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiJXXKH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 19:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
+        id S230194AbiJXXmn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 19:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbiJXXJn (ORCPT
+        with ESMTP id S229822AbiJXXmY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 19:09:43 -0400
+        Mon, 24 Oct 2022 19:42:24 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA99E1905CC;
-        Mon, 24 Oct 2022 14:31:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF4A1D73FB;
+        Mon, 24 Oct 2022 15:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1666645537; h=from:from:sender:reply-to:subject:subject:date:date:
+        s=mail; t=1666615860; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1UD+7xSqDi+aiCecEHlellc6AlNFN+6Hnf+64Mwju04=;
-        b=1/RwB8pLXZAOeHRrHgf4rRHS77BqdNxIP1WQmi34UGYci7+f217kiaTRID++zeaPUCqz3g
-        Ql95hcwli5XhoLHbexC4jHVyRa51yTlAw+MYQLkn2jvjVjrlJXWSljIgvN1fy4gQYC/QdD
-        ZTw2ZfxmFDr4/9eq+to0U3GMC2WEHTc=
-Date:   Mon, 24 Oct 2022 22:05:27 +0100
+        bh=6dhnHc0bAedKhrMgs9Dk+4I6+5jfqv63sCgiUYVWOcI=;
+        b=tn1ZvOhDMsL2gp6C/3Ym9t7tzU8xZKvHqGrY4PYZXRWhTkGcKydZ7EkM1OPd+MtYhJbqEU
+        gaeSSUu5ewEavK1O9aX2hgvviFqghRqzkRmSVnUBoMURUYz5BkO4yWfO/2k3UF6FZOwmlk
+        eYlYk1D+4AEN4Q6V/cyZPE1MQ5gYaoA=
+Date:   Mon, 24 Oct 2022 13:50:50 +0100
 From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v3 2/2] serial: 8250/ingenic: Add support for the
+Subject: Re: [PATCH v2 2/2] serial: 8250/ingenic: Add support for the
  JZ4750/JZ4755
 To:     Siarhei Volkau <lis8215@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,10 +36,10 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Message-Id: <3XZ9KR.KOUPAEJY0VWY2@crapouillou.net>
-In-Reply-To: <20221022165047.4020785-3-lis8215@gmail.com>
-References: <20221022165047.4020785-1-lis8215@gmail.com>
-        <20221022165047.4020785-3-lis8215@gmail.com>
+Message-Id: <Q0D9KR.U3D9MHHH52AZ@crapouillou.net>
+In-Reply-To: <20221022151224.4000238-3-lis8215@gmail.com>
+References: <20221022151224.4000238-1-lis8215@gmail.com>
+        <20221022151224.4000238-3-lis8215@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
@@ -49,7 +49,7 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Siarhei,
 
-Le sam. 22 oct. 2022 =E0 19:50:47 +0300, Siarhei Volkau=20
+Le sam. 22 oct. 2022 =E0 18:12:24 +0300, Siarhei Volkau=20
 <lis8215@gmail.com> a =E9crit :
 > JZ4750/55/60 (but not JZ4760b) have an extra divisor in between extclk
 > and peripheral clock, called CPCCR.ECS, the driver can't figure out=20
@@ -74,13 +74,13 @@ Le sam. 22 oct. 2022 =E0 19:50:47 +0300, Siarhei Volkau=20
 l.c#L158
 > Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
 > ---
->  drivers/tty/serial/8250/8250_ingenic.c | 48=20
+>  drivers/tty/serial/8250/8250_ingenic.c | 50=20
 > ++++++++++++++++++++++----
->  1 file changed, 42 insertions(+), 6 deletions(-)
+>  1 file changed, 43 insertions(+), 7 deletions(-)
 >=20
 > diff --git a/drivers/tty/serial/8250/8250_ingenic.c=20
 > b/drivers/tty/serial/8250/8250_ingenic.c
-> index 2b2f5d8d2..744705467 100644
+> index 2b2f5d8d2..3ffa6b722 100644
 > --- a/drivers/tty/serial/8250/8250_ingenic.c
 > +++ b/drivers/tty/serial/8250/8250_ingenic.c
 > @@ -87,24 +87,19 @@ static void __init=20
@@ -90,9 +90,10 @@ l.c#L158
 >=20
 > -static int __init ingenic_early_console_setup(struct earlycon_device=20
 > *dev,
+> -					      const char *opt)
 > +static int __init ingenic_earlycon_setup_tail(struct earlycon_device=20
 > *dev,
->  					      const char *opt)
+> +					      const char *opt)
 >  {
 >  	struct uart_port *port =3D &dev->port;
 >  	unsigned int divisor;
@@ -101,8 +102,8 @@ l.c#L158
 > -	if (!dev->port.membase)
 > -		return -ENODEV;
 
-Again, as I said on your v2, you can keep this here. Then you won't=20
-have to duplicate code.
+You can keep this here - no need to move it (and it'd avoid duplicating=20
+code).
 
 > -
 >  	if (opt) {
@@ -130,7 +131,7 @@ have to duplicate code.
 > +
 > +	ingenic_early_console_setup_clock(dev);
 > +
-> +	return ingenic_earlycon_setup_tail(dev, opt);
+> +	ingenic_earlycon_setup_tail(dev, opt);
 > +}
 > +
 > +static int __init jz4750_early_console_setup(struct earlycon_device=20
@@ -157,19 +158,23 @@ have to duplicate code.
 > +	if (dev->port.uartclk > 16000000)
 > +		dev->port.uartclk /=3D 2;
 
-I'm OK with this code, but the comment is not very clear.
+I would assume you could just do:
+dev->port.uartclk =3D 12000000;
 
-What about:
+Since you'd always get a 12 MHz clock (either with a 12 MHz oscillator=20
+or a 24 MHz oscillator with a /2 divider).
 
-"JZ4750/55/60 have an optional /2 divider between the EXT oscillator=20
-and some peripherals including UART, which will be enabled if using a=20
-24 MHz oscillator, and disabled when using a 12 MHz oscillator."
+With that said - I am fine with that code, it would allow to fine-tune=20
+the oscillator value (although I hightly doubt anybody is going to do=20
+that).
+
+The 16 MHz value sounds very arbitrary, but I'll give it a pass.
 
 Cheers,
 -Paul
 
 > +
-> +	return ingenic_earlycon_setup_tail(dev, opt);
+> +	ingenic_earlycon_setup_tail(dev, opt);
 > +}
 > +
 >  OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
