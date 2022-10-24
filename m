@@ -2,98 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84066C3A59D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 06:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE47FFA373F
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 07:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbiJXGh0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 02:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
+        id S229587AbiJXHzX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 03:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiJXGhZ (ORCPT
+        with ESMTP id S229536AbiJXHzU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 02:37:25 -0400
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0094453039;
-        Sun, 23 Oct 2022 23:37:10 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id e18so27504476edj.3;
-        Sun, 23 Oct 2022 23:37:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DNOlpRDz3PRWt2SLP7TWTsSG8DwAhs18CtKmfXpDPX8=;
-        b=CV4bsx+87Oz8CTcBtchXph5pjkTYPmTmaenXtoljMoBcxQ1bwwWGKZJnH1XCxiDejj
-         lLJrFruXE4smaXxfJ4BVY/yzrCnBd6O8SZivoaA8WVLg03E9siGIN/kdUUJwsBUZlNMF
-         0efcFRt5J3mVQHj+nJvn0riasV3DqwQs0MyOH9ZWACsJf8YEeBZNpyk8mpeSzP7VDi4/
-         4fzPJLLUph0ORbpo/fKlRjx0gh2srLZfsd0n+/aTGGkKUgDQUohy5hagRsveOF4DxDGD
-         EOG2ga/9KIE1KJo8eIxmsHDRMMA8mGU5uvfpezE3E6XPg9dnXIy1Qpl6lBs/Ahk5qJvJ
-         g0Yw==
-X-Gm-Message-State: ACrzQf11i0wMQOSbdGG1OVdIU7Z5shdvjv/EUsZoq2Ng0EqfiHckU4Cv
-        dZC8RCVdqUsq4kyXuJXc14NqaE/lNkld/g==
-X-Google-Smtp-Source: AMsMyM706iOH7eofX+Z3ICsllq08MNRHvZtNgzRhuuuAIBnAyBuFDIBnHyBDTZeMEAqUN4Aaclx8QA==
-X-Received: by 2002:a05:6402:33c4:b0:448:e63e:4f40 with SMTP id a4-20020a05640233c400b00448e63e4f40mr29103392edc.203.1666593428760;
-        Sun, 23 Oct 2022 23:37:08 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id 15-20020a170906300f00b007415f8ffcbbsm15194521ejz.98.2022.10.23.23.37.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 23 Oct 2022 23:37:07 -0700 (PDT)
-Message-ID: <0ac3dc40-080a-f843-f616-7a9fdd78afaf@kernel.org>
-Date:   Mon, 24 Oct 2022 08:37:06 +0200
+        Mon, 24 Oct 2022 03:55:20 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9C93B735;
+        Mon, 24 Oct 2022 00:55:14 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id BC1EF1C000E;
+        Mon, 24 Oct 2022 07:55:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1666598113;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v+DtEIbWCTrMoEhxqNZp5xO+0p2o8LDxYvX/bSafQhA=;
+        b=EKvNS6u8jnjegmr7GDNhG+HxpDM+Wj8+KWSwkrOzg4G/WtiE/ROOrbblmt3pAjrvfgueMZ
+        jNTxNy9LBLmzrpAyINZWgaV33dHQsxd2oSo/1LGCIw3PJwc8S4Gp1tPDIZwDQizaBcpvvY
+        S3ztUWTpqBY/bKIMXiZzkz2tMvCnNm3MdwXcvuQA9cOxsDUOftYKyK5T8gE5BZQRipHKSD
+        MEoTEyocU8KUQ2bKMtZt6sK6di8sKvOZGKxCEN0+nn2aWJyMv0pJI2PBN9TXXCi3sZ5UiY
+        Jci8bOiL/oSTvMdSx5T2vTxAVT3MDnq5GdNYYMuKfU1RrQ0HaA8QlN4H7V8uHw==
+Date:   Mon, 24 Oct 2022 09:55:07 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Sylwester Nawrocki <sylvester.nawrocki@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: Re: [PATCH 02/21] ARM: s3c: remove s3c24xx specific hacks
+Message-ID: <20221024095507.302687f8@xps-13>
+In-Reply-To: <20221021203329.4143397-2-arnd@kernel.org>
+References: <20221021202254.4142411-1-arnd@kernel.org>
+        <20221021203329.4143397-2-arnd@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Content-Language: en-US
-To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
-        lukas@wunner.de, ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-References: <20221020131938.32454-1-sherry.sun@nxp.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH V3] tty: serial: fsl_lpuart: don't break the on-going
- transfer when global reset
-In-Reply-To: <20221020131938.32454-1-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 20. 10. 22, 15:19, Sherry Sun wrote:
-> @@ -2636,6 +2610,54 @@ static const struct serial_rs485 lpuart_rs485_supported = {
->   	/* delay_rts_* and RX_DURING_TX are not supported */
->   };
->   
-> +static int lpuart_global_reset(struct lpuart_port *sport)
-> +{
-> +	struct uart_port *port = &sport->port;
-> +	void __iomem *global_addr;
-> +	unsigned long ctrl, bd;
-> +	unsigned int val = 0;
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(sport->ipg_clk);
-> +	if (ret) {
-> +		dev_err(sport->port.dev, "failed to enable uart ipg clk: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	if (is_imx7ulp_lpuart(sport) || is_imx8qxp_lpuart(sport)) {
-> +		/*
-> +		 * If the transmitter is used by earlycon, wait for transmit engine to
-> +		 * complete and then reset.
-> +		 */
-> +		ctrl = lpuart32_read(port, UARTCTRL);
-> +		if (ctrl & UARTCTRL_TE) {
-> +			bd = lpuart32_read(&sport->port, UARTBAUD);
-> +			if (read_poll_timeout_atomic(lpuart32_tx_empty, val, val, 1, 100000,
-> +						     false, port)) {
+Hi Arnd,
 
-Ah, this is not atomic context (clk_prepare_enable() above and 
-usleep_range() below), so no need for _atomic here too.
+arnd@kernel.org wrote on Fri, 21 Oct 2022 22:27:35 +0200:
 
-thanks,
--- 
-js
-suse labs
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> A number of device drivers reference CONFIG_ARM_S3C24XX_CPUFREQ or
+> similar symbols that are no longer available with the platform gone,
+> though the drivers themselves are still used on newer platforms,
+> so remove these hacks.
+>=20
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+Thanks,
+Miqu=C3=A8l
