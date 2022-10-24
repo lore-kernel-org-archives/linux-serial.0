@@ -2,129 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0527FA373E
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 13:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE74ECAAA1
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Oct 2022 13:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235908AbiJXNRi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Oct 2022 09:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
+        id S236580AbiJXNvC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Oct 2022 09:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233701AbiJXNRE (ORCPT
+        with ESMTP id S236748AbiJXNty (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Oct 2022 09:17:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FA29AF9E;
-        Mon, 24 Oct 2022 05:26:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A375E612D2;
-        Mon, 24 Oct 2022 12:26:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AF6CC433D7;
-        Mon, 24 Oct 2022 12:25:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1666614362;
-        bh=2XWGMD1dyJoof5ESj2tNrEfH8u5LG6bFReadSHUzboE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=keyyr4OZE3GtaW9cTc0eOlIcSQLxEgKVkHoKcO1+qn3YT7qDohzIikn4xVrY3uteN
-         IxaxxTbHSva8XMZStVMADlD/Jy3e/38tNhwXegG7zeiW5IzZEiu0RA1PB4Uh7+RcEI
-         dvcSk+hRxPA79LfLwH21FfvNZnsqud3zbSSYpHjYKgQbCvl4Te3C0DvNBYjQP3s6va
-         HhY0qZo0LBSeTBRz76K6dOJ+EupvvNPRbVV9X3Chv7khS5TFoRBfS7QqAf2mcMCxRc
-         OlbvlC6F2FVjUEpnT793zg2Oq1oMC6HJkKHBnppUyC/kzsDaeV5nGhQwo8jpUAvZxi
-         htN5/K4iXEADQ==
-Date:   Mon, 24 Oct 2022 13:25:55 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Sergiu.Moga@microchip.com
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
-        Claudiu.Beznea@microchip.com, radu_nicolae.pirea@upb.ro,
-        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, Kavyasree.Kotagiri@microchip.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, krzysztof.kozlowski@linaro.org
-Subject: Re: [PATCH v5 1/9] dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI
- child node ref binding
-Message-ID: <Y1aEU+k1lMOdSSR5@google.com>
-References: <20220922113347.144383-1-sergiu.moga@microchip.com>
- <20220922113347.144383-2-sergiu.moga@microchip.com>
- <YzRiVwzJYXtat1O5@google.com>
- <7a0c45e2-85fc-b5b0-d1de-a9e06a20bb42@microchip.com>
- <YzRnAy0DrfBilz8d@google.com>
- <1d61596b-876b-2eca-f72d-ed38cc36f1a8@microchip.com>
+        Mon, 24 Oct 2022 09:49:54 -0400
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B04B87B1
+        for <linux-serial@vger.kernel.org>; Mon, 24 Oct 2022 05:41:38 -0700 (PDT)
+Received: by mail-pg1-f173.google.com with SMTP id r18so8538445pgr.12
+        for <linux-serial@vger.kernel.org>; Mon, 24 Oct 2022 05:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Jh8UQ4JmTZN9hL0/8CXAkNYRnuwMy/n4/v6mITjc4KY=;
+        b=y0W+zUyiBftSd0JgAGoPOqPtmV13guRpqzbMHskUNvLCEuQ6pihIc7oGP6TuC3oQt5
+         NjC6zT2GBgFpwt3TaO3sCktoTg2zHU1fTtWzfcwSmh6ykgmIp95Eot8a0sqsecpFyW7x
+         1HT6dR9s6lU9w8AQMYPhYLXd1Gu3x1edoP1WhBwFF/jIaERMSCG6bAABteTZbOS+Taz8
+         m7SCCh9de8RQXNTOTCxekuN5wUYGpUE+af/pdLsiLsH9H7ozUi1IJplIrGjD7sC4Tf7t
+         s+A+OHtLvPIWSHgE+4xzSs5FzW53+pzJ7Liv/i1SA0R2VvOs5lkPyZK2zhrwcwhQeqwz
+         cUfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jh8UQ4JmTZN9hL0/8CXAkNYRnuwMy/n4/v6mITjc4KY=;
+        b=VvzDs8PIDsGm3jRNlrIc66uei2JKRRCGHVrkivieAJVpzq8qjrp+Kau+R6NYL0aUkv
+         yHwprvCBrOofpfikg/DQt6BwvsuXDWJ1KAL2llh1sLSMfBBm0fAGcWUqyctHDVDcAR6Y
+         0cVtDH677nKFHl2a6wzRkQBXwFD72Pz3YsZYXTaObM1ogdmdiGX1mojCIAN/pcC+jV8b
+         LimrSejG5WZBN7fA34JcKgXeyYhVaoPn/gdgMUDe48qVTsdXAATrSEuL1DTG/haSYdsh
+         bagk/7cGv9QYFM0HMVOL5vH3u+dAUdqop5ZhrRicz0GZVgXm8FzSBwahmK136hzWk0aF
+         p5aw==
+X-Gm-Message-State: ACrzQf3KdXAdM8AdtO1UEe7VYmMBFWebd6xJEBnva7sSHH2r893k/rqq
+        YcHMn1NnT3UOgjkEHJr/+BEQyFna4UZVYw==
+X-Google-Smtp-Source: AMsMyM64HS96JA+t5NegWTBhGoXrPmUTvN8S9j1oIuC6j5JnhVzd28Edhbio8VxlddWIvdR7T0/thQ==
+X-Received: by 2002:a0c:8ccc:0:b0:4b2:382e:ddaa with SMTP id q12-20020a0c8ccc000000b004b2382eddaamr27200510qvb.33.1666614368794;
+        Mon, 24 Oct 2022 05:26:08 -0700 (PDT)
+Received: from [192.168.1.8] ([64.57.193.93])
+        by smtp.gmail.com with ESMTPSA id u30-20020a37ab1e000000b006ef0350db8asm9109052qke.128.2022.10.24.05.26.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Oct 2022 05:26:08 -0700 (PDT)
+Message-ID: <a354c24d-0355-7c9d-ad05-4c21561af4dc@linaro.org>
+Date:   Mon, 24 Oct 2022 08:26:05 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1d61596b-876b-2eca-f72d-ed38cc36f1a8@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 02/21] ARM: s3c: remove s3c24xx specific hacks
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, Ben Dooks <ben-linux@fluff.org>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Sylwester Nawrocki <sylvester.nawrocki@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20221021202254.4142411-1-arnd@kernel.org>
+ <20221021203329.4143397-2-arnd@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221021203329.4143397-2-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 28 Sep 2022, Sergiu.Moga@microchip.com wrote:
+On 21/10/2022 16:27, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> A number of device drivers reference CONFIG_ARM_S3C24XX_CPUFREQ or
+> similar symbols that are no longer available with the platform gone,
+> though the drivers themselves are still used on newer platforms,
+> so remove these hacks.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-> On 28.09.2022 18:23, Lee Jones wrote:
-> > On Wed, 28 Sep 2022, Sergiu.Moga@microchip.com wrote:
-> > 
-> >> On 28.09.2022 18:03, Lee Jones wrote:
-> >>> On Thu, 22 Sep 2022, Sergiu Moga wrote:
-> >>>
-> >>>> Another functionality of FLEXCOM is that of SPI. In order for
-> >>>> the proper validation of the SPI children nodes through the binding
-> >>>> to occur, the proper binding for SPI must be referenced.
-> >>>>
-> >>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-> >>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >>>> ---
-> >>>>
-> >>>>
-> >>>> v1 -> v2:
-> >>>> - use full schema paths
-> >>>>
-> >>>>
-> >>>> v2 -> v3:
-> >>>> - Added Reviewed-by tag, previously this was [PATCH 3]
-> >>>>
-> >>>>
-> >>>> v3 -> v4:
-> >>>> - Nothing, previously this was [PATCH 5]
-> >>>>
-> >>>>
-> >>>> v4 -> v5:
-> >>>> - Nothing
-> >>>>
-> >>>>
-> >>>>
-> >>>>    .../devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml       | 5 ++---
-> >>>>    1 file changed, 2 insertions(+), 3 deletions(-)
-> >>>
-> >>> Not sure how these can be handled.
-> >>>
-> >>> I guess I cannot take these until the other patches are applied.
-> >>>
-> >>> NB: The patch doesn't apply cleanly anyway, so will need to be rebased.
-> >>>
-> >>
-> >>
-> >> Hello,
-> >>
-> >> The sama5d2-flexcom binding related patches are dependent on:
-> >> https://lore.kernel.org/linux-arm-kernel/20220916075744.1879428-1-kavyasree.kotagiri@microchip.com/
-> > 
-> > I would be very cautious about relying on comments made in the
-> > cover-letter.  Better to make this a hard requirement and place them
-> > in the same patch-set.
-> > 
-> 
-> 
-> 
-> Understood, my apologies, I will keep this in mind the next time this 
-> happens :).
-> 
-> Otherwise, by applying the patch series linked above, my sama5d2-flexcom 
-> patches should apply cleanly afterwards.
 
-Please re-send this once the other set has been applied.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
--- 
-Lee Jones [李琼斯]
+Best regards,
+Krzysztof
+
