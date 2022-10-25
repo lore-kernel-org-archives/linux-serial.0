@@ -2,85 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B95B7C04A95
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 10:15:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BEE6C04A95
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 10:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbiJYKP5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Oct 2022 06:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
+        id S230360AbiJYKVU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Oct 2022 06:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbiJYKPi (ORCPT
+        with ESMTP id S232364AbiJYKUz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Oct 2022 06:15:38 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C1295A5;
-        Tue, 25 Oct 2022 03:09:27 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id CD37E1FD6C;
-        Tue, 25 Oct 2022 10:09:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1666692565; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3ux62HDRPYlDLLBODOUnZkbRi1/eHkDR13k5JCm7MLk=;
-        b=pe95vjayzklaVLXKUbO97EJ97WMPCsVMYOBmzxLulcVWLYFdKU6sUz2NBWSF/GJySVz+pD
-        nlLHyQ6AjOfjpbrhd8bQedACqg6T0DS/easbo/kY8WaoRMq+AzWkdOg9Q6Tt64fZMfuFU2
-        yIXbNA+81edyfWKbo0+f9Lj4ttQBJN0=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6B0FE2C141;
-        Tue, 25 Oct 2022 10:09:25 +0000 (UTC)
-Date:   Tue, 25 Oct 2022 12:09:22 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
+        Tue, 25 Oct 2022 06:20:55 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FAC171CF1;
+        Tue, 25 Oct 2022 03:17:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666693056; x=1698229056;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=U1KoYFF/icq9KjKxIKGx99Qx9TPUDJo/UOlkG3I0mNg=;
+  b=SW1ufyga0AqrhIULz0ypBeiqAv0SL6d9jDQl1iDnJxSif0t4L+/cSx9R
+   ZanR2h5CC9I/3YeKq1yoZwLUwnNumB/vMW3O59rKBlIXXvWTxPYJtc5Ou
+   yWkREmvPBIrRHV7n5rrQrYt/8mHMiU3mBGx+bjRu4fyBPb0JEzjjZ5S4S
+   lUSmpcftMRw67lf31buqk19JpBTk5n9YHsbX1PFiHsFM8e4/9iG5IJIwu
+   qHB4vZzgCW/Lr0/ipVfJJ0xhjwYxKMLO5+03OWDyoK2rutgjgIWZ1Oxrq
+   kjjQp34ZaWvEnn+V2Bp+ZAOP9albUKKpSLdX4RbiOSAT0RXg7emwgWe/g
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="334234736"
+X-IronPort-AV: E=Sophos;i="5.95,211,1661842800"; 
+   d="scan'208";a="334234736"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 03:17:36 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="626377430"
+X-IronPort-AV: E=Sophos;i="5.95,211,1661842800"; 
+   d="scan'208";a="626377430"
+Received: from pweidel-mobl.ger.corp.intel.com ([10.252.44.62])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 03:17:34 -0700
+Date:   Tue, 25 Oct 2022 13:17:29 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "D. Starke" <daniel.starke@siemens.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v2 22/38] serial: kgdboc: document console_lock
- usage
-Message-ID: <Y1e10nnjR6zysUwh@alley>
-References: <20221019145600.1282823-1-john.ogness@linutronix.de>
- <20221019145600.1282823-23-john.ogness@linutronix.de>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] tty: n_gsm: introduce macro for minimal unit
+ size
+In-Reply-To: <20221024130114.2070-1-daniel.starke@siemens.com>
+Message-ID: <fa9b8796-b0cd-d6e4-12d3-e0acd570d633@linux.intel.com>
+References: <20221024130114.2070-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019145600.1282823-23-john.ogness@linutronix.de>
+Content-Type: multipart/mixed; boundary="8323329-170580793-1666693056=:1638"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed 2022-10-19 17:01:44, John Ogness wrote:
-> kgdboc_earlycon_init() uses the console_lock to ensure that no consoles
-> are unregistered until the kgdboc_earlycon is setup. This is necessary
-> because the trapping of the exit() callback assumes that the exit()
-> callback is not called before the trap is setup.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Great catch!
+--8323329-170580793-1666693056=:1638
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-Note: This behavior might be dangerous. printk_late_init() checks if
-      the early console code is in the init section. It unregisters
-      such consoles even when keep_bootcon parameter is used.
+On Mon, 24 Oct 2022, D. Starke wrote:
 
-      Well, it is "not serious" and might be improved later.
-      If the early console has this code in the early section
-      then it is a bug and should be fixed. printk_late_init() does
-      the best effort because this problem would block all consoles
-      and would be hard to debug. It is the same with kgdb but
-      it is still only a corner case and just the best effort.
-
-> Explicitly document this non-typical console_lock usage.
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> n_gsm has a minimal protocol overhead of 7 bytes. The current code already
+> checks whether the configured MRU/MTU size is at least one byte more than
+> this.
+> 
+> Introduce the macro MIN_MTU to make this value more obvious.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Best Regards,
-Petr
+
+-- 
+ i.
+
+--8323329-170580793-1666693056=:1638--
