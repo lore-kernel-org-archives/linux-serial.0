@@ -2,85 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC83EC38A2D
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 11:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DA7C38A2D
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 11:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbiJYL2R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Oct 2022 07:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
+        id S230483AbiJYLuU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Oct 2022 07:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiJYL2Q (ORCPT
+        with ESMTP id S231357AbiJYLuT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Oct 2022 07:28:16 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21C218D45C;
-        Tue, 25 Oct 2022 04:28:15 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1666697293;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=j00FzWp2DyoqTFDqRk0YLSglffeF01Js6+w7bEZmwNM=;
-        b=l71XfcAhxqUMYyLb6J5362OAWgdW/zU2metRCyQUk7jOeuO+qmyxwZk/2zhBXKftgtJ9c/
-        bRHczdniYcmsyegXhM13t92O8y72FeWj8VD8myypiPI37cst1nwyc1m0zTmjxnu24/pkS6
-        bSEvn3tUTVhTEAkpk6tQUDNjG+aLUgwyF6tyy1yjWJrUnyxzr75UWrgeb3tU33jgUb9us4
-        1ClP9zuZmBDOuuNaqILy3vDM8Xm+f23jPY8yrOQrl9wAEzfc5MWHF4gShl5wbP8vz4/Yw3
-        fddhFgaYlJ6GrKyVFzci65mSr3QctPaX0hsbHzsWynLNuPjyih5X13S+Y8Bh0g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1666697293;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=j00FzWp2DyoqTFDqRk0YLSglffeF01Js6+w7bEZmwNM=;
-        b=5Z7hvJgeW/8IOsZH9zCVaPGCmsM2TtwRxk3HhpkgSGk1Tg9j/Fsmj079UEvOlSz4baTZa7
-        Kjm45zFlSoDy59Dg==
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
+        Tue, 25 Oct 2022 07:50:19 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439C92F64E;
+        Tue, 25 Oct 2022 04:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666698617; x=1698234617;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Xb9y1sL2yBm6531F/bavSgt2tsu3zlbPV+g/ABHSgpA=;
+  b=WIuqe/7P678zJpSd9HHWtDCcvqxqBswhONzwoVvcCucTqrKAgQE/Hskx
+   XVjZxr9GVTJV4FOaXSE0yg8G5OjRJ404h1feLi40Dk6b6Z/1Eo5F0Gbvz
+   FMJhvJCIukmDQaN3aWwVKE+z1xNGIiBigB81KwbGL183rhy7tyIOcC7Ud
+   bpduC/hmvd8zwGCDKs9OPA9lrcr1wk85MHf1jXmnLkiJwPLdkxalWdhZD
+   SbuOuBTu2Q5SjhCqXAzkw4Q/T/oqYez5b50JCE1lD+KkdJXXz8qgMFCw5
+   p1RVa7UOxc6wwwvY8Mx3BFFydmUOTDDflUV/FQXYZvU/13gzJ2OhzUBwp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="334248926"
+X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
+   d="scan'208";a="334248926"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 04:50:17 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="694924313"
+X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
+   d="scan'208";a="694924313"
+Received: from pweidel-mobl.ger.corp.intel.com ([10.252.44.62])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 04:50:15 -0700
+Date:   Tue, 25 Oct 2022 14:50:14 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "Starke, Daniel" <daniel.starke@siemens.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v2 12/38] tty: serial: kgdboc: use
- console_is_enabled()
-In-Reply-To: <CAD=FV=WF2S9wQ6uR+VKU4EfDTVd0JnKkuU3Wyfo6P8E_FouebQ@mail.gmail.com>
-References: <20221019145600.1282823-1-john.ogness@linutronix.de>
- <20221019145600.1282823-13-john.ogness@linutronix.de>
- <CAD=FV=VFxKL=sOMdhyHrgy2JOtzKJdOe4euwZRRAK7P-rNVjuQ@mail.gmail.com>
- <CAD=FV=WF2S9wQ6uR+VKU4EfDTVd0JnKkuU3Wyfo6P8E_FouebQ@mail.gmail.com>
-Date:   Tue, 25 Oct 2022 13:34:12 +0206
-Message-ID: <87czagf8hf.fsf@jogness.linutronix.de>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] tty: n_gsm: add parameter negotiation support
+In-Reply-To: <GV1PR10MB5892040CAC0FED4857BB771AE0319@GV1PR10MB5892.EURPRD10.PROD.OUTLOOK.COM>
+Message-ID: <d253f864-5585-ce29-b9b4-92a0e2bc374@linux.intel.com>
+References: <20221024130114.2070-1-daniel.starke@siemens.com> <20221024130114.2070-3-daniel.starke@siemens.com> <403445fd-fc99-290-2a5d-cd7c18fb715c@linux.intel.com> <GV1PR10MB5892040CAC0FED4857BB771AE0319@GV1PR10MB5892.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-10-24, Doug Anderson <dianders@chromium.org> wrote:
-> It actually only holds console_list_lock() even at the end of the
-> series. Still, it seems weird that we're declaring the `data_race` on
-> CON_ENABLED but not CON_BOOT ?
+On Tue, 25 Oct 2022, Starke, Daniel wrote:
 
-You are correct that it is not a data race (because of the
-console_list_lock being held.) Petr has suggested adding a separate
-function for non-data-race callers. For v3 I will do this and use it
-here, probably called console_is_enabled_locked().
+> > > +	n1 = FIELD_GET(PN_N_FIELD_N1, le16_to_cpu(params->n_bits));
+> > 
+> > Should this be using get_unaligned...()?
+> 
+> Is this really necessary if the structure is already __packed? I did not
+> receive any warning by the compiler.
 
-Usually CON_ENABLED is the only flag that is interesting during normal
-operation. The kgdboc case is an exception. I thought about if we should
-have console_flags() and console_flags_locked() to be able to handle
-general con->flags access. console_flags() would be marked with
-data_race(), console_flags_locked() would use lockdep to ensure the
-console_list_lock is held.
+It would be arch dependent to begin with. But honestly, I'm not entirely 
+certain here myself.
 
-But I would also like to have the _is_enabled special variant because
-how we check if a console is enabled will be different for the atomic
-consoles. I would like to hide those details in the _is_enabled
-implementation.
+Documentation/core-api/unaligned-memory-access.rst claims compiler would 
+indeed do extra work to ensure access of unaligned member in a packed 
+struct is handled ok. But then you call le16_to_cpu() for the member field 
+which is full of cast magic so I'd be a bit hesitant to claim the 
+knowledge about the unalignment is carried all the way down there through 
+those casts.
 
-John Ogness
+Other subtle detail is the reply side struct which is allocated from stack
+and with packed compiler is allowed (I don't know if it does that or not)
+to make the struct unaligned as well (so perhaps put_unaligned would be 
+necessary there too if packed is retained).
+
+If you want my recommendation, I'd just remove the packed altogether from 
+the struct because there seems to be no natural holes in it, use 
+get_unaligned for the receive side, and add this build time check:
+
+static_assert(sizeof(struct gsm_dlci_param_bits) == 8);
+
+If lkp builds all its current archs fine with that static_assert(), I'd be 
+pretty sure the struct that the unpacked struct is ok on all archs. Would 
+it ever stop being true on any arch/compiler setting, the assert would 
+catch it right away.
+
+
+-- 
+ i.
+
