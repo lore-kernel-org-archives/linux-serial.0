@@ -2,100 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7132C38A2D
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 07:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B95B7C04A95
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 10:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbiJYHkM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Oct 2022 03:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
+        id S231224AbiJYKP5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Oct 2022 06:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231899AbiJYHkD (ORCPT
+        with ESMTP id S231220AbiJYKPi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Oct 2022 03:40:03 -0400
-Received: from first.geanix.com (first.geanix.com [116.203.34.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C181BC780
-        for <linux-serial@vger.kernel.org>; Tue, 25 Oct 2022 00:40:01 -0700 (PDT)
-Received: from xps.skovby (85.184.138.169.dynamic.dhcp.aura-net.dk [85.184.138.169])
-        by first.geanix.com (Postfix) with ESMTPSA id 23DBF57B60;
-        Tue, 25 Oct 2022 07:39:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1666683598; bh=qZrSlc6MMwTOB3mI09iVZFthHD/6RQ4/UnCZviOYtcs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=mbMtJ6vpEbBeDCUlwP34o3oiGNlnAq+JzEgiz3atgxTWSYPbJZfCBxgaapRtfIkJ3
-         y41ssRtPXe1i0vbx56JBXkO4Y20J5xH5g8HMS8BtE5+z/JxbABUY5bkFy8B3PtYWvu
-         yZfG3Ugns5W9tnriybPIeHoylCPqEATbvN+N5rlyUVgFJV0ZZLnWCFPtzt+Z48/xLl
-         egVx4xXOl6ZDsYRLjOdwEypBm3WZ5adLP1DYgylut7LYb9kfQDU7uOVvrtlk1mtZwE
-         g+0OTnxyGTqFMvoskmu8QAaHwSETPuSiX8la2OIwTtN/9hHfVRxr3cbMvvTRgaBh29
-         LVtsK/xtXPOCQ==
-From:   =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>
-To:     linux-serial@vger.kernel.org
-Cc:     =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH v3 4/4] tty: 8250: update description of RUNTIME_PORTS / nr_uarts
-Date:   Tue, 25 Oct 2022 09:39:44 +0200
-Message-Id: <20221025073944.102437-4-martin@geanix.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221025073944.102437-1-martin@geanix.com>
-References: <20221025073944.102437-1-martin@geanix.com>
+        Tue, 25 Oct 2022 06:15:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C1295A5;
+        Tue, 25 Oct 2022 03:09:27 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id CD37E1FD6C;
+        Tue, 25 Oct 2022 10:09:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1666692565; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3ux62HDRPYlDLLBODOUnZkbRi1/eHkDR13k5JCm7MLk=;
+        b=pe95vjayzklaVLXKUbO97EJ97WMPCsVMYOBmzxLulcVWLYFdKU6sUz2NBWSF/GJySVz+pD
+        nlLHyQ6AjOfjpbrhd8bQedACqg6T0DS/easbo/kY8WaoRMq+AzWkdOg9Q6Tt64fZMfuFU2
+        yIXbNA+81edyfWKbo0+f9Lj4ttQBJN0=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 6B0FE2C141;
+        Tue, 25 Oct 2022 10:09:25 +0000 (UTC)
+Date:   Tue, 25 Oct 2022 12:09:22 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 22/38] serial: kgdboc: document console_lock
+ usage
+Message-ID: <Y1e10nnjR6zysUwh@alley>
+References: <20221019145600.1282823-1-john.ogness@linutronix.de>
+ <20221019145600.1282823-23-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221019145600.1282823-23-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The 8250 module has been updated allow configurations with zero builtin
-UART ports, so change the description of the parameter to reflect that.
+On Wed 2022-10-19 17:01:44, John Ogness wrote:
+> kgdboc_earlycon_init() uses the console_lock to ensure that no consoles
+> are unregistered until the kgdboc_earlycon is setup. This is necessary
+> because the trapping of the exit() callback assumes that the exit()
+> callback is not called before the trap is setup.
 
-Signed-off-by: Martin Hundebøll <martin@geanix.com>
----
+Great catch!
 
-Change since v2:
- * new patch
+Note: This behavior might be dangerous. printk_late_init() checks if
+      the early console code is in the init section. It unregisters
+      such consoles even when keep_bootcon parameter is used.
 
- drivers/tty/serial/8250/8250_core.c |  3 ++-
- drivers/tty/serial/8250/Kconfig     | 10 +++++-----
- 2 files changed, 7 insertions(+), 6 deletions(-)
+      Well, it is "not serious" and might be improved later.
+      If the early console has this code in the early section
+      then it is a bug and should be fixed. printk_late_init() does
+      the best effort because this problem would block all consoles
+      and would be hard to debug. It is the same with kgdb but
+      it is still only a corner case and just the best effort.
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index a8fbc2325244..3d8bf0296080 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1257,7 +1257,8 @@ module_param_hw(share_irqs, uint, other, 0644);
- MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
- 
- module_param(nr_uarts, uint, 0644);
--MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
-+MODULE_PARM_DESC(nr_uarts, "Number of built-in (non-discoverable) UARTs to initialize. (1-"
-+		_MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
- 
- module_param(skip_txen_test, uint, 0644);
- MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index d0b49e15fbf5..65ef03553146 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -191,15 +191,15 @@ config SERIAL_8250_NR_UARTS
- 	  via hot-plug, or any ISA multi-port serial cards.
- 
- config SERIAL_8250_RUNTIME_UARTS
--	int "Number of 8250/16550 serial ports to register at runtime"
-+	int "Number of built-in (non-discoverable) UARTs to initialize at boot time"
- 	depends on SERIAL_8250
- 	range 0 SERIAL_8250_NR_UARTS
- 	default "4"
- 	help
--	  Set this to the maximum number of serial ports you want
--	  the kernel to register at boot time.  This can be overridden
--	  with the module parameter "nr_uarts", or boot-time parameter
--	  8250.nr_uarts
-+	  Set this to the maximum number of built-in (non-discoverable) serial
-+	  ports you want the kernel to initialize at boot time.  This can be
-+	  overridden with the module parameter "nr_uarts", or boot-time
-+	  parameter 8250.nr_uarts
- 
- config SERIAL_8250_EXTENDED
- 	bool "Extended 8250/16550 serial driver options"
--- 
-2.38.1
+> Explicitly document this non-typical console_lock usage.
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
