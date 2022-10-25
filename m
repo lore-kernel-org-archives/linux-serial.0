@@ -2,95 +2,245 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DA7C38A2D
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 11:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0963CC04A95
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Oct 2022 12:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbiJYLuU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Oct 2022 07:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
+        id S231255AbiJYME5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Oct 2022 08:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbiJYLuT (ORCPT
+        with ESMTP id S230499AbiJYMEz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Oct 2022 07:50:19 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439C92F64E;
-        Tue, 25 Oct 2022 04:50:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666698617; x=1698234617;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Xb9y1sL2yBm6531F/bavSgt2tsu3zlbPV+g/ABHSgpA=;
-  b=WIuqe/7P678zJpSd9HHWtDCcvqxqBswhONzwoVvcCucTqrKAgQE/Hskx
-   XVjZxr9GVTJV4FOaXSE0yg8G5OjRJ404h1feLi40Dk6b6Z/1Eo5F0Gbvz
-   FMJhvJCIukmDQaN3aWwVKE+z1xNGIiBigB81KwbGL183rhy7tyIOcC7Ud
-   bpduC/hmvd8zwGCDKs9OPA9lrcr1wk85MHf1jXmnLkiJwPLdkxalWdhZD
-   SbuOuBTu2Q5SjhCqXAzkw4Q/T/oqYez5b50JCE1lD+KkdJXXz8qgMFCw5
-   p1RVa7UOxc6wwwvY8Mx3BFFydmUOTDDflUV/FQXYZvU/13gzJ2OhzUBwp
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="334248926"
-X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="334248926"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 04:50:17 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="694924313"
-X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="694924313"
-Received: from pweidel-mobl.ger.corp.intel.com ([10.252.44.62])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 04:50:15 -0700
-Date:   Tue, 25 Oct 2022 14:50:14 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Tue, 25 Oct 2022 08:04:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC1592584;
+        Tue, 25 Oct 2022 05:04:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BFE79CE1D20;
+        Tue, 25 Oct 2022 12:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ABF9C433D6;
+        Tue, 25 Oct 2022 12:04:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1666699487;
+        bh=YW//GU5sb0r8mi7I32KE2ymg1traZIpaDxmtoLIzbes=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OdUjisFbv3VN/3alY+fDk337abdJVYmWrgPOWQPjkKNXM9pR+jghcvrWdWVsMmOOQ
+         9KlIN+Q1RgSroUzB4zveVdFOZAyEhP6eRDSuz+vLiNNimWSOhE2r9KRhHuzFjY7rwe
+         VOY8d6rB2Fr1PRZqe4e/PIhDS7nLWCHAZD4cKDWM=
+Date:   Tue, 25 Oct 2022 14:04:44 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 3/3] tty: n_gsm: add parameter negotiation support
-In-Reply-To: <GV1PR10MB5892040CAC0FED4857BB771AE0319@GV1PR10MB5892.EURPRD10.PROD.OUTLOOK.COM>
-Message-ID: <d253f864-5585-ce29-b9b4-92a0e2bc374@linux.intel.com>
-References: <20221024130114.2070-1-daniel.starke@siemens.com> <20221024130114.2070-3-daniel.starke@siemens.com> <403445fd-fc99-290-2a5d-cd7c18fb715c@linux.intel.com> <GV1PR10MB5892040CAC0FED4857BB771AE0319@GV1PR10MB5892.EURPRD10.PROD.OUTLOOK.COM>
+Message-ID: <Y1fQ3G1W8PUIrod9@kroah.com>
+References: <20221024130114.2070-1-daniel.starke@siemens.com>
+ <20221024130114.2070-3-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221024130114.2070-3-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 25 Oct 2022, Starke, Daniel wrote:
-
-> > > +	n1 = FIELD_GET(PN_N_FIELD_N1, le16_to_cpu(params->n_bits));
-> > 
-> > Should this be using get_unaligned...()?
+On Mon, Oct 24, 2022 at 03:01:14PM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Is this really necessary if the structure is already __packed? I did not
-> receive any warning by the compiler.
+> n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+> See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+> The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+> the newer 27.010 here. Chapter 5.1.8.1.1 describes the parameter negotiation
+> messages and parameters. Chapter 5.4.1 states that the default parameters
+> are to be used if no negotiation is performed. Chapter 5.4.6.3.1 describes
+> the encoding of the parameter negotiation message. The meaning of the
+> parameters and allowed value ranges can be found in chapter 5.7.
+> 
+> Add parameter negotiation support accordingly. DLCI specific parameter
+> configuration by the user requires additional ioctls. This is subject to
+> another patch.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c | 335 ++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 327 insertions(+), 8 deletions(-)
+> 
+> v1 -> v2:
+> Incorporated review comments.
+> Simplification of command retry handling remains subject to future patches.
+> 
+> Link: https://lore.kernel.org/all/8c2b9492-caf4-7a48-3a7b-da939a4ac8b6@linux.intel.com/
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index c217013b3e16..11d3730bf436 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -38,6 +38,7 @@
+>  #include <linux/sched/signal.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/tty.h>
+> +#include <linux/bitfield.h>
+>  #include <linux/ctype.h>
+>  #include <linux/mm.h>
+>  #include <linux/math.h>
+> @@ -127,6 +128,7 @@ struct gsm_msg {
+>  
+>  enum gsm_dlci_state {
+>  	DLCI_CLOSED,
+> +	DLCI_CONFIGURE,		/* Sending PN (for adaption > 1) */
+>  	DLCI_OPENING,		/* Sending SABM not seen UA */
+>  	DLCI_OPEN,		/* SABM/UA complete */
+>  	DLCI_CLOSING,		/* Sending DISC not seen UA/DM */
+> @@ -184,6 +186,30 @@ struct gsm_dlci {
+>  	struct net_device *net; /* network interface, if created */
+>  };
+>  
+> +/*
+> + * Parameter bits used for parameter negotiation according to 3GPP 27.010
+> + * chapter 5.4.6.3.1.
+> + */
+> +
+> +struct gsm_dlci_param_bits {
+> +	u8 d_bits;
+> +	u8 i_cl_bits;
+> +	u8 p_bits;
+> +	u8 t_bits;
+> +	__le16 n_bits;
+> +	u8 na_bits;
+> +	u8 k_bits;
+> +} __packed;
+> +
+> +#define PN_D_FIELD_DLCI		GENMASK(5, 0)
+> +#define PN_I_CL_FIELD_FTYPE	GENMASK(3, 0)
+> +#define PN_I_CL_FIELD_ADAPTION	GENMASK(7, 4)
+> +#define PN_P_FIELD_PRIO		GENMASK(5, 0)
+> +#define PN_T_FIELD_T1		GENMASK(7, 0)
+> +#define PN_N_FIELD_N1		GENMASK(15, 0)
+> +#define PN_NA_FIELD_N2		GENMASK(7, 0)
+> +#define PN_K_FIELD_K		GENMASK(2, 0)
+> +
+>  /* Total number of supported devices */
+>  #define GSM_TTY_MINORS		256
+>  
+> @@ -411,6 +437,7 @@ static const u8 gsm_fcs8[256] = {
+>  #define INIT_FCS	0xFF
+>  #define GOOD_FCS	0xCF
+>  
+> +static void gsm_dlci_close(struct gsm_dlci *dlci);
+>  static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
+>  static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
+>  static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
+> @@ -533,6 +560,59 @@ static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
+>  	kfree(prefix);
+>  }
+>  
+> +/**
+> + * gsm_encode_params	-	encode DLCI parameters
+> + * @dlci: DLCI to encode from
+> + * @params: buffer to fill with the encoded parameters
+> + *
+> + * Encodes the parameters according to GSM 07.10 section 5.4.6.3.1
+> + * table 3.
+> + */
+> +static int gsm_encode_params(const struct gsm_dlci *dlci,
+> +			     struct gsm_dlci_param_bits *params)
+> +{
+> +	const struct gsm_mux *gsm = dlci->gsm;
+> +	unsigned int i, cl;
+> +
+> +	switch (dlci->ftype) {
+> +	case UIH:
+> +		i = 0; /* UIH */
+> +		break;
+> +	case UI:
+> +		i = 1; /* UI */
+> +		break;
+> +	default:
+> +		pr_err("%s: unsupported frame type %d\n", __func__,
+> +		       dlci->ftype);
 
-It would be arch dependent to begin with. But honestly, I'm not entirely 
-certain here myself.
+This needs to be dev_err(), right?
 
-Documentation/core-api/unaligned-memory-access.rst claims compiler would 
-indeed do extra work to ensure access of unaligned member in a packed 
-struct is handled ok. But then you call le16_to_cpu() for the member field 
-which is full of cast magic so I'd be a bit hesitant to claim the 
-knowledge about the unalignment is carried all the way down there through 
-those casts.
+And why is it not just dev_dbg()/
 
-Other subtle detail is the reply side struct which is allocated from stack
-and with packed compiler is allowed (I don't know if it does that or not)
-to make the struct unaligned as well (so perhaps put_unaligned would be 
-necessary there too if packed is retained).
+> +		return -EINVAL;
+> +	}
+> +
+> +	switch (dlci->adaption) {
+> +	case 1: /* Unstructured */
+> +		cl = 0; /* convergence layer type 1 */
+> +		break;
+> +	case 2: /* Unstructured with modem bits. */
+> +		cl = 1; /* convergence layer type 2 */
+> +		break;
+> +	default:
+> +		pr_err("%s: unsupported adaption %d\n", __func__,
+> +		       dlci->adaption);
 
-If you want my recommendation, I'd just remove the packed altogether from 
-the struct because there seems to be no natural holes in it, use 
-get_unaligned for the receive side, and add this build time check:
+Again, dev_dbg()?
 
-static_assert(sizeof(struct gsm_dlci_param_bits) == 8);
+Do not yet userspace, or external devices, spam kernel logs with
+messages.
 
-If lkp builds all its current archs fine with that static_assert(), I'd be 
-pretty sure the struct that the unpacked struct is ok on all archs. Would 
-it ever stop being true on any arch/compiler setting, the assert would 
-catch it right away.
+> +		return -EINVAL;
+> +	}
+> +
+> +	params->d_bits = FIELD_PREP(PN_D_FIELD_DLCI, dlci->addr);
+> +	/* UIH, convergence layer type 1 */
+> +	params->i_cl_bits = FIELD_PREP(PN_I_CL_FIELD_FTYPE, i) |
+> +			    FIELD_PREP(PN_I_CL_FIELD_ADAPTION, cl);
+> +	params->p_bits = FIELD_PREP(PN_P_FIELD_PRIO, dlci->prio);
+> +	params->t_bits = FIELD_PREP(PN_T_FIELD_T1, gsm->t1);
+> +	params->n_bits = cpu_to_le16(FIELD_PREP(PN_N_FIELD_N1, dlci->mtu));
+> +	params->na_bits = FIELD_PREP(PN_NA_FIELD_N2, gsm->n2);
+> +	params->k_bits = FIELD_PREP(PN_K_FIELD_K, dlci->k);
+> +
+> +	return 0;
+> +}
+> +
+>  /**
+>   *	gsm_register_devices	-	register all tty devices for a given mux index
+>   *
+> @@ -1450,6 +1530,116 @@ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
+>  	dlci->modem_rx = mlines;
+>  }
+>  
+> +/**
+> + * gsm_process_negotiation	-	process received parameters
+> + * @gsm: GSM channel
+> + * @addr: DLCI address
+> + * @cr: command/response
+> + * @params: encoded parameters from the parameter negotiation message
+> + *
+> + * Used when the response for our parameter negotiation command was
+> + * received.
+> + */
+> +static int gsm_process_negotiation(struct gsm_mux *gsm, unsigned int addr,
+> +				   unsigned int cr,
+> +				   const struct gsm_dlci_param_bits *params)
+> +{
+> +	struct gsm_dlci *dlci = gsm->dlci[addr];
+> +	unsigned int ftype, i, adaption, prio, n1, k;
+> +
+> +	i = FIELD_GET(PN_I_CL_FIELD_FTYPE, params->i_cl_bits);
+> +	adaption = FIELD_GET(PN_I_CL_FIELD_ADAPTION, params->i_cl_bits) + 1;
+> +	prio = FIELD_GET(PN_P_FIELD_PRIO, params->p_bits);
+> +	n1 = FIELD_GET(PN_N_FIELD_N1, le16_to_cpu(params->n_bits));
+> +	k = FIELD_GET(PN_K_FIELD_K, params->k_bits);
+> +
+> +	if (n1 < MIN_MTU) {
+> +		if (debug & DBG_ERRORS)
 
+Please use the proper debug code in the kernel, don't roll your own.
 
--- 
- i.
+> +			pr_info("%s N1 out of range in PN\n", __func__);
 
+This should be dev_dbg().
+
+And never use __func__ in a dev_dbg() call, it's there automatically.
+
+thanks,
+
+greg k-h
