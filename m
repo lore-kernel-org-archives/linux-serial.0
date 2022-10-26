@@ -2,139 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F78DC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Oct 2022 19:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA47ECDFA1
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Oct 2022 19:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiJZT0V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Oct 2022 15:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
+        id S234170AbiJZTgb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Oct 2022 15:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234094AbiJZT0U (ORCPT
+        with ESMTP id S234428AbiJZTga (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Oct 2022 15:26:20 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E7E5755A;
-        Wed, 26 Oct 2022 12:26:18 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id w14so3847439wru.8;
-        Wed, 26 Oct 2022 12:26:18 -0700 (PDT)
+        Wed, 26 Oct 2022 15:36:30 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26F97C754
+        for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2022 12:36:29 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id bn35so15022795ljb.5
+        for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2022 12:36:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=64tY0YpU8fQILXC9YRxDKfbMv1GXMHIfonz4Qb2UxfQ=;
-        b=qtBWmyAbHdGesJGyvQcQHSuJhEfwiWKbTQg+J2UN1LDtjd4eCrh4W5NH5DP/P94p5H
-         qvy8/YnUM86risRYUOSbqfwn+VbaDe20mk2drRPc+YaLeqpW8iWAsdAWLKFfgLm1o+/0
-         gyYJvnxNMGrB7Bq/kAXFwITsE+eyMbiiDiSRGNqaMDFFm4ExmQnhKHgIONMIYVYN0Zcf
-         v/pMYkv1QZqfmjfMxf8/7RXTMRmwbmEz/cXzITVHUw9K2T/oo6pov1jo8Ob1MGtlfm1Z
-         ouUqZ8AcTDOG1UCWOjwLf5MXZXcCDABBt4d53wSC/YWkVMQwUBDPffsC/mfI38Cpqpui
-         Nelw==
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=2crP+CNTSVg/qssMO0+pA6fHPnsnBY1oB+6tJDNUVrY=;
+        b=E68Eqd4yO5pAtgzk93S9wnj833V3o7j6XqjWKC+M2wnIQ4tatOJEuZR2tAIIJkctSZ
+         LZ8kVWqp0b/0P/SiykcjHZmqMs6BjDNVrUQmHBJNV/9NX/xT17+8N4C5WMrj67l8/duL
+         vYRNYr4n3+DCKoTs0yN5AyWKEzd0uBEw3yr6AwRYEcs6A0CVlL8L5Z0MF705ZRu72GnT
+         C8vOzUpcHous9L1imwZPEL81ftSG5sNfXm3PVJWXfMADgR9TmQvRfP4uUYAsBe1q7nsq
+         8+sMVRPxwFL26S50oDObtnoVppZGZLl+5z/n+GPU/qYtPNsmxPqz1hb+FOvO4Epk7nfI
+         /gsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=64tY0YpU8fQILXC9YRxDKfbMv1GXMHIfonz4Qb2UxfQ=;
-        b=Rkvz2CGTSWxnIh/S1/GXbBqFQAAQo43c4cLSNlYDiwhvlDhAw8yDbtLowRTi86tvTd
-         p5mmgWxp4pHJgGE6QytRoES3hB1ZqrYOpJ/bHbrWHXSuh2Dv+gSI3jkLv4QgI6U8/57J
-         UQ8GHxk7FB+Uqj78+wERq/Ngx3V8dXFUhnK5SjXXDxP0CRh81vO/zO2wK9tye6Df+wxX
-         15WAxNWPjoOXiUQrUbbYtNQUEna2ViNKhoEs8gPcYKj8leuX6SrfSceiu+2Yz8W8k5sE
-         dTFZHXDPmC7vpG9hv3IJV11HGj2n5xwIAEC97ZtTHSawf/6K+zUqsXgk058rpouyhhy3
-         PpIQ==
-X-Gm-Message-State: ACrzQf1w0WZ02CSzgDv3rNlIf6N3nWY5NBs2B7FfjdoJKlkC5t9tJy8q
-        tSISmNyPezZumjb8/ZRXluerQnD8Ve0=
-X-Google-Smtp-Source: AMsMyM7XxRClBYeudJRntlTY0J5WQ71HTQVIGzNR3DyF4gkXjhiT23Fne861TaPftcEcE8zO1AaRJw==
-X-Received: by 2002:a05:6000:2ad:b0:231:48fb:3a64 with SMTP id l13-20020a05600002ad00b0023148fb3a64mr29106999wry.184.1666812376933;
-        Wed, 26 Oct 2022 12:26:16 -0700 (PDT)
-Received: from [192.168.0.160] ([170.253.36.171])
-        by smtp.gmail.com with ESMTPSA id n66-20020a1ca445000000b003cdf141f363sm2772309wme.11.2022.10.26.12.26.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Oct 2022 12:26:16 -0700 (PDT)
-Message-ID: <6d9bb637-6733-fe0c-1836-1c1649a20d11@gmail.com>
-Date:   Wed, 26 Oct 2022 21:26:15 +0200
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2crP+CNTSVg/qssMO0+pA6fHPnsnBY1oB+6tJDNUVrY=;
+        b=PL/l4JIkf3eTG50mcKE6ijazlWS5z61DHg5vCw3bUdjvjMDHMci5bVP8163/t1T00I
+         kZhhruEPfVfBHGTyt5PfMgh58EM8Hl3Nco9muTE4f6cBySH3rcicBTEgraFANSCIzl+S
+         VMhviBelsScXL5q/DB3jRBcj9lNSTY7Oii0BnsH2mYuLW5RCU+NxPsPnjzT+vWUuShlq
+         gLPeQBDd9V+pDbd2IFwJPEL33kKAZTx9euBz0UKWpf5UbsWAP9EuOufzWG4DtQJHrsoP
+         YueZGx5q33aCvmYSRNzU64XtCdMh/MdFo+KhJhz4QAQ8Q9Ujvie1/1qhvpKPVIGelfKo
+         VUMg==
+X-Gm-Message-State: ACrzQf3UTjReOFuNolvTMrzzDe6y+dwCkJxaD7SDI1SlES8q05Jm08MT
+        dmcQE6GvG3cIiW+Qb6TMZXE=
+X-Google-Smtp-Source: AMsMyM4Kqfx+vx+3ljOG+fKd4UeaU4Xi+E9nxHr/r2DcxSzNouT+f/W4hFYxRdYC7dB6Go5ChCyIOQ==
+X-Received: by 2002:a2e:874e:0:b0:277:38b:212a with SMTP id q14-20020a2e874e000000b00277038b212amr9406417ljj.363.1666812987921;
+        Wed, 26 Oct 2022 12:36:27 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id g10-20020ac2538a000000b004a2386b8cf5sm941538lfh.215.2022.10.26.12.36.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Oct 2022 12:36:26 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Francesco Dolcini <francesco@dolcini.it>
+Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        linux-serial@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+Subject: Re: imx serial chars lost issue
+References: <20221003110850.GA28338@francesco-nb.int.toradex.com>
+        <20221026065604.xp4lzysm2ag7bfmk@pengutronix.de>
+        <Y1jok9FxV4K9q6nb@francesco-nb.int.toradex.com>
+Date:   Wed, 26 Oct 2022 22:36:25 +0300
+In-Reply-To: <Y1jok9FxV4K9q6nb@francesco-nb.int.toradex.com> (Francesco
+        Dolcini's message of "Wed, 26 Oct 2022 09:58:11 +0200")
+Message-ID: <871qqubcna.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH] ioctl_tty.2: Document TIOCSERGETLSR/TIOCSER_TEMT
-Content-Language: en-US
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        linux-man@vger.kernel.org
-Cc:     linux-serial@vger.kernel.org
-References: <20221026191202.5510-1-pali@kernel.org>
-From:   Alejandro Colomar <alx.manpages@gmail.com>
-In-Reply-To: <20221026191202.5510-1-pali@kernel.org>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------vrsGdLNa8kHZKvMReQp0sMPU"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------vrsGdLNa8kHZKvMReQp0sMPU
-Content-Type: multipart/mixed; boundary="------------phNbzwtUlG24IC0VTn3UhLu9";
- protected-headers="v1"
-From: Alejandro Colomar <alx.manpages@gmail.com>
-To: =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>, linux-man@vger.kernel.org
-Cc: linux-serial@vger.kernel.org
-Message-ID: <6d9bb637-6733-fe0c-1836-1c1649a20d11@gmail.com>
-Subject: Re: [PATCH] ioctl_tty.2: Document TIOCSERGETLSR/TIOCSER_TEMT
-References: <20221026191202.5510-1-pali@kernel.org>
-In-Reply-To: <20221026191202.5510-1-pali@kernel.org>
+Francesco Dolcini <francesco@dolcini.it> writes:
 
---------------phNbzwtUlG24IC0VTn3UhLu9
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+> On Wed, Oct 26, 2022 at 08:56:04AM +0200, Uwe Kleine-König wrote:
+>> On Mon, Oct 03, 2022 at 01:08:50PM +0200, Francesco Dolcini wrote:
+>> > recently I have been experiencing an issue with the imx uart on i.MX6ULL
+>> > SoC, on the tty console (no flow control, 1152008n1), chars after the 32nd
+>> > are lost when typing "fast" (copy/paste or writing to the uart using
+>> > automated tools).
+>> > 
+>> > This was tested on Linux 6.0, however it does not look like a brand new
+>> > regression, kernel 5.4 was somehow subject to the same issue, although
+>> > it was way more difficult to trigger it.
+>> > 
+>> > While I do understand that without flow control this is something that
+>> > cannot be prevented, it is pretty fishy that is always the chars after
+>> > the 32nd.
+>> > 
+>> > I guess that might be happening is that the FIFO is emptied only by a
+>> > timer or when it is full, instead of emptying it when half-full, and the
+>> > CPU might not be fast enough leading to an overflow and the chars lost.
+>> > 
+>> > Any idea?
+>> 
+>> It's not unheared that there are bugs in the imx serial driver, but I'm
+>> at least half confident that it's not a driver issue.
+>> 
+>> I guess commit 7a637784d517 ("serial: imx: reduce RX interrupt
+>> frequency") is relevant, this was added in v5.18-rc1.
+>> 
+>> If this is really the commit that made the issue easier to reproduce,
+>> then this is a hint that there is no functional problem and we're "just"
+>> talking about irq latency issues. If enabling flow control solves the
+>> issue, this is another hint in the same direction.
+>
+> I can confirm that reverting 7a637784d517 makes the issue more difficult to
+> reproduce, and even when it is reproduced the amount of chars lost is
+> decreased. Enabling HW flow control is not trivial to test.
+>
+>> The other side starts sending chars at a high frequency. Once the RX
+>> FIFO fill level reaches 8 an irq is triggered. Now if there are 25 more
+>> characters received before the irq is serviced you get an overflow and
+>> loose chars. Without 7a637784d517 there is a bit more time (i.e. 7
+>> character times).
+>> 
+>> So either you use a very high baud rate that is hard to handle (compared
+>> to the cpu frequency), or this is a side effect of increased irq
+>> latency (which is likely a problem somewhere else).
+>
+> The uart is configured as 115200 8n1, 86usec per char, given the 25
+> chars FIFO is 2.150msec to service the irq and get the data out of the
+> fifo.
+>
+> Just thinking at the MHz the CPU is 792MHz, however it can (and will)
+> scale down to 198MHz.
+>
+> I would say that something like that should be reasonable to handle, but
+> it's just my gut feeling ...
 
-SGkgUGFsaSENCg0KT24gMTAvMjYvMjIgMjE6MTIsIFBhbGkgUm9ow6FyIHdyb3RlOg0KPiBT
-aWduZWQtb2ZmLWJ5OiBQYWxpIFJvaMOhciA8cGFsaUBrZXJuZWwub3JnPg0KDQpQYXRjaCBh
-cHBsaWVkLiAgVGhhbmtzIQ0KDQpDaGVlcnMsDQoNCkFsZXgNCg0KPiAtLS0NCj4gICBtYW4y
-L2lvY3RsX3R0eS4yIHwgMTYgKysrKysrKysrKysrKysrLQ0KPiAgIDEgZmlsZSBjaGFuZ2Vk
-LCAxNSBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEv
-bWFuMi9pb2N0bF90dHkuMiBiL21hbjIvaW9jdGxfdHR5LjINCj4gaW5kZXggNzU5ZWE3YmJh
-NjJmLi40MWZmMzhiNmY1NzggMTAwNjQ0DQo+IC0tLSBhL21hbjIvaW9jdGxfdHR5LjINCj4g
-KysrIGIvbWFuMi9pb2N0bF90dHkuMg0KPiBAQCAtMzA5LDYgKzMwOSwyMSBAQCBmb3IgdGhl
-IGFyZ3VtZW50IHZhbHVlcw0KPiAgIC5CUiBUQ0lGTFVTSCAsDQo+ICAgLkJSIFRDT0ZMVVNI
-ICwNCj4gICAuQlIgVENJT0ZMVVNIIC4NCj4gKy5UUA0KPiArLkIgVElPQ1NFUkdFVExTUg0K
-PiArQXJndW1lbnQ6DQo+ICsuQkkgImludFx+KiIgYXJncA0KPiArLklQDQo+ICtHZXQgbGlu
-ZSBzdGF0dXMgcmVnaXN0ZXIuIFN0YXR1cyByZWdpc3RlciBoYXMNCj4gKy5CIFRJT0NTRVJf
-VEVNVA0KPiArYml0IHNldCB3aGVuIG91dHB1dCBidWZmZXIgaXMgZW1wdHkgYW5kIGFsc28g
-aGFyZHdhcmUgdHJhbnNtaXR0ZXIgaXMgcGh5c2ljYWxseSBlbXB0eS4NCj4gKy5JUA0KPiAr
-RG9lcyBub3QgaGF2ZSB0byBiZSBzdXBwb3J0ZWQgYnkgYWxsIHNlcmlhbCB0dHkgZHJpdmVy
-cy4NCj4gKy5JUA0KPiArLkJSIHRjZHJhaW4gKDMpDQo+ICtkb2VzIG5vdCB3YWl0IGFuZCBy
-ZXR1cm5zIGltbWVkaWF0ZWx5IHdoZW4NCj4gKy5CIFRJT0NTRVJfVEVNVA0KPiArYml0IGlz
-IHNldC4NCj4gICAuU1MgRmFraW5nIGlucHV0DQo+ICAgLlRQDQo+ICAgLkIgVElPQ1NUSQ0K
-PiBAQCAtODkwLDcgKzkwNSw2IEBAIG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkNCj4g
-ICAuXCIgVElPQ1NFUkdXSUxECQlpbnQgKg0KPiAgIC5cIiBUSU9DU0VSU1dJTEQJCWNvbnN0
-IGludCAqDQo+ICAgLlwiIFRJT0NTRVJHU1RSVUNUCQlzdHJ1Y3QgYXN5bmNfc3RydWN0ICoN
-Cj4gLS5cIiBUSU9DU0VSR0VUTFNSCQlpbnQgKg0KPiAgIC5cIiBUSU9DU0VSR0VUTVVMVEkJ
-CXN0cnVjdCBzZXJpYWxfbXVsdGlwb3J0X3N0cnVjdCAqDQo+ICAgLlwiIFRJT0NTRVJTRVRN
-VUxUSQkJY29uc3Qgc3RydWN0IHNlcmlhbF9tdWx0aXBvcnRfc3RydWN0ICoNCj4gICAuXCIg
-VElPQ0dTRVJJQUwsIFRJT0NTU0VSSUFMIChzZWUgYWJvdmUpDQoNCi0tIA0KPGh0dHA6Ly93
-d3cuYWxlamFuZHJvLWNvbG9tYXIuZXMvPg0K
+A wild guess: make sure you don't use Linux kernel console on serial
+port, i.e., /proc/consoles is empty. Serial console may disable
+interrupts for very long time intervals due to kernel printk()
+implementation.
 
---------------phNbzwtUlG24IC0VTn3UhLu9--
+I've got random data loss on serial ports when turning on and off WiFi
+on my board (that caused some printk() diagnostic from the kernel) due
+to this deficiency. Took ages to isolate.
 
---------------vrsGdLNa8kHZKvMReQp0sMPU
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEE6jqH8KTroDDkXfJAnowa+77/2zIFAmNZidcACgkQnowa+77/
-2zITKQ//c4TwwITMBibbwl5UOqIUiDN3cHChga2pK1S8eyArcWv4Zzm+ZCejLigI
-byT/iPGwn79Fgg1Td0yfDRcxDxPaoTJf76joA22M4knUSds8RSyvankMMlvPWxf3
-N9r/y11RxerZHX8jwyJHO8LtbKVrjE9TszeuBLeYCWFzV1JT71XPFYVAVmBvzCyV
-FUhsgAfHvPF99k0U9c9Pm4uLI/SYjsu6bu2GtsASRD9zp0RoSKBeFGm/5Rbwi/e4
-DkY09fuDkv/h39NKNz8XE1xbCP8dT11rOv75QDa6pgasHRMFZZi3udrk9S0/KTop
-VqgcpaxvfuL7l8ESCga2qUffYoOn5NMCYlRTyMKjekFl+euRecsdAZtTLXco1fZm
-pQGzlnVufCV4l+yKcTtCKLwX84IDqUqEBot/UF3DCG5CBPB2lvGv20t+ZSSDItcC
-syez9kAzwHrX1/ijfaOB9Chel2xJA/2gs4Lyjcs9L22BBh7KGs5KVPcvcG7MxXKP
-io86bdXwuGINiuNk1DSz7Uq2Bp2r+wrHm8l82UHBMX3XwhPx2rule+Q2L/j2GWJI
-BAsrNhlLTVrN2vb1HSDiW+gxeeE6nx2jvS82Iv7kgao9il7RLIfTPiTPdTj7eEOn
-fO+h14orc3PHgF2upN1cjT9n+euAVMMFGUXMqIIXZiGu6ZhZfdU=
-=aLEU
------END PGP SIGNATURE-----
-
---------------vrsGdLNa8kHZKvMReQp0sMPU--
+-- Sergey Organov
