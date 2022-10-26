@@ -2,147 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85508C38A2D
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Oct 2022 11:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3B7C38A2D
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Oct 2022 16:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233040AbiJZLcT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Oct 2022 07:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S233441AbiJZQyQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Oct 2022 12:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233513AbiJZLbz (ORCPT
+        with ESMTP id S233682AbiJZQyP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Oct 2022 07:31:55 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8CF7297F
-        for <linux-serial@vger.kernel.org>; Wed, 26 Oct 2022 04:31:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666783901; x=1698319901;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=jrGSLtx40ZyLtY9pGZKpZNNPujlNpZihob9wPbsNhDU=;
-  b=ZBWNiHJjeqp04BjPcrWp3AibNpAcKTUvZktZ6z7C5hQWCKJyfKkeMHKP
-   esfk3FJVrvkaoA9zue65lij2AhH5SqtVquUAqIo2CL4yrWETMcPEMVc6A
-   2tgsual1U/CU4gNCCj70khw72ojHG6G3tXa2JT7UvVoS5v2eiJ8ENzhoD
-   GdS5NvS/B71uvXmlddQBUf6lhfxhq52W3ccvWnYNB7msZE+C6mFAGzxOy
-   M3Rqfa7azGI5JJjwY9Wu+KA/WxRKBL0LtCQQJZyBoqab4uTJbMhYiDWRO
-   tbXjobZKWF/7Jy7EUCAngCPLAK9fORexmt5NcEdksrSt0KuNuMzobtMHd
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="305535693"
-X-IronPort-AV: E=Sophos;i="5.95,214,1661842800"; 
-   d="scan'208";a="305535693"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2022 04:31:40 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="626753074"
-X-IronPort-AV: E=Sophos;i="5.95,214,1661842800"; 
-   d="scan'208";a="626753074"
-Received: from sgohier-mobl.ger.corp.intel.com ([10.252.54.78])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2022 04:31:38 -0700
-Date:   Wed, 26 Oct 2022 14:31:37 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Martin_Hundeb=F8ll?= <martin@geanix.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 3/4] serial: 8250: skip platform device registration
- with no runtime ports
-In-Reply-To: <20221025073944.102437-3-martin@geanix.com>
-Message-ID: <c1642f35-6270-7155-795d-a3f7324f799c@linux.intel.com>
-References: <20221025073944.102437-1-martin@geanix.com> <20221025073944.102437-3-martin@geanix.com>
+        Wed, 26 Oct 2022 12:54:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66E5F985B;
+        Wed, 26 Oct 2022 09:54:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62BCE61FCB;
+        Wed, 26 Oct 2022 16:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749EFC433B5;
+        Wed, 26 Oct 2022 16:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1666803253;
+        bh=2QZvPddq3LVwpWCyC1ZiUaUBdBGd9LnlGy6Mb6c2s4s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DU2ADWSpgiv68QWcovvOgwewY9Z73R9kogo7fj+a9gqGDFwVtu4NbJlYduFTC93hO
+         7KKisriyuNInA8/ls1JVEaUGl5iJeFVKBdkN7Rbg/dEJwcaeu6mOYQBeNDupfw0ZgF
+         vayaStsp9+kuKPsvh/SQ7G7kIa83oceizN2Ioqm8=
+Date:   Wed, 26 Oct 2022 18:54:11 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dominique Martinet <dominique.martinet@atmark-techno.com>
+Cc:     Lukas Wunner <lukas@wunner.de>, stable@vger.kernel.org,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Roosen Henri <Henri.Roosen@ginzinger.com>,
+        linux-serial@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Daisuke Mizobuchi <mizo@atmark-techno.com>
+Subject: Re: [PATCH 5.10 v2 1/2] serial: core: move RS485 configuration tasks
+ from drivers into core
+Message-ID: <Y1lmM7Qu1yscuaIU@kroah.com>
+References: <20221017051737.51727-1-dominique.martinet@atmark-techno.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1785117009-1666783900=:9482"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221017051737.51727-1-dominique.martinet@atmark-techno.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1785117009-1666783900=:9482
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 25 Oct 2022, Martin Hundebøll wrote:
-
-> Skip registration of the platform device used for built-in ports, if no
-> such ports are configured/created.
+On Mon, Oct 17, 2022 at 02:17:36PM +0900, Dominique Martinet wrote:
+> From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 > 
-> Signed-off-by: Martin Hundebøll <martin@geanix.com>
-
-For patches 1-3:
-
-Tested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-Please include these tags into the next version of your submission.
-Thank you.
-
--- 
- i.
-
+> Several drivers that support setting the RS485 configuration via userspace
+> implement one or more of the following tasks:
+> 
+> - in case of an invalid RTS configuration (both RTS after send and RTS on
+>   send set or both unset) fall back to enable RTS on send and disable RTS
+>   after send
+> 
+> - nullify the padding field of the returned serial_rs485 struct
+> 
+> - copy the configuration into the uart port struct
+> 
+> - limit RTS delays to 100 ms
+> 
+> Move these tasks into the serial core to make them generic and to provide
+> a consistent behaviour among all drivers.
+> 
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> Link: https://lore.kernel.org/r/20220410104642.32195-2-LinoSanfilippo@gmx.de
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> [ Upstream commit 0ed12afa5655512ee418047fb3546d229df20aa1 ]
+> Signed-off-by: Daisuke Mizobuchi <mizo@atmark-techno.com>
+> Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
 > ---
-> 
-> Change since v1:
->  * call serial8250_pnp_init() also when nr_uarts is zero
-> 
-> Change since v2:
->  * invert condition to initialize built-in ports (as suggested by Ilpo)
-> 
->  drivers/tty/serial/8250/8250_core.c | 30 +++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index ba48431ec6e2..a8fbc2325244 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1186,22 +1186,26 @@ static int __init serial8250_init(void)
->  	if (ret)
->  		goto unreg_uart_drv;
->  
-> -	serial8250_isa_devs = platform_device_alloc("serial8250",
-> -						    PLAT8250_DEV_LEGACY);
-> -	if (!serial8250_isa_devs) {
-> -		ret = -ENOMEM;
-> -		goto unreg_pnp;
-> +	if (nr_uarts) {
-> +		serial8250_isa_devs = platform_device_alloc("serial8250",
-> +							    PLAT8250_DEV_LEGACY);
-> +		if (!serial8250_isa_devs) {
-> +			ret = -ENOMEM;
-> +			goto unreg_pnp;
-> +		}
-> +
-> +		ret = platform_device_add(serial8250_isa_devs);
-> +		if (ret)
-> +			goto put_dev;
-> +
-> +		serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
->  	}
->  
-> -	ret = platform_device_add(serial8250_isa_devs);
-> -	if (ret)
-> -		goto put_dev;
-> -
-> -	serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
-> -
->  	ret = platform_driver_register(&serial8250_isa_driver);
->  	if (ret == 0)
->  		goto out;
-> +	if (!nr_uarts)
-> +		goto unreg_pnp;
->  
->  	platform_device_del(serial8250_isa_devs);
->  put_dev:
-> @@ -1230,7 +1234,9 @@ static void __exit serial8250_exit(void)
->  	serial8250_isa_devs = NULL;
->  
->  	platform_driver_unregister(&serial8250_isa_driver);
-> -	platform_device_unregister(isa_dev);
-> +
-> +	if (nr_uarts)
-> +		platform_device_unregister(isa_dev);
->  
->  	serial8250_pnp_exit();
->  
-> 
+> Follow-up of https://lkml.kernel.org/r/20221017013807.34614-1-dominique.martinet@atmark-techno.com
 
---8323329-1785117009-1666783900=:9482--
+I need a 5.15.y version of this series before I can take the 5.10.y
+version.
+
+thanks,
+
+greg k-h
