@@ -2,167 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABE5ECAAA1
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Oct 2022 06:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A51C38A02
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Oct 2022 08:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbiJ1GUy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Oct 2022 02:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
+        id S229542AbiJ1IHO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 Oct 2022 04:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiJ1GUx (ORCPT
+        with ESMTP id S229457AbiJ1IHM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Oct 2022 02:20:53 -0400
-Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5ECAC385;
-        Thu, 27 Oct 2022 23:20:50 -0700 (PDT)
-Date:   Fri, 28 Oct 2022 08:20:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=thorsis.com; s=default;
-        t=1666938047;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:content-type:content-type:in-reply-to:in-reply-to:
-         references:references; bh=F9MaZfC5dOvrw2AAE71aejLNXhOhHToAdH9Vvg4sUDQ=;
-        b=gOsjlYKD35myIP4h5tqjz/IzS4BESg4AkjT7BR3Wl2VZXlLmfKWu3G2vNVUcQAlLrvg7P6
-        k+hrwNmDUhKCVTXBw1NWH/gloJX0lKgQ3W0WUsZYIZJFqgmarofMLSoj9dbwrd6mR0Hjvg
-        0F6MHvDBWlc4OPbgzgYdnYhNPkjD1DJ9ag4i7XjX1XhnaT6LUIamMG9TPUQkp6Xbp38+2N
-        8CXC7+Hzcm6RnR3qgR/jHoZbE03fpIHoJ/J+V4HTX7frgU5UFMQ1KSmx3q1VHhUQ64joHV
-        VmwaB9IwTpxrsffRG4p/h6GBBG60mn6TERs7R/bDEt8vDWZ13B9S3zvnNsm8jQ==
-From:   Alexander Dahl <ada@thorsis.com>
-To:     Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marex@denx.de" <marex@denx.de>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/4] dt_bindings: rs485: Add binding for GPIO that
- controls Rx enable during Tx
-Message-ID: <Y1t0vurzqh8XziDs@ada.ifak-system.com>
-Mail-Followup-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Rob Herring <robh@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-        "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
-        "marex@denx.de" <marex@denx.de>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-References: <20221026165049.9541-1-cniedermaier@dh-electronics.com>
- <20221026165049.9541-2-cniedermaier@dh-electronics.com>
- <20221026205914.GA1294440-robh@kernel.org>
- <f04351971a5c4b5e8930000addb06398@dh-electronics.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f04351971a5c4b5e8930000addb06398@dh-electronics.com>
+        Fri, 28 Oct 2022 04:07:12 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0B414D1DE;
+        Fri, 28 Oct 2022 01:07:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1666944413; bh=x/5w/cGYdibUL64Yl4ECGE+0k1q6HN5SEpULyLqnnTY=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=M07rrsMbhbuAELDz/7pjFJXp6LxO55xMMKZZzmTms1N3NFUoRV0FUYBa0FBEUMW+s
+         1/cLEsSXpsmeHZV77wIoA1FHjW1rI6Sf2BYSAkdueNh6c+3g2wEabdPczoMI9ZgNmv
+         YysqkBrPDZFP1rNy6frNCv5Sfn4dSDy8XeVhBcGlDDrGBmI6qAY7D4q5dGaAdupqoL
+         UCJZIqtsjamsUGaQCWcIsmutNpKzXSoM/14Uq+u9aRfoWbj3uSAMEXevNbxLUMs87b
+         e21/0EWHTKNm7ucaP58PJrWMfC9QXcuFz4CBAVCp5gXld8Yq7BxszvbdTT/BrH6bTj
+         28owU4M1GdCIQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.83] ([84.162.5.241]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MqJm5-1pR0zm2vzP-00nN7V; Fri, 28
+ Oct 2022 10:06:53 +0200
+Message-ID: <4ff347e8-1ef4-e006-01db-3d420213f6e3@gmx.de>
+Date:   Fri, 28 Oct 2022 10:06:51 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 5.10 v2 1/2] serial: core: move RS485 configuration tasks
+ from drivers into core
+Content-Language: en-US
+To:     Dominique Martinet <dominique.martinet@atmark-techno.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Lukas Wunner <lukas@wunner.de>, stable@vger.kernel.org,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Roosen Henri <Henri.Roosen@ginzinger.com>,
+        linux-serial@vger.kernel.org,
+        Daisuke Mizobuchi <mizo@atmark-techno.com>
+References: <20221017051737.51727-1-dominique.martinet@atmark-techno.com>
+ <Y1lmM7Qu1yscuaIU@kroah.com> <Y1nPFe6IaRI7j6fE@atmark-techno.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <Y1nPFe6IaRI7j6fE@atmark-techno.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:7kcgS7x37TR5Kk8FR4wt1f1+cw/bPg19ZJA0AU6Ho4uaFKe1+l/
+ FDTK18fNl4Kv7ymaYJHwSgbkVF3+IRATd0eKFbnXy8H+14D7E/StIe8n4y0YUrljBA5ECp7
+ ZwWe+8QfODDsCBhrK+P/WjnbBv3M1J+ezPTqyz66m6oBFY46deM1KohhRWaIYPG7j8TWqxM
+ GiloMO0wK6mf2rrDLFsBA==
+UI-OutboundReport: notjunk:1;M01:P0:2yiIC+5nqmc=;FRIoq7hVgVvG/SWJ41HrD3u+pO6
+ rLfz/DJ8c4zrm95jodpW2/52f9Z/e8z1rZqSJBbhfItJBGLT6ZJ07ZCknxQZNqOR7SmOu7vnY
+ SWwXYjSdJrSoAE8n8pJioyBjNwDzK7zkUuGW8tAvWFqBJ9UZw12TaBq+iGPQBxaKlC77CmEzm
+ W7tlQ3dpXjypckBZYB1tr8xHZaqoF5yjcf0m5brJSLUXmNwgLMn9+ttb0SajJoCkwJ2Bd1L31
+ iKMaf33croNTyIMeV3uLvFww5W4K3jUA6jaavTdS8rfvc3Ii0eBjkFgnj23283iytcln1QK/v
+ VK7KA2MCGDGTMT0EW7SKHzTQWNltL1fdRIv3BiwHkiCZQ7kGk0D2EGO57c9560paZ7/ZSmp8j
+ ZyAVJFkUsQ60kJfwOWFdxZl1ARMNfGtURRorKWA6yN+8B4vQCscFFyqnPkGXJ9OOcQCZ7AmWl
+ DRcqXDo7GSqYcwqoNpdxB7I42jrF3NEV77DQib5rhDjK4M4m2jr5zo73ZqVbofply9MChPqzu
+ PJV7GfbB/qldkuKeb1j8D++rWaJt09vxOePQQuf84J7lEb6oCZpYTof035C9AB5RArvWp5zrW
+ XbZZVcoSFR2tOOI6pUo5IukjjsEd4bZRjcCA2VFnui9TJCCVL1GkyZ8CJ1rRrjU5/6lUpnpLU
+ 07TkwDxH2pdZIT1FICkqqRL285bY9ryk5Row4QZ9YAr9qgT0CEneaZOztu6LoP5+ILd46LawQ
+ /jQDtKZX0rVV9Qz03hM0Shq3RkLhJAbd4XIDeluJpC9GWUGzyQboExIhS13ydkgUb4RCHKjP3
+ 1PcPka9nX0AmORfQ3ul0nzo0HeVprRpos7+aBUJTgUXU3qaBq9JacDOmU3iEUr+y5Q1DrzWYw
+ CPQK38WfdNVIxQ6PmQ6vVaM1E/IwSGCkhvmq5Jc9pCIudq6SEAxSWCVAdApTephyswnIlHyb5
+ xS+7uQ==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Christoph,
 
-let me first say, for an upcoming new product we are currently
-developing, we tried different wirings, all related to that !RE pin of
-the transceiver.
 
-In a first hardware revision the engineer doing the schematic
-connected !RE to GND (always on) and it took me a while to recognize
-what was going on: everything send through TX was mirrored on RX,
-which makes using lots of standard applications on that port just
-fail.  (To be fair, we need exactly that behaviour on a different
-board.)
+On 27.10.22 02:21, Dominique Martinet wrote:
+> Greg Kroah-Hartman wrote on Wed, Oct 26, 2022 at 06:54:11PM +0200:
+>> On Mon, Oct 17, 2022 at 02:17:36PM +0900, Dominique Martinet wrote:
+>>> From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+>>>
+>>> Several drivers that support setting the RS485 configuration via users=
+pace
+>>> implement one or more of the following tasks:
+>>>
+>>> - in case of an invalid RTS configuration (both RTS after send and RTS=
+ on
+>>>   send set or both unset) fall back to enable RTS on send and disable =
+RTS
+>>>   after send
+>>>
+>>> - nullify the padding field of the returned serial_rs485 struct
+>>>
+>>> - copy the configuration into the uart port struct
+>>>
+>>> - limit RTS delays to 100 ms
+>>>
+>>> Move these tasks into the serial core to make them generic and to prov=
+ide
+>>> a consistent behaviour among all drivers.
+>>>
+>>> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+>>> Link: https://lore.kernel.org/r/20220410104642.32195-2-LinoSanfilippo@=
+gmx.de
+>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>> [ Upstream commit 0ed12afa5655512ee418047fb3546d229df20aa1 ]
+>>> Signed-off-by: Daisuke Mizobuchi <mizo@atmark-techno.com>
+>>> Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.co=
+m>
+>>> ---
+>>> Follow-up of https://lkml.kernel.org/r/20221017013807.34614-1-dominiqu=
+e.martinet@atmark-techno.com
+>>
+>> I need a 5.15.y version of this series before I can take the 5.10.y
+>> version.
+>
+> Thanks for the probing, I did not know about this rule (but it makes
+> sense); I've just sent a 5.15 version:
+> https://lkml.kernel.org/r/20221027001943.637449-1-dominique.martinet@atm=
+ark-techno.com
+>
+> I'd really appreciate if Lino could take a look and confirm we didn't
+> botch this too much -- we've tested the 5.10 version and it looks ok,
+> but this is different enough from the original patch to warrant a check
+> from the author.
 
-In a second iteration !RE is directly connected to DE now, so RE is
-now always the opposite of DE.  DE itself is always connected to the
-RTS line of the UART, which allows the driver to switch direction.
+Concerning the part I authored (patch 1) I do not see any changes, so
 
-More below.
+Acked-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 
-Am Thu, Oct 27, 2022 at 12:06:56PM +0000 schrieb Christoph Niedermaier:
-> From: Rob Herring [mailto:robh@kernel.org]
-> Sent: Wednesday, October 26, 2022 10:59 PM
-> > On Wed, Oct 26, 2022 at 06:50:46PM +0200, Christoph Niedermaier wrote:
-> >> Add the binding for a generic definition of a GPIO, that controls whether Rx
-> >> is connected or disconnected by an electrical circuit to have the ability
-> >> to receive the signals on the bus during sending or disable receiving during
-> >> sending.
-> >>
-> >> Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-> >> ---
-> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >> Cc: Rob Herring <robh+dt@kernel.org>
-> >> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> >> Cc: Marek Vasut <marex@denx.de>
-> >> Cc: devicetree@vger.kernel.org
-> >> To: linux-serial@vger.kernel.org
-> >> To: linux-arm-kernel@lists.infradead.org
-> >> ---
-> >>  Documentation/devicetree/bindings/serial/rs485.yaml | 4 ++++
-> >>  1 file changed, 4 insertions(+)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
-> >> index 90a1bab40f05..0ebd7690f85d 100644
-> >> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
-> >> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
-> >> @@ -51,6 +51,10 @@ properties:
-> >>      description: GPIO pin to enable RS485 bus termination.
-> >>      maxItems: 1
-> >>
-> >> +  rs485-rx-during-tx-gpios:
-> >> +    description: GPIO pin to control RS485 Rx enable during Tx.
-> > 
-> > Active state means do what? And inactive? This is an output gating the
-> > RX signal or an input telling the receiver what to do during tx? The
-> > description is not adequate.
-> > 
-> > How does this property relate to 'rs485-rx-during-tx' Any combination of
-> > the 2 being present or not is okay? If not, you need some constraints.
-> > 
-> > Rob
-> 
-> 
-> Hi Rob,
-> 
-> I have improved the message:
-> 
-> The standard RS485 is a half-duplex bus that in most cased is driven by an
-> UART controller. The interface to the bus is controlled by a transceiver, that
-> has a pin called RE (Rx enable) or similar, which connects the bus to Rx signal
-> of the UART controller. This patch adds a binding for a generic definition of a
-> GPIO that can switch between two states to control the RE pin via an electrical
-> circuit:
-> - Active:
->   The RE pin is always active. The UART Rx see everything on the bus and
->   therefore also what happens with the Tx signal on the bus.
-> - Inactive:
->   The RE pin is always active, but during sending on the bus the pin RE is
->   inactive. So basically the receiving during sending is suppressed.
-> 
-> Is it now more understandable, or have I still not considered an aspect?
+However the part Lukas authored (patch 2) seems to be the one that has bee=
+n adjusted
+a lot, so maybe you rather/also want to have his ack?
 
-Better.  But what about the questions Rob asked?  There's already a
-property 'rs485-rx-during-tx' which leads to setting the flag
-SER_RS485_RX_DURING_TX in serial core.  As far as I understood from a
-quick glance at core and drivers, this deals with half or full duplex
-from the UART point of view (not the transceiver).
+Best Regards,
+Lino
 
-You need to explain, what's the difference to the new property.
-I suspect you want to somehow switch behaviour with that GPIO line?
-Which driver should switch that line in the end and when?
 
-(For third iteration of our hardware we thought about a GPIO
-controlling whether !RE is always on or connected to DE, but that's
-probably not what you have in mind?)
 
-Maybe a simple generic schematic could help explain or maybe you find
-a better name for the property?
-
-Greets
-Alex
-
-> 
-> 
-> Thanks and regards
-> Christoph
