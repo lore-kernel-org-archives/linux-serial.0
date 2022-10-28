@@ -2,139 +2,173 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A51C38A02
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Oct 2022 08:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC706ECAAA1
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Oct 2022 08:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbiJ1IHO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Oct 2022 04:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
+        id S229536AbiJ1I3D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 28 Oct 2022 04:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiJ1IHM (ORCPT
+        with ESMTP id S229981AbiJ1I2x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Oct 2022 04:07:12 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0B414D1DE;
-        Fri, 28 Oct 2022 01:07:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1666944413; bh=x/5w/cGYdibUL64Yl4ECGE+0k1q6HN5SEpULyLqnnTY=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=M07rrsMbhbuAELDz/7pjFJXp6LxO55xMMKZZzmTms1N3NFUoRV0FUYBa0FBEUMW+s
-         1/cLEsSXpsmeHZV77wIoA1FHjW1rI6Sf2BYSAkdueNh6c+3g2wEabdPczoMI9ZgNmv
-         YysqkBrPDZFP1rNy6frNCv5Sfn4dSDy8XeVhBcGlDDrGBmI6qAY7D4q5dGaAdupqoL
-         UCJZIqtsjamsUGaQCWcIsmutNpKzXSoM/14Uq+u9aRfoWbj3uSAMEXevNbxLUMs87b
-         e21/0EWHTKNm7ucaP58PJrWMfC9QXcuFz4CBAVCp5gXld8Yq7BxszvbdTT/BrH6bTj
-         28owU4M1GdCIQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.83] ([84.162.5.241]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MqJm5-1pR0zm2vzP-00nN7V; Fri, 28
- Oct 2022 10:06:53 +0200
-Message-ID: <4ff347e8-1ef4-e006-01db-3d420213f6e3@gmx.de>
-Date:   Fri, 28 Oct 2022 10:06:51 +0200
+        Fri, 28 Oct 2022 04:28:53 -0400
+Received: from mx3.securetransport.de (mx3.securetransport.de [IPv6:2a01:4f8:c0c:92be::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0261D1C493E
+        for <linux-serial@vger.kernel.org>; Fri, 28 Oct 2022 01:28:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+        s=dhelectronicscom; t=1666945666;
+        bh=Nzw+lJPvhuGpLkLfLOU1y21nWQh1oo3psAESPs5jx0U=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=VCW4H50KN7pcCvQFglKX0nYLcLiUkQSWyACuDjib2dCBsoSkozx/tGP5B3UZucNNI
+         qylMuwhrD0WElBm5T3b89RDhGj99jN8oe31MpJ/8NsuUPYmh48ZzqOTRUrT0BUtvBR
+         MP9R0Y8Yppmgz38dkuxy3MKzW8N0YPrOY/OcIuKZ8id2tjz1c53gyTznJJrmqS7lxU
+         GWZpJLQbt5gwFGnXnrb6nhykMfA8YLOwXC/QG2TpMr1eA1imf9A1v3KtyTpmbXmXU9
+         OLTgiINrIpzP8lLxJH+Eeg2E1CJ0d4ZVnrHgkuPeB26AXjWm8j3CjPoqYSwi2d2KKf
+         W0BzGcHjKf1dQ==
+X-secureTransport-forwarded: yes
+From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To:     Alexander Dahl <ada@thorsis.com>
+CC:     Rob Herring <robh@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marex@denx.de" <marex@denx.de>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [PATCH 1/4] dt_bindings: rs485: Add binding for GPIO that
+ controls Rx enable during Tx
+Thread-Topic: [PATCH 1/4] dt_bindings: rs485: Add binding for GPIO that
+ controls Rx enable during Tx
+Thread-Index: AQHY6VtPL1dpKjxCfE69ES0JgWopKq4hB10AgADJ5GCAAWVVAIAALFPQ
+Date:   Fri, 28 Oct 2022 08:27:35 +0000
+Message-ID: <be36f321adeb44dc9ecc5398db315349@dh-electronics.com>
+References: <20221026165049.9541-1-cniedermaier@dh-electronics.com>
+ <20221026165049.9541-2-cniedermaier@dh-electronics.com>
+ <20221026205914.GA1294440-robh@kernel.org>
+ <f04351971a5c4b5e8930000addb06398@dh-electronics.com>
+ <Y1t0vurzqh8XziDs@ada.ifak-system.com>
+In-Reply-To: <Y1t0vurzqh8XziDs@ada.ifak-system.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 5.10 v2 1/2] serial: core: move RS485 configuration tasks
- from drivers into core
-Content-Language: en-US
-To:     Dominique Martinet <dominique.martinet@atmark-techno.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Lukas Wunner <lukas@wunner.de>, stable@vger.kernel.org,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Roosen Henri <Henri.Roosen@ginzinger.com>,
-        linux-serial@vger.kernel.org,
-        Daisuke Mizobuchi <mizo@atmark-techno.com>
-References: <20221017051737.51727-1-dominique.martinet@atmark-techno.com>
- <Y1lmM7Qu1yscuaIU@kroah.com> <Y1nPFe6IaRI7j6fE@atmark-techno.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <Y1nPFe6IaRI7j6fE@atmark-techno.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7kcgS7x37TR5Kk8FR4wt1f1+cw/bPg19ZJA0AU6Ho4uaFKe1+l/
- FDTK18fNl4Kv7ymaYJHwSgbkVF3+IRATd0eKFbnXy8H+14D7E/StIe8n4y0YUrljBA5ECp7
- ZwWe+8QfODDsCBhrK+P/WjnbBv3M1J+ezPTqyz66m6oBFY46deM1KohhRWaIYPG7j8TWqxM
- GiloMO0wK6mf2rrDLFsBA==
-UI-OutboundReport: notjunk:1;M01:P0:2yiIC+5nqmc=;FRIoq7hVgVvG/SWJ41HrD3u+pO6
- rLfz/DJ8c4zrm95jodpW2/52f9Z/e8z1rZqSJBbhfItJBGLT6ZJ07ZCknxQZNqOR7SmOu7vnY
- SWwXYjSdJrSoAE8n8pJioyBjNwDzK7zkUuGW8tAvWFqBJ9UZw12TaBq+iGPQBxaKlC77CmEzm
- W7tlQ3dpXjypckBZYB1tr8xHZaqoF5yjcf0m5brJSLUXmNwgLMn9+ttb0SajJoCkwJ2Bd1L31
- iKMaf33croNTyIMeV3uLvFww5W4K3jUA6jaavTdS8rfvc3Ii0eBjkFgnj23283iytcln1QK/v
- VK7KA2MCGDGTMT0EW7SKHzTQWNltL1fdRIv3BiwHkiCZQ7kGk0D2EGO57c9560paZ7/ZSmp8j
- ZyAVJFkUsQ60kJfwOWFdxZl1ARMNfGtURRorKWA6yN+8B4vQCscFFyqnPkGXJ9OOcQCZ7AmWl
- DRcqXDo7GSqYcwqoNpdxB7I42jrF3NEV77DQib5rhDjK4M4m2jr5zo73ZqVbofply9MChPqzu
- PJV7GfbB/qldkuKeb1j8D++rWaJt09vxOePQQuf84J7lEb6oCZpYTof035C9AB5RArvWp5zrW
- XbZZVcoSFR2tOOI6pUo5IukjjsEd4bZRjcCA2VFnui9TJCCVL1GkyZ8CJ1rRrjU5/6lUpnpLU
- 07TkwDxH2pdZIT1FICkqqRL285bY9ryk5Row4QZ9YAr9qgT0CEneaZOztu6LoP5+ILd46LawQ
- /jQDtKZX0rVV9Qz03hM0Shq3RkLhJAbd4XIDeluJpC9GWUGzyQboExIhS13ydkgUb4RCHKjP3
- 1PcPka9nX0AmORfQ3ul0nzo0HeVprRpos7+aBUJTgUXU3qaBq9JacDOmU3iEUr+y5Q1DrzWYw
- CPQK38WfdNVIxQ6PmQ6vVaM1E/IwSGCkhvmq5Jc9pCIudq6SEAxSWCVAdApTephyswnIlHyb5
- xS+7uQ==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 27.10.22 02:21, Dominique Martinet wrote:
-> Greg Kroah-Hartman wrote on Wed, Oct 26, 2022 at 06:54:11PM +0200:
->> On Mon, Oct 17, 2022 at 02:17:36PM +0900, Dominique Martinet wrote:
->>> From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
->>>
->>> Several drivers that support setting the RS485 configuration via users=
-pace
->>> implement one or more of the following tasks:
->>>
->>> - in case of an invalid RTS configuration (both RTS after send and RTS=
- on
->>>   send set or both unset) fall back to enable RTS on send and disable =
-RTS
->>>   after send
->>>
->>> - nullify the padding field of the returned serial_rs485 struct
->>>
->>> - copy the configuration into the uart port struct
->>>
->>> - limit RTS delays to 100 ms
->>>
->>> Move these tasks into the serial core to make them generic and to prov=
-ide
->>> a consistent behaviour among all drivers.
->>>
->>> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
->>> Link: https://lore.kernel.org/r/20220410104642.32195-2-LinoSanfilippo@=
-gmx.de
->>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>> [ Upstream commit 0ed12afa5655512ee418047fb3546d229df20aa1 ]
->>> Signed-off-by: Daisuke Mizobuchi <mizo@atmark-techno.com>
->>> Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.co=
-m>
->>> ---
->>> Follow-up of https://lkml.kernel.org/r/20221017013807.34614-1-dominiqu=
-e.martinet@atmark-techno.com
->>
->> I need a 5.15.y version of this series before I can take the 5.10.y
->> version.
->
-> Thanks for the probing, I did not know about this rule (but it makes
-> sense); I've just sent a 5.15 version:
-> https://lkml.kernel.org/r/20221027001943.637449-1-dominique.martinet@atm=
-ark-techno.com
->
-> I'd really appreciate if Lino could take a look and confirm we didn't
-> botch this too much -- we've tested the 5.10 version and it looks ok,
-> but this is different enough from the original patch to warrant a check
-> from the author.
-
-Concerning the part I authored (patch 1) I do not see any changes, so
-
-Acked-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-
-However the part Lukas authored (patch 2) seems to be the one that has bee=
-n adjusted
-a lot, so maybe you rather/also want to have his ack?
-
-Best Regards,
-Lino
-
-
-
+RnJvbTogQWxleGFuZGVyIERhaGwgW21haWx0bzphZGFAdGhvcnNpcy5jb21dDQpTZW50OiBGcmlk
+YXksIE9jdG9iZXIgMjgsIDIwMjIgODoyMSBBTQ0KPiANCj4gSGVsbG8gQ2hyaXN0b3BoLA0KPiAN
+Cg0KSGVsbG8gQWxleCwNCg0KPiBsZXQgbWUgZmlyc3Qgc2F5LCBmb3IgYW4gdXBjb21pbmcgbmV3
+IHByb2R1Y3Qgd2UgYXJlIGN1cnJlbnRseQ0KPiBkZXZlbG9waW5nLCB3ZSB0cmllZCBkaWZmZXJl
+bnQgd2lyaW5ncywgYWxsIHJlbGF0ZWQgdG8gdGhhdCAhUkUgcGluIG9mDQo+IHRoZSB0cmFuc2Nl
+aXZlci4NCj4gDQo+IEluIGEgZmlyc3QgaGFyZHdhcmUgcmV2aXNpb24gdGhlIGVuZ2luZWVyIGRv
+aW5nIHRoZSBzY2hlbWF0aWMNCj4gY29ubmVjdGVkICFSRSB0byBHTkQgKGFsd2F5cyBvbikgYW5k
+IGl0IHRvb2sgbWUgYSB3aGlsZSB0byByZWNvZ25pemUNCj4gd2hhdCB3YXMgZ29pbmcgb246IGV2
+ZXJ5dGhpbmcgc2VuZCB0aHJvdWdoIFRYIHdhcyBtaXJyb3JlZCBvbiBSWCwNCj4gd2hpY2ggbWFr
+ZXMgdXNpbmcgbG90cyBvZiBzdGFuZGFyZCBhcHBsaWNhdGlvbnMgb24gdGhhdCBwb3J0IGp1c3QN
+Cj4gZmFpbC4gIChUbyBiZSBmYWlyLCB3ZSBuZWVkIGV4YWN0bHkgdGhhdCBiZWhhdmlvdXIgb24g
+YSBkaWZmZXJlbnQNCj4gYm9hcmQuKQ0KPiANCj4gSW4gYSBzZWNvbmQgaXRlcmF0aW9uICFSRSBp
+cyBkaXJlY3RseSBjb25uZWN0ZWQgdG8gREUgbm93LCBzbyBSRSBpcw0KPiBub3cgYWx3YXlzIHRo
+ZSBvcHBvc2l0ZSBvZiBERS4gIERFIGl0c2VsZiBpcyBhbHdheXMgY29ubmVjdGVkIHRvIHRoZQ0K
+PiBSVFMgbGluZSBvZiB0aGUgVUFSVCwgd2hpY2ggYWxsb3dzIHRoZSBkcml2ZXIgdG8gc3dpdGNo
+IGRpcmVjdGlvbi4NCj4gDQo+IE1vcmUgYmVsb3cuDQo+IA0KPiBBbSBUaHUsIE9jdCAyNywgMjAy
+MiBhdCAxMjowNjo1NlBNICswMDAwIHNjaHJpZWIgQ2hyaXN0b3BoIE5pZWRlcm1haWVyOg0KPj4g
+RnJvbTogUm9iIEhlcnJpbmcgW21haWx0bzpyb2JoQGtlcm5lbC5vcmddDQo+PiBTZW50OiBXZWRu
+ZXNkYXksIE9jdG9iZXIgMjYsIDIwMjIgMTA6NTkgUE0NCj4+PiBPbiBXZWQsIE9jdCAyNiwgMjAy
+MiBhdCAwNjo1MDo0NlBNICswMjAwLCBDaHJpc3RvcGggTmllZGVybWFpZXIgd3JvdGU6DQo+Pj4+
+IEFkZCB0aGUgYmluZGluZyBmb3IgYSBnZW5lcmljIGRlZmluaXRpb24gb2YgYSBHUElPLCB0aGF0
+IGNvbnRyb2xzIHdoZXRoZXIgUngNCj4+Pj4gaXMgY29ubmVjdGVkIG9yIGRpc2Nvbm5lY3RlZCBi
+eSBhbiBlbGVjdHJpY2FsIGNpcmN1aXQgdG8gaGF2ZSB0aGUgYWJpbGl0eQ0KPj4+PiB0byByZWNl
+aXZlIHRoZSBzaWduYWxzIG9uIHRoZSBidXMgZHVyaW5nIHNlbmRpbmcgb3IgZGlzYWJsZSByZWNl
+aXZpbmcgZHVyaW5nDQo+Pj4+IHNlbmRpbmcuDQo+Pj4+DQo+Pj4+IFNpZ25lZC1vZmYtYnk6IENo
+cmlzdG9waCBOaWVkZXJtYWllciA8Y25pZWRlcm1haWVyQGRoLWVsZWN0cm9uaWNzLmNvbT4NCj4+
+Pj4gLS0tDQo+Pj4+IENjOiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZvdW5kYXRp
+b24ub3JnPg0KPj4+PiBDYzogUm9iIEhlcnJpbmcgPHJvYmgrZHRAa2VybmVsLm9yZz4NCj4+Pj4g
+Q2M6IEtyenlzenRvZiBLb3psb3dza2kgPGtyenlzenRvZi5rb3psb3dza2krZHRAbGluYXJvLm9y
+Zz4NCj4+Pj4gQ2M6IE1hcmVrIFZhc3V0IDxtYXJleEBkZW54LmRlPg0KPj4+PiBDYzogZGV2aWNl
+dHJlZUB2Z2VyLmtlcm5lbC5vcmcNCj4+Pj4gVG86IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5v
+cmcNCj4+Pj4gVG86IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZw0KPj4+PiAt
+LS0NCj4+Pj4gIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvcnM0ODUu
+eWFtbCB8IDQgKysrKw0KPj4+PiAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKQ0KPj4+
+Pg0KPj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3Nl
+cmlhbC9yczQ4NS55YW1sIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3Nlcmlh
+bC9yczQ4NS55YW1sDQo+Pj4+IGluZGV4IDkwYTFiYWI0MGYwNS4uMGViZDc2OTBmODVkIDEwMDY0
+NA0KPj4+PiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL3Jz
+NDg1LnlhbWwNCj4+Pj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3Nl
+cmlhbC9yczQ4NS55YW1sDQo+Pj4+IEBAIC01MSw2ICs1MSwxMCBAQCBwcm9wZXJ0aWVzOg0KPj4+
+PiAgICAgIGRlc2NyaXB0aW9uOiBHUElPIHBpbiB0byBlbmFibGUgUlM0ODUgYnVzIHRlcm1pbmF0
+aW9uLg0KPj4+PiAgICAgIG1heEl0ZW1zOiAxDQo+Pj4+DQo+Pj4+ICsgIHJzNDg1LXJ4LWR1cmlu
+Zy10eC1ncGlvczoNCj4+Pj4gKyAgICBkZXNjcmlwdGlvbjogR1BJTyBwaW4gdG8gY29udHJvbCBS
+UzQ4NSBSeCBlbmFibGUgZHVyaW5nIFR4Lg0KPj4+DQo+Pj4gQWN0aXZlIHN0YXRlIG1lYW5zIGRv
+IHdoYXQ/IEFuZCBpbmFjdGl2ZT8gVGhpcyBpcyBhbiBvdXRwdXQgZ2F0aW5nIHRoZQ0KPj4+IFJY
+IHNpZ25hbCBvciBhbiBpbnB1dCB0ZWxsaW5nIHRoZSByZWNlaXZlciB3aGF0IHRvIGRvIGR1cmlu
+ZyB0eD8gVGhlDQo+Pj4gZGVzY3JpcHRpb24gaXMgbm90IGFkZXF1YXRlLg0KPj4+DQo+Pj4gSG93
+IGRvZXMgdGhpcyBwcm9wZXJ0eSByZWxhdGUgdG8gJ3JzNDg1LXJ4LWR1cmluZy10eCcgQW55IGNv
+bWJpbmF0aW9uIG9mDQo+Pj4gdGhlIDIgYmVpbmcgcHJlc2VudCBvciBub3QgaXMgb2theT8gSWYg
+bm90LCB5b3UgbmVlZCBzb21lIGNvbnN0cmFpbnRzLg0KPj4+DQo+Pj4gUm9iDQo+Pg0KPj4NCj4+
+IEhpIFJvYiwNCj4+DQo+PiBJIGhhdmUgaW1wcm92ZWQgdGhlIG1lc3NhZ2U6DQo+Pg0KPj4gVGhl
+IHN0YW5kYXJkIFJTNDg1IGlzIGEgaGFsZi1kdXBsZXggYnVzIHRoYXQgaW4gbW9zdCBjYXNlZCBp
+cyBkcml2ZW4gYnkgYW4NCj4+IFVBUlQgY29udHJvbGxlci4gVGhlIGludGVyZmFjZSB0byB0aGUg
+YnVzIGlzIGNvbnRyb2xsZWQgYnkgYSB0cmFuc2NlaXZlciwgdGhhdA0KPj4gaGFzIGEgcGluIGNh
+bGxlZCBSRSAoUnggZW5hYmxlKSBvciBzaW1pbGFyLCB3aGljaCBjb25uZWN0cyB0aGUgYnVzIHRv
+IFJ4IHNpZ25hbA0KPj4gb2YgdGhlIFVBUlQgY29udHJvbGxlci4gVGhpcyBwYXRjaCBhZGRzIGEg
+YmluZGluZyBmb3IgYSBnZW5lcmljIGRlZmluaXRpb24gb2YgYQ0KPj4gR1BJTyB0aGF0IGNhbiBz
+d2l0Y2ggYmV0d2VlbiB0d28gc3RhdGVzIHRvIGNvbnRyb2wgdGhlIFJFIHBpbiB2aWEgYW4gZWxl
+Y3RyaWNhbA0KPj4gY2lyY3VpdDoNCj4+IC0gQWN0aXZlOg0KPj4gICBUaGUgUkUgcGluIGlzIGFs
+d2F5cyBhY3RpdmUuIFRoZSBVQVJUIFJ4IHNlZSBldmVyeXRoaW5nIG9uIHRoZSBidXMgYW5kDQo+
+PiAgIHRoZXJlZm9yZSBhbHNvIHdoYXQgaGFwcGVucyB3aXRoIHRoZSBUeCBzaWduYWwgb24gdGhl
+IGJ1cy4NCj4+IC0gSW5hY3RpdmU6DQo+PiAgIFRoZSBSRSBwaW4gaXMgYWx3YXlzIGFjdGl2ZSwg
+YnV0IGR1cmluZyBzZW5kaW5nIG9uIHRoZSBidXMgdGhlIHBpbiBSRSBpcw0KPj4gICBpbmFjdGl2
+ZS4gU28gYmFzaWNhbGx5IHRoZSByZWNlaXZpbmcgZHVyaW5nIHNlbmRpbmcgaXMgc3VwcHJlc3Nl
+ZC4NCj4+DQo+PiBJcyBpdCBub3cgbW9yZSB1bmRlcnN0YW5kYWJsZSwgb3IgaGF2ZSBJIHN0aWxs
+IG5vdCBjb25zaWRlcmVkIGFuIGFzcGVjdD8NCj4gDQo+IEJldHRlci4gIEJ1dCB3aGF0IGFib3V0
+IHRoZSBxdWVzdGlvbnMgUm9iIGFza2VkPyAgVGhlcmUncyBhbHJlYWR5IGENCj4gcHJvcGVydHkg
+J3JzNDg1LXJ4LWR1cmluZy10eCcgd2hpY2ggbGVhZHMgdG8gc2V0dGluZyB0aGUgZmxhZw0KPiBT
+RVJfUlM0ODVfUlhfRFVSSU5HX1RYIGluIHNlcmlhbCBjb3JlLiAgQXMgZmFyIGFzIEkgdW5kZXJz
+dG9vZCBmcm9tIGENCj4gcXVpY2sgZ2xhbmNlIGF0IGNvcmUgYW5kIGRyaXZlcnMsIHRoaXMgZGVh
+bHMgd2l0aCBoYWxmIG9yIGZ1bGwgZHVwbGV4DQo+IGZyb20gdGhlIFVBUlQgcG9pbnQgb2Ygdmll
+dyAobm90IHRoZSB0cmFuc2NlaXZlcikuDQo+IA0KPiBZb3UgbmVlZCB0byBleHBsYWluLCB3aGF0
+J3MgdGhlIGRpZmZlcmVuY2UgdG8gdGhlIG5ldyBwcm9wZXJ0eS4NCj4gSSBzdXNwZWN0IHlvdSB3
+YW50IHRvIHNvbWVob3cgc3dpdGNoIGJlaGF2aW91ciB3aXRoIHRoYXQgR1BJTyBsaW5lPw0KPiBX
+aGljaCBkcml2ZXIgc2hvdWxkIHN3aXRjaCB0aGF0IGxpbmUgaW4gdGhlIGVuZCBhbmQgd2hlbj8N
+Cj4gDQo+IChGb3IgdGhpcmQgaXRlcmF0aW9uIG9mIG91ciBoYXJkd2FyZSB3ZSB0aG91Z2h0IGFi
+b3V0IGEgR1BJTw0KPiBjb250cm9sbGluZyB3aGV0aGVyICFSRSBpcyBhbHdheXMgb24gb3IgY29u
+bmVjdGVkIHRvIERFLCBidXQgdGhhdCdzDQo+IHByb2JhYmx5IG5vdCB3aGF0IHlvdSBoYXZlIGlu
+IG1pbmQ/KQ0KPiANCj4gTWF5YmUgYSBzaW1wbGUgZ2VuZXJpYyBzY2hlbWF0aWMgY291bGQgaGVs
+cCBleHBsYWluIG9yIG1heWJlIHlvdSBmaW5kDQo+IGEgYmV0dGVyIG5hbWUgZm9yIHRoZSBwcm9w
+ZXJ0eT8NCj4gDQo+IEdyZWV0cw0KPiBBbGV4DQoNCkJhc2ljYWxseSB0aGUgaWRlYSBpcyB0aGF0
+IHRoaXMgR1BJTyBpcyBhbiBpbmRpY2F0b3IgZm9yIHRoZSBzdGF0ZSBvZiB0aGUNCmZsYWcgJ3Jz
+NDg1LXJ4LWR1cmluZy10eCcsIHNvIHRoYXQgdGhlIGhhcmR3YXJlIGtub3dzIHdoaWNoIG1vZGUg
+Zm9yIHRoZQ0KcmVjZWl2aW5nIGlzIHdhbnRlZC4NCg0KTXkgc2NoZW1hdGljczoNCiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIOKUjOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUkA0KICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAg4pSCICAgICBSUzQ4NCAgICAgICAg4pSCDQogICAgICAgICAgICAgICBUeCDilIDilIDi
+lIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilKREICAgICAgICAgICAgICAg
+ICDilIINCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIOKUgiAgICAgVHJhbnNjZWl2
+ZXIgIOKUgg0KICAgICAgICAgICAgICBSVFMg4pSA4pSA4pSA4pSA4pSs4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSkREUgICAgICAgICAgICAgICAg4pSCDQogICAgICAgICAgICAgICAg
+ICAgICAg4pSCICAgICAgICAgIOKUgiAgICAgICAgICAgICAgICAgIOKUgg0KICAgICAgICAgICAg
+ICAgICAgICAgIOKUgiDilIzilIDilIDilIDilIDilIDilJAgIOKUgiAgICAgICAgICAgICAgICAg
+IOKUgg0KICAgICAgICAgICAgICAgICAgICAgIOKUlOKUgOKUpCYgICAg4pSCICDilIIgICAgICAg
+ICAgICAgICAgICDilIINCiAgICAgICAgICAgICAgICAgICAgICAgIOKUgiAgICAg4pSc4pSA4pSA
+4pSkIVJFICAgICAgICAgICAgICAg4pSCDQohcnhfZHVyaW5nX3R4X2dwaW8g4pSA4pSA4pSA4pSA
+4pSA4pSkICAgICDilIIgIOKUgiAgICAgICAgICAgICAgICAgIOKUgg0KICAgICAgICAgICAgICAg
+ICAgICAgICAg4pSU4pSA4pSA4pSA4pSA4pSA4pSYICDilIIgICAgICAgICAgICAgICAgICDilIIN
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIOKUgiAgICAgICAgICAgICAgICAgIOKU
+gg0KICAgICAgICAgICAgICAgUngg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSkUiAgICAgICAgICAgICAgICAg4pSCDQogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICDilIIgICAgICAgICAgICAgICAgICDilIINCiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIOKUlOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
+gOKUgOKUgOKUgOKUgOKUmA0KDQpJIG11eGVkIHRoZSBVQVJUIENUUyBwaW4gYXMgR1BJTyBhbmQg
+dXNlIGl0IGFzIHJ4X2R1cmluZ190eF9ncGlvLCBiZWNhdXNlDQppbiBteSBjYXNlIHRoaXMgcGlu
+IGlzIHVudXNlZCBhbnl3YXkuIEl0IHNob3VsZCBiZSBub3RlZCB0aGF0IEkgdGhlbiB1c2UNCnRo
+aXMgcGluIExPVyBBQ1RJVkUgKGluIERUIGJ5IEdQSU9fQUNUSVZFX0xPVykuDQoNCkkgaG9wZSBp
+dCBoYXMgYmVjb21lIGNsZWFyZXIgd2hhdCBJIGFtIGRvaW5nLg0KRG8geW91IHN0aWxsIHRoaW5r
+IEkgbmVlZCBhbm90aGVyIG5hbWU/DQoNCg0KUmVnYXJkcw0KQ2hyaXN0b3BoDQo=
