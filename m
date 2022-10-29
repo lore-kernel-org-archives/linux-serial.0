@@ -2,97 +2,194 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A38FA3740
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Oct 2022 06:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF9D8C38A02
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Oct 2022 15:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbiJ2G7M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Oct 2022 02:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
+        id S229795AbiJ2PdZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 29 Oct 2022 11:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiJ2G7M (ORCPT
+        with ESMTP id S229761AbiJ2PdY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Oct 2022 02:59:12 -0400
-Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278C181688
-        for <linux-serial@vger.kernel.org>; Fri, 28 Oct 2022 23:59:11 -0700 (PDT)
-Received: from gw.atmark-techno.com (localhost [127.0.0.1])
-        by gw.atmark-techno.com (Postfix) with ESMTP id D38C66013C
-        for <linux-serial@vger.kernel.org>; Sat, 29 Oct 2022 15:59:09 +0900 (JST)
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id 301E76013D
-        for <linux-serial@vger.kernel.org>; Sat, 29 Oct 2022 15:59:09 +0900 (JST)
-Received: by mail-pg1-f198.google.com with SMTP id x16-20020a63b210000000b0045f5c1e18d0so3527338pge.0
-        for <linux-serial@vger.kernel.org>; Fri, 28 Oct 2022 23:59:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6F/e3an+HkL6s8uZYrMNfU7hm7ZeC4VHKbQWbFreALk=;
-        b=rZ6JiPcI5HKFDieLedpTeveMjteOAiQVNNWsOuYOCSu42lMfC50OXmd3Sd9Mh+h+GU
-         OAvY1PL8AqOU6RUqrnPkuJTU0u+0NxJkXo8szJrLtUBqEe5Xro6WuCBHtXUuhMRx38Xb
-         jxh6YnU8+LhIObsi2+nRKHucOM6l8+StN/F/cdfhUlVqOo5Zq04kVEHfg0py3ArNCOtS
-         YyB/63ndZLVK8jR4AV8FmER6XSIl+9EqBt9gnMyBSJsHHI9je3v69MHn2TyPPqGggz1t
-         egxMO2WlwIVZt87JKOmUtKwZVp3qfUcj91wcSQ7E6B/1l/JtOhyFXi+w9zvXxcVngc0e
-         kyaQ==
-X-Gm-Message-State: ACrzQf3kP8l/DNGcQf9bnB52HU1JWT7bVwfqiLIpm+94vhLC9bCim9n6
-        iKgmldPbTGwVUKwi87EOrfxnzefwDI21zjqxp9FtZAZgFd5dTWtD1NiSSThwunkD+1Qg0ssBIuk
-        l5eIrCxVYPwbAzCWyqUdI/94MNg+c
-X-Received: by 2002:a17:90a:ce89:b0:213:167c:81e1 with SMTP id g9-20020a17090ace8900b00213167c81e1mr20705680pju.38.1667026748215;
-        Fri, 28 Oct 2022 23:59:08 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7YaSV9vrd5tee16XR/CS30ja/JOgXjwptpxXCf0g5s4Z5wS7VTmgf5FDPF3+eoOR1Q9ZBC4A==
-X-Received: by 2002:a17:90a:ce89:b0:213:167c:81e1 with SMTP id g9-20020a17090ace8900b00213167c81e1mr20705662pju.38.1667026747927;
-        Fri, 28 Oct 2022 23:59:07 -0700 (PDT)
-Received: from pc-zest.atmarktech (117.209.187.35.bc.googleusercontent.com. [35.187.209.117])
-        by smtp.gmail.com with ESMTPSA id d14-20020a170902cece00b00186b06963f9sm558705plg.180.2022.10.28.23.59.06
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Oct 2022 23:59:07 -0700 (PDT)
-Received: from martinet by pc-zest.atmarktech with local (Exim 4.96)
-        (envelope-from <martinet@pc-zest>)
-        id 1oofo9-008u42-28;
-        Sat, 29 Oct 2022 15:59:05 +0900
-Date:   Sat, 29 Oct 2022 15:58:55 +0900
-From:   Dominique Martinet <dominique.martinet@atmark-techno.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Roosen Henri <Henri.Roosen@ginzinger.com>,
-        linux-serial@vger.kernel.org,
-        Daisuke Mizobuchi <mizo@atmark-techno.com>
-Subject: Re: [PATCH 5.10 v2 1/2] serial: core: move RS485 configuration tasks
- from drivers into core
-Message-ID: <Y1zPL0Y6bmqvvhMw@atmark-techno.com>
-References: <20221017051737.51727-1-dominique.martinet@atmark-techno.com>
- <Y1lmM7Qu1yscuaIU@kroah.com>
- <Y1nPFe6IaRI7j6fE@atmark-techno.com>
- <4ff347e8-1ef4-e006-01db-3d420213f6e3@gmx.de>
+        Sat, 29 Oct 2022 11:33:24 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7113C5C9E6;
+        Sat, 29 Oct 2022 08:33:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667057603; x=1698593603;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mHuDuDNNRUovT7qPxWeRLywh7Ez+3FPl+XwoW9eBfPY=;
+  b=Z0NWIqlEgU8Wl1x6r/v9bMNEZYNhPKTycCU5YgaW/B5eK5YVbcmgiA5d
+   dYbPG+D8I4qy0B3qMgUcFQsf+6SCOppu2kyuH1q866s7I73EJgUGMXl2V
+   5CrMbrBMPjxjhp9LvaCpo209ty/4b9RbBJIzV5OSNOVXxgVm1ulbH4JJx
+   3fhDXqkMq9HFOHSQQrUL5HwyQN0DevYFPORwsBRW1UP8qfCwbIH2x8EQK
+   2pj9zpRq4UCclIHjnIa4OMKWRfM46Iifpgh1Itflo099FieBUQ/ISjcYp
+   RKkjgAiSTF/R8ZL4XI4QviJ27aIInUQs+hH++aBZuDSgPLEAdq9EoLH8O
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10515"; a="309761404"
+X-IronPort-AV: E=Sophos;i="5.95,224,1661842800"; 
+   d="scan'208";a="309761404"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 08:33:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10515"; a="738464276"
+X-IronPort-AV: E=Sophos;i="5.95,224,1661842800"; 
+   d="scan'208";a="738464276"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga002.fm.intel.com with ESMTP; 29 Oct 2022 08:33:18 -0700
+Date:   Sat, 29 Oct 2022 23:24:10 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com
+Subject: Re: [PATCH v4 4/4] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+Message-ID: <Y11FmiDeVhGir+7z@yilunxu-OptiPlex-7050>
+References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com>
+ <20221020212610.697729-5-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4ff347e8-1ef4-e006-01db-3d420213f6e3@gmx.de>
+In-Reply-To: <20221020212610.697729-5-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Lino Sanfilippo wrote on Fri, Oct 28, 2022 at 10:06:51AM +0200:
-> > I'd really appreciate if Lino could take a look and confirm we didn't
-> > botch this too much -- we've tested the 5.10 version and it looks ok,
-> > but this is different enough from the original patch to warrant a check
-> > from the author.
->
-> However the part Lukas authored (patch 2) seems to be the one that has been adjusted
-> a lot, so maybe you rather/also want to have his ack?
+On 2022-10-20 at 14:26:10 -0700, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Add a Device Feature List (DFL) bus driver for the Altera
+> 16550 implementation of UART.
+> 
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> ---
+> v4: use dev_err_probe() everywhere that is appropriate
+>     clean up noise
+>     change error messages to use the word, unsupported
+>     tried again to sort Makefile and KConfig better
+>     reorder probe function for easier error handling
+>     use new dfh_find_param API
+> 
+> v3: use passed in location of registers
+>     use cleaned up functions for parsing parameters
+> 
+> v2: clean up error messages
+>     alphabetize header files
+>     fix 'missing prototype' error by making function static
+>     tried to sort Makefile and Kconfig better
+> ---
+>  drivers/tty/serial/8250/8250_dfl.c | 149 +++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig    |  12 +++
+>  drivers/tty/serial/8250/Makefile   |   1 +
+>  3 files changed, 162 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dfl.c b/drivers/tty/serial/8250/8250_dfl.c
+> new file mode 100644
+> index 000000000000..f02f0ba2a565
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_dfl.c
+> @@ -0,0 +1,149 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Driver for FPGA UART
+> + *
+> + * Copyright (C) 2022 Intel Corporation, Inc.
+> + *
+> + * Authors:
+> + *   Ananda Ravuri <ananda.ravuri@intel.com>
+> + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/dfl.h>
+> +#include <linux/io-64-nonatomic-lo-hi.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/serial.h>
+> +#include <linux/serial_8250.h>
+> +
+> +struct dfl_uart {
+> +	int line;
+> +};
+> +
+> +static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct uart_8250_port *uart)
+> +{
+> +	struct device *dev = &dfl_dev->dev;
+> +	u64 v, fifo_len, reg_width;
+> +	u64 *p;
+> +
+> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ);
+> +	if (!p)
+> +		return dev_err_probe(dev, -EINVAL, "missing CLK_FRQ param\n");
+> +
+> +	uart->port.uartclk = *p;
+> +	dev_dbg(dev, "UART_CLK_ID %u Hz\n", uart->port.uartclk);
+> +
+> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_FIFO_LEN);
+> +	if (!p)
+> +		return dev_err_probe(dev, -EINVAL, "missing FIFO_LEN param\n");
+> +
+> +	fifo_len = *p;
+> +	dev_dbg(dev, "UART_FIFO_ID fifo_len %llu\n", fifo_len);
+> +
+> +	switch (fifo_len) {
+> +	case 32:
+> +		uart->port.type = PORT_ALTR_16550_F32;
+> +		break;
+> +
+> +	case 64:
+> +		uart->port.type = PORT_ALTR_16550_F64;
+> +		break;
+> +
+> +	case 128:
+> +		uart->port.type = PORT_ALTR_16550_F128;
+> +		break;
+> +
+> +	default:
+> +		return dev_err_probe(dev, -EINVAL, "unsupported fifo_len %llu\n", fifo_len);
+> +	}
+> +
+> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_REG_LAYOUT);
+> +	if (!p)
+> +		return dev_err_probe(dev, -EINVAL, "missing REG_LAYOUT param\n");
+> +
+> +	v = *p;
+> +	uart->port.regshift = FIELD_GET(DFHv1_PARAM_ID_REG_SHIFT, v);
+> +	reg_width = FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v);
 
-Gah, sorry -- I'm juggling with too many things at once here and got the
-two patches mixed up.
+I have concern that the raw layout inside the parameter block is
+still exposed to drivers and need to be parsed by each driver.
 
-Yes, I meant Lukas here for patch 2/2, sorry. Promoted him to To.
-And thank you Lino for having a look and pointing it out!
+How about we define HW agnostic IDs for parameter specific fields like:
 
--- 
-Dominique
+PARAM_ID		FIELD_ID
+================================
+MSIX			STARTV
+			NUMV
+--------------------------------
+CLK			FREQ
+--------------------------------
+FIFO			LEN
+--------------------------------
+REG_LAYOUT		WIDTH
+			SHIFT
 
+And define like u64 dfl_find_param(struct dfl_device *, int param_id, int field_id)
 
+Think further, if we have to define HW agnostic property - value pairs,
+why don't we just use "Software nodes for the firmware node", see
+drivers/base/swnode.c. I think this may be a better choice.
+
+Thanks,
+Yilun
