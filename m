@@ -2,111 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7314AECAAA1
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Oct 2022 14:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA8FECAAA1
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Oct 2022 18:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbiJaOh7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Oct 2022 10:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
+        id S229668AbiJaSkt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Oct 2022 14:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbiJaOh7 (ORCPT
+        with ESMTP id S229468AbiJaSks (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Oct 2022 10:37:59 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD4F133;
-        Mon, 31 Oct 2022 07:37:58 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id b22so1899526qtr.12;
-        Mon, 31 Oct 2022 07:37:58 -0700 (PDT)
+        Mon, 31 Oct 2022 14:40:48 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BF0DF77;
+        Mon, 31 Oct 2022 11:40:46 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id ay14-20020a05600c1e0e00b003cf6ab34b61so2038961wmb.2;
+        Mon, 31 Oct 2022 11:40:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FdNQvvz/TcjuSLSWR6z7pC8eGlQDZ2fUoLnJ0hIn9JM=;
-        b=FQkKnTetxtaJNkeLJ1/dTkWTe/GIK0eXJQKhWTKJvbQCO0WmoDUF3BLTB0hiObZOHJ
-         BoEmo0qtTH8KjB1nvoLElLDFErGiH9+LhT6AYrTdeSD0XtNek8qOvDm0Y8kEHU5eJKi+
-         8VMiddJh+9Gwy5IWG0hHZ8SmkcpUy7wZ5KQVxdJWj/O7GIlgCp93GfsQ0lM1D/jzgv9h
-         IbCOmrv+CQP1MY8f5CIfVheEE1TvAlk5vSimz707iVNb6GeOhyVjmZbzASEK4bmKWl4g
-         tbJTAFeXcfs+XNpP6PiWfmGE7k9JgMSFi1ltFTtg1cGhLS8ZUvifQmMyGPe+ydqmchD/
-         Jg0A==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zMgETaAE4cSZ0k4hJhUAcCXN4b9qeptJfCrItoYYMYI=;
+        b=gu0KikZeI0bIt0XggQjkFqcYoKXY8TXoey1wf6kgwmriaGpLk68bf8r4BJNdJGSw9d
+         a/d5mHoTYv5vGK1vKN6sgbY/eRdxVuHrwq9gIzWO2Gt7ochovMmMxhBLdFHpeyEQhOGI
+         AG0hBNxeclmPenIBhCjh48FVT3jBZVCp8y112ZL/G6i7+dLzm/IJtnUXPcd6MUnzgl0Y
+         2fZK35rSyVip1kRU2zrZ5Efl2vyA9GreVtaigMXDQ1na98/m3Debqnnn7evrj0SDLoMr
+         MFTNsUVmvmFVw3JNHDNiT2+vCbE7IOyin43/yam5p4CRiI58qWxTgeB8WoZ18xG8eRBK
+         5UNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FdNQvvz/TcjuSLSWR6z7pC8eGlQDZ2fUoLnJ0hIn9JM=;
-        b=TjTS1zQzkrDoqLwrZbHxTjM4WhfbIpJQZSzrgsrAoApjV71VE4PL08ujUH8/Tlm1eT
-         gHa0e1j7cEbIwLWygDdG3frSwhu6tNcMMZOlIxHusxX80Lh8e9qdBIvQE+15Vfxjte28
-         NmW8UYKVq75P2hty+SdW235wIRk+EKXTg7c1bT7b1AJpCwZw7WG07H89jlWwSurUfYAm
-         gKeJyB41dNZuW4HMxJQGH82PrXtg4DecZ5J6kSegf0tvZpnal36T47RIBIobTz8UIuQV
-         4CFLZ313RDdVCBsQEzdbbhZZrk+63fsSAPQz9+j4j8CCsu6JbbnYppidIhQt233lV3Yx
-         eA1Q==
-X-Gm-Message-State: ACrzQf2utbiDBgDGduvqfk/zAfm8oMTjd84flsTJHdpoEnHnEd9cJrcu
-        lclWoo4omsCcos8hhwW2x8od21pxJWB3QKumPUs=
-X-Google-Smtp-Source: AMsMyM7Q3JYrAfRHj1F7hs4HJFdbvm4TAnI00K6PSiRyknLbZ6h33UPqd4RjNvJR8IEKNcoe+8nN/oXgDoFFrcf4yIw=
-X-Received: by 2002:a05:622a:491:b0:39c:e770:2813 with SMTP id
- p17-20020a05622a049100b0039ce7702813mr10991684qtx.384.1667227077088; Mon, 31
- Oct 2022 07:37:57 -0700 (PDT)
+        bh=zMgETaAE4cSZ0k4hJhUAcCXN4b9qeptJfCrItoYYMYI=;
+        b=1tvFfbkR98woGFkVl99vYXr1Ndslz8PmQX8dybbVZbKZn8xPei+MZWpViFjZkTOk+M
+         A0+lHuYeR/4dbYVXGVsn6WpSD6O1IeQUhy+l0FDgpdGRAVUUhLXZhjGRByIIQm7JLP/a
+         aw3A2vQl/AJhmU5XdrmW0NJairRTfcSSC7JDcQpesDMG0BLNF2WAmneJ3UJmptFRupi5
+         O9Fm9Izd7sGO0bDLAqrTEbBJzdsnTFmG9/wX4lzXCKXQrsgmjsmjtboKIQV8v7wuG+7U
+         gvQXcMJnJz5ptp5KnQM0Y4gjDRsyV1xyBll44cJn2/58XoqDhAOItA0vhZLKd93k/6xN
+         B/mA==
+X-Gm-Message-State: ACrzQf1g3uQ/H4D33NavtjwsaubuTq+nf3k/zlACyucAbraRZb2dz3jt
+        0ietxuDcyBUW9c6L7vdOQHs=
+X-Google-Smtp-Source: AMsMyM5sqUekBItN5y+a486TSf5NZ2MkgnKD5heHK2bdojq3gb9fZdANpYFY8qwzfXA82d4a0NhnWg==
+X-Received: by 2002:a05:600c:21c9:b0:3cf:7833:2940 with SMTP id x9-20020a05600c21c900b003cf78332940mr2003113wmj.35.1667241645352;
+        Mon, 31 Oct 2022 11:40:45 -0700 (PDT)
+Received: from hp-power-15.localdomain (mm-167-8-212-37.vitebsk.dynamic.pppoe.byfly.by. [37.212.8.167])
+        by smtp.gmail.com with ESMTPSA id k18-20020a05600c081200b003b4935f04a4sm8525887wmp.5.2022.10.31.11.40.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Oct 2022 11:40:44 -0700 (PDT)
+From:   Siarhei Volkau <lis8215@gmail.com>
+Cc:     Siarhei Volkau <lis8215@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: [PATCH v4 0/2] serial: 8250/ingenic: Add support for the JZ4750
+Date:   Mon, 31 Oct 2022 21:40:38 +0300
+Message-Id: <20221031184041.1338129-1-lis8215@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
- <20221001061507.3508603-2-kumaravel.thiagarajan@microchip.com>
- <CAHp75VfoWii5Eo4n=-JcqE4VZMRoq77jjdTMGfwBF+vzKBXPog@mail.gmail.com> <PH0PR11MB509629C9B80D4331AAF0E5AC9B379@PH0PR11MB5096.namprd11.prod.outlook.com>
-In-Reply-To: <PH0PR11MB509629C9B80D4331AAF0E5AC9B379@PH0PR11MB5096.namprd11.prod.outlook.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Oct 2022 16:37:20 +0200
-Message-ID: <CAHp75Vf5sBJiNQckCxDGCzFWBYnVs4BhP9+m77_6guZYC+Cybg@mail.gmail.com>
-Subject: Re: [PATCH v2 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver for
- quad-uart support.
-To:     Tharunkumar.Pasumarthi@microchip.com
-Cc:     Kumaravel.Thiagarajan@microchip.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        u.kleine-koenig@pengutronix.de, johan@kernel.org,
-        wander@redhat.com, etremblay@distech-controls.com,
-        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 11:24 AM <Tharunkumar.Pasumarthi@microchip.com> wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > Sent: Monday, October 3, 2022 2:53 PM
+JZ4750 and JZ4755 have an extra clock divisor in CGU called CPCCR.ECS.
+It needs to be handled properly in the early console driver.
 
-...
+v4:
+ - move duplicate code
+ - apply Paul's description for the quirk & commit msg
+v3:
+ - fix build errors
+v2:
+ - serial moved into separate patchset
+ - code refactored to avoid peek in CGU register
+ - Krzysztof's ack picked
+v1:
+ - big patchset for the whole JZ4755 support
 
-> > > +       [PORT_MCHP16550A] = {
-> > > +               .name           = "MCHP16550A",
-> > > +               .fifo_size      = 256,
-> > > +               .tx_loadsz      = 256,
-> > > +               .fcr            = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01,
-> > > +               .rxtrig_bytes   = {2, 66, 130, 194},
-> > > +               .flags          = UART_CAP_FIFO,
-> > > +       },
-> >
-> > Can you assign this in ->setup() or so instead of adding a new port type?
->
-> If I understand correctly, you suggest doing something like this inside pci1xxxx_setup() API:
->
-> pci1xxxx_setup(.., uart_8250_port *port, ..) {
-> ..
-> port->port.fifosize = 256;
-> port->tx_loadsz = 256;
-> port->capabilities = UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_01;
-> ..
-> }
->
-> instead of adding new port type PORT_MCHP16550A.
+Siarhei Volkau (2):
+  dt-bindings: serial: ingenic: Add support for the JZ4750/55 SoCs
+  serial: 8250/ingenic: Add support for the JZ4750/JZ4755
 
-Yes, something like this.
-
-> But, if I do this, I cannot use sysfs interface for updating rx_trig_bytes right?
-
-Maybe, I don't remember by heart that part of the code. But why do you
-need that ABI in the first place?
+ .../bindings/serial/ingenic,uart.yaml         |  4 +++
+ drivers/tty/serial/8250/8250_ingenic.c        | 32 +++++++++++++++++--
+ 2 files changed, 33 insertions(+), 3 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.36.1
+
