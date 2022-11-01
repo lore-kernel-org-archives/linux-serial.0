@@ -2,106 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C227C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 06:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8CFFA373D
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 08:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbiKAGQK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Nov 2022 02:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
+        id S229835AbiKAIcH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Nov 2022 04:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKAGQJ (ORCPT
+        with ESMTP id S229511AbiKAIcG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Nov 2022 02:16:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5541181C;
-        Mon, 31 Oct 2022 23:16:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 087936152C;
-        Tue,  1 Nov 2022 06:16:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F7FC433D6;
-        Tue,  1 Nov 2022 06:16:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667283365;
-        bh=lufWgB5um/sNxdP6lEFeAgabE+Ij9VKyh7YPrmjuB8M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MtcAPHXiZE9DrpUM8sWJXgElbCJyOW7RBR/YzbJH7BGRjqgMovwlXf7J4vUaj17Nx
-         ZLmjVXm/Q56VbOHelTHfQEPaNdJoevkZvWX/1qbL+tMBgAziCbgC64XperIBtdK1GW
-         6UTTXJHmOuB4jjgwi05F3Z4azz3RLSkOco63bzXA=
-Date:   Tue, 1 Nov 2022 07:16:54 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/3] tty: n_gsm: add parameter negotiation support
-Message-ID: <Y2C51txUYBGv53j+@kroah.com>
-References: <20221024130114.2070-1-daniel.starke@siemens.com>
- <20221024130114.2070-3-daniel.starke@siemens.com>
- <Y1fQ3G1W8PUIrod9@kroah.com>
- <DB9PR10MB5881479C5BE3D2A97A7D354CE0379@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+        Tue, 1 Nov 2022 04:32:06 -0400
+Received: from first.geanix.com (first.geanix.com [116.203.34.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5701C3B5
+        for <linux-serial@vger.kernel.org>; Tue,  1 Nov 2022 01:32:05 -0700 (PDT)
+Received: from [192.168.8.20] (85.184.138.169.dynamic.dhcp.aura-net.dk [85.184.138.169])
+        by first.geanix.com (Postfix) with ESMTPSA id 9382B57E3A;
+        Tue,  1 Nov 2022 08:32:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1667291521; bh=j76fLgLlBKsECzKo+2rHQmcWOJMCLJu1MqNb6QWVwrU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=ZJV77Z9UHK2deExHk0k6BcLPJrvNMe0GyiEZcDTDYjJeEaxEIvvj/KyQ7+GOp7VQK
+         qzJ94P4sXfDM4w9/dcdjodWkMo66rLlfussPSiTnLD8AK19U9RNzK5Kl+5CdkiwOgl
+         /i/jz4BpY/fr8PndSZpAi3v/PTmXSj35naIZECciBUSEEKAjwMwHc3jfqaFiO0NFNT
+         U/GUZzHQmeH1a+y0tpstIpYZdRj984JnZs7h4xYly4gOWaHeVYC+FSB2q2kH/ZRxBz
+         jPIrlSRMMsHrZ/oX72HS/Qra1e6Wt/wk1mbw5+dDgXc9RskB+iKydfpUriBWS4jZ8J
+         ktuh3zcDNOlCw==
+Message-ID: <9320837b-1b8a-9ddf-7de8-d75816fb209b@geanix.com>
+Date:   Tue, 1 Nov 2022 09:32:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB9PR10MB5881479C5BE3D2A97A7D354CE0379@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v3 3/4] serial: 8250: skip platform device registration
+ with no runtime ports
+Content-Language: en-US-large
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial <linux-serial@vger.kernel.org>
+References: <20221025073944.102437-1-martin@geanix.com>
+ <20221025073944.102437-3-martin@geanix.com>
+ <c1642f35-6270-7155-795d-a3f7324f799c@linux.intel.com>
+ <b6619d9-5b91-e06c-f2a0-af92128937d2@linux.intel.com>
+ <d27b3f5d-8766-fa1c-c369-31ebe344f87@linux.intel.com>
+From:   =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>
+In-Reply-To: <d27b3f5d-8766-fa1c-c369-31ebe344f87@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Oct 31, 2022 at 01:26:50PM +0000, Starke, Daniel wrote:
-> Thank you for your review.
+On 28/10/2022 11.40, Ilpo Järvinen wrote:
+> On Fri, 28 Oct 2022, Ilpo Järvinen wrote:
 > 
-> > > +		pr_err("%s: unsupported frame type %d\n", __func__,
-> > > +		       dlci->ftype);
-> >
-> > This needs to be dev_err(), right?
+>> On Wed, 26 Oct 2022, Ilpo Järvinen wrote:
+>>
+>>> On Tue, 25 Oct 2022, Martin Hundebøll wrote:
+>>>
+>>>> Skip registration of the platform device used for built-in ports, if no
+>>>> such ports are configured/created.
+>>>>
+>>>> Signed-off-by: Martin Hundebøll <martin@geanix.com>
+>>>
+>>> For patches 1-3:
+>>>
+>>> Tested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>>> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>>>
+>>> Please include these tags into the next version of your submission.
+>>> Thank you.
+>>
+>> Actually, I just found out that some set of cmdline parameters do no
+>> longer work the same. So I'm retracting both of my tags for now.
+>>
+>> =0 did work as expected due to this change which I tested and some other
+>> values >4 but there now seems to be problem of the console not showing up
+>> like previously when I don't give nr_uarts at all.
 > 
-> There is no place within this driver that uses dev_*() at the moment except
-> for the timeout function of the network stack (gsm_mux_net_tx_timeout()).
-> I do not mind either way, but I would prefer a consistent variant within
-> this driver. Therefore, I suggest switching from pr_*() to dev_*() in a
-> separate patch.
-
-Yes, that's a good idea.
-
-> > And why is it not just dev_dbg()/
+> NAK from me until the problem is resolved adequately.
 > 
-> I used pr_err() instead of pr_dbg() due to the fact that this mismatch will
-> most likely make it impossible to use the n_gsm driver with the connected
-> device as it stands. I am okay to replace it with pr_info() though.
+> Already the patch 1/4 causes an unacceptable reassignment of ttySx
+> targets. This is going to break people's cmdline console setups so you
+> need to find a better way.
 > 
-> > > +		pr_err("%s: unsupported adaption %d\n", __func__,
-> > > +		       dlci->adaption);
-> >
-> > Again, dev_dbg()?
-> >
-> > Do not yet userspace, or external devices, spam kernel logs with
-> > messages.
+> Before any of these patches:
 > 
-> These are related to the user API. Therefore, I do not mind changing these
-> to debug level.
-
-Please do, userspace should not be able to spam kernel logs, bad things
-can happen if that is possible.
-
-> > And never use __func__ in a dev_dbg() call, it's there automatically.
+> [    0.000000] Command line: console=ttyS0,115200n8 8250.nr_uarts=4
+> [    0.021031] Kernel command line: console=ttyS0,115200n8 8250.nr_uarts=4
+> [    0.441924] printk: console [ttyS0] enabled
+> [    2.243165] printk: console [ttyS0] disabled
+> [    2.245682] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
+> [    4.010237] printk: console [ttyS0] enabled
+> [    5.933887] dw-apb-uart.7: ttyS1 at MMIO 0x4010007000 (irq = 16, base_baud = 6250000) is a 16550A
+> [    5.952829] dw-apb-uart.8: ttyS2 at MMIO 0x4010008000 (irq = 17, base_baud = 6250000) is a 16550A
 > 
-> I could not find a hint that __func__ is included in dev_dbg(). What is
-> included is the subsystem name and the device name but not the function
-> name within the driver according to include/linux/dev_printk.h. Other
-> device drivers like usb/dwc2/core.c also include __func__ here. But it
-> appears to be possible to automate this by re-defining dev_fmt().
+> After 1/4 ttyS0 is no longer the same:
+> 
+> [    0.000000] Command line: console=ttyS0,115200n8 8250.nr_uarts=4
+> [    0.021023] Kernel command line: console=ttyS0,115200n8 8250.nr_uarts=4
+> [    0.441872] printk: console [ttyS0] enabled
+> [    2.233584] dw-apb-uart.6: ttyS4 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
+> [    2.241955] dw-apb-uart.7: ttyS5 at MMIO 0x4010007000 (irq = 16, base_baud = 6250000) is a 16550A
+> [    2.249804] dw-apb-uart.8: ttyS6 at MMIO 0x4010008000 (irq = 17, base_baud = 6250000) is a 16550A
 
-You can dynamically add the function location at runtime when using
-pr_dbg() or dev_dbg(), see the documentation.  So any addition of
-__func__ in a string for those calls is just wrong and should be
-removed.
+Thanks for testing this.
 
-Can you fix this up to not spam the log for errors (move to debug
-level), and resend the updated series?
+The old behavior is wrong: your designware ports replace the built-in ones (0 to 3) instead of using the unused ones (4 to 31). With these patches, it acts as I'd expect: the built-in ports are kept, and any later discovered ports follow.
 
-thanks,
+Yes, breaking existing systems in this way is unacceptable. I'm not sure how to approach this, but I'm inclined to introduce a new config variable to keep the broken behavior?
 
-greg k-h
+// Martin
+
+
+  
+
