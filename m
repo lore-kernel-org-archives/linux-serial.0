@@ -2,282 +2,190 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6642FC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 17:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7828C4332F
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 17:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbiKARjd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Nov 2022 13:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
+        id S230238AbiKARzf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Nov 2022 13:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbiKARjc (ORCPT
+        with ESMTP id S231264AbiKARzV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Nov 2022 13:39:32 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4FA1C134;
-        Tue,  1 Nov 2022 10:39:31 -0700 (PDT)
+        Tue, 1 Nov 2022 13:55:21 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798AA1CB1C;
+        Tue,  1 Nov 2022 10:54:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667324371; x=1698860371;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=0ZjrCQV2szkIBsohUgRabaLNp5KW45ts5vZMFlnCfUc=;
-  b=K29vJq3c3/CQJEDpbBstFYfUra7dxK2QB988bwQprxyNnhoN/cOSlMKS
-   e8AysJqkmJ5Kmts3M3IRaLA9IovpFGq9C76xq3Nea2kz4ul+eTTxM7/pT
-   x897gJclVuDsatuj+/DcV0flWlsQRmmfmL/NNV34qyJG5Ca2Io7VmA7sh
-   Wj3mvaOfnvKjqA3ajsU+idvEUJ7BoF+B1OMJUVOIrdpKU1CR/yH1GDU4U
-   g9kW0C3d3Zo4aVLItsT2UeFXLsnnCKzhIeg8wMOprf06YfhZHoI5Wh3ZI
-   jEqnZFELM92g6cZgoxIIHr7PlPkyf0MpS/rxI0JDLuzqLae2KfkAxW+lU
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="371281095"
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667325284; x=1698861284;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=A0UQKDfuo+jUmnYDd8bMMpsGBYn12aO5l8t4+Kyma44=;
+  b=GHT4qXXrIR9mjVKc9Qc0EsWJbs/KWBEsqgSVj78/b7RlhxpNHyT+90ym
+   cQR037kzkJI9UaAfQZe0Cu3Tlr6wsXK/iU84ZdGv137eiKFIBcwhx3JhD
+   CgpparaeF/iOMtLO5ogfuljLR8QumMMeIHcY/TUFw8B9FB767KODiXkBa
+   NsqEq3pXIlZhJIn/uu3eWEM5lR5xFAr2oGXSUBxvF/HIns0oseFkaJbAE
+   CJTzvSQ/vgqpJe1NVZ5qjFEJcmEQRRvShOWaSdBOQKr5ufKvK18HfVMkV
+   F69ESzlEhNgSyarTUnzSOU9HJLtmreTZbd2HVa1dY9ssCBJ6AbD2Poxp9
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="371281095"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 10:39:31 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="585085265"
-X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="585085265"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 10:39:31 -0700
-Date:   Tue, 1 Nov 2022 10:39:47 -0700 (PDT)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-cc:     Xu Yilun <yilun.xu@intel.com>, hao.wu@intel.com,
-        Russ Weight <russell.h.weight@intel.com>,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, Lukas Wunner <lukas@wunner.de>,
-        marpagan@redhat.com
-Subject: Re: [PATCH v4 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-In-Reply-To: <1a812bba-6832-36cc-dfed-7d7ddd8f421c@linux.intel.com>
-Message-ID: <alpine.DEB.2.22.394.2211011037420.2746019@rhweight-WRK1>
-References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com> <20221020212610.697729-5-matthew.gerlach@linux.intel.com> <Y11FmiDeVhGir+7z@yilunxu-OptiPlex-7050> <alpine.DEB.2.22.394.2210311719460.2680729@rhweight-WRK1> <Y2B6kAnd+m3ftWRf@yilunxu-OptiPlex-7050>
- <alpine.DEB.2.22.394.2211010843110.2746019@rhweight-WRK1> <1a812bba-6832-36cc-dfed-7d7ddd8f421c@linux.intel.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+   d="scan'208";a="121326549"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 10:54:43 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 1 Nov 2022 10:54:38 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Tue, 1 Nov 2022 10:54:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LIyahCInKcoShwV7vaa1dFWhJxe+Ukoy7RvviYRuuO2txA+LjqYT9j7RI0IzYOmc6uXJylTz7MerX2nDW4Y33cTxlUitYET3x8ijTrvecBzoKOCs63mXIKdayO54v1Zn8ev+RWL7YZQJYORWFfRtLXh5V79GBdbVMKP4NwIU+vj1uVImx0wTsLiw9gNHLGYw0BsrU2aKtP02AaE9UPHv1FWE4ihCCUXeSYCXLrNACdbzGp3foGDRYnz3SVaX/GLQ/aGJdaRbYgGfpecScWHsILD2wXguaihc2JGwrrMtJV5PjabLrxIB8gwN7TwMxJnwc8TLWbAGjJsKzF4gW41/lA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=A0UQKDfuo+jUmnYDd8bMMpsGBYn12aO5l8t4+Kyma44=;
+ b=PTjg3XM0ehXia5ZoOi3WokNWaMHX3AlrluzlDQVLvw09jkucI0R7edknNnPGERoPPJbq7wb8xxMxlpZMYOFqK5lr7r2mZVQt6llO4qUJ//CFLiRtPtllvOKjSN8F79sNbid5KlS+345utgbJDpXta6e8XCzVak1bZRUsdLj/oGo5uYxevoWIbd7ODmLTdc4P2IwkemmoOOS+5vmAqkldTaqvX+WH0RICpf7b/HckycFIhWBEYBB5JjzSfXbIyejtglxEjW1HT0xNJ8zAQpMB4OCihCpLAB0rtWoP9OjGQErmHni1SS753xB4jqei5gZ6Ovod+6IwmTHD4amAHaLdqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=A0UQKDfuo+jUmnYDd8bMMpsGBYn12aO5l8t4+Kyma44=;
+ b=Jq2c0b1zhPz7k0wKHTNUVXmsMhoHIWlbpR3Xww0VUrtfBHGR4DvPQILZxMm0OdqOaRbqlghAtSsCQ1MDmrI83iV33qa2HLPdQFVNwJoZS+fD8Z6FSx0C6Sjdp2NSTyI2VIWOK4paq34cdS/WvrvlyykPw9KnlE4u34Xqw+W7Oxg=
+Received: from BN8PR11MB3668.namprd11.prod.outlook.com (2603:10b6:408:81::24)
+ by BN9PR11MB5449.namprd11.prod.outlook.com (2603:10b6:408:11e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.21; Tue, 1 Nov
+ 2022 17:54:36 +0000
+Received: from BN8PR11MB3668.namprd11.prod.outlook.com
+ ([fe80::7a86:8d3a:9e52:13ca]) by BN8PR11MB3668.namprd11.prod.outlook.com
+ ([fe80::7a86:8d3a:9e52:13ca%4]) with mapi id 15.20.5769.021; Tue, 1 Nov 2022
+ 17:54:36 +0000
+From:   <Kumaravel.Thiagarajan@microchip.com>
+To:     <andy.shevchenko@gmail.com>, <Tharunkumar.Pasumarthi@microchip.com>
+CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ilpo.jarvinen@linux.intel.com>, <u.kleine-koenig@pengutronix.de>,
+        <johan@kernel.org>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <macro@orcam.me.uk>,
+        <geert+renesas@glider.be>, <jk@ozlabs.org>,
+        <phil.edworthy@renesas.com>, <lukas@wunner.de>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH v2 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver for
+ quad-uart support.
+Thread-Topic: [PATCH v2 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver
+ for quad-uart support.
+Thread-Index: AQHY1V1Eyoyo00S86kajlcGzY3FsyK38aLWAgCwBsoCAAFduAIABmeAAgAADigCAACf10A==
+Date:   Tue, 1 Nov 2022 17:54:36 +0000
+Message-ID: <BN8PR11MB3668DA36E2589CF5EE2A6EA9E9369@BN8PR11MB3668.namprd11.prod.outlook.com>
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+ <20221001061507.3508603-2-kumaravel.thiagarajan@microchip.com>
+ <CAHp75VfoWii5Eo4n=-JcqE4VZMRoq77jjdTMGfwBF+vzKBXPog@mail.gmail.com>
+ <PH0PR11MB509629C9B80D4331AAF0E5AC9B379@PH0PR11MB5096.namprd11.prod.outlook.com>
+ <CAHp75Vf5sBJiNQckCxDGCzFWBYnVs4BhP9+m77_6guZYC+Cybg@mail.gmail.com>
+ <PH0PR11MB509684CE1142854777FAD9979B369@PH0PR11MB5096.namprd11.prod.outlook.com>
+ <CAHp75Vf4DdDX_=9XZsocKg3k+SyCyYZ1i=9DoFxic4rOe9x2hA@mail.gmail.com>
+In-Reply-To: <CAHp75Vf4DdDX_=9XZsocKg3k+SyCyYZ1i=9DoFxic4rOe9x2hA@mail.gmail.com>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN8PR11MB3668:EE_|BN9PR11MB5449:EE_
+x-ms-office365-filtering-correlation-id: fc7178fe-2791-4b33-ef17-08dabc322416
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WuvdWAnuWUab9Ng/OGcNVJa01k3ilW2lra9ejjkQ6v1UDoScH8HNOge+Jufqw1ZPlT/7BR8oqQxlSY5Xlgh30jLqZZ6T8m9YIzk9BZnAk1DH2gBRJ5MKXCC7GQSD3Bg7b2Ns1jkYIi9lVLQWzrCzh53bo2NZ55KzkPRXAbEuRSFzq9gnt0TPnRpkdoc5DT7wd1B284V5xrCr8HB6X/jEdQ4lTh6IK1wxDsP5jSvN0tUwL3IKfhgz3KMhVGK6T8q+/7vg1+0oZECNQ0ukWq+asAEzaW4l59uHpvD6Ybvzn+UBUs5osZWq59kY/Qn03TqHAIKVNg/UTy8+L9uAmn4QBrRu1AQOTCodCm1sc2IFr44HscEN6FV0Krv9gqm1TBj5wx/ajr9ppEFjnSvwxt+saPdkao6bAhZ8HDRa82hDPl3XmIspow4o20/u1uEzM9lTCNbm6THMEI2va0hkgBFvYwamuuEO4LVyI2oKV/2KnLeaVr2oDlxWP8rEOFKXtB+Z1yfaSu8KKTVvj+m+Ps6BVKFdNwBX1yvYNKm3CGJc34yijWsNgzD040AWRc76QtRmMlKEgkNlqRofAlU7Ueu2lTW3Ny8ju7ox4HTdCT5hHn2EjFHZ2LwgOs6oX0JxQXZpimfe6m88osBlKL/qntbT/44OHu506U4BwVZDVAtorOXACXFIBUHgVvFBb9ZPuO+Iw2YAIQMGvJjRmd7QmnpqdaTbtrA9GTiTiPXwVjWCUn0FpwTCEt6NwKB6G/7cLOhZWv8b0vd/haM7qpPpiqYJ9sfh+xn9EQt4RnILtcIpaGlz7BIKiYTGvnLaW2UtclSanAsl54Y2AElyIpbDU2WWxeynMQeeTD8y3iS0fIAF6Jo=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3668.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(39860400002)(346002)(366004)(396003)(376002)(451199015)(55016003)(186003)(41300700001)(71200400001)(54906003)(122000001)(110136005)(6636002)(316002)(83380400001)(66556008)(76116006)(66446008)(64756008)(8676002)(66476007)(66946007)(4326008)(8936002)(52536014)(38070700005)(7416002)(107886003)(7696005)(6506007)(5660300002)(33656002)(2906002)(53546011)(38100700002)(86362001)(478600001)(26005)(9686003)(32563001)(414714003)(473944003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SW4rbzhoK1pORW9kYjdxNVJtaUJlcTVGMGtoTXdiQS9ra3BRQ1UxdkxmTnR3?=
+ =?utf-8?B?czF4dHpHY2IySHdpRGN1Wk5aMS9WRmNUVmdUSWxzcnFZOU14R1RGQy8wS0FY?=
+ =?utf-8?B?ckp2enhzemo4WDF6OUk2aEhTb0w1VDV5bk96UUFZbHVPZzZrRWVmam5Ucisv?=
+ =?utf-8?B?aXoyZlhLeUpJNGJnaWNIaVk2QUxIQmJnb3VEQnBPUSs4bVNXQ2tjWkloa3c5?=
+ =?utf-8?B?VjQwRFluWVZWOVRMaGtaZ2xLeGh6T1hpUjM0cWJKM2E1QmRydklkby9tQWo1?=
+ =?utf-8?B?c3h4TjF5Vk1ndmtUakFrQUgzbms3SWc0QjhFRUtVbi9DdlFZU2J0NVU1T2lF?=
+ =?utf-8?B?R0JoS00vWUgxZDBUdU81bVBsWlZYSUV1L3R3akc0eTUxZG43KytDZ2tQVlRl?=
+ =?utf-8?B?K09wUFp1aWVPOHk5ZTdaMWtrVjFjQXhxZXJGVFpyNmJEVDV5cG9BMTc5NVdT?=
+ =?utf-8?B?SUVKdUFzcXh1N2VJMWhDTVcwd1oyZ0JVRzdKQWh5aHRDSEJMbGYxT1ovVVVJ?=
+ =?utf-8?B?Qy9JSlZyMHZpVWxoVHY0emRpckJMbTlOY2FmNkZweHl4MGJLL0xHT2xycytH?=
+ =?utf-8?B?YUgvTEpBTEZ1YTU2Q0ZxUVkvaktQd1pSc3d1RFFwU1NMRHBVUVpmME9pVHRJ?=
+ =?utf-8?B?dDYzaHdEMUlWNlRWcHUweEhqazkrUnNxdTB6RWFKRFpZRFRGVXR2c2FaRFhx?=
+ =?utf-8?B?dzBiaElBVlVQbVlWZjFwV0dTY3JMaFdPSExyVGlpek4wTnlXa0dablBRZzhi?=
+ =?utf-8?B?STFHRjMwelovKzR2N0h2YTlhbUZuVVdzMDVjK0M5QWE2SVBkdXpGK3BaRUE1?=
+ =?utf-8?B?V01CWTloQ21iTGlqK3NNUXZMNnRPdWdnbjNCY09RRHJhQVBMSElKZHZlQlFp?=
+ =?utf-8?B?QVp0RGp4NHpLaktBYlhQMGZDS3MvSHBlSjY5M2JrMzFPRzVFanp0Z2w2TXda?=
+ =?utf-8?B?NHBFMHpZc21kZ1RmTGk5ZlQ3cUVxZTZBb091dk9lRkxhb1BQSk80SmdwMTRo?=
+ =?utf-8?B?WWJkWE9zRUdQN3hVR2tsclljaXZFNmEvejBuVEp4TjE2YUhJMFkxMTE1cEdQ?=
+ =?utf-8?B?Tm5GcTZHM1Q0U1E2ZHVUd1BYci9Ubk8rSThrY2VBYnZzeEMzZjE1TituM1l0?=
+ =?utf-8?B?SUptYmZOUkxyZ2YxSENtWWtUYjl1ZDlYZWdoVVY4a2ppZXJnMVBucmFINzJy?=
+ =?utf-8?B?TmZpbHJjcGhKVndDSkQrekJ2MkdONnl3YnpxUVpCSDhDUGtkV3Q1dVUzbURn?=
+ =?utf-8?B?NmlOejB0Z1FEUGw1M0lPSndxdTBadmtPcStpSGxSS3RKMnpYUlFFRjBXMEs3?=
+ =?utf-8?B?Y1l5T0Y1UzhiS3kvY2dtb1pKSEhSSDNMS3RrdmFyNVhVS3BFSU5VUHlOS2xn?=
+ =?utf-8?B?aDVpWFBRdWx1VGRqaWxqWVJ2UGYrZDJ0MDBJd0NPcjNBc29hWW94MmFUZ3Ji?=
+ =?utf-8?B?SktlcnVFcUNVc3FzWS9lakZ2alpZSkszZGpXaGpNeWZaMXpJeFhGRkUvYkg1?=
+ =?utf-8?B?dnlzSWd5djA4dFFJMElibk5rak1JOXV6UWJmd1Ftb2htRU14OFpFalQ1VzFo?=
+ =?utf-8?B?TW5hTlpMYTBKNmJIWjgzOXNJNld6SHRIM0FhK09kQzgyNEMyTmN2Uks5VTFD?=
+ =?utf-8?B?NDZYalErWWN3NFZOREI2ODVrOEo1ZVBEVGYzNW15M0p0ci8zTCtyNUlDdmZh?=
+ =?utf-8?B?aEFQd1NmRFZObGVGWkFKcWdXT3BUNDl6VjVhcWhVNFR4alg2aHVZQm14NjZq?=
+ =?utf-8?B?UUp0K2pydVBWTHBlbDJySVZJa3Q3QVRSU0ZyM3BrRnZld2RMSjhKMXBXM0tx?=
+ =?utf-8?B?OFZFb2haNHJ3UWVMdWFFbHM2M2N3eE1ubkh0WmpqZXdGVzhSWSs0aHJzbDE3?=
+ =?utf-8?B?ZWFkYmJENWMzT2hxQWs2MkpBcGJ1Z0JVNnc4R1FmdkV5K215eXhzRnNkR2xo?=
+ =?utf-8?B?djl4WFBKUUFwdXVuTlF3cTRlaE5ScUFSVHpMcWVuUDJoZUFNVGpOQVMrUDdG?=
+ =?utf-8?B?UkxMbkxQVU9HQ05RQTdNSkhRREk3MkRSaUtEWFhLc3k3d3VXbU52QXUrUHM1?=
+ =?utf-8?B?SVRsYmhRS3crZXVJaFJsdGJTSUdpSjNSOVFtam9ISW5CYU0rdVpXUU1vWGtp?=
+ =?utf-8?B?RVZvZ0dFL3F5TjM1bUlnRjhlU3d5QWsyY2VWUWxyMEdFMVFHa3JLOHl5K3gr?=
+ =?utf-8?Q?KhHy2IvZOvgG4en9MtELdzg=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-195426309-1667324388=:2746019"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3668.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc7178fe-2791-4b33-ef17-08dabc322416
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2022 17:54:36.5903
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HvmYRhoidVl/iH9h7O5uUoj00k4VhW/4l66Eet+ULew/Hh886CqG6G2kY7X6lv6wcqVcIXAf1W+Q7m2jCeEdlN+Q96EuLi5n+A4eN9XoAr8MRH0uCSODMT8zjCuqq85J
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5449
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-195426309-1667324388=:2746019
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 8BIT
-
-
-
-On Tue, 1 Nov 2022, Ilpo Järvinen wrote:
-
-> On Tue, 1 Nov 2022, matthew.gerlach@linux.intel.com wrote:
->
->>
->>
->> On Tue, 1 Nov 2022, Xu Yilun wrote:
->>
->>> On 2022-10-31 at 17:34:39 -0700, matthew.gerlach@linux.intel.com wrote:
->>>>
->>>>
->>>> On Sat, 29 Oct 2022, Xu Yilun wrote:
->>>>
->>>>> On 2022-10-20 at 14:26:10 -0700, matthew.gerlach@linux.intel.com wrote:
->>>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>>>>>
->>>>>> Add a Device Feature List (DFL) bus driver for the Altera
->>>>>> 16550 implementation of UART.
->>>>>>
->>>>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>>>>> ---
->>>>>> v4: use dev_err_probe() everywhere that is appropriate
->>>>>>     clean up noise
->>>>>>     change error messages to use the word, unsupported
->>>>>>     tried again to sort Makefile and KConfig better
->>>>>>     reorder probe function for easier error handling
->>>>>>     use new dfh_find_param API
->>>>>>
->>>>>> v3: use passed in location of registers
->>>>>>     use cleaned up functions for parsing parameters
->>>>>>
->>>>>> v2: clean up error messages
->>>>>>     alphabetize header files
->>>>>>     fix 'missing prototype' error by making function static
->>>>>>     tried to sort Makefile and Kconfig better
->>>>>> ---
->>>>>>  drivers/tty/serial/8250/8250_dfl.c | 149
->>>>>> +++++++++++++++++++++++++++++
->>>>>>  drivers/tty/serial/8250/Kconfig    |  12 +++
->>>>>>  drivers/tty/serial/8250/Makefile   |   1 +
->>>>>>  3 files changed, 162 insertions(+)
->>>>>>  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
->>>>>>
->>>>>> diff --git a/drivers/tty/serial/8250/8250_dfl.c
->>>>>> b/drivers/tty/serial/8250/8250_dfl.c
->>>>>> new file mode 100644
->>>>>> index 000000000000..f02f0ba2a565
->>>>>> --- /dev/null
->>>>>> +++ b/drivers/tty/serial/8250/8250_dfl.c
->>>>>> @@ -0,0 +1,149 @@
->>>>>> +// SPDX-License-Identifier: GPL-2.0
->>>>>> +/*
->>>>>> + * Driver for FPGA UART
->>>>>> + *
->>>>>> + * Copyright (C) 2022 Intel Corporation, Inc.
->>>>>> + *
->>>>>> + * Authors:
->>>>>> + *   Ananda Ravuri <ananda.ravuri@intel.com>
->>>>>> + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>>>>> + */
->>>>>> +
->>>>>> +#include <linux/bitfield.h>
->>>>>> +#include <linux/dfl.h>
->>>>>> +#include <linux/io-64-nonatomic-lo-hi.h>
->>>>>> +#include <linux/kernel.h>
->>>>>> +#include <linux/module.h>
->>>>>> +#include <linux/serial.h>
->>>>>> +#include <linux/serial_8250.h>
->>>>>> +
->>>>>> +struct dfl_uart {
->>>>>> +	int line;
->>>>>> +};
->>>>>> +
->>>>>> +static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct
->>>>>> uart_8250_port *uart)
->>>>>> +{
->>>>>> +	struct device *dev = &dfl_dev->dev;
->>>>>> +	u64 v, fifo_len, reg_width;
->>>>>> +	u64 *p;
->>>>>> +
->>>>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ);
->>>>>> +	if (!p)
->>>>>> +		return dev_err_probe(dev, -EINVAL, "missing CLK_FRQ
->>>>>> param\n");
->>>>>> +
->>>>>> +	uart->port.uartclk = *p;
->>>>>> +	dev_dbg(dev, "UART_CLK_ID %u Hz\n", uart->port.uartclk);
->>>>>> +
->>>>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_FIFO_LEN);
->>>>>> +	if (!p)
->>>>>> +		return dev_err_probe(dev, -EINVAL, "missing FIFO_LEN
->>>>>> param\n");
->>>>>> +
->>>>>> +	fifo_len = *p;
->>>>>> +	dev_dbg(dev, "UART_FIFO_ID fifo_len %llu\n", fifo_len);
->>>>>> +
->>>>>> +	switch (fifo_len) {
->>>>>> +	case 32:
->>>>>> +		uart->port.type = PORT_ALTR_16550_F32;
->>>>>> +		break;
->>>>>> +
->>>>>> +	case 64:
->>>>>> +		uart->port.type = PORT_ALTR_16550_F64;
->>>>>> +		break;
->>>>>> +
->>>>>> +	case 128:
->>>>>> +		uart->port.type = PORT_ALTR_16550_F128;
->>>>>> +		break;
->>>>>> +
->>>>>> +	default:
->>>>>> +		return dev_err_probe(dev, -EINVAL, "unsupported
->>>>>> fifo_len %llu\n", fifo_len);
->>>>>> +	}
->>>>>> +
->>>>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_REG_LAYOUT);
->>>>>> +	if (!p)
->>>>>> +		return dev_err_probe(dev, -EINVAL, "missing REG_LAYOUT
->>>>>> param\n");
->>>>>> +
->>>>>> +	v = *p;
->>>>>> +	uart->port.regshift = FIELD_GET(DFHv1_PARAM_ID_REG_SHIFT, v);
->>>>>> +	reg_width = FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v);
->>>>>
->>>>> I have concern that the raw layout inside the parameter block is
->>>>> still exposed to drivers and need to be parsed by each driver.
->>>>
->>>> Raw parameter block will always have to be passed to the driver because HW
->>>> specific properties can be defined that will need to be parsed by the
->>>> specific driver.
->>>
->>> So there is a question about the scope of the definitions of these parameter
->>> blocks. MSIX seems globally used across all dfl devices. REG_LAYOUT
->>> seems specific to uart?
->>
->> There are definitely two classes of parameter blocks.  One class is HW
->> agnostic parameters where the parameters are relevant to many different kinds
->> of HW components.  MSI-X, and input clock-frequency are certainly HW agnostic,
->> and it turns out that REG_LAYOUT is not specific to uart.  You can see
->> reg_bits and reg_stride in struct regmap_config.  There are also device tree
->> bindings for reg-shift and reg-io-width.  The second class of parameters would
->> be specific to HW component.  In the case of this uart driver, all parameters
->> would be considered HW agnostic parameters.
->>
->>>
->>> If a parameter block is widely used in dfl drivers, duplicate the parsing
->>> from HW layout in each driver may not be a good idea. While for device
->>> specific parameter block, it's OK.
->>
->> It sounds like we are in agreement.
->>
->>>
->>> Another concern is the indexing of the parameter IDs. If some parameter
->>> blocks should be device specific, then no need to have globally indexed
->>> parameter IDs. Index them locally in device is OK. So put the definitions
->>> of ID values, HW layout and their parsing operation in each driver.
->>
->> It may be confusing for two drivers to use the same parameter id that have
->> different meanings and data layout.  Since all the parameters for this driver
->> would be considered HW agnostic, we'd don't need to address this issue with
->> this patchset.
->>
->>>>> How about we define HW agnostic IDs for parameter specific fields like:
->>>>>
->>>>> PARAM_ID		FIELD_ID
->>>>> ================================
->>>>> MSIX			STARTV
->>>>> 			NUMV
->>>>> --------------------------------
->>>>> CLK			FREQ
->>>>> --------------------------------
->>>>> FIFO			LEN
->>>>> --------------------------------
->>>>> REG_LAYOUT		WIDTH
->>>>> 			SHIFT
->>>>>
->>>>> And define like u64 dfl_find_param(struct dfl_device *, int param_id,
->>>>> int field_id)
->>>>
->>>> I don't think dfl_find_param as defined above adds much value.
->>>>
->>>>>
->>>>> Think further, if we have to define HW agnostic property - value pairs,
->>>>> why don't we just use "Software nodes for the firmware node", see
->>>>> drivers/base/swnode.c. I think this may be a better choice.
->>>>
->>>> I am looking into "Software nodes for the firmware node", and it can be
->>>> used
->>>> for HW agnostic properties.  Each dfl driver will still have to make a
->>>> function call to fetch each HW agnostice property value as well as a
->>>> function call to find the HW specific parameters and then parse those
->>>> parameters.
->
-> Btw, another aspect this discussion has completely overlooked is the
-> presence of parameter version and how it impacts data layout. Is v1
-> always going be a subset of v2 or can a later version remove something
-> v1 had?
-
-In general it would be preferable for v1 to be a subset of v2.  This 
-allows for v1 SW to work on v2 HW.
-
->
-> -- 
-> i.
->
---8323328-195426309-1667324388=:2746019--
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmR5IFNoZXZjaGVua28gPGFu
+ZHkuc2hldmNoZW5rb0BnbWFpbC5jb20+DQo+IFNlbnQ6IFR1ZXNkYXksIE5vdmVtYmVyIDEsIDIw
+MjIgODo0NyBQTQ0KPiBUbzogVGhhcnVua3VtYXIgUGFzdW1hcnRoaSAtIEk2NzgyMQ0KPiA8VGhh
+cnVua3VtYXIuUGFzdW1hcnRoaUBtaWNyb2NoaXAuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENI
+IHYyIHR0eS1uZXh0IDEvM10gODI1MDogbWljcm9jaGlwOiBwY2kxeHh4eDogQWRkIGRyaXZlciBm
+b3INCj4gcXVhZC11YXJ0IHN1cHBvcnQuDQo+ICANCj4gT24gVHVlLCBOb3YgMSwgMjAyMiBhdCA1
+OjA0IFBNIDxUaGFydW5rdW1hci5QYXN1bWFydGhpQG1pY3JvY2hpcC5jb20+DQo+IHdyb3RlOg0K
+PiA+ID4gRnJvbTogQW5keSBTaGV2Y2hlbmtvIDxhbmR5LnNoZXZjaGVua29AZ21haWwuY29tPg0K
+PiA+ID4gU2VudDogTW9uZGF5LCBPY3RvYmVyIDMxLCAyMDIyIDg6MDcgUE0NCj4gDQo+IC4uLg0K
+PiANCj4gPiA+ID4gQnV0LCBpZiBJIGRvIHRoaXMsIEkgY2Fubm90IHVzZSBzeXNmcyBpbnRlcmZh
+Y2UgZm9yIHVwZGF0aW5nIHJ4X3RyaWdfYnl0ZXMNCj4gcmlnaHQ/DQo+ID4gPg0KPiA+ID4gTWF5
+YmUsIEkgZG9uJ3QgcmVtZW1iZXIgYnkgaGVhcnQgdGhhdCBwYXJ0IG9mIHRoZSBjb2RlLiBCdXQg
+d2h5IGRvDQo+ID4gPiB5b3UgbmVlZCB0aGF0IEFCSSBpbiB0aGUgZmlyc3QgcGxhY2U/DQo+ID4N
+Cj4gPiBCeSB1c2luZyB0aGUgc3lzZnMgaW50ZXJmYWNlLCBvdXIgZHJpdmVyIHdpbGwgYmUgYWJs
+ZSB0byB1cGRhdGUgdGhlIHRyaWdnZXINCj4gbGV2ZWwgZm9yIHRoZSByZWNlaXZlciBmaWZvIGlu
+dGVycnVwdCBhdCBydW50aW1lLg0KPiANCj4gVGhpcyBkb2Vzbid0IGFuc3dlciBteSBxdWVzdGlv
+bi4gV2hhdCBpcyB0aGlzIG5lZWRlZCBmb3I/DQpJIHRoaW5rIHRoaXMgd2lsbCBiZSB1c2VmdWwg
+Zm9yIG91ciBjdXN0b21lcnMgaW4gdHVuaW5nIHRoZSB0cmlnZ2VyIGxldmVsIGJhc2VkIG9uIHRo
+ZWlyIGFwcGxpY2F0aW9uLg0KVGhpcyBpcyBhIFVBUlQgYmFzZWQgb24gcHJvZ3JhbW1lZCBJL08g
+YW5kIGF0IGhpZ2hlciBzcGVlZHMgc29tZXRpbWVzIHdoZXJlIHRoZXJlIGNhbiBiZQ0KY29udGlu
+dW91cyBzdHJlYW0gb2YgZGF0YSBmb3IgYSBsb25nIHRpbWUsIHdlIG1heSBuZWVkIHRvIHNldCB0
+aGUgdHJpZ2dlciB0byB0aGUgbG93ZXIgc2lkZSB0byBkZXRlY3QNCmVhcmx5IGFuZCBhdm9pZCBv
+dmVyZmxvdy4NCk9uIHRoZSBvdGhlciBoYW5kLCBpbiBzb21lIGFwcGxpY2F0aW9ucyB3aGVyZSB0
+aGUgY29udGludW91cyBzdHJlYW0gb2YgZGF0YSBpcyBub3QgdmVyeSBsb25nIGFuZA0Kbm8gcmlz
+ayBvZiBvdmVyZmxvdywgc2V0IGl0IHRvIGhpZ2hlciBzaWRlIHRvIGF2b2lkIGZyZXF1ZW50IGlu
+dGVycnVwdHMuLg0KV2UganVzdCB3YW50IHRvIGtlZXAgdGhpcyBvcHRpb24gb3BlbiBpbiB0aGUg
+ZHJpdmVyIGZvciBkaWZmZXJlbnQgY3VzdG9tZXJzIHdobyB3b3VsZCB3YW50IHRvIHR1bmUNCnRo
+aXMgYmFzZWQgb24gdGhlaXIgYXBwbGljYXRpb24uDQpQbGVhc2UgbGV0IHVzIGtub3cgaWYgdGhl
+cmUgYXJlIGZ1cnRoZXIgcXVlc3Rpb25zIG9yIGFueSBpc3N1ZXMgaW4gdGhpcyBhcHByb2FjaC4N
+Cg0KVGhhbmsgWW91Lg0KDQpSZWdhcmRzLA0KS3VtYXINCg==
