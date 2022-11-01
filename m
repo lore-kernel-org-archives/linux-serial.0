@@ -2,48 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C1EC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 15:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DBCC4332F
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 15:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbiKAPZv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Nov 2022 11:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49188 "EHLO
+        id S230478AbiKAPgO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Nov 2022 11:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiKAPZu (ORCPT
+        with ESMTP id S231129AbiKAPgM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Nov 2022 11:25:50 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE939589;
-        Tue,  1 Nov 2022 08:25:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667316348; x=1698852348;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=IlJqAbU3y+VY+MO6lSfCIXqnUVoHU57DkpIJh1KnXjU=;
-  b=GYSAG4k3jlhGGxXn1h6VfIIkXeYncSFAtrGEtPGBlCpvQtX4ZQMUqlJ6
-   rYkqpq+TWjKLtJDCsNy4dkjDa7MErABSqVNUZlFlKRDyTuQNdt6ptI1QZ
-   Dtz2kHZourCRA7lMp25YgclcGN/rP1WwMBV85KZVjo/aN59uSenidzlZT
-   mxUI2g1EPDCexovqppnQW/rWGI30pf6Do8sH67tEoLI+Xj8a1T/WvQqYZ
-   VgjxBmwgId69NbHG+lChZfmccIq0MB2LTgmZi1bqqr3kU3J5WSog7qCcW
-   NZIe+iFNuLTAW7A7A4RDPNtPwJlXYwlaXchZfR41/sydxQ/1bptLZX565
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="310870159"
-X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="310870159"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:25:47 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="611877247"
-X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="611877247"
-Received: from mweigler-mobl.ger.corp.intel.com ([10.249.40.213])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:25:43 -0700
-Date:   Tue, 1 Nov 2022 17:25:36 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tharunkumar.Pasumarthi@microchip.com
-cc:     Kumaravel.Thiagarajan@microchip.com,
+        Tue, 1 Nov 2022 11:36:12 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F9D19285;
+        Tue,  1 Nov 2022 08:36:12 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id i9so7016279qki.10;
+        Tue, 01 Nov 2022 08:36:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6tyOFs8HMbPI+3QLAryCFA6h9mffJbuGR7qcAQvPo6U=;
+        b=HD2F7usIAd7F8S8uMjiTVJ5X7S19RhIjJDEF6bhBE6PKB4r4Qv5416aWWBwTnpyp0b
+         6u3lTQAqEgYqIiEC4Ur3tnmviCrLWklJuwUY2i6p/VgnJ4GF49XFg0idXlmUPLwLztgD
+         XBHW1trEsP7xQqFr8JkdwqbVTK7g0kQHP1bKnxGUlb5ayEnD+Dn4X8y6jldU5ZfnzEyr
+         vuZyeYNBkODaYu4zQ3mPkwqgQ5VJBZeBBqOL6JgPO8+kYEDn42M2VHr1Pb1aziP4eSFJ
+         s6Pid7JP12kZ56M5RLnzEEuXsLbDgv7J/XfwYVVyVoQ6z4Q8QEydkTPLHcbgZaHGuUD0
+         0oDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6tyOFs8HMbPI+3QLAryCFA6h9mffJbuGR7qcAQvPo6U=;
+        b=MMiQuA4qaZ+X+4Ycg7uRDAr/2TJgzIvwUejWulBp/EZ/sK+0EI/C0C21QcBGiCe8R6
+         ND3xVaN1T8PrkguA5EITLtJ4FNtOVQJgkiopXlzoNxfgYTnDKIyse69AMrY0IhKR8jHi
+         UPz3TL2nmDzzAOyBvdTvEPvZl7PoyVeyGTYz3G7bquggXsjHuw0uxYShdwYVMGXKtvF4
+         waVXLyudJunHECdYLwHX0xtQRpna0MlglA3e6K5TQGIiE9ZhTZQVo4Yxklt2W91gx3ft
+         gYc0i+tRJB7ChFf8RH4m+WyBWxq4oFDemRymoNq/OPAecs/F1MicO0CtKUcj2xytXyI4
+         qKuA==
+X-Gm-Message-State: ACrzQf3XgKcmcw3ZUHZDxvT7YlQ8ojBBWUe6eDmFNdZ2eeL3U9sMC5qw
+        xAK6PgbC7Qzb0qLmKPyy4T+xCPgsRpIbKiv+gYs=
+X-Google-Smtp-Source: AMsMyM5qBbpvlvNhLoJPjX7ijO/W8S3R6x9hlC6iBDXs41tmeasn1CZpPTQ+vfmcyONP+08aPBBwyKhVuKClZEnNx6Q=
+X-Received: by 2002:a37:8786:0:b0:6f9:6d0c:27b4 with SMTP id
+ j128-20020a378786000000b006f96d0c27b4mr130158qkd.383.1667316971008; Tue, 01
+ Nov 2022 08:36:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+ <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com>
+ <e433da81-46d5-5aad-4ce9-6d48b2e674e@linux.intel.com> <PH0PR11MB509668B72B3B85C2966D36909B369@PH0PR11MB5096.namprd11.prod.outlook.com>
+ <adb2d184-a247-ec16-10f-dfc13831ffc9@linux.intel.com>
+In-Reply-To: <adb2d184-a247-ec16-10f-dfc13831ffc9@linux.intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 1 Nov 2022 17:35:35 +0200
+Message-ID: <CAHp75VeuYDbjvShTTW5797opunO4DvGSLQG3Aiv0pTpx-6ZZXg@mail.gmail.com>
+Subject: Re: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
+ support to quad-uart driver.
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Tharunkumar.Pasumarthi@microchip.com,
+        Kumaravel.Thiagarajan@microchip.com,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, andy.shevchenko@gmail.com,
+        Jiri Slaby <jirislaby@kernel.org>,
         u.kleine-koenig@pengutronix.de, johan@kernel.org,
         wander@redhat.com, etremblay@distech-controls.com,
         macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
@@ -51,88 +70,37 @@ cc:     Kumaravel.Thiagarajan@microchip.com,
         LKML <linux-kernel@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         UNGLinuxDriver@microchip.com
-Subject: RE: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
- support to quad-uart driver.
-In-Reply-To: <PH0PR11MB509668B72B3B85C2966D36909B369@PH0PR11MB5096.namprd11.prod.outlook.com>
-Message-ID: <adb2d184-a247-ec16-10f-dfc13831ffc9@linux.intel.com>
-References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com> <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com> <e433da81-46d5-5aad-4ce9-6d48b2e674e@linux.intel.com>
- <PH0PR11MB509668B72B3B85C2966D36909B369@PH0PR11MB5096.namprd11.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1851274057-1667316347=:1608"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, Nov 1, 2022 at 5:25 PM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Tue, 1 Nov 2022, Tharunkumar.Pasumarthi@microchip.com wrote:
 
---8323329-1851274057-1667316347=:1608
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+...
 
-On Tue, 1 Nov 2022, Tharunkumar.Pasumarthi@microchip.com wrote:
+> > I went through the code and it seems like this is not taken care by the=
+ core.
+> > Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485=
+_config' callback?
+> > This has not been done since we do not need all the configurations done=
+ inside 'serial8250_em485_config'.
+>
+> It has nothing to do with serial8250_em485_config.
+>
+> It is very hard to believe you couldn't find
+> uart_sanitize_serial_rs485() and uart_set_rs485_config() yourself, the
+> latter calls your driver specific rs485 handler.
 
-> > From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > Sent: Monday, October 3, 2022 2:34 PM
-> > To: Kumaravel Thiagarajan - I21417
-> > <Kumaravel.Thiagarajan@microchip.com>
-> > Subject: Re: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
-> > support to quad-uart driver.
-> > 
-> > [Some people who received this message don't often get email from
-> > ilpo.jarvinen@linux.intel.com. Learn why this is important at
-> > https://aka.ms/LearnAboutSenderIdentification ]
-> > 
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> > content is safe
-> > 
-> > > +     if (rs485->flags & SER_RS485_ENABLED) {
-> > > +             memset(rs485->padding, 0, sizeof(rs485->padding));
-> > 
-> > Core handles this for you.
-> 
-> I went through the code and it seems like this is not taken care by the core.
-> Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_config' callback?
-> This has not been done since we do not need all the configurations done inside 'serial8250_em485_config'.
-> 
-> > > +             if (!(rs485->flags & SER_RS485_RTS_ON_SEND)) {
-> > > +                     data |= ADCL_CFG_POL_SEL;
-> > > +                     rs485->flags |=  SER_RS485_RTS_AFTER_SEND;
-> > > +             } else {
-> > > +                     rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
-> > > +             }
-> > 
-> > Core handles that flags sanitization for you.
-> 
-> I went through the code and it seems like this is not taken care by the core.
-> Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_config' callback?
-> This has not been done since we do not need all the configurations done inside 'serial8250_em485_config'.
-> 
-> > > +     } else {
-> > > +             memset(rs485, 0, sizeof(*rs485));
-> > 
-> > Core handles this.
-> 
-> I went through the code and it seems like this is not taken care by the core.
-> Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_config' callback?
-> This has not been done since we do not need all the configurations done inside 'serial8250_em485_config'.
-> 
-> > > +     writeb(data, (port->membase + ADCL_CFG_REG));
-> > > +     port->rs485 = *rs485;
-> > 
-> > Core handles this.
-> 
-> I went through the code and it seems like this is not taken care by the core.
-> Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_config' callback?
-> This has not been done since we do not need all the configurations done inside 'serial8250_em485_config'.
+Which version has this API? If it's v6.1-rc1 and patches are made
+against v6.0, it's possible to miss something.
 
-It has nothing to do with serial8250_em485_config.
+In any case, the patches to the serial subsystem should always be done
+against the tty/tty-next branch.
 
-It is very hard to believe you couldn't find 
-uart_sanitize_serial_rs485() and uart_set_rs485_config() yourself, the 
-latter calls your driver specific rs485 handler.
-
--- 
- i.
-
---8323329-1851274057-1667316347=:1608--
+--=20
+With Best Regards,
+Andy Shevchenko
