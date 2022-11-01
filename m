@@ -2,116 +2,256 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3DBC4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 15:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64471C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 16:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiKAPuJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Nov 2022 11:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S230062AbiKAQGv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Nov 2022 12:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230185AbiKAPuI (ORCPT
+        with ESMTP id S229553AbiKAQGu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Nov 2022 11:50:08 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E1D17E3D;
-        Tue,  1 Nov 2022 08:50:07 -0700 (PDT)
+        Tue, 1 Nov 2022 12:06:50 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371EE1571D;
+        Tue,  1 Nov 2022 09:06:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667317807; x=1698853807;
+  t=1667318809; x=1698854809;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=w9UQyPuZ+Hlj8rKvoSh33jcdRi4ssbzxCPzgI/eKvTY=;
-  b=VUloBj/l1lJVPlUJU0hkzftoUxE0oVJAETILMaQINtjm4uuu2M/bvwRZ
-   DHL9fIYFzBhl1qSHfYXfaQldUVU8M8YOcAcA2h9/LPGKDq9ponxMxgn5U
-   wEpwJNvemzLzKnlHFB0iS+UCFTvsQ+YwOJVPyYGAQkfqwgphp2kcHNjyd
-   xoQkB+4893RYO6jHVDynpFPf+61AmMQTeyGy3y/5+Y8dFL4Tala6ArXA+
-   FK9UpHJYj0CiZ7ruidHnzvL90PAKf01yO3ntDdpejdYHc0S1s8FraF4NK
-   fAI0gJiu83GBgO4P/+JfRaC5DCpMmGkqdw7uRYp+S2HIGuNp6Bsb8QYaa
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="310263176"
+   references:mime-version;
+  bh=MayWlSqqoHM0+wU0rV8BWk4tRrFd6ej2gtNp75/u7+4=;
+  b=I8I/girk6cKqgnvjHfcZfIE6DEfTK4qX3Lv2KSvFIcnyawa0uqdxmNqi
+   eBLyblNJzj101uHA0L1PupsJHBwcEimUon+XewA/8WJFumt30M0CK2z76
+   DhtHcCRSjg4Tx06itMFreTXwc//wseED0G4zIEQJOIFt9EEqStoAZ3GLe
+   gFtowvcAZWkU0LJYz33QrcMVgkXgYUxhJlpTBaPvW+IjZf5xmLPzUDd+6
+   S7k3EdOC6mkMB3ObJqQS8ic5UQjE6dPbWQymyUwnUvsdukoiQRA3KqR8X
+   kzJOPqvd0OzlZONOLOn7ahuCtEefF7cooNGRXbucHMuxBpsCXA6RmU2pb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="307896805"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="310263176"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:50:07 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="879125747"
+   d="scan'208";a="307896805"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 09:06:44 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="636445570"
 X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
-   d="scan'208";a="879125747"
-Received: from mweigler-mobl.ger.corp.intel.com ([10.249.40.213])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 08:50:02 -0700
-Date:   Tue, 1 Nov 2022 17:49:55 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Tharunkumar.Pasumarthi@microchip.com,
-        Kumaravel.Thiagarajan@microchip.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        u.kleine-koenig@pengutronix.de, johan@kernel.org,
-        wander@redhat.com, etremblay@distech-controls.com,
-        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
-        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
- support to quad-uart driver.
-In-Reply-To: <CAHp75VeuYDbjvShTTW5797opunO4DvGSLQG3Aiv0pTpx-6ZZXg@mail.gmail.com>
-Message-ID: <2646f5e7-7f26-e748-8812-f1d17c799b8a@linux.intel.com>
-References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com> <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com> <e433da81-46d5-5aad-4ce9-6d48b2e674e@linux.intel.com> <PH0PR11MB509668B72B3B85C2966D36909B369@PH0PR11MB5096.namprd11.prod.outlook.com>
- <adb2d184-a247-ec16-10f-dfc13831ffc9@linux.intel.com> <CAHp75VeuYDbjvShTTW5797opunO4DvGSLQG3Aiv0pTpx-6ZZXg@mail.gmail.com>
+   d="scan'208";a="636445570"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 09:06:42 -0700
+Date:   Tue, 1 Nov 2022 09:04:39 -0700 (PDT)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Xu Yilun <yilun.xu@intel.com>
+cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com
+Subject: Re: [PATCH v4 4/4] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+In-Reply-To: <Y2B6kAnd+m3ftWRf@yilunxu-OptiPlex-7050>
+Message-ID: <alpine.DEB.2.22.394.2211010843110.2746019@rhweight-WRK1>
+References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com> <20221020212610.697729-5-matthew.gerlach@linux.intel.com> <Y11FmiDeVhGir+7z@yilunxu-OptiPlex-7050> <alpine.DEB.2.22.394.2210311719460.2680729@rhweight-WRK1>
+ <Y2B6kAnd+m3ftWRf@yilunxu-OptiPlex-7050>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-2129762944-1667317709=:1608"
-Content-ID: <4cf03961-274f-876e-446f-ed6a5635f268@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2129762944-1667317709=:1608
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <26c4e49f-5f6f-6727-a0e7-77c64adb6b0@linux.intel.com>
-
-On Tue, 1 Nov 2022, Andy Shevchenko wrote:
-
-> On Tue, Nov 1, 2022 at 5:25 PM Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> wrote:
-> > On Tue, 1 Nov 2022, Tharunkumar.Pasumarthi@microchip.com wrote:
-> 
-> ...
-> 
-> > > I went through the code and it seems like this is not taken care by the core.
-> > > Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_config' callback?
-> > > This has not been done since we do not need all the configurations done inside 'serial8250_em485_config'.
-> >
-> > It has nothing to do with serial8250_em485_config.
-> >
-> > It is very hard to believe you couldn't find
-> > uart_sanitize_serial_rs485() and uart_set_rs485_config() yourself, the
-> > latter calls your driver specific rs485 handler.
-> 
-> Which version has this API? If it's v6.1-rc1 and patches are made
-> against v6.0, it's possible to miss something.
-> 
-> In any case, the patches to the serial subsystem should always be done
-> against the tty/tty-next branch.
-
-It has been for multiple stable kernel version already. It was moved to 
-own function by this commit:
-
-git describe --contains 2dbd0c14ebe8836eaf890c7f50f3fc5d26d67d95
-v6.0-rc1~64^2~129
-
-Originally introduced here:
-git describe --contains 0ed12afa5655512ee418047fb3546d229df20aa1
-v5.19-rc1~47^2~142
-
-There have been perhaps one of those things I pointed out that was added 
-later than the others but it won't explain why nothing was found from the 
-code.
 
 
--- 
- i.
---8323329-2129762944-1667317709=:1608--
+On Tue, 1 Nov 2022, Xu Yilun wrote:
+
+> On 2022-10-31 at 17:34:39 -0700, matthew.gerlach@linux.intel.com wrote:
+>>
+>>
+>> On Sat, 29 Oct 2022, Xu Yilun wrote:
+>>
+>>> On 2022-10-20 at 14:26:10 -0700, matthew.gerlach@linux.intel.com wrote:
+>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>>
+>>>> Add a Device Feature List (DFL) bus driver for the Altera
+>>>> 16550 implementation of UART.
+>>>>
+>>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>> ---
+>>>> v4: use dev_err_probe() everywhere that is appropriate
+>>>>     clean up noise
+>>>>     change error messages to use the word, unsupported
+>>>>     tried again to sort Makefile and KConfig better
+>>>>     reorder probe function for easier error handling
+>>>>     use new dfh_find_param API
+>>>>
+>>>> v3: use passed in location of registers
+>>>>     use cleaned up functions for parsing parameters
+>>>>
+>>>> v2: clean up error messages
+>>>>     alphabetize header files
+>>>>     fix 'missing prototype' error by making function static
+>>>>     tried to sort Makefile and Kconfig better
+>>>> ---
+>>>>  drivers/tty/serial/8250/8250_dfl.c | 149 +++++++++++++++++++++++++++++
+>>>>  drivers/tty/serial/8250/Kconfig    |  12 +++
+>>>>  drivers/tty/serial/8250/Makefile   |   1 +
+>>>>  3 files changed, 162 insertions(+)
+>>>>  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+>>>>
+>>>> diff --git a/drivers/tty/serial/8250/8250_dfl.c b/drivers/tty/serial/8250/8250_dfl.c
+>>>> new file mode 100644
+>>>> index 000000000000..f02f0ba2a565
+>>>> --- /dev/null
+>>>> +++ b/drivers/tty/serial/8250/8250_dfl.c
+>>>> @@ -0,0 +1,149 @@
+>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>> +/*
+>>>> + * Driver for FPGA UART
+>>>> + *
+>>>> + * Copyright (C) 2022 Intel Corporation, Inc.
+>>>> + *
+>>>> + * Authors:
+>>>> + *   Ananda Ravuri <ananda.ravuri@intel.com>
+>>>> + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>> + */
+>>>> +
+>>>> +#include <linux/bitfield.h>
+>>>> +#include <linux/dfl.h>
+>>>> +#include <linux/io-64-nonatomic-lo-hi.h>
+>>>> +#include <linux/kernel.h>
+>>>> +#include <linux/module.h>
+>>>> +#include <linux/serial.h>
+>>>> +#include <linux/serial_8250.h>
+>>>> +
+>>>> +struct dfl_uart {
+>>>> +	int line;
+>>>> +};
+>>>> +
+>>>> +static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct uart_8250_port *uart)
+>>>> +{
+>>>> +	struct device *dev = &dfl_dev->dev;
+>>>> +	u64 v, fifo_len, reg_width;
+>>>> +	u64 *p;
+>>>> +
+>>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ);
+>>>> +	if (!p)
+>>>> +		return dev_err_probe(dev, -EINVAL, "missing CLK_FRQ param\n");
+>>>> +
+>>>> +	uart->port.uartclk = *p;
+>>>> +	dev_dbg(dev, "UART_CLK_ID %u Hz\n", uart->port.uartclk);
+>>>> +
+>>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_FIFO_LEN);
+>>>> +	if (!p)
+>>>> +		return dev_err_probe(dev, -EINVAL, "missing FIFO_LEN param\n");
+>>>> +
+>>>> +	fifo_len = *p;
+>>>> +	dev_dbg(dev, "UART_FIFO_ID fifo_len %llu\n", fifo_len);
+>>>> +
+>>>> +	switch (fifo_len) {
+>>>> +	case 32:
+>>>> +		uart->port.type = PORT_ALTR_16550_F32;
+>>>> +		break;
+>>>> +
+>>>> +	case 64:
+>>>> +		uart->port.type = PORT_ALTR_16550_F64;
+>>>> +		break;
+>>>> +
+>>>> +	case 128:
+>>>> +		uart->port.type = PORT_ALTR_16550_F128;
+>>>> +		break;
+>>>> +
+>>>> +	default:
+>>>> +		return dev_err_probe(dev, -EINVAL, "unsupported fifo_len %llu\n", fifo_len);
+>>>> +	}
+>>>> +
+>>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_REG_LAYOUT);
+>>>> +	if (!p)
+>>>> +		return dev_err_probe(dev, -EINVAL, "missing REG_LAYOUT param\n");
+>>>> +
+>>>> +	v = *p;
+>>>> +	uart->port.regshift = FIELD_GET(DFHv1_PARAM_ID_REG_SHIFT, v);
+>>>> +	reg_width = FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v);
+>>>
+>>> I have concern that the raw layout inside the parameter block is
+>>> still exposed to drivers and need to be parsed by each driver.
+>>
+>> Raw parameter block will always have to be passed to the driver because HW
+>> specific properties can be defined that will need to be parsed by the
+>> specific driver.
+>
+> So there is a question about the scope of the definitions of these parameter
+> blocks. MSIX seems globally used across all dfl devices. REG_LAYOUT
+> seems specific to uart?
+
+There are definitely two classes of parameter blocks.  One class is HW 
+agnostic parameters where the parameters are relevant to many different 
+kinds of HW components.  MSI-X, and input clock-frequency are certainly HW 
+agnostic, and it turns out that REG_LAYOUT is not specific to uart.  You 
+can see reg_bits and reg_stride in struct regmap_config.  There are also 
+device tree bindings for reg-shift and reg-io-width.  The second class of 
+parameters would be specific to HW component.  In the case of this uart 
+driver, all parameters would be considered HW agnostic parameters.
+
+>
+> If a parameter block is widely used in dfl drivers, duplicate the parsing
+> from HW layout in each driver may not be a good idea. While for device
+> specific parameter block, it's OK.
+
+It sounds like we are in agreement.
+
+>
+> Another concern is the indexing of the parameter IDs. If some parameter
+> blocks should be device specific, then no need to have globally indexed
+> parameter IDs. Index them locally in device is OK. So put the definitions
+> of ID values, HW layout and their parsing operation in each driver.
+
+It may be confusing for two drivers to use the same parameter id that have 
+different meanings and data layout.  Since all the parameters for this 
+driver would be considered HW agnostic, we'd don't need to address this 
+issue with this patchset.
+
+>
+> Thanks,
+> Yilun
+>
+>>
+>>>
+>>> How about we define HW agnostic IDs for parameter specific fields like:
+>>>
+>>> PARAM_ID		FIELD_ID
+>>> ================================
+>>> MSIX			STARTV
+>>> 			NUMV
+>>> --------------------------------
+>>> CLK			FREQ
+>>> --------------------------------
+>>> FIFO			LEN
+>>> --------------------------------
+>>> REG_LAYOUT		WIDTH
+>>> 			SHIFT
+>>>
+>>> And define like u64 dfl_find_param(struct dfl_device *, int param_id, int field_id)
+>>
+>> I don't think dfl_find_param as defined above adds much value.
+>>
+>>>
+>>> Think further, if we have to define HW agnostic property - value pairs,
+>>> why don't we just use "Software nodes for the firmware node", see
+>>> drivers/base/swnode.c. I think this may be a better choice.
+>>
+>> I am looking into "Software nodes for the firmware node", and it can be used
+>> for HW agnostic properties.  Each dfl driver will still have to make a
+>> function call to fetch each HW agnostice property value as well as a
+>> function call to find the HW specific parameters and then parse those
+>> parameters.
+>>
+>>>
+>>> Thanks,
+>>> Yilun
+>>>
+>
