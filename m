@@ -2,164 +2,213 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E112DFA3747
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Oct 2022 18:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3627EFA3748
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 00:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230137AbiJaSky (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Oct 2022 14:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
+        id S229890AbiKAAe3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Oct 2022 20:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiJaSkw (ORCPT
+        with ESMTP id S229776AbiKAAeZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Oct 2022 14:40:52 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A107212626;
-        Mon, 31 Oct 2022 11:40:50 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id o4so17223568wrq.6;
-        Mon, 31 Oct 2022 11:40:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4l/rQiBjU2EDqlLswcve2tJlyY/XQgWJ8y1LR4isvn0=;
-        b=DjG/2ufk+7Y/8//JX+76+6lP62M9TveRoAHeKTQuwNmllazKZR1h4IANy23WyhsSCX
-         243ph3qCkpilBizc50D21TYy8sBYgHWyDwmwNIzljrqo6AfC1L+gkYnf+3jnhlpRL+ke
-         vbnBVCjvAGtGymBLSk4DP6rx19thJXyDhPPDfjajf/XLtR0NHhEYlgOsJe0MV8T9Ou45
-         ilM3Z4dbReG5MMTm+3RyLrAT5WVoxSo1i6dDIT52CgM+kM0yV0I0kyaESPVkn+hE8T8p
-         0w/ZCcgbzVDhmwXnHZD7z8yQWWNSObaFIVK4kqhqTipr0iAPE+hySuc63zBhEJEbGBZe
-         If1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4l/rQiBjU2EDqlLswcve2tJlyY/XQgWJ8y1LR4isvn0=;
-        b=nUph5eV+4/L7Pv56oKEJpVB/UMfUucG3MABFykz2HzVcy3RCdMiBPJ0uyYl7ObqJBE
-         RlHZmfnS/Kq21LCqNbbRALc9bG9FHI9v09GWNN2Mmjq4m53ZF/U7Zbrn7OknSChBqGSu
-         i0ZDoblQu2mO0/VEYIOqWz0giZPF3e0BAJUGpXrvQZKLZww2UK60+oBwYzpzgt6pBSDO
-         z74n8mUTkZ/RgXONLFrAbIyuM2YfdVrURUiCrfwiTCxx57JAPQpvbNxoV47OBaWNv0dx
-         jrm6OyMlhVW/bnMWIHXlASa82sG1u66BZWViqe/hiQ0PXfU/qjlyobElqp1msMPsx4EM
-         pWzA==
-X-Gm-Message-State: ACrzQf2Zc30bdav0IUXkKjBrGjIwmVf3Wt7SgumDbTk3fciQgoBGAfD6
-        g3YWeqovGp8COV11QyID9Sk=
-X-Google-Smtp-Source: AMsMyM5npn0gP5TdeeyQ46cg9Bn7gzkoKCuKASGnw5gB32sz/rFPxQXnD+wbE8y1BuSZdV/ui3EXJw==
-X-Received: by 2002:a05:6000:a09:b0:236:6b18:6b30 with SMTP id co9-20020a0560000a0900b002366b186b30mr9565291wrb.356.1667241649233;
-        Mon, 31 Oct 2022 11:40:49 -0700 (PDT)
-Received: from hp-power-15.localdomain (mm-167-8-212-37.vitebsk.dynamic.pppoe.byfly.by. [37.212.8.167])
-        by smtp.gmail.com with ESMTPSA id k18-20020a05600c081200b003b4935f04a4sm8525887wmp.5.2022.10.31.11.40.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Oct 2022 11:40:48 -0700 (PDT)
-From:   Siarhei Volkau <lis8215@gmail.com>
-Cc:     Siarhei Volkau <lis8215@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH v4 2/2] serial: 8250/ingenic: Add support for the JZ4750/JZ4755
-Date:   Mon, 31 Oct 2022 21:40:40 +0300
-Message-Id: <20221031184041.1338129-3-lis8215@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20221031184041.1338129-1-lis8215@gmail.com>
-References: <20221031184041.1338129-1-lis8215@gmail.com>
+        Mon, 31 Oct 2022 20:34:25 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE0F15A27;
+        Mon, 31 Oct 2022 17:34:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667262864; x=1698798864;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=acc+2gBvRft+JiQI6WLRivHkyIwnDQIoyJyGzxx54G8=;
+  b=fOqynw/FxWsnL7zmy8pcfsD7bEI51JImUeX7hT6i80Sy4wCfPnL48PUh
+   XdGQ/32UJpIqqol8kHCvKjn1PWzQQoz9jAAG3O8PLe8W+cgIjWAceXOVe
+   IDxmU51CFfdef0niBHDZDNSNpN7xdK+C1gL2RF82htkEEbSI6FpTADRc8
+   Jmy5mIqHFNCHKO7P/9QEY88qflJznY+6ViMcIE0FBt42TGkeVu3qH1LuW
+   RcLqGDS7oMbdXhLANS4iNV+oObheE49McSCjZDd6jEj1VHQtMaaiDPsC1
+   IvpE6+CSd2H/Vl+kGKyOcA8qvUYDAh7WYGtXiV1LJJgNvBfQEavzcI1n/
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10517"; a="371112434"
+X-IronPort-AV: E=Sophos;i="5.95,229,1661842800"; 
+   d="scan'208";a="371112434"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2022 17:34:23 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10517"; a="739152697"
+X-IronPort-AV: E=Sophos;i="5.95,229,1661842800"; 
+   d="scan'208";a="739152697"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2022 17:34:22 -0700
+Date:   Mon, 31 Oct 2022 17:34:39 -0700 (PDT)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Xu Yilun <yilun.xu@intel.com>
+cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com
+Subject: Re: [PATCH v4 4/4] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+In-Reply-To: <Y11FmiDeVhGir+7z@yilunxu-OptiPlex-7050>
+Message-ID: <alpine.DEB.2.22.394.2210311719460.2680729@rhweight-WRK1>
+References: <20221020212610.697729-1-matthew.gerlach@linux.intel.com> <20221020212610.697729-5-matthew.gerlach@linux.intel.com> <Y11FmiDeVhGir+7z@yilunxu-OptiPlex-7050>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-JZ4750/55/60 (but not JZ4760b) have an optional /2 divider between the
-EXT oscillator and some peripherals including UART, which will
-be enabled if using a 24 MHz oscillator, and disabled when
-using a 12 MHz oscillator.
 
-This behavior relies on hardware differences: most boards (if not all)
-with those SoCs have 12 or 24 MHz oscillators but many peripherals want
-12Mhz to operate properly (AIC and USB-PHY at least).
 
-The 16MHz threshold looks arbitrary but used in vendor's bootloader code
-for enable the divider.
+On Sat, 29 Oct 2022, Xu Yilun wrote:
 
-The patch doesn't affect JZ4760's behavior as it is subject for another
-patchset with re-classification of all supported ingenic UARTs.
+> On 2022-10-20 at 14:26:10 -0700, matthew.gerlach@linux.intel.com wrote:
+>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>
+>> Add a Device Feature List (DFL) bus driver for the Altera
+>> 16550 implementation of UART.
+>>
+>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> ---
+>> v4: use dev_err_probe() everywhere that is appropriate
+>>     clean up noise
+>>     change error messages to use the word, unsupported
+>>     tried again to sort Makefile and KConfig better
+>>     reorder probe function for easier error handling
+>>     use new dfh_find_param API
+>>
+>> v3: use passed in location of registers
+>>     use cleaned up functions for parsing parameters
+>>
+>> v2: clean up error messages
+>>     alphabetize header files
+>>     fix 'missing prototype' error by making function static
+>>     tried to sort Makefile and Kconfig better
+>> ---
+>>  drivers/tty/serial/8250/8250_dfl.c | 149 +++++++++++++++++++++++++++++
+>>  drivers/tty/serial/8250/Kconfig    |  12 +++
+>>  drivers/tty/serial/8250/Makefile   |   1 +
+>>  3 files changed, 162 insertions(+)
+>>  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_dfl.c b/drivers/tty/serial/8250/8250_dfl.c
+>> new file mode 100644
+>> index 000000000000..f02f0ba2a565
+>> --- /dev/null
+>> +++ b/drivers/tty/serial/8250/8250_dfl.c
+>> @@ -0,0 +1,149 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Driver for FPGA UART
+>> + *
+>> + * Copyright (C) 2022 Intel Corporation, Inc.
+>> + *
+>> + * Authors:
+>> + *   Ananda Ravuri <ananda.ravuri@intel.com>
+>> + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> + */
+>> +
+>> +#include <linux/bitfield.h>
+>> +#include <linux/dfl.h>
+>> +#include <linux/io-64-nonatomic-lo-hi.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/serial.h>
+>> +#include <linux/serial_8250.h>
+>> +
+>> +struct dfl_uart {
+>> +	int line;
+>> +};
+>> +
+>> +static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct uart_8250_port *uart)
+>> +{
+>> +	struct device *dev = &dfl_dev->dev;
+>> +	u64 v, fifo_len, reg_width;
+>> +	u64 *p;
+>> +
+>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ);
+>> +	if (!p)
+>> +		return dev_err_probe(dev, -EINVAL, "missing CLK_FRQ param\n");
+>> +
+>> +	uart->port.uartclk = *p;
+>> +	dev_dbg(dev, "UART_CLK_ID %u Hz\n", uart->port.uartclk);
+>> +
+>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_FIFO_LEN);
+>> +	if (!p)
+>> +		return dev_err_probe(dev, -EINVAL, "missing FIFO_LEN param\n");
+>> +
+>> +	fifo_len = *p;
+>> +	dev_dbg(dev, "UART_FIFO_ID fifo_len %llu\n", fifo_len);
+>> +
+>> +	switch (fifo_len) {
+>> +	case 32:
+>> +		uart->port.type = PORT_ALTR_16550_F32;
+>> +		break;
+>> +
+>> +	case 64:
+>> +		uart->port.type = PORT_ALTR_16550_F64;
+>> +		break;
+>> +
+>> +	case 128:
+>> +		uart->port.type = PORT_ALTR_16550_F128;
+>> +		break;
+>> +
+>> +	default:
+>> +		return dev_err_probe(dev, -EINVAL, "unsupported fifo_len %llu\n", fifo_len);
+>> +	}
+>> +
+>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_REG_LAYOUT);
+>> +	if (!p)
+>> +		return dev_err_probe(dev, -EINVAL, "missing REG_LAYOUT param\n");
+>> +
+>> +	v = *p;
+>> +	uart->port.regshift = FIELD_GET(DFHv1_PARAM_ID_REG_SHIFT, v);
+>> +	reg_width = FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v);
+>
+> I have concern that the raw layout inside the parameter block is
+> still exposed to drivers and need to be parsed by each driver.
 
-Link: https://github.com/carlos-wong/uboot_jz4755/blob/master/cpu/mips/jz_serial.c#L158
-Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
----
- drivers/tty/serial/8250/8250_ingenic.c | 32 +++++++++++++++++++++++---
- 1 file changed, 29 insertions(+), 3 deletions(-)
+Raw parameter block will always have to be passed to the driver because HW 
+specific properties can be defined that will need to be parsed by the 
+specific driver.
 
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index 2b2f5d8d2..617b8ce60 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -87,7 +87,7 @@ static void __init ingenic_early_console_setup_clock(struct earlycon_device *dev
- 	dev->port.uartclk = be32_to_cpup(prop);
- }
- 
--static int __init ingenic_early_console_setup(struct earlycon_device *dev,
-+static int __init ingenic_earlycon_setup_tail(struct earlycon_device *dev,
- 					      const char *opt)
- {
- 	struct uart_port *port = &dev->port;
-@@ -103,8 +103,6 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
- 		uart_parse_options(opt, &baud, &parity, &bits, &flow);
- 	}
- 
--	ingenic_early_console_setup_clock(dev);
--
- 	if (dev->baud)
- 		baud = dev->baud;
- 	divisor = DIV_ROUND_CLOSEST(port->uartclk, 16 * baud);
-@@ -129,9 +127,36 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
- 	return 0;
- }
- 
-+static int __init ingenic_early_console_setup(struct earlycon_device *dev,
-+					      const char *opt)
-+{
-+	ingenic_early_console_setup_clock(dev);
-+
-+	return ingenic_earlycon_setup_tail(dev, opt);
-+}
-+
-+static int __init jz4750_early_console_setup(struct earlycon_device *dev,
-+					     const char *opt)
-+{
-+	/*
-+	 * JZ4750/55/60 have an optional /2 divider between the EXT
-+	 * oscillator and some peripherals including UART, which will
-+	 * be enabled if using a 24 MHz oscillator, and disabled when
-+	 * using a 12 MHz oscillator.
-+	 */
-+	ingenic_early_console_setup_clock(dev);
-+	if (dev->port.uartclk >= 16000000)
-+		dev->port.uartclk /= 2;
-+
-+	return ingenic_earlycon_setup_tail(dev, opt);
-+}
-+
- OF_EARLYCON_DECLARE(jz4740_uart, "ingenic,jz4740-uart",
- 		    ingenic_early_console_setup);
- 
-+OF_EARLYCON_DECLARE(jz4750_uart, "ingenic,jz4750-uart",
-+		    jz4750_early_console_setup);
-+
- OF_EARLYCON_DECLARE(jz4770_uart, "ingenic,jz4770-uart",
- 		    ingenic_early_console_setup);
- 
-@@ -328,6 +353,7 @@ static const struct ingenic_uart_config x1000_uart_config = {
- 
- static const struct of_device_id of_match[] = {
- 	{ .compatible = "ingenic,jz4740-uart", .data = &jz4740_uart_config },
-+	{ .compatible = "ingenic,jz4750-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4760-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4770-uart", .data = &jz4760_uart_config },
- 	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
--- 
-2.36.1
+>
+> How about we define HW agnostic IDs for parameter specific fields like:
+>
+> PARAM_ID		FIELD_ID
+> ================================
+> MSIX			STARTV
+> 			NUMV
+> --------------------------------
+> CLK			FREQ
+> --------------------------------
+> FIFO			LEN
+> --------------------------------
+> REG_LAYOUT		WIDTH
+> 			SHIFT
+>
+> And define like u64 dfl_find_param(struct dfl_device *, int param_id, int field_id)
 
+I don't think dfl_find_param as defined above adds much value.
+
+>
+> Think further, if we have to define HW agnostic property - value pairs,
+> why don't we just use "Software nodes for the firmware node", see
+> drivers/base/swnode.c. I think this may be a better choice.
+
+I am looking into "Software nodes for the firmware node", and it can be 
+used for HW agnostic properties.  Each dfl driver will still have to 
+make a function call to fetch each HW agnostice property value as well as 
+a function call to find the HW specific parameters and then parse those 
+parameters.
+
+>
+> Thanks,
+> Yilun
+>
