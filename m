@@ -2,246 +2,219 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48477C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 14:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C986C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Nov 2022 14:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiKAOQM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Nov 2022 10:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
+        id S230010AbiKAOxx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Nov 2022 10:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiKAOQK (ORCPT
+        with ESMTP id S230093AbiKAOxp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Nov 2022 10:16:10 -0400
-Received: from first.geanix.com (first.geanix.com [116.203.34.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C5A18E37
-        for <linux-serial@vger.kernel.org>; Tue,  1 Nov 2022 07:16:09 -0700 (PDT)
-Received: from xps.localdomain (85.184.138.169.dynamic.dhcp.aura-net.dk [85.184.138.169])
-        by first.geanix.com (Postfix) with ESMTPSA id AA9735790A;
-        Tue,  1 Nov 2022 14:16:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1667312164; bh=bDaV/c3CKErIyQEANf4vztfrbaHR5q+yhT8OxW0D1yc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=SYFj+fzlweusmL71GKAoAesbnuI1Do+CtQ+h/DuLhbgHJM8+ppqyzgA9vgrHeq+TS
-         A5Ao5qJ45qXy0rQyI6hGVz1tmDPdq2UDqP0vZsPpML+Y8hz2SCWOVKPkV9FBNfbtHk
-         3XokN8j4Q1sYiMnZFjMzy/bcvTT1NfIzsU71cc0tenKl7Ix2RQZwFsfccRQa90Rqfy
-         qIMlp2F8zpCD/oYll0nxeTistMB3pk0jtl5ammQj0OnK1bJIdklmHcWAGgmMSqxL/d
-         3cel8aCwMRFe+WQGRtkIY7NyPV0lStXn/PRQTNmc9+q4kPwTM0Cn1fmXglhvab4g63
-         58AaXBmAkAorA==
-Date:   Tue, 1 Nov 2022 15:16:03 +0100
-From:   Martin =?utf-8?Q?Hundeb=C3=B8ll?= <martin@geanix.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v3 3/4] serial: 8250: skip platform device registration
- with no runtime ports
-Message-ID: <20221101141603.u4bqn5qx7y7tzzzr@xps.localdomain>
-References: <20221025073944.102437-1-martin@geanix.com>
- <20221025073944.102437-3-martin@geanix.com>
- <c1642f35-6270-7155-795d-a3f7324f799c@linux.intel.com>
- <b6619d9-5b91-e06c-f2a0-af92128937d2@linux.intel.com>
- <d27b3f5d-8766-fa1c-c369-31ebe344f87@linux.intel.com>
- <9320837b-1b8a-9ddf-7de8-d75816fb209b@geanix.com>
- <7ba1dd5b-7b9e-50a1-7539-41533c8d4c94@linux.intel.com>
- <b1a1680d-d226-e6b5-ac6e-25e0827dca25@geanix.com>
- <566134f-fd72-d8e6-f5ba-a97062b4189@linux.intel.com>
+        Tue, 1 Nov 2022 10:53:45 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0591610AA;
+        Tue,  1 Nov 2022 07:53:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1667314417; x=1698850417;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ftmHzb7R+7Hvrwl0dCG6XqwRUG4BLyEIsZSt/7gDuyQ=;
+  b=Hkzi9mGcD41ZWXjOJ5aIQ7GHrQOJKKw0PdDb1PbcfeUQ7/Ecdr6NZpW+
+   87gUCy13rrs4Vx0qg9MozA3zpnBuANurf3cAM36OQtK7ExCLc4Us0SOsR
+   6uoahCRCYRQHyvOqVPjjnTsvtiu0b9ATJthLLSUgAJyLmAXypSDTbJAsc
+   atMn7/eeYFLtnSrnF6UwpbPZN9WHvCkc6Dgp2t6VWRLZcjFCTqI+NXT8h
+   KusTnhDYw6i1uNSBDTyJqktMdIzaMIHjfJxGQ9JiTa890o5V74r/JELgF
+   zrJ01ST2WIt6Sy3zRT2KB2x+m56C4ofbww9b4bP/A2PtwrIYCIYOgnQIZ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.95,231,1661842800"; 
+   d="scan'208";a="181429506"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Nov 2022 07:53:31 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 1 Nov 2022 07:53:30 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Tue, 1 Nov 2022 07:53:30 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X6TeS2ZCWCogVSA6Iu7P9tqsqqpD63p2Ts6F/cuy+2c0DFFFN/z76SvlEefkCet8nZdTc01RS0aCyZ8vMLfZa+f/nTFx3/+xz2PPVFdaZ9TzQX0vI6/2HRNpC7sfNpw8rXX/b8iwQSd7+Nxjrifi4T5YLihpUFdwnDjDO64kKv5t8EaTFwFiP9NBPskSvSFYywg+jv+JpG7pA78XrTAqxmKwEwmm4Ef9F9KkdEqmoSIef6RK0PZxikru9d+bNtWDg3QoR9b879FaLlJbORB5abWZ1Xyckr3MCqMmfPdSD/lMZE8ExTWvcPfruYDf7ejH4hw0oKXRVHAAP3Xp/q7AGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bqMtby7HvtCYr58pfoPmwjVXDKegV1PkXn2n0l6Z2qk=;
+ b=Vi8+ymaJUdtkoyrHIqUxERqNEf8C7vBCyAVvN8te7CTcDES+eNpIdO96A2UTTvIcWu7KF0pE8voXPCO6RNzccdyBkHWu8Opplxtzt+z6JkohIUaYRn8ofZiI53rgWQWl3uroqPILoyDgbgtOCG6trRtrK4EcBrIhNqWSVCRldlIN2uw4oOsOBHVK+VcfTwRK3sANt41eJKnltCYExskd2DciP+pdACQPKqc520Wk+163Rph8vnyUWboeTDQtbTyEJ+cQieEMoaRKWEFDyalkVuwqFnd7X8zRJ5xe60YNUpO8CaaW0+2KWjsTXS5ihmWK/APtfkVEaTR7lQRpleNRvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bqMtby7HvtCYr58pfoPmwjVXDKegV1PkXn2n0l6Z2qk=;
+ b=uMV0faUbTLBA7mczDLMszD1sa9kTuXbptMiMqi0S4Hqxcuw1c9p3Ijj/+OaA7xvUAkdimnHM23s/bdMp6FpdCxxGs/aP2aQQb4Dz9yBjkAvZUpCPmBaL8VNaLCP0dG8og8CVkL4X+/vslKpWrsH6kUEg/Z0eovoKw/L1wZY/i9I=
+Received: from PH0PR11MB5096.namprd11.prod.outlook.com (2603:10b6:510:3c::5)
+ by DM4PR11MB5504.namprd11.prod.outlook.com (2603:10b6:5:39d::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.21; Tue, 1 Nov
+ 2022 14:53:25 +0000
+Received: from PH0PR11MB5096.namprd11.prod.outlook.com
+ ([fe80::1cfb:5030:3f7c:7add]) by PH0PR11MB5096.namprd11.prod.outlook.com
+ ([fe80::1cfb:5030:3f7c:7add%9]) with mapi id 15.20.5769.021; Tue, 1 Nov 2022
+ 14:53:25 +0000
+From:   <Tharunkumar.Pasumarthi@microchip.com>
+To:     <ilpo.jarvinen@linux.intel.com>,
+        <Kumaravel.Thiagarajan@microchip.com>
+CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <andy.shevchenko@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <johan@kernel.org>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <macro@orcam.me.uk>,
+        <geert+renesas@glider.be>, <jk@ozlabs.org>,
+        <phil.edworthy@renesas.com>, <lukas@wunner.de>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
+ support to quad-uart driver.
+Thread-Topic: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
+ support to quad-uart driver.
+Thread-Index: AQHY1V0xlQ9ney05Q0yTvysx01RZiK38Y4YAgC3ztyA=
+Date:   Tue, 1 Nov 2022 14:53:25 +0000
+Message-ID: <PH0PR11MB509668B72B3B85C2966D36909B369@PH0PR11MB5096.namprd11.prod.outlook.com>
+References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
+ <20221001061507.3508603-3-kumaravel.thiagarajan@microchip.com>
+ <e433da81-46d5-5aad-4ce9-6d48b2e674e@linux.intel.com>
+In-Reply-To: <e433da81-46d5-5aad-4ce9-6d48b2e674e@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR11MB5096:EE_|DM4PR11MB5504:EE_
+x-ms-office365-filtering-correlation-id: 50fb7f18-f9f4-43cd-a600-08dabc18d437
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KMM+/fLc1FQVSbhPtEM9eHgPO1kb6Ozho/vSiLRCw8ESf6iSNdsKyGiLCAgu0V8YAhXcnuwVA6i0AMAxH1r+WfjFxhOLC2ksN0BCRbLG+7cmfLw+KL5UydL3duJD0kSpMaizw7cUAYyiT5sn+hfIae+sjyjFTTc/pSOftDw4+WNhfqe3izpg9VoH0F9iEoXeBQQ8uHEwJ7Wp2q5+O3FxEYlKsgDxckkFKP8J1wR5fOb4Xo8cNMa5/sdZEhoo9SNZq7nFXlZZyc47i8/1erV2uv4uHyl4OFeR8HbUo4j7heBYBTRSnNYZCl6PxklNIAGTPeJpD04F436KcrKv2cOMC9zxWt1pspUxUxVpP5xYQYKC7KlAkHvt1n7u5cca17mWmCWwihNFolH5n0Qf/mXxeVwq9Qy84Vyk0iYQWyhHQQwTGStBGzNuotfOoYRkLE8NN5AUjs+7MokDlSNYF7R5XT9/03HT7oAaplYinLHgTcmQnRGrNpwNqN44q+9A8a+/PzYWvIuc3SA7Y4vS5VyFDOG7RS7D8HxC+LvDZzwgrcU1BgjJAioEkIWiOKWfRflZKiyvAzJm2XQ306Z3XBjVcDpMp8OAnPuDTvIFl+CVcoSvK3/Xb6nHNLUN5p7HMC2T1qg5kDLnPjEwLNAhOlWgA+7NNHZfbuZeNQa+IP93hHY1CWOH8E0PiU481acGscFKsRYN4NHichAjYrPpHhkewo7IG4h6Kmz5ySciNOFQTizqfvYXZVFK3bLm5L+QXlYkhp02ptA0eFsZxtF1KET92jrxLxCO/W/nz3Pq2Ru/HUXUjssx3HI7UFoB7pVFniHg3fcjnI0dxuwZ4Ru8rZCc0c7kM+lwrKD1BBXYjHJxfiA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5096.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(396003)(39860400002)(366004)(346002)(136003)(451199015)(66574015)(2906002)(83380400001)(38070700005)(33656002)(86362001)(122000001)(38100700002)(7416002)(5660300002)(76116006)(64756008)(52536014)(66556008)(8676002)(4326008)(41300700001)(66946007)(66446008)(8936002)(66476007)(6506007)(7696005)(186003)(53546011)(107886003)(26005)(9686003)(966005)(6636002)(110136005)(316002)(54906003)(478600001)(71200400001)(55016003)(32563001)(414714003)(473944003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?QZjLVvV8VOMgrD3WZlxS415Cy4nFsRjWxDeA+T9EwHyli89+0529SLHtFM?=
+ =?iso-8859-1?Q?/DgUqq7Sb87zQtdoE4eePJSsS9AMWYme5OsiiZ3EU3r6lgD1vzDrktgAOb?=
+ =?iso-8859-1?Q?x7rkr66SFOHvSyTRPzOx1jW7b7uaR/OP+M+vWp8s2Irktq+ioCH6kFHdZO?=
+ =?iso-8859-1?Q?csgOvv+z6dOzqgh2EkknviZeCg6t5TUpWd1qqRmJzO6cZIWfPqO68DzTX6?=
+ =?iso-8859-1?Q?DXbDmhqJC08AnvAGGoa+JjEYazajzjSIWQfSuH3Wkk3+1ojjPn6U9WspfG?=
+ =?iso-8859-1?Q?9/UziclIptMro6ex31VbPea8JEAcJ+dSVkakKGUOQ0i+0Mt/yzqFxlV0Qj?=
+ =?iso-8859-1?Q?ugCB2Ujv95Kx+gCvoAoPH1D9pYN7AOc4RrwP91mjNlN49VwmUDPqFO0KjY?=
+ =?iso-8859-1?Q?b6NkeCr4WBf2fdbVSg8nw6kPruBmAkTFXCUqQAxkVJEkVBBn1j/rurULm9?=
+ =?iso-8859-1?Q?1xGUBM1XTCtRrPr66K8b0XeSTs9ksV2ud8UhuIgIaFhwzPgTF/S/6sm+WJ?=
+ =?iso-8859-1?Q?DDdadVE2ksXvISrctC2JBNZauquEE2FzLwGpeph9JYwQSIucZAWeMgUZAO?=
+ =?iso-8859-1?Q?aqWRJYoMqvJUtUtGrlBglfINYibjiAzDp4LW1mPkhZQd+oud+kyt5B5xzd?=
+ =?iso-8859-1?Q?/vSKAkLMahnGn4SKZcPSDh4oFEeWfS0CMHt5Bj9TIpsGFZbCVOwAzAQcc0?=
+ =?iso-8859-1?Q?uwRkB5lmdtyENKIUHUCCYiEE2QZ6iQQgcnW9bvolwpG0hw+bGBJbMkWbiY?=
+ =?iso-8859-1?Q?YZ85Mweu819KX/vuwcZkqNdeqEbZu4LdX/Qvj9pLyKnjuASiVzgu7hS0RK?=
+ =?iso-8859-1?Q?09njr0SwxlZ9K5ua4Xm7cnWXrQBgbHTNDP51fPWl6gkiV+czunFvmqBF0d?=
+ =?iso-8859-1?Q?Juu8g6pjaMa67LCdAbFkeitEmxrv/7Yvf5rigy47ollYs4/d4C34jOpOJO?=
+ =?iso-8859-1?Q?kqk0HEr05DmwixbGntaoq5S+x7oRxutBJavxjNsRtwj9xHUMlKrhpz5+we?=
+ =?iso-8859-1?Q?TCtmW+AwPEy4a0UsMaXMUAilD1V+UFopTFI+QUH5gGYEC678a6VUEIMKvT?=
+ =?iso-8859-1?Q?8M+Z7vCLcW+rbIjqNeKHEvhAbXqY3fe8R5859GIeeNN1z57H/77to/l8x4?=
+ =?iso-8859-1?Q?82hecJTPBe16hGr455tJLT18WmTWAZDvy82WdAD+3DMkv22KsRNP1N1yyc?=
+ =?iso-8859-1?Q?CwpvCtDWUhvX0IXNKIrDadVRdxlMEuZM5y5QFnuh6jd7zbnaRENUHyHcZH?=
+ =?iso-8859-1?Q?xMP6ESSeSM1Ws/nfYRLRy2ZT71k1Rvs4LtfuP2RvsZ7NUlAV+Ijcg/jkWs?=
+ =?iso-8859-1?Q?POxUoPQHFw2KH6AgN9I1m4V3pfmRpTkbG2aVHnwbTGlJYDnmQCi5v1dqE0?=
+ =?iso-8859-1?Q?PogEt7rYMjdkGr999w6WaL1LEoHDgcZeQU9YSb+Xl/jXcsUqJYzzN+y72s?=
+ =?iso-8859-1?Q?tM+dqCLHIeRlqF5uTTTysNw7dnWy2NA3vyeJuJyhoWI/7Lf4uqLN1AsWTg?=
+ =?iso-8859-1?Q?yKzMLxd4qscQdHdPmTw+d5npoR0i7r32gCRE3fhLhTQz0l18DCGRdG3db5?=
+ =?iso-8859-1?Q?NzyJbmP8hm7ly5zkujl7a4tBtkMD+qTUIT58XJK/mTZbLjOSWkoj9EyGLh?=
+ =?iso-8859-1?Q?Ubo0F09Ikdtglpv5kC/FVc3OkpGz4Adrs62p1m5fjCa2EZzhx/PJ68/8NU?=
+ =?iso-8859-1?Q?sasM7DbtrZ4eWY6rCzE=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <566134f-fd72-d8e6-f5ba-a97062b4189@linux.intel.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5096.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50fb7f18-f9f4-43cd-a600-08dabc18d437
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2022 14:53:25.1687
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZKmIlAkH7d+XSB8vetuCxvu+pzFzpE8tPu5kxpKY4O7nyOrf9KZSE5N6wTBUxSfK42IoG0KDxKnS86jG3AvrZB7YWCFlrvGvgOtNvvS8r9PpqVxDuaFeYl07bthhy360
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5504
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 01, 2022 at 03:22:33PM +0200, Ilpo Järvinen wrote:
-> On Tue, 1 Nov 2022, Martin Hundebøll wrote:
-> > On 01/11/2022 12.44, Ilpo Järvinen wrote:
-> > > On Tue, 1 Nov 2022, Martin Hundebøll wrote:
-> > > > On 28/10/2022 11.40, Ilpo Järvinen wrote:
-> > > > > On Fri, 28 Oct 2022, Ilpo Järvinen wrote:
-> > > > > > =0 did work as expected due to this change which I tested and some
-> > > > > > other
-> > > > > > values >4 but there now seems to be problem of the console not showing
-> > > > > > up
-> > > > > > like previously when I don't give nr_uarts at all.
-> > > > > 
-> > > > > NAK from me until the problem is resolved adequately.
-> > > > > 
-> > > > > Already the patch 1/4 causes an unacceptable reassignment of ttySx
-> > > > > targets. This is going to break people's cmdline console setups so you
-> > > > > need to find a better way.
-> > > > > 
-> > > > > Before any of these patches:
-> > > > > 
-> > > > > [    0.000000] Command line: console=ttyS0,115200n8 8250.nr_uarts=4
-> > > > > [    0.021031] Kernel command line: console=ttyS0,115200n8
-> > > > > 8250.nr_uarts=4
-> > > > > [    0.441924] printk: console [ttyS0] enabled
-> > > > > [    2.243165] printk: console [ttyS0] disabled
-> > > > > [    2.245682] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33,
-> > > > > base_baud = 115200) is a 16550A
-> > > > > [    4.010237] printk: console [ttyS0] enabled
-> > > > > [    5.933887] dw-apb-uart.7: ttyS1 at MMIO 0x4010007000 (irq = 16,
-> > > > > base_baud = 6250000) is a 16550A
-> > > > > [    5.952829] dw-apb-uart.8: ttyS2 at MMIO 0x4010008000 (irq = 17,
-> > > > > base_baud = 6250000) is a 16550A
-> > > > > 
-> > > > > After 1/4 ttyS0 is no longer the same:
-> > > > > 
-> > > > > [    0.000000] Command line: console=ttyS0,115200n8 8250.nr_uarts=4
-> > > > > [    0.021023] Kernel command line: console=ttyS0,115200n8
-> > > > > 8250.nr_uarts=4
-> > > > > [    0.441872] printk: console [ttyS0] enabled
-> > > > > [    2.233584] dw-apb-uart.6: ttyS4 at MMIO 0x4010006000 (irq = 33,
-> > > > > base_baud = 115200) is a 16550A
-> > > > > [    2.241955] dw-apb-uart.7: ttyS5 at MMIO 0x4010007000 (irq = 16,
-> > > > > base_baud = 6250000) is a 16550A
-> > > > > [    2.249804] dw-apb-uart.8: ttyS6 at MMIO 0x4010008000 (irq = 17,
-> > > > > base_baud = 6250000) is a 16550A
-> > > > 
-> > > > Thanks for testing this.
-> > > > 
-> > > > The old behavior is wrong: your designware ports replace the built-in ones
-> > > > (0
-> > > > to 3) instead of using the unused ones (4 to 31). With these patches, it
-> > > > acts
-> > > > as I'd expect: the built-in ports are kept, and any later discovered ports
-> > > > follow.
-> > > > 
-> > > > Yes, breaking existing systems in this way is unacceptable. I'm not sure
-> > > > how
-> > > > to approach this, but I'm inclined to introduce a new config variable to
-> > > > keep
-> > > > the broken behavior?
-> > > 
-> > > To me this looks now more an attempt to repurpose the nr_uarts to mean
-> > > something it really hasn't. Clearly it hasn't meant non-discoverable
-> > > ports earlier but something related to the maximum number ports. This also
-> > > explains why we had that misunderstanding about the meaning of nr_uarts
-> > > between us earlier.
-> > 
-> > I was confused about the relation between SERIAL_8250_NR_UARTS and
-> > SERIAL_8250_RUNTIME_UARTS, and started digging through the code. The
-> > description of NR_UARTS clearly states that it controls the number of
-> > *supported* uarts, but I found that it was in fact controlled by RUNTIME_UARTS
-> > (8250.nr_uarts).
-> >
-> > With the current behavior, ever setting NR_UARTS to anything different from
-> > RUNTIME_UARTS makes no sense, since the code only loops until RUNTIME_UARTS.
-> 
-> One is there to size the array (max you can have with a particular build
-> of a kernel ever). The other is to control the maximum number of ports per 
-> boot. I'd guess the former is there mainly for legacy reason from the era 
-> when memory really was scarser resource than it is today.
+> From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+> Sent: Monday, October 3, 2022 2:34 PM
+> To: Kumaravel Thiagarajan - I21417
+> <Kumaravel.Thiagarajan@microchip.com>
+> Subject: Re: [PATCH v2 tty-next 2/3] 8250: microchip: pci1xxxx: Add rs485
+> support to quad-uart driver.
+>=20
+> [Some people who received this message don't often get email from
+> ilpo.jarvinen@linux.intel.com. Learn why this is important at
+> https://aka.ms/LearnAboutSenderIdentification ]
+>=20
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> > +     if (rs485->flags & SER_RS485_ENABLED) {
+> > +             memset(rs485->padding, 0, sizeof(rs485->padding));
+>=20
+> Core handles this for you.
 
-Oh, I see.
+I went through the code and it seems like this is not taken care by the cor=
+e.
+Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_con=
+fig' callback?
+This has not been done since we do not need all the configurations done ins=
+ide 'serial8250_em485_config'.
 
-> > Both Arch Linux and Fedora have come to the same conclusion, since they set
-> > both configs to 32. So now I have 32 useless /dev/ttyS* nodes on my laptop. If
-> > you run ubuntu on a machine with no uart hardware attached, you'll get 48
-> > useless ttyS* nodes, of which only the first 32 will ever be available for
-> > real hardware.
-> 
-> Why load the driver then at all, if there's no need/hw for it? Ironically, 
-> setting nr_uarts (as it is) to a smaller value would reduce that waste 
-> and in case of =0 the driver wouldn't be loaded.
+> > +             if (!(rs485->flags & SER_RS485_RTS_ON_SEND)) {
+> > +                     data |=3D ADCL_CFG_POL_SEL;
+> > +                     rs485->flags |=3D  SER_RS485_RTS_AFTER_SEND;
+> > +             } else {
+> > +                     rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
+> > +             }
+>=20
+> Core handles that flags sanitization for you.
 
-We have some PCIe attached UARTs that doesn't appear until after the
-system is up and running (they sit behind an FPGA controlled from
-userspace.) Some revisions have built-in UARTs while others don't, and I
-would like to run the same kernel, rootfs, and boot configuration on all
-of them.
+I went through the code and it seems like this is not taken care by the cor=
+e.
+Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_con=
+fig' callback?
+This has not been done since we do not need all the configurations done ins=
+ide 'serial8250_em485_config'.
 
-> I know distros will do it but that's their policy decision that doesn't 
-> really belong here. If there's hw/need for any users of a distro, they 
-> provide the support in the most generic way that makes things easy for 
-> them/users, that is, by having sufficient number of ports for (almost) all 
-> usecases.
-> 
-> In addition, to me n useless ports just sitting there doesn't sound that 
-> serious issue that it would warrant breaking setups that currently depend 
-> on certain ttyS numbers (I suppose you actually agree with this point).
+> > +     } else {
+> > +             memset(rs485, 0, sizeof(*rs485));
+>=20
+> Core handles this.
 
-Agreed. Although we have seen races between the DELETE and ADD uevents
-mentioned below, leading to non-deterministical device numbers.
+I went through the code and it seems like this is not taken care by the cor=
+e.
+Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_con=
+fig' callback?
+This has not been done since we do not need all the configurations done ins=
+ide 'serial8250_em485_config'.
 
-> > If you look at uevents from 8250 when the designware ports are discovered,
-> > you'll see a DELETE of the built-in ttyS0 first, and then an ADD of the
-> > designware ttyS0. My understanding is that we should never have had that
-> > built-in ttyS0 in the first place?
-> 
-> I certainly suspect the built-in one really isn't there (in ACPI) but I 
-> don't want to spend my time on confirming the obvious.
+> > +     writeb(data, (port->membase + ADCL_CFG_REG));
+> > +     port->rs485 =3D *rs485;
+>=20
+> Core handles this.
 
-From a system booted with these patches, and 8250.nr_uarts=0, I get two
-ports from ACPI PNP:
+I went through the code and it seems like this is not taken care by the cor=
+e.
+Do you suggest calling 'serial8250_em485_config' inside 'pci1xxxx_rs485_con=
+fig' callback?
+This has not been done since we do not need all the configurations done ins=
+ide 'serial8250_em485_config'.
 
-# cat /sys/class/tty/ttyS0/port
-0x3F8
-# cat /sys/class/tty/ttyS1/port
-0x2F8
 
-which matches the SERIAL_PORT_DNFS define in arch/x86/include/asm/serial.h
-
-> > > The code which makes this "wrong behavior" to happen is the last loop in
-> > > serial8250_find_match_or_unused(). Given its comment, I think it has been
-> > > very much intentional behavior. Pretending that non-discoverable port is
-> > > more real/precious than a port that was later _discovered_ and is very
-> > > much a real one is what brings you to this renumbering issue.
-> > 
-> > The serial8250_find_match_or_unused() logic exists to relate non-discoverable
-> > ports to those discovered later through ACPI PNP. Some of my systems announces
-> > those built-in ports with ACPI, in which case the discovered ports are
-> > assigned to their "built-in" numbers.
-> > 
-> > I believe all systems running today announce these built-in ports through ACPI
-> > PNP, but they are still usable as early consoles, so this special logic is
-> > still needed?
-> 
-> Unfortunately, I don't know the answer to whether it is a safe assumption 
-> or not.
-> 
-> > > I'm not anymore sure about your goals really. Now it sounds one of the
-> > > goals is preserving the non-discoverable ports, whereas previously it was
-> > > just about allowing 0 of them.
-> > 
-> > My initial goal was to rely on discoverable ports only. Some of our systems
-> > have no built-in uarts, so the bash init script failed to even start, because
-> > the kernel command line had console=ttyS0, and bash tried to do set terminal
-> > attributes on it. I am only trying to fix the code "the right way", but that
-> > might not be possible without breaking numbering fo existing systems.
-> 
-> Again I don't follow the reasoning fully here. What is your end goal here 
-> in this scenario. You'd either want to have no ports to appear at all or 
-> have a non-discoverable (=bogus) port as ttyS0. Which way it is?
-> 
-> If you, on the other hand, would have a discoverable port that will take 
-> over ttyS0, I don't understand why it fails so it seemingly leaves only 
-> those two options I gave.
-
-My endgoal is to avoid a bogus ttyS0, but a working driver (for the PCIe
-connected ports).
-
-I still think it seems wrong to have non-working device nodes. They only
-confuse both people and software:
-
-% sudo stty -F /dev/ttyS0
-stty: /dev/ttyS0: Input/output error
-
-> > > How about you add entirely new CONFIG and/or param for this minimum number
-> > > of non-discoverable ports and make the last resort loop (or perhaps all
-> > > but the first loop) in serial8250_find_match_or_unused() to honor that
-> > > (start looking only from port above that index). If it defaults to 0, I
-> > > think this renumbering issue is avoided. Would it work for all the goals
-> > > you have?
-> > 
-> > That would work for me. But shouldn't we clean up the 
-> > SERIAL_8250_NR_UARTS vs. SERIAL_8250_RUNTIME_UARTS also?
-> 
-> I'm not convinced there's something wrong with it. It's legacy yes, but
-> the max ports compiled in vs max ports per boot is not wrong/buggy as is.
-
-Your interpretation of those two makes sense, but I don't really see a
-usecase for setting 8250.nr_uarts at boot time though.
-
-// Martin
+Thanks,
+Tharun Kumar P
