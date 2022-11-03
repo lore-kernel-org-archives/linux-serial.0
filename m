@@ -2,55 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C68BAC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Nov 2022 10:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63358C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Nov 2022 15:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiKCKLc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Nov 2022 06:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
+        id S232043AbiKCPJv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Nov 2022 11:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiKCKLb (ORCPT
+        with ESMTP id S232047AbiKCPJb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Nov 2022 06:11:31 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C2E10F;
-        Thu,  3 Nov 2022 03:11:30 -0700 (PDT)
+        Thu, 3 Nov 2022 11:09:31 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37600165B6;
+        Thu,  3 Nov 2022 08:08:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667470290; x=1699006290;
+  t=1667488106; x=1699024106;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version:content-id;
-  bh=zoRxbT7gH06wem0h6gHGOg636SfhzReDK31jhRkTDrg=;
-  b=lH3j9Rxpik9UIJUE0MirkZoDXEFAPb0q9lC2CuCGFgL5lIf7OCyw0lKq
-   izoS9HAeb3awwWXSoPgQpXhpp9W1e/As3fU28pr6qWFS6F76XlY/DmMov
-   S7uYGcpoXWoPdwOL6hYwDT5PHhoJZpN3yksLbqx7cW4I7ET5WbM2cr0Wj
-   9qXXakQpC8H7P34HZtvtK2bHnVAPDehFGE/NApWoaDmXZiSy6SfOY72sd
-   Z70CC2FStZZ7SQ6FgfiXexkqw3nnGrhZ4xqYCTV5GKJIS1WHR2xNuQg5J
-   S1m/RANhV9SQyltzaItJ3g7jeUI7dOs8KZxRtHuZPmDEfC55SafX2J827
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="371742755"
-X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
-   d="scan'208";a="371742755"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2022 03:11:30 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="963878894"
-X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
-   d="scan'208";a="963878894"
+  bh=yeW9eeJhsyvz9FzwMMUudELqRBI7Xek1EfSMp8Ul2nw=;
+  b=BW3RwmU+snPa8vkBFIgICQq1H4gCCfBGceuO9h2MEaFINqSXefS8VL3R
+   9rEew6p2mK3SO5pXkwVSI6S6NMVP/xtKBwN1bz0KIMFxYM2RGjNA3ezmn
+   Hkk1yHMxsebYO6Z9oHbtP0kvZv36w0ZLJvShJW+gWU5WTUORst9HDz9WN
+   NgdxNt0pfegB1GYpJl1FShnK5ILRhyyXuADeaKWTEv39U7G6VvYmTYJtQ
+   aIROiAsXaX2Pc5xN7xLwlwfqeYV1+e6qYJObMAfnFI/u8/eYic26sr7MU
+   YyDCpP5uFeGTgjcbFqwkKZqjTSm1zUqe4AWM6OlKIr9yuHeKYImSXSXCL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="309704952"
+X-IronPort-AV: E=Sophos;i="5.96,235,1665471600"; 
+   d="scan'208";a="309704952"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2022 08:08:25 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="666003047"
+X-IronPort-AV: E=Sophos;i="5.96,235,1665471600"; 
+   d="scan'208";a="666003047"
 Received: from jsentis-mobl.ger.corp.intel.com ([10.251.215.225])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2022 03:11:28 -0700
-Date:   Thu, 3 Nov 2022 12:11:26 +0200 (EET)
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2022 08:08:23 -0700
+Date:   Thu, 3 Nov 2022 17:08:20 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
 cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] tty: Convert tty_buffer flags to bool
-In-Reply-To: <Y2Mtricfx/HxiEHc@kroah.com>
-Message-ID: <b9162bab-41aa-e24c-825-ec1a974b65e6@linux.intel.com>
-References: <20221019105504.16800-1-ilpo.jarvinen@linux.intel.com> <Y2Mtricfx/HxiEHc@kroah.com>
+Subject: Re: [PATCH v3 3/3] tty: n_gsm: add parameter negotiation support
+In-Reply-To: <20221103091743.2119-3-daniel.starke@siemens.com>
+Message-ID: <ca6a13b-2bb-6bfb-3720-41677fcaea96@linux.intel.com>
+References: <20221103091743.2119-1-daniel.starke@siemens.com> <20221103091743.2119-3-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1759914694-1667465065=:1757"
-Content-ID: <7c284166-a236-ea2-1c1d-57c98c6bdec3@linux.intel.com>
+Content-Type: multipart/mixed; BOUNDARY="8323329-2136426116-1667487869=:1757"
+Content-ID: <ca68bd6b-a3e8-76e-e3ae-2e2415aeefff@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -58,132 +59,42 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1759914694-1667465065=:1757
+--8323329-2136426116-1667487869=:1757
 Content-Type: text/plain; CHARSET=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
-Content-ID: <9310fe7a-df7d-df5d-5b8d-b02f6237282@linux.intel.com>
+Content-ID: <4441385a-4cbd-aff5-5cf1-29398bc7f055@linux.intel.com>
 
-On Thu, 3 Nov 2022, Greg KH wrote:
+On Thu, 3 Nov 2022, D. Starke wrote:
 
-> On Wed, Oct 19, 2022 at 01:55:03PM +0300, Ilpo Järvinen wrote:
-> > The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
-> > There is also a few quite confusing operations for checking the presense
-> > of TTYB_NORMAL. Simplify things by converting flags to bool.
-> > 
-> > Despite the name remaining the same, the meaning of "flags" is altered
-> > slightly by this change. Previously it referred to flags of the buffer
-> > (only TTYB_NORMAL being used as a flag). After this change, flags tell
-> > whether the buffer contains/should be allocated with flags array along
-> > with character data array. It is much more suitable name that
-> > TTYB_NORMAL was for this purpose, thus the name remains.
-> > 
-> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > ---
-> > 
-> > v2:
-> > - Make it more obvious why flags is not renamed (both in kerneldoc
-> >   comment and commit message).
-> > 
-> >  drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
-> >  include/linux/tty_buffer.h |  5 +----
-> >  include/linux/tty_flip.h   |  4 ++--
-> >  3 files changed, 17 insertions(+), 20 deletions(-)
-> > 
-> > diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> > index 5e287dedce01..b408d830fcbc 100644
-> > --- a/drivers/tty/tty_buffer.c
-> > +++ b/drivers/tty/tty_buffer.c
-> > @@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
-> >  	p->commit = 0;
-> >  	p->lookahead = 0;
-> >  	p->read = 0;
-> > -	p->flags = 0;
-> > +	p->flags = true;
-> >  }
-> >  
-> >  /**
-> > @@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
-> >   * __tty_buffer_request_room	-	grow tty buffer if needed
-> >   * @port: tty port
-> >   * @size: size desired
-> > - * @flags: buffer flags if new buffer allocated (default = 0)
-> > + * @flags: buffer has to store flags along character data
-> >   *
-> >   * Make at least @size bytes of linear space available for the tty buffer.
-> >   *
-> > @@ -260,19 +260,19 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
-> >   * Returns: the size we managed to find.
-> >   */
-> >  static int __tty_buffer_request_room(struct tty_port *port, size_t size,
-> > -				     int flags)
-> > +				     bool flags)
-> >  {
-> >  	struct tty_bufhead *buf = &port->buf;
-> >  	struct tty_buffer *b, *n;
-> >  	int left, change;
-> >  
-> >  	b = buf->tail;
-> > -	if (b->flags & TTYB_NORMAL)
-> > +	if (!b->flags)
-> >  		left = 2 * b->size - b->used;
-> >  	else
-> >  		left = b->size - b->used;
-> >  
-> > -	change = (b->flags & TTYB_NORMAL) && (~flags & TTYB_NORMAL);
-> > +	change = !b->flags && flags;
-> >  	if (change || left < size) {
-> >  		/* This is the slow path - looking for new buffers to use */
-> >  		n = tty_buffer_alloc(port, size);
-> > @@ -300,7 +300,7 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
-> >  
-> >  int tty_buffer_request_room(struct tty_port *port, size_t size)
-> >  {
-> > -	return __tty_buffer_request_room(port, size, 0);
-> > +	return __tty_buffer_request_room(port, size, true);
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Did this logic just get inverted?
->
-> Maybe it's the jet-lag, but this feels like it's not correct anymore.
+> n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+> See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+> The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+> the newer 27.010 here. Chapter 5.1.8.1.1 describes the parameter negotiation
+> messages and parameters. Chapter 5.4.1 states that the default parameters
+> are to be used if no negotiation is performed. Chapter 5.4.6.3.1 describes
+> the encoding of the parameter negotiation message. The meaning of the
+> parameters and allowed value ranges can be found in chapter 5.7.
+> 
+> Add parameter negotiation support accordingly. DLCI specific parameter
+> configuration by the user requires additional ioctls. This is subject to
+> another patch.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 
-As you can see, the old way is sooo confusing :-). I'll admit I stumbled 
-myself with this same default thing first. It's even more confusing than 
-the other places.
+Thanks.
 
-This check is true when flag bytes are present / required to be present:
-	(~flags & TTYB_NORMAL)
-It's very very confusing way to check such condition due to layered 
-reverse logic.
+For all three patches:
 
-With old code, the per character flag bytes won't be there in the buffer 
-if TTYB_NORMAL is present. Thus, the old default of 0 means 
-__tty_buffer_request_room will allocate room for those flag bytes.
-
-If you think about it carefully, the old code passed 0. Therefore, ~0 & 
-TTYB_NORMAL is going to be true. After my change true is passed and true 
-matches to the original code.
-
-So the logic was not inverted. I just cleared those layered reverse logic 
-traps the original had which makes my patch look it's inverting things.
-
-I really appreciate you took your time to find out this little detail
-from it! This is far from a simple change because of how trappy the old
-way of doing things is.
-
-> Maybe a commet up above where you calculate "left" would make more sense
-> as to what is going on?
-
-Do you mean you want me to add a comment there? I don't see any 
-pre-existing comments that you could be pointing me to.
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 
-Should I resubmit it since you probably dropped the patch?
-
-
-While doing this cleanup, I realized there would likely be room for 
-some improvements which would avoid allocing a new tty_buffer. I'll 
-probably look into those at some point.
+BTW, you should have carried the Reviewed-bys over in patches 1-2 since I 
+already gave those tags for you for v2. Please try to remember to collect 
+the tags next time if you end up resubmitting a series.
 
 
 -- 
  i.
---8323329-1759914694-1667465065=:1757--
+--8323329-2136426116-1667487869=:1757--
