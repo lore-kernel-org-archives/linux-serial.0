@@ -2,133 +2,271 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 552B5C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Nov 2022 02:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D336C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Nov 2022 09:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbiKCCzd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Nov 2022 22:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        id S229637AbiKCJVx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Nov 2022 05:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbiKCCzS (ORCPT
+        with ESMTP id S229770AbiKCJVS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Nov 2022 22:55:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787D513F96;
-        Wed,  2 Nov 2022 19:54:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13B9161CF4;
-        Thu,  3 Nov 2022 02:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D9E9C433C1;
-        Thu,  3 Nov 2022 02:54:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667444086;
-        bh=4KHUanK4Eb1jeTKJdS189VeKoR1cBDb90sED4WqUSPU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cffox6kD0l4pbNz+Sgn+ZsQKAETP+3Ml6lKhXxyg9Zhh4SWrcKx6Oy23PkTWQl20t
-         3RE4KLtOvIAzJZJ2hjicbCkCaQNRhJhvIYYGPV8tgY8GA0JF6vWXHTOFee2hZHePG/
-         WaJjkpYkqG6obxXY9rJc8hCjSoCn4lcvTyMny3t8=
-Date:   Thu, 3 Nov 2022 03:55:42 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] tty: Convert tty_buffer flags to bool
-Message-ID: <Y2Mtricfx/HxiEHc@kroah.com>
-References: <20221019105504.16800-1-ilpo.jarvinen@linux.intel.com>
+        Thu, 3 Nov 2022 05:21:18 -0400
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Nov 2022 02:21:16 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3864DDF3B
+        for <linux-serial@vger.kernel.org>; Thu,  3 Nov 2022 02:21:16 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202211030920103157c9e7286c136aaa
+        for <linux-serial@vger.kernel.org>;
+        Thu, 03 Nov 2022 10:20:11 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=NdDppYDLu8yz6PkPX9FRLqLfAtptQYpIs0pGGCxBVL8=;
+ b=DO5NtWW4rxNrbkarvy6/B7aPZMfRPU7LW7rund4kcAHZJvykVWIefbJH3/T/3WDdcrn17p
+ k/gwk6/+Fj8ZZI8cKO2fTbFurituA9P4WVpktVAowy0tyhaxrJOUg5dzo/qz4M0PLErVIrMS
+ TZtY+fy2b5WikIo8EdCUXnrQOjgDM=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v3 2/3] tty: n_gsm: add parameters used with parameter negotiation
+Date:   Thu,  3 Nov 2022 10:17:42 +0100
+Message-Id: <20221103091743.2119-2-daniel.starke@siemens.com>
+In-Reply-To: <20221103091743.2119-1-daniel.starke@siemens.com>
+References: <20221103091743.2119-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221019105504.16800-1-ilpo.jarvinen@linux.intel.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 19, 2022 at 01:55:03PM +0300, Ilpo Järvinen wrote:
-> The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
-> There is also a few quite confusing operations for checking the presense
-> of TTYB_NORMAL. Simplify things by converting flags to bool.
-> 
-> Despite the name remaining the same, the meaning of "flags" is altered
-> slightly by this change. Previously it referred to flags of the buffer
-> (only TTYB_NORMAL being used as a flag). After this change, flags tell
-> whether the buffer contains/should be allocated with flags array along
-> with character data array. It is much more suitable name that
-> TTYB_NORMAL was for this purpose, thus the name remains.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
-> 
-> v2:
-> - Make it more obvious why flags is not renamed (both in kerneldoc
->   comment and commit message).
-> 
->  drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
->  include/linux/tty_buffer.h |  5 +----
->  include/linux/tty_flip.h   |  4 ++--
->  3 files changed, 17 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 5e287dedce01..b408d830fcbc 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
->  	p->commit = 0;
->  	p->lookahead = 0;
->  	p->read = 0;
-> -	p->flags = 0;
-> +	p->flags = true;
->  }
->  
->  /**
-> @@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
->   * __tty_buffer_request_room	-	grow tty buffer if needed
->   * @port: tty port
->   * @size: size desired
-> - * @flags: buffer flags if new buffer allocated (default = 0)
-> + * @flags: buffer has to store flags along character data
->   *
->   * Make at least @size bytes of linear space available for the tty buffer.
->   *
-> @@ -260,19 +260,19 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
->   * Returns: the size we managed to find.
->   */
->  static int __tty_buffer_request_room(struct tty_port *port, size_t size,
-> -				     int flags)
-> +				     bool flags)
->  {
->  	struct tty_bufhead *buf = &port->buf;
->  	struct tty_buffer *b, *n;
->  	int left, change;
->  
->  	b = buf->tail;
-> -	if (b->flags & TTYB_NORMAL)
-> +	if (!b->flags)
->  		left = 2 * b->size - b->used;
->  	else
->  		left = b->size - b->used;
->  
-> -	change = (b->flags & TTYB_NORMAL) && (~flags & TTYB_NORMAL);
-> +	change = !b->flags && flags;
->  	if (change || left < size) {
->  		/* This is the slow path - looking for new buffers to use */
->  		n = tty_buffer_alloc(port, size);
-> @@ -300,7 +300,7 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
->  
->  int tty_buffer_request_room(struct tty_port *port, size_t size)
->  {
-> -	return __tty_buffer_request_room(port, size, 0);
-> +	return __tty_buffer_request_room(port, size, true);
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Did this logic just get inverted?
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.1 describes the encoding of the
+parameter negotiation messages.
 
-Maybe it's the jet-lag, but this feels like it's not correct anymore.
+Add the parameters used there to 'gsm_mux' and 'gsm_dlci' and initialize both
+according to the value ranges and recommended defaults defined in chapter 5.7.
 
-Maybe a commet up above where you calculate "left" would make more sense
-as to what is going on?
+Replace the use of the DLC default values from the 'gsm_mux' fields with the DLC
+specific values from the 'gsm_dlci' fields where applicable.
 
-thanks,
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 58 +++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 45 insertions(+), 13 deletions(-)
 
-greg k-h
+v2 -> v3:
+No changes.
+
+Link: https://lore.kernel.org/all/20221024130114.2070-2-daniel.starke@siemens.com/
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 570c40a3d78f..c217013b3e16 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -40,6 +40,7 @@
+ #include <linux/tty.h>
+ #include <linux/ctype.h>
+ #include <linux/mm.h>
++#include <linux/math.h>
+ #include <linux/string.h>
+ #include <linux/slab.h>
+ #include <linux/poll.h>
+@@ -75,7 +76,12 @@ module_param(debug, int, 0600);
+ 
+ #define T1	10		/* 100mS */
+ #define T2	34		/* 333mS */
++#define T3	10		/* 10s */
+ #define N2	3		/* Retry 3 times */
++#define K	2		/* outstanding I frames */
++
++#define MAX_T3 255		/* In seconds. */
++#define MAX_WINDOW_SIZE 7	/* Limit of K in error recovery mode. */
+ 
+ /* Use long timers for testing at low speed with debug on */
+ #ifdef DEBUG_TIMING
+@@ -160,7 +166,12 @@ struct gsm_dlci {
+ 	int prev_adaption;
+ 	u32 modem_rx;		/* Our incoming virtual modem lines */
+ 	u32 modem_tx;		/* Our outgoing modem lines */
++	unsigned int mtu;
+ 	bool dead;		/* Refuse re-open */
++	/* Configuration */
++	u8 prio;		/* Priority */
++	u8 ftype;		/* Frame type */
++	u8 k;			/* Window size */
+ 	/* Flow control */
+ 	bool throttled;		/* Private copy of throttle state */
+ 	bool constipated;	/* Throttle status for outgoing */
+@@ -283,7 +294,9 @@ struct gsm_mux {
+ 	int adaption;		/* 1 or 2 supported */
+ 	u8 ftype;		/* UI or UIH */
+ 	int t1, t2;		/* Timers in 1/100th of a sec */
++	unsigned int t3;	/* Power wake-up timer in seconds. */
+ 	int n2;			/* Retry count */
++	u8 k;			/* Window size */
+ 
+ 	/* Statistics (not currently exposed) */
+ 	unsigned long bad_fcs;
+@@ -1075,12 +1088,12 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ 		return 0;
+ 
+ 	/* MTU/MRU count only the data bits but watch adaption mode */
+-	if ((len + h) > gsm->mtu)
+-		len = gsm->mtu - h;
++	if ((len + h) > dlci->mtu)
++		len = dlci->mtu - h;
+ 
+ 	size = len + h;
+ 
+-	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
++	msg = gsm_data_alloc(gsm, dlci->addr, size, dlci->ftype);
+ 	if (!msg)
+ 		return -ENOMEM;
+ 	dp = msg->data;
+@@ -1144,19 +1157,19 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
+ 	len = dlci->skb->len + overhead;
+ 
+ 	/* MTU/MRU count only the data bits */
+-	if (len > gsm->mtu) {
++	if (len > dlci->mtu) {
+ 		if (dlci->adaption == 3) {
+ 			/* Over long frame, bin it */
+ 			dev_kfree_skb_any(dlci->skb);
+ 			dlci->skb = NULL;
+ 			return 0;
+ 		}
+-		len = gsm->mtu;
++		len = dlci->mtu;
+ 	} else
+ 		last = 1;
+ 
+ 	size = len + overhead;
+-	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
++	msg = gsm_data_alloc(gsm, dlci->addr, size, dlci->ftype);
+ 	if (msg == NULL) {
+ 		skb_queue_tail(&dlci->skb_list, dlci->skb);
+ 		dlci->skb = NULL;
+@@ -1213,7 +1226,7 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
+ 		return -EINVAL;
+ 	}
+ 
+-	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
++	msg = gsm_data_alloc(gsm, dlci->addr, size, dlci->ftype);
+ 	if (!msg) {
+ 		pr_err("%s: gsm_data_alloc error", __func__);
+ 		return -ENOMEM;
+@@ -1338,8 +1351,9 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
+ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 			       int dlen)
+ {
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
++	struct gsm_msg *msg;
+ 
++	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->dlci[0]->ftype);
+ 	if (msg == NULL)
+ 		return -ENOMEM;
+ 
+@@ -1365,7 +1379,8 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, const u8 *data,
+ 					int dlen)
+ {
+ 	struct gsm_msg *msg;
+-	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
++
++	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->dlci[0]->ftype);
+ 	if (msg == NULL)
+ 		return;
+ 	msg->data[0] = (cmd & 0xFE) << 1 | EA;	/* Clear C/R */
+@@ -2075,6 +2090,13 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
+ 	dlci->gsm = gsm;
+ 	dlci->addr = addr;
+ 	dlci->adaption = gsm->adaption;
++	dlci->mtu = gsm->mtu;
++	if (addr == 0)
++		dlci->prio = 0;
++	else
++		dlci->prio = roundup(addr + 1, 8) - 1;
++	dlci->ftype = gsm->ftype;
++	dlci->k = gsm->k;
+ 	dlci->state = DLCI_CLOSED;
+ 	if (addr) {
+ 		dlci->data = gsm_dlci_data;
+@@ -2650,7 +2672,9 @@ static struct gsm_mux *gsm_alloc_mux(void)
+ 
+ 	gsm->t1 = T1;
+ 	gsm->t2 = T2;
++	gsm->t3 = T3;
+ 	gsm->n2 = N2;
++	gsm->k = K;
+ 	gsm->ftype = UIH;
+ 	gsm->adaption = 1;
+ 	gsm->encoding = GSM_ADV_OPT;
+@@ -2691,7 +2715,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+ 	c->initiator = gsm->initiator;
+ 	c->t1 = gsm->t1;
+ 	c->t2 = gsm->t2;
+-	c->t3 = 0;	/* Not supported */
++	c->t3 = gsm->t3;
+ 	c->n2 = gsm->n2;
+ 	if (gsm->ftype == UIH)
+ 		c->i = 1;
+@@ -2700,7 +2724,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+ 	pr_debug("Ftype %d i %d\n", gsm->ftype, c->i);
+ 	c->mru = gsm->mru;
+ 	c->mtu = gsm->mtu;
+-	c->k = 0;
++	c->k = gsm->k;
+ }
+ 
+ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+@@ -2717,12 +2741,16 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 		return -EINVAL;
+ 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU)
+ 		return -EINVAL;
++	if (c->t3 > MAX_T3)
++		return -EINVAL;
+ 	if (c->n2 > 255)
+ 		return -EINVAL;
+ 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
+ 		return -EINVAL;
+ 	if (c->initiator > 1)
+ 		return -EINVAL;
++	if (c->k > MAX_WINDOW_SIZE)
++		return -EINVAL;
+ 	if (c->i == 0 || c->i > 2)	/* UIH and UI only */
+ 		return -EINVAL;
+ 	/*
+@@ -2770,6 +2798,10 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 		gsm->t1 = c->t1;
+ 	if (c->t2)
+ 		gsm->t2 = c->t2;
++	if (c->t3)
++		gsm->t3 = c->t3;
++	if (c->k)
++		gsm->k = c->k;
+ 
+ 	/*
+ 	 * FIXME: We need to separate activation/deactivation from adding
+@@ -3298,9 +3330,9 @@ static int gsm_create_network(struct gsm_dlci *dlci, struct gsm_netconfig *nc)
+ 		pr_err("alloc_netdev failed\n");
+ 		return -ENOMEM;
+ 	}
+-	net->mtu = dlci->gsm->mtu;
++	net->mtu = dlci->mtu;
+ 	net->min_mtu = MIN_MTU;
+-	net->max_mtu = dlci->gsm->mtu;
++	net->max_mtu = dlci->mtu;
+ 	mux_net = netdev_priv(net);
+ 	mux_net->dlci = dlci;
+ 	kref_init(&mux_net->ref);
+-- 
+2.34.1
+
