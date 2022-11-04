@@ -2,91 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76331C4332F
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Nov 2022 12:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AE3C4332F
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Nov 2022 13:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231944AbiKDMuq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Nov 2022 08:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34282 "EHLO
+        id S231309AbiKDN2h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Nov 2022 09:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiKDMup (ORCPT
+        with ESMTP id S230222AbiKDN1h (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Nov 2022 08:50:45 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49865EE31;
-        Fri,  4 Nov 2022 05:50:44 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id x15so2915617qtv.9;
-        Fri, 04 Nov 2022 05:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HCg5U14h823fd/E6HfvfZMyPQS0BVVOBKdKh70+tEco=;
-        b=MURPBtT6SMZEFPvlZ8dHt6QTCIs5u7eDlYRQ3df41UwWgEh9kUXPkmMZbegcaIqQc+
-         VtdIXBcpivNIG+MwsAxsi1gWcu27Lg+p+1EfAm4iqF9bGgY6GUKPc7Coa1GZd+aSuQpZ
-         cXBptuU89TH8TrYCxBaIPooysc3ftyCMwDudNaGqymcrcll4CalAqI4IwaTmTPFv8WxF
-         BpT3inRmHsyD8O1+hpHeg48LJqJC7MyrjE1mbeK/ug/m6tUboARBrx5FWHxMDRb9LZCJ
-         TXcoY68JAzPx5dIxdG9DXMVWbZiZkZnnQqyXhzKK3bntebhaK8f3coZjgVRxRFBOyDke
-         bVbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HCg5U14h823fd/E6HfvfZMyPQS0BVVOBKdKh70+tEco=;
-        b=vL3ahOlA0IVmC/ne0uLgAB7P6YQQ3OcreSG9sZcGjgLU4iU+NllphU2RuMSt4gRR6V
-         NyoBV/fbEP+sCygcj5TqWJ/7JYx9uwqs0e5syqHOgnhbDRDDbfEHk6QUQQIMdweJXREs
-         /6I2Io44DtDzxrDWR2gfVlYQncir87yXRzaoxOON47TYMv7tIvZxYNBLI93joQ5tA41C
-         VxJFwsTRevlUdEkXKBuam7adgmvQn4ABHdmrDGjgu3Y9y022ClQtFkyfEAFhJWSiaiJD
-         xgd3lArW82ZCf+DQXQ9TSIIRnB+EQ3o//3onFuUJBGoobW3XZbaBM+hqJ6HNPLG6REhy
-         RjGg==
-X-Gm-Message-State: ACrzQf0YRLzjfDqB8sucRIr8pnY0aHN7jx3Kn8E9gvtjaOZcmDKeR27J
-        1I900gnk495+++3Y0g9IxFtjsxJxtkNcF+mXRvOhHDKk1BU=
-X-Google-Smtp-Source: AMsMyM7/vR6BHUB9wDEQrhkpI1dQLqYW8s55rI35FAXgGTlmy57auC3tsOsnHMCOAwGP85036yjCWc8xjBfR3E7Hqq8=
-X-Received: by 2002:ac8:7152:0:b0:3a5:2fa2:cd1a with SMTP id
- h18-20020ac87152000000b003a52fa2cd1amr18686625qtp.195.1667566243392; Fri, 04
- Nov 2022 05:50:43 -0700 (PDT)
+        Fri, 4 Nov 2022 09:27:37 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759172EF74;
+        Fri,  4 Nov 2022 06:26:02 -0700 (PDT)
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2A4D2Ghi030654;
+        Fri, 4 Nov 2022 13:25:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=40jF6bool0pRdYkHn/c8RLr0Y9N3r7cZhNrwHaQljDs=;
+ b=RknmRGqD7UX935qS0U0YtasmJrHa2C7jkwTLc8FmHBqsB9hzf7ySoHOiWa7BUPYdMJgf
+ MWoTAGGJ3BhpT2oOCDRNVeMoSaHo724uEoFXGQ7g6X6QpDapSnCDa8x637MLpvpzvtej
+ w3lMAt6YmP6m8xOBebQCGT30aQqrWaetTrsGCYkyPKfP76pAw9iYMWFDCIUQwPRr2tPP
+ YHAOBHskXTgnaZkXG4FzZ8yczTcV8Wtle5VpN3RurloQi4AB1W2xYF3DdeMNMfeIe7IF
+ ilkKs/d689fHu3aIzqye0u9kgYmEKe8J/AixTbF0T6VbQCt8q5XCQerEj2sDshdeSOLF oQ== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3kn0830hmg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 04 Nov 2022 13:25:43 +0000
+Received: from nasanex01c.na.qualcomm.com (corens_vlan604_snip.qualcomm.com [10.53.140.1])
+        by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2A4DPh0m021473
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 4 Nov 2022 13:25:43 GMT
+Received: from [10.214.66.81] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 4 Nov 2022
+ 06:25:40 -0700
+Message-ID: <b5e5244f-fa9e-0701-4efc-088ed2c7ac1b@quicinc.com>
+Date:   Fri, 4 Nov 2022 18:55:37 +0530
 MIME-Version: 1.0
-References: <20221001061507.3508603-1-kumaravel.thiagarajan@microchip.com>
- <20221001061507.3508603-4-kumaravel.thiagarajan@microchip.com>
- <CAHp75VdEJvG=BQvS2KVNY8BnjfHyOCO6ww0S4_gxVZNuhXaURg@mail.gmail.com> <PH0PR11MB50964BC2301907D51B3DCF119B3B9@PH0PR11MB5096.namprd11.prod.outlook.com>
-In-Reply-To: <PH0PR11MB50964BC2301907D51B3DCF119B3B9@PH0PR11MB5096.namprd11.prod.outlook.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 4 Nov 2022 14:50:07 +0200
-Message-ID: <CAHp75VfGZf_aM4+ta10kxaktwvkk9XiV=8ttAg7hcFV-rBtY1g@mail.gmail.com>
-Subject: Re: [PATCH v2 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
- management functions to quad-uart driver.
-To:     Tharunkumar.Pasumarthi@microchip.com
-Cc:     Kumaravel.Thiagarajan@microchip.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        u.kleine-koenig@pengutronix.de, johan@kernel.org,
-        wander@redhat.com, etremblay@distech-controls.com,
-        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH] serial: Fix a typo ("ignorning")
+Content-Language: en-US
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        <linux-serial@vger.kernel.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20221104103719.2234098-1-j.neuschaefer@gmx.net>
+ <71ac8750-8a15-4d0c-7b0e-8992b68992cd@somainline.org>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <71ac8750-8a15-4d0c-7b0e-8992b68992cd@somainline.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: DHblWlrTP9jx1hN_DHS53DQ86XyeKGL8
+X-Proofpoint-GUID: DHblWlrTP9jx1hN_DHS53DQ86XyeKGL8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-04_09,2022-11-03_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 suspectscore=0 spamscore=0
+ clxscore=1011 mlxlogscore=999 malwarescore=0 mlxscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211040089
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 4, 2022 at 12:23 PM <Tharunkumar.Pasumarthi@microchip.com> wrote:
-> > From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > Sent: Monday, October 3, 2022 2:57 PM
 
-> > If you have similarities with 8250_pci, probably you need to split it to
-> > 8250_pcilib.c and share. (See how 8250_dw /8250_lpss are done in that
-> > sense.)
->
-> All the functions used in 8250_pci1xxxx.c  that have similarity with 8250_pci use registers
-> that are specific to our IP.  The only function that can be moved to common library is the
-> setup_port. But, for that the first argument of setup_port must be changed to
-> 'struct pci_dev *dev' (priv->dev).  Do you suggest doing this?
+Hi,
 
-So, you can create a common serial8250_setup_port(struct pci_dev *dev,
-...) and call it from the static setup_port() inside 8250_pci.c. This
-way you won't introduce too many churn.
+On 11/4/2022 4:16 PM, Konrad Dybcio wrote:
+> 
+> On 04/11/2022 11:37, Jonathan Neuschäfer wrote:
+>> Fix the two instances of this typo present in the MSM and VT8500 serial
+>> drivers.
+>>
+>> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+>> ---
+> 
+> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 
--- 
-With Best Regards,
-Andy Shevchenko
+Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
+
+-Mukesh
+> 
+> 
+> Konrad
+> 
+>>   drivers/tty/serial/msm_serial.c    | 2 +-
+>>   drivers/tty/serial/vt8500_serial.c | 2 +-
+>>   2 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/msm_serial.c 
+>> b/drivers/tty/serial/msm_serial.c
+>> index 7dd19a2815794..d9a3aa941427c 100644
+>> --- a/drivers/tty/serial/msm_serial.c
+>> +++ b/drivers/tty/serial/msm_serial.c
+>> @@ -819,7 +819,7 @@ static void msm_handle_rx(struct uart_port *port)
+>>               port->icount.rx++;
+>>           }
+>>
+>> -        /* Mask conditions we're ignorning. */
+>> +        /* Mask conditions we're ignoring. */
+>>           sr &= port->read_status_mask;
+>>
+>>           if (sr & MSM_UART_SR_RX_BREAK)
+>> diff --git a/drivers/tty/serial/vt8500_serial.c 
+>> b/drivers/tty/serial/vt8500_serial.c
+>> index 10fbdb09965f3..37c8a55b48eda 100644
+>> --- a/drivers/tty/serial/vt8500_serial.c
+>> +++ b/drivers/tty/serial/vt8500_serial.c
+>> @@ -168,7 +168,7 @@ static void handle_rx(struct uart_port *port)
+>>
+>>           c = readw(port->membase + VT8500_RXFIFO) & 0x3ff;
+>>
+>> -        /* Mask conditions we're ignorning. */
+>> +        /* Mask conditions we're ignoring. */
+>>           c &= ~port->read_status_mask;
+>>
+>>           if (c & FER) {
+>> -- 
+>> 2.35.1
+>>
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
