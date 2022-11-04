@@ -2,142 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AE3C4332F
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Nov 2022 13:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 198BFC433FE
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Nov 2022 14:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbiKDN2h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Nov 2022 09:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
+        id S232261AbiKDO21 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Nov 2022 10:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230222AbiKDN1h (ORCPT
+        with ESMTP id S232164AbiKDO1y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Nov 2022 09:27:37 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759172EF74;
-        Fri,  4 Nov 2022 06:26:02 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2A4D2Ghi030654;
-        Fri, 4 Nov 2022 13:25:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=40jF6bool0pRdYkHn/c8RLr0Y9N3r7cZhNrwHaQljDs=;
- b=RknmRGqD7UX935qS0U0YtasmJrHa2C7jkwTLc8FmHBqsB9hzf7ySoHOiWa7BUPYdMJgf
- MWoTAGGJ3BhpT2oOCDRNVeMoSaHo724uEoFXGQ7g6X6QpDapSnCDa8x637MLpvpzvtej
- w3lMAt6YmP6m8xOBebQCGT30aQqrWaetTrsGCYkyPKfP76pAw9iYMWFDCIUQwPRr2tPP
- YHAOBHskXTgnaZkXG4FzZ8yczTcV8Wtle5VpN3RurloQi4AB1W2xYF3DdeMNMfeIe7IF
- ilkKs/d689fHu3aIzqye0u9kgYmEKe8J/AixTbF0T6VbQCt8q5XCQerEj2sDshdeSOLF oQ== 
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3kn0830hmg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Nov 2022 13:25:43 +0000
-Received: from nasanex01c.na.qualcomm.com (corens_vlan604_snip.qualcomm.com [10.53.140.1])
-        by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2A4DPh0m021473
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 4 Nov 2022 13:25:43 GMT
-Received: from [10.214.66.81] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 4 Nov 2022
- 06:25:40 -0700
-Message-ID: <b5e5244f-fa9e-0701-4efc-088ed2c7ac1b@quicinc.com>
-Date:   Fri, 4 Nov 2022 18:55:37 +0530
+        Fri, 4 Nov 2022 10:27:54 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCCB31EE1
+        for <linux-serial@vger.kernel.org>; Fri,  4 Nov 2022 07:25:44 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id i9so3109044qki.10
+        for <linux-serial@vger.kernel.org>; Fri, 04 Nov 2022 07:25:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9sD8EciRvb46rdf2K+kL45tZIE2mUCgw2o7OORvwigA=;
+        b=lyVoSJjJdrYXF7iBhSXbA2hQWrHZBCsUHunCw2aZE9p4yHHID2AdHsUpJqBGMyR6Bz
+         CUWJwUfAfeoJpammVHa8axjeWM++BWimWDMx4ePwliO4qwh5r3MC3hlLB6Qg+dVCxl0x
+         GTprG77sDlWGUXDm2Qt3ajk+AAOhWUTkdCqIDVmBxwf/s3DkuxUtDb4qV5CZ7Itu/yXl
+         ukbJxVl4WYS0WVXV3ShiVHJW1f97HcR1mCiwYP8KbMHLDnP4/tr/EqjbKVp99rFPsAUD
+         zRZJy9kLLYF2mCb0bwq9H8hm/9wpPXICI1aGb8YSnnU838dZZGOGiibNlB0u2MEere6U
+         ZsKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9sD8EciRvb46rdf2K+kL45tZIE2mUCgw2o7OORvwigA=;
+        b=Pix3rUN1S1O2FjpMVq8BtVXRsg/JeaPFDMcr8xaeQCw6Yx8UP1tTGICW/4wynsLg2A
+         1VECOMPrZ1msK8rJMD/41DclNFkKbDG+ckiciI6LTImqq7Q0XkGbCRm9T3/crAFZy1KZ
+         GB6FLyDLSuptDl9ZPv3PYRAjznjOa2EpoWC9IQBrsxrMMOV0uElUt5eKhveSRwQpXikO
+         c3l5ZXrV24nxJbB//HLxQvRV5PdfAzxp6ET/J8Y1U3JLnJUDTb8hLpRinYF24xbcz2iW
+         /IkNq5pV63gOF0amql/AvNlx4M4olyHpDCdiqRUCILOGNrL2xm1cNfoUp0hFqBKyLrCq
+         dytg==
+X-Gm-Message-State: ACrzQf1FBT3/32SJLqhTzpPJDywyGJbFwGeYGVu/TDT0idqt8KrP9M3Q
+        n+QtLN5GgNMaOH40AhVg/p5Keiz7hHFVpA==
+X-Google-Smtp-Source: AMsMyM5yd4v4Lf5ChlcAa3i9aOx0jZgX3ZtOSNqQoEiBB2464wyApfZu45Vmm9dPLD61sWqFzgV1zg==
+X-Received: by 2002:a05:620a:cec:b0:6fa:a3d:dda5 with SMTP id c12-20020a05620a0cec00b006fa0a3ddda5mr26567414qkj.564.1667571943916;
+        Fri, 04 Nov 2022 07:25:43 -0700 (PDT)
+Received: from ?IPV6:2601:586:5000:570:aad6:acd8:4ed9:299b? ([2601:586:5000:570:aad6:acd8:4ed9:299b])
+        by smtp.gmail.com with ESMTPSA id k7-20020ac84747000000b003a4f22c6507sm2508637qtp.48.2022.11.04.07.25.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Nov 2022 07:25:43 -0700 (PDT)
+Message-ID: <0f97ef6c-234e-d677-75ba-11b22586c95e@linaro.org>
+Date:   Fri, 4 Nov 2022 10:25:42 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH] serial: Fix a typo ("ignorning")
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] dt-bindings: serial: arm,sbsa-uart: Convert to
+ json-schema
 Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        <linux-serial@vger.kernel.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20221104103719.2234098-1-j.neuschaefer@gmx.net>
- <71ac8750-8a15-4d0c-7b0e-8992b68992cd@somainline.org>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <71ac8750-8a15-4d0c-7b0e-8992b68992cd@somainline.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: DHblWlrTP9jx1hN_DHS53DQ86XyeKGL8
-X-Proofpoint-GUID: DHblWlrTP9jx1hN_DHS53DQ86XyeKGL8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-04_09,2022-11-03_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 adultscore=0 priorityscore=1501 suspectscore=0 spamscore=0
- clxscore=1011 mlxlogscore=999 malwarescore=0 mlxscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211040089
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20221104104303.1534876-1-thierry.reding@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221104104303.1534876-1-thierry.reding@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 04/11/2022 06:43, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
+> 
+> Convert the ARM SBSA UART device tree bindings from the free-form text
+> format to json-schema.
+> 
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> ---
+>  .../bindings/serial/arm,sbsa-uart.yaml        | 37 +++++++++++++++++++
+>  .../bindings/serial/arm_sbsa_uart.txt         | 10 -----
+>  2 files changed, 37 insertions(+), 10 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml b/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
+> new file mode 100644
+> index 000000000000..afaa1ef7f2e6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
+> @@ -0,0 +1,37 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/arm,sbsa-uart.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ARM SBSA defined generic UART
+> +
+> +maintainers:
+> +  - Rob Herring <robh@kernel.org>
+> +  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Hi,
+This shouldn't be Greg but someone nothing the hardware. Rob might work,
+but maybe also Russell who is mentioned in maintainers entry?
 
-On 11/4/2022 4:16 PM, Konrad Dybcio wrote:
-> 
-> On 04/11/2022 11:37, Jonathan Neuschäfer wrote:
->> Fix the two instances of this typo present in the MSM and VT8500 serial
->> drivers.
->>
->> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
->> ---
-> 
-> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Please resend with him cced.
 
-Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
+> +
+> +description:
+> +  This UART uses a subset of the PL011 registers and consequently lives
+> +  in the PL011 driver. It's baudrate and other communication parameters
+> +  cannot be adjusted at runtime, so it lacks a clock specifier here.
+> +
+> +properties:
+> +  compatible:
+> +    const: arm,sbsa-uart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +allOf:
+> +  - $ref: serial.yaml
+> +
+> +unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +...
 
--Mukesh
-> 
-> 
-> Konrad
-> 
->>   drivers/tty/serial/msm_serial.c    | 2 +-
->>   drivers/tty/serial/vt8500_serial.c | 2 +-
->>   2 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/tty/serial/msm_serial.c 
->> b/drivers/tty/serial/msm_serial.c
->> index 7dd19a2815794..d9a3aa941427c 100644
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -819,7 +819,7 @@ static void msm_handle_rx(struct uart_port *port)
->>               port->icount.rx++;
->>           }
->>
->> -        /* Mask conditions we're ignorning. */
->> +        /* Mask conditions we're ignoring. */
->>           sr &= port->read_status_mask;
->>
->>           if (sr & MSM_UART_SR_RX_BREAK)
->> diff --git a/drivers/tty/serial/vt8500_serial.c 
->> b/drivers/tty/serial/vt8500_serial.c
->> index 10fbdb09965f3..37c8a55b48eda 100644
->> --- a/drivers/tty/serial/vt8500_serial.c
->> +++ b/drivers/tty/serial/vt8500_serial.c
->> @@ -168,7 +168,7 @@ static void handle_rx(struct uart_port *port)
->>
->>           c = readw(port->membase + VT8500_RXFIFO) & 0x3ff;
->>
->> -        /* Mask conditions we're ignorning. */
->> +        /* Mask conditions we're ignoring. */
->>           c &= ~port->read_status_mask;
->>
->>           if (c & FER) {
->> -- 
->> 2.35.1
->>
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Example would be nice, although it  is not a requirement.
+
+
+Best regards,
+Krzysztof
+
