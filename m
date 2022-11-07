@@ -2,128 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5140C4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 14:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A4DC4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 15:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbiKGOSY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 09:18:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
+        id S232708AbiKGPKC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 10:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232313AbiKGOSB (ORCPT
+        with ESMTP id S232726AbiKGPKA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 09:18:01 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CD41D33D;
-        Mon,  7 Nov 2022 06:17:00 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1667830618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wOWHeHInm2fmU2wKM0mWh276PVpVVzC8ULssrB/joiM=;
-        b=swwcC/eytgcMbEKzOsEncCun4WY7vCLbcSffYIRaqcjIVCgoqyAiB72Hq237ceNlyL5/yg
-        IaBRPSjRNC+INjKqpcmmT7hw6GRutYGeymQnr6Ol54Fij7be5Jfsm1DMqRlgS5UuQl9Rvq
-        kdDA0dnHuT7VyfDq9u5tURAAc7KWeGndsalFDzyw85DF2YnZXb09JJH4a9xoJEpkWVwyS8
-        9jeLeuqUOLHzlmT4uTJIGlq4oWnVJQX+g1TczTiRuFCoB5GfciO6IKmx3iBPLaJbghiv/i
-        PLkKtR22cC0RUj+pZZuRVN6VNvOn/czOzbB7QmzT3PZHj15nJHjX9f2zg0usMA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1667830618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wOWHeHInm2fmU2wKM0mWh276PVpVVzC8ULssrB/joiM=;
-        b=XMu8M3iTA3yEquZZqVsUkXpN+6MK0GssBgVj2Cl5IKI6K2iL8N2eyBMcwztJY/whxe4NYQ
-        BGYy6M/luah7T/Cg==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH printk v3 40/40] tty: serial: sh-sci: use setup() callback for early console
-Date:   Mon,  7 Nov 2022 15:22:38 +0106
-Message-Id: <20221107141638.3790965-41-john.ogness@linutronix.de>
-In-Reply-To: <20221107141638.3790965-1-john.ogness@linutronix.de>
-References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+        Mon, 7 Nov 2022 10:10:00 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EF11DDE0;
+        Mon,  7 Nov 2022 07:09:58 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id c8so8251102qvn.10;
+        Mon, 07 Nov 2022 07:09:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xcR9lfWxQYYggutBYXX8jFDllzL5dvH/OMCsAac2+rw=;
+        b=AcAy4kj7xO7cxMUOheawQ40hciY65r2N0nwsNhsKmei8MAsBW05Y2mZXSzvF3iKLTL
+         RZPpjGzhVEJXVKYELaR499rXN4uWVp7jKPzuSgHdhLTKb4ZGgHZ38+K5TOe6DXywhqfB
+         kkagoojERWS6DOKPTyUYlBhXDi8wK3ZSStt6DnDL1n745Ky+gE64pzVvaNahmgECY+eM
+         sc8FRKWkwH1Yzfh33NBpVz4R3hMefG5ax+XM1wHJkydVlnpe/p26SnOXEGVt072V0Icf
+         ib3Egmk6Hhq9CYGt3+o7RFiN68F/upDfNYSxSPJp5wihuo9BRZSzLZAXWGySTIjuJ3Eo
+         xD6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:user-agent:mime-version:date:message-id:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xcR9lfWxQYYggutBYXX8jFDllzL5dvH/OMCsAac2+rw=;
+        b=rIQFpb+7JyRhlSZ6t8M3NFOY+8XVbL9f2XDgD6fbT9Z3NShyJtjfTwnGSFnStf/vHO
+         WHoC11FRkqAUuFyLrZ5nUcfxVg7a4/tXnFOA+g2uT22o3bMhN5ISVoCr4xNb+qpzROa/
+         NNnXQIURoVek/hCPvbZ2oWLSIELOsW2GPbFJcCwj3GRTT28PxzylttP+l3IZ7bvwN7QU
+         +QhoSK7y1bQW2jSivEpc9t+5UkUgVhdEN6tUHerlTV0ZOcydhGADQvudHoGf0LR2OnGt
+         6xZHGCOT5N4LZ1tD287G9A8dYmZYqyUs4CWODWQ7+9CkFOd9GyvjWeC+fHG2q8iAR8X9
+         aeAQ==
+X-Gm-Message-State: ACrzQf3vBmpeyMS+0t5+gSvoXnFeBvIFxgcD12x4PmMrQb+I+Mbfu+Qm
+        gW23gdtYN3VVBiip3AWmmWQ=
+X-Google-Smtp-Source: AMsMyM6aAFJE1en6KQCXeSWQDoqCPBynXxktK9qfeKbN5Zs3+uBYUavcNlBG6peXGVBkshXgPkVDlg==
+X-Received: by 2002:a05:6214:19ea:b0:4bc:1388:8d7c with SMTP id q10-20020a05621419ea00b004bc13888d7cmr30781708qvc.84.1667833797183;
+        Mon, 07 Nov 2022 07:09:57 -0800 (PST)
+Received: from [10.248.12.149] ([129.63.248.1])
+        by smtp.gmail.com with ESMTPSA id v22-20020a05620a441600b006eeaf9160d6sm7169680qkp.24.2022.11.07.07.09.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Nov 2022 07:09:56 -0800 (PST)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+Message-ID: <ef5d4f48-71b9-2d5c-37f4-7a029a32a41b@gmail.com>
+Date:   Mon, 7 Nov 2022 10:09:55 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v1 7/7] ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
+To:     Arnd Bergmann <arnd@arndb.de>, NXP Linux Team <linux-imx@nxp.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>, aisheng.dong@nxp.com,
+        stefan@agner.ch, Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Russell King <linux@armlinux.org.uk>, abel.vesa@nxp.com,
+        dev@lynxeye.de, Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        tharvey@gateworks.com, leoyang.li@nxp.com, fugang.duan@nxp.com,
+        Giulio Benetti <giulio.benetti@benettiengineering.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+References: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
+ <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
+ <d293e410-223d-4baa-ba6d-65bc11ab1e55@app.fastmail.com>
+Content-Language: en-US
+In-Reply-To: <d293e410-223d-4baa-ba6d-65bc11ab1e55@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When setting up the early console, the setup() callback of the
-regular console is used. It is called manually before registering
-the early console instead of providing a setup() callback for the
-early console. This is probably because the early setup needs a
-different @options during the early stage.
 
-The issue here is that the setup() callback is called without the
-console_list_lock held and functions such as uart_set_options()
-expect that.
 
-Rather than manually calling the setup() function before registering,
-provide an early console setup() callback that will use the different
-early options. This ensures that the error checking, ordering, and
-locking context when setting up the early console are correct.
+On 11/7/22 02:44, Arnd Bergmann wrote:
+> On Mon, Nov 7, 2022, at 08:15, Jesse Taube wrote:
+>> Remove unused compatibles from i.MXRT1050.dtsi.
+>> Change GPT clock-names to match documentation.
+>>
+>> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+>> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> 
+> Can you make sure your changelog texts explain why you do this?
+Yes, sorry I wasn't clear.
+> Are they fundamentally different from the devices you had
+> claimed to be compatible with that need a different driver,
+UART and SDHC had drivers added which are better fit.
+The GPT binds to imx6dl which is also the same as imx6sl.
+> or are there drivers in the field that bind to the wrong
+> string first?
+I don't understand?
 
-Note that technically the current implementation works because it is
-only used in early boot. And since the early console setup is
-performed before registering, it cannot race with anything and thus
-does not need any locking. However, longterm maintenance is easier
-when drivers rely on the subsystem API rather than manually
-implementing steps that could cause breakage in the future.
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/sh-sci.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 62f773286d44..f3a1cfec757a 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -3054,15 +3054,26 @@ static struct console serial_console = {
- };
- 
- #ifdef CONFIG_SUPERH
-+static char early_serial_buf[32];
-+
-+static int early_serial_console_setup(struct console *co, char *options)
-+{
-+	WARN_ON(options);
-+	/*
-+	 * Use @early_serial_buf because @options will always be
-+	 * NULL at this early stage.
-+	 */
-+	return serial_console_setup(co, early_serial_buf);
-+}
-+
- static struct console early_serial_console = {
- 	.name           = "early_ttySC",
- 	.write          = serial_console_write,
-+	.setup		= early_serial_console_setup,
- 	.flags          = CON_PRINTBUFFER,
- 	.index		= -1,
- };
- 
--static char early_serial_buf[32];
--
- static int sci_probe_earlyprintk(struct platform_device *pdev)
- {
- 	const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
-@@ -3074,8 +3085,6 @@ static int sci_probe_earlyprintk(struct platform_device *pdev)
- 
- 	sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
- 
--	serial_console_setup(&early_serial_console, early_serial_buf);
--
- 	if (!strstr(early_serial_buf, "keep"))
- 		early_serial_console.flags |= CON_BOOT;
- 
--- 
-2.30.2
-
+Thanks,
+Jesse Taube
+> 
+>        Arnd
