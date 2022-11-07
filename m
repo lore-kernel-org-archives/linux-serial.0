@@ -2,93 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4677EC43217
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 11:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FFEC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 11:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbiKGLHn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 06:07:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
+        id S231889AbiKGLb7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 06:31:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231518AbiKGLHe (ORCPT
+        with ESMTP id S231857AbiKGLb4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 06:07:34 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0239618386;
-        Mon,  7 Nov 2022 03:07:33 -0800 (PST)
+        Mon, 7 Nov 2022 06:31:56 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F55019C06;
+        Mon,  7 Nov 2022 03:31:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667819253; x=1699355253;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GX897nypwCJ78jjUOfdNotVKqeArdhyavQ6h8PsVU8c=;
-  b=iBAai1hLFbwA3ysMoxykDt0hyJZiRbCzyzWNyAomHd9iwAdfPIpenazq
-   DAJ4xRaUCowz/bCuNKsj+ayqCsQPHwU5eLHsdLPI4J12fu/Cm1tlh0ztK
-   QSDAkQgYXb7v9lj6SuDozCuXagovBnDlqEwUPXqpGTcwy4BKcBwD46JEK
-   ecZuik8nyNhIB2JLA/og0EDA1NXsDBOLadHV8GEycOEf3eXBscNamUU/k
-   08zrALZsJb3jXpCG6dZaXL0JtegYjufovr9mxUvOgeRtxf50Wm5wUR+zx
-   /sEK8i7wpdDIzcNZl0u6GumAdST+Qhj6EMcRalvEEz+p3wnkKlR6KJG1J
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="290773043"
+  t=1667820716; x=1699356716;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=fqn6QtaeFYW7jPHfHs6aYUWyGCrgoRcjFC8Z+hfgI/w=;
+  b=Ch+SIiWQWELPsRwcbhh5IMZQF17e46umXTDVmUgN4v/5/hK6L0ceDwoh
+   Qub25O/eucyCSnM1fXzOHhGh0FhYG/7BJaezYc2vP34Vm3340eAFKe4hj
+   frEhIG/ZmjWwA2ZHnHc3KC+4flvfjihMVKZ96Ku8rdPAptjte4m13m47T
+   sN7faVZd0QKLgDW1kj6atEJr/vPrpP0x3/8G+nEI3iYMVb8WGkQS+4D2T
+   ML5LvmA48R4hISJwjXAEtJpz+K4ra8v1FJp9jAgKv3b737hjTGtkjZ+2g
+   /SZ4p7fWr46ajKBxGyimPwblaV7L9PCkpchJWJ4DEUbOPuCjE4LUewagj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="293734902"
 X-IronPort-AV: E=Sophos;i="5.96,143,1665471600"; 
-   d="scan'208";a="290773043"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 03:07:33 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="586932381"
+   d="scan'208";a="293734902"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 03:31:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="965119800"
 X-IronPort-AV: E=Sophos;i="5.96,143,1665471600"; 
-   d="scan'208";a="586932381"
-Received: from gschoede-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.46.211])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 03:07:31 -0800
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+   d="scan'208";a="965119800"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP; 07 Nov 2022 03:31:54 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1os0M4-008bpd-1F;
+        Mon, 07 Nov 2022 13:31:52 +0200
+Date:   Mon, 7 Nov 2022 13:31:52 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        stable@vger.kernel.org, Gilles BULOZ <gilles.buloz@kontron.com>
-Subject: [PATCH 4/4] serial: 8250: Flush DMA Rx on RLSI
-Date:   Mon,  7 Nov 2022 13:07:08 +0200
-Message-Id: <20221107110708.58223-5-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221107110708.58223-1-ilpo.jarvinen@linux.intel.com>
-References: <20221107110708.58223-1-ilpo.jarvinen@linux.intel.com>
+        Gilles BULOZ <gilles.buloz@kontron.com>
+Subject: Re: [PATCH 1/1] serial: 8250_dma: Rearm DMA Rx if more data is
+ pending
+Message-ID: <Y2jsqNHQ5KhYISb3@smile.fi.intel.com>
+References: <20221107102126.56481-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221107102126.56481-1-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Returning true from handle_rx_dma() without flushing DMA first creates
-a data ordering hazard. If DMA Rx has handled any character at the
-point when RLSI occurs, the non-DMA path handles any pending characters
-jumping them ahead of those characters that are pending under DMA.
+On Mon, Nov 07, 2022 at 12:21:26PM +0200, Ilpo Järvinen wrote:
+> When DMA Rx completes, the current behavior is to just exit the DMA
+> completion handler without future actions. If the transfer is still
+> on-going, UART will trigger an interrupt and that eventually rearms the
+> DMA Rx. The extra interrupt round-trip has an inherent latency cost
+> that increases the risk of FIFO overrun. In such situations, the
+> latency margin tends to already be less due to FIFO not being empty.
+> 
+> Add check into DMA Rx completion handler to detect if LSR has DR (Data
+> Ready) still set. DR indicates there will be more characters pending
+> and DMA Rx can be rearmed right away to handle them.
 
-Fixes: 75df022b5f89 ("serial: 8250_dma: Fix RX handling")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
----
-Cc: Gilles BULOZ <gilles.buloz@kontron.com>
+Yep, I used to have something like draft of the below change locally.
+Thanks for putting it in shape and upstreamimg!
 
- drivers/tty/serial/8250/8250_port.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 92dd18716169..388172289627 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1901,10 +1901,9 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
- 		if (!up->dma->rx_running)
- 			break;
- 		fallthrough;
-+	case UART_IIR_RLSI:
- 	case UART_IIR_RX_TIMEOUT:
- 		serial8250_rx_dma_flush(up);
--		fallthrough;
--	case UART_IIR_RLSI:
- 		return true;
- 	}
- 	return up->dma->rx_dma(up);
+> Cc: Gilles BULOZ <gilles.buloz@kontron.com>
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_dma.c | 19 ++++++++++++++++---
+>  1 file changed, 16 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+> index b85c82616e8c..37d6af2ec427 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -38,9 +38,8 @@ static void __dma_tx_complete(void *param)
+>  	spin_unlock_irqrestore(&p->port.lock, flags);
+>  }
+>  
+> -static void __dma_rx_complete(void *param)
+> +static void __dma_rx_complete(struct uart_8250_port *p)
+>  {
+> -	struct uart_8250_port	*p = param;
+>  	struct uart_8250_dma	*dma = p->dma;
+>  	struct tty_port		*tty_port = &p->port.state->port;
+>  	struct dma_tx_state	state;
+> @@ -57,6 +56,20 @@ static void __dma_rx_complete(void *param)
+>  	tty_flip_buffer_push(tty_port);
+>  }
+>  
+> +static void dma_rx_complete(void *param)
+> +{
+> +	struct uart_8250_port *p = param;
+> +	struct uart_8250_dma *dma = p->dma;
+> +	unsigned long flags;
+> +
+> +	__dma_rx_complete(p);
+> +
+> +	spin_lock_irqsave(&p->port.lock, flags);
+> +	if (!dma->rx_running && (serial_lsr_in(p) & UART_LSR_DR))
+> +		p->dma->rx_dma(p);
+> +	spin_unlock_irqrestore(&p->port.lock, flags);
+> +}
+> +
+>  int serial8250_tx_dma(struct uart_8250_port *p)
+>  {
+>  	struct uart_8250_dma		*dma = p->dma;
+> @@ -130,7 +143,7 @@ int serial8250_rx_dma(struct uart_8250_port *p)
+>  		return -EBUSY;
+>  
+>  	dma->rx_running = 1;
+> -	desc->callback = __dma_rx_complete;
+> +	desc->callback = dma_rx_complete;
+>  	desc->callback_param = p;
+>  
+>  	dma->rx_cookie = dmaengine_submit(desc);
+> -- 
+> 2.30.2
+> 
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
