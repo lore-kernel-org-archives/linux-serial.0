@@ -2,58 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770BEC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 09:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5958C4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 10:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbiKGJwY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 04:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44574 "EHLO
+        id S231592AbiKGKWC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 05:22:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbiKGJwX (ORCPT
+        with ESMTP id S231733AbiKGKVw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 04:52:23 -0500
-X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Nov 2022 01:52:22 PST
-Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7826578
-        for <linux-serial@vger.kernel.org>; Mon,  7 Nov 2022 01:52:22 -0800 (PST)
-Received: by mail.lokoho.com (Postfix, from userid 1001)
-        id 06BF382938; Mon,  7 Nov 2022 09:15:48 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
-        t=1667812559; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
-        h=Date:From:To:Subject:From;
-        b=la3alWt0ukkgJzlaCbPI0T8SEF+kZWSjKQE2r9j2/yZIK0B3hlVYOxk6eRG5aPp4k
-         RCBYfihP6PuCh7EfQ9wfKHQU9jPajz8LErIva8aqCo6YzCEYt1AMAUeYv41tsaLYrJ
-         sbXlXyg4MGHslG4l84PKEHy1Psmq19gvoz2Kth7FYVcDJuofx6ewHt928UoMHRxXaz
-         fZaHmZlt4affi9zloFqGZIEvTh8XAU2DneDyEhH5WTPkgTMrtDNKNC/cjV1Mm2E6ig
-         Pqas3duqLyB+LEdqLKWCCoSuVHGp05qwAGPD0DAUd3stIQ+r0dPM98H8b3ax3BqONa
-         sxprMZ/QyuWnQ==
-Received: by mail.lokoho.com for <linux-serial@vger.kernel.org>; Mon,  7 Nov 2022 09:15:37 GMT
-Message-ID: <20221107074500-0.1.23.5m4e.0.j7kz5ndb8j@lokoho.com>
-Date:   Mon,  7 Nov 2022 09:15:37 GMT
-From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
-X-Mailer: mail.lokoho.com
+        Mon, 7 Nov 2022 05:21:52 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0433018E36;
+        Mon,  7 Nov 2022 02:21:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667816499; x=1699352499;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=86H81jTk5MeGGr4bfjg6h5GLTuAz4tzPfCa+h/HeqSM=;
+  b=Ajm/VtNK0dgsKTDcGVG9hGscy3xT2aJKNr13HxjMwp61x8+5qIB4sSjR
+   iSxJiE54+joW8RzxSe4MO8x5WoyEJqCSj3+12wWbsd7S/00FstHBsT/6h
+   1jb4Gis8b1NLO+Ol4kaVLXrBEt0x1KpMbM1MNHXn22SW0pBrNEk5er0Nn
+   PiiSti2212B002jeMsNpkErKOw4kxzGB8bx2vO76GF2Uy7QPA+wA63fKN
+   uHnox2Yrvx42yHbc3JEQj59btWttoLzfxpaLyH+nKxYJGw4rcN8psoekc
+   +wbtkW7Ymp8nIHQa9R7IQ7BZhtsByP6hH2jFTbdhsmcv9hW4X6O/PPh3y
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="293724142"
+X-IronPort-AV: E=Sophos;i="5.96,143,1665471600"; 
+   d="scan'208";a="293724142"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 02:21:38 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="965100338"
+X-IronPort-AV: E=Sophos;i="5.96,143,1665471600"; 
+   d="scan'208";a="965100338"
+Received: from gschoede-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.46.211])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 02:21:36 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Gilles BULOZ <gilles.buloz@kontron.com>
+Subject: [PATCH 1/1] serial: 8250_dma: Rearm DMA Rx if more data is pending
+Date:   Mon,  7 Nov 2022 12:21:26 +0200
+Message-Id: <20221107102126.56481-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+When DMA Rx completes, the current behavior is to just exit the DMA
+completion handler without future actions. If the transfer is still
+on-going, UART will trigger an interrupt and that eventually rearms the
+DMA Rx. The extra interrupt round-trip has an inherent latency cost
+that increases the risk of FIFO overrun. In such situations, the
+latency margin tends to already be less due to FIFO not being empty.
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+Add check into DMA Rx completion handler to detect if LSR has DR (Data
+Ready) still set. DR indicates there will be more characters pending
+and DMA Rx can be rearmed right away to handle them.
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+Cc: Gilles BULOZ <gilles.buloz@kontron.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_dma.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index b85c82616e8c..37d6af2ec427 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -38,9 +38,8 @@ static void __dma_tx_complete(void *param)
+ 	spin_unlock_irqrestore(&p->port.lock, flags);
+ }
+ 
+-static void __dma_rx_complete(void *param)
++static void __dma_rx_complete(struct uart_8250_port *p)
+ {
+-	struct uart_8250_port	*p = param;
+ 	struct uart_8250_dma	*dma = p->dma;
+ 	struct tty_port		*tty_port = &p->port.state->port;
+ 	struct dma_tx_state	state;
+@@ -57,6 +56,20 @@ static void __dma_rx_complete(void *param)
+ 	tty_flip_buffer_push(tty_port);
+ }
+ 
++static void dma_rx_complete(void *param)
++{
++	struct uart_8250_port *p = param;
++	struct uart_8250_dma *dma = p->dma;
++	unsigned long flags;
++
++	__dma_rx_complete(p);
++
++	spin_lock_irqsave(&p->port.lock, flags);
++	if (!dma->rx_running && (serial_lsr_in(p) & UART_LSR_DR))
++		p->dma->rx_dma(p);
++	spin_unlock_irqrestore(&p->port.lock, flags);
++}
++
+ int serial8250_tx_dma(struct uart_8250_port *p)
+ {
+ 	struct uart_8250_dma		*dma = p->dma;
+@@ -130,7 +143,7 @@ int serial8250_rx_dma(struct uart_8250_port *p)
+ 		return -EBUSY;
+ 
+ 	dma->rx_running = 1;
+-	desc->callback = __dma_rx_complete;
++	desc->callback = dma_rx_complete;
+ 	desc->callback_param = p;
+ 
+ 	dma->rx_cookie = dmaengine_submit(desc);
+-- 
+2.30.2
 
-
-Pozdrawiam
-Adam Charachuta
