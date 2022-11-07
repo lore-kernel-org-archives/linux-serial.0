@@ -2,107 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860DEC4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 07:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80AB5C43217
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 08:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231327AbiKGHon (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 02:44:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        id S230510AbiKGIro (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 03:47:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiKGHom (ORCPT
+        with ESMTP id S230475AbiKGIrn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 02:44:42 -0500
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC090D2F9;
-        Sun,  6 Nov 2022 23:44:41 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 6D2AB320098B;
-        Mon,  7 Nov 2022 02:44:37 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Mon, 07 Nov 2022 02:44:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1667807076; x=1667893476; bh=gpvkcbB9aU
-        GK1DAsXCTCzTnpVw31btsSzgZo6/6uIBE=; b=NCV/SlKwFixVlW2RTuHKunS3z0
-        s2j6o2hpeR8/tXBhlTvBXNLa7mrTV/1nDsv2vDwU2zf11e7y6Y/FuONjYwhLqLNO
-        ahl5TPHy+p8if+Y5TvP0j9thmA4i5MoZtEkR5x32REgLSMycnSaS9nNFQVMzVhBS
-        eJwvj5YSMS68OReVfJIZF2CbA+2jdaPY4s4dhWhN4aQga9YIefHR7Ckmu9wkUUv9
-        xBpGj90XC7ci7HDqnvi3RTPiUUzFdnsYBdQKn86xQrzYOML24EkYxhRYla+P4gJz
-        4fVg7fZEQzTcxsutFevuPGaA89Yp6R4PMHL3d2yPRLb52shuBtfoJ0c1A9rQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1667807076; x=1667893476; bh=gpvkcbB9aUGK1DAsXCTCzTnpVw31
-        btsSzgZo6/6uIBE=; b=Eh8RLtb5dQadHLzKZ98rtWZhUHC/RPLPZH5nrfV7dkUF
-        RqlmgUk4uxr3ISpCkd3rWhiqLnUiWiP8x+aD7UYkTau9bEKP5vuC+oABq2o2I51u
-        Zj8ZA77GXeXMGrwVxNSIpXc6QGtCdZWyQDVi9PjIox9loBFdb/O8IBbBaxqQb6sZ
-        RhO8UG6z4KZCRkP4lOsFDvBt6PvoyBENHQCOQfgTWNgKit3AueyP8svg7YK7ccey
-        jb9sPUavVp5uBm0Htagy+zzkuqqY3Smh9oYXvpv1J89H2GiKHHdKX8d5JBlnrGUb
-        dgsshNck1rgiLEi+91nGjDQ5N4vGBjcRS912QCCYZQ==
-X-ME-Sender: <xms:ZLdoY1OT9ItMNqpRWgxzgZl2WWB1-pg3LqMY_NWjM1yP_FYlUQiu-Q>
-    <xme:ZLdoY39o-WXII-0H_EoOR0iBmqRTFvVPc2nFaNv3JWRo9rTwJb0i6zDFtyWMTiXyf
-    QbFgzQzbs2N6bGYRcQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrvdejgdduudduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:ZLdoY0Twh-3seG_wYzXVkO_SSfiDsQndI5dbZV4sghHM_SkBXfLYMg>
-    <xmx:ZLdoYxvRUQB9HQafHSm2kkhogWzCnN-aDhBjxci1pLhpn_48-oLA1w>
-    <xmx:ZLdoY9cO3A9001tECLkgybD3vcGYairMoYYkyfP4yEigoY9Ov1YFYw>
-    <xmx:ZLdoYxPTjA9QL41TSHdHazj8989jA4RPmoh9qv50ORgwD-Sc522VaA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 0034FB60086; Mon,  7 Nov 2022 02:44:35 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1087-g968661d8e1-fm-20221021.001-g968661d8
-Mime-Version: 1.0
-Message-Id: <d293e410-223d-4baa-ba6d-65bc11ab1e55@app.fastmail.com>
-In-Reply-To: <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
-References: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
- <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
-Date:   Mon, 07 Nov 2022 08:44:21 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Jesse Taube" <mr.bossman075@gmail.com>,
-        "NXP Linux Team" <linux-imx@nxp.com>
-Cc:     "Rob Herring" <robh+dt@kernel.org>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Shawn Guo" <shawnguo@kernel.org>,
-        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
-        "Fabio Estevam" <festevam@gmail.com>, aisheng.dong@nxp.com,
-        stefan@agner.ch, "Linus Walleij" <linus.walleij@linaro.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Russell King" <linux@armlinux.org.uk>, abel.vesa@nxp.com,
-        dev@lynxeye.de, "Marcel Ziswiler" <marcel.ziswiler@toradex.com>,
-        tharvey@gateworks.com, leoyang.li@nxp.com, fugang.duan@nxp.com,
-        "Giulio Benetti" <giulio.benetti@benettiengineering.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v1 7/7] ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
-Content-Type: text/plain
+        Mon, 7 Nov 2022 03:47:43 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B971086;
+        Mon,  7 Nov 2022 00:47:42 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B871722453;
+        Mon,  7 Nov 2022 08:47:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1667810860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uFwkIA+hpXfr5X8ZQSucgd5/1QNkOR9JRiXi9mJSFas=;
+        b=eZwujpWyIOaAy0UYMyza2lX7QA78jpGKxfHk1fRaxsXE8fwqguK1mQwDULKSazmwqaQXX2
+        uBbL1xmlg+cHjXsP311tnDEoivhxnXrLtVIJK3xfSuROzdF79N6UrHWBo6tOh0/dups3Ko
+        93c0iG4nvmF/4X7W8OULty2Go+EpiUQ=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 991672C141;
+        Mon,  7 Nov 2022 08:47:38 +0000 (UTC)
+Date:   Mon, 7 Nov 2022 09:47:38 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Doug Anderson <dianders@chromium.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 12/38] tty: serial: kgdboc: use
+ console_is_enabled()
+Message-ID: <Y2jGKnSw02QLecx+@alley>
+References: <20221019145600.1282823-1-john.ogness@linutronix.de>
+ <20221019145600.1282823-13-john.ogness@linutronix.de>
+ <CAD=FV=VFxKL=sOMdhyHrgy2JOtzKJdOe4euwZRRAK7P-rNVjuQ@mail.gmail.com>
+ <CAD=FV=WF2S9wQ6uR+VKU4EfDTVd0JnKkuU3Wyfo6P8E_FouebQ@mail.gmail.com>
+ <87czagf8hf.fsf@jogness.linutronix.de>
+ <87bkpm7kp8.fsf@jogness.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87bkpm7kp8.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 7, 2022, at 08:15, Jesse Taube wrote:
-> Remove unused compatibles from i.MXRT1050.dtsi.
-> Change GPT clock-names to match documentation.
->
-> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+On Fri 2022-11-04 17:29:15, John Ogness wrote:
+> On 2022-10-24, Doug Anderson <dianders@chromium.org> wrote:
+> > It actually only holds console_list_lock() even at the end of the
+> > series. Still, it seems weird that we're declaring the `data_race` on
+> > CON_ENABLED but not CON_BOOT ?
+> 
+> For my upcoming v3 I decided to drop this patch and will keep the
+> existing direct reading of @flags. Instead of this patch, for v3 the
+> comment will additionally mention why @flags is allowed to be directly
+> read:
+> 
+> /*
+>  * Hold the console_lock to guarantee that no consoles are
+              ^^^^^^^^^^^^
+>  * unregistered until the kgdboc_earlycon setup is complete.
 
-Can you make sure your changelog texts explain why you do this?
-Are they fundamentally different from the devices you had
-claimed to be compatible with that need a different driver,
-or are there drivers in the field that bind to the wrong
-string first?
+My understanding is that this is synchronized by console_list_lock.
+Or do I miss something?
 
-       Arnd
+>  * Trapping the exit() callback relies on exit() not being
+>  * called until the trap is setup. This also allows safe
+>  * traversal of the console list and race-free reading of @flags.
+>  */
+
+Best Regards,
+Petr
