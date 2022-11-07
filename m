@@ -2,73 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A66C433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 06:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA6CC43217
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 07:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230448AbiKGGYk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 01:24:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
+        id S230365AbiKGHPP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 02:15:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbiKGGYi (ORCPT
+        with ESMTP id S230509AbiKGHPO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 01:24:38 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F25B10B5A;
-        Sun,  6 Nov 2022 22:24:35 -0800 (PST)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N5LmW53LHzRp42;
-        Mon,  7 Nov 2022 14:24:27 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 7 Nov 2022 14:24:33 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <krzysztof.kozlowski@linaro.org>, <alim.akhtar@samsung.com>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <ben-linux@fluff.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.or>
-Subject: [PATCH] tty: serial: samsung_tty: Fix clk resource leak issue
-Date:   Mon, 7 Nov 2022 14:21:20 +0800
-Message-ID: <20221107062120.20321-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 7 Nov 2022 02:15:14 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EF713D14;
+        Sun,  6 Nov 2022 23:15:13 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id mi9so7538428qvb.8;
+        Sun, 06 Nov 2022 23:15:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1ConCPo0JgzXnifvtHayx2cdD1tHDcQM3uZHVa6AUFo=;
+        b=GjXZhSSi7DJnPZOo9Qxid2itQILmmID1uNtDj50BdEN01L7zxOkmFuyFsJ0JEQGVJ+
+         knabDzCESRfscOGUdl6W1EGv5L8mgudREwnp2YAs/wqWpJHw8+VH3JWJg4NQEe639TU8
+         HEsRCHx27dY32oSDO7tSWb04Vma1WNS13uShoFsGXIWdYbiD4gielxuLPoyPtgoVs3Of
+         ubvwgh5ZosO1eBKMQSHpFnI3Jp6ddnqoQ0+INYbN/LOehd5yrCwFvtkE5RL2Dm+njSwB
+         64BmxL/4eSt3bxGs1zW1MFwFdmlMmG98HFUYBsDUKIsBpXlbRr9TG419brH7SbofQxx4
+         8JuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1ConCPo0JgzXnifvtHayx2cdD1tHDcQM3uZHVa6AUFo=;
+        b=GnI1jTZ2yxA4QVoSdpzwMb+xIR6YMBVkRWF3gMkPLhz9KZF1PDUYGgx2B4vYE/nKVe
+         /psdl2URUdzdGov9tOM/8sfM+QMFBKYRmwQTw50nxuL8APMWRa5UAsqthh5515I7J2Dc
+         687V+Uvlr6/pU+FqIMeFG8vftdZnMMKWgtj5RZP8aUsapOj8y4OQYBaNTb3PrbTbHugs
+         1r4rN9KcjhjwdvuZipn9ZgMzId/o4dIUACRBpFOwQnrnOoUdRP20wZaHSYLGna6KMcM+
+         sXTLftA/2xF9hahDRV5IfQxVzLNN84pBAYcntr5wT4UIk9E/C106+RwHyTlm52Htp/fy
+         PVLg==
+X-Gm-Message-State: ACrzQf0TcVtJU6iLyA6MInflvKAQ83vpjFQfHT/TccJ9jHEALPOu8IhU
+        1ybps8abI4zL6n9Wh0jcNGoBZH8P4T0=
+X-Google-Smtp-Source: AMsMyM6/9iKIN29/SQteS8iyAnmP0Ri9UTD+kzyEPbhKrlCLTG0MOAkrwwnN7PuD9Jy6OjM2fgk7JA==
+X-Received: by 2002:a05:6214:19cb:b0:4bb:6a28:83bc with SMTP id j11-20020a05621419cb00b004bb6a2883bcmr44021707qvc.102.1667805313040;
+        Sun, 06 Nov 2022 23:15:13 -0800 (PST)
+Received: from jesse-desktop.jtp-bos.lab (pool-108-26-185-122.bstnma.fios.verizon.net. [108.26.185.122])
+        by smtp.gmail.com with ESMTPSA id br8-20020a05620a460800b006cf38fd659asm6318428qkb.103.2022.11.06.23.15.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Nov 2022 23:15:12 -0800 (PST)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+Cc:     robh+dt@kernel.org, sboyd@kernel.org, shawnguo@kernel.org,
+        kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, linux@armlinux.org.uk,
+        abel.vesa@nxp.com, dev@lynxeye.de, marcel.ziswiler@toradex.com,
+        tharvey@gateworks.com, leoyang.li@nxp.com, fugang.duan@nxp.com,
+        Mr.Bossman075@gmail.com, giulio.benetti@benettiengineering.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v1 0/7] Clean-up and documentation for i.MXRT1050
+Date:   Mon,  7 Nov 2022 02:15:04 -0500
+Message-Id: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In the s3c24xx_serial_get_options(), calling clk_get() without clk_put()
-will cause clk resource leak issue, this patch fixes it.
+During the initial commit of i.MXRT1050
+many of the DT docs were missing; this patch adds them.
+The commit also adds docs for i.MXRT1170.
+Clean up dtsi.
+fix all the naming of pins in pinctrl,
+wrong due to a miscommunication.
 
-Fixes: b497549a035c ("[ARM] S3C24XX: Split serial driver into core and per-cpu drivers")
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- drivers/tty/serial/samsung_tty.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Jesse Taube (7):
+  dt-bindings: arm: imx: Add i.MXRT compatible Documentation
+  dt-bindings: pinctrl: Fix file path for pinfunc include
+  dt-bindings: timer: gpt: Add i.MXRT compatible Documentation
+  dt-bindings: serial: fsl-lpuart: add i.MXRT1170 compatible
+  dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT1170 compatible
+  pinctrl: freescale: Fix i.MXRT1050 pad names
+  ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 77d1363029f5..8a3bb9832172 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2529,9 +2529,10 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 		sprintf(clk_name, "clk_uart_baud%d", clk_sel);
- 
- 		clk = clk_get(port->dev, clk_name);
--		if (!IS_ERR(clk))
-+		if (!IS_ERR(clk)) {
- 			rate = clk_get_rate(clk);
--		else
-+			clk_put(clk);
-+		} else
- 			rate = 1;
- 
- 		*baud = rate / (16 * (ubrdiv + 1));
+ .../devicetree/bindings/arm/fsl.yaml          |  12 +
+ .../bindings/mmc/fsl-imx-esdhc.yaml           |   4 +
+ .../bindings/pinctrl/fsl,imxrt1050.yaml       |   2 +-
+ .../bindings/serial/fsl-lpuart.yaml           |   3 +
+ .../devicetree/bindings/timer/fsl,imxgpt.yaml |   2 +
+ arch/arm/boot/dts/imxrt1050.dtsi              |  11 +-
+ drivers/pinctrl/freescale/pinctrl-imxrt1050.c | 546 ++++++++----------
+ 7 files changed, 280 insertions(+), 300 deletions(-)
+
 -- 
-2.17.1
+2.37.2
 
