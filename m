@@ -2,109 +2,79 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A4DC4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 15:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595AAC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 17:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbiKGPKC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 10:10:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
+        id S231733AbiKGRPK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 12:15:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232726AbiKGPKA (ORCPT
+        with ESMTP id S231350AbiKGRPK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 10:10:00 -0500
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EF11DDE0;
-        Mon,  7 Nov 2022 07:09:58 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id c8so8251102qvn.10;
-        Mon, 07 Nov 2022 07:09:58 -0800 (PST)
+        Mon, 7 Nov 2022 12:15:10 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D5D1C42C;
+        Mon,  7 Nov 2022 09:15:09 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id x18so7558789qki.4;
+        Mon, 07 Nov 2022 09:15:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:user-agent:mime-version:date:message-id:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=xcR9lfWxQYYggutBYXX8jFDllzL5dvH/OMCsAac2+rw=;
-        b=AcAy4kj7xO7cxMUOheawQ40hciY65r2N0nwsNhsKmei8MAsBW05Y2mZXSzvF3iKLTL
-         RZPpjGzhVEJXVKYELaR499rXN4uWVp7jKPzuSgHdhLTKb4ZGgHZ38+K5TOe6DXywhqfB
-         kkagoojERWS6DOKPTyUYlBhXDi8wK3ZSStt6DnDL1n745Ky+gE64pzVvaNahmgECY+eM
-         sc8FRKWkwH1Yzfh33NBpVz4R3hMefG5ax+XM1wHJkydVlnpe/p26SnOXEGVt072V0Icf
-         ib3Egmk6Hhq9CYGt3+o7RFiN68F/upDfNYSxSPJp5wihuo9BRZSzLZAXWGySTIjuJ3Eo
-         xD6Q==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lNZBxRCT6IoAOSKA4oKxRQJpHQcbfNkzKSkfJsFKok8=;
+        b=qRICBuBNJv6NB+1PB2j41AL/m8SvYi7+EvVl85EQCCNPH/+jQEK9uTAyfj945g1WMU
+         rBWhD5wZfyr4Bs24XemL3APERdst6BR/i0Iz1QpaKX0Nn02tXF8ApsB4PjVgcKes//co
+         jhVCbO5K/KSZPQ7D2dSW2qm4wTgHCtXT3CYxm+N08uVSS6fFbiblth8cxKkkWtMVjSsO
+         DfdPr6HEbvHryUdo8kTACRaMIqVRfQZtMXrO0GI8KuzUD10QAtdJReVX7FdXWd+J5jBB
+         GTRMp5f674A2nePjRtwpdF3a23kzs7O26Vm7ReVa47Nw42JVc76B1WeRBJYSspkNMIEA
+         5JKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xcR9lfWxQYYggutBYXX8jFDllzL5dvH/OMCsAac2+rw=;
-        b=rIQFpb+7JyRhlSZ6t8M3NFOY+8XVbL9f2XDgD6fbT9Z3NShyJtjfTwnGSFnStf/vHO
-         WHoC11FRkqAUuFyLrZ5nUcfxVg7a4/tXnFOA+g2uT22o3bMhN5ISVoCr4xNb+qpzROa/
-         NNnXQIURoVek/hCPvbZ2oWLSIELOsW2GPbFJcCwj3GRTT28PxzylttP+l3IZ7bvwN7QU
-         +QhoSK7y1bQW2jSivEpc9t+5UkUgVhdEN6tUHerlTV0ZOcydhGADQvudHoGf0LR2OnGt
-         6xZHGCOT5N4LZ1tD287G9A8dYmZYqyUs4CWODWQ7+9CkFOd9GyvjWeC+fHG2q8iAR8X9
-         aeAQ==
-X-Gm-Message-State: ACrzQf3vBmpeyMS+0t5+gSvoXnFeBvIFxgcD12x4PmMrQb+I+Mbfu+Qm
-        gW23gdtYN3VVBiip3AWmmWQ=
-X-Google-Smtp-Source: AMsMyM6aAFJE1en6KQCXeSWQDoqCPBynXxktK9qfeKbN5Zs3+uBYUavcNlBG6peXGVBkshXgPkVDlg==
-X-Received: by 2002:a05:6214:19ea:b0:4bc:1388:8d7c with SMTP id q10-20020a05621419ea00b004bc13888d7cmr30781708qvc.84.1667833797183;
-        Mon, 07 Nov 2022 07:09:57 -0800 (PST)
-Received: from [10.248.12.149] ([129.63.248.1])
-        by smtp.gmail.com with ESMTPSA id v22-20020a05620a441600b006eeaf9160d6sm7169680qkp.24.2022.11.07.07.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Nov 2022 07:09:56 -0800 (PST)
-From:   Jesse Taube <mr.bossman075@gmail.com>
-X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
-Message-ID: <ef5d4f48-71b9-2d5c-37f4-7a029a32a41b@gmail.com>
-Date:   Mon, 7 Nov 2022 10:09:55 -0500
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lNZBxRCT6IoAOSKA4oKxRQJpHQcbfNkzKSkfJsFKok8=;
+        b=X/K8V3rKDgcNXOIiC5Srov4GgXdxg1tQYkiZ50Kd5pPRw8eGbW06pEXbJLDY/I9Ib5
+         kCk1mc+bTWrAdV3n+eng7O7utCBNW5GsSi8XRbR8VSmMfFFqEH0AqQFU7B/T9EN9y9UK
+         Y8vzPUbyxJ7bv0rSzxlm1AP41N+hPqXgY3m6raLGJBhwile96mksv5dRp920bdn84XHW
+         jLh78Pa5JJR0cj7mSE9vsmWlvgTnCWY9Xs6LVWHU8BbzWg3sC7AffgJbogNF+PeO9as4
+         fkBDVwypAPct40VGLPIubPh/AbAta8JBwCjrneDp/dNnu8icAWG0gtzNO+Y3IdzJCDgq
+         H2RA==
+X-Gm-Message-State: ACrzQf1d+T5FQKQBn1iUErDoFbks+f0GhSH/djcjnhndR74F0lz4rsYn
+        N1JxAeKVWfAPdlY57Vn3Qt7s1Sr9eQkaYw==
+X-Google-Smtp-Source: AMsMyM6Fm9D00A5eYTrA5OD7zVWM0jWQTjM1Qkkzrb+Cs++Ch/5U1B6aI2DpxcQPvwgH8VkzE6I1IA==
+X-Received: by 2002:a05:620a:15ba:b0:6fa:ae91:b2b7 with SMTP id f26-20020a05620a15ba00b006faae91b2b7mr8129203qkk.611.1667841308049;
+        Mon, 07 Nov 2022 09:15:08 -0800 (PST)
+Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
+        by smtp.gmail.com with ESMTPSA id az36-20020a05620a172400b006ce9e880c6fsm7333611qkb.111.2022.11.07.09.15.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Nov 2022 09:15:07 -0800 (PST)
+From:   Gabriel Somlo <gsomlo@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
+        joel@jms.id.au, david.abdurachmanov@sifive.com,
+        florent@enjoy-digital.fr
+Subject: [PATCH v1 0/3] serial: liteuart: add IRQ support
+Date:   Mon,  7 Nov 2022 12:14:57 -0500
+Message-Id: <20221107171500.2537938-1-gsomlo@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH v1 7/7] ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
-To:     Arnd Bergmann <arnd@arndb.de>, NXP Linux Team <linux-imx@nxp.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, aisheng.dong@nxp.com,
-        stefan@agner.ch, Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>, abel.vesa@nxp.com,
-        dev@lynxeye.de, Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        tharvey@gateworks.com, leoyang.li@nxp.com, fugang.duan@nxp.com,
-        Giulio Benetti <giulio.benetti@benettiengineering.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-serial@vger.kernel.org
-References: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
- <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
- <d293e410-223d-4baa-ba6d-65bc11ab1e55@app.fastmail.com>
-Content-Language: en-US
-In-Reply-To: <d293e410-223d-4baa-ba6d-65bc11ab1e55@app.fastmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Add IRQ support to the LiteX LiteUART serial interface.
 
+Gabriel Somlo (3):
+  serial: liteuart: cosmetic changes
+  serial: liteuart: separate RX loop from poll timer
+  serial: liteuart: add IRQ support
 
-On 11/7/22 02:44, Arnd Bergmann wrote:
-> On Mon, Nov 7, 2022, at 08:15, Jesse Taube wrote:
->> Remove unused compatibles from i.MXRT1050.dtsi.
->> Change GPT clock-names to match documentation.
->>
->> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
->> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> 
-> Can you make sure your changelog texts explain why you do this?
-Yes, sorry I wasn't clear.
-> Are they fundamentally different from the devices you had
-> claimed to be compatible with that need a different driver,
-UART and SDHC had drivers added which are better fit.
-The GPT binds to imx6dl which is also the same as imx6sl.
-> or are there drivers in the field that bind to the wrong
-> string first?
-I don't understand?
+ drivers/tty/serial/liteuart.c | 124 ++++++++++++++++++++++------------
+ 1 file changed, 81 insertions(+), 43 deletions(-)
 
-Thanks,
-Jesse Taube
-> 
->        Arnd
+-- 
+2.37.3
+
