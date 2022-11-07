@@ -2,99 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7504CC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 11:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 113A8C433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 12:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231667AbiKGLup (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 06:50:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
+        id S231476AbiKGMDi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Nov 2022 07:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbiKGLuo (ORCPT
+        with ESMTP id S232027AbiKGMDg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 06:50:44 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F00941A38E;
-        Mon,  7 Nov 2022 03:50:43 -0800 (PST)
+        Mon, 7 Nov 2022 07:03:36 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229F5AE49;
+        Mon,  7 Nov 2022 04:03:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667821844; x=1699357844;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=XpXWt8wuTNay08we0kpVyVUQSkZOZQKYsYrZtuRP7q8=;
-  b=I9mZzES2MP2IwtQGlczr15X9hIlrpg9wCuvekHNRmup1SvQakH2Uar2t
-   mk7j0BFpw0B158p+EGBvkhfnVnbpepDCVdEaK8iynOiQrMdtLsFTwUsJ5
-   +jRoLQ2BKfSvv5S4DWt3bkI81vS0JzvARw+D5m8AaaB+d62k6fIY4TeZ+
-   1czgsYLZvuKl3NoC9BuUW5/xzZajOJiuVqLHC7hZ9/F6RxC96j6HBOZ7l
-   7iKQfh8vnyt8Wz7Fcj6BZY8crM7+E9PYXD3IQ+6/HC+orkqKfgGpmvJBo
-   FfdQVHoJ+WZuDKycHP8zLPMAJNq8hiCqRGjLhIrCXza6HzhNsinBu0vtI
+  t=1667822616; x=1699358616;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Z1kJ88PxVSnKX0ubwde7m8W4wYIIR6Ene1mnU2DV/8c=;
+  b=MCcP5KWLULmGwShwZSmvg2XYy/njSelSzi4F6W1Nasqj/RiiGL/1TdYT
+   vO+5t6hiy1oeHsv7+pLDFtYgxTFZd7DDrG24V8YA/CjY5mkw33wTDJQzS
+   EItYLANt/+/bI5ijruKyaiVMNzFDDh87q2inV7BrFsRelPYDJjrC5USiK
+   0r7yyOYPkleBGddgNMqK5G12VRx34C2VbKBH3FzbMLRoqgJvkngBR0gIO
+   takTxyoMPWNBqn+vo129wY7iW/mVAsheADY4NzCKCHnLYhC9GCdB7g+D4
+   81zV7U3NMMQpaZFEtkHVTAgfy0Lc9zOTMlx73XlAOmVPB7l+OpaK/I32t
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="311525697"
+X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="312158411"
 X-IronPort-AV: E=Sophos;i="5.96,143,1665471600"; 
-   d="scan'208";a="311525697"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 03:50:43 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="635880143"
+   d="scan'208";a="312158411"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 04:03:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10523"; a="881047014"
 X-IronPort-AV: E=Sophos;i="5.96,143,1665471600"; 
-   d="scan'208";a="635880143"
-Received: from gschoede-mobl1.ger.corp.intel.com ([10.252.46.211])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2022 03:50:41 -0800
-Date:   Mon, 7 Nov 2022 13:50:38 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+   d="scan'208";a="881047014"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 07 Nov 2022 04:03:31 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1os0qg-008cPz-1R;
+        Mon, 07 Nov 2022 14:03:30 +0200
+Date:   Mon, 7 Nov 2022 14:03:30 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?utf-8?Q?J=EF=BF=BDrvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH 0/4] 8250: DMA Fixes
-In-Reply-To: <Y2js3Xsq1Fmz1mTq@smile.fi.intel.com>
-Message-ID: <b66aa1-50ab-ecc-1633-d6e83f5cd925@linux.intel.com>
-References: <20221107110708.58223-1-ilpo.jarvinen@linux.intel.com> <Y2js3Xsq1Fmz1mTq@smile.fi.intel.com>
+Message-ID: <Y2j0EmqkH8f57q9N@smile.fi.intel.com>
+References: <20221107110708.58223-1-ilpo.jarvinen@linux.intel.com>
+ <Y2js3Xsq1Fmz1mTq@smile.fi.intel.com>
+ <b66aa1-50ab-ecc-1633-d6e83f5cd925@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-958723828-1667820915=:56477"
-Content-ID: <f6d7d065-7c86-6b86-28bc-3114c847489f@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b66aa1-50ab-ecc-1633-d6e83f5cd925@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-958723828-1667820915=:56477
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <3087fb9-ada7-8275-9bc3-a0b62ca08322@linux.intel.com>
-
-On Mon, 7 Nov 2022, Andy Shevchenko wrote:
-
-> On Mon, Nov 07, 2022 at 01:07:04PM +0200, Ilpo Järvinen wrote:
-> > Here are a number of 8250 DMA related fixes. The last one seems the
-> > most serious problem able to corrupt the payload ordering.
+On Mon, Nov 07, 2022 at 01:50:38PM +0200, Ilpo Jï¿½rvinen wrote:
+> On Mon, 7 Nov 2022, Andy Shevchenko wrote:
+> 
+> > On Mon, Nov 07, 2022 at 01:07:04PM +0200, Ilpo Järvinen wrote:
+> > > Here are a number of 8250 DMA related fixes. The last one seems the
+> > > most serious problem able to corrupt the payload ordering.
+> > > 
+> > > Ilpo Järvinen (4):
+> > >   serial: 8250: Fall back to non-DMA Rx if IIR_RDI occurs
 > > 
-> > Ilpo Järvinen (4):
-> >   serial: 8250: Fall back to non-DMA Rx if IIR_RDI occurs
+> > 8250_port?
+> > 
+> > >   serial: 8250_lpss: Configure DMA also w/o DMA filter
+> > >   serial: 8250_lpss: Use 16B DMA burst with Elkhart Lake
+> > >   serial: 8250: Flush DMA Rx on RLSI
+> > 
+> > 8250_port?
 > 
-> 8250_port?
-> 
-> >   serial: 8250_lpss: Configure DMA also w/o DMA filter
-> >   serial: 8250_lpss: Use 16B DMA burst with Elkhart Lake
-> >   serial: 8250: Flush DMA Rx on RLSI
-> 
-> 8250_port?
+> Why?
 
-Why?
+> To me this 8250_core/port split is still integral part of the same 
+> 8250 even if they're in the end technically loaded into different modules
+> or the code is in a different file. There's even some trickery to access 
+> internals of the other part to workaround the circular module dependency 
+> logic that would otherwise prevent the split (like we learned not so long 
+> time ago with that setup_irq change).
 
-To me this 8250_core/port split is still integral part of the same 
-8250 even if they're in the end technically loaded into different modules
-or the code is in a different file. There's even some trickery to access 
-internals of the other part to workaround the circular module dependency 
-logic that would otherwise prevent the split (like we learned not so long 
-time ago with that setup_irq change).
+> I can start to use 8250_port if you insist but it seems pointless 5 extra 
+> characters out from a resource that is scarse to begin with, IMHO (the 
+> summary line is not that long).
 
-I can start to use 8250_port if you insist but it seems pointless 5 extra 
-characters out from a resource that is scarse to begin with, IMHO (the 
-summary line is not that long).
-
+No strong opinion here, I just follow (in my patches) the following logic:
+- if it touches a single file, I use full prefix,
+- otherwise I use 8250
 
 -- 
- i.
---8323329-958723828-1667820915=:56477--
+With Best Regards,
+Andy Shevchenko
+
+
