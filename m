@@ -2,146 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD18DC4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Nov 2022 20:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7C9C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Nov 2022 08:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232585AbiKGU1g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Nov 2022 15:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57464 "EHLO
+        id S233425AbiKHIqg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Nov 2022 03:46:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231906AbiKGU1f (ORCPT
+        with ESMTP id S232654AbiKHIqf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Nov 2022 15:27:35 -0500
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD18DD2;
-        Mon,  7 Nov 2022 12:27:32 -0800 (PST)
-Received: by mail-oi1-f180.google.com with SMTP id q186so1017268oia.9;
-        Mon, 07 Nov 2022 12:27:32 -0800 (PST)
+        Tue, 8 Nov 2022 03:46:35 -0500
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F886328;
+        Tue,  8 Nov 2022 00:46:35 -0800 (PST)
+Received: by mail-qk1-f178.google.com with SMTP id g10so8697775qkl.6;
+        Tue, 08 Nov 2022 00:46:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3H8ClgcI0ymBxPx6cLH6CRePq5Du7IS4PnD3S+Hqfq4=;
-        b=FhM2r0moynYABUs30a6LIPdwZKa2qeNekrGqhJjg24gFmqZtuSTQ0Oc6La6LgZ4oGw
-         rz6vRCi3Lfwj898zbqoG4SHwDzW+fNvjZIQ+WlJAWKifS97tV8FstD4KbpYy0n5v0KDx
-         fWqFwWioxf4qnqoBX0D6VbknQJSEmjGtXOUQEqgvNYbiXzjkz40hKjNbzbT0I7Dn7QtE
-         plZH9zIqZWO/YiW1JDGAbS4J33HLe52+7ft9G5NsSV+VDr9PETiXE80jekJK4mQ8gkDO
-         VzLH8wiBVKp4olaCLMqorDdktBMjJ4iuxGl9cXf7gQwvnDQmDIR8WlKSoGYcq3Y+4WS6
-         HGqA==
-X-Gm-Message-State: ANoB5pmx30oSizdY/sgvZ5Q7WO0I6UCZkn/AHbldQBRsi1qX5a6fqKNZ
-        9smJkPe0943N8CfZ2omRjg==
-X-Google-Smtp-Source: AA0mqf5BdaFcCRbC0ePcKnRo+beRxTjUbIE7EHAOLUExpIWMwDMolbzjdYfVcU5qfnQy3dYRj5VFAQ==
-X-Received: by 2002:a05:6808:1787:b0:35a:7f71:c99c with SMTP id bg7-20020a056808178700b0035a7f71c99cmr5275091oib.18.1667852851754;
-        Mon, 07 Nov 2022 12:27:31 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id fp19-20020a056870659300b0013b8b3710bfsm3599492oab.13.2022.11.07.12.27.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 12:27:31 -0800 (PST)
-Received: (nullmailer pid 1585282 invoked by uid 1000);
-        Mon, 07 Nov 2022 20:27:33 -0000
-Date:   Mon, 7 Nov 2022 14:27:33 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: arm,sbsa-uart: Convert to
- json-schema
-Message-ID: <20221107202733.GA1574416-robh@kernel.org>
-References: <20221104104303.1534876-1-thierry.reding@gmail.com>
- <0f97ef6c-234e-d677-75ba-11b22586c95e@linaro.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BFaOixIsnZB6xQs+v+v1PC0UnPOGoBPbA99XLP2d//4=;
+        b=r1BvGxGhsEKJ0CtZAyIY3Oklp5eBfkr221XBOxriBIAaTtpe02QtuPCCAdqKVdAZ53
+         yWTPljVS235e7FYabNmxgpMiD0NbcEtrqPafqan7LVg3S49iOrpVEeacglhPZI1/3rHT
+         VgHw7Yup/AfiPMromzkHAyl+V2DQPIGYRO/qOnIlSpPzMH9ijHCegI3dh2f98na+v6tV
+         D7C5S/vI05Sjvj2KVIW3+VJDpKAeZWPZDQEF7tpaGYyO8xZqvllF1My5ogXU3DX9tDIw
+         TJCDbPx+nxca960kKbmOWbL6oy+QLwXuESG9YVbGofoGiNxP/5VrOtlzAP/dyyc7+Lpx
+         nzcg==
+X-Gm-Message-State: ANoB5pmjsBapCdT5WEBOh8xpqur8gIJmVoCvKIBnjElbbO/OBTfZCs9T
+        UDAGYO62p5Q5+lFe6zKgQmIARlWQvQf347rV
+X-Google-Smtp-Source: AA0mqf7JVMnD9YVCtiPej7HiTR2ho/IJ0963D9akB9Oxol1Lnn4D0t/2KVeYaN8+aiT1QO+t2L0Cag==
+X-Received: by 2002:ae9:f008:0:b0:6fa:d7db:72b4 with SMTP id l8-20020ae9f008000000b006fad7db72b4mr6818918qkg.473.1667897194205;
+        Tue, 08 Nov 2022 00:46:34 -0800 (PST)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id u12-20020a05620a084c00b006fa4cefccd6sm8643966qku.13.2022.11.08.00.46.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Nov 2022 00:46:32 -0800 (PST)
+Received: by mail-yb1-f179.google.com with SMTP id 131so12189162ybl.3;
+        Tue, 08 Nov 2022 00:46:31 -0800 (PST)
+X-Received: by 2002:a05:6902:503:b0:6cf:c510:6a23 with SMTP id
+ x3-20020a056902050300b006cfc5106a23mr34694308ybs.380.1667897191488; Tue, 08
+ Nov 2022 00:46:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0f97ef6c-234e-d677-75ba-11b22586c95e@linaro.org>
+References: <20221107141638.3790965-1-john.ogness@linutronix.de> <20221107141638.3790965-24-john.ogness@linutronix.de>
+In-Reply-To: <20221107141638.3790965-24-john.ogness@linutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 8 Nov 2022 09:46:20 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXuBh1PznFggpwSanBtHu9=ngJkVCRzdZVnjxWs2+cbxw@mail.gmail.com>
+Message-ID: <CAMuHMdXuBh1PznFggpwSanBtHu9=ngJkVCRzdZVnjxWs2+cbxw@mail.gmail.com>
+Subject: Re: [PATCH printk v3 23/40] serial_core: replace uart_console_enabled()
+ with uart_console_registered()
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tony Lindgren <tony@atomide.com>,
+        Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 04, 2022 at 10:25:42AM -0400, Krzysztof Kozlowski wrote:
-> On 04/11/2022 06:43, Thierry Reding wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> > 
-> > Convert the ARM SBSA UART device tree bindings from the free-form text
-> > format to json-schema.
-> > 
-> > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > ---
-> >  .../bindings/serial/arm,sbsa-uart.yaml        | 37 +++++++++++++++++++
-> >  .../bindings/serial/arm_sbsa_uart.txt         | 10 -----
-> >  2 files changed, 37 insertions(+), 10 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
-> >  delete mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+Hi John,
 
-Note that NXP LS2160a has a warning with this. The warning is correct 
-because both PL011 and SBSA UART is wrong IMO. The question is which one 
-is it really. I would assume someone went with SBSA for some reason. The 
-pl011 compatible should be ignored given 'arm,primecell' is missing.
+On Mon, Nov 7, 2022 at 3:16 PM John Ogness <john.ogness@linutronix.de> wrote:
+> All users of uart_console_enabled() really want to know if a console
+> is registered. It is not reliable to check for CON_ENABLED in order
+> to identify if a console is registered. Use console_is_registered()
+> instead.
+>
+> A _locked() variant is provided because uart_set_options() is always
+> called with the console_list_lock held and must check if a console
+> is registered in order to synchronize with kgdboc.
+>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -743,9 +743,20 @@ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
+>  static inline int setup_earlycon(char *buf) { return 0; }
+>  #endif
+>
+> -static inline bool uart_console_enabled(struct uart_port *port)
+> +/* Variant of uart_console_registered() when the console_list_lock is held. */
+> +static inline bool uart_console_registered_locked(struct uart_port *port)
+>  {
+> -       return uart_console(port) && (port->cons->flags & CON_ENABLED);
+> +       return uart_console(port) && console_is_registered_locked(port->cons);
+> +}
+> +
+> +static inline bool uart_console_registered(struct uart_port *port)
+> +{
+> +       bool ret;
+> +
+> +       console_list_lock();
+> +       ret = uart_console_registered_locked(port);
+> +       console_list_unlock();
+> +       return ret;
+
+Perhaps
+
+    return uart_console(port) && console_is_registered();
+
+to avoid locking the list when the first condition is not true?
+
+>  }
 
 
-> > diff --git a/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml b/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
-> > new file mode 100644
-> > index 000000000000..afaa1ef7f2e6
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
-> > @@ -0,0 +1,37 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/arm,sbsa-uart.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: ARM SBSA defined generic UART
-> > +
-> > +maintainers:
-> > +  - Rob Herring <robh@kernel.org>
-> > +  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> This shouldn't be Greg but someone nothing the hardware. Rob might work,
-> but maybe also Russell who is mentioned in maintainers entry?
+Gr{oetje,eeting}s,
 
-I'm fine with it given I already have pl011 binding.
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-> Please resend with him cced.
-> 
-> > +
-> > +description:
-> > +  This UART uses a subset of the PL011 registers and consequently lives
-> > +  in the PL011 driver. It's baudrate and other communication parameters
-> > +  cannot be adjusted at runtime, so it lacks a clock specifier here.
-
-Differences to PL011 are relavent, but location of the (Linux) driver is 
-not.
-
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: arm,sbsa-uart
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +allOf:
-> > +  - $ref: serial.yaml
-> > +
-> > +unevaluatedProperties: false
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +...
-> 
-> Example would be nice, although it  is not a requirement.
-> 
-> 
-> Best regards,
-> Krzysztof
-> 
-> 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
