@@ -2,157 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620F9C4167B
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Nov 2022 08:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F73C43219
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Nov 2022 11:08:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233682AbiKHIxp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Nov 2022 03:53:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
+        id S234089AbiKHLIj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Nov 2022 06:08:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233087AbiKHIxo (ORCPT
+        with ESMTP id S233995AbiKHLIQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Nov 2022 03:53:44 -0500
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623AC2E6B1;
-        Tue,  8 Nov 2022 00:53:43 -0800 (PST)
-Received: by mail-qt1-f170.google.com with SMTP id fz10so8320076qtb.3;
-        Tue, 08 Nov 2022 00:53:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sMUrTGbsuJBSNskypqc+l16xSCENjcN6xWIa6z6rntY=;
-        b=1KfjDWT0uq6bdoX96LCib9Lnc4qVlUNpdog0kTSOiPg9EOkfKwwlwc9yoXkLG1CTvx
-         Dax4mkNCvQAPqQjdAXOsVNH4BlIdKyr7cU2rwtDRMVTtv+BveVgx61QfX7blfjmGtP7I
-         pVkn8SK9BeCKXPSH3QNmzSkVUAmYP5EIKxcxdxVUdC+0wl6z3DtSsKFassUcrSrzpfk4
-         lGUlLpYWIfyI/Pl3do6Ex0w15MSkKWJm/nF5n7RYqAVQAauqNwNSm0qxlc4lM+FXQLaE
-         8RxWdhwtGhtqUbKi3DsmdRqtDK5zXquwlbIyxl38QMkwlSlmCHLdEL1GhHXyyXJisBiu
-         1OsA==
-X-Gm-Message-State: ACrzQf3TYtgSzd5t4A+lmGYz8qv/Qz6uS6s5gWF8vQ1OLITHYGRrUbJX
-        M6nM6qjrruWlcXTvMco8xKHDW6ufELINtPzC
-X-Google-Smtp-Source: AMsMyM6zdhrGeW2yrJuK1+2Y3Wi9nIWwdegxGARtcMMB3b2UdZwNOW2l5Wu42LH8b4/kTBRrubASOA==
-X-Received: by 2002:ac8:5ad1:0:b0:3a4:ffff:8c59 with SMTP id d17-20020ac85ad1000000b003a4ffff8c59mr41644037qtd.57.1667897622314;
-        Tue, 08 Nov 2022 00:53:42 -0800 (PST)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id w10-20020ac843ca000000b003a4f2510e5dsm7706488qtn.24.2022.11.08.00.53.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Nov 2022 00:53:41 -0800 (PST)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-36ad4cf9132so127693027b3.6;
-        Tue, 08 Nov 2022 00:53:41 -0800 (PST)
-X-Received: by 2002:a0d:e301:0:b0:374:a8ba:99b0 with SMTP id
- m1-20020a0de301000000b00374a8ba99b0mr6095905ywe.358.1667897620819; Tue, 08
- Nov 2022 00:53:40 -0800 (PST)
-MIME-Version: 1.0
-References: <20221107141638.3790965-1-john.ogness@linutronix.de> <20221107141638.3790965-41-john.ogness@linutronix.de>
-In-Reply-To: <20221107141638.3790965-41-john.ogness@linutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Nov 2022 09:53:29 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXZnTaxbezvH=NBz7tbBgiXjj6H5YGv88tVHtYLFxKuag@mail.gmail.com>
-Message-ID: <CAMuHMdXZnTaxbezvH=NBz7tbBgiXjj6H5YGv88tVHtYLFxKuag@mail.gmail.com>
-Subject: Re: [PATCH printk v3 40/40] tty: serial: sh-sci: use setup() callback
- for early console
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Nov 2022 06:08:16 -0500
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FAD47309;
+        Tue,  8 Nov 2022 03:08:05 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id A2CE35C0217;
+        Tue,  8 Nov 2022 06:08:04 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute3.internal (MEProxy); Tue, 08 Nov 2022 06:08:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1667905684; x=1667992084; bh=U2YniFrngs
+        ovR3GGMHxDGF+HfkbcgWA9nLVRmjP0B74=; b=DLZAbHIDGlSTqD5S6iR3/gtAx9
+        eQPOYkplcG08hQDSgSO1gFClIBZ2sG7HpVUj8MRQGSvwr3uX0nWzeaIFqs9BtSV0
+        K6Cha0JZ4bLdlWYZtF6ytoLIqWDEAsB53CrO86XXr0e0n4Og2B/pQ/n6T7NguH3n
+        ZgVhYysiE3e4IahkP7qciaGtVZyg9P1WwqW7kx8iewWSD47Jt1S4eLTkeEpd8aX9
+        JaPh1OeythbWk1w12UGaD65Ah+DzjDVwXD8CLbRxEe/uwEp9nH0Prj5TDfdsKBL5
+        Yfh4kvAiZbUIr3vxHNd51QMOjzK2H0RU5uQXZ1J6MLcCMmmIVHYwj/nva7WQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1667905684; x=1667992084; bh=U2YniFrngsovR3GGMHxDGF+Hfkbc
+        gWA9nLVRmjP0B74=; b=guo9ieRqxDkiVbCiCXSD12kJW79DrE3/LFbw76BjvFvM
+        4OUzzLIX/dE07AIH0AAWU08egIJQ7ch32xAxGofrymLafOsbRHhjUIm6a37pPDpN
+        cDBaSFbbAsIqzSE4xu+gr1WZz1z5xll+m+2Nz1MIwlbmQrPNIRaf3M78dqVb8BMS
+        7H0hoZXWFqBNHFOY0yPXyHvr+V9LJl+7ivf4A8RpAweUKzOnnuPdFMfl/ozcfgfb
+        vZFukuUffMCdMmegB0y0oBbl/qKMswvuwxEM/h4DNixcmQ28IpJiYITK/WJfUH85
+        Zz3R7bPMFAlGHL9EyuPNhJ/cLRA8yg/NV+iBArsDQQ==
+X-ME-Sender: <xms:kzhqYxSRQqupIpfPXyXLRHQN-f7Swmt-t-SiPLc9Qb4nbBbka45vSg>
+    <xme:kzhqY6zZFRhJJTTEe4plBs6MlVt3yMnZ608f1Xn2QSqDkT3aN7jwyrqSZ0DPJbQ_S
+    QVPa-wKNwbdLTgtfLM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvgedrfedtgddvhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
+    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
+    hnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:kzhqY22OzqwTPxWzlMhHiKqQ446U1FI1m5Yy45A9NbLjmnv4P4SJDA>
+    <xmx:kzhqY5D-Rz_VgQ94AH2kjcL5y74K5vL0-T2cPdBJASFgYgnJexgiaA>
+    <xmx:kzhqY6iHYGkZyYz5fovjzvcwG5T3IJmkEi9PqQopFjxW3ERDXIBujg>
+    <xmx:lDhqY1TFWSNJsWkhZe0ejtZAEljf33bOXTw81USZ4MUxfDl5OYgWUQ>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 84808B60086; Tue,  8 Nov 2022 06:08:03 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1115-g8b801eadce-fm-20221102.001-g8b801ead
+Mime-Version: 1.0
+Message-Id: <d5f29c86-4bd8-4550-971e-4e941b1099f2@app.fastmail.com>
+In-Reply-To: <ef5d4f48-71b9-2d5c-37f4-7a029a32a41b@gmail.com>
+References: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
+ <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
+ <d293e410-223d-4baa-ba6d-65bc11ab1e55@app.fastmail.com>
+ <ef5d4f48-71b9-2d5c-37f4-7a029a32a41b@gmail.com>
+Date:   Tue, 08 Nov 2022 12:07:33 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jesse Taube" <mr.bossman075@gmail.com>,
+        "NXP Linux Team" <linux-imx@nxp.com>
+Cc:     "Rob Herring" <robh+dt@kernel.org>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Shawn Guo" <shawnguo@kernel.org>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
+        "Fabio Estevam" <festevam@gmail.com>, aisheng.dong@nxp.com,
+        stefan@agner.ch, "Linus Walleij" <linus.walleij@linaro.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Russell King" <linux@armlinux.org.uk>, abel.vesa@nxp.com,
+        dev@lynxeye.de, "Marcel Ziswiler" <marcel.ziswiler@toradex.com>,
+        tharvey@gateworks.com, leoyang.li@nxp.com, fugang.duan@nxp.com,
+        "Giulio Benetti" <giulio.benetti@benettiengineering.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1 7/7] ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi John,
-
-CC linux-sh (SH-specific code)
-CC linux-renesas-soc (JFYI)
-
-On Mon, Nov 7, 2022 at 3:20 PM John Ogness <john.ogness@linutronix.de> wrote:
-> When setting up the early console, the setup() callback of the
-> regular console is used. It is called manually before registering
-> the early console instead of providing a setup() callback for the
-> early console. This is probably because the early setup needs a
-> different @options during the early stage.
+On Mon, Nov 7, 2022, at 16:09, Jesse Taube wrote:
+> On 11/7/22 02:44, Arnd Bergmann wrote:
+>> On Mon, Nov 7, 2022, at 08:15, Jesse Taube wrote:
+>>> Remove unused compatibles from i.MXRT1050.dtsi.
+>>> Change GPT clock-names to match documentation.
+>>>
+>>> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+>>> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+>> 
+>> Can you make sure your changelog texts explain why you do this?
+> Yes, sorry I wasn't clear.
 >
-> The issue here is that the setup() callback is called without the
-> console_list_lock held and functions such as uart_set_options()
-> expect that.
+>> Are they fundamentally different from the devices you had
+>> claimed to be compatible with that need a different driver,
 >
-> Rather than manually calling the setup() function before registering,
-> provide an early console setup() callback that will use the different
-> early options. This ensures that the error checking, ordering, and
-> locking context when setting up the early console are correct.
->
-> Note that technically the current implementation works because it is
-> only used in early boot. And since the early console setup is
-> performed before registering, it cannot race with anything and thus
-> does not need any locking. However, longterm maintenance is easier
-> when drivers rely on the subsystem API rather than manually
-> implementing steps that could cause breakage in the future.
->
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> UART and SDHC had drivers added which are better fit.
+> The GPT binds to imx6dl which is also the same as imx6sl.
 
-Thanks for your patch!
+Where are those drivers added? Looking at linux-6.1-rc2
+and linux-next, I still see them use the same drivers as
+the original ones, and listing both strings would be the
+preferred method.
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3054,15 +3054,26 @@ static struct console serial_console = {
->  };
->
->  #ifdef CONFIG_SUPERH
-> +static char early_serial_buf[32];
-> +
-> +static int early_serial_console_setup(struct console *co, char *options)
-> +{
-> +       WARN_ON(options);
-> +       /*
-> +        * Use @early_serial_buf because @options will always be
-> +        * NULL at this early stage.
-> +        */
-> +       return serial_console_setup(co, early_serial_buf);
-> +}
-> +
->  static struct console early_serial_console = {
->         .name           = "early_ttySC",
->         .write          = serial_console_write,
-> +       .setup          = early_serial_console_setup,
->         .flags          = CON_PRINTBUFFER,
->         .index          = -1,
->  };
->
-> -static char early_serial_buf[32];
-> -
->  static int sci_probe_earlyprintk(struct platform_device *pdev)
->  {
->         const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
-> @@ -3074,8 +3085,6 @@ static int sci_probe_earlyprintk(struct platform_device *pdev)
->
->         sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
->
-> -       serial_console_setup(&early_serial_console, early_serial_buf);
-> -
->         if (!strstr(early_serial_buf, "keep"))
->                 early_serial_console.flags |= CON_BOOT;
->
-> --
-> 2.30.2
+>> or are there drivers in the field that bind to the wrong
+>> string first?
+> I don't understand?
 
-LGTM, so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+I mean if you had run into the case where you have
+a driver that misbehaves when the fallback string is
+present in addition to the most specific one.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+     Arnd
