@@ -2,93 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B978C43219
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Nov 2022 12:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9AEC433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Nov 2022 12:47:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234182AbiKHMUd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Nov 2022 07:20:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        id S234189AbiKHMrX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Nov 2022 07:47:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234153AbiKHMUa (ORCPT
+        with ESMTP id S234079AbiKHMrT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Nov 2022 07:20:30 -0500
+        Tue, 8 Nov 2022 07:47:19 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0795F17A9E;
-        Tue,  8 Nov 2022 04:20:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DF951C29;
+        Tue,  8 Nov 2022 04:47:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667910026; x=1699446026;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vkqZhcPnjGQqDiDQpqIE/N5L7Qt+GaZklcF5cPF1GxM=;
-  b=S04avOY4z2fnKV5eQWl0ii4kD8D9lSBAvdVDho6Sp2LRdnlQxYIaxhNR
-   VKR0Y6QSg37RtQvWqHGEP/nXVWvJN/OQybpjj1yeJb85HKc26reGl9G9Z
-   oCd5lQ9pKgNI5EVZkhRylc9Dit+qIrZYbywfdvkqXMybaxFo7Zuu0mVe8
-   4kMRtV1f8OKc9E4swrC3LVnaJFxNtTig1sCl+HP1CP6O519XM+nP9Wjq0
-   9u17JZnqq6gD0+91fcjTff3Xn44mzNSqeHBQjfwELGEDmo+oRfjcwFR5M
-   CckDC/TJRKKGiX56E1QVQrz82rf2ylyFGRPYnWbqjFTdhC4WHkCOG82Kc
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="374951476"
+  t=1667911638; x=1699447638;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=zvBFCIqzdoTj9UnYmptO+ryXyIdI3ESvdJd9r6IDuZA=;
+  b=SkmUVBJYf6sES4vKCpC6lpcTFsQ3lpgOSOT0HSeWEmOjgMs3YI0cr5Kd
+   F6ztZxuXTdnkBnXA0Z43JHFFsK2kxU5ZNJzPmzgQpnddvzWuhYevO7SXs
+   TO1VKjEmhBIRTpvYa0D7KTnZ1YHVdleGWtwXe/OpXaBnmpxQqS2WLbJq/
+   cA9oWBVBqnCCf4ZmvOvzJUZMPyl3kaFjA3T0eIDOMmYWECXflWaaQECgR
+   yfDzkFMmqSrS7EPSXuHm5TJNQ/gbrb1DlWhrkQ1TTb/trC9EqEpCxeUAE
+   FSHFe4c6LQA2/4kwRO8KSK3yHAa7Pl8cGnyBB9p8cRk1doI19aMDYsThV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="374955747"
 X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
-   d="scan'208";a="374951476"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 04:20:25 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="741932231"
+   d="scan'208";a="374955747"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 04:47:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10524"; a="699910525"
 X-IronPort-AV: E=Sophos;i="5.96,147,1665471600"; 
-   d="scan'208";a="741932231"
-Received: from ppkrause-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.73])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 04:20:23 -0800
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org,
+   d="scan'208";a="699910525"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Nov 2022 04:47:15 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1osO0Y-0098GB-0o;
+        Tue, 08 Nov 2022 14:47:14 +0200
+Date:   Tue, 8 Nov 2022 14:47:13 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Gilles BULOZ <gilles.buloz@kontron.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v2 4/4] serial: 8250: Flush DMA Rx on RLSI
-Date:   Tue,  8 Nov 2022 14:19:52 +0200
-Message-Id: <20221108121952.5497-5-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221108121952.5497-1-ilpo.jarvinen@linux.intel.com>
+        linux-kernel@vger.kernel.org,
+        Gilles BULOZ <gilles.buloz@kontron.com>
+Subject: Re: [PATCH v2 0/4] 8250: DMA Fixes
+Message-ID: <Y2pP0VSW4uSyoqrS@smile.fi.intel.com>
 References: <20221108121952.5497-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20221108121952.5497-1-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Returning true from handle_rx_dma() without flushing DMA first creates
-a data ordering hazard. If DMA Rx has handled any character at the
-point when RLSI occurs, the non-DMA path handles any pending characters
-jumping them ahead of those characters that are pending under DMA.
+On Tue, Nov 08, 2022 at 02:19:48PM +0200, Ilpo Järvinen wrote:
+> Here are a number of 8250 DMA related fixes. The last one seems the
+> most serious problem able to corrupt the payload ordering.
 
-Fixes: 75df022b5f89 ("serial: 8250_dma: Fix RX handling")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_port.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Thank you for the update!
+LGTM,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 92dd18716169..388172289627 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1901,10 +1901,9 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
- 		if (!up->dma->rx_running)
- 			break;
- 		fallthrough;
-+	case UART_IIR_RLSI:
- 	case UART_IIR_RX_TIMEOUT:
- 		serial8250_rx_dma_flush(up);
--		fallthrough;
--	case UART_IIR_RLSI:
- 		return true;
- 	}
- 	return up->dma->rx_dma(up);
+> v2:
+> - Tweak configure logic to match Andy's suggestion
+> - Cleaned up the tags from the oneliner patch
+> 
+> Ilpo Järvinen (4):
+>   serial: 8250: Fall back to non-DMA Rx if IIR_RDI occurs
+>   serial: 8250_lpss: Configure DMA also w/o DMA filter
+>   serial: 8250_lpss: Use 16B DMA burst with Elkhart Lake
+>   serial: 8250: Flush DMA Rx on RLSI
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
