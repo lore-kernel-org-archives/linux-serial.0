@@ -2,142 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3142CC433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE13C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiKIMCK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 07:02:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
+        id S229533AbiKIMCw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 07:02:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiKIMCJ (ORCPT
+        with ESMTP id S229447AbiKIMCv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 07:02:09 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57BB2CE30;
-        Wed,  9 Nov 2022 04:02:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667995328; x=1699531328;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=hypwsi6BOBxwCxzYBfJ6znER4INgKD9gmMosAIAe8os=;
-  b=T29Vnlu9HD24NzsK9BxZfPT/PviIDkAUJwwqUsi1uDR/op0imtKVwemd
-   ARFQVmxo8PaJoRfN8ozoSofKrO32YbtBPOuKLuvtSKUHzqCflZvH6KSUs
-   LVezkR0Ni0XDuQ1k+ZaIUXfH9ddw/Mzlv1hdqzRYKzCprv2+mTtcUxC88
-   9F8Uujqbx6WtOHCTyBnDFk3PkV1Mw0v5gtOCWNUt+nrrks6xNWgEMaUup
-   8qHnORca+mIEm+N45erPHoKsz5RfXdXBc+k4N0KCpw03SNwZfK+NDiWaI
-   BgekN7Hz16O0E2ztBegHo/MpHrXq7P6ICLFShDw1DQpgmLSrS940gwaOM
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="309669979"
-X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="309669979"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 04:02:08 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="779320963"
-X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="779320963"
-Received: from jsanche3-mobl1.ger.corp.intel.com ([10.251.219.48])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 04:02:06 -0800
-Date:   Wed, 9 Nov 2022 14:02:04 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Sherry Sun <sherry.sun@nxp.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 9 Nov 2022 07:02:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795842D76B;
+        Wed,  9 Nov 2022 04:02:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD19B81C98;
+        Wed,  9 Nov 2022 12:02:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AEC8C433D6;
+        Wed,  9 Nov 2022 12:02:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1667995367;
+        bh=/yQM/f090OAeWMsA4JwUWTtZHi+F0/lBIpwhZOAAhCY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=y3ey7U9icl93mDMBa9apturhQJNCymQjL44QehXBLY56m/SuGtzHvxpgRkIreQY/4
+         6hDDba2M3Yk0F4Njub8O9P6aUsZkACgJZnLjbYwjltcVz4+ewslKOFb+7ywDnGG4/K
+         OI9X584CNF8cqZg/Jj8gzQGRmaWAQysf2L01L0QU=
+Date:   Wed, 9 Nov 2022 13:02:43 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial <linux-serial@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-imx@nxp.com
-Subject: Re: [PATCH 1/2] tty: serial: fsl_lpuart: only enable Idle Line
- Interrupt for non-dma case
-In-Reply-To: <20221109104515.17266-2-sherry.sun@nxp.com>
-Message-ID: <154eb2b-9467-e915-f51c-18d616c81d34@linux.intel.com>
-References: <20221109104515.17266-1-sherry.sun@nxp.com> <20221109104515.17266-2-sherry.sun@nxp.com>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] tty: Convert tty_buffer flags to bool
+Message-ID: <Y2uW4/lxooSO2FNi@kroah.com>
+References: <20221019105504.16800-1-ilpo.jarvinen@linux.intel.com>
+ <Y2Mtricfx/HxiEHc@kroah.com>
+ <b9162bab-41aa-e24c-825-ec1a974b65e6@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b9162bab-41aa-e24c-825-ec1a974b65e6@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 9 Nov 2022, Sherry Sun wrote:
-
-> For the lpuart driver, the Idle Line Interrupt Enable now is only needed
-> for the CPU mode, so enable the UARTCTRL_ILIE at the correct place, and
-> clear it when shutdown.
+On Thu, Nov 03, 2022 at 12:11:26PM +0200, Ilpo Järvinen wrote:
+> On Thu, 3 Nov 2022, Greg KH wrote:
 > 
-> Also need to configure the suitable UARTCTRL_IDLECFG, now the value is
-> 0x7, represent 128 idle characters will trigger the Idle Line Interrupt.
->
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
+> > On Wed, Oct 19, 2022 at 01:55:03PM +0300, Ilpo Järvinen wrote:
+> > > The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
+> > > There is also a few quite confusing operations for checking the presense
+> > > of TTYB_NORMAL. Simplify things by converting flags to bool.
+> > > 
+> > > Despite the name remaining the same, the meaning of "flags" is altered
+> > > slightly by this change. Previously it referred to flags of the buffer
+> > > (only TTYB_NORMAL being used as a flag). After this change, flags tell
+> > > whether the buffer contains/should be allocated with flags array along
+> > > with character data array. It is much more suitable name that
+> > > TTYB_NORMAL was for this purpose, thus the name remains.
+> > > 
+> > > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > > ---
+> > > 
+> > > v2:
+> > > - Make it more obvious why flags is not renamed (both in kerneldoc
+> > >   comment and commit message).
+> > > 
+> > >  drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
+> > >  include/linux/tty_buffer.h |  5 +----
+> > >  include/linux/tty_flip.h   |  4 ++--
+> > >  3 files changed, 17 insertions(+), 20 deletions(-)
+> > > 
+> > > diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> > > index 5e287dedce01..b408d830fcbc 100644
+> > > --- a/drivers/tty/tty_buffer.c
+> > > +++ b/drivers/tty/tty_buffer.c
+> > > @@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
+> > >  	p->commit = 0;
+> > >  	p->lookahead = 0;
+> > >  	p->read = 0;
+> > > -	p->flags = 0;
+> > > +	p->flags = true;
+> > >  }
+> > >  
+> > >  /**
+> > > @@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+> > >   * __tty_buffer_request_room	-	grow tty buffer if needed
+> > >   * @port: tty port
+> > >   * @size: size desired
+> > > - * @flags: buffer flags if new buffer allocated (default = 0)
+> > > + * @flags: buffer has to store flags along character data
+> > >   *
+> > >   * Make at least @size bytes of linear space available for the tty buffer.
+> > >   *
+> > > @@ -260,19 +260,19 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+> > >   * Returns: the size we managed to find.
+> > >   */
+> > >  static int __tty_buffer_request_room(struct tty_port *port, size_t size,
+> > > -				     int flags)
+> > > +				     bool flags)
+> > >  {
+> > >  	struct tty_bufhead *buf = &port->buf;
+> > >  	struct tty_buffer *b, *n;
+> > >  	int left, change;
+> > >  
+> > >  	b = buf->tail;
+> > > -	if (b->flags & TTYB_NORMAL)
+> > > +	if (!b->flags)
+> > >  		left = 2 * b->size - b->used;
+> > >  	else
+> > >  		left = b->size - b->used;
+> > >  
+> > > -	change = (b->flags & TTYB_NORMAL) && (~flags & TTYB_NORMAL);
+> > > +	change = !b->flags && flags;
+> > >  	if (change || left < size) {
+> > >  		/* This is the slow path - looking for new buffers to use */
+> > >  		n = tty_buffer_alloc(port, size);
+> > > @@ -300,7 +300,7 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
+> > >  
+> > >  int tty_buffer_request_room(struct tty_port *port, size_t size)
+> > >  {
+> > > -	return __tty_buffer_request_room(port, size, 0);
+> > > +	return __tty_buffer_request_room(port, size, true);
+> > 
+> > Did this logic just get inverted?
+> >
+> > Maybe it's the jet-lag, but this feels like it's not correct anymore.
 > 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index bd685491eead..f5a0a14fa366 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -179,7 +179,7 @@
->  #define UARTCTRL_SBK		0x00010000
->  #define UARTCTRL_MA1IE		0x00008000
->  #define UARTCTRL_MA2IE		0x00004000
-> -#define UARTCTRL_IDLECFG	0x00000100
-> +#define UARTCTRL_IDLECFG_OFF   8
->  #define UARTCTRL_LOOPS		0x00000080
->  #define UARTCTRL_DOZEEN		0x00000040
->  #define UARTCTRL_RSRC		0x00000020
-> @@ -230,6 +230,8 @@
->  #define GLOBAL_RST_MIN_US	20
->  #define GLOBAL_RST_MAX_US	40
->  
-> +#define UARTCTRL_IDLECFG	0x7
-> +
-
-GEN_MASK() to the correct bits directly?
-
->  /* Rx DMA timeout in ms, which is used to calculate Rx ring buffer size */
->  #define DMA_RX_TIMEOUT		(10)
->  
-> @@ -1506,7 +1508,7 @@ static void lpuart32_setup_watermark(struct lpuart_port *sport)
->  	ctrl = lpuart32_read(&sport->port, UARTCTRL);
->  	ctrl_saved = ctrl;
->  	ctrl &= ~(UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_TE |
-> -			UARTCTRL_RIE | UARTCTRL_RE);
-> +			UARTCTRL_RIE | UARTCTRL_RE | UARTCTRL_ILIE);
->  	lpuart32_write(&sport->port, ctrl, UARTCTRL);
->  
->  	/* enable FIFO mode */
-> @@ -1530,7 +1532,8 @@ static void lpuart32_setup_watermark_enable(struct lpuart_port *sport)
->  	lpuart32_setup_watermark(sport);
->  
->  	temp = lpuart32_read(&sport->port, UARTCTRL);
-> -	temp |= UARTCTRL_RE | UARTCTRL_TE | UARTCTRL_ILIE;
-> +	temp |= UARTCTRL_RE | UARTCTRL_TE;
-> +	temp |= UARTCTRL_IDLECFG << UARTCTRL_IDLECFG_OFF;
-
-FIELD_PREP() would probably be more appropriate for this? Then you can 
-also drop the shift offset.
-
--- 
- i.
-
->  	lpuart32_write(&sport->port, temp, UARTCTRL);
->  }
->  
-> @@ -1669,7 +1672,7 @@ static void lpuart32_configure(struct lpuart_port *sport)
->  	}
->  	temp = lpuart32_read(&sport->port, UARTCTRL);
->  	if (!sport->lpuart_dma_rx_use)
-> -		temp |= UARTCTRL_RIE;
-> +		temp |= UARTCTRL_RIE | UARTCTRL_ILIE;
->  	if (!sport->lpuart_dma_tx_use)
->  		temp |= UARTCTRL_TIE;
->  	lpuart32_write(&sport->port, temp, UARTCTRL);
-> @@ -1770,7 +1773,7 @@ static void lpuart32_shutdown(struct uart_port *port)
->  
->  	/* disable Rx/Tx and interrupts */
->  	temp = lpuart32_read(port, UARTCTRL);
-> -	temp &= ~(UARTCTRL_TE | UARTCTRL_RE |
-> +	temp &= ~(UARTCTRL_TE | UARTCTRL_RE | UARTCTRL_ILIE |
->  			UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
->  	lpuart32_write(port, temp, UARTCTRL);
->  
+> As you can see, the old way is sooo confusing :-). I'll admit I stumbled 
+> myself with this same default thing first. It's even more confusing than 
+> the other places.
 > 
+> This check is true when flag bytes are present / required to be present:
+> 	(~flags & TTYB_NORMAL)
+> It's very very confusing way to check such condition due to layered 
+> reverse logic.
+> 
+> With old code, the per character flag bytes won't be there in the buffer 
+> if TTYB_NORMAL is present. Thus, the old default of 0 means 
+> __tty_buffer_request_room will allocate room for those flag bytes.
+> 
+> If you think about it carefully, the old code passed 0. Therefore, ~0 & 
+> TTYB_NORMAL is going to be true. After my change true is passed and true 
+> matches to the original code.
+> 
+> So the logic was not inverted. I just cleared those layered reverse logic 
+> traps the original had which makes my patch look it's inverting things.
+> 
+> I really appreciate you took your time to find out this little detail
+> from it! This is far from a simple change because of how trappy the old
+> way of doing things is.
+> 
+> > Maybe a commet up above where you calculate "left" would make more sense
+> > as to what is going on?
+> 
+> Do you mean you want me to add a comment there? I don't see any 
+> pre-existing comments that you could be pointing me to.
+> 
+> 
+> Should I resubmit it since you probably dropped the patch?
 
+No need, I took is as-is now, thanks.
+
+greg k-h
