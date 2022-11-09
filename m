@@ -2,64 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF412C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 07:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01601C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 07:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbiKIHJB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 02:09:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
+        id S229873AbiKIHWt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 02:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiKIHJA (ORCPT
+        with ESMTP id S229872AbiKIHWr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 02:09:00 -0500
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C637D2AA
-        for <linux-serial@vger.kernel.org>; Tue,  8 Nov 2022 23:08:58 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 1DF672800B3C2;
-        Wed,  9 Nov 2022 08:08:55 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 11E081000D; Wed,  9 Nov 2022 08:08:55 +0100 (CET)
-Date:   Wed, 9 Nov 2022 08:08:55 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     oe-kbuild@lists.linux.dev, lkp@intel.com,
-        oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [tty:tty-next 10/67] drivers/tty/serial/8250/8250_omap.c:825
- omap8250_rs485_config() warn: bitwise AND condition is false here
-Message-ID: <20221109070855.GA4264@wunner.de>
-References: <202211070440.8hWunFUN-lkp@intel.com>
+        Wed, 9 Nov 2022 02:22:47 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136EA14D3F
+        for <linux-serial@vger.kernel.org>; Tue,  8 Nov 2022 23:22:46 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4N6byc006sz15MPV;
+        Wed,  9 Nov 2022 15:22:31 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 9 Nov
+ 2022 15:22:43 +0800
+From:   Yuan Can <yuancan@huawei.com>
+To:     <alcooperx@gmail.com>, <bcm-kernel-feedback-list@broadcom.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>
+CC:     <yuancan@huawei.com>
+Subject: [PATCH] serial: 8250_bcm7271: Fix error handling in brcmuart_init()
+Date:   Wed, 9 Nov 2022 07:21:09 +0000
+Message-ID: <20221109072110.117291-1-yuancan@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202211070440.8hWunFUN-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 03:40:41PM +0300, Dan Carpenter wrote:
-> New smatch warnings:
-> drivers/tty/serial/8250/8250_omap.c:825 omap8250_rs485_config() warn: bitwise AND condition is false here
-[...]
-> vim +825 drivers/tty/serial/8250/8250_omap.c
-[...]
-> 801954d1210a89 Lukas Wunner              2022-10-16 @825  		if (priv->mdr1 & UART_OMAP_MDR1_16X_MODE)
-> 
-> This should be:
-> 
-> 	if (priv->mdr1 == UART_OMAP_MDR1_16X_MODE)
+A problem about 8250_bcm7271 create debugfs failed is triggered with the
+following log given:
 
-Thanks for the heads-up Dan, I've just submitted a fix:
+ [  324.516635] debugfs: Directory 'bcm7271-uart' with parent '/' already present!
 
-https://lore.kernel.org/linux-serial/7d5b04da13d89b8708b9543a0b125f2b6062a77b.1667977259.git.lukas@wunner.de/
+The reason is that brcmuart_init() returns platform_driver_register()
+directly without checking its return value, if platform_driver_register()
+failed, it returns without destroy the newly created debugfs, resulting
+the debugfs of 8250_bcm7271 can never be created later.
 
-As always your reports are greatly appreciated.
+ brcmuart_init()
+   debugfs_create_dir() # create debugfs directory
+   platform_driver_register()
+     driver_register()
+       bus_add_driver()
+         priv = kzalloc(...) # OOM happened
+   # return without destroy debugfs directory
 
-Lukas
+Fix by removing debugfs when platform_driver_register() returns error.
+
+Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+Signed-off-by: Yuan Can <yuancan@huawei.com>
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index fa8ccf204d86..89bfcefbea84 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1212,9 +1212,17 @@ static struct platform_driver brcmuart_platform_driver = {
+ 
+ static int __init brcmuart_init(void)
+ {
++	int ret;
++
+ 	brcmuart_debugfs_root = debugfs_create_dir(
+ 		brcmuart_platform_driver.driver.name, NULL);
+-	return platform_driver_register(&brcmuart_platform_driver);
++	ret = platform_driver_register(&brcmuart_platform_driver);
++	if (ret) {
++		debugfs_remove_recursive(brcmuart_debugfs_root);
++		return ret;
++	}
++
++	return 0;
+ }
+ module_init(brcmuart_init);
+ 
+-- 
+2.17.1
+
