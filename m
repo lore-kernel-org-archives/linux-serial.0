@@ -2,190 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 567C5C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 05:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D05C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 07:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiKIFoX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 00:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S229485AbiKIHEp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 02:04:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiKIFoX (ORCPT
+        with ESMTP id S229705AbiKIHEm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 00:44:23 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634F813CEA
-        for <linux-serial@vger.kernel.org>; Tue,  8 Nov 2022 21:44:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667972662; x=1699508662;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0+UHtDFgBUWqiMoCDRQmvEVwbuC/fQAftNddTUdeS1M=;
-  b=XPFgW8CdOk5aGjJnFPDE/uiur8h4EdGnjTuNUsHi6QulRZibz3DI/RkD
-   EC2QxpPStGT9rdGAmiGlK9ltakbtPabMikm1P8EU2ixExTULmBdYuT4EV
-   LjaShPcwUW0aYA/77FbJb4KEEBgcE9HErDrKJzrs2VvezbaGNn4gQy8kC
-   tx7+bZAxDS/jyZ2jm1xx5iR0gqnIyFUfE/Rj+fc4FYKLzVGEqhRvDEQn8
-   mAbxrymnE7rZ9sg4jm/ta3/MOfaN5LMsyQWfUX8X6HgBg4AIbsWe7VyuU
-   +M3q7VnEh1PYc1XhcsFo7JZLaps/u1prvGKULevQQZhTtbHQoag9gArBR
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="291283183"
-X-IronPort-AV: E=Sophos;i="5.96,149,1665471600"; 
-   d="scan'208";a="291283183"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2022 21:44:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="667869235"
-X-IronPort-AV: E=Sophos;i="5.96,149,1665471600"; 
-   d="scan'208";a="667869235"
-Received: from lkp-server01.sh.intel.com (HELO e783503266e8) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 08 Nov 2022 21:44:20 -0800
-Received: from kbuild by e783503266e8 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1osdsq-00016x-0P;
-        Wed, 09 Nov 2022 05:44:20 +0000
-Date:   Wed, 09 Nov 2022 13:44:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 5c30f3e4a6e67c88c979ad30554bf4ef9b24fbd0
-Message-ID: <636b3e2a.Fd9xltPhGgAJU0v0%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Nov 2022 02:04:42 -0500
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC781DF00
+        for <linux-serial@vger.kernel.org>; Tue,  8 Nov 2022 23:04:40 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 691AD100E5F21;
+        Wed,  9 Nov 2022 08:04:33 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 4F27128CBD; Wed,  9 Nov 2022 08:04:33 +0100 (CET)
+Message-Id: <7d5b04da13d89b8708b9543a0b125f2b6062a77b.1667977259.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Wed, 9 Nov 2022 08:04:34 +0100
+Subject: [PATCH tty-next] serial: 8250: 8250_omap: Fix calculation of RS485
+ delays
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Dan Carpenter <error27@gmail.com>, linux-serial@vger.kernel.org
+Cc:     Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>, Bin Liu <b-liu@ti.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Nishanth Menon <nm@ti.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Zeng Chao <chao.zeng@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 5c30f3e4a6e67c88c979ad30554bf4ef9b24fbd0  tty: Move TIOCSTI toggle variable before kerndoc
+Commit 801954d1210a ("serial: 8250: 8250_omap: Support native RS485")
+calculates RS485 delays from the baudrate.  The baudrate is generated
+with either a 16x or 13x divisor.  The divisor is set in the Mode
+Definition Register 1 (MDR1).
 
-elapsed time: 791m
+The commit erroneously assumes that the register stores the divisor as
+a bitmask and uses a logical AND to differentiate between 16x and 13x
+divisors.  However the divisor is really stored as a 3-bit mode
+(see lines 363ff in include/uapi/linux/serial_reg.h).
 
-configs tested: 112
-configs skipped: 3
+The logical AND operation is performed with UART_OMAP_MDR1_16X_MODE,
+which is defined as 0x0 and hence yields false.  So the commit always
+assumes a 13x divisor.  Fix by using an equal comparison.  This works
+because we never set any of the other 5 bits in the register.  (They
+pertain to IrDA mode, which is not supported by the driver).
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Fixes: 801954d1210a ("serial: 8250: 8250_omap: Support native RS485")
+Link: https://lore.kernel.org/linux-serial/202211070440.8hWunFUN-lkp@intel.com/
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+---
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-gcc tested configs:
-x86_64                            allnoconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-ia64                             allmodconfig
-i386                          randconfig-c001
-x86_64                          rhel-8.3-func
-x86_64                    rhel-8.3-kselftests
-s390                                defconfig
-s390                             allmodconfig
-arc                                 defconfig
-alpha                               defconfig
-s390                             allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-sparc                       sparc32_defconfig
-csky                             alldefconfig
-sh                           se7712_defconfig
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-mips                      loongson3_defconfig
-sh                  sh7785lcr_32bit_defconfig
-powerpc                     sequoia_defconfig
-arm                             ezx_defconfig
-powerpc                     mpc83xx_defconfig
-powerpc                       holly_defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-arc                              alldefconfig
-arm                          exynos_defconfig
-mips                          rb532_defconfig
-i386                             allyesconfig
-i386                                defconfig
-x86_64               randconfig-a006-20221107
-x86_64               randconfig-a001-20221107
-x86_64               randconfig-a004-20221107
-x86_64               randconfig-a003-20221107
-x86_64               randconfig-a005-20221107
-x86_64               randconfig-a002-20221107
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-xtensa                           allyesconfig
-powerpc                      makalu_defconfig
-powerpc                       maple_defconfig
-i386                 randconfig-a001-20221107
-i386                 randconfig-a006-20221107
-i386                 randconfig-a003-20221107
-i386                 randconfig-a002-20221107
-i386                 randconfig-a005-20221107
-i386                 randconfig-a004-20221107
-arm                        trizeps4_defconfig
-arm                           sunxi_defconfig
-arc                        vdk_hs38_defconfig
-m68k                        m5272c3_defconfig
-sh                          rsk7269_defconfig
-arm                             rpc_defconfig
-arm                      integrator_defconfig
-powerpc                        cell_defconfig
-powerpc                     rainier_defconfig
-sh                           se7751_defconfig
-powerpc                 linkstation_defconfig
-arm                        clps711x_defconfig
-arm                      footbridge_defconfig
-m68k                       m5275evb_defconfig
-nios2                            alldefconfig
-powerpc                    klondike_defconfig
-powerpc                        warp_defconfig
-sh                           se7722_defconfig
-mips                            ar7_defconfig
-parisc                generic-64bit_defconfig
-mips                        bcm47xx_defconfig
-riscv                               defconfig
-openrisc                 simple_smp_defconfig
-
-clang tested configs:
-hexagon              randconfig-r041-20221108
-hexagon              randconfig-r045-20221108
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-arm                       imx_v4_v5_defconfig
-arm                          moxart_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-mips                     cu1000-neo_defconfig
-mips                          ath25_defconfig
-mips                        qi_lb60_defconfig
-arm                         mv78xx0_defconfig
-x86_64                        randconfig-k001
-powerpc                 mpc836x_rdk_defconfig
-i386                              allnoconfig
-arm                       aspeed_g4_defconfig
-arm64                            allyesconfig
-powerpc                     skiroot_defconfig
-
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 1dd8c5b..734f092 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -824,7 +824,7 @@ static int omap8250_rs485_config(struct uart_port *port,
+ 	 * of the AM65 TRM:  https://www.ti.com/lit/ug/spruid7e/spruid7e.pdf
+ 	 */
+ 	if (priv->quot) {
+-		if (priv->mdr1 & UART_OMAP_MDR1_16X_MODE)
++		if (priv->mdr1 == UART_OMAP_MDR1_16X_MODE)
+ 			baud = port->uartclk / (16 * priv->quot);
+ 		else
+ 			baud = port->uartclk / (13 * priv->quot);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
