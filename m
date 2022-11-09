@@ -2,96 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE75C43217
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 07:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB26BC4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 08:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiKIHWt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 02:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
+        id S229605AbiKIIVB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 03:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiKIHWs (ORCPT
+        with ESMTP id S229576AbiKIIVA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 02:22:48 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E86E1DF0F
-        for <linux-serial@vger.kernel.org>; Tue,  8 Nov 2022 23:22:46 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4N6btc1cR1zpVt4;
-        Wed,  9 Nov 2022 15:19:04 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 9 Nov
- 2022 15:22:44 +0800
-From:   Yuan Can <yuancan@huawei.com>
-To:     <alcooperx@gmail.com>, <bcm-kernel-feedback-list@broadcom.com>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <linux-serial@vger.kernel.org>
-CC:     <yuancan@huawei.com>
-Subject: [PATCH] serial: 8250_bcm7271: Fix error handling in brcmuart_init()
-Date:   Wed, 9 Nov 2022 07:21:10 +0000
-Message-ID: <20221109072110.117291-2-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221109072110.117291-1-yuancan@huawei.com>
-References: <20221109072110.117291-1-yuancan@huawei.com>
+        Wed, 9 Nov 2022 03:21:00 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE1B1CFCA
+        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 00:20:59 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id l39-20020a05600c1d2700b003cf93c8156dso715854wms.4
+        for <linux-serial@vger.kernel.org>; Wed, 09 Nov 2022 00:20:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=AQTh+h4wAo4t46Rl+wdOIR7scWoK1pkYjOSDztAOvMk=;
+        b=Cpek1q7QSMGXU1gFGsylqWYf0SzpoFAOnziq+0yCk/hPO0U0Xq2kq0DUIJhaSedm3O
+         Jol89RRWCiZVRDnFZ/3Odn+y0+oQULQZ4SZh/JYYpFmkt8YPDvvQRSPFMgWtOjxHI4rQ
+         pn4K+rQ4VIE7wTJxowiODzKlxgs/+S6PdIRt9mNzyqSq9+lEK6aeyjYrK+16bpfykehg
+         +Ag+15KKt5KlviWRBZQh1SC00aHih4RA1FJZ+4Ex0k0dFQsxtWGtjuCVZoLWpcsCv6yw
+         4ViyYZVhGSKO/q+v/ZQ+tapEmWuBLH8xHWRfL64tgbCSDpxJeE6xqiCauPfGbW0T8A30
+         sdwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AQTh+h4wAo4t46Rl+wdOIR7scWoK1pkYjOSDztAOvMk=;
+        b=sn2M6GZIR5sL1JFA8un2Z9Hi13+ld8zs8oa509n1pdGwM204nGt1d7NuyFVxEu/kfR
+         0cshhWAJ1Q9K11ADxvYJVn6vGBwujQUIpwC74cv1qJTk85sTMRRk1hWswBPKwcVl055D
+         EBtziTtHtk5IaeMMiXAaYGPah7tidpCy/WKmjomE1jBWi4Z1qVvO+G/NBx3RHg3NRctd
+         ilI5qpQMwihX9nSWugW4/ONnqzGNoNsn9JcJL1ROLQ0h6T4fZDEBLgFlIZh0PDxcqRNC
+         MATCAs7JzxS0kSb7AgKQuknD/kq34YogI/nJEv4n9rUQcDprcpNmRvUgVN2bcPxkL9fG
+         zW1g==
+X-Gm-Message-State: ACrzQf3SZsgPIXYlQt4cT+zKROxHsbxD1xxfC1JUV/+AEfwYsxxUpq/7
+        yHcm1XwpTYc2thlMjCecfdue/A==
+X-Google-Smtp-Source: AMsMyM7a3muG+xctXMNmA6t/4RK9t8xXwL/BnJxGkPaozlKTl4ulPc+VWNiTqriOd50k7tssbwBdJg==
+X-Received: by 2002:a1c:7704:0:b0:3c4:bda1:7c57 with SMTP id t4-20020a1c7704000000b003c4bda17c57mr866812wmi.6.1667982057803;
+        Wed, 09 Nov 2022 00:20:57 -0800 (PST)
+Received: from ash.lan ([167.98.0.196])
+        by smtp.gmail.com with ESMTPSA id n22-20020a1c7216000000b003a6125562e1sm699068wmc.46.2022.11.09.00.20.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 00:20:57 -0800 (PST)
+Date:   Wed, 9 Nov 2022 08:20:55 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v3 02/40] serial: kgdboc: Lock console list in
+ probe function
+Message-ID: <20221109082055.melzih2jwhwjztam@ash.lan>
+References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+ <20221107141638.3790965-3-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221107141638.3790965-3-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A problem about 8250_bcm7271 create debugfs failed is triggered with the
-following log given:
+On Mon, Nov 07, 2022 at 03:22:00PM +0106, John Ogness wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
+>
+> Unprotected list walks are not necessarily safe.
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
 
- [  324.516635] debugfs: Directory 'bcm7271-uart' with parent '/' already present!
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-The reason is that brcmuart_init() returns platform_driver_register()
-directly without checking its return value, if platform_driver_register()
-failed, it returns without destroy the newly created debugfs, resulting
-the debugfs of 8250_bcm7271 can never be created later.
 
- brcmuart_init()
-   debugfs_create_dir() # create debugfs directory
-   platform_driver_register()
-     driver_register()
-       bus_add_driver()
-         priv = kzalloc(...) # OOM happened
-   # return without destroy debugfs directory
-
-Fix by removing debugfs when platform_driver_register() returns error.
-
-Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-Signed-off-by: Yuan Can <yuancan@huawei.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index fa8ccf204d86..89bfcefbea84 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1212,9 +1212,17 @@ static struct platform_driver brcmuart_platform_driver = {
- 
- static int __init brcmuart_init(void)
- {
-+	int ret;
-+
- 	brcmuart_debugfs_root = debugfs_create_dir(
- 		brcmuart_platform_driver.driver.name, NULL);
--	return platform_driver_register(&brcmuart_platform_driver);
-+	ret = platform_driver_register(&brcmuart_platform_driver);
-+	if (ret) {
-+		debugfs_remove_recursive(brcmuart_debugfs_root);
-+		return ret;
-+	}
-+
-+	return 0;
- }
- module_init(brcmuart_init);
- 
--- 
-2.17.1
-
+Daniel.
