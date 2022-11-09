@@ -2,88 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C11C433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 09:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2525EC4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 10:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229550AbiKIJor (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 04:44:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        id S230232AbiKIKrD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 05:47:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiKIJoq (ORCPT
+        with ESMTP id S229551AbiKIKrC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 04:44:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBB422BE4;
-        Wed,  9 Nov 2022 01:44:45 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1667987084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kPAk+3cLOj2C0i9syAj3cq39vfGjg5hFSD8YkhVNKCk=;
-        b=KGQPt3BuMB8UxOiIeFc+7+g3uFtm5Q+FCy0D1VPuuhLPP7wqeYjclkvf1RZxSMfB6ZYBCt
-        O5f5FF0udqPW6CI/S0q6BcPp+Y5RSQoTsPStReWTA85+wKkTrJjAgTbSEAeoXsA3kVvFE7
-        PEXiLJdpH/khQx7aMlU8mUKl1Y4fvdVWoa8Ty7z8J5eH3ft0N/k/3y6tPQqkXFUeFJWakU
-        WtOA5VwvhTYQ/TBB3pnQwMlyenIw21lmNsyYhrjRRERT4DVCo4owgVakHWDZhAnMSIzOfY
-        kwrI2VjoZ+EHwYrhzKzN6fxSAY1G9IMwfNLmcCELUTNB4I5Se7wkQhlDwQTqeg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1667987084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kPAk+3cLOj2C0i9syAj3cq39vfGjg5hFSD8YkhVNKCk=;
-        b=LsawK0XIGHqnjIumlhGVKLy3i3Z9JVErl5RyBoTCpwhm33D+5Tr+t5xSfti/otQSEWiBov
-        Du2+ohG3YC9rpIDQ==
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v3 36/40] tty: serial: kgdboc: use
- console_list_lock for list traversal
-In-Reply-To: <20221109090631.wbtar2ho45x5yanl@ash.lan>
-References: <20221107141638.3790965-1-john.ogness@linutronix.de>
- <20221107141638.3790965-37-john.ogness@linutronix.de>
- <20221109090631.wbtar2ho45x5yanl@ash.lan>
-Date:   Wed, 09 Nov 2022 10:50:43 +0106
-Message-ID: <87tu388nsk.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
+        Wed, 9 Nov 2022 05:47:02 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80071.outbound.protection.outlook.com [40.107.8.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC75AD51;
+        Wed,  9 Nov 2022 02:47:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NeA4hjsePVzigT/EEWJSu9ZrMaoS4wNnAGh52wWVWEtPnav6eVTUW3uT89H7pgxrG2eGV+9Kf+Xomh6ShrXVoRn2i5Ox6cy2q+DBeUR7XYvvD9dF4Y7aH7GHgTp+PrMpLN9PH7gDPiWTJZ8b52goHc7gHp3CKvAiackVVCzhTirw/Eq9ZXkslLehFj25QmRAqj5aCdnc7W53eS9am0v7dN9WPZNSVRvB6tPwlkI/wJOhDZBu6kdEafzq+ILXMMR3T8j2rgBYsK5PA306aqZRaL4dJW8pL9/Blqzpfd6xpUIy4pcWXk1KsP+pdpYR6H+aGxFf4bhg5XkSfnAbPd6k4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sUR2wQfu7Zrk6hZwjMbmRe2uTw0e27OMu1gfoSUI3IM=;
+ b=IOzWRLzvYYpWQGiVhKxgCrgron8ennaJnDSMjPPoqWD3lGuSG5mF3YKDk/PL6G+mjmykIYP63tYcrzrl6j7zEl/FgVtf8csIPyQjU/rkcWKkbOtXSEihzEk7enXXMNfd/UWq7fK3X0OajZ3WT8bv/k5zN2A+dIduCYN4Z3+goZ9AKdLcJ/C2aDSc4oqCov4J5h4PQWfOEHI7AOWAa/mQDcZc4Jw8eM2HJUowT7ItB7EfFag/OUdTiehNHoFScYyWYxNofRD8zlRi1CXF+pU2wLU29/M5lA9HNS22tV0iM4Zpi44Um6DmmMZmKHIlKIUDcyCBjaUC1qHBji1iylCYDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sUR2wQfu7Zrk6hZwjMbmRe2uTw0e27OMu1gfoSUI3IM=;
+ b=Jgso5yA/QPS8M0zLWXSAzbDSTmtgH9sz6Ds0cpQdf0rpPErN//rweONVLHtDGKiLpa9661IBu6eDqYU/Ffrv9YHunHlEODkl4cMqWmS20hoUoT9Or60gTzhZkzmCyvg8TpCVL+tNOFVqpMzZoXfEdnaRp34okhLOe6zkF3+39bM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by PAXPR04MB8974.eurprd04.prod.outlook.com (2603:10a6:102:20d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Wed, 9 Nov
+ 2022 10:46:58 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::71f1:f7bb:5039:e55d]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::71f1:f7bb:5039:e55d%3]) with mapi id 15.20.5791.027; Wed, 9 Nov 2022
+ 10:46:58 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH 0/2] fsl_lpuart: improve Idle Line Interrupt and registers handle in .shutdown()
+Date:   Wed,  9 Nov 2022 18:45:13 +0800
+Message-Id: <20221109104515.17266-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
 Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0009.apcprd02.prod.outlook.com
+ (2603:1096:4:194::11) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|PAXPR04MB8974:EE_
+X-MS-Office365-Filtering-Correlation-Id: c7c4f547-5edd-4b1b-3f5b-08dac23fb996
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x3KdP7u3VlewblbbBvvgGiCB253RhA7wcotIcua8UtLzdwEKu1iXrUo7907gX03kiZlpZ1wmzFOAyFrmMInB+dNavu0Q9eJvE705F7HzoibOdvWKxhYmQTuBzpg1h3tWvmPnLXjLItsCfg1tWKI2oGLTVBZJ5Tg/pxZHSmMioJMt7k9CKeK99/W66wcwz0U15DUY2xZL/rSzMH/ABBPDWaiCvjXwo/YaesAxhDavxCdurXnZKQcHtAZK/dbxbOauCiqTM2Dy3aYmkjTIZWXGzpKg9s/pff7F/s4/nc+IG8WnNGiILP+1I8C0poXOIJfQPwhCUCfErP8PoQdSxis+x76ls2wkXMRhvhgSEKqzoWD7UIS7028bsylrOAzeKYGqo3WMqFcGSs8TK3YY6cdWlawgxeZ+0+bKw0bsjfIYwU/wfOONxl7Ahx8UYd15in2sBeTk0JjDWXpveCtfOq8+/IYSpyiB+MnzjqHkp1Lx56mPKTsRnDeIrjOx7dMAoTCEEUyPz2yw71mfttS9PWtbICmvjVGnP+km3Smv4YayylL33zuV8W3OTKEm584Q1KwpvL1AEQc6s5cCCO0U037UsqIVeeQYhlRU2NPwbE/D1MOpUhMySAlLQ2nc0UNZC7cKXuL4K+dZQkndrRsfpFUHV4khXrtioh3MD3z3ydCQPMHSlX1586oE0P1xEBoBGpncRSTzakspDl0TtmWpid3YVFYaRJ44ChldS4rT8E6W/w9RmAkizyNGCbA31bJSlsZb29Fd61NPIwPKfcNgCAqc5O0HO6t9QIGzq8JfdfkeK/8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(451199015)(186003)(86362001)(38100700002)(38350700002)(316002)(66476007)(66556008)(66946007)(8936002)(8676002)(2906002)(4744005)(44832011)(41300700001)(6666004)(4326008)(26005)(52116002)(1076003)(2616005)(6506007)(83380400001)(5660300002)(6512007)(6486002)(478600001)(36756003)(142923001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jzk7YTvLjelUVo8ALVcZdVkoiuKHxIGZNQU6Z2zXAZIjhiiGJpJ3WwUMejhb?=
+ =?us-ascii?Q?SENIFrlfaOVkUUC7IP9u0k1FmsabXzoS4M3fY4lIsawmv6NG8aBrYBg1hzK5?=
+ =?us-ascii?Q?eWVxj/DXNaAi6e/PxkDKO9Uxs3DKfbvH6qHEHvQu7ijv+PumzenS/tssvhTs?=
+ =?us-ascii?Q?pxcyxF24PBSSnkotdRZGBUDNz01yBa8kQqXrK/kdpZ37BEvL4TCTXbqc3pWR?=
+ =?us-ascii?Q?z9kOLkYMCsk1lYlzCYOjAmUb86WbRRUZDJ3a8BA66uwm7Qj5mryptpZRFRYl?=
+ =?us-ascii?Q?yHbCusnlniIDanO81JbpWXHFXKnkbkEAmDrMnSyagYhGO8sHJvfVg7Qi47eS?=
+ =?us-ascii?Q?adYG5auT0YLx2lOx4DkpMIVj0zm5YP2ZpzpCp8GTcSzIijlCnRJNx14yB/m4?=
+ =?us-ascii?Q?ZornU7m2XhPCQ7ZK6LkeaHFKCR8hHntHofI9ZzQiYUiaQN+rm3Txku7iOKNi?=
+ =?us-ascii?Q?mixSA4dYZiXBy7hdy3M7eM2jQffhlrpsRNARngiWy//sqek/hH5DkWMd0wsJ?=
+ =?us-ascii?Q?ioighfeVu1/3khl+xIUqrKhI0wtZN0Akw/ifs2rDDyrxCuh99iBSC1l4jQXb?=
+ =?us-ascii?Q?Yak7RUYHP+NKUG2gwQWkV7yJd/ZMc5ao3wImDYzIMVySbaMiZnPrnrT5Zc9b?=
+ =?us-ascii?Q?EBesSZ/xOZtmVxPOy3R/foaDZDUu07RxvT0Rsu4zAzXIChad2nlM+TaAVIzv?=
+ =?us-ascii?Q?nfb/l/lnoh6CApXhIxh+IpUGaQT8AEDw66Oge1obrec+s2QHNt0uONx1subK?=
+ =?us-ascii?Q?52f9vPhSjRtl5iqX+pcndVGWT1CfeuqgEUa4LZkm0EounNcbLA8KI1l1GCn+?=
+ =?us-ascii?Q?DuP0s5EyaF3E45o5mYv48gdd5bBAjqXDZ2FNpO+agQSPT2xvlzIyzdbCIIJF?=
+ =?us-ascii?Q?VGAg2HHgY7EFqhIAyvc5WBTuVgTkSzZgdrnYSzIkod6Qx7/NYfsGSqOE7x9r?=
+ =?us-ascii?Q?cWRd0uic9ZCZwxRnAHimSwzS/kndkleI/FoOv1DmDKW0dyzlMBcfipi/XWtK?=
+ =?us-ascii?Q?ecVUDy0oCGXARniHdlKteEzG8y+wc5IHBDs8FoFQolIadas7jJlLGtMUFq35?=
+ =?us-ascii?Q?FMbAoPJuTZF+OHMyhqDHvi+yRVlXsBqhWtCOp5SAL+SbI9ChO8k4XjBJJR9E?=
+ =?us-ascii?Q?6AAKU3fqIeCUgfwiGYCK9tCwzQOFkV5Wwr4HTfykT+4cLUaF5/r5ZrMhPCtc?=
+ =?us-ascii?Q?LXA5SsCGAcdsKYZWIbECCwlvr4LuTMANVzhS4dd5tW6fmzXpj8QvDTvY60SY?=
+ =?us-ascii?Q?+wMRiIvSzF0u4MufFEuG2+OL95omQI+E601y5IyUXjDkPlZTmzuoUyf2oT9O?=
+ =?us-ascii?Q?QE+RgqpFFi2pcpAzoyiKRplmR+0Y7Lz8CCySBf+EO1V5nu71mmKgZeW4HEqP?=
+ =?us-ascii?Q?IiNAr8xQr3KRBjkMcezaBopDy2MEtR9yKlpcZLcFV3E3BA6l/UDmPEmEZjXk?=
+ =?us-ascii?Q?FS1VH0BxK65AljKULW/fvMAmshoOVcxs3vV1K95JVVs8MvA1UQS6sTvNA5uu?=
+ =?us-ascii?Q?7KH3y6iNPZX/l94wmkJY+mpJwVg5XELwpX/CMrPbWBpwVx79HxLuhlLykM5e?=
+ =?us-ascii?Q?+m3lnxJzlCyOjbJLorh6acNxgY2J2YJT5oD9oxuA?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7c4f547-5edd-4b1b-3f5b-08dac23fb996
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2022 10:46:58.2611
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LVgeEt5/9vZ8X69wVkouqUUV9kIyfUzECfHcXe5IiFDc7DPcP86IuwE33e1bRyBHNeo/jAiUXl23vlv6dnkUsQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8974
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-11-09, Daniel Thompson <daniel.thompson@linaro.org> wrote:
->> @@ -463,9 +476,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
->>  	 * serial drivers might be OK with this, print a warning once per
->>  	 * boot if we detect this case.
->>  	 */
->> -	for_each_console(con)
->> +	cookie = console_srcu_read_lock();
->> +	for_each_console_srcu(con) {
->>  		if (con == kgdboc_earlycon_io_ops.cons)
->> -			return;
->> +			break;
->> +	}
->> +	console_srcu_read_unlock(cookie);
->> +	if (con)
->> +		return;
->
-> This change isn't mentioned in the patch description.
+The patchset improve the Idle Line Interrupt for lpuart driver, also handle
+the registers correctly for lpuart32 when shutdown the uart port.
 
-I will move this change into its own separate patch.
+The patches have been tested on imx8ulp-evk platform.
 
-    tty: serial: kgdboc: use srcu console list iterator
+Sherry Sun (2):
+  tty: serial: fsl_lpuart: only enable Idle Line Interrupt for non-dma
+    case
+  tty: serial: fsl_lpuart: improve lpuart32 registers clearing when
+    shutdown
 
-    Use srcu console list iteration for safe console list traversal.
+ drivers/tty/serial/fsl_lpuart.c | 26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
-Thanks.
+-- 
+2.17.1
 
-John
