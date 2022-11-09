@@ -2,57 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AB7C4167E
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 08:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBD5C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 08:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiKIIwv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 03:52:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
+        id S229509AbiKIIyT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 03:54:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiKIIwr (ORCPT
+        with ESMTP id S229590AbiKIIyS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 03:52:47 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7196D1DA68
-        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 00:52:46 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id a13so26237803edj.0
-        for <linux-serial@vger.kernel.org>; Wed, 09 Nov 2022 00:52:46 -0800 (PST)
+        Wed, 9 Nov 2022 03:54:18 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267B8A1B6
+        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 00:54:17 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id kt23so44800939ejc.7
+        for <linux-serial@vger.kernel.org>; Wed, 09 Nov 2022 00:54:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=frOnrhJ74ppM6hXWocdjxv2r1BiSDtd6GcT/Z6n8wU0=;
-        b=QqXkk+3nUml+G502STHHAN2GsPWmmPxtKwXnGZes8WLiR/2gjZyYZKlmPHMMfHQDXp
-         GKlL7wYAdEXE2VKKjxlVyvTkrRH2tgz5WmcYGq+4IkktZ8d8LsKUAcqOz2nh5GqQWvDG
-         rRWw/zZitD2c6ZbGHmb2uCfodKlc3nM0vBzBqHoeBNNXi+F5mS+PEOuerJR4dzs6lDbH
-         h15pFgXn/LOBsspiiyC5QGTwlkIjoxiiP3WAZ3+0VKEl+8fcrXaKp/d4fdNgOFVPtxIS
-         GGCm3XhJjrLIq0HokX9HqdAqLHmR+U7JzZ6NdTBcN2PxQSGY47S/vWWe6PRzGWyZsRHK
-         OsKw==
+        bh=9VyQHSn8deMiEOwsj51SgZgqSSVUV+0wlM/SBBhvxXc=;
+        b=GGNJehiWYL3Gp9ason0FhcmYFESsPZpn5AFN7kOkMr08+QsRUS2FYSSA2163xbbAy9
+         sCm29EjadnyYCJ4qo8t89xcOSC2HM12RyoQ5svx82KfhKXzZ9wRk3eRUyGBS5EcWdG8h
+         aqfOggWQ/Gd6ZUZqof0BJE7Z54seYus3yAs3AV9K9daY+opQn6X+1lMCc0h83OXtOCvY
+         hFX6xhxESF3PK/cL5PyaD+KFCF1BSPnHXfOtA3SAk8B4pcNyG48j6ZCEyegRKKZG9S2N
+         G7u6uDtfPEOtLaTMcTrFhecWinnHQ0xN+2czhYEKXJFc4xe+whvIhxqi6rGtCyyUiCH3
+         WhSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=frOnrhJ74ppM6hXWocdjxv2r1BiSDtd6GcT/Z6n8wU0=;
-        b=enhTEuVEue3XTKDgNMa9C2hBcAhSPJMblAscnpuXWoWSsKfOO7ClTTmD9yKDKVUFLI
-         beqa2rvzSveBZtAqg/cxG9xTf4ngoTTjS1LWshvbQkzPvhNT1FHD+pVHay4IGrimuxv0
-         wff3MywU7ZzvhoQ9lezXxZYOzCwGEQCwkhfPFoXcLVj1P81VV0YOs89t7Nv4ltmuaofF
-         gCkD3DuUwGW/1xF8/4+o18VAi1BY27qTGU3WEfR8zn15GA7ETUAwRGBC9EGuZj8mfMfq
-         AwH+Sw5RRdZxGfgJdJlwp8hQHOCtLIuuS0qeuLKUqG9WCfCjpmN8f5NQo0hLa3qtqzcT
-         D6vA==
-X-Gm-Message-State: ACrzQf13b0gApUbUDC4DjDP+hpC4Wg8JX5v9Zab71ET+guxc8x0XhIU8
-        SAofrrQIelNSBlBGsKO9ZA33qjKAqNJ7pCna3bIQgQ==
-X-Google-Smtp-Source: AMsMyM5olyoqt3HWysASRfmTw7EcpeES+nNZCfFVFJlLHvy4TBh7/6VbG+eA4kRXDUCwMcUpQ9LDpvaixauVJCY7Eaw=
-X-Received: by 2002:aa7:c718:0:b0:462:ff35:95dc with SMTP id
- i24-20020aa7c718000000b00462ff3595dcmr57926907edq.32.1667983965031; Wed, 09
- Nov 2022 00:52:45 -0800 (PST)
+        bh=9VyQHSn8deMiEOwsj51SgZgqSSVUV+0wlM/SBBhvxXc=;
+        b=qsFz+iXhUH6g9GNXp3pSqXM2kUeYKtfFndSYOgy1UngXpxlGp+g6fJ0tTAGbvxuQCC
+         T0jbC8M6C3afbUvyr77IK+wC3xtynBXrm7v2sximH44U9cMfpxVmujFcjRAD8d01ly/O
+         IDZuXVNS5tPhUxOF7XLqgV4zzCwXYnh5m1u9DmsZJt07F+YLd+b0Vklc6EilVtkoGBSX
+         +/ly4ldgVT6F95hCr087DBFAO4vTgwnR3jTYrxvttWGkEkVzbUZ1P6AksM/T1CSobxCk
+         C73PtBqvjXLaDb1xDwK3H2G/uG/bxyZV6xx/McDolzJmtlI6e4TIPFMf/kBHi4pCpyWW
+         Ty1g==
+X-Gm-Message-State: ACrzQf2st2UYOl0/G6sza/WPTZMqriZHww4tphaH7lOfuHccIQPUPdoL
+        mYnql43ZQ6bvR2yCaSzlhLABrZofO1rvnyN7FFy9mQ==
+X-Google-Smtp-Source: AMsMyM56WEU7+qzjtVJGqMNooERxqHsIu3s18Kbye5GziPmoTH7Ul/AX4W2U11ncDwVCDDoKRS1Y+Yth0GDg5i6F7JU=
+X-Received: by 2002:a17:907:c1e:b0:7ae:31a0:571e with SMTP id
+ ga30-20020a1709070c1e00b007ae31a0571emr24211009ejc.690.1667984055694; Wed, 09
+ Nov 2022 00:54:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
-In-Reply-To: <20221107071511.2764628-1-Mr.Bossman075@gmail.com>
+References: <20221107071511.2764628-1-Mr.Bossman075@gmail.com> <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
+In-Reply-To: <20221107071511.2764628-8-Mr.Bossman075@gmail.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 9 Nov 2022 09:52:33 +0100
-Message-ID: <CACRpkdZj=DqLQye9Cm3xCdo68tMqK8HAuNfOpCSRv9rSbSir4g@mail.gmail.com>
-Subject: Re: [PATCH v1 0/7] Clean-up and documentation for i.MXRT1050
+Date:   Wed, 9 Nov 2022 09:54:04 +0100
+Message-ID: <CACRpkdZ5do2Y6UESif+Cu_teCvfCH8gtg8DiE1H-aR3gNK3pfw@mail.gmail.com>
+Subject: Re: [PATCH v1 7/7] ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
 To:     Jesse Taube <mr.bossman075@gmail.com>
 Cc:     linux-imx@nxp.com, robh+dt@kernel.org, sboyd@kernel.org,
         shawnguo@kernel.org, kernel@pengutronix.de, festevam@gmail.com,
@@ -71,26 +71,14 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Mon, Nov 7, 2022 at 8:15 AM Jesse Taube <mr.bossman075@gmail.com> wrote:
 
-> During the initial commit of i.MXRT1050
-> many of the DT docs were missing; this patch adds them.
-> The commit also adds docs for i.MXRT1170.
-> Clean up dtsi.
-> fix all the naming of pins in pinctrl,
-> wrong due to a miscommunication.
+> Remove unused compatibles from i.MXRT1050.dtsi.
+> Change GPT clock-names to match documentation.
 >
-> Jesse Taube (7):
->   dt-bindings: arm: imx: Add i.MXRT compatible Documentation
->   dt-bindings: pinctrl: Fix file path for pinfunc include
->   dt-bindings: timer: gpt: Add i.MXRT compatible Documentation
->   dt-bindings: serial: fsl-lpuart: add i.MXRT1170 compatible
->   dt-bindings: mmc: fsl-imx-esdhc: add i.MXRT1170 compatible
->   pinctrl: freescale: Fix i.MXRT1050 pad names
+> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
 
-I applied patches 1-6 to the pinctrl tree.
-
->   ARM: dts: imx: Update i.MXRT1050.dtsi compatibles
-
-Please apply this patch 7/7 to the i.MX SoC tree.
+I applied patches 1-6 to the pinctrl tree, this one seems independent
+and possibly should not even be applied as I understand it.
 
 Yours,
 Linus Walleij
