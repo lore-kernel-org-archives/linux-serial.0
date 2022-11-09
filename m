@@ -2,92 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB26BC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 08:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC52C433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 08:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbiKIIVB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 03:21:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
+        id S229602AbiKIIV6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 03:21:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiKIIVA (ORCPT
+        with ESMTP id S229448AbiKIIV5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 03:21:00 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE1B1CFCA
-        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 00:20:59 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id l39-20020a05600c1d2700b003cf93c8156dso715854wms.4
-        for <linux-serial@vger.kernel.org>; Wed, 09 Nov 2022 00:20:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AQTh+h4wAo4t46Rl+wdOIR7scWoK1pkYjOSDztAOvMk=;
-        b=Cpek1q7QSMGXU1gFGsylqWYf0SzpoFAOnziq+0yCk/hPO0U0Xq2kq0DUIJhaSedm3O
-         Jol89RRWCiZVRDnFZ/3Odn+y0+oQULQZ4SZh/JYYpFmkt8YPDvvQRSPFMgWtOjxHI4rQ
-         pn4K+rQ4VIE7wTJxowiODzKlxgs/+S6PdIRt9mNzyqSq9+lEK6aeyjYrK+16bpfykehg
-         +Ag+15KKt5KlviWRBZQh1SC00aHih4RA1FJZ+4Ex0k0dFQsxtWGtjuCVZoLWpcsCv6yw
-         4ViyYZVhGSKO/q+v/ZQ+tapEmWuBLH8xHWRfL64tgbCSDpxJeE6xqiCauPfGbW0T8A30
-         sdwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AQTh+h4wAo4t46Rl+wdOIR7scWoK1pkYjOSDztAOvMk=;
-        b=sn2M6GZIR5sL1JFA8un2Z9Hi13+ld8zs8oa509n1pdGwM204nGt1d7NuyFVxEu/kfR
-         0cshhWAJ1Q9K11ADxvYJVn6vGBwujQUIpwC74cv1qJTk85sTMRRk1hWswBPKwcVl055D
-         EBtziTtHtk5IaeMMiXAaYGPah7tidpCy/WKmjomE1jBWi4Z1qVvO+G/NBx3RHg3NRctd
-         ilI5qpQMwihX9nSWugW4/ONnqzGNoNsn9JcJL1ROLQ0h6T4fZDEBLgFlIZh0PDxcqRNC
-         MATCAs7JzxS0kSb7AgKQuknD/kq34YogI/nJEv4n9rUQcDprcpNmRvUgVN2bcPxkL9fG
-         zW1g==
-X-Gm-Message-State: ACrzQf3SZsgPIXYlQt4cT+zKROxHsbxD1xxfC1JUV/+AEfwYsxxUpq/7
-        yHcm1XwpTYc2thlMjCecfdue/A==
-X-Google-Smtp-Source: AMsMyM7a3muG+xctXMNmA6t/4RK9t8xXwL/BnJxGkPaozlKTl4ulPc+VWNiTqriOd50k7tssbwBdJg==
-X-Received: by 2002:a1c:7704:0:b0:3c4:bda1:7c57 with SMTP id t4-20020a1c7704000000b003c4bda17c57mr866812wmi.6.1667982057803;
-        Wed, 09 Nov 2022 00:20:57 -0800 (PST)
-Received: from ash.lan ([167.98.0.196])
-        by smtp.gmail.com with ESMTPSA id n22-20020a1c7216000000b003a6125562e1sm699068wmc.46.2022.11.09.00.20.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 00:20:57 -0800 (PST)
-Date:   Wed, 9 Nov 2022 08:20:55 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 9 Nov 2022 03:21:57 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2F21CFD5
+        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 00:21:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667982116; x=1699518116;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=VMrD3pLP+mqv6TezKopc1BPgIejnnUIw0KzNtfIhXyc=;
+  b=lVzbDbP55Zv6eDYXVJXvXfP4DeEpVeBCg5mk3Zk6iX09rDcN9qjtOo/S
+   5eeHuqPEiQwD85pkfhirCzjTZNt1D7zgdX94uCUHzRfm483YiIudR5akt
+   s25gih4/yeBZlmr/AMapx5zqWKfHd6MU+cp9dd1YGO0MdT5uoT85NmvZt
+   BfQTUm8LpooIxM6pbqc3etU6HYUWf0Ddrac5LmIOdylZ9b2xDa0zy3fr4
+   WE9VpsJSS8UHl4cstxkmswWSNdNf4LXZ7quxW+qRhu8g1+n+dpRBWPaHS
+   URrtzqXoSvs14U3lV4sK5YNmXaVNV4txgKxbNAf7O4v09Ou5rFZ3AILrt
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="397214582"
+X-IronPort-AV: E=Sophos;i="5.96,149,1665471600"; 
+   d="scan'208";a="397214582"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 00:21:56 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="725891752"
+X-IronPort-AV: E=Sophos;i="5.96,149,1665471600"; 
+   d="scan'208";a="725891752"
+Received: from jsanche3-mobl1.ger.corp.intel.com ([10.251.219.48])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 00:21:46 -0800
+Date:   Wed, 9 Nov 2022 10:21:35 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v3 02/40] serial: kgdboc: Lock console list in
- probe function
-Message-ID: <20221109082055.melzih2jwhwjztam@ash.lan>
-References: <20221107141638.3790965-1-john.ogness@linutronix.de>
- <20221107141638.3790965-3-john.ogness@linutronix.de>
+        Dan Carpenter <error27@gmail.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>, Bin Liu <b-liu@ti.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Nishanth Menon <nm@ti.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Zeng Chao <chao.zeng@siemens.com>
+Subject: Re: [PATCH tty-next] serial: 8250: 8250_omap: Fix calculation of
+ RS485 delays
+In-Reply-To: <7d5b04da13d89b8708b9543a0b125f2b6062a77b.1667977259.git.lukas@wunner.de>
+Message-ID: <4ede67f0-3839-3de1-6b48-787229135e6d@linux.intel.com>
+References: <7d5b04da13d89b8708b9543a0b125f2b6062a77b.1667977259.git.lukas@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221107141638.3790965-3-john.ogness@linutronix.de>
+Content-Type: multipart/mixed; boundary="8323329-2084623902-1667982109=:8279"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 03:22:00PM +0106, John Ogness wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
->
-> Unprotected list walks are not necessarily safe.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+--8323329-2084623902-1667982109=:8279
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
+On Wed, 9 Nov 2022, Lukas Wunner wrote:
 
-Daniel.
+> Commit 801954d1210a ("serial: 8250: 8250_omap: Support native RS485")
+> calculates RS485 delays from the baudrate.  The baudrate is generated
+> with either a 16x or 13x divisor.  The divisor is set in the Mode
+> Definition Register 1 (MDR1).
+> 
+> The commit erroneously assumes that the register stores the divisor as
+> a bitmask and uses a logical AND to differentiate between 16x and 13x
+> divisors.  However the divisor is really stored as a 3-bit mode
+> (see lines 363ff in include/uapi/linux/serial_reg.h).
+> 
+> The logical AND operation is performed with UART_OMAP_MDR1_16X_MODE,
+> which is defined as 0x0 and hence yields false.  So the commit always
+> assumes a 13x divisor.  Fix by using an equal comparison.  This works
+> because we never set any of the other 5 bits in the register.  (They
+> pertain to IrDA mode, which is not supported by the driver).
+> 
+> Fixes: 801954d1210a ("serial: 8250: 8250_omap: Support native RS485")
+> Link: https://lore.kernel.org/linux-serial/202211070440.8hWunFUN-lkp@intel.com/
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index 1dd8c5b..734f092 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -824,7 +824,7 @@ static int omap8250_rs485_config(struct uart_port *port,
+>  	 * of the AM65 TRM:  https://www.ti.com/lit/ug/spruid7e/spruid7e.pdf
+>  	 */
+>  	if (priv->quot) {
+> -		if (priv->mdr1 & UART_OMAP_MDR1_16X_MODE)
+> +		if (priv->mdr1 == UART_OMAP_MDR1_16X_MODE)
+>  			baud = port->uartclk / (16 * priv->quot);
+>  		else
+>  			baud = port->uartclk / (13 * priv->quot);
+
+It was very lucky that 16x mode happened to be zero so that automation 
+could catch this problem.
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+-- 
+ i.
+
+--8323329-2084623902-1667982109=:8279--
