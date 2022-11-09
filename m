@@ -2,99 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFC7C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3142CC433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiKIMBK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 07:01:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        id S229555AbiKIMCK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 07:02:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiKIMBK (ORCPT
+        with ESMTP id S229584AbiKIMCJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 07:01:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BE22CDE2;
-        Wed,  9 Nov 2022 04:01:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ECDEB81E00;
-        Wed,  9 Nov 2022 12:01:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED837C433D6;
-        Wed,  9 Nov 2022 12:01:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667995265;
-        bh=MMR9BuGh9Gom2AgUFKnJO3eflwuddmurD1iEbH/TJwg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j2Dr4QQnwLnfWBdZY6eQWbcY/jjiye/O3ZEZ9aZw3WO85oPq7faKuIogs5ghZgoAN
-         plR3L6MRr+KiAlRESq0GvHIIoMpGwZALMBfZxZviMYm4xsFBY4P0dZblNW84XWOYTR
-         eIWJUlTMmuXy/l/ThaLUY27vW0LvFdziNTwtBYA8=
-Date:   Wed, 9 Nov 2022 13:01:02 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        jay.dolan@accesio.com, cang1@live.co.uk,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver
- for quad-uart support.
-Message-ID: <Y2uWftt5b2AWyTtX@kroah.com>
-References: <20221107124517.1364484-1-kumaravel.thiagarajan@microchip.com>
- <20221107124517.1364484-2-kumaravel.thiagarajan@microchip.com>
+        Wed, 9 Nov 2022 07:02:09 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57BB2CE30;
+        Wed,  9 Nov 2022 04:02:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667995328; x=1699531328;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=hypwsi6BOBxwCxzYBfJ6znER4INgKD9gmMosAIAe8os=;
+  b=T29Vnlu9HD24NzsK9BxZfPT/PviIDkAUJwwqUsi1uDR/op0imtKVwemd
+   ARFQVmxo8PaJoRfN8ozoSofKrO32YbtBPOuKLuvtSKUHzqCflZvH6KSUs
+   LVezkR0Ni0XDuQ1k+ZaIUXfH9ddw/Mzlv1hdqzRYKzCprv2+mTtcUxC88
+   9F8Uujqbx6WtOHCTyBnDFk3PkV1Mw0v5gtOCWNUt+nrrks6xNWgEMaUup
+   8qHnORca+mIEm+N45erPHoKsz5RfXdXBc+k4N0KCpw03SNwZfK+NDiWaI
+   BgekN7Hz16O0E2ztBegHo/MpHrXq7P6ICLFShDw1DQpgmLSrS940gwaOM
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="309669979"
+X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
+   d="scan'208";a="309669979"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 04:02:08 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="779320963"
+X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
+   d="scan'208";a="779320963"
+Received: from jsanche3-mobl1.ger.corp.intel.com ([10.251.219.48])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 04:02:06 -0800
+Date:   Wed, 9 Nov 2022 14:02:04 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-imx@nxp.com
+Subject: Re: [PATCH 1/2] tty: serial: fsl_lpuart: only enable Idle Line
+ Interrupt for non-dma case
+In-Reply-To: <20221109104515.17266-2-sherry.sun@nxp.com>
+Message-ID: <154eb2b-9467-e915-f51c-18d616c81d34@linux.intel.com>
+References: <20221109104515.17266-1-sherry.sun@nxp.com> <20221109104515.17266-2-sherry.sun@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221107124517.1364484-2-kumaravel.thiagarajan@microchip.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 06:15:15PM +0530, Kumaravel Thiagarajan wrote:
-> +++ b/drivers/tty/serial/8250/8250_pcilib.c
-> @@ -0,0 +1,31 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Microchip pci1xxxx 8250 library. */
+On Wed, 9 Nov 2022, Sherry Sun wrote:
 
-Better name and a copyright line?
-
+> For the lpuart driver, the Idle Line Interrupt Enable now is only needed
+> for the CPU mode, so enable the UARTCTRL_ILIE at the correct place, and
+> clear it when shutdown.
+> 
+> Also need to configure the suitable UARTCTRL_IDLECFG, now the value is
+> 0x7, represent 128 idle characters will trigger the Idle Line Interrupt.
+>
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index bd685491eead..f5a0a14fa366 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -179,7 +179,7 @@
+>  #define UARTCTRL_SBK		0x00010000
+>  #define UARTCTRL_MA1IE		0x00008000
+>  #define UARTCTRL_MA2IE		0x00004000
+> -#define UARTCTRL_IDLECFG	0x00000100
+> +#define UARTCTRL_IDLECFG_OFF   8
+>  #define UARTCTRL_LOOPS		0x00000080
+>  #define UARTCTRL_DOZEEN		0x00000040
+>  #define UARTCTRL_RSRC		0x00000020
+> @@ -230,6 +230,8 @@
+>  #define GLOBAL_RST_MIN_US	20
+>  #define GLOBAL_RST_MAX_US	40
+>  
+> +#define UARTCTRL_IDLECFG	0x7
 > +
-> +#include <linux/pci.h>
-> +#include "8250.h"
-> +
-> +int pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
-> +		   u8 bar, unsigned int offset, int regshift)
-> +{
-> +	if (bar >= PCI_STD_NUM_BARS)
-> +		return -EINVAL;
-> +
-> +	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
-> +		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
-> +			return -ENOMEM;
-> +
-> +		port->port.iotype = UPIO_MEM;
-> +		port->port.iobase = 0;
-> +		port->port.mapbase = pci_resource_start(dev, bar) + offset;
-> +		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
-> +		port->port.regshift = regshift;
-> +	} else {
-> +		port->port.iotype = UPIO_PORT;
-> +		port->port.iobase = pci_resource_start(dev, bar) + offset;
-> +		port->port.mapbase = 0;
-> +		port->port.membase = NULL;
-> +		port->port.regshift = 0;
-> +	}
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_setup_port);
 
-This needs a better name, 8250_pci_setup_port()?  This is not a pci core
-function.
+GEN_MASK() to the correct bits directly?
 
-thanks,
+>  /* Rx DMA timeout in ms, which is used to calculate Rx ring buffer size */
+>  #define DMA_RX_TIMEOUT		(10)
+>  
+> @@ -1506,7 +1508,7 @@ static void lpuart32_setup_watermark(struct lpuart_port *sport)
+>  	ctrl = lpuart32_read(&sport->port, UARTCTRL);
+>  	ctrl_saved = ctrl;
+>  	ctrl &= ~(UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_TE |
+> -			UARTCTRL_RIE | UARTCTRL_RE);
+> +			UARTCTRL_RIE | UARTCTRL_RE | UARTCTRL_ILIE);
+>  	lpuart32_write(&sport->port, ctrl, UARTCTRL);
+>  
+>  	/* enable FIFO mode */
+> @@ -1530,7 +1532,8 @@ static void lpuart32_setup_watermark_enable(struct lpuart_port *sport)
+>  	lpuart32_setup_watermark(sport);
+>  
+>  	temp = lpuart32_read(&sport->port, UARTCTRL);
+> -	temp |= UARTCTRL_RE | UARTCTRL_TE | UARTCTRL_ILIE;
+> +	temp |= UARTCTRL_RE | UARTCTRL_TE;
+> +	temp |= UARTCTRL_IDLECFG << UARTCTRL_IDLECFG_OFF;
 
-greg k-h
+FIELD_PREP() would probably be more appropriate for this? Then you can 
+also drop the shift offset.
+
+-- 
+ i.
+
+>  	lpuart32_write(&sport->port, temp, UARTCTRL);
+>  }
+>  
+> @@ -1669,7 +1672,7 @@ static void lpuart32_configure(struct lpuart_port *sport)
+>  	}
+>  	temp = lpuart32_read(&sport->port, UARTCTRL);
+>  	if (!sport->lpuart_dma_rx_use)
+> -		temp |= UARTCTRL_RIE;
+> +		temp |= UARTCTRL_RIE | UARTCTRL_ILIE;
+>  	if (!sport->lpuart_dma_tx_use)
+>  		temp |= UARTCTRL_TIE;
+>  	lpuart32_write(&sport->port, temp, UARTCTRL);
+> @@ -1770,7 +1773,7 @@ static void lpuart32_shutdown(struct uart_port *port)
+>  
+>  	/* disable Rx/Tx and interrupts */
+>  	temp = lpuart32_read(port, UARTCTRL);
+> -	temp &= ~(UARTCTRL_TE | UARTCTRL_RE |
+> +	temp &= ~(UARTCTRL_TE | UARTCTRL_RE | UARTCTRL_ILIE |
+>  			UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
+>  	lpuart32_write(port, temp, UARTCTRL);
+>  
+> 
+
