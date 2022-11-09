@@ -2,93 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E569FC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D54AC433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbiKIMHS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 07:07:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
+        id S229795AbiKIMTi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 07:19:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiKIMHP (ORCPT
+        with ESMTP id S229896AbiKIMTh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 07:07:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A1C2CDED;
-        Wed,  9 Nov 2022 04:07:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 957F7B81E1F;
-        Wed,  9 Nov 2022 12:07:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25BAC433C1;
-        Wed,  9 Nov 2022 12:07:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667995632;
-        bh=EcGvod2J7G0EVeowczE6d3P4Q6057Dkap40V5xBec00=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zhKNOILCuudrEnFWLLop6f5k4YkSkLQ82UcZOVQ58SS6C4kIHy+JSor41RVjo7lHi
-         152dPz1nRbJWOBqqjcmDGsf+TtU7tFs8OaSPtlFovWOJ8Vvrb6hBnUIyU5LkujaiH5
-         TynH0AUHYF+1G+HNQeGX98y1RwieMqf6c1UFiIXg=
-Date:   Wed, 9 Nov 2022 13:07:08 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Gabriel Somlo <gsomlo@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
-        joel@jms.id.au, david.abdurachmanov@sifive.com,
-        florent@enjoy-digital.fr
-Subject: Re: [PATCH v1 1/3] serial: liteuart: cosmetic changes
-Message-ID: <Y2uX7GJYOmaGvRR2@kroah.com>
-References: <20221107171500.2537938-1-gsomlo@gmail.com>
- <20221107171500.2537938-2-gsomlo@gmail.com>
+        Wed, 9 Nov 2022 07:19:37 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0A02612E;
+        Wed,  9 Nov 2022 04:19:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667996374; x=1699532374;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=bCkzJnJGlqi2Ptd+wmfFB6aY/2jG6IDmsgal7Led+7Q=;
+  b=k8cctlNhz6shQhnGSiOBlWPYWgohVe1CuxXkIPReg56FEZVQwFCyhQcN
+   L8tYU8jCc5CIvUVE9SKh6VvnhM+JuQVYRIvPw1v8DqqJQ+yzX9HoEnLvL
+   7xBHyg0D7tz3JLeLgzQs2GgoTWqWFj/rNWASY1lnfc36/OT3o3SFHTA5k
+   NIeTwBrdN4aBqhILQoWX61fUzzRbW8fvUqDkq+hnxX0oO0uPidgdBIgsL
+   53XCYnr6UsehsFEL0cicaiVL1o+fsVkRUf7pQ47XdxKpZbRqYxKsjtm+0
+   YPnBs0AuRGNlYQPjGP5qx3wd5d1BnRlUISRGcVLGwxqzD7o2oKqRmCwlK
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="312123326"
+X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
+   d="scan'208";a="312123326"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 04:19:27 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="881911295"
+X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
+   d="scan'208";a="881911295"
+Received: from jsanche3-mobl1.ger.corp.intel.com ([10.251.219.48])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 04:19:25 -0800
+Date:   Wed, 9 Nov 2022 14:19:21 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-imx@nxp.com
+Subject: Re: [PATCH 2/2] tty: serial: fsl_lpuart: improve lpuart32 registers
+ clearing when shutdown
+In-Reply-To: <20221109104515.17266-3-sherry.sun@nxp.com>
+Message-ID: <9e682825-3420-fbe3-eb9d-8e864430363a@linux.intel.com>
+References: <20221109104515.17266-1-sherry.sun@nxp.com> <20221109104515.17266-3-sherry.sun@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221107171500.2537938-2-gsomlo@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 07, 2022 at 12:14:58PM -0500, Gabriel Somlo wrote:
-> Make some cosmetic/stylistic (non-functional) improvements:
-> 
-> 1. Use a DRV_NAME macro to avoid hard-coding "liteuart" in multiple
-> locations throughout the source file
-> 
-> 2. Use bit numbers instead of magic constants for event flags
-> 
-> 3. Remove stub uart_ops methods that are not called unconditionally
-> from serial_core; Document stubs that are required by serial_core
-> 
-> 4. Don't set unused port->regshift and port->iobase fields gratuitously
-> during probe()
-> 
-> 5. Improve coding style in liteuart_init()
+On Wed, 9 Nov 2022, Sherry Sun wrote:
 
-When you list different things you do in a single patch, that means you
-should break this up into individual patches.
+> Need to clear the UARTSTAT and UARTMODIR registers when shutdown the
+> uart port, also clear the Rx/Tx DMA enable bits and loopback
+> configuration bit.
 
-Please do that here, this should be at least 5 patches.
+This lacks answer to "Why?" question. Think about somebody not as familiar 
+with the HW as you are looking back to this very commit message like 5 
+years from now and wondering why this change was made.
 
+Preferrably make a separate change out of all these four changes if the 
+answers to why question are different.
 
+It would also help in deciding whether Fixes tag is necessary or not 
+since you didn't seem to include.
 
-> 
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+-- 
+ i.
+
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 > ---
->  drivers/tty/serial/liteuart.c | 38 +++++++++--------------------------
->  1 file changed, 10 insertions(+), 28 deletions(-)
+>  drivers/tty/serial/fsl_lpuart.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 4c0604325ee9..4b9cca249828 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -18,6 +18,8 @@
->  #include <linux/tty_flip.h>
->  #include <linux/xarray.h>
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index f5a0a14fa366..43d9d6a6e94a 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1771,11 +1771,22 @@ static void lpuart32_shutdown(struct uart_port *port)
 >  
-> +#define DRV_NAME "liteuart"
-
-Just use KBUILD_MODNAME please.
-
-thanks,
-
-greg k-h
+>  	spin_lock_irqsave(&port->lock, flags);
+>  
+> +	/* clear statue */
+> +	temp = lpuart32_read(&sport->port, UARTSTAT);
+> +	lpuart32_write(&sport->port, temp, UARTSTAT);
+> +
+> +	/* disable Rx/Tx DMA */
+> +	temp = lpuart32_read(port, UARTBAUD);
+> +	temp &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
+> +	lpuart32_write(port, temp, UARTBAUD);
+> +
+>  	/* disable Rx/Tx and interrupts */
+>  	temp = lpuart32_read(port, UARTCTRL);
+>  	temp &= ~(UARTCTRL_TE | UARTCTRL_RE | UARTCTRL_ILIE |
+> -			UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
+> +			UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE |
+> +			UARTCTRL_LOOPS);
+>  	lpuart32_write(port, temp, UARTCTRL);
+> +	lpuart32_write(port, 0, UARTMODIR);
+>  
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  
+> 
