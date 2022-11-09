@@ -2,98 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1252CC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 09:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C11C433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 09:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230310AbiKIJLO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 04:11:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S229550AbiKIJor (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 04:44:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiKIJKd (ORCPT
+        with ESMTP id S229508AbiKIJoq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 04:10:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134E812A97
-        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 01:10:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A696D6194D
-        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 09:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA7EC433D7;
-        Wed,  9 Nov 2022 09:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667985011;
-        bh=bkYZTtOLzDgwBZKcRK0AMGmXmk8TRCdzpX4SqBFmxg4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sccMhsLPzKCOXhaVWdmeWV+UQPoA9cc5mogJUUfiVPhFSOgxEziXny17xCnuI867T
-         HrAUk8fm3nM3Vj6XLjyxyf7zSNljdh5J+5cwNyDIrjRzwFPKiZVZHWarHIm+fUpcEo
-         sDJkK+QWm63I4Q7hi0lc+qr3hd6qWuqy4acyVgxI=
-Date:   Wed, 9 Nov 2022 10:10:08 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Gaosheng Cui <cuigaosheng1@huawei.com>
-Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
-        andre.przywara@arm.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: pl011: Fix error handling in pl011_init()
-Message-ID: <Y2tucFPU15TsbRBp@kroah.com>
-References: <20221109084626.2032013-1-cuigaosheng1@huawei.com>
+        Wed, 9 Nov 2022 04:44:46 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBB422BE4;
+        Wed,  9 Nov 2022 01:44:45 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1667987084;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kPAk+3cLOj2C0i9syAj3cq39vfGjg5hFSD8YkhVNKCk=;
+        b=KGQPt3BuMB8UxOiIeFc+7+g3uFtm5Q+FCy0D1VPuuhLPP7wqeYjclkvf1RZxSMfB6ZYBCt
+        O5f5FF0udqPW6CI/S0q6BcPp+Y5RSQoTsPStReWTA85+wKkTrJjAgTbSEAeoXsA3kVvFE7
+        PEXiLJdpH/khQx7aMlU8mUKl1Y4fvdVWoa8Ty7z8J5eH3ft0N/k/3y6tPQqkXFUeFJWakU
+        WtOA5VwvhTYQ/TBB3pnQwMlyenIw21lmNsyYhrjRRERT4DVCo4owgVakHWDZhAnMSIzOfY
+        kwrI2VjoZ+EHwYrhzKzN6fxSAY1G9IMwfNLmcCELUTNB4I5Se7wkQhlDwQTqeg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1667987084;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kPAk+3cLOj2C0i9syAj3cq39vfGjg5hFSD8YkhVNKCk=;
+        b=LsawK0XIGHqnjIumlhGVKLy3i3Z9JVErl5RyBoTCpwhm33D+5Tr+t5xSfti/otQSEWiBov
+        Du2+ohG3YC9rpIDQ==
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v3 36/40] tty: serial: kgdboc: use
+ console_list_lock for list traversal
+In-Reply-To: <20221109090631.wbtar2ho45x5yanl@ash.lan>
+References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+ <20221107141638.3790965-37-john.ogness@linutronix.de>
+ <20221109090631.wbtar2ho45x5yanl@ash.lan>
+Date:   Wed, 09 Nov 2022 10:50:43 +0106
+Message-ID: <87tu388nsk.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109084626.2032013-1-cuigaosheng1@huawei.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 04:46:26PM +0800, Gaosheng Cui wrote:
-> When amba_driver_register failed, we need to unregister the platform
-> driver which have been registered, otherwise there maybe resource leak,
-> so we add error handlings in pl011_init() to fix it.
-> 
-> Fixes: 0dd1e247fd39 ("drivers: PL011: add support for the ARM SBSA generic UART")
-> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 6d8552506091..ef6d9941f972 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2982,11 +2982,23 @@ static struct amba_driver pl011_driver = {
->  
->  static int __init pl011_init(void)
->  {
-> +	int ret;
-> +
->  	printk(KERN_INFO "Serial: AMBA PL011 UART driver\n");
->  
-> -	if (platform_driver_register(&arm_sbsa_uart_platform_driver))
-> +	ret = platform_driver_register(&arm_sbsa_uart_platform_driver);
-> +	if (unlikely(ret)) {
+On 2022-11-09, Daniel Thompson <daniel.thompson@linaro.org> wrote:
+>> @@ -463,9 +476,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+>>  	 * serial drivers might be OK with this, print a warning once per
+>>  	 * boot if we detect this case.
+>>  	 */
+>> -	for_each_console(con)
+>> +	cookie = console_srcu_read_lock();
+>> +	for_each_console_srcu(con) {
+>>  		if (con == kgdboc_earlycon_io_ops.cons)
+>> -			return;
+>> +			break;
+>> +	}
+>> +	console_srcu_read_unlock(cookie);
+>> +	if (con)
+>> +		return;
+>
+> This change isn't mentioned in the patch description.
 
-Only use likely/unlikely if you can prove with a benchmark that it makes
-a measurable change to do so.
+I will move this change into its own separate patch.
 
-Here, on the init error path, it will never happen.
+    tty: serial: kgdboc: use srcu console list iterator
 
-And how are you causing this call to fail?
+    Use srcu console list iteration for safe console list traversal.
 
-How was this tested?
+Thanks.
 
->  		pr_warn("could not register SBSA UART platform driver\n");
-> -	return amba_driver_register(&pl011_driver);
-> +		return ret;
-> +	}
-> +
-> +	ret = amba_driver_register(&pl011_driver);
-> +	if (unlikely(ret)) {
-
-Again, never use unlikely() like this.
-
-And again, how did you get this to fail under normal operation?  And how
-was this tested?
-
-thanks,
-
-greg k-h
+John
