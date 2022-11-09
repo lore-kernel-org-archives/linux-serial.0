@@ -2,97 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69ABC433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 11:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFC7C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229567AbiKILzO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 06:55:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
+        id S229633AbiKIMBK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 07:01:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiKILzN (ORCPT
+        with ESMTP id S229541AbiKIMBK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 06:55:13 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F201B1DF14;
-        Wed,  9 Nov 2022 03:55:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667994912; x=1699530912;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=7MoJf6hwU/jiZpPsHcDpL18qbN8uRxN5JFzI/TAVayo=;
-  b=he4neB0pCjBcjmR6/6dK4lvhIcapUWnXS+QXOkd3pvro2c+408rL+WgA
-   YnL6htWbEQ7MtDR1VqTFyy3VlnrB9TL3Lj4f0lcVv7DjCoO0q6rR9zxFH
-   dHMPIoXJCGO5f/ZJnixA33NNUI0KxekURgy+PWoJ41jZiyl4+hN47fXCC
-   P2JgwvkoT6nJrr+cvHctDrBbOugwbNERnolBCa30JAbolGcHhxiCPFqqO
-   u8jfaAuuW70o4BQWIu8ERYQslvYlJlgyumj7KJyfohz+wN031yH3bfy+Z
-   849TQS1e2gvKsKYHV4rTa3jbCW83wLTXvMobOeQOhwKrrKaqj4MNXGENL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="375234356"
-X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="375234356"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 03:55:12 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="614663390"
-X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="614663390"
-Received: from jsanche3-mobl1.ger.corp.intel.com ([10.251.219.48])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 03:55:10 -0800
-Date:   Wed, 9 Nov 2022 13:55:07 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     delisun <delisun@pateo.com.cn>
-cc:     linux@armlinux.org.uk,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: pl011: Do not clear RX FIFO & RX interrupt in
- unthrottle.
-In-Reply-To: <20221109105822.332011-1-delisun@pateo.com.cn>
-Message-ID: <b4de808e-333-e1f9-b047-1ecadb29838e@linux.intel.com>
-References: <20221109105822.332011-1-delisun@pateo.com.cn>
+        Wed, 9 Nov 2022 07:01:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BE22CDE2;
+        Wed,  9 Nov 2022 04:01:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3ECDEB81E00;
+        Wed,  9 Nov 2022 12:01:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED837C433D6;
+        Wed,  9 Nov 2022 12:01:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1667995265;
+        bh=MMR9BuGh9Gom2AgUFKnJO3eflwuddmurD1iEbH/TJwg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j2Dr4QQnwLnfWBdZY6eQWbcY/jjiye/O3ZEZ9aZw3WO85oPq7faKuIogs5ghZgoAN
+         plR3L6MRr+KiAlRESq0GvHIIoMpGwZALMBfZxZviMYm4xsFBY4P0dZblNW84XWOYTR
+         eIWJUlTMmuXy/l/ThaLUY27vW0LvFdziNTwtBYA8=
+Date:   Wed, 9 Nov 2022 13:01:02 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
+        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
+        jay.dolan@accesio.com, cang1@live.co.uk,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
+        phil.edworthy@renesas.com, lukas@wunner.de,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v3 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver
+ for quad-uart support.
+Message-ID: <Y2uWftt5b2AWyTtX@kroah.com>
+References: <20221107124517.1364484-1-kumaravel.thiagarajan@microchip.com>
+ <20221107124517.1364484-2-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221107124517.1364484-2-kumaravel.thiagarajan@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 9 Nov 2022, delisun wrote:
+On Mon, Nov 07, 2022 at 06:15:15PM +0530, Kumaravel Thiagarajan wrote:
+> +++ b/drivers/tty/serial/8250/8250_pcilib.c
+> @@ -0,0 +1,31 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Microchip pci1xxxx 8250 library. */
 
-> Clearing the RX FIFO will cause data loss.
-> Copy the pl011_enabl_interrupts implementation, and remove the clear
-> interrupt and FIFO part of the code.
-> 
+Better name and a copyright line?
 
-You should add Fixes tag.
-
--- 
- i.
-
-
-> Signed-off-by: delisun <delisun@pateo.com.cn>
-> ---
->  drivers/tty/serial/amba-pl011.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 5cdced39eafd..08034e5dcec0 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1828,8 +1828,17 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
->  static void pl011_unthrottle_rx(struct uart_port *port)
->  {
->  	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
-> +	unsigned long flags;
->  
-> -	pl011_enable_interrupts(uap);
-> +	spin_lock_irqsave(&uap->port.lock, flags);
 > +
-> +	uap->im = UART011_RTIM;
-> +	if (!pl011_dma_rx_running(uap))
-> +		uap->im |= UART011_RXIM;
+> +#include <linux/pci.h>
+> +#include "8250.h"
 > +
-> +	pl011_write(uap->im, uap, REG_IMSC);
+> +int pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
+> +		   u8 bar, unsigned int offset, int regshift)
+> +{
+> +	if (bar >= PCI_STD_NUM_BARS)
+> +		return -EINVAL;
 > +
-> +	spin_unlock_irqrestore(&uap->port.lock, flags);
+> +	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
+> +		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
+> +			return -ENOMEM;
+> +
+> +		port->port.iotype = UPIO_MEM;
+> +		port->port.iobase = 0;
+> +		port->port.mapbase = pci_resource_start(dev, bar) + offset;
+> +		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
+> +		port->port.regshift = regshift;
+> +	} else {
+> +		port->port.iotype = UPIO_PORT;
+> +		port->port.iobase = pci_resource_start(dev, bar) + offset;
+> +		port->port.mapbase = 0;
+> +		port->port.membase = NULL;
+> +		port->port.regshift = 0;
+> +	}
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_setup_port);
 
+This needs a better name, 8250_pci_setup_port()?  This is not a pci core
+function.
+
+thanks,
+
+greg k-h
