@@ -2,169 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE13C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E569FC4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 12:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiKIMCw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 07:02:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
+        id S229606AbiKIMHS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 07:07:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiKIMCv (ORCPT
+        with ESMTP id S229745AbiKIMHP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 07:02:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795842D76B;
-        Wed,  9 Nov 2022 04:02:50 -0800 (PST)
+        Wed, 9 Nov 2022 07:07:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A1C2CDED;
+        Wed,  9 Nov 2022 04:07:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD19B81C98;
-        Wed,  9 Nov 2022 12:02:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AEC8C433D6;
-        Wed,  9 Nov 2022 12:02:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 957F7B81E1F;
+        Wed,  9 Nov 2022 12:07:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25BAC433C1;
+        Wed,  9 Nov 2022 12:07:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1667995367;
-        bh=/yQM/f090OAeWMsA4JwUWTtZHi+F0/lBIpwhZOAAhCY=;
+        s=korg; t=1667995632;
+        bh=EcGvod2J7G0EVeowczE6d3P4Q6057Dkap40V5xBec00=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=y3ey7U9icl93mDMBa9apturhQJNCymQjL44QehXBLY56m/SuGtzHvxpgRkIreQY/4
-         6hDDba2M3Yk0F4Njub8O9P6aUsZkACgJZnLjbYwjltcVz4+ewslKOFb+7ywDnGG4/K
-         OI9X584CNF8cqZg/Jj8gzQGRmaWAQysf2L01L0QU=
-Date:   Wed, 9 Nov 2022 13:02:43 +0100
+        b=zhKNOILCuudrEnFWLLop6f5k4YkSkLQ82UcZOVQ58SS6C4kIHy+JSor41RVjo7lHi
+         152dPz1nRbJWOBqqjcmDGsf+TtU7tFs8OaSPtlFovWOJ8Vvrb6hBnUIyU5LkujaiH5
+         TynH0AUHYF+1G+HNQeGX98y1RwieMqf6c1UFiIXg=
+Date:   Wed, 9 Nov 2022 13:07:08 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] tty: Convert tty_buffer flags to bool
-Message-ID: <Y2uW4/lxooSO2FNi@kroah.com>
-References: <20221019105504.16800-1-ilpo.jarvinen@linux.intel.com>
- <Y2Mtricfx/HxiEHc@kroah.com>
- <b9162bab-41aa-e24c-825-ec1a974b65e6@linux.intel.com>
+To:     Gabriel Somlo <gsomlo@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
+        joel@jms.id.au, david.abdurachmanov@sifive.com,
+        florent@enjoy-digital.fr
+Subject: Re: [PATCH v1 1/3] serial: liteuart: cosmetic changes
+Message-ID: <Y2uX7GJYOmaGvRR2@kroah.com>
+References: <20221107171500.2537938-1-gsomlo@gmail.com>
+ <20221107171500.2537938-2-gsomlo@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b9162bab-41aa-e24c-825-ec1a974b65e6@linux.intel.com>
+In-Reply-To: <20221107171500.2537938-2-gsomlo@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 03, 2022 at 12:11:26PM +0200, Ilpo Järvinen wrote:
-> On Thu, 3 Nov 2022, Greg KH wrote:
+On Mon, Nov 07, 2022 at 12:14:58PM -0500, Gabriel Somlo wrote:
+> Make some cosmetic/stylistic (non-functional) improvements:
 > 
-> > On Wed, Oct 19, 2022 at 01:55:03PM +0300, Ilpo Järvinen wrote:
-> > > The struct tty_buffer has flags which is only used for storing TTYB_NORMAL.
-> > > There is also a few quite confusing operations for checking the presense
-> > > of TTYB_NORMAL. Simplify things by converting flags to bool.
-> > > 
-> > > Despite the name remaining the same, the meaning of "flags" is altered
-> > > slightly by this change. Previously it referred to flags of the buffer
-> > > (only TTYB_NORMAL being used as a flag). After this change, flags tell
-> > > whether the buffer contains/should be allocated with flags array along
-> > > with character data array. It is much more suitable name that
-> > > TTYB_NORMAL was for this purpose, thus the name remains.
-> > > 
-> > > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > > ---
-> > > 
-> > > v2:
-> > > - Make it more obvious why flags is not renamed (both in kerneldoc
-> > >   comment and commit message).
-> > > 
-> > >  drivers/tty/tty_buffer.c   | 28 ++++++++++++++--------------
-> > >  include/linux/tty_buffer.h |  5 +----
-> > >  include/linux/tty_flip.h   |  4 ++--
-> > >  3 files changed, 17 insertions(+), 20 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> > > index 5e287dedce01..b408d830fcbc 100644
-> > > --- a/drivers/tty/tty_buffer.c
-> > > +++ b/drivers/tty/tty_buffer.c
-> > > @@ -107,7 +107,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
-> > >  	p->commit = 0;
-> > >  	p->lookahead = 0;
-> > >  	p->read = 0;
-> > > -	p->flags = 0;
-> > > +	p->flags = true;
-> > >  }
-> > >  
-> > >  /**
-> > > @@ -249,7 +249,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
-> > >   * __tty_buffer_request_room	-	grow tty buffer if needed
-> > >   * @port: tty port
-> > >   * @size: size desired
-> > > - * @flags: buffer flags if new buffer allocated (default = 0)
-> > > + * @flags: buffer has to store flags along character data
-> > >   *
-> > >   * Make at least @size bytes of linear space available for the tty buffer.
-> > >   *
-> > > @@ -260,19 +260,19 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
-> > >   * Returns: the size we managed to find.
-> > >   */
-> > >  static int __tty_buffer_request_room(struct tty_port *port, size_t size,
-> > > -				     int flags)
-> > > +				     bool flags)
-> > >  {
-> > >  	struct tty_bufhead *buf = &port->buf;
-> > >  	struct tty_buffer *b, *n;
-> > >  	int left, change;
-> > >  
-> > >  	b = buf->tail;
-> > > -	if (b->flags & TTYB_NORMAL)
-> > > +	if (!b->flags)
-> > >  		left = 2 * b->size - b->used;
-> > >  	else
-> > >  		left = b->size - b->used;
-> > >  
-> > > -	change = (b->flags & TTYB_NORMAL) && (~flags & TTYB_NORMAL);
-> > > +	change = !b->flags && flags;
-> > >  	if (change || left < size) {
-> > >  		/* This is the slow path - looking for new buffers to use */
-> > >  		n = tty_buffer_alloc(port, size);
-> > > @@ -300,7 +300,7 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
-> > >  
-> > >  int tty_buffer_request_room(struct tty_port *port, size_t size)
-> > >  {
-> > > -	return __tty_buffer_request_room(port, size, 0);
-> > > +	return __tty_buffer_request_room(port, size, true);
-> > 
-> > Did this logic just get inverted?
-> >
-> > Maybe it's the jet-lag, but this feels like it's not correct anymore.
+> 1. Use a DRV_NAME macro to avoid hard-coding "liteuart" in multiple
+> locations throughout the source file
 > 
-> As you can see, the old way is sooo confusing :-). I'll admit I stumbled 
-> myself with this same default thing first. It's even more confusing than 
-> the other places.
+> 2. Use bit numbers instead of magic constants for event flags
 > 
-> This check is true when flag bytes are present / required to be present:
-> 	(~flags & TTYB_NORMAL)
-> It's very very confusing way to check such condition due to layered 
-> reverse logic.
+> 3. Remove stub uart_ops methods that are not called unconditionally
+> from serial_core; Document stubs that are required by serial_core
 > 
-> With old code, the per character flag bytes won't be there in the buffer 
-> if TTYB_NORMAL is present. Thus, the old default of 0 means 
-> __tty_buffer_request_room will allocate room for those flag bytes.
+> 4. Don't set unused port->regshift and port->iobase fields gratuitously
+> during probe()
 > 
-> If you think about it carefully, the old code passed 0. Therefore, ~0 & 
-> TTYB_NORMAL is going to be true. After my change true is passed and true 
-> matches to the original code.
-> 
-> So the logic was not inverted. I just cleared those layered reverse logic 
-> traps the original had which makes my patch look it's inverting things.
-> 
-> I really appreciate you took your time to find out this little detail
-> from it! This is far from a simple change because of how trappy the old
-> way of doing things is.
-> 
-> > Maybe a commet up above where you calculate "left" would make more sense
-> > as to what is going on?
-> 
-> Do you mean you want me to add a comment there? I don't see any 
-> pre-existing comments that you could be pointing me to.
-> 
-> 
-> Should I resubmit it since you probably dropped the patch?
+> 5. Improve coding style in liteuart_init()
 
-No need, I took is as-is now, thanks.
+When you list different things you do in a single patch, that means you
+should break this up into individual patches.
+
+Please do that here, this should be at least 5 patches.
+
+
+
+> 
+> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> ---
+>  drivers/tty/serial/liteuart.c | 38 +++++++++--------------------------
+>  1 file changed, 10 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> index 4c0604325ee9..4b9cca249828 100644
+> --- a/drivers/tty/serial/liteuart.c
+> +++ b/drivers/tty/serial/liteuart.c
+> @@ -18,6 +18,8 @@
+>  #include <linux/tty_flip.h>
+>  #include <linux/xarray.h>
+>  
+> +#define DRV_NAME "liteuart"
+
+Just use KBUILD_MODNAME please.
+
+thanks,
 
 greg k-h
