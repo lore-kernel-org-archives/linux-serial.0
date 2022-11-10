@@ -2,63 +2,63 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB12C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 00:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D7BC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 00:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbiKJApI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 19:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        id S231613AbiKJApJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 19:45:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiKJApG (ORCPT
+        with ESMTP id S231898AbiKJApH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 19:45:06 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD0310B68;
-        Wed,  9 Nov 2022 16:45:04 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id g10so295278qkl.6;
-        Wed, 09 Nov 2022 16:45:04 -0800 (PST)
+        Wed, 9 Nov 2022 19:45:07 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB23610B4B;
+        Wed,  9 Nov 2022 16:45:05 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id v8so276361qkg.12;
+        Wed, 09 Nov 2022 16:45:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8WawqzZk7R2Fk2wsVcJJHQ6DiWGY8oW1x9eP6skVjzc=;
-        b=BouGuuFJgYKQlwMFnLgGAomksp6JBXvMmPKLTxSZ4G+wA3ulfHAPluhAeShcJ1lOp3
-         Sr2sZnNvNVX6XYeSEzxSpYNap/O2tMf/fJRnhmKTI0OWk1M+jvCYdbxEIwTCG7Jhlwdc
-         vXFE/Z+vKHdgInLez+Io5DllqAz0hwdb799amr/myCmGoKsFJW00gNClTvumZrI+lh5k
-         WvKMoLXpGBHR83oIF4lXM3W2xAAOAR7Mj/GLWKNUxT/2XcoXqKyaxHWyYpEIkwQ2aJVN
-         7UN1dwNzmIyQpCqBy9x6KTzU+OQOwD94cGF81nhjI8adYczgVTYWshljVGCsEJF79ZJO
-         9FQQ==
+        bh=JGJtELmNn2N31csZAgx2uQhrYPHpFF+hYpnYsk0wKOQ=;
+        b=PGzXe0NF6uhRCr/YlqlmwGO9Vn7L9XDFgrwLwqdU3s+9e4Guk+msChFd1ZpbLpuR/j
+         krg277Y74VLK04l9Kn9/mpojXgvJfkw7SlwoxpvBzFrCPbfwmwSrHGkY6EWSIqocbZnK
+         7qC6MdJIoAS6tf4nib2gB70ymqOlYvVj0GgwYxN37N/dqIC9T/emrkQ8tGx/BEhzqI3/
+         TvnBgNQgffvQVNSkMBqJaaVwsdoE5tHlXdW1UTi+DakZPAybRW+AAGAh5eKSGgwIY6Xc
+         +RCYUf0P8et2C915xHdKldzeUBB1rM1HkFGtSikA6xzOi9bxAAtx/JVLKXVzXfVSodTG
+         /9kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8WawqzZk7R2Fk2wsVcJJHQ6DiWGY8oW1x9eP6skVjzc=;
-        b=bQdzd7XbDzlCatWIT/BPjspo7DTUs2Or7EciUAlXdNP6tNwH7B14mx7utbr56OCpHF
-         FvnWFEc3K2Y2xWVe2ed5Cd8TJRnUGC9Eo+cTRH6vvSd7Pws82pgTBLKPbxeyHEAu+ajS
-         uceMXl+ZNz9sxrK7o9xnb4kZ9/p8bNJ+5TmbH9YwM4wnj1uN8Y9JoIlK0DqkRmMLt5lp
-         RTlWqeySF5wlUgJyk2lPwsqa+HX2CDWsnbg+eRGfll3/NM3ABJA7fNZwN85Tzb7Xppw9
-         jmLZ4KEgrhI7VQbmzaEjsS5cWHpcNkSxyiWlGby3xcJ5asWSx1EITLn5Pa9OIwsu1OOc
-         HZXQ==
-X-Gm-Message-State: ACrzQf00zlz94FaPQTjooie8VfnmcpWrIUwcPow/wvd3JiBTEbT38VFO
-        Vjs0eDBpsAHYYBzlZ2sQE50sUghE/7OzpA==
-X-Google-Smtp-Source: AMsMyM7naaYh/kH/pOdwL/hcMy/xDCGY2DWQcT5gUgeEmxZgAwrBEqfdvgYDPqjwrrc0pSD2LfRITw==
-X-Received: by 2002:a05:620a:13db:b0:6fa:28c5:e06 with SMTP id g27-20020a05620a13db00b006fa28c50e06mr41372617qkl.629.1668041103435;
-        Wed, 09 Nov 2022 16:45:03 -0800 (PST)
+        bh=JGJtELmNn2N31csZAgx2uQhrYPHpFF+hYpnYsk0wKOQ=;
+        b=yqjWb7p3uSZpltnJwZd9CC9Rq1hn+l97XqJq2yJqw3SF6AvCXeOFOK8CEZGkMEVELS
+         MEl+7TJpNYEV7BNnWuTMK/dGZyvOCj8KDtUINL3EFJ3r59fPZpeLoF2DZyN4c0K0rdM3
+         z15YKvamjpNIvZXuuFNCnbb9gY4Qm7JdPpwqzb66Eom9eYzwGNtPV3Fdn9wcWEpn/QAE
+         sGvldyb7jn5Ft+R5EHmWysoz+2l3JNKbnzDf4gIt7uVF9hm6CZNHa9nWg+4Y3NVaDa4u
+         NmWdXU465XUTNwFb7jiCWdrM3dIzUEyu/yVYqKkVZLoLoc1PnPkTBvBSPqsjzFIsdvgo
+         I28A==
+X-Gm-Message-State: ANoB5pkeDSlCt5+7s78z7DWviBVTqJk6K0gmN8lC7IhJl0eu3g+phSPu
+        2KG/p+QiBnPkTU+NBkfi2VmG84eY/rEEkw==
+X-Google-Smtp-Source: AA0mqf7ONdtZeMcE/TcJ/hb19GNm8vvMxnryhx/U1o6x7euahSllOb1OxXcB+AaczRvC+v7GfQv5wg==
+X-Received: by 2002:ae9:f30d:0:b0:6fb:7cb:7b21 with SMTP id p13-20020ae9f30d000000b006fb07cb7b21mr7851196qkg.653.1668041105219;
+        Wed, 09 Nov 2022 16:45:05 -0800 (PST)
 Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
-        by smtp.gmail.com with ESMTPSA id x1-20020a05620a12a100b006eeb3165565sm11678506qki.80.2022.11.09.16.45.02
+        by smtp.gmail.com with ESMTPSA id x1-20020a05620a12a100b006eeb3165565sm11678506qki.80.2022.11.09.16.45.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 16:45:02 -0800 (PST)
+        Wed, 09 Nov 2022 16:45:04 -0800 (PST)
 From:   Gabriel Somlo <gsomlo@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
         joel@jms.id.au, david.abdurachmanov@gmail.com,
         florent@enjoy-digital.fr, geert@linux-m68k.org
-Subject: [PATCH v2 4/7] serial: liteuart: don't set unused port fields
-Date:   Wed,  9 Nov 2022 19:44:47 -0500
-Message-Id: <20221110004450.772768-5-gsomlo@gmail.com>
+Subject: [PATCH v2 6/7] serial: liteuart: separate RX loop from poll timer
+Date:   Wed,  9 Nov 2022 19:44:49 -0500
+Message-Id: <20221110004450.772768-7-gsomlo@gmail.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221110004450.772768-1-gsomlo@gmail.com>
 References: <20221110004450.772768-1-gsomlo@gmail.com>
@@ -68,28 +68,65 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Remove regshift and iobase port fields, since they are unused
-by the driver.
+Move the character-receive (RX) loop to its own dedicated function,
+and (for now) call that from the poll timer, liteuart_timer().
+
+This is in preparation for adding IRQ support to the receive path.
 
 Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
 ---
- drivers/tty/serial/liteuart.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/serial/liteuart.c | 25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index 90f6280c5452..5b684fd198b7 100644
+index 047d5ad32e13..aa7052280197 100644
 --- a/drivers/tty/serial/liteuart.c
 +++ b/drivers/tty/serial/liteuart.c
-@@ -264,9 +264,7 @@ static int liteuart_probe(struct platform_device *pdev)
- 	port->iotype = UPIO_MEM;
- 	port->flags = UPF_BOOT_AUTOCONF;
- 	port->ops = &liteuart_ops;
--	port->regshift = 2;
- 	port->fifosize = 16;
--	port->iobase = 1;
- 	port->type = PORT_UNKNOWN;
- 	port->line = dev_id;
- 	spin_lock_init(&port->lock);
+@@ -67,29 +67,34 @@ static struct uart_driver liteuart_driver = {
+ #endif
+ };
+ 
+-static void liteuart_timer(struct timer_list *t)
++static void liteuart_rx_chars(struct uart_port *port)
+ {
+-	struct liteuart_port *uart = from_timer(uart, t, timer);
+-	struct uart_port *port = &uart->port;
+ 	unsigned char __iomem *membase = port->membase;
+-	unsigned int flg = TTY_NORMAL;
+-	int ch;
+-	unsigned long status;
++	unsigned int status;
++	unsigned char ch;
+ 
+ 	while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
+ 		ch = litex_read8(membase + OFF_RXTX);
+ 		port->icount.rx++;
+ 
+ 		/* necessary for RXEMPTY to refresh its value */
+-		litex_write8(membase + OFF_EV_PENDING, EV_TX | EV_RX);
++		litex_write8(membase + OFF_EV_PENDING, EV_RX);
+ 
+ 		/* no overflow bits in status */
+ 		if (!(uart_handle_sysrq_char(port, ch)))
+-			uart_insert_char(port, status, 0, ch, flg);
+-
+-		tty_flip_buffer_push(&port->state->port);
++			uart_insert_char(port, status, 0, ch, TTY_NORMAL);
+ 	}
+ 
++	tty_flip_buffer_push(&port->state->port);
++}
++
++static void liteuart_timer(struct timer_list *t)
++{
++	struct liteuart_port *uart = from_timer(uart, t, timer);
++	struct uart_port *port = &uart->port;
++
++	liteuart_rx_chars(port);
++
+ 	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+ }
+ 
 -- 
 2.37.3
 
