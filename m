@@ -2,136 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD4DC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 01:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24105C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 02:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbiKJBKO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 20:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        id S232594AbiKJCDX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 21:03:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232147AbiKJBKN (ORCPT
+        with ESMTP id S232326AbiKJCCa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 20:10:13 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306CE20BFD;
-        Wed,  9 Nov 2022 17:10:13 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id cl5so209880wrb.9;
-        Wed, 09 Nov 2022 17:10:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=A4BVg09/STu01lFVH/5ornDK9lnhrRi6lMKaTSST7mY=;
-        b=OhEWGto4w919H51dq8VGsWY55Xa5sr9ra83dNKq9q2PHuJcIFEWhdLeu6Nmx4IKD78
-         Pm0tEh//QsSxYdx/YMpvM54JdmjGnRfhppWVD4SMnO+YrchiWc3RWQqQX1eu9LQyocMC
-         ywOy7zEu+E3CKhDhExA6UERqCVDHff3e6nGEU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=A4BVg09/STu01lFVH/5ornDK9lnhrRi6lMKaTSST7mY=;
-        b=iKFVltQur3Ob9lATaxM+RgGQARNVDi8iOKIa9h3bw6eWMQG/QhzwCa15SCGD7xciqs
-         KfY3fyH9QyVEmL2Jfghz10wT4hFGIA4Z6y1Ebwl9ZwscvVvaPHgElm6UZFuOZROLxOK/
-         462oJkkTNTg6clW53uAoKfEQAkoum0D7xHrbiws3FlXzuWLX8JqbwrTO6S/CMwYvjUS/
-         V4nlgeDBKKu9S+mzyHDIcVwEhOJLA8PjbKFYHArkEfMkd7qqL370LPx7+il0sClE5aEf
-         8CoxKvF33sn5tHkGfHVcifxCRxglCc/fkepEtsWRSdageOb6qalFd19dwjyzIBkOVtjC
-         fD9w==
-X-Gm-Message-State: ACrzQf3TE9Agyoo6416PQXFLusD1b2QJJYcbQaMf8al1xfJqamZzi3Me
-        UfmKIc7IgbFY1CElxeuId2w/e/PVUq56O5Z1+8w=
-X-Google-Smtp-Source: AMsMyM5LJOzcN7OYnZGg612UrhCC2fvKXD8pGOmgi9F+cP+iuoy+x5uJoVYfQmIT+MwA0acViOgoEFVUNteGj4XfT8U=
-X-Received: by 2002:a05:6000:1008:b0:236:60e8:3d40 with SMTP id
- a8-20020a056000100800b0023660e83d40mr39546819wrx.3.1668042611623; Wed, 09 Nov
- 2022 17:10:11 -0800 (PST)
+        Wed, 9 Nov 2022 21:02:30 -0500
+Received: from lucky1-03.263.net (lucky1-03.263.net [211.157.147.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE13B844;
+        Wed,  9 Nov 2022 18:01:16 -0800 (PST)
+Received: from localhost (unknown [192.168.167.13])
+        by lucky1-03.263.net (Postfix) with ESMTP id 8933615912C;
+        Thu, 10 Nov 2022 10:01:13 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-SKE-CHECKED: 1
+X-ANTISPAM-LEVEL: 2
+Received: from localhost.localdomain (unknown [119.3.119.19])
+        by smtp.263.net (postfix) whith ESMTP id P9901T140387763083008S1668045671061901_;
+        Thu, 10 Nov 2022 10:01:13 +0800 (CST)
+X-IP-DOMAINF: 1
+X-RL-SENDER: delisun@pateo.com.cn
+X-SENDER: delisun@pateo.com.cn
+X-LOGIN-NAME: delisun@pateo.com.cn
+X-FST-TO: linux@armlinux.org.uk
+X-RCPT-COUNT: 6
+X-LOCAL-RCPT-COUNT: 1
+X-MUTI-DOMAIN-COUNT: 0
+X-SENDER-IP: 119.3.119.19
+X-ATTACHMENT-NUM: 0
+X-UNIQUE-TAG: <c004394b170b72c6d8f534af761c91cb>
+X-System-Flag: 0
+From:   delisun <delisun@pateo.com.cn>
+To:     linux@armlinux.org.uk
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        delisun <delisun@pateo.com.cn>
+Subject: [PATCH] serial: pl011: Do not clear RX FIFO & RX interrupt in unthrottle.
+Date:   Thu, 10 Nov 2022 10:01:08 +0800
+Message-Id: <20221110020108.7700-1-delisun@pateo.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20221107171500.2537938-1-gsomlo@gmail.com> <20221107171500.2537938-3-gsomlo@gmail.com>
-In-Reply-To: <20221107171500.2537938-3-gsomlo@gmail.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Thu, 10 Nov 2022 01:09:59 +0000
-Message-ID: <CACPK8XdGpGUispRcfgaVyE=18Wwg8GFHH7QJ6bcQLA5XDikSiQ@mail.gmail.com>
-Subject: Re: [PATCH v1 2/3] serial: liteuart: separate RX loop from poll timer
-To:     Gabriel Somlo <gsomlo@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        kgugala@antmicro.com, mholenko@antmicro.com,
-        david.abdurachmanov@sifive.com, florent@enjoy-digital.fr
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 7 Nov 2022 at 17:15, Gabriel Somlo <gsomlo@gmail.com> wrote:
->
-> Move the character-receive (RX) loop to its own dedicated function,
-> and (for now) call that from the poll timer, liteuart_timer().
->
-> This is in preparation for adding IRQ support to the receive path.
->
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> ---
->  drivers/tty/serial/liteuart.c | 25 +++++++++++++++----------
->  1 file changed, 15 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 4b9cca249828..90a29ed79bff 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -69,29 +69,34 @@ static struct uart_driver liteuart_driver = {
->  #endif
->  };
->
-> -static void liteuart_timer(struct timer_list *t)
-> +static void liteuart_rx_chars(struct uart_port *port)
->  {
-> -       struct liteuart_port *uart = from_timer(uart, t, timer);
-> -       struct uart_port *port = &uart->port;
->         unsigned char __iomem *membase = port->membase;
-> -       unsigned int flg = TTY_NORMAL;
-> -       int ch;
-> -       unsigned long status;
-> +       unsigned int status;
-> +       unsigned char ch;
+Clearing the RX FIFO will cause data loss.
+Copy the pl011_enabl_interrupts implementation, and remove the clear
+interrupt and FIFO part of the code.
 
-u32, u8, void __iomem * would be better kernel types to use here.
+Fixes: 211565b10099 ("serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle")
+Signed-off-by: delisun <delisun@pateo.com.cn>
+---
+ drivers/tty/serial/amba-pl011.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-You've also changed ch from a signed 32 to an unsigned 8.
-
->
->         while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
->                 ch = litex_read8(membase + OFF_RXTX);
->                 port->icount.rx++;
->
->                 /* necessary for RXEMPTY to refresh its value */
-> -               litex_write8(membase + OFF_EV_PENDING, EV_TX | EV_RX);
-> +               litex_write8(membase + OFF_EV_PENDING, EV_RX);
-
-You're no longer clearing EV_TX, but don't mention why (I understand
-why with the context of the other changes, so perhaps add something to
-this commit message).
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 5cdced39eafd..08034e5dcec0 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1828,8 +1828,17 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
+ static void pl011_unthrottle_rx(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
++	unsigned long flags;
+ 
+-	pl011_enable_interrupts(uap);
++	spin_lock_irqsave(&uap->port.lock, flags);
++
++	uap->im = UART011_RTIM;
++	if (!pl011_dma_rx_running(uap))
++		uap->im |= UART011_RXIM;
++
++	pl011_write(uap->im, uap, REG_IMSC);
++
++	spin_unlock_irqrestore(&uap->port.lock, flags);
+ }
+ 
+ static int pl011_startup(struct uart_port *port)
+-- 
+2.25.1
 
 
->
->                 /* no overflow bits in status */
->                 if (!(uart_handle_sysrq_char(port, ch)))
-> -                       uart_insert_char(port, status, 0, ch, flg);
-> -
-> -               tty_flip_buffer_push(&port->state->port);
-> +                       uart_insert_char(port, status, 0, ch, TTY_NORMAL);
->         }
->
-> +       tty_flip_buffer_push(&port->state->port);
-> +}
-> +
-> +static void liteuart_timer(struct timer_list *t)
-> +{
-> +       struct liteuart_port *uart = from_timer(uart, t, timer);
-> +       struct uart_port *port = &uart->port;
-> +
-> +       liteuart_rx_chars(port);
-> +
->         mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
->  }
->
-> --
-> 2.37.3
->
+
