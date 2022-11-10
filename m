@@ -2,77 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A20C43217
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 18:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1B6C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 18:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbiKJSEa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Nov 2022 13:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        id S230163AbiKJSGq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Nov 2022 13:06:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231728AbiKJSEG (ORCPT
+        with ESMTP id S230168AbiKJSGn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Nov 2022 13:04:06 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7684345ED7;
-        Thu, 10 Nov 2022 10:03:50 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 218392292B;
-        Thu, 10 Nov 2022 18:03:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1668103429; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yUxxNFRyrBakLyHUCOSvHWfBsY0UPGKUqsopoVuSD1g=;
-        b=qzFyp8E//kCUil5Kimk240zLxzo/MAIyT6Z5L/g7vmLkf7GhcukYXuTVM/QuhVsdB8Rm5N
-        CJnjGMJl5yH3H9ShX2YjGZcmYeBWKoZOAJh91m6LOjm3xtcU2itWXOYppZCf7eiEWYmrK+
-        7T3lXw+mHMzXHy2rKhPO26J7LHw/NOc=
-Received: from suse.cz (unknown [10.100.208.146])
+        Thu, 10 Nov 2022 13:06:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2393713F93;
+        Thu, 10 Nov 2022 10:06:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id B0FF72C141;
-        Thu, 10 Nov 2022 18:03:47 +0000 (UTC)
-Date:   Thu, 10 Nov 2022 19:03:47 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v3 37/40] tty: serial: kgdboc: synchronize
- tty_find_polling_driver() and register_console()
-Message-ID: <Y209A4xlsRiBMz6+@alley>
-References: <20221107141638.3790965-1-john.ogness@linutronix.de>
- <20221107141638.3790965-38-john.ogness@linutronix.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADC9B61DE9;
+        Thu, 10 Nov 2022 18:06:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9630FC433C1;
+        Thu, 10 Nov 2022 18:06:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1668103602;
+        bh=ymv93fw8232T14FWYerOXLO1Sz8xk73G0SrPUp5YyFk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=w0ZgmvOVNVz88EXwMg6+3V2sp0eufwrD5nFsj/vWptph9gzMbo82Aty5S3v1zcZkL
+         KGxC18QCrb4plIrQDE0IRqqN6KTEAQUtXGYaPZLrbm4L2K3hACbd7fycbgOckOqdsf
+         fz32MmuoS5QixOs/P2/CTw4tyaj2NDJbQemj2rtg=
+Date:   Thu, 10 Nov 2022 19:06:39 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel.Thiagarajan@microchip.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
+        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
+        jay.dolan@accesio.com, cang1@live.co.uk,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
+        phil.edworthy@renesas.com, lukas@wunner.de,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v3 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver
+ for quad-uart support.
+Message-ID: <Y209rznr0BB633rY@kroah.com>
+References: <20221107124517.1364484-1-kumaravel.thiagarajan@microchip.com>
+ <20221107124517.1364484-2-kumaravel.thiagarajan@microchip.com>
+ <Y2uWftt5b2AWyTtX@kroah.com>
+ <BN8PR11MB366816A34B16BE29A5FD7912E9019@BN8PR11MB3668.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221107141638.3790965-38-john.ogness@linutronix.de>
+In-Reply-To: <BN8PR11MB366816A34B16BE29A5FD7912E9019@BN8PR11MB3668.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon 2022-11-07 15:22:35, John Ogness wrote:
-> Calling tty_find_polling_driver() can lead to uart_set_options() being
-> called (via the poll_init() callback of tty_operations) to configure the
-> uart. But uart_set_options() can also be called by register_console()
-> (via the setup() callback of console).
-> 
-> Take the console_list_lock to synchronize against register_console() and
-> also use it for console list traversal. This also ensures the console list
-> cannot change until the polling console has been chosen.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+On Thu, Nov 10, 2022 at 05:18:46PM +0000, Kumaravel.Thiagarajan@microchip.com wrote:
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Wednesday, November 9, 2022 5:31 PM
+> > To: Kumaravel Thiagarajan - I21417 <Kumaravel.Thiagarajan@microchip.com>
+> > Subject: Re: [PATCH v3 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver for
+> > quad-uart support.
+> >  
+> > On Mon, Nov 07, 2022 at 06:15:15PM +0530, Kumaravel Thiagarajan wrote:
+> > > +++ b/drivers/tty/serial/8250/8250_pcilib.c
+> > > @@ -0,0 +1,31 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/* Microchip pci1xxxx 8250 library. */
+> > 
+> > Better name and a copyright line?
+> Yes Greg. I think "8250 PCI library" would be the correct name. Is that fine?
 
-Huh, this is a maze of related calls. At least for me. But the change
-seems to be correct.
+That would be good as obviously it's not a microchip-only thing here.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Regarding the copyright, we moved the "setup_port" function from 8250_pci.c to this new file.
+> Can I use the same copyright statement from 8250_pci.c "Copyright (C) 2001 Russell King, All Rights Reserved."?
 
-Best Regards,
-Petr
+Yes, that would be good.
+
+thanks,
+
+greg k-h
