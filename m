@@ -2,84 +2,168 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1B6C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 18:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F796C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 20:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiKJSGq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Nov 2022 13:06:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48902 "EHLO
+        id S229461AbiKJU3k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Nov 2022 15:29:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiKJSGn (ORCPT
+        with ESMTP id S229946AbiKJU3j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Nov 2022 13:06:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2393713F93;
-        Thu, 10 Nov 2022 10:06:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADC9B61DE9;
-        Thu, 10 Nov 2022 18:06:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9630FC433C1;
-        Thu, 10 Nov 2022 18:06:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1668103602;
-        bh=ymv93fw8232T14FWYerOXLO1Sz8xk73G0SrPUp5YyFk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=w0ZgmvOVNVz88EXwMg6+3V2sp0eufwrD5nFsj/vWptph9gzMbo82Aty5S3v1zcZkL
-         KGxC18QCrb4plIrQDE0IRqqN6KTEAQUtXGYaPZLrbm4L2K3hACbd7fycbgOckOqdsf
-         fz32MmuoS5QixOs/P2/CTw4tyaj2NDJbQemj2rtg=
-Date:   Thu, 10 Nov 2022 19:06:39 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kumaravel.Thiagarajan@microchip.com
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        jay.dolan@accesio.com, cang1@live.co.uk,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver
- for quad-uart support.
-Message-ID: <Y209rznr0BB633rY@kroah.com>
-References: <20221107124517.1364484-1-kumaravel.thiagarajan@microchip.com>
- <20221107124517.1364484-2-kumaravel.thiagarajan@microchip.com>
- <Y2uWftt5b2AWyTtX@kroah.com>
- <BN8PR11MB366816A34B16BE29A5FD7912E9019@BN8PR11MB3668.namprd11.prod.outlook.com>
+        Thu, 10 Nov 2022 15:29:39 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179F21CFFC;
+        Thu, 10 Nov 2022 12:29:34 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id k2so1875372qkk.7;
+        Thu, 10 Nov 2022 12:29:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ih5vbeDEAFzKplO982fNJrgyD80A/aFIEJ2OMUT2j4o=;
+        b=HOuepxNdSz8sxgRYf9mKW4vLXN5T3uEH0aRUCqJEv/AB62lWjI4i5TMKwNPOUhH/ed
+         7406HkAIQaMjQvrpGVc2HcPwB/dYW9ntnv5XnbCtGqyJWvJXVZm57N9mkC42v8I5Yg52
+         7BtW/4Xhsc7yzFn6GqAtLykuIS8YyFY9VUGF/FlyP5OMUbmDXHUCpmjcvXr/iCv5B/S2
+         c4z1/qCuzTgtb3eyL532GFYVzuOfKjhzmFOq5VsAqKNlnvF+tRFlBe5/R2M39yT9rNUT
+         8o9RnxIZjWJn0vKXvP99chZedwebr2VL7hf92RbGwYIcoSzMPpamrnW5fUQLiHEobpZu
+         zKxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ih5vbeDEAFzKplO982fNJrgyD80A/aFIEJ2OMUT2j4o=;
+        b=3hNQGJRYPkJRdPXRrmGCZmqQWFUX5IXWpNJF7hyFPYNafUwN15pqsNzTeMKEFWZahQ
+         M5ydm3b2oI4gzm7ZK1DySaHfXa+FLo1NDBIyqPMIH+6LcgxnQbkp4yxGVSJKEZ+0RNLm
+         KSLCdRkbjXonEamVBkrU9B76j2PqTSE3jyT7z7jEdT+l++ZOi28Ro0H6Tio0rsT904SP
+         WEsmGS9lgL42ipuOlF49JqojrYLXXFBQtb8lcrT234yBEDat/KDL2VfEsdsqoHMrtZEh
+         Lful8iWmIatAZKg7MpHz6jOTEw09IyjzeRSUTdAuCR3Si0rFmwkcko1RpetwlSyxbBs9
+         0vRg==
+X-Gm-Message-State: ACrzQf3zaA4a17KhMK/nvzebbSohIVS1mhwtNdIaMwC3cEOLyGw13XmC
+        /XU5lhL/wfU95tkR6ztjc2SQvGmQ6y8eog==
+X-Google-Smtp-Source: AMsMyM70iuhbVvo3+cuEcWfteZfe6ZXwUOabi8j35ocMFTt8YEzGCaGRlyR5Wg24nm/WVJe/GJBktg==
+X-Received: by 2002:a37:e301:0:b0:6fa:4749:cb8c with SMTP id y1-20020a37e301000000b006fa4749cb8cmr1782662qki.335.1668112173211;
+        Thu, 10 Nov 2022 12:29:33 -0800 (PST)
+Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
+        by smtp.gmail.com with ESMTPSA id bq35-20020a05620a46a300b006bbf85cad0fsm207937qkb.20.2022.11.10.12.29.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 12:29:32 -0800 (PST)
+Date:   Thu, 10 Nov 2022 15:29:30 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
+        mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        geert@linux-m68k.org
+Subject: Re: [PATCH v2 6/7] serial: liteuart: separate RX loop from poll timer
+Message-ID: <Y21fKt+mGKvQ8yMF@glsvmlin.ini.cmu.edu>
+References: <20221110004450.772768-1-gsomlo@gmail.com>
+ <20221110004450.772768-7-gsomlo@gmail.com>
+ <1c902ee8-d33d-c2d0-7eef-719f59f3a64@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <BN8PR11MB366816A34B16BE29A5FD7912E9019@BN8PR11MB3668.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1c902ee8-d33d-c2d0-7eef-719f59f3a64@linux.intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 05:18:46PM +0000, Kumaravel.Thiagarajan@microchip.com wrote:
-> > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: Wednesday, November 9, 2022 5:31 PM
-> > To: Kumaravel Thiagarajan - I21417 <Kumaravel.Thiagarajan@microchip.com>
-> > Subject: Re: [PATCH v3 tty-next 1/3] 8250: microchip: pci1xxxx: Add driver for
-> > quad-uart support.
-> >  
-> > On Mon, Nov 07, 2022 at 06:15:15PM +0530, Kumaravel Thiagarajan wrote:
-> > > +++ b/drivers/tty/serial/8250/8250_pcilib.c
-> > > @@ -0,0 +1,31 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/* Microchip pci1xxxx 8250 library. */
+On Thu, Nov 10, 2022 at 01:01:47PM +0200, Ilpo Järvinen wrote:
+> On Wed, 9 Nov 2022, Gabriel Somlo wrote:
+> 
+> > Move the character-receive (RX) loop to its own dedicated function,
+> > and (for now) call that from the poll timer, liteuart_timer().
 > > 
-> > Better name and a copyright line?
-> Yes Greg. I think "8250 PCI library" would be the correct name. Is that fine?
+> > This is in preparation for adding IRQ support to the receive path.
+> > 
+> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > ---
+> >  drivers/tty/serial/liteuart.c | 25 +++++++++++++++----------
+> >  1 file changed, 15 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> > index 047d5ad32e13..aa7052280197 100644
+> > --- a/drivers/tty/serial/liteuart.c
+> > +++ b/drivers/tty/serial/liteuart.c
+> > @@ -67,29 +67,34 @@ static struct uart_driver liteuart_driver = {
+> >  #endif
+> >  };
+> >  
+> > -static void liteuart_timer(struct timer_list *t)
+> > +static void liteuart_rx_chars(struct uart_port *port)
+> >  {
+> > -	struct liteuart_port *uart = from_timer(uart, t, timer);
+> > -	struct uart_port *port = &uart->port;
+> >  	unsigned char __iomem *membase = port->membase;
+> > -	unsigned int flg = TTY_NORMAL;
+> > -	int ch;
+> > -	unsigned long status;
+> > +	unsigned int status;
+> > +	unsigned char ch;
+> >  
+> >  	while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
+> >  		ch = litex_read8(membase + OFF_RXTX);
+> >  		port->icount.rx++;
+> >  
+> >  		/* necessary for RXEMPTY to refresh its value */
+> > -		litex_write8(membase + OFF_EV_PENDING, EV_TX | EV_RX);
+> > +		litex_write8(membase + OFF_EV_PENDING, EV_RX);
+> >  
+> >  		/* no overflow bits in status */
+> >  		if (!(uart_handle_sysrq_char(port, ch)))
+> > -			uart_insert_char(port, status, 0, ch, flg);
+> > -
+> > -		tty_flip_buffer_push(&port->state->port);
+> > +			uart_insert_char(port, status, 0, ch, TTY_NORMAL);
+> >  	}
+> >  
+> > +	tty_flip_buffer_push(&port->state->port);
+> 
+> This change is doing extra stuff besides moving rx to a dedicated 
+> function.
+> 
+> I see no reason why those other changes couldn't be put into an entirely 
+> separate patch. Also, please described those changes properly in the 
+> commit message (answer the why? question).
+ 
+You're right, calling `tty_flip_buffer_push()` as each character is
+received is overkill, we only need to call it once per interrupt once
+all available characters have been received.
 
-That would be good as obviously it's not a microchip-only thing here.
+I forgot I noticed (and fixed) that as part of the move -- I'll split
+it out into its own separate patch (probably *before* moving all of rx
+to a dedicated function).
 
-> Regarding the copyright, we moved the "setup_port" function from 8250_pci.c to this new file.
-> Can I use the same copyright statement from 8250_pci.c "Copyright (C) 2001 Russell King, All Rights Reserved."?
+Should show up in v3, once I also address all the other feedback I
+received.
 
-Yes, that would be good.
+Thanks again for catching it!
 
-thanks,
+Cheers,
+-Gabriel
 
-greg k-h
+> -- 
+>  i.
+> 
+> > +}
+> > +
+> > +static void liteuart_timer(struct timer_list *t)
+> > +{
+> > +	struct liteuart_port *uart = from_timer(uart, t, timer);
+> > +	struct uart_port *port = &uart->port;
+> > +
+> > +	liteuart_rx_chars(port);
+> > +
+> >  	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+> >  }
+> >  
+> > 
+> 
+> 
