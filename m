@@ -2,100 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89958C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Nov 2022 18:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A631FC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 00:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiKISiY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 13:38:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        id S231273AbiKJApC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 19:45:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiKISiX (ORCPT
+        with ESMTP id S229516AbiKJApB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 13:38:23 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A384D42
-        for <linux-serial@vger.kernel.org>; Wed,  9 Nov 2022 10:38:22 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id a27so10851648qtw.10
-        for <linux-serial@vger.kernel.org>; Wed, 09 Nov 2022 10:38:22 -0800 (PST)
+        Wed, 9 Nov 2022 19:45:01 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C4510577;
+        Wed,  9 Nov 2022 16:45:00 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id v8so276240qkg.12;
+        Wed, 09 Nov 2022 16:45:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pUzdzgOMIz4xlQPPVaHYr83ZUWID1ld+9RYoGNyvuj4=;
-        b=N7EcyrfqMnT7nC91AZ/DLR1pgI/LrYQjvX/3WzoWz8Z49zOfDfr//VepDRRaEoRPAW
-         /h+02/ZDCEwvUq4YTbDKuHolMQfIiKlPc+R5ckaWJ4UXg3xItdhBbJpZrAkSygUlXtTt
-         3z7ImQHoODKCHBJo/JPPTs/E5OJgtbyc3TiGPJRDBCkFVfikFhU5NBx1pKJKYSrA+3+7
-         YFn7HAKV04TJJ0pA/ibpqN3NhsV8EB6yRS/3kxJxL9ul2rXFRfZg60MXy6ei5mTJdddA
-         Pl/kzxy8hSM3hUM5O7QPKArXobVhDQiOH37jh7UI3Kx83E9bYTG3FG0RlYjlL43IXg2/
-         HAUw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PlZX5OoXSR6dQu6BFUXNsw0d4qkRtcYOShuOxFg1Iz8=;
+        b=clS4I7+fvJvuEFtwnJCI5Ij2i04DoGO8TvRN2+Oe9DEtu5VupjIhF2nvqzv3ufjwfM
+         +LuKvWh9F8iDBqYHFjPEEpl5pSVITlujaQo6nOc1VKvxPzpw/a3st5EtlLoXRHplUI/n
+         Hkju3Ks8Wvsc9RegrJ1xBlFM7V72ycNWzhG4Qp4YDAL0NZZTqKew9WC4y1rIp7XsfIAj
+         A3+hwDW6ahsiMs2T2iFQARbXL6ljst6bn2PswExnYEfOaYFPBsYpY9NFdaLMSKKoVGDE
+         S7JIBhTkf/pA1jye6pwXm+f9ZjhSybdYKrwqPaJq5eIuaumyD6Nt37vxaQ2nxs0XB0dd
+         yAaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pUzdzgOMIz4xlQPPVaHYr83ZUWID1ld+9RYoGNyvuj4=;
-        b=E8eeRG2+cQ00GxH8+Ch+HDRc3YB/yLUJ9bWtgaRbtwZABQYmokE912937AF2m4Fusc
-         E0gyhxRLfAK4v4nvi23gPZg7P0WQRYvG0J5FP05nu6lNMb3ARXzDL+cX/iMwMGAk9LDW
-         4Ces6cnKSNr2kGM5TtpyHAjq48kpAiNCdPI9aBIhclFN35Vx0mi6PuSlWGXXN/18BqOR
-         ycy/DtFpocOVDBPLfptlG6EfjJfH2P0/9rZm3sUqI4Zub0o36XcLBh20d+Wi8ulD0j8Q
-         I/AwlQkcU/AHq6+K1W3UVvN5nywHvs32hZRlmZO4ATqi77foomiPQ2lNLeWt3UqvH8zb
-         CZEQ==
-X-Gm-Message-State: ACrzQf3/Lc6xLcXgzQlUmwP6r12na2DMGvnNEPhkIe0AFpVy5dEvGADS
-        Uhgx655WGb3LJypaR5+xqUQ=
-X-Google-Smtp-Source: AMsMyM5l8wPCGikt7ZzWQ5fjPZ5zngvhfZuq+7DJ8a86pPDIvvpmqwHmk2JC91kLbWSFKYwFfWfhJw==
-X-Received: by 2002:a05:622a:248c:b0:3a5:15f9:57a5 with SMTP id cn12-20020a05622a248c00b003a515f957a5mr46543912qtb.48.1668019101076;
-        Wed, 09 Nov 2022 10:38:21 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q3-20020a05620a2a4300b006eed47a1a1esm11438990qkp.134.2022.11.09.10.38.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Nov 2022 10:38:20 -0800 (PST)
-Message-ID: <a48dffd6-821d-f818-1bdf-f1b841fa189a@gmail.com>
-Date:   Wed, 9 Nov 2022 10:38:16 -0800
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PlZX5OoXSR6dQu6BFUXNsw0d4qkRtcYOShuOxFg1Iz8=;
+        b=3by7n7y+ZH3oZPuzz2r4fXTByBd0loRs3WBa1zmK+9x7gseuiIzEIGgSyBrLDAP+h9
+         SXAuMewKNp9cvulODOpbl8Q8aJaSWSW4fQwuVZzAglAoGllZb9itc3dw0H/o9FiU+imY
+         G4SQhOUNYqtS96Ink/nNUCS3gOdsyDrh6ARQT45MRcxnwI7XvbE0W14eLEE8ghZeHBFL
+         RsrmRPMAU2Zl+ZK45KlT9e/sEOTQQFepjyTB1gYijOuILtO5JCKBL9rGPd81le9dSyjS
+         QnpHF24BifCXix3PsYD1WR5QIjvYJePjeKXU2C7nhiMgOumXOUDAkBJsT8lQy2+828LB
+         wHyA==
+X-Gm-Message-State: ACrzQf16D0Jn5A0h/SpM3XYlH4kAQGj9ubVii8+VVUGUAV51Ueubv1+K
+        OozxV/tvOPYY+JTa9YTL+S49g1JYaf7NyQ==
+X-Google-Smtp-Source: AMsMyM7VcbFAoqQFEoZJrNxKTjOQV6SK029qE8vzEA0Sy9MM0U6VJZbH8NJtUzZMQ2n8Cv0jdnRodA==
+X-Received: by 2002:a05:620a:25c8:b0:6ae:ba71:ea7d with SMTP id y8-20020a05620a25c800b006aeba71ea7dmr45719850qko.547.1668041099611;
+        Wed, 09 Nov 2022 16:44:59 -0800 (PST)
+Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
+        by smtp.gmail.com with ESMTPSA id x1-20020a05620a12a100b006eeb3165565sm11678506qki.80.2022.11.09.16.44.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Nov 2022 16:44:59 -0800 (PST)
+From:   Gabriel Somlo <gsomlo@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
+        joel@jms.id.au, david.abdurachmanov@gmail.com,
+        florent@enjoy-digital.fr, geert@linux-m68k.org
+Subject: [PATCH v2 0/7] serial: liteuart: add IRQ support
+Date:   Wed,  9 Nov 2022 19:44:43 -0500
+Message-Id: <20221110004450.772768-1-gsomlo@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] serial: 8250_bcm7271: Fix error handling in
- brcmuart_init()
-Content-Language: en-US
-To:     Yuan Can <yuancan@huawei.com>, alcooperx@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-References: <20221109072110.117291-1-yuancan@huawei.com>
- <20221109072110.117291-2-yuancan@huawei.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20221109072110.117291-2-yuancan@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/8/22 23:21, 'Yuan Can' via BCM-KERNEL-FEEDBACK-LIST,PDL wrote:
-> A problem about 8250_bcm7271 create debugfs failed is triggered with the
-> following log given:
-> 
->   [  324.516635] debugfs: Directory 'bcm7271-uart' with parent '/' already present!
-> 
-> The reason is that brcmuart_init() returns platform_driver_register()
-> directly without checking its return value, if platform_driver_register()
-> failed, it returns without destroy the newly created debugfs, resulting
-> the debugfs of 8250_bcm7271 can never be created later.
-> 
->   brcmuart_init()
->     debugfs_create_dir() # create debugfs directory
->     platform_driver_register()
->       driver_register()
->         bus_add_driver()
->           priv = kzalloc(...) # OOM happened
->     # return without destroy debugfs directory
-> 
-> Fix by removing debugfs when platform_driver_register() returns error.
-> 
-> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-> Signed-off-by: Yuan Can <yuancan@huawei.com>
+Add IRQ support to the LiteX LiteUART serial interface
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Changes from v1:
+	- split minor cosmetic changes out into individual patches
+	  (1/3 became 1..5/7)
+	- patches 6/7 and 7/7 unchanged (used to be 2/3 and 3/3)
+
+Gabriel Somlo (7):
+  serial: liteuart: use KBUILD_MODNAME as driver name
+  serial: liteuart: use bit number macros
+  serial: liteuart: remove unused uart_ops stubs
+  serial: liteuart: don't set unused port fields
+  serial: liteuart: minor style fix in liteuart_init()
+  serial: liteuart: separate RX loop from poll timer
+  serial: liteuart: add IRQ support
+
+ drivers/tty/serial/liteuart.c | 123 ++++++++++++++++++++++------------
+ 1 file changed, 80 insertions(+), 43 deletions(-)
+
 -- 
-Florian
+2.37.3
 
