@@ -2,63 +2,63 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A38C43217
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 00:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BEEC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 00:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbiKJApK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Nov 2022 19:45:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
+        id S232038AbiKJApL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Nov 2022 19:45:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbiKJApH (ORCPT
+        with ESMTP id S231949AbiKJApI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Nov 2022 19:45:07 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723801181C;
-        Wed,  9 Nov 2022 16:45:05 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id x21so331809qkj.0;
-        Wed, 09 Nov 2022 16:45:05 -0800 (PST)
+        Wed, 9 Nov 2022 19:45:08 -0500
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5D411C1F;
+        Wed,  9 Nov 2022 16:45:07 -0800 (PST)
+Received: by mail-qk1-x72b.google.com with SMTP id s20so299148qkg.5;
+        Wed, 09 Nov 2022 16:45:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MThhfi/+6K/LOJrqVDZeVBTVPExj3Q+f1CKmXTQaNyE=;
-        b=DAHYdZZoIL7Pd0YKF9Mnb6+h8QIEevMKOBWXVhUndf3BAOgh7GrkrZJXPF/LEwPMcP
-         mGFa+NGQxKvkOAAAOTjMOHmw7ig4oIYxZN50g7+QOu+TKxKUIIc57dkGBFeDPNq60OdI
-         DaDkfeqnd/SeCg/A+WKzV66OyqLak6PuqlZDCJGcOkggQKYd4TQOEffxPpGpgtpFxfv9
-         JgnFJqd1LKgOyKA8aSARWdblYHvoRAbQ7sTepOg4zlaozzTcLP8mMapnhYGZEpWo9D6V
-         jadPyjx1WJ/5HvNA8Z5h7AA48phggj/nBE7w5GfkW/KGgJrvRvARvMVzLEKBa9Uf1/p5
-         VQdA==
+        bh=+gDpqiQ2v07jcXDv+V+5mliWVvvI7QzpDNtOf1ZH6V8=;
+        b=UKJoFM9Gfo4iktkKb4AhB4lJnkAdV940srYt0j+gLCpBXNv0FaYU6SpVIh6JdC1fDR
+         iHXJjhNo5C9pFNNm0IiGbEuqUcb8MneWBurYovZKXBQM8pqJvZ2agsAACBaKOXqg/+Bw
+         FPYJ+GCUIIajWyAnJcHaZI+QWZubGkUq5cYZTza5PzYbyDlVeDtXboHKO/kuVlKBqKsm
+         oBlITBLnxIMXFbdAP4In+DKLcC8x+/WSHZE8VMfYpZNYYKYpcCJ16Zc+YmX+UVjlrPUX
+         eziVvkE2aZjGRkzsFoL0H49py5ZKg0uqDBTbpE6CY5v6exd1AfcZ0eYkpTCNoS+W34Mw
+         pnbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=MThhfi/+6K/LOJrqVDZeVBTVPExj3Q+f1CKmXTQaNyE=;
-        b=0tdvO2zzPAAFhz8M1mwjR6Za7xO67qxGAGdG/zn5IchrcFNiBx993N8FgjGF/OvYC3
-         xI8i3aUm9o2oweitBTmaHoJXzLSmU6bHVqSDiVMjZmbb9VrvQFeuaNb/CWD0149GQ41o
-         47e83kSQSPFkJS6uQ4B8n9x+kkIQSMwfkPc7YHP2jZdp02lnsJ/uHYBhZZiLLv8gf9Js
-         Tl0gmTFgcwj98DV8L1VHONfsfi4VoCR0pP2sGrbunzHojgmqZrgtUjwfgG8I0znbxb3h
-         cW/w0ElR+yY0TCKB3Y9r67d0X5zC/jRFvoim6FvJFVHGw9vrbfnC5WYYzxRllGqCvYYp
-         gSTA==
-X-Gm-Message-State: ACrzQf2D2bISuJtGmvP343S1ZVoa969a6h46vfgAC4LjSk6qYNRQiMJ8
-        32EF+JAJAZpjB9FD9ioU1qxwgKM31v8xjA==
-X-Google-Smtp-Source: AMsMyM4NMUBf+oK46xU4WjC9cr4l9fZu1eJT+d+lR/Y3nOm87TRa6JUo8+7q+xRQjdPwptgk2m4Mvw==
-X-Received: by 2002:a37:b6c4:0:b0:6fa:7c9f:edda with SMTP id g187-20020a37b6c4000000b006fa7c9feddamr24899601qkf.13.1668041104322;
-        Wed, 09 Nov 2022 16:45:04 -0800 (PST)
+        bh=+gDpqiQ2v07jcXDv+V+5mliWVvvI7QzpDNtOf1ZH6V8=;
+        b=TKq7Ilmp46KbC75OvC0Ol3otxxpK+7umaU6Ko+TOH9p+vatKgqAkNq5j2rwX+QJmFV
+         Vg/g+IO7FH4d09iPuIoJlduBvvZUF0tAjr78rTlejLp5llpXfrak0KqL0lEx3pf5bJnN
+         pd3+fCy1bE25grEFAn7Qp67jrmIAaMhgsh8ijkIO3Paft7SHEfuh5A9F6XXaun7dUCSs
+         /TjxSoIPZFUytvirVoNli+uLJYuM1l1E30k0rSOE9mGjxM8720aRXOkSI4xTIxsyc7AG
+         znsEwr9XwqjEG5hIBOrxrfr+cmWcng73i1q20Khje22Noa70D2z8uR/+mlZf5aJURq0j
+         HqcA==
+X-Gm-Message-State: ACrzQf02fQ6ei2c/D2mxnn+XjvRw2IVeENlm0xsQsl3JRQ9ePzWFpH/V
+        K3axYQRfPyuhGLLlL7c3riXhCQ84xtbFXg==
+X-Google-Smtp-Source: AMsMyM4DTmriaNEFE6SIFXZh5UExPzopMuzvhqIlUs+cSfvIU9CoTmnahpzYAXeY3v/hmp6QAMidew==
+X-Received: by 2002:a37:ac0f:0:b0:6fa:1185:4e7e with SMTP id e15-20020a37ac0f000000b006fa11854e7emr46101376qkm.334.1668041106140;
+        Wed, 09 Nov 2022 16:45:06 -0800 (PST)
 Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
-        by smtp.gmail.com with ESMTPSA id x1-20020a05620a12a100b006eeb3165565sm11678506qki.80.2022.11.09.16.45.03
+        by smtp.gmail.com with ESMTPSA id x1-20020a05620a12a100b006eeb3165565sm11678506qki.80.2022.11.09.16.45.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 16:45:03 -0800 (PST)
+        Wed, 09 Nov 2022 16:45:05 -0800 (PST)
 From:   Gabriel Somlo <gsomlo@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
         joel@jms.id.au, david.abdurachmanov@gmail.com,
         florent@enjoy-digital.fr, geert@linux-m68k.org
-Subject: [PATCH v2 5/7] serial: liteuart: minor style fix in liteuart_init()
-Date:   Wed,  9 Nov 2022 19:44:48 -0500
-Message-Id: <20221110004450.772768-6-gsomlo@gmail.com>
+Subject: [PATCH v2 7/7] serial: liteuart: add IRQ support
+Date:   Wed,  9 Nov 2022 19:44:50 -0500
+Message-Id: <20221110004450.772768-8-gsomlo@gmail.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20221110004450.772768-1-gsomlo@gmail.com>
 References: <20221110004450.772768-1-gsomlo@gmail.com>
@@ -68,30 +68,125 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Add support for IRQ-driven RX. The TX path remains "polling" based,
+which is fine since TX is synchronous.
+
 Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
 ---
- drivers/tty/serial/liteuart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/liteuart.c | 66 +++++++++++++++++++++++++++++++----
+ 1 file changed, 59 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index 5b684fd198b7..047d5ad32e13 100644
+index aa7052280197..45da944d1fea 100644
 --- a/drivers/tty/serial/liteuart.c
 +++ b/drivers/tty/serial/liteuart.c
-@@ -398,12 +398,10 @@ static int __init liteuart_init(void)
- 		return res;
+@@ -6,6 +6,7 @@
+  */
  
- 	res = platform_driver_register(&liteuart_platform_driver);
--	if (res) {
-+	if (res)
- 		uart_unregister_driver(&liteuart_driver);
--		return res;
--	}
- 
--	return 0;
-+	return res;
+ #include <linux/console.h>
++#include <linux/interrupt.h>
+ #include <linux/litex.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+@@ -88,13 +89,27 @@ static void liteuart_rx_chars(struct uart_port *port)
+ 	tty_flip_buffer_push(&port->state->port);
  }
  
- static void __exit liteuart_exit(void)
++static irqreturn_t liteuart_interrupt(int irq, void *data)
++{
++	struct uart_port *port = data;
++	unsigned int isr;
++
++	isr = litex_read32(port->membase + OFF_EV_PENDING);
++
++	spin_lock(&port->lock);
++	if (isr & EV_RX)
++		liteuart_rx_chars(port);
++	spin_unlock(&port->lock);
++
++	return IRQ_RETVAL(isr);
++}
++
+ static void liteuart_timer(struct timer_list *t)
+ {
+ 	struct liteuart_port *uart = from_timer(uart, t, timer);
+ 	struct uart_port *port = &uart->port;
+ 
+-	liteuart_rx_chars(port);
+-
++	liteuart_interrupt(0, port);
+ 	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+ }
+ 
+@@ -163,19 +178,49 @@ static void liteuart_stop_rx(struct uart_port *port)
+ static int liteuart_startup(struct uart_port *port)
+ {
+ 	struct liteuart_port *uart = to_liteuart_port(port);
++	unsigned long flags;
++	int ret;
++	u8 irq_mask = 0;
+ 
+-	/* disable events */
+-	litex_write8(port->membase + OFF_EV_ENABLE, 0);
++	if (port->irq) {
++		ret = request_irq(port->irq, liteuart_interrupt, 0,
++				  KBUILD_MODNAME, port);
++		if (ret == 0) {
++			/* we only need interrupts on the rx path! */
++			irq_mask = EV_RX;
++		} else {
++			pr_err(KBUILD_MODNAME ": can't attach LiteUART %d "
++				"irq %d; switching to polling\n",
++				port->line, port->irq);
++			port->irq = 0;
++		}
++	}
+ 
+-	/* prepare timer for polling */
+-	timer_setup(&uart->timer, liteuart_timer, 0);
+-	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
++	if (!port->irq) {
++		timer_setup(&uart->timer, liteuart_timer, 0);
++		mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
++	}
++
++	spin_lock_irqsave(&port->lock, flags);
++	litex_write8(port->membase + OFF_EV_ENABLE, irq_mask);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return 0;
+ }
+ 
+ static void liteuart_shutdown(struct uart_port *port)
+ {
++	struct liteuart_port *uart = to_liteuart_port(port);
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++	litex_write8(port->membase + OFF_EV_ENABLE, 0);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	if (port->irq)
++		free_irq(port->irq, port);
++	else
++		del_timer_sync(&uart->timer);
+ }
+ 
+ static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
+@@ -264,6 +309,13 @@ static int liteuart_probe(struct platform_device *pdev)
+ 		goto err_erase_id;
+ 	}
+ 
++	/* get irq */
++	ret = platform_get_irq_optional(pdev, 0);
++	if (ret < 0 && ret != -ENXIO)
++		return ret;
++	if (ret > 0)
++		port->irq = ret;
++
+ 	/* values not from device tree */
+ 	port->dev = &pdev->dev;
+ 	port->iotype = UPIO_MEM;
 -- 
 2.37.3
 
