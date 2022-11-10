@@ -2,103 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FEDC433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 13:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F954C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 15:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiKJNq2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Nov 2022 08:46:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
+        id S230124AbiKJPAV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Nov 2022 10:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231182AbiKJNqZ (ORCPT
+        with ESMTP id S230445AbiKJPAU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Nov 2022 08:46:25 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE4C6B219;
-        Thu, 10 Nov 2022 05:46:23 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668087981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 10 Nov 2022 10:00:20 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B1238B6;
+        Thu, 10 Nov 2022 07:00:19 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1BE611FD34;
+        Thu, 10 Nov 2022 15:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1668092418; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=W9gAlgK59K3GYVN1pexux5Shff1JGMx2AGh3/W1sEoo=;
-        b=nGrAAys6AP0r4qx6oHZchp43VEZmz20vcT+t1BaNy27TPPFm4TQtF0+nUf15FVU8Z7FDRu
-        iVTzsJDR6E8nzaADMzn953RkpQP9GGUuKkJX++fD7VpUoRVKxJikK8zXQCP1LqO13RHYC6
-        /FZu+D+KFveJlRPM02AyaOd1HbecEn2XMmnIICNlE3GjsBd6IXROjlPRBQQeYlmbz2OcA1
-        +9BO1F/SchFFRyYUeSPx81KvAfQ6NEEYf6xua0LtvI1/1c5ooWpx7XVysd7qgAWvqwL1O2
-        s2efj4opntJMieDi/H/q0DjXAiKBEcSW09ZqiYo8kS7zS/x21I+48gl9U3SA8A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668087981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=W9gAlgK59K3GYVN1pexux5Shff1JGMx2AGh3/W1sEoo=;
-        b=J2wQ2EmfTl7/Zy284MB9bR5WsxeYkNSFqUxMX4V5DLw8iHX2H04ziDoqljASf8tQo0C173
-        xOtYi20o3hDNtICQ==
-To:     Petr Mladek <pmladek@suse.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
+        bh=RgH7RP9708poSiKSHyKoZckyhGjc0rkuVUOBFq3s34M=;
+        b=kkrfcrooedaFwCfCVYG8Qcg1TIKUSiyl7N64pFltx8WSy5P0SKUG/YKPMCryfKn9VQSQNK
+        pLkie6bst7XLTMOgEBIyLtEB1N/OR3p3fDcWI16UUvy2qMiR39ISzWx+cxgayH4Xs1K4PR
+        mWr1G8GKZ42wHZGQ/2ZsMdpudwTZdIo=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E60A42C141;
+        Thu, 10 Nov 2022 15:00:17 +0000 (UTC)
+Date:   Thu, 10 Nov 2022 16:00:17 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ilpo =?utf-8?Q?J=C3=A4rvi?= =?utf-8?Q?nen?= 
-        <ilpo.jarvinen@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tony Lindgren <tony@atomide.com>,
-        Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v3 23/40] serial_core: replace
- uart_console_enabled() with uart_console_registered()
-In-Reply-To: <Y2z7lLEvQx7iLuuP@alley>
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v3 27/40] tty: serial: earlycon: use
+ console_is_registered()
+Message-ID: <Y20SAUcLYrcTKSxL@alley>
 References: <20221107141638.3790965-1-john.ogness@linutronix.de>
- <20221107141638.3790965-24-john.ogness@linutronix.de>
- <CAMuHMdXuBh1PznFggpwSanBtHu9=ngJkVCRzdZVnjxWs2+cbxw@mail.gmail.com>
- <Y2z7lLEvQx7iLuuP@alley>
-Date:   Thu, 10 Nov 2022 14:52:20 +0106
-Message-ID: <87fseq6hxv.fsf@jogness.linutronix.de>
+ <20221107141638.3790965-28-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221107141638.3790965-28-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-11-10, Petr Mladek <pmladek@suse.com> wrote:
->>> -static inline bool uart_console_enabled(struct uart_port *port)
->>> +/* Variant of uart_console_registered() when the console_list_lock is held. */
->>> +static inline bool uart_console_registered_locked(struct uart_port *port)
->>>  {
->>> -       return uart_console(port) && (port->cons->flags & CON_ENABLED);
->>> +       return uart_console(port) && console_is_registered_locked(port->cons);
->>> +}
->>> +
->>> +static inline bool uart_console_registered(struct uart_port *port)
->>> +{
->>> +       bool ret;
->>> +
->>> +       console_list_lock();
->>> +       ret = uart_console_registered_locked(port);
->>> +       console_list_unlock();
->>> +       return ret;
->> 
->> Perhaps
->> 
->>     return uart_console(port) && console_is_registered();
->> 
->> to avoid locking the list when the first condition is not true?
->
-> I do not have strong opinion on this. It is true that the code
-> duplication is trivial but it is a code duplication. Either
-> way would work for me.
+On Mon 2022-11-07 15:22:25, John Ogness wrote:
+> It is not reliable to check for CON_ENABLED in order to identify if a
+> console is registered. Use console_is_registered() instead.
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-I will go with Geert's suggestion for v4. It is important that we reduce
-lock contention for non-console ports.
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-> The reset of the code looks good. Feel free to use:
->
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Thanks.
-
-John
+Best Regards,
+Petr
