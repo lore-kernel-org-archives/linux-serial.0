@@ -2,120 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFB6C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 16:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DDBC4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 17:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiKKQpY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Nov 2022 11:45:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
+        id S232177AbiKKRGq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Nov 2022 12:06:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiKKQpW (ORCPT
+        with ESMTP id S230043AbiKKRGp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Nov 2022 11:45:22 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF4FF012;
-        Fri, 11 Nov 2022 08:45:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668185121; x=1699721121;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k8e9e7nUGMQKTjT/UB23G+Vl6wm0WUKF3M0J9ZTBV5A=;
-  b=VU7H6SgmkrWzhBo4aoeP8HpgPyVqEMDbxKqkTp203WVtdXHSDrAbDJIy
-   78igevk8o8z+lsk4z43kVE+s/MXWeAqVNZ0fHeeIlHuNPu7T8RfO2io2m
-   vRbi3Bv0nli7MlFmSSJ28pDwUbewPUH9FkcZw4xm2QAq8Ye6SdfqpOLT8
-   wRJmreaA6iQmb/X0eaPg4syNtl+w0IkcCIBavpxdk0CHPk3AeKzkHH1+m
-   lYYoWWymQ7ktffRnSqWdBgKHXRMi6v64BooqlclED8i7/xuKsm1AyEj3l
-   /iggxm8yH+Tfh/XsrB+2D2Jffqilv/u4S1VVixAgHyk1rfLh+Nt8QSrQP
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="397923900"
-X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="397923900"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 08:45:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="668859256"
-X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="668859256"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008.jf.intel.com with ESMTP; 11 Nov 2022 08:45:16 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1otX9V-00Ankg-1L;
-        Fri, 11 Nov 2022 18:45:13 +0200
-Date:   Fri, 11 Nov 2022 18:45:13 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+        Fri, 11 Nov 2022 12:06:45 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EED729A8;
+        Fri, 11 Nov 2022 09:06:44 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id lf15so3700151qvb.9;
+        Fri, 11 Nov 2022 09:06:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sXx3A05HJYEyorjvDLtzFzGsbPsAQOKVKTmCTm5nngs=;
+        b=LuoA2pzCpw3gU/2r/tNIjIqgohEuAWvxyozzM9Drqh8Mde8xAAnF0WmplIEIghqONO
+         KYnfeNt6UQ31fRt5WYs8UfGHKL2s+pf5pLzoZEBQmepZidwncGU2sE+wKqv6r6U+q0Xx
+         VkAGbZCEbaOP7fMixM7RfDma1p82fIgFP31FWOBO1xV1gp3ElnExn6kyQgNOdus3FHNp
+         /Jj6mLyU5fpREeAAp3IhkmU2wv86iOu46hvinkuyG+C3Ugg99tM824KNzC5ylZWmK/BL
+         x2jjMkpRn+TXxvxdlFa87pwtSwg3fjyvxYgfPH+FD1IWUEzCYtOIrSxsevdZb/H/mox1
+         Ze1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sXx3A05HJYEyorjvDLtzFzGsbPsAQOKVKTmCTm5nngs=;
+        b=6tVZ0RoPsF9ju7f1bTZiTFZGMx6ALICzFUw335hYo4d3dAUm7WgwT+xZpEY0sZo7Va
+         ZcRtLbTPYV70DBX4Ub3GvxLeyHIaJIZQCzZoyV2exWluvMNf7tR6ba5bK478SyWWkiWI
+         WXQ/KWGuzfAzNxk9d2HqWAjP/iBla4n06eOtls63entmGElmw/9tOBz9dlZ7okmZITwZ
+         hkoMChjH6h9M80ZgEaCdswpcANeEVTJstuEkmvXwfBpkVVj7oscgbWEpBucvYzAqvOAs
+         16y+MCIj0sVXsDP3tOxmgSKpzuRnxHQx9QFoMGMThNk67jEjeJ/nL+jmJf6MjTi62big
+         wLzQ==
+X-Gm-Message-State: ANoB5pkBvoCtQMA8k9gPB0zgjUhFmom5e/QXr6K6mruRRKaXKVQn3tTK
+        NxZ7VwF06sIDxj4PHo/WDvLJ9lKc7Y/q3A==
+X-Google-Smtp-Source: AA0mqf6YOtw97a/6+Em55RlLJKrxUctsXdKo0FRuP7JWgkrpNueVuon6iCUVLg6l2IDWDl6kjyCgdw==
+X-Received: by 2002:a0c:ec48:0:b0:4b7:c96b:80ec with SMTP id n8-20020a0cec48000000b004b7c96b80ecmr2673227qvq.17.1668186402972;
+        Fri, 11 Nov 2022 09:06:42 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id t6-20020a05622a180600b00343057845f7sm1527090qtc.20.2022.11.11.09.06.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Nov 2022 09:06:42 -0800 (PST)
+Date:   Fri, 11 Nov 2022 12:06:40 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Joel Stanley <joel@jms.id.au>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        jay.dolan@accesio.com, cang1@live.co.uk,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v4 tty-next 3/3] 8250: microchip: pci1xxxx: Add power
- management functions to quad-uart driver
-Message-ID: <Y258GVGTxyt5zZnW@smile.fi.intel.com>
-References: <20221111161130.2043882-1-kumaravel.thiagarajan@microchip.com>
- <20221111161130.2043882-4-kumaravel.thiagarajan@microchip.com>
+        kgugala@antmicro.com, mholenko@antmicro.com,
+        david.abdurachmanov@sifive.com, florent@enjoy-digital.fr
+Subject: Re: [PATCH v1 2/3] serial: liteuart: separate RX loop from poll timer
+Message-ID: <Y26BIPcWznDdHtEG@errol.ini.cmu.edu>
+References: <20221107171500.2537938-1-gsomlo@gmail.com>
+ <20221107171500.2537938-3-gsomlo@gmail.com>
+ <CACPK8XdGpGUispRcfgaVyE=18Wwg8GFHH7QJ6bcQLA5XDikSiQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221111161130.2043882-4-kumaravel.thiagarajan@microchip.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CACPK8XdGpGUispRcfgaVyE=18Wwg8GFHH7QJ6bcQLA5XDikSiQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 11, 2022 at 09:41:30PM +0530, Kumaravel Thiagarajan wrote:
-> pci1xxxx's quad-uart function has the capability to wake up the host
+On Thu, Nov 10, 2022 at 01:09:59AM +0000, Joel Stanley wrote:
+> On Mon, 7 Nov 2022 at 17:15, Gabriel Somlo <gsomlo@gmail.com> wrote:
+> >
+> > Move the character-receive (RX) loop to its own dedicated function,
+> > and (for now) call that from the poll timer, liteuart_timer().
+> >
+> > This is in preparation for adding IRQ support to the receive path.
+> >
+> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > ---
+> >  drivers/tty/serial/liteuart.c | 25 +++++++++++++++----------
+> >  1 file changed, 15 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> > index 4b9cca249828..90a29ed79bff 100644
+> > --- a/drivers/tty/serial/liteuart.c
+> > +++ b/drivers/tty/serial/liteuart.c
+> > @@ -69,29 +69,34 @@ static struct uart_driver liteuart_driver = {
+> >  #endif
+> >  };
+> >
+> > -static void liteuart_timer(struct timer_list *t)
+> > +static void liteuart_rx_chars(struct uart_port *port)
+> >  {
+> > -       struct liteuart_port *uart = from_timer(uart, t, timer);
+> > -       struct uart_port *port = &uart->port;
+> >         unsigned char __iomem *membase = port->membase;
+> > -       unsigned int flg = TTY_NORMAL;
+> > -       int ch;
+> > -       unsigned long status;
+> > +       unsigned int status;
+> > +       unsigned char ch;
+> 
+> u32, u8, void __iomem * would be better kernel types to use here.
+> 
+> You've also changed ch from a signed 32 to an unsigned 8.
 
-UART
+uart_insert_char() expects both `status` and `ch` to be of type
+`unsigned int`. Switching `ch` to 8-bit was a typo, thanks for
+catching it!
 
-> from suspend state. Enable wakeup before entering into suspend and
-> disable wakeup on resume.
+I'm going to use `unsigned int status, ch` in v3, to match the
+signature of `uart_insert_char()` -- hope that's OK. This will be
+a separate commit preceding the "move rx loop out of poll timer"
+change.
+ 
+> >
+> >         while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
+> >                 ch = litex_read8(membase + OFF_RXTX);
+> >                 port->icount.rx++;
+> >
+> >                 /* necessary for RXEMPTY to refresh its value */
+> > -               litex_write8(membase + OFF_EV_PENDING, EV_TX | EV_RX);
+> > +               litex_write8(membase + OFF_EV_PENDING, EV_RX);
+> 
+> You're no longer clearing EV_TX, but don't mention why (I understand
+> why with the context of the other changes, so perhaps add something to
+> this commit message).
 
-> Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+I'm adding a separate commit to document this (in v3) as well.
 
-No Co-developed-by?
-
-> +static bool pci1xxxx_port_suspend(int line)
-> +{
-> +	struct uart_8250_port *up = serial8250_get_port(line);
-> +	struct uart_port *port = &up->port;
-> +	struct tty_port *tport = &port->state->port;
-> +	unsigned long flags;
-> +	bool ret = false;
-> +	u8 wakeup_mask;
-> +
-> +	mutex_lock(&tport->mutex);
-> +	if (port->suspended == 0 && port->dev) {
-> +		wakeup_mask = readb(up->port.membase + UART_WAKE_MASK_REG);
-> +
-> +		spin_lock_irqsave(&port->lock, flags);
-> +		port->mctrl &= ~TIOCM_OUT2;
-> +		port->ops->set_mctrl(port, port->mctrl);
-> +		spin_unlock_irqrestore(&port->lock, flags);
-
-> +		if ((wakeup_mask & UART_WAKE_SRCS) != UART_WAKE_SRCS)
-> +			ret = true;
-
-Can be
-		ret = (wakeup_mask & UART_WAKE_SRCS) != UART_WAKE_SRCS;
-
-> +	}
-> +
-> +	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
-> +	mutex_unlock(&tport->mutex);
-> +
-> +	return ret;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+--Gabriel
+ 
+> 
+> >
+> >                 /* no overflow bits in status */
+> >                 if (!(uart_handle_sysrq_char(port, ch)))
+> > -                       uart_insert_char(port, status, 0, ch, flg);
+> > -
+> > -               tty_flip_buffer_push(&port->state->port);
+> > +                       uart_insert_char(port, status, 0, ch, TTY_NORMAL);
+> >         }
+> >
+> > +       tty_flip_buffer_push(&port->state->port);
+> > +}
+> > +
+> > +static void liteuart_timer(struct timer_list *t)
+> > +{
+> > +       struct liteuart_port *uart = from_timer(uart, t, timer);
+> > +       struct uart_port *port = &uart->port;
+> > +
+> > +       liteuart_rx_chars(port);
+> > +
+> >         mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+> >  }
+> >
+> > --
+> > 2.37.3
+> >
