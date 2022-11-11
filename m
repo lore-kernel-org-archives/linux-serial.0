@@ -2,104 +2,178 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF70C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 14:25:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF590C43217
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 15:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbiKKOZl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Nov 2022 09:25:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37004 "EHLO
+        id S234333AbiKKP7V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Nov 2022 10:59:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234248AbiKKOZL (ORCPT
+        with ESMTP id S233842AbiKKP7S (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Nov 2022 09:25:11 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894AC391E9;
-        Fri, 11 Nov 2022 06:25:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668176708; x=1699712708;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=m11pAB5y0zFrcscE/1egpbuT7jD+h/gvZLDvumXx/v8=;
-  b=FLByUkvFGnOuQXxcDdqwDP0D+3v05oeu5wS5EMhNt2+sV/QDkwViIb7J
-   J1aAOXMgquDjMrZkT2YCineTIRToc99cdcE6hK7jZkxDUQPK3VogvTxNa
-   4jvtCfW7M37225wsXeIjXE59bVhH9Jt3IEyyLxitXVb5vI/VCPJgqGThh
-   quWOmxWAudTyIdYiwgVw2ipOBO6AQaa8o0LZKkz2w3a+APdVls4pxY1fl
-   /mpSU5gNG8j2iiBysnVGWIhTW9RjKr/eQhws5YxUILjLaU2+Zm1rOcuWz
-   3itqtAeQl3wtXurMCjVy53YUHgvVG2dSmYXuwHcWWo3DmccagIEj5Z8D5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="292007805"
-X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="292007805"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 06:25:08 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="632044092"
-X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="632044092"
-Received: from iglushko-mobl1.ger.corp.intel.com ([10.249.44.68])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 06:25:05 -0800
-Date:   Fri, 11 Nov 2022 16:25:02 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH] n_tty: Rename tail to old_tail in n_tty_read()
-Message-ID: <22b37499-ff9a-7fc1-f6e0-58411328d122@linux.intel.com>
+        Fri, 11 Nov 2022 10:59:18 -0500
+X-Greylist: delayed 2394 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Nov 2022 07:59:17 PST
+Received: from smtpout.efficios.com (smtpout.efficios.com [IPv6:2607:5300:203:5aae::31e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2623C6CE;
+        Fri, 11 Nov 2022 07:59:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
+        s=smtpout1; t=1668177821;
+        bh=EYvFyeYoIXdpRZUrDIt9Kwnd3gAkvdIgxw1lIXG8SKY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=l66N3oiBVl0WpLOT0hkLWrSBLQJsJSW4+ouPxFZH5QD5KKmXDB6CMjzwtM8VVLLpX
+         a4mvKpJXJiuV9Qw3ANDqSRII+7K5waLtTRLYZ90oeO3HFXyKJpVusI8jz1TOHWpOiX
+         dJRcqsFN0mN40E/3U0KhejsRReLLA8QsqIZLb9mPKd4oL95EyLfXlhHXXYFtuTieM/
+         mQitMOSC/OQ89QyOELCnHdOHRibH9OXvgNxVpUIxiREjJL0PTMu3jrCYcnxgmXCUU+
+         h1vYvH07RGr00OmtJNBP+zQXctnrrr738WJXcAPDjU36sTOHtCkNno5wnO/vjAKkO+
+         R+/kME1qSOXkw==
+Received: from [172.16.0.153] (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
+        by smtpout.efficios.com (Postfix) with ESMTPSA id 4N81fh5HFrzgt1;
+        Fri, 11 Nov 2022 09:43:40 -0500 (EST)
+Message-ID: <02cdf436-6942-89a7-98b2-bfa75ba5f301@efficios.com>
+Date:   Fri, 11 Nov 2022 09:43:49 -0500
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1634807828-1668176707=:1606"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH printk v3 00/40] reduce console_lock scope
+Content-Language: en-US
+To:     John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tony Lindgren <tony@atomide.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, Ard Biesheuvel <ardb@kernel.org>,
+        linux-efi@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        linux-usb@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Helge Deller <deller@gmx.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Tom Rix <trix@redhat.com>, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+In-Reply-To: <20221107141638.3790965-1-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 2022-11-07 09:15, John Ogness wrote:
+[...]
+> 
+> The base commit for this series is from Paul McKenney's RCU tree
+> and provides an NMI-safe SRCU implementation [1]. Without the
+> NMI-safe SRCU implementation, this series is not less safe than
+> mainline. But we will need the NMI-safe SRCU implementation for
+> atomic consoles anyway, so we might as well get it in
+> now. Especially since it _does_ increase the reliability for
+> mainline in the panic path.
 
---8323329-1634807828-1668176707=:1606
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+So, your email got me to review the SRCU nmi-safe series:
 
-The local tail variable in n_tty_read() is used for one purpose, it
-keeps the old tail. Thus, rename it appropriately to improve code
-readability.
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/log/?h=srcunmisafe.2022.10.21a
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Especially this commit:
 
----
- drivers/tty/n_tty.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?h=srcunmisafe.2022.10.21a&id=5d0f5953b60f5f7a278085b55ddc73e2932f4c33
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 597019690ae6..c8f56c9b1a1c 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -2130,7 +2130,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 	ssize_t retval = 0;
- 	long timeout;
- 	bool packet;
--	size_t tail;
-+	size_t old_tail;
- 
- 	/*
- 	 * Is this a continuation of a read started earler?
-@@ -2193,7 +2193,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 	}
- 
- 	packet = tty->ctrl.packet;
--	tail = ldata->read_tail;
-+	old_tail = ldata->read_tail;
- 
- 	add_wait_queue(&tty->read_wait, &wait);
- 	while (nr) {
-@@ -2282,7 +2282,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 		if (time)
- 			timeout = time;
- 	}
--	if (tail != ldata->read_tail)
-+	if (old_tail != ldata->read_tail)
- 		n_tty_kick_worker(tty);
- 	up_read(&tty->termios_rwsem);
- 
+I disagree with the overall approach taken there, which is to create
+yet another SRCU flavor, this time with explicit "nmi-safe" read-locks.
+This adds complexity to the kernel APIs and I think we can be clever
+about this and make SRCU nmi-safe without requiring a whole new incompatible
+API.
+
+You can find the basic idea needed to achieve this in the libside RCU
+user-space implementation. I needed to introduce a split-counter concept
+to support rseq vs atomics to keep track of per-cpu grace period counters.
+The "rseq" counter is the fast-path, but if rseq fails, the abort handler
+uses the atomic counter instead.
+
+https://github.com/compudj/side/blob/main/src/rcu.h#L23
+
+struct side_rcu_percpu_count {
+	uintptr_t begin;
+	uintptr_t rseq_begin;
+	uintptr_t end;
+	uintptr_t rseq_end;
+}  __attribute__((__aligned__(SIDE_CACHE_LINE_SIZE)));
+
+The idea is to "split" each percpu counter into two counters, one for rseq,
+and the other for atomics. When a grace period wants to observe the value of
+a percpu counter, it simply sums the two counters:
+
+https://github.com/compudj/side/blob/main/src/rcu.c#L112
+
+The same idea can be applied to SRCU in the kernel: one counter for percpu ops,
+and the other counter for nmi context, so basically:
+
+srcu_read_lock()
+
+if (likely(!in_nmi()))
+   increment the percpu-ops lock counter
+else
+   increment the atomic lock counter
+
+srcu_read_unlock()
+
+if (likely(!in_nmi()))
+   increment the percpu-ops unlock counter
+else
+   increment the atomic unlock counter
+
+Then in the grace period sum the percpu-ops and the atomic values whenever
+each counter value is read.
+
+This would allow SRCU to be NMI-safe without requiring the callers to
+explicitly state whether they need to be nmi-safe or not, and would only
+take the overhead of the atomics in the NMI handlers rather than for all
+users which happen to use SRCU read locks shared with nmi handlers.
+
+Thoughts ?
+
+Thanks,
+
+Mathieu
 
 -- 
-tg: (15730dc45dc7..) tty/rename-tail (depends on: tty-next)
---8323329-1634807828-1668176707=:1606--
+Mathieu Desnoyers
+EfficiOS Inc.
+https://www.efficios.com
+
