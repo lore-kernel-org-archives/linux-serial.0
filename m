@@ -2,161 +2,179 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DDBC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 17:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B26C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 17:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232177AbiKKRGq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Nov 2022 12:06:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46556 "EHLO
+        id S234136AbiKKRQK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Nov 2022 12:16:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230043AbiKKRGp (ORCPT
+        with ESMTP id S234306AbiKKRQJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Nov 2022 12:06:45 -0500
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EED729A8;
-        Fri, 11 Nov 2022 09:06:44 -0800 (PST)
-Received: by mail-qv1-xf2e.google.com with SMTP id lf15so3700151qvb.9;
-        Fri, 11 Nov 2022 09:06:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sXx3A05HJYEyorjvDLtzFzGsbPsAQOKVKTmCTm5nngs=;
-        b=LuoA2pzCpw3gU/2r/tNIjIqgohEuAWvxyozzM9Drqh8Mde8xAAnF0WmplIEIghqONO
-         KYnfeNt6UQ31fRt5WYs8UfGHKL2s+pf5pLzoZEBQmepZidwncGU2sE+wKqv6r6U+q0Xx
-         VkAGbZCEbaOP7fMixM7RfDma1p82fIgFP31FWOBO1xV1gp3ElnExn6kyQgNOdus3FHNp
-         /Jj6mLyU5fpREeAAp3IhkmU2wv86iOu46hvinkuyG+C3Ugg99tM824KNzC5ylZWmK/BL
-         x2jjMkpRn+TXxvxdlFa87pwtSwg3fjyvxYgfPH+FD1IWUEzCYtOIrSxsevdZb/H/mox1
-         Ze1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sXx3A05HJYEyorjvDLtzFzGsbPsAQOKVKTmCTm5nngs=;
-        b=6tVZ0RoPsF9ju7f1bTZiTFZGMx6ALICzFUw335hYo4d3dAUm7WgwT+xZpEY0sZo7Va
-         ZcRtLbTPYV70DBX4Ub3GvxLeyHIaJIZQCzZoyV2exWluvMNf7tR6ba5bK478SyWWkiWI
-         WXQ/KWGuzfAzNxk9d2HqWAjP/iBla4n06eOtls63entmGElmw/9tOBz9dlZ7okmZITwZ
-         hkoMChjH6h9M80ZgEaCdswpcANeEVTJstuEkmvXwfBpkVVj7oscgbWEpBucvYzAqvOAs
-         16y+MCIj0sVXsDP3tOxmgSKpzuRnxHQx9QFoMGMThNk67jEjeJ/nL+jmJf6MjTi62big
-         wLzQ==
-X-Gm-Message-State: ANoB5pkBvoCtQMA8k9gPB0zgjUhFmom5e/QXr6K6mruRRKaXKVQn3tTK
-        NxZ7VwF06sIDxj4PHo/WDvLJ9lKc7Y/q3A==
-X-Google-Smtp-Source: AA0mqf6YOtw97a/6+Em55RlLJKrxUctsXdKo0FRuP7JWgkrpNueVuon6iCUVLg6l2IDWDl6kjyCgdw==
-X-Received: by 2002:a0c:ec48:0:b0:4b7:c96b:80ec with SMTP id n8-20020a0cec48000000b004b7c96b80ecmr2673227qvq.17.1668186402972;
-        Fri, 11 Nov 2022 09:06:42 -0800 (PST)
-Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
-        by smtp.gmail.com with ESMTPSA id t6-20020a05622a180600b00343057845f7sm1527090qtc.20.2022.11.11.09.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 09:06:42 -0800 (PST)
-Date:   Fri, 11 Nov 2022 12:06:40 -0500
-From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        kgugala@antmicro.com, mholenko@antmicro.com,
-        david.abdurachmanov@sifive.com, florent@enjoy-digital.fr
-Subject: Re: [PATCH v1 2/3] serial: liteuart: separate RX loop from poll timer
-Message-ID: <Y26BIPcWznDdHtEG@errol.ini.cmu.edu>
-References: <20221107171500.2537938-1-gsomlo@gmail.com>
- <20221107171500.2537938-3-gsomlo@gmail.com>
- <CACPK8XdGpGUispRcfgaVyE=18Wwg8GFHH7QJ6bcQLA5XDikSiQ@mail.gmail.com>
+        Fri, 11 Nov 2022 12:16:09 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF4620F71;
+        Fri, 11 Nov 2022 09:16:04 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B3E6A22427;
+        Fri, 11 Nov 2022 17:16:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1668186962; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FxrxM7pL3XKtifIuT+LlAb2dWxKEfCKW4HflKcsOazM=;
+        b=Bx93kEFIydrek2IJhS1lyxdnzNwsqiFWcSHlAxlTXbGbLl8Lk667JwSy1+8nQrjVP4gzUK
+        pk7Pxa39UFsq+onAdTpLvmGhPWQO4bmOhnEYXxKi2ONuoPJKIvtHs/cqCGFk2+29VflLLL
+        YjzXL5z0HLnd9i/Kgm5/5Wa6hVfQATQ=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4937A2C145;
+        Fri, 11 Nov 2022 17:16:02 +0000 (UTC)
+Date:   Fri, 11 Nov 2022 18:15:58 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH printk v3 40/40] tty: serial: sh-sci: use setup()
+ callback for early console
+Message-ID: <Y26DTir7jozrsEST@alley>
+References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+ <20221107141638.3790965-41-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CACPK8XdGpGUispRcfgaVyE=18Wwg8GFHH7QJ6bcQLA5XDikSiQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
+In-Reply-To: <20221107141638.3790965-41-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 01:09:59AM +0000, Joel Stanley wrote:
-> On Mon, 7 Nov 2022 at 17:15, Gabriel Somlo <gsomlo@gmail.com> wrote:
-> >
-> > Move the character-receive (RX) loop to its own dedicated function,
-> > and (for now) call that from the poll timer, liteuart_timer().
-> >
-> > This is in preparation for adding IRQ support to the receive path.
-> >
-> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> > ---
-> >  drivers/tty/serial/liteuart.c | 25 +++++++++++++++----------
-> >  1 file changed, 15 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> > index 4b9cca249828..90a29ed79bff 100644
-> > --- a/drivers/tty/serial/liteuart.c
-> > +++ b/drivers/tty/serial/liteuart.c
-> > @@ -69,29 +69,34 @@ static struct uart_driver liteuart_driver = {
-> >  #endif
-> >  };
-> >
-> > -static void liteuart_timer(struct timer_list *t)
-> > +static void liteuart_rx_chars(struct uart_port *port)
-> >  {
-> > -       struct liteuart_port *uart = from_timer(uart, t, timer);
-> > -       struct uart_port *port = &uart->port;
-> >         unsigned char __iomem *membase = port->membase;
-> > -       unsigned int flg = TTY_NORMAL;
-> > -       int ch;
-> > -       unsigned long status;
-> > +       unsigned int status;
-> > +       unsigned char ch;
-> 
-> u32, u8, void __iomem * would be better kernel types to use here.
-> 
-> You've also changed ch from a signed 32 to an unsigned 8.
+Ccing Bartosz who should be familiar with the early platform code.
 
-uart_insert_char() expects both `status` and `ch` to be of type
-`unsigned int`. Switching `ch` to 8-bit was a typo, thanks for
-catching it!
+On Mon 2022-11-07 15:22:38, John Ogness wrote:
+> When setting up the early console, the setup() callback of the
+> regular console is used. It is called manually before registering
+> the early console instead of providing a setup() callback for the
+> early console. This is probably because the early setup needs a
+> different @options during the early stage.
 
-I'm going to use `unsigned int status, ch` in v3, to match the
-signature of `uart_insert_char()` -- hope that's OK. This will be
-a separate commit preceding the "move rx loop out of poll timer"
-change.
- 
-> >
-> >         while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
-> >                 ch = litex_read8(membase + OFF_RXTX);
-> >                 port->icount.rx++;
-> >
-> >                 /* necessary for RXEMPTY to refresh its value */
-> > -               litex_write8(membase + OFF_EV_PENDING, EV_TX | EV_RX);
-> > +               litex_write8(membase + OFF_EV_PENDING, EV_RX);
+This last sentece makes a bit nervous ;-)
+
+I think that I understood it in the end, see below.
+
+> The issue here is that the setup() callback is called without the
+> console_list_lock held and functions such as uart_set_options()
+> expect that.
 > 
-> You're no longer clearing EV_TX, but don't mention why (I understand
-> why with the context of the other changes, so perhaps add something to
-> this commit message).
-
-I'm adding a separate commit to document this (in v3) as well.
-
-Thanks,
---Gabriel
- 
+> Rather than manually calling the setup() function before registering,
+> provide an early console setup() callback that will use the different
+> early options. This ensures that the error checking, ordering, and
+> locking context when setting up the early console are correct.
 > 
-> >
-> >                 /* no overflow bits in status */
-> >                 if (!(uart_handle_sysrq_char(port, ch)))
-> > -                       uart_insert_char(port, status, 0, ch, flg);
-> > -
-> > -               tty_flip_buffer_push(&port->state->port);
-> > +                       uart_insert_char(port, status, 0, ch, TTY_NORMAL);
-> >         }
-> >
-> > +       tty_flip_buffer_push(&port->state->port);
-> > +}
-> > +
-> > +static void liteuart_timer(struct timer_list *t)
-> > +{
-> > +       struct liteuart_port *uart = from_timer(uart, t, timer);
-> > +       struct uart_port *port = &uart->port;
-> > +
-> > +       liteuart_rx_chars(port);
-> > +
-> >         mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> >  }
-> >
-> > --
-> > 2.37.3
-> >
+> Note that technically the current implementation works because it is
+> only used in early boot. And since the early console setup is
+> performed before registering, it cannot race with anything and thus
+> does not need any locking. However, longterm maintenance is easier
+> when drivers rely on the subsystem API rather than manually
+> implementing steps that could cause breakage in the future.
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  drivers/tty/serial/sh-sci.c | 17 +++++++++++++----
+>  1 file changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 62f773286d44..f3a1cfec757a 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3054,15 +3054,26 @@ static struct console serial_console = {
+>  };
+>  
+>  #ifdef CONFIG_SUPERH
+> +static char early_serial_buf[32];
+> +
+> +static int early_serial_console_setup(struct console *co, char *options)
+> +{
+> +	WARN_ON(options);
+> +	/*
+> +	 * Use @early_serial_buf because @options will always be
+> +	 * NULL at this early stage.
+> +	 */
+
+The commit message says that we use @early_serial_buf because
+the early console probably needs another parameters.
+
+It suggests that @options might be for the later stage and
+we need to replace them there. Are we sure that this will always
+be NULL?
+
+Background:
+
+The console->setup() is called in two situations:
+
+   1. when the console is registered as the default console, see
+     try_enable_default_console(). In this case, @options
+     is really NULL.
+
+   2. when the console is preferred either via the commnadline,
+      or device tree, or SPCR, see try_enable_preferred_console().
+      In this case, some real @options would be passed.
+
+     From the code POV, the preferred consoles are added by calling
+     add_preferred_console().
+
+
+Now, it means that the WARN_ON() is correct only when this console
+is always registered before the preferred consoles are defined.
+
+I think that this is really the case. This console
+is actually registered via the "earlyprintk" parameter that
+is proceed by the arch-specific code before the preferred
+consoles are added the standard way via the kernel commandline.
+
+Note that "earlyprintk" and "earlycon" are two different parameters.
+
+"earlyprintk" normally initializes "early_console" that is
+called directly by early_printk(). It is used for super early
+debugging. These messages even do not end in the ring buffer.
+
+"earlycon" defines a "normal" console that is used by the standard
+printk(). They are later replaced by properly initialized console
+drivers that are in sysfs, ...
+
+Note that "earlycon" calls add_preferred_console() so that
+the @options are stored and passed from try_enable_preferred_console().
+
+But "earlyprintk" does not call add_preferred_console() so
+we need this hack to store and pass the console options
+another way.
+
+> +	return serial_console_setup(co, early_serial_buf);
+> +}
+> +
+
+So I would do something like:
+
+static int early_serial_console_setup(struct console *co, char *options)
+{
+	/*
+	 * This early console is registered using earlyprintk= parameter
+	 * that does not call add_preferred_console(). The @options
+	 * are passed using a custom buffer.
+	 */
+	WARN_ON(options);
+
+	return serial_console_setup(co, early_serial_buf);
+}
+
+Also we should explain this in the commit message.
+
+Best Regards,
+Petr
