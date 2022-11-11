@@ -2,168 +2,70 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F796C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Nov 2022 20:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD06C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 09:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbiKJU3k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Nov 2022 15:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
+        id S232983AbiKKJ7q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Nov 2022 04:59:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiKJU3j (ORCPT
+        with ESMTP id S232608AbiKKJ7q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Nov 2022 15:29:39 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179F21CFFC;
-        Thu, 10 Nov 2022 12:29:34 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id k2so1875372qkk.7;
-        Thu, 10 Nov 2022 12:29:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ih5vbeDEAFzKplO982fNJrgyD80A/aFIEJ2OMUT2j4o=;
-        b=HOuepxNdSz8sxgRYf9mKW4vLXN5T3uEH0aRUCqJEv/AB62lWjI4i5TMKwNPOUhH/ed
-         7406HkAIQaMjQvrpGVc2HcPwB/dYW9ntnv5XnbCtGqyJWvJXVZm57N9mkC42v8I5Yg52
-         7BtW/4Xhsc7yzFn6GqAtLykuIS8YyFY9VUGF/FlyP5OMUbmDXHUCpmjcvXr/iCv5B/S2
-         c4z1/qCuzTgtb3eyL532GFYVzuOfKjhzmFOq5VsAqKNlnvF+tRFlBe5/R2M39yT9rNUT
-         8o9RnxIZjWJn0vKXvP99chZedwebr2VL7hf92RbGwYIcoSzMPpamrnW5fUQLiHEobpZu
-         zKxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ih5vbeDEAFzKplO982fNJrgyD80A/aFIEJ2OMUT2j4o=;
-        b=3hNQGJRYPkJRdPXRrmGCZmqQWFUX5IXWpNJF7hyFPYNafUwN15pqsNzTeMKEFWZahQ
-         M5ydm3b2oI4gzm7ZK1DySaHfXa+FLo1NDBIyqPMIH+6LcgxnQbkp4yxGVSJKEZ+0RNLm
-         KSLCdRkbjXonEamVBkrU9B76j2PqTSE3jyT7z7jEdT+l++ZOi28Ro0H6Tio0rsT904SP
-         WEsmGS9lgL42ipuOlF49JqojrYLXXFBQtb8lcrT234yBEDat/KDL2VfEsdsqoHMrtZEh
-         Lful8iWmIatAZKg7MpHz6jOTEw09IyjzeRSUTdAuCR3Si0rFmwkcko1RpetwlSyxbBs9
-         0vRg==
-X-Gm-Message-State: ACrzQf3zaA4a17KhMK/nvzebbSohIVS1mhwtNdIaMwC3cEOLyGw13XmC
-        /XU5lhL/wfU95tkR6ztjc2SQvGmQ6y8eog==
-X-Google-Smtp-Source: AMsMyM70iuhbVvo3+cuEcWfteZfe6ZXwUOabi8j35ocMFTt8YEzGCaGRlyR5Wg24nm/WVJe/GJBktg==
-X-Received: by 2002:a37:e301:0:b0:6fa:4749:cb8c with SMTP id y1-20020a37e301000000b006fa4749cb8cmr1782662qki.335.1668112173211;
-        Thu, 10 Nov 2022 12:29:33 -0800 (PST)
-Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
-        by smtp.gmail.com with ESMTPSA id bq35-20020a05620a46a300b006bbf85cad0fsm207937qkb.20.2022.11.10.12.29.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 12:29:32 -0800 (PST)
-Date:   Thu, 10 Nov 2022 15:29:30 -0500
-From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
+        Fri, 11 Nov 2022 04:59:46 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649E949B43;
+        Fri, 11 Nov 2022 01:59:40 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0F2F52018F;
+        Fri, 11 Nov 2022 09:59:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1668160779; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Uyn60W/v8JE7SjdKlawr3nBkaxBT1V/caWA0/DUgMEU=;
+        b=sf7oK0ZFSmbDUtArZU9Tg84hj8t2CYyovBkWZxmx1rB8kblb9tDCqdmiaDF+DHSLSXyTd4
+        LZaG+9luTXHvJOr325VhohT3V5jeNMkBCe21ihz2v8vLYuXK1noC+rgJe/g3R2WHy8K+bU
+        MJ8edXMtOSgKBr94W1e/WMxA+YIt6Pc=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B213F2C142;
+        Fri, 11 Nov 2022 09:59:37 +0000 (UTC)
+Date:   Fri, 11 Nov 2022 10:59:37 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
-        mholenko@antmicro.com, joel@jms.id.au,
-        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
-        geert@linux-m68k.org
-Subject: Re: [PATCH v2 6/7] serial: liteuart: separate RX loop from poll timer
-Message-ID: <Y21fKt+mGKvQ8yMF@glsvmlin.ini.cmu.edu>
-References: <20221110004450.772768-1-gsomlo@gmail.com>
- <20221110004450.772768-7-gsomlo@gmail.com>
- <1c902ee8-d33d-c2d0-7eef-719f59f3a64@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v3 38/40] tty: serial: kgdboc: use
+ console_list_lock to trap exit
+Message-ID: <Y24dCalaGXJQcNTI@alley>
+References: <20221107141638.3790965-1-john.ogness@linutronix.de>
+ <20221107141638.3790965-39-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1c902ee8-d33d-c2d0-7eef-719f59f3a64@linux.intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
+In-Reply-To: <20221107141638.3790965-39-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 10, 2022 at 01:01:47PM +0200, Ilpo Järvinen wrote:
-> On Wed, 9 Nov 2022, Gabriel Somlo wrote:
+On Mon 2022-11-07 15:22:36, John Ogness wrote:
+> kgdboc_earlycon_init() uses the console_lock to ensure that no consoles
+> are unregistered until the kgdboc_earlycon is setup. The console_list_lock
+> should be used instead because list synchronization responsibility will
+> be removed from the console_lock in a later change.
 > 
-> > Move the character-receive (RX) loop to its own dedicated function,
-> > and (for now) call that from the poll timer, liteuart_timer().
-> > 
-> > This is in preparation for adding IRQ support to the receive path.
-> > 
-> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> > ---
-> >  drivers/tty/serial/liteuart.c | 25 +++++++++++++++----------
-> >  1 file changed, 15 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> > index 047d5ad32e13..aa7052280197 100644
-> > --- a/drivers/tty/serial/liteuart.c
-> > +++ b/drivers/tty/serial/liteuart.c
-> > @@ -67,29 +67,34 @@ static struct uart_driver liteuart_driver = {
-> >  #endif
-> >  };
-> >  
-> > -static void liteuart_timer(struct timer_list *t)
-> > +static void liteuart_rx_chars(struct uart_port *port)
-> >  {
-> > -	struct liteuart_port *uart = from_timer(uart, t, timer);
-> > -	struct uart_port *port = &uart->port;
-> >  	unsigned char __iomem *membase = port->membase;
-> > -	unsigned int flg = TTY_NORMAL;
-> > -	int ch;
-> > -	unsigned long status;
-> > +	unsigned int status;
-> > +	unsigned char ch;
-> >  
-> >  	while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
-> >  		ch = litex_read8(membase + OFF_RXTX);
-> >  		port->icount.rx++;
-> >  
-> >  		/* necessary for RXEMPTY to refresh its value */
-> > -		litex_write8(membase + OFF_EV_PENDING, EV_TX | EV_RX);
-> > +		litex_write8(membase + OFF_EV_PENDING, EV_RX);
-> >  
-> >  		/* no overflow bits in status */
-> >  		if (!(uart_handle_sysrq_char(port, ch)))
-> > -			uart_insert_char(port, status, 0, ch, flg);
-> > -
-> > -		tty_flip_buffer_push(&port->state->port);
-> > +			uart_insert_char(port, status, 0, ch, TTY_NORMAL);
-> >  	}
-> >  
-> > +	tty_flip_buffer_push(&port->state->port);
-> 
-> This change is doing extra stuff besides moving rx to a dedicated 
-> function.
-> 
-> I see no reason why those other changes couldn't be put into an entirely 
-> separate patch. Also, please described those changes properly in the 
-> commit message (answer the why? question).
- 
-You're right, calling `tty_flip_buffer_push()` as each character is
-received is overkill, we only need to call it once per interrupt once
-all available characters have been received.
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-I forgot I noticed (and fixed) that as part of the move -- I'll split
-it out into its own separate patch (probably *before* moving all of rx
-to a dedicated function).
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-Should show up in v3, once I also address all the other feedback I
-received.
-
-Thanks again for catching it!
-
-Cheers,
--Gabriel
-
-> -- 
->  i.
-> 
-> > +}
-> > +
-> > +static void liteuart_timer(struct timer_list *t)
-> > +{
-> > +	struct liteuart_port *uart = from_timer(uart, t, timer);
-> > +	struct uart_port *port = &uart->port;
-> > +
-> > +	liteuart_rx_chars(port);
-> > +
-> >  	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> >  }
-> >  
-> > 
-> 
-> 
+Best Regards,
+Petr
