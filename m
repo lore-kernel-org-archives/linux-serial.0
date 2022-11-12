@@ -2,82 +2,232 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F0BC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Nov 2022 21:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20842C4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Nov 2022 21:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233363AbiKKV2s (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Nov 2022 16:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
+        id S232004AbiKLVAQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Nov 2022 16:00:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232943AbiKKV2q (ORCPT
+        with ESMTP id S230147AbiKLVAQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Nov 2022 16:28:46 -0500
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0ED10B5C;
-        Fri, 11 Nov 2022 13:28:42 -0800 (PST)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-13d9a3bb27aso6683626fac.11;
-        Fri, 11 Nov 2022 13:28:42 -0800 (PST)
+        Sat, 12 Nov 2022 16:00:16 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F4ADFA1;
+        Sat, 12 Nov 2022 13:00:14 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id j6so5624137qvn.12;
+        Sat, 12 Nov 2022 13:00:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=STjvMWYAsL+noLrHNxVjcJMidYYojzqz+eFneOGh7ac=;
+        b=lFi4p41JqA2nJ8nC9YLCR6IoRcolevIzQxJPScLttGHEoVYd66XJBBJFGfUbKOfyh/
+         oq6LW8kITseidXXCLWy8ktgxehKE7YIkt69LRjFZL6ORawlunJ8jZj7l1Ifoozdd27TR
+         uH6AMa/OZBHtLlEN6dLTYQ0Vh70rVFrd86iIM/NQePl4N9o6Tci4L7piL046VbSrW7G8
+         3novVjPUjbTAfm3jK2TzgFtCPHZalc7GVk0IqzedSNKCSm92ZHtdsgU0JiN/iwCH9g93
+         08NXvIvKX2SevzwvIAkVaVZQI0oIRtyZwNCWN0lCEcWL5rmswuGH0ZQyaVMuaYRpZOMN
+         SlGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=a9IWXVJO7FCfYbdDLeNc5y7EDDRr0wMjZ75A9nG5cpU=;
-        b=zk9iDq4DRkff3JSjfKAxYmgG+ul2MoD2OevOaqoJ+jGaGW4AomCRh5CixCMBxptHB1
-         gvgVetrBQPmagMTdYDH/RjUfFbmHfSMKp3vBY/pvgPanV+tkplucARzkAfao3XQQEGpK
-         hVNJe2d6byVFEHWuSU6nvZ/7sLtOuo+9PY7SyRxiL1gDfhwlLG7EJ5F9ixYwWbj7eVGJ
-         Wv/lu2m5NnTASx5CPWN2dFpui9b/FJWTN00dRAwRCG5d4Ckm1VZtWHVpxH9rV+jAi4j4
-         wfaGQztcyq4Aa5tGOfeaXMf1j3/s5mO52dTOVznFrB0nsaGQ4S5Td4cy6oeyfTRKh6yt
-         px2g==
-X-Gm-Message-State: ANoB5pnR4Bq1xhK/JzAjbEL1ZYFDGQLr8zxe+Hy7izNUrFINSdnRJFh/
-        N5xOP8OfMpN3iMbMeEd6oO/cMFHLrQ==
-X-Google-Smtp-Source: AA0mqf7qza00MxfRDpxW6kAteViq0Xda0ZdehJkcfO/3K+a/O01/4Wv8KeSIDtxEH1rNIHYOfRtLsg==
-X-Received: by 2002:a05:6870:ac88:b0:13b:29b7:e1a5 with SMTP id ns8-20020a056870ac8800b0013b29b7e1a5mr2017586oab.100.1668202121401;
-        Fri, 11 Nov 2022 13:28:41 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g4-20020a9d6a04000000b00637032a39a3sm1433579otn.6.2022.11.11.13.28.40
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=STjvMWYAsL+noLrHNxVjcJMidYYojzqz+eFneOGh7ac=;
+        b=gjfAuwVHpEt1Z0KUCgXo9NNadb2DLcDKxWNA5+ex5VeUuuGg1MKnkwbvJP78HO78LW
+         sTJ4yV9ncZ1LE/949bC37gJ5/fqUpn89iT90Flr1gGGQGPqgVFguNHsY8St+mrnyrWI0
+         qDVLesAYSoiRwXySnRoninERZjla2M6PZrxV2A852F/SEYu/d89yoIjgZ7vd6IfPSXDZ
+         JEjAtrB8lGpXdOLbAAj38gT/YqBLrAqoq6W6gk8dgX4j3AiDhBDcXRfB0v157RJWqZs+
+         AHlQrdf15VPL6hMVRyG+yLS4/wFvvv30HiDEvPkcnkbGX1Wdv9ednlXx3KvdWnA1kPCV
+         iEPQ==
+X-Gm-Message-State: ANoB5pn9ObRqRyU7RsETGH9vjxsxkNbHrwdxqanSew5Twq0JWsx7CDmB
+        pGTHBJ5HXPiOTadENFWcSRk=
+X-Google-Smtp-Source: AA0mqf7pNIdnXYoxN9Utrshlkdq33VEit4aQ7HO+LkFo5wa3yHVCDY2by1jc1bt5XB9NQOIqIyZFQg==
+X-Received: by 2002:a05:6214:5247:b0:4bb:9358:2a1e with SMTP id kf7-20020a056214524700b004bb93582a1emr6982844qvb.97.1668286813535;
+        Sat, 12 Nov 2022 13:00:13 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id j3-20020a05620a288300b006ed138e89f2sm3678531qkp.123.2022.11.12.13.00.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 13:28:40 -0800 (PST)
-Received: (nullmailer pid 4103969 invoked by uid 1000);
-        Fri, 11 Nov 2022 21:28:42 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Peter Korsgaard <jacmet@sunsite.dk>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: xlnx,opb-uartlite: Drop 'contains' from 'xlnx,use-parity'
-Date:   Fri, 11 Nov 2022 15:28:38 -0600
-Message-Id: <20221111212838.4103828-1-robh@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Sat, 12 Nov 2022 13:00:12 -0800 (PST)
+Date:   Sat, 12 Nov 2022 16:00:10 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        kgugala@antmicro.com, mholenko@antmicro.com,
+        david.abdurachmanov@sifive.com, florent@enjoy-digital.fr
+Subject: Re: [PATCH v1 3/3] serial: liteuart: add IRQ support
+Message-ID: <Y3AJWtmDIOZhX37/@errol.ini.cmu.edu>
+References: <20221107171500.2537938-1-gsomlo@gmail.com>
+ <20221107171500.2537938-4-gsomlo@gmail.com>
+ <CACPK8XePY_nYo5OduxOAdAyUqtXju+9vAb+iXZqi6rmvR7Fp=Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACPK8XePY_nYo5OduxOAdAyUqtXju+9vAb+iXZqi6rmvR7Fp=Q@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-'contains' applies to arrays, but 'xlnx,use-parity' is a scalar. So drop
-'contains' from the 'if' schema.
+On Thu, Nov 10, 2022 at 01:08:55AM +0000, Joel Stanley wrote:
+> On Mon, 7 Nov 2022 at 17:15, Gabriel Somlo <gsomlo@gmail.com> wrote:
+> >
+> > Add support for IRQ-driven RX. The TX path remains "polling" based,
+> > which is fine since TX is synchronous.
+> >
+> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > ---
+> >  drivers/tty/serial/liteuart.c | 65 +++++++++++++++++++++++++++++++----
+> >  1 file changed, 58 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> > index 90a29ed79bff..47ce3ecc50f2 100644
+> > --- a/drivers/tty/serial/liteuart.c
+> > +++ b/drivers/tty/serial/liteuart.c
+> > @@ -6,6 +6,7 @@
+> >   */
+> >
+> >  #include <linux/console.h>
+> > +#include <linux/interrupt.h>
+> >  #include <linux/litex.h>
+> >  #include <linux/module.h>
+> >  #include <linux/of.h>
+> > @@ -90,13 +91,27 @@ static void liteuart_rx_chars(struct uart_port *port)
+> >         tty_flip_buffer_push(&port->state->port);
+> >  }
+> >
+> > +static irqreturn_t liteuart_interrupt(int irq, void *data)
+> > +{
+> > +       struct uart_port *port = data;
+> > +       unsigned int isr;
+> > +
+> > +       isr = litex_read32(port->membase + OFF_EV_PENDING);
+> > +
+> > +       spin_lock(&port->lock);
+> > +       if (isr & EV_RX)
+> > +               liteuart_rx_chars(port);
+> > +       spin_unlock(&port->lock);
+> > +
+> > +       return IRQ_RETVAL(isr);
+> 
+> I don't follow this. If you've handled the RX IRQ, you want to return
+> IRQ_HANDLED. And if it's a different bit set you haven't handled it.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/serial/xlnx,opb-uartlite.yaml          | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Since I only enabled RX IRQs, it didn't occur to me that events would
+still be generated for the TX path, regardless. I've made that clearer
+(as an intermediate step) in the RX-path irq patch.
+ 
+> > +}
+> > +
+> >  static void liteuart_timer(struct timer_list *t)
+> >  {
+> >         struct liteuart_port *uart = from_timer(uart, t, timer);
+> >         struct uart_port *port = &uart->port;
+> >
+> > -       liteuart_rx_chars(port);
+> > -
+> > +       liteuart_interrupt(0, port);
+> >         mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+> >  }
+> >
+> > @@ -165,19 +180,48 @@ static void liteuart_stop_rx(struct uart_port *port)
+> >  static int liteuart_startup(struct uart_port *port)
+> >  {
+> >         struct liteuart_port *uart = to_liteuart_port(port);
+> > +       unsigned long flags;
+> > +       int ret;
+> > +       u8 irq_mask = 0;
+> >
+> > -       /* disable events */
+> > -       litex_write8(port->membase + OFF_EV_ENABLE, 0);
+> > +       if (port->irq) {
+> > +               ret = request_irq(port->irq, liteuart_interrupt, 0,
+> > +                                 DRV_NAME, port);
+> > +               if (ret == 0) {
+> > +                       /* we only need interrupts on the rx path! */
+> 
+> Why not use the tx interrupts too?
 
-diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-index f7617b88c7c3..2f4390e8d4e8 100644
---- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-+++ b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-@@ -67,8 +67,7 @@ allOf:
-   - if:
-       properties:
-         xlnx,use-parity:
--          contains:
--            const: 1
-+          const: 1
-     then:
-       required:
-         - xlnx,odd-parity
--- 
-2.35.1
+I've added another commit that also handles TX-mode IRQs (had to
+rewrite the entire TX path to be compatible with both IRQ mode and
+callable from the poll timer if IRQs are not supported).
 
+> > +                       irq_mask = EV_RX;
+> > +               } else {
+> > +                       pr_err(DRV_NAME ": can't attach LiteUART %d irq=%d; "
+> > +                              "switching to polling\n", port->line, port->irq);
+> 
+> put the string on the one line so it's grepable.
+> 
+> Take a look a the help for pr_fmt in include/linux/printk.h. This way
+> you get the driver name prefix for all pr_ messages.
+
+Got it, thanks!
+
+> > +                       port->irq = 0;
+> > +               }
+> > +       }
+> >
+> > -       /* prepare timer for polling */
+> > -       timer_setup(&uart->timer, liteuart_timer, 0);
+> > -       mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+> > +       if (!port->irq) {
+> > +               timer_setup(&uart->timer, liteuart_timer, 0);
+> > +               mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+> > +       }
+> > +
+> > +       spin_lock_irqsave(&port->lock, flags);
+> 
+> Are you sure we need to take a lock and disable interrupts here?
+> 
+> > +       litex_write8(port->membase + OFF_EV_ENABLE, irq_mask);
+> > +       spin_unlock_irqrestore(&port->lock, flags);
+> >
+> >         return 0;
+> >  }
+> >
+> >  static void liteuart_shutdown(struct uart_port *port)
+> >  {
+> > +       struct liteuart_port *uart = to_liteuart_port(port);
+> > +       unsigned long flags;
+> > +
+> > +       spin_lock_irqsave(&port->lock, flags);
+> 
+> same as above. I think the reason for doing this might have been if
+> you had a set of registers to change inside the critical section that
+> you needed to appear atomic. But this hardware only has one register
+> to flip, so we can do without the locking.
+
+Got rid of the locks in v3.
+
+Thanks,
+--Gabriel
+
+> > +       litex_write8(port->membase + OFF_EV_ENABLE, 0);
+> > +       spin_unlock_irqrestore(&port->lock, flags);
+> > +
+> > +       if (port->irq)
+> > +               free_irq(port->irq, port);
+> > +       else
+> > +               del_timer_sync(&uart->timer);
+> >  }
+> >
+> >  static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
+> > @@ -266,6 +310,13 @@ static int liteuart_probe(struct platform_device *pdev)
+> >                 goto err_erase_id;
+> >         }
+> >
+> > +       /* get irq */
+> > +       ret = platform_get_irq_optional(pdev, 0);
+> > +       if (ret < 0 && ret != -ENXIO)
+> > +               return ret;
+> > +       if (ret > 0)
+> > +               port->irq = ret;
+> > +
+> >         /* values not from device tree */
+> >         port->dev = &pdev->dev;
+> >         port->iotype = UPIO_MEM;
+> > --
+> > 2.37.3
+> >
