@@ -2,116 +2,223 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A434C4332F
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Nov 2022 21:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D98C433FE
+	for <linux-serial@archiver.kernel.org>; Sun, 13 Nov 2022 12:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235174AbiKLVWW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Nov 2022 16:22:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
+        id S235250AbiKMMGT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 13 Nov 2022 07:06:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235167AbiKLVWB (ORCPT
+        with ESMTP id S235242AbiKMMGS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Nov 2022 16:22:01 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911C119013;
-        Sat, 12 Nov 2022 13:21:45 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id e15so4887413qts.1;
-        Sat, 12 Nov 2022 13:21:45 -0800 (PST)
+        Sun, 13 Nov 2022 07:06:18 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CA0E00E;
+        Sun, 13 Nov 2022 04:06:17 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id d7so3522406qkk.3;
+        Sun, 13 Nov 2022 04:06:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4NCT7lY3J4rHEmB/eCMozFwPMR+2ENWLul3W/EW/Ce8=;
-        b=ibBpN+mSBrLOruOHKikiQOy1KhKqal2y5bUcjXK4ClO1BHI2gzyH4zxhWvr14HLmtj
-         aVcfH3Qd6G27BpBpmWlIyzjJGeUZ5QabY+U/uyl/QrZpraxCO7yYR/1tRDYlK7YTnOx9
-         AaEpn5kCukLOB3mJlw778PfWrLuvvIEHRjWvwbHHJuP/3KOf7rvS4e6gR58PlCX5tApD
-         Mj2yTab+sc8N4mbgrCx8Q8pP9jteZ9U3DDcXgUBkJOUf7tqs6AWXx3Ljg7XQ6nHexUCB
-         3kYXez+RbpGpEXrrPilWX6q0GGXwRxaeetxJZSmHh/BWV08BOTi26YYOSXKyT1fgCLOD
-         d7zw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fAOo6SdSr5cc6dwBg2ueNRz2u+b4dLiCPJjmXU85JXY=;
+        b=QD2OY85oxXJOJM7gw6JS67mJtilyu6V2LCT+TStSYeiOsGZ7YgsIi3D7tjDg1K4ldz
+         wYfG3k4J4x+xqcguDHVfPbuRfoMGkH9f0Eo+kGLlasyx7z5oiFSsM1gr4W+Lox6I2X/t
+         fEH7WyGgJWqqvhE3FkT3O+4wXzTZAPTyFR24LewQIqk9aOvyfQ5Z/uD2w1G7ysENw5/a
+         WQ5KjMCQ4AnzisqFBcCAdqXIeACtoUaFs+l+BvPgoe6q3qy5xGRoLjAWvXS7VPQnBEI6
+         1a40U8z7dEkonqXG4bWBA0Mh7AiP/fF8wwLV0V86oPK7kFzOT5KdtttZSxifjWW2MNGx
+         xMwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4NCT7lY3J4rHEmB/eCMozFwPMR+2ENWLul3W/EW/Ce8=;
-        b=ejdLDZgqZDSBch7ozxThNUlzg8G7Zm0m9DLBz04k/6UIhk0CDSTu88KQy1qACON5Oh
-         P7AMFoSi4aljHPgMDBH5Qpc1uyEoHNAcjNbhNAVe0FVv9+Tqbvrzh9MD4GnvU6f9B9CD
-         eDGxQZL15SPGGot3A9L1S6jgF1nO8Gosp66ULVmmGkNydw3eXpy7YQ+Kt15KPojrMJyn
-         1KJxRdWGWPzhD/RyIjDacbeLn6AkPDIBYaYg3FFolE3cG4d8kqwShn5ikF1rZgfgR6WO
-         W/V+0ja5YSY450tdNgjOer4abzjTgbxbUQnaQ5rFkyO14EPHps/bmDjHFyLWtyjK6klM
-         1NVw==
-X-Gm-Message-State: ANoB5pktSJIY2SfYAaYTHr/Bhi+UurH9/E1rfZ49fzRC9snfxO6A/oGN
-        pSuTfD63HYmMp1u8UzXRxmLA++cbocos/w==
-X-Google-Smtp-Source: AA0mqf4kGIjc6Cyy47M1gqYvdf3SoZIo7BjrXdBvoBI3boGlCxQookuql8wSIQfiQ5csBfaoARLkYQ==
-X-Received: by 2002:a05:622a:1c0d:b0:3a5:21f0:39f0 with SMTP id bq13-20020a05622a1c0d00b003a521f039f0mr6848653qtb.10.1668288104961;
-        Sat, 12 Nov 2022 13:21:44 -0800 (PST)
-Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
-        by smtp.gmail.com with ESMTPSA id t8-20020a37ea08000000b006fa313bf185sm3811839qkj.8.2022.11.12.13.21.44
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fAOo6SdSr5cc6dwBg2ueNRz2u+b4dLiCPJjmXU85JXY=;
+        b=KHvDH5Ep+0eQwp+FfFZSLGdhF8igikODw1Ba3cqHGxgtRUIkxlDRwdhSnJCmsWxZln
+         9sDlSY8JqEbiZ1pgsc8DldsQ3AjBu/mtNHuhQJKTUiOl4TFHX4fHqNOE6a48I2oMBC/Z
+         83tlbJdFjGEaXpUtsVQ89hSFQg83cr6GCI/SByV7VV4FE13udNL5Kpw6CTC9D1C20sDE
+         nZ3upZ+ZT5T3L/mOxElOqb3VprfbVlhQoy14/xU+PBQo04za70SrYg6LnUvwkJZz8yWu
+         Yiszfmoj2mRbF85YZv0FVCysYC80dQF/3Kmx79O1sKVSv9eiXJo0QGpnUGf2/nRNOy6D
+         +Z4Q==
+X-Gm-Message-State: ANoB5plpTKDah25qweI4E8EbzU2gx1DuGsPdPGp0e1ZP24K4Kx4KKY6M
+        7mZQPXjfRehYwC6+m1ZW1NuPns9BFDIY4g==
+X-Google-Smtp-Source: AA0mqf6fa3sscoJq3aEkuEI2tZc1kVisJbwP13Jkuw4tjBRID86EUiMjaQAm91r/zTFT0kZoaBTF/w==
+X-Received: by 2002:a37:e308:0:b0:6fa:1745:cb2c with SMTP id y8-20020a37e308000000b006fa1745cb2cmr7466111qki.119.1668341176431;
+        Sun, 13 Nov 2022 04:06:16 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id c8-20020ac853c8000000b00359961365f1sm4073976qtq.68.2022.11.13.04.06.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Nov 2022 13:21:44 -0800 (PST)
-From:   Gabriel Somlo <gsomlo@gmail.com>
+        Sun, 13 Nov 2022 04:06:15 -0800 (PST)
+Date:   Sun, 13 Nov 2022 07:06:14 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
         joel@jms.id.au, david.abdurachmanov@gmail.com,
-        florent@enjoy-digital.fr, geert@linux-m68k.org
-Subject: [PATCH v3 14/14] serial: liteuart: move polling putchar() function
-Date:   Sat, 12 Nov 2022 16:21:25 -0500
-Message-Id: <20221112212125.448824-15-gsomlo@gmail.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20221112212125.448824-1-gsomlo@gmail.com>
+        florent@enjoy-digital.fr, geert@linux-m68k.org,
+        ilpo.jarvinen@linux.intel.com
+Subject: Re: [PATCH v3 13/14] serial: liteuart: add IRQ support for the TX
+ path
+Message-ID: <Y3DdtgIbBHTnUffV@errol.ini.cmu.edu>
 References: <20221112212125.448824-1-gsomlo@gmail.com>
+ <20221112212125.448824-14-gsomlo@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221112212125.448824-14-gsomlo@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The polling liteuart_putchar() function is only called from methods
-conditionally enabled by CONFIG_SERIAL_LITEUART_CONSOLE. Move its
-definition closer to the console code where it is dependent on the
-same config option.
+On Sat, Nov 12, 2022 at 04:21:24PM -0500, Gabriel Somlo wrote:
+> Modify the TX path to operate in an IRQ-compatible way, while
+> maintaining support for polling mode via the poll timer.
+> 
+> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> ---
+>  drivers/tty/serial/liteuart.c | 67 ++++++++++++++++++++++++-----------
+>  1 file changed, 47 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> index e30adb30277f..307c27398e30 100644
+> --- a/drivers/tty/serial/liteuart.c
+> +++ b/drivers/tty/serial/liteuart.c
+> @@ -46,6 +46,7 @@ struct liteuart_port {
+>  	struct uart_port port;
+>  	struct timer_list timer;
+>  	u32 id;
+> +	bool poll_tx_started;
+>  };
+>  
+>  #define to_liteuart_port(port)	container_of(port, struct liteuart_port, port)
+> @@ -78,29 +79,24 @@ static void liteuart_putchar(struct uart_port *port, unsigned char ch)
+>  
+>  static void liteuart_stop_tx(struct uart_port *port)
+>  {
+> -	/* not used in LiteUART, but called unconditionally from serial_core */
+> +	if (port->irq) {
+> +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
+> +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
+> +	} else {
+> +		struct liteuart_port *uart = to_liteuart_port(port);
+> +		uart->poll_tx_started = false;
+> +	}
+>  }
+>  
+>  static void liteuart_start_tx(struct uart_port *port)
+>  {
+> -	struct circ_buf *xmit = &port->state->xmit;
+> -	unsigned char ch;
+> -
+> -	if (unlikely(port->x_char)) {
+> -		litex_write8(port->membase + OFF_RXTX, port->x_char);
+> -		port->icount.tx++;
+> -		port->x_char = 0;
+> -	} else if (!uart_circ_empty(xmit)) {
+> -		while (xmit->head != xmit->tail) {
+> -			ch = xmit->buf[xmit->tail];
 
-Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
----
- drivers/tty/serial/liteuart.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+I just realized that this:
 
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index 307c27398e30..767c356e60c9 100644
---- a/drivers/tty/serial/liteuart.c
-+++ b/drivers/tty/serial/liteuart.c
-@@ -69,14 +69,6 @@ static struct uart_driver liteuart_driver = {
- #endif
- };
- 
--static void liteuart_putchar(struct uart_port *port, unsigned char ch)
--{
--	while (litex_read8(port->membase + OFF_TXFULL))
--		cpu_relax();
--
--	litex_write8(port->membase + OFF_RXTX, ch);
--}
--
- static void liteuart_stop_tx(struct uart_port *port)
- {
- 	if (port->irq) {
-@@ -389,6 +381,14 @@ static struct platform_driver liteuart_platform_driver = {
- 
- #ifdef CONFIG_SERIAL_LITEUART_CONSOLE
- 
-+static void liteuart_putchar(struct uart_port *port, unsigned char ch)
-+{
-+	while (litex_read8(port->membase + OFF_TXFULL))
-+		cpu_relax();
-+
-+	litex_write8(port->membase + OFF_RXTX, ch);
-+}
-+
- static void liteuart_console_write(struct console *co, const char *s,
- 	unsigned int count)
- {
--- 
-2.37.3
+> -			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> -			port->icount.tx++;
 
+... conflicts with another accepted patch (by Ilpo) that's currently
+making its way to being released:
+https://lore.kernel.org/all/20221019091151.6692-20-ilpo.jarvinen@linux.intel.com/
+
+> -			liteuart_putchar(port, ch);
+> -		}
+> +	if (port->irq) {
+> +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
+> +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask | EV_TX);
+> +	} else {
+> +		struct liteuart_port *uart = to_liteuart_port(port);
+> +		uart->poll_tx_started = true;
+>  	}
+> -
+> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> -		uart_write_wakeup(port);
+>  }
+>  
+>  static void liteuart_stop_rx(struct uart_port *port)
+> @@ -131,18 +127,47 @@ static void liteuart_rx_chars(struct uart_port *port)
+>  	tty_flip_buffer_push(&port->state->port);
+>  }
+>  
+> +static void liteuart_tx_chars(struct uart_port *port)
+> +{
+> +	struct circ_buf *xmit = &port->state->xmit;
+> +
+> +	if (unlikely(port->x_char)) {
+> +		litex_write8(port->membase + OFF_RXTX, port->x_char);
+> +		port->x_char = 0;
+> +		port->icount.tx++;
+> +		return;
+> +	}
+> +
+> +	while (!litex_read8(port->membase + OFF_TXFULL)) {
+> +		if (xmit->head == xmit->tail)
+> +			break;
+> +		litex_write8(port->membase + OFF_RXTX, xmit->buf[xmit->tail]);
+
+Also, this:
+
+> +		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> +		port->icount.tx++;
+
+should now be `uart_xmit_advance(port, 1);` instead.
+I'm going to take that into account in v4, in addition to any extra
+feedback I'll receive.
+
+Thanks!
+
+> +	}
+> +
+> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> +		uart_write_wakeup(port);
+> +
+> +	if (uart_circ_empty(xmit))
+> +		liteuart_stop_tx(port);
+> +}
+> +
+>  static irqreturn_t liteuart_interrupt(int irq, void *data)
+>  {
+>  	struct liteuart_port *uart = data;
+>  	struct uart_port *port = &uart->port;
+>  	u8 isr = litex_read8(port->membase + OFF_EV_PENDING);
+>  
+> -	/* for now, only rx path triggers interrupts */
+> -	isr &= EV_RX;
+> +	if (!(port->irq || uart->poll_tx_started))
+> +		isr &= ~EV_TX;	/* polling mode with tx stopped */
+>  
+>  	spin_lock(&port->lock);
+>  	if (isr & EV_RX)
+>  		liteuart_rx_chars(port);
+> +	if (isr & EV_TX) {
+> +		liteuart_tx_chars(port);
+> +	}
+>  	spin_unlock(&port->lock);
+>  
+>  	return IRQ_RETVAL(isr);
+> @@ -196,6 +221,7 @@ static int liteuart_startup(struct uart_port *port)
+>  	}
+>  
+>  	if (!port->irq) {
+> +		uart->poll_tx_started = false;
+>  		timer_setup(&uart->timer, liteuart_timer, 0);
+>  		mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+>  	}
+> @@ -210,6 +236,7 @@ static void liteuart_shutdown(struct uart_port *port)
+>  	struct liteuart_port *uart = to_liteuart_port(port);
+>  
+>  	litex_write8(port->membase + OFF_EV_ENABLE, 0);
+> +	uart->poll_tx_started = false;
+>  
+>  	if (port->irq)
+>  		free_irq(port->irq, port);
+> -- 
+> 2.37.3
+> 
