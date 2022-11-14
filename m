@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47960C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Nov 2022 16:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D26CC43219
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Nov 2022 16:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237627AbiKNQbQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Nov 2022 11:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
+        id S237637AbiKNQcW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Nov 2022 11:32:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237715AbiKNQaw (ORCPT
+        with ESMTP id S237643AbiKNQaz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Nov 2022 11:30:52 -0500
+        Mon, 14 Nov 2022 11:30:55 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A682F3B0;
-        Mon, 14 Nov 2022 08:29:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF6B2F64D;
+        Mon, 14 Nov 2022 08:29:53 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668443391;
+        s=2020; t=1668443392;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=R9VqGyF+glKoWbwrATKZGXQP3ZfoC2SELt3pYx7i6e4=;
-        b=DacyzsBcp752j0f06x6Q5nIQ3Y5gHBQvOHj6L2Z1z+kRtb13uwnRXYW37qeBlA7kgq5U5n
-        OaG76pGwOCwmTLoNnu/ZsGzwldP/gJxxLG3s06WbdxVYr9g1JXPqk0nThtOkMIKl8nD9ZC
-        J5NDzg7I6YeBPhNNt11xV2oCLyep6w6l3sQDsNbw86SZHUUGw3Z7L59dKKhdvveul7RcQw
-        gTAN2eDqhT8DvmFpCl3VGyA+CLcij+AIKpEnvnW1Y2ot2Pkpr7hjHH5KLAm7Due/1vwzjr
-        AB7lVHWHuwghLHNLPcTikzz1Xbjg9af9IqHrb2u8wSXUTwh+qQgOKXTfbaCX7Q==
+        bh=lyFJ0F0+PfcRjhKzuNkMUBeWMaE9PNLLtfp/JWoaB8Q=;
+        b=o493Ws7OLoNBwC3oJekHe/zqr8d4O1r2boZdC330Lx7sXR/IS+LlFMlQSjiYgilqi2WvYy
+        bK6oiaWKOaMF+Ov1zkmR7m17gutu6TqbBnx+DW+0CKcPwn/WP4WoTvHeOnxG3Dcpw50L0F
+        uCuMhIdKv8bxHZuMIY7yE5xqI87CzHeE17gRcNmlIyNpc4AunL7RVRWKjhFqzm99845QTr
+        GU9GdrUeraNW+PFqq9HeRlvM+uQT2Bk7lgRw4l2QqcvqrMlmgfyI3VLCm+SlLEyaEy08XS
+        9IYpB54UDdp25QGOFuwjoXwpDVZUiUqepmIgjw9G5zSxprsVTUdFu7iZnYfhNw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668443391;
+        s=2020e; t=1668443392;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=R9VqGyF+glKoWbwrATKZGXQP3ZfoC2SELt3pYx7i6e4=;
-        b=5U/0tNMtf/1+xSx/qQ15ry4JRyEwzML/OTxzN7u46NDdwk8a6TlIBlnh67P6RTs4qrLo08
-        vYO+POSL/MrszBCw==
+        bh=lyFJ0F0+PfcRjhKzuNkMUBeWMaE9PNLLtfp/JWoaB8Q=;
+        b=3yUj92YNamRVgcCdfRvOJqzWFRVhH0VyAxXFN/+0roEsIDgaS8xom/DI+PxiHFB0NAZLYl
+        geAOjgKKccPDeLAw==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: [PATCH printk v4 37/39] tty: serial: kgdboc: use console_list_lock to trap exit
-Date:   Mon, 14 Nov 2022 17:35:30 +0106
-Message-Id: <20221114162932.141883-38-john.ogness@linutronix.de>
+        linux-serial@vger.kernel.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH printk v4 39/39] tty: serial: sh-sci: use setup() callback for early console
+Date:   Mon, 14 Nov 2022 17:35:32 +0106
+Message-Id: <20221114162932.141883-40-john.ogness@linutronix.de>
 In-Reply-To: <20221114162932.141883-1-john.ogness@linutronix.de>
 References: <20221114162932.141883-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -59,47 +59,85 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-kgdboc_earlycon_init() uses the console_lock to ensure that no consoles
-are unregistered until the kgdboc_earlycon is setup. The console_list_lock
-should be used instead because list synchronization responsibility will
-be removed from the console_lock in a later change.
+When setting up the early console, the setup() callback of the
+regular console is used. It is called manually before registering
+the early console instead of providing a setup() callback for the
+early console. This is probably because the early setup needs a
+different @options during the early stage.
+
+The issue here is that the setup() callback is called without the
+console_list_lock held and functions such as uart_set_options()
+expect that.
+
+Rather than manually calling the setup() function before registering,
+provide an early console setup() callback that will use the different
+early options. This ensures that the error checking, ordering, and
+locking context when setting up the early console are correct.
+
+Since this early console can only be registered via the earlyprintk=
+parameter, the @options argument of the setup() callback will always
+be NULL. Rather than simply ignoring the argument, add a WARN_ON()
+to get our attention in case the setup() callback semantics should
+change in the future.
+
+Note that technically the current implementation works because it is
+only used in early boot. And since the early console setup is
+performed before registering, it cannot race with anything and thus
+does not need any locking. However, longterm maintenance is easier
+when drivers rely on the subsystem API rather than manually
+implementing steps that could cause breakage in the future.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/kgdboc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/sh-sci.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 8c2b7ccdfebf..a3ed9b34e2ab 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -558,13 +558,13 @@ static int __init kgdboc_earlycon_init(char *opt)
- 	 */
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 62f773286d44..76452fe2af86 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3054,15 +3054,29 @@ static struct console serial_console = {
+ };
  
- 	/*
--	 * Hold the console_lock to guarantee that no consoles are
-+	 * Hold the console_list_lock to guarantee that no consoles are
- 	 * unregistered until the kgdboc_earlycon setup is complete.
- 	 * Trapping the exit() callback relies on exit() not being
- 	 * called until the trap is setup. This also allows safe
- 	 * traversal of the console list and race-free reading of @flags.
- 	 */
--	console_lock();
-+	console_list_lock();
- 	for_each_console(con) {
- 		if (con->write && con->read &&
- 		    (con->flags & (CON_BOOT | CON_ENABLED)) &&
-@@ -606,7 +606,7 @@ static int __init kgdboc_earlycon_init(char *opt)
- 	}
+ #ifdef CONFIG_SUPERH
++static char early_serial_buf[32];
++
++static int early_serial_console_setup(struct console *co, char *options)
++{
++	/*
++	 * This early console is always registered using the earlyprintk=
++	 * parameter, which does not call add_preferred_console(). Thus
++	 * @options is always NULL and the options for this early console
++	 * are passed using a custom buffer.
++	 */
++	WARN_ON(options);
++
++	return serial_console_setup(co, early_serial_buf);
++}
++
+ static struct console early_serial_console = {
+ 	.name           = "early_ttySC",
+ 	.write          = serial_console_write,
++	.setup		= early_serial_console_setup,
+ 	.flags          = CON_PRINTBUFFER,
+ 	.index		= -1,
+ };
  
- unlock:
--	console_unlock();
-+	console_list_unlock();
+-static char early_serial_buf[32];
+-
+ static int sci_probe_earlyprintk(struct platform_device *pdev)
+ {
+ 	const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
+@@ -3074,8 +3088,6 @@ static int sci_probe_earlyprintk(struct platform_device *pdev)
  
- 	/* Non-zero means malformed option so we always return zero */
- 	return 0;
+ 	sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
+ 
+-	serial_console_setup(&early_serial_console, early_serial_buf);
+-
+ 	if (!strstr(early_serial_buf, "keep"))
+ 		early_serial_console.flags |= CON_BOOT;
+ 
 -- 
 2.30.2
 
