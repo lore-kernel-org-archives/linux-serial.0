@@ -2,223 +2,72 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D98C433FE
-	for <linux-serial@archiver.kernel.org>; Sun, 13 Nov 2022 12:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4B6C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Nov 2022 06:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235250AbiKMMGT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 13 Nov 2022 07:06:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
+        id S234803AbiKNGap (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Nov 2022 01:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiKMMGS (ORCPT
+        with ESMTP id S230030AbiKNGap (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 13 Nov 2022 07:06:18 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CA0E00E;
-        Sun, 13 Nov 2022 04:06:17 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id d7so3522406qkk.3;
-        Sun, 13 Nov 2022 04:06:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fAOo6SdSr5cc6dwBg2ueNRz2u+b4dLiCPJjmXU85JXY=;
-        b=QD2OY85oxXJOJM7gw6JS67mJtilyu6V2LCT+TStSYeiOsGZ7YgsIi3D7tjDg1K4ldz
-         wYfG3k4J4x+xqcguDHVfPbuRfoMGkH9f0Eo+kGLlasyx7z5oiFSsM1gr4W+Lox6I2X/t
-         fEH7WyGgJWqqvhE3FkT3O+4wXzTZAPTyFR24LewQIqk9aOvyfQ5Z/uD2w1G7ysENw5/a
-         WQ5KjMCQ4AnzisqFBcCAdqXIeACtoUaFs+l+BvPgoe6q3qy5xGRoLjAWvXS7VPQnBEI6
-         1a40U8z7dEkonqXG4bWBA0Mh7AiP/fF8wwLV0V86oPK7kFzOT5KdtttZSxifjWW2MNGx
-         xMwQ==
+        Mon, 14 Nov 2022 01:30:45 -0500
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C158E0DF;
+        Sun, 13 Nov 2022 22:30:43 -0800 (PST)
+Received: by mail-wr1-f48.google.com with SMTP id d9so11577245wrm.13;
+        Sun, 13 Nov 2022 22:30:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fAOo6SdSr5cc6dwBg2ueNRz2u+b4dLiCPJjmXU85JXY=;
-        b=KHvDH5Ep+0eQwp+FfFZSLGdhF8igikODw1Ba3cqHGxgtRUIkxlDRwdhSnJCmsWxZln
-         9sDlSY8JqEbiZ1pgsc8DldsQ3AjBu/mtNHuhQJKTUiOl4TFHX4fHqNOE6a48I2oMBC/Z
-         83tlbJdFjGEaXpUtsVQ89hSFQg83cr6GCI/SByV7VV4FE13udNL5Kpw6CTC9D1C20sDE
-         nZ3upZ+ZT5T3L/mOxElOqb3VprfbVlhQoy14/xU+PBQo04za70SrYg6LnUvwkJZz8yWu
-         Yiszfmoj2mRbF85YZv0FVCysYC80dQF/3Kmx79O1sKVSv9eiXJo0QGpnUGf2/nRNOy6D
-         +Z4Q==
-X-Gm-Message-State: ANoB5plpTKDah25qweI4E8EbzU2gx1DuGsPdPGp0e1ZP24K4Kx4KKY6M
-        7mZQPXjfRehYwC6+m1ZW1NuPns9BFDIY4g==
-X-Google-Smtp-Source: AA0mqf6fa3sscoJq3aEkuEI2tZc1kVisJbwP13Jkuw4tjBRID86EUiMjaQAm91r/zTFT0kZoaBTF/w==
-X-Received: by 2002:a37:e308:0:b0:6fa:1745:cb2c with SMTP id y8-20020a37e308000000b006fa1745cb2cmr7466111qki.119.1668341176431;
-        Sun, 13 Nov 2022 04:06:16 -0800 (PST)
-Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
-        by smtp.gmail.com with ESMTPSA id c8-20020ac853c8000000b00359961365f1sm4073976qtq.68.2022.11.13.04.06.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Nov 2022 04:06:15 -0800 (PST)
-Date:   Sun, 13 Nov 2022 07:06:14 -0500
-From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
-        joel@jms.id.au, david.abdurachmanov@gmail.com,
-        florent@enjoy-digital.fr, geert@linux-m68k.org,
-        ilpo.jarvinen@linux.intel.com
-Subject: Re: [PATCH v3 13/14] serial: liteuart: add IRQ support for the TX
- path
-Message-ID: <Y3DdtgIbBHTnUffV@errol.ini.cmu.edu>
-References: <20221112212125.448824-1-gsomlo@gmail.com>
- <20221112212125.448824-14-gsomlo@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GgXHANZ8M58hWgR57QCgeYzsoA5NGl2ZEic8AnHQx1M=;
+        b=RtviJRPKazSuTrGEkDQ7MXwGhYXxCxkzcl5q2M8r89aeEN9m7jxBdCxydPdU5GXrwH
+         1gTDNjS9fotr7asWdNt8JyetUhKx4z7FtNgYJXH85SSxHSpybgtNNJWuHuOCWvXxDfvc
+         o+TMVXkjo71bGru8+Z4q6v7CfcJWgZ+lQXNn1yx4tyiEV6vqQmV11PcjI8xzMW3As8aS
+         YyWRc9PgQ+qjA18dB/Ei8iMsqR+mRlh17OSI+NBWaOOtzZQsUbGF/CDhN1Dp10SSDufc
+         317eGcnHob4F+niBeA2XVZUwt+K84rfnIiglgbwEpAmowieiSxlPHihrtUUCRXrnJ8k2
+         Eksg==
+X-Gm-Message-State: ANoB5pkrYC+M5eiKe/JZcj4iy8VtuJLZM/LBy5E6vhBNg0ftWAGerZfL
+        LKExuocl8HdlcHaAxyms7g8jWyu3+is=
+X-Google-Smtp-Source: AA0mqf5FebTso67LyCISPFGwUp+QMeujN258yCJoxEv3iH9cbdsWcbmffyTSJJVkMccX3F5sOya6xA==
+X-Received: by 2002:adf:f207:0:b0:236:8322:4be9 with SMTP id p7-20020adff207000000b0023683224be9mr6474911wro.171.1668407441820;
+        Sun, 13 Nov 2022 22:30:41 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id l9-20020a05600c1d0900b003cf878c4468sm18530130wms.5.2022.11.13.22.30.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Nov 2022 22:30:41 -0800 (PST)
+Message-ID: <b0d0abd2-e672-f1f4-3695-7fb0952faae0@kernel.org>
+Date:   Mon, 14 Nov 2022 07:30:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221112212125.448824-14-gsomlo@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] n_tty: Rename tail to old_tail in n_tty_read()
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+References: <22b37499-ff9a-7fc1-f6e0-58411328d122@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <22b37499-ff9a-7fc1-f6e0-58411328d122@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Nov 12, 2022 at 04:21:24PM -0500, Gabriel Somlo wrote:
-> Modify the TX path to operate in an IRQ-compatible way, while
-> maintaining support for polling mode via the poll timer.
+On 11. 11. 22, 15:25, Ilpo Järvinen wrote:
+> The local tail variable in n_tty_read() is used for one purpose, it
+> keeps the old tail. Thus, rename it appropriately to improve code
+> readability.
 > 
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> ---
->  drivers/tty/serial/liteuart.c | 67 ++++++++++++++++++++++++-----------
->  1 file changed, 47 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index e30adb30277f..307c27398e30 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -46,6 +46,7 @@ struct liteuart_port {
->  	struct uart_port port;
->  	struct timer_list timer;
->  	u32 id;
-> +	bool poll_tx_started;
->  };
->  
->  #define to_liteuart_port(port)	container_of(port, struct liteuart_port, port)
-> @@ -78,29 +79,24 @@ static void liteuart_putchar(struct uart_port *port, unsigned char ch)
->  
->  static void liteuart_stop_tx(struct uart_port *port)
->  {
-> -	/* not used in LiteUART, but called unconditionally from serial_core */
-> +	if (port->irq) {
-> +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
-> +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
-> +	} else {
-> +		struct liteuart_port *uart = to_liteuart_port(port);
-> +		uart->poll_tx_started = false;
-> +	}
->  }
->  
->  static void liteuart_start_tx(struct uart_port *port)
->  {
-> -	struct circ_buf *xmit = &port->state->xmit;
-> -	unsigned char ch;
-> -
-> -	if (unlikely(port->x_char)) {
-> -		litex_write8(port->membase + OFF_RXTX, port->x_char);
-> -		port->icount.tx++;
-> -		port->x_char = 0;
-> -	} else if (!uart_circ_empty(xmit)) {
-> -		while (xmit->head != xmit->tail) {
-> -			ch = xmit->buf[xmit->tail];
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-I just realized that this:
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-> -			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> -			port->icount.tx++;
+-- 
+js
+suse labs
 
-... conflicts with another accepted patch (by Ilpo) that's currently
-making its way to being released:
-https://lore.kernel.org/all/20221019091151.6692-20-ilpo.jarvinen@linux.intel.com/
-
-> -			liteuart_putchar(port, ch);
-> -		}
-> +	if (port->irq) {
-> +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
-> +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask | EV_TX);
-> +	} else {
-> +		struct liteuart_port *uart = to_liteuart_port(port);
-> +		uart->poll_tx_started = true;
->  	}
-> -
-> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> -		uart_write_wakeup(port);
->  }
->  
->  static void liteuart_stop_rx(struct uart_port *port)
-> @@ -131,18 +127,47 @@ static void liteuart_rx_chars(struct uart_port *port)
->  	tty_flip_buffer_push(&port->state->port);
->  }
->  
-> +static void liteuart_tx_chars(struct uart_port *port)
-> +{
-> +	struct circ_buf *xmit = &port->state->xmit;
-> +
-> +	if (unlikely(port->x_char)) {
-> +		litex_write8(port->membase + OFF_RXTX, port->x_char);
-> +		port->x_char = 0;
-> +		port->icount.tx++;
-> +		return;
-> +	}
-> +
-> +	while (!litex_read8(port->membase + OFF_TXFULL)) {
-> +		if (xmit->head == xmit->tail)
-> +			break;
-> +		litex_write8(port->membase + OFF_RXTX, xmit->buf[xmit->tail]);
-
-Also, this:
-
-> +		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> +		port->icount.tx++;
-
-should now be `uart_xmit_advance(port, 1);` instead.
-I'm going to take that into account in v4, in addition to any extra
-feedback I'll receive.
-
-Thanks!
-
-> +	}
-> +
-> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> +		uart_write_wakeup(port);
-> +
-> +	if (uart_circ_empty(xmit))
-> +		liteuart_stop_tx(port);
-> +}
-> +
->  static irqreturn_t liteuart_interrupt(int irq, void *data)
->  {
->  	struct liteuart_port *uart = data;
->  	struct uart_port *port = &uart->port;
->  	u8 isr = litex_read8(port->membase + OFF_EV_PENDING);
->  
-> -	/* for now, only rx path triggers interrupts */
-> -	isr &= EV_RX;
-> +	if (!(port->irq || uart->poll_tx_started))
-> +		isr &= ~EV_TX;	/* polling mode with tx stopped */
->  
->  	spin_lock(&port->lock);
->  	if (isr & EV_RX)
->  		liteuart_rx_chars(port);
-> +	if (isr & EV_TX) {
-> +		liteuart_tx_chars(port);
-> +	}
->  	spin_unlock(&port->lock);
->  
->  	return IRQ_RETVAL(isr);
-> @@ -196,6 +221,7 @@ static int liteuart_startup(struct uart_port *port)
->  	}
->  
->  	if (!port->irq) {
-> +		uart->poll_tx_started = false;
->  		timer_setup(&uart->timer, liteuart_timer, 0);
->  		mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
->  	}
-> @@ -210,6 +236,7 @@ static void liteuart_shutdown(struct uart_port *port)
->  	struct liteuart_port *uart = to_liteuart_port(port);
->  
->  	litex_write8(port->membase + OFF_EV_ENABLE, 0);
-> +	uart->poll_tx_started = false;
->  
->  	if (port->irq)
->  		free_irq(port->irq, port);
-> -- 
-> 2.37.3
-> 
