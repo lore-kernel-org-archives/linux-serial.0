@@ -2,72 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4B6C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Nov 2022 06:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA9CC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Nov 2022 13:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234803AbiKNGap (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Nov 2022 01:30:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
+        id S229762AbiKNNp3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Nov 2022 08:45:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiKNGap (ORCPT
+        with ESMTP id S236936AbiKNNp2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Nov 2022 01:30:45 -0500
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C158E0DF;
-        Sun, 13 Nov 2022 22:30:43 -0800 (PST)
-Received: by mail-wr1-f48.google.com with SMTP id d9so11577245wrm.13;
-        Sun, 13 Nov 2022 22:30:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GgXHANZ8M58hWgR57QCgeYzsoA5NGl2ZEic8AnHQx1M=;
-        b=RtviJRPKazSuTrGEkDQ7MXwGhYXxCxkzcl5q2M8r89aeEN9m7jxBdCxydPdU5GXrwH
-         1gTDNjS9fotr7asWdNt8JyetUhKx4z7FtNgYJXH85SSxHSpybgtNNJWuHuOCWvXxDfvc
-         o+TMVXkjo71bGru8+Z4q6v7CfcJWgZ+lQXNn1yx4tyiEV6vqQmV11PcjI8xzMW3As8aS
-         YyWRc9PgQ+qjA18dB/Ei8iMsqR+mRlh17OSI+NBWaOOtzZQsUbGF/CDhN1Dp10SSDufc
-         317eGcnHob4F+niBeA2XVZUwt+K84rfnIiglgbwEpAmowieiSxlPHihrtUUCRXrnJ8k2
-         Eksg==
-X-Gm-Message-State: ANoB5pkrYC+M5eiKe/JZcj4iy8VtuJLZM/LBy5E6vhBNg0ftWAGerZfL
-        LKExuocl8HdlcHaAxyms7g8jWyu3+is=
-X-Google-Smtp-Source: AA0mqf5FebTso67LyCISPFGwUp+QMeujN258yCJoxEv3iH9cbdsWcbmffyTSJJVkMccX3F5sOya6xA==
-X-Received: by 2002:adf:f207:0:b0:236:8322:4be9 with SMTP id p7-20020adff207000000b0023683224be9mr6474911wro.171.1668407441820;
-        Sun, 13 Nov 2022 22:30:41 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id l9-20020a05600c1d0900b003cf878c4468sm18530130wms.5.2022.11.13.22.30.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Nov 2022 22:30:41 -0800 (PST)
-Message-ID: <b0d0abd2-e672-f1f4-3695-7fb0952faae0@kernel.org>
-Date:   Mon, 14 Nov 2022 07:30:40 +0100
+        Mon, 14 Nov 2022 08:45:28 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EBE24093;
+        Mon, 14 Nov 2022 05:45:23 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5B59120008;
+        Mon, 14 Nov 2022 13:45:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1668433522; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nBxrJD3dpbkrLcoAw5xCCnCqviVBPHnrjEWuuoLd3BU=;
+        b=hw9KJ9KNhTmqXCktmrZuCnSkd2kMHj5VtXLZ5Y4racFgEEFNIob97XyiMOZX/H8RZmawJW
+        wX8Ea+JW1xIrKQqYXTuTfOKYU7mRzZodLO3rxoP+9JK/MkBXLBHsQOT+q4lmcQ6JKghRqi
+        4IPovdZdbnV9qPbd0guWhXYxM2rWvB4=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 2EF272C142;
+        Mon, 14 Nov 2022 13:45:21 +0000 (UTC)
+Date:   Mon, 14 Nov 2022 14:45:21 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: Do not delay boot when printing log to serial console during
+ startup?
+Message-ID: <Y3JGcQyuW+ydwkYE@alley>
+References: <c87cc376-3b0d-8fda-7fc1-555c930faaf1@molgen.mpg.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH] n_tty: Rename tail to old_tail in n_tty_read()
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <22b37499-ff9a-7fc1-f6e0-58411328d122@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <22b37499-ff9a-7fc1-f6e0-58411328d122@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <c87cc376-3b0d-8fda-7fc1-555c930faaf1@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11. 11. 22, 15:25, Ilpo Järvinen wrote:
-> The local tail variable in n_tty_read() is used for one purpose, it
-> keeps the old tail. Thus, rename it appropriately to improve code
-> readability.
+Adding John into Cc. He is working on introducing printk kthreads that
+might allow to handle consoles asynchronously.
+
+On Tue 2022-10-11 11:03:39, Paul Menzel wrote:
+> Dear Linux folks,
 > 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> We boot our systems generally with the serial console enabled
+> `console=ttyS0,115200n8`, and noticed that initializing the console takes at
+> least one second.
+> 
+>     $ dmesg | grep -e 'DMI:' -e 'printk: console'
+>     [    0.000000] DMI: Dell Inc. PowerEdge R7525/05Y13N, BIOS 2.7.3
+> 03/30/2022
+>     [    2.691432] printk: console [tty0] enabled
+>     [    5.414384] printk: console [ttyS0] enabled
+> 
+>     $ dmesg | grep -e 'DMI:' -e 'printk:'
+>     [    0.000000] DMI: Dell Inc. Precision Tower 3620/0MWYPT, BIOS 2.22.0
+> 07/13/2022
+>     [    0.146953] printk: console [tty0] enabled
+>     [    1.374382] printk: console [ttyS0] enabled
+> 
+>     $ dmesg | grep -e 'DMI:' -e 'printk: console'
+>     [    0.000000] DMI: Dell Inc. PowerEdge R7425/08V001, BIOS 1.6.7
+> 10/29/2018
+>     [    1.589543] printk: console [tty0] enabled
+>     [    3.057770] printk: console [ttyS0] enabled
+> 
+>     $ dmesg | grep -e 'DMI:' -e 'printk: console'
+>     [    0.000000] DMI: HPE ProLiant DL385 Gen10 Plus/ProLiant DL385 Gen10
+> Plus, BIOS A42 12/03/2021
+>     [    5.171202] printk: console [tty0] enabled
+>     [    8.066602] printk: console [ttyS0] enabled
+> 
+> `initcall_debug` shows:
+> 
+>     [    0.190491] calling  univ8250_console_init+0x0/0x2b @ 0
+>     [    1.488645] printk: console [ttyS0] enabled
+>     [    1.492945] initcall univ8250_console_init+0x0/0x2b returned 0 after
+> 0 usecs
+> 
+> (Note, that the “after time” by initcall does not match the timestamp at the
+> beginning.)
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+The message "printk: console [ttyS0] enabled" is printed almost at the
+end of register_console(). It happens after all previously printed
+messages reach the console.
 
--- 
-js
-suse labs
+It might take a long time to show all messages on slow serial consoles.
 
+
+> So it looks to me like, that the already recorded messages are printed out
+> over the serial console first, before it continues. The documentation of
+> `register_console()` in `kernel/printk/printk.c` confirms that:
+> >
+> >  * The console driver calls this routine during kernel initialization
+> >  * to register the console printing procedure with printk() and to
+> >  * print any messages that were printed by the kernel before the
+> >  * console driver was initialized.
+
+Most people want to see all messages. Any previous warning or error might
+the reason why the system crashed later.
+
+If you want faster boot, you might consider using "quiet" or
+loglevel=<some low number> on the kernel command line. It will
+show only the most important messages on the console.
+
+
+> Is there an option to enable the serial console but send the messages to it
+> asynchronously so it does not hold up the boot?
+
+We have been trying to get this into upstream for years. It is not
+that easy. Asynchronous handling increases the risk that a console
+will not show the last important messages when things go wrong.
+
+Anyway, we are still trying. One puzzle of this effort is just
+being reviewed in this thread,
+https://lore.kernel.org/r/20221107141638.3790965-1-john.ogness@linutronix.de
+
+Best Regards,
+Petr
