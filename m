@@ -2,76 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AD1C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 15:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5DCC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 15:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiKOPSw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 10:18:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53340 "EHLO
+        id S232248AbiKOPeM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 10:34:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbiKOPSr (ORCPT
+        with ESMTP id S231473AbiKOPeL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 10:18:47 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EDA7662;
-        Tue, 15 Nov 2022 07:18:45 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 99B6D1F8B6;
-        Tue, 15 Nov 2022 15:18:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1668525524; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wmd9e2V800pMClRiLzcK0IdzwRhRue70HC0KGpKjA08=;
-        b=u3okpK3DCIn/jJ9HRrVg+/SeGfcRU5qoxU/Wqz4XyC/TgQ4vqu4nZODb4sBf5wNf+U2q3I
-        FwmgTEghfX0mrdlX8iSDcFRbS4MNW25IIlhglazM6k5i2moMyMuKEt+tT9KlHeFOD3spJv
-        kccZClqc3X+jm5QSIsrD+aB0zm65L3g=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5B50D2C142;
-        Tue, 15 Nov 2022 15:18:44 +0000 (UTC)
-Date:   Tue, 15 Nov 2022 16:18:43 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
+        Tue, 15 Nov 2022 10:34:11 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B3AE007;
+        Tue, 15 Nov 2022 07:34:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668526450; x=1700062450;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=9Xa8FNyt4rbCBBfcK3IywB5xwQCsUT/g+nCwG40O7yQ=;
+  b=nOFGz8ARev2fl6USzBW2a0Yq5ZVrPRy9Fqgm/5nDHOF+r6+lVYCWF/9x
+   Hnx9V1fetWZwbrsS625VLBiu2QVLiQmGQEZZnOJLJEybE9YYxMz01VkRM
+   +ZIYSgC+vQnhval7zWDR2cb3zbgduMU3rmSQVnDI+1DzcBWBSjftBFMbu
+   180US7G7XeuxXGc5jCE5m6i/M9posjW/cxGK9zXeBbAOT3uyR98LQ7ma2
+   hYn+gknLmnjJUzpYpxV9J6zdMR7GVnZCNFaDGpuJQlqGuKs2ip/KUMFux
+   9sVf5tE1iKkhRnKRQhDwn+f5Zi1mvYcj+MmMlyBhN7PaBlCz+GJKr80A6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="374413702"
+X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
+   d="scan'208";a="374413702"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:33:55 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="641245703"
+X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
+   d="scan'208";a="641245703"
+Received: from mrosso-mobl1.ger.corp.intel.com ([10.249.45.244])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:33:48 -0800
+Date:   Tue, 15 Nov 2022 17:33:47 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Gabriel Somlo <gsomlo@gmail.com>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v4 35/39] tty: serial: kgdboc: use
- console_list_lock for list traversal
-Message-ID: <Y3Ot0xKsL7+Zq8eH@alley>
-References: <20221114162932.141883-1-john.ogness@linutronix.de>
- <20221114162932.141883-36-john.ogness@linutronix.de>
+        Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
+        mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        geert@linux-m68k.org
+Subject: Re: [PATCH v3 02/14] serial: liteuart: use bit number macros
+In-Reply-To: <20221112212125.448824-3-gsomlo@gmail.com>
+Message-ID: <40b5679c-5316-9c5c-7e4-5c8c74ba1acf@linux.intel.com>
+References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-3-gsomlo@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221114162932.141883-36-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon 2022-11-14 17:35:28, John Ogness wrote:
-> configure_kgdboc() uses the console_lock for console list iteration. Use
-> the console_list_lock instead because list synchronization responsibility
-> will be removed from the console_lock in a later change.
-> 
-> The SRCU iterator could have been used here, but a later change will
-> relocate the locking of the console_list_lock to also provide
-> synchronization against register_console().
-> 
-> Note, the console_lock is still needed to serialize the device()
-> callback with other console operations.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+On Sat, 12 Nov 2022, Gabriel Somlo wrote:
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Replace magic bit constants (e.g., 1, 2, 4) with BIT(x) expressions.
+> 
+> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> ---
+>  drivers/tty/serial/liteuart.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> index 32b81bd03d0c..1497d4cdc221 100644
+> --- a/drivers/tty/serial/liteuart.c
+> +++ b/drivers/tty/serial/liteuart.c
+> @@ -38,8 +38,8 @@
+>  #define OFF_EV_ENABLE	0x14
+>  
+>  /* events */
+> -#define EV_TX		0x1
+> -#define EV_RX		0x2
+> +#define EV_TX		BIT(0)
+> +#define EV_RX		BIT(1)
+>  
+>  struct liteuart_port {
+>  	struct uart_port port;
+> 
 
-Best Regards,
-Petr
+This seems to assume some random header provides BIT() for you?
+
+-- 
+ i.
+
