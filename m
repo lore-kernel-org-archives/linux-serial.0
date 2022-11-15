@@ -2,179 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F3FC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 16:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B38DC43217
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 16:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238595AbiKOQ0L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 11:26:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
+        id S238731AbiKOQnr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 11:43:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238381AbiKOQ0K (ORCPT
+        with ESMTP id S238703AbiKOQnl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 11:26:10 -0500
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5457FD12D;
-        Tue, 15 Nov 2022 08:26:08 -0800 (PST)
-Received: by mail-qk1-x731.google.com with SMTP id 8so9830212qka.1;
-        Tue, 15 Nov 2022 08:26:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=a9IhxCF1cAeyewI8SYiOpvZjTk66VUbn+seWVTa9bhw=;
-        b=mykMIgeniufSLJ9cmo0MZyWqwIjhiClWIOtoujOie6LEb8/+QUhRlgYgQnms1lA7+s
-         VQ8XwZPFzTX4/ELERle39zxKRBeX2JXh/UwOZ8ZcGZ/hXWOEcK6+W0xu0sQ39zEYD94y
-         qzALW4knzggQGfxQvbIBwpEMZJaxk+oPlmmjSRGBum4Qrl5kYyvWjz2v2W18xxkDe3Lp
-         U6Oj8Yt9b+T3ymz6ZOgqF/mfBFNgclKlPJfo2ga8w6WHlCPStF8IKyIoPuuUgvi+5qB2
-         bxjMFcPOxn0YP46gbCWCvjcjSRt7BbDbuGb/9rS8saJrqa6q7uU+11I5Q56T1eX8KOdp
-         wS9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=a9IhxCF1cAeyewI8SYiOpvZjTk66VUbn+seWVTa9bhw=;
-        b=BOu7sUjzMr0NU4+U+KxZv2ZuWTK0JSthCM6JbBDqovhQ2Q8iVbgC70Mu1FD5Dw4QQP
-         Kfmgv4F44QvZ0tLiLH/ClbXhDuS4vP5PzRY67y+BcEMzr7jAL2jk58dJebldYQiSW7+Q
-         2H2IgWBarnDsOpQs8RM2J8A69gPpQwTVRwVzmH0iVTFG2X0OSQfedAlqh6m4ylEsd9QD
-         RO1W+loLlZFoImbetQdX5uVo6sPG3fFU/Jgi7S+akL3oYuLh/fF+bJiuhpl25/kIZ5ba
-         wCohxgWRY3Bw6Hk5FwCdldytKMbA5tTLA4VVaJyYq+VOscvDXYTUbAt6I2E3a2+w6HAA
-         +c2Q==
-X-Gm-Message-State: ANoB5pmOwqgGNGskxdwpe1J5cX0VvGzkfILRpg2Y6tsThG0qJWbJTQZm
-        HLjA0TWNh7orbFWMN6l/vOM=
-X-Google-Smtp-Source: AA0mqf4nG5AWGXxrB9xBsaq2mJWE00q21VzciHsLwLRgvhGMU+WTheBsbXZ+2iO5iF39OKFCzAsETA==
-X-Received: by 2002:a05:620a:1d0d:b0:6f9:c2be:a89 with SMTP id dl13-20020a05620a1d0d00b006f9c2be0a89mr15912566qkb.437.1668529567455;
-        Tue, 15 Nov 2022 08:26:07 -0800 (PST)
-Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
-        by smtp.gmail.com with ESMTPSA id s8-20020a05620a254800b006fa16fe93bbsm8449105qko.15.2022.11.15.08.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 08:26:07 -0800 (PST)
-Date:   Tue, 15 Nov 2022 11:26:05 -0500
-From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
+        Tue, 15 Nov 2022 11:43:41 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3A313CCA;
+        Tue, 15 Nov 2022 08:43:39 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3A56D1F8D7;
+        Tue, 15 Nov 2022 16:43:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1668530618; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fp5QcrHVvziCUNf95TE2tiPSkunTivk9nv+QjUBLUYc=;
+        b=DuI+pBPW9cPLeFgTUc8qq6JcnB8YMbdXCCKmj/VkmKXQEOJiQGxHQifk91b5K7HbP6jtNB
+        Uq1ybCS4qBXvhOllYVSMaq0J07cfltsC0Xy0eGgPgZiviaLmrHSQvSQ/keV2DA/qXrahAH
+        498ArqD0N8Ee/uLQ/20i067xlnBI0bE=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id F37422C142;
+        Tue, 15 Nov 2022 16:43:37 +0000 (UTC)
+Date:   Tue, 15 Nov 2022 17:43:37 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
-        mholenko@antmicro.com, joel@jms.id.au,
-        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
-        geert@linux-m68k.org
-Subject: Re: [PATCH v3 12/14] serial: liteuart: add IRQ support for the RX
- path
-Message-ID: <Y3O9nfeyEXxhsmA5@errol.ini.cmu.edu>
-References: <20221112212125.448824-1-gsomlo@gmail.com>
- <20221112212125.448824-13-gsomlo@gmail.com>
- <a914ebd3-5eb8-6c53-3f58-3371fdabf7@linux.intel.com>
- <Y3O7AKVuY3/n6I5K@errol.ini.cmu.edu>
- <7b5042be-8061-d4f4-43b5-75a5ad6dbcb0@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH printk v4 39/39] tty: serial: sh-sci: use setup()
+ callback for early console
+Message-ID: <Y3PBuWL/3qihQJxj@alley>
+References: <20221114162932.141883-1-john.ogness@linutronix.de>
+ <20221114162932.141883-40-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7b5042be-8061-d4f4-43b5-75a5ad6dbcb0@linux.intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
+In-Reply-To: <20221114162932.141883-40-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 15, 2022 at 06:21:00PM +0200, Ilpo Järvinen wrote:
-> On Tue, 15 Nov 2022, Gabriel L. Somlo wrote:
+On Mon 2022-11-14 17:35:32, John Ogness wrote:
+> When setting up the early console, the setup() callback of the
+> regular console is used. It is called manually before registering
+> the early console instead of providing a setup() callback for the
+> early console. This is probably because the early setup needs a
+> different @options during the early stage.
 > 
-> > On Tue, Nov 15, 2022 at 06:00:11PM +0200, Ilpo Järvinen wrote:
-> > > On Sat, 12 Nov 2022, Gabriel Somlo wrote:
-> > > 
-> > > > Add support for IRQ-driven RX. Support for the TX path will be added
-> > > > in a separate commit.
-> > > > 
-> > > > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> > > > ---
-> > > >  drivers/tty/serial/liteuart.c | 61 +++++++++++++++++++++++++++++++----
-> > > >  1 file changed, 54 insertions(+), 7 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> > > > index cf1ce597b45e..e30adb30277f 100644
-> > > > --- a/drivers/tty/serial/liteuart.c
-> > > > +++ b/drivers/tty/serial/liteuart.c
-> > > > @@ -6,6 +6,7 @@
-> > > >   */
-> > > >  
-> > > >  #include <linux/console.h>
-> > > > +#include <linux/interrupt.h>
-> > > >  #include <linux/litex.h>
-> > > >  #include <linux/module.h>
-> > > >  #include <linux/of.h>
-> > > > @@ -130,13 +131,29 @@ static void liteuart_rx_chars(struct uart_port *port)
-> > > >  	tty_flip_buffer_push(&port->state->port);
-> > > >  }
-> > > >  
-> > > > +static irqreturn_t liteuart_interrupt(int irq, void *data)
-> > > > +{
-> > > > +	struct liteuart_port *uart = data;
-> > > > +	struct uart_port *port = &uart->port;
-> > > > +	u8 isr = litex_read8(port->membase + OFF_EV_PENDING);
-> > > > +
-> > > > +	/* for now, only rx path triggers interrupts */
-> > > 
-> > > Please don't add comment like this at all when your series removes it in a 
-> > > later patch.
-> > 
-> > OK, I will remove it in v4.
-> > 
-> > > > +	isr &= EV_RX;
-> > > > +
-> > > > +	spin_lock(&port->lock);
-> > > > +	if (isr & EV_RX)
-> > > > +		liteuart_rx_chars(port);
-> > > > +	spin_unlock(&port->lock);
-> > > > +
-> > > > +	return IRQ_RETVAL(isr);
-> > > > +}
-> > > > +
-> > > >  static void liteuart_timer(struct timer_list *t)
-> > > >  {
-> > > >  	struct liteuart_port *uart = from_timer(uart, t, timer);
-> > > >  	struct uart_port *port = &uart->port;
-> > > >  
-> > > > -	liteuart_rx_chars(port);
-> > > > -
-> > > > +	liteuart_interrupt(0, port);
-> > > >  	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> > > >  }
-> > > >  
-> > > > @@ -162,19 +179,42 @@ static unsigned int liteuart_get_mctrl(struct uart_port *port)
-> > > >  static int liteuart_startup(struct uart_port *port)
-> > > >  {
-> > > >  	struct liteuart_port *uart = to_liteuart_port(port);
-> > > > +	int ret;
-> > > > +	u8 irq_mask = 0;
-> > > >  
-> > > > -	/* disable events */
-> > > > -	litex_write8(port->membase + OFF_EV_ENABLE, 0);
-> > > > +	if (port->irq) {
-> > > > +		ret = request_irq(port->irq, liteuart_interrupt, 0,
-> > > > +				  KBUILD_MODNAME, uart);
-> > > > +		if (ret == 0) {
-> > > > +			/* only enable rx interrupts at this time */
-> > > 
-> > > This comment seems pretty useless. Your code says very much the same.
-> > 
-> > The comment was meant to let the reader know that the code is doing it
-> > *intentionally* (rather than forgetting to enable tx irqs by mistake).
-> > But I'm OK with removing this comment in v4 as well if you think
-> > that's an overly paranoid and redundant thing to do... :)
+> The issue here is that the setup() callback is called without the
+> console_list_lock held and functions such as uart_set_options()
+> expect that.
 > 
-> I see. Reading the other comment first caused me to misinterpret this one 
-> to mean that only RX interrupts are implemented.
+> Rather than manually calling the setup() function before registering,
+> provide an early console setup() callback that will use the different
+> early options. This ensures that the error checking, ordering, and
+> locking context when setting up the early console are correct.
 > 
-> Maybe if you change "at this time" to "at startup" it would make it more 
-> obvious.
- 
-OK, I'll fix the comment per your suggestion rather than get rid of it.
+> Since this early console can only be registered via the earlyprintk=
+> parameter, the @options argument of the setup() callback will always
+> be NULL. Rather than simply ignoring the argument, add a WARN_ON()
+> to get our attention in case the setup() callback semantics should
+> change in the future.
+> 
+> Note that technically the current implementation works because it is
+> only used in early boot. And since the early console setup is
+> performed before registering, it cannot race with anything and thus
+> does not need any locking. However, longterm maintenance is easier
+> when drivers rely on the subsystem API rather than manually
+> implementing steps that could cause breakage in the future.
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Thanks again,
---G
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-> -- 
->  i.
-
+Best Regards,
+Petr
