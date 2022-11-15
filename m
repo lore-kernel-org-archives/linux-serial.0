@@ -2,59 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4B7C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 15:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB44C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 15:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiKOPha (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 10:37:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37710 "EHLO
+        id S230455AbiKOPiZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 10:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbiKOPh3 (ORCPT
+        with ESMTP id S238340AbiKOPiT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 10:37:29 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C9A1135;
-        Tue, 15 Nov 2022 07:37:28 -0800 (PST)
+        Tue, 15 Nov 2022 10:38:19 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFAC2A246;
+        Tue, 15 Nov 2022 07:38:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668526648; x=1700062648;
+  t=1668526699; x=1700062699;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=QQLyJI4VfQejyW/sYeJBUJDP5XIRKK9OrKTVrzJrIYQ=;
-  b=Wsg2pOFen0kGVHsCYG+pufOCWcCEODRUQwNSqXFrMgtgUltRvgRmrS6D
-   LZsHxc/N+qJtGULnSXrQjDMJEMWtmNJfE8HldqfeuLIthsG1slArlNVqq
-   SbpyJZXK8nVpMj7hJFgG92ZGnMP2uLaGQAy6Q+P/C3wGzUfGv0AT4ImW6
-   HzLaQ/Iu5/fTTeI2TY0GY+wnLCM3RLRKq4DREhDl0ZkSwXGdANz1rVdOf
-   ZYFCJTbMluZREcoigsrRLKbPb/cpdWt8n/NcWGYVksiEOMcXH7g0j5Ey7
-   jNP5/mHOEjwOawPskQsPr2FK9pdS7zmYWa7GDDZQqSd0zlr3aIKTGmpYw
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="313429239"
+  bh=h9Dz/FHEPC+309z8nlhNqhBZsEpwoLFia6iUlxl7tOw=;
+  b=L6RtAlvmwp9s3tFDD44xZbjh9TjEwcKDW13KoDFJVj1WXkknc46b5apj
+   sbnJ0aNw6JxDz3ODzj1RK0f4UM4xjFfG7x4J8AYsLao4FhHXKYNmK7dOz
+   BTMQuvOk/JMuxt5KOlnN0ndiOG2F8JH20Db29XYMkk/11NfG3gkQ6mt6t
+   djNFQkGsANA3zkzthjhQFqHWgfEYCmdLyiIU1F3wJwaP2nhmEluVhXtoY
+   0WdV7el1Pk6l9K5muFmTfXE/PVZPi/PYW7fwTCGt1lQ+ilbAcDU61pu7j
+   NqNub6IfMenmwN/bc+rbWf19aOt9rneMm1M7e5+NVO9rZ9oXKGJoOpRMp
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="398571060"
 X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="313429239"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:37:28 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="883998050"
+   d="scan'208";a="398571060"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:38:18 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="763952893"
 X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="883998050"
+   d="scan'208";a="763952893"
 Received: from mrosso-mobl1.ger.corp.intel.com ([10.249.45.244])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:37:24 -0800
-Date:   Tue, 15 Nov 2022 17:37:22 +0200 (EET)
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:38:14 -0800
+Date:   Tue, 15 Nov 2022 17:38:12 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Gabriel Somlo <gsomlo@gmail.com>
-cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
-        mholenko@antmicro.com, joel@jms.id.au,
+cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
         david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
         geert@linux-m68k.org
-Subject: Re: [PATCH v3 03/14] serial: liteuart: remove unused uart_ops
- stubs
-In-Reply-To: <20221112212125.448824-4-gsomlo@gmail.com>
-Message-ID: <db1a5445-b22e-bcf2-e323-8f36392b9340@linux.intel.com>
-References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-4-gsomlo@gmail.com>
+Subject: Re: [PATCH v3 06/14] serial: liteuart: move tty_flip_buffer_push()
+ out of rx loop
+In-Reply-To: <20221112212125.448824-7-gsomlo@gmail.com>
+Message-ID: <fd1b8455-47eb-3161-4076-136e3265155@linux.intel.com>
+References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-7-gsomlo@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-967172777-1668526648=:2268"
+Content-Type: multipart/mixed; boundary="8323329-1333663003-1668526699=:2268"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -62,80 +60,41 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-967172777-1668526648=:2268
+--8323329-1333663003-1668526699=:2268
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Sat, 12 Nov 2022, Gabriel Somlo wrote:
 
-> Remove stub uart_ops methods that are not called unconditionally
-> from serial_core. Document stubs that are expected to be present.
+> Calling tty_flip_buffer_push() for each individual received character
+> is overkill. Move it out of the rx loop, and only call it once per
+> set of characters received together.
 > 
 > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
 > ---
->  drivers/tty/serial/liteuart.c | 18 +-----------------
->  1 file changed, 1 insertion(+), 17 deletions(-)
+>  drivers/tty/serial/liteuart.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 1497d4cdc221..90f6280c5452 100644
+> index 047d5ad32e13..ff3486860989 100644
 > --- a/drivers/tty/serial/liteuart.c
 > +++ b/drivers/tty/serial/liteuart.c
-> @@ -122,6 +122,7 @@ static unsigned int liteuart_get_mctrl(struct uart_port *port)
->  
->  static void liteuart_stop_tx(struct uart_port *port)
->  {
-> +	/* not used in LiteUART, but called unconditionally from serial_core */
->  }
->  
->  static void liteuart_start_tx(struct uart_port *port)
-> @@ -154,11 +155,6 @@ static void liteuart_stop_rx(struct uart_port *port)
->  	del_timer(&uart->timer);
->  }
->  
-> -static void liteuart_break_ctl(struct uart_port *port, int break_state)
-> -{
-> -	/* LiteUART doesn't support sending break signal */
-> -}
+> @@ -86,10 +86,10 @@ static void liteuart_timer(struct timer_list *t)
+>  		/* no overflow bits in status */
+>  		if (!(uart_handle_sysrq_char(port, ch)))
+>  			uart_insert_char(port, status, 0, ch, flg);
 > -
->  static int liteuart_startup(struct uart_port *port)
->  {
->  	struct liteuart_port *uart = to_liteuart_port(port);
-> @@ -197,15 +193,6 @@ static const char *liteuart_type(struct uart_port *port)
->  	return "liteuart";
->  }
+> -		tty_flip_buffer_push(&port->state->port);
+>  	}
 >  
-> -static void liteuart_release_port(struct uart_port *port)
-> -{
-> -}
-> -
-> -static int liteuart_request_port(struct uart_port *port)
-> -{
-> -	return 0;
-> -}
-> -
->  static void liteuart_config_port(struct uart_port *port, int flags)
->  {
->  	/*
-> @@ -232,13 +219,10 @@ static const struct uart_ops liteuart_ops = {
->  	.stop_tx	= liteuart_stop_tx,
->  	.start_tx	= liteuart_start_tx,
->  	.stop_rx	= liteuart_stop_rx,
-> -	.break_ctl	= liteuart_break_ctl,
->  	.startup	= liteuart_startup,
->  	.shutdown	= liteuart_shutdown,
->  	.set_termios	= liteuart_set_termios,
->  	.type		= liteuart_type,
-> -	.release_port	= liteuart_release_port,
-> -	.request_port	= liteuart_request_port,
->  	.config_port	= liteuart_config_port,
->  	.verify_port	= liteuart_verify_port,
->  };
-> 
+> +	tty_flip_buffer_push(&port->state->port);
+> +
+>  	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+>  }
 
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
 
 -- 
  i.
 
---8323329-967172777-1668526648=:2268--
+--8323329-1333663003-1668526699=:2268--
