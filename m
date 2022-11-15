@@ -2,46 +2,58 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBC0C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 17:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FC3C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 18:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiKORai (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 12:30:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
+        id S230401AbiKOSVp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 13:21:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbiKORab (ORCPT
+        with ESMTP id S231781AbiKOSVi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 12:30:31 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B49727CC3;
-        Tue, 15 Nov 2022 09:30:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668533431; x=1700069431;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=v/gXZgAkBDWLR52/dCOevLzgqKOuZMBAd/MdsAF6coQ=;
-  b=WDb6xThU/P7QfqYmuGiyt3Cpm61RWhUyMK4kQaai0n9WkxUWij0dUDB9
-   ZXNOJ/6Imr1Uc/W9hwoOXRUjB3CjMlZovS1taCS2MCYwqaTSfv9tXDPFS
-   kycZFX14gLNw7GjZ/QMv9Z/Vm2OL+UbOE4PuLMmJ3/27rm38NuGzXEeX8
-   MAvnXBQaqQD62vhwe0tqCc0E9r2AB7y8RwEgJ8OBYafHL7ixYC89ytLTI
-   7RT3sWu0sG2SET09Np7YCiyRNPgJz8hfhGS7V66qTYegHTGrXKP0na7N4
-   BEda+DBq5ZgPLWD4fHy2+TPJvNFpmliYTZg4vakjFfMGRfocBLPXqdtu/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="309943770"
-X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="309943770"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 09:30:30 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="639025728"
-X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="639025728"
-Received: from mrosso-mobl1.ger.corp.intel.com ([10.249.45.244])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 09:30:26 -0800
-Date:   Tue, 15 Nov 2022 19:30:09 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
-cc:     LKML <linux-kernel@vger.kernel.org>,
+        Tue, 15 Nov 2022 13:21:38 -0500
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E539B2980E;
+        Tue, 15 Nov 2022 10:21:37 -0800 (PST)
+Received: by mail-qk1-x735.google.com with SMTP id x21so10100203qkj.0;
+        Tue, 15 Nov 2022 10:21:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=38lbvHtM/Sh5K1youCdXU00uQaYmJjr9mutlugnfY2U=;
+        b=FDDekQG05EB4iFbBqvrMs4kK02G8tKxIcVGHXR9mcS8Il26xpbzz0iBGWICM0jkdlV
+         3rH/pH+DmWSqg96r1wOCbygUisOxhkbIZLhdk2nURTTu4Q88MhSp2Cv75kWXT+op2sdq
+         pa2d/no3UyPnsdBoYjN0JQObptNcW2GFjqPaaGrBmcngiPZLMiEPxYC80Ju87hmF2Htx
+         GAYlaQwxJeMuCd/RYRqjE10uk1vIEWqhXfXDxja36EGOIyYFy5ykWLMRjeLOX1MbBu/E
+         iJYSXBPOt5MoLeB4s7Io1GwKQir4eVBIxjyHB518uDKOOV2L8PHjWUH2Q/tpgi9PmOHn
+         NmBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=38lbvHtM/Sh5K1youCdXU00uQaYmJjr9mutlugnfY2U=;
+        b=d1G8HgfHiEVd+sruTXhnhoYUgVwbD91on0nvFl39MvqDC7FLp2lunSlPNcQ6XUPFna
+         f+6S55WYsErrjAKahGFG/tleR0hq6zTfsDLcXAHEMfDgu4CORKBOgIRzn4Ka0evyF7G7
+         PJbiDZqzq1URTL0i/xy7iQ1byyqT2R7CQWHB8X0Z1mJpH7r92xSicNdQCYH96qwoi57k
+         LUy7ebAqB1le9gb1JTQI57CvvflptdxAatyFBO16s5ZzzDsa+cTyNeYNBtUlq5oAqMNs
+         UGtxJQXroKRzaD7SsHPApUmSAsx83y40J5dJWNfnK3rmrbd9Nc+ZcbLcKrgB9yNFtS5V
+         XgGA==
+X-Gm-Message-State: ANoB5pk2JAIbDl1CEs3ATOPWu2R3FvqzuzKRkRsNTnZVDh2SbFqeZlYM
+        XBVq7PSF9hCzfkpnwLfV1IA=
+X-Google-Smtp-Source: AA0mqf59s8GBbOflxICSmriBe32P8xmvmu5vMXrZk4Y8aPAvbpLIaI+pbjTGa6WLAs7u76eREsV30w==
+X-Received: by 2002:a37:b01:0:b0:6ee:9453:9d92 with SMTP id 1-20020a370b01000000b006ee94539d92mr16606911qkl.520.1668536496920;
+        Tue, 15 Nov 2022 10:21:36 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05620a280900b006b95b0a714esm8490461qkp.17.2022.11.15.10.21.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 10:21:36 -0800 (PST)
+Date:   Tue, 15 Nov 2022 13:21:34 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
@@ -50,95 +62,114 @@ cc:     LKML <linux-kernel@vger.kernel.org>,
         geert@linux-m68k.org
 Subject: Re: [PATCH v3 13/14] serial: liteuart: add IRQ support for the TX
  path
-In-Reply-To: <Y3PI0gP0vnmYTmZK@errol.ini.cmu.edu>
-Message-ID: <281fcd2-157e-c9ce-a0e5-b077ed43887a@linux.intel.com>
-References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-14-gsomlo@gmail.com> <957056a1-78a5-1141-18d7-b49f87fa85f0@linux.intel.com> <Y3PI0gP0vnmYTmZK@errol.ini.cmu.edu>
+Message-ID: <Y3PYrsjW7yUMuusO@errol.ini.cmu.edu>
+References: <20221112212125.448824-1-gsomlo@gmail.com>
+ <20221112212125.448824-14-gsomlo@gmail.com>
+ <957056a1-78a5-1141-18d7-b49f87fa85f0@linux.intel.com>
+ <Y3PI0gP0vnmYTmZK@errol.ini.cmu.edu>
+ <281fcd2-157e-c9ce-a0e5-b077ed43887a@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1451186594-1668533231=:63372"
-Content-ID: <253696f8-4b14-c119-b4a6-c92b93cb4d@linux.intel.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <281fcd2-157e-c9ce-a0e5-b077ed43887a@linux.intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1451186594-1668533231=:63372
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <5acca97e-6fac-d1fc-15b5-de58d993f3fe@linux.intel.com>
-
-On Tue, 15 Nov 2022, Gabriel L. Somlo wrote:
-
-> On Tue, Nov 15, 2022 at 06:14:50PM +0200, Ilpo Järvinen wrote:
-> > On Sat, 12 Nov 2022, Gabriel Somlo wrote:
-> > 
-> > > Modify the TX path to operate in an IRQ-compatible way, while
-> > > maintaining support for polling mode via the poll timer.
+On Tue, Nov 15, 2022 at 07:30:09PM +0200, Ilpo Järvinen wrote:
+> On Tue, 15 Nov 2022, Gabriel L. Somlo wrote:
+> 
+> > On Tue, Nov 15, 2022 at 06:14:50PM +0200, Ilpo Järvinen wrote:
+> > > On Sat, 12 Nov 2022, Gabriel Somlo wrote:
 > > > 
-> > > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> > > ---
-> > >  drivers/tty/serial/liteuart.c | 67 ++++++++++++++++++++++++-----------
-> > >  1 file changed, 47 insertions(+), 20 deletions(-)
+> > > > Modify the TX path to operate in an IRQ-compatible way, while
+> > > > maintaining support for polling mode via the poll timer.
+> > > > 
+> > > > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > > > ---
+> > > >  drivers/tty/serial/liteuart.c | 67 ++++++++++++++++++++++++-----------
+> > > >  1 file changed, 47 insertions(+), 20 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> > > > index e30adb30277f..307c27398e30 100644
+> > > > --- a/drivers/tty/serial/liteuart.c
+> > > > +++ b/drivers/tty/serial/liteuart.c
+> 
+> > > > +	if (port->irq) {
+> > > > +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
+> > > > +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
 > > > 
-> > > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> > > index e30adb30277f..307c27398e30 100644
-> > > --- a/drivers/tty/serial/liteuart.c
-> > > +++ b/drivers/tty/serial/liteuart.c
-
-> > > +	if (port->irq) {
-> > > +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
-> > > +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
+> > > If you put irq_mask into liteuart_port you wouldn't need to read it 
+> > > back here?
 > > 
-> > If you put irq_mask into liteuart_port you wouldn't need to read it 
-> > back here?
+> > So, instead of `bool poll_tx_started` I should just keep a copy of the
+> > irq_mask there, and take `&port->lock` whenever I need to *both* update
+> > the mask *and* write it out to the actual device register?
 > 
-> So, instead of `bool poll_tx_started` I should just keep a copy of the
-> irq_mask there, and take `&port->lock` whenever I need to *both* update
-> the mask *and* write it out to the actual device register?
+> I was mostly thinking of storing EV_RX there but then it could be derived 
+> from port->irq that is checked by all paths already.
 
-I was mostly thinking of storing EV_RX there but then it could be derived 
-from port->irq that is checked by all paths already.
+I'm a bit confused here -- the reason I was reading in irq_mask from
+the mmio port and then flipping the EV_TX bit before writing it back
+out was to preserve the current value of the EV_RX bit in that
+register, whatever it may happen to be at the time. If I shadowed the
+entire register value (with both EV_RX and EV_TX bits reflecting their
+current value), I could get away with only ever *writing* the MMIO
+register each time the shadow register value is modified (one or both
+of the bits are flipped), and only when port->irq is non-zero (i.e.,
+the shadow register would work for polling-mode also).
 
-> > > +	if (unlikely(port->x_char)) {
-> > > +		litex_write8(port->membase + OFF_RXTX, port->x_char);
-> > > +		port->x_char = 0;
-> > > +		port->icount.tx++;
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	while (!litex_read8(port->membase + OFF_TXFULL)) {
-> > > +		if (xmit->head == xmit->tail)
+I think that's how altera_uart.c is doing it (I've been using that as
+a source of inspiration).
+
+I thought that's what you were suggesting earlie, but based on your
+response above I'm no longer sure I follow.
+
+> > > > +	if (unlikely(port->x_char)) {
+> > > > +		litex_write8(port->membase + OFF_RXTX, port->x_char);
+> > > > +		port->x_char = 0;
+> > > > +		port->icount.tx++;
+> > > > +		return;
+> > > > +	}
+> > > > +
+> > > > +	while (!litex_read8(port->membase + OFF_TXFULL)) {
+> > > > +		if (xmit->head == xmit->tail)
+> > > 
+> > > There exists a helper for this condition.
 > > 
-> > There exists a helper for this condition.
+> > Is that in the released linus tree, or still only in tty-next?
 > 
-> Is that in the released linus tree, or still only in tty-next?
+> uart_circ_empty() has been around for ages.
 
-uart_circ_empty() has been around for ages.
+Oh, I misunderstood what you meant here originally -- just use
+`uart_circ_empty()` like I'm already doing elsewhere in the code, got
+it!
 
-> > > +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> > > +		uart_write_wakeup(port);
-> > > +
-> > > +	if (uart_circ_empty(xmit))
-> > > +		liteuart_stop_tx(port);
-> > > +}
+> > > > +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> > > > +		uart_write_wakeup(port);
+> > > > +
+> > > > +	if (uart_circ_empty(xmit))
+> > > > +		liteuart_stop_tx(port);
+> > > > +}
+> > > 
+> > > You might want to check if you can generate this whole function with 
+> > > Jiri's tx helpers (IIRC, they're only in tty-next tree currently).
 > > 
-> > You might want to check if you can generate this whole function with 
-> > Jiri's tx helpers (IIRC, they're only in tty-next tree currently).
+> > Looks like I should switch to tty-next for this whole series, which
+> > makes sense, since it's a tty I'm working on :)
+> > 
+> > I'll rebase on top of that before I send out v4, hopefully later this
+> > afternoon.
 > 
-> Looks like I should switch to tty-next for this whole series, which
-> makes sense, since it's a tty I'm working on :)
+> Ok.
 > 
-> I'll rebase on top of that before I send out v4, hopefully later this
-> afternoon.
+> As I now looked it up, Jiri's tx helpers is 
+> 8275b48b278096edc1e3ea5aa9cf946a10022f79 and you'll find some example 
+> conversions in the changes following it.
 
-Ok.
+I'll check that out and follow the examples.
 
-As I now looked it up, Jiri's tx helpers is 
-8275b48b278096edc1e3ea5aa9cf946a10022f79 and you'll find some example 
-conversions in the changes following it.
-
-
--- 
- i.
---8323329-1451186594-1668533231=:63372--
+Thanks again,
+--G
