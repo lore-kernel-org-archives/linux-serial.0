@@ -2,208 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD72C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 15:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 858DEC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 15:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiKOPsO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 10:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43636 "EHLO
+        id S231347AbiKOPwj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 10:52:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbiKOPsI (ORCPT
+        with ESMTP id S238358AbiKOPwT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 10:48:08 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667822CCAE;
-        Tue, 15 Nov 2022 07:48:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668527287; x=1700063287;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=esQYanLlOvexoYc53n1hkKiLmuXm7gaBOcFvaSRa3d8=;
-  b=Yiw1R6rKl7UHPaOjlEY0isC9k5q1JS/hMghfUvBOGmRR0IXfPnblVV9c
-   2DoH0YNG5C9aesQNNT2dc0jjRhI6GJb6cA38mnc4X0FctSg9MRbAJLxQK
-   ssYD1bfcZ6441krMuGAw2ShbjEuGjWW7gM6Qd5hqtX57kjIteHaZNGVXY
-   +MvfdWLxmJogCxKaN8SnXU8pSy0uqVXbqQcQ6pD7N7AeN3HCCn+i67QE3
-   44tEypr8HBLmot+7ZbFWeBQ3VfIKqMY96wqfYffbW4RY28mFYULpG9oEf
-   GBcUSFRWqRAEtrOFVcZTxOnYX3NyDJ74puXRq00UEg0+OX2Ok2QggPDq8
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="291995132"
-X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="291995132"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:48:07 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="781382824"
-X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="781382824"
-Received: from mrosso-mobl1.ger.corp.intel.com ([10.249.45.244])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 07:48:03 -0800
-Date:   Tue, 15 Nov 2022 17:48:01 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Gabriel Somlo <gsomlo@gmail.com>
-cc:     LKML <linux-kernel@vger.kernel.org>,
+        Tue, 15 Nov 2022 10:52:19 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56A42E9E3;
+        Tue, 15 Nov 2022 07:51:46 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id u7so10016684qvn.13;
+        Tue, 15 Nov 2022 07:51:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=O6dn5ExXEEUUjc/yMx7cgGs2EkgDVeq481oTf2xsoZY=;
+        b=lS/wuXpA06L4GbnyUyGuiUHNT+J69FO2Qq4E9GMBMC/FHaanO/dVhs2NP8WYlOp7hd
+         OWZh0AwzClg4E47AHWNupIIIRK1oQJdAJKa4bkx7WU17cdvTPsueHf0lIRt3jyFmpwJ1
+         K707FTgLPQF0iNspM1k0pvZaN7bOneGMcGEEptaQ6I3u+JqN8NrPPKefzIMU4c9IQW1C
+         VZKy3BeGXg2dulHNclzzLdM39zVhrx40vvSGt9kGSxen6NdkmaC6qYF1BVjfUamXAJwH
+         jT4LDgTka72jPsROXuN3dGT55YfLgi0LcKO5Vjm0Zek20rjwAoe32EhvYwx1SfMaw0es
+         9Ofg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=O6dn5ExXEEUUjc/yMx7cgGs2EkgDVeq481oTf2xsoZY=;
+        b=53uZEPHwTFvHFVpcV80imtr2ilD+fpUrAmAE4u3wUKJ5H22jrnajEVLyoEQrPN6/KZ
+         X9Hu/isVsQTDyzKpXVyoYkgg+PPiMgJCAFU6YkpGB3tIJpZ/ciRZTVs/oX+Ap68yyXHe
+         Ho/+BaF1U61SJvg8yA4AN6quU6CAwWRWPHWIwwZ+x9REVWIDdluBF5ULeP4KVWT5L4hH
+         J5lPlgcWvYuS67rzkgx9Q+VAgaIxSJwJWQE7ht6W6X3uCCQ2jcm8+4BplqfOmgSLvAa8
+         sSqJdW7rluHq1vFVW167/UCmsaWVVag0FINODBuAQ0M3WMRuNryvzdtffdXh250uIjsF
+         LiEw==
+X-Gm-Message-State: ANoB5pkiq3kErmTaKGh3FqjAYkwt5lW0Mv39Aj/j3oPlzokeLB76WdfT
+        Jtbw8KRFCgbAWU6d/txqCPHB5bwghvi9/Q==
+X-Google-Smtp-Source: AA0mqf5cW6YHCmRTW+FmlbM7ggnLpTfbNnNrmiqLtbGR6gAjEcB93+aujvOQG0KmlCP4m3zPwHJ/RQ==
+X-Received: by 2002:ad4:4434:0:b0:4bb:6bbd:8c1b with SMTP id e20-20020ad44434000000b004bb6bbd8c1bmr17595669qvt.111.1668527505699;
+        Tue, 15 Nov 2022 07:51:45 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id w8-20020a05620a444800b006fb7f94a65bsm3655784qkp.44.2022.11.15.07.51.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 07:51:45 -0800 (PST)
+Date:   Tue, 15 Nov 2022 10:51:43 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
         mholenko@antmicro.com, joel@jms.id.au,
         david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
         geert@linux-m68k.org
-Subject: Re: [PATCH v3 11/14] serial: liteuart: move function definitions
-In-Reply-To: <20221112212125.448824-12-gsomlo@gmail.com>
-Message-ID: <4acd99f5-86eb-e0c8-a9ca-a4f5c7e07393@linux.intel.com>
-References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-12-gsomlo@gmail.com>
+Subject: Re: [PATCH v3 02/14] serial: liteuart: use bit number macros
+Message-ID: <Y3O1jyO+9iCGS5Rx@errol.ini.cmu.edu>
+References: <20221112212125.448824-1-gsomlo@gmail.com>
+ <20221112212125.448824-3-gsomlo@gmail.com>
+ <40b5679c-5316-9c5c-7e4-5c8c74ba1acf@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-931260506-1668527287=:2268"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <40b5679c-5316-9c5c-7e4-5c8c74ba1acf@linux.intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-931260506-1668527287=:2268
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Sat, 12 Nov 2022, Gabriel Somlo wrote:
-
-> Move definitions for liteuart_[stop|start]_tx(), liteuart_stop_rx(),
-> and liteuart_putchar() to a more convenient location in preparation
-> for adding IRQ support. This patch contains no functional changes.
+On Tue, Nov 15, 2022 at 05:33:47PM +0200, Ilpo Järvinen wrote:
+> On Sat, 12 Nov 2022, Gabriel Somlo wrote:
 > 
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> ---
->  drivers/tty/serial/liteuart.c | 98 +++++++++++++++++------------------
->  1 file changed, 49 insertions(+), 49 deletions(-)
+> > Replace magic bit constants (e.g., 1, 2, 4) with BIT(x) expressions.
+> > 
+> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > ---
+> >  drivers/tty/serial/liteuart.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> > index 32b81bd03d0c..1497d4cdc221 100644
+> > --- a/drivers/tty/serial/liteuart.c
+> > +++ b/drivers/tty/serial/liteuart.c
+> > @@ -38,8 +38,8 @@
+> >  #define OFF_EV_ENABLE	0x14
+> >  
+> >  /* events */
+> > -#define EV_TX		0x1
+> > -#define EV_RX		0x2
+> > +#define EV_TX		BIT(0)
+> > +#define EV_RX		BIT(1)
+> >  
+> >  struct liteuart_port {
+> >  	struct uart_port port;
+> > 
 > 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 172ac190ba2f..cf1ce597b45e 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -67,36 +67,6 @@ static struct uart_driver liteuart_driver = {
->  #endif
->  };
->  
-> -static void liteuart_rx_chars(struct uart_port *port)
-> -{
-> -	unsigned char __iomem *membase = port->membase;
-> -	unsigned int status, ch;
-> -
-> -	while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
-> -		ch = litex_read8(membase + OFF_RXTX);
-> -		port->icount.rx++;
-> -
-> -		/* necessary for RXEMPTY to refresh its value */
-> -		litex_write8(membase + OFF_EV_PENDING, EV_RX);
-> -
-> -		/* no overflow bits in status */
-> -		if (!(uart_handle_sysrq_char(port, ch)))
-> -			uart_insert_char(port, status, 0, ch, TTY_NORMAL);
-> -	}
-> -
-> -	tty_flip_buffer_push(&port->state->port);
-> -}
-> -
-> -static void liteuart_timer(struct timer_list *t)
-> -{
-> -	struct liteuart_port *uart = from_timer(uart, t, timer);
-> -	struct uart_port *port = &uart->port;
-> -
-> -	liteuart_rx_chars(port);
-> -
-> -	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> -}
-> -
->  static void liteuart_putchar(struct uart_port *port, unsigned char ch)
->  {
->  	while (litex_read8(port->membase + OFF_TXFULL))
-> @@ -105,25 +75,6 @@ static void liteuart_putchar(struct uart_port *port, unsigned char ch)
->  	litex_write8(port->membase + OFF_RXTX, ch);
->  }
->  
-> -static unsigned int liteuart_tx_empty(struct uart_port *port)
-> -{
-> -	/* not really tx empty, just checking if tx is not full */
-> -	if (!litex_read8(port->membase + OFF_TXFULL))
-> -		return TIOCSER_TEMT;
-> -
-> -	return 0;
-> -}
-> -
-> -static void liteuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> -{
-> -	/* modem control register is not present in LiteUART */
-> -}
-> -
-> -static unsigned int liteuart_get_mctrl(struct uart_port *port)
-> -{
-> -	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-> -}
-> -
->  static void liteuart_stop_tx(struct uart_port *port)
->  {
->  	/* not used in LiteUART, but called unconditionally from serial_core */
-> @@ -159,6 +110,55 @@ static void liteuart_stop_rx(struct uart_port *port)
->  	del_timer(&uart->timer);
->  }
->  
-> +static void liteuart_rx_chars(struct uart_port *port)
-> +{
-> +	unsigned char __iomem *membase = port->membase;
-> +	unsigned int status, ch;
-> +
-> +	while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
-> +		ch = litex_read8(membase + OFF_RXTX);
-> +		port->icount.rx++;
-> +
-> +		/* necessary for RXEMPTY to refresh its value */
-> +		litex_write8(membase + OFF_EV_PENDING, EV_RX);
-> +
-> +		/* no overflow bits in status */
-> +		if (!(uart_handle_sysrq_char(port, ch)))
-> +			uart_insert_char(port, status, 0, ch, TTY_NORMAL);
-> +	}
-> +
-> +	tty_flip_buffer_push(&port->state->port);
-> +}
-> +
-> +static void liteuart_timer(struct timer_list *t)
-> +{
-> +	struct liteuart_port *uart = from_timer(uart, t, timer);
-> +	struct uart_port *port = &uart->port;
-> +
-> +	liteuart_rx_chars(port);
-> +
-> +	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> +}
-> +
-> +static unsigned int liteuart_tx_empty(struct uart_port *port)
-> +{
-> +	/* not really tx empty, just checking if tx is not full */
-> +	if (!litex_read8(port->membase + OFF_TXFULL))
-> +		return TIOCSER_TEMT;
-> +
-> +	return 0;
-> +}
-> +
-> +static void liteuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> +{
-> +	/* modem control register is not present in LiteUART */
-> +}
-> +
-> +static unsigned int liteuart_get_mctrl(struct uart_port *port)
-> +{
-> +	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-> +}
-> +
->  static int liteuart_startup(struct uart_port *port)
->  {
->  	struct liteuart_port *uart = to_liteuart_port(port);
-> 
+> This seems to assume some random header provides BIT() for you?
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+OK: version 4 of the series will have this commit explicitly
+#include <linux/bits.h>, which right now is most likely brought
+in implicitly by one or more of the existing headers.
 
--- 
- i.
-
---8323329-931260506-1668527287=:2268--
+Thanks,
+--Gabriel
