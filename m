@@ -2,45 +2,45 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A75EC43217
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 16:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8F2C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 16:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238592AbiKOQRf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 11:17:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S230095AbiKOQVI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 11:21:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238585AbiKOQRU (ORCPT
+        with ESMTP id S230034AbiKOQVH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 11:17:20 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755402C133;
-        Tue, 15 Nov 2022 08:17:18 -0800 (PST)
+        Tue, 15 Nov 2022 11:21:07 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F1210C3;
+        Tue, 15 Nov 2022 08:21:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668529038; x=1700065038;
+  t=1668529266; x=1700065266;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=SsK9Yo3R9foh+0Ic3YagDaLNJGA7x0gWOyCfmmPxYmA=;
-  b=HBqEJ4O+w+PRaHzB94T08ECQ9A5qFOd5xHPJ8eobGDRMBiJdsnAn/aUX
-   iw9WK0jXDfZE/v62/lcBLpLjsmmuN07bxr0wXLpOrnJeKTjJLFQXUUl2J
-   a+5Bfvbzy+Wl1foxtV3nvO9JXkAdjVMyxO8DqN/mUxxb7/LvTE7ZorEtH
-   9mLWqfHDfJKxarS24EofhdVNBTZr+OxCiupotjMwAFacOgnSGgnEF4Jbv
-   gXmxIISI328fBGTsBTeIxmAZHUw/kVGop4kmMomf7UG+T6G30Rut2fKI+
-   50W1FlY2Njx4RgI3vxKXgnTETF2jbfiBBcTD8ByC2gebB8NCqmhTHssWU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="339092581"
+  bh=JfTC8m8Q4FYXgVJlchjlzdhxCWxzzUXbMBu2VN/q2cQ=;
+  b=RRpAxpfTNlmRBFrlJWhrUdM2JgkQPCYFnbgweo7uLuH7sbgNi3p5Zg10
+   r7X9TDCfww/vjztiLDCHmBrbOofBlWVYc/RfIAB1WP0YXd/HNaYcQP3Up
+   scDNb5DdgsKzbcP7xXeWspyiv2QsGWoqRCgIphIph/NeWaKOohaamH9GB
+   QlNBUhKpCknloqIT4/Sq2zR7bmbhNVDAt5yBaN4km8OLE0UtQZMBY8A29
+   nwCHL3tLiYMKrisqY6+hyGekQEcdauavWRocRhymuGsVe6vEsuQKuXhgV
+   QSR50bLFiOEXfijXCY9QcpIk5RvddnlE0kJSPcjYfueSJ056rrRpl5hlH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="398584148"
 X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="339092581"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 08:17:02 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="781395283"
+   d="scan'208";a="398584148"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 08:21:05 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="707791440"
 X-IronPort-AV: E=Sophos;i="5.96,166,1665471600"; 
-   d="scan'208";a="781395283"
+   d="scan'208";a="707791440"
 Received: from mrosso-mobl1.ger.corp.intel.com ([10.249.45.244])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 08:16:59 -0800
-Date:   Tue, 15 Nov 2022 18:16:57 +0200 (EET)
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2022 08:21:01 -0800
+Date:   Tue, 15 Nov 2022 18:21:00 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Gabriel Somlo <gsomlo@gmail.com>
+To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
 cc:     LKML <linux-kernel@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -48,13 +48,13 @@ cc:     LKML <linux-kernel@vger.kernel.org>,
         mholenko@antmicro.com, joel@jms.id.au,
         david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
         geert@linux-m68k.org
-Subject: Re: [PATCH v3 14/14] serial: liteuart: move polling putchar()
- function
-In-Reply-To: <20221112212125.448824-15-gsomlo@gmail.com>
-Message-ID: <a8432f1f-1674-e2e0-8162-f8f8173ea42@linux.intel.com>
-References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-15-gsomlo@gmail.com>
+Subject: Re: [PATCH v3 12/14] serial: liteuart: add IRQ support for the RX
+ path
+In-Reply-To: <Y3O7AKVuY3/n6I5K@errol.ini.cmu.edu>
+Message-ID: <7b5042be-8061-d4f4-43b5-75a5ad6dbcb0@linux.intel.com>
+References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-13-gsomlo@gmail.com> <a914ebd3-5eb8-6c53-3f58-3371fdabf7@linux.intel.com> <Y3O7AKVuY3/n6I5K@errol.ini.cmu.edu>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-794393047-1668529023=:2268"
+Content-Type: multipart/mixed; boundary="8323329-155084183-1668529265=:2268"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -62,61 +62,102 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-794393047-1668529023=:2268
-Content-Type: text/plain; charset=ISO-8859-15
+--8323329-155084183-1668529265=:2268
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
 
-On Sat, 12 Nov 2022, Gabriel Somlo wrote:
+On Tue, 15 Nov 2022, Gabriel L. Somlo wrote:
 
-> The polling liteuart_putchar() function is only called from methods
-> conditionally enabled by CONFIG_SERIAL_LITEUART_CONSOLE. Move its
-> definition closer to the console code where it is dependent on the
-> same config option.
+> On Tue, Nov 15, 2022 at 06:00:11PM +0200, Ilpo Järvinen wrote:
+> > On Sat, 12 Nov 2022, Gabriel Somlo wrote:
+> > 
+> > > Add support for IRQ-driven RX. Support for the TX path will be added
+> > > in a separate commit.
+> > > 
+> > > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > > ---
+> > >  drivers/tty/serial/liteuart.c | 61 +++++++++++++++++++++++++++++++----
+> > >  1 file changed, 54 insertions(+), 7 deletions(-)
+> > > 
+> > > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+> > > index cf1ce597b45e..e30adb30277f 100644
+> > > --- a/drivers/tty/serial/liteuart.c
+> > > +++ b/drivers/tty/serial/liteuart.c
+> > > @@ -6,6 +6,7 @@
+> > >   */
+> > >  
+> > >  #include <linux/console.h>
+> > > +#include <linux/interrupt.h>
+> > >  #include <linux/litex.h>
+> > >  #include <linux/module.h>
+> > >  #include <linux/of.h>
+> > > @@ -130,13 +131,29 @@ static void liteuart_rx_chars(struct uart_port *port)
+> > >  	tty_flip_buffer_push(&port->state->port);
+> > >  }
+> > >  
+> > > +static irqreturn_t liteuart_interrupt(int irq, void *data)
+> > > +{
+> > > +	struct liteuart_port *uart = data;
+> > > +	struct uart_port *port = &uart->port;
+> > > +	u8 isr = litex_read8(port->membase + OFF_EV_PENDING);
+> > > +
+> > > +	/* for now, only rx path triggers interrupts */
+> > 
+> > Please don't add comment like this at all when your series removes it in a 
+> > later patch.
 > 
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> ---
->  drivers/tty/serial/liteuart.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+> OK, I will remove it in v4.
 > 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 307c27398e30..767c356e60c9 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -69,14 +69,6 @@ static struct uart_driver liteuart_driver = {
->  #endif
->  };
->  
-> -static void liteuart_putchar(struct uart_port *port, unsigned char ch)
-> -{
-> -	while (litex_read8(port->membase + OFF_TXFULL))
-> -		cpu_relax();
-> -
-> -	litex_write8(port->membase + OFF_RXTX, ch);
-> -}
-> -
->  static void liteuart_stop_tx(struct uart_port *port)
->  {
->  	if (port->irq) {
-> @@ -389,6 +381,14 @@ static struct platform_driver liteuart_platform_driver = {
->  
->  #ifdef CONFIG_SERIAL_LITEUART_CONSOLE
->  
-> +static void liteuart_putchar(struct uart_port *port, unsigned char ch)
-> +{
-> +	while (litex_read8(port->membase + OFF_TXFULL))
-> +		cpu_relax();
-> +
-> +	litex_write8(port->membase + OFF_RXTX, ch);
-> +}
-> +
->  static void liteuart_console_write(struct console *co, const char *s,
->  	unsigned int count)
->  {
+> > > +	isr &= EV_RX;
+> > > +
+> > > +	spin_lock(&port->lock);
+> > > +	if (isr & EV_RX)
+> > > +		liteuart_rx_chars(port);
+> > > +	spin_unlock(&port->lock);
+> > > +
+> > > +	return IRQ_RETVAL(isr);
+> > > +}
+> > > +
+> > >  static void liteuart_timer(struct timer_list *t)
+> > >  {
+> > >  	struct liteuart_port *uart = from_timer(uart, t, timer);
+> > >  	struct uart_port *port = &uart->port;
+> > >  
+> > > -	liteuart_rx_chars(port);
+> > > -
+> > > +	liteuart_interrupt(0, port);
+> > >  	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+> > >  }
+> > >  
+> > > @@ -162,19 +179,42 @@ static unsigned int liteuart_get_mctrl(struct uart_port *port)
+> > >  static int liteuart_startup(struct uart_port *port)
+> > >  {
+> > >  	struct liteuart_port *uart = to_liteuart_port(port);
+> > > +	int ret;
+> > > +	u8 irq_mask = 0;
+> > >  
+> > > -	/* disable events */
+> > > -	litex_write8(port->membase + OFF_EV_ENABLE, 0);
+> > > +	if (port->irq) {
+> > > +		ret = request_irq(port->irq, liteuart_interrupt, 0,
+> > > +				  KBUILD_MODNAME, uart);
+> > > +		if (ret == 0) {
+> > > +			/* only enable rx interrupts at this time */
+> > 
+> > This comment seems pretty useless. Your code says very much the same.
+> 
+> The comment was meant to let the reader know that the code is doing it
+> *intentionally* (rather than forgetting to enable tx irqs by mistake).
+> But I'm OK with removing this comment in v4 as well if you think
+> that's an overly paranoid and redundant thing to do... :)
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+I see. Reading the other comment first caused me to misinterpret this one 
+to mean that only RX interrupts are implemented.
 
+Maybe if you change "at this time" to "at startup" it would make it more 
+obvious.
 
 -- 
  i.
 
---8323329-794393047-1668529023=:2268--
+--8323329-155084183-1668529265=:2268--
