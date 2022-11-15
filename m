@@ -2,142 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D26CC43219
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Nov 2022 16:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8902C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 07:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237637AbiKNQcW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Nov 2022 11:32:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
+        id S229972AbiKOHRd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 02:17:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237643AbiKNQaz (ORCPT
+        with ESMTP id S229455AbiKOHRb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Nov 2022 11:30:55 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF6B2F64D;
-        Mon, 14 Nov 2022 08:29:53 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668443392;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lyFJ0F0+PfcRjhKzuNkMUBeWMaE9PNLLtfp/JWoaB8Q=;
-        b=o493Ws7OLoNBwC3oJekHe/zqr8d4O1r2boZdC330Lx7sXR/IS+LlFMlQSjiYgilqi2WvYy
-        bK6oiaWKOaMF+Ov1zkmR7m17gutu6TqbBnx+DW+0CKcPwn/WP4WoTvHeOnxG3Dcpw50L0F
-        uCuMhIdKv8bxHZuMIY7yE5xqI87CzHeE17gRcNmlIyNpc4AunL7RVRWKjhFqzm99845QTr
-        GU9GdrUeraNW+PFqq9HeRlvM+uQT2Bk7lgRw4l2QqcvqrMlmgfyI3VLCm+SlLEyaEy08XS
-        9IYpB54UDdp25QGOFuwjoXwpDVZUiUqepmIgjw9G5zSxprsVTUdFu7iZnYfhNw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668443392;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lyFJ0F0+PfcRjhKzuNkMUBeWMaE9PNLLtfp/JWoaB8Q=;
-        b=3yUj92YNamRVgcCdfRvOJqzWFRVhH0VyAxXFN/+0roEsIDgaS8xom/DI+PxiHFB0NAZLYl
-        geAOjgKKccPDeLAw==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH printk v4 39/39] tty: serial: sh-sci: use setup() callback for early console
-Date:   Mon, 14 Nov 2022 17:35:32 +0106
-Message-Id: <20221114162932.141883-40-john.ogness@linutronix.de>
-In-Reply-To: <20221114162932.141883-1-john.ogness@linutronix.de>
-References: <20221114162932.141883-1-john.ogness@linutronix.de>
+        Tue, 15 Nov 2022 02:17:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8391DF05;
+        Mon, 14 Nov 2022 23:17:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61D36B816D4;
+        Tue, 15 Nov 2022 07:17:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B151BC433D6;
+        Tue, 15 Nov 2022 07:17:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668496648;
+        bh=4+/EQQYq7onpYQWLzcvcEdnGKo/7iYZ/uL0MrdW6F24=;
+        h=From:To:Cc:Subject:Date:From;
+        b=U2fZHfaNEO1BH3jEhS2mhHKTOSJgcQ5Icu5Qu1JDBg9q4iyq4KiQcyVszU7pARyZm
+         0tD8X4lqMzghdB8FOYY49ZZDYpElPIk5RxW0JeDQbFgXOz/GSG8EfQSxsxNR0xCRIE
+         eKuIrF3F/YV+nb9W9gjAuWze/9Ko/uIyCzCwQEVVvm5n5dwtI6mPi83j1/uII2PNAS
+         1i65qXsclBHab/uLWk1tA08agPVljXyBht/wHtw4zSk71Boqu+Fgwz4K3WNIzTBhS1
+         38c0ULOo5HZu1v+qpJs8eLG6ih5mRahawUFqcDN3/Vb+KNhBV8ZYG8lZ3bJezyxe0O
+         AOZ54uzpS2FEA==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH 1/4] tty: serial: altera_jtaguart: remove flag from altera_jtaguart_rx_chars()
+Date:   Tue, 15 Nov 2022 08:17:21 +0100
+Message-Id: <20221115071724.5185-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When setting up the early console, the setup() callback of the
-regular console is used. It is called manually before registering
-the early console instead of providing a setup() callback for the
-early console. This is probably because the early setup needs a
-different @options during the early stage.
+TTY_NORMAL is the only value it contains, so remove the variable and use
+the constant instead.
 
-The issue here is that the setup() callback is called without the
-console_list_lock held and functions such as uart_set_options()
-expect that.
-
-Rather than manually calling the setup() function before registering,
-provide an early console setup() callback that will use the different
-early options. This ensures that the error checking, ordering, and
-locking context when setting up the early console are correct.
-
-Since this early console can only be registered via the earlyprintk=
-parameter, the @options argument of the setup() callback will always
-be NULL. Rather than simply ignoring the argument, add a WARN_ON()
-to get our attention in case the setup() callback semantics should
-change in the future.
-
-Note that technically the current implementation works because it is
-only used in early boot. And since the early console setup is
-performed before registering, it cannot race with anything and thus
-does not need any locking. However, longterm maintenance is easier
-when drivers rely on the subsystem API rather than manually
-implementing steps that could cause breakage in the future.
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Tobias Klauser <tklauser@distanz.ch>
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/sh-sci.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ drivers/tty/serial/altera_jtaguart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 62f773286d44..76452fe2af86 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -3054,15 +3054,29 @@ static struct console serial_console = {
- };
- 
- #ifdef CONFIG_SUPERH
-+static char early_serial_buf[32];
-+
-+static int early_serial_console_setup(struct console *co, char *options)
-+{
-+	/*
-+	 * This early console is always registered using the earlyprintk=
-+	 * parameter, which does not call add_preferred_console(). Thus
-+	 * @options is always NULL and the options for this early console
-+	 * are passed using a custom buffer.
-+	 */
-+	WARN_ON(options);
-+
-+	return serial_console_setup(co, early_serial_buf);
-+}
-+
- static struct console early_serial_console = {
- 	.name           = "early_ttySC",
- 	.write          = serial_console_write,
-+	.setup		= early_serial_console_setup,
- 	.flags          = CON_PRINTBUFFER,
- 	.index		= -1,
- };
- 
--static char early_serial_buf[32];
--
- static int sci_probe_earlyprintk(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index aa49553fac58..8d1729711584 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -126,18 +126,17 @@ static void altera_jtaguart_set_termios(struct uart_port *port,
+ static void altera_jtaguart_rx_chars(struct altera_jtaguart *pp)
  {
- 	const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
-@@ -3074,8 +3088,6 @@ static int sci_probe_earlyprintk(struct platform_device *pdev)
+ 	struct uart_port *port = &pp->port;
+-	unsigned char ch, flag;
++	unsigned char ch;
+ 	unsigned long status;
  
- 	sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
+ 	while ((status = readl(port->membase + ALTERA_JTAGUART_DATA_REG)) &
+ 	       ALTERA_JTAGUART_DATA_RVALID_MSK) {
+ 		ch = status & ALTERA_JTAGUART_DATA_DATA_MSK;
+-		flag = TTY_NORMAL;
+ 		port->icount.rx++;
  
--	serial_console_setup(&early_serial_console, early_serial_buf);
--
- 	if (!strstr(early_serial_buf, "keep"))
- 		early_serial_console.flags |= CON_BOOT;
+ 		if (uart_handle_sysrq_char(port, ch))
+ 			continue;
+-		uart_insert_char(port, 0, 0, ch, flag);
++		uart_insert_char(port, 0, 0, ch, TTY_NORMAL);
+ 	}
  
+ 	tty_flip_buffer_push(&port->state->port);
 -- 
-2.30.2
+2.38.1
 
