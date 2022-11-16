@@ -2,55 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FC3C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Nov 2022 18:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39138C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 00:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230401AbiKOSVp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Nov 2022 13:21:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
+        id S229560AbiKPAQQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Nov 2022 19:16:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiKOSVi (ORCPT
+        with ESMTP id S229575AbiKPAQQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Nov 2022 13:21:38 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E539B2980E;
-        Tue, 15 Nov 2022 10:21:37 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id x21so10100203qkj.0;
-        Tue, 15 Nov 2022 10:21:37 -0800 (PST)
+        Tue, 15 Nov 2022 19:16:16 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A7B1BE;
+        Tue, 15 Nov 2022 16:16:14 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id g10so10691794qkl.6;
+        Tue, 15 Nov 2022 16:16:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=38lbvHtM/Sh5K1youCdXU00uQaYmJjr9mutlugnfY2U=;
-        b=FDDekQG05EB4iFbBqvrMs4kK02G8tKxIcVGHXR9mcS8Il26xpbzz0iBGWICM0jkdlV
-         3rH/pH+DmWSqg96r1wOCbygUisOxhkbIZLhdk2nURTTu4Q88MhSp2Cv75kWXT+op2sdq
-         pa2d/no3UyPnsdBoYjN0JQObptNcW2GFjqPaaGrBmcngiPZLMiEPxYC80Ju87hmF2Htx
-         GAYlaQwxJeMuCd/RYRqjE10uk1vIEWqhXfXDxja36EGOIyYFy5ykWLMRjeLOX1MbBu/E
-         iJYSXBPOt5MoLeB4s7Io1GwKQir4eVBIxjyHB518uDKOOV2L8PHjWUH2Q/tpgi9PmOHn
-         NmBA==
+        bh=QFox3T1RUAHoxY4Bqm6YyFiBNEx0ZrKnZC+XfWXVVyY=;
+        b=ON2ecGuTwnPWNOGLvgebF/ZPPK4OgysjpIWEL/veiAgZQxGpQeVUdDPTe/KfQRy1ri
+         C9ErNyZTJrLd9JcYEgqW6AUHF5xMRhhXxoAChgdf1JTDDMdrm4GUr86vDAOcZq2uCHeM
+         LMB32DYhZTZEUzZNRbnLel2tLArnnSYxCFvfdxoU4xaQbd7qDePSFsZeMCzdpU94bL4J
+         TzJsypLPb3uomGYO67xjM8rPMnggyacSMp6Jzk0qB786u3y3Kaj5HlL0FBLD5IH4bkxn
+         Kg6pFY0LVNvhyMXb1jThoKpjZ9qTYf3YafouU744gDxPchB/b3jIWQCA7fClgpeIOGb+
+         hKvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=38lbvHtM/Sh5K1youCdXU00uQaYmJjr9mutlugnfY2U=;
-        b=d1G8HgfHiEVd+sruTXhnhoYUgVwbD91on0nvFl39MvqDC7FLp2lunSlPNcQ6XUPFna
-         f+6S55WYsErrjAKahGFG/tleR0hq6zTfsDLcXAHEMfDgu4CORKBOgIRzn4Ka0evyF7G7
-         PJbiDZqzq1URTL0i/xy7iQ1byyqT2R7CQWHB8X0Z1mJpH7r92xSicNdQCYH96qwoi57k
-         LUy7ebAqB1le9gb1JTQI57CvvflptdxAatyFBO16s5ZzzDsa+cTyNeYNBtUlq5oAqMNs
-         UGtxJQXroKRzaD7SsHPApUmSAsx83y40J5dJWNfnK3rmrbd9Nc+ZcbLcKrgB9yNFtS5V
-         XgGA==
-X-Gm-Message-State: ANoB5pk2JAIbDl1CEs3ATOPWu2R3FvqzuzKRkRsNTnZVDh2SbFqeZlYM
-        XBVq7PSF9hCzfkpnwLfV1IA=
-X-Google-Smtp-Source: AA0mqf59s8GBbOflxICSmriBe32P8xmvmu5vMXrZk4Y8aPAvbpLIaI+pbjTGa6WLAs7u76eREsV30w==
-X-Received: by 2002:a37:b01:0:b0:6ee:9453:9d92 with SMTP id 1-20020a370b01000000b006ee94539d92mr16606911qkl.520.1668536496920;
-        Tue, 15 Nov 2022 10:21:36 -0800 (PST)
+        bh=QFox3T1RUAHoxY4Bqm6YyFiBNEx0ZrKnZC+XfWXVVyY=;
+        b=L05Aw0xUT6tQtPBxxqO06AhAaPgBw5yceapo5qsmW8cwFXyWqA+jGORkoB+Tvq3nnU
+         xHAC/Gxi9ezFqlAxCUIFMwzWYBiC4s6Nknl+z3JK9mTMjZR2xYUXMIT8RjHhDjsZnzDF
+         h3TgcPba3wVIrUMIHTH4+yus9r01eEZ5bvyOwF0M9k/2FIXxCsntec6h3pPfHki+ghhn
+         8iCPtM6TSEizH3tF2G2/4Dz9xOC+JKSsy3w85agBH2RRKzYupSrZcBX4R4pUDlv7Mvwz
+         PRObF5G5ZdrU/KyNFwTIqm5gJh3chK/M6lUaMg0eFTMjbkTL7n+1bmUe4JaB8FPAKmc2
+         eXHQ==
+X-Gm-Message-State: ANoB5pnIrKs4JnoLe/YDE2YFovfHWNkuiqERlfLd123AtOqajyavNwoM
+        r6pzR3byCLXnWnS/qK1qlQo=
+X-Google-Smtp-Source: AA0mqf78GT5xarMTInHXVeJEt5O5SckzmDzpKM27CY1oHpC9wz5XvbT0yM/UaJJNHjbOB8iqGCQevg==
+X-Received: by 2002:a05:620a:209d:b0:6fa:2d5c:110a with SMTP id e29-20020a05620a209d00b006fa2d5c110amr17121354qka.628.1668557773894;
+        Tue, 15 Nov 2022 16:16:13 -0800 (PST)
 Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
-        by smtp.gmail.com with ESMTPSA id f9-20020a05620a280900b006b95b0a714esm8490461qkp.17.2022.11.15.10.21.35
+        by smtp.gmail.com with ESMTPSA id e7-20020a05622a110700b0038b684a1642sm7926544qty.32.2022.11.15.16.16.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 10:21:36 -0800 (PST)
-Date:   Tue, 15 Nov 2022 13:21:34 -0500
+        Tue, 15 Nov 2022 16:16:13 -0800 (PST)
+Date:   Tue, 15 Nov 2022 19:16:11 -0500
 From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
 To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
@@ -62,7 +62,7 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         geert@linux-m68k.org
 Subject: Re: [PATCH v3 13/14] serial: liteuart: add IRQ support for the TX
  path
-Message-ID: <Y3PYrsjW7yUMuusO@errol.ini.cmu.edu>
+Message-ID: <Y3Qry3Hza6ydnibL@errol.ini.cmu.edu>
 References: <20221112212125.448824-1-gsomlo@gmail.com>
  <20221112212125.448824-14-gsomlo@gmail.com>
  <957056a1-78a5-1141-18d7-b49f87fa85f0@linux.intel.com>
@@ -111,65 +111,138 @@ On Tue, Nov 15, 2022 at 07:30:09PM +0200, Ilpo Järvinen wrote:
 > I was mostly thinking of storing EV_RX there but then it could be derived 
 > from port->irq that is checked by all paths already.
 
-I'm a bit confused here -- the reason I was reading in irq_mask from
-the mmio port and then flipping the EV_TX bit before writing it back
-out was to preserve the current value of the EV_RX bit in that
-register, whatever it may happen to be at the time. If I shadowed the
-entire register value (with both EV_RX and EV_TX bits reflecting their
-current value), I could get away with only ever *writing* the MMIO
-register each time the shadow register value is modified (one or both
-of the bits are flipped), and only when port->irq is non-zero (i.e.,
-the shadow register would work for polling-mode also).
+So, just to clear up the best course of action here (before I rebase
+everything on top of tty-next: How about the patch below (currently
+applied separately at the end of the entire series, but I can respin
+it as part of the rx path (12/14) and tx path (13/14) as appropriate.
 
-I think that's how altera_uart.c is doing it (I've been using that as
-a source of inspiration).
+Let me know what you think.
 
-I thought that's what you were suggesting earlie, but based on your
-response above I'm no longer sure I follow.
+Thanks,
+--Gabriel
 
-> > > > +	if (unlikely(port->x_char)) {
-> > > > +		litex_write8(port->membase + OFF_RXTX, port->x_char);
-> > > > +		port->x_char = 0;
-> > > > +		port->icount.tx++;
-> > > > +		return;
-> > > > +	}
-> > > > +
-> > > > +	while (!litex_read8(port->membase + OFF_TXFULL)) {
-> > > > +		if (xmit->head == xmit->tail)
-> > > 
-> > > There exists a helper for this condition.
-> > 
-> > Is that in the released linus tree, or still only in tty-next?
-> 
-> uart_circ_empty() has been around for ages.
 
-Oh, I misunderstood what you meant here originally -- just use
-`uart_circ_empty()` like I'm already doing elsewhere in the code, got
-it!
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index eb0ae8c8bd94..185db423c65f 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -47,7 +47,7 @@ struct liteuart_port {
+ 	struct uart_port port;
+ 	struct timer_list timer;
+ 	u32 id;
+-	bool poll_tx_started;
++	u8 irq_reg;
+ };
+ 
+ #define to_liteuart_port(port)	container_of(port, struct liteuart_port, port)
+@@ -70,26 +70,27 @@ static struct uart_driver liteuart_driver = {
+ #endif
+ };
+ 
++static void liteuart_update_irq_reg(struct uart_port *port, bool set, u8 bits)
++{
++	struct liteuart_port *uart = to_liteuart_port(port);
++
++	if (set)
++		uart->irq_reg |= bits;
++	else
++		uart->irq_reg &= ~bits;
++
++	if (port->irq)
++		litex_write8(port->membase + OFF_EV_ENABLE, uart->irq_reg);
++}
++
+ static void liteuart_stop_tx(struct uart_port *port)
+ {
+-	if (port->irq) {
+-		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
+-		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
+-	} else {
+-		struct liteuart_port *uart = to_liteuart_port(port);
+-		uart->poll_tx_started = false;
+-	}
++	liteuart_update_irq_reg(port, false, EV_TX);
+ }
+ 
+ static void liteuart_start_tx(struct uart_port *port)
+ {
+-	if (port->irq) {
+-		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
+-		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask | EV_TX);
+-	} else {
+-		struct liteuart_port *uart = to_liteuart_port(port);
+-		uart->poll_tx_started = true;
+-	}
++	liteuart_update_irq_reg(port, true, EV_TX);
+ }
+ 
+ static void liteuart_stop_rx(struct uart_port *port)
+@@ -149,12 +150,10 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
+ {
+ 	struct liteuart_port *uart = data;
+ 	struct uart_port *port = &uart->port;
+-	u8 isr = litex_read8(port->membase + OFF_EV_PENDING);
+-
+-	if (!(port->irq || uart->poll_tx_started))
+-		isr &= ~EV_TX;	/* polling mode with tx stopped */
++	u8 isr;
+ 
+ 	spin_lock(&port->lock);
++	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
+ 	if (isr & EV_RX)
+ 		liteuart_rx_chars(port);
+ 	if (isr & EV_TX)
+@@ -195,39 +194,40 @@ static unsigned int liteuart_get_mctrl(struct uart_port *port)
+ static int liteuart_startup(struct uart_port *port)
+ {
+ 	struct liteuart_port *uart = to_liteuart_port(port);
++	unsigned long flags;
+ 	int ret;
+-	u8 irq_mask = 0;
+ 
+ 	if (port->irq) {
+ 		ret = request_irq(port->irq, liteuart_interrupt, 0,
+ 				  KBUILD_MODNAME, uart);
+-		if (ret == 0) {
+-			/* only enabling rx interrupts at startup */
+-			irq_mask = EV_RX;
+-		} else {
++		if (ret) {
+ 			pr_err(pr_fmt("line %d irq %d failed: using polling\n"),
+ 				port->line, port->irq);
+ 			port->irq = 0;
+ 		}
+ 	}
+ 
++	spin_lock_irqsave(&port->lock, flags);
++	/* only enabling rx irqs during startup */
++	liteuart_update_irq_reg(port, true, EV_RX);
++	spin_unlock_irqrestore(&port->lock, flags);
++
+ 	if (!port->irq) {
+-		uart->poll_tx_started = false;
+ 		timer_setup(&uart->timer, liteuart_timer, 0);
+ 		mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+ 	}
+ 
+-	litex_write8(port->membase + OFF_EV_ENABLE, irq_mask);
+-
+ 	return 0;
+ }
+ 
+ static void liteuart_shutdown(struct uart_port *port)
+ {
+ 	struct liteuart_port *uart = to_liteuart_port(port);
++	unsigned long flags;
+ 
+-	litex_write8(port->membase + OFF_EV_ENABLE, 0);
+-	uart->poll_tx_started = false;
++	spin_lock_irqsave(&port->lock, flags);
++	liteuart_update_irq_reg(port, false, EV_RX | EV_TX);
++	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	if (port->irq)
+ 		free_irq(port->irq, port);
+-- 
+2.37.3
 
-> > > > +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> > > > +		uart_write_wakeup(port);
-> > > > +
-> > > > +	if (uart_circ_empty(xmit))
-> > > > +		liteuart_stop_tx(port);
-> > > > +}
-> > > 
-> > > You might want to check if you can generate this whole function with 
-> > > Jiri's tx helpers (IIRC, they're only in tty-next tree currently).
-> > 
-> > Looks like I should switch to tty-next for this whole series, which
-> > makes sense, since it's a tty I'm working on :)
-> > 
-> > I'll rebase on top of that before I send out v4, hopefully later this
-> > afternoon.
-> 
-> Ok.
-> 
-> As I now looked it up, Jiri's tx helpers is 
-> 8275b48b278096edc1e3ea5aa9cf946a10022f79 and you'll find some example 
-> conversions in the changes following it.
-
-I'll check that out and follow the examples.
-
-Thanks again,
---G
