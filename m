@@ -2,240 +2,190 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A39C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 11:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BE2C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 14:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232575AbiKPLiz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Nov 2022 06:38:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        id S230459AbiKPOsn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Nov 2022 09:48:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238662AbiKPLiP (ORCPT
+        with ESMTP id S233074AbiKPOsm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Nov 2022 06:38:15 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5DB59FD5;
-        Wed, 16 Nov 2022 03:26:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668598002; x=1700134002;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=MYpBpylj8pMY9WIe8XTtpCtT58gvamyc9KojdYzS4oI=;
-  b=K8tiPlosuXvW76KrZt1Au+GA876nkeBmhAT3sVZP7MBrDh7ROHftrb5V
-   MNUTVTE3hKPSDDGZS3AbwwCyBr6ALwGicWhhLIdlqgO5f4AeUAZPAa3VS
-   i7ObN8H3RF61BOoMJs/SNMsH1xkcNHShBENvIeI8tm/TuR1tjRQGMaJ0R
-   jvkAfzvQXrcHmKKy9pwtDu21jyIp5SnBm22xstSHEsGYb2A7M9WEEkYDU
-   jWmnFUdpTtq0z/1O6w3Dz0tYKn2HmJwph2TdZWNfpYb+YS0jlvvZtjpN/
-   l/M1pJRMiwoYEIigqD0STKj/zMiI06FKCapdd2q/Q/3R3MWxq1ztvEDEL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="295885321"
-X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
-   d="scan'208";a="295885321"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 03:26:42 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="708131352"
-X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
-   d="scan'208";a="708131352"
-Received: from tkrebs-mobl.ger.corp.intel.com ([10.252.58.4])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 03:26:39 -0800
-Date:   Wed, 16 Nov 2022 13:26:36 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
-cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
+        Wed, 16 Nov 2022 09:48:42 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083F71A218
+        for <linux-serial@vger.kernel.org>; Wed, 16 Nov 2022 06:48:39 -0800 (PST)
+Received: from [192.168.1.107] (82-131-200-171.pool.digikabel.hu [82.131.200.171])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: hs@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id C2DB784A14;
+        Wed, 16 Nov 2022 15:48:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1668610117;
+        bh=KWzY50RVH+2ZYGUjmf0Y7ybA/7x2fGxBya4vWUbTqlQ=;
+        h=Subject:To:Cc:References:Reply-To:From:Date:In-Reply-To:From;
+        b=GEkLLImLur4/2j6JbeOLH2BaEgv/H1axTazcAS23db7yr3MdFlXwzOgtEjlGT/wOv
+         xqVwN7lVR/toBF8mLHO8h/SX6XqWDphsw3bPcqQuT/umFnM26eetSfv2tB0ccgkRUd
+         LUCfGGoxX9Pfn5TULxv+zVB8/mpO1L4P3vY8hzONwkno5Nv2miaZMKSCrBj8rhUzFq
+         OEm8tOahmmmwRfNUvItbbmsYBU/FYCtoVPDmRM76tGQskKs4+MfGT13Ja+f+8GOCNH
+         imcLCsvGHVl3ND2UxoDjTEl/WkqOfvKp8XBFWeqI7QmL3Dv5Ni/xTSjIWBYcowwgcP
+         4dToXdwNDRKwA==
+Subject: Re: [PATCH v2] tty: serial: imx: Handle RS485 DE signal active high
+To:     Marek Vasut <marex@denx.de>
+Cc:     Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Fabio Estevam <festevam@denx.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kgugala@antmicro.com,
-        mholenko@antmicro.com, joel@jms.id.au,
-        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
-        geert@linux-m68k.org
-Subject: Re: [PATCH v3 13/14] serial: liteuart: add IRQ support for the TX
- path
-In-Reply-To: <Y3Qry3Hza6ydnibL@errol.ini.cmu.edu>
-Message-ID: <fa879d4-94a3-ed73-9b5e-edea78a160c8@linux.intel.com>
-References: <20221112212125.448824-1-gsomlo@gmail.com> <20221112212125.448824-14-gsomlo@gmail.com> <957056a1-78a5-1141-18d7-b49f87fa85f0@linux.intel.com> <Y3PI0gP0vnmYTmZK@errol.ini.cmu.edu> <281fcd2-157e-c9ce-a0e5-b077ed43887a@linux.intel.com>
- <Y3Qry3Hza6ydnibL@errol.ini.cmu.edu>
+        Jiri Slaby <jirislaby@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        kernel@dh-electronics.com, kernel@pengutronix.de,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+References: <20220929144400.13571-1-marex@denx.de>
+Reply-To: hs@denx.de
+From:   Heiko Schocher <hs@denx.de>
+Message-ID: <122dadc4-a1e2-a102-e0a9-fd3d4da45c48@denx.de>
+Date:   Wed, 16 Nov 2022 15:48:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1091608436-1668598001=:1688"
+In-Reply-To: <20220929144400.13571-1-marex@denx.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hello Marek,
 
---8323329-1091608436-1668598001=:1688
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 15 Nov 2022, Gabriel L. Somlo wrote:
-
-> On Tue, Nov 15, 2022 at 07:30:09PM +0200, Ilpo Järvinen wrote:
-> > On Tue, 15 Nov 2022, Gabriel L. Somlo wrote:
-> > 
-> > > On Tue, Nov 15, 2022 at 06:14:50PM +0200, Ilpo Järvinen wrote:
-> > > > On Sat, 12 Nov 2022, Gabriel Somlo wrote:
-> > > > 
-> > > > > Modify the TX path to operate in an IRQ-compatible way, while
-> > > > > maintaining support for polling mode via the poll timer.
-> > > > > 
-> > > > > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> > > > > ---
-> > > > >  drivers/tty/serial/liteuart.c | 67 ++++++++++++++++++++++++-----------
-> > > > >  1 file changed, 47 insertions(+), 20 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> > > > > index e30adb30277f..307c27398e30 100644
-> > > > > --- a/drivers/tty/serial/liteuart.c
-> > > > > +++ b/drivers/tty/serial/liteuart.c
-> > 
-> > > > > +	if (port->irq) {
-> > > > > +		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
-> > > > > +		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
-> > > > 
-> > > > If you put irq_mask into liteuart_port you wouldn't need to read it 
-> > > > back here?
-> > > 
-> > > So, instead of `bool poll_tx_started` I should just keep a copy of the
-> > > irq_mask there, and take `&port->lock` whenever I need to *both* update
-> > > the mask *and* write it out to the actual device register?
-> > 
-> > I was mostly thinking of storing EV_RX there but then it could be derived 
-> > from port->irq that is checked by all paths already.
+On 29.09.22 16:44, Marek Vasut wrote:
+> The default polarity of RS485 DE signal is active high. This driver does
+> not handle such case properly. Currently, when a pin is multiplexed as a
+> UART CTS_B on boot, this pin is pulled HIGH by the i.MX UART CTS circuit,
+> which activates DE signal on the RS485 transceiver and thus behave as if
+> the RS485 was transmitting data, so the system blocks the RS485 bus when
+> it starts and until user application takes over. This behavior is not OK.
+> The problem consists of two separate parts.
 > 
-> So, just to clear up the best course of action here (before I rebase
-> everything on top of tty-next: How about the patch below (currently
-> applied separately at the end of the entire series, but I can respin
-> it as part of the rx path (12/14) and tx path (13/14) as appropriate.
+> First, the i.MX UART IP requires UCR1 UARTEN and UCR2 RXEN to be set for
+> UCR2 CTSC and CTS bits to have any effect. The UCR2 CTSC bit permits the
+> driver to set CTS (RTS_B or RS485 DE signal) to either level sychronous
+> to the internal UART IP clock. Compared to other options, like GPIO CTS
+> control, this has the benefit of being synchronous to the UART IP clock
+> and thus without glitches or bus delays. The reason for the CTS design
+> is likely because when the Receiver is disabled, the UART IP can never
+> indicate that it is ready to receive data by assering CTS signal, so
+> the CTS is always pulled HIGH by default.
 > 
-> Let me know what you think.
+> When the port is closed by user space, imx_uart_stop_rx() clears UCR2
+> RXEN bit, and imx_uart_shutdown() clears UCR1 UARTEN bit. This disables
+> UART Receiver and UART itself, and forces CTS signal HIGH, which leads
+> to the RS485 bus being blocked because RS485 DE is incorrectly active.
+> 
+> The proposed solution for this problem is to keep the Receiver running
+> even after the port is closed, but in loopback mode. This disconnects
+> the RX FIFO input from the RXD external signal, and since UCR2 TXEN is
+> cleared, the UART Transmitter is disabled, so nothing can feed data in
+> the RX FIFO. Because the Receiver is still enabled, the UCR2 CTSC and
+> CTS bits still have effect and the CTS (RS485 DE) control is retained.
+> 
+> Note that in case of RS485 DE signal active low, there is no problem and
+> no special handling is necessary. The CTS signal defaults to HIGH, thus
+> the RS485 is by default set to Receive and the bus is not blocked.
+> 
+> Note that while there is the possibility to control CTS using GPIO with
+> either CTS polarity, this has the downside of not being synchronous to
+> the UART IP clock and thus glitchy and susceptible to slow DE switching.
+> 
+> Second, on boot, before the UART driver probe callback is called, the
+> driver core triggers pinctrl_init_done() and configures the IOMUXC to
+> default state. At this point, UCR1 UARTEN and UCR2 RXEN are both still
+> cleared, but UART CTS_B (RS485 DE) is configured as CTS function, thus
+> the RTS signal is pulled HIGH by the UART IP CTS circuit.
+> 
+> One part of the solution here is to enable UCR1 UARTEN and UCR2 RXEN and
+> UTS loopback in this driver probe callback, thus unblocking the CTSC and
+> CTS control early on. But this is still too late, since the pin control
+> is already configured and CTS has been pulled HIGH for a short period
+> of time.
+> 
+> When Linux kernel boots and this driver is bound, the pin control is set
+> to special "init" state if the state is available, and driver can switch
+> the "default" state afterward when ready. This state can be used to set
+> the CTS line as a GPIO in DT temporarily, and a GPIO hog can force such
+> GPIO to LOW, thus keeping the RS485 DE line LOW early on boot. Once the
+> driver takes over and UCR1 UARTEN and UCR2 RXEN and UTS loopback are all
+> enabled, the driver can switch to "default" pin control state and control
+> the CTS line as function instead. DT binding example is below:
+> 
+> "
+> &gpio6 {
+>   rts-init-hog {
+>     gpio-hog;
+>     gpios = <5 0>;
+>     output-low;
+>     line-name = "rs485-de";
+>   };
+> };
+> 
+> &uart5 { /* DHCOM UART2 */
+>   pinctrl-0 = <&pinctrl_uart5>;
+>   pinctrl-1 = <&pinctrl_uart5_init>;
+>   pinctrl-names = "default", "init";
+>   ...
+> };
+> pinctrl_uart5_init: uart5-init-grp {
+>   fsl,pins = <
+> ...
+>     MX6QDL_PAD_CSI0_DAT19__GPIO6_IO05       0x30b1
+>   >;
+> };
+> 
+> pinctrl_uart5: uart5-grp {
+>   fsl,pins = <
+> ...
+>     MX6QDL_PAD_CSI0_DAT19__UART5_CTS_B      0x30b1
+>   >;
+> };
+> "
+> 
+> Tested-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Reviewed-by: Fabio Estevam <festevam@denx.de>
+> ---
+> Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+> Cc: Fabio Estevam <festevam@denx.de>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Cc: Peng Fan <peng.fan@nxp.com>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+> Cc: kernel@dh-electronics.com
+> Cc: kernel@pengutronix.de
+> Cc: linux-arm-kernel@lists.infradead.org
+> To: linux-serial@vger.kernel.org
+> ---
+> V2: - Add code comments per input from Uwe
+>     - Add TB from Christoph
+> ---
+>  drivers/tty/serial/imx.c | 64 ++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 58 insertions(+), 6 deletions(-)
 
-I'm fine with that I think. I'd change to bits parameter name to something 
-more meaningful though, I guess the irq_mask could do ok there.
+Thank! Successfully tested on an imx8mp based board.
 
+Tested-by: Heiko Schocher <hs@denx.de>
+
+bye,
+Heiko
 -- 
- i.
-
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index eb0ae8c8bd94..185db423c65f 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -47,7 +47,7 @@ struct liteuart_port {
->  	struct uart_port port;
->  	struct timer_list timer;
->  	u32 id;
-> -	bool poll_tx_started;
-> +	u8 irq_reg;
->  };
->  
->  #define to_liteuart_port(port)	container_of(port, struct liteuart_port, port)
-> @@ -70,26 +70,27 @@ static struct uart_driver liteuart_driver = {
->  #endif
->  };
->  
-> +static void liteuart_update_irq_reg(struct uart_port *port, bool set, u8 bits)
-> +{
-> +	struct liteuart_port *uart = to_liteuart_port(port);
-> +
-> +	if (set)
-> +		uart->irq_reg |= bits;
-> +	else
-> +		uart->irq_reg &= ~bits;
-> +
-> +	if (port->irq)
-> +		litex_write8(port->membase + OFF_EV_ENABLE, uart->irq_reg);
-> +}
-> +
->  static void liteuart_stop_tx(struct uart_port *port)
->  {
-> -	if (port->irq) {
-> -		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
-> -		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask & ~EV_TX);
-> -	} else {
-> -		struct liteuart_port *uart = to_liteuart_port(port);
-> -		uart->poll_tx_started = false;
-> -	}
-> +	liteuart_update_irq_reg(port, false, EV_TX);
->  }
->  
->  static void liteuart_start_tx(struct uart_port *port)
->  {
-> -	if (port->irq) {
-> -		u8 irq_mask = litex_read8(port->membase + OFF_EV_ENABLE);
-> -		litex_write8(port->membase + OFF_EV_ENABLE, irq_mask | EV_TX);
-> -	} else {
-> -		struct liteuart_port *uart = to_liteuart_port(port);
-> -		uart->poll_tx_started = true;
-> -	}
-> +	liteuart_update_irq_reg(port, true, EV_TX);
->  }
->  
->  static void liteuart_stop_rx(struct uart_port *port)
-> @@ -149,12 +150,10 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
->  {
->  	struct liteuart_port *uart = data;
->  	struct uart_port *port = &uart->port;
-> -	u8 isr = litex_read8(port->membase + OFF_EV_PENDING);
-> -
-> -	if (!(port->irq || uart->poll_tx_started))
-> -		isr &= ~EV_TX;	/* polling mode with tx stopped */
-> +	u8 isr;
->  
->  	spin_lock(&port->lock);
-> +	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
->  	if (isr & EV_RX)
->  		liteuart_rx_chars(port);
->  	if (isr & EV_TX)
-> @@ -195,39 +194,40 @@ static unsigned int liteuart_get_mctrl(struct uart_port *port)
->  static int liteuart_startup(struct uart_port *port)
->  {
->  	struct liteuart_port *uart = to_liteuart_port(port);
-> +	unsigned long flags;
->  	int ret;
-> -	u8 irq_mask = 0;
->  
->  	if (port->irq) {
->  		ret = request_irq(port->irq, liteuart_interrupt, 0,
->  				  KBUILD_MODNAME, uart);
-> -		if (ret == 0) {
-> -			/* only enabling rx interrupts at startup */
-> -			irq_mask = EV_RX;
-> -		} else {
-> +		if (ret) {
->  			pr_err(pr_fmt("line %d irq %d failed: using polling\n"),
->  				port->line, port->irq);
->  			port->irq = 0;
->  		}
->  	}
->  
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	/* only enabling rx irqs during startup */
-> +	liteuart_update_irq_reg(port, true, EV_RX);
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
->  	if (!port->irq) {
-> -		uart->poll_tx_started = false;
->  		timer_setup(&uart->timer, liteuart_timer, 0);
->  		mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
->  	}
->  
-> -	litex_write8(port->membase + OFF_EV_ENABLE, irq_mask);
-> -
->  	return 0;
->  }
->  
->  static void liteuart_shutdown(struct uart_port *port)
->  {
->  	struct liteuart_port *uart = to_liteuart_port(port);
-> +	unsigned long flags;
->  
-> -	litex_write8(port->membase + OFF_EV_ENABLE, 0);
-> -	uart->poll_tx_started = false;
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	liteuart_update_irq_reg(port, false, EV_RX | EV_TX);
-> +	spin_unlock_irqrestore(&port->lock, flags);
->  
->  	if (port->irq)
->  		free_irq(port->irq, port);
-> 
-
---8323329-1091608436-1668598001=:1688--
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: +49-8142-66989-52   Fax: +49-8142-66989-80   Email: hs@denx.de
