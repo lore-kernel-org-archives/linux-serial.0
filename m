@@ -2,56 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF1EC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 16:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05213C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 16:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234818AbiKPQWz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Nov 2022 11:22:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
+        id S234896AbiKPQXP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Nov 2022 11:23:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234791AbiKPQWh (ORCPT
+        with ESMTP id S234892AbiKPQWi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Nov 2022 11:22:37 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EDD56EE1;
-        Wed, 16 Nov 2022 08:22:08 -0800 (PST)
+        Wed, 16 Nov 2022 11:22:38 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEDC58002;
+        Wed, 16 Nov 2022 08:22:10 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668615727;
+        s=2020; t=1668615729;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uvYIlIwdOZX0ToDjYltIx1ojqweQggTLKVs/EsUfUxM=;
-        b=cDkHuByF8QExd1GzBvcO0Kt+WxLMtwjdTUOjC1Nx7dklHUvQJAlA1sNg5coF7q2rC7AWD6
-        P3Z+ORdHR1pxbm0K+YzrMnac67OvU46jjMVNB7LL2GLWgE3+XblyNAEe8rVxvs70fmg0Fv
-        KQX2bhp26f4Yk3zWfZCiVXeY0XqKN4WNDJR3L6WfeAlrwmmDou0KZJE/vHWLddRiaV7G8Y
-        n74SjpC07KjR+Jr6Gqru1CCO9E+ATUGtJv9vG4IBuhfNyKphfYgIF/sdXFFB/YIdEe5jxI
-        vV2QkFv9raU0RxhKR/c5A+3SNDgWx5JRSl5OCOKDbCCiZyJLfnbuyo5T3r6Xmg==
+        bh=6hf4u/s4+AojpME8OJwmFCYo46PpjYxYo+DIhKotoZ0=;
+        b=Q2qeOzzILKPeM4Fxhi7r+Gq3cQ9jsmx9lGVYfDR+fWfGhaFfr8vPWZU5AC5raFSFI/LRBA
+        6wpD/myRS0aIc+52+F4YdG1NGnuklXCsd9q4HAz4KM6D2UV/Qg5qo98SlFEOPLH3voeZJm
+        g3zwpeTHvWz/+uO1Y0NYaWoiOAGYMKIRESt+fWNVYxwXCYV9D7yyZ+aA9dK3AfsIXz5UXV
+        iZgU/RIRTXfQwttH8CJyoW1syhCUQIIq3ZAUNbBNx6wkhfpLB5pPR4tui2BTXbg428HM7R
+        /Jlj1K86Tpu7g2BM+LQhtVZfiyc90H1FbW51PbngNGRQ4TTR4o5p6MeB2yVllg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668615727;
+        s=2020e; t=1668615729;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uvYIlIwdOZX0ToDjYltIx1ojqweQggTLKVs/EsUfUxM=;
-        b=UMmPPfjn/9pjYQ1xq/OO3fIsM130tZbyDJI1u9YMmWJRne9j/mf6hd2YYK5HXxEuJS3gbM
-        uNscX4mSzGEWblAg==
+        bh=6hf4u/s4+AojpME8OJwmFCYo46PpjYxYo+DIhKotoZ0=;
+        b=9tm5BNT5j4GwYhklIDEkUD/Np15mgjT+9v3F//XA1pRocGB74UMrUCC3bDkAUA3wY9wRpJ
+        LUSB57yO9g6sRrDg==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH printk v5 22/40] serial_core: replace uart_console_enabled() with uart_console_registered()
-Date:   Wed, 16 Nov 2022 17:27:34 +0106
-Message-Id: <20221116162152.193147-23-john.ogness@linutronix.de>
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH printk v5 26/40] tty: serial: earlycon: use console_is_registered()
+Date:   Wed, 16 Nov 2022 17:27:38 +0106
+Message-Id: <20221116162152.193147-27-john.ogness@linutronix.de>
 In-Reply-To: <20221116162152.193147-1-john.ogness@linutronix.de>
 References: <20221116162152.193147-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -60,127 +55,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-All users of uart_console_enabled() really want to know if a console
-is registered. It is not reliable to check for CON_ENABLED in order
-to identify if a console is registered. Use console_is_registered()
-instead.
-
-A _locked() variant is provided because uart_set_options() is always
-called with the console_list_lock held and must check if a console
-is registered in order to synchronize with kgdboc.
+It is not reliable to check for CON_ENABLED in order to identify if a
+console is registered. Use console_is_registered() instead.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- drivers/tty/serial/8250/8250_core.c |  2 +-
- drivers/tty/serial/pic32_uart.c     |  2 +-
- drivers/tty/serial/serial_core.c    | 14 +++++++-------
- include/linux/serial_core.h         | 10 ++++++++--
- 4 files changed, 17 insertions(+), 11 deletions(-)
+ drivers/tty/serial/earlycon.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 94fbf0add2ce..74568292186f 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -565,7 +565,7 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index a5f380584cda..4f6e9bf57169 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -181,7 +181,7 @@ int __init setup_earlycon(char *buf)
+ 	if (!buf || !buf[0])
+ 		return -EINVAL;
  
- 		up->port.dev = dev;
+-	if (early_con.flags & CON_ENABLED)
++	if (console_is_registered(&early_con))
+ 		return -EALREADY;
  
--		if (uart_console_enabled(&up->port))
-+		if (uart_console_registered(&up->port))
- 			pm_runtime_get_sync(up->port.dev);
+ again:
+@@ -253,7 +253,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 	bool big_endian;
+ 	u64 addr;
  
- 		serial8250_apply_quirks(up);
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index 2beada66c824..1183b2a26539 100644
---- a/drivers/tty/serial/pic32_uart.c
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -919,7 +919,7 @@ static int pic32_uart_probe(struct platform_device *pdev)
- 	}
+-	if (early_con.flags & CON_ENABLED)
++	if (console_is_registered(&early_con))
+ 		return -EALREADY;
  
- #ifdef CONFIG_SERIAL_PIC32_CONSOLE
--	if (uart_console_enabled(port)) {
-+	if (uart_console_registered(port)) {
- 		/* The peripheral clock has been enabled by console_setup,
- 		 * so disable it till the port is used.
- 		 */
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 179ee199df34..b9fbbee598b8 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2223,11 +2223,11 @@ uart_set_options(struct uart_port *port, struct console *co,
- 	/*
- 	 * Ensure that the serial-console lock is initialised early.
- 	 *
--	 * Note that the console-enabled check is needed because of kgdboc,
--	 * which can end up calling uart_set_options() for an already enabled
-+	 * Note that the console-registered check is needed because
-+	 * kgdboc can call uart_set_options() for an already registered
- 	 * console via tty_find_polling_driver() and uart_poll_init().
- 	 */
--	if (!uart_console_enabled(port) && !port->console_reinit)
-+	if (!uart_console_registered_locked(port) && !port->console_reinit)
- 		uart_port_spin_lock_init(port);
- 
- 	memset(&termios, 0, sizeof(struct ktermios));
-@@ -2573,7 +2573,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * successfully registered yet, try to re-register it.
- 		 * It may be that the port was not available.
- 		 */
--		if (port->cons && !(port->cons->flags & CON_ENABLED))
-+		if (port->cons && !console_is_registered(port->cons))
- 			register_console(port->cons);
- 
- 		/*
-@@ -2956,7 +2956,7 @@ static ssize_t console_show(struct device *dev,
- 	mutex_lock(&port->mutex);
- 	uport = uart_port_check(state);
- 	if (uport)
--		console = uart_console_enabled(uport);
-+		console = uart_console_registered(uport);
- 	mutex_unlock(&port->mutex);
- 
- 	return sprintf(buf, "%c\n", console ? 'Y' : 'N');
-@@ -2978,7 +2978,7 @@ static ssize_t console_store(struct device *dev,
- 	mutex_lock(&port->mutex);
- 	uport = uart_port_check(state);
- 	if (uport) {
--		oldconsole = uart_console_enabled(uport);
-+		oldconsole = uart_console_registered(uport);
- 		if (oldconsole && !newconsole) {
- 			ret = unregister_console(uport->cons);
- 		} else if (!oldconsole && newconsole) {
-@@ -3086,7 +3086,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	 * If this port is in use as a console then the spinlock is already
- 	 * initialised.
- 	 */
--	if (!uart_console_enabled(uport))
-+	if (!uart_console_registered(uport))
- 		uart_port_spin_lock_init(uport);
- 
- 	if (uport->cons && uport->dev)
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index d657f2a42a7b..91871464b99d 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -743,9 +743,15 @@ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
- static inline int setup_earlycon(char *buf) { return 0; }
- #endif
- 
--static inline bool uart_console_enabled(struct uart_port *port)
-+/* Variant of uart_console_registered() when the console_list_lock is held. */
-+static inline bool uart_console_registered_locked(struct uart_port *port)
- {
--	return uart_console(port) && (port->cons->flags & CON_ENABLED);
-+	return uart_console(port) && console_is_registered_locked(port->cons);
-+}
-+
-+static inline bool uart_console_registered(struct uart_port *port)
-+{
-+	return uart_console(port) && console_is_registered(port->cons);
- }
- 
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 	spin_lock_init(&port->lock);
 -- 
 2.30.2
 
