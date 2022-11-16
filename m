@@ -2,119 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59241C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 14:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6131C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Nov 2022 16:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233866AbiKPOuC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Nov 2022 09:50:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        id S233207AbiKPQWC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 16 Nov 2022 11:22:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233770AbiKPOtl (ORCPT
+        with ESMTP id S231224AbiKPQWB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Nov 2022 09:49:41 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB9E17A9E;
-        Wed, 16 Nov 2022 06:49:31 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id u7so12003003qvn.13;
-        Wed, 16 Nov 2022 06:49:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GsRGGaIiBoJlwl/45zB6BAECaPWQUSVeGqaE9kAVQrI=;
-        b=CqrrIl3uMqf9NCB5q4CLw/Pa8BCbWfgMrW1s9jDsDO0IemRCQGuS1bWJnczyJEz4yv
-         sSzpnT2kKzIrTl4xHRy6MuaGNn4SYXg5fPxuSXtaZvP4CPLvgFmhMtqi5ouDKYYD1Kyl
-         2QKrrtN/XU1QXctfCpfvsqxQxigLLro4miqSM0JVDHd5YDAlc5+DGPZUW96wJ1s85mE4
-         VjHj/3V8++CJPw5A3x660GYei74pQ8yyorgP79WHClIW00NWC3RH0on+zHo/JrT3nN/o
-         qaojdX1Rbi+azeYmSoA0e1fqTfQjq7Yd62hTSyTbb8yFapevogH9pQgQKjyXdK0NXWVA
-         leLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GsRGGaIiBoJlwl/45zB6BAECaPWQUSVeGqaE9kAVQrI=;
-        b=tLrRNeCt9UajBy8AfNxCHY+kloSy50SQNXGINjpPnM1yyN0H9raTMATDkCAFgHSifQ
-         awGBs/WVIBRz768Tbd7CpUPTLpa2Me17Q6C+3MWd62lQ9Gls55iNO9Vx2tEWv1Ft9JCx
-         HrB19qufbgLyXLdhNTo9q+YWom1fdkjTNpGO9AqponmeQ1Kn1HbiOhz0xA32F7b/zH8m
-         3p02kt3HYoQ5LPvvHlFyHajPJcWcmaX+XH8Us0zISm9vYvdlLFbFDkNoNIghePGn9Yvf
-         vpocaDvxh3xOZdLj/Ij3BRevF+7E15xKD6p2aTKPigBKxRCBROJksRxK55k0XiTwakVV
-         VbEg==
-X-Gm-Message-State: ANoB5pk6zD7N1PLLHBaLnuegO/YRNDTBrx8dEFZZTbJI61tRi60MV4v8
-        fdaJtaNEisBzah7o704uxrKN0N5LKOZXtA==
-X-Google-Smtp-Source: AA0mqf7GNSwZZJNcB+oms94DY8nCWtNvbQUHc7BMFnPcrIxoh8m0VYjlpfke324iahugsfe/I0dNTQ==
-X-Received: by 2002:a05:6214:370c:b0:4bb:64f7:dce5 with SMTP id np12-20020a056214370c00b004bb64f7dce5mr20740663qvb.15.1668610170609;
-        Wed, 16 Nov 2022 06:49:30 -0800 (PST)
-Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
-        by smtp.gmail.com with ESMTPSA id g5-20020ac84805000000b0039a55f78792sm8729624qtq.89.2022.11.16.06.49.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 06:49:30 -0800 (PST)
-From:   Gabriel Somlo <gsomlo@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
-        joel@jms.id.au, david.abdurachmanov@gmail.com,
-        florent@enjoy-digital.fr, geert@linux-m68k.org,
-        ilpo.jarvinen@linux.intel.com
-Subject: [PATCH v4 14/14] serial: liteuart: move polling putchar() function
-Date:   Wed, 16 Nov 2022 09:49:08 -0500
-Message-Id: <20221116144908.234154-15-gsomlo@gmail.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221116144908.234154-1-gsomlo@gmail.com>
-References: <20221116144908.234154-1-gsomlo@gmail.com>
+        Wed, 16 Nov 2022 11:22:01 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAC726495;
+        Wed, 16 Nov 2022 08:22:00 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1668615718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MpXDwx4HKdMdBWDyluBjDSAFdjedUOkxkf204NlGPAs=;
+        b=LqzUIFfWKdEdiyeDT4SA4emyQt7a9a+2ayMhlNuY8oKBxOZ55QB5G2qQqcYfRRW2xlUICW
+        tBwDtRYB7JMPPvjHX4UxY5ypgN6jVCNWuE/WjNV6Ur8UrMVRcsBmdQuVxrOQ+dqHuMDUTP
+        1qm5jh0qN+dcqhLR8NCFhFcm/ntrqaL7JO1PtX4eXnjEtGvhUa+irm7Cqewqp/dPHWPpir
+        loS78h/J/Y2VzMyenoQlqx/7uSrTjLRrp4Z4Gv2Or3yKv4I7e9jJ05pSDNY5sngtzthllA
+        BYZqI6OU9WxkkKJuMK1lZhzdDMcEAvjzz7rJiL8FLy2y7oOwam8IlCUML4DVHg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1668615718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MpXDwx4HKdMdBWDyluBjDSAFdjedUOkxkf204NlGPAs=;
+        b=KpNtEbzlAdwIW6nKnDTQJbZW60PKBRcYjMQXzivs6ATu0YjHy6ToNZTwuGwHb2+Ivz8DwO
+        UUVw2DECAzI7ufDA==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: [PATCH printk v5 01/40] serial: kgdboc: Lock console list in probe function
+Date:   Wed, 16 Nov 2022 17:27:13 +0106
+Message-Id: <20221116162152.193147-2-john.ogness@linutronix.de>
+In-Reply-To: <20221116162152.193147-1-john.ogness@linutronix.de>
+References: <20221116162152.193147-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The polling liteuart_putchar() function is only called from methods
-conditionally enabled by CONFIG_SERIAL_LITEUART_CONSOLE. Move its
-definition closer to the console code where it is dependent on the
-same config option.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Unprotected list walks are not necessarily safe.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 ---
- drivers/tty/serial/liteuart.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/tty/serial/kgdboc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index 977fc4349b47..238f615cb80e 100644
---- a/drivers/tty/serial/liteuart.c
-+++ b/drivers/tty/serial/liteuart.c
-@@ -70,14 +70,6 @@ static struct uart_driver liteuart_driver = {
- #endif
- };
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 7aa37be3216a..e76f0186c335 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -193,6 +193,7 @@ static int configure_kgdboc(void)
+ 	if (!p)
+ 		goto noconfig;
  
--static void liteuart_putchar(struct uart_port *port, unsigned char ch)
--{
--	while (litex_read8(port->membase + OFF_TXFULL))
--		cpu_relax();
--
--	litex_write8(port->membase + OFF_RXTX, ch);
--}
--
- static void liteuart_update_irq_reg(struct uart_port *port, bool set, u8 mask)
- {
- 	struct liteuart_port *uart = to_liteuart_port(port);
-@@ -372,6 +364,14 @@ static struct platform_driver liteuart_platform_driver = {
++	console_lock();
+ 	for_each_console(cons) {
+ 		int idx;
+ 		if (cons->device && cons->device(cons, &idx) == p &&
+@@ -201,6 +202,7 @@ static int configure_kgdboc(void)
+ 			break;
+ 		}
+ 	}
++	console_unlock();
  
- #ifdef CONFIG_SERIAL_LITEUART_CONSOLE
- 
-+static void liteuart_putchar(struct uart_port *port, unsigned char ch)
-+{
-+	while (litex_read8(port->membase + OFF_TXFULL))
-+		cpu_relax();
-+
-+	litex_write8(port->membase + OFF_RXTX, ch);
-+}
-+
- static void liteuart_console_write(struct console *co, const char *s,
- 	unsigned int count)
- {
+ 	kgdb_tty_driver = p;
+ 	kgdb_tty_line = tty_line;
 -- 
-2.38.1
+2.30.2
 
