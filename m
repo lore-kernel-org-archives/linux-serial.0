@@ -2,138 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A741FC43217
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 01:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B81C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 05:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234685AbiKQBAQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Nov 2022 20:00:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
+        id S234698AbiKQFBE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Nov 2022 00:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiKQA76 (ORCPT
+        with ESMTP id S234598AbiKQFA5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Nov 2022 19:59:58 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C906AEE9
-        for <linux-serial@vger.kernel.org>; Wed, 16 Nov 2022 16:59:52 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id n20so1510402ejh.0
-        for <linux-serial@vger.kernel.org>; Wed, 16 Nov 2022 16:59:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7IItaZa/7I4VBu5cw0wrKUsh/hbQDFMwGlkpESbfAao=;
-        b=HAD+QNbZhmm80gWWfMxazQiOdxU/8OoWGwpppi16ividblCxYrow2hz0E0zZ7AhQ0z
-         cJqUTprf41aF4MbLXaLFlbvRQJVq6IL9gsK+Kqxa/h2queVIuT30rA6VyDlCgXIBzNyT
-         qslBCis6l11GbiAG8lz7dScccivWN8QaYUE08=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7IItaZa/7I4VBu5cw0wrKUsh/hbQDFMwGlkpESbfAao=;
-        b=LeQXgtlMWHkK7pKpyDgVNtHXq5TLRlTXaCGKPjYGppiVEnNPIle1FMOTvFUKSZMScW
-         gpHZ/jGfOqupq5B0e/sYgZjRzDE8BE6MjwQWf0OjXGFQsqN4PBeHnLDmOlz5AmEVHArp
-         Y0et23+hmMBZRjyuyxP+leVkbIrwOkYFzp59sR6gmPAZaMRRSRrgLekQxBtbmoKVTIov
-         8iFlNO9Uk1agfpOMH3ZePPLkUqQSFNcmVYZq5ADBFeveFJJq9nlF8FM0ZVB9fcV8ueiX
-         kL6vkmDMfc/d1o+HBW8YMkAY6EVJtezf+ZAkTDvlb43ObqlO8P0NtutIG+bI/WwZkWH4
-         gFTQ==
-X-Gm-Message-State: ANoB5pmVH5385WWcGCaleEdYm1cyaEmlw3D5nPP8jmnyhev0TGOMVv/K
-        Sz2Sz9ajfhJj8B/fJRXoKaTe3X1vRKk84EDO
-X-Google-Smtp-Source: AA0mqf4jMVtIyLUBrfkE56kV0cU7uOdqTBwk3z4zMmiqvr55ZRV3K/syauAzjnlUG3py3lJ6Ip9pvg==
-X-Received: by 2002:a17:906:1498:b0:73f:40a9:62ff with SMTP id x24-20020a170906149800b0073f40a962ffmr252514ejc.678.1668646789699;
-        Wed, 16 Nov 2022 16:59:49 -0800 (PST)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id dk6-20020a0564021d8600b0046146c730easm8229162edb.75.2022.11.16.16.59.47
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Nov 2022 16:59:48 -0800 (PST)
-Received: by mail-wr1-f49.google.com with SMTP id bs21so431447wrb.4
-        for <linux-serial@vger.kernel.org>; Wed, 16 Nov 2022 16:59:47 -0800 (PST)
-X-Received: by 2002:adf:fb4c:0:b0:236:5270:735e with SMTP id
- c12-20020adffb4c000000b002365270735emr35889wrs.659.1668646787360; Wed, 16 Nov
- 2022 16:59:47 -0800 (PST)
+        Thu, 17 Nov 2022 00:00:57 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9094B3C6F9;
+        Wed, 16 Nov 2022 21:00:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1668661255; x=1700197255;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RBlLGM0dgrfV1MWsy3HHtoXbOzkM5k1F9BEEOdYJ4QE=;
+  b=sy6VZQzT43NNXWulL/RpCXRvStHAP54SsZ4Gz8TGqsJqskf+8bzW6m3A
+   P92ZOGJV8QQNPmu8Ga9Ib0lkx58uexoU+doVRaUh2AMuFKyBOCk9M5wwn
+   EAMD1ETb+nQMKtBpLG0mr8YmSKdSgHPK8naghhOnBVeDgasBQRLpSkYZL
+   NKTo2ICfy3sBGVIbnwcgvRTdAUrwLB8h1pwvvrDjGqwyEpaP5Qrvaeg8s
+   16UkxOYnoGF2OQ2EHO2E0oIQv3qCF+g4no6dsTiz0dkzBdFeNIpck/Aiy
+   6FuUiaGkM6rWEhHJ+bMnog/gkWYAAznsigv0mtzb+r0ZnyU9qQXVYldMA
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,169,1665471600"; 
+   d="scan'208";a="200162641"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Nov 2022 22:00:54 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 16 Nov 2022 22:00:54 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 16 Nov 2022 22:00:48 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <andriy.shevchenko@linux.intel.com>,
+        <ilpo.jarvinen@linux.intel.com>, <macro@orcam.me.uk>,
+        <jay.dolan@accesio.com>, <cang1@live.co.uk>,
+        <u.kleine-koenig@pengutronix.de>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <jk@ozlabs.org>,
+        <biju.das.jz@bp.renesas.com>, <geert+renesas@glider.be>,
+        <phil.edworthy@renesas.com>, <lukas@wunner.de>,
+        <UNGLinuxDriver@microchip.com>, <colin.i.king@gmail.com>
+Subject: [PATCH v5 tty-next 0/4] 8250: microchip: pci1xxxx: Add driver for the pci1xxxx's quad-uart function
+Date:   Thu, 17 Nov 2022 10:31:22 +0530
+Message-ID: <20221117050126.2966714-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20221116162152.193147-1-john.ogness@linutronix.de> <20221116162152.193147-36-john.ogness@linutronix.de>
-In-Reply-To: <20221116162152.193147-36-john.ogness@linutronix.de>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 16 Nov 2022 16:59:35 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=WHEjpL1VYnLRp9Vy300Xd3Tu=u3MOo_rvHCABDTsQFPA@mail.gmail.com>
-Message-ID: <CAD=FV=WHEjpL1VYnLRp9Vy300Xd3Tu=u3MOo_rvHCABDTsQFPA@mail.gmail.com>
-Subject: Re: [PATCH printk v5 35/40] tty: serial: kgdboc: use srcu console
- list iterator
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+downstream ports. Quad-uart is one of the functions in the multi-function
+endpoint. This patch adds device driver for the quad-uart function and
+enumerates between 1 to 4 instances of uarts based on the PCIe subsystem
+device ID.
 
-On Wed, Nov 16, 2022 at 8:22 AM John Ogness <john.ogness@linutronix.de> wrote:
->
-> Use srcu console list iteration for safe console list traversal.
-> Note that this is a preparatory change for when console_lock no
-> longer provides synchronization for the console list.
->
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> ---
->  drivers/tty/serial/kgdboc.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 5be381003e58..c6df9ef34099 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -451,6 +451,7 @@ static void kgdboc_earlycon_pre_exp_handler(void)
->  {
->         struct console *con;
->         static bool already_warned;
-> +       int cookie;
->
->         if (already_warned)
->                 return;
-> @@ -463,9 +464,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
->          * serial drivers might be OK with this, print a warning once per
->          * boot if we detect this case.
->          */
-> -       for_each_console(con)
-> +       cookie = console_srcu_read_lock();
-> +       for_each_console_srcu(con) {
->                 if (con == kgdboc_earlycon_io_ops.cons)
-> -                       return;
-> +                       break;
-> +       }
-> +       console_srcu_read_unlock(cookie);
-> +       if (con)
-> +               return;
+The changes from v1->v2->v3->v4->v5 are mentioned in each patch in the
+patchset.
 
-Is there truly any guarantee that "con" will be NULL if
-for_each_console_srcu() finishes naturally (AKA without a "break"
-being executed)?
+Thanks to Andy Shevchenko, Ilpo Jarvinen, Chritophe JAILLET, Geert
+Uytterhoeven, Greg KH for their review comments.
 
-It looks as if currently this will be true but nothing in the comments
-of for_each_console_srcu() nor hlist_for_each_entry_srcu() (which it
-calls) guarantees this, right? It would be nice if that was
-documented, but I guess it's not a huge deal.
+Kumaravel Thiagarajan (4):
+  8250: microchip: pci1xxxx: Add driver for quad-uart support.
+  8250: microchip: pci1xxxx: Add serial8250_pci_setup_port definition in
+    8250_pcilib.c
+  8250: microchip: pci1xxxx: Add RS485 support to quad-uart driver
+  8250: microchip: pci1xxxx: Add power management functions to quad-uart
+    driver
 
- Also: wasn't there just some big issue about people using loop
-iteration variables after the loop finished?
+ MAINTAINERS                             |   7 +
+ drivers/tty/serial/8250/8250_pci.c      |  24 +-
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 544 ++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pcilib.c   |  38 ++
+ drivers/tty/serial/8250/8250_pcilib.h   |   9 +
+ drivers/tty/serial/8250/8250_port.c     |   8 +
+ drivers/tty/serial/8250/Kconfig         |  15 +
+ drivers/tty/serial/8250/Makefile        |   2 +
+ include/uapi/linux/serial_core.h        |   3 +
+ 9 files changed, 628 insertions(+), 22 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_pci1xxxx.c
+ create mode 100644 drivers/tty/serial/8250/8250_pcilib.c
+ create mode 100644 drivers/tty/serial/8250/8250_pcilib.h
 
-https://lwn.net/Articles/885941/
+-- 
+2.25.1
 
-Ah, I guess that's a slightly different problem and probably not relevant here.
-
-So it seems like this is fine.
-
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
