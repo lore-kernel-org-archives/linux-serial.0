@@ -2,321 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9EFC43219
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 08:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA463C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 09:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239421AbiKQIZd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Nov 2022 03:25:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
+        id S239764AbiKQJcS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Nov 2022 04:32:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239294AbiKQIZX (ORCPT
+        with ESMTP id S239778AbiKQJcO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Nov 2022 03:25:23 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573383F06A;
-        Thu, 17 Nov 2022 00:25:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668673522; x=1700209522;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NQ50HG/r1HiZzg5yGcXYjfciQ4IDQuB+FY0bVqYYGEc=;
-  b=dzsyHRa1iDNAOnz1wnY6jV8bem65x89N75f235+sx4JbNUJrKHKCNkng
-   6mma4JoMR8EGHMf2HnYwpSp+f83B7gpI0QxzyYtXX9kV7khrNb27QCDwr
-   /I2w11H7yTepZqK9Z3CrILmb0BayWQGwg6RV70lEh19CNnAJooBqfMl9c
-   j201QYq2XE9A5qeX8ACubCr+tCdYjajiNIVYAxEDRGbIRmHmfrUZKj0TA
-   USf1369QP30y70/o1iR3Vg8XdvdgckMkBie1lAd4+Vi+hRUK3OUX+VpN2
-   7bUkebeGc0dea2cBXqMLqj72qNLXvPffh6I047XWrrlz6wMcaaEFidqlm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="312806070"
-X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
-   d="scan'208";a="312806070"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 00:25:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="590536828"
-X-IronPort-AV: E=Sophos;i="5.96,171,1665471600"; 
-   d="scan'208";a="590536828"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 17 Nov 2022 00:25:17 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ovaCv-00DUjG-2Q;
-        Thu, 17 Nov 2022 10:25:13 +0200
-Date:   Thu, 17 Nov 2022 10:25:13 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        jay.dolan@accesio.com, cang1@live.co.uk,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        UNGLinuxDriver@microchip.com, colin.i.king@gmail.com,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v5 tty-next 1/4] 8250: microchip: pci1xxxx: Add driver
- for quad-uart support.
-Message-ID: <Y3Xv6XOwddNq6Gmr@smile.fi.intel.com>
-References: <20221117050126.2966714-1-kumaravel.thiagarajan@microchip.com>
- <20221117050126.2966714-2-kumaravel.thiagarajan@microchip.com>
+        Thu, 17 Nov 2022 04:32:14 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97C776149;
+        Thu, 17 Nov 2022 01:32:12 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1668677530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iFIVJDRzYLM8JlLFrtE2EgsFESyY1Nn5OMC4RLGV2yY=;
+        b=iO+tJagEFHt9sg3fABlDdYAV9ylNd2aGmxyQcShKySENThGFArqJQ8hgUGOE+R4GBPMfkg
+        ImEl/eK0b6L/3MgkJEM2JaXlERewhhZemcHyk+o6A9rQxWGx4iKCWDl0X+Z/OVHiZNoYMx
+        3nrH9Qr5h6bw8fCufJv+zAYIZkMqQXDiIeyRpTCPIrphe5LW29+Bd5T18kmjvyN4K1DovK
+        vjQlkpgXI0+6G+E7K92dwR7/eoDunyq4Lu1Ual/ioE57tvDkwgVEuvKBlDtXSm/VNLTI50
+        FkVxBD8AANMCAw3eKLoEOYgAiY8DDLzoaZGqiO2uz+SlM6Di6wkpUm3d0aN9VQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1668677530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iFIVJDRzYLM8JlLFrtE2EgsFESyY1Nn5OMC4RLGV2yY=;
+        b=4rm3sbLF/dC1nwbgx05ZOnnr6IRULStcUsiZpVrNglmTpyFibpYbmeCw1oeyHc8QZtkC1B
+        XEAeOafHqjKRM1Bw==
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v5 35/40] tty: serial: kgdboc: use srcu console
+ list iterator
+In-Reply-To: <CAD=FV=WHEjpL1VYnLRp9Vy300Xd3Tu=u3MOo_rvHCABDTsQFPA@mail.gmail.com>
+References: <20221116162152.193147-1-john.ogness@linutronix.de>
+ <20221116162152.193147-36-john.ogness@linutronix.de>
+ <CAD=FV=WHEjpL1VYnLRp9Vy300Xd3Tu=u3MOo_rvHCABDTsQFPA@mail.gmail.com>
+Date:   Thu, 17 Nov 2022 10:38:07 +0106
+Message-ID: <87tu2yncyw.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221117050126.2966714-2-kumaravel.thiagarajan@microchip.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 10:31:23AM +0530, Kumaravel Thiagarajan wrote:
-> pci1xxxx is a PCIe switch with a multi-function endpoint on one of
-> its downstream ports. Quad-uart is one of the functions in the
-> multi-function endpoint. This driver loads for the quad-uart and
-> enumerates single or multiple instances of uart based on the PCIe
-> subsystem device ID.
+Hi Doug,
 
-Getting better!
+On 2022-11-16, Doug Anderson <dianders@chromium.org> wrote:
+>> @@ -463,9 +464,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+>>          * serial drivers might be OK with this, print a warning once per
+>>          * boot if we detect this case.
+>>          */
+>> -       for_each_console(con)
+>> +       cookie = console_srcu_read_lock();
+>> +       for_each_console_srcu(con) {
+>>                 if (con == kgdboc_earlycon_io_ops.cons)
+>> -                       return;
+>> +                       break;
+>> +       }
+>> +       console_srcu_read_unlock(cookie);
+>> +       if (con)
+>> +               return;
+>
+> Is there truly any guarantee that "con" will be NULL if
+> for_each_console_srcu() finishes naturally (AKA without a "break"
+> being executed)?
 
-...
+Right now it is true because @con becoming NULL is the exit criteria for
+the loop.
 
-> +struct pci1xxxx_8250 {
-> +	struct pci_dev *dev;
+> It looks as if currently this will be true but nothing in the comments
+> of for_each_console_srcu() nor hlist_for_each_entry_srcu() (which it
+> calls) guarantees this, right? It would be nice if that was
+> documented, but I guess it's not a huge deal.
 
-Call it pdev to distinguish with regular struct device.
+Yes, if it is frowned upon that the iterator is used outside the loop,
+it would be nice if the for_each macros explicitly provided some hints
+in their documentation.
 
-> +	unsigned int nr;
-> +	void __iomem *membase;
-> +	int line[];
-> +};
+> Also: wasn't there just some big issue about people using loop
+> iteration variables after the loop finished?
+>
+> https://lwn.net/Articles/885941/
 
-...
+Thanks for referencing that article! Indeed if the macros are changed so
+that the iterator is defined in the loop, then code like this will
+break. But I would expect that making such macro changes will also
+require updating the call sites to avoid unused variables outside the
+loops. And then this code could receive the appropriate fixup.
 
-> +static int pci1xxxx_get_num_ports(struct pci_dev *dev)
-> +{
-> +	switch (dev->subsystem_device) {
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p0:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p1:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p2:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3:
+I feel like if I add extra code to guarantee a NULL without relying on
+the macro implementation, I'll get more resistance due to unnecessarily
+adding code and variables. But I may be wrong.
 
-> +	default:
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-You can even start with a default, so it will be more visible.
-But the way it's now is also okay.
+Thanks.
 
-> +		return 1;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p01:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p02:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p03:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p12:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p13:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p23:
-> +		return 2;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p012:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p123:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p013:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p023:
-> +		return 3;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_4p:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI11414:
-> +		return 4;
-> +	}
-> +}
-
-...
-
-> +	quot = (NSEC_PER_SEC / (baud * UART_BIT_SAMPLE_CNT));
-
-Too many parentheses.
-
-> +	*frac = (((NSEC_PER_SEC - (quot * baud * UART_BIT_SAMPLE_CNT)) /
-
-Ditto.
-
-> +		  UART_BIT_SAMPLE_CNT) * 255) / baud;
-
-...
-
-> +	switch (priv->dev->subsystem_device) {
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p1:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p12:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p123:
-> +		first_offset = 256;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p2:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p23:
-> +		first_offset = 512;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3:
-> +		first_offset = 768;
-> +		break;
-
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p13:
-> +		first_offset = 256;
-> +		break;
-
-Can't it be moved to the above list?
-
-> +	default:
-> +		first_offset = 0;
-> +		break;
-> +	}
-
-...
-
-> +	switch (priv->dev->subsystem_device) {
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p02:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p023:
-> +		if (idx > 0)
-> +			idx++;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p03:
-> +		if (idx > 0)
-> +			idx += 2;
-> +		break;
-
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p13:
-> +		if (idx > 0)
-> +			idx++;
-> +		break;
-
-Can it be moved to the above list?
-
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p013:
-> +		if (idx > 1)
-> +			idx++;
-> +		break;
-
-default?
-
-> +	}
-
-...
-
-> +	switch (priv->dev->subsystem_device) {
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p0:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI12000:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI11010:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI11101:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI11400:
-> +	default:
-> +		irq_idx = 0;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p1:
-> +		irq_idx = 1;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p2:
-> +		irq_idx = 2;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3:
-> +		irq_idx = 3;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p01:
-
-> +		irq_idx = idx;
-
-This line is duplicated. I told you how to avoid duplication.
-Use -1 outside of the switch-case and check that after.
-
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p02:
-> +		if (idx > 0)
-> +			idx++;
-> +		irq_idx = idx;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p03:
-> +		if (idx > 0)
-> +			idx += 2;
-> +		irq_idx = idx;
-> +		break;
-
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p12:
-> +		irq_idx = idx + 1;
-> +		break;
-
-
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p13:
-> +		if (idx > 0)
-> +			idx += 1;
-> +		irq_idx = idx + 1;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_2p23:
-> +		irq_idx = idx + 2;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p012:
-> +		irq_idx = idx;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p013:
-> +		if (idx > 1)
-> +			idx++;
-> +		irq_idx = idx;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p023:
-> +		if (idx > 0)
-> +			idx++;
-> +		irq_idx = idx;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_3p123:
-> +		irq_idx = idx + 1;
-> +		break;
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_4p:
-> +	case PCI_SUBDEVICE_ID_EFAR_PCI11414:
-> +		irq_idx = idx;
-> +		break;
-
-Try to make this entire switch-case more compact. It's possible.
-
-> +	}
-
-...
-
-> +	dev = &pdev->dev;
-
-You can do it in the definition block above, since we know that dev is always
-valid at this point.
-
-...
-
-> +	priv->membase = pcim_iomap(pdev, 0, 0);
-
-Never fails?
-
-...
-
-> +	for (i = 0; i < nr_ports; i++) {
-> +		if (num_vectors == 4)
-> +			pci1xxxx_irq_assign(priv, &uart, i);
-> +
-> +		rc = pci1xxxx_setup(priv, &uart, i);
-> +		if (rc) {
-> +			dev_warn(dev, "Failed to setup port %u\n", i);
-> +			break;
-
-If it's not a fatal error, why break? Don't you need to continue for the rest?
-Otherwise use
-
-	return dev_err_probe(...);
-
-pattern.
-
-> +		}
-> +		priv->line[i] = serial8250_register_8250_port(&uart);
-> +		if (priv->line[i] < 0) {
-> +			dev_err(dev,
-> +				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
-> +				uart.port.iobase, uart.port.irq,
-> +				uart.port.iotype, priv->line[i]);
-> +			break;
-
-Ditto.
-
-> +		}
-> +	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+John
