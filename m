@@ -2,39 +2,39 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA463C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 09:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31495C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 10:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239764AbiKQJcS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Nov 2022 04:32:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
+        id S232921AbiKQKAt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Nov 2022 05:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239778AbiKQJcO (ORCPT
+        with ESMTP id S231871AbiKQKAs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Nov 2022 04:32:14 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97C776149;
-        Thu, 17 Nov 2022 01:32:12 -0800 (PST)
+        Thu, 17 Nov 2022 05:00:48 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E15525C;
+        Thu, 17 Nov 2022 02:00:46 -0800 (PST)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1668677530;
+        s=2020; t=1668679244;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=iFIVJDRzYLM8JlLFrtE2EgsFESyY1Nn5OMC4RLGV2yY=;
-        b=iO+tJagEFHt9sg3fABlDdYAV9ylNd2aGmxyQcShKySENThGFArqJQ8hgUGOE+R4GBPMfkg
-        ImEl/eK0b6L/3MgkJEM2JaXlERewhhZemcHyk+o6A9rQxWGx4iKCWDl0X+Z/OVHiZNoYMx
-        3nrH9Qr5h6bw8fCufJv+zAYIZkMqQXDiIeyRpTCPIrphe5LW29+Bd5T18kmjvyN4K1DovK
-        vjQlkpgXI0+6G+E7K92dwR7/eoDunyq4Lu1Ual/ioE57tvDkwgVEuvKBlDtXSm/VNLTI50
-        FkVxBD8AANMCAw3eKLoEOYgAiY8DDLzoaZGqiO2uz+SlM6Di6wkpUm3d0aN9VQ==
+        bh=maOat5H9gR3gEndNJY08JL9PAhjiKE0EY6OpaWP1/04=;
+        b=RGSf5GbhYCWO2dgXgAK/4MemOTdiWzdlP2kHg1EY3iV82/jd6MD8qutFDOfZyP9AVki+J/
+        RJ3tnnq6qLSJqqLRr72tXKSu30sMmZ40MFaLZbHPv5iVTEioxdnQWXBGw2O5N8hagYae8C
+        eCB4colyFEdiZ5ue+ppMaKiDDXUTmIYbgrfRYPfZIInqUaDu9aBDcjuxngxWMw2cLoyVmy
+        YQbMsvPmhg8jJHFTlEbypw0KgTemn+F6bHK3dPe+RmIxFbhPe/VOto2MlBZj9l2nBJZypQ
+        8POBvrR40jv9J1kVauY3ttDgvETw6SrqQHB+svEGkXwXN5pZ5ACVmn4odhHzLw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1668677530;
+        s=2020e; t=1668679244;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=iFIVJDRzYLM8JlLFrtE2EgsFESyY1Nn5OMC4RLGV2yY=;
-        b=4rm3sbLF/dC1nwbgx05ZOnnr6IRULStcUsiZpVrNglmTpyFibpYbmeCw1oeyHc8QZtkC1B
-        XEAeOafHqjKRM1Bw==
+        bh=maOat5H9gR3gEndNJY08JL9PAhjiKE0EY6OpaWP1/04=;
+        b=OlNG+d1h/dgED4we7sPNyAacUdRGHP68b+yrWn7eSaSHsibUbUaAIusgf57rSNw5GtbQqm
+        6kHebCFDUDCB26Bw==
 To:     Doug Anderson <dianders@chromium.org>
 Cc:     Petr Mladek <pmladek@suse.com>,
         Sergey Senozhatsky <senozhatsky@chromium.org>,
@@ -46,68 +46,37 @@ Cc:     Petr Mladek <pmladek@suse.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v5 35/40] tty: serial: kgdboc: use srcu console
- list iterator
-In-Reply-To: <CAD=FV=WHEjpL1VYnLRp9Vy300Xd3Tu=u3MOo_rvHCABDTsQFPA@mail.gmail.com>
+Subject: Re: [PATCH printk v5 37/40] tty: serial: kgdboc: synchronize
+ tty_find_polling_driver() and register_console()
+In-Reply-To: <CAD=FV=WWZAAhw7rWjCvtqz6VGh-PzG_zMnugX_KkG7gZ+a9Qpw@mail.gmail.com>
 References: <20221116162152.193147-1-john.ogness@linutronix.de>
- <20221116162152.193147-36-john.ogness@linutronix.de>
- <CAD=FV=WHEjpL1VYnLRp9Vy300Xd3Tu=u3MOo_rvHCABDTsQFPA@mail.gmail.com>
-Date:   Thu, 17 Nov 2022 10:38:07 +0106
-Message-ID: <87tu2yncyw.fsf@jogness.linutronix.de>
+ <20221116162152.193147-38-john.ogness@linutronix.de>
+ <CAD=FV=WWZAAhw7rWjCvtqz6VGh-PzG_zMnugX_KkG7gZ+a9Qpw@mail.gmail.com>
+Date:   Thu, 17 Nov 2022 11:06:40 +0106
+Message-ID: <87pmdloq7r.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Doug,
-
 On 2022-11-16, Doug Anderson <dianders@chromium.org> wrote:
->> @@ -463,9 +464,14 @@ static void kgdboc_earlycon_pre_exp_handler(void)
->>          * serial drivers might be OK with this, print a warning once per
->>          * boot if we detect this case.
->>          */
->> -       for_each_console(con)
->> +       cookie = console_srcu_read_lock();
->> +       for_each_console_srcu(con) {
->>                 if (con == kgdboc_earlycon_io_ops.cons)
->> -                       return;
->> +                       break;
->> +       }
->> +       console_srcu_read_unlock(cookie);
->> +       if (con)
->> +               return;
->
-> Is there truly any guarantee that "con" will be NULL if
-> for_each_console_srcu() finishes naturally (AKA without a "break"
-> being executed)?
+> Seems OK to me, though I guess I would have moved console_lock() up
+> too just because this isn't a case we need to optimize and then we can
+> be extra certain that nobody else is messing with console structures
+> while we're looking at them.
 
-Right now it is true because @con becoming NULL is the exit criteria for
-the loop.
+Actually this series is not about optimization. It is about reducing the
+scope of console_lock and removing unnecessary use of it.
 
-> It looks as if currently this will be true but nothing in the comments
-> of for_each_console_srcu() nor hlist_for_each_entry_srcu() (which it
-> calls) guarantees this, right? It would be nice if that was
-> documented, but I guess it's not a huge deal.
+If tty_find_polling_driver() needs to be called under the console_lock,
+then we need to document exactly why. I could not find any situations
+where it is necessary.
 
-Yes, if it is frowned upon that the iterator is used outside the loop,
-it would be nice if the for_each macros explicitly provided some hints
-in their documentation.
-
-> Also: wasn't there just some big issue about people using loop
-> iteration variables after the loop finished?
->
-> https://lwn.net/Articles/885941/
-
-Thanks for referencing that article! Indeed if the macros are changed so
-that the iterator is defined in the loop, then code like this will
-break. But I would expect that making such macro changes will also
-require updating the call sites to avoid unused variables outside the
-loops. And then this code could receive the appropriate fixup.
-
-I feel like if I add extra code to guarantee a NULL without relying on
-the macro implementation, I'll get more resistance due to unnecessarily
-adding code and variables. But I may be wrong.
+Also keep in mind that in the long term we will be completely removing
+the console_lock. It is a painful process of identifying and dismantling
+its scope and replacing it with multiple clearly scoped locking
+mechanisms.
 
 > Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
