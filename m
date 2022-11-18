@@ -2,95 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F38B6C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 11:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C898EC4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 12:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235107AbiKRL56 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Nov 2022 06:57:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49880 "EHLO
+        id S241512AbiKRM0G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Nov 2022 07:26:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232495AbiKRL54 (ORCPT
+        with ESMTP id S229753AbiKRM0F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Nov 2022 06:57:56 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9322978185;
-        Fri, 18 Nov 2022 03:57:54 -0800 (PST)
+        Fri, 18 Nov 2022 07:26:05 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B516297096
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 04:26:03 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id w14so9025503wru.8
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 04:26:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1668772674; x=1700308674;
-  h=message-id:subject:from:to:cc:date:
-   content-transfer-encoding:mime-version;
-  bh=QIh1dsN6FNGfG4QOukreO86wpMqHHOp+PVH82+/U2Pc=;
-  b=cCZuycHkCdTAdepToZjznIArcdEmqFpGpjzsClzN9QpEW5wrPvCrR6P4
-   luso5iqvlTFCLbbaESljnRpeuFEn630Mg5BFMheMd+kFIoO/rzeFQgILQ
-   V+SZxgCH1e0thkAtKZoMdfiki8ECtv0ydFYm0PwSbK6oaNibXO+O9ozPE
-   wnJ775Ah+nGgDt+aY3DYL6xfw4tgxGdMxWvF33+U7TNSFymYe9Tq908xX
-   E1kTcEbvQcgtoXsoaXrA9Kmkf8HcrdECBE7QQ0zzeQPhoUhHxVrMTOsvy
-   MokndAWVA2c+ilpwg/3N+ztFazJ4rH3H8qcM5n8pPjaYoGb9JvdRrKM3W
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.96,174,1665439200"; 
-   d="scan'208";a="27447524"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 18 Nov 2022 12:57:52 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 18 Nov 2022 12:57:52 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 18 Nov 2022 12:57:52 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1668772672; x=1700308672;
-  h=message-id:subject:from:to:cc:date:
-   content-transfer-encoding:mime-version;
-  bh=QIh1dsN6FNGfG4QOukreO86wpMqHHOp+PVH82+/U2Pc=;
-  b=ntatMiEjZT3uLgqt6l1KSDyPPYrwrvbGuoZMK4twvWjhEjuC/nRsumVY
-   h7HpF+uC6LmgUVYNmuvb3vgPaYUsr+lzWvvLZCazX+Ob6aUmqaa3IAKWj
-   7c5yixB1yd8P8fWy/2btj7a+NExika6kApeu9ieSFAIhfxPh5D5HH9IGv
-   g51tTPGZeZ9Tq6wCMxeqkvb/3+O5x0eRKwF0fBATdsX1ioXBAt0xFtcsn
-   JW6+0wGI4GxDHQCx8vcWFH4kL4ryCU8yQ19eu1O0FaJHcnqlP/DQ6lcrS
-   FtBR8sXVg4JqbunOuhcZ6+OOJH1I56nBv/kgvYjLzy464mrmneopILKOj
-   A==;
-X-IronPort-AV: E=Sophos;i="5.96,174,1665439200"; 
-   d="scan'208";a="27447523"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 18 Nov 2022 12:57:52 +0100
-Received: from [192.168.2.129] (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 31339280056;
-        Fri, 18 Nov 2022 12:57:52 +0100 (CET)
-Message-ID: <f7cf39a9c152031a09608a68115e32988617f626.camel@ew.tq-group.com>
-Subject: 8250_omap: incorrect RS485 RTS on close during transmission
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ok8L9adaIF0+CzBKoz5waBpeT5nnReMM5+PgzYDBt80=;
+        b=f2Cb7dHTJjhqmL4nuB7JcTcfxgkO1h1jDsAs7KhIweoREnbOrExif0SmJwDzeODSOM
+         UodP8YI4ODyETCmk/nvSJUzWVG6hN/S4p+MR1IlkoPbQeSnlS5Bmv7LArfXnvs2lhh2m
+         MRQ3wNg+PjYnJHiPQ6Dn0JJmBZ3BEJr9YVrdkj13NzVmt7xCTQjkh2pa676vHgpGmqN7
+         YwwREFcM29537vlm/SDqIP948Z2zauJzalGMd65UuCUj3fKeLw/sN7Z/06GcKcANntWw
+         oiaEwyWx5/W5ycI6vmuZ1lkl5zssbA6nKU0UMHnFURL0BMYv/dUqznIluVc9phNAcfx0
+         Shbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ok8L9adaIF0+CzBKoz5waBpeT5nnReMM5+PgzYDBt80=;
+        b=dCZokW8KRMVOLsxMpNZwrBiuArewrBkpN88f1FGqU/+IBNa+MX06aXaAYsIvTrEySJ
+         iBGt/iGNUmqjT2/cWAKUbtyJdO3euYIxaSm4LuUzb9p8R5BUMsss0kqz9FywhIDQTvlN
+         CluNgwuxkBjGaW61HLVmXLJ1n3dNx9xDV/KSOyIu78Mmc5L0IkmOSzEaKxgGwY6zR+1a
+         Qip2MPSDeXleiBOIyYYcfM8nz2NFdSKjy+POW7cd36MhisJaYvr5dMVL3kqSmKYukl3d
+         ac5D4Glnf5DdND6+1owcD+MvD4BQlBxJEzx89ez8163zw33FVxslPruJ7v9SwA1XkXfr
+         Gi2g==
+X-Gm-Message-State: ANoB5pn4O80mVCd47t0o8GaLdG2LLj74sBp1AbM6wmf+JdnYtZHIOb4B
+        3h2/XRQcS3Dfj2MgcWFItT9w2w==
+X-Google-Smtp-Source: AA0mqf6r/e4h3ksywhJAWCbT8MHmcgbW2hMlFLWlgDP7ngu97nZVBRX+wWYL1Ps0MAi0xJ2u/N11WQ==
+X-Received: by 2002:adf:f805:0:b0:236:ef0b:68c5 with SMTP id s5-20020adff805000000b00236ef0b68c5mr4316485wrp.373.1668774362233;
+        Fri, 18 Nov 2022 04:26:02 -0800 (PST)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:b10c:1279:a704:75d4])
+        by smtp.gmail.com with ESMTPSA id f19-20020a05600c155300b003c6f3e5ba42sm9873958wmg.46.2022.11.18.04.26.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Nov 2022 04:26:01 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 18 Nov 2022 12:57:49 +0100
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4-0ubuntu1 
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH 00/15] serial: qcom-geni-serial: implement support for SE DMA
+Date:   Fri, 18 Nov 2022 13:25:24 +0100
+Message-Id: <20221118122539.384993-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Lukas,
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-I've discovered a new issue with EM485 in 8250_omap (and probably other
-serial drivers as well?): When closing the TTY device while there is
-still an ongoing transmission, the RTS pin will get stuck active until
-the TTY is opened again. This can be easily reproduced by running `cat
-/dev/zero > /dev/ttySx` and then stopping it using Ctrl-C.
+The goal of this series is to update the qcom-geni-serial driver to use
+the DMA mode of the QUPv3 serial engine. This is accomplished by the last
+patch in the series. The previous ones contain either various tweaks,
+reworks and refactoring or prepare the driver for adding DMA support.
 
-The issue exists in current mainline (6.1-rc5+), and applying "serial:
-8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()" from next
-doesn't solve it. I think it should work with "serial: 8250: 8250_omap:
-Support native RS485", but we also need RS485 on AM57xx CPUs, which
-don't have native RS485.
+More work will follow on the serial engine in order to reduce code
+redundancy among its users and add support for SE DMA to the qcom GENI
+SPI driver.
 
-I intend to look into this myself next week, but as you've worked on
-this code a lot lately, maybe you already have an idea how to fix it?
+Bartosz Golaszewski (15):
+  tty: serial: qcom-geni-serial: drop unneeded forward definitions
+  tty: serial: qcom-geni-serial: remove unused symbols
+  tty: serial: qcom-geni-serial: align #define values
+  tty: serial: qcom-geni-serial: simplify the to_dev_port() macro
+  tty: serial: qcom-geni-serial: remove stray newlines
+  tty: serial: qcom-geni-serial: refactor qcom_geni_serial_isr()
+  tty: serial: qcom-geni-serial: remove unneeded tabs
+  tty: serial: qcom-geni-serial: split out the FIFO tx code
+  tty: serial: qcom-geni-serial: drop the return value from handle_rx
+  tty: serial: qcom-geni-serial: use of_device_id data
+  tty: serial: qcom-geni-serial: stop operations in progress at shutdown
+  tty: serial: provide devm_uart_add_one_port()
+  tty: serial: qcom-geni-serial: use devres for uart port management
+  soc: qcom-geni-se: add more symbol definitions
+  tty: serial: qcom-geni-serial: add support for serial engine DMA
 
-Regards,
-Matthias
+ .../driver-api/driver-model/devres.rst        |   3 +
+ drivers/tty/serial/qcom_geni_serial.c         | 616 ++++++++++++------
+ drivers/tty/serial/serial_core.c              |  36 +
+ include/linux/qcom-geni-se.h                  |   3 +
+ include/linux/serial_core.h                   |   6 +
+ 5 files changed, 457 insertions(+), 207 deletions(-)
+
+-- 
+2.37.2
 
