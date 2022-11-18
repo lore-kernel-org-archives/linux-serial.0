@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B725C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 13:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11201C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 14:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241939AbiKRN6y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Nov 2022 08:58:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
+        id S240540AbiKROB7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Nov 2022 09:01:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241523AbiKRN6y (ORCPT
+        with ESMTP id S235301AbiKROB6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Nov 2022 08:58:54 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27196261;
-        Fri, 18 Nov 2022 05:58:52 -0800 (PST)
+        Fri, 18 Nov 2022 09:01:58 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2807673BA8;
+        Fri, 18 Nov 2022 06:01:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668779933; x=1700315933;
+  t=1668780118; x=1700316118;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=nShZpoZFoRHWgmSg5gh/suMCBijJSZAQGCwKIphVewU=;
-  b=ZzXyt/H28ZUXAx50wKeRUJFhbhAHANkj3EjrEUvrwcxHG/G+gkd8OvH9
-   Jnv8SV+Uv0sbMgM1xEnuL62fQ/hCziI/WFZsNuCeJQWQ6iNgRoUrS8uaR
-   GLfXCDSWbhwAZ0BjQIQsA3H6CdeScSFFV28odmT1rB5kfXqExTPjfRtJL
-   RgbCJfryb1hpCnf2Dd4V+HWi/nZicVSCZ5W1piHRPPGVX2pGzGDzFWZ7I
-   c+w3894D1ZXeprU6KN3J2dsYm+KoeTlXXn6Rplz7vEBolP00KRofHkRxy
-   zuiqUM+dhU9f3nPhTsNAEG9PwPxQ88FS7pk54yoVy0PxfqG1OdPS6pZ7d
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="375271128"
+  bh=i9fDX2RekVjnvoD7vP30rRVqChwZ1BAuiy9dcDgVax0=;
+  b=BMK0FHOV1yyOYJGwj2D0LEDkAKzc+4x3B+JBTklxcgS1pRzDadiJK+1u
+   PPxg9VmNwL59ZuKtJUAeHon7bN6hkZUBesmG9uF1t5alkrl5Ub0Tx3AzW
+   Sjec9ybgO3XnyF13kGMajSEhhcW7RgXOA3wDEMdRM7RK5zJ/Un10Jvg4w
+   VipWuFlA8bfIFq8yGIF0QaRMLrwHnQx3rv0j2/n0fc3DeiMliYMmr+LBs
+   C/UwtEeHOTeUOnEbOShik1sAZYg5HZvAy8Lj8pzIEGGHr++W9FwMSdzbT
+   CRY5ZqeL5Lk4JjEk0rWD0hEYg/ZCEMEmEfBhueWHRJMbjQ/64WTzlHBQ/
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="399426146"
 X-IronPort-AV: E=Sophos;i="5.96,174,1665471600"; 
-   d="scan'208";a="375271128"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 05:58:52 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="640217830"
+   d="scan'208";a="399426146"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 06:01:57 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10535"; a="729238337"
 X-IronPort-AV: E=Sophos;i="5.96,174,1665471600"; 
-   d="scan'208";a="640217830"
+   d="scan'208";a="729238337"
 Received: from amulyuko-mobl1.ccr.corp.intel.com ([10.252.35.83])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 05:58:49 -0800
-Date:   Fri, 18 Nov 2022 15:58:47 +0200 (EET)
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2022 06:01:54 -0800
+Date:   Fri, 18 Nov 2022 16:01:53 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Gabriel Somlo <gsomlo@gmail.com>
 cc:     LKML <linux-kernel@vger.kernel.org>,
@@ -48,13 +48,13 @@ cc:     LKML <linux-kernel@vger.kernel.org>,
         mholenko@antmicro.com, joel@jms.id.au,
         david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
         geert@linux-m68k.org
-Subject: Re: [PATCH v4 12/14] serial: liteuart: add IRQ support for the RX
+Subject: Re: [PATCH v4 13/14] serial: liteuart: add IRQ support for the TX
  path
-In-Reply-To: <20221116144908.234154-13-gsomlo@gmail.com>
-Message-ID: <6629539b-c5a7-4edc-7ab1-5c977f7319@linux.intel.com>
-References: <20221116144908.234154-1-gsomlo@gmail.com> <20221116144908.234154-13-gsomlo@gmail.com>
+In-Reply-To: <20221116144908.234154-14-gsomlo@gmail.com>
+Message-ID: <cf454524-7c38-76e3-61c9-7e2671cc2eb@linux.intel.com>
+References: <20221116144908.234154-1-gsomlo@gmail.com> <20221116144908.234154-14-gsomlo@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-651772109-1668779933=:3952"
+Content-Type: multipart/mixed; boundary="8323329-72002580-1668780118=:3952"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -62,175 +62,92 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-651772109-1668779933=:3952
+--8323329-72002580-1668780118=:3952
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Wed, 16 Nov 2022, Gabriel Somlo wrote:
 
-> Add support for IRQ-driven RX. Support for the TX path will be added
-> in a separate commit.
+> Switch the TX path to IRQ-driven operation, while maintaining support
+> for polling mode via the poll timer.
 > 
 > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
 > ---
 > 
 > Changes from v3:
->   - add shadow irq register to support polling mode and avoid reading
->     hardware mmio irq register to learn which irq flags are enabled
->     - this also simplifies both liteuart_interrupt() and liteuart_startup()
+>   - remove superfluous curly braces from liteuart_interrupt()
+>   - simplified [start|stop]_tx() by using shadow irq register from
+>     patch 12/14
+>   - simplified liteuart_tx_chars() by rebasing on top of tty-next tree
 > 
->  drivers/tty/serial/liteuart.c | 76 +++++++++++++++++++++++++++++++----
->  1 file changed, 69 insertions(+), 7 deletions(-)
+>  drivers/tty/serial/liteuart.c | 30 +++++++++++++-----------------
+>  1 file changed, 13 insertions(+), 17 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 8a6e176be08e..fad778578986 100644
+> index fad778578986..977fc4349b47 100644
 > --- a/drivers/tty/serial/liteuart.c
 > +++ b/drivers/tty/serial/liteuart.c
-> @@ -7,6 +7,7 @@
+> @@ -93,27 +93,12 @@ static void liteuart_update_irq_reg(struct uart_port *port, bool set, u8 mask)
 >  
->  #include <linux/bits.h>
->  #include <linux/console.h>
-> +#include <linux/interrupt.h>
->  #include <linux/litex.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> @@ -46,6 +47,7 @@ struct liteuart_port {
->  	struct uart_port port;
->  	struct timer_list timer;
->  	u32 id;
-> +	u8 irq_reg;
->  };
->  
->  #define to_liteuart_port(port)	container_of(port, struct liteuart_port, port)
-> @@ -76,6 +78,19 @@ static void liteuart_putchar(struct uart_port *port, unsigned char ch)
->  	litex_write8(port->membase + OFF_RXTX, ch);
->  }
->  
-> +static void liteuart_update_irq_reg(struct uart_port *port, bool set, u8 mask)
-> +{
-> +	struct liteuart_port *uart = to_liteuart_port(port);
-> +
-> +	if (set)
-> +		uart->irq_reg |= mask;
-> +	else
-> +		uart->irq_reg &= ~mask;
-> +
-> +	if (port->irq)
-> +		litex_write8(port->membase + OFF_EV_ENABLE, uart->irq_reg);
-> +}
-> +
 >  static void liteuart_stop_tx(struct uart_port *port)
 >  {
+> +	liteuart_update_irq_reg(port, false, EV_TX);
 >  }
-> @@ -129,13 +144,27 @@ static void liteuart_rx_chars(struct uart_port *port)
+>  
+>  static void liteuart_start_tx(struct uart_port *port)
+>  {
+> -	struct circ_buf *xmit = &port->state->xmit;
+> -	unsigned char ch;
+> -
+> -	if (unlikely(port->x_char)) {
+> -		litex_write8(port->membase + OFF_RXTX, port->x_char);
+> -		port->icount.tx++;
+> -		port->x_char = 0;
+> -	} else if (!uart_circ_empty(xmit)) {
+> -		while (xmit->head != xmit->tail) {
+> -			ch = xmit->buf[xmit->tail];
+> -			uart_xmit_advance(port, 1);
+> -			liteuart_putchar(port, ch);
+> -		}
+> -	}
+> -
+> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> -		uart_write_wakeup(port);
+> +	liteuart_update_irq_reg(port, true, EV_TX);
+>  }
+>  
+>  static void liteuart_stop_rx(struct uart_port *port)
+> @@ -144,6 +129,15 @@ static void liteuart_rx_chars(struct uart_port *port)
 >  	tty_flip_buffer_push(&port->state->port);
 >  }
 >  
-> +static irqreturn_t liteuart_interrupt(int irq, void *data)
+> +static void liteuart_tx_chars(struct uart_port *port)
 > +{
-> +	struct liteuart_port *uart = data;
-> +	struct uart_port *port = &uart->port;
-> +	u8 isr;
+> +	u8 ch;
 > +
-> +	spin_lock(&port->lock);
-> +	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
-> +	if (isr & EV_RX)
-> +		liteuart_rx_chars(port);
-> +	spin_unlock(&port->lock);
-> +
-> +	return IRQ_RETVAL(isr);
+> +	uart_port_tx(port, ch,
+> +		!litex_read8(port->membase + OFF_TXFULL),
+> +		litex_write8(port->membase + OFF_RXTX, ch));
 > +}
 > +
->  static void liteuart_timer(struct timer_list *t)
+>  static irqreturn_t liteuart_interrupt(int irq, void *data)
 >  {
->  	struct liteuart_port *uart = from_timer(uart, t, timer);
->  	struct uart_port *port = &uart->port;
+>  	struct liteuart_port *uart = data;
+> @@ -154,6 +148,8 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
+>  	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
+>  	if (isr & EV_RX)
+>  		liteuart_rx_chars(port);
+> +	if (isr & EV_TX)
+> +		liteuart_tx_chars(port);
+>  	spin_unlock(&port->lock);
 >  
-> -	liteuart_rx_chars(port);
-> -
-> +	liteuart_interrupt(0, port);
->  	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
->  }
->  
-> @@ -161,19 +190,45 @@ static unsigned int liteuart_get_mctrl(struct uart_port *port)
->  static int liteuart_startup(struct uart_port *port)
->  {
->  	struct liteuart_port *uart = to_liteuart_port(port);
-> +	unsigned long flags;
-> +	int ret;
->  
-> -	/* disable events */
-> -	litex_write8(port->membase + OFF_EV_ENABLE, 0);
-> +	if (port->irq) {
-> +		ret = request_irq(port->irq, liteuart_interrupt, 0,
-> +				  KBUILD_MODNAME, uart);
-> +		if (ret) {
-> +			pr_err(pr_fmt("line %d irq %d failed: using polling\n"),
-> +				port->line, port->irq);
+>  	return IRQ_RETVAL(isr);
 
-dev_err() seems more appropriate here.
-
-> +			port->irq = 0;
-> +		}
-> +	}
->  
-> -	/* prepare timer for polling */
-> -	timer_setup(&uart->timer, liteuart_timer, 0);
-> -	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	/* only enabling rx irqs during startup */
-> +	liteuart_update_irq_reg(port, true, EV_RX);
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
-> +	if (!port->irq) {
-> +		timer_setup(&uart->timer, liteuart_timer, 0);
-> +		mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-> +	}
->  
->  	return 0;
->  }
->  
->  static void liteuart_shutdown(struct uart_port *port)
->  {
-> +	struct liteuart_port *uart = to_liteuart_port(port);
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	liteuart_update_irq_reg(port, false, EV_RX | EV_TX);
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
-> +	if (port->irq)
-> +		free_irq(port->irq, port);
-> +	else
-> +		del_timer_sync(&uart->timer);
->  }
->  
->  static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
-> @@ -262,6 +317,13 @@ static int liteuart_probe(struct platform_device *pdev)
->  		goto err_erase_id;
->  	}
->  
-> +	/* get irq */
-
-This comment is unnecessary.
-
-Other than that,
+Looks very clean now with uart_port_tx(), thanks.
 
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
 
-
-> +	ret = platform_get_irq_optional(pdev, 0);
-> +	if (ret < 0 && ret != -ENXIO)
-> +		return ret;
-> +	if (ret > 0)
-> +		port->irq = ret;
-> +
->  	/* values not from device tree */
->  	port->dev = &pdev->dev;
->  	port->iotype = UPIO_MEM;
-> 
-
---8323329-651772109-1668779933=:3952--
+--8323329-72002580-1668780118=:3952--
