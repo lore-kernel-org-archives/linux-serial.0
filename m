@@ -2,96 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5276C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Nov 2022 21:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C3BC4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 08:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239958AbiKQVKx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Nov 2022 16:10:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        id S241002AbiKRI27 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Nov 2022 03:28:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234966AbiKQVKq (ORCPT
+        with ESMTP id S241369AbiKRI2d (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Nov 2022 16:10:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EAC6150A;
-        Thu, 17 Nov 2022 13:10:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F31562244;
-        Thu, 17 Nov 2022 21:10:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBA0C433C1;
-        Thu, 17 Nov 2022 21:10:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1668719444;
-        bh=ulKbmepQK2sAIKuchll7WMs+rDidt3FKe8fmmwtt6s8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k8+kfEk3B3ssl4EvyEo1GW3Z2mOYWxTH55YHPOQKlqmYDMxH/nGwWKJEAiG2XfXjg
-         OkPXL+bmeW+UBvXubzHmfuISoZPKNycGxUWPfA9UWeXaMgp6Fp912yy02rJMUWRVXZ
-         ZxwSH7XqcSYfDZpmraTGVz2hhBFeSSpFP5zfWQpM=
-Date:   Thu, 17 Nov 2022 22:10:31 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     delisun <delisun@pateo.com.cn>
-Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: pl011: Do not clear RX FIFO & RX interrupt in
- unthrottle.
-Message-ID: <Y3ajR/S/wcQMvXQ2@kroah.com>
-References: <20221109105822.332011-1-delisun@pateo.com.cn>
+        Fri, 18 Nov 2022 03:28:33 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE461011
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 00:28:24 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id x21so5856460ljg.10
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 00:28:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MrA5CDs46lQZm6VaAVmPmV1Nyk9XIySNq9lvhXdo7k8=;
+        b=yIT6wd8Tn/4EigMdSev3RTx1dShvONUZ1o2LJic5y3UzW8LgMuG7uFp80Y8Mw7p+2i
+         u+Hx+MWiciMmXSYnrFx98cxa4sbmSAURAUt99p8E3r2tMmF0ygoLGxcFQPJrif3jPMLj
+         y0DxRVohO6j383Jju+uqZkJFVPAKCT7G1d+SNz0aRrDl59ec+iH3SvLunNJnRAN3fFHp
+         uj/yuz8SV/cGRRKi6lGP5BHU+Y9YeVlbn5zwGo+B4clkg1nQfYqsfFdJXz60NiVE7C5x
+         xoWYk/DHjlYtipany3Ms311spap+ZgR86DO9tnSirVslPkUYj7drcMZpd/Ds56w7qUSX
+         eO2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MrA5CDs46lQZm6VaAVmPmV1Nyk9XIySNq9lvhXdo7k8=;
+        b=tFdr1RTn4VHVEVprxenvrx7Hz6yyVfmWU3WHCY2NtLBgm7sFSOzVIEzsOwwKB/M/u5
+         E/Ec4h2cbYEpWjP0iEVXFM8BVFPtG0kVDKC/9Vp+ToeIZdmMuRtXEcNPo6E6uHx5ayL8
+         VMVp49eXvBi4mDnQgNnrj/n0w5LnWN7IrbS1szRDzlR9VLeKEfhf/f+fBV1Ghva+iobj
+         5YoSzHShdCkgR6iAp2skkgDG0PqZaui9JE/MHnpcoB5Eq8qiX1e6oIRaeQ7nnB6/gURp
+         RZDh1PaH1noiVp85AaJ/TxYvFPsgjZz3j5fzhM18WC+pspzSS9+4BI6Rn0Js1mKLudXD
+         n/qw==
+X-Gm-Message-State: ANoB5pkBoKUrpHUuARryX347WTZF5+ivzRpED/R6OAA7IRgUNPohA85i
+        ZTW/Lb7gpBcP3wnzDvWWsRqL1A==
+X-Google-Smtp-Source: AA0mqf4FSTsj7jWLGFDuUM1KolU0pAAAlYx7n+VRF6tfHUnjgf3Tz4kJo9qfndGCbN01BGn3foVCSQ==
+X-Received: by 2002:a2e:9052:0:b0:26e:eeb:f9cf with SMTP id n18-20020a2e9052000000b0026e0eebf9cfmr2211769ljg.480.1668760070041;
+        Fri, 18 Nov 2022 00:27:50 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id g27-20020a2eb0db000000b0026bf0d71b1esm573326ljl.93.2022.11.18.00.27.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Nov 2022 00:27:49 -0800 (PST)
+Message-ID: <06ac1c86-22f7-97ff-bf59-6fb0994dfcc5@linaro.org>
+Date:   Fri, 18 Nov 2022 09:27:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109105822.332011-1-delisun@pateo.com.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC PATCH 1/9] dt-bindings: drop redundant part of title of
+ shared bindings
+Content-Language: en-US
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-watchdog@vger.kernel.org
+References: <20221117123850.368213-1-krzysztof.kozlowski@linaro.org>
+ <20221117123850.368213-2-krzysztof.kozlowski@linaro.org>
+ <Y3Z0w6JH1f5zgwvW@spud>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Y3Z0w6JH1f5zgwvW@spud>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 09, 2022 at 06:58:22PM +0800, delisun wrote:
-> Clearing the RX FIFO will cause data loss.
-> Copy the pl011_enabl_interrupts implementation, and remove the clear
-> interrupt and FIFO part of the code.
-> 
-> Signed-off-by: delisun <delisun@pateo.com.cn>
-> ---
->  drivers/tty/serial/amba-pl011.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 5cdced39eafd..08034e5dcec0 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1828,8 +1828,17 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
->  static void pl011_unthrottle_rx(struct uart_port *port)
->  {
->  	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
-> +	unsigned long flags;
->  
-> -	pl011_enable_interrupts(uap);
-> +	spin_lock_irqsave(&uap->port.lock, flags);
-> +
-> +	uap->im = UART011_RTIM;
-> +	if (!pl011_dma_rx_running(uap))
-> +		uap->im |= UART011_RXIM;
-> +
-> +	pl011_write(uap->im, uap, REG_IMSC);
-> +
-> +	spin_unlock_irqrestore(&uap->port.lock, flags);
->  }
->  
->  static int pl011_startup(struct uart_port *port)
-> -- 
-> 2.25.1
+On 17/11/2022 18:52, Conor Dooley wrote:
+> On Thu, Nov 17, 2022 at 01:38:42PM +0100, Krzysztof Kozlowski wrote:
+>> The Devicetree bindings document does not have to say in the title that
+>> it is a "binding", but instead just describe the hardware.  For shared
+>> (re-usable) schemas, name them all as "common properties".
 > 
 > 
+>> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+>> index 1ab416c83c8d..d2de3d128b73 100644
+>> --- a/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+>> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
+>> @@ -4,7 +4,7 @@
+>>  $id: http://devicetree.org/schemas/clock/qcom,gcc.yaml#
+>>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>>  
+>> -title: Qualcomm Global Clock & Reset Controller Common Bindings
+>> +title: Qualcomm Global Clock & Reset Controller common parts
+>>  
+>>  maintainers:
+>>    - Stephen Boyd <sboyd@kernel.org>
 > 
+> 
+>> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+>> index cf9c2f7bddc2..20ac432dc683 100644
+>> --- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+>> +++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+>> @@ -4,7 +4,7 @@
+>>  $id: http://devicetree.org/schemas/opp/opp-v2-base.yaml#
+>>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>>  
+>> -title: Generic OPP (Operating Performance Points) Common Binding
+>> +title: Generic OPP (Operating Performance Points) common parts
+>>  
+>>  maintainers:
+>>    - Viresh Kumar <viresh.kumar@linaro.org>
+> 
+> Hey Krzysztof,
+> 
+> Hopefully I've not overlooked something obvious, but it wasnt noted in
+> the commit message - how come these two are "parts" rather than
+> "properties"? The opp one at least don't seem to have much more than
+> properties and patterProperties in it.
 
-How was this tested?
+They should be properties, will fix in v2.
 
-What commit id does this fix?
 
-And your email is showing up as unvalidated, please fix your email
-infrastructure to properly verify messages.
+Best regards,
+Krzysztof
 
-thanks,
-
-greg k-h
