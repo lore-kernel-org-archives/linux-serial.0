@@ -2,61 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A330DC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 13:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F101C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 13:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242061AbiKRNce (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Nov 2022 08:32:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
+        id S242240AbiKRNhs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Nov 2022 08:37:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242062AbiKRNcL (ORCPT
+        with ESMTP id S242079AbiKRNh0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Nov 2022 08:32:11 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0418EB40
-        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 05:31:55 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id t10so6849078ljj.0
-        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 05:31:55 -0800 (PST)
+        Fri, 18 Nov 2022 08:37:26 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64CE92098
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 05:35:27 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id c1so8225377lfi.7
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 05:35:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
          :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B8FY88gPwALYD33m6JUThwNzG/UMY8VcHLNAEQsYy/g=;
-        b=vcfyEQQ9KtiVVsvm8Q1+i8HI5RzNo91thvAvlL5R+/I0TaSgqVJjdoWVLZrbgBEIru
-         yZjNuSsp6USKzq94j0/c5ykSWxMyLnJbiQlGdPh9YNlHzl8ms4cT5g26qf/WVWkgJJ2V
-         7wBJaKLsG+KBlbk8K2rcJwm28HaX5vploo8kZUGvzvOpTnZiVIc66/zKU4OdJ3E2sdXo
-         Ea/2eQ2a6rTZ2bGyDEL7+NtJKYMyuiK4RI/mFb+v3az8QZFipjuxRUXXX6JdpizNYGZJ
-         uUD8xatAwMgEMQEMEba5CM16AeNk1Cmj8zWQ9Wr6ab24c3XSzDzHwRkDXn79fJkIAPgJ
-         2l4g==
+        bh=qj8yYZOqVCaFgmChHFtZrXYgiAp7+fvIrrm4iXS1zLs=;
+        b=tfXgrddhNWtrKuF/6cMrvFuQcfLeciFVqSMUXBagxnkHYIXa2/xIzMOsXzUaFTuK3B
+         clhVRgtmEkd1eMfTYDhNv4xE5aJ+2CncWk/l9erqyLhBLFqflic7Eg5AzdZjSWNTaFed
+         /fIygYOOJ9X3SEDeRtV1QhSI0VKWF0vmiIhaAjxKRgfuW67AyN4ybWOpPZEBQAJoGlcr
+         wTCYUU/ozs2PUu2LBJR4sVymfuXHytSaW80RLKDEHjzGgGTZrJsXFFhjjFSGiVlSMGjV
+         fuQ3EosdU6OwhDIl+XZR23BcE/jr4lwHZ6vd/qvJDlU80Y2pKfDxhc6E9EJKeo++ZznA
+         R30A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
          :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=B8FY88gPwALYD33m6JUThwNzG/UMY8VcHLNAEQsYy/g=;
-        b=3nlGy+HZkZoagOYrJBhlIx0gQimSjgITD+G+vMEdxjuLHs7sZGvRvnhXLI1yM2iG+x
-         hexbCVh1ZPWBm4IXbRY5gciHNt6OcnisDeCk3u4u1TTspQ68b+g4i02rxgkwe/LbvcjR
-         aMmGdTh67TPjvgwY8yKDgK8KDP0fCYoKJ+WXuaCQV6ZqAjM+ysb2JS8dgHSqwoVnKntO
-         DCLcmrJ8uqlA8C1Nq4YGERjEw5Nyj0Sj5BfYcF4Cll2vVerrt7uXvhV6tKect7DijSr0
-         NSxRagkKxc9/0Z0YC3dRPuQdfl4yLHSyZik/X0Tc1CrHDiUrAWwUWjGW0G/k+9CUsAwU
-         uXWg==
-X-Gm-Message-State: ANoB5pkKwPrzYB+xyVJbKX766DjtafGl2z8hK5r+awRRewTCgvreX3gk
-        lTcfm4vosVWS/ypVxiHHameMQQ==
-X-Google-Smtp-Source: AA0mqf7ve3KIF1vM/6XJ5J4l8FtgRNpQ5LKI1R4fwJD37X4+/lqzl3nSwbur6KowSiWz6PfeOysjUA==
-X-Received: by 2002:a2e:a889:0:b0:26d:cf5f:6a22 with SMTP id m9-20020a2ea889000000b0026dcf5f6a22mr2383342ljq.508.1668778315129;
-        Fri, 18 Nov 2022 05:31:55 -0800 (PST)
+        bh=qj8yYZOqVCaFgmChHFtZrXYgiAp7+fvIrrm4iXS1zLs=;
+        b=rguUUbjeHAXyjvmQeDS8exkf1vfd8neiRWa6BpKkyW1IvWHhkhEq5NSb62ez6d5y4n
+         KOLa6wivrxdBGVoT1GF8hB8WSt6BJUeZmvXFlNUdZ0Lt7YlDWOGyI+qEOik9yJy+++xH
+         pmcQlp5/uZ5A+VgDZEj6fAhIuHlbWvoE1cysHdEoXhGbpwV8o1llYpXRYYMbl+Uz/KyI
+         zZQBprKRTuuQRYL+jqzi8G+H97eFfOq+biaMQ9uOG0KGUtMXuvOpDNpULuY3c/vAjMA8
+         5u/26gxj+cShE07r5qA0TkKLpahDFrFpJSPvOrp0Oac9QFyghXPAASteurOn08FBH/9c
+         xrNg==
+X-Gm-Message-State: ANoB5plXq3E/74Dh2F6DEbGRNDi/oSt9XPtc1HPcDpU10cspW95yzmlP
+        dof9irRaazxcgq3cogE6NbbZWQ==
+X-Google-Smtp-Source: AA0mqf6Ck/17r9Fqp2PsZX2kvXmYiBzUiRUecnEXFKbfah4OEG0WAWVfd+Pgdi6y+cQgbJdxD0mvnw==
+X-Received: by 2002:a05:6512:2986:b0:4a4:2967:78eb with SMTP id du6-20020a056512298600b004a4296778ebmr2386104lfb.222.1668778526006;
+        Fri, 18 Nov 2022 05:35:26 -0800 (PST)
 Received: from [192.168.31.208] ([194.29.137.22])
-        by smtp.gmail.com with ESMTPSA id s15-20020a056512214f00b004a8b9c68735sm659057lfr.102.2022.11.18.05.31.54
+        by smtp.gmail.com with ESMTPSA id l6-20020a19c206000000b004a4754c5db5sm658815lfc.244.2022.11.18.05.35.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Nov 2022 05:31:54 -0800 (PST)
-Message-ID: <208a663b-c2b2-d5a8-9eec-62f9a692c6c7@linaro.org>
-Date:   Fri, 18 Nov 2022 14:31:53 +0100
+        Fri, 18 Nov 2022 05:35:25 -0800 (PST)
+Message-ID: <416d2d7f-f0b7-87e1-c987-fd78efda7091@linaro.org>
+Date:   Fri, 18 Nov 2022 14:35:24 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [PATCH 11/15] tty: serial: qcom-geni-serial: stop operations in
- progress at shutdown
+Subject: Re: [PATCH 14/15] soc: qcom-geni-se: add more symbol definitions
 To:     Bartosz Golaszewski <brgl@bgdev.pl>,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -68,9 +67,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 References: <20221118122539.384993-1-brgl@bgdev.pl>
- <20221118122539.384993-12-brgl@bgdev.pl>
+ <20221118122539.384993-15-brgl@bgdev.pl>
 From:   Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20221118122539.384993-12-brgl@bgdev.pl>
+In-Reply-To: <20221118122539.384993-15-brgl@bgdev.pl>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -82,28 +81,37 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On 18/11/2022 13:25, Bartosz Golaszewski wrote:
 > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> We don't stop transmissions in progress at shutdown. This is fine with
-> FIFO SE mode but with DMA it causes trouble so fix it now.
+> The following symbols will be used when adding support for SE DMA in
+> the qcom geni serial driver.
 > 
 > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > ---
+You might have added them along with the new users, but still:
+
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
 Konrad
->   drivers/tty/serial/qcom_geni_serial.c | 3 +++
+>   include/linux/qcom-geni-se.h | 3 +++
 >   1 file changed, 3 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 6a9f3f937f29..091b8f277a04 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -868,6 +868,9 @@ static void get_tx_fifo_size(struct qcom_geni_serial_port *port)
->   
->   static void qcom_geni_serial_shutdown(struct uart_port *uport)
->   {
-> +	qcom_geni_serial_stop_tx(uport);
-> +	qcom_geni_serial_stop_rx(uport);
-> +
->   	disable_irq(uport->irq);
->   }
->   
+> diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+> index f5672785c0c4..400213daa461 100644
+> --- a/include/linux/qcom-geni-se.h
+> +++ b/include/linux/qcom-geni-se.h
+> @@ -103,6 +103,7 @@ struct geni_se {
+>   #define SE_DMA_TX_FSM_RST		0xc58
+>   #define SE_DMA_RX_IRQ_STAT		0xd40
+>   #define SE_DMA_RX_IRQ_CLR		0xd44
+> +#define SE_DMA_RX_LEN_IN		0xd54
+>   #define SE_DMA_RX_FSM_RST		0xd58
+>   #define SE_HW_PARAM_0			0xe24
+>   #define SE_HW_PARAM_1			0xe28
+> @@ -235,6 +236,8 @@ struct geni_se {
+>   #define RX_SBE				BIT(2)
+>   #define RX_RESET_DONE			BIT(3)
+>   #define RX_FLUSH_DONE			BIT(4)
+> +#define RX_DMA_PARITY_ERR		BIT(5)
+> +#define RX_DMA_BREAK			GENMASK(8, 7)
+>   #define RX_GENI_GP_IRQ			GENMASK(10, 5)
+>   #define RX_GENI_CANCEL_IRQ		BIT(11)
+>   #define RX_GENI_GP_IRQ_EXT		GENMASK(13, 12)
