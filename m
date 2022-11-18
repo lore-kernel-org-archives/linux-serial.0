@@ -2,71 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86961C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 20:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB91C4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 19 Nov 2022 00:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiKRUVO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Nov 2022 15:21:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
+        id S232971AbiKSAkG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Nov 2022 19:40:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232054AbiKRUVH (ORCPT
+        with ESMTP id S232630AbiKSAjE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Nov 2022 15:21:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4094FF9B;
-        Fri, 18 Nov 2022 12:21:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A07C162766;
-        Fri, 18 Nov 2022 20:21:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FBD3C43470;
-        Fri, 18 Nov 2022 20:21:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668802865;
-        bh=DWsLD693n2wIbo21lAMAjKLSUP38xOhJOadCauauLbU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=XHdGlGKtGYjFolVERlzAfWHDRUpGrId8RzgnpAqIPceiWMALzf6PTt0GMYRO61ekQ
-         XWuUOEfgsQPUUVXxlpis4H9gSp0RcMVDWDU10yqtUN8EjpXS7bfCpN8sY79d128UBg
-         p2Yuz9LiW3ERR5i3s20J6exLjTbLVRKe4nA9T+1GnwRtMctSNFo9oazClCZzPLgL1L
-         Kg2yFSSlAI79dsK2FKkMUWeJjpUgJIV4i3uyevuHTrV73NUY/RiTrOi4yLxa3jN4Q3
-         EloL9JzP4j2Uq3nCGWPCOzUiiAbN27Nx3CDEVisgboNpDQ3lDnPZso1aFgNFeTdxmd
-         MSON0QJip9bqw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F1F7AC395F3;
-        Fri, 18 Nov 2022 20:21:04 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.1-rc6
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Y3fJy1m1WHFAO05t@kroah.com>
-References: <Y3fJy1m1WHFAO05t@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Y3fJy1m1WHFAO05t@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc6
-X-PR-Tracked-Commit-Id: 3ec17cb325ac731c2211e13f7eaa4b812694e218
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 09389357e9667be17699b1889134fb7524dc31ba
-Message-Id: <166880286498.9331.16951401045690432121.pr-tracker-bot@kernel.org>
-Date:   Fri, 18 Nov 2022 20:21:04 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Fri, 18 Nov 2022 19:39:04 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A27C78F6
+        for <linux-serial@vger.kernel.org>; Fri, 18 Nov 2022 15:44:21 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1owA9h-0005GQ-GO; Fri, 18 Nov 2022 23:48:17 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1owA9e-0058rl-B2; Fri, 18 Nov 2022 23:48:15 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1owA9d-0000Ty-Sg; Fri, 18 Nov 2022 23:48:13 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Grant Likely <grant.likely@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-i2c@vger.kernel.org, kernel@pengutronix.de,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 571/606] serial: sc16is7xx: Convert to i2c's .probe_new()
+Date:   Fri, 18 Nov 2022 23:45:05 +0100
+Message-Id: <20221118224540.619276-572-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
+References: <20221118224540.619276-1-uwe@kleine-koenig.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Fri, 18 Nov 2022 19:07:07 +0100:
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc6
+.probe_new() doesn't get the i2c_device_id * parameter, so determine
+that explicitly in the probe function.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/09389357e9667be17699b1889134fb7524dc31ba
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/sc16is7xx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 39f92eb1e698..8412b25eac86 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1665,9 +1665,9 @@ MODULE_ALIAS("spi:sc16is7xx");
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+-static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+-			       const struct i2c_device_id *id)
++static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
+ {
++	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
+ 	const struct sc16is7xx_devtype *devtype;
+ 	struct regmap *regmap;
+ 
+@@ -1708,7 +1708,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+ 		.name		= SC16IS7XX_NAME,
+ 		.of_match_table	= sc16is7xx_dt_ids,
+ 	},
+-	.probe		= sc16is7xx_i2c_probe,
++	.probe_new	= sc16is7xx_i2c_probe,
+ 	.remove		= sc16is7xx_i2c_remove,
+ 	.id_table	= sc16is7xx_i2c_id_table,
+ };
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.38.1
+
