@@ -2,117 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087D6C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 18:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86961C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Nov 2022 20:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234351AbiKRSHO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Nov 2022 13:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
+        id S231879AbiKRUVO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Nov 2022 15:21:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235350AbiKRSHN (ORCPT
+        with ESMTP id S232054AbiKRUVH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Nov 2022 13:07:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD557A34E;
-        Fri, 18 Nov 2022 10:07:12 -0800 (PST)
+        Fri, 18 Nov 2022 15:21:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4094FF9B;
+        Fri, 18 Nov 2022 12:21:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78525B824E8;
-        Fri, 18 Nov 2022 18:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED03DC433C1;
-        Fri, 18 Nov 2022 18:07:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1668794830;
-        bh=JRgQbEpZ0RMwp2uvvwWa6pDC/KPMoVxtfGmsL0D4kqw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=E27fsi49wTCfdVZwbEGB1YdksFqgHCF6a7kDMML0Ct+fjdR1Gp51qEDSdadJLrR5K
-         DBfA0svoOx/IrdnvRAIvQPUl6om9hJzQuBjgC81y8J63k4pamBZLD1d1cFHJHO26PZ
-         NOMeBh4TetcaUhdkyY3PnXLBXHAlJJak3L4FrkDM=
-Date:   Fri, 18 Nov 2022 19:07:07 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A07C162766;
+        Fri, 18 Nov 2022 20:21:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FBD3C43470;
+        Fri, 18 Nov 2022 20:21:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668802865;
+        bh=DWsLD693n2wIbo21lAMAjKLSUP38xOhJOadCauauLbU=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=XHdGlGKtGYjFolVERlzAfWHDRUpGrId8RzgnpAqIPceiWMALzf6PTt0GMYRO61ekQ
+         XWuUOEfgsQPUUVXxlpis4H9gSp0RcMVDWDU10yqtUN8EjpXS7bfCpN8sY79d128UBg
+         p2Yuz9LiW3ERR5i3s20J6exLjTbLVRKe4nA9T+1GnwRtMctSNFo9oazClCZzPLgL1L
+         Kg2yFSSlAI79dsK2FKkMUWeJjpUgJIV4i3uyevuHTrV73NUY/RiTrOi4yLxa3jN4Q3
+         EloL9JzP4j2Uq3nCGWPCOzUiiAbN27Nx3CDEVisgboNpDQ3lDnPZso1aFgNFeTdxmd
+         MSON0QJip9bqw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F1F7AC395F3;
+        Fri, 18 Nov 2022 20:21:04 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.1-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Y3fJy1m1WHFAO05t@kroah.com>
+References: <Y3fJy1m1WHFAO05t@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Y3fJy1m1WHFAO05t@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc6
+X-PR-Tracked-Commit-Id: 3ec17cb325ac731c2211e13f7eaa4b812694e218
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 09389357e9667be17699b1889134fb7524dc31ba
+Message-Id: <166880286498.9331.16951401045690432121.pr-tracker-bot@kernel.org>
+Date:   Fri, 18 Nov 2022 20:21:04 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 6.1-rc6
-Message-ID: <Y3fJy1m1WHFAO05t@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 30a0b95b1335e12efef89dd78518ed3e4a71a763:
+The pull request you sent on Fri, 18 Nov 2022 19:07:07 +0100:
 
-  Linux 6.1-rc3 (2022-10-30 15:19:28 -0700)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc6
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/09389357e9667be17699b1889134fb7524dc31ba
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.1-rc6
+Thank you!
 
-for you to fetch changes up to 3ec17cb325ac731c2211e13f7eaa4b812694e218:
-
-  docs/driver-api/miscellaneous: Remove kernel-doc of serial_core.c (2022-11-09 14:56:05 +0100)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 6.1-rc6
-
-Here are a number of small tty and serial driver fixes for 6.1-rc6.
-They all resolve reported problems:
-	- kernel doc build problems with the -rc1 serial driver
-	  documentation update
-	- n_gsm reported problems
-	- imx serial driver missing callback
-	- lots of tiny 8250 driver fixes for reported issues.
-
-All of these have been in linux-next for over a week with no reported
-problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Akira Yokosawa (1):
-      docs/driver-api/miscellaneous: Remove kernel-doc of serial_core.c
-
-Duoming Zhou (1):
-      tty: n_gsm: fix sleep-in-atomic-context bug in gsm_control_send
-
-Fedor Pchelkin (2):
-      Revert "tty: n_gsm: avoid call of sleeping functions from atomic context"
-      Revert "tty: n_gsm: replace kicktimer with delayed_work"
-
-Ilpo Järvinen (4):
-      serial: 8250: Fall back to non-DMA Rx if IIR_RDI occurs
-      serial: 8250_lpss: Configure DMA also w/o DMA filter
-      serial: 8250_lpss: Use 16B DMA burst with Elkhart Lake
-      serial: 8250: Flush DMA Rx on RLSI
-
-Lukas Wunner (1):
-      serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()
-
-Matthias Schiffer (1):
-      serial: 8250_omap: remove wait loop from Errata i202 workaround
-
-Shawn Guo (1):
-      serial: imx: Add missing .thaw_noirq hook
-
-Sherry Sun (1):
-      tty: serial: fsl_lpuart: don't break the on-going transfer when global reset
-
-Tony Lindgren (3):
-      serial: 8250: omap: Fix missing PM runtime calls for omap8250_set_mctrl()
-      serial: 8250: omap: Fix unpaired pm_runtime_put_sync() in omap8250_remove()
-      serial: 8250: omap: Flush PM QOS work on remove
-
- Documentation/driver-api/miscellaneous.rst |  5 +-
- drivers/tty/n_gsm.c                        | 71 +++++++++++++++-------------
- drivers/tty/serial/8250/8250_lpss.c        | 17 +++++--
- drivers/tty/serial/8250/8250_omap.c        | 52 +++++++++++---------
- drivers/tty/serial/8250/8250_port.c        |  7 ++-
- drivers/tty/serial/fsl_lpuart.c            | 76 +++++++++++++++++++-----------
- drivers/tty/serial/imx.c                   |  1 +
- 7 files changed, 138 insertions(+), 91 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
