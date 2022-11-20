@@ -2,45 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57671C433FE
-	for <linux-serial@archiver.kernel.org>; Sun, 20 Nov 2022 11:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25664C4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 20 Nov 2022 14:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbiKTL7N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 20 Nov 2022 06:59:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
+        id S229675AbiKTO2N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 20 Nov 2022 09:28:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiKTL7M (ORCPT
+        with ESMTP id S229645AbiKTO2N (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 20 Nov 2022 06:59:12 -0500
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C935F01A;
-        Sun, 20 Nov 2022 03:59:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1668945543; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=GCQgfecM5oAjOLyUsRLj0KQKxUlftJFFpZ9/PI/AMTRTJwZ+uU+GfQvLWsbs+7OsFg4HX7ofavWdS1J/B/R1jIgOUbE3ZBhQsZbwac1FzpLBahOycc3sy082tMwsr9DxdElq5VVO5Wok2Q+UXrRYlYzPDuWEZaCRJNJm8svQizY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1668945543; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=j3d00nupHhCdWjEL+0yMBXb36kiHshGZbkXiymHzukk=; 
-        b=PjNrvgEkHL/CJ5pm4RLCir3iYrXoX8NjblTxLmCbsIqexedZb0iaskoM6NyEO+aJYb3/xjAmT6Wa3kpNMs7Dr4e6x1c7W/VDKP5OHTSBE7KARZ6wCKPpiYy92kHbFhCM0VZEgOke567tSgo9NbW6LR9KvyrZPwLffTNza4GhCVc=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1668945543;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:MIME-Version:Message-Id:Reply-To;
-        bh=j3d00nupHhCdWjEL+0yMBXb36kiHshGZbkXiymHzukk=;
-        b=H+3stPwG61N+OKqbRYL3nbNsfkqi3Ik6fsJFepLJnyiddtZbVCMiZPx5MEvLSzyo
-        KQJJX3A9Lrd4bb2iFajAWFTd0d/bw54a+kHSVOavmH0SyDfPJH3UmGTCgifsWonS+dB
-        Ka8vTcKkic3J3LegfrgPybmm2Uo6GRKxH26mgzJ4=
-Received: from edelgard.fodlan.icenowy.me (112.94.100.29 [112.94.100.29]) by mx.zohomail.com
-        with SMTPS id 1668945542045893.9487348701042; Sun, 20 Nov 2022 03:59:02 -0800 (PST)
-Message-ID: <32ffd3f857ce9c08462ce8a7b2e40871c2f2c275.camel@icenowy.me>
-Subject: Re: [PATCH 5/7] riscv: dts: bouffalolab: add the bl808 SoC base
- device tree
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Conor Dooley <conor@kernel.org>, Jisheng Zhang <jszhang@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sun, 20 Nov 2022 09:28:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998E413DD4;
+        Sun, 20 Nov 2022 06:28:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15F1860C53;
+        Sun, 20 Nov 2022 14:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6407C433D6;
+        Sun, 20 Nov 2022 14:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668954491;
+        bh=ZyTdR46YHnrIKCr3ypza1lyjyvfhcyJlCC9EQ4CL9Qw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BKuUuq7ArZdPGwIubzAT9eJp3NWq8a5wOgtoZVkvi6AsDW4icVR/rmq/LsrMn3Frj
+         jJ0IJolr731DBC7/lnH0xjK3IJ67Dl7HTA0+FBT2hM+etAQqdqJxwnAffT+Q1rm5w4
+         CpD2SmRJbDcOznoeXE+f9RSYjoHT9ebONxG6Wr8zJo73jUgx6oIVnlwdXHWA+GouFs
+         d423jE1Nl9KPg7YasDzlDTnE7n3WPxMqFuqI8SsNt4sx6Zv2qjeidSvDpOADjWqZwK
+         vp1yKZO+xtFJCrGj5t7uumHs6dEfTgvPXCGlJyAPc7xiIvieNZ98vY4f+Kk6AHS0Nc
+         6qjPrLFJbsWPg==
+Date:   Sun, 20 Nov 2022 14:28:06 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Icenowy Zheng <uwu@icenowy.me>
+Cc:     Jisheng Zhang <jszhang@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -49,132 +45,44 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Date:   Sun, 20 Nov 2022 19:58:56 +0800
-In-Reply-To: <Y3oJSfsNFE9Cn0Al@spud>
+Subject: Re: [PATCH 5/7] riscv: dts: bouffalolab: add the bl808 SoC base
+ device tree
+Message-ID: <Y3o5dqPX7ScTs9qj@spud>
 References: <20221120082114.3030-1-jszhang@kernel.org>
-         <20221120082114.3030-6-jszhang@kernel.org> <Y3oJSfsNFE9Cn0Al@spud>
-Organization: Anthon Open-Source Community
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.4 
+ <20221120082114.3030-6-jszhang@kernel.org>
+ <Y3oJSfsNFE9Cn0Al@spud>
+ <32ffd3f857ce9c08462ce8a7b2e40871c2f2c275.camel@icenowy.me>
 MIME-Version: 1.0
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <32ffd3f857ce9c08462ce8a7b2e40871c2f2c275.camel@icenowy.me>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-5ZyoIDIwMjItMTEtMjDmmJ/mnJ/ml6XnmoQgMTE6MDIgKzAwMDDvvIxDb25vciBEb29sZXnlhpnp
-gZPvvJoKPiBPbiBTdW4sIE5vdiAyMCwgMjAyMiBhdCAwNDoyMToxMlBNICswODAwLCBKaXNoZW5n
-IFpoYW5nIHdyb3RlOgo+ID4gQWRkIGEgYmFpc2MgZHRzaSBmb3IgdGhlIGJvdWZmYWxvbGFiIGJs
-ODA4IFNvQy4KPiA+IAo+ID4gU2lnbmVkLW9mZi1ieTogSmlzaGVuZyBaaGFuZyA8anN6aGFuZ0Br
-ZXJuZWwub3JnPgo+ID4gLS0tCj4gPiDCoGFyY2gvcmlzY3YvYm9vdC9kdHMvTWFrZWZpbGXCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoCAxICsKPiA+IMKgYXJjaC9yaXNjdi9ib290L2R0
-cy9ib3VmZmFsb2xhYi9ibDgwOC5kdHNpIHwgNzQKPiA+ICsrKysrKysrKysrKysrKysrKysrKysK
-PiA+IMKgMiBmaWxlcyBjaGFuZ2VkLCA3NSBpbnNlcnRpb25zKCspCj4gPiDCoGNyZWF0ZSBtb2Rl
-IDEwMDY0NCBhcmNoL3Jpc2N2L2Jvb3QvZHRzL2JvdWZmYWxvbGFiL2JsODA4LmR0c2kKPiA+IAo+
-ID4gZGlmZiAtLWdpdCBhL2FyY2gvcmlzY3YvYm9vdC9kdHMvTWFrZWZpbGUKPiA+IGIvYXJjaC9y
-aXNjdi9ib290L2R0cy9NYWtlZmlsZQo+ID4gaW5kZXggZmYxNzQ5OTZjZGZkLi5iNTI1NDY3MTUy
-YjIgMTAwNjQ0Cj4gPiAtLS0gYS9hcmNoL3Jpc2N2L2Jvb3QvZHRzL01ha2VmaWxlCj4gPiArKysg
-Yi9hcmNoL3Jpc2N2L2Jvb3QvZHRzL01ha2VmaWxlCj4gPiBAQCAtMSw0ICsxLDUgQEAKPiA+IMKg
-IyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMAo+ID4gK3N1YmRpci15ICs9IGJvdWZm
-YWxvbGFiCj4gPiDCoHN1YmRpci15ICs9IHNpZml2ZQo+ID4gwqBzdWJkaXIteSArPSBzdGFyZml2
-ZQo+ID4gwqBzdWJkaXItJChDT05GSUdfU09DX0NBTkFBTl9LMjEwX0RUQl9CVUlMVElOKSArPSBj
-YW5hYW4KPiA+IGRpZmYgLS1naXQgYS9hcmNoL3Jpc2N2L2Jvb3QvZHRzL2JvdWZmYWxvbGFiL2Js
-ODA4LmR0c2kKPiA+IGIvYXJjaC9yaXNjdi9ib290L2R0cy9ib3VmZmFsb2xhYi9ibDgwOC5kdHNp
-Cj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NAo+ID4gaW5kZXggMDAwMDAwMDAwMDAwLi5jOThlYmIx
-NGVlMTAKPiA+IC0tLSAvZGV2L251bGwKPiA+ICsrKyBiL2FyY2gvcmlzY3YvYm9vdC9kdHMvYm91
-ZmZhbG9sYWIvYmw4MDguZHRzaQo+ID4gQEAgLTAsMCArMSw3NCBAQAo+ID4gKy8vIFNQRFgtTGlj
-ZW5zZS1JZGVudGlmaWVyOiAoR1BMLTIuMCsgb3IgTUlUKQo+ID4gKy8qCj4gPiArICogQ29weXJp
-Z2h0IChDKSAyMDIyIEppc2hlbmcgWmhhbmcgPGpzemhhbmdAa2VybmVsLm9yZz4KPiA+ICsgKi8K
-PiA+ICsKPiA+ICsjaW5jbHVkZSA8ZHQtYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvaXJx
-Lmg+Cj4gPiArCj4gPiArLyB7Cj4gPiArwqDCoMKgwqDCoMKgwqBjb21wYXRpYmxlID0gImJvdWZm
-YWxvbGFiLGJsODA4IjsKPiA+ICvCoMKgwqDCoMKgwqDCoCNhZGRyZXNzLWNlbGxzID0gPDE+Owo+
-ID4gK8KgwqDCoMKgwqDCoMKgI3NpemUtY2VsbHMgPSA8MT47Cj4gPiArCj4gPiArwqDCoMKgwqDC
-oMKgwqBjcHVzIHsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB0aW1lYmFzZS1m
-cmVxdWVuY3kgPSA8MTAwMDAwMD47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-I2FkZHJlc3MtY2VsbHMgPSA8MT47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-I3NpemUtY2VsbHMgPSA8MD47Cj4gPiArCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgY3B1MDogY3B1QDAgewo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqBjb21wYXRpYmxlID0gInRoZWFkLGM5MDYiLCAicmlzY3YiOwo+IAo+IFNvIHRo
-aXMgaXMgbm90IHlldCBkZWZpbmVkIGFzIHRoZSBkdCBldGMgZm9yIHRoZSBkMSBoYXMgbm90IHll
-dAo+IGxhbmRlZC4KPiBJIHRoaW5rIEkgd2lsbCBnbyBwaWNrIHVwIHRoYXQgcGF0Y2ggZm9yIHY2
-LjIgYXMgaXQgc2hvdWxkIG1ha2UKPiBldmVyeW9uZSdzIGxpZmUgZWFzaWVyLgo+IAo+IFdpdGhv
-dXQgdGhhdCwgZHRic19jaGVjayBwcm9kdWNlczoKPiBhcmNoL3Jpc2N2L2Jvb3QvZHRzL2JvdWZm
-YWxvbGFiL2JsODA4LXNpcGVlZC1tMXMuZHRiOjA6MDoKPiAvY3B1cy9jcHVAMDogZmFpbGVkIHRv
-IG1hdGNoIGFueSBzY2hlbWEgd2l0aCBjb21wYXRpYmxlOgo+IFsndGhlYWQsYzkwNicsICdyaXNj
-diddCj4gCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oGRldmljZV90eXBlID0gImNwdSI7Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoHJlZyA9IDwwPjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgZC1jYWNoZS1ibG9jay1zaXplID0gPDY0PjsKPiA+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZC1jYWNoZS1zZXRzID0g
-PDI1Nj47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oGQtY2FjaGUtc2l6ZSA9IDwzMjc2OD47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoGktY2FjaGUtYmxvY2stc2l6ZSA9IDw2ND47Cj4gPiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGktY2FjaGUtc2V0cyA9IDwx
-Mjg+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBp
-LWNhY2hlLXNpemUgPSA8MzI3Njg+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqBtbXUtdHlwZSA9ICJyaXNjdixzdjM5IjsKPiA+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmlzY3YsaXNhID0gInJ2NjRpbWFm
-ZGMiOwo+ID4gKwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqBjcHUwX2ludGM6IGludGVycnVwdC1jb250cm9sbGVyIHsKPiA+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNvbXBhdGli
-bGUgPSAicmlzY3YsY3B1LWludGMiOwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZXJydXB0LWNvbnRyb2xsZXI7Cj4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAjYWRkcmVzcy1jZWxscyA9IDwwPjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNpbnRlcnJ1cHQtY2VsbHMg
-PSA8MT47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oH07Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfTsKPiA+ICvCoMKgwqDCoMKg
-wqDCoH07Cj4gPiArCj4gPiArwqDCoMKgwqDCoMKgwqB4dGFsOiB4dGFsLWNsayB7Cj4gPiArwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJmaXhlZC1jbG9jayI7Cj4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY2xvY2stZnJlcXVlbmN5ID0gPDQwMDAw
-MDAwPjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjbG9jay1vdXRwdXQtbmFt
-ZXMgPSAieHRhbCI7Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgI2Nsb2NrLWNl
-bGxzID0gPDA+Owo+ID4gK8KgwqDCoMKgwqDCoMKgfTsKPiA+ICsKPiA+ICvCoMKgwqDCoMKgwqDC
-oHNvYyB7Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJz
-aW1wbGUtYnVzIjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByYW5nZXM7Cj4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZXJydXB0LXBhcmVudCA9IDwmcGxp
-Yz47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZG1hLW5vbmNvaGVyZW50Owo+
-ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNhZGRyZXNzLWNlbGxzID0gPDE+Owo+
-ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNzaXplLWNlbGxzID0gPDE+Owo+ID4g
-Kwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHVhcnQwOiBzZXJpYWxAMzAwMDIw
-MDAgewo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBj
-b21wYXRpYmxlID0gImJvdWZmYWxvbGFiLHVhcnQiOwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZWcgPSA8MHgzMDAwMjAwMCAweDEwMDA+Owo+ID4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpbnRlcnJ1cHRz
-ID0gPDIwIElSUV9UWVBFX0xFVkVMX0hJR0g+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjbG9ja3MgPSA8Jnh0YWw+Owo+ID4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBzdGF0dXMgPSAiZGlzYWJsZWQiOwo+
-ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4gPiArCj4gPiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgcGxpYzogaW50ZXJydXB0LWNvbnRyb2xsZXJAZTAwMDAwMDAg
-ewo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjb21w
-YXRpYmxlID0gInRoZWFkLGM5MDAtcGxpYyI7Cj4gCj4gSG1tLCB0aGlzIG9uZSBmYWlscyB2YWxp
-ZGF0aW9uIHRvby4gTGlrZWx5IHlvdSBuZWVkIHRvIGFkZCBhCj4gImJvdWZmYWxvbGFiLHBsaWMi
-IHRvIHRoZSBwbGljIGR0LWJpbmRpbmcgb3Igb3RoZXJ3aXNlIG1vZGlmeSB0aGUKPiBiaW5kaW5n
-IHN1Y2ggdGhhdCB0aGVhZCxjOTAwLXBsaWMgb24gaXQncyBvd24gaXMgcGVybWl0dGVkLiBDQyBT
-YW11ZWwKPiBvbgo+IHRoYXQgcGF0Y2ggcGxlYXNlIGluIGNhc2UgaGUgaGFzIGFuIG9waW5pb24g
-b24gaXQuCgpQZXJzb25hbGx5IEkgcHJlZmVyIGEgc2luZ2xlIGM5MDAtcGxpYyBpbiBjb21wYXRp
-YmxlLCBiZWNhdXNlIHRoZSBQTElDCmRvZXNuJ3QgbG9vayBzbyBjb25maWd1cmFibGUgaW4gQzkw
-Ni9DOTEwICh0aGUgaW50ZXJydXB0IHNvdXJjZSBudW1iZXIKaXMgcmVhbGx5IGFkanVzdGFibGUs
-IGJ1dCBpdCdzIGFscmVhZHkgaW4gdGhlIHJpc2N2LG5kZXYgcHJvcGVydHkpLgoKPiAKPiBBbHNv
-LCBJJ3ZlIHRha2VuIG92ZXIgcGlja2luZyB1cCB0aGUgbWlzYyBkdCBzdHVmZiB0aGF0IFBhbG1l
-ciB1c2VkCj4gdG8KPiBhcHBseSAtIHNvIGNhbmFhbiwgc3RhcmZpdmUgJiBzaWZpdmUgc3R1ZmYu
-IERvIHlvdSBpbnRlbmRlZCBzZW5kaW5nCj4gUFJzCj4gdG8gQXJuZCBmb3IgdGhpcyBzdHVmZiwg
-b3Igd291bGQgeW91IGxpa2UgdG8gbWUgYnVuZGxlIGl0IHdpdGggd2hhdCBJCj4gYW0KPiBnb2lu
-ZyB0byBiZSBzZW5kaW5nIGFueXdheT8KPiAKPiBUaGFua3MsCj4gQ29ub3IuCj4gCj4gPiArwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJlZyA9IDwweGUwMDAw
-MDAwIDB4NDAwMDAwMD47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoGludGVycnVwdHMtZXh0ZW5kZWQgPSA8JmNwdTBfaW50Ywo+ID4gMHhmZmZmZmZm
-Zj4sCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8JmNwdTBfaW50YyA5PjsK
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZXJy
-dXB0LWNvbnRyb2xsZXI7Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCNhZGRyZXNzLWNlbGxzID0gPDA+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAjaW50ZXJydXB0LWNlbGxzID0gPDI+Owo+ID4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByaXNjdixuZGV2ID0g
-PDY0PjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Owo+ID4gK8KgwqDCoMKg
-wqDCoMKgfTsKPiA+ICt9Owo+ID4gLS0gCj4gPiAyLjM3LjIKPiA+IAo+IAo+IF9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gbGludXgtcmlzY3YgbWFpbGlu
-ZyBsaXN0Cj4gbGludXgtcmlzY3ZAbGlzdHMuaW5mcmFkZWFkLm9yZwo+IGh0dHA6Ly9saXN0cy5p
-bmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtcmlzY3YKCg==
+On Sun, Nov 20, 2022 at 07:58:56PM +0800, Icenowy Zheng wrote:
+> 在 2022-11-20星期日的 11:02 +0000，Conor Dooley写道：
+> > On Sun, Nov 20, 2022 at 04:21:12PM +0800, Jisheng Zhang wrote:
+> > > Add a baisc dtsi for the bouffalolab bl808 SoC.
+
+> > > +               plic: interrupt-controller@e0000000 {
+> > > +                       compatible = "thead,c900-plic";
+> > 
+> > Hmm, this one fails validation too. Likely you need to add a
+> > "bouffalolab,plic" to the plic dt-binding or otherwise modify the
+> > binding such that thead,c900-plic on it's own is permitted. CC Samuel
+> > on
+> > that patch please in case he has an opinion on it.
+> 
+> Personally I prefer a single c900-plic in compatible, because the PLIC
+> doesn't look so configurable in C906/C910 (the interrupt source number
+> is really adjustable, but it's already in the riscv,ndev property).
+
+Right, if all implementations are going to be identical (modulo the
+riscv,ndev) allowing thead,c900-plic in isolation makes sense to me.
+I had a bit of a check in the history & it looks like there was no 
+explanation given for why the D1 needed a specific compatible (although
+there's no harm in having one in case something comes up in the future
+that'd require special handling for a given implementation).
 
