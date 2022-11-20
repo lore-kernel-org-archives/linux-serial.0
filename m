@@ -2,82 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36488C433FE
-	for <linux-serial@archiver.kernel.org>; Sun, 20 Nov 2022 11:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 560FAC433FE
+	for <linux-serial@archiver.kernel.org>; Sun, 20 Nov 2022 11:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbiKTLJc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 20 Nov 2022 06:09:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
+        id S229455AbiKTL5c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 20 Nov 2022 06:57:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiKTLJb (ORCPT
+        with ESMTP id S229478AbiKTL5a (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 20 Nov 2022 06:09:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BEF23F068;
-        Sun, 20 Nov 2022 03:09:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18CCD60C37;
-        Sun, 20 Nov 2022 11:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADF9C433D6;
-        Sun, 20 Nov 2022 11:09:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1668942569;
-        bh=vnyH8G1WUbHbEn7eQvky+ZPnOfOJ4emdGiMvxdIUtSU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XgiEMPVSngYVdZ7fTokegvHRQhWn8tlEaWT0A86kyG7WIt11GOw7N5AkaEYp+sTy5
-         2f552pb6+g4zD+BL0IqVvHcpgnrNc32HZUPC1OBnl6O6OP5P4YhBtI+Aybddao0OD4
-         6neM5gWBr5j+i9oR+t5Gq9mH3n2EZSUXeXgUydZFaBYwBGZ7OugaPWGPrgLvRaTfQ4
-         2SrgomtnHgXi9Q3LT2BBV7C60NKqEOd4IqYgDnmT3p7o7IT3+dmGQgYiV95G9ypQ7v
-         Q39Xu32JzP1L1wlHPCsZ78qcG4Pb8v4aRVTOwIMULtlLcSuFCpQiEPtHd2mDyGc95L
-         +SIoaaVCGE5og==
-Date:   Sun, 20 Nov 2022 11:09:24 +0000
-From:   Conor Dooley <conor@kernel.org>
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sun, 20 Nov 2022 06:57:30 -0500
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04B0C36;
+        Sun, 20 Nov 2022 03:57:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1668945436; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=ng3Yjnce5LoSWYNSaPWg8YBKbAm8VShZgrA7Stnl55Jy4XHxc5F6yHyAzx7heFlNk+4nGq4oecz00/IrFQAKKTDQ1+qJ1eIMOnFfZx90ht1oLCrmFdkv8aUqwqJ0kCoQsT+WWDvHTA2+wFHcGZwbRzY4EweGvlAAeDIxWrl091s=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1668945436; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=TWmgry8NgngIUiXTgpSXxtbDHcnIyfa0JiiI/7Nvz+0=; 
+        b=FFrifJu29X09dDqjHasO3Vvv8Vl6sQ/2nAY6cxlXZPfC0LnNeJn5z3OZ1wAn9L7tZ6He6o96YLVOeiudF5xbqaQg1BewHtCDKEliP9CiD7NXMNpddwtQ8zXDM5pxBV5jWmGZkPEp35X01Wr1s6lo6NWI0EWVuTpG39BGt1TzxfE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=icenowy.me;
+        spf=pass  smtp.mailfrom=uwu@icenowy.me;
+        dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1668945436;
+        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
+        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:MIME-Version:Message-Id:Reply-To;
+        bh=TWmgry8NgngIUiXTgpSXxtbDHcnIyfa0JiiI/7Nvz+0=;
+        b=TEHdXYjcq2IQ8SOZRsIQ+VcXg+Cgi8+rzb9YilugQd39ZKud1ac/HG0nBANeMvVw
+        gwxjcJSNMWXGtchc8j7AwZ0cBxEawyAiMQw3RofSPqk5Kp6v0bQhB6Rf5Kd3SAz9fVm
+        ikkOdE3JkRLqWVyD2KTFIDM1KrExGxQ/0TwBEwlo=
+Received: from edelgard.fodlan.icenowy.me (112.94.100.29 [112.94.100.29]) by mx.zohomail.com
+        with SMTPS id 1668945432410994.7351069945597; Sun, 20 Nov 2022 03:57:12 -0800 (PST)
+Message-ID: <924b302f8714677b4f018b0d64a7e92db6d9e6ea.camel@icenowy.me>
+Subject: Re: [PATCH 6/7] riscv: dts: bouffalolab: add Sipeed M1S dock
+ devicetree
+From:   Icenowy Zheng <uwu@icenowy.me>
+To:     Jisheng Zhang <jszhang@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 6/7] riscv: dts: bouffalolab: add Sipeed M1S dock
- devicetree
-Message-ID: <Y3oK5B2yYL8+JzLs@spud>
-References: <20221120082114.3030-1-jszhang@kernel.org>
- <20221120082114.3030-7-jszhang@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Date:   Sun, 20 Nov 2022 19:57:06 +0800
 In-Reply-To: <20221120082114.3030-7-jszhang@kernel.org>
+References: <20221120082114.3030-1-jszhang@kernel.org>
+         <20221120082114.3030-7-jszhang@kernel.org>
+Organization: Anthon Open-Source Community
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 
+MIME-Version: 1.0
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Nov 20, 2022 at 04:21:13PM +0800, Jisheng Zhang wrote:
+=E5=9C=A8 2022-11-20=E6=98=9F=E6=9C=9F=E6=97=A5=E7=9A=84 16:21 +0800=EF=BC=
+=8CJisheng Zhang=E5=86=99=E9=81=93=EF=BC=9A
 > Sipeed manufactures a M1S system-on-module and dock board, add basic
 > support for them.
-> 
+>=20
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > ---
->  arch/riscv/boot/dts/bouffalolab/Makefile      |  2 ++
->  .../boot/dts/bouffalolab/bl808-sipeed-m1s.dts | 30 +++++++++++++++++++
->  2 files changed, 32 insertions(+)
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
-> 
-> diff --git a/arch/riscv/boot/dts/bouffalolab/Makefile b/arch/riscv/boot/dts/bouffalolab/Makefile
+> =C2=A0arch/riscv/boot/dts/bouffalolab/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 |=C2=A0 2 ++
+> =C2=A0.../boot/dts/bouffalolab/bl808-sipeed-m1s.dts | 30
+
+I suggest a M1s DTSI and a M1s Dock DTS.
+
+> +++++++++++++++++++
+> =C2=A02 files changed, 32 insertions(+)
+> =C2=A0create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
+> =C2=A0create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-
+> m1s.dts
+>=20
+> diff --git a/arch/riscv/boot/dts/bouffalolab/Makefile
+> b/arch/riscv/boot/dts/bouffalolab/Makefile
 > new file mode 100644
 > index 000000000000..42e17e1a97bd
 > --- /dev/null
 > +++ b/arch/riscv/boot/dts/bouffalolab/Makefile
 > @@ -0,0 +1,2 @@
 > +# SPDX-License-Identifier: GPL-2.0
-> +dtb-$(CONFIG_SOC_BOUFFALOLAB) += bl808-sipeed-m1s.dtb
-> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
+> +dtb-$(CONFIG_SOC_BOUFFALOLAB) +=3D bl808-sipeed-m1s.dtb
+> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
+> b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
 > new file mode 100644
 > index 000000000000..64421fb2ad67
 > --- /dev/null
@@ -93,34 +108,29 @@ On Sun, Nov 20, 2022 at 04:21:13PM +0800, Jisheng Zhang wrote:
 > +#include "bl808.dtsi"
 > +
 > +/ {
-> +	model = "Sipeed M1S";
-> +	compatible = "sipeed,m1s", "bouffalolab,bl808";
-
-These compatibles also need to be defined, in a bouffalolab.yaml in the
-riscv/ bindings subdirectory. Otherwise:
-arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtb:0:0: /: failed to match any schema with compatible: ['sipeed,m1s', 'bouffalolab,bl808']
-
-Thanks,
-Conor.
-
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0model =3D "Sipeed M1S";
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0compatible =3D "sipeed,m1s", "=
+bouffalolab,bl808";
 > +
-> +	aliases {
-> +		serial0 = &uart0;
-> +	};
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0aliases {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0serial0 =3D &uart0;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
 > +
-> +	chosen {
-> +		stdout-path = "serial0:2000000n8";
-> +	};
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0chosen {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0stdout-path =3D "serial0:2000000n8";
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
 > +
-> +	memory@50000000 {
-> +		device_type = "memory";
-> +		reg = <0x50000000 0x04000000>;
-> +	};
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0memory@50000000 {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0device_type =3D "memory";
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0reg =3D <0x50000000 0x04000000>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
 > +};
 > +
 > +&uart0 {
-> +	status = "okay";
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0status =3D "okay";
 > +};
-> -- 
-> 2.37.2
-> 
+
