@@ -2,68 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A35FC4332F
-	for <linux-serial@archiver.kernel.org>; Sun, 20 Nov 2022 15:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8E3C4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 20 Nov 2022 17:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbiKTPGr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 20 Nov 2022 10:06:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S229587AbiKTRv3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 20 Nov 2022 12:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiKTPGq (ORCPT
+        with ESMTP id S229572AbiKTRv2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 20 Nov 2022 10:06:46 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFAF327DCF
-        for <linux-serial@vger.kernel.org>; Sun, 20 Nov 2022 07:06:44 -0800 (PST)
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com [209.85.219.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Sun, 20 Nov 2022 12:51:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38BC2409A;
+        Sun, 20 Nov 2022 09:51:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 975E33F12E
-        for <linux-serial@vger.kernel.org>; Sun, 20 Nov 2022 15:06:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1668956803;
-        bh=63zAF8njkANWb8igjiBaT0d8rq+Da/5C67QfqYnl2t8=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=hToLUdSsFlR5TRWbqcJqg8tcqoi5MeZDQ7hNgyip+ejupzQGvaDCQAjFynA6dJc4i
-         VeBAzucPe6/iCyLK89xFMV2s9G1RReHs5cXWWVQTgLNpsi1SzUIwNlyUlt2Ot1FClQ
-         7ecACEU0NSzjSEidIgJ0IaYJ2YLMZz/Wz9TouGAdJpwWm8hAXzbghSOt8NvzQ6RPYS
-         qVvKSzKSzD9uju5QCvUgVgsAb/S+TK5R/p5buh54u/YMpxdFzYpt+4i467c6cN5clZ
-         shBXZBrg2Qd6HuDADXJKMykHIcl7ulATdgZCSDqQjdW/6zWOD3nWTKjhQskYr0rRVK
-         Fi8+IxRaG0VbQ==
-Received: by mail-yb1-f198.google.com with SMTP id e189-20020a25e7c6000000b006e37f21e689so9065515ybh.10
-        for <linux-serial@vger.kernel.org>; Sun, 20 Nov 2022 07:06:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=63zAF8njkANWb8igjiBaT0d8rq+Da/5C67QfqYnl2t8=;
-        b=NUFJgiuIaFaYPpV2OkUfgCA5NpmW2BZKI1d31eyXR92X6k32/T0RG55aULKlFiVInc
-         Tv4kmFddOBQZd7IrK+Nh3TQGr8ReQLSvGBvzMY5TMTaLLU1U/+BCRlf8+nC/wsIE8JAh
-         S3jYh0JXS3rJx5ZljQj82wtBNe3IGOhe3xGCkP0azyz1Rh1OSB5LOuVTnXTzMeYFjFpN
-         V3R0hqRNeY9R7HhjBu+Xg8DJTx/pHKuvTC8If7/zEQVlkF8OaiyahV535cWd9b+SyWad
-         bP0Oz7D24btrNebzhvxV3lSuqVbNRyXAlGb6iNpf272RqmEjet1V5+lqv1UTUT/4GjvC
-         lccg==
-X-Gm-Message-State: ANoB5pm3M4TC4EmLUDo23cMvNONicVmzTQ/Ryf1XWr85rV+PIckaHKlc
-        IpEedPfNHtuIh4vBtnRhgobsjgdBBxNjOz4J2eSo8GQD58+UUz0wkTGA75bu9z+ZlovWUgpe3RM
-        RLt+u/XcU96q6lwBzZj/8nGOWNXuGOiTtz9dIxaV6rQF+HzkVNX3NLMKjYA==
-X-Received: by 2002:a25:510:0:b0:6d2:e45c:71c0 with SMTP id 16-20020a250510000000b006d2e45c71c0mr1159131ybf.153.1668956802566;
-        Sun, 20 Nov 2022 07:06:42 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf55/6YijqPTdK5T7pQbmZ9YUNCO1Mc29Pp3Y0+lMw1fpsdcrNDEF/GdRZ3UT0Hk4JVi119cTfndkBPYGd+wvxE=
-X-Received: by 2002:a25:510:0:b0:6d2:e45c:71c0 with SMTP id
- 16-20020a250510000000b006d2e45c71c0mr1159114ybf.153.1668956802357; Sun, 20
- Nov 2022 07:06:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20221120082114.3030-1-jszhang@kernel.org> <20221120082114.3030-7-jszhang@kernel.org>
-In-Reply-To: <20221120082114.3030-7-jszhang@kernel.org>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Sun, 20 Nov 2022 16:06:26 +0100
-Message-ID: <CAJM55Z_QA7a_jYYwy59W=ihZqK0ciS+FJ2Gsw_7469CW8wQ7nw@mail.gmail.com>
-Subject: Re: [PATCH 6/7] riscv: dts: bouffalolab: add Sipeed M1S dock devicetree
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EB2AB80ACB;
+        Sun, 20 Nov 2022 17:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF86C433C1;
+        Sun, 20 Nov 2022 17:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1668966684;
+        bh=79AEpTRKQTWAHAOHI8JWsnFg+OvIT75uE0KkDyA7TBo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VYJtJIqCGToiTZSAcm3HB63P+y+LabQen90VlfxF9pvHQbbrS//M3+uKXs5PXp64Q
+         FTILDxaIAThcKYLlmFzTdf2nbS5EPWYo5x+Hg460Mvu5nAFOZLfpXXBab8CcbD3eUp
+         647cTkmnfvK1GHRnHqjLHnVICdeYdvaPGHzxaTJGhCe8ZUqSouR4BouRThVaEeeCjX
+         jX/U8rUY9zPz5veeKvH2rt9H0cr3VB9aixE/MWjoTw70uiBop36wp/eY2/tkS43ak/
+         +2WH6GQfTnaYA9tOZCnF+rWETLQa1yQU3n8NYRHEzMrtX7irEMJ4geKyHZcuybyrs3
+         3u4VAA9imcbhw==
+Date:   Sun, 20 Nov 2022 17:51:19 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Cc:     Jisheng Zhang <jszhang@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -72,83 +45,38 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 5/7] riscv: dts: bouffalolab: add the bl808 SoC base
+ device tree
+Message-ID: <Y3ppF88SuYAPOjbU@spud>
+References: <20221120082114.3030-1-jszhang@kernel.org>
+ <20221120082114.3030-6-jszhang@kernel.org>
+ <CAJM55Z_f=zp3Z=wno_yr7csAUMQ472RiZXD19CrDTTxmGAmU4w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJM55Z_f=zp3Z=wno_yr7csAUMQ472RiZXD19CrDTTxmGAmU4w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 20 Nov 2022 at 09:33, Jisheng Zhang <jszhang@kernel.org> wrote:
->
-> Sipeed manufactures a M1S system-on-module and dock board, add basic
-> support for them.
->
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> ---
->  arch/riscv/boot/dts/bouffalolab/Makefile      |  2 ++
->  .../boot/dts/bouffalolab/bl808-sipeed-m1s.dts | 30 +++++++++++++++++++
->  2 files changed, 32 insertions(+)
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
->
-> diff --git a/arch/riscv/boot/dts/bouffalolab/Makefile b/arch/riscv/boot/dts/bouffalolab/Makefile
-> new file mode 100644
-> index 000000000000..42e17e1a97bd
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/bouffalolab/Makefile
-> @@ -0,0 +1,2 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +dtb-$(CONFIG_SOC_BOUFFALOLAB) += bl808-sipeed-m1s.dtb
-> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
-> new file mode 100644
-> index 000000000000..64421fb2ad67
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dts
-> @@ -0,0 +1,30 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
-> +/*
-> + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "bl808.dtsi"
-> +
-> +/ {
-> +       model = "Sipeed M1S";
+On Sun, Nov 20, 2022 at 03:57:17PM +0100, Emil Renner Berthing wrote:
+> On Sun, 20 Nov 2022 at 09:32, Jisheng Zhang <jszhang@kernel.org> wrote:
+> >
+> > Add a baisc dtsi for the bouffalolab bl808 SoC.
 
-On seeedstudio.com and everywhere else I look I only see this written
-as "Sipeed M1s".
+> > +       xtal: xtal-clk {
+> > +               compatible = "fixed-clock";
+> > +               clock-frequency = <40000000>;
+> 
+> This was discussed many times before, but I think the conclusion was
+> that the frequency is a property of the crystal on the board, so this
+> should be 0 in the SoC dtsi, and then overwritten in the board device
+> tree.
 
-And to echo what Icenowy writes, this is better split as a .dtsi for
-the Sipeed M1s module that can then be included by a .dts for the
-using the module with the dock, which should then have something like
+Or set nothing in soc.dtsi so that dtbs_check can be used to see if
+someone forgot to set a clock for their board?
 
-model = "Sipeed M1s Dock";
+> > +               clock-output-names = "xtal";
+> > +               #clock-cells = <0>;
+> > +       };
 
-> +       compatible = "sipeed,m1s", "bouffalolab,bl808";
-> +
-> +       aliases {
-> +               serial0 = &uart0;
-> +       };
-> +
-> +       chosen {
-> +               stdout-path = "serial0:2000000n8";
-> +       };
-> +
-> +       memory@50000000 {
-> +               device_type = "memory";
-> +               reg = <0x50000000 0x04000000>;
-> +       };
-> +};
-> +
-> +&uart0 {
-> +       status = "okay";
-> +};
-> ---
-> 2.37.2
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
