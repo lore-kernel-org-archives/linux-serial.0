@@ -2,113 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32724C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7025C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbiKUKLi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 05:11:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
+        id S230519AbiKUKQa convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 05:16:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiKUKL0 (ORCPT
+        with ESMTP id S230105AbiKUKQ3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 05:11:26 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB51B45
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:11:25 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id u2so13964265ljl.3
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:11:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Vkbm4Bxn5eLnjPj3/tOUOnl04OhPLdTSTUnYDiGnDgo=;
-        b=bR/nvBGSZjElA8QI/+tH/765a4y1M2Z+4n0UDqntO79EVlF1v7gSzOkFqB0mmLdDNj
-         hOt6Kx6yDqk6TdNyNxegPDA45Yx0nzjaOTEyfn5KrZCMGNutG2of+2wV6Dms1L1GqR8N
-         pmkSNKO4mEJkwD+7YrtKCJ5mpfGXgV+ccv4g3F1JKKPsYfFBwyubXPB9b6pFq8f2suft
-         VlfBiXfLZpUvsDkWsrN/6JOKGF8TgBap+757VGyxsw8qk/HjB/ML/O8tXBfwYxkKj5CS
-         JselQKZ24Kxskv+/m9hOFQjCXcc6/YfJexxtCPLux/6+Cd1+bYWrzG1aIIRgzzmb/fsw
-         axJg==
+        Mon, 21 Nov 2022 05:16:29 -0500
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5800831ECA;
+        Mon, 21 Nov 2022 02:16:28 -0800 (PST)
+Received: by mail-qk1-f170.google.com with SMTP id k4so7649664qkj.8;
+        Mon, 21 Nov 2022 02:16:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vkbm4Bxn5eLnjPj3/tOUOnl04OhPLdTSTUnYDiGnDgo=;
-        b=oD7t08SW380u4z7E6yY3vGusNTH84LBHB4FSWMRH7LKGUMzu+RqwDWGVZ0Dgiwnihy
-         iu988RYK/z/ADs2GMa1gPMWQqPfGvXQPSavtLK7XS5NTxopEtrGG+DwzsC7plTsJ2ddL
-         UzeXD5nPHYD9N+HpSHiHGcvEgb5+8IImyGOU+zQ/GWZgTZ3VSw/mbMqsaPMlCp/9Dtr0
-         9v3EzArAngVP/pucg7ZGljhPc2ut0NhlyHYHfwO7A2+ymH84uTk30LFZd4aCdGqyAn/f
-         4pG0nYOPXtlfaTQwy4ggWPq7s5t9WoWMF3AmCxcfQauZk4vSbxGhDUtWhfGEuF6PjUjL
-         V9ZQ==
-X-Gm-Message-State: ANoB5pkiYmMW5XBcAbYpHYHMbgym/tOaUkjq2RoAARMtHzw5EP1HSfJC
-        Kh36WaQArCq0Ji+hUntJHUF1Ew==
-X-Google-Smtp-Source: AA0mqf68/n19Rjf7V+oTQiueK1njPoKnq0nXUA6E151V5mffE88KckL4M3G268YOmAXtMqrcnqK5hQ==
-X-Received: by 2002:a05:651c:1510:b0:277:75fb:1fc5 with SMTP id e16-20020a05651c151000b0027775fb1fc5mr5398278ljf.405.1669025483901;
-        Mon, 21 Nov 2022 02:11:23 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id v4-20020a056512348400b0048af397c827sm1974128lfr.218.2022.11.21.02.11.22
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AH7J2YAbJJnliv8tRtEf0xlMhNlRGV7PPaAW6p6F+x8=;
+        b=iLW1NUG3h4ORAFxZ84wzc5LbPyJ6kpB9cPrZdF6eKlS2wNBOIkbzjBAPIN0QLn6x4C
+         9mjjsjVrSLrf7XPczPicXBrU71xJlivC7Q55IY77y/LhQmAvmjuaXwiHvk3Tf0bFCv/E
+         9/tK0zcm8sCVnpjIDGVO11Gdnvqu1eH745cl0leApnHvPoAIQhUvpx5/BRyeAMONOySJ
+         Py2aokjIBYyIIYfW3Ga8x1ZvGZzjCdvn06+pYA6j3z8OnuZ50VaJKPhom6uuOICtMnVO
+         6RENidr8dMoftJtMAbwCCphRBjuSPw4lY+r2C0hIsgLdZ1WXSuvFbnMUvoZwnXpbR8Ee
+         gIiQ==
+X-Gm-Message-State: ANoB5pkkDOz/SraxhFJXbjbNhoXq6W/jYnMIqNnR90C2a+16hmGpAvj6
+        LVc+37VvKfRU/dfdKpHd08c+XIdul/TRdw==
+X-Google-Smtp-Source: AA0mqf4EH63l2/yPwScD+AaqSL244ZfXdSlfGBBidsVgK56zipAgMRiiUFZXMw/lnFZeFr/3FTW59A==
+X-Received: by 2002:a37:e20d:0:b0:6fa:8e8e:1ee5 with SMTP id g13-20020a37e20d000000b006fa8e8e1ee5mr15451922qki.45.1669025787304;
+        Mon, 21 Nov 2022 02:16:27 -0800 (PST)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id s6-20020a05620a254600b006e07228ed53sm8094014qko.18.2022.11.21.02.16.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 02:11:23 -0800 (PST)
-Message-ID: <9cc705dd-191d-ddf9-9e26-403d5124c77c@linaro.org>
-Date:   Mon, 21 Nov 2022 11:11:22 +0100
+        Mon, 21 Nov 2022 02:16:26 -0800 (PST)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-3704852322fso108795307b3.8;
+        Mon, 21 Nov 2022 02:16:25 -0800 (PST)
+X-Received: by 2002:a81:6cd2:0:b0:38d:5807:4b9b with SMTP id
+ h201-20020a816cd2000000b0038d58074b9bmr6623722ywc.358.1669025785217; Mon, 21
+ Nov 2022 02:16:25 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 7/7] MAINTAINERS: add myself as Bouffalolab SoC entry
- maintainer
-Content-Language: en-US
-To:     Jisheng Zhang <jszhang@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-References: <20221120082114.3030-1-jszhang@kernel.org>
- <20221120082114.3030-8-jszhang@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221120082114.3030-8-jszhang@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-11-gsomlo@gmail.com>
+In-Reply-To: <20221118145512.509950-11-gsomlo@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 21 Nov 2022 11:16:14 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVCc5xtnRoprtdgt_ZH42j=+ivS4aD+Uceg9pny-FpzYQ@mail.gmail.com>
+Message-ID: <CAMuHMdVCc5xtnRoprtdgt_ZH42j=+ivS4aD+Uceg9pny-FpzYQ@mail.gmail.com>
+Subject: Re: [PATCH v5 10/14] serial: liteuart: separate rx loop from poll timer
+To:     Gabriel Somlo <gsomlo@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        ilpo.jarvinen@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 20/11/2022 09:21, Jisheng Zhang wrote:
-> I want to maintain this Bouffalolab riscv SoC entry from now on.
+Hi Gabriel,
 
-Use 3rd person narrative, so:
-1. Subject: MAINTAINERS: riscv: add entry for Bouffalolab SoC
-2. Commit: Add Jisheng Zhang as Bouffalolab SoC maintainer.
+On Fri, Nov 18, 2022 at 3:57 PM Gabriel Somlo <gsomlo@gmail.com> wrote:
+> Convert the rx loop into its own dedicated function, and (for now)
+> call it from the poll timer. This is in preparation for adding irq
+> support to the receive path.
+>
+> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-> 
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> ---
->  MAINTAINERS | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 92451834b940..3564b27d7da4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17738,6 +17738,12 @@ F:	arch/riscv/
->  N:	riscv
->  K:	riscv
->  
-> +RISC-V BOUFFALOLAB SOC SUPPORT
-> +M:	Jisheng Zhang <jszhang@kernel.org>
-> +L:	linux-riscv@lists.infradead.org
-> +S:	Maintained
-> +F:	arch/riscv/boot/dts/bouffalolab/
+Thanks for your patch!
+
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+> --- a/drivers/tty/serial/liteuart.c
+> +++ b/drivers/tty/serial/liteuart.c
+> @@ -68,10 +68,8 @@ static struct uart_driver liteuart_driver = {
+>  #endif
+>  };
+>
+> -static void liteuart_timer(struct timer_list *t)
+> +static void liteuart_rx_chars(struct uart_port *port)
+
+So first you spin this off into a separate function, so it can be
+called from both the interrupt and polling paths.
+Later, in "[PATCH v5 12/14] serial: liteuart: add IRQ support for the
+RX path", you remove the call from the polling path...
+
+
+>  {
+> -       struct liteuart_port *uart = from_timer(uart, t, timer);
+> -       struct uart_port *port = &uart->port;
+>         unsigned char __iomem *membase = port->membase;
+>         unsigned int status, ch;
+>
+> @@ -88,6 +86,14 @@ static void liteuart_timer(struct timer_list *t)
+>         }
+>
+>         tty_flip_buffer_push(&port->state->port);
+> +}
 > +
->  RISC-V MICROCHIP FPGA SUPPORT
->  M:	Conor Dooley <conor.dooley@microchip.com>
->  M:	Daire McNamara <daire.mcnamara@microchip.com>
+> +static void liteuart_timer(struct timer_list *t)
+> +{
+> +       struct liteuart_port *uart = from_timer(uart, t, timer);
+> +       struct uart_port *port = &uart->port;
+> +
+> +       liteuart_rx_chars(port);
+>
+>         mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
+>  }
 
-Best regards,
-Krzysztof
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
