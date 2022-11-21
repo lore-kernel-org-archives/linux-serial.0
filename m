@@ -2,85 +2,154 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E98C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 09:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CAEC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbiKUJ5R convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 04:57:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
+        id S230167AbiKUKJ3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 05:09:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbiKUJ5M (ORCPT
+        with ESMTP id S229903AbiKUKJJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 04:57:12 -0500
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB5393;
-        Mon, 21 Nov 2022 01:57:11 -0800 (PST)
-Received: by mail-qt1-f175.google.com with SMTP id l2so6907454qtq.11;
-        Mon, 21 Nov 2022 01:57:11 -0800 (PST)
+        Mon, 21 Nov 2022 05:09:09 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EEF12D03
+        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:09:06 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id d6so18060562lfs.10
+        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:09:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TxrwoV4uWAErf9DL6sbWjIb3t+zcjaVCbt4w4586XkY=;
+        b=Wed0FFJ81XFeo/OAhCrlzD6g9EDFNqhjFc6GWDE+gFplOeMHnMYKzJe06LfyI8dihk
+         dX2CQCikjWSKjz+bBsAMq6DXgQRrR4f4jjYOH1cEFlxtN4/OSlU/ZxBFc+R/E3hmh4lQ
+         yrfzBynHDAvigzlXz2rwhPv7+aKa09hrMZ0VcOiXsU1cZ+1YtaCgRFV7vw6LL0oahIYB
+         Sx+eHl44hLwcd1qhkHn4pUilfYQdfKDa9WC3VtsavFbS1pA64Wen1F23TqyRWG18s5kP
+         j4z8qQOtl+0nLwm4XB0KOlMz/zoA7hc6eVozDfFiv0wS6wk/zAg8oEcAxs/QxdT03ay3
+         vC9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bajdHYdVWPN35JSI3uh58zSxMZgupl/Y01sde+6nnAM=;
-        b=u4uZydQYNl0VDhJ3M+B0C99tKvsIqcquhOu4NEpuOw8k9vbC2VXzKNWzi9oaL4/VuA
-         CVREGrCwnPlLKecZHO39b/SMax4kvRihq629fC4QTI0J2gdlU8LcnTp6C91E9c+9ZSqF
-         dMCAJOMaIXQmJawAeOuG2b9LsW48tBQcBtVcnVCKbJOCDquF5L8nQmit0bOBFuMGkzdV
-         5hovoGYljoPSB/tSxm01SMlshqsnMjMeZ95rjIteD+l/0QtuGqkLnHXxBKt1noNMp2Mn
-         pm2L3kGqbZrZi3tJGGv29GKKkmVkAzRnBDGLnDCelnVaHr9uOZ7zpwXcwvihS4us/q/w
-         S+MA==
-X-Gm-Message-State: ANoB5pkD6cVccCygRtZ75f+7kXXodJh+j92R/NOHhMYtXjnmaJBQt/i7
-        o21wcZMr/FoPqxgyK52AAR6m1BctphwwCw==
-X-Google-Smtp-Source: AA0mqf7rDf+Nq8vdMwakt2kYy5ArHCLGLe1p5sQwI99G+1iIve50bA1pRmw0qUBTBoyTYoR608aycQ==
-X-Received: by 2002:ac8:7f83:0:b0:3a5:1fa1:f2 with SMTP id z3-20020ac87f83000000b003a51fa100f2mr2059879qtj.91.1669024630463;
-        Mon, 21 Nov 2022 01:57:10 -0800 (PST)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id v9-20020ac873c9000000b003a54a19c550sm6396180qtp.57.2022.11.21.01.57.09
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TxrwoV4uWAErf9DL6sbWjIb3t+zcjaVCbt4w4586XkY=;
+        b=MzQr1oSmpqIhWsz3VgJu1N0B8TobcOpo8hbIy/FuWQEvjxrhYoEpLtZu04eLNP3a8Y
+         HHfZ2+lwXaxFqkBeQyg3Mqh1qib18i7sRKhRHef28eSiTn0RCYkIZvPDpDo/H9j0jipK
+         hCBfCel1x/DsCFARycteqwbh3oiJqJ3WnTAUpImbpRBsAuwUFrF4TmWYSu+5KYDhJOKM
+         +5FU1+zeDZcD1+HcS8j+BE0qFfZ+GwqB1fGF87t2vXKB//GrldMPFmFgS1kc7x7PIx2E
+         hp0MbZXER/MNliDXB5Kf7Eux5VBE6GwQ4f9WmAomGda5n0r7BEvYu6tqbA3WhqAt/TcN
+         jntQ==
+X-Gm-Message-State: ANoB5plLm8K3TlN2x9Zk7jIQz3iqZ1937ZzRLNF02ZljGmLk3zhVrXe8
+        iL+HXYnsE6EIVRB61Pj4eI8J9qdB5oAbyY7R
+X-Google-Smtp-Source: AA0mqf5GeXjgbrXXdWAXxvd6orgjBRuVp8zzcCyfmnYfi/NNmTb9WEE8schAAo/sbXXSZ/qNgDNyxA==
+X-Received: by 2002:a19:7001:0:b0:4b1:8fbb:d3f4 with SMTP id h1-20020a197001000000b004b18fbbd3f4mr5968366lfc.70.1669025344352;
+        Mon, 21 Nov 2022 02:09:04 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id d20-20020ac25454000000b004948378080csm1953159lfn.290.2022.11.21.02.08.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 01:57:09 -0800 (PST)
-Received: by mail-yb1-f173.google.com with SMTP id f201so12947963yba.12;
-        Mon, 21 Nov 2022 01:57:09 -0800 (PST)
-X-Received: by 2002:a25:9e84:0:b0:6de:6183:c5c3 with SMTP id
- p4-20020a259e84000000b006de6183c5c3mr1445076ybq.89.1669024628902; Mon, 21 Nov
- 2022 01:57:08 -0800 (PST)
+        Mon, 21 Nov 2022 02:09:03 -0800 (PST)
+Message-ID: <1774dce0-b9eb-6b75-c9c2-98dbc05db04a@linaro.org>
+Date:   Mon, 21 Nov 2022 11:08:47 +0100
 MIME-Version: 1.0
-References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-9-gsomlo@gmail.com>
-In-Reply-To: <20221118145512.509950-9-gsomlo@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 21 Nov 2022 10:56:57 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUszhxJF8gU-A=rRET9PsdiaqOS-rDrkbxjpQK7p5mk8A@mail.gmail.com>
-Message-ID: <CAMuHMdUszhxJF8gU-A=rRET9PsdiaqOS-rDrkbxjpQK7p5mk8A@mail.gmail.com>
-Subject: Re: [PATCH v5 08/14] serial: liteuart: simplify passing of
- uart_insert_char() flag
-To:     Gabriel Somlo <gsomlo@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
-        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
-        ilpo.jarvinen@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 1/7] dt-bindings: serial: add bindings doc for Bouffalolab
+ uart driver
+Content-Language: en-US
+To:     Jisheng Zhang <jszhang@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <20221120082114.3030-1-jszhang@kernel.org>
+ <20221120082114.3030-2-jszhang@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221120082114.3030-2-jszhang@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 18, 2022 at 3:56 PM Gabriel Somlo <gsomlo@gmail.com> wrote:
-> Simply provide the hard-coded TTY_NORMAL flag to uart_insert_char()
-> directly -- no need to dedicate a variable for that exclusive purpose.
->
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+On 20/11/2022 09:21, Jisheng Zhang wrote:
+> Add bindings doc for Bouffalolab UART Driver
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: drop second, redundant "bindings doc".
 
-Gr{oetje,eeting}s,
+> 
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  .../bindings/serial/bouffalolab,uart.yaml     | 50 +++++++++++++++++++
+>  1 file changed, 50 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> new file mode 100644
+> index 000000000000..6cef956d33d2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> @@ -0,0 +1,50 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/serial/bouffalolab,uart.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 
-                        Geert
+Drop quotes from both lines.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> +
+> +title: Bouffalolab UART Controller
+> +
+> +maintainers:
+> +  - Jisheng Zhang <jszhang@kernel.org>
+> +
+> +allOf:
+> +  - $ref: serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: bouffalolab,uart
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+No model number? From bouffalolab there will be only one, exactly UART
+model? No new models in next 5, 10, 100 years?
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    aliases {
+> +        serial0 = &uart0;
+> +    };
+
+Drop aliases, not related.
+
+
+
+Best regards,
+Krzysztof
+
