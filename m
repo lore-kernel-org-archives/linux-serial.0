@@ -2,221 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0547EC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 11:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC0BC4708E
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 13:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiKULcd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 06:32:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
+        id S230428AbiKUNdh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 08:33:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231270AbiKULba (ORCPT
+        with ESMTP id S229864AbiKUNd1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 06:31:30 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D30BF80C
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 03:26:01 -0800 (PST)
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com [209.85.219.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DAD423F0A2
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 11:25:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1669029959;
-        bh=FiGkcGbzyfgd+faqNuzsk0J93877S/Msc6ZRoL9HQP0=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=qTWcb+mcPupDV2MGKFxLHVNzBflDIkphnwn2YttuS/sVDJ1gpq5fHQUGatfZTz3/O
-         7mVmq0qp2eKhhk1x2CsQY08WWII/XrvuaJmUQHXauPyv74VzQDcAbR+M8xdwY7cB9T
-         l9XwZAanOEpVI5Fo2Rg1ZkGspA4w3XiKfKJQPe3w/P2TpSFCESDgb0TiWx7Rq5adrJ
-         1YPAD/1dqapWGQkz0UpsE/X0GdFVVD4CJ/bsqk9Gw8DX8R5uMdsuaeqahKaVFoHREc
-         rWZVhAfLKk0GfrBtah4M8E8xLN4s0DqmJ9IVyb7S3+GCNlca+i/TyG0U185xo5z/My
-         JZ2c1sACprPDw==
-Received: by mail-yb1-f198.google.com with SMTP id w127-20020a25df85000000b006e990dfd5b8so6068109ybg.1
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 03:25:59 -0800 (PST)
+        Mon, 21 Nov 2022 08:33:27 -0500
+Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0168784822;
+        Mon, 21 Nov 2022 05:33:26 -0800 (PST)
+Received: by mail-qk1-f175.google.com with SMTP id p18so7956362qkg.2;
+        Mon, 21 Nov 2022 05:33:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FiGkcGbzyfgd+faqNuzsk0J93877S/Msc6ZRoL9HQP0=;
-        b=Ao3jJ9pjHVnue7NHEoT6/qazT8YppXFTu3JcgX3TbvG574CBNpS3mkEEEHp5eBzzvx
-         MgS830ry1GdI+sG83hNTowhKq4MpbRibYHH2X8ZDZ1IhGWC7CjKjISgwL5wqPMzY3uD4
-         KrO9YmOYiEJqbTrFm/M6YMkWZG/eFIZsp1yqldbhqs+G/QsehflQq4/ZDv7TgQ873ym2
-         V5QsNE2DLQyLpxxqjDX7Aez8DdPxZEVkw7iMV2efmTg5LEdfueiuXWcBeGm+tMHoxYPk
-         HEntLi+DNu6tvBLCSEe0Fhk8EeZJwJMO/tR/90RpE6ekKk+KnramEVlylToyuKh2mpdb
-         cUSg==
-X-Gm-Message-State: ANoB5plSBXjXxq1RUqOGerXdWsO2GzVkEloFuarCaTtJR8dJe8rGXxhF
-        EYa/uQkC8/mYUch2x0qp4VIsMDdDKWa3LNfkX5h0bCorWQ7ObV34SiS8pgorRJmw/7xxKXEeULx
-        D1Bms6CMN3Epx3CJSA7lTTf9d3Y8QISUQLdSZDUBnfWipXxXxoYtBbTEA9Q==
-X-Received: by 2002:a25:abe4:0:b0:6e7:cbc4:1ac3 with SMTP id v91-20020a25abe4000000b006e7cbc41ac3mr15644377ybi.559.1669029958929;
-        Mon, 21 Nov 2022 03:25:58 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5Xq9tjSs4Qr1D2ghrSTz4SnS2vs/YppSYp35p6mK+zW9yruVxeUf3o6O+n1peXM/7BVePjaiCc53Vd+/yylUE=
-X-Received: by 2002:a25:abe4:0:b0:6e7:cbc4:1ac3 with SMTP id
- v91-20020a25abe4000000b006e7cbc41ac3mr15644356ybi.559.1669029958721; Mon, 21
- Nov 2022 03:25:58 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=W52hjy2XgXbLvoau/TZhYUdh0mFs9ky77EejBWrKJL0=;
+        b=MKBAflyqCUHtzPOOQZ6ifQuwGDxrXiqLha4B6jgtDirrkjwDpkFryHuD6F/dt8H0QI
+         /OIxYrlqSHJDdf035z2Khhf6Kryhq1gElZdNzSmWIBxdcJErG0ksH8kPf2cpKnjiGIly
+         jDZA5W2gtjqmoIEHcAdhqOYFTh1/kn8BF7eeKJcFk2VjJkIWVC5Ad5PmSNuuBGrnERyp
+         c80M43ypsnc9Em3IJzqGakMQC8lGEP87p4FVat1CCYUeyIGWTts6Q2ROcXfUuxpSE3AA
+         5Xqf4HHD5kcwg6YwWXUrJ1/eZxMVpT2w3M5TLvlivG1HOyJ8IFsM6fXzmDinFTgUttcU
+         Uqhg==
+X-Gm-Message-State: ANoB5plLQ5A+/+zT5/m1BgTpcb1kqSljtoUhzcMqioQs+/IM6aYOCLxV
+        8maqDHR5KaxgAEMGSgB6hUqsAxwHQez/9g==
+X-Google-Smtp-Source: AA0mqf5ztepVbKEErbeHzkEO/g8ATeu0M6TG2+WT51QBKFlvCWQFw94PLJ5lwReFzcLN831JtiNw6w==
+X-Received: by 2002:a05:620a:993:b0:6fa:172:c37d with SMTP id x19-20020a05620a099300b006fa0172c37dmr16277536qkx.92.1669037604910;
+        Mon, 21 Nov 2022 05:33:24 -0800 (PST)
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
+        by smtp.gmail.com with ESMTPSA id l21-20020a37f915000000b006fa7b5ea2d1sm8239937qkj.125.2022.11.21.05.33.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Nov 2022 05:33:23 -0800 (PST)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-36cbcda2157so113000447b3.11;
+        Mon, 21 Nov 2022 05:33:23 -0800 (PST)
+X-Received: by 2002:a81:4f4c:0:b0:357:66a5:bb25 with SMTP id
+ d73-20020a814f4c000000b0035766a5bb25mr17212924ywb.383.1669037603130; Mon, 21
+ Nov 2022 05:33:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20221120082114.3030-1-jszhang@kernel.org> <20221120082114.3030-6-jszhang@kernel.org>
- <CAJM55Z_f=zp3Z=wno_yr7csAUMQ472RiZXD19CrDTTxmGAmU4w@mail.gmail.com> <540beefcad5f9921068d54d056f168a4c45ffeaf.camel@icenowy.me>
-In-Reply-To: <540beefcad5f9921068d54d056f168a4c45ffeaf.camel@icenowy.me>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Mon, 21 Nov 2022 12:25:42 +0100
-Message-ID: <CAJM55Z9D1=T-mZkScP2LJbRfi=gB8bmpKDMndHhXGomFGN9OOA@mail.gmail.com>
-Subject: Re: [PATCH 5/7] riscv: dts: bouffalolab: add the bl808 SoC base
- device tree
-To:     Icenowy Zheng <uwu@icenowy.me>
-Cc:     Jisheng Zhang <jszhang@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
+References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org> <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 21 Nov 2022 14:33:11 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUtT3=F-3XLb604VUvKxNQBWK1y0rMnMn0kASKjQGw=3g@mail.gmail.com>
+Message-ID: <CAMuHMdUtT3=F-3XLb604VUvKxNQBWK1y0rMnMn0kASKjQGw=3g@mail.gmail.com>
+Subject: Re: [PATCH v2 7/9] dt-bindings: drop redundant part of title (beginning)
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 21 Nov 2022 at 04:37, Icenowy Zheng <uwu@icenowy.me> wrote:
+On Mon, Nov 21, 2022 at 12:09 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> The Devicetree bindings document does not have to say in the title that
+> it is a "Devicetree binding", but instead just describe the hardware.
 >
-> =E5=9C=A8 2022-11-20=E6=98=9F=E6=9C=9F=E6=97=A5=E7=9A=84 15:57 +0100=EF=
-=BC=8CEmil Renner Berthing=E5=86=99=E9=81=93=EF=BC=9A
-> > On Sun, 20 Nov 2022 at 09:32, Jisheng Zhang <jszhang@kernel.org>
-> > wrote:
-> > >
-> > > Add a baisc dtsi for the bouffalolab bl808 SoC.
-> > >
-> > > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > > ---
-> > >  arch/riscv/boot/dts/Makefile               |  1 +
-> > >  arch/riscv/boot/dts/bouffalolab/bl808.dtsi | 74
-> > > ++++++++++++++++++++++
-> > >  2 files changed, 75 insertions(+)
-> > >  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > >
-> > > diff --git a/arch/riscv/boot/dts/Makefile
-> > > b/arch/riscv/boot/dts/Makefile
-> > > index ff174996cdfd..b525467152b2 100644
-> > > --- a/arch/riscv/boot/dts/Makefile
-> > > +++ b/arch/riscv/boot/dts/Makefile
-> > > @@ -1,4 +1,5 @@
-> > >  # SPDX-License-Identifier: GPL-2.0
-> > > +subdir-y +=3D bouffalolab
-> > >  subdir-y +=3D sifive
-> > >  subdir-y +=3D starfive
-> > >  subdir-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) +=3D canaan
-> > > diff --git a/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > > b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > > new file mode 100644
-> > > index 000000000000..c98ebb14ee10
-> > > --- /dev/null
-> > > +++ b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > > @@ -0,0 +1,74 @@
-> > > +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
-> > > +/*
-> > > + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
-> > > + */
-> > > +
-> > > +#include <dt-bindings/interrupt-controller/irq.h>
-> > > +
-> > > +/ {
-> > > +       compatible =3D "bouffalolab,bl808";
-> > > +       #address-cells =3D <1>;
-> > > +       #size-cells =3D <1>;
-> > > +
-> > > +       cpus {
-> > > +               timebase-frequency =3D <1000000>;
-> > > +               #address-cells =3D <1>;
-> > > +               #size-cells =3D <0>;
-> > > +
-> > > +               cpu0: cpu@0 {
-> > > +                       compatible =3D "thead,c906", "riscv";
-> > > +                       device_type =3D "cpu";
-> > > +                       reg =3D <0>;
-> > > +                       d-cache-block-size =3D <64>;
-> > > +                       d-cache-sets =3D <256>;
-> > > +                       d-cache-size =3D <32768>;
-> > > +                       i-cache-block-size =3D <64>;
-> > > +                       i-cache-sets =3D <128>;
-> > > +                       i-cache-size =3D <32768>;
-> > > +                       mmu-type =3D "riscv,sv39";
-> > > +                       riscv,isa =3D "rv64imafdc";
-> > > +
-> > > +                       cpu0_intc: interrupt-controller {
-> > > +                               compatible =3D "riscv,cpu-intc";
-> > > +                               interrupt-controller;
-> > > +                               #address-cells =3D <0>;
-> > > +                               #interrupt-cells =3D <1>;
-> > > +                       };
-> > > +               };
-> > > +       };
-> > > +
-> > > +       xtal: xtal-clk {
-> > > +               compatible =3D "fixed-clock";
-> > > +               clock-frequency =3D <40000000>;
-> >
-> > This was discussed many times before, but I think the conclusion was
-> > that the frequency is a property of the crystal on the board, so this
-> > should be 0 in the SoC dtsi, and then overwritten in the board device
-> > tree.
+> Drop beginning "Devicetree bindings" in various forms:
 >
-> But many chips just specify an accepted frequency in their datasheet,
-> and using a frequency other than this is undefined behavior.
+>   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
+>     -exec sed -i -e 's/^title: [dD]evice[ -]\?[tT]ree [bB]indings\? for \([tT]he \)\?\(.*\)$/title: \u\2/' {} \;
+>
+>   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
+>     -exec sed -i -e 's/^title: [bB]indings\? for \([tT]he \)\?\(.*\)$/title: \u\2/' {} \;
+>
+>   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
+>     -exec sed -i -e 's/^title: [dD][tT] [bB]indings\? for \([tT]he \)\?\(.*\)$/title: \u\2/' {} \;
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Yes, this was the argument in previous discussions, but the conclusion
-was still that it should go in the board dts. To be clear I'm just
-summing up the conclusion from previous discussions about this, and
-have no strong opinion other than we should do the same everywhere.
+>  .../devicetree/bindings/interrupt-controller/renesas,irqc.yaml  | 2 +-
 
-> >
-> > > +               clock-output-names =3D "xtal";
-> > > +               #clock-cells =3D <0>;
-> > > +       };
-> > > +
-> > > +       soc {
-> > > +               compatible =3D "simple-bus";
-> > > +               ranges;
-> > > +               interrupt-parent =3D <&plic>;
-> > > +               dma-noncoherent;
-> > > +               #address-cells =3D <1>;
-> > > +               #size-cells =3D <1>;
-> > > +
-> > > +               uart0: serial@30002000 {
-> > > +                       compatible =3D "bouffalolab,uart";
-> > > +                       reg =3D <0x30002000 0x1000>;
-> > > +                       interrupts =3D <20 IRQ_TYPE_LEVEL_HIGH>;
-> > > +                       clocks =3D <&xtal>;
-> > > +                       status =3D "disabled";
-> > > +               };
-> > > +
-> > > +               plic: interrupt-controller@e0000000 {
-> > > +                       compatible =3D "thead,c900-plic";
-> > > +                       reg =3D <0xe0000000 0x4000000>;
-> > > +                       interrupts-extended =3D <&cpu0_intc
-> > > 0xffffffff>,
-> > > +                                             <&cpu0_intc 9>;
-> > > +                       interrupt-controller;
-> > > +                       #address-cells =3D <0>;
-> > > +                       #interrupt-cells =3D <2>;
-> > > +                       riscv,ndev =3D <64>;
-> > > +               };
-> > > +       };
-> > > +};
-> > > --
-> > > 2.37.2
-> > >
-> > >
-> > > _______________________________________________
-> > > linux-riscv mailing list
-> > > linux-riscv@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-riscv
-> >
-> > _______________________________________________
-> > linux-riscv mailing list
-> > linux-riscv@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-riscv
->
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
