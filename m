@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CAEC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBEFC43217
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiKUKJ3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 05:09:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S229988AbiKUKJ5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 05:09:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiKUKJJ (ORCPT
+        with ESMTP id S231181AbiKUKJv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 05:09:09 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EEF12D03
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:09:06 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id d6so18060562lfs.10
-        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:09:05 -0800 (PST)
+        Mon, 21 Nov 2022 05:09:51 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC75EFAED
+        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:09:48 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id r12so18109546lfp.1
+        for <linux-serial@vger.kernel.org>; Mon, 21 Nov 2022 02:09:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=TxrwoV4uWAErf9DL6sbWjIb3t+zcjaVCbt4w4586XkY=;
-        b=Wed0FFJ81XFeo/OAhCrlzD6g9EDFNqhjFc6GWDE+gFplOeMHnMYKzJe06LfyI8dihk
-         dX2CQCikjWSKjz+bBsAMq6DXgQRrR4f4jjYOH1cEFlxtN4/OSlU/ZxBFc+R/E3hmh4lQ
-         yrfzBynHDAvigzlXz2rwhPv7+aKa09hrMZ0VcOiXsU1cZ+1YtaCgRFV7vw6LL0oahIYB
-         Sx+eHl44hLwcd1qhkHn4pUilfYQdfKDa9WC3VtsavFbS1pA64Wen1F23TqyRWG18s5kP
-         j4z8qQOtl+0nLwm4XB0KOlMz/zoA7hc6eVozDfFiv0wS6wk/zAg8oEcAxs/QxdT03ay3
-         vC9Q==
+        bh=i3YXumFsPw6lbI2IHMtFObomGfN5gHhNwcdgLP+EhJk=;
+        b=jMQDqklr6GJhwiLPT9kPQTPmexECun/4HMUGVLBEqBvYISI8XEuWKkoKtj+dKN2kW8
+         LnyRPehM4XhFvmvIv7o8L1T7/0ugBPOT9oMyWvlsqngtdLPsdhc4DftPtJVqPwZ3ajMF
+         zB5BQky4xx8qaU/c7Wuq25mcd7cAeoJdiEwFZ1lptGOkknfifq8ztal99bBbiWwkWfeM
+         5wjxp2czMpvgnJavWNh1b6EWfwNwQ9tncKAkyrzSefAaBJDi9YSwOtA9aR826sp/4z67
+         iIIsu0EgU2jqZF5JijtlmtYruvIVVwTIl2+CscNbK7DLfXToq2+9aMY/qiUQ8lg2sfEx
+         hQ/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TxrwoV4uWAErf9DL6sbWjIb3t+zcjaVCbt4w4586XkY=;
-        b=MzQr1oSmpqIhWsz3VgJu1N0B8TobcOpo8hbIy/FuWQEvjxrhYoEpLtZu04eLNP3a8Y
-         HHfZ2+lwXaxFqkBeQyg3Mqh1qib18i7sRKhRHef28eSiTn0RCYkIZvPDpDo/H9j0jipK
-         hCBfCel1x/DsCFARycteqwbh3oiJqJ3WnTAUpImbpRBsAuwUFrF4TmWYSu+5KYDhJOKM
-         +5FU1+zeDZcD1+HcS8j+BE0qFfZ+GwqB1fGF87t2vXKB//GrldMPFmFgS1kc7x7PIx2E
-         hp0MbZXER/MNliDXB5Kf7Eux5VBE6GwQ4f9WmAomGda5n0r7BEvYu6tqbA3WhqAt/TcN
-         jntQ==
-X-Gm-Message-State: ANoB5plLm8K3TlN2x9Zk7jIQz3iqZ1937ZzRLNF02ZljGmLk3zhVrXe8
-        iL+HXYnsE6EIVRB61Pj4eI8J9qdB5oAbyY7R
-X-Google-Smtp-Source: AA0mqf5GeXjgbrXXdWAXxvd6orgjBRuVp8zzcCyfmnYfi/NNmTb9WEE8schAAo/sbXXSZ/qNgDNyxA==
-X-Received: by 2002:a19:7001:0:b0:4b1:8fbb:d3f4 with SMTP id h1-20020a197001000000b004b18fbbd3f4mr5968366lfc.70.1669025344352;
-        Mon, 21 Nov 2022 02:09:04 -0800 (PST)
+        bh=i3YXumFsPw6lbI2IHMtFObomGfN5gHhNwcdgLP+EhJk=;
+        b=sQk6jY/L7x9ZEF2Glq+YUabrlainArE0AvrolV5NvVggBJXY/N9o+Tx+P2+zBrAGey
+         54/MaVwrxIvU+hUCeE9IedBHgrDjnE2ns+iK+GAh9EEmS9cGdnwJLK2hXGbZpZXN+3Zk
+         Kot334vfRmJS+RSZf8PRlT3DXSbvnwGboiXH/H2j8kipvVCnY+h8Ql57FYUbVn9dfz5J
+         YrBtMjsKukigGUtu4Sg5sFAzdAZr8y+hwBgodWVLPyPUvzewRJ7g8ukpyDpuKfLR4dag
+         6rRs+k/eZf6GvzXBSxaxugIi+sT+bmSAizxul2SxhsIh/xtnj/EzWj8HMoWgm2F6tktE
+         A5jA==
+X-Gm-Message-State: ANoB5pkjt7p5hqc6xsWddwQWafqXiCAm9LbcauCdr4vNj/21Q8fdxQEO
+        8k1gDmlcbgONPSGkvvcy9inZTg==
+X-Google-Smtp-Source: AA0mqf6DBfrEF5O0+Ktio6r059/CuVFDgOS3eqygqMtw5mUk3rI1/U6Kjd8+p/QbRjRwyx2S7laiMA==
+X-Received: by 2002:ac2:5e2c:0:b0:4a2:243a:ef6e with SMTP id o12-20020ac25e2c000000b004a2243aef6emr942157lfg.454.1669025387158;
+        Mon, 21 Nov 2022 02:09:47 -0800 (PST)
 Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id d20-20020ac25454000000b004948378080csm1953159lfn.290.2022.11.21.02.08.47
+        by smtp.gmail.com with ESMTPSA id be34-20020a056512252200b0049e9122bd1bsm1975586lfb.164.2022.11.21.02.09.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 02:09:03 -0800 (PST)
-Message-ID: <1774dce0-b9eb-6b75-c9c2-98dbc05db04a@linaro.org>
-Date:   Mon, 21 Nov 2022 11:08:47 +0100
+        Mon, 21 Nov 2022 02:09:46 -0800 (PST)
+Message-ID: <9d287ce2-a826-5777-8d88-8e05e6924670@linaro.org>
+Date:   Mon, 21 Nov 2022 11:09:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Subject: Re: [PATCH 1/7] dt-bindings: serial: add bindings doc for Bouffalolab
- uart driver
+Subject: Re: [PATCH 5/7] riscv: dts: bouffalolab: add the bl808 SoC base
+ device tree
 Content-Language: en-US
 To:     Jisheng Zhang <jszhang@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -69,9 +69,9 @@ To:     Jisheng Zhang <jszhang@kernel.org>,
 Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
 References: <20221120082114.3030-1-jszhang@kernel.org>
- <20221120082114.3030-2-jszhang@kernel.org>
+ <20221120082114.3030-6-jszhang@kernel.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221120082114.3030-2-jszhang@kernel.org>
+In-Reply-To: <20221120082114.3030-6-jszhang@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -79,75 +79,24 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 20/11/2022 09:21, Jisheng Zhang wrote:
-> Add bindings doc for Bouffalolab UART Driver
-
-Subject: drop second, redundant "bindings doc".
-
+> Add a baisc dtsi for the bouffalolab bl808 SoC.
 > 
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > ---
->  .../bindings/serial/bouffalolab,uart.yaml     | 50 +++++++++++++++++++
->  1 file changed, 50 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+>  arch/riscv/boot/dts/Makefile               |  1 +
+>  arch/riscv/boot/dts/bouffalolab/bl808.dtsi | 74 ++++++++++++++++++++++
+>  2 files changed, 75 insertions(+)
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
-> new file mode 100644
-> index 000000000000..6cef956d33d2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
-> @@ -0,0 +1,50 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/serial/bouffalolab,uart.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> diff --git a/arch/riscv/boot/dts/Makefile b/arch/riscv/boot/dts/Makefile
+> index ff174996cdfd..b525467152b2 100644
+> --- a/arch/riscv/boot/dts/Makefile
+> +++ b/arch/riscv/boot/dts/Makefile
+> @@ -1,4 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> +subdir-y += bouffalolab
 
-Drop quotes from both lines.
-
-> +
-> +title: Bouffalolab UART Controller
-> +
-> +maintainers:
-> +  - Jisheng Zhang <jszhang@kernel.org>
-> +
-> +allOf:
-> +  - $ref: serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: bouffalolab,uart
-
-No model number? From bouffalolab there will be only one, exactly UART
-model? No new models in next 5, 10, 100 years?
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    aliases {
-> +        serial0 = &uart0;
-> +    };
-
-Drop aliases, not related.
-
+Nothing to build there, so not yet.
 
 
 Best regards,
