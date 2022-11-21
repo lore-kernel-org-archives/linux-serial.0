@@ -2,56 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7025C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 068EFC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 10:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230519AbiKUKQa convert rfc822-to-8bit (ORCPT
+        id S229831AbiKUKRq convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 05:16:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        Mon, 21 Nov 2022 05:17:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbiKUKQ3 (ORCPT
+        with ESMTP id S229905AbiKUKRn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 05:16:29 -0500
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5800831ECA;
-        Mon, 21 Nov 2022 02:16:28 -0800 (PST)
-Received: by mail-qk1-f170.google.com with SMTP id k4so7649664qkj.8;
-        Mon, 21 Nov 2022 02:16:28 -0800 (PST)
+        Mon, 21 Nov 2022 05:17:43 -0500
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD61212092;
+        Mon, 21 Nov 2022 02:17:38 -0800 (PST)
+Received: by mail-qk1-f180.google.com with SMTP id z1so7660966qkl.9;
+        Mon, 21 Nov 2022 02:17:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=AH7J2YAbJJnliv8tRtEf0xlMhNlRGV7PPaAW6p6F+x8=;
-        b=iLW1NUG3h4ORAFxZ84wzc5LbPyJ6kpB9cPrZdF6eKlS2wNBOIkbzjBAPIN0QLn6x4C
-         9mjjsjVrSLrf7XPczPicXBrU71xJlivC7Q55IY77y/LhQmAvmjuaXwiHvk3Tf0bFCv/E
-         9/tK0zcm8sCVnpjIDGVO11Gdnvqu1eH745cl0leApnHvPoAIQhUvpx5/BRyeAMONOySJ
-         Py2aokjIBYyIIYfW3Ga8x1ZvGZzjCdvn06+pYA6j3z8OnuZ50VaJKPhom6uuOICtMnVO
-         6RENidr8dMoftJtMAbwCCphRBjuSPw4lY+r2C0hIsgLdZ1WXSuvFbnMUvoZwnXpbR8Ee
-         gIiQ==
-X-Gm-Message-State: ANoB5pkkDOz/SraxhFJXbjbNhoXq6W/jYnMIqNnR90C2a+16hmGpAvj6
-        LVc+37VvKfRU/dfdKpHd08c+XIdul/TRdw==
-X-Google-Smtp-Source: AA0mqf4EH63l2/yPwScD+AaqSL244ZfXdSlfGBBidsVgK56zipAgMRiiUFZXMw/lnFZeFr/3FTW59A==
-X-Received: by 2002:a37:e20d:0:b0:6fa:8e8e:1ee5 with SMTP id g13-20020a37e20d000000b006fa8e8e1ee5mr15451922qki.45.1669025787304;
-        Mon, 21 Nov 2022 02:16:27 -0800 (PST)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id s6-20020a05620a254600b006e07228ed53sm8094014qko.18.2022.11.21.02.16.25
+        bh=6tQj4S/iKIQ/NxULtK0zpJiAfSFXnwF4EZ6vKDJSo1c=;
+        b=zoGNBwM/YDAMXWIK81MYYAZXQcZnvEH2FuwmKHJwJNjqB+PZ9Dhrov+nnyPYxZ7Gz5
+         XS5/f5EO/dO9kNxSYiqdWKs1cdT5M8A0BWm1i1sjyR4BFV7n0CaNpoERNu8Cha8JJLmG
+         /KlSGrCH3Mo/fNRm1ICu6p+1YjV7mgpppIqfIJz0mE8sk759kbb+8sGRRg3cFnKsTZN5
+         frrBK0LFehZ/UlwM4XwPUdv+fnF38ifeuGqsf323LnZaAI0AaSTomq2xuwtjEXI86ogA
+         x0dzayoRXfEZtMxisJlbAJFQEYnWlwpfn7pG8Ro1jV9qSRndAN3EzwyAsqL5OavsHt5C
+         i75Q==
+X-Gm-Message-State: ANoB5pmnLmP1Qnpq3UFvxrDQm7j6XluSyS6CWzEH/hi/rEGUXvdop6ET
+        dYdSCX8NwBUf9VVdVDkMZoyHnjSvlzv3lw==
+X-Google-Smtp-Source: AA0mqf5l4AJkTy0W/0OcWNgEjluONw7Za4RGqHuQh0vlTjC8jdvvZIgy/aWrByZjViE9vuaabUHyIg==
+X-Received: by 2002:a05:620a:8081:b0:6fa:19c4:a6c7 with SMTP id ef1-20020a05620a808100b006fa19c4a6c7mr7476018qkb.51.1669025857664;
+        Mon, 21 Nov 2022 02:17:37 -0800 (PST)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id fx9-20020a05622a4ac900b0039a610a04b1sm6505153qtb.37.2022.11.21.02.17.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 02:16:26 -0800 (PST)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-3704852322fso108795307b3.8;
-        Mon, 21 Nov 2022 02:16:25 -0800 (PST)
-X-Received: by 2002:a81:6cd2:0:b0:38d:5807:4b9b with SMTP id
- h201-20020a816cd2000000b0038d58074b9bmr6623722ywc.358.1669025785217; Mon, 21
- Nov 2022 02:16:25 -0800 (PST)
+        Mon, 21 Nov 2022 02:17:37 -0800 (PST)
+Received: by mail-yb1-f176.google.com with SMTP id f201so13005261yba.12;
+        Mon, 21 Nov 2022 02:17:36 -0800 (PST)
+X-Received: by 2002:a5b:24b:0:b0:6ca:3b11:8d76 with SMTP id
+ g11-20020a5b024b000000b006ca3b118d76mr16441811ybp.202.1669025856529; Mon, 21
+ Nov 2022 02:17:36 -0800 (PST)
 MIME-Version: 1.0
-References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-11-gsomlo@gmail.com>
-In-Reply-To: <20221118145512.509950-11-gsomlo@gmail.com>
+References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-12-gsomlo@gmail.com>
+In-Reply-To: <20221118145512.509950-12-gsomlo@gmail.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 21 Nov 2022 11:16:14 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVCc5xtnRoprtdgt_ZH42j=+ivS4aD+Uceg9pny-FpzYQ@mail.gmail.com>
-Message-ID: <CAMuHMdVCc5xtnRoprtdgt_ZH42j=+ivS4aD+Uceg9pny-FpzYQ@mail.gmail.com>
-Subject: Re: [PATCH v5 10/14] serial: liteuart: separate rx loop from poll timer
+Date:   Mon, 21 Nov 2022 11:17:25 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXKEOZXdZx3i+546DUAXt9DYD87BxKC3XN9XUomLMN5hg@mail.gmail.com>
+Message-ID: <CAMuHMdXKEOZXdZx3i+546DUAXt9DYD87BxKC3XN9XUomLMN5hg@mail.gmail.com>
+Subject: Re: [PATCH v5 11/14] serial: liteuart: move function definitions
 To:     Gabriel Somlo <gsomlo@gmail.com>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         gregkh@linuxfoundation.org, jirislaby@kernel.org,
@@ -64,56 +64,15 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Gabriel,
-
 On Fri, Nov 18, 2022 at 3:57 PM Gabriel Somlo <gsomlo@gmail.com> wrote:
-> Convert the rx loop into its own dedicated function, and (for now)
-> call it from the poll timer. This is in preparation for adding irq
-> support to the receive path.
+> Move definitions for liteuart_[stop|start]_tx(), liteuart_stop_rx(),
+> and liteuart_putchar() to a more convenient location in preparation
+> for adding IRQ support. This patch contains no functional changes.
 >
 > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
 > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Thanks for your patch!
-
 Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -68,10 +68,8 @@ static struct uart_driver liteuart_driver = {
->  #endif
->  };
->
-> -static void liteuart_timer(struct timer_list *t)
-> +static void liteuart_rx_chars(struct uart_port *port)
-
-So first you spin this off into a separate function, so it can be
-called from both the interrupt and polling paths.
-Later, in "[PATCH v5 12/14] serial: liteuart: add IRQ support for the
-RX path", you remove the call from the polling path...
-
-
->  {
-> -       struct liteuart_port *uart = from_timer(uart, t, timer);
-> -       struct uart_port *port = &uart->port;
->         unsigned char __iomem *membase = port->membase;
->         unsigned int status, ch;
->
-> @@ -88,6 +86,14 @@ static void liteuart_timer(struct timer_list *t)
->         }
->
->         tty_flip_buffer_push(&port->state->port);
-> +}
-> +
-> +static void liteuart_timer(struct timer_list *t)
-> +{
-> +       struct liteuart_port *uart = from_timer(uart, t, timer);
-> +       struct uart_port *port = &uart->port;
-> +
-> +       liteuart_rx_chars(port);
->
->         mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
->  }
 
 Gr{oetje,eeting}s,
 
