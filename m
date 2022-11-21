@@ -2,56 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47368C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 09:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36378C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 09:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbiKUJyp convert rfc822-to-8bit (ORCPT
+        id S230469AbiKUJ4S convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 04:54:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
+        Mon, 21 Nov 2022 04:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiKUJxt (ORCPT
+        with ESMTP id S231250AbiKUJ4B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 04:53:49 -0500
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95DBDF8A;
-        Mon, 21 Nov 2022 01:53:36 -0800 (PST)
-Received: by mail-qv1-f51.google.com with SMTP id e15so7676806qvo.4;
-        Mon, 21 Nov 2022 01:53:36 -0800 (PST)
+        Mon, 21 Nov 2022 04:56:01 -0500
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8182603;
+        Mon, 21 Nov 2022 01:55:47 -0800 (PST)
+Received: by mail-qt1-f169.google.com with SMTP id c15so6920953qtw.8;
+        Mon, 21 Nov 2022 01:55:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=MOcXUuHAGZimwc+RZm0Yt6j74cNusx2nIprjfIzx5YU=;
-        b=FxrYTijCXNPlCdnTR/qhjNWueLjMV1bdjoszW+/RqXM7j5Pj231VKeB2WvZ1lHZwhc
-         nbxvlp5oDDO0nvrc+ex5oKMkDjPf5xQ9YVJvtld+xMhTYTPCHcAJAgU2crKNmx99gFB2
-         bo5YDUqRCm9a+b5qxTRvH/fzPO7Hf9zTpsDoXwXiAvg8B0PlO5u8Tepr//3AnTGIQwTJ
-         CLsbpDfnByfDQSGZYpvS93T+S/zBn/0yTHlktxOft19oSV5pTxbRoAoELu1Iv30OJorS
-         6s/RJRP+lK/KsTXxBxUyl+SCvG/7O4lw6zRBtckil+tXFxBk9psbjBdJ2hHpGTudVI7L
-         1Edg==
-X-Gm-Message-State: ANoB5pkbDigfef2TCIi0NDcKA4IB03g2CnPC8OuxrLOIBUiH1tHkUYf9
-        WbuU2a1mmlZxFykp7gOSxintkcExDVop8A==
-X-Google-Smtp-Source: AA0mqf6bc5uQ9A+jKCMsLY/XTTOD+1e5YYW4/scGfbmTnFMdo35Xfpbfpj7btWTnjskYySYCNLAj6g==
-X-Received: by 2002:ad4:52e9:0:b0:4bb:728e:b232 with SMTP id p9-20020ad452e9000000b004bb728eb232mr4470319qvu.27.1669024415708;
-        Mon, 21 Nov 2022 01:53:35 -0800 (PST)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id z15-20020a05622a124f00b003a51e6b6c95sm6469986qtx.14.2022.11.21.01.53.34
+        bh=St3MUbTUVs2+aDUKogjOGRd4edHciV6Y1IPm+TilpGk=;
+        b=WVCYj7V8Sm8tHa5JE8FyDSXXJn5OrKCDllQZNAqobDzOW5WIBnXHUIM/N/M+bpykG3
+         T6BI/e9ajMCJX+rE+eptAiSmrvXIdt/fYAnDcSU0XEERPuYukFaA6ZVDqZeFisf8MQmc
+         Ni0y4INL2XXPzCHoyhU3BAzVa9Ve8cK4uhLrovI4izOYlcSfOAwjFXR16ZVMPMIzlPhs
+         lumhVfYORnTv19jMarox4KTnt0QYu2gPw5kAEc0HFao8oImlKUqvQoIwuzf7sufEGc5v
+         /r0RRt9P3NXhiIiI3MTcS3rWSYDk1mZWgzv7CVRv0vWG1Vwl0ehR4VhvWNPkhGJ5nnjD
+         B0Xg==
+X-Gm-Message-State: ANoB5plh/TUV5xHUJrP/aSEQEm1o66q4rwbstwL0XQRXKA+pgkvXW7Sp
+        mlpImc8E/38DD8StFhzKCjNhoT2FcpODeg==
+X-Google-Smtp-Source: AA0mqf5Eyff0pcOh0zmyQVqGnTKHkvtL7yDxqBuSGAixLILmd9Sk+gvuhRSRRHxH/JAoWCMdNnzv+A==
+X-Received: by 2002:a05:622a:2283:b0:3a5:8ba0:f81f with SMTP id ay3-20020a05622a228300b003a58ba0f81fmr16904064qtb.395.1669024546017;
+        Mon, 21 Nov 2022 01:55:46 -0800 (PST)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id e9-20020ac81309000000b003a56796a764sm6412592qtj.25.2022.11.21.01.55.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 01:53:35 -0800 (PST)
-Received: by mail-yb1-f172.google.com with SMTP id y83so4847204yby.6;
-        Mon, 21 Nov 2022 01:53:34 -0800 (PST)
-X-Received: by 2002:a25:9e84:0:b0:6de:6183:c5c3 with SMTP id
- p4-20020a259e84000000b006de6183c5c3mr1436785ybq.89.1669024414398; Mon, 21 Nov
- 2022 01:53:34 -0800 (PST)
+        Mon, 21 Nov 2022 01:55:44 -0800 (PST)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-39e61d2087dso32938447b3.5;
+        Mon, 21 Nov 2022 01:55:44 -0800 (PST)
+X-Received: by 2002:a81:f80f:0:b0:38e:e541:d8ca with SMTP id
+ z15-20020a81f80f000000b0038ee541d8camr15664270ywm.283.1669024544135; Mon, 21
+ Nov 2022 01:55:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-6-gsomlo@gmail.com>
-In-Reply-To: <20221118145512.509950-6-gsomlo@gmail.com>
+References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-7-gsomlo@gmail.com>
+In-Reply-To: <20221118145512.509950-7-gsomlo@gmail.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 21 Nov 2022 10:53:23 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXvC3LoDY+qxxyDHGCi4ViMoxb=gKA+_8oob5yCoX7vNw@mail.gmail.com>
-Message-ID: <CAMuHMdXvC3LoDY+qxxyDHGCi4ViMoxb=gKA+_8oob5yCoX7vNw@mail.gmail.com>
-Subject: Re: [PATCH v5 05/14] serial: liteuart: minor style fix in liteuart_init()
+Date:   Mon, 21 Nov 2022 10:55:33 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXuHM2QdmNUuJ7Zb9XOAaKR8fegb7KiTL+5_mPkdO307A@mail.gmail.com>
+Message-ID: <CAMuHMdXuHM2QdmNUuJ7Zb9XOAaKR8fegb7KiTL+5_mPkdO307A@mail.gmail.com>
+Subject: Re: [PATCH v5 06/14] serial: liteuart: move tty_flip_buffer_push()
+ out of rx loop
 To:     Gabriel Somlo <gsomlo@gmail.com>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         gregkh@linuxfoundation.org, jirislaby@kernel.org,
@@ -65,6 +66,10 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On Fri, Nov 18, 2022 at 3:56 PM Gabriel Somlo <gsomlo@gmail.com> wrote:
+> Calling tty_flip_buffer_push() for each individual received character
+> is overkill. Move it out of the rx loop, and only call it once per
+> set of characters received together.
+>
 > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
 > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
