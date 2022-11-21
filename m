@@ -2,49 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B653BC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 08:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120AEC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 08:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiKUIhV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 03:37:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33308 "EHLO
+        id S229715AbiKUImo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 03:42:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiKUIhQ (ORCPT
+        with ESMTP id S229475AbiKUImn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 03:37:16 -0500
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A8A1F2FE;
-        Mon, 21 Nov 2022 00:37:15 -0800 (PST)
-Received: by mail-ej1-f41.google.com with SMTP id bj12so26695726ejb.13;
-        Mon, 21 Nov 2022 00:37:15 -0800 (PST)
+        Mon, 21 Nov 2022 03:42:43 -0500
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A92644E;
+        Mon, 21 Nov 2022 00:42:42 -0800 (PST)
+Received: by mail-ed1-f54.google.com with SMTP id l24so2631001edj.8;
+        Mon, 21 Nov 2022 00:42:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ahq+G/QJAtYi82jQX9f+cluF1LoI7Ep3P6ooqImmzio=;
-        b=7LfECugByeuj80xcnDAHP4rwoDr0y970L+DFRrFr/TV2X7d3CmdOFtzEhtb1H2tA5C
-         ivnZM2c1UaGRAtMGzX52ZADBmuZnsJ59VbQ4H1a1SqcY8oeVQZ+YBbReJgJ1yD1eRNnR
-         91/sx/zzq8lChSn785GeWah/KbK2xza0XCYreukCLqzc3e/cNNYa4Af+krfFEpAr2no0
-         4Ed3JcOvbpjATlPLDj1TF+2KehpIGf6WmGnwMS22s0tsiG+qmqM40cCNhL1kmajGQkJk
-         jgOzWbg2WQCP5wReUzekx2MwCYuo/jpWisU3uhwAbyvVcJ/p/JFUD2JB+S7bQIQp8nO5
-         jlvg==
-X-Gm-Message-State: ANoB5pkSUxm3w8sC1LeoLEwfIuRXYO0leDJoOWjbT9mqPYYTVSkz0ZZP
-        xN9ffMRAyBN5PFDV6FS9h10=
-X-Google-Smtp-Source: AA0mqf41/ue7ZZt1+gcLSpO14efqLI+hlYnYIbCKKeHwcs15FjtqWJOIsTULd/kWAjyTSzy1uKpieg==
-X-Received: by 2002:a17:906:eb04:b0:7ae:77ef:d048 with SMTP id mb4-20020a170906eb0400b007ae77efd048mr14659303ejb.740.1669019833844;
-        Mon, 21 Nov 2022 00:37:13 -0800 (PST)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id 9-20020a170906328900b0078df3b4464fsm4803199ejw.19.2022.11.21.00.37.12
+        bh=79IcmyiF9Ta7ifYcXOVVX61hUTkh+ixj1xyhExMH+Hw=;
+        b=7yrFaf7g6TNx+C0LuPxttfpCics2NYsNKQhkOm5+dLVpZwOt4c3boosiknVP7IbzuN
+         qP+d7SbofT0gIo1P4vXiDc9wMaQcOUXA0h0Zp142tHm3OVgQHC4b75BvolkUyHJwQNO2
+         5rZ8/IejyuEzrUmJYKkelrgJXSWdKDs2NI1aOFukTXqrXw9pA9RCXZDGeyN49ZOmkUWx
+         EFoxYCQNzhy/PBUCS4wJ+xjXRu7OFo0pZyjlr89kjIj7ZgMyspN4sKg82zIPg+M1576t
+         jxSOFJAIqxvJNIlf50JUMDT3HFG3PQnJ8hNmFvf0bV3n6AyjAbRt0BOcc8arftSbIPNH
+         QynQ==
+X-Gm-Message-State: ANoB5pkBUyjnO4LytYVgqmGo/+nMTOVwRDXdr7jRwvs6Ee3nGnrbAa15
+        rqtuwL8w141GUaDjBQA07mCrCSqTQleWXw==
+X-Google-Smtp-Source: AA0mqf4EKwn2NcoKuzk3M00InmLenObnz7fbVogrY3sWgEq5cOGQpHRPcZnELt6wJjmdKO19IdWWJg==
+X-Received: by 2002:a05:6402:528d:b0:468:dc9:ec08 with SMTP id en13-20020a056402528d00b004680dc9ec08mr15565745edb.17.1669020160813;
+        Mon, 21 Nov 2022 00:42:40 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id s26-20020a056402165a00b0046800749670sm4997624edx.53.2022.11.21.00.42.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 00:37:13 -0800 (PST)
-Message-ID: <44bf21b6-cbe4-4d73-0883-a9bcbd7d5971@kernel.org>
-Date:   Mon, 21 Nov 2022 09:37:12 +0100
+        Mon, 21 Nov 2022 00:42:40 -0800 (PST)
+Message-ID: <a1d0f706-f12e-dbf2-be18-99f22d91eccc@kernel.org>
+Date:   Mon, 21 Nov 2022 09:42:39 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.1
 Subject: Re: [PATCH v5 09/14] serial: liteuart: fix rx loop variable types
 Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
 To:     Gabriel Somlo <gsomlo@gmail.com>, linux-kernel@vger.kernel.org
 Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
@@ -52,50 +53,57 @@ Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         geert@linux-m68k.org, ilpo.jarvinen@linux.intel.com
 References: <20221118145512.509950-1-gsomlo@gmail.com>
  <20221118145512.509950-10-gsomlo@gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20221118145512.509950-10-gsomlo@gmail.com>
+ <44bf21b6-cbe4-4d73-0883-a9bcbd7d5971@kernel.org>
+In-Reply-To: <44bf21b6-cbe4-4d73-0883-a9bcbd7d5971@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 11. 22, 15:55, Gabriel Somlo wrote:
-> Update variable types to match the signature of uart_insert_char()
-> which consumes them.
+On 21. 11. 22, 9:37, Jiri Slaby wrote:
+> On 18. 11. 22, 15:55, Gabriel Somlo wrote:
+>> Update variable types to match the signature of uart_insert_char()
+>> which consumes them.
+>>
+>> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+>> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>> ---
+>>   drivers/tty/serial/liteuart.c | 3 +--
+>>   1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/liteuart.c 
+>> b/drivers/tty/serial/liteuart.c
+>> index 81aa7c1da73c..42ac9aee050a 100644
+>> --- a/drivers/tty/serial/liteuart.c
+>> +++ b/drivers/tty/serial/liteuart.c
+>> @@ -73,8 +73,7 @@ static void liteuart_timer(struct timer_list *t)
+>>       struct liteuart_port *uart = from_timer(uart, t, timer);
+>>       struct uart_port *port = &uart->port;
+>>       unsigned char __iomem *membase = port->membase;
+>> -    int ch;
+>> -    unsigned long status;
+>> +    unsigned int status, ch;
 > 
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->   drivers/tty/serial/liteuart.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
+> These should be u8 after all, right?
 > 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 81aa7c1da73c..42ac9aee050a 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -73,8 +73,7 @@ static void liteuart_timer(struct timer_list *t)
->   	struct liteuart_port *uart = from_timer(uart, t, timer);
->   	struct uart_port *port = &uart->port;
->   	unsigned char __iomem *membase = port->membase;
-> -	int ch;
-> -	unsigned long status;
-> +	unsigned int status, ch;
+> Wait, status is a bool in the end:
+> 
+>>       while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
+> 
+> But why is it passed to uart_insert_char() as such? That's ugly. Maybe 
+> drop all of this "status" and pass LSR_RXC directly.
 
-These should be u8 after all, right?
+Actually, even 0 directly, provided overrun parameter is always 0.
 
-Wait, status is a bool in the end:
+> The while's 
+> condition would simply look like (!litex_read8(membase + OFF_RXEMPTY)) 
+> then.
+> 
+>>           ch = litex_read8(membase + OFF_RXTX);
+> 
+> thanks,
 
->   	while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
-
-But why is it passed to uart_insert_char() as such? That's ugly. Maybe 
-drop all of this "status" and pass LSR_RXC directly. The while's 
-condition would simply look like (!litex_read8(membase + OFF_RXEMPTY)) then.
-
->   		ch = litex_read8(membase + OFF_RXTX);
-
-thanks,
 -- 
 js
-suse labs
 
