@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 120AEC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 08:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3852C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 08:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiKUImo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 03:42:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
+        id S229868AbiKUIpK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 03:45:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiKUImn (ORCPT
+        with ESMTP id S229519AbiKUIpJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 03:42:43 -0500
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A92644E;
-        Mon, 21 Nov 2022 00:42:42 -0800 (PST)
-Received: by mail-ed1-f54.google.com with SMTP id l24so2631001edj.8;
-        Mon, 21 Nov 2022 00:42:42 -0800 (PST)
+        Mon, 21 Nov 2022 03:45:09 -0500
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9813661744;
+        Mon, 21 Nov 2022 00:45:08 -0800 (PST)
+Received: by mail-ej1-f51.google.com with SMTP id gv23so26846361ejb.3;
+        Mon, 21 Nov 2022 00:45:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=79IcmyiF9Ta7ifYcXOVVX61hUTkh+ixj1xyhExMH+Hw=;
-        b=7yrFaf7g6TNx+C0LuPxttfpCics2NYsNKQhkOm5+dLVpZwOt4c3boosiknVP7IbzuN
-         qP+d7SbofT0gIo1P4vXiDc9wMaQcOUXA0h0Zp142tHm3OVgQHC4b75BvolkUyHJwQNO2
-         5rZ8/IejyuEzrUmJYKkelrgJXSWdKDs2NI1aOFukTXqrXw9pA9RCXZDGeyN49ZOmkUWx
-         EFoxYCQNzhy/PBUCS4wJ+xjXRu7OFo0pZyjlr89kjIj7ZgMyspN4sKg82zIPg+M1576t
-         jxSOFJAIqxvJNIlf50JUMDT3HFG3PQnJ8hNmFvf0bV3n6AyjAbRt0BOcc8arftSbIPNH
-         QynQ==
-X-Gm-Message-State: ANoB5pkBUyjnO4LytYVgqmGo/+nMTOVwRDXdr7jRwvs6Ee3nGnrbAa15
-        rqtuwL8w141GUaDjBQA07mCrCSqTQleWXw==
-X-Google-Smtp-Source: AA0mqf4EKwn2NcoKuzk3M00InmLenObnz7fbVogrY3sWgEq5cOGQpHRPcZnELt6wJjmdKO19IdWWJg==
-X-Received: by 2002:a05:6402:528d:b0:468:dc9:ec08 with SMTP id en13-20020a056402528d00b004680dc9ec08mr15565745edb.17.1669020160813;
-        Mon, 21 Nov 2022 00:42:40 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id s26-20020a056402165a00b0046800749670sm4997624edx.53.2022.11.21.00.42.39
+        bh=OSwlfEXLAaByikFdLKEpN0fMli0S+iw5J5JRP+E+1Cc=;
+        b=rvQCUCyxWAlLkTXzd4eJbfIbHWOHY0fpbLDY+PkqkAE9T7lE4SegWbl5WWGliyV+ih
+         LM1cW4bGK81GNwYL4ZzsCV8mCuWZhc/HedEOvXTYZRlQbTd9I1YBkIfhSFuBzG0I4nfN
+         2P8pYGntOiji5oD0t7VDmShr3gaO4t24fAiROX7dpyOSTC1M81QjDGWX39zblAOr73NN
+         VFfcEXrVspB/4cmCiCMIyJ7NGwMHJaeaWtCx7MBEmsTXbVNdlSIy5K5pHTgsdLsThAB4
+         adDN9hZmD4dL8Wd0i+ZbvXjvvRPMM3eSECmkDIKxqTiNF9FlYxm9LF1BukRMwxse9V7Z
+         AvRg==
+X-Gm-Message-State: ANoB5pkUSbym6XGl3v8c838WTV/smfOPv+A+euXw6CQHhcELIU/inqni
+        +whBKFnJuv03J/P2NkxYmQQ=
+X-Google-Smtp-Source: AA0mqf41aeCMWBPw/W7bBHcNFCqsvqDvBWz2UqhC19oVJxhOzms9tp5qTIha/NA4JBOobYK3ayRaBQ==
+X-Received: by 2002:a17:906:ce35:b0:7ae:215:2dd5 with SMTP id sd21-20020a170906ce3500b007ae02152dd5mr14306117ejb.208.1669020307205;
+        Mon, 21 Nov 2022 00:45:07 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id es8-20020a056402380800b00459148fbb3csm4896199edb.86.2022.11.21.00.45.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 00:42:40 -0800 (PST)
-Message-ID: <a1d0f706-f12e-dbf2-be18-99f22d91eccc@kernel.org>
-Date:   Mon, 21 Nov 2022 09:42:39 +0100
+        Mon, 21 Nov 2022 00:45:06 -0800 (PST)
+Message-ID: <1b5a963c-2a5b-54fe-784e-fcc4d06c347e@kernel.org>
+Date:   Mon, 21 Nov 2022 09:45:05 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.1
@@ -86,24 +86,10 @@ On 21. 11. 22, 9:37, Jiri Slaby wrote:
 >> +    unsigned int status, ch;
 > 
 > These should be u8 after all, right?
-> 
-> Wait, status is a bool in the end:
-> 
->>       while ((status = !litex_read8(membase + OFF_RXEMPTY)) == 1) {
-> 
-> But why is it passed to uart_insert_char() as such? That's ugly. Maybe 
-> drop all of this "status" and pass LSR_RXC directly.
 
-Actually, even 0 directly, provided overrun parameter is always 0.
-
-> The while's 
-> condition would simply look like (!litex_read8(membase + OFF_RXEMPTY)) 
-> then.
-> 
->>           ch = litex_read8(membase + OFF_RXTX);
-> 
-> thanks,
+And can you change membase to u8 * too 8-)?
 
 -- 
 js
+suse labs
 
