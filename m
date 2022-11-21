@@ -2,84 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD51C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 08:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DB4C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 09:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbiKUI6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 03:58:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        id S230289AbiKUJpf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 04:45:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiKUI6p (ORCPT
+        with ESMTP id S230156AbiKUJpc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 03:58:45 -0500
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FF5D2D3;
-        Mon, 21 Nov 2022 00:58:45 -0800 (PST)
-Received: by mail-ej1-f46.google.com with SMTP id bj12so26809731ejb.13;
-        Mon, 21 Nov 2022 00:58:45 -0800 (PST)
+        Mon, 21 Nov 2022 04:45:32 -0500
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBDFDEA4;
+        Mon, 21 Nov 2022 01:45:31 -0800 (PST)
+Received: by mail-qv1-f50.google.com with SMTP id i12so7685709qvs.2;
+        Mon, 21 Nov 2022 01:45:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=PVOvAfGe8EFehC4Um3S5FYYIC4OCoqGuqtE1Oktag4Q=;
-        b=LpfMOpSbAca9wWz8nkQpSsO2Gi/9UtBgRk7YanbPNDrHQ6nr0/JLDPaNR1jT3uBxqC
-         UTuguHr92aXYfouIskj5MkhY4qqea2E5Vs1yfVE0OpGut/Tn56NOZP68gRgPxCl8AED7
-         5T/FJa6KmgP+BwWJcNDLnoQNbOGScyOh6LvM1EvALTnxOSAnKCTw4NvPnMuOAri3E5vK
-         wgijhxrTBC5VB8jjnhOOtYOpo1kvwambZWt8i7uTy/1kWUIkoW8g5xUox9BvTz6qH17w
-         4u4Xfh7LaJr3GFELuVa4IExsWmGBi74CUVc+UOiB2OXtb/VVw/OsfrdA1aznDaQaE4/r
-         yl0A==
-X-Gm-Message-State: ANoB5plXaG64aJ3cK26NA94r71kTrRliyNy4qo0J+5DF8ysnx4Bqh+Xs
-        WhH9gU/bI+AL9bHhl6T8B8I=
-X-Google-Smtp-Source: AA0mqf6uDngcY8U/b2D28EFm58gOju20m5WgSxWJC4mLLcPZa4hFvp1jvQh+4WVNdBhjdVxJHRzDng==
-X-Received: by 2002:a17:906:3fce:b0:7ad:bb54:75d3 with SMTP id k14-20020a1709063fce00b007adbb5475d3mr14286281ejj.484.1669021123551;
-        Mon, 21 Nov 2022 00:58:43 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id c1-20020a17090618a100b0074134543f82sm4824059ejf.90.2022.11.21.00.58.42
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=35vxWs5cwO0QxNYuBdoRAR/aU6e3A2oDOcVJrHNXrgM=;
+        b=g1kmj9nsL3IK0BRaYUCqdA1YOqyjLNcQWmHQxPBvzDv/KgKONxBgsHDtp4Cl+7Q3tS
+         IQc7P9S7ciugFc41ptjqwAhGtnkmUn3AJCYWASWkoB2+TRLnGgT4aNFPMrZIeohn4zHN
+         Nd6oFEJl+8g9HVb3tEbI33HZu0eqiowJlsBPl9q4wvCOF/MDSSyDKKkyxInxK89zRwJb
+         OqjrBOZXmgCym0nu4l6zDNOGX5iRdybwPbeozOrww+j5jbH46GUiAKcUjMO40GiEtGoB
+         4coTRPVAesILHJnMDTbusWDoANtO2Bt5XcunnE3I4bjGRrbKcsjrAJsbXqK0QIQdGAqJ
+         CFlA==
+X-Gm-Message-State: ANoB5pn1hSQ9a3Rg2y7bz94+yts4cMUUZmj7pU5t3mc4IkwlEyb4YT8D
+        G1GPbS6jV1XzTgB/KHIc3IH8UQcP/mwAOg==
+X-Google-Smtp-Source: AA0mqf6BYBDenKmoprjrVUhMEL5+aZ87Y18Rrrt9teXhL6lPyXv48r9zDRLnCz46aicSJaEELDqmuw==
+X-Received: by 2002:ad4:430f:0:b0:4bb:64f7:dce5 with SMTP id c15-20020ad4430f000000b004bb64f7dce5mr16520851qvs.15.1669023930405;
+        Mon, 21 Nov 2022 01:45:30 -0800 (PST)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id i10-20020a05620a404a00b006bb8b5b79efsm8078070qko.129.2022.11.21.01.45.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 00:58:43 -0800 (PST)
-Message-ID: <7e2e76f8-5d88-4df4-2335-9f7b129b2e26@kernel.org>
-Date:   Mon, 21 Nov 2022 09:58:41 +0100
+        Mon, 21 Nov 2022 01:45:29 -0800 (PST)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-3a7081e3b95so4045177b3.1;
+        Mon, 21 Nov 2022 01:45:29 -0800 (PST)
+X-Received: by 2002:a81:f80f:0:b0:38e:e541:d8ca with SMTP id
+ z15-20020a81f80f000000b0038ee541d8camr15639818ywm.283.1669023929286; Mon, 21
+ Nov 2022 01:45:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v5 13/14] serial: liteuart: add IRQ support for the TX
- path
-Content-Language: en-US
-To:     Gabriel Somlo <gsomlo@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-2-gsomlo@gmail.com>
+In-Reply-To: <20221118145512.509950-2-gsomlo@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 21 Nov 2022 10:45:18 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUoE7HUmAxQkwTditVzGL6cJiw8tnEa9ys6EcSOp8seBw@mail.gmail.com>
+Message-ID: <CAMuHMdUoE7HUmAxQkwTditVzGL6cJiw8tnEa9ys6EcSOp8seBw@mail.gmail.com>
+Subject: Re: [PATCH v5 01/14] serial: liteuart: use KBUILD_MODNAME as driver name
+To:     Gabriel Somlo <gsomlo@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
         kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
         david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
-        geert@linux-m68k.org, ilpo.jarvinen@linux.intel.com
-References: <20221118145512.509950-1-gsomlo@gmail.com>
- <20221118145512.509950-14-gsomlo@gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20221118145512.509950-14-gsomlo@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        ilpo.jarvinen@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 11. 22, 15:55, Gabriel Somlo wrote:
-> Switch the TX path to IRQ-driven operation, while maintaining support
-> for polling mode via the poll timer.
-> 
+On Fri, Nov 18, 2022 at 3:56 PM Gabriel Somlo <gsomlo@gmail.com> wrote:
+> Replace hard-coded instances of "liteuart" with KBUILD_MODNAME.
+>
 > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-...
-> @@ -154,6 +148,8 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
->   	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
->   	if (isr & EV_RX)
->   		liteuart_rx_chars(port);
-> +	if (isr & EV_TX)
-> +		liteuart_tx_chars(port);
 
-Wait, how do you ensure the OFF_EV_PENDING reg contains EV_RX and/or 
-EV_TX in the polling mode?
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-thanks,
--- 
-js
-suse labs
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
