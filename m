@@ -2,205 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3489FC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 14:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF172C43217
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 14:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbiKUOAZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 09:00:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        id S229491AbiKUOLL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Nov 2022 09:11:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231555AbiKUOAG (ORCPT
+        with ESMTP id S229519AbiKUOKz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 09:00:06 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20151C92D;
-        Mon, 21 Nov 2022 05:59:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669039159; x=1700575159;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=sj2b1TjV39Tt4i/TIED+Enb/63DlzwcLP/R2kSeUNTQ=;
-  b=dBSKhY14Z+U91e4nbkQu2ZY8JS8OTAR0YMmdKjvRKJuImC5TgMRvW2Pv
-   Vi+YxyBHfsNKLbI6k0sEOh2NWy0XEm47kkJJ9dF5bgRbBOTO7ApkcnL2R
-   oe1yk6dus25m2fFiBc9oOxtbM6r9woOkkfyGWdeH1aqPoCNli4qXq5XB2
-   gG061brKnsn5xaa+/8R7LHnuwSztz0cMFArCPdmqgjj0Wp8MJG33mFxgF
-   YF06EtTjq7gC1x8UTxkoW3jV2XhQtGEf1EKmXeTrpOsIcWS1jEykskiiS
-   rFoB3vNJeljW6GzCLPo2m6nPlHPGdEUxqj1HfSFI8k7vqNp/HEPIwhrFt
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="311189762"
-X-IronPort-AV: E=Sophos;i="5.96,181,1665471600"; 
-   d="scan'208";a="311189762"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 05:59:19 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="704568621"
-X-IronPort-AV: E=Sophos;i="5.96,181,1665471600"; 
-   d="scan'208";a="704568621"
-Received: from ebarboza-mobl1.amr.corp.intel.com ([10.251.209.16])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 05:59:15 -0800
-Date:   Mon, 21 Nov 2022 15:59:13 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jisheng Zhang <jszhang@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 2/7] serial: bflb_uart: add Bouffalolab UART Driver
-In-Reply-To: <20221120082114.3030-3-jszhang@kernel.org>
-Message-ID: <faa34e87-4633-31e7-144b-4fec46cb8f59@linux.intel.com>
-References: <20221120082114.3030-1-jszhang@kernel.org> <20221120082114.3030-3-jszhang@kernel.org>
+        Mon, 21 Nov 2022 09:10:55 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9CCD119;
+        Mon, 21 Nov 2022 06:07:41 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id x18so8028335qki.4;
+        Mon, 21 Nov 2022 06:07:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=nCp6eJnEVzWDEtPCziQPCYGKd6IyiDKcam0fNT4ySd8=;
+        b=ZFrvdWBICMrI5FQi8GfrxZhCAuhDV5oMZdAuWOWdqN6VHCQsFvk0xTjeiBi1Q/PfRQ
+         6obNkfIpD4pGSUZV42QtpkU3eRCbkt7dK4Mg431hyKkYre4DHZJpeDP8+rb9WfSgxm2m
+         cGxKOaH8LeT1ko9x9gmUGbLWusPg0N3UvuD73wM7683eozXTKVz6iQ/Zvr/1z2aED35K
+         qAp6SYx63j87519h33cF8CkTrWoCWrwl/4pfFKSJkQUQktX7rb4floXnPrOoYxYXnVMZ
+         Ko8KxDee9/N0lS5K5+tsCwgAJQ1AN3W+xNrNlv4OfoOFE3uHudR8FUTggVXkJQypxYms
+         0Gow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nCp6eJnEVzWDEtPCziQPCYGKd6IyiDKcam0fNT4ySd8=;
+        b=c5KqHHW4kPCqyiP1fvEW55t/km2HM/ZaReQjWQ6Y/O0nRXy/BuO48d/EBDi8I3MAKU
+         hlHsvmtpIDJGtYua3SktgE5HBHVe/RZ94UgXRo9a98s/XDN3xaAIkOyRw7VfPwSPnGYU
+         6Yx8Fp07X8mDdP1uH2qK7tbI+kkh0ooNkjTVtyDoDarlMp69kTqxBkFuGQn6wBfe/Nr0
+         iFEEwXmz/c9oDnDPQh7u+QPpiaAm1TzLP2f0JBc3n+KcXmNZ9cN3dwQgMx9h4G+hD2ZK
+         lxUgdIBheqb/MW3RM7Qi+pBEbHqaH1s50qwheXZBr7OPJZ94vyKG1C936L12FUEwPAFu
+         ZmEA==
+X-Gm-Message-State: ANoB5plLDoXyYVyqTRM+7x+XhyMs185EpGHc3CUuFaiSdChLi1zTD90Y
+        TOk0LS8eiRexD6alLFeGHvY=
+X-Google-Smtp-Source: AA0mqf5DB27OwbiHThtWOcpu43UNLe8yZQ0Ii1NmM+LUpg4jVu8h8dTp1s40do5Ovmudf1pROsfQqg==
+X-Received: by 2002:a37:444b:0:b0:6fa:389e:7228 with SMTP id r72-20020a37444b000000b006fa389e7228mr16525237qka.141.1669039657938;
+        Mon, 21 Nov 2022 06:07:37 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id fa9-20020a05622a4cc900b0039cc944ebdasm6731297qtb.54.2022.11.21.06.07.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Nov 2022 06:07:37 -0800 (PST)
+Date:   Mon, 21 Nov 2022 09:07:35 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, kgugala@antmicro.com,
+        mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        geert@linux-m68k.org, ilpo.jarvinen@linux.intel.com
+Subject: Re: [PATCH v5 13/14] serial: liteuart: add IRQ support for the TX
+ path
+Message-ID: <Y3uGJ3D4OH0vPLqj@errol.ini.cmu.edu>
+References: <20221118145512.509950-1-gsomlo@gmail.com>
+ <20221118145512.509950-14-gsomlo@gmail.com>
+ <7e2e76f8-5d88-4df4-2335-9f7b129b2e26@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7e2e76f8-5d88-4df4-2335-9f7b129b2e26@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 20 Nov 2022, Jisheng Zhang wrote:
-
-> Add the driver for Bouffalolab UART IP which is found in Bouffalolab
-> SoCs such as bl808.
+On Mon, Nov 21, 2022 at 09:58:41AM +0100, Jiri Slaby wrote:
+> On 18. 11. 22, 15:55, Gabriel Somlo wrote:
+> > Switch the TX path to IRQ-driven operation, while maintaining support
+> > for polling mode via the poll timer.
+> > 
+> > Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
+> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ...
+> > @@ -154,6 +148,8 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
+> >   	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
+> >   	if (isr & EV_RX)
+> >   		liteuart_rx_chars(port);
+> > +	if (isr & EV_TX)
+> > +		liteuart_tx_chars(port);
 > 
-> UART driver probe will create path named "/dev/ttySx".
-> 
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> Wait, how do you ensure the OFF_EV_PENDING reg contains EV_RX and/or EV_TX
+> in the polling mode?
 
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index 238a9557b487..8509cdc11d87 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -25,6 +25,7 @@ obj-$(CONFIG_SERIAL_8250) += 8250/
->  
->  obj-$(CONFIG_SERIAL_AMBA_PL010) += amba-pl010.o
->  obj-$(CONFIG_SERIAL_AMBA_PL011) += amba-pl011.o
-> +obj-$(CONFIG_SERIAL_BFLB) += bflb_uart.o
->  obj-$(CONFIG_SERIAL_CLPS711X) += clps711x.o
->  obj-$(CONFIG_SERIAL_PXA_NON8250) += pxa.o
->  obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
-> diff --git a/drivers/tty/serial/bflb_uart.c b/drivers/tty/serial/bflb_uart.c
-> new file mode 100644
-> index 000000000000..65f98ccf8fa8
-> --- /dev/null
-> +++ b/drivers/tty/serial/bflb_uart.c
-> @@ -0,0 +1,659 @@
-> +#define UART_FIFO_CONFIG_1		(0x84)
-> +#define  UART_TX_FIFO_CNT_SFT		0
-> +#define  UART_TX_FIFO_CNT_MSK		GENMASK(5, 0)
-> +#define  UART_RX_FIFO_CNT_MSK		GENMASK(13, 8)
-> +#define  UART_TX_FIFO_TH_SFT		16
+The hardware (well, *gateware*) is coded to populate the EV_PENDING
+register regardless of whether IRQs are enabled via the EV_ENABLE
+register (or indeed, whether IRQs are even "wired into" the design at
+all). See
 
-Use FIELD_PREP() instead of adding a separate *_SFT define.
+https://github.com/enjoy-digital/litex/blob/master/litex/soc/cores/uart.py
+and
+https://github.com/enjoy-digital/litex/blob/master/litex/soc/interconnect/csr_eventmanager.py
 
-> +#define  UART_TX_FIFO_TH_MSK		GENMASK(20, 16)
-> +#define  UART_RX_FIFO_TH_SFT		24
-> +#define  UART_RX_FIFO_TH_MSK		GENMASK(28, 24)
-> +#define UART_FIFO_WDATA			0x88
-> +#define UART_FIFO_RDATA			0x8c
-> +#define  UART_FIFO_RDATA_MSK		GENMASK(7, 0)
+for a starting point on why it's OK to just assume that...
 
-
-> +	val = rdl(port, UART_URX_CONFIG);
-> +	val &= ~UART_CR_URX_EN;
-> +	wrl(port, UART_URX_CONFIG, val);
-> +
-> +	val = rdl(port, UART_INT_MASK);
-> +	val |= UART_URX_FIFO_INT | UART_URX_RTO_INT |
-> +	       UART_URX_FER_INT;
-
-Fits to single line.
-
-> +	port->type = PORT_BFLB;
-> +
-> +	/* Clear mask, so no surprise interrupts. */
-> +	val = rdl(port, UART_INT_MASK);
-> +	val |= UART_UTX_END_INT;
-> +	val |= UART_UTX_FIFO_INT;
-> +	val |= UART_URX_FIFO_INT;
-> +	val |= UART_URX_RTO_INT;
-> +	val |= UART_URX_FER_INT;
-
-Why to split it to this many lines?
-
-> +	spin_lock_irqsave(&port->lock, flags);
-> +
-> +	val = rdl(port, UART_INT_MASK);
-> +	val |= 0xfff;
-
-In most of the other places, the bits used with UART_INT_MASK are named, 
-but for some reason you don't do it here and the bits extend beyond the 
-ones which are defined with name.
-
-> +	wrl(port, UART_INT_MASK, val);
-> +
-> +	wrl(port, UART_DATA_CONFIG, 0);
-> +	wrl(port, UART_SW_MODE, 0);
-> +	wrl(port, UART_URX_RTO_TIMER, 0x4f);
-
-FIELD_PREP(UART_CR_URX_RTO_VALUE_MSK, 0x4f)? It would document what field
-is written explicitly.
-
-> +
-> +	val = rdl(port, UART_FIFO_CONFIG_1);
-> +	val &= ~UART_RX_FIFO_TH_MSK;
-> +	val |= BFLB_UART_RX_FIFO_TH << UART_RX_FIFO_TH_SFT;
-> +	wrl(port, UART_FIFO_CONFIG_1, val);
-> +
-> +	/* Unmask RX interrupts now */
-> +	val = rdl(port, UART_INT_MASK);
-> +	val &= ~UART_URX_FIFO_INT;
-> +	val &= ~UART_URX_RTO_INT;
-> +	val &= ~UART_URX_FER_INT;
-
-Combine to single line.
-
-> +static int bflb_uart_request_port(struct uart_port *port)
-> +{
-> +	/* UARTs always present */
-> +	return 0;
-> +}
-> +static void bflb_uart_release_port(struct uart_port *port)
-> +{
-> +	/* Nothing to release... */
-> +}
-
-Both release_port and request_port are NULL checked by the caller, there's 
-no need to provide and empty one.
-
-> +static const struct uart_ops bflb_uart_ops = {
-> +	.tx_empty = bflb_uart_tx_empty,
-> +	.get_mctrl = bflb_uart_get_mctrl,
-> +	.set_mctrl = bflb_uart_set_mctrl,
-> +	.start_tx = bflb_uart_start_tx,
-> +	.stop_tx = bflb_uart_stop_tx,
-> +	.stop_rx = bflb_uart_stop_rx,
-> +	.break_ctl = bflb_uart_break_ctl,
-> +	.startup = bflb_uart_startup,
-> +	.shutdown = bflb_uart_shutdown,
-> +	.set_termios = bflb_uart_set_termios,
-> +	.type = bflb_uart_type,
-> +	.request_port = bflb_uart_request_port,
-> +	.release_port = bflb_uart_release_port,
-> +	.config_port = bflb_uart_config_port,
-> +	.verify_port = bflb_uart_verify_port,
-> +};
-
-> +static void bflb_uart_console_write(struct console *co, const char *s,
-> +				    u_int count)
-> +{
-> +	struct uart_port *port = &bflb_uart_ports[co->index]->port;
-> +	u32 status, reg, mask;
-> +
-> +	/* save then disable interrupts */
-> +	mask = rdl(port, UART_INT_MASK);
-> +	reg = -1;
-
-Use ~0 instead. Why -1 here and 0xfff in the other place?
-
-
--- 
- i.
+Thanks,
+--Gabriel
