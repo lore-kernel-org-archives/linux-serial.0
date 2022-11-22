@@ -2,150 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8B1C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 08:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBBFC4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 08:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiKVIZt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 03:25:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
+        id S233001AbiKVIwx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 03:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiKVIZl (ORCPT
+        with ESMTP id S232982AbiKVIwr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 03:25:41 -0500
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD32B40461;
-        Tue, 22 Nov 2022 00:25:39 -0800 (PST)
-Received: by mail-ej1-f47.google.com with SMTP id f18so34082690ejz.5;
-        Tue, 22 Nov 2022 00:25:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rqzJXVCIFXT+ImcuK6zLC9C+IpbEl4M5NWl8PhnWNgo=;
-        b=PYm31l6uBTsU14LOqwru6wKUn8SNtjyY6PW/1OQBKgLQLAu6eulVVu+7LaCLcoheKD
-         STH8PMY3llbq8+DUywI9pxQPAhL2Du05tZw67C5Kf3qNhpFVX1IKn602IEZq7FgVwvZN
-         MTwAfUkR8XGYcJZuBtI7bfDKU8UVpWmdM37GZx2C+ze1dRBT8lp37qcRDfwdGnyPBYoz
-         rGUEzejK3LoL2Nemw9WjmZw2JBifLRm2nmHbYxF5pyIbxamzVEcYdJai9/1YrlIIep/G
-         kVi0zUmgenZlCYcirq6mIrA4PJW0VrNBaILviycqwrW+ON7vcRPHqahHRJ+uFY9FNqbu
-         tfQQ==
-X-Gm-Message-State: ANoB5pm7XED2g+Ysn/2T68GvSlChS9JDqLwhNNjnPl7NDPvrAIGYa2lj
-        fhqFyosKwlqN7AztAE6djVc=
-X-Google-Smtp-Source: AA0mqf4rqYMo51srxf/7UurVAPmcfYjv2eV6nPzemuxUog61X+TJcq5AjJ/Pon56VIFK1GDG8x3qEg==
-X-Received: by 2002:a17:907:1dc6:b0:78d:8533:be13 with SMTP id og6-20020a1709071dc600b0078d8533be13mr18662937ejc.716.1669105538479;
-        Tue, 22 Nov 2022 00:25:38 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id m17-20020a170906161100b0073dc5bb7c32sm5802902ejd.64.2022.11.22.00.25.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 00:25:38 -0800 (PST)
-Message-ID: <ca8e1e8c-fe50-ca94-7cb8-9044f8cc16d0@kernel.org>
-Date:   Tue, 22 Nov 2022 09:25:36 +0100
+        Tue, 22 Nov 2022 03:52:47 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71995558E;
+        Tue, 22 Nov 2022 00:52:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1669107165; x=1700643165;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=NJKojUVVwfNiBj6nGyV2BiX29XXsfamg3FpOm3EoRFg=;
+  b=Gt3LBIz9oHgyzomZwcxeqav31aVyo6XiXNPK+XKmS61/rcy/b2FgBFvl
+   A1OIWRl+Wt2PafYKJsyiisBVfpl63hNiXhMPZ6D6pi4eLjg/iumGvmgMJ
+   5FV+6yDLUqO2hDePwzTVGR9L/gIycojND194Ud/1FHEq5ZP8w4AbZyqr/
+   G+Gm2vCiE7nMwZ/Pw3ENJ3Dv4YG2g7Itueiz64sQJKFtMlLIs++as7MhX
+   6K3phmMrUNqpUbkJ9814Mi0OgukDtYGHBHebYMiJf4Rh7mgYbYCl1sq8U
+   0lKHoOHXTNVLCwvlg/+ixRmLMmNnZEudvqxtd9rkrfS0nHm2gkEjoNymp
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.96,183,1665439200"; 
+   d="scan'208";a="27501948"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 22 Nov 2022 09:52:42 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Tue, 22 Nov 2022 09:52:42 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Tue, 22 Nov 2022 09:52:42 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1669107162; x=1700643162;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=NJKojUVVwfNiBj6nGyV2BiX29XXsfamg3FpOm3EoRFg=;
+  b=HXl9zXP+aCc45pS/jaSoSRLNYYPTiNQqVUhyQLLm9f9eVdXTBT/H9XrL
+   vVkOBVA3TiO5wbRe/1R3qQEPV+0DkrPsvS86zvlnQoV4RYy3Svzlb5flV
+   7iSi+/KwWNSkmlCH2qF/wZIxvTb59iVbiNwtJWFyM2cVn9WFMmwBW0tuI
+   mNvgDfLhvKC3iFio1hwh4H9jqx3u6opOequa7edR0CsddIIRdMNSVBX8p
+   XqlxOm1gFKmz2VQr9q1a6OKow3Avg7xriBQJRh4LpfRJ5NgWVIW3qB8Jh
+   ZuEVdW6Gb843ST4sclTMrDWeLFJLg37uaBEq9S1lz1VbEjOZDqM+kT7rf
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,183,1665439200"; 
+   d="scan'208";a="27501947"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 22 Nov 2022 09:52:42 +0100
+Received: from [192.168.2.129] (SCHIFFERM-M2.tq-net.de [10.121.49.14])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 52450280056;
+        Tue, 22 Nov 2022 09:52:42 +0100 (CET)
+Message-ID: <bce6407bc42eeec8f459f09bc1326761327c98ec.camel@ew.tq-group.com>
+Subject: Re: 8250_omap: incorrect RS485 RTS on close during transmission
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>
+Cc:     Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 22 Nov 2022 09:52:40 +0100
+In-Reply-To: <f7cf39a9c152031a09608a68115e32988617f626.camel@ew.tq-group.com>
+References: <f7cf39a9c152031a09608a68115e32988617f626.camel@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4-0ubuntu1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v5 2/3] tty: serial: use uart_port_tx() helper
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     afaerber@suse.de, alexandre.belloni@bootlin.com,
-        claudiu.beznea@microchip.com, festevam@gmail.com,
-        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
-        kernel@pengutronix.de, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        liviu.dudau@arm.com, lorenzo.pieralisi@arm.com, mani@kernel.org,
-        nicolas.ferre@microchip.com, richard.genoud@gmail.com,
-        s.hauer@pengutronix.de, shawnguo@kernel.org, sudeep.holla@arm.com,
-        tklauser@distanz.ch, vz@mleia.com
-References: <20221004104927.14361-3-jirislaby@kernel.org>
- <20221121202724.1708460-1-michael@walle.cc>
- <f95ef7b7-cc23-9fed-5d05-1aa66aaeb86a@kernel.org>
- <0ef4f1e6d92601a39fe0d1c316506c12@walle.cc>
- <325fdfbf37b155c41e2b45bcddd96e9b@walle.cc>
- <0faeb934-a2c9-fcc2-6961-d3f1bbf37fa2@kernel.org>
-In-Reply-To: <0faeb934-a2c9-fcc2-6961-d3f1bbf37fa2@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22. 11. 22, 9:23, Jiri Slaby wrote:
-> On 22. 11. 22, 9:18, Michael Walle wrote:
->> Am 2022-11-22 09:09, schrieb Michael Walle:
->>> Hi,
->>>
->>> Am 2022-11-22 08:02, schrieb Jiri Slaby:
->>>> On 21. 11. 22, 21:27, Michael Walle wrote:
->>>>> This will break serial output for the userspace on my board
->>>>> (arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt*dts). The 
->>>>> uart_port_tx()
->>>>> helper will call __port->ops->stop_tx(__port) if 
->>>>> uart_circ_chars_pending()
->>>>> returns 0. But the code above, doesn't do that. In fact, removing the
->>>>> stop_tx() call in the helper macro, will fix the console output.
->>>>>
->>>>> Any ideas how to fix that?
->>>>
->>>> Hm, so ATMEL_US_TXRDY is removed from tx_done_mask in stop_tx, but not
->>>> added back in start_tx. So the tx interrupt is never handled (the tx
->>>> tasklet is not scheduled to send the queue chars) in
->>>> atmel_handle_transmit().
->>>>
->>>> Any chance, the below fixes it?
->>>>
->>>> diff --git a/drivers/tty/serial/atmel_serial.c
->>>> b/drivers/tty/serial/atmel_serial.c
->>>> index 11bf2466390e..395370e0c77b 100644
->>>> --- a/drivers/tty/serial/atmel_serial.c
->>>> +++ b/drivers/tty/serial/atmel_serial.c
->>>> @@ -596,6 +596,8 @@ static void atmel_start_tx(struct uart_port *port)
->>>>                 /* re-enable PDC transmit */
->>>>                 atmel_uart_writel(port, ATMEL_PDC_PTCR, 
->>>> ATMEL_PDC_TXTEN);
->>>>
->>>> +       atmel_port->tx_done_mask |= ATMEL_US_TXRDY;
->>>> +
->>>>         /* Enable interrupts */
->>>>         atmel_uart_writel(port, ATMEL_US_IER, 
->>>> atmel_port->tx_done_mask);
->>>>
->>>>
->>>> thanks,
->>>
->>> Unfortunately, that doesn't help. Btw, some characters are transmitted:
->>>
->>>
->>> [    6.219356] Key type dns_resolver registered
->>> [    6.223679] Registering SWP/SWPB emulation handler
->>> [    6.247530] Loading compiled-in X.509 certificates
->>> [    6.288467] Freeing unused kernel image (initmem) memory: 1024K
->>> [    6.297789] Run /init as init process
->>> WbSOROSOSOSOSOStarting linuxptp system clock synchronization: O
->>>
->>> -michael
->>
->> But you made me look at atmel_stop_tx() and there is this:
->>
->>         /*
->>      * Disable the transmitter.
->>      * This is mandatory when DMA is used, otherwise the DMA buffer
->>      * is fully transmitted.
->>      */
->>      atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
->>
->> Removing that write, will also fix the problem. Could it be, that
->> the transmit is still active (via DMA) but the driver will call
->> tx_stop() and then stop the transmission in the background?
-> 
-> Yes, that was exactly the next step to try. The datasheet doesn't tell 
-> much what happens when TXDIS is written while the characters are 
-> transmitted.
+On Fri, 2022-11-18 at 12:57 +0100, Matthias Schiffer wrote:
+> Hi Lukas,
+>=20
+> I've discovered a new issue with EM485 in 8250_omap (and probably other
+> serial drivers as well?): When closing the TTY device while there is
+> still an ongoing transmission, the RTS pin will get stuck active until
+> the TTY is opened again. This can be easily reproduced by running `cat
+> /dev/zero > /dev/ttySx` and then stopping it using Ctrl-C.
+>=20
+> The issue exists in current mainline (6.1-rc5+), and applying "serial:
+> 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()" from next
+> doesn't solve it. I think it should work with "serial: 8250: 8250_omap:
+> Support native RS485", but we also need RS485 on AM57xx CPUs, which
+> don't have native RS485.
+>=20
+> I intend to look into this myself next week, but as you've worked on
+> this code a lot lately, maybe you already have an idea how to fix it?
+>=20
+> Regards,
+> Matthias
+>=20
 
-Side note: your usart doesn't use dma. It's PIO (hence all that 
-uart_tx_helper()). And the attached patch doesn't touch TXDIS for 
-non-DMA case. I.e. it should transmit the final character (and nothing 
-more).
+Okay, I've narrowed down the issue to uart_shutdown() ->
+uart_port_shutdown() - here, ops->shutdown() is called, which clears
+the FIFOs (in the case of the default 8250_port and 8250_omap)
+implementations, but doesn't wait for the clear to finish, and doesn't
+call ops->stop_tx().
 
--- 
-js
+I believe a similar problem can occur in uart_suspend_port(). Here,
+ops->stop_tx() is called before ops->shutdown(), but stop_tx() is a no-
+op when the TX FIFO is not empty (again, for the 8250 case - I haven't
+really looked at other drivers).
 
+Given that EM485 is handled in 8250_port by __stop_tx(), which is
+called both internally in the 8250 driver and from the serial core
+through stop_tx(), it is not clear to me what the correct layer to fix
+this is. Two ideas:
+
+(1) Have ops->shutdown() wait until the TX FIFO is empty. Call
+ops->stop_tx() after ops->shutdown() in serial core. For this to work,
+calling stop_tx() after shutdown() must be allowed in all drivers; I'm
+not sure if this is currently the case, and if it is desirable at all.
+
+(2) Do the whole handling in the driver's ops->shutdown(), do not
+further involve the serial core.
+
+So far, I've implemented (1) locally for 8250_omap, and together with
+"serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()" it
+fixes the issue on my test devices, but I'm not too happy about the
+"shutdown then tx_stop" order of calls. So maybe (2) is the better
+solution after all?
