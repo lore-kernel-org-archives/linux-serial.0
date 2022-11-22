@@ -2,63 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB15DC4167B
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 09:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07094C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 09:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233301AbiKVJlU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 04:41:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        id S233152AbiKVJzD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 04:55:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233312AbiKVJlM (ORCPT
+        with ESMTP id S233421AbiKVJy7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 04:41:12 -0500
-X-Greylist: delayed 904 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Nov 2022 01:41:09 PST
-Received: from mail.axisfairfi.com (mail.axisfairfi.com [94.177.230.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5A951C29
-        for <linux-serial@vger.kernel.org>; Tue, 22 Nov 2022 01:41:08 -0800 (PST)
-Received: by mail.axisfairfi.com (Postfix, from userid 1001)
-        id 60D6182643; Tue, 22 Nov 2022 09:15:32 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=axisfairfi.com;
-        s=mail; t=1669108538;
-        bh=0BgaW9t8GFER5QecxVkFsHrVi3gO/4V5KAZgJaiRYBs=;
-        h=Date:From:To:Subject:From;
-        b=ZnnQ5YhtZsYWRHFWFqtnEutG2lO9HWT4X/8cn0GR1qgdLw7KywOOA0vxc5gXPxjje
-         Dz34QlS4gJx7oGa+cqzIP8p/LY8jqjU7b4ffcfq2AYwBzcormsKLhCFWnjA7p/iAmW
-         gAg5y+UbSWAFqGFb7519ITY7CK148Jq6Gqm7oo7G7v9Xb2YkmvWmJV/cJ6RMcmLvZk
-         0TdiuLPYjVO2sQ57t+C1uGFT61jhVSFOHVTIwD+7jQAamytJ2/+RTsZmJ7oMFv7ovA
-         xh+AmJ5jXBCBQBpw3UsRYQ4j+sgpEVUpCKDGqFqUsQ2X1Hlf3kIR/zXd0PHmmukbBL
-         fLGWgIfgC4Y8A==
-Received: by mail.axisfairfi.com for <linux-serial@vger.kernel.org>; Tue, 22 Nov 2022 09:15:27 GMT
-Message-ID: <20221122074500-0.1.d.odb.0.bwselb61wu@axisfairfi.com>
-Date:   Tue, 22 Nov 2022 09:15:27 GMT
-From:   "Zbynek Spacek" <zbynek.spacek@axisfairfi.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: Silikonmischungen
-X-Mailer: mail.axisfairfi.com
+        Tue, 22 Nov 2022 04:54:59 -0500
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D659B19003;
+        Tue, 22 Nov 2022 01:54:58 -0800 (PST)
+Received: by mail-qk1-f174.google.com with SMTP id 8so9868820qka.1;
+        Tue, 22 Nov 2022 01:54:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Wn85hJe4YJD3JoALwodoe0B1HoCXIOwjbx5dJ3CB4vM=;
+        b=3dzhIeWO7X2M96j0MZrTCKTWwMYZmqe+5mL/ggxLbZyIjcJ5Ip96NKM5nIlgMvaopj
+         szYZtTx8O+gPB0yLXTLi/6HojfCTa4y5fDJt5LtqvqDJFSkXeYq7sMm0VXqzOrZPmh20
+         yzK1Wb30z6Eakmep/1VwJ5uBMrYwoKpsXa0QuwTGAe7GiWGuY5HEZZBlESqcUcz57ZPy
+         ua0aQmixn5qjX6wMVH1Rz1ONKf+8vrqrzLI9Tbf9yulBaVwl87xsislmhmtXQgK8pvdZ
+         7EciwTsLO8ZtBCE1QY10g8AZT67DLRpaOjuvDy3G7Oz9uHpaqM6syIuO+sRE95o5+ac7
+         J87w==
+X-Gm-Message-State: ANoB5pmuCgZL6EnHs0t1BuQ4RIcj5zxECdUmU2rSe4dL31IRP5pTUDBR
+        Z2SW4Lt6Yua7WW3ubI2g4BirpAV6o1VEUQ==
+X-Google-Smtp-Source: AA0mqf5yq9cgv2D+lkgzq0eLjdk/cgP0h8W7urXDuXSABNN9b90M2p4DxRgwTf9Ig9hLbgCcc4f1mw==
+X-Received: by 2002:a37:aa51:0:b0:6ee:f54d:e17 with SMTP id t78-20020a37aa51000000b006eef54d0e17mr8318619qke.63.1669110897586;
+        Tue, 22 Nov 2022 01:54:57 -0800 (PST)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id k1-20020a05620a414100b006eea4b5abcesm9853516qko.89.2022.11.22.01.54.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Nov 2022 01:54:57 -0800 (PST)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-3876f88d320so139287337b3.6;
+        Tue, 22 Nov 2022 01:54:56 -0800 (PST)
+X-Received: by 2002:a05:690c:b81:b0:37e:6806:a5f9 with SMTP id
+ ck1-20020a05690c0b8100b0037e6806a5f9mr5601587ywb.47.1669110896451; Tue, 22
+ Nov 2022 01:54:56 -0800 (PST)
 MIME-Version: 1.0
+References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-13-gsomlo@gmail.com>
+ <abb7d87a-46c7-fe7f-f943-4287d15a537f@kernel.org> <Y3vIi2OF5t4IrCS1@errol.ini.cmu.edu>
+ <8dd90e39-087e-984c-c289-dbfa766359a8@kernel.org>
+In-Reply-To: <8dd90e39-087e-984c-c289-dbfa766359a8@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 22 Nov 2022 10:54:45 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV3_YhF454J3ixRjOgWzJhL_Qr_XqxtSqxjF0qxGotFQw@mail.gmail.com>
+Message-ID: <CAMuHMdV3_YhF454J3ixRjOgWzJhL_Qr_XqxtSqxjF0qxGotFQw@mail.gmail.com>
+Subject: Re: [PATCH v5 12/14] serial: liteuart: add IRQ support for the RX path
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     "Gabriel L. Somlo" <gsomlo@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, kgugala@antmicro.com,
+        mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        ilpo.jarvinen@linux.intel.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Good morning,
+On Tue, Nov 22, 2022 at 8:44 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> On 21. 11. 22, 19:50, Gabriel L. Somlo wrote:
+> >>>    static void liteuart_timer(struct timer_list *t)
+> >>>    {
+> >>>     struct liteuart_port *uart = from_timer(uart, t, timer);
+> >>>     struct uart_port *port = &uart->port;
+> >>> -   liteuart_rx_chars(port);
+> >>> -
+> >>> +   liteuart_interrupt(0, port);
+> >>
+> >> Are you sure spin_lock() is safe from this path? I assume so, but have you
+> >> thought about it?
+> >
+> > I checked and at that point `in_serving_softirq()` is true.
+> >
+> > *However*, after studying spin_lock() and friends for a while, I'm
+> > not quite clear on whether that unequivocally translates
+> > to "yes, we're safe" :)
+>
+> Depends whether some hard irq context is grabbing the port lock too. If
+> it does, it will spin forever waiting for this soft irq to finish (never
+> happens as it was interrupted).
+>
+> > As such, I'm inclined to switch to `spin_lock_irqsave()` and
+> > `spin_unlock_irqrestore()` even in the interrupt handler, which is
+> > explicitly stated to be "safe from any context":
+> > https://www.kernel.org/doc/html/v4.15/kernel-hacking/locking.html#cheat-sheet-for-locking
+>
+>
+>
+> > The alternative could be to set `TIMER_IRQSAFE` in `timer_setup()`,
+> > but no other tty driver seems to be doing that, so I'd be a bit off
+> > the beaten path there... :)
+>
+> Ah, no.
+>
+> > Please do let me know what you think about this, particularly if you
+> > consider going the spin_lock_irqsave-everywhere-just-to-be-safe route
+> > overkill... :)
+>
+> If you are unsure about the other contexts, irqsave/restore is the way
+> to go. It can be lifted later, if someone investigates harder.
 
-do you need intermediates for processing, plastics (e.g. rubber) or silic=
-one mixtures?
+Inside the interrupt handler, plain spin_lock() should be OK.
+Inside the timer handler, I think you need to use spin_lock_irqsave(),
+as e.g. liteuart_set_termios() (and lots of code in serial_core.c)
+already uses spin_lock_irqsave().
+Besides, on non-SMP, spin_lock() doesn't do anything, so you need
+to rely on disabling the local interrupt.
 
-We provide a wide range of silicone rubbers with various properties, sili=
-cone mixtures from renowned manufacturers such as Wacker, Elastosil LR an=
-d dyes, stabilizers, primers and anti-adhesive additives.
+Gr{oetje,eeting}s,
 
-We also produce technical silicone compounds with increased resistance to=
- oils, resistant to high temperatures and water vapor, conductive and man=
-y more.
+                        Geert
 
-We provide fast order fulfillment, timely deliveries and cost optimizatio=
-n.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Can I introduce what we can offer you?
-
-
-Zbynek Spacek
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
