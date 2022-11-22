@@ -2,126 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07094C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 09:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36336C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 10:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233152AbiKVJzD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 04:55:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
+        id S233208AbiKVKWN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 05:22:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233421AbiKVJy7 (ORCPT
+        with ESMTP id S233498AbiKVKVr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 04:54:59 -0500
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D659B19003;
-        Tue, 22 Nov 2022 01:54:58 -0800 (PST)
-Received: by mail-qk1-f174.google.com with SMTP id 8so9868820qka.1;
-        Tue, 22 Nov 2022 01:54:58 -0800 (PST)
+        Tue, 22 Nov 2022 05:21:47 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589411DA7A
+        for <linux-serial@vger.kernel.org>; Tue, 22 Nov 2022 02:21:42 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id l39-20020a05600c1d2700b003cf93c8156dso10916807wms.4
+        for <linux-serial@vger.kernel.org>; Tue, 22 Nov 2022 02:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KCYmUoNLEWECSxLiDeK3zZweGQLAcBJOoW4I6ZR1gew=;
+        b=7qzSmY3gSjeDV3Y94wgusDWy2XGVnwPFbkeSC5S4ylmgG1n4TowscBx+PjSl/Wflk7
+         oWZqY8YGIVZ7do5yzReenaNh/xCrcPE/7+9cSU7nD53NAhHGo37KuiiPdi6Vq6qZMjpp
+         CjKHnqGQR+NaR8XJYpYkzf/GAysJiKEel4J8yyis6V1dIXBaF8DfZ2c9I5WRLIzZpQGY
+         7tRlhRF0Ui+sg+nTHd2Pys5B9gUATUqwSr0PllrsYtogcKzpbsZria+6tS8kstWM5hft
+         YZksrmwUrK6kX9I9F0+cY/zDetDJhr2m30E69ccGr0q5bwNUmzas9JPX85WT0FUcRZ1I
+         CeMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Wn85hJe4YJD3JoALwodoe0B1HoCXIOwjbx5dJ3CB4vM=;
-        b=3dzhIeWO7X2M96j0MZrTCKTWwMYZmqe+5mL/ggxLbZyIjcJ5Ip96NKM5nIlgMvaopj
-         szYZtTx8O+gPB0yLXTLi/6HojfCTa4y5fDJt5LtqvqDJFSkXeYq7sMm0VXqzOrZPmh20
-         yzK1Wb30z6Eakmep/1VwJ5uBMrYwoKpsXa0QuwTGAe7GiWGuY5HEZZBlESqcUcz57ZPy
-         ua0aQmixn5qjX6wMVH1Rz1ONKf+8vrqrzLI9Tbf9yulBaVwl87xsislmhmtXQgK8pvdZ
-         7EciwTsLO8ZtBCE1QY10g8AZT67DLRpaOjuvDy3G7Oz9uHpaqM6syIuO+sRE95o5+ac7
-         J87w==
-X-Gm-Message-State: ANoB5pmuCgZL6EnHs0t1BuQ4RIcj5zxECdUmU2rSe4dL31IRP5pTUDBR
-        Z2SW4Lt6Yua7WW3ubI2g4BirpAV6o1VEUQ==
-X-Google-Smtp-Source: AA0mqf5yq9cgv2D+lkgzq0eLjdk/cgP0h8W7urXDuXSABNN9b90M2p4DxRgwTf9Ig9hLbgCcc4f1mw==
-X-Received: by 2002:a37:aa51:0:b0:6ee:f54d:e17 with SMTP id t78-20020a37aa51000000b006eef54d0e17mr8318619qke.63.1669110897586;
-        Tue, 22 Nov 2022 01:54:57 -0800 (PST)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id k1-20020a05620a414100b006eea4b5abcesm9853516qko.89.2022.11.22.01.54.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 01:54:57 -0800 (PST)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-3876f88d320so139287337b3.6;
-        Tue, 22 Nov 2022 01:54:56 -0800 (PST)
-X-Received: by 2002:a05:690c:b81:b0:37e:6806:a5f9 with SMTP id
- ck1-20020a05690c0b8100b0037e6806a5f9mr5601587ywb.47.1669110896451; Tue, 22
- Nov 2022 01:54:56 -0800 (PST)
+        bh=KCYmUoNLEWECSxLiDeK3zZweGQLAcBJOoW4I6ZR1gew=;
+        b=Jk0N9xRAX6pcQ8XZzhrEJE5jccXKrr4kFyfER66kJ0wycIgVS/ZDmqRg+G0c+h93iA
+         XV6F+Wd+hDGLikkaeW8bddnA2F+Eb3Ft5R2Dof0e8BaaZdjxCJ/JTPzwzytzGFkreqkT
+         zDdUpInBoPs4P5Hrs7eu4H3OCFrf8jNS8zVX+MNvR5eEsNfUBzKut8KV0mg44db2A3dg
+         UP27UCWVGi4/Uo0ENse/n7HTFnIEAx5nQaqwTzpNC70wZi4VK9mS9iFD7dJ8ubh4u5qT
+         JGEiZflknE0FOohomCe8zXDOVSGvgr/JAY8KGTobR4V4jRiAgqFD2PozHl8Lzv0yTzzh
+         bBdA==
+X-Gm-Message-State: ANoB5plJUxCbnpOiG6ENXk1+AQgcKWAAeCiTxYYujyVinxlGygW4AZq6
+        s4WbBMPdwU+XJmX73gcDyAuzCQ==
+X-Google-Smtp-Source: AA0mqf7NHroE0cWTu2dxNSfxoeMDbw0wykM8B35qUHrtjNz23OEmkw3G+wIZ04aVmVQJuixcwvZlyw==
+X-Received: by 2002:a7b:c852:0:b0:3c6:a8c7:755e with SMTP id c18-20020a7bc852000000b003c6a8c7755emr5023586wml.167.1669112500866;
+        Tue, 22 Nov 2022 02:21:40 -0800 (PST)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:e011:9e81:66f1:3415])
+        by smtp.gmail.com with ESMTPSA id o3-20020a5d4083000000b002366e8eee11sm13432873wrp.101.2022.11.22.02.21.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 02:21:40 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH v2 00/15] serial: qcom-geni-serial: implement support for SE DMA
+Date:   Tue, 22 Nov 2022 11:21:10 +0100
+Message-Id: <20221122102125.142075-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20221118145512.509950-1-gsomlo@gmail.com> <20221118145512.509950-13-gsomlo@gmail.com>
- <abb7d87a-46c7-fe7f-f943-4287d15a537f@kernel.org> <Y3vIi2OF5t4IrCS1@errol.ini.cmu.edu>
- <8dd90e39-087e-984c-c289-dbfa766359a8@kernel.org>
-In-Reply-To: <8dd90e39-087e-984c-c289-dbfa766359a8@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 22 Nov 2022 10:54:45 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV3_YhF454J3ixRjOgWzJhL_Qr_XqxtSqxjF0qxGotFQw@mail.gmail.com>
-Message-ID: <CAMuHMdV3_YhF454J3ixRjOgWzJhL_Qr_XqxtSqxjF0qxGotFQw@mail.gmail.com>
-Subject: Re: [PATCH v5 12/14] serial: liteuart: add IRQ support for the RX path
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     "Gabriel L. Somlo" <gsomlo@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, kgugala@antmicro.com,
-        mholenko@antmicro.com, joel@jms.id.au,
-        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
-        ilpo.jarvinen@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 8:44 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> On 21. 11. 22, 19:50, Gabriel L. Somlo wrote:
-> >>>    static void liteuart_timer(struct timer_list *t)
-> >>>    {
-> >>>     struct liteuart_port *uart = from_timer(uart, t, timer);
-> >>>     struct uart_port *port = &uart->port;
-> >>> -   liteuart_rx_chars(port);
-> >>> -
-> >>> +   liteuart_interrupt(0, port);
-> >>
-> >> Are you sure spin_lock() is safe from this path? I assume so, but have you
-> >> thought about it?
-> >
-> > I checked and at that point `in_serving_softirq()` is true.
-> >
-> > *However*, after studying spin_lock() and friends for a while, I'm
-> > not quite clear on whether that unequivocally translates
-> > to "yes, we're safe" :)
->
-> Depends whether some hard irq context is grabbing the port lock too. If
-> it does, it will spin forever waiting for this soft irq to finish (never
-> happens as it was interrupted).
->
-> > As such, I'm inclined to switch to `spin_lock_irqsave()` and
-> > `spin_unlock_irqrestore()` even in the interrupt handler, which is
-> > explicitly stated to be "safe from any context":
-> > https://www.kernel.org/doc/html/v4.15/kernel-hacking/locking.html#cheat-sheet-for-locking
->
->
->
-> > The alternative could be to set `TIMER_IRQSAFE` in `timer_setup()`,
-> > but no other tty driver seems to be doing that, so I'd be a bit off
-> > the beaten path there... :)
->
-> Ah, no.
->
-> > Please do let me know what you think about this, particularly if you
-> > consider going the spin_lock_irqsave-everywhere-just-to-be-safe route
-> > overkill... :)
->
-> If you are unsure about the other contexts, irqsave/restore is the way
-> to go. It can be lifted later, if someone investigates harder.
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Inside the interrupt handler, plain spin_lock() should be OK.
-Inside the timer handler, I think you need to use spin_lock_irqsave(),
-as e.g. liteuart_set_termios() (and lots of code in serial_core.c)
-already uses spin_lock_irqsave().
-Besides, on non-SMP, spin_lock() doesn't do anything, so you need
-to rely on disabling the local interrupt.
+The goal of this series is to update the qcom-geni-serial driver to use
+the DMA mode of the QUPv3 serial engine. This is accomplished by the last
+patch in the series. The previous ones contain either various tweaks,
+reworks and refactoring or prepare the driver for adding DMA support.
 
-Gr{oetje,eeting}s,
+More work will follow on the serial engine in order to reduce code
+redundancy among its users and add support for SE DMA to the qcom GENI
+SPI driver.
 
-                        Geert
+v1 -> v2:
+- turn to_dev_uport() macro into a static inline function
+- use CIRC_CNT_TO_END() and uart_xmit_advance() where applicable and don't
+  handle xmit->tail directly
+- drop sizeof() where BYTES_PER_FIFO_WORD can be used
+- further refactor qcom_geni_serial_handle_tx_fifo()
+- collect review tags
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Bartosz Golaszewski (15):
+  tty: serial: qcom-geni-serial: drop unneeded forward definitions
+  tty: serial: qcom-geni-serial: remove unused symbols
+  tty: serial: qcom-geni-serial: align #define values
+  tty: serial: qcom-geni-serial: improve the to_dev_port() macro
+  tty: serial: qcom-geni-serial: remove stray newlines
+  tty: serial: qcom-geni-serial: refactor qcom_geni_serial_isr()
+  tty: serial: qcom-geni-serial: remove unneeded tabs
+  tty: serial: qcom-geni-serial: refactor qcom_geni_serial_handle_tx()
+  tty: serial: qcom-geni-serial: drop the return value from handle_rx
+  tty: serial: qcom-geni-serial: use of_device_id data
+  tty: serial: qcom-geni-serial: stop operations in progress at shutdown
+  tty: serial: provide devm_uart_add_one_port()
+  tty: serial: qcom-geni-serial: use devres for uart port management
+  soc: qcom-geni-se: add more symbol definitions
+  tty: serial: qcom-geni-serial: add support for serial engine DMA
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ .../driver-api/driver-model/devres.rst        |   3 +
+ drivers/tty/serial/qcom_geni_serial.c         | 614 ++++++++++++------
+ drivers/tty/serial/serial_core.c              |  36 +
+ include/linux/qcom-geni-se.h                  |   3 +
+ include/linux/serial_core.h                   |   6 +
+ 5 files changed, 455 insertions(+), 207 deletions(-)
+
+-- 
+2.37.2
+
