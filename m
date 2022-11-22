@@ -2,63 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F61C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 16:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282DBC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 16:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234333AbiKVQ4w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 11:56:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        id S234363AbiKVQ6k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 11:58:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiKVQ4w (ORCPT
+        with ESMTP id S234374AbiKVQ6j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 11:56:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61644701B8;
-        Tue, 22 Nov 2022 08:56:51 -0800 (PST)
+        Tue, 22 Nov 2022 11:58:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C882EF6C;
+        Tue, 22 Nov 2022 08:58:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED37B617C7;
-        Tue, 22 Nov 2022 16:56:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E73E7C433C1;
-        Tue, 22 Nov 2022 16:56:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B39D9B81CB2;
+        Tue, 22 Nov 2022 16:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C88BC433D6;
+        Tue, 22 Nov 2022 16:58:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1669136210;
-        bh=sDFTGUjsPKcXyILYLrgWvafvMUJ4sD7Xkzve8rezIsM=;
+        s=korg; t=1669136309;
+        bh=BweFA7Hldv6dYWUI7Rx0+i0hiB7jKeQrUbpDoH8sLV8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k3vhVNkhY6AtC53wfTC29QY7EKPYhiGnVGiCXL/UVJ4wyWRlY6Efgn1A32tcS9jDE
-         sVuz4kfY0rm6Y/yVHiKnCjbxA0Wt3ALVb1sj4DiDYtI97z2PEwalhYBXcVaQ7DR1hh
-         T4de2LzzagHaCuhUpvPizOX7Ikxt0VUE4bs1nU9Y=
-Date:   Tue, 22 Nov 2022 17:56:47 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: switch to new
- dmaengine_terminate_* API
-Message-ID: <Y3z/T5PUQdUJ/Aau@kroah.com>
-References: <20221117102705.13287-1-sherry.sun@nxp.com>
+        b=06LcMx17g7Oy6wt+mN8VCOFHE7Ip0WhnTZUFxu0KfudLF9BnqWY+cpa6cIK2hYz7m
+         CESNjInlHOCTehM7Rk4oZVaxq1QsgkSlH+rcEyyTu0ksA6vXBdgA0P/Lp18SU9vjn6
+         fc66hpwATtqYNfrHp1hTS4ggwGn193q16X9goe1Y=
+Date:   Tue, 22 Nov 2022 17:58:26 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: Re: [PATCH v2 12/15] tty: serial: provide devm_uart_add_one_port()
+Message-ID: <Y3z/sqRZ3A/j8TIv@kroah.com>
+References: <20221122102125.142075-1-brgl@bgdev.pl>
+ <20221122102125.142075-13-brgl@bgdev.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221117102705.13287-1-sherry.sun@nxp.com>
+In-Reply-To: <20221122102125.142075-13-brgl@bgdev.pl>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 17, 2022 at 06:27:05PM +0800, Sherry Sun wrote:
-> Convert dmaengine_terminate_all() calls to synchronous and asynchronous
-> versions where appropriate.
+On Tue, Nov 22, 2022 at 11:21:22AM +0100, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
+> Provide a devres variant of uart_add_one_port() that removes the managed
+> port at device detach.
 
-Fails to apply to my tree :(
+Ick, no, please let's keep devm away from the serial layer like this.
 
-Please rebase and resend.
+I would need a LOT of justification for why this is needed, not just one
+driver that wants to use it, sorry.
+
+Please do not make this part of the series for this driver, but do it
+separately, later, if you still want it.
 
 thanks,
 
