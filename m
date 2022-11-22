@@ -2,84 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4249C43219
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 19:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 393CAC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 19:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbiKVTDY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 14:03:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        id S234549AbiKVTlh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 14:41:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234421AbiKVTDM (ORCPT
+        with ESMTP id S234561AbiKVTld (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 14:03:12 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E601758C
-        for <linux-serial@vger.kernel.org>; Tue, 22 Nov 2022 11:03:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669143791; x=1700679791;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oSUMinOlsUfKF3wEMHIbj2Kl9ms686CL0+PNOlu/SmM=;
-  b=oECM6patRcqvGqjwL6kA54D9aSXR4pUhFv0B51GUBXmge8vPCHGq/HeX
-   LxRB+ch/HJ4pgLCTiVC0SN4KYKIlFwGQRtUioxkNfTzwx3uKssEVB+4pt
-   sHcAjxutrNib0HZMvUTyTRhauXRuVqDWtCCSnLz8C7jNHULzzbND1EmLw
-   g6vBJYPt38JSs2S/tM34PXymMKevlIPhmIbkM12lR3XmTugCK9up8ubBg
-   TfIjPhtkwfxXKY+zeU2YsHW+Xn8f2iErcWnTayONIhiH7x1L3SmxjR1C8
-   Fa9YZVRRAp4BBf1gNyFhOuFllyx8wgovPM5TC2SZaM/zxOdsbdDWPBdm6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="312592657"
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="312592657"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 11:03:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="747464857"
-X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
-   d="scan'208";a="747464857"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP; 22 Nov 2022 11:03:09 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1oxYXz-00Fxz4-31;
-        Tue, 22 Nov 2022 21:03:07 +0200
-Date:   Tue, 22 Nov 2022 21:03:07 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, yangyingliang@huawei.com
-Subject: Re: [PATCH] serial: pch: Fix PCI device refcount leak in
- pch_request_dma()
-Message-ID: <Y30c66gA+bOXGebH@smile.fi.intel.com>
-References: <20221122114559.27692-1-wangxiongfeng2@huawei.com>
+        Tue, 22 Nov 2022 14:41:33 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2716903AB;
+        Tue, 22 Nov 2022 11:41:30 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id g10so11032364qkl.6;
+        Tue, 22 Nov 2022 11:41:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=WN1Z8b2npo9zrcc7Ye3tJUfPHpOwBCPYefSwPRJW7pk=;
+        b=FSWzI2FQbl+j/4kon7wpjHSzJdGTF8yPNOk58HShrQ4wmDgw2J34ym+0iwIN3Q+4BW
+         514Ys3B2UmkNk9GnnIceg/6AIeXqxeXja2W+mQSo6sACvuOHTQDFVSKi4cgWc8gxUGdW
+         bVTTPOr5S/9UwHKSuRNSSuIBYIbMx9dafDSu75ANNKnDM1SW68D0WOfn0ujUUt0dCDrP
+         9YvyYZSEcKSVd0UW4grXcjBecoeq7n/I679JROcprqcXVXfCrRs1/+2l88PRm92bqlN8
+         rzZ1+dhsFp/xya57GGmlzjhLWHRXxdrg0c1xF8rUwfjZx5fGPo9DdeQ5N0B4atARklGD
+         TCNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WN1Z8b2npo9zrcc7Ye3tJUfPHpOwBCPYefSwPRJW7pk=;
+        b=bNEZNdjDt7gUxVILDvCo+jBsL6eFwZDEAENzfW5nGZyuk1FqFk0iZHQkThMVUl/Bmz
+         JqVVj5Cvy1fUz3Kch1y0JFAP4l44R2PeosCp4eTyVzl6QsimOtqX60pyQuP8KFbFTQ1w
+         VaBLf+5fxE6VlCK3Jgky8AsyNwmKD6QDww9rT0af0cJoBlyFgfFc6fwW3DlVWnPsoMiO
+         qjfbz6XmTG0j+TAxFF/5a/bGioWcELEhQnDknQ79xvv+Qn/ufKi9DjG3SoQsSydZ+IhK
+         ZBxZf/3BKP5NQJYti3Dtga0Myvt8A++BpwmJLVCjGITy+wk74ibfV2DG8kjbkCXa5h0+
+         INIg==
+X-Gm-Message-State: ANoB5pkwaB0cbctgogcHOr7NVh7b0knB/3xwAC0tue42PWMHvgCskXQU
+        s4eZbSDByd4X990rClLBnjQ=
+X-Google-Smtp-Source: AA0mqf655e1XgJg6QxPsCpvhZuW2dH6rseugSp2pLwMxwVgulJYI60p77mAGbK4Krp/Zb5mmNjeo0g==
+X-Received: by 2002:a37:a807:0:b0:6f1:9cb:deda with SMTP id r7-20020a37a807000000b006f109cbdedamr5323092qke.589.1669146089938;
+        Tue, 22 Nov 2022 11:41:29 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id i5-20020a05620a404500b006fb11eee465sm10791017qko.64.2022.11.22.11.41.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Nov 2022 11:41:29 -0800 (PST)
+Date:   Tue, 22 Nov 2022 14:41:27 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        ilpo.jarvinen@linux.intel.com
+Subject: Re: [PATCH v5 12/14] serial: liteuart: add IRQ support for the RX
+ path
+Message-ID: <Y30l53r3SJCHiXjj@errol.ini.cmu.edu>
+References: <20221118145512.509950-1-gsomlo@gmail.com>
+ <20221118145512.509950-13-gsomlo@gmail.com>
+ <abb7d87a-46c7-fe7f-f943-4287d15a537f@kernel.org>
+ <Y3vIi2OF5t4IrCS1@errol.ini.cmu.edu>
+ <8dd90e39-087e-984c-c289-dbfa766359a8@kernel.org>
+ <CAMuHMdV3_YhF454J3ixRjOgWzJhL_Qr_XqxtSqxjF0qxGotFQw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221122114559.27692-1-wangxiongfeng2@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CAMuHMdV3_YhF454J3ixRjOgWzJhL_Qr_XqxtSqxjF0qxGotFQw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 07:45:59PM +0800, Xiongfeng Wang wrote:
-> As comment of pci_get_slot() says, it returns a pci_device with its
-> refcount increased. The caller must decrement the reference count by
-> calling pci_dev_put().
+On Tue, Nov 22, 2022 at 10:54:45AM +0100, Geert Uytterhoeven wrote:
+> On Tue, Nov 22, 2022 at 8:44 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > On 21. 11. 22, 19:50, Gabriel L. Somlo wrote:
+> > >>>    static void liteuart_timer(struct timer_list *t)
+> > >>>    {
+> > >>>     struct liteuart_port *uart = from_timer(uart, t, timer);
+> > >>>     struct uart_port *port = &uart->port;
+> > >>> -   liteuart_rx_chars(port);
+> > >>> -
+> > >>> +   liteuart_interrupt(0, port);
+> > >>
+> > >> Are you sure spin_lock() is safe from this path? I assume so, but have you
+> > >> thought about it?
+> > >
+> > > I checked and at that point `in_serving_softirq()` is true.
+> > >
+> > > *However*, after studying spin_lock() and friends for a while, I'm
+> > > not quite clear on whether that unequivocally translates
+> > > to "yes, we're safe" :)
+> >
+> > Depends whether some hard irq context is grabbing the port lock too. If
+> > it does, it will spin forever waiting for this soft irq to finish (never
+> > happens as it was interrupted).
+> >
+> > > As such, I'm inclined to switch to `spin_lock_irqsave()` and
+> > > `spin_unlock_irqrestore()` even in the interrupt handler, which is
+> > > explicitly stated to be "safe from any context":
+> > > https://www.kernel.org/doc/html/v4.15/kernel-hacking/locking.html#cheat-sheet-for-locking
+> >
+> >
+> >
+> > > The alternative could be to set `TIMER_IRQSAFE` in `timer_setup()`,
+> > > but no other tty driver seems to be doing that, so I'd be a bit off
+> > > the beaten path there... :)
+> >
+> > Ah, no.
+> >
+> > > Please do let me know what you think about this, particularly if you
+> > > consider going the spin_lock_irqsave-everywhere-just-to-be-safe route
+> > > overkill... :)
+> >
+> > If you are unsure about the other contexts, irqsave/restore is the way
+> > to go. It can be lifted later, if someone investigates harder.
+> 
+> Inside the interrupt handler, plain spin_lock() should be OK.
+> Inside the timer handler, I think you need to use spin_lock_irqsave(),
+> as e.g. liteuart_set_termios() (and lots of code in serial_core.c)
+> already uses spin_lock_irqsave().
+> Besides, on non-SMP, spin_lock() doesn't do anything, so you need
+> to rely on disabling the local interrupt.
 
-> Since 'dma_dev' is only used to filter the channel in filter(), we can
-> call pci_dev_put() before exiting from pch_request_dma(). Add the
-> missing pci_dev_put() for the normal and error path.
+Thanks Geert for the clarification! I could write two wrappers around
+the actual code doing the interrupt handler work, one with spin_lock()
+for the actual irq handler and another with spin_lock_irqsave() for
+the timer codepath. But to keep things simple I'm inclined to simply
+use spin_lock_irqsave() and add a comment saying it's because we need
+it when polling and it's not actually harmful when using IRQ.
 
-No, we can't do that. How is it supposed to work if DMA device disappears in
-the middle?
-
-Look at how it's done in the
-
-5318f70da7e8 serial: 8250_lpss: Balance reference count for PCI DMA device
-67ec6dd0b257 serial: 8250_mid: Balance reference count for PCI DMA device
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+--Gabriel
+ 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
