@@ -2,39 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7767CC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Nov 2022 20:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B585C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 07:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231222AbiKUU1m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Nov 2022 15:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
+        id S232258AbiKVHCJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 02:02:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiKUU1l (ORCPT
+        with ESMTP id S229750AbiKVHCI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Nov 2022 15:27:41 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B83212D1F;
-        Mon, 21 Nov 2022 12:27:39 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id D0C3F1359;
-        Mon, 21 Nov 2022 21:27:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1669062457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8dK3d1oQe8X/2pt53oFWkl+Bv7pDERsDly7J5/Bok7U=;
-        b=o921CSn/87OErQwPhLw+XZXrl1z/1WIdOI3ijg2y3bWIDdTV6b3Kti9W59jDmL/CZIHcUi
-        1SncAISlqzwHnbLTKRWIHDkbdipwYU/XVVzI2J6GLwEcE1PJoQWXSNw0bZeTAILBo7r3Bo
-        c2AYqk7zscF44u/utES2ZVTyJDGM8zK420esoS/IP2nMS+24ZYb64rcWV7u8/DArxpKgwN
-        PccvGDLnHVjDo5kJrRXcoYh/QOtoo6FQVg1Fs3V5hkKvt3YEgV/vvkAoY4QvPGzdr7RV7t
-        S/q33mEGojWVUyNCZMYV9/a4QMh1K6M/fyXHfVkOyuNzTYoIqbbetlAOC6keIQ==
-From:   Michael Walle <michael@walle.cc>
-To:     jirislaby@kernel.org
+        Tue, 22 Nov 2022 02:02:08 -0500
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC39F23BF0;
+        Mon, 21 Nov 2022 23:02:07 -0800 (PST)
+Received: by mail-ej1-f44.google.com with SMTP id f27so33722478eje.1;
+        Mon, 21 Nov 2022 23:02:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=obhyf6FbeDYJ4EzUmao9xEvzmssDDgcxntsnLOZ5F7g=;
+        b=ZgQzUOvf1AG4XRU9QvCfO/xuBT0LzT8i9dqulbVwlbeSvr/oyg53SSDEpHRO7NkaUe
+         +X6qF0eceb33pRteladirlW+QNZAOiEjN0BfaAcr+yXxGQltSRB7cUExmmUHYBWadI6+
+         JqhHvkpC/QbOoZudGzre1BIheWOC+l15RIfrdohHoAeeHvdvuzOx8VoLkZHPX5GvcuRi
+         mAMOiPWa78P7kZtRPSwui55xBDK1wahWRrM1jvR3NQghapkbck5Zh3KqBeyB98/lryjC
+         0EahdalbLMUW7IyW8QoeKbzPIqIe1WWioHrck2pCwaIzGJUCmx/Zu/7VX2AI+As0/Uem
+         gEJA==
+X-Gm-Message-State: ANoB5pn5cDU1cbokLHDIrkOllXbOB5u/f14R3saCPeD4qt/t7G4dfr2q
+        NMN7n9tWODXchD/DnWfXeeX4NPqKYYrSsA==
+X-Google-Smtp-Source: AA0mqf6K+SNMjIbRwN8XBuKJx8oR6/cRUUp23vgQyzgzvpU6h2PPnNCsBeh2ys7OQ9298Isleb1DzA==
+X-Received: by 2002:a17:907:c208:b0:7ad:79c0:547a with SMTP id ti8-20020a170907c20800b007ad79c0547amr8621315ejc.41.1669100526244;
+        Mon, 21 Nov 2022 23:02:06 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id b14-20020a17090636ce00b007a8de84ce36sm5751620ejc.206.2022.11.21.23.02.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Nov 2022 23:02:05 -0800 (PST)
+Message-ID: <f95ef7b7-cc23-9fed-5d05-1aa66aaeb86a@kernel.org>
+Date:   Tue, 22 Nov 2022 08:02:04 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v5 2/3] tty: serial: use uart_port_tx() helper
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
 Cc:     afaerber@suse.de, alexandre.belloni@bootlin.com,
         claudiu.beznea@microchip.com, festevam@gmail.com,
         gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
@@ -44,71 +55,50 @@ Cc:     afaerber@suse.de, alexandre.belloni@bootlin.com,
         nicolas.ferre@microchip.com, richard.genoud@gmail.com,
         s.hauer@pengutronix.de, shawnguo@kernel.org, sudeep.holla@arm.com,
         tklauser@distanz.ch, vz@mleia.com
-Subject: Re: [PATCH v5 2/3] tty: serial: use uart_port_tx() helper
-Date:   Mon, 21 Nov 2022 21:27:24 +0100
-Message-Id: <20221121202724.1708460-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221004104927.14361-3-jirislaby@kernel.org>
 References: <20221004104927.14361-3-jirislaby@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+ <20221121202724.1708460-1-michael@walle.cc>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20221121202724.1708460-1-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Hi,
 
-Hi Jiri,
+On 21. 11. 22, 21:27, Michael Walle wrote:
+> This will break serial output for the userspace on my board
+> (arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt*dts). The uart_port_tx()
+> helper will call __port->ops->stop_tx(__port) if uart_circ_chars_pending()
+> returns 0. But the code above, doesn't do that. In fact, removing the
+> stop_tx() call in the helper macro, will fix the console output.
+> 
+> Any ideas how to fix that?
 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index bd07f79a2df9..a6b4d30c5888 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -824,30 +824,14 @@ static void atmel_rx_chars(struct uart_port *port)
->   */
->  static void atmel_tx_chars(struct uart_port *port)
->  {
-> -	struct circ_buf *xmit = &port->state->xmit;
->  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +	bool pending;
-> +	u8 ch;
->  
-> -	if (port->x_char &&
-> -	    (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY)) {
-> -		atmel_uart_write_char(port, port->x_char);
-> -		port->icount.tx++;
-> -		port->x_char = 0;
-> -	}
-> -	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-> -		return;
-> -
-> -	while (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY) {
-> -		atmel_uart_write_char(port, xmit->buf[xmit->tail]);
-> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> -		port->icount.tx++;
-> -		if (uart_circ_empty(xmit))
-> -			break;
-> -	}
-> -
-> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> -		uart_write_wakeup(port);
-> -
-> -	if (!uart_circ_empty(xmit)) {
-> +	pending = uart_port_tx(port, ch,
-> +		atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXRDY,
-> +		atmel_uart_write_char(port, ch));
-> +	if (pending) {
->  		/* we still have characters to transmit, so we should continue
->  		 * transmitting them when TX is ready, regardless of
->  		 * mode or duplexity
+Hm, so ATMEL_US_TXRDY is removed from tx_done_mask in stop_tx, but not 
+added back in start_tx. So the tx interrupt is never handled (the tx 
+tasklet is not scheduled to send the queue chars) in 
+atmel_handle_transmit().
 
-This will break serial output for the userspace on my board
-(arch/arm/boot/dts/lan966x-kontron-kswitch-d10-mmt*dts). The uart_port_tx()
-helper will call __port->ops->stop_tx(__port) if uart_circ_chars_pending()
-returns 0. But the code above, doesn't do that. In fact, removing the
-stop_tx() call in the helper macro, will fix the console output.
+Any chance, the below fixes it?
 
-Any ideas how to fix that?
+diff --git a/drivers/tty/serial/atmel_serial.c 
+b/drivers/tty/serial/atmel_serial.c
+index 11bf2466390e..395370e0c77b 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -596,6 +596,8 @@ static void atmel_start_tx(struct uart_port *port)
+                 /* re-enable PDC transmit */
+                 atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTEN);
 
--michael
++       atmel_port->tx_done_mask |= ATMEL_US_TXRDY;
++
+         /* Enable interrupts */
+         atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
+
+
+thanks,
+-- 
+js
+
