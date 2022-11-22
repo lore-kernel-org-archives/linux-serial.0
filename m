@@ -2,92 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B822C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 11:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E62C4167E
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Nov 2022 16:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232467AbiKVLe3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 06:34:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        id S234128AbiKVQnd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Nov 2022 11:43:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232348AbiKVLeH (ORCPT
+        with ESMTP id S234110AbiKVQnW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 06:34:07 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A2D270B
-        for <linux-serial@vger.kernel.org>; Tue, 22 Nov 2022 03:28:03 -0800 (PST)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4NGhnJ1cgMz15Mn6;
-        Tue, 22 Nov 2022 19:27:32 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 19:28:01 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 22 Nov 2022 19:28:01 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <yangyingliang@huawei.com>,
-        <wangxiongfeng2@huawei.com>
-Subject: [PATCH] serial: pch: Fix PCI device refcount leak in pch_request_dma()
-Date:   Tue, 22 Nov 2022 19:45:59 +0800
-Message-ID: <20221122114559.27692-1-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        Tue, 22 Nov 2022 11:43:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DABC61B8C;
+        Tue, 22 Nov 2022 08:43:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EAEE61796;
+        Tue, 22 Nov 2022 16:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7CD1C433D6;
+        Tue, 22 Nov 2022 16:43:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1669135392;
+        bh=HhGB03f7yfLJTw6SIRqhGxERi9Gom4x4ToervBUNQF8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ai29wCwrSrFMalECnQg3VZFE6JJ7w1PVvNsX/nUcTdZGvwJT9FgVXh0Qu1fP/KZjg
+         gLL1mmmGyJUPfkwUZ8U8rfzyORb4k7cg2ocWkdlYVwXPJu4ByDHKX8FbqktGuqI0/r
+         L84ihOeSNwOdUyo5JUrjvyIoAUgVxWDKIToY6zCM=
+Date:   Tue, 22 Nov 2022 17:43:08 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, Ard Biesheuvel <ardb@kernel.org>,
+        linux-efi@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        linux-usb@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Helge Deller <deller@gmx.de>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Tom Rix <trix@redhat.com>, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH printk v5 00/40] reduce console_lock scope
+Message-ID: <Y3z8HOt0yOd1nceY@kroah.com>
+References: <20221116162152.193147-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221116162152.193147-1-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As comment of pci_get_slot() says, it returns a pci_device with its
-refcount increased. The caller must decrement the reference count by
-calling pci_dev_put().
+On Wed, Nov 16, 2022 at 05:27:12PM +0106, John Ogness wrote:
+> This is v5 of a series to prepare for threaded/atomic
+> printing. v4 is here [0]. This series focuses on reducing the
+> scope of the BKL console_lock. It achieves this by switching to
+> SRCU and a dedicated mutex for console list iteration and
+> modification, respectively. The console_lock will no longer
+> offer this protection.
+> 
+> Also, during the review of v2 it came to our attention that
+> many console drivers are checking CON_ENABLED to see if they
+> are registered. Because this flag can change without
+> unregistering and because this flag does not represent an
+> atomic point when an (un)registration process is complete,
+> a new console_is_registered() function is introduced. This
+> function uses the console_list_lock to synchronize with the
+> (un)registration process to provide a reliable status.
+> 
+> All users of the console_lock for list iteration have been
+> modified. For the call sites where the console_lock is still
+> needed (for other reasons), comments are added to explain
+> exactly why the console_lock is needed.
+> 
+> All users of CON_ENABLED for registration status have been
+> modified to use console_is_registered(). Note that there are
+> still users of CON_ENABLED, but this is for legitimate purposes
+> about a registered console being able to print.
+> 
+> The base commit for this series is from Paul McKenney's RCU tree
+> and provides an NMI-safe SRCU implementation [1]. Without the
+> NMI-safe SRCU implementation, this series is not less safe than
+> mainline. But we will need the NMI-safe SRCU implementation for
+> atomic consoles anyway, so we might as well get it in
+> now. Especially since it _does_ increase the reliability for
+> mainline in the panic path.
+> 
+> Changes since v4:
+> 
+> printk:
+> 
+> - Introduce console_init_seq() to handle the now rather complex
+>   procedure to find an appropriate start sequence number for a
+>   new console upon registration.
+> 
+> - When registering a non-boot console and boot consoles are
+>   registered, try to flush all the consoles to get the next @seq
+>   value before falling back to use the @seq of the enabled boot
+>   console that is furthest behind.
+> 
+> - For console_force_preferred_locked(), make the console the
+>   head of the console list.
+> 
 
-Since 'dma_dev' is only used to filter the channel in filter(), we can
-call pci_dev_put() before exiting from pch_request_dma(). Add the
-missing pci_dev_put() for the normal and error path.
 
-Fixes: 3c6a483275f4 ("Serial: EG20T: add PCH_UART driver")
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- drivers/tty/serial/pch_uart.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index c59ce7886579..b17788cf309b 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -694,6 +694,7 @@ static void pch_request_dma(struct uart_port *port)
- 	if (!chan) {
- 		dev_err(priv->port.dev, "%s:dma_request_channel FAILS(Tx)\n",
- 			__func__);
-+		pci_dev_put(dma_dev);
- 		return;
- 	}
- 	priv->chan_tx = chan;
-@@ -710,6 +711,7 @@ static void pch_request_dma(struct uart_port *port)
- 			__func__);
- 		dma_release_channel(priv->chan_tx);
- 		priv->chan_tx = NULL;
-+		pci_dev_put(dma_dev);
- 		return;
- 	}
- 
-@@ -717,6 +719,8 @@ static void pch_request_dma(struct uart_port *port)
- 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
- 				    &priv->rx_buf_dma, GFP_KERNEL);
- 	priv->chan_rx = chan;
-+
-+	pci_dev_put(dma_dev);
- }
- 
- static void pch_dma_rx_complete(void *arg)
--- 
-2.20.1
-
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
