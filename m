@@ -2,144 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80729C46467
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7D3C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236712AbiKWM56 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 07:57:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
+        id S238312AbiKWM7R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 07:59:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237573AbiKWM4h (ORCPT
+        with ESMTP id S238329AbiKWM54 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 07:56:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A5490583;
-        Wed, 23 Nov 2022 04:45:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64FDFB81F71;
-        Wed, 23 Nov 2022 12:45:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6C1C433C1;
-        Wed, 23 Nov 2022 12:45:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669207543;
-        bh=RGeNPl1q1Rd26khakiP04+aHQgUDACWNhheSntWR3UY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=h0C5OQ8f1bOBvHAYfQCxiV+UVKLrIGS9P0YtyKAa+kJR3ubcsnsvKveii9+ZzAZf0
-         KFvyNDEQWzWbtyv1UX70yAVwioR2jo5ruaQPldY6a+vgWgwSX1zcyqtEjngD8KM/Yq
-         M6PUd3abEGoUE0y/Bgaao90C1JhPAJx53kO4hgqASvtwYQBf0OvtaXtFIUz4Bu1lDp
-         VIf0564hw9e0zALWubi0Vjd6AwiH3ys3RC1BzcCcLVqGK09x8Yo91qDBvnSdVX6TFz
-         AqPhj4px3Bc9dIAlgRIKc2ZFJHt38YJZ1l5HXTs7/XLgpDj/A7rM0UlyO6j4u3O/bB
-         LOasv+pPUfxUQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, tony@atomide.com,
-        andriy.shevchenko@linux.intel.com, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 1/5] serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()
-Date:   Wed, 23 Nov 2022 07:45:33 -0500
-Message-Id: <20221123124540.266772-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 23 Nov 2022 07:57:56 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C37194A7C;
+        Wed, 23 Nov 2022 04:46:20 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id m7-20020a05600c090700b003cf8a105d9eso1205716wmp.5;
+        Wed, 23 Nov 2022 04:46:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0LW62Ti7mfshMfxCZUJVluE7umXYJJzUzfDjrUZcXpU=;
+        b=VShjlACwmJy3zF3ybErpld9hZR/86uTUySpyCy0LKeYE0xudLRVlE2qDXcGadnzHY5
+         pgLxw4WIEuZ0srU3r0FXkFzdXGcJ5nenn56oVh07rXmqmznZejzg7a8hdkW0oN0cqs4E
+         vB9cup0ZhxSI+R1OlhQvbj997E4qougSUt+FJ72Wj3Lj/vuBSW1ezWBDb9UVfF8XMUgF
+         WoCVO/SLVAWVfCPkzdK/z8UOQnCClUThck9ihzGelfKTELiKjkDhiTqiz9/zus1y0Zhl
+         QOBMa7Lmv2B4H9G7f6IyZ/Rw4BLzrWOO8yS9IPgzR6lBC6D/5hT2tSqghzeTwr5hAjXn
+         CtNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0LW62Ti7mfshMfxCZUJVluE7umXYJJzUzfDjrUZcXpU=;
+        b=VeWk7a063l6S1bjk9m0otWyi1tvLVbSEdccgx3IlPnAEkJydrD8vCGMX1YngpJAz3C
+         KSGKj+tMt0ebmajoiC7q+ikYXvZCEK1lJP0hYoQSpQUnDabQKxTt0pY7sTZJHvDXLMMZ
+         UxPB4ah3ru89o9urjfGfPNRpgKcvakD18HQaeE9PUBmTdUUouXXdPQbwyY/oiNV+yKlQ
+         nqUlkDoaCDxyrS19mvw0UQLFiMYmfCmhSPMo2kj7qS/9WcL/S0Gz5OnbPSVu7DkA2igg
+         Ld2TbZNrbtQWzYcUnslm+1dm5mlxdei1gsD26iysASDhEFk0piLI4l9KcGa1Rzjc94lB
+         vVIg==
+X-Gm-Message-State: ANoB5pmnPxlA9c6k8UWbSt7I5+DIf/x9W1eHikyHc4Dj0CqzNGctbgbm
+        S1Bki8idmVimG4XoV27ut9XePcWHaD0=
+X-Google-Smtp-Source: AA0mqf61wJK7TB1tH9sT3E/AjZZ4eV17JPD+famsDd5w3gXU3efvkpaAl3HGbgiV+XnQx7JubXMO9w==
+X-Received: by 2002:a05:600c:4e8e:b0:3c6:b7cc:79d2 with SMTP id f14-20020a05600c4e8e00b003c6b7cc79d2mr24289145wmq.42.1669207578715;
+        Wed, 23 Nov 2022 04:46:18 -0800 (PST)
+Received: from [192.168.2.41] ([46.227.18.67])
+        by smtp.gmail.com with ESMTPSA id k17-20020a5d6291000000b0022e66749437sm16623931wru.93.2022.11.23.04.46.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Nov 2022 04:46:18 -0800 (PST)
+Message-ID: <ffb1f40b-bbe8-5431-63cf-a53fc0606971@gmail.com>
+Date:   Wed, 23 Nov 2022 13:46:17 +0100
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH 2/2] serial: atmel: don't stop the transmitter when doing
+ PIO
+Content-Language: fr
+To:     Michael Walle <michael@walle.cc>,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-arm-kernel@lists.infradead.org
+References: <20221123082736.24566-1-jirislaby@kernel.org>
+ <20221123082736.24566-2-jirislaby@kernel.org>
+ <df233ce37626fdb194b583808326d966@walle.cc>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <df233ce37626fdb194b583808326d966@walle.cc>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+Le 23/11/2022 à 09:50, Michael Walle a écrit :
+> Am 2022-11-23 09:27, schrieb Jiri Slaby (SUSE):
+>> Writing ATMEL_US_TXDIS to ATMEL_US_CR makes the transmitter NOT to send
+>> the just queued character. This means when the character is last and
+>> uart calls ops->stop_tx(), the character is not sent at all.
+>>
+>> The usart datasheet is not much specific on this, it just says the
+>> transmitter is stopped. But apparently, the character is dropped. So
+>> we should stop the transmitter only for DMA and PDC transfers to not
+>> send any more characters. For PIO, this is unexpected and deviates from
+>> other drivers. In particular, the below referenced commit broke TX as it
+>> added a call to ->stop_tx() after the very last character written to the
+>> transmitter.
+>>
+>> So fix this by limiting the write of ATMEL_US_TXDIS to DMA transfers
+>> only.
+>>
+>> Even there, I don't know if it is correctly implemented. Are all the
+>> queued characters sent once ->start_tx() is called? Anyone tested flow
+>> control -- be it hard (RTSCTS) or the soft (XOFF/XON) one?
+>>
+>> Fixes: 2d141e683e9a ("tty: serial: use uart_port_tx() helper")
+>> Cc: Richard Genoud <richard.genoud@gmail.com>
+>> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+>> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+>> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Reported-by: Michael Walle <michael@walle.cc>
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> 
+> Already merged, but:
+> Tested-by: Michael Walle <michael@walle.cc>
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
 
-[ Upstream commit 038ee49fef18710bedd38b531d173ccd746b2d8d ]
-
-RS485-enabled UART ports on TI Sitara SoCs with active-low polarity
-exhibit a Transmit Enable glitch on ->set_termios():
-
-omap8250_restore_regs(), which is called from omap_8250_set_termios(),
-sets the TCRTLR bit in the MCR register and clears all other bits,
-including RTS.  If RTS uses active-low polarity, it is now asserted
-for no reason.
-
-The TCRTLR bit is subsequently cleared by writing up->mcr to the MCR
-register.  That variable is always zero, so the RTS bit is still cleared
-(incorrectly so if RTS is active-high).
-
-(up->mcr is not, as one might think, a cache of the MCR register's
-current value.  Rather, it only caches a single bit of that register,
-the AFE bit.  And it only does so if the UART supports the AFE bit,
-which OMAP does not.  For details see serial8250_do_set_termios() and
-serial8250_do_set_mctrl().)
-
-Finally at the end of omap8250_restore_regs(), the MCR register is
-restored (and RTS deasserted) by a call to up->port.ops->set_mctrl()
-(which equals serial8250_set_mctrl()) and serial8250_em485_stop_tx().
-
-So there's an RTS glitch between setting TCRTLR and calling
-serial8250_em485_stop_tx().  Avoid by using a read-modify-write
-when setting TCRTLR.
-
-While at it, drop a redundant initialization of up->mcr.  As explained
-above, the variable isn't used by the driver and it is already
-initialized to zero because it is part of the static struct
-serial8250_ports[] declared in 8250_core.c.  (Static structs are
-initialized to zero per section 6.7.8 nr. 10 of the C99 standard.)
-
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Su Bao Cheng <baocheng.su@siemens.com>
-Tested-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/6554b0241a2c7fd50f32576fdbafed96709e11e8.1664278942.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_omap.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index c551407bee07..7795e6401a93 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -259,6 +259,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
- {
- 	struct omap8250_priv *priv = up->port.private_data;
- 	struct uart_8250_dma	*dma = up->dma;
-+	u8 mcr = serial8250_in_MCR(up);
- 
- 	if (dma && dma->tx_running) {
- 		/*
-@@ -275,7 +276,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
- 	serial_out(up, UART_EFR, UART_EFR_ECB);
- 
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_A);
--	serial8250_out_MCR(up, UART_MCR_TCRTLR);
-+	serial8250_out_MCR(up, mcr | UART_MCR_TCRTLR);
- 	serial_out(up, UART_FCR, up->fcr);
- 
- 	omap8250_update_scr(up, priv);
-@@ -291,7 +292,8 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
- 	serial_out(up, UART_LCR, 0);
- 
- 	/* drop TCR + TLR access, we setup XON/XOFF later */
--	serial8250_out_MCR(up, up->mcr);
-+	serial8250_out_MCR(up, mcr);
-+
- 	serial_out(up, UART_IER, up->ier);
- 
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-@@ -600,7 +602,6 @@ static int omap_8250_startup(struct uart_port *port)
- 
- 	pm_runtime_get_sync(port->dev);
- 
--	up->mcr = 0;
- 	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
- 
- 	serial_out(up, UART_LCR, UART_LCR_WLEN8);
--- 
-2.35.1
-
+> 
+> Thanks,
+> -michael
+Thanks !
