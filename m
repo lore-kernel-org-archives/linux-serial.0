@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5762DC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 13:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D816C47088
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 13:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237267AbiKWNDC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 08:03:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43098 "EHLO
+        id S238733AbiKWNXm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 08:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238840AbiKWNCR (ORCPT
+        with ESMTP id S234936AbiKWNXU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 08:02:17 -0500
-Received: from mx3.securetransport.de (mx3.securetransport.de [IPv6:2a01:4f8:c0c:92be::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BB146CA02
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 04:47:46 -0800 (PST)
+        Wed, 23 Nov 2022 08:23:20 -0500
+Received: from mx2.securetransport.de (mx2.securetransport.de [IPv6:2a03:4000:13:6c7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B4FC2FC32
+        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 05:03:07 -0800 (PST)
 Received: from mail.dh-electronics.com (unknown [77.24.89.57])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx3.securetransport.de (Postfix) with ESMTPSA id 8BE0D5DD10;
-        Wed, 23 Nov 2022 13:46:45 +0100 (CET)
+        by mx2.securetransport.de (Postfix) with ESMTPSA id 6E8735E8BF;
+        Wed, 23 Nov 2022 14:01:47 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1669207606;
-        bh=xK8zJcTf25/mDwEWUMWN/rNLwZTPLWF2eRCfj7fpGBM=;
+        s=dhelectronicscom; t=1669208511;
+        bh=8bejrz9uFar5stLsX8M9y4eC0FFkLbxKABV8dztCfEM=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=ceMOykJDfXcdnR/yPSmFS3I3aTEQH1bpav5lEO47OxvgP4IPcrt5AKVh2kt+FFdxi
-         csx/RcP4AJXQS1meqAenLt6Q0whDgZMymbFEYIZ7XIrAVX5M+wUI1wuLoh/DRz0+jH
-         YwU5tdM+FLzQaLU4gIVK6uNS/72P7FhPRGnpErcY3w7qTMPmoicbxzsYy9SK5xEgkI
-         NNXSoXbd4/qAyuaeZSAOyAFSk7ZjCRO65Obem6fVQV+0rrDJuDcxViodHxvYrtoRuA
-         m4CFqptlPPtfolhtPTdgje+Gk3uO8dDbHWtBIcgXTDaCNCpJ1kKfZlIiDU3Pgfel4W
-         EatrQraZx7EbQ==
+        b=IpMkv+vtJFaL1LZo77zphXuZU8ZCVGlm55iTUXh8oJTlvSc4/YnFx/XMZ2b+ZT34f
+         Y1BI5cu+J7LpIHynil2pORWpt3yrHUDCTUET4ofY6URFVV081Uiy6erz/pm0REvARK
+         PWMgS3iK77g5CJ7gHfjC1hiXznOb8gUSIjAhvw0WU45gMEpNEkDeWFc+uJoqaIwZpD
+         xRdDTS3dr6YO/FhiUQ1UG/MEsbUI/KFnmnnRegObdZX7jRekv4Uo3MCY7D3lzbcyE0
+         Su+D51FZRpHy40vwQqNmi9nOlx+kDamPHjaNI9p600qClJOehqda4TutccZ/bR014P
+         U+o2STpUPSjjw==
 Received: from DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) by
  DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.20; Wed, 23 Nov 2022 13:31:36 +0100
+ 15.2.1118.20; Wed, 23 Nov 2022 13:31:37 +0100
 Received: from localhost.localdomain (172.16.51.2) by
  DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.20 via Frontend Transport; Wed, 23 Nov 2022 13:31:35 +0100
+ 15.2.1118.20 via Frontend Transport; Wed, 23 Nov 2022 13:31:36 +0100
 From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
 To:     <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
@@ -45,11 +45,15 @@ CC:     <krzysztof.kozlowski+dt@linaro.org>, <marex@denx.de>,
         <jirislaby@kernel.org>,
         Christoph Niedermaier <cniedermaier@dh-electronics.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Dahl <ada@thorsis.com>, <kernel@dh-electronics.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Alexander Dahl <ada@thorsis.com>,
+        Fabio Estevam <festevam@denx.de>, <kernel@dh-electronics.com>,
         Linux Team <linux-imx@nxp.com>
-Subject: [PATCH V2 2/4] serial: core: Add option to output RS485 RX_DURING_TX state via GPIO
-Date:   Wed, 23 Nov 2022 13:30:02 +0100
-Message-ID: <20221123123004.7216-2-cniedermaier@dh-electronics.com>
+Subject: [PATCH V2 3/4] serial: imx: Add support for RS485 RX_DURING_TX output GPIO
+Date:   Wed, 23 Nov 2022 13:30:03 +0100
+Message-ID: <20221123123004.7216-3-cniedermaier@dh-electronics.com>
 X-Mailer: git-send-email 2.11.0
 X-klartext: yes
 In-Reply-To: <20221123123004.7216-1-cniedermaier@dh-electronics.com>
@@ -60,16 +64,21 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch provides a generic GPIO variable for outputting the state
-of RS485 RX_DURING_TX. The GPIO is defined by the devicetree property
-"rs485-rx-during-tx-gpios". To use it in a low level serial driver,
-the evaluation of this variable must be implemented there accordingly.
+If a RX_DURING_TX GPIO is defined by the DT property "rs485-rx-during-tx-gpios"
+this patch switches this GPIO accordingly to the RS485 flag RX_DURING_TX in user
+space. In addition, the i.MX UART receiver is no longer turned on and off during
+sending, because now the hardware is responsible for connecting or disconnecting
+RX during TX controlled by this GPIO.
 
 Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
 ---
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
 Cc: Alexander Dahl <ada@thorsis.com>
+Cc: Fabio Estevam <festevam@denx.de>
 Cc: Marek Vasut <marex@denx.de>
 Cc: kernel@dh-electronics.com
 Cc: Linux Team <linux-imx@nxp.com>
@@ -77,54 +86,48 @@ To: linux-serial@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org
 ---
 V2: - Rework of the commit message
-    - Rework GPIO property comment
 ---
- drivers/tty/serial/serial_core.c | 12 ++++++++++++
- include/linux/serial_core.h      |  1 +
- 2 files changed, 13 insertions(+)
+ drivers/tty/serial/imx.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index b9fbbee598b8..867f2675caca 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3410,6 +3410,7 @@ int uart_get_rs485_mode(struct uart_port *port)
- 	struct device *dev = port->dev;
- 	u32 rs485_delay[2];
- 	int ret;
-+	int rx_during_tx_gpio_flag;
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 757825edb0cd..f241f16472f2 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -476,7 +476,8 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ 				imx_uart_rts_inactive(sport, &ucr2);
+ 			imx_uart_writel(sport, ucr2, UCR2);
  
- 	ret = device_property_read_u32_array(dev, "rs485-rts-delay",
- 					     rs485_delay, 2);
-@@ -3458,6 +3459,17 @@ int uart_get_rs485_mode(struct uart_port *port)
- 	if (port->rs485_term_gpio)
- 		port->rs485_supported.flags |= SER_RS485_TERMINATE_BUS;
+-			imx_uart_start_rx(port);
++			if (!port->rs485_rx_during_tx_gpio)
++				imx_uart_start_rx(port);
  
-+	rx_during_tx_gpio_flag = (rs485conf->flags & SER_RS485_RX_DURING_TX) ?
-+				 GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-+	port->rs485_rx_during_tx_gpio = devm_gpiod_get_optional(dev,
-+								"rs485-rx-during-tx",
-+								rx_during_tx_gpio_flag);
-+	if (IS_ERR(port->rs485_rx_during_tx_gpio)) {
-+		ret = PTR_ERR(port->rs485_rx_during_tx_gpio);
-+		port->rs485_rx_during_tx_gpio = NULL;
-+		return dev_err_probe(dev, ret, "Cannot get rs485-rx-during-tx-gpios\n");
+ 			sport->tx_state = OFF;
+ 		}
+@@ -705,7 +706,8 @@ static void imx_uart_start_tx(struct uart_port *port)
+ 				imx_uart_rts_inactive(sport, &ucr2);
+ 			imx_uart_writel(sport, ucr2, UCR2);
+ 
+-			if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
++			if (!(port->rs485.flags & SER_RS485_RX_DURING_TX) &&
++			    !port->rs485_rx_during_tx_gpio)
+ 				imx_uart_stop_rx(port);
+ 
+ 			sport->tx_state = WAIT_AFTER_RTS;
+@@ -1955,6 +1957,13 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
+ 	    rs485conf->flags & SER_RS485_RX_DURING_TX)
+ 		imx_uart_start_rx(port);
+ 
++	if (port->rs485_rx_during_tx_gpio) {
++		if (rs485conf->flags & SER_RS485_RX_DURING_TX)
++			gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 1);
++		else
++			gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 0);
 +	}
 +
  	return 0;
  }
- EXPORT_SYMBOL_GPL(uart_get_rs485_mode);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index fd59f600094a..e0c83d05ae7b 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -579,6 +579,7 @@ struct uart_port {
- 	struct serial_rs485     rs485;
- 	struct serial_rs485	rs485_supported;	/* Supported mask for serial_rs485 */
- 	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
-+	struct gpio_desc	*rs485_rx_during_tx_gpio; /* Output GPIO that indicates the state of RS485 RX during TX */
- 	struct serial_iso7816   iso7816;
- 	void			*private_data;		/* generic platform data pointer */
- };
+ 
 -- 
 2.11.0
 
