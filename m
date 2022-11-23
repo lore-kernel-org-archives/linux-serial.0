@@ -2,147 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 978C9C4321E
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 08:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC76C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 08:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235946AbiKWIJ1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 03:09:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
+        id S235505AbiKWI17 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 03:27:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236323AbiKWIJ1 (ORCPT
+        with ESMTP id S236569AbiKWI1p (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 03:09:27 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C539A248
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 00:09:26 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oxkok-0006Eq-Bh; Wed, 23 Nov 2022 09:09:14 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oxkoi-0060sj-AG; Wed, 23 Nov 2022 09:09:13 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oxkoi-000yN1-Ek; Wed, 23 Nov 2022 09:09:12 +0100
-Date:   Wed, 23 Nov 2022 09:09:12 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     kernel@pengutronix.de,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        Grant Likely <grant.likely@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 571/606] serial: sc16is7xx: Convert to i2c's .probe_new()
-Message-ID: <20221123080912.lbmfgnco67psdu27@pengutronix.de>
-References: <20221118224540.619276-1-uwe@kleine-koenig.org>
- <20221118224540.619276-572-uwe@kleine-koenig.org>
- <536ac08e-bdbd-b4d6-8309-8f6763f8db12@kernel.org>
- <20221121070757.cqiybt5uk4qiczmr@pengutronix.de>
- <0bfea903-5efd-a76d-5944-16a2c9362adb@kernel.org>
+        Wed, 23 Nov 2022 03:27:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DCAB8C;
+        Wed, 23 Nov 2022 00:27:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB15561B13;
+        Wed, 23 Nov 2022 08:27:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAABDC433C1;
+        Wed, 23 Nov 2022 08:27:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669192061;
+        bh=2ofp/BMPjwg+BMvx/7faulMyTjPJEKpup6ALMxyJL58=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WJjXJ2whn+6+lj2hNLVPETN8pcvKGKN/7RZr09IksU6GqhO4uboDzNGmG07PzA6Xn
+         3TZFVMavwDUNBC/lZQm8Mq87b3kDb2M22FtR0JIuGTubD9vS6FiW2ZtNEf3eb2LDrj
+         q+LN3LFj5KNruZDDkaebHcbVofdqt6OcPUCsmqnh8r114pwzYSbV9q0WE2tRMwSt88
+         VF9QY6iUH6D0XLJt4NqY9zVonmVsWAWShywx9FXniazaV7GL2yTbfINhBZ1LoLe8wJ
+         r9wSoo1YNN3IOOGCQLBqCAKbPS3fbre9YW4s3Box8UYDU5qG9XwVlw3l6O5QS0+3NT
+         4PGcFZAly+Xaw==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH 1/2] serial: atmel: cleanup atmel_start+stop_tx()
+Date:   Wed, 23 Nov 2022 09:27:35 +0100
+Message-Id: <20221123082736.24566-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f745plogbhx5hxup"
-Content-Disposition: inline
-In-Reply-To: <0bfea903-5efd-a76d-5944-16a2c9362adb@kernel.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Define local variables holding information about whether pdc or dma is
+used in the HW. These are retested several times by calls to
+atmel_use_pdc_tx() and atmel_use_dma_tx(). So to make the code more
+readable, simply cache the values.
 
---f745plogbhx5hxup
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is also a preparatory patch for the next one (where is_pdc is used
+once more in atmel_stop_tx()).
 
-Hello Jiri,
+Cc: Richard Genoud <richard.genoud@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Reported-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/tty/serial/atmel_serial.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-On Wed, Nov 23, 2022 at 07:36:52AM +0100, Jiri Slaby wrote:
-> On 21. 11. 22, 8:07, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Nov 21, 2022 at 07:03:41AM +0100, Jiri Slaby wrote:
-> > > On 18. 11. 22, 23:45, Uwe Kleine-K=F6nig wrote:
-> > > > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > > >=20
-> > > > .probe_new() doesn't get the i2c_device_id * parameter, so determine
-> > > > that explicitly in the probe function.
-> > >=20
-> > > I wonder why -- is this a new approach to probe functions? Or is only=
- i2c
-> > > affected? And why? Could you point to the commit introducing and desc=
-ribing
-> > > the change in the i2c core?
-> >=20
-> > I didn't sent the cover letter to all recipents of the individual
-> > patches, so flow of information is a bit rough. Sorry about that.
-> >=20
-> > You can find it at
-> > https://lore.kernel.org/lkml/20221118224540.619276-1-uwe@kleine-koenig.=
-org/,
-> > it should answer your question.
->=20
-> Yes, I looked up that beforehand, but was no more clever after reading it.
->=20
-> > The short version is: The i2c framework does a more or less expensive
-> > lookup for each call to .probe() to provide the id parameter. A relevant
-> > part of the drivers however doesn't use this parameter, so the idea is
-> > to let the drivers who actually need it, determine it themselves.
-> >=20
-> > Statistics for the current state of this series in my tree:
-> > Among the 602 converted drivers, 404 don't make use of the parameter.
->=20
-> So doesn't it make sense to provide both probe with no id and "probe_id"
-> then? 200 is quite a few (a third to be precise).
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 4ca04676c406..65f63dccfd72 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -552,8 +552,9 @@ static u_int atmel_get_mctrl(struct uart_port *port)
+ static void atmel_stop_tx(struct uart_port *port)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	bool is_pdc = atmel_use_pdc_tx(port);
+ 
+-	if (atmel_use_pdc_tx(port)) {
++	if (is_pdc) {
+ 		/* disable PDC transmit */
+ 		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTDIS);
+ 	}
+@@ -572,7 +573,6 @@ static void atmel_stop_tx(struct uart_port *port)
+ 	if (atmel_uart_is_half_duplex(port))
+ 		if (!atomic_read(&atmel_port->tasklet_shutdown))
+ 			atmel_start_rx(port);
+-
+ }
+ 
+ /*
+@@ -581,20 +581,22 @@ static void atmel_stop_tx(struct uart_port *port)
+ static void atmel_start_tx(struct uart_port *port)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	bool is_pdc = atmel_use_pdc_tx(port);
++	bool is_dma = is_pdc || atmel_use_dma_tx(port);
+ 
+-	if (atmel_use_pdc_tx(port) && (atmel_uart_readl(port, ATMEL_PDC_PTSR)
++	if (is_pdc && (atmel_uart_readl(port, ATMEL_PDC_PTSR)
+ 				       & ATMEL_PDC_TXTEN))
+ 		/* The transmitter is already running.  Yes, we
+ 		   really need this.*/
+ 		return;
+ 
+-	if (atmel_use_pdc_tx(port) || atmel_use_dma_tx(port))
+-		if (atmel_uart_is_half_duplex(port))
+-			atmel_stop_rx(port);
++	if (is_dma && atmel_uart_is_half_duplex(port))
++		atmel_stop_rx(port);
+ 
+-	if (atmel_use_pdc_tx(port))
++	if (is_pdc) {
+ 		/* re-enable PDC transmit */
+ 		atmel_uart_writel(port, ATMEL_PDC_PTCR, ATMEL_PDC_TXTEN);
++	}
+ 
+ 	/* Enable interrupts */
+ 	atmel_uart_writel(port, ATMEL_US_IER, atmel_port->tx_done_mask);
+-- 
+2.38.1
 
-Having the probe callback with the id parameter is only temporary. As
-soon as all drivers are converted, the variant with the id parameter
-will go away.
-
-> BTW is this a performance issue? I.e. does it slow down the boot?
-
-I don't know the start motivation for Lee (who triggered the conversion
-in b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new() call-back
-type")).
-Looking at the git history, he created 1e98dcd77970 ("mfd: 88pm860x:
-Move over to new I2C device .probe() call") converting a driver that
-doesn't benefit immensely. The lookup is more expensive for drivers with
-big .id_table, the converted driver has only one entry.
-
-I think in the end is a mixture between:
-
- - A big part of the drivers doesn't benefit from the lookup.
- - For most other busses the probe function only gets a device parameter
-   and no id (spi, platform, i3c). There are counter examples though:
-   amba, usb. Didn't check further.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---f745plogbhx5hxup
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmN91SUACgkQwfwUeK3K
-7AnEJwf/W4pS8GZPEAPf9Q7m0soQa4CPHBpI/2o+JSehcUyl1SirnlbwiBy7Dq4k
-dx3FOMT9OJtN7XvRlJJhfE6Wt3OuZzpvwsDsb9sT+Gr2V7w7NsozRiTG7d1KEa2r
-qTWPl1/l9QhJlFECDavLxSSqF/IvuirEKHZ/oM87g3c+hgyxH0LrE28qpLAx/9FN
-JYUDstbnyvDfTyJiJvgx3AAMd1jDZ2uH9DdfjjBIO2Mn58nMeGvXwqWlDs29xceS
-NQGVR5/G4X+uXx8WMitZ25bcJ2h8nsZ21OY0Kehjw0fnB1sTJf2DGGgoGroQZhu0
-4A0YlTudRazzo6X24r4O99su6DQESw==
-=2Rnm
------END PGP SIGNATURE-----
-
---f745plogbhx5hxup--
