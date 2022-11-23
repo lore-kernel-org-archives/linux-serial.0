@@ -2,115 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B032C636F8
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 04:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A290C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 05:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235895AbiKWEkC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Nov 2022 23:40:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
+        id S235810AbiKWFjp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 00:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235952AbiKWEjo (ORCPT
+        with ESMTP id S235828AbiKWFjo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Nov 2022 23:39:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1811D9B386;
-        Tue, 22 Nov 2022 20:39:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B54961A3F;
-        Wed, 23 Nov 2022 04:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225EEC433C1;
-        Wed, 23 Nov 2022 04:39:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669178381;
-        bh=EVw4Vc0/gYpVHxzZAdah2zLNd6pA0gTQaK+joP95BKw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QeBxZCprwCTU86Pqv1jbwEiUULNLeEVvPC1vdnFLEOwo4ZjJ9TnndaaoA5XZ55BlH
-         dFNUaBxj1NdIgxQuslei2pAmnW/Z2yQ9Ez0pbOGy0w60FJfyM8TQpvvGSwo4X/CPnL
-         iGkeDfTcaooUjn+RtR+b8weXzQXvnVb2mgoYJ2ygsOCLKSiOMGNGANIMuXfckChAz+
-         PyeRCc3K/Sfw5tX54bqUCF6lgw/E5TKozvtW8vmrDPLBxXa96QLuq80CiTdUw3XPSv
-         11aAf/r27UgMrIlh/qUbpu0OZ3U7Hl/Jm7U0evtgaaia6qFgX/rpiLMZNJZusN3NFD
-         cRxjZ+VpqSyfQ==
-Date:   Wed, 23 Nov 2022 10:09:36 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 5/9] dt-bindings: drop redundant part of title (end,
- part two)
-Message-ID: <Y32kCHhdLjQvSnE3@matsya>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
+        Wed, 23 Nov 2022 00:39:44 -0500
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0909F1D99;
+        Tue, 22 Nov 2022 21:39:42 -0800 (PST)
+Received: by mail-ej1-f42.google.com with SMTP id bj12so40289696ejb.13;
+        Tue, 22 Nov 2022 21:39:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ATGjR+WR/rvjQsAzn1FSqZfn3gb1osfEIFie0PtsarM=;
+        b=U+8Uv8gJ2qDZiQSCGRoHCx2H9bz/TkLscQkC3beEsPxseWgnqpjJkBelaJPcc8ndTM
+         cDYLXe/rspwQiuLsxIfHDdCajKt2T5W859u+atxFYqxFUqFpV6qcR45CdD5m3b4agHrE
+         uFxPEx/NRefirR4IBFGu2HtcN27Yv8e5FQE/aFu/m/8KG1jX/+iIfa8d7hARPsEv/ySu
+         s3/dNnAuMT4F4J8vhuVV5dMf0EAikZeTHvITCGFtf6cO2ZVdvG6eFluWfPPW5hZxKBWK
+         X5Nox9XDvuVk4a0Xaei1WEQYPbwo1ZtSe/pEQMt7nXAFI5ZUecd3OfvVXMKkEraJ6clh
+         sAlg==
+X-Gm-Message-State: ANoB5pkuwD8MEwOHadJ50Sl38CfPW0Yw1GESp1S4LIpBxUgPuy4HsVrW
+        dC5IpOxFWr8G65r/4dvGitYkgBaycrLqhQ==
+X-Google-Smtp-Source: AA0mqf5kI5TnLrfB3RLx5Y2CCjO7P5arxBYeHo5nRSrp0aEhmhgLF2EVkPwsltj7axC/FdZx713hFQ==
+X-Received: by 2002:a17:906:4d16:b0:78b:15dc:2355 with SMTP id r22-20020a1709064d1600b0078b15dc2355mr7706255eju.306.1669181981309;
+        Tue, 22 Nov 2022 21:39:41 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id bc3-20020a056402204300b00463597d2c25sm7219679edb.74.2022.11.22.21.39.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Nov 2022 21:39:40 -0800 (PST)
+Message-ID: <b5888b92-ed6c-98c7-0d38-982a31e10e4f@kernel.org>
+Date:   Wed, 23 Nov 2022 06:39:39 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-6-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v5 09/14] serial: liteuart: fix rx loop variable types
+Content-Language: en-US
+To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, kgugala@antmicro.com,
+        mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        geert@linux-m68k.org, ilpo.jarvinen@linux.intel.com
+References: <20221118145512.509950-1-gsomlo@gmail.com>
+ <20221118145512.509950-10-gsomlo@gmail.com>
+ <44bf21b6-cbe4-4d73-0883-a9bcbd7d5971@kernel.org>
+ <1b5a963c-2a5b-54fe-784e-fcc4d06c347e@kernel.org>
+ <Y3uDZV8b+3GfQyUY@errol.ini.cmu.edu>
+ <2f242291-99b6-a50f-cd52-e7dfd8c88c8f@kernel.org>
+ <Y305gZnFSaUBtCRa@errol.ini.cmu.edu>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <Y305gZnFSaUBtCRa@errol.ini.cmu.edu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21-11-22, 12:06, Krzysztof Kozlowski wrote:
-> The Devicetree bindings document does not have to say in the title that
-> it is a "binding", but instead just describe the hardware.
+On 22. 11. 22, 22:05, Gabriel L. Somlo wrote:
+> So, looking at what uart_insert_char() does, I could simply do this
+> instead:
 > 
-> Drop trailing "Node|Tree|Generic bindings" in various forms (also with
-> trailling full stop):
+>   	while(!litex_read8(membase + OFF_RXEMPTY) {
+>   		...
+> 		/* LiteUART does not provide overrun bits */
+>   		if (!(uart_handle_sysrq_char(port, ch) ||
+>   		     tty_insert_flip_char(&port->state->port, ch, TTY_NORMAL)))
+>   			++port->icount.buf_overrun;
+>   
+> That is, `tty_insert_flip_char() is the portion of `uart_insert_char()`
+> that actually gets executed if status is 1 and overrun is 0...
 > 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [nN]ode [bB]indings\?\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [tT]ree [bB]indings\?\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [gG]eneric [bB]indings\?\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [bB]indings\? description\.\?$/title: \1/' {} \;
-> 
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -not -name 'trivial-devices.yaml' \
->     -exec sed -i -e 's/^title: \(.*\) [bB]indings\? document\.\?$/title: \1/' {} \;
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> I'm not quite confident about whether this is an improvement in legibility
+> and/or code quality,
 
->  Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml    | 2 +-
->  Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml      | 2 +-
->  Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml      | 2 +-
-
-Acked-By: Vinod Koul <vkoul@kernel.org>
+It's not :). Keep the uart_ helper.
 
 -- 
-~Vinod
+js
+suse labs
+
