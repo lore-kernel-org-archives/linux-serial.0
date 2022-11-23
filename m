@@ -2,173 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BC6C47089
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 23:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5C3C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 23:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiKWXYo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 18:24:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
+        id S229957AbiKWXaI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 18:30:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiKWXYk (ORCPT
+        with ESMTP id S229836AbiKWXaH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 18:24:40 -0500
-Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA3D1121C8;
-        Wed, 23 Nov 2022 15:24:39 -0800 (PST)
-Date:   Wed, 23 Nov 2022 23:24:23 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail3; t=1669245874; x=1669505074;
-        bh=4D7H7t9cQFG+vEXPzrmjxP0kBkCA637MqCW+lh8xlvo=;
-        h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID:BIMI-Selector;
-        b=hPbJVkIuL1M0qEmL0bT4PuPpgSPCUAu33Y+Qb7tdeEgjcQqAn2P9/FpfK16HEA2EM
-         7vjsfHf0eS2PmoRXdPNGezpmX314hJ02XB0zpjgzVkJDzPqhEL7AMChGfIwFpiPwIA
-         NF7ZZEj1iGDIHy5p8DLkWQw2m5Qldpno4e6/JtLA16r0ZaA4hkUD/VeqWm5hbTdlnb
-         BxWDFCkr77h+K0/o8YNYsqjLGq0ZWGeFJce25BsYm5wcKn9VpmO0zKAO32OE9aTevx
-         yfP5UsPCKW2I3bqPQKJL7FqD0bhsWsXV2qxdqiRQ7WsVWh4oHNK9TFNBq0m4+w4lGn
-         bmQFT/VhhjM8A==
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-From:   =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Matthew Wilcox <willy@infradead.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Wolfram Sang <wsa@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Ming Lei <ming.lei@redhat.com>,
-        Jilin Yuan <yuanjilin@cdjrlc.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Won Chung <wonchung@google.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-i3c@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH 3/5] driver core: make struct device_type.uevent() take a const *
-Message-ID: <tx7-rd-SyCXl_K0mh2tDzOLPmogI631IJQJRNK8dMW_GVZiy5AHHVN7-b_Ib3P1L_dLTCRPEw8dAhDbMAPGg8QTKs4p1XFoNHlEZpAnWcCw=@protonmail.com>
-In-Reply-To: <Y35vLAWWfezPvGSm@kroah.com>
-References: <Y34hgIW8p1RlQTBB@smile.fi.intel.com> <Y34+V2bCDdqujBDk@kroah.com> <Y35JfNJDppRp5bLX@ziepe.ca> <Y35R+/eQJYI7VaDS@kroah.com> <Y35YlI93UBuTfgYy@ziepe.ca> <Y35dMIaNYSE0Cykd@casper.infradead.org> <Y35iKfYf3ThdVvaR@kroah.com> <Y35lt+0jXrOKynL5@ziepe.ca> <Y35vLAWWfezPvGSm@kroah.com>
-Feedback-ID: 20568564:user:proton
+        Wed, 23 Nov 2022 18:30:07 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51415528A9
+        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 15:30:06 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id i10so591053ejg.6
+        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 15:30:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z6LMA2Q7Sd9YoQJrsC7M8vf0UTTXg6tg8Z/ivyNNtlI=;
+        b=QVxOmbx5W8N8oI+CO+EoZM5UX+bfTXZuciRAEqxOAzgxuIIgnZlDZYUUdIgMv3XE/I
+         pTnqe1fF5y/5zFy1RTKMy4pUmEVgUpwwWc5lupEmInFXY4okiXwTQzAU5HBfT8/CpW2s
+         DdJ3850XAGqqoKuElIY93w8ZRcUw0UIHUJnrg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Z6LMA2Q7Sd9YoQJrsC7M8vf0UTTXg6tg8Z/ivyNNtlI=;
+        b=CYIq44NOHnPn0sqBJWVuGRGW7zfT11Vkn7DHoFLgjmirVAkhkAcUkfMSRbEmSsOFk1
+         tW4Tc4GYgrjXXuxjQzximGxXFmPtm78eV9VBiX6KLnif/nPzsnql003JMLjxdbagS7es
+         jK90uzB7iuGtOx0g6aHKXqyth4LwlbwipawmrDIQb/swzR48yPh82B/7AxMWa0SHSvmM
+         DGtoTK7DYzgGhuTKHL7qYSm27LzzCpFkCc2UeZTr+H1NBdpE+3KpWJahHqZ1HgIZvcMz
+         1gx8rHETemUiE+1OEAZDkhTNTtAdFxB5fOt94kmfc2QaEg6PL2d9PyhdJ6Ok6whBlfqc
+         oxKQ==
+X-Gm-Message-State: ANoB5pnvlicGg+GR6uIi6gMf14RdQOCSa5rfOZ5Q1XzsB3xcfIjB2rGR
+        u62CxVvHTR7qkgwzbreYMQGjgA==
+X-Google-Smtp-Source: AA0mqf6kJ1NiWMAw3V9kaPUJq2zIuJ/jntNiapgSvLSd4MHybETVGPrvoYm/b0CtQsiQdVir2dWh0A==
+X-Received: by 2002:a17:906:583:b0:78d:9e18:b8f7 with SMTP id 3-20020a170906058300b0078d9e18b8f7mr24815322ejn.657.1669246204918;
+        Wed, 23 Nov 2022 15:30:04 -0800 (PST)
+Received: from alco.roam.corp.google.com (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
+        by smtp.gmail.com with ESMTPSA id n5-20020aa7db45000000b004618a89d273sm1846799edt.36.2022.11.23.15.30.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 15:30:04 -0800 (PST)
+Subject: [PATCH v1 0/1] earlycon: Let users set the clock frequency
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIAPKsfmMC/xXLQQqAIBBA0avIrBvQCTG6zahDSmKg1Ea6e7Z88P+ALi1Lh10NaPLknq86YRYFIX
+ E9BHOcBtJExtCKf88FQzlxs9E7bTiydTAHz13QN64hzaXepbzvB8BUHNhhAAAA
+From:   Ricardo Ribalda <ribalda@chromium.org>
+Date:   Thu, 24 Nov 2022 00:29:54 +0100
+Message-Id: <20221123-serial-clk-v1-0-1f0554a46ad1@chromium.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Ricardo Ribalda <ribalda@chromium.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+X-Mailer: b4 0.11.0-dev-d93f8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=886; i=ribalda@chromium.org;
+ h=from:subject:message-id; bh=r9k7xumMZXx17RDnVJJ/c5a94RiKP7pRkdNoriPB6QA=;
+ b=owEBbQKS/ZANAwAKAdE30T7POsSIAcsmYgBjfqz1/bqULfgCPpUe/L4Qm9HvuKY5iLwBbVLJxZKJ
+ 6vAd/dOJAjMEAAEKAB0WIQREDzjr+/4oCDLSsx7RN9E+zzrEiAUCY36s9QAKCRDRN9E+zzrEiF/CEA
+ CN6DO9jgh+m217z2h8lcawj1UjCSXYgyRRv8D//iWT0qGc4cAiFiloU4VE+EaRNmp0rC1R7pqrn6i6
+ YJOVgRQniXL4PcGwWfQ+yGm3EVm1WxsLaGdZLU+6XDr4+Ayf3q1OERxNuzBBRz32vyesSxZ64GpzDq
+ ngOxbprvJaTq3iyL21jOFXDJlMb9jiDphDvKCQzEFzsmOsAEMvGAFKGU0mJAZK98N4LOFvJXVU+q8+
+ s5fCoXLW+PiNyCTrE89NzCBxNLl2Fdqw000Z2jPN5ShLlLYKyhlpyQFsx6ZL1NkfrPY48wwFf5XPJQ
+ U9ffifURgtsXcI6gK2M1sku2Ju280pt9js4xhv477MGBACQoqJCDcQpUH/HHkU4S0B7a0dUir4wMp2
+ NK/XxW+VrApVA3aZ/morg1NFLDSwPpXoZ4wtLhqbfhehXeAXSDPaz3reNM66cdzFcuSuAukr7lVduB
+ P/z3vGhzCkkxpnM8s2DnSee5CijAvq1+Dj3nRWm9HG7bBP+4EwxM7Zr7Y+MrFboNDU5mb46DeFpYUQ
+ uL4y20T5RiFhhFyH/cme6qI/7nKA6GZXrbRAkYXh1ORTlFTAlO/B1864FCl7tif/ZLYvxJFeXaafzA
+ nHLSYKUk3IY9Hi5pLd1HVpgtrqCCKBJVRgwnnLnaolzAWyAqvHNl2mHhP3jw==
+X-Developer-Key: i=ribalda@chromium.org; a=openpgp;
+ fpr=9EC3BB66E2FC129A6F90B39556A0D81F9F782DA9
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Some platforms, namely AMD Picasso, use non standard uart clocks (48M),
+witch makes it impossible to use with earlycon.
+    
+Let the user select its own frequency.
 
-Hi
+To: Jonathan Corbet <corbet@lwn.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
 
+---
+Ricardo Ribalda (1):
+      earlycon: Let users set the clock frequency
 
-2022. november 23., szerda 20:06 keltez=C3=A9ssel, Greg Kroah-Hartman =
-=C3=ADrta:
+ Documentation/admin-guide/kernel-parameters.txt | 12 +++++++-----
+ drivers/tty/serial/earlycon.c                   |  7 ++++++-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+---
+base-commit: 4312098baf37ee17a8350725e6e0d0e8590252d4
+change-id: 20221123-serial-clk-85db701ada57
 
-
-> On Wed, Nov 23, 2022 at 02:25:59PM -0400, Jason Gunthorpe wrote:
->=20
-> > On Wed, Nov 23, 2022 at 07:10:49PM +0100, Greg Kroah-Hartman wrote:
-> >=20
-> > > On Wed, Nov 23, 2022 at 05:49:36PM +0000, Matthew Wilcox wrote:
-> > >=20
-> > > > On Wed, Nov 23, 2022 at 01:29:56PM -0400, Jason Gunthorpe wrote:
-> > > >=20
-> > > > > #define generic_container_of(in_type, in, out_type, out_member) \
-> > > > > _Generic(in, \
-> > > > > const in_type *: ((const out_type *)container_of(in, out_type, ou=
-t_member)), \
-> > > > > in_type *: ((out_type *)container_of(in, out_type, out_member)) \
-> > > > > )
-> > > >=20
-> > > > There's a neat trick I found in seqlock.h:
-> > > >=20
-> > > > #define generic_container_of(in_t, in, out_t, m) \
-> > > > _Generic(*(in), \
-> > > > const in_t: ((const out_t *)container_of(in, out_t, m)), \
-> > > > in_t: ((out_t *)container_of(in, out_type, m)) \
-> > > > )
-> > > >=20
-> > > > and now it fits in 80 columns ;-)
-> > >=20
-> > > Nice trick! Dropping the inline functions is a bit different, let me
-> > > see if that still gives a sane error if we pass an incorrect type or
-> > > mess with the const * the wrong way. I'll run some tests tomorrow
-> > > afternoon...
-> >=20
-> > The errors in some cases are very verbose, but it is somewhat
-> > understandable - the worst is when _Generic fails to match anything,
-> > but also at least clang partially expanded container_of and it throws
-> > other assertions too.
-> >=20
-> > I also wonder if this could just be rolled into the normal
-> > container_of.
->=20
->=20
-> I think we might be able to now, my previous attempts with inline
-> functions prevented that. I'll beat on that tomorrow...
->=20
-> > in_type would have to be derived like:
-> >=20
-> > in_type =3D typeof((out_type *)NULL)->out_member)
-> >=20
-> > But I don't know if you can use typeof in a generic type matching expre=
-ssion..
->=20
->=20
-> Maybe that is what threw me before, I can't remember. I do know we
-> tried a number of different attempts, can't recall the failed ones...
->=20
-
-I am sorry I haven't followed the previous discussion,
-but has something like the following been considered?
-
-  #define container_of2(ptr, type, member) \
-  =09_Generic((ptr), \
-  =09=09typeof_member(const type, member) *: container_of((ptr), const type=
-, member), \
-  =09=09const void *: container_of((ptr), const type, member), \
-  =09=09default: container_of((ptr), type, member) \
-  =09)
-
-This is not perfect by any means, but I believe it is a reasonable
-improvement. It only really works reliably if the member type and
-the specified `type` in the arguments are unqualified,
-but I believe that should cover the majority of cases.
-
-I have tried to build an x86-64 defconfig with this and there are
-numerous const violations, but I haven't seen any false positives.
-
-
-> [...]
-
-
-Regards,
-Barnab=C3=A1s P=C5=91cze
+Best regards,
+-- 
+Ricardo Ribalda <ribalda@chromium.org>
