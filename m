@@ -2,198 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD44C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 18:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41708C47088
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 19:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239212AbiKWSlp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 13:41:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
+        id S239628AbiKWTG0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 14:06:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238995AbiKWSlo (ORCPT
+        with ESMTP id S236590AbiKWTGY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 13:41:44 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C8079911;
-        Wed, 23 Nov 2022 10:41:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669228903; x=1700764903;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5NUpWHxh0HMcGrVnX2uqj2PpmAieZarcGlSMWP4Qkgk=;
-  b=OQamZGKTewFCjGBAIKBeVtEmRk/dkCp/uG0muzEczfGJ7Lkl8ipOEs1s
-   T1lvVjoXVsqvCCxv/W4D7Y6hMsjaKqmY4dyM5C8RUc6Uae1pP5Z/d82q0
-   JaXRK7sRa4qQj5i6/eWyrTFO+bURQkGhpzqkqIey5HU6wAKo/oRr+0KgK
-   4OflOchUu92hHnKyTDuqLBgEHwtpbqcrbAQGEPRtL6JYMY9ljMwBFw3/u
-   ggIT7GYo3oyTBNEU1yxficp/r/meYWNAiTKxAPxNoM/H5NNecBs3ALOxs
-   NsdKX3iWu6nWSe9F70CkjCC70O7XSfg4CFJMIWFVSfuqAFqww//yaW5hz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="376279590"
-X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="376279590"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 10:41:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="644211307"
-X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
-   d="scan'208";a="644211307"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007.fm.intel.com with ESMTP; 23 Nov 2022 10:41:40 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1oxugk-00GPLO-0x;
-        Wed, 23 Nov 2022 20:41:38 +0200
-Date:   Wed, 23 Nov 2022 20:41:38 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Wed, 23 Nov 2022 14:06:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC46F922D2;
+        Wed, 23 Nov 2022 11:06:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 586E161EBE;
+        Wed, 23 Nov 2022 19:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7968C433D6;
+        Wed, 23 Nov 2022 19:06:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1669230382;
+        bh=imibZHjJL9cpBpAGiGFcUllw5xFRNIsDuHu6Y+fwag4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V2GZdWHPvr+u9NV42kW3apisS1jk4Cp6h19MZ6qfaWIUGIVJV5gV2ha39zpYgwqP7
+         WIt60wd9b8FvKniDUGYZZUiLCvZQFxPf+YdmrcSFnI46/b/EWX33zlFDz2TQxA125f
+         2aOS9p5Y/Iiz28acyMaujccSu8U/Ol2yQw6Symkw=
+Date:   Wed, 23 Nov 2022 20:06:20 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Wolfram Sang <wsa@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <Y35pYsrrSTPr4y9k@smile.fi.intel.com>
-References: <20221123082825.32820-1-tony@atomide.com>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Ming Lei <ming.lei@redhat.com>,
+        Jilin Yuan <yuanjilin@cdjrlc.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Won Chung <wonchung@google.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH 3/5] driver core: make struct device_type.uevent() take a
+ const *
+Message-ID: <Y35vLAWWfezPvGSm@kroah.com>
+References: <Y34hgIW8p1RlQTBB@smile.fi.intel.com>
+ <97be39ed-3cea-d55a-caa6-c2652baef399@gmail.com>
+ <Y34zyzdbRUdyOSkA@casper.infradead.org>
+ <Y34+V2bCDdqujBDk@kroah.com>
+ <Y35JfNJDppRp5bLX@ziepe.ca>
+ <Y35R+/eQJYI7VaDS@kroah.com>
+ <Y35YlI93UBuTfgYy@ziepe.ca>
+ <Y35dMIaNYSE0Cykd@casper.infradead.org>
+ <Y35iKfYf3ThdVvaR@kroah.com>
+ <Y35lt+0jXrOKynL5@ziepe.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221123082825.32820-1-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <Y35lt+0jXrOKynL5@ziepe.ca>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 10:28:24AM +0200, Tony Lindgren wrote:
-> We want to enable runtime PM for serial port device drivers in a generic
-> way. To do this, we want to have the serial core layer manage the
-> registered physical serial controller devices.
+On Wed, Nov 23, 2022 at 02:25:59PM -0400, Jason Gunthorpe wrote:
+> On Wed, Nov 23, 2022 at 07:10:49PM +0100, Greg Kroah-Hartman wrote:
+> > On Wed, Nov 23, 2022 at 05:49:36PM +0000, Matthew Wilcox wrote:
+> > > On Wed, Nov 23, 2022 at 01:29:56PM -0400, Jason Gunthorpe wrote:
+> > > > #define generic_container_of(in_type, in, out_type, out_member) \
+> > > > 	_Generic(in,                                        \
+> > > >                   const in_type *: ((const out_type *)container_of(in, out_type, out_member)),   \
+> > > >                   in_type *: ((out_type *)container_of(in, out_type, out_member)) \
+> > > > 		  )
+> > > 
+> > > There's a neat trick I found in seqlock.h:
+> > > 
+> > > #define generic_container_of(in_t, in, out_t, m)			\
+> > > 	_Generic(*(in),							\
+> > > 		const in_t: ((const out_t *)container_of(in, out_t, m)), \
+> > > 		in_t: ((out_t *)container_of(in, out_type, m))	\
+> > > 	)
+> > > 
+> > > and now it fits in 80 columns ;-)
+> > 
+> > Nice trick!  Dropping the inline functions is a bit different, let me
+> > see if that still gives a sane error if we pass an incorrect type or
+> > mess with the const * the wrong way.  I'll run some tests tomorrow
+> > afternoon...
 > 
-> The serial layer has a few challenges to deal with:
+> The errors in some cases are very verbose, but it is somewhat
+> understandable - the worst is when _Generic fails to match anything,
+> but also at least clang partially expanded container_of and it throws
+> other assertions too.
 > 
-> 1. The serial port mapping to a physical serial port controller device
->    is currently not easily available after the physical serial controller
->    struct device gets registered uart_add_one_port() time
+> I also wonder if this could just be rolled into the normal
+> container_of.
+
+I think we might be able to now, my previous attempts with inline
+functions prevented that.  I'll beat on that tomorrow...
+
+> in_type would have to be derived like:
 > 
-> 2. The serial port device drivers have their own driver data. So we cannot
->    currently start making use of serial core generic data easily without
->    changing all the serial port device drivers
+>   in_type = typeof((out_type *)NULL)->out_member)
 > 
-> To find the serial ports for a controller based on struct device, let's
-> add a new data structure for a serial_controller. On registering a port,
-> we can use the drv->state array to find the associated serial port
-> controller and initialize the serial core controller.
-> 
-> As some serial port device drivers enable runtime PM in their probe before
-> registering with the serial core layer, and some do not enable runtime PM
-> at all currently, we need check the state in the serial core layer on
-> uart_port_startup(). We need to also consider that a serial port device
-> may have multiple ports.
-> 
-> Initially we enable runtime PM for all the serial port controller devices.
-> This allows us to add runtime PM calls and properly handle any errors
-> without a need for serial layer specific runtime PM wrapper functions.
-> 
-> After this patch no functional changes for the serial port device drivers
-> are intended. We just enable runtime PM and keep the runtime PM usage
-> count until all the serial controller ports are unregistered. For drivers
-> implementing PM runtime, we just keep track of the runtime PM
-> configuration.
-> 
-> For the serial port drivers, the serial core layer has the following use
-> cases to deal with:
-> 
-> 1. If a serial port device driver does not implement runtime PM, the
->    device state is set to active state, and the runtime PM usage count
->    is kept until the last port for a device is unregistered
-> 
-> 2. If a serial port device driver implements runtime PM, the runtime PM
->    usage count is kept until the last port for the device is unregistered
-> 
-> 3. If a serial port device driver implements runtime PM autosuspend,
->    autosuspend is not prevented. This currently gets set only for the
->    8250_omap driver to keep runtime PM working for it
-> 
-> For system suspend, things should be mostly detached from the runtime PM.
-> The serial port device drivers may call pm_runtime_force_suspend() and
-> pm_runtime_force_resume() as needed.
+> But I don't know if you can use typeof in a generic type matching expression..
 
-...
+Maybe that is what threw me before, I can't remember.  I do know we
+tried a number of different attempts, can't recall the failed ones...
 
-> +static struct serial_controller *to_controller(struct uart_port *port)
+thanks,
 
-Perhaps to_serial_controller()? Or to_serial_ctrl() ?
-
-> +{
-> +	if (!port->dev)
-> +		return NULL;
-> +
-> +	return port->state->controller;
-> +}
-
-...
-
-> +/*
-> + * Starts runtime PM for the serial controller device if not already started
-> + * by the serial port driver. Called from uart_add_one_port() with port_mutex
-> + * held.
-
-Perhaps we may utilize lockdep_assert() here?
-
-> + */
-
-Also maybe might_sleep() can be added where it's appropriate?
-
-...
-
-> +static int serial_core_register_port(struct uart_port *port,
-> +				     struct uart_driver *drv)
-> +{
-> +	struct serial_controller *controller;
-> +	bool allocated = false;
-> +	int ret;
-> +
-> +	if (!port->dev)
-> +		return 0;
-> +
-> +	controller = serial_core_find_controller(drv, port->dev);
-> +	if (!controller) {
-
-> +		controller = kzalloc(sizeof(*controller), GFP_KERNEL);
-> +		if (!controller)
-> +			return -ENOMEM;
-> +
-> +		controller->drv = drv;
-> +		controller->dev = port->dev;
-> +		controller->supports_autosuspend = port->supports_autosuspend;
-> +		allocated = true;
-
-Maybe split this to a serial_core_controller_alloc()?
-
-> +	}
-> +
-> +	port->state->controller = controller;
-> +	WARN_ON(port->supports_autosuspend != controller->supports_autosuspend);
-> +
-> +	ret = serial_core_pm_runtime_start(port);
-> +	if (ret < 0)
-> +		goto err_free;
-> +
-> +	return 0;
-> +
-> +err_free:
-> +	port->state->controller = NULL;
-> +	if (allocated)
-> +		kfree(controller);
-> +
-> +	return ret;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+greg k-h
