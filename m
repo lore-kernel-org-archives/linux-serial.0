@@ -2,132 +2,151 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D816C47088
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 13:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15A4C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 13:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238733AbiKWNXm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 08:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        id S237611AbiKWNZB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 08:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234936AbiKWNXU (ORCPT
+        with ESMTP id S237740AbiKWNYY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 08:23:20 -0500
-Received: from mx2.securetransport.de (mx2.securetransport.de [IPv6:2a03:4000:13:6c7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B4FC2FC32
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 05:03:07 -0800 (PST)
-Received: from mail.dh-electronics.com (unknown [77.24.89.57])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx2.securetransport.de (Postfix) with ESMTPSA id 6E8735E8BF;
-        Wed, 23 Nov 2022 14:01:47 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1669208511;
-        bh=8bejrz9uFar5stLsX8M9y4eC0FFkLbxKABV8dztCfEM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=IpMkv+vtJFaL1LZo77zphXuZU8ZCVGlm55iTUXh8oJTlvSc4/YnFx/XMZ2b+ZT34f
-         Y1BI5cu+J7LpIHynil2pORWpt3yrHUDCTUET4ofY6URFVV081Uiy6erz/pm0REvARK
-         PWMgS3iK77g5CJ7gHfjC1hiXznOb8gUSIjAhvw0WU45gMEpNEkDeWFc+uJoqaIwZpD
-         xRdDTS3dr6YO/FhiUQ1UG/MEsbUI/KFnmnnRegObdZX7jRekv4Uo3MCY7D3lzbcyE0
-         Su+D51FZRpHy40vwQqNmi9nOlx+kDamPHjaNI9p600qClJOehqda4TutccZ/bR014P
-         U+o2STpUPSjjw==
-Received: from DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) by
- DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.20; Wed, 23 Nov 2022 13:31:37 +0100
-Received: from localhost.localdomain (172.16.51.2) by
- DHPWEX01.DH-ELECTRONICS.ORG (10.64.2.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.20 via Frontend Transport; Wed, 23 Nov 2022 13:31:36 +0100
-From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <krzysztof.kozlowski+dt@linaro.org>, <marex@denx.de>,
-        <jirislaby@kernel.org>,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Alexander Dahl <ada@thorsis.com>,
-        Fabio Estevam <festevam@denx.de>, <kernel@dh-electronics.com>,
-        Linux Team <linux-imx@nxp.com>
-Subject: [PATCH V2 3/4] serial: imx: Add support for RS485 RX_DURING_TX output GPIO
-Date:   Wed, 23 Nov 2022 13:30:03 +0100
-Message-ID: <20221123123004.7216-3-cniedermaier@dh-electronics.com>
-X-Mailer: git-send-email 2.11.0
-X-klartext: yes
-In-Reply-To: <20221123123004.7216-1-cniedermaier@dh-electronics.com>
-References: <20221123123004.7216-1-cniedermaier@dh-electronics.com>
+        Wed, 23 Nov 2022 08:24:24 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C82903B9;
+        Wed, 23 Nov 2022 05:05:08 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id c2so416112qko.1;
+        Wed, 23 Nov 2022 05:05:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=R+v8ZxKX8tGaAXfvICGpj0mzbrVbhvFOF5mYVd6TaZA=;
+        b=EnaQDaNjXv66YcJvROjW0f4Fp2tpTGrlrVC3D8TyZX2t/4xHQRxAKa5K22EPyKj1xS
+         dhwKCFByRH3lTWCbkLTrysAabgahJE/bE8lokrWd03gTZ09dSDz2jJ1iy6gZ2q97Dg4g
+         Jzvebow4zGVLe4RhVS7QOoaXONXpGbtbm8jqosdnLfe/kmO0hh+ObDpVFn3fBG6Q/MDg
+         59lwIxffJf60dVeaeYT4U0O6hsHskNFGFSSfyJxTSHF5dJxxyNtORppkt+8l4460cs/z
+         FmdYcH/UPpArWaN8u12WdsqmELnWx1BIhAJY534UppzXUYLOugpyVREILYkqTb8MOX3X
+         WVHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=R+v8ZxKX8tGaAXfvICGpj0mzbrVbhvFOF5mYVd6TaZA=;
+        b=mtVk75mPRjeEjb3tV4OxwGuJscUgvQmHFId3K6xWxfR8UX6rB3Pdq6o0FsAC0XuJqJ
+         Ww2k7sNZtxRVrFGVWmzFrzcyQUAe4hIBmS6G5o8U+1Y69YeSrMXMyzKo5Kls8q3VWY5Y
+         6XY7cZwUoZNy4JPk8nHaR3Xj9v/+dgCq8AtSa+QaxL8H8qrILhQfrNi/QDmyzu8TJHfL
+         BmLAbiqrWT6axmxhAoQKEAVwhie+fYgKeyTbNg+1EMN6gJ+rXYpYdbk4RSlTb48j4QOf
+         NbpLY9gVq8AtLlXATByXLLdLceLXozTqL1oILKDZfzNLx130IAr/EwrlyQmN2tu3a2sQ
+         TMfw==
+X-Gm-Message-State: ANoB5pk3atz7ygvot/Pnfry+6vMiOIHLuPIMwn0IbyPFf4M5AksSkAs+
+        ENuARha7dJ/WRL4Iy5D0z+AFAJdpOzMoEg==
+X-Google-Smtp-Source: AA0mqf7YCtPtIZq9hYuE3siFAGi4/qioJ7hPqW5YDQXgYKAPVT8DaADy5yParuwZ/m88yUdVx25BWw==
+X-Received: by 2002:a05:620a:19:b0:6fb:aa94:7c0e with SMTP id j25-20020a05620a001900b006fbaa947c0emr10876901qki.37.1669208706941;
+        Wed, 23 Nov 2022 05:05:06 -0800 (PST)
+Received: from glsvmlin.ini.cmu.edu (GLSVMLIN.INI.CMU.EDU. [128.2.16.9])
+        by smtp.gmail.com with ESMTPSA id f13-20020a05620a408d00b006bb78d095c5sm12188520qko.79.2022.11.23.05.05.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Nov 2022 05:05:06 -0800 (PST)
+From:   Gabriel Somlo <gsomlo@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, kgugala@antmicro.com, mholenko@antmicro.com,
+        joel@jms.id.au, david.abdurachmanov@gmail.com,
+        florent@enjoy-digital.fr, geert@linux-m68k.org,
+        ilpo.jarvinen@linux.intel.com
+Subject: [PATCH v6 00/14] serial: liteuart: add IRQ support
+Date:   Wed, 23 Nov 2022 08:04:46 -0500
+Message-Id: <20221123130500.1030189-1-gsomlo@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-If a RX_DURING_TX GPIO is defined by the DT property "rs485-rx-during-tx-gpios"
-this patch switches this GPIO accordingly to the RS485 flag RX_DURING_TX in user
-space. In addition, the i.MX UART receiver is no longer turned on and off during
-sending, because now the hardware is responsible for connecting or disconnecting
-RX during TX controlled by this GPIO.
+Add IRQ support to the LiteX LiteUART serial interface
 
-Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
----
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Alexander Dahl <ada@thorsis.com>
-Cc: Fabio Estevam <festevam@denx.de>
-Cc: Marek Vasut <marex@denx.de>
-Cc: kernel@dh-electronics.com
-Cc: Linux Team <linux-imx@nxp.com>
-To: linux-serial@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
----
-V2: - Rework of the commit message
----
- drivers/tty/serial/imx.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+Changes from v5:
+  - picked up r/b Geert Uytterhoeven on select subset of commits
+  - 09/14 ("clean up rx loop variables"):
+    - eliminate `status` variable altogether as its value is known
+      and constant inside the loop;
+    - switch `ch` to `u8`, to match the call *producing* it
+      (`litex_read8()`) instead of those consuming its value.
+  - 12/14 ("add IRQ support for the RX path"):
+    - s/dev_err()/dev_warn()/ when falling back to polling in
+      `liteuart_startup()`
+    - use `spin_[lock_irqsave|unlock_irqrestore]()` in the interrupt
+      handler, since the same code may also be called in "serving_softirq"
+      context when using a poll timer instead of interrupts
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 757825edb0cd..f241f16472f2 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -476,7 +476,8 @@ static void imx_uart_stop_tx(struct uart_port *port)
- 				imx_uart_rts_inactive(sport, &ucr2);
- 			imx_uart_writel(sport, ucr2, UCR2);
- 
--			imx_uart_start_rx(port);
-+			if (!port->rs485_rx_during_tx_gpio)
-+				imx_uart_start_rx(port);
- 
- 			sport->tx_state = OFF;
- 		}
-@@ -705,7 +706,8 @@ static void imx_uart_start_tx(struct uart_port *port)
- 				imx_uart_rts_inactive(sport, &ucr2);
- 			imx_uart_writel(sport, ucr2, UCR2);
- 
--			if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
-+			if (!(port->rs485.flags & SER_RS485_RX_DURING_TX) &&
-+			    !port->rs485_rx_during_tx_gpio)
- 				imx_uart_stop_rx(port);
- 
- 			sport->tx_state = WAIT_AFTER_RTS;
-@@ -1955,6 +1957,13 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
- 	    rs485conf->flags & SER_RS485_RX_DURING_TX)
- 		imx_uart_start_rx(port);
- 
-+	if (port->rs485_rx_during_tx_gpio) {
-+		if (rs485conf->flags & SER_RS485_RX_DURING_TX)
-+			gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 1);
-+		else
-+			gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 0);
-+	}
-+
- 	return 0;
- }
- 
+> Changes from v4:
+>   - picked up r/b Ilpo Järvinen on 12/14 and 13/14
+>   - 12/14 ("add IRQ support for the RX path"): using dev_err() instead
+>     of combining pr_err() and pr_fmt(); also, remove superfluous comment
+>
+> Changes from v3:
+>   - picked up r/b Ilpo Järvinen on select subset of commits
+>   - rebased entire series on top of tty-next tree
+>   - 2/14 ("use bit number macros"): explicitly include <linux/bits.h>
+>   - 3/14 ("remove unused uart_ops stubs"): don't add gratuitous comment
+>     removed later on in the series
+>   - 12/14 ("add IRQ support for the RX path"): add shadow irq register
+>     to support polling mode and avoid reading hardware mmio irq register
+>     to learn which irq flags are enabled
+>     - this also simplifies both liteuart_interrupt() and liteuart_startup()
+>   - 13/14 ("add IRQ support for the TX path"):
+>     - removed superfluous curly braces from liteuart_interrupt()
+>     - simplified [start|stop]_tx() by using shadow irq register from 12/14
+>     - simplified liteuart_tx_chars() by rebasing on top of tty-next tree
+>
+> Changes from v2:
+>   - further split out "separate RX loop from poll timer" into
+>     dedicated patches highlighting additional changes explicitly:
+>       - factoring out tty_flip_buffer_push() (6/14)
+>       - ack only RX events in RX loop (7/14)
+>       - pass constant flag to uart_insert_char() directly (8/14)
+>       - fix variable types in rx loop (9/14)
+>       - separating RX loop from poll timer (10/14)
+>   - added patch (11/14) to move function definitions to a more
+>     convenient location, making subsequent changes easier to read
+>     in diff patch form.
+>   - fixes and clarifications for RX path IRQ support patch (now 12/14):
+>       - only return IRQ_HANDLED for RX events
+>       - use pr_fmt() to improve style of irq setup error message
+>       - remove unnecessary locking from around single-register access
+>   - modify TX path to support both IRQ-mode and polling (13/14)
+>   - move polling-only liteuart_putchar() behind same conditional
+>     (CONFIG_SERIAL_LITEUART_CONSOLE) as the rest of the code that's
+>     still using it.
+>
+> Changes from v1:
+>   - split minor cosmetic changes out into individual patches
+>     (1/3 became 1..5/7)
+>   - patches 6/7 and 7/7 unchanged (used to be 2/3 and 3/3)
+
+Gabriel Somlo (14):
+  serial: liteuart: use KBUILD_MODNAME as driver name
+  serial: liteuart: use bit number macros
+  serial: liteuart: remove unused uart_ops stubs
+  serial: liteuart: don't set unused port fields
+  serial: liteuart: minor style fix in liteuart_init()
+  serial: liteuart: move tty_flip_buffer_push() out of rx loop
+  serial: liteuart: rx loop should only ack rx events
+  serial: liteuart: simplify passing of uart_insert_char() flag
+  serial: liteuart: clean up rx loop variables
+  serial: liteuart: separate rx loop from poll timer
+  serial: liteuart: move function definitions
+  serial: liteuart: add IRQ support for the RX path
+  serial: liteuart: add IRQ support for the TX path
+  serial: liteuart: move polling putchar() function
+
+ drivers/tty/serial/liteuart.c | 217 +++++++++++++++++++++-------------
+ 1 file changed, 132 insertions(+), 85 deletions(-)
+
 -- 
-2.11.0
+2.38.1
 
