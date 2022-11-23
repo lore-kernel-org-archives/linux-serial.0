@@ -2,159 +2,174 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743CBC46467
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 18:26:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19C0C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 18:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236748AbiKWS0H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 13:26:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        id S237705AbiKWSh1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 13:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238156AbiKWS0G (ORCPT
+        with ESMTP id S239799AbiKWShM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 13:26:06 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AFE66C89
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 10:26:01 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id e15so11788797qts.1
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 10:26:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wor3YG1VA6P7o8c/O7L7eJMI/pZ9HPWWwXQft3hmCP0=;
-        b=cedo7ZWSmsuH0XJ4ubpV07F12j6QbWjVQ5/8pLuMpcToghtBSuk56S6MXMX6Qm7WjS
-         1NChO+moKmrDNMneamIggSvWWzwr/T//kN/Kwcj6tkr42ZlPhD/UrODWK93fqzNGGGwJ
-         iaes3XW9eYna/Bw5lL+n4z8tFP5LtgS2cmv98rZ7AlPx3XDSdaiaMvzcA8+djvnqI1Jm
-         kByuaQkEy2IUN0jEoJWE9aJxjegXkz/nFnBqeS7bAW8o6PzzHwTSega1vNzAX6eGe++Z
-         VrL1e2yxkd6Af/0OPW4nuezYyEJvxr1zGiOqJwebNXGUK6ij0o7CaXNXzEmp7wpIRmex
-         6uNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Wor3YG1VA6P7o8c/O7L7eJMI/pZ9HPWWwXQft3hmCP0=;
-        b=I9GYQkQtWkQIRBmjOhDdrDooS9GTUqw6VTJhfu/f6gtQob8LNk2P9XNT963KEWtVmp
-         9WndClElgfJu43SsaCrMvPM+AzPHmkrnvAJFuN14okIwdSA0Ylfc4Ne3QbCzlyhltPoi
-         RGbvUBgnB9zoM1PCtIG5ORsgfmn0KPdJGW81U9Um5KgBZo+OLcBdLw0/9LVVqroDDFFI
-         LBKqNQt/z8KmZZbvsGAuOclAt0gBp7Go3YGK7aaOPCYIqtPVxS/wFLHJ1Zdk5x8bdvay
-         /dVf17MMh9i7Bp1gg3dCC+YnmXnnROLWJ/ze+8WYPwlrV/IVKDBrKfv/THzGbNWbZUuw
-         Pi1A==
-X-Gm-Message-State: ANoB5pmAYs7EUCeWCCEScIPqocgbshMLpnJsI0QKFXgjagNOWvwdkudW
-        yogAmCLjymO1Wg1wOGaq/FYHxQ==
-X-Google-Smtp-Source: AA0mqf7b8dECsNl10eMwxdSE/ntYRY0ZHq3jcx6smQ+WjEjXUXHAE2sWPKfXnqS1wuH6GWMgna/H+Q==
-X-Received: by 2002:a05:622a:1f97:b0:3a6:39c4:dc6 with SMTP id cb23-20020a05622a1f9700b003a639c40dc6mr19492448qtb.515.1669227960618;
-        Wed, 23 Nov 2022 10:26:00 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-122-23.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.122.23])
-        by smtp.gmail.com with ESMTPSA id e9-20020ac81309000000b003a56796a764sm10034417qtj.25.2022.11.23.10.25.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 10:25:59 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oxuRb-00AgEQ-7R;
-        Wed, 23 Nov 2022 14:25:59 -0400
-Date:   Wed, 23 Nov 2022 14:25:59 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Wolfram Sang <wsa@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Wed, 23 Nov 2022 13:37:12 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FFE3FBA5;
+        Wed, 23 Nov 2022 10:37:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669228629; x=1700764629;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pB1EsglLcKD2gYBT5AzeYPhOVPqNCWBwum0p1o8faIY=;
+  b=UBsY46wqcFB9d79lwnqNZ7n4N7aQb7g2kFnn0VJNYPf4bWqhJWQZM3b2
+   f+CNmpTC+QuGASEHv8ZkTkFASxub1ZdcCrwcA5W7XYOrZgcWwBMoQKwZM
+   q8v0sykJLumbJt9ykv0Ztr8gtU2BPe4eYAE0hvOIeXu/PLA1xwyK5JTbW
+   8cyC+Hk89T/qf77vCEFhX67f4pzvXPFa4vmOaW1PRBGMDPnQWNdIVutDY
+   0p1ZRonhvv+zCCSwxWw+4PgQSOnq1tXj7w2X6klXUkyPNBky8pUgo2XNd
+   wkcVv6bAfMvhN1L0L0D8PqhzbZAXH2CGFbf1lwpLK25KoX5fTY7JbX9K2
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="293841223"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="293841223"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2022 10:37:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10540"; a="672972434"
+X-IronPort-AV: E=Sophos;i="5.96,187,1665471600"; 
+   d="scan'208";a="672972434"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga008.jf.intel.com with ESMTP; 23 Nov 2022 10:37:05 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1oxucJ-00GPFU-1y;
+        Wed, 23 Nov 2022 20:37:03 +0200
+Date:   Wed, 23 Nov 2022 20:37:03 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Ming Lei <ming.lei@redhat.com>,
-        Jilin Yuan <yuanjilin@cdjrlc.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Won Chung <wonchung@google.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-i3c@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH 3/5] driver core: make struct device_type.uevent() take a
- const *
-Message-ID: <Y35lt+0jXrOKynL5@ziepe.ca>
-References: <711d5275-7e80-c00d-0cdc-0f3d52175361@gmail.com>
- <Y34hgIW8p1RlQTBB@smile.fi.intel.com>
- <97be39ed-3cea-d55a-caa6-c2652baef399@gmail.com>
- <Y34zyzdbRUdyOSkA@casper.infradead.org>
- <Y34+V2bCDdqujBDk@kroah.com>
- <Y35JfNJDppRp5bLX@ziepe.ca>
- <Y35R+/eQJYI7VaDS@kroah.com>
- <Y35YlI93UBuTfgYy@ziepe.ca>
- <Y35dMIaNYSE0Cykd@casper.infradead.org>
- <Y35iKfYf3ThdVvaR@kroah.com>
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] serial: core: Add port port device to flush TX on
+ runtime resume
+Message-ID: <Y35oT9/3OKRciWCP@smile.fi.intel.com>
+References: <20221123082825.32820-1-tony@atomide.com>
+ <20221123082825.32820-2-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y35iKfYf3ThdVvaR@kroah.com>
+In-Reply-To: <20221123082825.32820-2-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 23, 2022 at 07:10:49PM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Nov 23, 2022 at 05:49:36PM +0000, Matthew Wilcox wrote:
-> > On Wed, Nov 23, 2022 at 01:29:56PM -0400, Jason Gunthorpe wrote:
-> > > #define generic_container_of(in_type, in, out_type, out_member) \
-> > > 	_Generic(in,                                        \
-> > >                   const in_type *: ((const out_type *)container_of(in, out_type, out_member)),   \
-> > >                   in_type *: ((out_type *)container_of(in, out_type, out_member)) \
-> > > 		  )
-> > 
-> > There's a neat trick I found in seqlock.h:
-> > 
-> > #define generic_container_of(in_t, in, out_t, m)			\
-> > 	_Generic(*(in),							\
-> > 		const in_t: ((const out_t *)container_of(in, out_t, m)), \
-> > 		in_t: ((out_t *)container_of(in, out_type, m))	\
-> > 	)
-> > 
-> > and now it fits in 80 columns ;-)
+On Wed, Nov 23, 2022 at 10:28:25AM +0200, Tony Lindgren wrote:
+> With PM runtime enabled for the serial port controllers, we can now flush
+> pending TX for the port on runtime PM resume as suggested by
+> Johan Hovold <johan@kernel.org>.
+
+I believe it's quite a duplication of email addresses (they are in Cc and will
+be on lore.kernel.org) and also below.
+
+> To flush the pending TX, let's set up each port as a proper device as
+> suggested by Greg Kroah-Hartman <gregkh@linuxfoundation.org>.
 > 
-> Nice trick!  Dropping the inline functions is a bit different, let me
-> see if that still gives a sane error if we pass an incorrect type or
-> mess with the const * the wrong way.  I'll run some tests tomorrow
-> afternoon...
+> We set up each port as a child device for the serial port controller
+> device. We use platform device for this and pass the port information
+> in platform_data.
+> 
+> Let's just do mimimal changes needed for now, more port specific code
+> can be then moved from serial_core.c to serial_port.c as needed.
 
-The errors in some cases are very verbose, but it is somewhat
-understandable - the worst is when _Generic fails to match anything,
-but also at least clang partially expanded container_of and it throws
-other assertions too.
+...
 
-I also wonder if this could just be rolled into the normal
-container_of.
+> +static int serial_core_add_port_device(struct uart_port *port)
+> +{
+> +	struct serial_port_platdata pd;
+> +	struct platform_device *pdev;
+> +	int ret;
+> +
+> +	pdev = platform_device_alloc("serial-port", PLATFORM_DEVID_AUTO);
+> +	if (!pdev)
+> +		return -ENOMEM;
+> +
+> +	pdev->dev.parent = port->dev;
+> +	pd.state = port->state;
+> +
+> +	ret = platform_device_add_data(pdev, &pd, sizeof(pd));
+> +	if (ret)
+> +		goto err_put;
+> +
+> +	ret = platform_device_add(pdev);
+> +	if (ret)
+> +		goto err_put;
+> +
+> +	port->state->port_dev = &pdev->dev;
+> +
+> +	return 0;
+> +
+> +err_put:
+> +	platform_device_put(pdev);
+> +
+> +	return ret;
 
-in_type would have to be derived like:
+Can we simply utilize platform_device_register_full()?
 
-  in_type = typeof((out_type *)NULL)->out_member)
+> +}
 
-But I don't know if you can use typeof in a generic type matching expression..
+...
 
-Jason
+> +EXPORT_SYMBOL(serial_port_get);
+
+Can we move these to namespace from day 1?
+
+...
+
+> +	return (!uart_tx_stopped(port) &&
+> +		uart_circ_chars_pending(&port->state->xmit));
+
+Outer parentheses are redundant.
+
+...
+
+> +static const struct dev_pm_ops serial_port_pm = {
+> +	SET_RUNTIME_PM_OPS(NULL, serial_port_runtime_resume, NULL)
+> +};
+
+Can't we use new macros / helpers which starts from DEFINE_...
+
+...
+
+> +	pm_runtime_set_autosuspend_delay(&pdev->dev,
+> +					 SERIAL_PORT_AUTOSUSPEND_DELAY_MS);
+
+With temporary
+
+	struct device *dev = &pdev->dev;
+
+this in particular become one line.
+
+...
+
+> +		.pm = &serial_port_pm,
+
+As per above, use pm_ptr() ?
+
+...
+
+> +
+
+Unneeded blank line.
+
+> +module_platform_driver(serial_port_driver);
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
