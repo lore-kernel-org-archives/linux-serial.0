@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A25C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80729C46467
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238653AbiKWMzq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 07:55:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        id S236712AbiKWM56 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 07:57:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238398AbiKWMyb (ORCPT
+        with ESMTP id S237573AbiKWM4h (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 07:54:31 -0500
+        Wed, 23 Nov 2022 07:56:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E826EB62;
-        Wed, 23 Nov 2022 04:45:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A5490583;
+        Wed, 23 Nov 2022 04:45:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47A96B81F5F;
-        Wed, 23 Nov 2022 12:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B50EAC433C1;
-        Wed, 23 Nov 2022 12:45:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64FDFB81F71;
+        Wed, 23 Nov 2022 12:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6C1C433C1;
+        Wed, 23 Nov 2022 12:45:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669207527;
-        bh=okRIfHw3QlKCu1PMcvGms37YPpS9vQTYZgme/u2LjS0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K4O6DsZABXcKlUC0WJ4eUzqVJfphkpmcVkGJZ9U2LpdGBYD2y1opE6Ao1VYaDIPn1
-         8hG/zz+5k/XEAZ2FCovqA6gi22xWNMiuqgE96jj/+vB11txNYV9M3rd+q5zU+4p3bp
-         m+CgvLlABL/M/xcaq5Qo6AoiNG+V4M1YbUtF7yU9vwhDYcXowb1mLkUg9r1UUVP/S/
-         6vtp4fnuS84k87Zv0f9dLg1q3TzU/3ryv61kZGnOGrtF1u3ROem0/5RI+8LCcuT2l2
-         a+LXz6C45tvN2gKQcrSSG4fcbgjMUobi64s+h1r562iArZ1dm9bgPkYURoh1HHbac4
-         ZLqn032p8kRjQ==
+        s=k20201202; t=1669207543;
+        bh=RGeNPl1q1Rd26khakiP04+aHQgUDACWNhheSntWR3UY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=h0C5OQ8f1bOBvHAYfQCxiV+UVKLrIGS9P0YtyKAa+kJR3ubcsnsvKveii9+ZzAZf0
+         KFvyNDEQWzWbtyv1UX70yAVwioR2jo5ruaQPldY6a+vgWgwSX1zcyqtEjngD8KM/Yq
+         M6PUd3abEGoUE0y/Bgaao90C1JhPAJx53kO4hgqASvtwYQBf0OvtaXtFIUz4Bu1lDp
+         VIf0564hw9e0zALWubi0Vjd6AwiH3ys3RC1BzcCcLVqGK09x8Yo91qDBvnSdVX6TFz
+         AqPhj4px3Bc9dIAlgRIKc2ZFJHt38YJZ1l5HXTs7/XLgpDj/A7rM0UlyO6j4u3O/bB
+         LOasv+pPUfxUQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Lukas Wunner <lukas@wunner.de>,
@@ -42,12 +42,10 @@ Cc:     Lukas Wunner <lukas@wunner.de>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         ilpo.jarvinen@linux.intel.com, tony@atomide.com,
         andriy.shevchenko@linux.intel.com, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 02/10] serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()
-Date:   Wed, 23 Nov 2022 07:45:10 -0500
-Message-Id: <20221123124520.266643-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 1/5] serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()
+Date:   Wed, 23 Nov 2022 07:45:33 -0500
+Message-Id: <20221123124540.266772-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221123124520.266643-1-sashal@kernel.org>
-References: <20221123124520.266643-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -104,7 +102,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index e32afaa94d36..c5af1495cd2e 100644
+index c551407bee07..7795e6401a93 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
 @@ -259,6 +259,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
