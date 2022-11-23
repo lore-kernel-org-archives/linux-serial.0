@@ -2,184 +2,164 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 913D2C47090
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 15:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22635C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 15:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238481AbiKWPO2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 10:14:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
+        id S238920AbiKWPbj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 10:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiKWPO1 (ORCPT
+        with ESMTP id S238872AbiKWPbV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 10:14:27 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4670685EC9;
-        Wed, 23 Nov 2022 07:14:26 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id m22so43412713eji.10;
-        Wed, 23 Nov 2022 07:14:26 -0800 (PST)
+        Wed, 23 Nov 2022 10:31:21 -0500
+Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFDE30F42
+        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 07:30:53 -0800 (PST)
+Received: by mail-ua1-x935.google.com with SMTP id c26so6406740uak.5
+        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 07:30:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hgnV7dzGWIIK4HLAnWBaJEBL2mTLW/I0cvrJZ3aQwLQ=;
-        b=YMJ/LWVHtvivchBTzQwnK1vjlMO+Yz1qi3F+5UiPUgfXYsHW97FLmplkkb1fg1J6+K
-         goYB9EqDRSGMEVxvnaAeVTF9Lc9Gf4uLBWSxTIzEd4dGukliptoZ4n3exYdegKJZSLxS
-         jqqRYMpOfvNhGznAoadCbX01da13AhoRzrTcCdNaWrn84IMP2tAXwxgcb2DgicvEWWfp
-         i43A/VFojKzoOpulaS8VMliUQvFXuOXde7c6MUNzuEGgGRk68D/p2retyzW7n9p5jNzk
-         Eo7b36EnX4jR3LhMZcShGFxfcBKk4/LQlmgUCRROq02DkIDupJ6I37wpVS8vwAn/gosV
-         VeGQ==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LUoChsKBNuN03wcrTOc2UNOEbfXAl69AwMtwVs41RuY=;
+        b=ZaE0WiDUcb45M/OW9G0pRdeWarrm4usTJd9OHJFG/VJmQoRKanZiP50SvmARkyXtAD
+         cxvdznzDyyRYvYiYAdUHvYTE0/sHXROUILeQXt+lc4C7a4foAEUY2NGV9XPdmoRixymk
+         lh7dc2tuaEoiSKZjmY6mqKTspZl+IJNFhNW1cZfalfP9smklKlktsG/kmcvL54SlyUtQ
+         VlZWYyVvUVNCAR74PXRwxcx2AtfqiLC/2qy8iJV3seAuVU32Qht7KEXmL3bzI8tgBKZb
+         Xgr5EGDsdfpURfXUPfsvapuHFDqt0+UANfAnYnCN+P/9yPso56hALMYTfSzwOdSwVivv
+         6KDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hgnV7dzGWIIK4HLAnWBaJEBL2mTLW/I0cvrJZ3aQwLQ=;
-        b=LzuxTEdqA88PnYU4gqT00hsmfe67JhBfKZ8N7IREaY72Vtlxa1J4d2A5b4VmXQhz9z
-         mXz+qWJYkUortzDNKIXvMyqn7zEnb5Sb6uxwfj/eUYH8tN16wgfvdpozZN0nsNmr/SCh
-         rLC5YlCQfeGBdZrpVYRvDDG0dspymCOOKVoCex03xPm5YmNbC1ZWu4BuPPED6XTpFiKf
-         LdTF54y88fC+9vSY/Y76BCyWRc/o6ivE4ARSbGre2tXEvoUStPa/ZHlQhpbOhaYXgKpz
-         6YMKX5OR63pfLb7p+9vhHL940BZTMi0zW14BmRwDnTV2ZBtG5QAwDOsnqQ5CXeztWul/
-         49DQ==
-X-Gm-Message-State: ANoB5plzpdHvWBZeaU8nqPhHKmuMaKrgMbNlahjL3mNV2KIcYlMcVpPm
-        LQhYbY1+OgPD3rtZ02FBKrk=
-X-Google-Smtp-Source: AA0mqf4dYNQ+ZnGLQviZkjaXr5Ekk3BmqKbpbTm6Z2vYCMarSSYwjqBcLfCq2BgNFKCJrb/e5E7t4w==
-X-Received: by 2002:a17:906:402:b0:7a6:fc0f:6fe6 with SMTP id d2-20020a170906040200b007a6fc0f6fe6mr23229240eja.694.1669216464581;
-        Wed, 23 Nov 2022 07:14:24 -0800 (PST)
-Received: from [10.20.0.7] ([37.120.217.162])
-        by smtp.gmail.com with ESMTPSA id ky13-20020a170907778d00b0077a1dd3e7b7sm7251748ejc.102.2022.11.23.07.14.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Nov 2022 07:14:23 -0800 (PST)
-Message-ID: <f96587d1-2610-8702-ba6a-bc15297eb2ab@gmail.com>
-Date:   Wed, 23 Nov 2022 16:14:21 +0100
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LUoChsKBNuN03wcrTOc2UNOEbfXAl69AwMtwVs41RuY=;
+        b=5FH7q5flTtkBDbgrnLT1B+4Kjs7s8G66DUQWPtWiOV1BWdaDanC2bvfjGx/zxbrAvh
+         POW5IiTI4ekd6nXYRF4LC+cEAtKP1XqOm0z80HbwNBObCcrF8O2KuGwiLneuMtKdOP6T
+         SaFJT7z7DU27XyKwSN+h8K+S6hmwJyqekytIIXONncQJjyZY9+hXK1QmNE31WfKy0c5f
+         bKnxM/uyZkEXx+iED6ANQLjPyiPmiOW2g9xvUVQUjIPDZFetZpxMvDsRs8dSz7+UJmWw
+         9gL63SSOED3emJXtkzgklvEunvuuG7psgCwxp7z/9CDPhTHaaiW8RxGJb7wFOTzC3ck8
+         LF2w==
+X-Gm-Message-State: ANoB5pkVYmHGVsOwBe55sd8dnRVGkRyyuZo+9ThCs4sxjWK9aLpMAjDW
+        IaZLFP+/JfzViP4CizH7mt87imWCXinta8Ewv8ePaw==
+X-Google-Smtp-Source: AA0mqf5DsMXES+K/CJiQVAcKNGFEyictIOB89in/o2CuupV7FzwhFkMHiT/XsitTAWFmDVvO/um9RMphviJgCYyT7EE=
+X-Received: by 2002:ab0:6015:0:b0:418:c2fa:f8a6 with SMTP id
+ j21-20020ab06015000000b00418c2faf8a6mr8323130ual.119.1669217452532; Wed, 23
+ Nov 2022 07:30:52 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH 3/5] driver core: make struct device_type.uevent() take a
- const *
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Wolfram Sang <wsa@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
+References: <20221122102125.142075-1-brgl@bgdev.pl> <20221122102125.142075-13-brgl@bgdev.pl>
+ <Y3z/sqRZ3A/j8TIv@kroah.com>
+In-Reply-To: <Y3z/sqRZ3A/j8TIv@kroah.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 23 Nov 2022 16:30:41 +0100
+Message-ID: <CAMRc=MfEa_GwCGLS6c_wET_6BSPSh_rp_hhvCC6M7FFPwdMf5g@mail.gmail.com>
+Subject: Re: [PATCH v2 12/15] tty: serial: provide devm_uart_add_one_port()
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Ming Lei <ming.lei@redhat.com>,
-        Jilin Yuan <yuanjilin@cdjrlc.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Won Chung <wonchung@google.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-i3c@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org
-References: <20221123122523.1332370-1-gregkh@linuxfoundation.org>
- <20221123122523.1332370-3-gregkh@linuxfoundation.org>
- <711d5275-7e80-c00d-0cdc-0f3d52175361@gmail.com>
- <Y34hgIW8p1RlQTBB@smile.fi.intel.com>
- <97be39ed-3cea-d55a-caa6-c2652baef399@gmail.com>
- <Y34zyzdbRUdyOSkA@casper.infradead.org>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-In-Reply-To: <Y34zyzdbRUdyOSkA@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/23/22 15:52, Matthew Wilcox wrote:
-> On Wed, Nov 23, 2022 at 02:59:00PM +0100, Maximilian Luz wrote:
->> On 11/23/22 14:34, Andy Shevchenko wrote:
->>> On Wed, Nov 23, 2022 at 02:14:31PM +0100, Maximilian Luz wrote:
->>>> On 11/23/22 13:25, Greg Kroah-Hartman wrote:
->>>>> The uevent() callback in struct device_type should not be modifying the
->>>>> device that is passed into it, so mark it as a const * and propagate the
->>>>> function signature changes out into all relevant subsystems that use
->>>>> this callback.
->>>
->>> [...]
->>>
->>>>> -static inline struct ssam_device *to_ssam_device(struct device *d)
->>>>> +static inline struct ssam_device *to_ssam_device(const struct device *d)
->>>>>     {
->>>>>     	return container_of(d, struct ssam_device, dev);
->>>>>     }
->>>>
->>>> I am slightly conflicted about this change as that now more or less
->>>> implicitly drops the const. So I'm wondering if it wouldn't be better to
->>>> either create a function specifically for const pointers or to just
->>>> open-code it in the instance above.
->>>>
->>>> I guess we could also convert this to a macro. Then at least there
->>>> wouldn't be an explicit and potentially misleading const-conversion
->>>> indicated in the function signature.
->>>
->>> This is an intermediate step as far as I know since moving container_of to
->>> recognize const is a bit noisy right now. I guess you can find a discussion
->>> on the topic between Greg and Sakari.
->>
->> Thanks! I assume you are referring to the following?
->>
->> 	https://lore.kernel.org/lkml/4218173bd72b4f1899d4c41a8e251f0d@AcuMS.aculab.com/T/
->>
->> As far as I can tell this is only a warning in documentation, not
->> compile time (which would probably be impossible?).
->>
->> As I've said I'd be fine with converting the function to a macro (and
->> preferably adding a similar warning like the one proposed in that
->> thread). The point that irks me up is just that, as proposed, the
->> function signature would now advertise a conversion that should never be
->> happening.
->>
->> Having two separate functions would create a compile-time guarantee, so
->> I'd prefer that, but I can understand if that might be considered too
->> noisy in code. Or if there is a push to make container_of() emit a
->> compile-time warning I'd also be perfectly happy with converting it to a
->> macro now as that'd alleviate the need for functions in the future.
-> 
-> Can't we do:
-> 
-> static inline const struct ssam_device *to_ssam_device(const struct device *d)
-> {
-> 	return container_of(d, const struct ssam_device, dev);
-> }
+On Tue, Nov 22, 2022 at 5:58 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Nov 22, 2022 at 11:21:22AM +0100, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> >
+> > Provide a devres variant of uart_add_one_port() that removes the managed
+> > port at device detach.
+>
+> Ick, no, please let's keep devm away from the serial layer like this.
+>
+> I would need a LOT of justification for why this is needed, not just one
+> driver that wants to use it, sorry.
+>
+> Please do not make this part of the series for this driver, but do it
+> separately, later, if you still want it.
+>
 
-There are at least a couple of places (device/driver-management and
-device-removal related, I think) using this function and requiring
-non-const access.
+Hey Greg,
 
-A bunch of other instances could be converted to const-access only, but
-that would require a couple more function signature changes (I should
-probably set up a patch for that regardless of this here as being a bit
-more strict about this makes sense).
+I sent out a v3 without devres changes.
 
-Regards,
-Max
+It's not just one driver that would use it, rather: it would be the
+first user and others could be converted later.
+
+I was wondering if your reaction ("Ick, no") comes from the general
+aversion to devres certain developers express? I'm asking because as a
+matter of fact, I've been just recently going through the various
+discussions about the supposed harm in using devres helpers and also
+watched Laurent's presentation[1] from this year's Linux Plumbers.
+While the issues described are real and easy to reproduce, I struggle
+to understand how they're caused by devres and not by the driver model
+in general. Specifically: the question that keeps popping up in my
+head is: how are the use-after-free issues fixed by ditching devres in
+favor of manually freeing resources in .remove()?
+
+I'm not the only one to be asking that, for instance in this[2]
+discussion Matti Vaittinen asked the same question and I can't find a
+convincing answer in this thread. Instead there are some incorrect
+statements, like claims that the order in which managed resources are
+released is not guaranteed - it is: resources are released in reverse
+(as they should).
+
+It's true that devres_release_all() is called after the remove()
+callback returns AND driver_sysfs_remove() is called so when replacing
+kmalloc() with devm_kmalloc(), there is some functional change but
+let's imagine the following patch:
+
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 3dda62503102..0046062828a3 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -527,7 +527,6 @@ static DEVICE_ATTR_RO(state_synced);
+
+ static void device_unbind_cleanup(struct device *dev)
+ {
+-    devres_release_all(dev);
+     arch_teardown_dma_ops(dev);
+     kfree(dev->dma_range_map);
+     dev->dma_range_map = NULL;
+@@ -548,6 +547,8 @@ static void device_remove(struct device *dev)
+         dev->bus->remove(dev);
+     else if (dev->driver->remove)
+         dev->driver->remove(dev);
++
++    devres_release_all(dev);
+ }
+
+ static int call_driver_probe(struct device *dev, struct device_driver *drv)
+
+This seems to work just fine when tested (and I would argue it would
+be slightly more correct so I may send it as a separate patch). Now
+the devres resources are freed in reverse order IMMEDIATELY after
+.remove(). How would moving anything into .remove() fix the
+use-after-free problem described?
+
+We have the same use-after-free issue with the GPIO character device
+and while we keep the struct device associated with it alive until the
+last reference is dropped, the user-space can crash the kernel by
+calling any of the GPIO ioctl()s once the device has been unbound. I'm
+looking into subsystem-level solutions to that but devres has nothing
+to do with that (I tested that with gpio-sim just to make sure).
+
+Anyway, it's most likely a subject for a separate discussion. Just let
+me know what kind of justification for devres other than "it lessens
+the burden on developers to keep track of resources and simplifies
+error paths" you'd like to see.
+
+Best Regards,
+Bartosz
+
+[1] https://www.youtube.com/watch?v=kW8LHWlJPTU
+[2] https://lore.kernel.org/lkml/cover.1660292316.git.mazziesaccount@gmail.com/T/
