@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD52C46467
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F71C47089
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:55:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238218AbiKWMxn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 07:53:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
+        id S238621AbiKWMzc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 07:55:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238385AbiKWMw0 (ORCPT
+        with ESMTP id S238271AbiKWMxr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 07:52:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA1565E5E;
-        Wed, 23 Nov 2022 04:44:43 -0800 (PST)
+        Wed, 23 Nov 2022 07:53:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC768E0B5;
+        Wed, 23 Nov 2022 04:45:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8246FB81F5E;
-        Wed, 23 Nov 2022 12:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B74C433C1;
-        Wed, 23 Nov 2022 12:44:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACE9961CAC;
+        Wed, 23 Nov 2022 12:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F8FC433D6;
+        Wed, 23 Nov 2022 12:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669207482;
-        bh=x9dBcq2IfmkPxW/k/jTwoQWG90O5QSUcsL+OeqKJQFg=;
+        s=k20201202; t=1669207506;
+        bh=jf4Mh3m/afTANV6fJs6J6UtOSLUmBptttcqdVL/OiiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MDZgwZcx7pF/HVVEUEiLofWQ4TBQmGww1ai1xpSr7sR/qDhONGgWmhkgiMJYXX6KG
-         5ZMscxLCiFbLuiVw5eYynR7h7mrMWXPmh5MXewdC63huNVMGDp1TE4V2EhQ7VZ0vcT
-         tQdCB2hoIbSjE7TUzLWRnd+suIBmf3a3yV7xdNX/wd4SIaixV+fFzk4Xhy/Y3Ag6V4
-         Pdi5WFsc+zhLtwm0LpeASqOqtyYIfWTPfeB6TyvuVu2alByXOhfy5yzMTo0FXENZK7
-         Vey3JvgghZmKE+ZsX9rU44pUVBOxFSz5ltnqDMXPJ68mz7Azme2DaNIyeEn38QJiae
-         Dhu3Xciy1xSLw==
+        b=tJo0GrjSq+6472RmoVwidUhg3lyhMkeV3Wfkp5hnspq2+XQZedYa5VQCuKodXUrvX
+         62VhYdqtyq0cED1EaxOnh7RUabjy5jGzvHRr77KYMPM9SM/8tzkYcKcRLxAyNU32la
+         Gpw1ODUgQycHLIIhCnbV/r2vifvD/yUE7YfwRmc70gVov8In+IyNZE6kniJJQPDPcx
+         7rT/k1xPfzw83AW41X6tSkEFxPxMEPR8ELzgZdSXkT6x43eNQABZprEQWrvuCSp6dx
+         CUocBhewXvNLrGZhjxwjc0MOWBeokX2mNInUhQ70aHBE99+iKVmlmsAZPAtt6BZWp5
+         /Cz/+3YyjXbDw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Lukas Wunner <lukas@wunner.de>,
@@ -42,12 +42,12 @@ Cc:     Lukas Wunner <lukas@wunner.de>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         ilpo.jarvinen@linux.intel.com, tony@atomide.com,
         andriy.shevchenko@linux.intel.com, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 04/15] serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()
-Date:   Wed, 23 Nov 2022 07:44:14 -0500
-Message-Id: <20221123124427.266286-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 02/11] serial: 8250: 8250_omap: Avoid RS485 RTS glitch on ->set_termios()
+Date:   Wed, 23 Nov 2022 07:44:47 -0500
+Message-Id: <20221123124458.266492-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221123124427.266286-1-sashal@kernel.org>
-References: <20221123124427.266286-1-sashal@kernel.org>
+In-Reply-To: <20221123124458.266492-1-sashal@kernel.org>
+References: <20221123124458.266492-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -104,10 +104,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index efe793a2fc65..f2a0ae49b143 100644
+index c1166b45c288..462dda444f60 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -268,6 +268,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+@@ -261,6 +261,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
  {
  	struct omap8250_priv *priv = up->port.private_data;
  	struct uart_8250_dma	*dma = up->dma;
@@ -115,7 +115,7 @@ index efe793a2fc65..f2a0ae49b143 100644
  
  	if (dma && dma->tx_running) {
  		/*
-@@ -284,7 +285,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+@@ -277,7 +278,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
  	serial_out(up, UART_EFR, UART_EFR_ECB);
  
  	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_A);
@@ -124,7 +124,7 @@ index efe793a2fc65..f2a0ae49b143 100644
  	serial_out(up, UART_FCR, up->fcr);
  
  	omap8250_update_scr(up, priv);
-@@ -300,7 +301,8 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+@@ -293,7 +294,8 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
  	serial_out(up, UART_LCR, 0);
  
  	/* drop TCR + TLR access, we setup XON/XOFF later */
@@ -134,7 +134,7 @@ index efe793a2fc65..f2a0ae49b143 100644
  	serial_out(up, UART_IER, up->ier);
  
  	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
-@@ -611,7 +613,6 @@ static int omap_8250_startup(struct uart_port *port)
+@@ -602,7 +604,6 @@ static int omap_8250_startup(struct uart_port *port)
  
  	pm_runtime_get_sync(port->dev);
  
