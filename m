@@ -2,61 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7D3C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 12:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F8EC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Nov 2022 13:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238312AbiKWM7R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Nov 2022 07:59:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
+        id S238363AbiKWNBX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Nov 2022 08:01:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238329AbiKWM54 (ORCPT
+        with ESMTP id S238337AbiKWNBE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Nov 2022 07:57:56 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C37194A7C;
-        Wed, 23 Nov 2022 04:46:20 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id m7-20020a05600c090700b003cf8a105d9eso1205716wmp.5;
-        Wed, 23 Nov 2022 04:46:20 -0800 (PST)
+        Wed, 23 Nov 2022 08:01:04 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB698BA5A3;
+        Wed, 23 Nov 2022 04:47:12 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id n7so1608118wrr.13;
+        Wed, 23 Nov 2022 04:47:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=0LW62Ti7mfshMfxCZUJVluE7umXYJJzUzfDjrUZcXpU=;
-        b=VShjlACwmJy3zF3ybErpld9hZR/86uTUySpyCy0LKeYE0xudLRVlE2qDXcGadnzHY5
-         pgLxw4WIEuZ0srU3r0FXkFzdXGcJ5nenn56oVh07rXmqmznZejzg7a8hdkW0oN0cqs4E
-         vB9cup0ZhxSI+R1OlhQvbj997E4qougSUt+FJ72Wj3Lj/vuBSW1ezWBDb9UVfF8XMUgF
-         WoCVO/SLVAWVfCPkzdK/z8UOQnCClUThck9ihzGelfKTELiKjkDhiTqiz9/zus1y0Zhl
-         QOBMa7Lmv2B4H9G7f6IyZ/Rw4BLzrWOO8yS9IPgzR6lBC6D/5hT2tSqghzeTwr5hAjXn
-         CtNw==
+        bh=4cGwFNflohw9/AH9gHHMd/XYEUPvOcdY9LmEyE90Q3w=;
+        b=nXRACSXZAPVuxShkl22zBOsiIjTtyDvki5+hyP7vbyxka74M1gylWF9bgRNuiwAo3H
+         qGWgacsY1pU7dgH6tXzzJW6G0wcp179Q79Hq4lKKJLO8V8ABREGDNn25duRzrTka7zk8
+         9S5A2r+VGZzYyAhwzuPW7WDwVymjsebMlaJ8AvT8FmBjuAuEuu3mcA5a+LgiSM7NxjXB
+         vQIMOrqxtr0uDuXs1qAO8FU0xUYajqZziAkgiSkeEBpZLFpCIYsVV1yXygAiCL8o+t1c
+         R0v5cNhFGwMDNtPcl7GJHLq8NtN01FhVb+x8wJz0Y5I6YluGBA13ZWH233mLN+E5mghO
+         WnLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0LW62Ti7mfshMfxCZUJVluE7umXYJJzUzfDjrUZcXpU=;
-        b=VeWk7a063l6S1bjk9m0otWyi1tvLVbSEdccgx3IlPnAEkJydrD8vCGMX1YngpJAz3C
-         KSGKj+tMt0ebmajoiC7q+ikYXvZCEK1lJP0hYoQSpQUnDabQKxTt0pY7sTZJHvDXLMMZ
-         UxPB4ah3ru89o9urjfGfPNRpgKcvakD18HQaeE9PUBmTdUUouXXdPQbwyY/oiNV+yKlQ
-         nqUlkDoaCDxyrS19mvw0UQLFiMYmfCmhSPMo2kj7qS/9WcL/S0Gz5OnbPSVu7DkA2igg
-         Ld2TbZNrbtQWzYcUnslm+1dm5mlxdei1gsD26iysASDhEFk0piLI4l9KcGa1Rzjc94lB
-         vVIg==
-X-Gm-Message-State: ANoB5pmnPxlA9c6k8UWbSt7I5+DIf/x9W1eHikyHc4Dj0CqzNGctbgbm
-        S1Bki8idmVimG4XoV27ut9XePcWHaD0=
-X-Google-Smtp-Source: AA0mqf61wJK7TB1tH9sT3E/AjZZ4eV17JPD+famsDd5w3gXU3efvkpaAl3HGbgiV+XnQx7JubXMO9w==
-X-Received: by 2002:a05:600c:4e8e:b0:3c6:b7cc:79d2 with SMTP id f14-20020a05600c4e8e00b003c6b7cc79d2mr24289145wmq.42.1669207578715;
-        Wed, 23 Nov 2022 04:46:18 -0800 (PST)
+        bh=4cGwFNflohw9/AH9gHHMd/XYEUPvOcdY9LmEyE90Q3w=;
+        b=gsIdm3hRzTOGld+yyW9LrNdKRBCIIWoMufWFiiDo6TwqjNhEt5ytAbYuiJ6MHqkQwg
+         LAdcZBILLridPO4SApARIg2XIrDcrv81zZ3JyGVhrOwFuvyGbHDAPF/fpFUiWmM2OOZt
+         9WmkGwXwHSCEnlyXt8RIhr2P9S0EVUzAsdiA5xCyAtUjAl36LCoQLq+XjL7sjnvl+Hxj
+         /DHgUO8Ep7lWIxbLHAcObJZCAi1gT5Sv2IhMdUFy8UURj6Aqhlwqu62/EzrxY4VrFhoe
+         QjmsuxTKd/YCnUo/fIUbU7SVZrnTasrn1OceTig/gMUQDRmeVMgeFE/Zm3C0i+lloIYt
+         opfg==
+X-Gm-Message-State: ANoB5pmgxN9hOOyz9TwlyTLNQykU2veC2G4qkBT271StXOUt4ee5nkhE
+        3Y7vCI0kyQw4zd+aCa8BZeqMp2TvGPA=
+X-Google-Smtp-Source: AA0mqf4tnkg+6/MR02cbthie6YzblRBnB+Eu4D335qxF1E9BwHOK1h+V12w5rl8cU+w2iLPQk1gXmg==
+X-Received: by 2002:a5d:6791:0:b0:241:e58c:6cb6 with SMTP id v17-20020a5d6791000000b00241e58c6cb6mr4248031wru.46.1669207624432;
+        Wed, 23 Nov 2022 04:47:04 -0800 (PST)
 Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id k17-20020a5d6291000000b0022e66749437sm16623931wru.93.2022.11.23.04.46.17
+        by smtp.gmail.com with ESMTPSA id f13-20020a05600c4e8d00b003c6c182bef9sm2990693wmq.36.2022.11.23.04.47.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Nov 2022 04:46:18 -0800 (PST)
-Message-ID: <ffb1f40b-bbe8-5431-63cf-a53fc0606971@gmail.com>
-Date:   Wed, 23 Nov 2022 13:46:17 +0100
+        Wed, 23 Nov 2022 04:47:04 -0800 (PST)
+Message-ID: <42d51c09-d6e4-52db-ce55-0b827341f080@gmail.com>
+Date:   Wed, 23 Nov 2022 13:47:03 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH 2/2] serial: atmel: don't stop the transmitter when doing
- PIO
+Subject: Re: [PATCH 1/2] serial: atmel: cleanup atmel_start+stop_tx()
 Content-Language: fr
 To:     Michael Walle <michael@walle.cc>,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
@@ -67,10 +66,9 @@ Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
         linux-arm-kernel@lists.infradead.org
 References: <20221123082736.24566-1-jirislaby@kernel.org>
- <20221123082736.24566-2-jirislaby@kernel.org>
- <df233ce37626fdb194b583808326d966@walle.cc>
+ <4b9c474a0b32ffe3725ed1cf9f084fcb@walle.cc>
 From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <df233ce37626fdb194b583808326d966@walle.cc>
+In-Reply-To: <4b9c474a0b32ffe3725ed1cf9f084fcb@walle.cc>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -79,26 +77,14 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Le 23/11/2022 à 09:50, Michael Walle a écrit :
 > Am 2022-11-23 09:27, schrieb Jiri Slaby (SUSE):
->> Writing ATMEL_US_TXDIS to ATMEL_US_CR makes the transmitter NOT to send
->> the just queued character. This means when the character is last and
->> uart calls ops->stop_tx(), the character is not sent at all.
+>> Define local variables holding information about whether pdc or dma is
+>> used in the HW. These are retested several times by calls to
+>> atmel_use_pdc_tx() and atmel_use_dma_tx(). So to make the code more
+>> readable, simply cache the values.
 >>
->> The usart datasheet is not much specific on this, it just says the
->> transmitter is stopped. But apparently, the character is dropped. So
->> we should stop the transmitter only for DMA and PDC transfers to not
->> send any more characters. For PIO, this is unexpected and deviates from
->> other drivers. In particular, the below referenced commit broke TX as it
->> added a call to ->stop_tx() after the very last character written to the
->> transmitter.
+>> This is also a preparatory patch for the next one (where is_pdc is used
+>> once more in atmel_stop_tx()).
 >>
->> So fix this by limiting the write of ATMEL_US_TXDIS to DMA transfers
->> only.
->>
->> Even there, I don't know if it is correctly implemented. Are all the
->> queued characters sent once ->start_tx() is called? Anyone tested flow
->> control -- be it hard (RTSCTS) or the soft (XOFF/XON) one?
->>
->> Fixes: 2d141e683e9a ("tty: serial: use uart_port_tx() helper")
 >> Cc: Richard Genoud <richard.genoud@gmail.com>
 >> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
 >> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
@@ -110,7 +96,6 @@ Le 23/11/2022 à 09:50, Michael Walle a écrit :
 > Already merged, but:
 > Tested-by: Michael Walle <michael@walle.cc>
 Acked-by: Richard Genoud <richard.genoud@gmail.com>
-
 > 
 > Thanks,
 > -michael
