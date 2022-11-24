@@ -2,140 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD91C43217
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 14:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7777BC636F9
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 14:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbiKXOwQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Nov 2022 09:52:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55614 "EHLO
+        id S230007AbiKXOyR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Nov 2022 09:54:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbiKXOwA (ORCPT
+        with ESMTP id S229436AbiKXOx5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Nov 2022 09:52:00 -0500
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B8614F9C6
-        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 06:51:24 -0800 (PST)
-Received: by mail-vs1-xe31.google.com with SMTP id i2so1753893vsc.1
-        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 06:51:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=saSlvoXli5roPdfQjc0COfGftVZoPty/RFt6GhCwe+A=;
-        b=gT/QVfsW8Jl2L3jgcVaSPpWfvSeebUi7AcuC3qu3LlVAS2DGxJdK+PnuuXxT0gD8VY
-         0oOuk5VbTWrgiO6pPWuBMVRnpuPhIcgSkiGrLNM05oeNdRkaRqh5WAAZNP2LQQWVzSKl
-         C6Mr577QeXYx8iILSUTpUXfZ/BJ3fvhqazsIx3OVr2fEhRBGVqWpvyPF2OIzVVKHCHtH
-         xMaVAowkY26QvHEIe0hxKO0Z09LWMDDMOeo9rfgGxdnwcCdr53+TMjech2S78WLA0ajr
-         s/V5naZIBTmMJ0Aqj3mmL/IY7zibk7sdBrx5QAljtihMolDjJ2ndvzmzxCaVCtBsWI4q
-         mDTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=saSlvoXli5roPdfQjc0COfGftVZoPty/RFt6GhCwe+A=;
-        b=lzjJ3tG/qOTu5uNecCIHb6Wh3Q3OKecIJl74yV3Ne4bumP4AnxeChbH6MdfHVNYKAA
-         5uBakgi2OzILJ+ofBceRwe31fsM4NWT08fmsJKnGZK8IMlzchOLXhq63TAue/g95SIF4
-         dbpudJ7vP8zfWyx0foDO3S09caMW+gatgr+daENLG4L3d3zslinOer9jiqbZM4V7kYxa
-         /d1xH/MXCUzsYk8yzwyEH0YDn8QMbXjQ4XKvSZTChxpI7eMl//4NJY7Bkkrh3X8WQaxB
-         SF1d6HYHkY859KqGQdpLTU4MSubfTO2grR9KybZsYnsTM4dQbaLW7pLlXF1CvcnOL6Ny
-         rtaA==
-X-Gm-Message-State: ANoB5pnI44nJu1DP+3BCxJKkZWQcvpbjVvfYQxTmK+jN5H30qvv0fA3P
-        8AIA0SpqBJuZplvEdRP6aApMVVVckuknX+A4BvHjMQ==
-X-Google-Smtp-Source: AA0mqf4oF0Md4QcSPaayMyHgMPSBM2LSp+i9R9Gs2DPnZ7VBAOmLy6vOz3lur+ZZfsybqDsBIkg0QgAnxYqJY4w8KqY=
-X-Received: by 2002:a67:e8d7:0:b0:3b0:767f:e291 with SMTP id
- y23-20020a67e8d7000000b003b0767fe291mr3351904vsn.47.1669301484092; Thu, 24
- Nov 2022 06:51:24 -0800 (PST)
+        Thu, 24 Nov 2022 09:53:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA1311A737;
+        Thu, 24 Nov 2022 06:53:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A26F62180;
+        Thu, 24 Nov 2022 14:53:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F372C433C1;
+        Thu, 24 Nov 2022 14:53:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669301606;
+        bh=unIV7Ik3dkhviLx7pqEUl7Hj+P8gzwLYsPUrycbdr2U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Bjiga38QWyzLlfhROr4+WaCyo1J6wcTkIZj/mwam3dWvx1Hx5xajOxzVB7myXCa9N
+         WNBAdzWlxBlBs+KppJLdJyV66PPHOF5WPs6Mou2/YQUFWDhxzmXFlw/QhsRkqhAbvM
+         IKZb4468eQJJDEnwbqI3IOZWGOuAGFvAZoZxBeBNa28SexV/3o2GKds11UG+j34jMn
+         qFVJwi+/7WO3rd5ejlO/fFF8/Xvu1SgSJacWq2/ZXhnbl5m/YnXscTIWOW5JF6sv2/
+         7AIFZSfR+8FP0gVVdcX2vRVTsiUKBtO1qb0RumfwgoMEoegx4yHbgmeuc5IR3fUnJ3
+         WdioSmYng4A7g==
+Received: by mercury (Postfix, from userid 1000)
+        id E481A106092A; Thu, 24 Nov 2022 15:53:23 +0100 (CET)
+Date:   Thu, 24 Nov 2022 15:53:23 +0100
+From:   Sebastian Reichel <sre@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 1/9] dt-bindings: drop redundant part of title of
+ shared bindings
+Message-ID: <20221124145323.tevilddtr7ajdd7l@mercury.elektranox.org>
+References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
+ <20221121110615.97962-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20221123110759.1836666-1-brgl@bgdev.pl> <20221123110759.1836666-9-brgl@bgdev.pl>
- <4f4b7e8b-8017-2a6f-f756-46c60fba8a3c@kernel.org>
-In-Reply-To: <4f4b7e8b-8017-2a6f-f756-46c60fba8a3c@kernel.org>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 24 Nov 2022 15:51:13 +0100
-Message-ID: <CAMRc=Me2ofiOs4Ue5oa+a6ngdf-NC8JuUC77XVnucoGR=C3zag@mail.gmail.com>
-Subject: Re: [PATCH v3 08/13] tty: serial: qcom-geni-serial: refactor qcom_geni_serial_handle_tx()
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kmrqy5oh67vgmowj"
+Content-Disposition: inline
+In-Reply-To: <20221121110615.97962-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 24, 2022 at 8:18 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 23. 11. 22, 12:07, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> >
-> > qcom_geni_serial_handle_tx() is pretty big, let's move the code that
-> > handles the actual writing of data to a separate function which makes
-> > sense in preparation for introducing a dma variant of handle_tx().
-> >
-> > Let's also shuffle the code a bit, drop unneeded variables and use
-> > uart_xmit_advance() instead of handling tail->xmit manually.
-> >
-> > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > ---
-> >   drivers/tty/serial/qcom_geni_serial.c | 54 +++++++++++++--------------
-> >   1 file changed, 27 insertions(+), 27 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index 68a1402fbe58..658b6d596f58 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -704,19 +704,42 @@ static void qcom_geni_serial_start_rx(struct uart_port *uport)
-> >       writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
-> >   }
->
-> I know you just shuffle the code, but:
->
-> > +static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
-> > +                                          unsigned int chunk)
-> > +{
-> > +     struct qcom_geni_serial_port *port = to_dev_port(uport);
-> > +     struct circ_buf *xmit = &uport->state->xmit;
-> > +     u8 buf[BYTES_PER_FIFO_WORD];
-> > +     size_t remaining = chunk;
->
-> Why size_t when the others are uints? Well, BYTES_PER_FIFO_WORD should
-> be defined as 4U.
 
-Good point.
+--kmrqy5oh67vgmowj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
-> > +     unsigned int tx_bytes;
-> > +     int c;
-> > +
-> > +     while (remaining) {
-> > +             memset(buf, 0, sizeof(buf));
-> > +             tx_bytes = min_t(size_t, remaining, BYTES_PER_FIFO_WORD);
->
-> Then, no need for min_t.
->
+Hi,
 
-Same.
+On Mon, Nov 21, 2022 at 12:06:07PM +0100, Krzysztof Kozlowski wrote:
+> The Devicetree bindings document does not have to say in the title that
+> it is a "binding", but instead just describe the hardware.  For shared
+> (re-usable) schemas, name them all as "common properties".
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Acked-by: Guenter Roeck <linux@roeck-us.net> # watchdog
+> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # IIO
+> Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>  .../devicetree/bindings/power/reset/restart-handler.yaml        | 2 +-
 
-> > +
-> > +             for (c = 0; c < tx_bytes ; c++) {
-> > +                     buf[c] = xmit->buf[xmit->tail];
-> > +                     uart_xmit_advance(uport, 1);
-> > +             }
-> > +
-> > +             iowrite32_rep(uport->membase + SE_GENI_TX_FIFOn, buf, 1);
->
-> I wonder, why is _rep variant used to transfer a single word? Only to
-> hide the cast?
->
+=2E..
 
-Even if - using writel() with a cast doesn't seem to improve the
-performance and this one looks prettier IMO.
+> diff --git a/Documentation/devicetree/bindings/power/reset/restart-handle=
+r.yaml b/Documentation/devicetree/bindings/power/reset/restart-handler.yaml
+> index 1f9a2aac53c0..378b404af7fd 100644
+> --- a/Documentation/devicetree/bindings/power/reset/restart-handler.yaml
+> +++ b/Documentation/devicetree/bindings/power/reset/restart-handler.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/power/reset/restart-handler.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> =20
+> -title: Restart and shutdown handler generic binding
+> +title: Restart and Shutdown Handler Common Properties
+> =20
+>  maintainers:
+>    - Sebastian Reichel <sre@kernel.org>
 
-Bartosz
+Acked-by: Sebastian Reichel <sre@kernel.org>
+
+-- Sebastian
+
+--kmrqy5oh67vgmowj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmN/hVMACgkQ2O7X88g7
++pqhwA/+M2Nr4azK150ufJYwasgPUHr+IvgiGG6zZbVydz4jcsik67ma/TlLQV0F
+e576CX8Tqzz90OcmpIPWvWr/+Ev0QWetfOvG+4+Io9Zh+w7Er6dnLWZuv3DbPDD8
+b5KbXY0fKBBc30RQVk7T0uhq0Qd/gJ38fOALFl7nymMSzekfDuYm+HNn9gURaxuK
+C3EKJDXCLhT05/DBQK4rx+CVy6tMk8oiQOrrESyGeHRrRv/7va6TjIKRqXoekdAx
+GEA6CF1jXwzX0TnUppKNjGdVeBw8UkflkU8lJrBozSSpo+IzaaT333jOhsX2ROKB
+uDDWkC4CAOVIXnLhUBSNJGm9ifZm906c/zyoZ77EzYNtsFESq5znEyTryuOfzjiS
+ykyxB/WkNLxxJf5Wcu4gqGks0KrnM7aE+pfV+cqViSgGi8ykIUwEjrbY15w34I4M
+1etdToVgbUEaL+ThZaymJ9xWhcWq2NHBTTHIgL2AA34rSqaJe1f990424jUT/SYZ
+7N4jCoDiJPK56gJJe5NRPSvz4LjlFa8bTB3rXioMA4Ep21+e4VrBT6TqERx/Jkaa
+RdEjPVIF6pkxOepaBigKGkjvwDj4AvwdIglKaIXcccH+I55OxMOyPj3FXgaOLB+5
+o6kJsJkqqpyU0tWJqBmeQED3yqn/Zz7XZZ4SunfkjJLBqxop5Ec=
+=r+Zg
+-----END PGP SIGNATURE-----
+
+--kmrqy5oh67vgmowj--
