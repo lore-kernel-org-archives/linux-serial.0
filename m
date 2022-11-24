@@ -2,131 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF876C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 06:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34490C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 07:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiKXGx4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Nov 2022 01:53:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
+        id S229495AbiKXHII (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Nov 2022 02:08:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiKXGxz (ORCPT
+        with ESMTP id S229448AbiKXHII (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Nov 2022 01:53:55 -0500
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37202C4B48;
-        Wed, 23 Nov 2022 22:53:54 -0800 (PST)
-Received: by mail-ed1-f54.google.com with SMTP id s12so1288882edd.5;
-        Wed, 23 Nov 2022 22:53:54 -0800 (PST)
+        Thu, 24 Nov 2022 02:08:08 -0500
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB6D1EED4;
+        Wed, 23 Nov 2022 23:18:16 -0800 (PST)
+Received: by mail-ej1-f53.google.com with SMTP id ho10so2233762ejc.1;
+        Wed, 23 Nov 2022 23:18:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iY6ZcqTTzxn4fRkMMwseAbYXc9/C12zRHdPoC7nG4+o=;
-        b=bEqqMoDVcv5J/XOkGre/RGj0X7KQTLtpnBpy+lt+873JXMTZeXO7qTux8rU2STn2Cj
-         5ebttfOD6b2zwp7jzOGRnvwKbgbchUJGEb9+lyHMCNDm1JakHEhvH6VT2E/AK+xiuE5B
-         UzRfPJbE2jMYix9D6aIheV+dvzKukaH8i9wK1yV49TP05mc22Nru/eiE+UoV0aIxWs/D
-         kmDdklqo6xLquPAjpeukk1fv1KKvHnuKbJ+J/YfiEnyrzwfwDdU5pLz17SRty/kO3Kr/
-         Ry0Ljhj53jfMrTE0fDVZQ8w6LSLy9D2m2DOz2gS+nC1/4rEayqTH6Ywtkz7Ijbfhy0rr
-         Ubwg==
-X-Gm-Message-State: ANoB5pkkFWVDk3C53WanvDJuyM/RNgMhg+AawSRgnsqWj2hlY/x2lImf
-        V6C+VbbXDHFeW20mlYO8XvhshDnhhBI=
-X-Google-Smtp-Source: AA0mqf4K7o5VSk7GHDPYog09RKIoAm6TRMYBZNhaDqjolSQDmdfEO0Q0jeZA+d8g42ipSTA45J8tPQ==
-X-Received: by 2002:a05:6402:1655:b0:46a:80cc:d5bd with SMTP id s21-20020a056402165500b0046a80ccd5bdmr1546199edx.210.1669272832529;
-        Wed, 23 Nov 2022 22:53:52 -0800 (PST)
+        bh=28w6O+pPmRjriUkq2iRz9DosEFHbVDYy9KC+KBujCX0=;
+        b=woRmyZCoFop9l6EOYAU++3ojjnRhqTRlLNdDSUpa4kpo9Ub8Ptrmn1oYHuCy1l2u+t
+         Z0v2rxOv8kVi4NwmQOTAauejKqIujjyhVdwpq6yvqprmSDWMIyeSTiteEqeuOI/B5it/
+         Wfj45OcInMoUFFYz+zcFhoP7Qs2x7MkNVgsDbwHiuvcizkN8cSty/eIBoliUR8JqrLg1
+         b1tOYOmnLPp3l38wXPBup/eo2UMglDsQWG28G9Oew4jdIl7RGN2/HUcb2mv6QwEEpTBW
+         xM0hyXG+dzJOIGOh2E4kQtWYQCUkB647PV176pZ43068p6urTmUtw3NXkmtdpUGXzhkA
+         kwFw==
+X-Gm-Message-State: ANoB5plJmOc+BjgBnQjJF3I8vGNSnZw0KjRFc7Zh3BsklFj0nFVJU8wG
+        Ik/5yH9df6PBfUlYoG/EbVo=
+X-Google-Smtp-Source: AA0mqf4ltkb6fLqg0H2PwZpZGh9xj593lrm/XSM6cvcyR2Dbz6kMZMYaV+jw/MCnHQBqZVWonSmhMQ==
+X-Received: by 2002:a17:906:38a:b0:7a7:1d4f:c7d9 with SMTP id b10-20020a170906038a00b007a71d4fc7d9mr15023752eja.402.1669274294885;
+        Wed, 23 Nov 2022 23:18:14 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id t18-20020a056402021200b00463a83ce063sm150395edv.96.2022.11.23.22.53.51
+        by smtp.gmail.com with ESMTPSA id o25-20020aa7c519000000b00467cc919072sm187692edq.17.2022.11.23.23.18.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Nov 2022 22:53:51 -0800 (PST)
-Message-ID: <562c1505-d3bc-6422-9598-15c399e6fbba@kernel.org>
-Date:   Thu, 24 Nov 2022 07:53:50 +0100
+        Wed, 23 Nov 2022 23:18:14 -0800 (PST)
+Message-ID: <4f4b7e8b-8017-2a6f-f756-46c60fba8a3c@kernel.org>
+Date:   Thu, 24 Nov 2022 08:18:11 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.1
+Subject: Re: [PATCH v3 08/13] tty: serial: qcom-geni-serial: refactor
+ qcom_geni_serial_handle_tx()
 Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220615062455.15490-1-tony@atomide.com>
- <Yrmfr3GfXYhclKXA@kroah.com> <Yrm1HaUtjTMcSIE+@atomide.com>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20221123110759.1836666-1-brgl@bgdev.pl>
+ <20221123110759.1836666-9-brgl@bgdev.pl>
 From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers to
- enable runtime PM
-In-Reply-To: <Yrm1HaUtjTMcSIE+@atomide.com>
+In-Reply-To: <20221123110759.1836666-9-brgl@bgdev.pl>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-I am returning to v2, as I managed to read only v3 and only now. But 
-here was already the point below.
-
-On 27. 06. 22, 15:48, Tony Lindgren wrote:
->>> Considering the above, let's improve the serial core layer so we can
->>> manage the serial port controllers better. Let's register the controllers
->>> with the serial core layer in addition to the serial ports.
->>
->> Why can't controllers be a device as well?
+On 23. 11. 22, 12:07, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> The controllers are devices already probed by the serial port drivers.
-> What's missing is mapping the ports (as devices based on the comments
-> above) to the controller devices. I don't think we need another struct
-> device for the serial controller in addition to the serial port driver
-> device and it's child port devices.
+> qcom_geni_serial_handle_tx() is pretty big, let's move the code that
+> handles the actual writing of data to a separate function which makes
+> sense in preparation for introducing a dma variant of handle_tx().
+> 
+> Let's also shuffle the code a bit, drop unneeded variables and use
+> uart_xmit_advance() instead of handling tail->xmit manually.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> ---
+>   drivers/tty/serial/qcom_geni_serial.c | 54 +++++++++++++--------------
+>   1 file changed, 27 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 68a1402fbe58..658b6d596f58 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -704,19 +704,42 @@ static void qcom_geni_serial_start_rx(struct uart_port *uport)
+>   	writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
+>   }
 
-To be honest, I don't like the patch (even v3). We have uart_state which 
-I already hate and now we have another structure holding *some* other 
-info about a serial device (apart from uart_port). It's mess already and 
-hard to follow, esp. to newcomers.
+I know you just shuffle the code, but:
 
-AFAIU, what Greg suggests would be:
+> +static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
+> +					     unsigned int chunk)
+> +{
+> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> +	struct circ_buf *xmit = &uport->state->xmit;
+> +	u8 buf[BYTES_PER_FIFO_WORD];
+> +	size_t remaining = chunk;
 
-PCI/platform/acpi/whatever struct dev
-   -> serial controller 1 struct dev
-      -> serial port 1 struct dev (tty_port instance exists for this)
-      -> serial port 2 struct dev (tty_port instance exists for this)
-      -> ...
-   -> serial controller 2 struct dev
-      -> serial port 1 struct dev (tty_port instance exists for this)
-      -> serial port 2 struct dev (tty_port instance exists for this)
-      -> ...
+Why size_t when the others are uints? Well, BYTES_PER_FIFO_WORD should 
+be defined as 4U.
 
-And you are objecting that mostly (or in all cases?), there will never 
-be "serial controller 2"?
+> +	unsigned int tx_bytes;
+> +	int c;
+> +
+> +	while (remaining) {
+> +		memset(buf, 0, sizeof(buf));
+> +		tx_bytes = min_t(size_t, remaining, BYTES_PER_FIFO_WORD);
 
-But given your description, I believe you need it anyway -- side note: 
-does really the PM layer/or you need it or would you be fine with 
-"serial port N" dev children? But provided you don't have the 
-controller, you work around it by struct serial_controller. So what's 
-actually the point of the workaround instead of sticking to proper 
-driver model? With the workaround you seem you have to implement all the 
-binding, lookup and such yourself anyway. And that renders the serial 
-even worse :P. Let's do the reverse instead.
+Then, no need for min_t.
 
-The only thing I am not sure about, whether tty_port should be struct 
-dev too -- and if it should have serial port 1 as a parent. But likely 
-so. And then with pure tty (i.e. tty_driver's, not uart_driver's), it 
-would have PCI/platform/acpi/whatever as a parent directly.
+> +
+> +		for (c = 0; c < tx_bytes ; c++) {
+> +			buf[c] = xmit->buf[xmit->tail];
+> +			uart_xmit_advance(uport, 1);
+> +		}
+> +
+> +		iowrite32_rep(uport->membase + SE_GENI_TX_FIFOn, buf, 1);
 
-In sum, the above structure makes perfect sense to me. There has only 
-been noone to do the real work yet. And having tty_port was a hard 
-prerequisite for this to happen. And that happened long time ago. All 
-this would need a lot of work initially¹⁾, but it paid off a lot in long 
-term.
-
-¹⁾I know what I am writing about -- I converted HID. After all, the core 
-was only 1000 lines patch (cf 85cdaf524b7d) + patches to convert all the 
-drivers incrementally (like 8c19a51591).
+I wonder, why is _rep variant used to transfer a single word? Only to 
+hide the cast?
 
 thanks,
 -- 
