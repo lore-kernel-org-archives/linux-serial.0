@@ -2,103 +2,72 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 685C5C43219
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 07:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412F8C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 07:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiKXHM1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Nov 2022 02:12:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
+        id S229745AbiKXHMl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Nov 2022 02:12:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiKXHMO (ORCPT
+        with ESMTP id S229735AbiKXHMZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Nov 2022 02:12:14 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41746CFA6E
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 23:16:36 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id 130so879070pgc.5
-        for <linux-serial@vger.kernel.org>; Wed, 23 Nov 2022 23:16:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9beI1qbDaBEZGBMzOodYXezAJNnkCn943LXJypsps08=;
-        b=jN9Iu2JG6Jbf9f/Vtx6/x8W99mbfvmkmA5JpUTuuOhHuX9hE65G+zwT360z98Yxh2l
-         i6PqDF91yJmzwCKNYEVFuLVfqGCqoHx9I7wNV8pa819eMDoiMR27SZF1GHdGnGDHcMWz
-         pqI4i03rsZDpQ60ONyvQHuYR+N3femATVqrSC4hLc3ih0MmJpf23tjAqEmigk+Q4lN5p
-         TjriD73VK+kqD8Wil5LA1NXQ4waHtGM3IZBFIczk95hCWTGki63dLVXFv0wvyqKSahPp
-         nd3iHhwTtHF7fG/CtXcp1E5PNjqsgHvp71L23Lt4pdmYQDMtQS6xnA3gM9hUIGynee9E
-         kaMQ==
+        Thu, 24 Nov 2022 02:12:25 -0500
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C401A3A3;
+        Wed, 23 Nov 2022 23:02:53 -0800 (PST)
+Received: by mail-ej1-f44.google.com with SMTP id vp12so808538ejc.8;
+        Wed, 23 Nov 2022 23:02:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9beI1qbDaBEZGBMzOodYXezAJNnkCn943LXJypsps08=;
-        b=8C1IUjqasGeL/y1egJfeLRy/NlJQxcBmN+jA16v8Ycj00wZCPCQYhZR9b/TWSv7rEo
-         Vx3ugZHxLWEZDgIwuJF9XJ0n653sDTINBuPb6vfRd1Qvsw3Y2T9ZeeUkkKtyAj/jzEfu
-         mhLt+WADwODUGVL3RmovTfd25EgcmKSiUAA+vMawtw/ID++5rGbVr1xLyiX1l6mgXYKA
-         Lj4uSt+8nO0050gI6VhU4U264AFZpF31t+6jX44g4lADpuKw0jRbvopzl35xC6enlFG5
-         hZd0qM/zA7NMAFjtxtceZeCb7OVdeKkpAh6aWX0YAGXjFRP4CVJZwZDlOmVpzYblzlS0
-         Z9zQ==
-X-Gm-Message-State: ANoB5pnzWS2TfVsTefSmBcKuD0J/CqHEPdLEqx8D0HBuqLjeevt1Qq43
-        cm94PpZZgG33ngiHIJ0hw8BHSw==
-X-Google-Smtp-Source: AA0mqf539xW7yp+XmSaeh7QyKEx/uI4+Px0TRaTKiiPa7cXAYmK2DoSN46/6FwkQRO+vECyNwcPwTg==
-X-Received: by 2002:aa7:8c19:0:b0:573:620a:3b1c with SMTP id c25-20020aa78c19000000b00573620a3b1cmr13160104pfd.50.1669274195379;
-        Wed, 23 Nov 2022 23:16:35 -0800 (PST)
-Received: from localhost ([122.172.85.60])
-        by smtp.gmail.com with ESMTPSA id k4-20020a170902c40400b001867fdec154sm414181plk.224.2022.11.23.23.16.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Nov 2022 23:16:34 -0800 (PST)
-Date:   Thu, 24 Nov 2022 12:46:32 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 0/9] dt-bindings: cleanup titles
-Message-ID: <20221124071632.5cadtc6pbdvdv3xb@vireshk-i7>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y3BuIHPcCEYQnF5EJCfcvp0uVQ+D0Hs/7ciNa+WMlcA=;
+        b=KzGcy01QeOdWUzgYW5tM3T+U6oEIRGhhW6noW9KkpcQ/4GIsN1IKgWOqUAWfgYxSFp
+         N2Sfo7TWynApMQ2r+OX7aR91/m2h7zPBwlvxuZmgJ3stnexTnoDGLgajZZp/wOvyTZ+h
+         yvyQ15kN3Ql9kZULCyfF5AAgP/W1aCAjEj/Hy7N3i6rdjWGvCPv6ZYEGLYTv8Vd0QTmR
+         L49pok4aKYH0FsaZR+jhGXzk7Ci4TnfMkO9g8DOlbShSZGmzioeat99tiubF+j/07lBw
+         ItB/g4pvdOY550Uif3UVzaD4ZVaCcCQ6pV22py1uPLPB/AatDkpL1BuY/NZr/cr66Ub6
+         dnOA==
+X-Gm-Message-State: ANoB5pkrzXTYzu6oAuG8I6FD96GIYGqo+bhfUuzKXvuqswQiuSr4Zzn6
+        SxAAo2KYaUHgHkhTGJctPWU=
+X-Google-Smtp-Source: AA0mqf5ze7Akj3TpX17yqe7DZ3SpaSkau61h7eALpc4C3+SAElCCuYk2/Zhq28b2wA4a7fw4Jnj1kw==
+X-Received: by 2002:a17:906:3810:b0:7b5:cab5:2ea8 with SMTP id v16-20020a170906381000b007b5cab52ea8mr10091575ejc.222.1669273372000;
+        Wed, 23 Nov 2022 23:02:52 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id bq21-20020a170906d0d500b00781be3e7badsm105054ejb.53.2022.11.23.23.02.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Nov 2022 23:02:51 -0800 (PST)
+Message-ID: <6cce2d35-3504-a600-cae6-fd4abee9afc9@kernel.org>
+Date:   Thu, 24 Nov 2022 08:02:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v6 00/14] serial: liteuart: add IRQ support
+Content-Language: en-US
+To:     Gabriel Somlo <gsomlo@gmail.com>, linux-kernel@vger.kernel.org
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        kgugala@antmicro.com, mholenko@antmicro.com, joel@jms.id.au,
+        david.abdurachmanov@gmail.com, florent@enjoy-digital.fr,
+        geert@linux-m68k.org, ilpo.jarvinen@linux.intel.com
+References: <20221123130500.1030189-1-gsomlo@gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20221123130500.1030189-1-gsomlo@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21-11-22, 12:06, Krzysztof Kozlowski wrote:
->  .../devicetree/bindings/cpufreq/cpufreq-mediatek-hw.yaml        | 2 +-
->  .../devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.yaml         | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v1.yaml               | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-base.yaml          | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml      | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2-qcom-level.yaml    | 2 +-
->  Documentation/devicetree/bindings/opp/opp-v2.yaml               | 2 +-
+On 23. 11. 22, 14:04, Gabriel Somlo wrote:
+> Add IRQ support to the LiteX LiteUART serial interface
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+LGTM
 
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+thanks,
 -- 
-viresh
+js
+suse labs
+
