@@ -2,277 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E7C0C63704
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 14:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD7CC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 15:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiKXO7N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Nov 2022 09:59:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
+        id S229610AbiKXPhM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Nov 2022 10:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiKXO7K (ORCPT
+        with ESMTP id S229572AbiKXPhM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Nov 2022 09:59:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD5D10EA35;
-        Thu, 24 Nov 2022 06:59:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38C17621A8;
-        Thu, 24 Nov 2022 14:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60CCAC433D6;
-        Thu, 24 Nov 2022 14:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669301948;
-        bh=nSBbA0yT0iOMP+Chy8tXuZKeJthAWp2datFpACAVtvk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g/Z3XTip6g2FFmhrf9q8UschEx45weHmYzYe79H8we9sEIqYNBGMcUwUSPidJztHO
-         EoJzTvZD3z+NDD9JMtHvEj2fc7JtF0W7dcaODw8FbII7IMM9Wm0vJeRsVixP0jK3xU
-         BaWqLTeZ0AN5DXC/qD9A3fPsNK7Mq0dBos/Fo3mo7kS2QA5fAuCocrjcrPfIQckCkg
-         W/c4cENdBvarlEWR9kDnN5cacS4gkkB0A7sTN7erTqL5hGvL5fCZZff48TWtCX4WW9
-         bAFx68QM6jUNzLf5rE3FYsARfEuiv6CaM29wT1sOR6D5KoY1RAkp0bSbhwEHs//8tP
-         kR7J0rMgtQcug==
-Received: by mercury (Postfix, from userid 1000)
-        id 43C24106092A; Thu, 24 Nov 2022 15:59:06 +0100 (CET)
-Date:   Thu, 24 Nov 2022 15:59:06 +0100
-From:   Sebastian Reichel <sre@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-watchdog@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 7/9] dt-bindings: drop redundant part of title
- (beginning)
-Message-ID: <20221124145906.i3xjt4cqwhbqpcop@mercury.elektranox.org>
-References: <20221121110615.97962-1-krzysztof.kozlowski@linaro.org>
- <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
+        Thu, 24 Nov 2022 10:37:12 -0500
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9481113FF6;
+        Thu, 24 Nov 2022 07:37:09 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id C667A80AF;
+        Thu, 24 Nov 2022 15:37:08 +0000 (UTC)
+Date:   Thu, 24 Nov 2022 17:37:07 +0200
+From:   Tony Lindgren <tony@atomide.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <Y3+PoxJNJm0Pe+Xm@atomide.com>
+References: <20220615062455.15490-1-tony@atomide.com>
+ <Yrmfr3GfXYhclKXA@kroah.com>
+ <Yrm1HaUtjTMcSIE+@atomide.com>
+ <562c1505-d3bc-6422-9598-15c399e6fbba@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="at2ocn3dkmbrzexs"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20221121110615.97962-8-krzysztof.kozlowski@linaro.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <562c1505-d3bc-6422-9598-15c399e6fbba@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
---at2ocn3dkmbrzexs
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
 Hi,
 
-On Mon, Nov 21, 2022 at 12:06:13PM +0100, Krzysztof Kozlowski wrote:
-> The Devicetree bindings document does not have to say in the title that
-> it is a "Devicetree binding", but instead just describe the hardware.
->=20
-> Drop beginning "Devicetree bindings" in various forms:
->=20
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -exec sed -i -e 's/^title: [dD]evice[ -]\?[tT]ree [bB]indings\? for \=
-([tT]he \)\?\(.*\)$/title: \u\2/' {} \;
->=20
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -exec sed -i -e 's/^title: [bB]indings\? for \([tT]he \)\?\(.*\)$/tit=
-le: \u\2/' {} \;
->=20
->   find Documentation/devicetree/bindings/ -type f -name '*.yaml' \
->     -exec sed -i -e 's/^title: [dD][tT] [bB]indings\? for \([tT]he \)\?\(=
-=2E*\)$/title: \u\2/' {} \;
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
+* Jiri Slaby <jirislaby@kernel.org> [221124 06:53]:
+> Hi,
+> 
+> I am returning to v2, as I managed to read only v3 and only now. But here
+> was already the point below.
+> 
+> On 27. 06. 22, 15:48, Tony Lindgren wrote:
+> > > > Considering the above, let's improve the serial core layer so we can
+> > > > manage the serial port controllers better. Let's register the controllers
+> > > > with the serial core layer in addition to the serial ports.
+> > > 
+> > > Why can't controllers be a device as well?
+> > 
+> > The controllers are devices already probed by the serial port drivers.
+> > What's missing is mapping the ports (as devices based on the comments
+> > above) to the controller devices. I don't think we need another struct
+> > device for the serial controller in addition to the serial port driver
+> > device and it's child port devices.
+> 
+> To be honest, I don't like the patch (even v3). We have uart_state which I
+> already hate and now we have another structure holding *some* other info
+> about a serial device (apart from uart_port). It's mess already and hard to
+> follow, esp. to newcomers.
 
-=2E..
+Yup the serial code sure is hard to follow..
 
->  Documentation/devicetree/bindings/power/supply/bq2415x.yaml     | 2 +-
->  Documentation/devicetree/bindings/power/supply/bq24190.yaml     | 2 +-
->  Documentation/devicetree/bindings/power/supply/bq24257.yaml     | 2 +-
->  Documentation/devicetree/bindings/power/supply/bq24735.yaml     | 2 +-
->  Documentation/devicetree/bindings/power/supply/bq25890.yaml     | 2 +-
->  Documentation/devicetree/bindings/power/supply/isp1704.yaml     | 2 +-
->  .../devicetree/bindings/power/supply/lltc,ltc294x.yaml          | 2 +-
->  .../devicetree/bindings/power/supply/richtek,rt9455.yaml        | 2 +-
->  Documentation/devicetree/bindings/power/supply/ti,lp8727.yaml   | 2 +-
+> AFAIU, what Greg suggests would be:
+> 
+> PCI/platform/acpi/whatever struct dev
+>   -> serial controller 1 struct dev
+>      -> serial port 1 struct dev (tty_port instance exists for this)
+>      -> serial port 2 struct dev (tty_port instance exists for this)
+>      -> ...
+>   -> serial controller 2 struct dev
+>      -> serial port 1 struct dev (tty_port instance exists for this)
+>      -> serial port 2 struct dev (tty_port instance exists for this)
+>      -> ...
 
-=2E..
+Oh you want the serial controller struct device as a child of the
+hardware controller struct device. Yeah that makes sense to put it there.
 
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq2415x.yaml =
-b/Documentation/devicetree/bindings/power/supply/bq2415x.yaml
-> index a3c00e078918..f7287ffd4b12 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq2415x.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq2415x.yaml
-> @@ -5,7 +5,7 @@
->  $id: http://devicetree.org/schemas/power/supply/bq2415x.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for TI bq2415x Li-Ion Charger
-> +title: TI bq2415x Li-Ion Charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq24190.yaml =
-b/Documentation/devicetree/bindings/power/supply/bq24190.yaml
-> index 4884ec90e2b8..001c0ffb408d 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq24190.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq24190.yaml
-> @@ -5,7 +5,7 @@
->  $id: http://devicetree.org/schemas/power/supply/bq24190.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for TI BQ2419x Li-Ion Battery Charger
-> +title: TI BQ2419x Li-Ion Battery Charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq24257.yaml =
-b/Documentation/devicetree/bindings/power/supply/bq24257.yaml
-> index c7406bef0fa8..cc45939d385b 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq24257.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq24257.yaml
-> @@ -5,7 +5,7 @@
->  $id: http://devicetree.org/schemas/power/supply/bq24257.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for bq24250, bq24251 and bq24257 Li-Ion Charger
-> +title: Bq24250, bq24251 and bq24257 Li-Ion Charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq24735.yaml =
-b/Documentation/devicetree/bindings/power/supply/bq24735.yaml
-> index dd9176ce71b3..388ee16f8a1e 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq24735.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq24735.yaml
-> @@ -5,7 +5,7 @@
->  $id: http://devicetree.org/schemas/power/supply/bq24735.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for TI BQ24735 Li-Ion Battery Charger
-> +title: TI BQ24735 Li-Ion Battery Charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/bq25890.yaml =
-b/Documentation/devicetree/bindings/power/supply/bq25890.yaml
-> index ee51b6335e72..dae27e93af09 100644
-> --- a/Documentation/devicetree/bindings/power/supply/bq25890.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/bq25890.yaml
-> @@ -5,7 +5,7 @@
->  $id: http://devicetree.org/schemas/power/supply/bq25890.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for bq25890, bq25892, bq25895 and bq25896 Li-Ion Charger
-> +title: Bq25890, bq25892, bq25895 and bq25896 Li-Ion Charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/isp1704.yaml =
-b/Documentation/devicetree/bindings/power/supply/isp1704.yaml
-> index 7e3449ed70d4..fb3a812aa5a9 100644
-> --- a/Documentation/devicetree/bindings/power/supply/isp1704.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/isp1704.yaml
-> @@ -5,7 +5,7 @@
->  $id: http://devicetree.org/schemas/power/supply/isp1704.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for NXP ISP1704 USB Charger Detection
-> +title: NXP ISP1704 USB Charger Detection
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/lltc,ltc294x.=
-yaml b/Documentation/devicetree/bindings/power/supply/lltc,ltc294x.yaml
-> index 109b41a0d56c..774582cd3a2c 100644
-> --- a/Documentation/devicetree/bindings/power/supply/lltc,ltc294x.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/lltc,ltc294x.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/power/supply/lltc,ltc294x.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for LTC2941, LTC2942, LTC2943 and LTC2944 battery fuel ga=
-uges
-> +title: LTC2941, LTC2942, LTC2943 and LTC2944 battery fuel gauges
-> =20
->  description: |
->    All chips measure battery capacity.
-> diff --git a/Documentation/devicetree/bindings/power/supply/richtek,rt945=
-5.yaml b/Documentation/devicetree/bindings/power/supply/richtek,rt9455.yaml
-> index bce15101318e..27bebc1757ba 100644
-> --- a/Documentation/devicetree/bindings/power/supply/richtek,rt9455.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/richtek,rt9455.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/power/supply/richtek,rt9455.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for Richtek rt9455 battery charger
-> +title: Richtek rt9455 battery charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
-> diff --git a/Documentation/devicetree/bindings/power/supply/ti,lp8727.yam=
-l b/Documentation/devicetree/bindings/power/supply/ti,lp8727.yaml
-> index 93654e732cda..ce6fbdba8f6b 100644
-> --- a/Documentation/devicetree/bindings/power/supply/ti,lp8727.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/ti,lp8727.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/power/supply/ti,lp8727.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Binding for TI/National Semiconductor LP8727 Charger
-> +title: TI/National Semiconductor LP8727 Charger
-> =20
->  maintainers:
->    - Sebastian Reichel <sre@kernel.org>
+I was kind of thinking we want the port devices be direct children of
+the hardware struct device, but I guess there is no such need.
 
-Acked-by: Sebastian Reichel <sre@kernel.org>
+> And you are objecting that mostly (or in all cases?), there will never be
+> "serial controller 2"?
 
--- Sebastian
+I'm was not aware of the need for multiple serial port controllers
+connected to a single hardware controller struct device. Is there an
+example for that somewhere?
 
---at2ocn3dkmbrzexs
-Content-Type: application/pgp-signature; name="signature.asc"
+Not that multiple serial controller struct devices matters with your
+suggestion, just wondering.
 
------BEGIN PGP SIGNATURE-----
+> But given your description, I believe you need it anyway -- side note: does
+> really the PM layer/or you need it or would you be fine with "serial port N"
+> dev children? But provided you don't have the controller, you work around it
+> by struct serial_controller. So what's actually the point of the workaround
+> instead of sticking to proper driver model? With the workaround you seem you
+> have to implement all the binding, lookup and such yourself anyway. And that
+> renders the serial even worse :P. Let's do the reverse instead.
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmN/hrkACgkQ2O7X88g7
-+poXLxAAo+A6KhvLNIyc9xLROpqlxyJWMCG/yc5TCq1ZV1KgtGo9x3TZ3o9jSbKp
-oekN2QIztickZoLQSKjVm2iIp8twlpC2BQeOiMoqZGAsVzkC3Fht+HBjyK5PfyWL
-BGctUAmwRbv16bKPVxPD9R3/Il3D4eTShapIzQ826hitd6/0nF5F1B+DDfs2LCIe
-Nl+peFHpzF5xrOyXaY61rRnWzRoXpw9oXcVGWqzw8xqfXZUQ2Oi714/ftE3MXkZk
-sKAPq+X6fo3+5lDQeP1TZCW7YeTnXImWP11UJEoJuIsrzoQxHAbrr/aamurwe7vS
-CvH8FWs7Gb5FYu+kxis4aQxtKfGcMMS1KgJ50YVHeJdjKuKFP1L4QHOWwRhhOosR
-X4TvrxYD0uFWa/utXiWoCT5OslqtqU17wys+S4zf8CLNwhOW1PLceLPH6Q/X3VkM
-XPBzM+6B5ltN+WXIQ2QDD5pFRZmh+kv3H5Ueoid7S/u7PxYOV1byRJeLsA9cMfyB
-th8k4KLJJQRuBgiOA6WwH9S0lac850zd5J9fkf+/J580liH9B/v+ukcIC8LpONts
-oFwtQsBwgqGWUOmHPmBOdsouumwrbYddnzolFrf20kvZK36bUQBQekmGJt+NgJKo
-wzC+XHhNGQc1pbe7IMj3hyGY1i5d8gB9KgBz4sCmiGwLr0Tvfww=
-=l6tX
------END PGP SIGNATURE-----
+To me it seems your suggestion actually makes things easier for runtime
+PM :)
 
---at2ocn3dkmbrzexs--
+We can just enable runtime PM for the serial controller struct device
+without tinkering with the parent hardware controller struct device.
+
+> The only thing I am not sure about, whether tty_port should be struct dev
+> too -- and if it should have serial port 1 as a parent. But likely so. And
+> then with pure tty (i.e. tty_driver's, not uart_driver's), it would have
+> PCI/platform/acpi/whatever as a parent directly.
+
+That seems like a separate set of patches, no? Or is there some need right
+now to have some child struct device as a direct child of the hardware
+controller struct device?
+
+> In sum, the above structure makes perfect sense to me. There has only been
+> noone to do the real work yet. And having tty_port was a hard prerequisite
+> for this to happen. And that happened long time ago. All this would need a
+> lot of work initially¹⁾, but it paid off a lot in long term.
+> 
+> ¹⁾I know what I am writing about -- I converted HID. After all, the core was
+> only 1000 lines patch (cf 85cdaf524b7d) + patches to convert all the drivers
+> incrementally (like 8c19a51591).
+
+Cool, thanks for your suggestions.
+
+Regards,
+
+Tony
