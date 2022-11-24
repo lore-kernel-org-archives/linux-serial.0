@@ -2,111 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2254C43219
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 12:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A79C4321E
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 12:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiKXMKZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Nov 2022 07:10:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
+        id S229918AbiKXMj5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Nov 2022 07:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiKXMKY (ORCPT
+        with ESMTP id S229515AbiKXMjk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Nov 2022 07:10:24 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0400E748C6
-        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 04:10:24 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id d123so1093359iof.7
-        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 04:10:23 -0800 (PST)
+        Thu, 24 Nov 2022 07:39:40 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554EDCB954
+        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 04:39:33 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id i10so3890862ejg.6
+        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 04:39:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=WsnqhIo8OuDtSYALlQhH/obeAFS+XPS7ahZHr0d+yKU=;
-        b=YjfJcqXwBHOuVL7wse2ZKsQ5JtVewfVDDfpPUV3ubL2ABHvwcOsMfh/HD/aiEg6gBB
-         XX/wR1/utF+we2u4WcBAMai6wjIAhlDokhsEktAsEKxDjH4nIrxXjHdbODGOHBoWnqqk
-         Cq2an3iNEkj2a9KY8cKh4PvmX1XJ5yuCdmHkQ=
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:from:to:cc:subject:date:message-id:reply-to;
+        bh=5Kn8cPTGqZ4uCa1GsQbZrRXQU/yMANRDAbiv/dCX5os=;
+        b=Hj46rWNvJRxg1GroRkU89OHTuqer7Eb/eAg4YimpMHBj2h+d/UCcnOyCFqil22oYw9
+         OEdgbSxptgyupsxRiSAZxkCh0GsolyjalTGXib0chCHhcPCAGhUInR/iHMgdLor+cCcx
+         K8BjrfvpGrlpQKZPpUKyqGjm/LYa+CeiYwlUA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=WsnqhIo8OuDtSYALlQhH/obeAFS+XPS7ahZHr0d+yKU=;
-        b=mXaT9yEwrVpv3RI5uqeIDowyt6tA1I35RBtmF5e43UY228jR0NG/crHBMENEw+thSc
-         0avJ8YgpOx4XhulmmFjxsNCBjV2h/kSD7PBUPJlawQ8+TGkeM2MD2YJ5AYg/ZJ2xc7wZ
-         xZ5naLRuoRAA06IeGrP7lkvLpvg91fhIdp8Gkzwwj9tzMchrGnTntzyy+fTbOzlPSWu/
-         XSjRZ282THzMMMeIULvTgMWOhn78A0aQvzAujt4POu1TpacgaEqjahxp87u/cJrvSweA
-         pZdf+cchLsUAvRPW9hf5TjuIesX7CFtgvC+azYpseP/ur80yDh3KNACiMvFZ/0TJheYu
-         4Dzw==
-X-Gm-Message-State: ANoB5pkHs6UyM/GcbGlq3yLdI9NchDLHQc56NCI+hqmZtXtX/WAWm1Sr
-        rp7G0xvcc82Kq/jWtjLVfoAacz0m6xuAVA==
-X-Google-Smtp-Source: AA0mqf7S0f+JInZV3RI+7UAE4Fqk4G+knLQutd6y8crVF5cemSpQLVyEbwSN9IaonHuf/mDorzcSMQ==
-X-Received: by 2002:a02:7a06:0:b0:374:c658:2141 with SMTP id a6-20020a027a06000000b00374c6582141mr13886845jac.210.1669291823247;
-        Thu, 24 Nov 2022 04:10:23 -0800 (PST)
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com. [209.85.166.52])
-        by smtp.gmail.com with ESMTPSA id m16-20020a0566022e9000b006deea01ff39sm400776iow.22.2022.11.24.04.10.21
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Nov 2022 04:10:22 -0800 (PST)
-Received: by mail-io1-f52.google.com with SMTP id y6so1088873iof.9
-        for <linux-serial@vger.kernel.org>; Thu, 24 Nov 2022 04:10:21 -0800 (PST)
-X-Received: by 2002:a02:c897:0:b0:374:100a:b0c7 with SMTP id
- m23-20020a02c897000000b00374100ab0c7mr6338879jao.185.1669291821369; Thu, 24
- Nov 2022 04:10:21 -0800 (PST)
+        bh=5Kn8cPTGqZ4uCa1GsQbZrRXQU/yMANRDAbiv/dCX5os=;
+        b=AtPMsHpNw8HFa0vKimOUzsyeOTse7Bq/eRDoAYsphX6GKvg+D6uUuXq2d/6SFX1wVt
+         Zs3p5fLAcJlYDd9Xul3sQDni6u4FHYKsFFI6RVBX8z1uzN+5L99iqv9OURC5O9RKrtbA
+         Nj7gvf9d0es87fjJ5+4C41ArE2eYEK+FdgxOfYE3xsK4k8kUkIZUdDXgHtzOL4ix9Aml
+         vDAKrqdh4hNUvZ3rZRbpFT4t5jMaE4MmhIGM7Kt5WmxDd4b3Yf3i0WCCu2u1ZDJSf91c
+         5jjQAIvc7p9u0i/vbK84Jx48NPBQ2BTw/7hDTfALGmBlFZJXtofGC7yK6i9nXhtzmZnb
+         68+w==
+X-Gm-Message-State: ANoB5pmgNP+xA5IietEy4jnaIQ1mfDOWbwUSPnRr2jbHypdX3L1nPNwZ
+        JvSUZg1Am8+aWt02mOKfIEEagw==
+X-Google-Smtp-Source: AA0mqf623RZGwsZ9J3hGFYAJK31u0wdeJACzjHCyIoe4JaPPeOFessO9rW1vW//v//HSnivNjPLnlg==
+X-Received: by 2002:a17:906:8616:b0:7ac:db70:3ab5 with SMTP id o22-20020a170906861600b007acdb703ab5mr27649182ejx.160.1669293571860;
+        Thu, 24 Nov 2022 04:39:31 -0800 (PST)
+Received: from alco.roam.corp.google.com ([2620:0:1059:10:7b70:9ff8:7491:883a])
+        by smtp.gmail.com with ESMTPSA id c17-20020aa7c991000000b004619f024864sm462866edt.81.2022.11.24.04.39.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Nov 2022 04:39:31 -0800 (PST)
+Subject: [PATCH v3 0/2] earlycon: Let users set the clock frequency
 MIME-Version: 1.0
-References: <20221123-serial-clk-v2-0-9c03ce8940d8@chromium.org>
- <20221123-serial-clk-v2-2-9c03ce8940d8@chromium.org> <140187ba-7d2c-8b7b-e172-7350eed458be@kernel.org>
-In-Reply-To: <140187ba-7d2c-8b7b-e172-7350eed458be@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIAOplf2MC/3XNwQ7CIAwG4FcxnK0BNtzmyfcwHjrAQWSQgCMxy97d6tHoqfmbfn9XVmz2trDTbm
+ XZVl98ihSa/Y5ph3Gy4A1lJrmUQsgG3vcYQIc79MqMHRdoUHWMwIjFwpgxakckLiHQ0vnySPn5eVAF
+ jcvPriqAg7hxpVpsj2jEWbucZr/Mh5QndqWmKv9rSXrQvNG2H1pu+i+9bdsLk/BureoAAAA=
 From:   Ricardo Ribalda <ribalda@chromium.org>
-Date:   Thu, 24 Nov 2022 13:10:10 +0100
-X-Gmail-Original-Message-ID: <CANiDSCvq54Xr7OECNuo230XhNbtY1Pgr8GA+ajreEZGYGucq9Q@mail.gmail.com>
-Message-ID: <CANiDSCvq54Xr7OECNuo230XhNbtY1Pgr8GA+ajreEZGYGucq9Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] earlycon: Let users set the clock frequency
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 24 Nov 2022 13:39:06 +0100
+Message-Id: <20221123-serial-clk-v3-0-49c516980ae0@chromium.org>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-doc@vger.kernel.org, Ricardo Ribalda <ribalda@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+X-Mailer: b4 0.11.0-dev-d93f8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1449; i=ribalda@chromium.org;
+ h=from:subject:message-id; bh=CA65+puFORA/eIOxDRyQMsQ2fz/utcp6fbHKAK0k9Pw=;
+ b=owEBbQKS/ZANAwAKAdE30T7POsSIAcsmYgBjf2X2idEkn5/JVjX11Kv0lBmXZStXm54LeTka6w7c
+ psNQaOqJAjMEAAEKAB0WIQREDzjr+/4oCDLSsx7RN9E+zzrEiAUCY39l9gAKCRDRN9E+zzrEiJOND/
+ wIOXy2PTlW9gnASfEAiKNUZDcSyA/apG4AjdWlrYo4KIrIiRFYf+U1LWq66/7xRX62rddtdlNFhmNB
+ 3850ZBi5UzMA3TZ91cNz6lyLPLrisQO3nX8UO4iRpt0YlUSKO7738wUkqpEFvvZviwOR/+OQGlp3PV
+ J8N4zdV8tw85dDoyaS76+wAWrpYzskMP3gs/PHUJJdtDO8icUxeml6BSfakyNN/Cosryk7PP9REsHg
+ tuRFK/BW1GNxphOn2i/1fZ/V7sqyBThI6ZlFH6ScURvLWp8MzFeQRf12Kxk4w4MfWZQ+NdeG2LXxCQ
+ E88rcRKMd5Boc3+o8Nsw5zGRegyKpmg6GfJswjTYN3T5kKrdt/JjpKjaxNQXcZyoC/5aPkvd7xQbY/
+ lCe3KjXwAuymHXq5TKI+WZPTcuH4JIe7OS18xGq5oZA51xEr2Baq+/yWNaSzbSgPfKu7+Wa+dnTuDH
+ dB+MYFlo2dozJHxGBVDXAdsa+mD4BaQ5NhfKlgHZxJ99RAnRbkuLUI6ffjRCrvzOjZrZNKgF5Qedy1
+ 2eYhiwbqAY4/1aPuacvjZXGgBFoWUacQnfu9jT5PMuiKo8ww7a00QP/dLforMdycugMVVEFPDR1/f/
+ uo+IE1VttqwY4qkYnZPcN4U1KRnNnMJIDnqxEo0vOaVe76kWwf4B6YTa7z0w==
+X-Developer-Key: i=ribalda@chromium.org; a=openpgp;
+ fpr=9EC3BB66E2FC129A6F90B39556A0D81F9F782DA9
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 24 Nov 2022 at 12:19, Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> Hi,
->
-> On 24. 11. 22, 11:02, Ricardo Ribalda wrote:
-> ...
-> > --- a/drivers/tty/serial/earlycon.c
-> > +++ b/drivers/tty/serial/earlycon.c
-> > @@ -120,9 +120,15 @@ static int __init parse_options(struct earlycon_device *device, char *options)
-> >       }
-> >
-> >       if (options) {
-> > +             char *uartclk;
-> > +
-> >               if (kstrtouint(options, 0, &device->baud) < 0)
-> >                       pr_warn("[%s] unsupported earlycon baud rate option\n",
-> >                               options);
->
-> IMO this won't work if there is a comma in options (i.e. your new
-> clkrate param). kstrtouint will return -EINVAL in that case.
->
-> > +             uartclk = strchr(options, ',');
-> > +             if (uartclk && kstrtouint(uartclk, 0, &port->uartclk) < 0)
->
-> You are giving ",number" to kstrtouint, right? That won't work either ;).
+Some platforms, namely AMD Picasso, use non standard uart clocks (48M),
+witch makes it impossible to use with earlycon.
+    
+Let the user select its own frequency.
 
+To: Jonathan Corbet <corbet@lwn.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
 
-The fun thing is that it worked because it fell back to the acpi
-parameters :). Will send a v3
+---
+Changes in v3:
+- Revert patch to use kstrtouint for baudrate
+- Parse the number not the ,number (Thanks Jiri :) )
+- Add optional patch to increase the options size
+- Link to v2: https://lore.kernel.org/r/20221123-serial-clk-v2-0-9c03ce8940d8@chromium.org
 
-Thanks!
->
-> regards,
-> --
-> js
->
+Changes in v2:
+- Add a patch to fix handling of baudrate
+- Use kstrtouint instead of simple_strtoul
+- Link to v1: https://lore.kernel.org/r/20221123-serial-clk-v1-0-1f0554a46ad1@chromium.org
 
+---
+Ricardo Ribalda (2):
+      earlycon: Let users set the clock frequency
+      earlycon: Increase options size
 
+ Documentation/admin-guide/kernel-parameters.txt | 12 +++++++-----
+ drivers/tty/serial/earlycon.c                   |  9 ++++++++-
+ include/linux/serial_core.h                     |  2 +-
+ 3 files changed, 16 insertions(+), 7 deletions(-)
+---
+base-commit: 4312098baf37ee17a8350725e6e0d0e8590252d4
+change-id: 20221123-serial-clk-85db701ada57
+
+Best regards,
 -- 
-Ricardo Ribalda
+Ricardo Ribalda <ribalda@chromium.org>
