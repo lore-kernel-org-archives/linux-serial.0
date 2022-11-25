@@ -2,93 +2,68 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA56C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Nov 2022 16:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFA2C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Nov 2022 09:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbiKXQGj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Nov 2022 11:06:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47508 "EHLO
+        id S229649AbiKYJlY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Nov 2022 04:41:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiKXQGi (ORCPT
+        with ESMTP id S229812AbiKYJlC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Nov 2022 11:06:38 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE7615AAA9;
-        Thu, 24 Nov 2022 08:06:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669305998; x=1700841998;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YvIW7uqHijKFD2vDLNW5+bbKzKM0bZDIyB8ZehT5fEs=;
-  b=oB+c5kSR4Vkmc63+Yqw2ltsYyitDqme/p5zhUuqVBnZIpYTb/hMJZhvU
-   c5FCJgaLFKOmenQJfuh9pL0tBLbqyw79tHUeot+uX9zI0/mlEFKbIMBfK
-   kSp+g9Iw9jtwlnfFstE+0RalIfZHdpeDCBz+O64gWkAj3tHfhjTQsGdCw
-   ZY/Hec5JvgJ7j9d6R3oQVQnSFc4VQDPQ5aCPcWp4Ztm1yjuO0+Ve+k0lk
-   NroEmnWOqaBKbcy6JSco6CtMww+uS+sJyGX95KQNiykblDe1bRxRvFFuT
-   7fwSVWYI9gnva/AwaSgjnP4wJl8dRzGNqJyuXvVxt1fqmaDKx2lFBgrtM
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10541"; a="341220935"
-X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
-   d="scan'208";a="341220935"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2022 08:06:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10541"; a="816891210"
-X-IronPort-AV: E=Sophos;i="5.96,190,1665471600"; 
-   d="scan'208";a="816891210"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 24 Nov 2022 08:06:34 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1oyEkC-00GphT-2V;
-        Thu, 24 Nov 2022 18:06:32 +0200
-Date:   Thu, 24 Nov 2022 18:06:32 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <Y3+WiArMrBPTwdaq@smile.fi.intel.com>
-References: <20220615062455.15490-1-tony@atomide.com>
- <Yrmfr3GfXYhclKXA@kroah.com>
- <Yrm1HaUtjTMcSIE+@atomide.com>
- <562c1505-d3bc-6422-9598-15c399e6fbba@kernel.org>
- <Y3+PoxJNJm0Pe+Xm@atomide.com>
+        Fri, 25 Nov 2022 04:41:02 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D7F3D91C
+        for <linux-serial@vger.kernel.org>; Fri, 25 Nov 2022 01:40:38 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NJVFv3gYYzRpVR;
+        Fri, 25 Nov 2022 17:40:03 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 25 Nov
+ 2022 17:40:36 +0800
+From:   Yuan Can <yuancan@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <alan@linux.intel.com>, <joshua.henderson@microchip.com>,
+        <andrei.pistirica@microchip.com>, <ralf@linux-mips.org>,
+        <linux-serial@vger.kernel.org>
+CC:     <yuancan@huawei.com>
+Subject: [PATCH] serial: pic32: Add checks for devm_clk_get() in pic32_uart_probe()
+Date:   Fri, 25 Nov 2022 09:38:32 +0000
+Message-ID: <20221125093832.33386-1-yuancan@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3+PoxJNJm0Pe+Xm@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Nov 24, 2022 at 05:37:07PM +0200, Tony Lindgren wrote:
-> * Jiri Slaby <jirislaby@kernel.org> [221124 06:53]:
-> > On 27. 06. 22, 15:48, Tony Lindgren wrote:
+As the devm_clk_get() may return ERR_PTR, its return value needs to be
+checked to avoid invalid poineter dereference.
 
-...
+Fixes: 157b9394709e ("serial: pic32_uart: Add PIC32 UART driver")
+Signed-off-by: Yuan Can <yuancan@huawei.com>
+---
+ drivers/tty/serial/pic32_uart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> > And you are objecting that mostly (or in all cases?), there will never be
-> > "serial controller 2"?
-> 
-> I'm was not aware of the need for multiple serial port controllers
-> connected to a single hardware controller struct device. Is there an
-> example for that somewhere?
-
-I would be on the safest side here by assuming that's possible
-(QEMU and FPGA are the first that comes to my mind of such possibilities).
-
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index 2beada66c824..ad16c5d28a30 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -890,6 +890,8 @@ static int pic32_uart_probe(struct platform_device *pdev)
+ 	sport->irq_rx		= irq_of_parse_and_map(np, 1);
+ 	sport->irq_tx		= irq_of_parse_and_map(np, 2);
+ 	sport->clk		= devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(sport->clk))
++		return PTR_ERR(sport->clk);
+ 	sport->dev		= &pdev->dev;
+ 
+ 	/* Hardware flow control: gpios
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
