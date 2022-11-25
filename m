@@ -2,257 +2,248 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A471CC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Nov 2022 14:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47624C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Nov 2022 14:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiKYODP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Nov 2022 09:03:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
+        id S230073AbiKYOiA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Nov 2022 09:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiKYODM (ORCPT
+        with ESMTP id S230044AbiKYOh6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Nov 2022 09:03:12 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCDA1CB3C;
-        Fri, 25 Nov 2022 06:03:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669384990; x=1700920990;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=2Y/9XdXRQark7DT8SRb7nK7aO6b4EOSkUvrrkHSKpbM=;
-  b=KwSR3ds9cg2jKrO3c8B+DMD3eGuupgsQupqDSaac5YqnNVMQythwJzkJ
-   nShOk5oz3i7d4HKwo7/WJ9G3KqMR3I3ScWvYHNn7mB5dRQWjKpjRYDiIa
-   SIr08ejupyU7DVExaoonwd45UPKRhJBJmTIDFcEJlMvTtYedKPBLrjcZ/
-   wDGKOZYLjZsG/I58T+vaFWNHgkyBvzVF98cJJtfldcrcHNgSW4Np3ZUK4
-   +4NApUkMTz5ryZ83lMb+UCeWYYOHZ3XNrxWjNOw9UAynN40QZmKkLRGrK
-   AkYaNYhUM0Nq0813lkzIl7+62S+Xn8OhJ4Dipiuq6e89FDPKi1/+Vxeb7
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10542"; a="341390779"
-X-IronPort-AV: E=Sophos;i="5.96,193,1665471600"; 
-   d="scan'208";a="341390779"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2022 06:02:50 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10542"; a="971579845"
-X-IronPort-AV: E=Sophos;i="5.96,193,1665471600"; 
-   d="scan'208";a="971579845"
-Received: from dpotapen-mobl.ger.corp.intel.com ([10.252.50.101])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2022 06:02:47 -0800
-Date:   Fri, 25 Nov 2022 16:02:45 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-omap@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] serial: core: Start managing serial controllers
- to enable runtime PM
-In-Reply-To: <20221123082825.32820-1-tony@atomide.com>
-Message-ID: <e6922dd6-8968-b54-afbc-d5ad969f64@linux.intel.com>
-References: <20221123082825.32820-1-tony@atomide.com>
+        Fri, 25 Nov 2022 09:37:58 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC9B1C108
+        for <linux-serial@vger.kernel.org>; Fri, 25 Nov 2022 06:37:55 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id i12so7125121wrb.0
+        for <linux-serial@vger.kernel.org>; Fri, 25 Nov 2022 06:37:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hrDPugbGkUH8uPiDnvaRZfdEhlUMjCxRails1zWFZdw=;
+        b=BMAit6xLhKZyhxy+vup7aqWvO/XCPl4fGAnIWkhlv0cgETv/w+db5BARl8jhd6eLAU
+         dDO1qPPALURyqP1cPkZxFjEPAssRnpUEE4pcwh3BTNLDAly4Pzf9g453lA3WyaMoz7/+
+         X2+z/+3cPIgf1kkkiAU2EYhEdGvRJAE7zZLe6G6JjBqvdSAWfWmAmo6ENLz7IoI3qcdy
+         t73evpDa4mplMnLOpxMPDFnATPbL05dY3aoBoiM4XbLENjYC7fwExRBuqcOHMUHrCXKn
+         +BXL/qyZkajAX6R/Ic5oJD7aXRzT0/0uiZ7zFbcnezQU/c434mivDpb5N9V9MR+CcOVk
+         wupw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hrDPugbGkUH8uPiDnvaRZfdEhlUMjCxRails1zWFZdw=;
+        b=18gF3X1K8pzeuJWS8HIb4CwsUWIe//IE/zhbW5eGArg7hu99uYn/+LgNzlugWTImGG
+         y4Q4DXBArAiowR0FKjZagyfFyVfXGVGLPCY5iwneKIVaN9Buf0hvhziKmuPd3Q7+5Fsd
+         TgyY3vmKK4QONwMpvV2T8DZjAHZeJIGDe5XVKYoe9cKjCfQbkOpp22A26nKXhAyaVfnW
+         ARaVolOuUyEdpR7Iww3cMWUeTmMqPEKuYWLnCcT08y2oVu+XLZ6XUXEjB+mhAeLgiHbM
+         6pJim2X6KOQBdoROSh+xtpN6T2cyFRsKMVgVczWROL8DW8jI2BtroJ2XOInyLGQFQLJi
+         0TsQ==
+X-Gm-Message-State: ANoB5pnsSZn1CDH5cptQj88zEkvW+TooDyYdmdaCPRSmrJQ262l2JzTr
+        JzO2uta4eBZWfP+D8wYeMLPRlQ==
+X-Google-Smtp-Source: AA0mqf6zFC29XjHLwhlQEYJX4yZh6j2JlZhtRxyqGdRVe0Zun9l7ZP3FYrb2zuBfsAUHkGZHKTvnVg==
+X-Received: by 2002:a05:6000:1208:b0:236:4838:515d with SMTP id e8-20020a056000120800b002364838515dmr22959604wrx.541.1669387073812;
+        Fri, 25 Nov 2022 06:37:53 -0800 (PST)
+Received: from [192.168.1.195] ([5.133.47.210])
+        by smtp.googlemail.com with ESMTPSA id d5-20020a05600c3ac500b003cfe6fd7c60sm5343439wms.8.2022.11.25.06.37.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Nov 2022 06:37:53 -0800 (PST)
+Message-ID: <426d1f07-0a5d-b740-dc93-77c5a8bc6d23@linaro.org>
+Date:   Fri, 25 Nov 2022 14:37:52 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v3 13/13] tty: serial: qcom-geni-serial: add support for
+ serial engine DMA
+Content-Language: en-US
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20221123110759.1836666-1-brgl@bgdev.pl>
+ <20221123110759.1836666-14-brgl@bgdev.pl>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <20221123110759.1836666-14-brgl@bgdev.pl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 23 Nov 2022, Tony Lindgren wrote:
+Thanks Bartosz for the patch,
 
-> We want to enable runtime PM for serial port device drivers in a generic
-> way. To do this, we want to have the serial core layer manage the
-> registered physical serial controller devices.
+On 23/11/2022 11:07, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> The serial layer has a few challenges to deal with:
+> The qcom-geni-serial driver currently only works in SE FIFO mode. This
+> limits the UART speed to around 180 kB/s. In order to achieve higher
+> speeds we need to use SE DMA mode.
 > 
-> 1. The serial port mapping to a physical serial port controller device
->    is currently not easily available after the physical serial controller
->    struct device gets registered uart_add_one_port() time
+> Keep the console port working in FIFO mode but extend the code to use DMA
+> for the high-speed port.
 > 
-> 2. The serial port device drivers have their own driver data. So we cannot
->    currently start making use of serial core generic data easily without
->    changing all the serial port device drivers
-> 
-> To find the serial ports for a controller based on struct device, let's
-> add a new data structure for a serial_controller. On registering a port,
-> we can use the drv->state array to find the associated serial port
-> controller and initialize the serial core controller.
-> 
-> As some serial port device drivers enable runtime PM in their probe before
-> registering with the serial core layer, and some do not enable runtime PM
-> at all currently, we need check the state in the serial core layer on
-> uart_port_startup(). We need to also consider that a serial port device
-> may have multiple ports.
-> 
-> Initially we enable runtime PM for all the serial port controller devices.
-> This allows us to add runtime PM calls and properly handle any errors
-> without a need for serial layer specific runtime PM wrapper functions.
-> 
-> After this patch no functional changes for the serial port device drivers
-> are intended. We just enable runtime PM and keep the runtime PM usage
-> count until all the serial controller ports are unregistered. For drivers
-> implementing PM runtime, we just keep track of the runtime PM
-> configuration.
-> 
-> For the serial port drivers, the serial core layer has the following use
-> cases to deal with:
-> 
-> 1. If a serial port device driver does not implement runtime PM, the
->    device state is set to active state, and the runtime PM usage count
->    is kept until the last port for a device is unregistered
-> 
-> 2. If a serial port device driver implements runtime PM, the runtime PM
->    usage count is kept until the last port for the device is unregistered
-> 
-> 3. If a serial port device driver implements runtime PM autosuspend,
->    autosuspend is not prevented. This currently gets set only for the
->    8250_omap driver to keep runtime PM working for it
-> 
-> For system suspend, things should be mostly detached from the runtime PM.
-> The serial port device drivers may call pm_runtime_force_suspend() and
-> pm_runtime_force_resume() as needed.
-> 
-> Suggested-by: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > ---
-> Changes since v2:
+>   drivers/tty/serial/qcom_geni_serial.c | 289 ++++++++++++++++++++++----
+>   1 file changed, 247 insertions(+), 42 deletions(-)
 > 
-> - Make each serial port a proper device as suggested by Greg. This is
->   a separate patch that flushes the TX on runtime PM resume
-> 
-> Changes since v1:
-> 
-> - Use kref as suggested by Andy
-> 
-> - Fix memory leak on error as noted by Andy
-> 
-> - Use use unsigned char for supports_autosuspend as suggested by Andy
-> 
-> - Coding style improvments as suggested by Andy
-> 
-> ---
->  drivers/tty/serial/8250/8250_core.c |   1 +
->  drivers/tty/serial/8250/8250_omap.c |   1 +
->  drivers/tty/serial/serial_core.c    | 179 ++++++++++++++++++++++++++++
->  include/linux/serial_core.h         |   4 +
->  4 files changed, 185 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1004,6 +1004,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->  		uart->port.regshift     = up->port.regshift;
->  		uart->port.iotype       = up->port.iotype;
->  		uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
-> +		uart->port.supports_autosuspend = up->port.supports_autosuspend;
->  		uart->bugs		= up->bugs;
->  		uart->port.mapbase      = up->port.mapbase;
->  		uart->port.mapsize      = up->port.mapsize;
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1330,6 +1330,7 @@ static int omap8250_probe(struct platform_device *pdev)
->  	up.rs485_start_tx = serial8250_em485_start_tx;
->  	up.rs485_stop_tx = serial8250_em485_stop_tx;
->  	up.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
-> +	up.port.supports_autosuspend = 1;
->  
->  	ret = of_alias_get_id(np, "serial");
->  	if (ret < 0) {
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -16,6 +16,7 @@
->  #include <linux/console.h>
->  #include <linux/gpio/consumer.h>
->  #include <linux/of.h>
-> +#include <linux/pm_runtime.h>
->  #include <linux/proc_fs.h>
->  #include <linux/seq_file.h>
->  #include <linux/device.h>
-> @@ -30,6 +31,20 @@
->  #include <linux/irq.h>
->  #include <linux/uaccess.h>
->  
-> +/*
-> + * Serial port device specific data for serial core.
-> + *
-> + * Each port device can have multiple ports with struct uart_state allocated
-> + * for each port. The array of ports is kept in struct uart_driver.
-> + */
-> +struct serial_controller {
-> +	struct device *dev;			/* Physical controller device */
-> +	struct uart_driver *drv;		/* For port specific uart_state */
-> +	struct kref ref;			/* Registered port count */
-> +	unsigned long implements_pm_runtime:1;
-> +	unsigned long supports_autosuspend:1;
-> +};
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 82242a40a95a..0f4ba909c792 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -70,6 +70,8 @@
+>   #define UART_START_TX			0x1
+>   /* UART S_CMD OP codes */
+>   #define UART_START_READ			0x1
+> +#define UART_PARAM			0x1
+> +#define UART_PARAM_RFR_OPEN		BIT(7)
+>   
+>   #define UART_OVERSAMPLING		32
+>   #define STALE_TIMEOUT			16
+> @@ -95,9 +97,11 @@
+>   /* We always configure 4 bytes per FIFO word */
+>   #define BYTES_PER_FIFO_WORD		4
+>   
+> +#define DMA_RX_BUF_SIZE		2048
 > +
->  /*
->   * This is used to lock changes in serial line configuration.
->   */
-> @@ -177,6 +192,162 @@ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
->  		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
->  }
->  
-> +static struct serial_controller *to_controller(struct uart_port *port)
+>   struct qcom_geni_device_data {
+>   	bool console;
+> -	void (*handle_rx)(struct uart_port *uport, u32 bytes, bool drop);
+> +	enum geni_se_xfer_mode mode;
+>   };
+>   
+>   struct qcom_geni_private_data {
+> @@ -118,9 +122,11 @@ struct qcom_geni_serial_port {
+>   	u32 tx_fifo_depth;
+>   	u32 tx_fifo_width;
+>   	u32 rx_fifo_depth;
+> +	dma_addr_t tx_dma_addr;
+> +	dma_addr_t rx_dma_addr;
+>   	bool setup;
+>   	unsigned int baud;
+> -	void *rx_fifo;
+> +	void *rx_buf;
+>   	u32 loopback;
+>   	bool brk;
+>   
+> @@ -552,18 +558,11 @@ static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
+>   
+>   static void handle_rx_uart(struct uart_port *uport, u32 bytes, bool drop)
+>   {
+> -	struct tty_port *tport;
+>   	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> -	u32 num_bytes_pw = port->tx_fifo_width / BITS_PER_BYTE;
+> -	u32 words = ALIGN(bytes, num_bytes_pw) / num_bytes_pw;
+> +	struct tty_port *tport = &uport->state->port;
+>   	int ret;
+>   
+> -	tport = &uport->state->port;
+> -	ioread32_rep(uport->membase + SE_GENI_RX_FIFOn, port->rx_fifo, words);
+> -	if (drop)
+> -		return;
+> -
+
+Are we removing FIFO support for uart?
+
+It it not a overhead to use dma for small transfers that are less than 
+fifo size?
+
+
+> -	ret = tty_insert_flip_string(tport, port->rx_fifo, bytes);
+> +	ret = tty_insert_flip_string(tport, port->rx_buf, bytes);
+>   	if (ret != bytes) {
+>   		dev_err(uport->dev, "%s:Unable to push data ret %d_bytes %d\n",
+>   				__func__, ret, bytes);
+> @@ -578,7 +577,70 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+>   	return !readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
+>   }
+>   
+> -static void qcom_geni_serial_start_tx(struct uart_port *uport)
+> +static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
 > +{
-> +	if (!port->dev)
-> +		return NULL;
+> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> +	bool done;
+
+-->
+> +	u32 status;
+...
 > +
-> +	return port->state->controller;
-> +}
+> +	status = readl(uport->membase + SE_GENI_STATUS);
+> +	if (!(status & M_GENI_CMD_ACTIVE))
+> +		return;
+<---
+
+this code snippet is repeating more than few times in the patches, looks 
+like it could be made to a inline helper.
+
+
 > +
-> +/*
-> + * Starts runtime PM for the serial controller device if not already started
-> + * by the serial port driver. Called from uart_add_one_port() with port_mutex
-> + * held.
-> + */
-> +static int serial_core_pm_runtime_start(struct uart_port *port)
-> +{
-> +	struct serial_controller *controller = to_controller(port);
-> +	struct device *dev = port->dev;
-> +	int ret = 0;
-> +
-> +	if (kref_get_unless_zero(&controller->ref))
-> +		return 0;
-> +
-> +	/* Init controller device on first reference */
-> +	kref_init(&controller->ref);
-> +
-> +	/* Always enable autosuspend and consider child devices for serdev */
-> +	pm_runtime_use_autosuspend(dev);
-> +	pm_suspend_ignore_children(dev, false);
-> +
-> +	/*
-> +	 * If the port driver did not enable runtime PM in probe, do it now.
-> +	 * Devices that did not enable runtime PM get set active so we can
-> +	 * properly handle the returned errors for runtime PM calls.
-> +	 */
-> +	if (!pm_runtime_enabled(dev)) {
-> +		pm_runtime_set_active(dev);
-> +		pm_runtime_enable(dev);
-> +	} else {
-> +		controller->implements_pm_runtime = 1;
+> +	if (port->rx_dma_addr) {
+> +		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
+> +				      port->tx_remaining);
+> +		port->tx_dma_addr = (dma_addr_t)NULL;
+> +		port->tx_remaining = 0;
 > +	}
 > +
-> +	/*
-> +	 * Keep the port device enabled unless autosuspend is supported.
-> +	 * Released on port shutdown.
-> +	 */
-> +	if (!controller->supports_autosuspend) {
-> +		ret = pm_runtime_resume_and_get(dev);
+> +	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
+> +	writel(m_irq_en, uport->membase + SE_GENI_M_IRQ_EN);
+> +	geni_se_cancel_m_cmd(&port->se);
+> +
+> +	done = qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
+> +					 S_CMD_CANCEL_EN, true);
+> +	if (!done) {
+> +		geni_se_abort_m_cmd(&port->se);
+> +		qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+> +					  M_CMD_ABORT_EN, true);
 
-Should this be done regardless of autosuspend if the port is console?
+return is not checked, there are few more such instances in the patch.
 
-There's a problem in the current place where this being called from 
-though, uart_console_enabled() doesn't return the correct value with at 
-least some devices this early:
+> +		writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+> +	}
+> +
+> +	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+> +}
+> +
+> +static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
+> +{
+> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> +	struct circ_buf *xmit = &uport->state->xmit;
+> +	unsigned int xmit_size;
+> +	int ret;
+> +
+> +	if (port->tx_dma_addr)
+> +		return;
+Is this condition actually possible?
 
-https://lore.kernel.org/linux-serial/AS8PR04MB84047F39CD10C00CEE29213F92219@AS8PR04MB8404.eurprd04.prod.outlook.com/
 
--- 
- i.
+> +
+> +	xmit_size = uart_circ_chars_pending(xmit);
+> +	if (xmit_size < WAKEUP_CHARS)
+> +		uart_write_wakeup(uport);
+> +
+> +	xmit_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+> +
+> +	qcom_geni_serial_setup_tx(uport, xmit_size);
+> +
+> +	ret = geni_se_tx_dma_prep(&port->se, &xmit->buf[xmit->tail],
+> +				  xmit_size, &port->tx_dma_addr);
+> +	if (ret) {
+> +		dev_err(uport->dev, "unable to start TX SE DMA: %d\n", ret);
+> +		qcom_geni_serial_stop_tx_dma(uport);
+> +		return;
+> +	}
+> +
+> +	port->tx_remaining = xmit_size;
+> +}
+> +
+
+...
