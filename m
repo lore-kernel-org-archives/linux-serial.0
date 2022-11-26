@@ -2,127 +2,283 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D421C4321E
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Nov 2022 15:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C6C1C4321E
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Nov 2022 17:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiKZPoL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 26 Nov 2022 10:44:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
+        id S229459AbiKZRFd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 26 Nov 2022 12:05:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiKZPoI (ORCPT
+        with ESMTP id S229753AbiKZRFc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 26 Nov 2022 10:44:08 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E0EF7A;
-        Sat, 26 Nov 2022 07:44:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669477447; x=1701013447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=TYZva1qhZaDDzx7ssD6565IlpCg24ayIFbcaC7tY8Tc=;
-  b=afaV5wieNPUjxu0caJC6JdakAXQOqaG+mJP11E9sBOfdvxW/FCdDmoSq
-   uszGkpjb5nf3De548PRwyr8tA0gjYkdzZijT5eCkTI9MaUL7wuDEK5FNd
-   DHxxEedinEuG50v1wryTy8tuS2GfxLpPE0gycyCpJAkwIvhrwC+gn8YZP
-   vqGEDAZKZz5uKM+4zWczaOB+RJUrHWVl1v9DiPG/G1MsaoSG/5NPhScuG
-   JcNKVf2MOUenZM/iTJdfierEPIRgcSWgA7CVeokYeMdRvPe3t3BpDN/xD
-   57LDEQ+dPBOukc9S9pF7aZDWoHCdzdL+VmK/32YN6VaBwDrOJGpoZ9vaZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10543"; a="376747252"
-X-IronPort-AV: E=Sophos;i="5.96,196,1665471600"; 
-   d="scan'208";a="376747252"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2022 07:44:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10543"; a="620587303"
-X-IronPort-AV: E=Sophos;i="5.96,196,1665471600"; 
-   d="scan'208";a="620587303"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP; 26 Nov 2022 07:43:54 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1oyxLL-000Bco-1n;
-        Sat, 26 Nov 2022 17:43:51 +0200
-Date:   Sat, 26 Nov 2022 17:43:51 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
-        alsa-devel@alsa-project.org, linux-staging@lists.linux.dev,
-        linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
-        Grant Likely <grant.likely@linaro.org>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-actions@lists.infradead.org, linux-gpio@vger.kernel.org,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
-        gregkh@linuxfoundation.org, linux-rpi-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Purism Kernel Team <kernel@puri.sm>,
-        patches@opensource.cirrus.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, linux-crypto@vger.kernel.org,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 000/606] i2c: Complete conversion to i2c_probe_new
-Message-ID: <Y4I0N3KpU/LSJYpd@smile.fi.intel.com>
-References: <20221118224540.619276-1-uwe@kleine-koenig.org>
- <20221122185818.3740200d@jic23-huawei>
- <20221122201654.5rdaisqho33buibj@pengutronix.de>
+        Sat, 26 Nov 2022 12:05:32 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF60517ABE
+        for <linux-serial@vger.kernel.org>; Sat, 26 Nov 2022 09:05:30 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id be26-20020a056602379a00b006dd80a0ba1cso3152555iob.11
+        for <linux-serial@vger.kernel.org>; Sat, 26 Nov 2022 09:05:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mRObnyWQ77FNc5nLTqMCtzarRGWF4vrwXp0aVC1ZsXM=;
+        b=SdFzxKFH7XXUxVqJQxzlsdFKCi1HUrZOk1chXriENCmfd7q1oyPmeEikdErDzEFlZB
+         Qb95UbKHndWaFbtLHbqYT9td+kezFvAYf7Ok9kAlx+o6MlsOBFdxUoMIT9NaEQPnE7RU
+         rmMbFK2lhTohrGvaxTe0yJyEYJedRYBckzBPFvb6UnipiOvpYO9SwG5fnzOhouAxf5nY
+         yXffoqtVoB/lN5/uMxoM9S4T29K8917KjwmQFl/vAtbCMD4OfJn8zsuWoVubuoMeNHsj
+         yppzhuJWyu+dx9/LmVtzyJWgT87RDsUcYM35YKA7ybFhbSDWBQBjQ2WXTPymzPBcyR2i
+         Q/8w==
+X-Gm-Message-State: ANoB5pm4QYuwvjdrP8gtfDkryE70scXMTfwyD8zM9eOJsdPJl0yuv6c7
+        t/ZyeEiOhHZ9wTPbnEct+823QtaAKC2N+4qbumsIOth5JWWC
+X-Google-Smtp-Source: AA0mqf4p0llG8pjr6D5/3po99s7mI54GOU1/c4eZvQCXXkL0eWSU6m9BKrvGZi2SOB9NITeI3//ouUY9tvjDxzeHpit6OI8ueeIQ
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20221122201654.5rdaisqho33buibj@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Received: by 2002:a02:cc6c:0:b0:374:4af4:8630 with SMTP id
+ j12-20020a02cc6c000000b003744af48630mr19301712jaq.89.1669482330036; Sat, 26
+ Nov 2022 09:05:30 -0800 (PST)
+Date:   Sat, 26 Nov 2022 09:05:30 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003d9e2405ee62a5a8@google.com>
+Subject: [syzbot] possible deadlock in tty_port_default_wakeup
+From:   syzbot <syzbot+2bd4a8abdc688d6abb1d@syzkaller.appspotmail.com>
+To:     andriy.shevchenko@linux.intel.com, etremblay@distech-controls.com,
+        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Nov 22, 2022 at 09:16:54PM +0100, Uwe Kleine-König wrote:
-> On Tue, Nov 22, 2022 at 06:58:18PM +0000, Jonathan Cameron wrote:
+Hello,
 
-> > Queued all of the below:
-> > with one tweaked as per your suggestion and the highlighted one dropped on basis
-> > I was already carrying the equivalent - as you pointed out.
-> > 
-> > I was already carrying the required dependency.
-> > 
-> > Includes the IIO ones in staging.
-> > 
+syzbot found the following issue on:
 
-> > p.s. I perhaps foolishly did this in a highly manual way so as to
-> > also pick up Andy's RB.  So might have dropped one...
-> 
-> You could have done:
-> 
-> 	H=$(git rev-parse @)
-> 	b4 am -P 49-190 20221118224540.619276-1-uwe@kleine-koenig.org
-> 	git am ...
-> 	git filter-branch -f --msg-filter "grep -v 'Signed-off-by: Jonathan'; echo 'Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>'; echo 'Signed-off-by: Jonathan Cameron <jic23@kernel.org>'" $H..
-> 
-> (untested, but you get the idea).
+HEAD commit:    eb7081409f94 Linux 6.1-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12340efd880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5db36e7087dcccae
+dashboard link: https://syzkaller.appspot.com/bug?extid=2bd4a8abdc688d6abb1d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-That's, for example (just last from the history as is), how I usually do it
-(tested):
+Unfortunately, I don't have any reproducer for this issue yet.
 
- git filter-branch --msg-filter 'sed -e "/Signed-off-by: Andy Shevchenko/ a Tested-by: Daniel Scally <dan.scally@ideasonboard.com>"' -f HEAD~4..HEAD
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2bd4a8abdc688d6abb1d@syzkaller.appspotmail.com
 
+======================================================
+WARNING: possible circular locking dependency detected
+6.1.0-rc6-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.1/4131 is trying to acquire lock:
+ffff88802c93a9d8 (&pool->lock){-.-.}-{2:2}, at: __queue_work+0x367/0x13b0 kernel/workqueue.c:1474
 
--- 
-With Best Regards,
-Andy Shevchenko
+but task is already holding lock:
+ffff88801b767528 (&tty->write_wait){-.-.}-{2:2}, at: __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:136
+
+which lock already depends on the new lock.
 
 
+the existing dependency chain (in reverse order) is:
+
+-> #4 (&tty->write_wait){-.-.}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x3d/0x60 kernel/locking/spinlock.c:162
+       __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:136
+       tty_port_default_wakeup+0x2a/0x40 drivers/tty/tty_port.c:71
+       serial8250_tx_chars+0x503/0xdb0 drivers/tty/serial/8250/8250_port.c:1859
+       serial8250_handle_irq.part.0+0x460/0x870 drivers/tty/serial/8250/8250_port.c:1949
+       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1922 [inline]
+       serial8250_default_handle_irq+0xb6/0x230 drivers/tty/serial/8250/8250_port.c:1969
+       serial8250_interrupt+0xfc/0x200 drivers/tty/serial/8250/8250_core.c:126
+       __handle_irq_event_percpu+0x264/0x970 kernel/irq/handle.c:158
+       handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
+       handle_irq_event+0xab/0x1e0 kernel/irq/handle.c:210
+       handle_edge_irq+0x263/0xd00 kernel/irq/chip.c:819
+       generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
+       handle_irq arch/x86/kernel/irq.c:231 [inline]
+       __common_interrupt+0xa1/0x210 arch/x86/kernel/irq.c:250
+       common_interrupt+0xa8/0xd0 arch/x86/kernel/irq.c:240
+       asm_common_interrupt+0x26/0x40 arch/x86/include/asm/idtentry.h:640
+       native_safe_halt arch/x86/include/asm/irqflags.h:51 [inline]
+       arch_safe_halt arch/x86/include/asm/irqflags.h:89 [inline]
+       default_idle+0xf/0x10 arch/x86/kernel/process.c:730
+       default_idle_call+0x84/0xc0 kernel/sched/idle.c:109
+       cpuidle_idle_call kernel/sched/idle.c:191 [inline]
+       do_idle+0x410/0x590 kernel/sched/idle.c:303
+       cpu_startup_entry+0x18/0x20 kernel/sched/idle.c:400
+       start_secondary+0x256/0x300 arch/x86/kernel/smpboot.c:262
+       secondary_startup_64_no_verify+0xce/0xdb
+
+-> #3 (&port_lock_key){-.-.}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x3d/0x60 kernel/locking/spinlock.c:162
+       serial8250_console_write+0x4ba/0x1010 drivers/tty/serial/8250/8250_port.c:3395
+       call_console_driver kernel/printk/printk.c:1942 [inline]
+       console_emit_next_record.constprop.0+0x3de/0x840 kernel/printk/printk.c:2731
+       console_flush_all kernel/printk/printk.c:2793 [inline]
+       console_unlock+0x3c2/0x600 kernel/printk/printk.c:2860
+       vprintk_emit+0x1bd/0x600 kernel/printk/printk.c:2268
+       vprintk+0x84/0xa0 kernel/printk/printk_safe.c:50
+       _printk+0xbe/0xf1 kernel/printk/printk.c:2289
+       register_console kernel/printk/printk.c:3208 [inline]
+       register_console+0x45e/0x820 kernel/printk/printk.c:3103
+       univ8250_console_init+0x3e/0x4a drivers/tty/serial/8250/8250_core.c:687
+       console_init+0x3bb/0x582 kernel/printk/printk.c:3298
+       start_kernel+0x303/0x498 init/main.c:1073
+       secondary_startup_64_no_verify+0xce/0xdb
+
+-> #2 (console_owner){..-.}-{0:0}:
+       console_lock_spinning_enable kernel/printk/printk.c:1805 [inline]
+       console_emit_next_record.constprop.0+0x2dd/0x840 kernel/printk/printk.c:2728
+       console_flush_all kernel/printk/printk.c:2793 [inline]
+       console_unlock+0x3c2/0x600 kernel/printk/printk.c:2860
+       vprintk_emit+0x1bd/0x600 kernel/printk/printk.c:2268
+       vprintk+0x84/0xa0 kernel/printk/printk_safe.c:50
+       _printk+0xbe/0xf1 kernel/printk/printk.c:2289
+       build_zonelists.cold+0xe5/0x11f mm/page_alloc.c:6503
+       __build_all_zonelists+0x122/0x180 mm/page_alloc.c:6616
+       build_all_zonelists_init+0x35/0x12f mm/page_alloc.c:6641
+       build_all_zonelists+0x123/0x140 mm/page_alloc.c:6674
+       start_kernel+0xbd/0x498 init/main.c:967
+       secondary_startup_64_no_verify+0xce/0xdb
+
+-> #1 (zonelist_update_seq.seqcount){...-}-{0:0}:
+       seqcount_lockdep_reader_access include/linux/seqlock.h:102 [inline]
+       read_seqbegin include/linux/seqlock.h:836 [inline]
+       zonelist_iter_begin mm/page_alloc.c:4727 [inline]
+       __alloc_pages_slowpath.constprop.0+0x1ae/0x23d0 mm/page_alloc.c:5049
+       __alloc_pages+0x4aa/0x5b0 mm/page_alloc.c:5568
+       __alloc_pages_node include/linux/gfp.h:223 [inline]
+       kmem_getpages mm/slab.c:1363 [inline]
+       cache_grow_begin+0x75/0x360 mm/slab.c:2570
+       cache_alloc_refill+0x27f/0x380 mm/slab.c:2943
+       ____cache_alloc mm/slab.c:3019 [inline]
+       ____cache_alloc mm/slab.c:3002 [inline]
+       __do_cache_alloc mm/slab.c:3202 [inline]
+       slab_alloc_node mm/slab.c:3250 [inline]
+       slab_alloc mm/slab.c:3265 [inline]
+       __kmem_cache_alloc_lru mm/slab.c:3442 [inline]
+       kmem_cache_alloc+0x364/0x460 mm/slab.c:3461
+       kmem_cache_zalloc include/linux/slab.h:679 [inline]
+       fill_pool+0x264/0x5c0 lib/debugobjects.c:168
+       __debug_object_init+0x7a/0xd10 lib/debugobjects.c:562
+       debug_object_init lib/debugobjects.c:617 [inline]
+       debug_object_activate+0x330/0x3e0 lib/debugobjects.c:703
+       debug_work_activate kernel/workqueue.c:510 [inline]
+       __queue_work+0x682/0x13b0 kernel/workqueue.c:1516
+       queue_work_on+0xf2/0x110 kernel/workqueue.c:1545
+       queue_work include/linux/workqueue.h:503 [inline]
+       schedule_work include/linux/workqueue.h:564 [inline]
+       wireless_send_event+0x6de/0xc40 net/wireless/wext-core.c:635
+       __cfg80211_ibss_joined+0x41d/0x540 net/wireless/ibss.c:56
+       cfg80211_process_wdev_events+0x391/0x5e0 net/wireless/util.c:986
+       cfg80211_process_rdev_events+0x9f/0x130 net/wireless/util.c:1012
+       cfg80211_event_work+0x2b/0x40 net/wireless/core.c:328
+       process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
+       worker_thread+0x669/0x1090 kernel/workqueue.c:2436
+       kthread+0x2e8/0x3a0 kernel/kthread.c:376
+       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+
+-> #0 (&pool->lock){-.-.}-{2:2}:
+       check_prev_add kernel/locking/lockdep.c:3097 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+       validate_chain kernel/locking/lockdep.c:3831 [inline]
+       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5055
+       lock_acquire kernel/locking/lockdep.c:5668 [inline]
+       lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
+       __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
+       _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:154
+       __queue_work+0x367/0x13b0 kernel/workqueue.c:1474
+       queue_work_on+0xf2/0x110 kernel/workqueue.c:1545
+       queue_work include/linux/workqueue.h:503 [inline]
+       schedule_work include/linux/workqueue.h:564 [inline]
+       p9_pollwake+0xc1/0x1d0 net/9p/trans_fd.c:538
+       __wake_up_common+0x147/0x650 kernel/sched/wait.c:107
+       __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:137
+       tty_ldisc_lock+0x59/0xb0 drivers/tty/tty_ldisc.c:312
+       tty_set_ldisc+0x92/0x680 drivers/tty/tty_ldisc.c:530
+       tiocsetd drivers/tty/tty_io.c:2426 [inline]
+       tty_ioctl+0x655/0x1660 drivers/tty/tty_io.c:2707
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+other info that might help us debug this:
+
+Chain exists of:
+  &pool->lock --> &port_lock_key --> &tty->write_wait
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&tty->write_wait);
+                               lock(&port_lock_key);
+                               lock(&tty->write_wait);
+  lock(&pool->lock);
+
+ *** DEADLOCK ***
+
+3 locks held by syz-executor.1/4131:
+ #0: ffff88801b7671c0 (&tty->legacy_mutex){+.+.}-{3:3}, at: tty_set_ldisc+0x85/0x680 drivers/tty/tty_ldisc.c:529
+ #1: ffff88801b767528 (&tty->write_wait){-.-.}-{2:2}, at: __wake_up_common_lock+0xb4/0x130 kernel/sched/wait.c:136
+ #2: ffffffff8c58ce40 (rcu_read_lock){....}-{1:2}, at: __queue_work+0xca/0x13b0 kernel/workqueue.c:1437
+
+stack backtrace:
+CPU: 3 PID: 4131 Comm: syz-executor.1 Not tainted 6.1.0-rc6-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2177
+ check_prev_add kernel/locking/lockdep.c:3097 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3216 [inline]
+ validate_chain kernel/locking/lockdep.c:3831 [inline]
+ __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5055
+ lock_acquire kernel/locking/lockdep.c:5668 [inline]
+ lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
+ __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
+ _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:154
+ __queue_work+0x367/0x13b0 kernel/workqueue.c:1474
+ queue_work_on+0xf2/0x110 kernel/workqueue.c:1545
+ queue_work include/linux/workqueue.h:503 [inline]
+ schedule_work include/linux/workqueue.h:564 [inline]
+ p9_pollwake+0xc1/0x1d0 net/9p/trans_fd.c:538
+ __wake_up_common+0x147/0x650 kernel/sched/wait.c:107
+ __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:137
+ tty_ldisc_lock+0x59/0xb0 drivers/tty/tty_ldisc.c:312
+ tty_set_ldisc+0x92/0x680 drivers/tty/tty_ldisc.c:530
+ tiocsetd drivers/tty/tty_io.c:2426 [inline]
+ tty_ioctl+0x655/0x1660 drivers/tty/tty_io.c:2707
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7eff5728c189
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007eff58003168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007eff573ac050 RCX: 00007eff5728c189
+RDX: 0000000020000000 RSI: 0000000000005423 RDI: 0000000000000005
+RBP: 00007eff572e7b01 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007fff20cbb7cf R14: 00007eff58003300 R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
