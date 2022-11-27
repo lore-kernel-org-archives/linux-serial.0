@@ -2,111 +2,167 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D0DC47088
-	for <linux-serial@archiver.kernel.org>; Sun, 27 Nov 2022 16:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EAAC46467
+	for <linux-serial@archiver.kernel.org>; Sun, 27 Nov 2022 17:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbiK0QZg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 27 Nov 2022 11:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
+        id S229450AbiK0RVl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 27 Nov 2022 12:21:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiK0QZf (ORCPT
+        with ESMTP id S229436AbiK0RVl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 27 Nov 2022 11:25:35 -0500
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84316D97;
-        Sun, 27 Nov 2022 08:25:34 -0800 (PST)
-Received: by mail-io1-f49.google.com with SMTP id z3so6097563iof.3;
-        Sun, 27 Nov 2022 08:25:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=4iphqB3V3njdrZMtNw34CrJe3N2iDEl+tDNQa/YZi+c=;
-        b=vh5zocrIlnHWH7qHliFpg2Rl3wQB9bJPqYzFy6vk271wDV141pUVQlloxid1X9qP+4
-         u+PVvH7EwnSoQtNfgUHqR19mYnxQnoXy1aXO1TD6H8LUka+gXI90mW4Uj3Dktz0rDUFK
-         mkj2DkCuUQfQBpK3HXyLAoJ0oNNhYdSbPZo65TSWzkH2fiQTWIMM/hGfoOmCkspoLF9D
-         leWaV+/b1OjYPQv6vNFErEjwdJ5nRpHik2ui82jcL3Gjq3ecoksC9hoVpfuAUu2P8zFg
-         QSz+sfijW6TaA4xb3g88/sq/5z/+SCP+Yko7KMqmvSfttt/f4M39ZZBDbNrYo7SN4Ryh
-         024g==
-X-Gm-Message-State: ANoB5pneOA1ADNNDlnbqKqNVERoQoiVJwplzK522JpE6zFimW+Le8xXQ
-        DXVukB9bYiKaxRiIAAYT2g==
-X-Google-Smtp-Source: AA0mqf5lRxAYsVtOblQJx782nbVWv9R6LXYMbMBaqudpFkDUV0f2N191eAUEFpzjYklx5TzPd3089g==
-X-Received: by 2002:a05:6638:4709:b0:389:e195:e8fb with SMTP id cs9-20020a056638470900b00389e195e8fbmr214618jab.254.1669566333650;
-        Sun, 27 Nov 2022 08:25:33 -0800 (PST)
-Received: from robh_at_kernel.org ([2605:ef80:80c3:406b:3c03:158a:46b4:95c8])
-        by smtp.gmail.com with ESMTPSA id z15-20020a056e02088f00b003029afc3672sm3083058ils.36.2022.11.27.08.25.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Nov 2022 08:25:32 -0800 (PST)
-Received: (nullmailer pid 7242 invoked by uid 1000);
-        Sun, 27 Nov 2022 16:25:30 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
+        Sun, 27 Nov 2022 12:21:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A197E092;
+        Sun, 27 Nov 2022 09:21:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E754260DBB;
+        Sun, 27 Nov 2022 17:21:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92350C433D6;
+        Sun, 27 Nov 2022 17:21:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1669569699;
+        bh=RbCdGgC86wp3IrVQB8kh4eO/EyjCHT42dZFvCZpk/+E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bBMFXK1XCqZSlP6OynF8hySHk5Qk7DpLm+s66cDs+n4ztSQKlOSuP1BgvhyizhhMk
+         JGC9AKOhXRbqrdGsQWiK2dDLg4SU3P9MvRuTFRVElW8HdVVKN5twCpIr/iycITj2ER
+         ZI+VUPNqz5Q1eiwCwcwiinxrt4PwdX0h4ZbnQzbgbMCGWxtadp7VEAhoS8ve+1z1Cg
+         /2xlHZQKdpTG2v7bSNbJKK86lyul1owd7SBJRUB8nOMWcBGcVywY4i2cs3juL/41Ps
+         vrkfwjEx++VHZlzkPzt9kHvqVTZPVq7PsxxmNlZbw/eGxlT38FbA6t05o6Ns+97tLR
+         7BJ9XhP4BnvAg==
+Date:   Sun, 27 Nov 2022 17:21:34 +0000
+From:   Conor Dooley <conor@kernel.org>
 To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?q?=2C?= Ilpo =?utf-8?q?J=C3=A4rvinen?= 
-        <ilpo.jarvinen@linux.intel.com>, Albert Ou <aou@eecs.berkeley.edu>,
-        devicetree@vger.kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-riscv@lists.infradead.org,
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Conor Dooley <conor@kernel.org>
-In-Reply-To: <20221127132448.4034-6-jszhang@kernel.org>
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Icenowy Zheng <uwu@icenowy.me>
+Subject: Re: [PATCH v2 6/9] riscv: dts: bouffalolab: add the bl808 SoC base
+ device tree
+Message-ID: <Y4OcngDlw/4Szt7g@spud>
 References: <20221127132448.4034-1-jszhang@kernel.org>
- <20221127132448.4034-6-jszhang@kernel.org>
-Message-Id: <166956617880.3839.1241284612339331336.robh@kernel.org>
-Subject: Re: [PATCH v2 5/9] dt-bindings: riscv: Add bouffalolab bl808 board
- compatibles
-Date:   Sun, 27 Nov 2022 10:25:30 -0600
+ <20221127132448.4034-7-jszhang@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221127132448.4034-7-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
++CC Icenowy
 
-On Sun, 27 Nov 2022 21:24:44 +0800, Jisheng Zhang wrote:
-> Several SoMs and boards are available that feature the Bouffalolab
-> bl808 SoC. Document the compatible strings.
+On Sun, Nov 27, 2022 at 09:24:45PM +0800, Jisheng Zhang wrote:
+> Add a baisc dtsi for the bouffalolab bl808 SoC.
 > 
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > ---
->  .../bindings/riscv/bouffalolab.yaml           | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/riscv/bouffalolab.yaml
+>  arch/riscv/boot/dts/bouffalolab/bl808.dtsi | 74 ++++++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
 > 
+> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808.dtsi b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
+> new file mode 100644
+> index 000000000000..f4b170ccc32e
+> --- /dev/null
+> +++ b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
+> @@ -0,0 +1,74 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
+> +/*
+> + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> + */
+> +
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +/ {
+> +	compatible = "bouffalolab,bl808";
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +
+> +	cpus {
+> +		timebase-frequency = <1000000>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		cpu0: cpu@0 {
+> +			compatible = "thead,c906", "riscv";
+> +			device_type = "cpu";
+> +			reg = <0>;
+> +			d-cache-block-size = <64>;
+> +			d-cache-sets = <256>;
+> +			d-cache-size = <32768>;
+> +			i-cache-block-size = <64>;
+> +			i-cache-sets = <128>;
+> +			i-cache-size = <32768>;
+> +			mmu-type = "riscv,sv39";
+> +			riscv,isa = "rv64imafdc";
+> +
+> +			cpu0_intc: interrupt-controller {
+> +				compatible = "riscv,cpu-intc";
+> +				interrupt-controller;
+> +				#address-cells = <0>;
+> +				#interrupt-cells = <1>;
+> +			};
+> +		};
+> +	};
+> +
+> +	xtal: xtal-clk {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		/* This value must be overridden by the board */
+> +		clock-frequency = <0>;
+> +	};
+> +
+> +	soc {
+> +		compatible = "simple-bus";
+> +		ranges;
+> +		interrupt-parent = <&plic>;
+> +		dma-noncoherent;
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +
+> +		uart0: serial@30002000 {
+> +			compatible = "bouffalolab,bl808-uart";
+> +			reg = <0x30002000 0x1000>;
+> +			interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
+> +			clocks = <&xtal>;
+> +			status = "disabled";
+> +		};
+> +
+> +		plic: interrupt-controller@e0000000 {
+> +			compatible = "thead,c900-plic";
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Hmm, @Icenowy - should this use your new open-c906-plic compatible from
+20221121041757.418645-4-uwu@icenowy.me ?
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/riscv/bouffalolab.yaml:20:36: [error] syntax error: mapping values are not allowed here (syntax)
+As is, dtbs_check gives a:
+bl808-sipeed-m1s-dock.dtb: interrupt-controller@e0000000: compatible: 'oneOf' conditional failed, one must be fixed:
+        ['thead,c900-plic'] is too short
 
-dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/riscv/bouffalolab.example.dts'
-Documentation/devicetree/bindings/riscv/bouffalolab.yaml:20:36: mapping values are not allowed in this context
-make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/riscv/bouffalolab.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/riscv/bouffalolab.yaml:20:36: mapping values are not allowed in this context
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/riscv/bouffalolab.yaml: ignoring, error parsing file
-make: *** [Makefile:1492: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20221127132448.4034-6-jszhang@kernel.org
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command.
-
+> +			reg = <0xe0000000 0x4000000>;
+> +			interrupts-extended = <&cpu0_intc 0xffffffff>,
+> +					      <&cpu0_intc 9>;
+> +			interrupt-controller;
+> +			#address-cells = <0>;
+> +			#interrupt-cells = <2>;
+> +			riscv,ndev = <64>;
+> +		};
+> +	};
+> +};
+> -- 
+> 2.38.1
+> 
+> 
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
