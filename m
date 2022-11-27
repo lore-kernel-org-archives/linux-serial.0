@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E4BC4332F
-	for <linux-serial@archiver.kernel.org>; Sun, 27 Nov 2022 13:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0917C4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 27 Nov 2022 13:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiK0Nfu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 27 Nov 2022 08:35:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
+        id S229756AbiK0NgE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 27 Nov 2022 08:36:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiK0Nfc (ORCPT
+        with ESMTP id S229838AbiK0Nfd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 27 Nov 2022 08:35:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5741311153;
-        Sun, 27 Nov 2022 05:35:07 -0800 (PST)
+        Sun, 27 Nov 2022 08:35:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2671114E;
+        Sun, 27 Nov 2022 05:35:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 115AAB80AF9;
-        Sun, 27 Nov 2022 13:35:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C76EC4314A;
-        Sun, 27 Nov 2022 13:35:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AED6B60DD8;
+        Sun, 27 Nov 2022 13:35:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E54C43149;
+        Sun, 27 Nov 2022 13:35:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669556104;
-        bh=g4LJwNon3ikj0mDiKpgNdJBJC8dWgZ0tmK3s2vZCTD8=;
+        s=k20201202; t=1669556108;
+        bh=WY2HK68xmDUjRE/FprHRGRMX/MQ7yprY9uH/Mc9QD0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jpO2M682vQ59NWqkX6C/C8bebtVTVE9tMN7m3DVqfwTJEMUHe76Q450KRtW9+EEDP
-         kp+JkF6gVBYtcBV/2OGtkNDp8Qd6fCNAdzzWbNPMreWCx7VebuoKTX2ytVyOh/M3JZ
-         w7brGzjj12WY1QBlV0HgY6GY129KZMbRbxmDT90I8SMB93tsVMarDW8J38Uoj2w19G
-         6OqlrcgPf8gzKQsNMrh3wZdTSfoYDPU1JxX6JmtnS1A54XxzPKPYKPG9UGm8K+TomB
-         29umEFMPipo6Tk89TitsHdQ6L8uQKxcx2makqRG93Ug4Y2vig1z5wjwYWFPv0fdMp5
-         axkzfNI+P6CGQ==
+        b=IL9tRkrEJkfPG91CZkJ7uLIYnU9L/HjkrxQLfTceisGhzG2SDOx2xfcLYjD2YUNTO
+         Rf2jbKSbxwmQJ5oCMQeorhqlsxxownbgLSgTmxwsAgXg2fKsUx7YEQJYIyulRTnEei
+         xBT3zHMsHUnl2AiCboocns2U16xRrj0lnmpI/fXy3AfvUP2Acg/k4iDQ/yoTOMHIiy
+         kRSh7qMSUWww0SLigqFCVDjcb377PNCUbh1ugkjzMv6TFHNoM6JwjbEgPxyRzctwQZ
+         gcMIFGpHudSy9JsApjgUxaIF/ieZHuAGFpVIcz0QKDA4ApnXwWbZpgt7FSsfWlBQ4U
+         0yd1H7v1+pu5A==
 From:   Jisheng Zhang <jszhang@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -43,9 +43,9 @@ To:     Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v2 8/9] MAINTAINERS: riscv: add entry for Bouffalolab SoC
-Date:   Sun, 27 Nov 2022 21:24:47 +0800
-Message-Id: <20221127132448.4034-9-jszhang@kernel.org>
+Subject: [PATCH v2 9/9] riscv: defconfig: enable BOUFFALOLAB SoC
+Date:   Sun, 27 Nov 2022 21:24:48 +0800
+Message-Id: <20221127132448.4034-10-jszhang@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221127132448.4034-1-jszhang@kernel.org>
 References: <20221127132448.4034-1-jszhang@kernel.org>
@@ -55,33 +55,26 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add Jisheng Zhang as Bouffalolab SoC maintainer.
+Enable BOUFFALOLAB soc config in defconfig to allow the default
+upstream kernel to boot on Sipeed M1s Dock board.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/riscv/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 00ff4a2949b8..a6b04249853c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17729,6 +17729,15 @@ F:	arch/riscv/
- N:	riscv
- K:	riscv
- 
-+RISC-V BOUFFALOLAB SOC SUPPORT
-+M:	Jisheng Zhang <jszhang@kernel.org>
-+L:	linux-riscv@lists.infradead.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/riscv/bouffalolab.yaml
-+F:	Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
-+F:	arch/riscv/boot/dts/bouffalolab/
-+F:	drivers/tty/serial/bflb_uart.c
-+
- RISC-V MICROCHIP FPGA SUPPORT
- M:	Conor Dooley <conor.dooley@microchip.com>
- M:	Daire McNamara <daire.mcnamara@microchip.com>
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index 05fd5fcf24f9..27b3d59c7d90 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -25,6 +25,7 @@ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_EXPERT=y
+ # CONFIG_SYSFS_SYSCALL is not set
+ CONFIG_PROFILING=y
++CONFIG_SOC_BOUFFALOLAB=y
+ CONFIG_SOC_MICROCHIP_POLARFIRE=y
+ CONFIG_SOC_SIFIVE=y
+ CONFIG_SOC_STARFIVE=y
 -- 
 2.38.1
 
