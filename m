@@ -2,163 +2,213 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E95C43217
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Nov 2022 09:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A27D5C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Nov 2022 11:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiK1JxP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Nov 2022 04:53:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
+        id S230477AbiK1LDi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Nov 2022 06:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiK1JxP (ORCPT
+        with ESMTP id S230164AbiK1LDi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Nov 2022 04:53:15 -0500
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78488BAB;
-        Mon, 28 Nov 2022 01:53:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1669629178; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=TkDhaTaha1YZwnDpZvKRDpSR4of7zurqL6+DIukCVgEplG/pEoprJKr8lvnxIOCsBp5ILrMbymqTSrm40SgUqaqm3s0c4ydSwiFOGwW55CsoiLaDs8TlI7Nk0NIlln4A8SccnUZXaKhwESvOvTgaJwUSrRkZLA4u6FYs4VnYaDs=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1669629178; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=RQxtNK72FsBLfreseFcEcIn2qrRvqhfKN7hWEpKOpOI=; 
-        b=mJaFO6WquKGfm8d7FkhvAZjjt3hV/HohZBe3MXWxzbgHk5sNk28+5iUQoeITcEMem9iA2nRcE3XE0CTcQ5f1S9TL8F9j/QmaP9PWFaxDZ5wRB7enY09O0VofK2wiRRLiORX2OKRacBQyiAYEeqFlG6Y7e36+jqDrBoJX3KmZzvg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1669629178;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:MIME-Version:Message-Id:Reply-To;
-        bh=RQxtNK72FsBLfreseFcEcIn2qrRvqhfKN7hWEpKOpOI=;
-        b=Q9zo4BOrqdTTcr+6bPVKXuq+Uo+Wv2jBccz2t0utu5ELYv5zXPk4g1pBueD9ckzj
-        L21fTMw/y2Z5xFm19wcNI7rbSu0CLv168ZbPfshqjQ0+oM/6EUd4LBLoEphW/Gud9SW
-        WTS6XTZz3l9+IrJ3NhlD73b6eqN0XgiDUhNqhiLk=
-Received: from [192.168.1.191] (120.85.97.163 [120.85.97.163]) by mx.zohomail.com
-        with SMTPS id 1669629176940825.6418046564406; Mon, 28 Nov 2022 01:52:56 -0800 (PST)
-Message-ID: <3ad94a3fc3558da2da80d238d26f29e2c42db5c1.camel@icenowy.me>
-Subject: Re: [PATCH v2 6/9] riscv: dts: bouffalolab: add the bl808 SoC base
- device tree
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Conor Dooley <conor@kernel.org>, Jisheng Zhang <jszhang@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
+        Mon, 28 Nov 2022 06:03:38 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7394D1900D
+        for <linux-serial@vger.kernel.org>; Mon, 28 Nov 2022 03:03:36 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id j196so12816508ybj.2
+        for <linux-serial@vger.kernel.org>; Mon, 28 Nov 2022 03:03:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=V5DiE42j4ubNltbzQXZx/+NLMNVDEzOQxUmz6VQnWto=;
+        b=D5NNHT4MhK4wc86HfMm5GxaECZHfNSKuBKcMMet2X9Y+fRHZ+R1W2GHvU0KYVO3b2W
+         DTsj2yRiaJql2ktYDWE/E2pthWdMlABuBlRpsZAyxZ87K28c90+MjABfCW6hAGelY1ar
+         UGpdT4Uh+Sz2fC9QdhsVwSb9dIVwderMPUUVUfwNnNAC69+jdjllEM39SQacyqG81Gg0
+         0Dh6qiwrPoDKKYEXQTLml2sOTRMimetlQfwO5JftnL0F4kp5ae3NE8aZZCAEvNO7VrcO
+         B+ncMWHyvz1pyAQR/Q0lrxbSnEYACaqft2J1r66Mikwfmd7dqUWRMInYv9Tbw7SDd0H5
+         1lig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=V5DiE42j4ubNltbzQXZx/+NLMNVDEzOQxUmz6VQnWto=;
+        b=ZiaHPxUGCsd3+KTHmut3nyFndImAOh4jGDw8yrh0OoXCk4EFlNtiitF24N/AwpTWIO
+         6Fz63P7ND5yNENp78wRalBcBm47lLK9y4450AqgMyZhrhW4VbaGGRM3Crv6Hf4g9s6OO
+         zQOq6fU876PnUliWFCUfkCh7ObxdKe4OEWfvezSKfE5V4M618wHXryLD9bDzSTOTZGqf
+         ks3xNARKEtRH2aJ/0VJCnmx5yn4YWqW8RI99rGB7abcEjxH511OSuc8E9Govxb0GKoJC
+         f/4ig5bW3mQ6tmMlb4pivrHHxWN0AXAU0oVTZgf2ozO0DoeVSL4ApLGIHX88YvoRC0th
+         Sbwg==
+X-Gm-Message-State: ANoB5pkfWEUcRsrkTUD+BDz7UVFKgwj9/UEB5C7O6YDvco9coUAOp2Nl
+        GG+zwLmbFzw+NU/Bg9eirwbzt5ho1d6j5agUj1C66w==
+X-Google-Smtp-Source: AA0mqf694kce0vLz91QS01OVFP9K/SDuWK+OmZ9OuEbaXo5uULcHI9tfdh5WllBxb0ilG+y6HbtFNHjijrPWL/Kbbio=
+X-Received: by 2002:a05:6902:534:b0:6d5:4f72:e6c1 with SMTP id
+ y20-20020a056902053400b006d54f72e6c1mr30176111ybs.122.1669633415572; Mon, 28
+ Nov 2022 03:03:35 -0800 (PST)
+MIME-Version: 1.0
+References: <20221123110759.1836666-1-brgl@bgdev.pl> <20221123110759.1836666-14-brgl@bgdev.pl>
+ <426d1f07-0a5d-b740-dc93-77c5a8bc6d23@linaro.org>
+In-Reply-To: <426d1f07-0a5d-b740-dc93-77c5a8bc6d23@linaro.org>
+From:   Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Date:   Mon, 28 Nov 2022 12:03:24 +0100
+Message-ID: <CACMJSet4WZj3qNCDGUkcg6NPS0aO10L5jq=rETvLFTg78iULtA@mail.gmail.com>
+Subject: Re: [PATCH v3 13/13] tty: serial: qcom-geni-serial: add support for
+ serial engine DMA
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Date:   Mon, 28 Nov 2022 17:52:51 +0800
-In-Reply-To: <Y4OcngDlw/4Szt7g@spud>
-References: <20221127132448.4034-1-jszhang@kernel.org>
-         <20221127132448.4034-7-jszhang@kernel.org> <Y4OcngDlw/4Szt7g@spud>
-Organization: Anthon Open-Source Community
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.4 
-MIME-Version: 1.0
-X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-5ZyoIDIwMjItMTEtMjfmmJ/mnJ/ml6XnmoQgMTc6MjEgKzAwMDDvvIxDb25vciBEb29sZXnlhpnp
-gZPvvJoKPiArQ0MgSWNlbm93eQo+IAo+IE9uIFN1biwgTm92IDI3LCAyMDIyIGF0IDA5OjI0OjQ1
-UE0gKzA4MDAsIEppc2hlbmcgWmhhbmcgd3JvdGU6Cj4gPiBBZGQgYSBiYWlzYyBkdHNpIGZvciB0
-aGUgYm91ZmZhbG9sYWIgYmw4MDggU29DLgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBKaXNoZW5n
-IFpoYW5nIDxqc3poYW5nQGtlcm5lbC5vcmc+Cj4gPiAtLS0KPiA+IMKgYXJjaC9yaXNjdi9ib290
-L2R0cy9ib3VmZmFsb2xhYi9ibDgwOC5kdHNpIHwgNzQKPiA+ICsrKysrKysrKysrKysrKysrKysr
-KysKPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDc0IGluc2VydGlvbnMoKykKPiA+IMKgY3JlYXRlIG1v
-ZGUgMTAwNjQ0IGFyY2gvcmlzY3YvYm9vdC9kdHMvYm91ZmZhbG9sYWIvYmw4MDguZHRzaQo+ID4g
-Cj4gPiBkaWZmIC0tZ2l0IGEvYXJjaC9yaXNjdi9ib290L2R0cy9ib3VmZmFsb2xhYi9ibDgwOC5k
-dHNpCj4gPiBiL2FyY2gvcmlzY3YvYm9vdC9kdHMvYm91ZmZhbG9sYWIvYmw4MDguZHRzaQo+ID4g
-bmV3IGZpbGUgbW9kZSAxMDA2NDQKPiA+IGluZGV4IDAwMDAwMDAwMDAwMC4uZjRiMTcwY2NjMzJl
-Cj4gPiAtLS0gL2Rldi9udWxsCj4gPiArKysgYi9hcmNoL3Jpc2N2L2Jvb3QvZHRzL2JvdWZmYWxv
-bGFiL2JsODA4LmR0c2kKPiA+IEBAIC0wLDAgKzEsNzQgQEAKPiA+ICsvLyBTUERYLUxpY2Vuc2Ut
-SWRlbnRpZmllcjogKEdQTC0yLjArIG9yIE1JVCkKPiA+ICsvKgo+ID4gKyAqIENvcHlyaWdodCAo
-QykgMjAyMiBKaXNoZW5nIFpoYW5nIDxqc3poYW5nQGtlcm5lbC5vcmc+Cj4gPiArICovCj4gPiAr
-Cj4gPiArI2luY2x1ZGUgPGR0LWJpbmRpbmdzL2ludGVycnVwdC1jb250cm9sbGVyL2lycS5oPgo+
-ID4gKwo+ID4gKy8gewo+ID4gK8KgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJib3VmZmFsb2xh
-YixibDgwOCI7Cj4gPiArwqDCoMKgwqDCoMKgwqAjYWRkcmVzcy1jZWxscyA9IDwxPjsKPiA+ICvC
-oMKgwqDCoMKgwqDCoCNzaXplLWNlbGxzID0gPDE+Owo+ID4gKwo+ID4gK8KgwqDCoMKgwqDCoMKg
-Y3B1cyB7Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgdGltZWJhc2UtZnJlcXVl
-bmN5ID0gPDEwMDAwMDA+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNhZGRy
-ZXNzLWNlbGxzID0gPDE+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNzaXpl
-LWNlbGxzID0gPDA+Owo+ID4gKwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNw
-dTA6IGNwdUAwIHsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgY29tcGF0aWJsZSA9ICJ0aGVhZCxjOTA2IiwgInJpc2N2IjsKPiA+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZGV2aWNlX3R5cGUgPSAiY3B1IjsK
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmVnID0g
-PDA+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBk
-LWNhY2hlLWJsb2NrLXNpemUgPSA8NjQ+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqBkLWNhY2hlLXNldHMgPSA8MjU2PjsKPiA+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZC1jYWNoZS1zaXplID0gPDMyNzY4
-PjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaS1j
-YWNoZS1ibG9jay1zaXplID0gPDY0PjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgaS1jYWNoZS1zZXRzID0gPDEyOD47Cj4gPiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGktY2FjaGUtc2l6ZSA9IDwzMjc2OD47
-Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG1tdS10
-eXBlID0gInJpc2N2LHN2MzkiOwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqByaXNjdixpc2EgPSAicnY2NGltYWZkYyI7Cj4gPiArCj4gPiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNwdTBfaW50YzogaW50ZXJy
-dXB0LWNvbnRyb2xsZXIgewo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJyaXNjdixjcHUtaW50YyI7
-Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqBpbnRlcnJ1cHQtY29udHJvbGxlcjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNhZGRyZXNzLWNlbGxz
-ID0gPDA+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgI2ludGVycnVwdC1jZWxscyA9IDwxPjsKPiA+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfTsKPiA+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqB9Owo+ID4gK8KgwqDCoMKgwqDCoMKgfTsKPiA+ICsKPiA+ICvCoMKg
-wqDCoMKgwqDCoHh0YWw6IHh0YWwtY2xrIHsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqBjb21wYXRpYmxlID0gImZpeGVkLWNsb2NrIjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAjY2xvY2stY2VsbHMgPSA8MD47Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgLyogVGhpcyB2YWx1ZSBtdXN0IGJlIG92ZXJyaWRkZW4gYnkgdGhlIGJvYXJkICov
-Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY2xvY2stZnJlcXVlbmN5ID0gPDA+
-Owo+ID4gK8KgwqDCoMKgwqDCoMKgfTsKPiA+ICsKPiA+ICvCoMKgwqDCoMKgwqDCoHNvYyB7Cj4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJzaW1wbGUtYnVz
-IjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByYW5nZXM7Cj4gPiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZXJydXB0LXBhcmVudCA9IDwmcGxpYz47Cj4gPiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZG1hLW5vbmNvaGVyZW50Owo+ID4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNhZGRyZXNzLWNlbGxzID0gPDE+Owo+ID4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNzaXplLWNlbGxzID0gPDE+Owo+ID4gKwo+ID4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHVhcnQwOiBzZXJpYWxAMzAwMDIwMDAgewo+ID4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjb21wYXRpYmxl
-ID0gImJvdWZmYWxvbGFiLGJsODA4LXVhcnQiOwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZWcgPSA8MHgzMDAwMjAwMCAweDEwMDA+Owo+ID4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpbnRlcnJ1cHRzID0g
-PDIwIElSUV9UWVBFX0xFVkVMX0hJR0g+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqBjbG9ja3MgPSA8Jnh0YWw+Owo+ID4gK8KgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ID4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4gPiArCj4gPiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgcGxpYzogaW50ZXJydXB0LWNvbnRyb2xsZXJAZTAwMDAwMDAgewo+
-ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjb21wYXRp
-YmxlID0gInRoZWFkLGM5MDAtcGxpYyI7Cj4gCj4gSG1tLCBASWNlbm93eSAtIHNob3VsZCB0aGlz
-IHVzZSB5b3VyIG5ldyBvcGVuLWM5MDYtcGxpYyBjb21wYXRpYmxlCj4gZnJvbQo+IDIwMjIxMTIx
-MDQxNzU3LjQxODY0NS00LXV3dUBpY2Vub3d5Lm1lwqA/CgpJIGFtIGFnYWluc3QgdXNpbmcgb3Bl
-bmM5MDYtcGxpYy4KCk1heWJlIEkgd2lsbCBhZGQgInRoZWFkLGM5MDYtcGxpYyIsICJ0aGVhZCxj
-OTAwLXBsaWMiIGFzIGFuIHZhbGlkCmNvbXBhdGlibGUsIGFzIHRoZXJlIHNlZW1zIHRvIGJlIGZl
-dyBvcHRpb25zIHJlbGF0ZWQgdG8gUExJQy9DTElOVCBmb3IKQzkwNi9DOTEwIChhdCBsZWFzdCBh
-cyB0aGUgb3BlbiBkb2N1bWVudCBvZiB0aGVtIHNheSkuCgo+IAo+IEFzIGlzLCBkdGJzX2NoZWNr
-IGdpdmVzIGE6Cj4gYmw4MDgtc2lwZWVkLW0xcy1kb2NrLmR0YjogaW50ZXJydXB0LWNvbnRyb2xs
-ZXJAZTAwMDAwMDA6IGNvbXBhdGlibGU6Cj4gJ29uZU9mJyBjb25kaXRpb25hbCBmYWlsZWQsIG9u
-ZSBtdXN0IGJlIGZpeGVkOgo+IMKgwqDCoMKgwqDCoMKgIFsndGhlYWQsYzkwMC1wbGljJ10gaXMg
-dG9vIHNob3J0Cj4gCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoHJlZyA9IDwweGUwMDAwMDAwIDB4NDAwMDAwMD47Cj4gPiArwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGludGVycnVwdHMtZXh0ZW5kZWQgPSA8JmNw
-dTBfaW50Ywo+ID4gMHhmZmZmZmZmZj4sCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCA8JmNwdTBfaW50YyA5PjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgaW50ZXJydXB0LWNvbnRyb2xsZXI7Cj4gPiArwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNhZGRyZXNzLWNlbGxzID0gPDA+Owo+ID4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAjaW50ZXJydXB0
-LWNlbGxzID0gPDI+Owo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqByaXNjdixuZGV2ID0gPDY0PjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqB9Owo+ID4gK8KgwqDCoMKgwqDCoMKgfTsKPiA+ICt9Owo+ID4gLS0gCj4gPiAyLjM4LjEK
-PiA+IAo+ID4gCj4gPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwo+ID4gbGludXgtcmlzY3YgbWFpbGluZyBsaXN0Cj4gPiBsaW51eC1yaXNjdkBsaXN0cy5p
-bmZyYWRlYWQub3JnCj4gPiBodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2xpbnV4LXJpc2N2Cgo=
+On Fri, 25 Nov 2022 at 15:37, Srinivas Kandagatla
+<srinivas.kandagatla@linaro.org> wrote:
+>
 
+<snip>
+
+> >
+> > @@ -552,18 +558,11 @@ static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
+> >
+> >   static void handle_rx_uart(struct uart_port *uport, u32 bytes, bool drop)
+> >   {
+> > -     struct tty_port *tport;
+> >       struct qcom_geni_serial_port *port = to_dev_port(uport);
+> > -     u32 num_bytes_pw = port->tx_fifo_width / BITS_PER_BYTE;
+> > -     u32 words = ALIGN(bytes, num_bytes_pw) / num_bytes_pw;
+> > +     struct tty_port *tport = &uport->state->port;
+> >       int ret;
+> >
+> > -     tport = &uport->state->port;
+> > -     ioread32_rep(uport->membase + SE_GENI_RX_FIFOn, port->rx_fifo, words);
+> > -     if (drop)
+> > -             return;
+> > -
+>
+> Are we removing FIFO support for uart?
+>
+> It it not a overhead to use dma for small transfers that are less than
+> fifo size?
+>
+
+You made me think about it but no - while I haven't measured it yet, I
+don't think it's worth the code complexity behind it. The i2c driver
+doesn't do it this way for short transfers either. If you insist I can
+test it and come forward with numbers but unless we encounter a
+real-life example of the need for lots of very short reads/writes in
+short succession, I don't think we should overcomplicate this.
+
+>
+> > -     ret = tty_insert_flip_string(tport, port->rx_fifo, bytes);
+> > +     ret = tty_insert_flip_string(tport, port->rx_buf, bytes);
+> >       if (ret != bytes) {
+> >               dev_err(uport->dev, "%s:Unable to push data ret %d_bytes %d\n",
+> >                               __func__, ret, bytes);
+> > @@ -578,7 +577,70 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
+> >       return !readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
+> >   }
+> >
+> > -static void qcom_geni_serial_start_tx(struct uart_port *uport)
+> > +static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
+> > +{
+> > +     struct qcom_geni_serial_port *port = to_dev_port(uport);
+> > +     bool done;
+>
+> -->
+> > +     u32 status;
+> ...
+> > +
+> > +     status = readl(uport->membase + SE_GENI_STATUS);
+> > +     if (!(status & M_GENI_CMD_ACTIVE))
+> > +             return;
+> <---
+>
+> this code snippet is repeating more than few times in the patches, looks
+> like it could be made to a inline helper.
+>
+
+Makes sense.
+
+>
+> > +
+> > +     if (port->rx_dma_addr) {
+> > +             geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
+> > +                                   port->tx_remaining);
+> > +             port->tx_dma_addr = (dma_addr_t)NULL;
+> > +             port->tx_remaining = 0;
+> > +     }
+> > +
+> > +     m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
+> > +     writel(m_irq_en, uport->membase + SE_GENI_M_IRQ_EN);
+> > +     geni_se_cancel_m_cmd(&port->se);
+> > +
+> > +     done = qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
+> > +                                      S_CMD_CANCEL_EN, true);
+> > +     if (!done) {
+> > +             geni_se_abort_m_cmd(&port->se);
+> > +             qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+> > +                                       M_CMD_ABORT_EN, true);
+>
+> return is not checked, there are few more such instances in the patch.
+>
+
+Yes, but this is an error path. What would I do if the cancel failed
+to go through and then the abort failed as well? I can at best emit an
+error message.
+
+> > +             writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+> > +     }
+> > +
+> > +     writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
+> > +}
+> > +
+> > +static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
+> > +{
+> > +     struct qcom_geni_serial_port *port = to_dev_port(uport);
+> > +     struct circ_buf *xmit = &uport->state->xmit;
+> > +     unsigned int xmit_size;
+> > +     int ret;
+> > +
+> > +     if (port->tx_dma_addr)
+> > +             return;
+> Is this condition actually possible?
+>
+
+It should never happen but I wanted to be sure. Maybe a BUG_ON() or
+WARN_ON() would be better?
+
+>
+> > +
+> > +     xmit_size = uart_circ_chars_pending(xmit);
+> > +     if (xmit_size < WAKEUP_CHARS)
+> > +             uart_write_wakeup(uport);
+> > +
+> > +     xmit_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+> > +
+> > +     qcom_geni_serial_setup_tx(uport, xmit_size);
+> > +
+> > +     ret = geni_se_tx_dma_prep(&port->se, &xmit->buf[xmit->tail],
+> > +                               xmit_size, &port->tx_dma_addr);
+> > +     if (ret) {
+> > +             dev_err(uport->dev, "unable to start TX SE DMA: %d\n", ret);
+> > +             qcom_geni_serial_stop_tx_dma(uport);
+> > +             return;
+> > +     }
+> > +
+> > +     port->tx_remaining = xmit_size;
+> > +}
+> > +
+>
+> ...
+
+Bart
