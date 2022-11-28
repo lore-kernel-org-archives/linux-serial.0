@@ -2,155 +2,113 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7A5C4321E
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Nov 2022 05:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C619DC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Nov 2022 06:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbiK1FEA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Nov 2022 00:04:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
+        id S229780AbiK1GKr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Nov 2022 01:10:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiK1FD6 (ORCPT
+        with ESMTP id S229751AbiK1GKq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Nov 2022 00:03:58 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2040.outbound.protection.outlook.com [40.107.6.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B252165B3;
-        Sun, 27 Nov 2022 21:03:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UsmU2woAffnNj/3DY6WlZ+D8NdXnj3GIAYu6f6PXWnMRuzKCcP3WLWCraGom3aClDM+DpRY9RYCWsFUovx0uJm64w1MDVbp6zySCkiwFRDVPbqSJH0wrk9ZSkFGLf87b7tUe4ziVAA+dQAn/2YMwql+9OugNlZD1fy6nV6dMpu/j0UIfg3M8QHLjyT6Rb9VLff3LIIAjyK7GCLZJTiu9ZIvBt8PpMRN3mKzfyVUOr7YvF3QFAdWZ4pHZBz/hVyveUeuTHO5M6iA2WHaoTz9A5aRM2nYkNhWhK21KZQWI07dAxYv49VQjAPUmL7xEmt0pJYAOu8kTctsEKWSOAYMoMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iW/F2GEdLB23V+7ezHfkPoculxIGDiUWyEZwAyBm1gk=;
- b=nNdMO0zSn6O5agQ4RjywRjTTfaSY38gHiNk4lwcTYEp8eS7AvsRe6699E0JRqhQPx/GNpMWJZ/7T3Sx8WDDvQULYHnSRXz1QuPMJ3YiDLU+Nxsd9glI2Xei46pqXr55R0BRK8KM+jJ12DfKNc+bK4gXUNVHGqVtbl+N477hubCHVoPUZIjaxzAfjG/Oa2Tnj8e7FQLo8GEc+zweulmN2n0jxeCvTBE3JZGToT4LgxBytrYou8xEeuC1+qAmJP4V9pimhMucCE99+UwuBONK+W0ULS+uOnduqFzwa/aDBYxpEUTcWOjZgzxVtn8ZkAbULzltXB1mrZIsYvpLxTkV5dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iW/F2GEdLB23V+7ezHfkPoculxIGDiUWyEZwAyBm1gk=;
- b=XA8o1EAPky2Ydzdk6kbvnsIaGaWWyz6DL4gHhliJwMAjsY3fV4rWKBo0nrN5+UDgJMWH+EwbaACfIf1oco5GznMwMv16iiS7BwFQ2FO39Fja0SZQKJPXy8hUkbqBXE+pM6k6Ll95YCg1x9QGzeroT2I1DCy8zL2GpczLu55obXo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by DU0PR04MB9442.eurprd04.prod.outlook.com (2603:10a6:10:35a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 05:03:55 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::aaa8:55c6:bc8b:6bd1]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::aaa8:55c6:bc8b:6bd1%5]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
- 05:03:55 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH] tty: serial: fsl_lpuart: don't enable receiver/transmitter before rx/tx dma ready
-Date:   Mon, 28 Nov 2022 13:02:08 +0800
-Message-Id: <20221128050208.28086-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI1PR02CA0014.apcprd02.prod.outlook.com
- (2603:1096:4:1f7::9) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
+        Mon, 28 Nov 2022 01:10:46 -0500
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78FF13F45;
+        Sun, 27 Nov 2022 22:10:45 -0800 (PST)
+Received: by mail-wr1-f46.google.com with SMTP id g12so15057687wrs.10;
+        Sun, 27 Nov 2022 22:10:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LNcHyBDLc5jdtnLBN8748IdlIq3jeqAUsM7MsspQYq8=;
+        b=hhrDcGj3lcmGsh7XLPOKXYX647Wme5iMWJzRP1QfHzffnXnI86JLKbsI2uCYrPpJCH
+         K1yVDRq+0oWBwmnL5KJyOVTrlqMEVGetd+s5oB1Vw5H4ifxqG8F7plTQt5Xu5pHguQqF
+         hYEp+ZSTUsw74T2CFnCkc6NqEGVwtQWMXLlQ0ZTJKtbET+tiayugwXytFVGvk1TJnusn
+         +YpmRSrTomDxHhwq5aGiFP1l/OaGqhTncqspGC3ucO5JqXPyGN9gPX7To2OGsXz4C0MM
+         Xh1O+7rJHtchnT5Zbj6RA/QAH9cCm0o/Qgf3kikMeidNkEmKIFTxN3gNOgG2DTLjz8O8
+         lCtw==
+X-Gm-Message-State: ANoB5pl//OZcWPQ2DBj0wVES3hrTjqcGuCsae792LVpZJp/b4z1CFv6w
+        fOti4JExh/dUiVp8Sdujy1w=
+X-Google-Smtp-Source: AA0mqf4U7mqwsR/kHM0iUuatuXazzkLjLDSblw4PHIluzbs1vltm1jgpwfhnnsZFOTu0BmvEDK3Osw==
+X-Received: by 2002:adf:fb4c:0:b0:236:5270:735e with SMTP id c12-20020adffb4c000000b002365270735emr18959992wrs.659.1669615844299;
+        Sun, 27 Nov 2022 22:10:44 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id n8-20020a05600c4f8800b003cfd64b6be1sm21801135wmq.27.2022.11.27.22.10.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Nov 2022 22:10:43 -0800 (PST)
+Message-ID: <c0406076-04e1-6b81-1bba-ac684516d898@kernel.org>
+Date:   Mon, 28 Nov 2022 07:10:41 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|DU0PR04MB9442:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8d14aefd-69b3-4809-b062-08dad0fdf1d7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZC+LiECCwk+DLg5H1atqbMAi+s80sWYhDL8NpcuHoTbi2WM4yLWXVHLc9P2WTLG6QppT+Id8ydYSoAA2pYjg+2t2JqzNWX84ipwlf7pD93wJ3KT+tBvXxwrErmBKDHFR1pIGclknfXaaUPQ0pvf2TgXwjNKt2ScMo02jELblZ1IyustLzSJnv8fbKJLu0LLRnyszPVOTM3xT1dTpWxjFoacr7+9WzpW4BaDG4ejeJyBrHGn++1P1Xj3+xCPO01UwcD4YsxKcJBlZb1VDhUa8ug2UCtAHFRujyenhfYg3U8lFZpPSQpTHuXKl8DolxAd/ARTVlsXNTylafpDbjwraX3sy71yvo+Vl378sRxZ2P4G2tDyGf+F5YoEuf5B5Ckr7yvNzYiU9Dn2VNgaJJI62YIGhM/65vHqK0sNJZWg1CkoCfp+Osl34qz89kGFBF9r80QM21brqOqELzrTb9kJUWInjFC1Xq6zf0zhSXsZBeF/wp33DkpBTRg2kFNFwKr+b3fHOt1ZXRGz91UvGf95gXDqNZ6sY1B3msrK4+MXBXi8GnDJyTkJK0ufpz+fbJNpq4+tuzDm6D2wXw2yFmVvK/cjY94Ce8DjB0RCYeNIcHjZhrwi3RdbiLJ+LiArSKBJh5SguLdTjhi22UzbTL6qUc/nd1CRe6PKU2DEP0Qx66wWC/okPqE51ugYyU40Q54xJ6fPFQw3N7msn+8Pdi17DPw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(376002)(396003)(39860400002)(136003)(451199015)(36756003)(38100700002)(38350700002)(2906002)(8936002)(44832011)(83380400001)(86362001)(66556008)(66476007)(8676002)(4326008)(6486002)(6512007)(1076003)(316002)(186003)(66946007)(478600001)(41300700001)(5660300002)(2616005)(6666004)(26005)(52116002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?V4p+R3rA2UaLs4CiOBSpAI0Z0gPIjwFQLCA0Uk14lnEEj4fCE8g6y260GYwj?=
- =?us-ascii?Q?Iv2dGkm9gyByqcsJeMtMWZUFDi8t0oJSyeT20crhJb1D1MxuwR4PKxxON/DP?=
- =?us-ascii?Q?9yKcxmIjcQdQahIXDRpq9kXLp72ZnHCt6AOGx2kfVkeoaUO0cf0paxKbk2Sc?=
- =?us-ascii?Q?lwSktFFMg/5vhYakvMHpvVWpIToM+U+PNx8ddfcFnFR2NisYMXze7jymRvXk?=
- =?us-ascii?Q?k7182cCFtootQyHNDF9UYWPX2R7prnTEiD4Mm8xJ3Dgfqf02W3B+mK4KIKvN?=
- =?us-ascii?Q?IRszz+ni1qZDXdZ2PJ0gAxj/aTagQk8W1OUMTEwtVchqABiaKmo7xtvYb5UZ?=
- =?us-ascii?Q?lcD1AuDZFoh9YZl9VnPcu6lOGuTWrKBGWleZgIfJ7d39CyDhWdFoAINzZioq?=
- =?us-ascii?Q?M9FWIQ+Odt4x51wO2Z2+7+UZs2IcSpY5SN7JNyaWTy38Pj4XdKth30y5ECUO?=
- =?us-ascii?Q?4fW9UrI4g7PuuKTnE6GQuu+yVZXDhN6s7jy4Qce96yzsbNQc7kQ63b8n+8Sy?=
- =?us-ascii?Q?wd+Z/juJUpX9TNAwzZZxOtBQm1km9z2WA1E10ej7+MfFvSq3rt/PVCPBLVVQ?=
- =?us-ascii?Q?9sLEmBI+D6DyfLu9kI3K1TFfqQtHfEWK8tfJwlsGlm/9yhIShpWz88dCTLi7?=
- =?us-ascii?Q?/H/thMrjuIw92KuhZcZmg/oep9ZyYiqS/9ObEUXU03uSHqmh/RLaG5AuXJWH?=
- =?us-ascii?Q?Yb8o3/s5b6P8PFCI7flnxt8yjivPhv/w3usObUTT59Se9tWi2/WCXH28c02E?=
- =?us-ascii?Q?9ATkWmCH9Aj27IW/Mhmv8OsFUecrogkSi0wssC60qwzvz2Z8CwDct72yuQiO?=
- =?us-ascii?Q?aX5547XmPOj6r2BWdD9mKQj0T72Y7OQ8NGPVlYLNtBAEkMUUCoK85rh3TCMY?=
- =?us-ascii?Q?r2bzh/tpyqvLkt1sGs2hzchSfYbv6Dg3P1nwzg9JeEmaTrTiNC5aO7N56hqS?=
- =?us-ascii?Q?S/9B/VJQ6Ji2OyLL9u2sEPMhf0r0H9V3OZLKDopU+LT+ZqTo6+BqU+bTfKRF?=
- =?us-ascii?Q?6k4CNMe06pkbEh0rhOiLSHpaTfQ/kJZ4u3Y6aeGJpM9Kf++Uc+xWvz6vPGVM?=
- =?us-ascii?Q?FRkcg5Y5zJKAEVgW2dFlBJg/OjlQaz11InI1nTcb4YVzxfrL99ZFlETmNLzq?=
- =?us-ascii?Q?+sf4RlUJKTc+CKkFLJPKkn6MQhQRUlo7nKdcOqIGf7w4NjN0fsFDy3a3aViY?=
- =?us-ascii?Q?X6mWSpYe+0gAyu45bTGOrIS/ZHVM7rdWzyTk7SHg83I08AUkqtbMValPifon?=
- =?us-ascii?Q?s3aUh5hUf4fpYw8OG0tEYQD+zGHgvehfA/vl5uEXuM3Iql8vV/focvUrD+AJ?=
- =?us-ascii?Q?VRATr/14biyVpMF7D8BhHhduTzytfn/mYZb2A6kNnxZCUC1xHD/Jy6PgV3VL?=
- =?us-ascii?Q?gi27D9YAUGZVaG3ATVKvBmS+P1YJrvOoChX+GRa+6lpYTCQyofityHT2tzKA?=
- =?us-ascii?Q?MsOCzGzknShvg+d5Ej229ijpMiV+YQ9+ojh1iyAht2Nv6voHUj7I0gb5X5Fs?=
- =?us-ascii?Q?ItekzA7W/x05NZLDhUAlzgDhdrbuwyqzf6hYBK7NCql9Ulj0h10x5XTIGiZJ?=
- =?us-ascii?Q?YFqsEnmtuuwj7/2TU9DfxmIaR93cFgCEfBgMk/g1?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d14aefd-69b3-4809-b062-08dad0fdf1d7
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 05:03:55.2538
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eYsYeRQw4lTMrpmwguy3yi1TOPnbhoOaRJPnX6clm+y3q/moCOFw4zNgJzOi2WdBL0UOhX5MJT4YIVuIGCeazA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9442
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v2 2/9] serial: bflb_uart: add Bouffalolab UART Driver
+Content-Language: en-US
+To:     Jisheng Zhang <jszhang@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Conor Dooley <conor@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20221127132448.4034-1-jszhang@kernel.org>
+ <20221127132448.4034-3-jszhang@kernel.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20221127132448.4034-3-jszhang@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-lpuart32_setup_watermark_enable() will configure the UART FIFO and
-watermark, also enable the receiver and transmitter, this should be done
-after the rx/tx dma steup ready.
+On 27. 11. 22, 14:24, Jisheng Zhang wrote:
+> +static void bflb_uart_tx_chars(struct uart_port *port)
 
-Also add lpuart32_hw_disable() to make sure the receiver/transmitter and
-interrupts are disabled during the dma steup.
+Again:
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+Are you unable to use the TX helper? If so:
+* why?
+* use uart_advance_xmit() at least.
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 8918e08bb19e..bb12b328e224 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1682,6 +1682,16 @@ static int lpuart_startup(struct uart_port *port)
- 	return 0;
- }
- 
-+static void lpuart32_hw_disable(struct lpuart_port *sport)
-+{
-+	unsigned long temp;
-+
-+	temp = lpuart32_read(&sport->port, UARTCTRL);
-+	temp &= ~(UARTCTRL_RIE | UARTCTRL_ILIE | UARTCTRL_RE |
-+		  UARTCTRL_TIE | UARTCTRL_TE);
-+	lpuart32_write(&sport->port, temp, UARTCTRL);
-+}
-+
- static void lpuart32_configure(struct lpuart_port *sport)
- {
- 	unsigned long temp;
-@@ -1706,11 +1716,12 @@ static void lpuart32_hw_setup(struct lpuart_port *sport)
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
--	lpuart32_setup_watermark_enable(sport);
-+	lpuart32_hw_disable(sport);
- 
- 	lpuart_rx_dma_startup(sport);
- 	lpuart_tx_dma_startup(sport);
- 
-+	lpuart32_setup_watermark_enable(sport);
- 	lpuart32_configure(sport);
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
+> +{
+> +	struct circ_buf *xmit = &port->state->xmit;
+> +	unsigned int count;
+> +
+> +	if (port->x_char) {
+> +		/* Send special char - probably flow control */
+> +		wrl(port, UART_FIFO_WDATA, port->x_char);
+> +		port->x_char = 0;
+> +		port->icount.tx++;
+> +		return;
+> +	}
+> +
+> +	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+> +		bflb_uart_stop_tx(port);
+> +		return;
+> +	}
+> +
+> +	count = BFLB_UART_TX_FIFO_TH;
+> +	do {
+> +		wrl(port, UART_FIFO_WDATA, xmit->buf[xmit->tail]);
+> +		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> +		port->icount.tx++;
+> +		if (uart_circ_empty(xmit))
+> +			break;
+> +	} while (--count > 0);
+> +
+> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> +		uart_write_wakeup(port);
+> +
+> +	if (uart_circ_empty(xmit))
+> +		bflb_uart_stop_tx(port);
+> +}
+
 -- 
-2.17.1
+js
+suse labs
 
