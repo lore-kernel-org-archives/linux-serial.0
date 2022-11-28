@@ -2,118 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419C4C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Nov 2022 14:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11E9C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Nov 2022 14:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232327AbiK1OcB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Nov 2022 09:32:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
+        id S232580AbiK1OkJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Nov 2022 09:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232609AbiK1Obr (ORCPT
+        with ESMTP id S232555AbiK1OkG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Nov 2022 09:31:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85707222B8;
-        Mon, 28 Nov 2022 06:31:18 -0800 (PST)
+        Mon, 28 Nov 2022 09:40:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B5322501;
+        Mon, 28 Nov 2022 06:40:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21B14611CC;
-        Mon, 28 Nov 2022 14:31:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF8F8C433C1;
-        Mon, 28 Nov 2022 14:31:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4729E611CF;
+        Mon, 28 Nov 2022 14:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 364F4C433C1;
+        Mon, 28 Nov 2022 14:39:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669645877;
-        bh=o6vs9x16gtpUsWQXrNUt1RAdeTIsOsJrIh1//CI7WcU=;
+        s=k20201202; t=1669646403;
+        bh=NvJorZr2n6+50Td4fDEE5U9WvCuKu2rwqwYX9x/uSbY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Cvl/V8Cdke02ytFWeQMSOfxV3zHGc1NmsEpKtrNhyfgGO1lEP62W2rmIndHnkful9
-         lDAHRxaTVcId6ZfW8aNbYOBso3/cQccmdpjo1ztEEqiWLPfaGwPGlWYeR2imhWUSy7
-         rSXLFrTckP8/lbRuNZuwnaqZ2eGH66mZ3Kl3WFyzSnGlGJCsr2eBMKdKhfBsdd/76S
-         n98FZztU6y9Btv0HpPpxEy0FfVIUPvSXLpEMKttXHdLtim9fhJ1rnUE9S5YXj5OEV6
-         01bOaG93q2gw3gOPcdhXAQW4QcXmjg/Uu/C3zrcERB5q3obnQwXku1CjvvpX4fDOf1
-         AJ27pLmtsPKzA==
-Date:   Mon, 28 Nov 2022 22:21:23 +0800
+        b=b/T6loHbagLo3jI9KjpAzMEvqaMA39G7a7kCR9PSNmOV415m3vD5xGHcBKfZLE65L
+         VxUHPPzZeSHRpNqv3kST7LSciy3QKcEKLPvH7XYWYvd6PClISSMtP2r51HTVkeaILk
+         nwLSrUHhk1eT08SY6OsT6iXt7XGPd9F98L9d7GcovC1V02MEyr9IWGtfIPoW+Kqf6T
+         6i86wJNWyaWMteBCloIOYtm5aK+KtGCsJD+CHsPRQcQYp6Fro5Lt3wkLHGe8BePSsy
+         pX2hIgPYjB+/kdOwuU6B6sn135tJPksOCK9D4u/ofy1oWVKAI0PFiTwgt2UXwiCBxs
+         hNVD0RHKICcgg==
+Date:   Mon, 28 Nov 2022 22:30:08 +0800
 From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 2/9] serial: bflb_uart: add Bouffalolab UART Driver
-Message-ID: <Y4TD48v84CJcMS+S@xhacker>
+Subject: Re: [PATCH v2 8/9] MAINTAINERS: riscv: add entry for Bouffalolab SoC
+Message-ID: <Y4TF8FzX19puws37@xhacker>
 References: <20221127132448.4034-1-jszhang@kernel.org>
- <20221127132448.4034-3-jszhang@kernel.org>
- <c0406076-04e1-6b81-1bba-ac684516d898@kernel.org>
+ <20221127132448.4034-9-jszhang@kernel.org>
+ <Y4Of7s6UGpD0/Iga@spud>
+ <Y4OgNW6uOe60Pi09@spud>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <c0406076-04e1-6b81-1bba-ac684516d898@kernel.org>
+In-Reply-To: <Y4OgNW6uOe60Pi09@spud>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 28, 2022 at 07:10:41AM +0100, Jiri Slaby wrote:
-> On 27. 11. 22, 14:24, Jisheng Zhang wrote:
-> > +static void bflb_uart_tx_chars(struct uart_port *port)
-> 
-> Again:
-> 
-> Are you unable to use the TX helper? If so:
+On Sun, Nov 27, 2022 at 05:36:53PM +0000, Conor Dooley wrote:
+> On Sun, Nov 27, 2022 at 05:35:48PM +0000, Conor Dooley wrote:
+> > Hey Jisheng,
+> > 
+> > On Sun, Nov 27, 2022 at 09:24:47PM +0800, Jisheng Zhang wrote:
+> > > Add Jisheng Zhang as Bouffalolab SoC maintainer.
+> > > 
+> > > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > > ---
+> > >  MAINTAINERS | 9 +++++++++
+> > >  1 file changed, 9 insertions(+)
+> > > 
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index 00ff4a2949b8..a6b04249853c 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -17729,6 +17729,15 @@ F:	arch/riscv/
+> > >  N:	riscv
+> > >  K:	riscv
+> > >  
+> > > +RISC-V BOUFFALOLAB SOC SUPPORT
+> > > +M:	Jisheng Zhang <jszhang@kernel.org>
+> > > +L:	linux-riscv@lists.infradead.org
+> > > +S:	Maintained
+> > > +F:	Documentation/devicetree/bindings/riscv/bouffalolab.yaml
+> > > +F:	Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> > > +F:	arch/riscv/boot/dts/bouffalolab/
+> > > +F:	drivers/tty/serial/bflb_uart.c
+> > 
+> > I think I asked last time but I didn't see an answer on lore or my
+> > mailbox - if you intend sending Arnd PRs for this stuff, please add a
 
-You know serial subsystem better than me, may I ask for more
-details? For example,
-Besides uart_xmit_advance(), do you expect other TX helpers? If yes,
-can you please list them?
+Per my past experience of synaptics/mrvl arm SoCs, I usually sent PRs to Arnd
+if there are two or more commits/patches; If there's only one patch, I
+asked Arnd for picking it up directly. So in bouffalolab SoC case, I
+want to do similar, but with one difference -- if there's only one
+patch, may I ask you for picking it up directly?
 
-> * why?
-> * use uart_advance_xmit() at least.
+> > git tree here. Otherwise, LMK and I'll bundle it with the other "misc
 
-Do you mean uart_xmit_advance()? in the do while loop below?
+Hmm, is "git tree" necessary?
 
-I'm not sure I understand the meaning, correct me If I misunderstand
-something.
-
-thanks
+> > riscv devicetree" stuff.
 > 
-> > +{
-> > +	struct circ_buf *xmit = &port->state->xmit;
-> > +	unsigned int count;
-> > +
-> > +	if (port->x_char) {
-> > +		/* Send special char - probably flow control */
-> > +		wrl(port, UART_FIFO_WDATA, port->x_char);
-> > +		port->x_char = 0;
-> > +		port->icount.tx++;
-> > +		return;
-> > +	}
-> > +
-> > +	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
-> > +		bflb_uart_stop_tx(port);
-> > +		return;
-> > +	}
-> > +
-> > +	count = BFLB_UART_TX_FIFO_TH;
-> > +	do {
-> > +		wrl(port, UART_FIFO_WDATA, xmit->buf[xmit->tail]);
-> > +		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> > +		port->icount.tx++;
-> > +		if (uart_circ_empty(xmit))
-> > +			break;
-> > +	} while (--count > 0);
-> > +
-> > +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> > +		uart_write_wakeup(port);
-> > +
-> > +	if (uart_circ_empty(xmit))
-> > +		bflb_uart_stop_tx(port);
-> > +}
+> I forgot:
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 > 
-> -- 
-> js
-> suse labs
-> 
+> > >  RISC-V MICROCHIP FPGA SUPPORT
+> > >  M:	Conor Dooley <conor.dooley@microchip.com>
+> > >  M:	Daire McNamara <daire.mcnamara@microchip.com>
+> > > -- 
+> > > 2.38.1
+> > > 
+> > > 
+> > > _______________________________________________
+> > > linux-riscv mailing list
+> > > linux-riscv@lists.infradead.org
+> > > http://lists.infradead.org/mailman/listinfo/linux-riscv
