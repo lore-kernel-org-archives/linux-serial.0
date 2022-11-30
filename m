@@ -2,72 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B934C4321E
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 07:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0183C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 07:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233850AbiK3HVg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Nov 2022 02:21:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
+        id S233890AbiK3HZf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Nov 2022 02:25:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiK3HVf (ORCPT
+        with ESMTP id S229604AbiK3HZf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Nov 2022 02:21:35 -0500
+        Wed, 30 Nov 2022 02:25:35 -0500
 Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038211F9D9;
-        Tue, 29 Nov 2022 23:21:34 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 3E9AF32008C3;
-        Wed, 30 Nov 2022 02:21:31 -0500 (EST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662C65B85E;
+        Tue, 29 Nov 2022 23:25:34 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id BF5F332008FE;
+        Wed, 30 Nov 2022 02:25:32 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 30 Nov 2022 02:21:32 -0500
+  by compute3.internal (MEProxy); Wed, 30 Nov 2022 02:25:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1669792890; x=
-        1669879290; bh=q72EpL3uhOPRJqv9dDJjBbzAkGOsjTb1XnOeKej+X6Y=; b=T
-        1oA3hm0bUR7Xv8EVN7JD1+jqOy3CWDrA2nAw/zq8z9ewbU3FQ8BBdMxfxP9FTE8y
-        tuYufw1idtHR12TPdU7wDWUgwHVtiBc1Jvh0c3hG5sAzi5QWafOHf8snUNIHxkQp
-        pQ4nEFhDJVqX0ybKKMvv1o6wxfnvHMjnBzDR/tzfpPQLh6F1qOy+Alme3W13OYnG
-        6rIYtNTmTCKr7k8+jfO5fF8TvKST6t6PxkcRN02IqKPTRZsbcp5p57iZ9PyRTWwt
-        yU/yICNdQPw68xFDEIZXTxEe6ze9lR/RSsAnGxUCoj7kplifqz9R4yJpWd3f4X/D
-        9Irdun8sZQShg21/RCCWg==
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1669793132; x=
+        1669879532; bh=7jCQGR0xy6Fkh672DFHxOw50RlZJiRPWysOecK1wOw8=; b=k
+        aMSJfphW6+/085SOqXaR1v5j3gYqHdwXRO3UWXeqKm0sI22YTLVg1zZxu4q8Mian
+        NBoZ/YmBEuYu2d4eisUFlVx0ZOmJXhhwaoYIsgp/99BwYb+Vor9m2Ffi7Hk/r4U9
+        SxtngMe+h013xAkljyl+0ovCGZkZ42y9MCss/iUzxd1YRPpSM7XgIvbdUcuHwrOV
+        r4f/Lr3ZWBDr+w8vTMU3H8z/islNut8v8E6jntzUqh403U4PDeF6Sxes74y4V9R+
+        wFueQVLNh+sc7iZ58oQwE8mhNH1VMx54n8KzhYPV9s+bzaYWb2lTUf8TyS5Mg85x
+        DUVu7mTp8vE0OYfXcNInw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669792890; x=
-        1669879290; bh=q72EpL3uhOPRJqv9dDJjBbzAkGOsjTb1XnOeKej+X6Y=; b=R
-        pYOmhN+h3E3LxnGoY1ByqBMUkdZ/f5rHya6YV4HXgIah0Xz+uVR7bGS/m0AR/hao
-        6wRFPXOwo1V5Hf7puqFqe29XGyX0QtVwGrKVAZs+2jIg8zAdBPGGIZ84wmQojVCC
-        lVVvLw6DkItgG4OEVCE2cl28nLNZUATNjbqKHuKy8fb5HmYRrerLfG5N63DywkVP
-        Siu8xcTVvs0aqhvmg9ASVSkAgfjHvaq6tdA+BYdNZLnvJ4UHjq7P3a5Rv8yOP9E1
-        ++L6vEv4rJj15oFj1ZJZZ9fcxK2Rz32m3sO79fXN6lRulgx+JBMng08MU1Nnqt3x
-        Tk6bOHpiu15BfyrwDsAng==
-X-ME-Sender: <xms:egSHY8bHzscxwxJ_XI7SjdETzhUGVpkCgZHGGx7OlAtJmDfvPDTR7w>
-    <xme:egSHY3YPBQFQAmJ2SNwJxWG1Cgg0rDgxX4PDTlh_7o8t8rqPTISOS9LaWasHjabZ5
-    YTisw3i6R2ee581ag>
-X-ME-Received: <xmr:egSHY2_xM4dj0QjoPWlGrg-4-ds6i5qcckSDdqkGcr3isVhQfAXlmVKLidKUR2FDwbVuD76bL9c_QwYzL1i14ciobGZNUy2aDrW9XRdbj0CnR7QRBy7zHvyUmw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtddvgddutdeiucetufdoteggodetrfdotf
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669793132; x=
+        1669879532; bh=7jCQGR0xy6Fkh672DFHxOw50RlZJiRPWysOecK1wOw8=; b=Z
+        f7Fw9YpciDY0tKXZmMdllDr3lTxLjh1f3gANVehv7WIvTk0Oo7rcD0IfFVjOSodP
+        1rgPCzcif5rQGPtDoP/ZDlLKUPQe0C19R/CM4SuLiQWLVeCu/dyI2lN0ebpJXYpZ
+        Xd8JxtOd5yg8pDVin3Nc3SDlni8baJtffS0mRmLgJGXMicKfaZwyMjVFCUBGk65q
+        gZH3guPITWL/0BY9nXmied32Yky3J4/l3AMsHerwCPcrsd4npfrUPrl8PqjxPSQg
+        FmXMGn6A/GdXKAiMiFhSWsabm93o+YY6SsaKlwmMXi0q3LoWx4IEYn9n1+osL306
+        L8g/SUdzpuLqgHDyR7pHg==
+X-ME-Sender: <xms:awWHYwtXr7G608ybY4KEM1S8_Pp4UiYRiF89zHNbX-jVt9DE_qy8cA>
+    <xme:awWHY9cN9j8EWtukGNQGjF-tiwVdR9x3q090LNeq8pGhqsuUjFYbzVn6kcI19G8WR
+    8CvXHNtu9g5IlwEvA>
+X-ME-Received: <xmr:awWHY7xmx3dP7lnpCvcaqk-hhIZN8MuwqaIDOKTzNmoaMNfG-51lsB36Ut1Sun3rLOG3VEDdcTEyHKWeElTfTtXiodkVDIU3EzTYaD1y6bzocP_lHVtD7auPxg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtddvgddutdekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkfffgggfvfevfhfhufgjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    cujfgurhepkfffgggfuffvvehfhfgjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
     uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpeejgfffhfdujeeftdeuudeguedttefgieetffffheejuefguedv
-    heejteeftdfftdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    ggtffrrghtthgvrhhnpeekjeelleefiedthfdtgfekgeehudefudeugeffvdfhudekleel
+    fedtteejhedutdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
     hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:egSHY2ryPlW0Uk6wVPPsUrzYPAZ3nphYU1HFdhLK9ugHv7xtEq6o5w>
-    <xmx:egSHY3o3lHtQ6VBxToj7VZ2tl1tYHonFUJGQ98ZssEKbbHp7Erc_GQ>
-    <xmx:egSHY0TXUTmItSHZUxv2Dg7cUD3c4oKZQbYc5LJS0EuxifZxTFxhUA>
-    <xmx:egSHY1ikeFwuY9xfeCiUw50Ag9_w21YQNXUIEhMyqtIioCf9C0-Hzw>
+X-ME-Proxy: <xmx:awWHYzMSZyjHp1FBAhPdwa80yMTvWE6Du6GfryRjoCm1WOsYavgIxg>
+    <xmx:awWHYw9WhAsKWrDpe-CWa42Vjk4Yc7Sq9Y5CL4ykausET5npobLEFw>
+    <xmx:awWHY7W6ZKVwOu7qM_AhZrj71OI2rt6It3KQKRwkhvA933xTLraHng>
+    <xmx:bAWHY7WCfNQvf4xaRNoPuUVmmKkIR9MO97xIw9rQ_b1I7AJ-WSn9uA>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 30 Nov 2022 02:21:28 -0500 (EST)
-Message-ID: <d4d8998f-288c-3ff6-141d-02814f8e35d0@sholland.org>
-Date:   Wed, 30 Nov 2022 01:21:27 -0600
+ 30 Nov 2022 02:25:31 -0500 (EST)
+Message-ID: <91d7eebd-7433-c06d-6d14-a01d11af9df9@sholland.org>
+Date:   Wed, 30 Nov 2022 01:25:30 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:102.0) Gecko/20100101
  Thunderbird/102.3.3
+Subject: Re: [PATCH v2 7/9] riscv: dts: bouffalolab: add Sipeed M1s SoM and
+ Dock devicetree
 Content-Language: en-US
 To:     Jisheng Zhang <jszhang@kernel.org>
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -82,11 +84,9 @@ Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         Jiri Slaby <jirislaby@kernel.org>,
         =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
 References: <20221127132448.4034-1-jszhang@kernel.org>
- <20221127132448.4034-7-jszhang@kernel.org>
+ <20221127132448.4034-8-jszhang@kernel.org>
 From:   Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH v2 6/9] riscv: dts: bouffalolab: add the bl808 SoC base
- device tree
-In-Reply-To: <20221127132448.4034-7-jszhang@kernel.org>
+In-Reply-To: <20221127132448.4034-8-jszhang@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -94,119 +94,103 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 11/27/22 07:24, Jisheng Zhang wrote:
-> Add a baisc dtsi for the bouffalolab bl808 SoC.
+> Sipeed manufactures a M1s system-on-module and dock board, add basic
+> support for them.
 > 
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > ---
->  arch/riscv/boot/dts/bouffalolab/bl808.dtsi | 74 ++++++++++++++++++++++
->  1 file changed, 74 insertions(+)
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
+>  arch/riscv/boot/dts/Makefile                  |  1 +
+>  arch/riscv/boot/dts/bouffalolab/Makefile      |  2 ++
+>  .../dts/bouffalolab/bl808-sipeed-m1s-dock.dts | 25 +++++++++++++++++++
+>  .../dts/bouffalolab/bl808-sipeed-m1s.dtsi     | 21 ++++++++++++++++
+>  4 files changed, 49 insertions(+)
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
 > 
-> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808.dtsi b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
+> diff --git a/arch/riscv/boot/dts/Makefile b/arch/riscv/boot/dts/Makefile
+> index ff174996cdfd..b525467152b2 100644
+> --- a/arch/riscv/boot/dts/Makefile
+> +++ b/arch/riscv/boot/dts/Makefile
+> @@ -1,4 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> +subdir-y += bouffalolab
+>  subdir-y += sifive
+>  subdir-y += starfive
+>  subdir-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += canaan
+> diff --git a/arch/riscv/boot/dts/bouffalolab/Makefile b/arch/riscv/boot/dts/bouffalolab/Makefile
 > new file mode 100644
-> index 000000000000..f4b170ccc32e
+> index 000000000000..5419964e892d
 > --- /dev/null
-> +++ b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> @@ -0,0 +1,74 @@
+> +++ b/arch/riscv/boot/dts/bouffalolab/Makefile
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +dtb-$(CONFIG_SOC_BOUFFALOLAB) += bl808-sipeed-m1s-dock.dtb
+> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+> new file mode 100644
+> index 000000000000..c6b4894a7b88
+> --- /dev/null
+> +++ b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+> @@ -0,0 +1,25 @@
 > +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 > +/*
 > + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
 > + */
 > +
-> +#include <dt-bindings/interrupt-controller/irq.h>
+> +/dts-v1/;
+> +
+> +#include "bl808-sipeed-m1s.dtsi"
 > +
 > +/ {
-> +	compatible = "bouffalolab,bl808";
-> +	#address-cells = <1>;
-> +	#size-cells = <1>;
+> +	model = "Sipeed M1s Dock";
+> +	compatible = "sipeed,m1s-dock", "sipeed,m1s", "bouffalolab,bl808";
 > +
-> +	cpus {
-> +		timebase-frequency = <1000000>;
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu0: cpu@0 {
-> +			compatible = "thead,c906", "riscv";
-> +			device_type = "cpu";
-> +			reg = <0>;
-> +			d-cache-block-size = <64>;
-> +			d-cache-sets = <256>;
-> +			d-cache-size = <32768>;
-> +			i-cache-block-size = <64>;
-> +			i-cache-sets = <128>;
-> +			i-cache-size = <32768>;
-> +			mmu-type = "riscv,sv39";
-> +			riscv,isa = "rv64imafdc";
-> +
-> +			cpu0_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#address-cells = <0>;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
+> +	aliases {
+> +		serial0 = &uart0;
 > +	};
 > +
-> +	xtal: xtal-clk {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		/* This value must be overridden by the board */
-> +		clock-frequency = <0>;
+> +	chosen {
+> +		stdout-path = "serial0:2000000n8";
 > +	};
+> +};
 > +
-> +	soc {
-> +		compatible = "simple-bus";
-> +		ranges;
-> +		interrupt-parent = <&plic>;
-> +		dma-noncoherent;
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
+> +&uart0 {
+> +	status = "okay";
+> +};
+> diff --git a/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
+> new file mode 100644
+> index 000000000000..5026de768534
+> --- /dev/null
+> +++ b/arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
+> @@ -0,0 +1,21 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
+> +/*
+> + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> + */
 > +
-> +		uart0: serial@30002000 {
-
-It's unfortunate that the SDK/documentation calls this peripheral both
-UART0 and UART3. I don't know if we can/should put the "M0" and "D0" bus
-peripherals in the same DT; it seems like most of the "M0" peripherals
-are not accessible from the C906. But if we did, this would conflict
-with the other UART0.
-
-> +			compatible = "bouffalolab,bl808-uart";
-> +			reg = <0x30002000 0x1000>;
-> +			interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&xtal>;
-
-There's a clock controller with a mux and a gate between the crystal and
-the UART. I'm not sure what the policy is about adding "fake" suppliers
-before the real supplier has a binding defined.
-
-Unfortunately, Bouffalolab threw everything and the kitchen sink into
-the GLB register space, so that complicates defining the binding for the
-clock/reset controller part.
-
-> +			status = "disabled";
-> +		};
+> +/dts-v1/;
 > +
-> +		plic: interrupt-controller@e0000000 {
-> +			compatible = "thead,c900-plic";
-> +			reg = <0xe0000000 0x4000000>;
-> +			interrupts-extended = <&cpu0_intc 0xffffffff>,
+> +#include "bl808.dtsi"
+> +
+> +/ {
+> +	compatible = "sipeed,m1s", "bouffalolab,bl808";
+> +
+> +	memory@50000000 {
+> +		device_type = "memory";
+> +		reg = <0x50000000 0x04000000>;
+> +	};
 
-The C906 PLIC has an M-mode context, so 0xffffffff is not correct. This
-should reference the M-mode external interrupt.
-
-> +					      <&cpu0_intc 9>;
-> +			interrupt-controller;
-> +			#address-cells = <0>;
-> +			#interrupt-cells = <2>;
-> +			riscv,ndev = <64>;
-
-The SDK/documentation lists IRQ numbers up to BL808_IRQ_PDS == 82, so
-this value should be at least that.
+The PSRAM is part of the BL808, so this should go in the SoC .dtsi file.
+(Unless I'm missing something and there are BL808 variants with
+different amounts of memory. The PSRAM init code in the SDK does size
+detection, so I suppose it is possible.)
 
 Regards,
 Samuel
 
-> +		};
-> +	};
+> +};
+> +
+> +&xtal {
+> +	clock-frequency = <40000000>;
 > +};
 
