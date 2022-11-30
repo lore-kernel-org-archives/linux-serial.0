@@ -2,107 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4525DC46467
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 12:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C28EC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 18:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235076AbiK3MoS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Nov 2022 07:44:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        id S230023AbiK3SE2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Nov 2022 13:04:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235029AbiK3MoI (ORCPT
+        with ESMTP id S229532AbiK3SEZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Nov 2022 07:44:08 -0500
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1167E4F19E
-        for <linux-serial@vger.kernel.org>; Wed, 30 Nov 2022 04:44:08 -0800 (PST)
-Received: by mail-vs1-xe2d.google.com with SMTP id m4so17106733vsc.6
-        for <linux-serial@vger.kernel.org>; Wed, 30 Nov 2022 04:44:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MNA7eZi9VQf69CeBVlQwZ04/y+5gTO1SaFbD25OjShk=;
-        b=uSk5JtGDkFtZkUVlSh2i3p7XW+BEpm0qle2Qeku5sBhEFvEtjxwJcJO/dKAIH6mtnM
-         ihCM776HxUIm9bISIC0XuUG2ntUDh43aYrOMKAm8kyIKgsGhNiQWX3jWqJ7nrDkcrJux
-         P6HiyheNg1ARMUwTofYkN+5TdwWAD+Ief4jrVs3kTBRmPfEJV+1Fj/Kobmxo1TAft8FS
-         86v6pEod24fy4y15bRVI/fgHouGGWPW/5cHlox5WDNAg1oMIcSXrXjoxUuke9vjsCIUJ
-         /Tk2xkrcwu9Rx5yVD7NwJ2YtxgrQifkgBuMZI59vLsuMVQHnRn7y6HHSroWm49Z+GqcQ
-         dgTw==
+        Wed, 30 Nov 2022 13:04:25 -0500
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223727061F;
+        Wed, 30 Nov 2022 10:04:25 -0800 (PST)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-1433ef3b61fso21924751fac.10;
+        Wed, 30 Nov 2022 10:04:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MNA7eZi9VQf69CeBVlQwZ04/y+5gTO1SaFbD25OjShk=;
-        b=Gt7EaF3GE+UASHQvmLxmos7xDvcWteZpU6L3SmqhFzWlrIwtfoqir5e9uwHKGspfnI
-         /6qZrLNbKPwNcFMBsjLc1E+77E8lP3sLSqg0e8vOIWZoKIgrcAXB431t39Fnzku3W/WB
-         kr96N6dqxUbtPBLaFKDu2/EAifgzlFZNAjpr/5EhHThWvvza5PjsiCcS2+U8UjtPALMc
-         it5kOl+oKEcLDaTMugB+TdPXLrO49fgTjW5xvD5m+a3XnWZIIsVT5yjAgotaWX3ZjzBx
-         01cuMLUhPwQJURg39KFIGqwZzgjvhSH73VbqhYrc5AdCdPFqkJBr70gjjscfzSKL07sS
-         3XdQ==
-X-Gm-Message-State: ANoB5pkpzGn6FF4sCqV+3k66WfY2iLySpt4E93lkIEu7aej8t5SzhmMX
-        2cDKbWy8gaMrk8lA1gFZSg8chXe/MP/LERgz/tkg7A==
-X-Google-Smtp-Source: AA0mqf54Z2CrPKxSRMlbr73gv+438gnoVt/fuaLT9AfACCSJrTBHJXFmdawHwFRgJOYgsFogG3EQ+yCbag8p/gkY3HY=
-X-Received: by 2002:a67:eb11:0:b0:3b0:c9bc:7abe with SMTP id
- a17-20020a67eb11000000b003b0c9bc7abemr3394360vso.61.1669812247176; Wed, 30
- Nov 2022 04:44:07 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O92/4gRbBZHRaTcuTNcEC3gTvM1Cg9IfNLbdStTU/4w=;
+        b=e9hS8/RO9ikfCpdQPdkRRNVlvsWqYh46dyxv7f1W4VswjATZImE0gFFT+PVoHXq350
+         OVbT8reE7TVaOfFGVAn/OIxSWglyrZMVhqCj356jqTOCftNoPhhONj4gEnST6oo0zvkW
+         T2EzVLRKRlkQ/iGrGwi3udBZPmf0mJKABo08b3gkjOzzpSm4oMFCUcLdORftrvboSj9O
+         h3vHhUstjXwSdzprosxI8sNsWBT9QBBPXb4psaWfYoVd1K0Xa6rIIzTJGZZHQVFKeAhW
+         Xqg0PXe3UyU+pT7hjaBFolSFnhvGYnUm0FklUJevzvVgV7rgkkdpXS02ECUwCHtRmbCr
+         UN+w==
+X-Gm-Message-State: ANoB5pmo3gf5HyAyWCjfn7iP/Np9Wa4Dfxzx9v9x/aMdmFdkQxgBec/n
+        KolsqJXPz7X0ldavozZX6A==
+X-Google-Smtp-Source: AA0mqf6eVp8liyqBEwwxUaePBihI5WtgVxnCAjlpm1rxRun20hfKca4NFhBlYl+T7dO+q/0y0pLPBg==
+X-Received: by 2002:a05:6870:e99f:b0:142:d085:c1cc with SMTP id r31-20020a056870e99f00b00142d085c1ccmr27521723oao.29.1669831463700;
+        Wed, 30 Nov 2022 10:04:23 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n7-20020a056870a44700b00130d060ce80sm1509542oal.31.2022.11.30.10.04.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 10:04:23 -0800 (PST)
+Received: (nullmailer pid 2535078 invoked by uid 1000);
+        Wed, 30 Nov 2022 18:04:22 -0000
+Date:   Wed, 30 Nov 2022 12:04:22 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 1/7] dt-bindings: serial: add bindings doc for
+ Bouffalolab uart driver
+Message-ID: <20221130180422.GA2527975-robh@kernel.org>
+References: <20221120082114.3030-1-jszhang@kernel.org>
+ <20221120082114.3030-2-jszhang@kernel.org>
 MIME-Version: 1.0
-References: <20221129110012.224685-1-brgl@bgdev.pl> <20221129110012.224685-12-brgl@bgdev.pl>
- <22332676-9d3a-1e21-aa70-e9c367b19bd9@kernel.org>
-In-Reply-To: <22332676-9d3a-1e21-aa70-e9c367b19bd9@kernel.org>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 30 Nov 2022 13:43:56 +0100
-Message-ID: <CAMRc=MczfMKYEWfV_WOazXni9FbXX8x_iwjm4URD7-WWQQmUsA@mail.gmail.com>
-Subject: Re: [PATCH v4 11/13] tty: serial: qcom-geni-serial: stop operations
- in progress at shutdown
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221120082114.3030-2-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 30, 2022 at 10:37 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 29. 11. 22, 12:00, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> >
-> > We don't stop transmissions in progress at shutdown. This is fine with
-> > FIFO SE mode but with DMA it causes trouble so fix it now.
-> >
-> > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> > ---
-> >   drivers/tty/serial/qcom_geni_serial.c | 3 +++
-> >   1 file changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index fe15fc0e1345..c0270eec2a66 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -864,6 +864,9 @@ static void get_tx_fifo_size(struct qcom_geni_serial_port *port)
-> >
-> >   static void qcom_geni_serial_shutdown(struct uart_port *uport)
-> >   {
-> > +     qcom_geni_serial_stop_tx(uport);
-> > +     qcom_geni_serial_stop_rx(uport);
-> > +
-> >       disable_irq(uport->irq);
->
-> I'm just asking without actually looking into the code: cannot the
-> interrupt reschedule/restart the above?
->
+On Sun, Nov 20, 2022 at 04:21:08PM +0800, Jisheng Zhang wrote:
+> Add bindings doc for Bouffalolab UART Driver
+> 
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  .../bindings/serial/bouffalolab,uart.yaml     | 50 +++++++++++++++++++
+>  1 file changed, 50 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> new file mode 100644
+> index 000000000000..6cef956d33d2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+> @@ -0,0 +1,50 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/serial/bouffalolab,uart.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: Bouffalolab UART Controller
+> +
+> +maintainers:
+> +  - Jisheng Zhang <jszhang@kernel.org>
+> +
+> +allOf:
+> +  - $ref: serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: bouffalolab,uart
 
-It can actually, good catch, thanks.
+'bouffalolab' needs to be documented in vendor-prefixes.yaml.
 
-Bart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    aliases {
+
+Drop, not relevant to the binding.
+
+> +        serial0 = &uart0;
+> +    };
+> +
+> +    uart0: serial@30002000 {
+> +        compatible = "bouffalolab,uart";
+> +        reg = <0x30002000 0x1000>;
+> +        interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks = <&xtal>;
+> +    };
+> +...
+> -- 
+> 2.37.2
+> 
+> 
