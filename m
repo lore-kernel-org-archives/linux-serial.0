@@ -2,102 +2,202 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7BDC47088
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 09:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240CBC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 10:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiK3JjU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Nov 2022 04:39:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        id S231322AbiK3K42 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Nov 2022 05:56:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235116AbiK3JiU (ORCPT
+        with ESMTP id S230100AbiK3K40 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Nov 2022 04:38:20 -0500
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E08BE16;
-        Wed, 30 Nov 2022 01:37:40 -0800 (PST)
-Received: by mail-ed1-f44.google.com with SMTP id b8so23209991edf.11;
-        Wed, 30 Nov 2022 01:37:39 -0800 (PST)
+        Wed, 30 Nov 2022 05:56:26 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBC81758B
+        for <linux-serial@vger.kernel.org>; Wed, 30 Nov 2022 02:56:22 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6495E3F326
+        for <linux-serial@vger.kernel.org>; Wed, 30 Nov 2022 10:56:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1669805780;
+        bh=DyimTsGicnIOXyJxTp612vWAngQAXfJDawR7jdgxSVE=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=EV8QM5qpTtj4mCdLCOpXIMF8+fnd3PewyfX7a9AhERKUrX7Ng6tVbpTGE9C12OceL
+         j8FVxZgX2E+12M6ifbe5j5W251ET+bAsRNovPKqBvwP3rAtFE5RQDn/L4u7iAAGbfd
+         mkrHvC1cM4IM3dq1Epz0rkmMHKcmPaCBn+KsNtdHblBbYmyscjQI/G6Fq7OxMVddPv
+         3HAnt3ge15U5B4tAVblNer0gR5/avyaWFqzzb6fZSE+obnOsBrgdhQ5Y7WQ42ru6g3
+         szaTbY/PKkrzUncp9wh+w5950BE1ecvx4p/W1kQ+YvnQKRiES4esD+Fck2h1gv83OO
+         ncXA5yRdQH+FQ==
+Received: by mail-ed1-f72.google.com with SMTP id x4-20020a05640226c400b0046bca29215eso366635edd.7
+        for <linux-serial@vger.kernel.org>; Wed, 30 Nov 2022 02:56:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8txsqYzOtikQ3QaXooOdL0rWxlI4WoMcJ9dMdxjlc34=;
-        b=7ZCCqNVSneXdbHkjAp4CsZ+lZTRRdYdXHW4bZ+UwHz3REcf7I/a8pBBEs7VTe5Z+hU
-         AFDGd9z1guEA5DCKPjazaVKmXhjDHuWJlXA0YYkT1v3Q/q4eyDaYTi4qsssudYUEXTEd
-         skiXFPwzIZVrS9Q9H1x9eUiML2ISQ2wQhwnaA8uJHT9Qk+E8NmngvBaScmLVn5ZIuWqG
-         +PBUWiEWMcHvw2c3t3EtCjvV7pBqVqskRpes3eycXvKaC/tw1rvaKSdZfllryn4bhYtL
-         gGLrh0WK6OJuhXgO902FOZLKLoM2iSTBrm0KDaFnlOzIAJPVS69W1byOEPYnZFTvJF/7
-         6vQQ==
-X-Gm-Message-State: ANoB5pmK3uXQpZ6iUZ75W5zisbrkjn3fPaFeI47IyzDXePaLcnWOUBiU
-        RDhQkA3pUYJLF087t/CfSy4=
-X-Google-Smtp-Source: AA0mqf7Tiax9Np3qBwe098NPc6lmOwV81ou5iaihHaCbKsNigXw7NiBzNqUrh8Y/yYdg+pkrP3h30A==
-X-Received: by 2002:a05:6402:5290:b0:461:af68:9bcd with SMTP id en16-20020a056402529000b00461af689bcdmr38837516edb.67.1669801058451;
-        Wed, 30 Nov 2022 01:37:38 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id 18-20020a170906211200b007b29eb8a4dbsm452553ejt.13.2022.11.30.01.37.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Nov 2022 01:37:37 -0800 (PST)
-Message-ID: <22332676-9d3a-1e21-aa70-e9c367b19bd9@kernel.org>
-Date:   Wed, 30 Nov 2022 10:37:36 +0100
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DyimTsGicnIOXyJxTp612vWAngQAXfJDawR7jdgxSVE=;
+        b=OaWdkJ54EfFE5naqy1GmLht2a9B+C6MwEVSifjRGCu1kRGd5/Wr5w1/arW2Woz8f9M
+         DFC+RdHmBEy3wy3mDUTdVB3DBRtV8FH0XRYbTe6+vUl0/7RdtrsIKKAOPsQBDBCGWzBo
+         4huYbw+r0z8EHfwddjzNWs7mW9ivk7ktm0IoueXoANnmPL66+KLAxZCmfJk1nmLTA2Ns
+         M/HvBUTlltQ6My1nqirAGbSq0VbNQyI458tID2PKsAylRtV5gLjH0/OA5dYXZEdaFOLJ
+         J1wN4AqwNdmaUZGl9230BsMzRp3dqJF5J6jPeMLTy4VmCpkRsii6VPtecXHwndYz4r/3
+         8JRA==
+X-Gm-Message-State: ANoB5pliiooSXW1OFn50gs+2dY9CKP+PfJ+nhjg6YMNDlsKNCFZofWsf
+        NM92nfQhxsvhu+OFmEyni/mYnFKfBY1zqQWSq/hXMumTm08WAlxV2AJHH8v5B3h/71rrYM9g22E
+        6m3mb7DJ+2Bxg7hGGiCYYC2rh+TplY8sD+rJTP7K3FA==
+X-Received: by 2002:a17:907:11c5:b0:7b1:316c:38f7 with SMTP id va5-20020a17090711c500b007b1316c38f7mr52813401ejb.387.1669805779859;
+        Wed, 30 Nov 2022 02:56:19 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7AEfKvCO4mUUHPLkMKip3v0WPDpcafAk3qN3uzgOhRCsG8xOanG+HE2L3zpdHE4w+q5Naamw==
+X-Received: by 2002:a17:907:11c5:b0:7b1:316c:38f7 with SMTP id va5-20020a17090711c500b007b1316c38f7mr52813388ejb.387.1669805779528;
+        Wed, 30 Nov 2022 02:56:19 -0800 (PST)
+Received: from localhost.localdomain (cm-2096.cable.globalnet.hr. [213.149.62.97])
+        by smtp.gmail.com with ESMTPSA id k2-20020a17090632c200b0078db18d7972sm496903ejk.117.2022.11.30.02.56.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Nov 2022 02:56:19 -0800 (PST)
+From:   Isaac True <isaac.true@canonical.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Isaac True <isaac.true@canonical.com>,
+        Wen-chien Jesse Sung <jesse.sung@canonical.com>
+Subject: [PATCH] serial: sc16is7xx: setup GPIO controller later in probe
+Date:   Wed, 30 Nov 2022 11:55:30 +0100
+Message-Id: <20221130105529.698385-1-isaac.true@canonical.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v4 11/13] tty: serial: qcom-geni-serial: stop operations
- in progress at shutdown
-Content-Language: en-US
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-References: <20221129110012.224685-1-brgl@bgdev.pl>
- <20221129110012.224685-12-brgl@bgdev.pl>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20221129110012.224685-12-brgl@bgdev.pl>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 29. 11. 22, 12:00, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> 
-> We don't stop transmissions in progress at shutdown. This is fine with
-> FIFO SE mode but with DMA it causes trouble so fix it now.
-> 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->   drivers/tty/serial/qcom_geni_serial.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index fe15fc0e1345..c0270eec2a66 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -864,6 +864,9 @@ static void get_tx_fifo_size(struct qcom_geni_serial_port *port)
->   
->   static void qcom_geni_serial_shutdown(struct uart_port *uport)
->   {
-> +	qcom_geni_serial_stop_tx(uport);
-> +	qcom_geni_serial_stop_rx(uport);
-> +
->   	disable_irq(uport->irq);
+The GPIO controller component of the sc16is7xx driver is setup too
+early, which can result in a race condition where another device tries
+to utilise the GPIO lines before the sc16is7xx device has finished
+initialising.
 
-I'm just asking without actually looking into the code: cannot the 
-interrupt reschedule/restart the above?
+This issue manifests itself as an Oops when the GPIO lines are configured:
 
-thanks,
+    Unable to handle kernel read from unreadable memory at virtual address
+    ...
+    pc : sc16is7xx_gpio_direction_output+0x68/0x108 [sc16is7xx]
+    lr : sc16is7xx_gpio_direction_output+0x4c/0x108 [sc16is7xx]
+    ...
+    Call trace:
+    sc16is7xx_gpio_direction_output+0x68/0x108 [sc16is7xx]
+    gpiod_direction_output_raw_commit+0x64/0x318
+    gpiod_direction_output+0xb0/0x170
+    create_gpio_led+0xec/0x198
+    gpio_led_probe+0x16c/0x4f0
+    platform_drv_probe+0x5c/0xb0
+    really_probe+0xe8/0x448
+    driver_probe_device+0xe8/0x138
+    __device_attach_driver+0x94/0x118
+    bus_for_each_drv+0x8c/0xe0
+    __device_attach+0x100/0x1b8
+    device_initial_probe+0x28/0x38
+    bus_probe_device+0xa4/0xb0
+    deferred_probe_work_func+0x90/0xe0
+    process_one_work+0x1c4/0x480
+    worker_thread+0x54/0x430
+    kthread+0x138/0x150
+    ret_from_fork+0x10/0x1c
+
+This patch moves the setup of the GPIO controller functions to later in the
+probe function, ensuring the sc16is7xx device has already finished
+initialising by the time other devices try to make use of the GPIO lines.
+The error handling has also been reordered to reflect the new
+initialisation order.
+
+Co-developed-by: Wen-chien Jesse Sung <jesse.sung@canonical.com>
+Signed-off-by: Wen-chien Jesse Sung <jesse.sung@canonical.com>
+Signed-off-by: Isaac True <isaac.true@canonical.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 51 +++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 524921360ca7..93cf5f788817 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1426,25 +1426,6 @@ static int sc16is7xx_probe(struct device *dev,
+ 	}
+ 	sched_set_fifo(s->kworker_task);
+ 
+-#ifdef CONFIG_GPIOLIB
+-	if (devtype->nr_gpio) {
+-		/* Setup GPIO cotroller */
+-		s->gpio.owner		 = THIS_MODULE;
+-		s->gpio.parent		 = dev;
+-		s->gpio.label		 = dev_name(dev);
+-		s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
+-		s->gpio.get		 = sc16is7xx_gpio_get;
+-		s->gpio.direction_output = sc16is7xx_gpio_direction_output;
+-		s->gpio.set		 = sc16is7xx_gpio_set;
+-		s->gpio.base		 = -1;
+-		s->gpio.ngpio		 = devtype->nr_gpio;
+-		s->gpio.can_sleep	 = 1;
+-		ret = gpiochip_add_data(&s->gpio, s);
+-		if (ret)
+-			goto out_thread;
+-	}
+-#endif
+-
+ 	/* reset device, purging any pending irq / data */
+ 	regmap_write(s->regmap, SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
+ 			SC16IS7XX_IOCONTROL_SRESET_BIT);
+@@ -1521,6 +1502,25 @@ static int sc16is7xx_probe(struct device *dev,
+ 				s->p[u].irda_mode = true;
+ 	}
+ 
++#ifdef CONFIG_GPIOLIB
++	if (devtype->nr_gpio) {
++		/* Setup GPIO cotroller */
++		s->gpio.owner		 = THIS_MODULE;
++		s->gpio.parent		 = dev;
++		s->gpio.label		 = dev_name(dev);
++		s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
++		s->gpio.get		 = sc16is7xx_gpio_get;
++		s->gpio.direction_output = sc16is7xx_gpio_direction_output;
++		s->gpio.set		 = sc16is7xx_gpio_set;
++		s->gpio.base		 = -1;
++		s->gpio.ngpio		 = devtype->nr_gpio;
++		s->gpio.can_sleep	 = 1;
++		ret = gpiochip_add_data(&s->gpio, s);
++		if (ret)
++			goto out_thread;
++	}
++#endif
++
+ 	/*
+ 	 * Setup interrupt. We first try to acquire the IRQ line as level IRQ.
+ 	 * If that succeeds, we can allow sharing the interrupt as well.
+@@ -1540,18 +1540,19 @@ static int sc16is7xx_probe(struct device *dev,
+ 	if (!ret)
+ 		return 0;
+ 
+-out_ports:
+-	for (i--; i >= 0; i--) {
+-		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+-		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
+-	}
+-
+ #ifdef CONFIG_GPIOLIB
+ 	if (devtype->nr_gpio)
+ 		gpiochip_remove(&s->gpio);
+ 
+ out_thread:
+ #endif
++
++out_ports:
++	for (i--; i >= 0; i--) {
++		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
++		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
++	}
++
+ 	kthread_stop(s->kworker_task);
+ 
+ out_clk:
 -- 
-js
-suse labs
+2.37.2
 
