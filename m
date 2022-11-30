@@ -2,77 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A494C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 05:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A212C4321E
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Nov 2022 06:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233567AbiK3FpM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Nov 2022 00:45:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
+        id S232849AbiK3GtG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Nov 2022 01:49:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233034AbiK3FpK (ORCPT
+        with ESMTP id S232297AbiK3GtG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Nov 2022 00:45:10 -0500
+        Wed, 30 Nov 2022 01:49:06 -0500
 Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE311EADC;
-        Tue, 29 Nov 2022 21:45:09 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 753073200904;
-        Wed, 30 Nov 2022 00:45:05 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Wed, 30 Nov 2022 00:45:06 -0500
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF0E45EDB;
+        Tue, 29 Nov 2022 22:49:04 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 6962432008C3;
+        Wed, 30 Nov 2022 01:49:01 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 30 Nov 2022 01:49:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1669787105; x=
-        1669873505; bh=LkZuJhoFPALKZewfNv71Q2bTIVj19V0FYRHh96YSopA=; b=V
-        b14HqnKNhghBeiSxGLwAxdjwLwPaUu1p/bYwm5hqd0cfIH83Fn4xckngJMp2AoJb
-        /wZ1UTRAJ3cLMhfrhSpBz0HK6q84comT/SQu0b8oAXd5UAOvnl+H3sTBfFGg7Gpf
-        d+2PcsALD3uC25R7iYve+aekl1e0Cxo8sj4uLXTKbj9ewbA/3C98Et/vA++ZOb2/
-        1wJOyfuNjw3w+hzqpbgYHamUsvjOD6L4FSA/tmsCfbHI2bo/aTu4wePVkvVcY9UX
-        yLhB5Xk3RbvX18+HG/WCnij6OgJuYa6U6EXJzzu2uZGcvUjR/hjQVEqEpYgbI6gC
-        usdBbHg8odzIRHy43YkNA==
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1669790940; x=
+        1669877340; bh=Oo4m/M2CLmFBs936diTgoNkM47vJxV+hsa4z7Pi/W/c=; b=i
+        UybVenTBMuICmg1qOTvvLhVZhFOCVQ2TUs07wvfeMI6oGBlIby4tTDTP2WehHFUq
+        JuXJW3HKOX+xthigiaMlemR8XB4s+kw+U/8M354F7214xlZ/EwOYO7T/wp3rF5cV
+        ostq0XKldLMxoF1pFJQRkR9rX/rGajiU5DtVdOqKgjRn4wLpUfeRS3jwnPzHJHql
+        zok6S8GtW2rDEJAqn1q1Rji2/HVSbN/wzZ+IYgMiu6W/Sc1OPGnHV3Mfin+Rq9jA
+        1cY6AwylGgipbF0XhfAxjum82IqFDAqqJBAazpPcR6s7pAlHZDkSPVO1/mxzBEAf
+        PzH6M/GkQP7BRt9aBdlqA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669787105; x=
-        1669873505; bh=LkZuJhoFPALKZewfNv71Q2bTIVj19V0FYRHh96YSopA=; b=k
-        wGiPT9yBN5R0ELE4mGlBKh4ypOq5HHBkngvvtP8Eb0QCsEeDidhwaG/9yOFitZ7X
-        BfI/eXk8BlZyEr3zokiheY2NzH/m1CwOUJ/YpT86iR4AalQ6mqgQ+NuwX1mCZ6Wa
-        EDCpo00ORWsIHS6aEsG4XTcbZXhvZP9HcwU/r0zC6V1RaRX5KZzOHRGU3Q+7O678
-        7X8ptn3H3Wnr8EKbrYvIIDwOuNUCKeJPVkGTgBF0IdaQG25Spb1tR2BynU5dXv2s
-        OMFnrkFHRqGtNovf6KtDfjf1jF4doQhdEmsMMKADa1xjDtKQazTACP5HqDAwPz6w
-        JdDhSOWlFl3gPryVk31HQ==
-X-ME-Sender: <xms:3-2GY4LfYbXANE94B4-b3M6xbVSF1n52BB5Uq3CssrNTRHjASw5-yA>
-    <xme:3-2GY4ISSTk5zdS7G30qZmANE49qtUrkOCt_tf1Sa-4PWtHRR6bzC7p6QupT-cX24
-    Pb3Nf7g0MhmEN3IRQ>
-X-ME-Received: <xmr:3-2GY4sF9s3ko5Bvsdv3gi0PAVIk8IS8XguHMxweVh8LrSCsxwPUfoAZ-mo81iNWsXBRbKnvKmiqDKg9K8z3hcVLip1ruI7f2He3X-YMIdRNLwN7m1wTWrfchw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtddvgdekiecutefuodetggdotefrodftvf
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1669790940; x=
+        1669877340; bh=Oo4m/M2CLmFBs936diTgoNkM47vJxV+hsa4z7Pi/W/c=; b=W
+        140O6eix5o9QGCjvzrQHyoM5YtS44aVc+YsF5ecHuZqgadvwyHJiiZd00p/NEMuw
+        dMCEqKjGV5z9ra54AsBqsHTjfQ8jW1mkTJKj06WXMQsHQLlRhsUqQd0g+y/zd2fx
+        7k5+jYaBmoYndpEVzWq6CrlDoAmKfxuewht9l/FelucM3wHt+6Fmedg+7rF71CIw
+        mU0+W4m/x8+9yuMRG7chKUdk8/4D5tW3kf2RJYNnYDnCrfCg3qvbdGov5mBw3ar1
+        xrzNVCPZ6TJujTYcUuCsLYYPSXJCTQ7oHWLLgcB+N0qA3GHAH1CliOzQKxVzTfL8
+        QyDpIFS8bDSKlhCM8WbKw==
+X-ME-Sender: <xms:2_yGYz0Y49q2bNvS5nkXckNWHbFLgDzTGWWRKbd-gvlkNS8gBa0hcA>
+    <xme:2_yGYyE8qsDxm79tnHHpiJgqVlpAKjCU-fLs9ui8qF9fofJCXsA-lt0zeZUy_tGIg
+    rAvDMjXkQuLA153jw>
+X-ME-Received: <xmr:2_yGYz6YTf4tziAk4X2ZgRzInmxjOwq94ysEjs3vWVqAhS4hw6lDk3gLUyGNqCb859MAgTfrMEfvoZchab9PSFB8Lcd0R0sT7QwqMJ6gsSVDG8yXK0mOjtII3A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtddvgdellecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkffggfgfhvfevfhfujggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
+    fjughrpefkffggfgfuvfevfhfhjggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
     vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnheptefghfelffeiueetjefhteektddvkedttdetleevlefhhefgkeeu
-    gfekieduleejnecuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhush
-    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhh
-    ohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:4O2GY1aqwqVKHzbN5zqeT9yy2cfQkK0xDGWSy_nMy6UetU53rqBBfA>
-    <xmx:4O2GY_aOd1BaVEmTOjzsBq-Uqj82iwuRJMJmyvkJ_3ZlMLJ9hNKj0g>
-    <xmx:4O2GYxB_B017LvgwjXTIDi_gHFOA6FNfzbsiKytdums5foyMQMaMpQ>
-    <xmx:4e2GYzSNNOMBxGZ921_CrEzbqHkcYhfJnbvqT-QqVLZ9m8y7lR2s4A>
+    ftrfgrthhtvghrnhepudfhffefhfffuddutedvffekteevieeugeefleelffeitddutdff
+    udehgfdtfefgnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhhohhllhgr
+    nhgurdhorhhg
+X-ME-Proxy: <xmx:2_yGY43y3F_JIzreruW5KaMjdYX6lCBtFKEAw0-f067mmFQXJj5nhw>
+    <xmx:2_yGY2G4PW9MSLevbKpqlAOlAlCP15_qWMzLUU23c7FN2OPIqUE3Pg>
+    <xmx:2_yGY59DQWmk2HPhM8j52r53VsjSu3g7Q7EGlXzBbfFZNbB-qMZTww>
+    <xmx:3PyGYyH_b_OEbiRJP5xFF7ri_CaEbLmi19Chl0sOjTQDPTgy5yaciQ>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 30 Nov 2022 00:45:01 -0500 (EST)
-Message-ID: <eee2d11d-a3b3-41d7-5f51-02294d5ee2cc@sholland.org>
-Date:   Tue, 29 Nov 2022 23:45:00 -0600
+ 30 Nov 2022 01:48:58 -0500 (EST)
+Message-ID: <d0344e62-b9ff-8465-9556-5562e195f4a3@sholland.org>
+Date:   Wed, 30 Nov 2022 00:48:58 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:102.0) Gecko/20100101
  Thunderbird/102.3.3
-From:   Samuel Holland <samuel@sholland.org>
+Subject: Re: [PATCH v2 3/9] riscv: add the Bouffalolab SoC family Kconfig
+ option
+Content-Language: en-US
 To:     Jisheng Zhang <jszhang@kernel.org>
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Conor Dooley <conor.dooley@microchip.com>,
         Rob Herring <robh+dt@kernel.org>,
         Conor Dooley <conor@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -83,11 +86,9 @@ Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         Jiri Slaby <jirislaby@kernel.org>,
         =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
 References: <20221127132448.4034-1-jszhang@kernel.org>
- <20221127132448.4034-2-jszhang@kernel.org>
-Content-Language: en-US
-Subject: Re: [PATCH v2 1/9] dt-bindings: serial: add documentation for
- Bouffalolab UART Driver
-In-Reply-To: <20221127132448.4034-2-jszhang@kernel.org>
+ <20221127132448.4034-4-jszhang@kernel.org>
+From:   Samuel Holland <samuel@sholland.org>
+In-Reply-To: <20221127132448.4034-4-jszhang@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -95,74 +96,38 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 11/27/22 07:24, Jisheng Zhang wrote:
-> Add bindings doc for Bouffalolab UART Driver
+> The Bouffalolab bl808 SoC contains three riscv CPUs, namely M0, D0 and
+> LP. The D0 is 64bit RISC-V GC compatible, so can run linux.
 > 
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 > ---
->  .../bindings/serial/bouffalolab,uart.yaml     | 47 +++++++++++++++++++
->  1 file changed, 47 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+>  arch/riscv/Kconfig.socs | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
-> new file mode 100644
-> index 000000000000..a8293444ca31
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
-> @@ -0,0 +1,47 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/bouffalolab,uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Bouffalolab UART Controller
-> +
-> +maintainers:
-> +  - Jisheng Zhang <jszhang@kernel.org>
-> +
-> +allOf:
-> +  - $ref: serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: bouffalolab,bl808-uart
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
+> diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+> index 69774bb362d6..90256f44ed4a 100644
+> --- a/arch/riscv/Kconfig.socs
+> +++ b/arch/riscv/Kconfig.socs
+> @@ -1,5 +1,11 @@
+>  menu "SoC selection"
+>  
+> +config SOC_BOUFFALOLAB
 
-There is also a reset control for this peripheral (in the GLB registers
-at GLB_SWRST_S1A0).
+The options in this file are getting renamed soon, so this should be
+named ARCH_BOUFFALOLAB. See
 
-And since you set additionalProperties, I believe you need to add the
-DMA channel properties here as well.
+https://lore.kernel.org/linux-riscv/20221121221414.109965-1-conor@kernel.org/
 
 Regards,
 Samuel
 
+> +	bool "Bouffalolab SoCs"
+> +	select SIFIVE_PLIC
+> +	help
+> +	  This enables support for Bouffalolab SoC platforms.
 > +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    uart0: serial@30002000 {
-> +        compatible = "bouffalolab,bl808-uart";
-> +        reg = <0x30002000 0x1000>;
-> +        interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&xtal>;
-> +    };
-> +...
+>  config SOC_MICROCHIP_POLARFIRE
+>  	bool "Microchip PolarFire SoCs"
+>  	select MCHP_CLK_MPFS
+
