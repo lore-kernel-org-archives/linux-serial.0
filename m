@@ -2,85 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19509C43217
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9D2C43217
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbiLAMKs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Dec 2022 07:10:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        id S231308AbiLAMMG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Dec 2022 07:12:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231294AbiLAMKr (ORCPT
+        with ESMTP id S230309AbiLAMMF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Dec 2022 07:10:47 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4227494911;
-        Thu,  1 Dec 2022 04:10:46 -0800 (PST)
+        Thu, 1 Dec 2022 07:12:05 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176519FEC6;
+        Thu,  1 Dec 2022 04:12:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669896646; x=1701432646;
+  t=1669896725; x=1701432725;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9JuKEDFgjles0FxGNHO8qhS4PPisXJ14oKVEED3D0Eo=;
-  b=nU7TFGIVHQx4gZ0Xomc8gB/px/o9VASnlR9L5svzs1RJQMlR1qSaFA6t
-   8E7fQ7ECn/6cDLAZpDpSIvSdkAKk78uwQ4BvsYiu3VXjoZF40HrtLHprf
-   IKYCU1BhyYdTG36mTQJJc8rYjLm9p4rvPO/0VZhsoo+ZOXB6VB2EEb8La
-   gTeHV4Ruev3fwK9oIdbfLs7pXWAespjpntFBOyHnqaVHzXM2auC1lhbdQ
-   9uc43awiksY5Cd0yPKz9QmwN3/OiuSXM5Cyk5F/F+IKtFWhey/wfRwINm
-   CMhaV6kSpF9w5NrqGlUOy5jYrMnXSW1/KnQaHOzp0uhu93QN8wIMkDUAI
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="296026196"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+nyqNhr3DjrxmbKqi/W9O0lEzuiL8DE0wvsWkUYbdww=;
+  b=Wt2OqPrbz+ba6aAM4OoVzuT35Ir4pXNwsQkts9y4DVh1b9UuZe9dSg6W
+   W27lbaJ6B9qh6J39GCcK5mbR3ggNUYAr9Q1jetN0dAFcHbgx0BkCrcZtq
+   Uvo7TMIi3iaXxpJe01Ex78Y/yQPo5+htBT77+4H56C79B+kb5P1JTzOqD
+   srh1JeENmCWCikD2hBOxtDvGnzc6RpXl/SM5saAf5sE1peC0B8h9cBjgG
+   kDsc4mRLtLFEKhCfuIdNcZs5UQDum0tZKqYtYeht+awROXM2XVnxYaT5J
+   gYFTaeY/HQszwjtPQWKnRmY/r2Yn+4dwvEymyglKTZRlNhEg89GS938AD
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="315693966"
 X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="296026196"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:10:45 -0800
+   d="scan'208";a="315693966"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:12:04 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="889708485"
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="677196479"
 X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="889708485"
+   d="scan'208";a="677196479"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006.fm.intel.com with ESMTP; 01 Dec 2022 04:10:41 -0800
+  by orsmga001.jf.intel.com with ESMTP; 01 Dec 2022 04:11:59 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p0iOk-002mAX-0G;
-        Thu, 01 Dec 2022 14:10:38 +0200
-Date:   Thu, 1 Dec 2022 14:10:37 +0200
+        id 1p0iQ0-002mBm-0l;
+        Thu, 01 Dec 2022 14:11:56 +0200
+Date:   Thu, 1 Dec 2022 14:11:55 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, macro@orcam.me.uk,
         jay.dolan@accesio.com, cang1@live.co.uk,
         u.kleine-koenig@pengutronix.de, wander@redhat.com,
         etremblay@distech-controls.com, jk@ozlabs.org,
         biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
+        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
         UNGLinuxDriver@microchip.com, colin.i.king@gmail.com,
         Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
 Subject: Re: [PATCH v6 tty-next 1/4] serial: 8250_pci: Add
  serial8250_pci_setup_port definition in 8250_pcilib.c
-Message-ID: <Y4iZvZkNc3OwKw/G@smile.fi.intel.com>
+Message-ID: <Y4iaC7rRkBhyOIsI@smile.fi.intel.com>
 References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com>
  <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
+ <1189f5af-aaac-f4c8-b928-cda183e7f90@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1189f5af-aaac-f4c8-b928-cda183e7f90@linux.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 01, 2022 at 10:21:43AM +0530, Kumaravel Thiagarajan wrote:
-> Move implementation of setup_port API to serial8250_pci_setup_port
+On Thu, Dec 01, 2022 at 11:06:53AM +0200, Ilpo Järvinen wrote:
+> On Thu, 1 Dec 2022, Kumaravel Thiagarajan wrote:
+...
 
-We refer to the functions as func().
-Moreover the grammatical period is what each end of sentence should have.
+> > +/*
+> > + * 8250 PCI library header file.
+> > + *
+> > + * Copyright (C) 2001 Russell King, All Rights Reserved.
+> > + */
+> 
+> You shouldn't depend on .c file having things included for you. So
+> please add these:
 
-> +EXPORT_SYMBOL_GPL(serial8250_pci_setup_port);
+> #include "8250.h"
 
-Make it namespaced from day 1.
+TBH I don't see how this is used here, but types.h for sure is missing.
 
-SERIAL_8250_PCI would be good name for symbol namespaces.
+> struct pci_dev;
+
++ blank line
+
+struct uart_8250_port;
+
+> Other than that,
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> > +int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port, u8 bar,
+> > +		   unsigned int offset, int regshift);
 
 
 -- 
