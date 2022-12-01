@@ -2,89 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A7BC47088
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C25EDC47089
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 13:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiLAMXP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Dec 2022 07:23:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
+        id S230040AbiLANao (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Dec 2022 08:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231343AbiLAMXN (ORCPT
+        with ESMTP id S231510AbiLANan (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Dec 2022 07:23:13 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB0018E3C;
-        Thu,  1 Dec 2022 04:23:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669897392; x=1701433392;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EP/AlIx/iBNKrfQdGQpEKhAM6XUj8+gNp+3KbyqvZ/k=;
-  b=gLTRKfpYo4lyvqw0eEuKcJnOkPPnOdCDnB0xXNb8zDtw+kpMnIRMzm6+
-   i8HUWfE3Dzle4reIWIbUGimG87HsLNcMkLBgOZZj3Q3Rg186ZUziqIrBw
-   T/xzdNGp5TJO2xzmdJxwr2TmaIeAcWuTGW1CEAWM6wyAnNQ9ow5fPTvRW
-   KtUKEcw9+KP9077QfpR4by95+WTHwtQ42t6uHKs3VQ/W/dXLL0EBjw58u
-   TSLUMC28hDhfUKf7jFi0jS7xgvCx7DYn2pDi81lmhgij0AtOydAD7aJss
-   agrc6/tkCFx38BqZrY2Uuiy/6nK0/iyqAB+UulBQwPqRyAYqJ2zz62xoh
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="313301115"
-X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="313301115"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:23:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="644623510"
-X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="644623510"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002.jf.intel.com with ESMTP; 01 Dec 2022 04:23:05 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p0iak-002mR5-2C;
-        Thu, 01 Dec 2022 14:23:02 +0200
-Date:   Thu, 1 Dec 2022 14:23:02 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        jay.dolan@accesio.com, cang1@live.co.uk,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        UNGLinuxDriver@microchip.com, colin.i.king@gmail.com,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v6 tty-next 4/4] serial: 8250_pci1xxxx: Add power
- management functions to quad-uart driver
-Message-ID: <Y4icpjHDim7eAJjx@smile.fi.intel.com>
-References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com>
- <20221201045146.1055913-5-kumaravel.thiagarajan@microchip.com>
+        Thu, 1 Dec 2022 08:30:43 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE156A9EB1
+        for <linux-serial@vger.kernel.org>; Thu,  1 Dec 2022 05:30:40 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id d3so1895718ljl.1
+        for <linux-serial@vger.kernel.org>; Thu, 01 Dec 2022 05:30:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=2ILQpLAASTEQxVAHqS2HsUvzwY9XLxYCyDgjgQHgPzU=;
+        b=eR9ALniAmj8Rr/MZ8fMkaouXFUfjlssAT56toegyYHVQ1TDZRoXOsvAdt5rJhV+V9U
+         8gZwDPU2a7V0Me0ZTWbWhqSV3vgyOTU3cbwup5/rBKe40wn9jaLCmMo1kHbM9/y6DR/2
+         OorzZRlGG0knCysTjLO7Y/fWYAFQmGBAbr3xARhqMO+syBiRvEtrH1MD8LhW7vVWCg1k
+         IDVPqKmd5i0S3Eo3tR6KkPEImCHtz8Yz33jN8evalkvM82qvdp3OrgviLG2cGDvsda7r
+         quhZmXkDLIp/ioY9PxAC668LfCcTG6iE3XsFyo2p4c9G1S6xKyiQWWO7LPW0gAXebrbK
+         IS8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2ILQpLAASTEQxVAHqS2HsUvzwY9XLxYCyDgjgQHgPzU=;
+        b=zQobhmd0bBEWkwqFTQRCiXZqS5cWcwujHJyBNjZmX774egWPxfANfLM4Sz0FwqU9vY
+         0TlN7Nq4mTOHBr/i3FDLOLRobFs81ooZ9Wx0BdnwICuy9XmQQ0SEjiLVTOLy7jh79Blj
+         Wg1uTexMTy6wFN+4E3wtGHLjWk0YJG+7Hu/k4q0PAZzXz/evh/7/oQmMqnIihbcw9vL+
+         oEZ/+d4Ki9/3IZSyXwAV8QZfv/s7Yl/VVSszyePs/4RNMpjmJMfKEkiafAyk681Y0h89
+         PsQYoXs0dNLP53GhZpd14aJCf5vPduNzdnXBKNlcZ4MD9wPRn4stvz3wSj2NIRFwt8k5
+         t8ZA==
+X-Gm-Message-State: ANoB5plX+hGiKopf2QB47UBcmPlqqTAi59Bi9lLCFUiiMXoN+V5DQqHp
+        zqyEO4jw2GxHPyh8n2NqieCIVA==
+X-Google-Smtp-Source: AA0mqf5OkeTE/cp5ki879BHyFVVAPe8JGTwak2eUMlj2ILnqi8fBN5AEyJqIAguB2W9cicz1mZD4tw==
+X-Received: by 2002:a2e:828d:0:b0:276:ffbf:2ee2 with SMTP id y13-20020a2e828d000000b00276ffbf2ee2mr19981993ljg.505.1669901439104;
+        Thu, 01 Dec 2022 05:30:39 -0800 (PST)
+Received: from krzk-bin.NAT.warszawa.vectranet.pl (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id p1-20020ac24ec1000000b004991437990esm657494lfr.11.2022.12.01.05.30.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Dec 2022 05:30:38 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: serial: qcom,msm-uart: Convert to DT schema
+Date:   Thu,  1 Dec 2022 14:30:36 +0100
+Message-Id: <20221201133036.45288-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221201045146.1055913-5-kumaravel.thiagarajan@microchip.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 01, 2022 at 10:21:46AM +0530, Kumaravel Thiagarajan wrote:
-> pci1xxxx's quad-uart function has the capability to wake up UART
-> from suspend state. Enable wakeup before entering into suspend and
-> disable wakeup on resume.
+Convert the Qualcomm MSM SoC UART (non-DMA) bindings to DT schema.
 
-...
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/serial/qcom,msm-uart.txt         | 25 ---------
+ .../bindings/serial/qcom,msm-uart.yaml        | 56 +++++++++++++++++++
+ 2 files changed, 56 insertions(+), 25 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml
 
-> +static DEFINE_SIMPLE_DEV_PM_OPS(pci1xxxx_pm_ops, pci1xxxx_suspend,
-> +				pci1xxxx_resume);
-
-One line?
-
-
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uart.txt b/Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
+deleted file mode 100644
+index ce8c90161959..000000000000
+--- a/Documentation/devicetree/bindings/serial/qcom,msm-uart.txt
++++ /dev/null
+@@ -1,25 +0,0 @@
+-* MSM Serial UART
+-
+-The MSM serial UART hardware is designed for low-speed use cases where a
+-dma-engine isn't needed. From a software perspective it's mostly compatible
+-with the MSM serial UARTDM except that it only supports reading and writing one
+-character at a time.
+-
+-Required properties:
+-- compatible: Should contain "qcom,msm-uart"
+-- reg: Should contain UART register location and length.
+-- interrupts: Should contain UART interrupt.
+-- clocks: Should contain the core clock.
+-- clock-names: Should be "core".
+-
+-Example:
+-
+-A uart device at 0xa9c00000 with interrupt 11.
+-
+-serial@a9c00000 {
+-	compatible = "qcom,msm-uart";
+-	reg = <0xa9c00000 0x1000>;
+-	interrupts = <11>;
+-	clocks = <&uart_cxc>;
+-	clock-names = "core";
+-};
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml b/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml
+new file mode 100644
+index 000000000000..a052aaef21f4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uart.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/qcom,msm-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm MSM SoC Serial UART
++
++maintainers:
++  - Bjorn Andersson <andersson@kernel.org>
++  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
++
++description:
++  The MSM serial UART hardware is designed for low-speed use cases where a
++  dma-engine isn't needed. From a software perspective it's mostly compatible
++  with the MSM serial UARTDM except that it only supports reading and writing
++  one character at a time.
++
++properties:
++  compatible:
++    const: qcom,msm-uart
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: core
++
++  interrupts:
++    maxItems: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - clock-names
++  - clocks
++  - interrupts
++  - reg
++
++unevaluatedProperties: false
++
++allOf:
++  - $ref: /schemas/serial/serial.yaml#
++
++examples:
++  - |
++    serial@a9c00000 {
++        compatible = "qcom,msm-uart";
++        reg = <0xa9c00000 0x1000>;
++        interrupts = <11>;
++        clocks = <&uart_cxc>;
++        clock-names = "core";
++    };
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
