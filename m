@@ -2,110 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0A6C43217
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19509C43217
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbiLAMJl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Dec 2022 07:09:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        id S231297AbiLAMKs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Dec 2022 07:10:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiLAMJk (ORCPT
+        with ESMTP id S231294AbiLAMKr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Dec 2022 07:09:40 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872BC94565
-        for <linux-serial@vger.kernel.org>; Thu,  1 Dec 2022 04:09:39 -0800 (PST)
+        Thu, 1 Dec 2022 07:10:47 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4227494911;
+        Thu,  1 Dec 2022 04:10:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669896579; x=1701432579;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=c2A3JlbdQzPIBwuXqYqtYZK3Lxugj8gZL6mBVUWZu0s=;
-  b=GW3xL5Z5JWGO+KafMb3yF1NrJ6msc1AaoNSrwde8odTl7jahzs1UaSuX
-   2qXXzFpEvuMZ3uWqq1M27Hp5Wc4UHr0HoI00kRWlcqXYz+7HSIgoH7CF3
-   SdlkJvXjloehKn7jrg31BoCAg09Avs/kWtqSWt9wsqEorjBoocjt+57eJ
-   iupjRTpAybozEzGjtjzqC4cBQh0H9ol1reDyqDrjDQ3UVQNaFbWaE8Gdk
-   l7mY2c9Ps7DhbmQKEFyDdwkmCOHzZMjsmJgjFsDzsslUAEOViGxGIShCW
-   kcAmRZLz6ksW68qim48EW11MiZ+q0WuaTTs0ngGWMTQmOfI21NGS3XU36
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="313298019"
+  t=1669896646; x=1701432646;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9JuKEDFgjles0FxGNHO8qhS4PPisXJ14oKVEED3D0Eo=;
+  b=nU7TFGIVHQx4gZ0Xomc8gB/px/o9VASnlR9L5svzs1RJQMlR1qSaFA6t
+   8E7fQ7ECn/6cDLAZpDpSIvSdkAKk78uwQ4BvsYiu3VXjoZF40HrtLHprf
+   IKYCU1BhyYdTG36mTQJJc8rYjLm9p4rvPO/0VZhsoo+ZOXB6VB2EEb8La
+   gTeHV4Ruev3fwK9oIdbfLs7pXWAespjpntFBOyHnqaVHzXM2auC1lhbdQ
+   9uc43awiksY5Cd0yPKz9QmwN3/OiuSXM5Cyk5F/F+IKtFWhey/wfRwINm
+   CMhaV6kSpF9w5NrqGlUOy5jYrMnXSW1/KnQaHOzp0uhu93QN8wIMkDUAI
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="296026196"
 X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="313298019"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:09:39 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="595042881"
+   d="scan'208";a="296026196"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:10:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="889708485"
 X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="595042881"
-Received: from akoroglu-mobl.ger.corp.intel.com ([10.251.212.165])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:09:35 -0800
-Date:   Thu, 1 Dec 2022 14:09:32 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Christoph Niedermaier <cniedermaier@dh-electronics.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski+dt@linaro.org, marex@denx.de,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Alexander Dahl <ada@thorsis.com>, kernel@dh-electronics.com,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH V3 4/4] serial: stm32: Add support for rs485 RX_DURING_TX
- output GPIO
-In-Reply-To: <20221201110237.7917-4-cniedermaier@dh-electronics.com>
-Message-ID: <2d909d7f-9c6-474-ce15-76a55fdafed3@linux.intel.com>
-References: <20221201110237.7917-1-cniedermaier@dh-electronics.com> <20221201110237.7917-4-cniedermaier@dh-electronics.com>
+   d="scan'208";a="889708485"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 01 Dec 2022 04:10:41 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1p0iOk-002mAX-0G;
+        Thu, 01 Dec 2022 14:10:38 +0200
+Date:   Thu, 1 Dec 2022 14:10:37 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
+        jay.dolan@accesio.com, cang1@live.co.uk,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
+        phil.edworthy@renesas.com, lukas@wunner.de,
+        UNGLinuxDriver@microchip.com, colin.i.king@gmail.com,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+Subject: Re: [PATCH v6 tty-next 1/4] serial: 8250_pci: Add
+ serial8250_pci_setup_port definition in 8250_pcilib.c
+Message-ID: <Y4iZvZkNc3OwKw/G@smile.fi.intel.com>
+References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com>
+ <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 1 Dec 2022, Christoph Niedermaier wrote:
+On Thu, Dec 01, 2022 at 10:21:43AM +0530, Kumaravel Thiagarajan wrote:
+> Move implementation of setup_port API to serial8250_pci_setup_port
 
-> If a RX_DURING_TX GPIO is defined by the DT property "rs485-rx-during-tx-gpios"
-> this patch switches this GPIO accordingly to the RS485 flag RX_DURING_TX in user
-> space. Controlled by this GPIO, now the hardware is responsible for connecting
-> or disconnecting RX during TX.
-> 
-> Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-> ---
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: Alexander Dahl <ada@thorsis.com>
-> Cc: Marek Vasut <marex@denx.de>
-> Cc: kernel@dh-electronics.com
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> To: linux-serial@vger.kernel.org
-> To: linux-arm-kernel@lists.infradead.org
-> ---
-> V2: - Rework of the commit message
-> V3: - No changes
-> ---
->  drivers/tty/serial/stm32-usart.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-> index a1490033aa16..0f2cca9054ba 100644
-> --- a/drivers/tty/serial/stm32-usart.c
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -226,7 +226,14 @@ static int stm32_usart_config_rs485(struct uart_port *port, struct ktermios *ter
->  
->  	stm32_usart_clr_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
->  
-> -	rs485conf->flags |= SER_RS485_RX_DURING_TX;
-> +	if (port->rs485_rx_during_tx_gpio) {
-> +		if (rs485conf->flags & SER_RS485_RX_DURING_TX)
-> +			gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 1);
-> +		else
-> +			gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio, 0);
+We refer to the functions as func().
+Moreover the grammatical period is what each end of sentence should have.
 
-gpiod_set_value_cansleep(port->rs485_rx_during_tx_gpio,
-			 !!(rs485conf->flags & SER_RS485_RX_DURING_TX));
+> +EXPORT_SYMBOL_GPL(serial8250_pci_setup_port);
 
-And the same comment also for the other patch.
+Make it namespaced from day 1.
+
+SERIAL_8250_PCI would be good name for symbol namespaces.
+
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
+
+
