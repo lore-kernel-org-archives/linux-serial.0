@@ -2,144 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5F6C4321E
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 07:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F354AC43217
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 09:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbiLAHef (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Dec 2022 02:34:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
+        id S230026AbiLAJHM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Dec 2022 04:07:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiLAHef (ORCPT
+        with ESMTP id S229968AbiLAJHL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Dec 2022 02:34:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B780630F41;
-        Wed, 30 Nov 2022 23:34:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EE861EB8;
-        Thu,  1 Dec 2022 07:34:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332CDC433D6;
-        Thu,  1 Dec 2022 07:34:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1669880072;
-        bh=70O6dWJgZaOOZXUcY049Qm0l1Sl9m0rDak1NqB+X3FA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VjyMr2PhNhftA89A5fAHg5mMHPzyCjrsdNh8fCfzIIsMjBMfbM94vQvO18k/17c++
-         M/LpJBVqxXxONrI142i/HA0HAVHIt0OVBetWr723YRVxQoSiLt8+KJYO8AUbYsaWf3
-         cz0E30ozBL8TOVS4eI46GvwapLXkfCfwdKnXDlUR1e8qj9MARmbvMKIv+yhVp0FjBf
-         Y4/syiiEiX1lmc5ycm0Esk3Cd34+vyX6OjT6eCGOVbzvySIg753Pk8A2QKGuy6iTwT
-         SJtDvXKZtIAYVcoX2hghbR+lX2hidRBSrmm23NybkZdpyCa8p6nYMvwO2thjmtVJeo
-         M5Hjl1BS4Ktig==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     dario.binacchi@amarulasolutions.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Richard Palethorpe <richard.palethorpe@suse.com>,
-        Petr Vorel <petr.vorel@suse.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        Max Staudt <max@enpas.org>
-Subject: [PATCH] can: slcan: fix freed work crash
-Date:   Thu,  1 Dec 2022 08:34:26 +0100
-Message-Id: <20221201073426.17328-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.38.1
+        Thu, 1 Dec 2022 04:07:11 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AF4DF7D;
+        Thu,  1 Dec 2022 01:07:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669885629; x=1701421629;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=3LFOvef9mHe/uLUNJV3kfSw98lBKxTyDZwvxR5zCcZI=;
+  b=XdIGggRbMkpzRD/EXzp+54i7Dbob/TirST4j4sH4ASIpJNnLEPGsW6Gi
+   xfLDMStgmeVTmu6KlHqRgBq+/+0ZYEAeooLnlh9jkAM62GVz9bhxWBKJe
+   u1k1P+D1TMA2qwsUnkLeTR2C6mI+UW1Sc1UfY/j6mhmU6z4OH80nn1CEh
+   2R18Wo6wDO8RbL1MhBwmoKG6tvLG3pjx5Esnb7JYoSbELYh5Hwzeivcm5
+   0n7R0ZWk6/VduT3Fd4iVXb+iYU3hFLWWr+E4rGGOeXH2h854Mynfpiae5
+   +IQxKVbzEx9nP2rANPC0WGasf2KzlqjLedIupUNcEEPUKncFy/EEMlWY6
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="377797266"
+X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
+   d="scan'208";a="377797266"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 01:07:01 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="889653371"
+X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
+   d="scan'208";a="889653371"
+Received: from akoroglu-mobl.ger.corp.intel.com ([10.251.212.165])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 01:06:56 -0800
+Date:   Thu, 1 Dec 2022 11:06:53 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        macro@orcam.me.uk, jay.dolan@accesio.com, cang1@live.co.uk,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
+        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
+        UNGLinuxDriver@microchip.com, colin.i.king@gmail.com,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+Subject: Re: [PATCH v6 tty-next 1/4] serial: 8250_pci: Add serial8250_pci_setup_port
+ definition in 8250_pcilib.c
+In-Reply-To: <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
+Message-ID: <1189f5af-aaac-f4c8-b928-cda183e7f90@linux.intel.com>
+References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com> <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1285920352-1669885620=:1757"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The LTP test pty03 is causing a crash in slcan:
-  BUG: kernel NULL pointer dereference, address: 0000000000000008
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 0 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP NOPTI
-  CPU: 0 PID: 348 Comm: kworker/0:3 Not tainted 6.0.8-1-default #1 openSUSE Tumbleweed 9d20364b934f5aab0a9bdf84e8f45cfdfae39dab
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
-  Workqueue:  0x0 (events)
-  RIP: 0010:process_one_work (/home/rich/kernel/linux/kernel/workqueue.c:706 /home/rich/kernel/linux/kernel/workqueue.c:2185)
-  Code: 49 89 ff 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 10 48 8b 06 48 8b 6f 48 49 89 c4 45 30 e4 a8 04 b8 00 00 00 00 4c 0f 44 e0 <49> 8b 44 24 08 44 8b a8 00 01 00 00 41 83 e5 20 f6 45 10 04 75 0e
-  RSP: 0018:ffffaf7b40f47e98 EFLAGS: 00010046
-  RAX: 0000000000000000 RBX: ffff9d644e1b8b48 RCX: ffff9d649e439968
-  RDX: 00000000ffff8455 RSI: ffff9d644e1b8b48 RDI: ffff9d64764aa6c0
-  RBP: ffff9d649e4335c0 R08: 0000000000000c00 R09: ffff9d64764aa734
-  R10: 0000000000000007 R11: 0000000000000001 R12: 0000000000000000
-  R13: ffff9d649e4335e8 R14: ffff9d64490da780 R15: ffff9d64764aa6c0
-  FS:  0000000000000000(0000) GS:ffff9d649e400000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000000000000008 CR3: 0000000036424000 CR4: 00000000000006f0
-  Call Trace:
-   <TASK>
-  worker_thread (/home/rich/kernel/linux/kernel/workqueue.c:2436)
-  kthread (/home/rich/kernel/linux/kernel/kthread.c:376)
-  ret_from_fork (/home/rich/kernel/linux/arch/x86/entry/entry_64.S:312)
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Apparently, the slcan's tx_work is freed while being scheduled. While
-slcan_netdev_close() (netdev side) calls flush_work(&sl->tx_work),
-slcan_close() (tty side) does not. So when the netdev is never set UP,
-but the tty is stuffed with bytes and forced to wakeup write, the work
-is scheduled, but never flushed.
+--8323329-1285920352-1669885620=:1757
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-So add an additional flush_work() to slcan_close() to be sure the work
-is flushed under all circumstances.
+On Thu, 1 Dec 2022, Kumaravel Thiagarajan wrote:
 
-The Fixes commit below moved flush_work() from slcan_close() to
-slcan_netdev_close(). What was the rationale behind it? Maybe we can
-drop the one in slcan_netdev_close()?
+> Move implementation of setup_port API to serial8250_pci_setup_port
+> 
+> Co-developed-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+> Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> ---
+> Changes in v6:
+> - Made this patch first patch of the patch series
+> 
+> Changes in v5:
+> - This is the new patch added in v5 version of this patchset
+> - Moved implementation of setup_port from 8250_pci.c to 8250_pcilib.c
+> 
+> ---
 
-I see the same pattern in can327. So it perhaps needs the very same fix.
+> diff --git a/drivers/tty/serial/8250/8250_pcilib.h b/drivers/tty/serial/8250/8250_pcilib.h
+> new file mode 100644
+> index 000000000000..41ef01d5c3c5
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_pcilib.h
+> @@ -0,0 +1,9 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * 8250 PCI library header file.
+> + *
+> + * Copyright (C) 2001 Russell King, All Rights Reserved.
+> + */
 
-Fixes: cfcb4465e992 ("can: slcan: remove legacy infrastructure")
-Link: https://bugzilla.suse.com/show_bug.cgi?id=1205597
-Reported-by: Richard Palethorpe <richard.palethorpe@suse.com>
-Tested-by: Petr Vorel <petr.vorel@suse.com>
-Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Cc: Max Staudt <max@enpas.org>
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
----
- drivers/net/can/slcan/slcan-core.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+You shouldn't depend on .c file having things included for you. So 
+please add these:
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index fbb34139daa1..f4db77007c13 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -864,12 +864,14 @@ static void slcan_close(struct tty_struct *tty)
- {
- 	struct slcan *sl = (struct slcan *)tty->disc_data;
- 
--	/* unregister_netdev() calls .ndo_stop() so we don't have to.
--	 * Our .ndo_stop() also flushes the TTY write wakeup handler,
--	 * so we can safely set sl->tty = NULL after this.
--	 */
- 	unregister_candev(sl->dev);
- 
-+	/*
-+	 * The netdev needn't be UP (so .ndo_stop() is not called). Hence make
-+	 * sure this is not running before freeing it up.
-+	 */
-+	flush_work(&sl->tx_work);
-+
- 	/* Mark channel as dead */
- 	spin_lock_bh(&sl->lock);
- 	tty->disc_data = NULL;
+#include "8250.h"
+
+struct pci_dev;
+
+Other than that,
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+
+> +
+> +int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port, u8 bar,
+> +		   unsigned int offset, int regshift);
+
+
 -- 
-2.38.1
+ i.
 
+--8323329-1285920352-1669885620=:1757--
