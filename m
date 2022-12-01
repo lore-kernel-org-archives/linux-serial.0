@@ -2,106 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9D2C43217
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A7BC47088
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Dec 2022 12:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiLAMMG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Dec 2022 07:12:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
+        id S229842AbiLAMXP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Dec 2022 07:23:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbiLAMMF (ORCPT
+        with ESMTP id S231343AbiLAMXN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Dec 2022 07:12:05 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176519FEC6;
-        Thu,  1 Dec 2022 04:12:05 -0800 (PST)
+        Thu, 1 Dec 2022 07:23:13 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB0018E3C;
+        Thu,  1 Dec 2022 04:23:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669896725; x=1701432725;
+  t=1669897392; x=1701433392;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=+nyqNhr3DjrxmbKqi/W9O0lEzuiL8DE0wvsWkUYbdww=;
-  b=Wt2OqPrbz+ba6aAM4OoVzuT35Ir4pXNwsQkts9y4DVh1b9UuZe9dSg6W
-   W27lbaJ6B9qh6J39GCcK5mbR3ggNUYAr9Q1jetN0dAFcHbgx0BkCrcZtq
-   Uvo7TMIi3iaXxpJe01Ex78Y/yQPo5+htBT77+4H56C79B+kb5P1JTzOqD
-   srh1JeENmCWCikD2hBOxtDvGnzc6RpXl/SM5saAf5sE1peC0B8h9cBjgG
-   kDsc4mRLtLFEKhCfuIdNcZs5UQDum0tZKqYtYeht+awROXM2XVnxYaT5J
-   gYFTaeY/HQszwjtPQWKnRmY/r2Yn+4dwvEymyglKTZRlNhEg89GS938AD
+   mime-version:in-reply-to;
+  bh=EP/AlIx/iBNKrfQdGQpEKhAM6XUj8+gNp+3KbyqvZ/k=;
+  b=gLTRKfpYo4lyvqw0eEuKcJnOkPPnOdCDnB0xXNb8zDtw+kpMnIRMzm6+
+   i8HUWfE3Dzle4reIWIbUGimG87HsLNcMkLBgOZZj3Q3Rg186ZUziqIrBw
+   T/xzdNGp5TJO2xzmdJxwr2TmaIeAcWuTGW1CEAWM6wyAnNQ9ow5fPTvRW
+   KtUKEcw9+KP9077QfpR4by95+WTHwtQ42t6uHKs3VQ/W/dXLL0EBjw58u
+   TSLUMC28hDhfUKf7jFi0jS7xgvCx7DYn2pDi81lmhgij0AtOydAD7aJss
+   agrc6/tkCFx38BqZrY2Uuiy/6nK0/iyqAB+UulBQwPqRyAYqJ2zz62xoh
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="315693966"
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="313301115"
 X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="315693966"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:12:04 -0800
+   d="scan'208";a="313301115"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 04:23:11 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="677196479"
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="644623510"
 X-IronPort-AV: E=Sophos;i="5.96,209,1665471600"; 
-   d="scan'208";a="677196479"
+   d="scan'208";a="644623510"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP; 01 Dec 2022 04:11:59 -0800
+  by orsmga002.jf.intel.com with ESMTP; 01 Dec 2022 04:23:05 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p0iQ0-002mBm-0l;
-        Thu, 01 Dec 2022 14:11:56 +0200
-Date:   Thu, 1 Dec 2022 14:11:55 +0200
+        id 1p0iak-002mR5-2C;
+        Thu, 01 Dec 2022 14:23:02 +0200
+Date:   Thu, 1 Dec 2022 14:23:02 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, macro@orcam.me.uk,
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
         jay.dolan@accesio.com, cang1@live.co.uk,
         u.kleine-koenig@pengutronix.de, wander@redhat.com,
         etremblay@distech-controls.com, jk@ozlabs.org,
         biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, Lukas Wunner <lukas@wunner.de>,
+        phil.edworthy@renesas.com, lukas@wunner.de,
         UNGLinuxDriver@microchip.com, colin.i.king@gmail.com,
         Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v6 tty-next 1/4] serial: 8250_pci: Add
- serial8250_pci_setup_port definition in 8250_pcilib.c
-Message-ID: <Y4iaC7rRkBhyOIsI@smile.fi.intel.com>
+Subject: Re: [PATCH v6 tty-next 4/4] serial: 8250_pci1xxxx: Add power
+ management functions to quad-uart driver
+Message-ID: <Y4icpjHDim7eAJjx@smile.fi.intel.com>
 References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com>
- <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
- <1189f5af-aaac-f4c8-b928-cda183e7f90@linux.intel.com>
+ <20221201045146.1055913-5-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1189f5af-aaac-f4c8-b928-cda183e7f90@linux.intel.com>
+In-Reply-To: <20221201045146.1055913-5-kumaravel.thiagarajan@microchip.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 01, 2022 at 11:06:53AM +0200, Ilpo Järvinen wrote:
-> On Thu, 1 Dec 2022, Kumaravel Thiagarajan wrote:
+On Thu, Dec 01, 2022 at 10:21:46AM +0530, Kumaravel Thiagarajan wrote:
+> pci1xxxx's quad-uart function has the capability to wake up UART
+> from suspend state. Enable wakeup before entering into suspend and
+> disable wakeup on resume.
+
 ...
 
-> > +/*
-> > + * 8250 PCI library header file.
-> > + *
-> > + * Copyright (C) 2001 Russell King, All Rights Reserved.
-> > + */
-> 
-> You shouldn't depend on .c file having things included for you. So
-> please add these:
+> +static DEFINE_SIMPLE_DEV_PM_OPS(pci1xxxx_pm_ops, pci1xxxx_suspend,
+> +				pci1xxxx_resume);
 
-> #include "8250.h"
-
-TBH I don't see how this is used here, but types.h for sure is missing.
-
-> struct pci_dev;
-
-+ blank line
-
-struct uart_8250_port;
-
-> Other than that,
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> 
-> > +int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port, u8 bar,
-> > +		   unsigned int offset, int regshift);
+One line?
 
 
 -- 
