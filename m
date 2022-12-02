@@ -2,152 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 191AEC47088
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Dec 2022 17:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C4BC4332F
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Dec 2022 17:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiLBRYn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Dec 2022 12:24:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
+        id S234123AbiLBRyu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Dec 2022 12:54:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234192AbiLBRYd (ORCPT
+        with ESMTP id S234006AbiLBRyt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Dec 2022 12:24:33 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2C3C2D31
-        for <linux-serial@vger.kernel.org>; Fri,  2 Dec 2022 09:24:32 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id b2so3470486iof.12
-        for <linux-serial@vger.kernel.org>; Fri, 02 Dec 2022 09:24:32 -0800 (PST)
+        Fri, 2 Dec 2022 12:54:49 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFBDD8276
+        for <linux-serial@vger.kernel.org>; Fri,  2 Dec 2022 09:54:48 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id o12so5604749pjo.4
+        for <linux-serial@vger.kernel.org>; Fri, 02 Dec 2022 09:54:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ofFR/mVCsDKZj44lDEy/8k5d1m69ZQ2boKHQlr/3NdY=;
-        b=NteYCFzY9P/RDwVHhhAOK1Uw483SNoVV17UFJtHDLJLYGlp3mGvBAvsBoUffOclc+M
-         q5BSW5wje1nc5AdNtDN+njEC+3gXB/ZKqDonnXMFu5Nra059pO6/Cj3uI24f6cEXaAYp
-         wvEqg8R+oeVO1abR93kTH6Kk/WRAgiCrjxOAI=
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=p1XzRn925Fp44O0w9G4cuwC3UNLrpIUG0nEwGRZQ/YU=;
+        b=ERYRng/+2McDbTloeXnaVcbmZ19evhdUD98unc3RFkNiKkugoSGQlyyxPeMsjND8ub
+         HeSzwVpd082dYV2tWVPad7nLVJrWTpkJw+g+McKgDwhlq78ELe3ui38zomaQNEDcWKv4
+         qOTVAdq9+zlgKtcPcSMzJwLMLquS0wSSdMIgTjaI53pwm4n0LJ5zv4DhvQ8wYz0K0fDJ
+         FuHKr6n6Pq0WuqSfPFxMuJSkj+zYEYiGAQy1tQNsOcxvib/qcjMMNoUDFJ/oKSDIaWdQ
+         HMRfIzWSRnOLJvV1f4Iug0xOWkHS5yVc2HLbdvwHQVzsF2JYX8DGEgYZXWKQvj4zGhy/
+         xlfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ofFR/mVCsDKZj44lDEy/8k5d1m69ZQ2boKHQlr/3NdY=;
-        b=rI1MWY8b8KCyH9Y0Q5gVNgAX/znNYb5ad+TbG5CS9R92BiVvOjm1NIDbmTnKwbrnsw
-         pIiNmAEorUWnG2CMP/jFco9h0FlzenYrqOuI6oQzqYQ1m+eWdQMpXhuUqygX5ZqkPl2y
-         I2ADFwZL8qZuGzxPQyWbqISes+scdpCMlAy71jJAscxx87mPESTIc3ob/NmmnThf0dO/
-         LPoleIXInv8ZVqkEmdeCbd1+usx0uck9aa4L12xkXMVlfGuk4LhkuwiZohCh4gzdBYKO
-         bD8ss4pkzxHFTYkhs+K+IX2fPKuuHPTTY2C3e4itvchwj5HqCAoWq9hjvJwaYq4Ks25X
-         5Itg==
-X-Gm-Message-State: ANoB5pnI1WMa2GFY0JCzC7gk6xADTA+oUwIg28uUl6fRkgHJ5jemMZL9
-        pz/79S3KT2WeSw9mg+fbuTZnxZALSXQDkYP3esI=
-X-Google-Smtp-Source: AA0mqf6aN6SDzv/1k2MmqHDkWDZGpc/F8RfMkDtxF1njsnz5isdX8Qm1eWkIUo/l9pOlLoB74MpOhQ==
-X-Received: by 2002:a02:5147:0:b0:365:cd53:9fbb with SMTP id s68-20020a025147000000b00365cd539fbbmr27077520jaa.220.1670001871820;
-        Fri, 02 Dec 2022 09:24:31 -0800 (PST)
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com. [209.85.166.47])
-        by smtp.gmail.com with ESMTPSA id y17-20020a056e02119100b00300d3c0e33dsm2651686ili.4.2022.12.02.09.24.30
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Dec 2022 09:24:30 -0800 (PST)
-Received: by mail-io1-f47.google.com with SMTP id 135so3483239iou.7
-        for <linux-serial@vger.kernel.org>; Fri, 02 Dec 2022 09:24:30 -0800 (PST)
-X-Received: by 2002:a5e:c64a:0:b0:6cc:e295:7bde with SMTP id
- s10-20020a5ec64a000000b006cce2957bdemr24816919ioo.183.1670001870306; Fri, 02
- Dec 2022 09:24:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20221123-serial-clk-v3-0-49c516980ae0@chromium.org> <20221123-serial-clk-v3-1-49c516980ae0@chromium.org>
-In-Reply-To: <20221123-serial-clk-v3-1-49c516980ae0@chromium.org>
-From:   Ricardo Ribalda <ribalda@chromium.org>
-Date:   Fri, 2 Dec 2022 18:24:19 +0100
-X-Gmail-Original-Message-ID: <CANiDSCs-CdhdvZF1PsDWivWiTB-=66DK4XOrv5hzbgbC9Z=+Rg@mail.gmail.com>
-Message-ID: <CANiDSCs-CdhdvZF1PsDWivWiTB-=66DK4XOrv5hzbgbC9Z=+Rg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] earlycon: Let users set the clock frequency
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=p1XzRn925Fp44O0w9G4cuwC3UNLrpIUG0nEwGRZQ/YU=;
+        b=5eQKZfnPRi2FLWPYJu4a3kOvkNAFNXtQ8w2v45WY/ecy3aCOQOB0q+RMvzgv5HS0PG
+         P6O0AQaMqBkJYNitOu+g4hglYLOaqQ2MHon/iEtxYH078H+rXg+ozX9ri3yd6sm2V0To
+         kL4LNRyyXA4sgmec5FNqK8+1bIfA2fuB6823oRvwka4ep7KhHdyhuNubBayKP8Jrg9iy
+         bw2cr6vYlxGYWyZ+jq6yQv+hDbz2RvLs+83SGKq3s0ur9z3Lm0Yfn8z/zIhapILBPqYm
+         08I4DmZICrIK1lueBr5Rukb27OK1KYet0/krXlkbR3hpq8dgiIpwV/eT7LBhn8SALSUU
+         r34w==
+X-Gm-Message-State: ANoB5pmlgU/8ky+q7P3/ALtvJ2RrUXAuHky2uypOVMVICeBwTlHne1CN
+        riRpI0jP1oReLYjQjIdsobl4UA==
+X-Google-Smtp-Source: AA0mqf76Z+L8vqIbTmVFjgnSj6R8n7eFo6mnFYtbdrFJbnUCXUjtrZiNr2NDlKMaN48VVG2YVV9Pyw==
+X-Received: by 2002:a17:90a:3d41:b0:213:d34:a80b with SMTP id o1-20020a17090a3d4100b002130d34a80bmr77669655pjf.74.1670003688186;
+        Fri, 02 Dec 2022 09:54:48 -0800 (PST)
+Received: from localhost ([50.221.140.188])
+        by smtp.gmail.com with ESMTPSA id i8-20020a170902c94800b00172fad607b3sm5864137pla.207.2022.12.02.09.54.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Dec 2022 09:54:47 -0800 (PST)
+Date:   Fri, 02 Dec 2022 09:54:47 -0800 (PST)
+X-Google-Original-Date: Fri, 02 Dec 2022 09:54:38 PST (-0800)
+Subject:     Re: [PATCH v2 0/9] riscv: add Bouffalolab bl808 support
+In-Reply-To: <20221127132448.4034-1-jszhang@kernel.org>
+CC:     robh+dt@kernel.org, Conor Dooley <conor@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, Greg KH <gregkh@linuxfoundation.org>,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     jszhang@kernel.org
+Message-ID: <mhng-0a879461-fb57-4547-887f-35ac0dc0ea1a@palmer-ri-x1c9a>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiri
+On Sun, 27 Nov 2022 05:24:39 PST (-0800), jszhang@kernel.org wrote:
+> This series adds Bouffalolab uart driver and basic devicetrees for
+> Bouffalolab bl808 SoC and Sipeed M1s dock board.
+>
+> It's too late for v6.2-rc1, but I hope I can catch up the v6.3-rc1
+> window.
+>
+> I think I have addressed all review comments to v1, correct me if I
+> missed anything.
+>
+> PS: this series assumes the "thead,c906" riscv cpu binding patch is
+> merged(I see Conor has picked up it).
+>
+> Since v1:
+>   - use FIELD_PREP and FIELD_GET macro
+>   - rewrite bflb_uart_tx_chars()
+>   - add vendor prefix for bouffalolab
+>   - add dt binding for bl808 compatibles
+>   - enable SOC_BOUFFALOLAB in defconfig
+>   - collect Reviewed-by tag
+>   - modify commit-msg as suggested
+>
+> Jisheng Zhang (9):
+>   dt-bindings: serial: add documentation for Bouffalolab UART Driver
+>   serial: bflb_uart: add Bouffalolab UART Driver
+>   riscv: add the Bouffalolab SoC family Kconfig option
+>   dt-bindings: vendor-prefixes: add bouffalolab
+>   dt-bindings: riscv: Add bouffalolab bl808 board compatibles
+>   riscv: dts: bouffalolab: add the bl808 SoC base device tree
+>   riscv: dts: bouffalolab: add Sipeed M1s SoM and Dock devicetree
+>   MAINTAINERS: riscv: add entry for Bouffalolab SoC
+>   riscv: defconfig: enable BOUFFALOLAB SoC
+>
+>  .../bindings/riscv/bouffalolab.yaml           |  34 +
+>  .../bindings/serial/bouffalolab,uart.yaml     |  47 ++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+>  MAINTAINERS                                   |   9 +
+>  arch/riscv/Kconfig.socs                       |   6 +
+>  arch/riscv/boot/dts/Makefile                  |   1 +
+>  arch/riscv/boot/dts/bouffalolab/Makefile      |   2 +
+>  .../dts/bouffalolab/bl808-sipeed-m1s-dock.dts |  25 +
+>  .../dts/bouffalolab/bl808-sipeed-m1s.dtsi     |  21 +
+>  arch/riscv/boot/dts/bouffalolab/bl808.dtsi    |  74 +++
+>  arch/riscv/configs/defconfig                  |   1 +
+>  drivers/tty/serial/Kconfig                    |  18 +
+>  drivers/tty/serial/Makefile                   |   1 +
+>  drivers/tty/serial/bflb_uart.c                | 610 ++++++++++++++++++
+>  include/uapi/linux/serial_core.h              |   3 +
+>  15 files changed, 854 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/riscv/bouffalolab.yaml
+>  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
+>  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
+>  create mode 100644 drivers/tty/serial/bflb_uart.c
 
-is there something else that I am missing here?
-
-Thanks!
-
-On Thu, 24 Nov 2022 at 13:39, Ricardo Ribalda <ribalda@chromium.org> wrote:
->
-> Some platforms, namely AMD Picasso, use non standard uart clocks (48M),
-> witch makes it impossible to use with earlycon.
->
-> Let the user select its own frequency.
->
-> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
->
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index a465d5242774..9efb6c3b0486 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1182,10 +1182,10 @@
->                         specified, the serial port must already be setup and
->                         configured.
->
-> -               uart[8250],io,<addr>[,options]
-> -               uart[8250],mmio,<addr>[,options]
-> -               uart[8250],mmio32,<addr>[,options]
-> -               uart[8250],mmio32be,<addr>[,options]
-> +               uart[8250],io,<addr>[,options[,uartclk]]
-> +               uart[8250],mmio,<addr>[,options[,uartclk]]
-> +               uart[8250],mmio32,<addr>[,options[,uartclk]]
-> +               uart[8250],mmio32be,<addr>[,options[,uartclk]]
->                 uart[8250],0x<addr>[,options]
->                         Start an early, polled-mode console on the 8250/16550
->                         UART at the specified I/O port or MMIO address.
-> @@ -1194,7 +1194,9 @@
->                         If none of [io|mmio|mmio32|mmio32be], <addr> is assumed
->                         to be equivalent to 'mmio'. 'options' are specified
->                         in the same format described for "console=ttyS<n>"; if
-> -                       unspecified, the h/w is not initialized.
-> +                       unspecified, the h/w is not initialized. 'uartclk' is
-> +                       the uart clock frequency; if unspecified, it is set
-> +                       to 'BASE_BAUD' * 16.
->
->                 pl011,<addr>
->                 pl011,mmio32,<addr>
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index a5f380584cda..3a0c88419b6c 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -120,7 +120,13 @@ static int __init parse_options(struct earlycon_device *device, char *options)
->         }
->
->         if (options) {
-> +               char *uartclk;
-> +
->                 device->baud = simple_strtoul(options, NULL, 0);
-> +               uartclk = strchr(options, ',');
-> +               if (uartclk && kstrtouint(uartclk + 1, 0, &port->uartclk) < 0)
-> +                       pr_warn("[%s] unsupported earlycon uart clkrate option\n",
-> +                               options);
->                 length = min(strcspn(options, " ") + 1,
->                              (size_t)(sizeof(device->options)));
->                 strscpy(device->options, options, length);
-> @@ -139,7 +145,8 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
->                 buf = NULL;
->
->         spin_lock_init(&port->lock);
-> -       port->uartclk = BASE_BAUD * 16;
-> +       if (!port->uartclk)
-> +               port->uartclk = BASE_BAUD * 16;
->         if (port->mapbase)
->                 port->membase = earlycon_map(port->mapbase, 64);
->
->
-> --
-> b4 0.11.0-dev-d93f8
-
-
-
--- 
-Ricardo Ribalda
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
