@@ -2,36 +2,35 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C177C47088
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Dec 2022 12:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FADC47088
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Dec 2022 15:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbiLBMP1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Dec 2022 07:15:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
+        id S233655AbiLBP1a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Dec 2022 10:27:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiLBMPX (ORCPT
+        with ESMTP id S233631AbiLBP11 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Dec 2022 07:15:23 -0500
+        Fri, 2 Dec 2022 10:27:27 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DD7D5869
-        for <linux-serial@vger.kernel.org>; Fri,  2 Dec 2022 04:15:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3ACCFE61
+        for <linux-serial@vger.kernel.org>; Fri,  2 Dec 2022 07:27:26 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1p14we-0008Hv-0H; Fri, 02 Dec 2022 13:15:08 +0100
+        id 1p17wW-0007eq-GS; Fri, 02 Dec 2022 16:27:12 +0100
 Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:63a6:d4c5:22e2:f72a])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1C95A13156D;
-        Fri,  2 Dec 2022 12:15:04 +0000 (UTC)
-Date:   Fri, 2 Dec 2022 13:14:58 +0100
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1E2CB1317A1;
+        Fri,  2 Dec 2022 15:27:10 +0000 (UTC)
+Date:   Fri, 2 Dec 2022 16:27:01 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Max Staudt <max@enpas.org>
-Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        dario.binacchi@amarulasolutions.com, linux-serial@vger.kernel.org,
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc:     dario.binacchi@amarulasolutions.com, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Richard Palethorpe <richard.palethorpe@suse.com>,
         Petr Vorel <petr.vorel@suse.com>,
@@ -40,16 +39,16 @@ Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org, ltp@lists.linux.it
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        Max Staudt <max@enpas.org>
 Subject: Re: [PATCH] can: slcan: fix freed work crash
-Message-ID: <20221202121458.qeqjzewvdbnqhvnt@pengutronix.de>
+Message-ID: <20221202152701.ewnillsqded7uby4@pengutronix.de>
 References: <20221201073426.17328-1-jirislaby@kernel.org>
- <20221202035242.155d54f4.max@enpas.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="x4q6zeagiapw3mdj"
+        protocol="application/pgp-signature"; boundary="ojrs3pnyh3h6c3hc"
 Content-Disposition: inline
-In-Reply-To: <20221202035242.155d54f4.max@enpas.org>
+In-Reply-To: <20221201073426.17328-1-jirislaby@kernel.org>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -59,28 +58,79 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---x4q6zeagiapw3mdj
+--ojrs3pnyh3h6c3hc
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 02.12.2022 03:52:42, Max Staudt wrote:
-> (CC: ltp@lists.linux.it because Petr did so.)
+On 01.12.2022 08:34:26, Jiri Slaby (SUSE) wrote:
+> The LTP test pty03 is causing a crash in slcan:
+>   BUG: kernel NULL pointer dereference, address: 0000000000000008
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD 0 P4D 0
+>   Oops: 0000 [#1] PREEMPT SMP NOPTI
+>   CPU: 0 PID: 348 Comm: kworker/0:3 Not tainted 6.0.8-1-default #1 openSU=
+SE Tumbleweed 9d20364b934f5aab0a9bdf84e8f45cfdfae39dab
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.15.0-=
+0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
+>   Workqueue:  0x0 (events)
+>   RIP: 0010:process_one_work (/home/rich/kernel/linux/kernel/workqueue.c:=
+706 /home/rich/kernel/linux/kernel/workqueue.c:2185)
+>   Code: 49 89 ff 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 10 48 8b 06 48=
+ 8b 6f 48 49 89 c4 45 30 e4 a8 04 b8 00 00 00 00 4c 0f 44 e0 <49> 8b 44 24 =
+08 44 8b a8 00 01 00 00 41 83 e5 20 f6 45 10 04 75 0e
+>   RSP: 0018:ffffaf7b40f47e98 EFLAGS: 00010046
+>   RAX: 0000000000000000 RBX: ffff9d644e1b8b48 RCX: ffff9d649e439968
+>   RDX: 00000000ffff8455 RSI: ffff9d644e1b8b48 RDI: ffff9d64764aa6c0
+>   RBP: ffff9d649e4335c0 R08: 0000000000000c00 R09: ffff9d64764aa734
+>   R10: 0000000000000007 R11: 0000000000000001 R12: 0000000000000000
+>   R13: ffff9d649e4335e8 R14: ffff9d64490da780 R15: ffff9d64764aa6c0
+>   FS:  0000000000000000(0000) GS:ffff9d649e400000(0000) knlGS:00000000000=
+00000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: 0000000000000008 CR3: 0000000036424000 CR4: 00000000000006f0
+>   Call Trace:
+>    <TASK>
+>   worker_thread (/home/rich/kernel/linux/kernel/workqueue.c:2436)
+>   kthread (/home/rich/kernel/linux/kernel/kthread.c:376)
+>   ret_from_fork (/home/rich/kernel/linux/arch/x86/entry/entry_64.S:312)
 >=20
-> Hi Jiry,
+> Apparently, the slcan's tx_work is freed while being scheduled. While
+> slcan_netdev_close() (netdev side) calls flush_work(&sl->tx_work),
+> slcan_close() (tty side) does not. So when the netdev is never set UP,
+> but the tty is stuffed with bytes and forced to wakeup write, the work
+> is scheduled, but never flushed.
 >=20
-> Thanks for finding this!
+> So add an additional flush_work() to slcan_close() to be sure the work
+> is flushed under all circumstances.
 >=20
+> The Fixes commit below moved flush_work() from slcan_close() to
+> slcan_netdev_close(). What was the rationale behind it? Maybe we can
+> drop the one in slcan_netdev_close()?
 >=20
-> Your patch looks correct to me, so please have a
+> I see the same pattern in can327. So it perhaps needs the very same fix.
 >=20
->   Reviewed-by: Max Staudt <max@enpas.org>
->=20
-> for both this patch to slcan, as well as an 1:1 patch to can327.
+> Fixes: cfcb4465e992 ("can: slcan: remove legacy infrastructure")
+> Link: https://bugzilla.suse.com/show_bug.cgi?id=3D1205597
+> Reported-by: Richard Palethorpe <richard.palethorpe@suse.com>
+> Tested-by: Petr Vorel <petr.vorel@suse.com>
+> Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: linux-can@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: stable@vger.kernel.org
+> Cc: Max Staudt <max@enpas.org>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-Max, can you create a patch for the can327 driver?
+Added to linux-can,
 
-regards,
+Thanks,
 Marc
 
 --=20
@@ -89,19 +139,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---x4q6zeagiapw3mdj
+--ojrs3pnyh3h6c3hc
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOJ7D8ACgkQrX5LkNig
-013NnAf/Z62/13CIDQ7V894/ROU5ZGk6S6LRPGG/p7Q4oFGe7BxjDOn4Izk+wTGX
-kisclotCPB1hsAfPi988cEjHEe2b6CXib1aZmtJOyGC8cuTgRvBimHElXGgDIUJe
-NYsq2C+WZsGSQqHX6eSClICQZ0DrIsyidSrhZ3gsl0KKGxxLEV1oKhlYjLhM7Hx2
-Ntd/uU3oFiOAIoRtDXORfGf1kleLK/XTvJMv1gg+NkTuYYh01HKXK7d42bthX1tP
-X0a28lItgg4SyQMXm6tX3KJ8AMsbpMKHPhIjXSB/Fild1XdAvnhxnNuZYg4w1oPI
-/Ib6xzyF13qn8t2HKAY0C8C3YfnTzw==
-=EslA
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmOKGUMACgkQrX5LkNig
+011wWQgAn+U91/ZltYGvoyP6wurNPczrfH4QqhMQ3x77TXxYpIO7Bme9LzWgnowK
+aCZGAi6RhnBCwVHYrRkPuQ9karVWhlrEYkLRKZJcBG3fbbOFMC+lUy51Tk4Dd+fR
+GZKwdr4ODTxerh5E6PBqCais4zGBdzBqGB+md9C7EUnvgC5MeGSAf8EFUkRrmb8T
+Wd8F2IRz5FCOZ0JjlTDHWWoS4dedoiodLUhyDCXn2mDMVjtDGkCHcvMM+3MO1bE1
+GLU21H65XDHg6nVBDmvMpLdfbvDxc3qVroe3wXyeJ8wzSd/acELrHusTZXKvmDg+
+IU0m+hpBwzplYQLMJSzmk5zZN76bWQ==
+=XIQ/
 -----END PGP SIGNATURE-----
 
---x4q6zeagiapw3mdj--
+--ojrs3pnyh3h6c3hc--
