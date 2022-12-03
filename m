@@ -2,130 +2,179 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C4BC4332F
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Dec 2022 17:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE87C352A1
+	for <linux-serial@archiver.kernel.org>; Sat,  3 Dec 2022 15:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234123AbiLBRyu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Dec 2022 12:54:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
+        id S229680AbiLCPRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 3 Dec 2022 10:17:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234006AbiLBRyt (ORCPT
+        with ESMTP id S229491AbiLCPRr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Dec 2022 12:54:49 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFBDD8276
-        for <linux-serial@vger.kernel.org>; Fri,  2 Dec 2022 09:54:48 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id o12so5604749pjo.4
-        for <linux-serial@vger.kernel.org>; Fri, 02 Dec 2022 09:54:48 -0800 (PST)
+        Sat, 3 Dec 2022 10:17:47 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32E8BE22
+        for <linux-serial@vger.kernel.org>; Sat,  3 Dec 2022 07:17:43 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id f13-20020a1cc90d000000b003d08c4cf679so2772629wmb.5
+        for <linux-serial@vger.kernel.org>; Sat, 03 Dec 2022 07:17:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=p1XzRn925Fp44O0w9G4cuwC3UNLrpIUG0nEwGRZQ/YU=;
-        b=ERYRng/+2McDbTloeXnaVcbmZ19evhdUD98unc3RFkNiKkugoSGQlyyxPeMsjND8ub
-         HeSzwVpd082dYV2tWVPad7nLVJrWTpkJw+g+McKgDwhlq78ELe3ui38zomaQNEDcWKv4
-         qOTVAdq9+zlgKtcPcSMzJwLMLquS0wSSdMIgTjaI53pwm4n0LJ5zv4DhvQ8wYz0K0fDJ
-         FuHKr6n6Pq0WuqSfPFxMuJSkj+zYEYiGAQy1tQNsOcxvib/qcjMMNoUDFJ/oKSDIaWdQ
-         HMRfIzWSRnOLJvV1f4Iug0xOWkHS5yVc2HLbdvwHQVzsF2JYX8DGEgYZXWKQvj4zGhy/
-         xlfQ==
+        d=smile-fr.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tC4AheAOygD5Q+8OaSRfrmV/Z8V9M2yBmfT77mic4IA=;
+        b=2uXNojJDIOyZcRSv4GU2d1wtFAm4dTj02+YaQewJI82Iu4F5soQahgOVbCFagTM0dH
+         E0qRODpK/X44WTXmgtr1vljGIccJOdpewRedtzh5UPnMVrj4NcHIN3EzWG4WFtPIknMg
+         VQblmEAahw5G6wWcPu5tOH9Mc3CQxo0HGpxwb1QN4LqYuP475bK6/vRZUUp3PxiOY9D9
+         oc16MsJyhIFpnCYKrJ+X71if5PxTUPAe2Pm5khukhWdKbPfoel6s+dcoVA7YyWHkPPP/
+         03H9A3KYQC+rvg62WoTpTjHZIyb/DqCwevwcfkqGnsKjSJ/RX5VSdwPpCrrMhgsgMFfZ
+         HTqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p1XzRn925Fp44O0w9G4cuwC3UNLrpIUG0nEwGRZQ/YU=;
-        b=5eQKZfnPRi2FLWPYJu4a3kOvkNAFNXtQ8w2v45WY/ecy3aCOQOB0q+RMvzgv5HS0PG
-         P6O0AQaMqBkJYNitOu+g4hglYLOaqQ2MHon/iEtxYH078H+rXg+ozX9ri3yd6sm2V0To
-         kL4LNRyyXA4sgmec5FNqK8+1bIfA2fuB6823oRvwka4ep7KhHdyhuNubBayKP8Jrg9iy
-         bw2cr6vYlxGYWyZ+jq6yQv+hDbz2RvLs+83SGKq3s0ur9z3Lm0Yfn8z/zIhapILBPqYm
-         08I4DmZICrIK1lueBr5Rukb27OK1KYet0/krXlkbR3hpq8dgiIpwV/eT7LBhn8SALSUU
-         r34w==
-X-Gm-Message-State: ANoB5pmlgU/8ky+q7P3/ALtvJ2RrUXAuHky2uypOVMVICeBwTlHne1CN
-        riRpI0jP1oReLYjQjIdsobl4UA==
-X-Google-Smtp-Source: AA0mqf76Z+L8vqIbTmVFjgnSj6R8n7eFo6mnFYtbdrFJbnUCXUjtrZiNr2NDlKMaN48VVG2YVV9Pyw==
-X-Received: by 2002:a17:90a:3d41:b0:213:d34:a80b with SMTP id o1-20020a17090a3d4100b002130d34a80bmr77669655pjf.74.1670003688186;
-        Fri, 02 Dec 2022 09:54:48 -0800 (PST)
-Received: from localhost ([50.221.140.188])
-        by smtp.gmail.com with ESMTPSA id i8-20020a170902c94800b00172fad607b3sm5864137pla.207.2022.12.02.09.54.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Dec 2022 09:54:47 -0800 (PST)
-Date:   Fri, 02 Dec 2022 09:54:47 -0800 (PST)
-X-Google-Original-Date: Fri, 02 Dec 2022 09:54:38 PST (-0800)
-Subject:     Re: [PATCH v2 0/9] riscv: add Bouffalolab bl808 support
-In-Reply-To: <20221127132448.4034-1-jszhang@kernel.org>
-CC:     robh+dt@kernel.org, Conor Dooley <conor@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, Greg KH <gregkh@linuxfoundation.org>,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     jszhang@kernel.org
-Message-ID: <mhng-0a879461-fb57-4547-887f-35ac0dc0ea1a@palmer-ri-x1c9a>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tC4AheAOygD5Q+8OaSRfrmV/Z8V9M2yBmfT77mic4IA=;
+        b=6y7O1pUMnkY9tIysSDiTPSPnIdk9AbKtB7bHht0Ja+KCwxoxv/nwvwLv9JZUvOQIgU
+         hnsTsxmKd7fyufZ6lAmFH4h3IRjgbiVDCA9H8dwlV8KBRQXKeeXSNBhRM2dp3Pn0YBW+
+         UxLmnw1ulc0gWFSnO91tI+nmPklovx4k+PEDDPDDg6te9Vb20kbxn6u1N1Ss6nYd9D98
+         IxRxm3iZU/OJR+bVAkUyJkuRLgD+zhjcsygDhB4Ctzw+HAzyvC6JZrxtU64QTXcvZ68c
+         n2snmlbu+AAtVRIK4NVPWKV7EGFflAh4Jc2rzuzKrFOUYiRlpig6j1NcIH1DclJL5cLY
+         r/1Q==
+X-Gm-Message-State: ANoB5pnx4H7MRfERYO+t6BgNlUAOgtZLwvCAZgpFguqb22znpzeQSmeR
+        FZ0D81O2a5f9pHJirB8WpAWf9Q==
+X-Google-Smtp-Source: AA0mqf4ifsFZORfnBS5P9rWVGjWkrrUc+jpAlb3Y/L7t3lfpxZuKSVdzEPhk75h65dtPe8H3tAWhng==
+X-Received: by 2002:a05:600c:1e89:b0:3cf:774b:ce6f with SMTP id be9-20020a05600c1e8900b003cf774bce6fmr11445571wmb.133.1670080662078;
+        Sat, 03 Dec 2022 07:17:42 -0800 (PST)
+Received: from ?IPV6:2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f? (2a01cb058f8a18001c97b8d1b477d53f.ipv6.abo.wanadoo.fr. [2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f])
+        by smtp.gmail.com with ESMTPSA id m35-20020a05600c3b2300b003b50428cf66sm13364063wms.33.2022.12.03.07.17.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 03 Dec 2022 07:17:41 -0800 (PST)
+Message-ID: <a9466cd9-2a75-6b53-3d57-6a6cdabd1b05@smile.fr>
+Date:   Sat, 3 Dec 2022 16:17:40 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] serial: 8250: omap: Fix missing PM runtime calls for
+ omap8250_set_mctrl()
+Content-Language: fr
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+References: <20221024063613.25943-1-tony@atomide.com>
+From:   Romain Naour <romain.naour@smile.fr>
+In-Reply-To: <20221024063613.25943-1-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 27 Nov 2022 05:24:39 PST (-0800), jszhang@kernel.org wrote:
-> This series adds Bouffalolab uart driver and basic devicetrees for
-> Bouffalolab bl808 SoC and Sipeed M1s dock board.
->
-> It's too late for v6.2-rc1, but I hope I can catch up the v6.3-rc1
-> window.
->
-> I think I have addressed all review comments to v1, correct me if I
-> missed anything.
->
-> PS: this series assumes the "thead,c906" riscv cpu binding patch is
-> merged(I see Conor has picked up it).
->
-> Since v1:
->   - use FIELD_PREP and FIELD_GET macro
->   - rewrite bflb_uart_tx_chars()
->   - add vendor prefix for bouffalolab
->   - add dt binding for bl808 compatibles
->   - enable SOC_BOUFFALOLAB in defconfig
->   - collect Reviewed-by tag
->   - modify commit-msg as suggested
->
-> Jisheng Zhang (9):
->   dt-bindings: serial: add documentation for Bouffalolab UART Driver
->   serial: bflb_uart: add Bouffalolab UART Driver
->   riscv: add the Bouffalolab SoC family Kconfig option
->   dt-bindings: vendor-prefixes: add bouffalolab
->   dt-bindings: riscv: Add bouffalolab bl808 board compatibles
->   riscv: dts: bouffalolab: add the bl808 SoC base device tree
->   riscv: dts: bouffalolab: add Sipeed M1s SoM and Dock devicetree
->   MAINTAINERS: riscv: add entry for Bouffalolab SoC
->   riscv: defconfig: enable BOUFFALOLAB SoC
->
->  .../bindings/riscv/bouffalolab.yaml           |  34 +
->  .../bindings/serial/bouffalolab,uart.yaml     |  47 ++
->  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
->  MAINTAINERS                                   |   9 +
->  arch/riscv/Kconfig.socs                       |   6 +
->  arch/riscv/boot/dts/Makefile                  |   1 +
->  arch/riscv/boot/dts/bouffalolab/Makefile      |   2 +
->  .../dts/bouffalolab/bl808-sipeed-m1s-dock.dts |  25 +
->  .../dts/bouffalolab/bl808-sipeed-m1s.dtsi     |  21 +
->  arch/riscv/boot/dts/bouffalolab/bl808.dtsi    |  74 +++
->  arch/riscv/configs/defconfig                  |   1 +
->  drivers/tty/serial/Kconfig                    |  18 +
->  drivers/tty/serial/Makefile                   |   1 +
->  drivers/tty/serial/bflb_uart.c                | 610 ++++++++++++++++++
->  include/uapi/linux/serial_core.h              |   3 +
->  15 files changed, 854 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/riscv/bouffalolab.yaml
->  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
->  create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
->  create mode 100644 drivers/tty/serial/bflb_uart.c
+Hello,
 
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Le 24/10/2022 à 08:36, Tony Lindgren a écrit :
+> There are cases where omap8250_set_mctrl() may get called after the
+> UART has already autoidled causing an asynchronous external abort.
+> 
+> This can happen on ttyport_open():
+> 
+> mem_serial_in from omap8250_set_mctrl+0x38/0xa0
+> omap8250_set_mctrl from uart_update_mctrl+0x4c/0x58
+> uart_update_mctrl from uart_dtr_rts+0x60/0xa8
+> uart_dtr_rts from tty_port_block_til_ready+0xd0/0x2a8
+> tty_port_block_til_ready from uart_open+0x14/0x1c
+> uart_open from ttyport_open+0x64/0x148
+> 
+> And on ttyport_close():
+> 
+> omap8250_set_mctrl from uart_update_mctrl+0x3c/0x48
+> uart_update_mctrl from uart_dtr_rts+0x54/0x9c
+> uart_dtr_rts from tty_port_shutdown+0x78/0x9c
+> tty_port_shutdown from tty_port_close+0x3c/0x74
+> tty_port_close from ttyport_close+0x40/0x58
+> 
+> It can also happen on disassociate_ctty() calling uart_shutdown()
+> that ends up calling omap8250_set_mctrl().
+> 
+> Let's fix the issue by adding missing PM runtime calls to
+> omap8250_set_mctrl(). To do this, we need to add __omap8250_set_mctrl()
+> that can be called from both omap8250_set_mctrl(), and from runtime PM
+> resume path when restoring the registers.
+
+Sorry, I'm late but I confirm that this patch fixes my issue [1].
+
+I checked without this patch applied with the 5.10.153-rt76+ kernel and I can
+reproduce the issue.
+
+Tested-by: Romain Naour <romain.naour@smile.fr>
+
+[1] https://marc.info/?l=linux-omap&m=164398186306233&w=2
+
+Best regards,
+Romain
+
+
+> 
+> Fixes: 61929cf0169d ("tty: serial: Add 8250-core based omap driver")
+> Depends-on: dd8088d5a896 ("PM: runtime: Add pm_runtime_resume_and_get to deal with usage counter")
+> Reported-by: Merlijn Wajer <merlijn@wizzup.org>
+> Reported-by: Romain Naour <romain.naour@smile.fr>
+> Reported-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+> Tested-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 22 ++++++++++++++++++++--
+>  1 file changed, 20 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -157,7 +157,11 @@ static u32 uart_read(struct uart_8250_port *up, u32 reg)
+>  	return readl(up->port.membase + (reg << up->port.regshift));
+>  }
+>  
+> -static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +/*
+> + * Called on runtime PM resume path from omap8250_restore_regs(), and
+> + * omap8250_set_mctrl().
+> + */
+> +static void __omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  {
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+>  	struct omap8250_priv *priv = up->port.private_data;
+> @@ -181,6 +185,20 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  	}
+>  }
+>  
+> +static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +{
+> +	int err;
+> +
+> +	err = pm_runtime_resume_and_get(port->dev);
+> +	if (err)
+> +		return;
+> +
+> +	__omap8250_set_mctrl(port, mctrl);
+> +
+> +	pm_runtime_mark_last_busy(port->dev);
+> +	pm_runtime_put_autosuspend(port->dev);
+> +}
+> +
+>  /*
+>   * Work Around for Errata i202 (2430, 3430, 3630, 4430 and 4460)
+>   * The access to uart register after MDR1 Access
+> @@ -341,7 +359,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+>  
+>  	omap8250_update_mdr1(up, priv);
+>  
+> -	up->port.ops->set_mctrl(&up->port, up->port.mctrl);
+> +	__omap8250_set_mctrl(&up->port, up->port.mctrl);
+>  
+>  	if (up->port.rs485.flags & SER_RS485_ENABLED)
+>  		serial8250_em485_stop_tx(up);
+
