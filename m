@@ -2,325 +2,150 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DAF3C47089
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Dec 2022 10:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F3CC47088
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Dec 2022 15:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiLEKaL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Dec 2022 05:30:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
+        id S232441AbiLEPUj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Dec 2022 10:20:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbiLEKaL (ORCPT
+        with ESMTP id S232476AbiLEPT0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Dec 2022 05:30:11 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA29B7C5;
-        Mon,  5 Dec 2022 02:30:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670236207; x=1701772207;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bupgB8+dQa6kyDr72Pv4zxzXEVg6/MGHJZw4SDOkbhY=;
-  b=wqRALHLVkTkkX0QJHa54BWYnp/RN/OILQfx/xaX2it1Bot/N+YOYRn4D
-   Dl6MwGodMmzsUZYVzQyw+TJ3dLGdfy0/VCwtfa94QK2H6wdzbgqAs85bU
-   IG+rRTEKc9xa/bq6CDtyWgAHAJdKilM626QGSR4mSQEpq6ISIYCDYTSWV
-   Tn7ffn5CvwvyCfzipvHmbHuK7D3bMSVE6mXGiyU4YtjcxwYaiyeSCFwiJ
-   LW45ae5VPZqUIir8edA0LjMhhOWVvrCquQv0yjOiYI1kDkQLxP975gY8q
-   VgUyX0s5CCPepW38NwWKAyXMevqXxdsGwynbuPQMYneTRnikF7aNc4YFH
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
-   d="asc'?scan'208";a="190034863"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Dec 2022 03:30:06 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 5 Dec 2022 03:30:05 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
- Transport; Mon, 5 Dec 2022 03:30:03 -0700
-Date:   Mon, 5 Dec 2022 10:29:43 +0000
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Icenowy Zheng <uwu@icenowy.me>,
-        Samuel Holland <samuel@sholland.org>,
-        Jisheng Zhang <jszhang@kernel.org>
-CC:     Samuel Holland <samuel@sholland.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        <linux-riscv@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Conor Dooley <conor@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v2 6/9] riscv: dts: bouffalolab: add the bl808 SoC base
- device tree
-Message-ID: <Y43IF/MpM9kX2gD6@wendy>
-References: <20221127132448.4034-1-jszhang@kernel.org>
- <20221127132448.4034-7-jszhang@kernel.org>
- <d4d8998f-288c-3ff6-141d-02814f8e35d0@sholland.org>
- <04abc8d6d8a9200e593f3f667a31ea0d3674c64b.camel@icenowy.me>
+        Mon, 5 Dec 2022 10:19:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A301C15710
+        for <linux-serial@vger.kernel.org>; Mon,  5 Dec 2022 07:19:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31DAB611A1
+        for <linux-serial@vger.kernel.org>; Mon,  5 Dec 2022 15:19:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3156BC43470;
+        Mon,  5 Dec 2022 15:19:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1670253563;
+        bh=9k0SYsXmX7cliPCK7YBl1oc0n4q1INu5uGIeva0RvvI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Rm3oF8GMByBcOCLygSZmLSuDknVEsReNrRg1o2Xvm5A2al4K29UbUWRZ4DkUAmqje
+         f2jbDfHn1NqU3+MaLgfEL2upigiq4fCtQCMn0Z9mAzrhxeB6hNCY7/vLczAXqUziHS
+         2b+UYrLsOMTVeY9JD2SWV9rWLZM2Yc5Qi5FvwBvA=
+Date:   Mon, 5 Dec 2022 16:19:21 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Oleksii Hryhorovych <alexcatze@gmail.com>
+Cc:     linux-serial@vger.kernel.org
+Subject: Re: serial driver issue
+Message-ID: <Y44L+TVanDkwAwHq@kroah.com>
+References: <CAB6k_g0siQ7O3LSBGAMUB0OFFn6MCAurXFohRSZaJyxjfneZ9Q@mail.gmail.com>
+ <Y4zQhTKmTXRj+AG0@kroah.com>
+ <CAB6k_g2GXwpgUndJQTYKVFjnmbpkLnhLa7vYGOi7AzO-ci-ENQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="U2PfE6iLzEQxY5EZ"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <04abc8d6d8a9200e593f3f667a31ea0d3674c64b.camel@icenowy.me>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAB6k_g2GXwpgUndJQTYKVFjnmbpkLnhLa7vYGOi7AzO-ci-ENQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---U2PfE6iLzEQxY5EZ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Sun, Dec 04, 2022 at 08:11:11PM +0200, Oleksii Hryhorovych wrote:
+> вс, 4 дек. 2022 г. в 18:53, Greg KH <gregkh@linuxfoundation.org>:
+> >
+> > On Sun, Dec 04, 2022 at 06:42:19PM +0200, Oleksii Hryhorovych wrote:
+> > > Hi. I have a problem with linux "serial" driver. I`m using a MosChip
+> > > 9901 based ExpressCard 34 dual rs-232 controller. When I plugged this
+> > > card into my PC, the system detected it, but when I tried to send or
+> > > read something from one of the ports, there was silence. Loopback test
+> > > also fails. On windows this card works perfectly, so this is not a
+> > > hardware issue. My kernel version is "5.15.78-1-MANJARO".
+> >
+> > How exactly are you trying to send data through the port?  What command
+> > did you use and what was the result?
+> >
+> I tried(each test 4 times, trying each device node for each port):
+> 1) Execute "cat /dev/ttyS6"(or ttyS7), connect rs-232 cable to port on
+> the card and to another PC, then send from another PC something to
+> port.
+> Result: nothing new appeared in console
 
-On Mon, Dec 05, 2022 at 04:17:59PM +0800, Icenowy Zheng wrote:
-> =E5=9C=A8 2022-11-30=E6=98=9F=E6=9C=9F=E4=B8=89=E7=9A=84 01:21 -0600=EF=
-=BC=8CSamuel Holland=E5=86=99=E9=81=93=EF=BC=9A
-> > On 11/27/22 07:24, Jisheng Zhang wrote:
-> > > Add a baisc dtsi for the bouffalolab bl808 SoC.
-> > >=20
-> > > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > > ---
-> > > =C2=A0arch/riscv/boot/dts/bouffalolab/bl808.dtsi | 74
-> > > ++++++++++++++++++++++
-> > > =C2=A01 file changed, 74 insertions(+)
-> > > =C2=A0create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > >=20
-> > > diff --git a/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > > b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > > new file mode 100644
-> > > index 000000000000..f4b170ccc32e
-> > > --- /dev/null
-> > > +++ b/arch/riscv/boot/dts/bouffalolab/bl808.dtsi
-> > > @@ -0,0 +1,74 @@
-> > > +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
-> > > +/*
-> > > + * Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
-> > > + */
-> > > +
-> > > +#include <dt-bindings/interrupt-controller/irq.h>
-> > > +
-> > > +/ {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0compatible =3D "bouffalola=
-b,bl808";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0#address-cells =3D <1>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0#size-cells =3D <1>;
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cpus {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0timebase-frequency =3D <1000000>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0#address-cells =3D <1>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0#size-cells =3D <0>;
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0cpu0: cpu@0 {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0com=
-patible =3D "thead,c906", "riscv";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0dev=
-ice_type =3D "cpu";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0reg=
- =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0d-c=
-ache-block-size =3D <64>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0d-c=
-ache-sets =3D <256>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0d-c=
-ache-size =3D <32768>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0i-c=
-ache-block-size =3D <64>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0i-c=
-ache-sets =3D <128>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0i-c=
-ache-size =3D <32768>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mmu=
--type =3D "riscv,sv39";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ris=
-cv,isa =3D "rv64imafdc";
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0cpu=
-0_intc: interrupt-controller {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0compatible =3D "riscv,cpu-intc=
-";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0interrupt-controller;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0#address-cells =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0#interrupt-cells =3D <1>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0xtal: xtal-clk {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0compatible =3D "fixed-clock";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0#clock-cells =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0/* This value must be overridden by the board */
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0clock-frequency =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0soc {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0compatible =3D "simple-bus";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0ranges;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0interrupt-parent =3D <&plic>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0dma-noncoherent;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0#address-cells =3D <1>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0#size-cells =3D <1>;
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0uart0: serial@30002000 {
-> >=20
-> > It's unfortunate that the SDK/documentation calls this peripheral
-> > both
-> > UART0 and UART3. I don't know if we can/should put the "M0" and "D0"
-> > bus
-> > peripherals in the same DT; it seems like most of the "M0"
-> > peripherals
-> > are not accessible from the C906. But if we did, this would conflict
-> > with the other UART0.
->=20
-> They're accessible but their interrupts are not, and I think this is
-> called d0_uart or uart3, but not uart0 at all.
->=20
-> >=20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0com=
-patible =3D "bouffalolab,bl808-uart";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0reg=
- =3D <0x30002000 0x1000>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int=
-errupts =3D <20 IRQ_TYPE_LEVEL_HIGH>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0clo=
-cks =3D <&xtal>;
-> >=20
-> > There's a clock controller with a mux and a gate between the crystal
-> > and the UART. I'm not sure what the policy is about adding "fake"
-> > suppliers before the real supplier has a binding defined.
-> >=20
-> > Unfortunately, Bouffalolab threw everything and the kitchen sink into
-> > the GLB register space, so that complicates defining the binding for
-> > the clock/reset controller part.
+"cat" isn't the best test, minicom is good, as you tried:
 
-I think it depends on how backwards/forwards compatible it's going to
-be? If new kernel + old DT works then that's all that's "required",
-right? Old kernel + new DT isn't going to work, but that's not required
-AFAIU.
+> 2) Connect rs232 cable to port on card and to another PC. Run terminal
+> on another PC, run minicom on this PC. Disable flow control. Send
+> something to terminal on both PCs.
+> Result: nothing appeared in terminals on both PCs.
+> 3) Connect pins number 2 and 3 on rs232 port (loopback test). Open
+> minicom, disable flow control and send something to the terminal.
+> Result: nothing new appeared in the terminal
+> 4) Connect pins number 2 and 3 on rs232 port (loopback test). Open
+> first console window, run "cat /dev/ttyS6"(or ttyS7). Open second
+> window, run "echo "test" > /dev/ttyS6"(or ttyS7).
+> Result: nothing new appeared in the first console
 
-> >=20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0sta=
-tus =3D "disabled";
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0plic: interrupt-controller@e0000000 {
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0com=
-patible =3D "thead,c900-plic";
->=20
-> Using a single c900-plic here needs more discussion, I think.
+I think the problem is that you do not have a driver attached to your
+serial ports, because:
 
-Yah. Per the discussion on [1], I think I'd rather we avoided the single
-c900-plic. Either a SoC-specific value, or "something" involving the
-"openplic" naming is needed here.
+> > > "dmesg" output about this card:
+> > >
+> > > [64329.311478] pcieport 0000:00:1c.1: pciehp: Slot(1): Card present
+> > > [64329.311485] pcieport 0000:00:1c.1: pciehp: Slot(1): Link Up
+> > > [64329.442833] pci 0000:02:00.0: [9710:9901] type 00 class 0x070002
+> > > [64329.442867] pci 0000:02:00.0: reg 0x10: [io  0x0000-0x0007]
+> > > [64329.442883] pci 0000:02:00.0: reg 0x14: [mem 0x00000000-0x00000fff]
+> > > [64329.442922] pci 0000:02:00.0: reg 0x20: [mem 0x00000000-0x00000fff]
+> > > [64329.443096] pci 0000:02:00.0: supports D1 D2
+> > > [64329.443099] pci 0000:02:00.0: PME# supported from D0 D1 D2 D3hot D3cold
+> > > [64329.443402] pci 0000:02:00.1: [9710:9901] type 00 class 0x070002
+> > > [64329.443434] pci 0000:02:00.1: reg 0x10: [io  0x0000-0x0007]
+> > > [64329.443451] pci 0000:02:00.1: reg 0x14: [mem 0x00000000-0x00000fff]
+> > > [64329.443495] pci 0000:02:00.1: reg 0x20: [mem 0x00000000-0x00000fff]
+> > > [64329.443679] pci 0000:02:00.1: supports D1 D2
+> > > [64329.443683] pci 0000:02:00.1: PME# supported from D0 D1 D2 D3hot D3cold
+> > > [64329.443948] pci 0000:02:00.0: BAR 1: assigned [mem 0xd0000000-0xd0000fff]
+> > > [64329.443960] pci 0000:02:00.0: BAR 4: assigned [mem 0xd0001000-0xd0001fff]
+> > > [64329.443969] pci 0000:02:00.1: BAR 1: assigned [mem 0xd0002000-0xd0002fff]
+> > > [64329.443979] pci 0000:02:00.1: BAR 4: assigned [mem 0xd0003000-0xd0003fff]
+> > > [64329.443987] pci 0000:02:00.0: BAR 0: assigned [io  0x2000-0x2007]
+> > > [64329.443995] pci 0000:02:00.1: BAR 0: assigned [io  0x2008-0x200f]
+> > > [64329.444006] pcieport 0000:00:1c.1: PCI bridge to [bus 02-22]
+> > > [64329.444012] pcieport 0000:00:1c.1:   bridge window [io  0x2000-0x3fff]
+> > > [64329.444017] pcieport 0000:00:1c.1:   bridge window [mem
+> > > 0xd0000000-0xd3ffffff]
+> > > [64329.444023] pcieport 0000:00:1c.1:   bridge window [mem
+> > > 0xbfb00000-0xbfcfffff 64bit pref]
+> > > [64329.444110] serial 0000:02:00.0: enabling device (0000 -> 0003)
+> > > [64329.444690] 0000:02:00.0: ttyS6 at I/O 0x2000 (irq = 17, base_baud
+> > > = 115200) is a 16550A
+> > > [64329.448040] serial 0000:02:00.1: enabling device (0000 -> 0003)
+> > > [64329.452843] 0000:02:00.1: ttyS7 at I/O 0x2008 (irq = 18, base_baud
+> > > = 115200) is a 16550A
 
-Thanks,
-Conor.
+ttyS6 and ttyS7 seem to be the correct devices, but:
 
-1 - https://lore.kernel.org/linux-riscv/20221121041757.418645-3-uwu@icenowy=
-=2Eme/
+> > Which tty device node are you using here?
+> >
+> I tried using both nodes, /dev/ttyS6 and /dev/ttyS7, and the result
+> was the same.
+> > What does the output of `find /dev/serial/` show?
+> >
+> /dev/serial/
+> /dev/serial/by-id
+> /dev/serial/by-id/usb-HP_HP_hs2340_HSPA+_MobileBroadband_C69366190FA2EB60-if01
+> /dev/serial/by-id/usb-HP_HP_hs2340_HSPA+_MobileBroadband_C69366190FA2EB60-if03
+> /dev/serial/by-id/usb-HP_HP_hs2340_HSPA+_MobileBroadband_C69366190FA2EB60-if09
+> /dev/serial/by-path
+> /dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.2:1.9
+> /dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.2:1.1
+> /dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.2:1.3
 
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0reg=
- =3D <0xe0000000 0x4000000>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int=
-errupts-extended =3D <&cpu0_intc
-> > > 0xffffffff>,
-> >=20
-> > The C906 PLIC has an M-mode context, so 0xffffffff is not correct.
-> > This
-> > should reference the M-mode external interrupt.
-> >=20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 <&cpu0_intc 9>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int=
-errupt-controller;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0#ad=
-dress-cells =3D <0>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0#in=
-terrupt-cells =3D <2>;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ris=
-cv,ndev =3D <64>;
-> >=20
-> > The SDK/documentation lists IRQ numbers up to BL808_IRQ_PDS =3D=3D 82, =
-so
-> > this value should be at least that.
-> >=20
-> > Regards,
-> > Samuel
-> >=20
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
-> > > +};
+You only have usb-serial devices seen in the system.
 
+Are you sure the PCI card is being controlled properly?  No other kernel
+log messages?
 
---U2PfE6iLzEQxY5EZ
-Content-Type: application/pgp-signature; name="signature.asc"
+Is /dev/ttyS6 and ttyS7 present in /dev?
 
------BEGIN PGP SIGNATURE-----
+What does 'ls -l /sys/class/tty/' show?
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY43IFwAKCRB4tDGHoIJi
-0jHqAP9sHKFru08Vy/LyY7BmPVOf/Q2x6tbCB1xx6sCi1t5fYQEAmj/nvnnKvgiu
-BImLWQ5XZFH6PkXyQU9IeMGGHtaV/Qs=
-=0waD
------END PGP SIGNATURE-----
+thanks,
 
---U2PfE6iLzEQxY5EZ--
+greg k-h
