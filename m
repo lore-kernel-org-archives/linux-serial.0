@@ -2,162 +2,136 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D30E3C4321E
-	for <linux-serial@archiver.kernel.org>; Sun,  4 Dec 2022 18:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D281C4708D
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Dec 2022 01:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiLDSL3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 4 Dec 2022 13:11:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        id S231132AbiLEBYK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 4 Dec 2022 20:24:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiLDSL1 (ORCPT
+        with ESMTP id S231186AbiLEBYJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 4 Dec 2022 13:11:27 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5610E11149
-        for <linux-serial@vger.kernel.org>; Sun,  4 Dec 2022 10:11:23 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id b16so3117436yba.0
-        for <linux-serial@vger.kernel.org>; Sun, 04 Dec 2022 10:11:23 -0800 (PST)
+        Sun, 4 Dec 2022 20:24:09 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9062512D10
+        for <linux-serial@vger.kernel.org>; Sun,  4 Dec 2022 17:24:07 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id l22-20020a17090a3f1600b00212fbbcfb78so13339942pjc.3
+        for <linux-serial@vger.kernel.org>; Sun, 04 Dec 2022 17:24:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=P9tOmcNBAIJX3PWoxRpY/FEoUe+pWpuWDYmU2C20A4k=;
-        b=FcO9qXXxQ5oOjlWEjVfALpugPnz3EqI4WStOzZjlad8NgAhPMYJmvk2uKaZRFAGmFC
-         VlP9INs+HQzU+fvwJJVUdkvqEvdUnmsx0K3V3W3r34E7XdwKFJ3hZ8FPUzCPu1Adh+pQ
-         vgQeU2dGo6w+GSkF92WSRLrvNZSqs1RJ8yN1YD0insnEACNzvsJZJ8JZFJFWSDQ21ILj
-         uMz/r2by0CtSdeiLylm8tdWIa4GyP3QYpyDzkMTgdyUxHMsRWOcxST/Og/smvJR4FBVQ
-         784LuQ5HQpX21hBUGG25tvgqcPohVGcCFfov+awHLHWcuoGtP48WjyD3Z+S5/RrdHGDz
-         53UA==
+        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=udJjLFsIsuNM+D3lyGnLy0JwlIO+NVedMCgCplH0XXs=;
+        b=2sodOIYqDSiSgt9c4aOcnZzMycrCLMB+S0oc/UblasgK8rW84vy4R/wwVZEnNlVY93
+         dVOmV12xvGZ4Oujmwz1r3dUvMOPMVaD0UHuC7nxTuYX1ZsR1ZxnqJL9/U86lKZ3CsYC0
+         wRRuLNZhYVg+RkW7uXJjyINUWtDmDvcslOU+/WpBe+vPm2tI/jkIT7jDr84wBsQW6PZ/
+         577d1OB826wBRXpLZlfIqClwq+/M5pT9pYUA/GGVIdbpLxheD6C67ZXr2wucXtLnWNXx
+         mESa5q578cQ3zESImbIxA0wk1glfr0h4sQZ8FbmVYghHbA94d3IbJjd5o2j6gfbDSPfB
+         NMBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=P9tOmcNBAIJX3PWoxRpY/FEoUe+pWpuWDYmU2C20A4k=;
-        b=0FPzTwr3THv5I011ANk1K8xdhyMO0i8OMaomEKKb8O0P2KsWseNtelFrNEM+xPMBIQ
-         9spijqQRcXtCMTKxcGNhyWJkizGL7HxvYXEHkMOiSexUzEl5kZjHezYtfUgCUU+LWYpd
-         lGqZgGW7O4rGrQvbVXoLq0fc60mBhkGuwg/cLxorq4+Ftxx18Uq7RPOuLWalmlzPkRxx
-         aXtNhP8F9z6fVi3ppwv0RaojzdqwqCff4uTluSe3XLrvbibCL7NpOVaG71lcloxQ4eBR
-         0fHcC6yv6gty8x1vaeuornZvq7nXL85cS29fDCJ2sKfDAPhmP2I8h9cZhL3SuBBgYFui
-         o2Tw==
-X-Gm-Message-State: ANoB5pni/+i1KKdQAhb5hVtZsvUHPIy4BDunURGYhZtgR14RQcsOjPDI
-        ELFr9rFQwgYJ9bfULalBeMceBKpQuki8VLcz4MYv+F3iMbZpHQ==
-X-Google-Smtp-Source: AA0mqf7vNyXiMT4+0fRhbouMwXtxmNZGbm3oVToMWF1CoZMjyrlQYY5uuXB0SVBkaKiWnxJ+7aOxfQHP7AKYLhxVrdY=
-X-Received: by 2002:a25:30c1:0:b0:6ef:fb99:4af9 with SMTP id
- w184-20020a2530c1000000b006effb994af9mr50116500ybw.108.1670177482580; Sun, 04
- Dec 2022 10:11:22 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=udJjLFsIsuNM+D3lyGnLy0JwlIO+NVedMCgCplH0XXs=;
+        b=Ken9o9mU/kYEdT0ETcXsgwCE8rsoyjDgPQrnqubQ+m2Y6p3cN+IJLCnQPsl2e/Sf0q
+         UZt+eHM4tFxrvTgvakL0+S4kGCtP1eFue1m17P+NYZr9rxksUGJd/VMR5z6NZ28s7+U1
+         tZeSzmbZ4elAQC9ywZ81ccfFEdQg3kXa93qhljpQgheh74fd53qT/tJE+ifax2N1tw9l
+         5Evcy3grqtFIYAhZ8lS/P79TOd4Fw/9wg1L5D+2Hat1dXQPU++k83udluVi6IK8NtB/M
+         FrlpX0HAQKmzhCOr1QFiRv5IlDHGWQyFrwbnDH0hOawnvROnohzvyUOEEdRuCl1vKYGU
+         OZ9g==
+X-Gm-Message-State: ANoB5pmjtVmNuitmoUXxjcG5cBLQizzKWpQXTdlwPsV32ZoKPD+/Anvx
+        7MhSa/6anaJJl13qPZDUaBKtuQ==
+X-Google-Smtp-Source: AA0mqf5qIK01sWvLtVrvTGJppmqa9AVW7iYDN5qPvMB9YJRe16Mwf2rVSwykwYB2y8WjCGkUQH5HtQ==
+X-Received: by 2002:a17:902:8604:b0:186:fe2d:f3cb with SMTP id f4-20020a170902860400b00186fe2df3cbmr66231522plo.132.1670203446986;
+        Sun, 04 Dec 2022 17:24:06 -0800 (PST)
+Received: from localhost ([121.99.145.49])
+        by smtp.gmail.com with ESMTPSA id r13-20020aa7962d000000b00576d4d69909sm1481840pfg.8.2022.12.04.17.24.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Dec 2022 17:24:06 -0800 (PST)
+Date:   Mon, 5 Dec 2022 14:24:03 +1300
+From:   Daniel Beer <daniel.beer@igorinstitute.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        Michael Zaidman <michael.zaidman@gmail.com>,
+        Christina Quast <contact@christina-quast.de>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH] hid-ft260: add UART support.
+Message-ID: <20221205012403.GA14904@nyquist.nev>
+References: <638c51a2.170a0220.3af16.18f8@mx.google.com>
+ <Y4xX7ILXMFHZtJkv@kroah.com>
+ <20221204091247.GA11195@nyquist.nev>
+ <Y4xqyRERBdr8fT7F@kroah.com>
 MIME-Version: 1.0
-References: <CAB6k_g0siQ7O3LSBGAMUB0OFFn6MCAurXFohRSZaJyxjfneZ9Q@mail.gmail.com>
- <Y4zQhTKmTXRj+AG0@kroah.com>
-In-Reply-To: <Y4zQhTKmTXRj+AG0@kroah.com>
-From:   Oleksii Hryhorovych <alexcatze@gmail.com>
-Date:   Sun, 4 Dec 2022 20:11:11 +0200
-Message-ID: <CAB6k_g2GXwpgUndJQTYKVFjnmbpkLnhLa7vYGOi7AzO-ci-ENQ@mail.gmail.com>
-Subject: Re: serial driver issue
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y4xqyRERBdr8fT7F@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-=D0=B2=D1=81, 4 =D0=B4=D0=B5=D0=BA. 2022 =D0=B3. =D0=B2 18:53, Greg KH <gre=
-gkh@linuxfoundation.org>:
->
-> On Sun, Dec 04, 2022 at 06:42:19PM +0200, Oleksii Hryhorovych wrote:
-> > Hi. I have a problem with linux "serial" driver. I`m using a MosChip
-> > 9901 based ExpressCard 34 dual rs-232 controller. When I plugged this
-> > card into my PC, the system detected it, but when I tried to send or
-> > read something from one of the ports, there was silence. Loopback test
-> > also fails. On windows this card works perfectly, so this is not a
-> > hardware issue. My kernel version is "5.15.78-1-MANJARO".
->
-> How exactly are you trying to send data through the port?  What command
-> did you use and what was the result?
->
-I tried(each test 4 times, trying each device node for each port):
-1) Execute "cat /dev/ttyS6"(or ttyS7), connect rs-232 cable to port on
-the card and to another PC, then send from another PC something to
-port.
-Result: nothing new appeared in console
-2) Connect rs232 cable to port on card and to another PC. Run terminal
-on another PC, run minicom on this PC. Disable flow control. Send
-something to terminal on both PCs.
-Result: nothing appeared in terminals on both PCs.
-3) Connect pins number 2 and 3 on rs232 port (loopback test). Open
-minicom, disable flow control and send something to the terminal.
-Result: nothing new appeared in the terminal
-4) Connect pins number 2 and 3 on rs232 port (loopback test). Open
-first console window, run "cat /dev/ttyS6"(or ttyS7). Open second
-window, run "echo "test" > /dev/ttyS6"(or ttyS7).
-Result: nothing new appeared in the first console
->
-> >
-> > "dmesg" output about this card:
-> >
-> > [64329.311478] pcieport 0000:00:1c.1: pciehp: Slot(1): Card present
-> > [64329.311485] pcieport 0000:00:1c.1: pciehp: Slot(1): Link Up
-> > [64329.442833] pci 0000:02:00.0: [9710:9901] type 00 class 0x070002
-> > [64329.442867] pci 0000:02:00.0: reg 0x10: [io  0x0000-0x0007]
-> > [64329.442883] pci 0000:02:00.0: reg 0x14: [mem 0x00000000-0x00000fff]
-> > [64329.442922] pci 0000:02:00.0: reg 0x20: [mem 0x00000000-0x00000fff]
-> > [64329.443096] pci 0000:02:00.0: supports D1 D2
-> > [64329.443099] pci 0000:02:00.0: PME# supported from D0 D1 D2 D3hot D3c=
-old
-> > [64329.443402] pci 0000:02:00.1: [9710:9901] type 00 class 0x070002
-> > [64329.443434] pci 0000:02:00.1: reg 0x10: [io  0x0000-0x0007]
-> > [64329.443451] pci 0000:02:00.1: reg 0x14: [mem 0x00000000-0x00000fff]
-> > [64329.443495] pci 0000:02:00.1: reg 0x20: [mem 0x00000000-0x00000fff]
-> > [64329.443679] pci 0000:02:00.1: supports D1 D2
-> > [64329.443683] pci 0000:02:00.1: PME# supported from D0 D1 D2 D3hot D3c=
-old
-> > [64329.443948] pci 0000:02:00.0: BAR 1: assigned [mem 0xd0000000-0xd000=
-0fff]
-> > [64329.443960] pci 0000:02:00.0: BAR 4: assigned [mem 0xd0001000-0xd000=
-1fff]
-> > [64329.443969] pci 0000:02:00.1: BAR 1: assigned [mem 0xd0002000-0xd000=
-2fff]
-> > [64329.443979] pci 0000:02:00.1: BAR 4: assigned [mem 0xd0003000-0xd000=
-3fff]
-> > [64329.443987] pci 0000:02:00.0: BAR 0: assigned [io  0x2000-0x2007]
-> > [64329.443995] pci 0000:02:00.1: BAR 0: assigned [io  0x2008-0x200f]
-> > [64329.444006] pcieport 0000:00:1c.1: PCI bridge to [bus 02-22]
-> > [64329.444012] pcieport 0000:00:1c.1:   bridge window [io  0x2000-0x3ff=
-f]
-> > [64329.444017] pcieport 0000:00:1c.1:   bridge window [mem
-> > 0xd0000000-0xd3ffffff]
-> > [64329.444023] pcieport 0000:00:1c.1:   bridge window [mem
-> > 0xbfb00000-0xbfcfffff 64bit pref]
-> > [64329.444110] serial 0000:02:00.0: enabling device (0000 -> 0003)
-> > [64329.444690] 0000:02:00.0: ttyS6 at I/O 0x2000 (irq =3D 17, base_baud
-> > =3D 115200) is a 16550A
-> > [64329.448040] serial 0000:02:00.1: enabling device (0000 -> 0003)
-> > [64329.452843] 0000:02:00.1: ttyS7 at I/O 0x2008 (irq =3D 18, base_baud
-> > =3D 115200) is a 16550A
->
->
-> Which tty device node are you using here?
->
-I tried using both nodes, /dev/ttyS6 and /dev/ttyS7, and the result
-was the same.
-> What does the output of `find /dev/serial/` show?
->
-/dev/serial/
-/dev/serial/by-id
-/dev/serial/by-id/usb-HP_HP_hs2340_HSPA+_MobileBroadband_C69366190FA2EB60-i=
-f01
-/dev/serial/by-id/usb-HP_HP_hs2340_HSPA+_MobileBroadband_C69366190FA2EB60-i=
-f03
-/dev/serial/by-id/usb-HP_HP_hs2340_HSPA+_MobileBroadband_C69366190FA2EB60-i=
-f09
-/dev/serial/by-path
-/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.2:1.9
-/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.2:1.1
-/dev/serial/by-path/pci-0000:00:1a.0-usb-0:1.2:1.3
+On Sun, Dec 04, 2022 at 10:39:21AM +0100, Greg Kroah-Hartman wrote:
+> > Thanks for reviewing. This device is quite strange -- it presents itself
+> > as a USB HID, but it provides both an I2C master and a UART. The
+> > existing driver supports only the I2C functionality currently.
+> 
+> Lots of devices are a "fake HID" device as other operating systems make
+> it easy to write userspace drivers that way.  Linux included.  What
+> userspace programs are going to want to interact with this device and
+> what api are they going to use?
 
-And it doesn't changes when I remove or insert back this card.
-> thanks,
->
-> greg k-h
+Hi Greg,
+
+The application I'm looking at uses it as a debug console, so personally
+I'd like to be able to use it with picocom and other terminal programs.
+
+> > > > --- a/include/uapi/linux/major.h
+> > > > +++ b/include/uapi/linux/major.h
+> > > > @@ -175,4 +175,6 @@
+> > > >  #define BLOCK_EXT_MAJOR		259
+> > > >  #define SCSI_OSD_MAJOR		260	/* open-osd's OSD scsi device */
+> > > >  
+> > > > +#define FT260_MAJOR		261
+> > > 
+> > > A whole new major for just a single tty port?  Please no, use dynamic
+> > > majors if you have to, or better yet, tie into the usb-serial
+> > > implementation (this is a USB device, right?) and then you don't have to
+> > > mess with this at all.
+> > 
+> > As far as I understand it, I don't think usb-serial is usable, due to
+> > the fact that this is already an HID driver.
+> 
+> That should not be a restriction at all.  You are adding a tty device to
+> this driver, no reason you can't interact with usb-serial instead.  That
+> way you share the correct userspace tty name and major/minor numbers and
+> all userspace tools should "just work" as they know that name and how to
+> interact with it already.
+> 
+> Try doing that instead of your own "raw" tty device please.
+
+Maybe I've misunderstood something. The reason I thought usb-serial was
+unusable in this instance was that I couldn't see a way to create a port
+except via usb-serial's own probe function (otherwise, the API looked
+fine).
+
+I don't know whether I'm looking at a serial or an I2C interface until
+after it's already been probed by HID core, I have a struct hid_device
+and I've asked what type of interface it is via an HID feature report.
+This can't be determined otherwise, because strapping pins affect the
+presentation of interfaces.
+
+At that point, I (currently) call uart_add_one_port. I might have missed
+it, but I didn't see anything analogous in the usb-serial API. Am I
+going about this the wrong way?
+
+Cheers,
+Daniel
+
+-- 
+Daniel Beer
+Firmware Engineer at Igor Institute
+daniel.beer@igorinstitute.com or +64-27-420-8101
+Offices in Seattle, San Francisco, and Vancouver BC or (206) 494-3312
