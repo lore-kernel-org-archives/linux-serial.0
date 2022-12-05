@@ -2,136 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D281C4708D
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Dec 2022 01:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE51C4321E
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Dec 2022 05:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbiLEBYK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 4 Dec 2022 20:24:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
+        id S231184AbiLEFBH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Dec 2022 00:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbiLEBYJ (ORCPT
+        with ESMTP id S230327AbiLEFBG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 4 Dec 2022 20:24:09 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9062512D10
-        for <linux-serial@vger.kernel.org>; Sun,  4 Dec 2022 17:24:07 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id l22-20020a17090a3f1600b00212fbbcfb78so13339942pjc.3
-        for <linux-serial@vger.kernel.org>; Sun, 04 Dec 2022 17:24:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=udJjLFsIsuNM+D3lyGnLy0JwlIO+NVedMCgCplH0XXs=;
-        b=2sodOIYqDSiSgt9c4aOcnZzMycrCLMB+S0oc/UblasgK8rW84vy4R/wwVZEnNlVY93
-         dVOmV12xvGZ4Oujmwz1r3dUvMOPMVaD0UHuC7nxTuYX1ZsR1ZxnqJL9/U86lKZ3CsYC0
-         wRRuLNZhYVg+RkW7uXJjyINUWtDmDvcslOU+/WpBe+vPm2tI/jkIT7jDr84wBsQW6PZ/
-         577d1OB826wBRXpLZlfIqClwq+/M5pT9pYUA/GGVIdbpLxheD6C67ZXr2wucXtLnWNXx
-         mESa5q578cQ3zESImbIxA0wk1glfr0h4sQZ8FbmVYghHbA94d3IbJjd5o2j6gfbDSPfB
-         NMBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=udJjLFsIsuNM+D3lyGnLy0JwlIO+NVedMCgCplH0XXs=;
-        b=Ken9o9mU/kYEdT0ETcXsgwCE8rsoyjDgPQrnqubQ+m2Y6p3cN+IJLCnQPsl2e/Sf0q
-         UZt+eHM4tFxrvTgvakL0+S4kGCtP1eFue1m17P+NYZr9rxksUGJd/VMR5z6NZ28s7+U1
-         tZeSzmbZ4elAQC9ywZ81ccfFEdQg3kXa93qhljpQgheh74fd53qT/tJE+ifax2N1tw9l
-         5Evcy3grqtFIYAhZ8lS/P79TOd4Fw/9wg1L5D+2Hat1dXQPU++k83udluVi6IK8NtB/M
-         FrlpX0HAQKmzhCOr1QFiRv5IlDHGWQyFrwbnDH0hOawnvROnohzvyUOEEdRuCl1vKYGU
-         OZ9g==
-X-Gm-Message-State: ANoB5pmjtVmNuitmoUXxjcG5cBLQizzKWpQXTdlwPsV32ZoKPD+/Anvx
-        7MhSa/6anaJJl13qPZDUaBKtuQ==
-X-Google-Smtp-Source: AA0mqf5qIK01sWvLtVrvTGJppmqa9AVW7iYDN5qPvMB9YJRe16Mwf2rVSwykwYB2y8WjCGkUQH5HtQ==
-X-Received: by 2002:a17:902:8604:b0:186:fe2d:f3cb with SMTP id f4-20020a170902860400b00186fe2df3cbmr66231522plo.132.1670203446986;
-        Sun, 04 Dec 2022 17:24:06 -0800 (PST)
-Received: from localhost ([121.99.145.49])
-        by smtp.gmail.com with ESMTPSA id r13-20020aa7962d000000b00576d4d69909sm1481840pfg.8.2022.12.04.17.24.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Dec 2022 17:24:06 -0800 (PST)
-Date:   Mon, 5 Dec 2022 14:24:03 +1300
-From:   Daniel Beer <daniel.beer@igorinstitute.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        Michael Zaidman <michael.zaidman@gmail.com>,
-        Christina Quast <contact@christina-quast.de>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] hid-ft260: add UART support.
-Message-ID: <20221205012403.GA14904@nyquist.nev>
-References: <638c51a2.170a0220.3af16.18f8@mx.google.com>
- <Y4xX7ILXMFHZtJkv@kroah.com>
- <20221204091247.GA11195@nyquist.nev>
- <Y4xqyRERBdr8fT7F@kroah.com>
+        Mon, 5 Dec 2022 00:01:06 -0500
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11735F007;
+        Sun,  4 Dec 2022 21:01:01 -0800 (PST)
+X-QQ-mid: bizesmtp83t1670216440tdylbiir
+Received: from ubuntu.. ( [111.196.135.79])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 05 Dec 2022 13:00:39 +0800 (CST)
+X-QQ-SSF: 01200000000000B0B000000A0000000
+X-QQ-FEAT: PsQCk6chbj5eK9ByDZQ9MzbRQ+lBTauZ/hMtMvyxFIKaWgsW4FUHY+4JhPLWp
+        N8cebpF9TczECdys04OEy9HJn9oZa3VLtz3WoQfuUwnGABxRVV92ZnKGLKSiUNXJ5vOly2i
+        EmIlXEJEYBtM4ApVe9usMvY0zPi/qFYgvjmCUU+0nd4O1v/vE9Ch275x3rBjfwiHDf3A2T1
+        ALae+DDCvEXhohsbyENwZm6hzz3JChV1omL5zQ9O6OghO903vD0KT3kQqoUEiDhoenU0Bhw
+        fitqzjEco1KqPtDZACKdNQMZ2GeNH3iCax7PxJS9Eqz/Xv5K1uxwzC+K3OLB1vn9HYngpfU
+        +ZkRbjl7WKf7o7fqqO6e0i0kHY+jg==
+X-QQ-GoodBg: 0
+From:   Bin Meng <bmeng@tinylab.org>
+To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org
+Cc:     Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Subject: [PATCH 1/2] serial: Adapt Arm semihosting earlycon driver to RISC-V
+Date:   Mon,  5 Dec 2022 13:00:37 +0800
+Message-Id: <20221205050038.195746-1-bmeng@tinylab.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y4xqyRERBdr8fT7F@kroah.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:tinylab.org:qybglogicsvr:qybglogicsvr3
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Dec 04, 2022 at 10:39:21AM +0100, Greg Kroah-Hartman wrote:
-> > Thanks for reviewing. This device is quite strange -- it presents itself
-> > as a USB HID, but it provides both an I2C master and a UART. The
-> > existing driver supports only the I2C functionality currently.
-> 
-> Lots of devices are a "fake HID" device as other operating systems make
-> it easy to write userspace drivers that way.  Linux included.  What
-> userspace programs are going to want to interact with this device and
-> what api are they going to use?
+Per RISC-V semihosting spec [1], adapt the existing Arm semihosting
+earlycon driver to RISC-V.
 
-Hi Greg,
+[1] https://github.com/riscv/riscv-semihosting-spec/blob/main/riscv-semihosting-spec.adoc
 
-The application I'm looking at uses it as a debug console, so personally
-I'd like to be able to use it with picocom and other terminal programs.
+Signed-off-by: Bin Meng <bmeng@tinylab.org>
+---
 
-> > > > --- a/include/uapi/linux/major.h
-> > > > +++ b/include/uapi/linux/major.h
-> > > > @@ -175,4 +175,6 @@
-> > > >  #define BLOCK_EXT_MAJOR		259
-> > > >  #define SCSI_OSD_MAJOR		260	/* open-osd's OSD scsi device */
-> > > >  
-> > > > +#define FT260_MAJOR		261
-> > > 
-> > > A whole new major for just a single tty port?  Please no, use dynamic
-> > > majors if you have to, or better yet, tie into the usb-serial
-> > > implementation (this is a USB device, right?) and then you don't have to
-> > > mess with this at all.
-> > 
-> > As far as I understand it, I don't think usb-serial is usable, due to
-> > the fact that this is already an HID driver.
-> 
-> That should not be a restriction at all.  You are adding a tty device to
-> this driver, no reason you can't interact with usb-serial instead.  That
-> way you share the correct userspace tty name and major/minor numbers and
-> all userspace tools should "just work" as they know that name and how to
-> interact with it already.
-> 
-> Try doing that instead of your own "raw" tty device please.
+ drivers/tty/serial/Kconfig                 |  2 +-
+ drivers/tty/serial/earlycon-arm-semihost.c | 17 ++++++++++++++++-
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
-Maybe I've misunderstood something. The reason I thought usb-serial was
-unusable in this instance was that I couldn't see a way to create a port
-except via usb-serial's own probe function (otherwise, the API looked
-fine).
-
-I don't know whether I'm looking at a serial or an I2C interface until
-after it's already been probed by HID core, I have a struct hid_device
-and I've asked what type of interface it is via an HID feature report.
-This can't be determined otherwise, because strapping pins affect the
-presentation of interfaces.
-
-At that point, I (currently) call uart_add_one_port. I might have missed
-it, but I didn't see anything analogous in the usb-serial API. Am I
-going about this the wrong way?
-
-Cheers,
-Daniel
-
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 434f83168546..e94d1265151c 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -75,7 +75,7 @@ config SERIAL_AMBA_PL011_CONSOLE
+ 
+ config SERIAL_EARLYCON_ARM_SEMIHOST
+ 	bool "Early console using ARM semihosting"
+-	depends on ARM64 || ARM
++	depends on ARM64 || ARM || RISCV
+ 	select SERIAL_CORE
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+diff --git a/drivers/tty/serial/earlycon-arm-semihost.c b/drivers/tty/serial/earlycon-arm-semihost.c
+index fcdec5f42376..25a0f91926a3 100644
+--- a/drivers/tty/serial/earlycon-arm-semihost.c
++++ b/drivers/tty/serial/earlycon-arm-semihost.c
+@@ -6,6 +6,10 @@
+  * Adapted for ARM and earlycon:
+  * Copyright (C) 2014 Linaro Ltd.
+  * Author: Rob Herring <robh@kernel.org>
++ *
++ * Adapted for RISC-V and earlycon:
++ * Copyright (C) 2022 tinylab.org
++ * Author: Bin Meng <bmeng@tinylab.org>
+  */
+ #include <linux/kernel.h>
+ #include <linux/console.h>
+@@ -23,7 +27,18 @@
+  */
+ static void smh_putc(struct uart_port *port, unsigned char c)
+ {
+-#ifdef CONFIG_ARM64
++#if defined(CONFIG_RISCV)
++	asm volatile("addi    a1, %0, 0\n"
++		     "addi    a0, zero, 3\n"
++		     ".balign 16\n"
++		     ".option push\n"
++		     ".option norvc\n"
++		     "slli    zero, zero, 0x1f\n"
++		     "ebreak\n"
++		     "srai    zero, zero, 0x7\n"
++		     ".option pop\n"
++		     : : "r" (&c) : "a0", "a1", "memory");
++#elif defined(CONFIG_ARM64)
+ 	asm volatile("mov  x1, %0\n"
+ 		     "mov  x0, #3\n"
+ 		     "hlt  0xf000\n"
 -- 
-Daniel Beer
-Firmware Engineer at Igor Institute
-daniel.beer@igorinstitute.com or +64-27-420-8101
-Offices in Seattle, San Francisco, and Vancouver BC or (206) 494-3312
+2.34.1
+
