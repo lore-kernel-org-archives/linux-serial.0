@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90012C47090
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Dec 2022 06:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDFCC352A1
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Dec 2022 06:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbiLFGwT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Dec 2022 01:52:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
+        id S234097AbiLFGxG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Dec 2022 01:53:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231895AbiLFGwR (ORCPT
+        with ESMTP id S233701AbiLFGxE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Dec 2022 01:52:17 -0500
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5637A1A83A;
-        Mon,  5 Dec 2022 22:52:16 -0800 (PST)
-Received: by mail-ed1-f54.google.com with SMTP id c17so10410106edj.13;
-        Mon, 05 Dec 2022 22:52:16 -0800 (PST)
+        Tue, 6 Dec 2022 01:53:04 -0500
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5019118E19;
+        Mon,  5 Dec 2022 22:53:03 -0800 (PST)
+Received: by mail-ed1-f41.google.com with SMTP id c66so12667500edf.5;
+        Mon, 05 Dec 2022 22:53:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SMTUgjfzyyWTmD7y/UtJYvOT87qBLK9RluPkgoZ6OBU=;
-        b=obB2Hb+oCi8AEy40JSR49oI6EgmQJ4plwPPZI1RdnuY3ps80qyjsQRNQtoIy6qsE0V
-         haO6AOaFCHWxBQd2bjCcsmU6SF2Gu0bFwxkgmAJ0vEt/X1l1m7ZcypYUmVq+52P5y52t
-         KmhgGzrKbP6s8pAEIwUZoUy785RgnIGKAkOfOK7g/lCmmNi1Dx/YJYbedVgZExZrJRFs
-         J7lqn2sGRgYg6OVXlO6bXDUZcfmhIkfrEmfCwT363dcPWxikEY35D6xjoaFdCQQS0RKg
-         j8F+ksbAEJFX07lALWoYTHsZtxERD9fAqIIXO9Qn6hO3y9zZ5QeLo3NtyZaTNYnbE+SK
-         vyyg==
-X-Gm-Message-State: ANoB5plvzfn7aPbWZizcjH5p0fTMMMxZdRgYFPvGXc4aO7cHvwr9kg59
-        UK1ZcNwbLpMxgbVRiVdU14+U5OL6hAo=
-X-Google-Smtp-Source: AA0mqf580R470q9lP4FNtIa85kztRpzJgRpl2SFp7WJ4mom5ZtAz2Sy+gJFG7CT9EUHXdT4LsDo80A==
-X-Received: by 2002:a05:6402:3807:b0:45c:a651:87f1 with SMTP id es7-20020a056402380700b0045ca65187f1mr60139045edb.359.1670309534847;
-        Mon, 05 Dec 2022 22:52:14 -0800 (PST)
+        bh=UwtS9TDJJ7vIw83Se/GeNxatxjK+vLXoVYcIsIw2pCE=;
+        b=S0sXAj7SOfM530NxQrt47d/CKYamGpsJDFPxxZwEbdKFn/kki0aInccH8jjr4bNGxa
+         3VKUQ7HapM4RSp0Hm3QMh+uksmuCHuf8/Y8JrqRuob2t/F68btSFu8vFeisHG2c0OMWf
+         o/x7FBwTekwItB/odd3029wY55+iJK6LdW61UHl5WBeLfBU4qwlRvdZYLr7FjClLeJhP
+         wk3/JG0UZJE/FslfJp3tOTxnaDuO7Z3DLfOiD4PUQWGGq8xvJfw0QOIW8sxZGul81yAs
+         /Q4q6GKD2r2E+d4vcsJjFDoc3J/AZUCrp2NuS/KO6EZIlErYxu5P2/q29rHd4S7GQNv+
+         z9sw==
+X-Gm-Message-State: ANoB5pm20fyTP7OdCdbBjEZNcBhKbOip6KHjqUDaEcAgc4K9rpfDVr6p
+        RKhvS8mrSc44UOsr4Hj2mL3rWs29cHI=
+X-Google-Smtp-Source: AA0mqf6dqcBoKY2qtVoQUNjNIl+EnIHecxyGvQiux6H57y+P29ImNa3L1/hmxyYKqmAAjQ5kDxc40A==
+X-Received: by 2002:a05:6402:4289:b0:467:9864:9463 with SMTP id g9-20020a056402428900b0046798649463mr59324551edc.360.1670309581953;
+        Mon, 05 Dec 2022 22:53:01 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id v6-20020a170906180600b007c0c679ca2fsm4628858eje.26.2022.12.05.22.52.14
+        by smtp.gmail.com with ESMTPSA id lb26-20020a170907785a00b00781e7d364ebsm7099422ejc.144.2022.12.05.22.53.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Dec 2022 22:52:14 -0800 (PST)
-Message-ID: <7117060e-9081-2bb2-823b-a1a311c8cb72@kernel.org>
-Date:   Tue, 6 Dec 2022 07:52:13 +0100
+        Mon, 05 Dec 2022 22:53:01 -0800 (PST)
+Message-ID: <df281b81-ba6c-4ca8-3da6-135d4ae09861@kernel.org>
+Date:   Tue, 6 Dec 2022 07:53:00 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH v3 1/2] earlycon: Let users set the clock frequency
+Subject: Re: [PATCH v3 2/2] earlycon: Increase options size
 Content-Language: en-US
 To:     Ricardo Ribalda <ribalda@chromium.org>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -51,9 +51,9 @@ To:     Ricardo Ribalda <ribalda@chromium.org>,
 Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org
 References: <20221123-serial-clk-v3-0-49c516980ae0@chromium.org>
- <20221123-serial-clk-v3-1-49c516980ae0@chromium.org>
+ <20221123-serial-clk-v3-2-49c516980ae0@chromium.org>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20221123-serial-clk-v3-1-49c516980ae0@chromium.org>
+In-Reply-To: <20221123-serial-clk-v3-2-49c516980ae0@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -61,72 +61,31 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 24. 11. 22, 13:39, Ricardo Ribalda wrote:
-> Some platforms, namely AMD Picasso, use non standard uart clocks (48M),
-> witch makes it impossible to use with earlycon.
+> Now that the clock frequency is also part of the options, 16 bytes is
+> too little.
 > 
-> Let the user select its own frequency.
+> Without this patch dmesg does not show the whole options, Eg:
+> 
+> earlycon: uart0 at MMIO32 0x00000000fedc9000 (options '115200n8,480000')
+> 
+> instead of: '115200n8,48000000'
 > 
 > Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index a465d5242774..9efb6c3b0486 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1182,10 +1182,10 @@
->   			specified, the serial port must already be setup and
->   			configured.
->   
-> -		uart[8250],io,<addr>[,options]
-> -		uart[8250],mmio,<addr>[,options]
-> -		uart[8250],mmio32,<addr>[,options]
-> -		uart[8250],mmio32be,<addr>[,options]
-> +		uart[8250],io,<addr>[,options[,uartclk]]
-> +		uart[8250],mmio,<addr>[,options[,uartclk]]
-> +		uart[8250],mmio32,<addr>[,options[,uartclk]]
-> +		uart[8250],mmio32be,<addr>[,options[,uartclk]]
->   		uart[8250],0x<addr>[,options]
->   			Start an early, polled-mode console on the 8250/16550
->   			UART at the specified I/O port or MMIO address.
-> @@ -1194,7 +1194,9 @@
->   			If none of [io|mmio|mmio32|mmio32be], <addr> is assumed
->   			to be equivalent to 'mmio'. 'options' are specified
->   			in the same format described for "console=ttyS<n>"; if
-> -			unspecified, the h/w is not initialized.
-> +			unspecified, the h/w is not initialized. 'uartclk' is
-> +			the uart clock frequency; if unspecified, it is set
-> +			to 'BASE_BAUD' * 16.
->   
->   		pl011,<addr>
->   		pl011,mmio32,<addr>
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index a5f380584cda..3a0c88419b6c 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -120,7 +120,13 @@ static int __init parse_options(struct earlycon_device *device, char *options)
->   	}
->   
->   	if (options) {
-> +		char *uartclk;
-> +
->   		device->baud = simple_strtoul(options, NULL, 0);
-> +		uartclk = strchr(options, ',');
-> +		if (uartclk && kstrtouint(uartclk + 1, 0, &port->uartclk) < 0)
-> +			pr_warn("[%s] unsupported earlycon uart clkrate option\n",
-> +				options);
->   		length = min(strcspn(options, " ") + 1,
->   			     (size_t)(sizeof(device->options)));
->   		strscpy(device->options, options, length);
-> @@ -139,7 +145,8 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
->   		buf = NULL;
->   
->   	spin_lock_init(&port->lock);
-> -	port->uartclk = BASE_BAUD * 16;
-> +	if (!port->uartclk)
-> +		port->uartclk = BASE_BAUD * 16;
->   	if (port->mapbase)
->   		port->membase = earlycon_map(port->mapbase, 64);
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index d657f2a42a7b..f555927195da 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -701,7 +701,7 @@ static inline int uart_poll_timeout(struct uart_port *port)
+>   struct earlycon_device {
+>   	struct console *con;
+>   	struct uart_port port;
+> -	char options[16];		/* e.g., 115200n8 */
+> +	char options[32];		/* e.g., 115200n8 */
+>   	unsigned int baud;
+>   };
 >   
 > 
 
