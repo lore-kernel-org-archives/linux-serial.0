@@ -2,190 +2,151 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FB6C63707
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 11:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B0FC352A1
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 11:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbiLGLvp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Dec 2022 06:51:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S229667AbiLGLyn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Dec 2022 06:54:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiLGLvk (ORCPT
+        with ESMTP id S229900AbiLGLyZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Dec 2022 06:51:40 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA80A1023;
-        Wed,  7 Dec 2022 03:51:35 -0800 (PST)
+        Wed, 7 Dec 2022 06:54:25 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F2453EC6;
+        Wed,  7 Dec 2022 03:53:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670413897; x=1701949897;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=zvQvoWnHKK8GKmWDVFy0JPFBwDEHDuP5ql5tVkzXUI4=;
-  b=ZuajStEeRpNFlPZfeo6DIQMNYe6DlHTbJOGTGc/9+2UE1k9Yc2+1zKr/
-   PF9EnSl1p0XZq4JHDT5dN8C83boMaA+u6Rv3TtEbmy8ALxV0hBhVu6nPt
-   AKeme+Zz1h4ATa938j0j5cjfLe8X/6BzkeptytL1OyA47CnBN995m1qJt
-   gXCUV1Jjsq0JRlNPkviA5hU80mXxn04ZGz9K+9XYR9DELgOw7nca0y3ly
-   79cpzVZGddLv/cfYoNJz6yTRY5n8H5zYUfoXhLqDN3ValC1HOYy+tlnMf
-   GbaiPmwSrocDE2UoWQabPzAYegIbkyFZ8kaYSFG9UzZJoNbv6cgWl7HwE
-   g==;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670414003; x=1701950003;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=yi1CvoW2ZnYsJeWqpB1M54BgrX9F2wgmCB/vqXuVrZQ=;
+  b=lkU7GPc/fqdJNcBL7nvCYyXOKx7PVW4jLKucUTauKGLstdaAx0W8b7aV
+   GvQmksnbe3xuUlVTOBYvI6rSUUyHOGKmFMyqk+dg7ltKrc2KFVgkVe8YF
+   +IYHM424iHPwrlRIGundevhgyzmN61jOkp6qk82Kw5ypktsa1/vWSUHiv
+   gCj/GkCZJoSagPlORNS8AlBM1mv7e9uuChkpcsjYNxQLzzcPORNdLJpn9
+   54m8SxlE+QdubZE3y3mlirSrtxo1J3oCl/uxbag9baOgwP+1j4lmd62Hq
+   Ni+3cym7WWmX9aGLF++ahhH05jHCioGaNiDjkcLK4Cvcz88NX2KiWekwr
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10553"; a="343902402"
 X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="186958748"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2022 04:51:35 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 7 Dec 2022 04:51:34 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
- Transport; Wed, 7 Dec 2022 04:51:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=defpQsGv6vBibrNrMJ5ggKCQlHpGUhRD0kfnrEfRjm+N5LUs12VQizxSL7KckLR20fCxqogo5aZiSoRUomOy2kfBrS7P6bnflWHVv4DYuG7DzcI50W5fwFxM4UueCekCvecupjk2rbsXfowCwef57xjRQUfSySZGVY7Oyrc+cNjanyWnimxQDDHdEpZbXiGQu4tb68CDztO9TFiPs7wQm7l4ZM52au2b8+ujmnibpj9r6OlDJryzyQwZ7ktBkryLLje0qkm89o89yAux8LIOrYM6VjqfMB2PH+k1XdAWOXpBluzFTiGg9kYcL6kZTe6feciZuYD0uw4DXc88uTUhBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Zn+MrOTtEEsmajVlWOMtniGh8bPwXakBqpZzzGJTD24=;
- b=RJhPfCjRAyUJIysHC4HMvJvg947Mbm6O+378RT2yzrKdtgLgK/9uS95OXCXdOBtRgNZ5YTrDL6Kq7lx+z79ZqbAfNXYws/Zu/yZVeuoB668FyZRe4TrPe/WIvACUL9+4FS4zemcAKarXPrfY6t/E+ESXpd344jsPoSy4mQPUVuf/RTvV8RYy9FqNtRNaVTwdmA9093OVCiuuAbePUBimUNfNfXczlOf5FcO4vr4pNeCJmpFCYHYkKgNiIQZ2r5rfRiJwD8+akxKYPwdrj/O0rCP0Itn05r7YkfPNhsOxJRjH4PbCMnBjruoXgA1czHTs9qi74ZpDkAn30RqnrRGxEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zn+MrOTtEEsmajVlWOMtniGh8bPwXakBqpZzzGJTD24=;
- b=jQhw6cRIlw8WfSWpM/boD+EpB89aYZQSL/9hPhsjD8YMIHrQ5N/9YtgGyISMbnTsVN/IG0BvEHsBqoXj8gpdK57KsDoTSf67D66AUN4gHYQlitTkJWPd5B+/e8QG3lbXyCFf3OCCeoQnvKrMakd6q+D2BLmZiJfaHH2Yjm/eLms=
-Received: from BN8PR11MB3668.namprd11.prod.outlook.com (2603:10b6:408:81::24)
- by DM4PR11MB5231.namprd11.prod.outlook.com (2603:10b6:5:38a::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.14; Wed, 7 Dec
- 2022 11:51:32 +0000
-Received: from BN8PR11MB3668.namprd11.prod.outlook.com
- ([fe80::fecf:d286:328b:747f]) by BN8PR11MB3668.namprd11.prod.outlook.com
- ([fe80::fecf:d286:328b:747f%7]) with mapi id 15.20.5880.014; Wed, 7 Dec 2022
- 11:51:32 +0000
-From:   <Kumaravel.Thiagarajan@microchip.com>
-To:     <ilpo.jarvinen@linux.intel.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <andriy.shevchenko@linux.intel.com>, <macro@orcam.me.uk>,
-        <jay.dolan@accesio.com>, <cang1@live.co.uk>,
-        <u.kleine-koenig@pengutronix.de>, <wander@redhat.com>,
-        <etremblay@distech-controls.com>, <jk@ozlabs.org>,
-        <biju.das.jz@bp.renesas.com>, <geert+renesas@glider.be>,
-        <phil.edworthy@renesas.com>, <lukas@wunner.de>,
-        <UNGLinuxDriver@microchip.com>, <colin.i.king@gmail.com>,
-        <Tharunkumar.Pasumarthi@microchip.com>
-Subject: RE: [PATCH v6 tty-next 3/4] serial: 8250_pci1xxxx: Add RS485 support
+   d="scan'208";a="343902402"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 03:53:22 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10553"; a="753067135"
+X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
+   d="scan'208";a="753067135"
+Received: from mindrei-mobl2.ger.corp.intel.com ([10.249.37.139])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 03:53:18 -0800
+Date:   Wed, 7 Dec 2022 13:53:17 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, macro@orcam.me.uk,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        cang1@live.co.uk, colin.i.king@gmail.com,
+        phil.edworthy@renesas.com, biju.das.jz@bp.renesas.com,
+        geert+renesas@glider.be, Lukas Wunner <lukas@wunner.de>,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+Subject: Re: [PATCH v7 tty-next 3/4] serial: 8250_pci1xxxx: Add RS485 support
  to quad-uart driver
-Thread-Topic: [PATCH v6 tty-next 3/4] serial: 8250_pci1xxxx: Add RS485 support
- to quad-uart driver
-Thread-Index: AQHZBUCyVI8Jzgj/vEqV1N6a80ZqLK5YyUOAgAmO8FA=
-Date:   Wed, 7 Dec 2022 11:51:31 +0000
-Message-ID: <BN8PR11MB36688D417F015D5DB19FA3FFE91A9@BN8PR11MB3668.namprd11.prod.outlook.com>
-References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com>
- <20221201045146.1055913-4-kumaravel.thiagarajan@microchip.com>
- <b9d2c851-7b16-b0a0-3475-c5ab17a563e@linux.intel.com>
-In-Reply-To: <b9d2c851-7b16-b0a0-3475-c5ab17a563e@linux.intel.com>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN8PR11MB3668:EE_|DM4PR11MB5231:EE_
-x-ms-office365-filtering-correlation-id: 62befd3b-085b-4d20-1540-08dad849625c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7x6Nz3Nnkg6+ZmgVLsJThAsolGYU7r1RtMByhxBOL6fldIqFshOr8TBwH4evvkify5Olq4z5U8Knys43hVCxxtX5bMGrnNGw2s+QmwaDjuZllwthXzUU/W547PM59HTrz4qgpt6xDRIQ2LKFUNPNSm4lIVCRuDK+kDPrJQsVjnV/uGCRlJhJYzHofsLsbYOWcwtADWBRBus4ri/7kz/PYWGmwHwXZypml/iMXgzgP+2+aNgMWbHfmiTr09eXtod7da4+uhQwVaee2aaOZkiR4jC9XD0B1pGUrG0uNk18ppaJGi/96GnY5GrftAPHrq5P7MjEtI4yd8t0beF88NQfJ3rij2ELnY8bRRWfbxe61RnHYF+9RQe+jYaSOg+HfFouTcLqJ9G9UzyPVsdz4PSRshj6IVSqmaeJRXIP4b4XslYZgRqvHMTnF2aJ8KGFaVMX6LWknitlt7MFF5kgbGQPRd+CAviAF+5rCLFkrkJHvroVeSw4IYsyxO/UVbfEWCLYsmmlC/ZUdyWdVZpOqr0376ZO/tqsxUuKlly4EZN8rspgRvln3nNY/aRmeCFYqEAIDbGQVa4muJ9Bwmp/mMmVIgLQ1qQuZH9p8X1shCzKwwRS+MMdzo8s4cYof84BguiRQTh4Yl+gMtHT0eQ0mHgX5o5raxLMpeI+lp4hlu09VljAvmXjSr/9CXMSkUZI7rVeWPqj+t/DKwqabE6HCy8qOwTL4oumwBZY9w4Bm9Pu4REQis5WjMGxdAZVrs1dJKHN
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3668.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(346002)(366004)(396003)(39860400002)(451199015)(38100700002)(38070700005)(2906002)(41300700001)(186003)(83380400001)(5660300002)(122000001)(8936002)(478600001)(52536014)(7416002)(107886003)(53546011)(6506007)(7696005)(71200400001)(66556008)(86362001)(8676002)(66446008)(76116006)(64756008)(66476007)(66946007)(26005)(54906003)(9686003)(4326008)(6916009)(316002)(55016003)(33656002)(473944003)(414714003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?Nm0YoMhMkkRHNXBp9zulcCMWTkVzrRcHa7WkLdEiFZiA/v0RNJCg1LkJHg?=
- =?iso-8859-1?Q?cfdcH1wlkYHRoUToZdtsDFMFpNYw9Qbs3fTjpM1A+Op4QgjVunuC8T/8Be?=
- =?iso-8859-1?Q?eef2m8FfqgoVpeBWIP9dU3tExBubqpgkOJ36CJyLyLFrqDdSjcjEp3kgYz?=
- =?iso-8859-1?Q?T4YS4H7nSJBMK9ToXs8rxGbaDIrTozX8Ooi2M+xVu0ec41Tkd/9SE6p9UV?=
- =?iso-8859-1?Q?RJPAsFHCUmmciyABUxxk11swNOob66T2C6oySwxfuBVRpB6RvLOkqXSYO9?=
- =?iso-8859-1?Q?gm/ET9sOOFNLJJOTAVYAcRQXpzr5uHps7O3wHPeELfs+lruDZ6z5WucEEt?=
- =?iso-8859-1?Q?R+vE0nvzGrv803brK6wL5fDVSqHO91G08cKUmH2mSpbMecKJaeFMAoikC4?=
- =?iso-8859-1?Q?UCA4zLqK6zhin9ovFEYVSudnwPtHmIoy6Dd1jitPI9Kqewh3aLNP5YEP1z?=
- =?iso-8859-1?Q?ocfzKExbvQCDblWGNzmf6B8YCfUCP5gkhMcAglv9We2UqCiOQOgt7Ym34E?=
- =?iso-8859-1?Q?o/dcNC2X9jd+lK7PAU9MZYDKdexs/sZ1RN4lW3n66jpU/Tq5UjW6A62DnA?=
- =?iso-8859-1?Q?rrhH1xjbKTf72ZNAT5WUb4YgClG1nnH3JyakvVNnK06c9W60/isnh+lcyb?=
- =?iso-8859-1?Q?BDD7tSEDcgNHj4pnUFSMM4xKccRYmsKoI+y8XODDvCR0qWhxjpQYGXrF5O?=
- =?iso-8859-1?Q?2vlyQkR3jhneiJQXf8mOViD0pHnkBNqyC1Forwmq9FthybQM7/ZsBHKlCN?=
- =?iso-8859-1?Q?VLGASvdd87duEbUEGLiFNvyfoTtdbr2iTRgZVYn6QF3t/Nm+jWI+kBVy6J?=
- =?iso-8859-1?Q?GXVoZbvjdPIUgh1/z5gxA2zAVu5E/2SnD0rvBFAWMAQ9VcBxJzd+JEz3vS?=
- =?iso-8859-1?Q?ojmZQaUbIRSYYw8JvNh2YaiTN1PvuSZGm1upEQ7NKgRHqXwU1DFlrOO+2c?=
- =?iso-8859-1?Q?AG+w2OYqRspHKx/7RIALhwdqwvzccwMgDejt3ZCsdC1P++UJuHe9ycrzw+?=
- =?iso-8859-1?Q?W2PqtHthmHC9v3MGy6+v/zz4uew5NQBz/XWY5C7S9dvAuGSbCkJMUQAkgd?=
- =?iso-8859-1?Q?vZ5uhgYTsixy7mZa7/JzerkRWVw9CleLYBfTuwjeBFzp7v10T1qtgOUpU9?=
- =?iso-8859-1?Q?+okl4H5qbfdtiQt0/L+e6p+P7+X00X3WikGN0gcTSScPR3QQO8H+ErO3dY?=
- =?iso-8859-1?Q?Ufyj/pxC6AaGD2iuCvL3U7ix8aatJaIfIN9JTZfRkilGyhSqpIm7LDXxTC?=
- =?iso-8859-1?Q?xHzk+Av/KhPEagJjhdeYfEfJG+uQQtyhTxl8Ds8Q2iOxbqYrSoNwhKokJ8?=
- =?iso-8859-1?Q?uiRu8D0qJEC91QgBtbSROTJTFTNqjpYTmITRFa4km1fFb1tzbBUNv/OSUN?=
- =?iso-8859-1?Q?parpAss/ieE13jGo0Rsw7LqWHDovQknhC25M0mWh9WzXBFSnoFWRoThv2V?=
- =?iso-8859-1?Q?GTHBD1n2A+orktZiAEHZYBQATRhMgpOcp0nrrVGiRu2MebTW3k84fv8CHU?=
- =?iso-8859-1?Q?bV1Tf0DlnUQOcZP4RvngwdQFA1F+aUuTPrM5xubGek89dDBfRwmtgvUm1d?=
- =?iso-8859-1?Q?dSbOujZWGwuVgYUDYPpeQFedRNLH8A3dVFNt9+yUGuGkq1VUGYMaZCaNzP?=
- =?iso-8859-1?Q?Rriv/8r8rZj+Rssx8vCJ711nPOpux3cY5zKKvsrPQdQCtpUeoFldLbP9Vj?=
- =?iso-8859-1?Q?yQ01oYAsvKzWfhy/jfs=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20221207235305.695541-4-kumaravel.thiagarajan@microchip.com>
+Message-ID: <784d1b68-98b8-324-ad34-7ef13352855@linux.intel.com>
+References: <20221207235305.695541-1-kumaravel.thiagarajan@microchip.com> <20221207235305.695541-4-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3668.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62befd3b-085b-4d20-1540-08dad849625c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2022 11:51:32.0448
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: R9l1JS97UG9+iLrcSHdL6BAAg5akoGJK2krVsxYw6DCb51YHAh+8UbUmX7GyEXrOE6EHJ38IiSkiZh6YGmticW9DXzCBzeDAtyRPVhRocjcaUS7daZqyzrmhzzlrafmT
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5231
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> Sent: Thursday, December 1, 2022 3:17 PM
-> To: Kumaravel Thiagarajan - I21417 <Kumaravel.Thiagarajan@microchip.com>
-> Subject: Re: [PATCH v6 tty-next 3/4] serial: 8250_pci1xxxx: Add RS485
-> support to quad-uart driver
->=20
-> On Thu, 1 Dec 2022, Kumaravel Thiagarajan wrote:
->=20
-> > pci1xxxx uart supports RS485 mode of operation in the hardware with
-> > auto-direction control with configurable delay for releasing RTS after
-> > the transmission. This patch adds support for the RS485 mode.
-> >
-> >
-> > +static int pci1xxxx_rs485_config(struct uart_port *port,
-> > +                              struct ktermios *termios,
-> > +                              struct serial_rs485 *rs485) {
-> > +     u32 clock_div =3D readl(port->membase +
-> > +UART_BAUD_CLK_DIVISOR_REG);
->=20
-> Maybe move this into the block where it's needed?
->=20
-> > +     u64 delay_in_baud_periods;
-> > +     u32 baud_period_in_ns;
-> > +     u32 data =3D 0;
->=20
-> data seems a bit too generic name for a variable? At minimum I'd suggest
-> using cfg or mode_cfg (I couldn't guess where ADCL comes from, perhaps it
-> has some component which would make the variable name better).
+On Thu, 8 Dec 2022, Kumaravel Thiagarajan wrote:
 
-Hi Ilpo,
+> pci1xxxx uart supports RS485 mode of operation in the hardware with
+> auto-direction control with configurable delay for releasing RTS after
+> the transmission. This patch adds support for the RS485 mode.
+> 
+> Co-developed-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+> Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> ---
+> Changes in v7:
+> - No Change
+> 
+> Changes in v6:
+> - Modified datatype of delay_in_baud_periods to u64 to avoid overflows
+> 
+> Changes in v5:
+> - Removed unnecessary assignments
+> - Corrected styling issues in comments
+> 
+> Changes in v4:
+> - No Change
+> 
+> Changes in v3:
+> - Remove flags sanitization in driver which is taken care in core
+> 
+> Changes in v2:
+> - move pci1xxxx_rs485_config to a separate patch with
+>   pci1xxxx_rs485_supported.
+> ---
+>  drivers/tty/serial/8250/8250_pci1xxxx.c | 49 +++++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> index be554e2d884b..9f0da264314a 100644
+> --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
+> +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> @@ -145,6 +145,53 @@ static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
+>  	       port->membase + UART_BAUD_CLK_DIVISOR_REG);
+>  }
+>  
+> +static int pci1xxxx_rs485_config(struct uart_port *port,
+> +				 struct ktermios *termios,
+> +				 struct serial_rs485 *rs485)
+> +{
+> +	u32 clock_div = readl(port->membase + UART_BAUD_CLK_DIVISOR_REG);
+> +	u64 delay_in_baud_periods;
+> +	u32 baud_period_in_ns;
+> +	u32 data = 0;
+> +
+> +	/*
+> +	 * pci1xxxx's uart hardware supports only RTS delay after
+> +	 * Tx and in units of bit times to a maximum of 15
+> +	 */
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		data = ADCL_CFG_EN | ADCL_CFG_PIN_SEL;
+> +
+> +		if (!(rs485->flags & SER_RS485_RTS_ON_SEND))
+> +			data |= ADCL_CFG_POL_SEL;
+> +
+> +		if (rs485->delay_rts_after_send) {
+> +			baud_period_in_ns =
+> +				FIELD_GET(BAUD_CLOCK_DIV_INT_MSK, clock_div) *
+> +				UART_BIT_SAMPLE_CNT;
+> +			delay_in_baud_periods =
+> +				rs485->delay_rts_after_send * NSEC_PER_MSEC /
+> +				baud_period_in_ns;
+> +			delay_in_baud_periods =
+> +				min_t(u64, delay_in_baud_periods,
+> +				      FIELD_MAX(ADCL_CFG_RTS_DELAY_MASK));
+> +			data |= FIELD_PREP(ADCL_CFG_RTS_DELAY_MASK,
+> +					   delay_in_baud_periods);
+> +			rs485->delay_rts_after_send =
+> +				baud_period_in_ns * delay_in_baud_periods /
+> +				NSEC_PER_MSEC;
 
-We just noticed after submitting v7 that this email of yours got forwarded =
-to spam folder by our IT infrastructure automatically and we missed it.
-We will take care of this in v8.
+div_u64() or cast+comment if you can prove you never need the high-word at 
+this point.
 
-Thank You.
+But why you even need u64 because delay_rts_after_send is limited to 
+RS485_MAX_RTS_DELAY (=100) by serial core? 100 * NSEC_PER_MSEC doesn't 
+overflow u32.
 
-Regards,
-Kumar
+
+-- 
+ i.
+
