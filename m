@@ -2,149 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12746C4708D
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 20:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CEEC4708D
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 22:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbiLGU22 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Dec 2022 15:28:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
+        id S230097AbiLGWFe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Dec 2022 17:05:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiLGU22 (ORCPT
+        with ESMTP id S230044AbiLGWFP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Dec 2022 15:28:28 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EACEDE88;
-        Wed,  7 Dec 2022 12:28:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670444906; x=1701980906;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sWTDm26dkSn9+qW1jd6fTadfWfLcjbzkrYlN30smQ6o=;
-  b=dREONcz7Jthp8/bEn/Tr2KGdmuNsdT03Rj8mXGP7GWQhK1Qb0aJvqS8p
-   T864/KLkkhBiW2yeXcjkQAavPIkRKVhzW7cekoQ1U0cgS7LEma6YgxxD0
-   uunMNdhfq+Zb6XCtUM5Q34HjL7KqIEKuAgsmFv8Gi5A/j6Yzs4aJ25D3m
-   TACULAOkanYXnc0jezjtA/iMVSOTGCYe1Lf5XHHAkrS8W2V2KNF0eAQy/
-   JHwVYKlSKpZ4xknGBwk4jmjkz74QA2zDiQ4q2NVA3ixy5HSiIe1nNfPHw
-   jcddGOiaD3Qzv/koHj1a83sGIO/YSbq1RZbVreb9bu0gCm+84lQzxlRU3
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="314642775"
-X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="314642775"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 12:28:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="624433944"
-X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="624433944"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP; 07 Dec 2022 12:28:02 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1p311M-005yqb-30;
-        Wed, 07 Dec 2022 22:28:00 +0200
-Date:   Wed, 7 Dec 2022 22:28:00 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v4 1/1] serial: core: Start managing serial
- controllers to enable runtime PM
-Message-ID: <Y5D3UKLgHCT9feuC@smile.fi.intel.com>
-References: <20221207124305.49943-1-tony@atomide.com>
- <Y5D187ygOvDEA0UK@smile.fi.intel.com>
+        Wed, 7 Dec 2022 17:05:15 -0500
+X-Greylist: delayed 483 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 07 Dec 2022 14:04:15 PST
+Received: from mail.someserver.de (mail2.someserver.de [31.15.66.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3EAE85660
+        for <linux-serial@vger.kernel.org>; Wed,  7 Dec 2022 14:04:15 -0800 (PST)
+Received: from localhost (unknown [213.55.243.226])
+        by mail.someserver.de (Postfix) with ESMTPSA id 39D44801C6;
+        Wed,  7 Dec 2022 22:56:19 +0100 (CET)
+From:   Christina Quast <contact@christina-quast.de>
+To:     linux-serial@vger.kernel.org
+Cc:     Christina Quast <contact@christina-quast.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Daniel Beer <daniel.beer@igorinstitute.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH tty-next 1/3] hid-ft260: Cleanup macro formatting
+Date:   Wed,  7 Dec 2022 22:55:38 +0100
+Message-Id: <20221207215540.114920-2-contact@christina-quast.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221207215540.114920-1-contact@christina-quast.de>
+References: <20221207215540.114920-1-contact@christina-quast.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y5D187ygOvDEA0UK@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 07, 2022 at 10:22:11PM +0200, Andy Shevchenko wrote:
-> On Wed, Dec 07, 2022 at 02:43:05PM +0200, Tony Lindgren wrote:
+Signed-off-by: Christina Quast <contact@christina-quast.de>
+Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Cc: Daniel Beer <daniel.beer@igorinstitute.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/hid/hid-ft260.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-...
-
-> > +int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
-> > +{
-> 
-> > +	bool allocated = false;
-> 
-> Not sure why this is needed.
-
-Okay, I got it.
-Still, see below.
-
-> > +	struct device *ctrl_dev;
-> > +	int ret;
-> > +
-> > +	ret = serial_core_add_one_port(drv, port);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	mutex_lock(&port_mutex);
-> > +
-> > +	/* Inititalize a serial core controller device if needed */
-> > +	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
-> > +	if (!ctrl_dev) {
-> > +		ctrl_dev = serial_core_ctrl_device_add(port);
-> > +		if (!ctrl_dev)
-> > +			goto err_remove_port;
-> > +		allocated = true;
-> > +	}
-> 
-> Wouldn't be slightly better
-> 
-> 	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
-> 	if (!ctrl_dev)
-> 		ctrl_dev = serial_core_ctrl_device_add(port);
-> 	if (!ctrl_dev)
-> 		goto err_remove_port;
-> 
-> ?
-> 
-> > +	/* Initialize a serial core port device */
-> > +	ret = serial_core_port_device_add(ctrl_dev, port);
-> > +	if (ret)
-> > +		goto err_del_ctrl_dev;
-> > +
-> > +	mutex_unlock(&port_mutex);
-> > +
-> > +	return 0;
-> > +
-> > +err_del_ctrl_dev:
-> > +	if (allocated)
-
-We can avoid this check by caching the platform device.
-
-	struct platform_device *ctrl_pdev = NULL;
-
-	if (...) {
-		ctrl_pdev = to_platform_device(ctrl_dev);
-	}
-
-	platform_device_del(ctrl_pdev);
-
-> > +		platform_device_del(to_platform_device(ctrl_dev));
-> 
-> Shouldn't you call platform_device_unregister()?
-> 
-> > +err_remove_port:
-> > +	mutex_unlock(&port_mutex);
-> > +
-> > +	return serial_core_remove_one_port(drv, port);
-> > +}
-
+diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
+index 79505c64dbfe..7edba9aaff43 100644
+--- a/drivers/hid/hid-ft260.c
++++ b/drivers/hid/hid-ft260.c
+@@ -29,7 +29,8 @@ MODULE_PARM_DESC(debug, "Toggle FT260 debugging messages");
+ 	} while (0)
+ 
+ #define FT260_REPORT_MAX_LENGTH (64)
+-#define FT260_I2C_DATA_REPORT_ID(len) (FT260_I2C_REPORT_MIN + (len - 1) / 4)
++#define FT260_I2C_DATA_REPORT_ID(len) (FT260_I2C_REPORT_MIN + ((len) - 1) / 4)
++
+ /*
+  * The input report format assigns 62 bytes for the data payload, but ft260
+  * returns 60 and 2 in two separate transactions. To minimize transfer time
+@@ -123,7 +124,7 @@ enum {
+ 	FT260_FLAG_START_STOP_REPEATED	= 0x07,
+ };
+ 
+-#define FT260_SET_REQUEST_VALUE(report_id) ((FT260_FEATURE << 8) | report_id)
++#define FT260_SET_REQUEST_VALUE(report_id) ((FT260_FEATURE << 8) | (report_id))
+ 
+ /* Feature In reports */
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
