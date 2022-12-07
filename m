@@ -2,157 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE66C4708E
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 13:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B66C352A1
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 16:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230013AbiLGNyf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Dec 2022 08:54:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        id S229515AbiLGQkP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Dec 2022 11:40:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiLGNy2 (ORCPT
+        with ESMTP id S229486AbiLGQkO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Dec 2022 08:54:28 -0500
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67FA4908F;
-        Wed,  7 Dec 2022 05:54:26 -0800 (PST)
-X-QQ-mid: bizesmtp74t1670421234t6glizjv
-Received: from ubuntu.. ( [111.196.135.79])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 07 Dec 2022 21:53:53 +0800 (CST)
-X-QQ-SSF: 01200000002000B0B000B00A0000000
-X-QQ-FEAT: znfcQSa1hKahN1m9MXihhlD9H25KcTrmlTsiK+jnZWRL9/KxDfCfAcvhFsc/S
-        H6xwwcByw5o8tyboieoNR+AmVut1u5dwzH1z7kU8wcl95Mbu8Q5d9o585jd++GMqxXex3jm
-        CkZv5G0mO+lxy1HIvqPQgiBjL+Xg/FTbI3XP92dc2IIwtBscteuxqYwu9H8dMfTPR2pi76w
-        XdcDgwtn7ldi7QrfHXzB8kvjGfAzHnmjj/vVARdO1lFukykzUI/F+5Z05FMnzMCP0w6VihL
-        Ij5qHkPkSvQihQ2PzgtxZMIcnd8yQ+naJaNuU5uA8uQjy5YHwcnRNQRB0Q3PWeJGSSWdsg4
-        lZEa5S3bFSh34fllrOvku39hQehmbNfimeWSEpMnQ1n/6Mvmn1T+aPsOt85ag==
-X-QQ-GoodBg: 0
-From:   Bin Meng <bmeng@tinylab.org>
-To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Wed, 7 Dec 2022 11:40:14 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D9565B0;
+        Wed,  7 Dec 2022 08:40:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6839ECE1AFE;
+        Wed,  7 Dec 2022 16:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A02C433C1;
+        Wed,  7 Dec 2022 16:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670431210;
+        bh=g5fGGrWSIRqwNSexjwtqPOCti3BgIlEU85pKTBf8T0g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Oo5QBkISEd5C93re2xC0MAd5GbmcJS0EQqCFX92m+ZL2Nnj+W+l6Aa8NisLDN8s2+
+         T/59VugOVhDKZk6+JfIq19yMgs9W72I7zpqEoVvLjqhwYaGveEsjBalrCI/i9FYgpi
+         GRSSZt4wnoHmFdjJya2qZ2v6WPaiqIAOgtedaL1X6wHhznVa3upGa5A4T7yrYIH67B
+         E4KovPtFNabXUFMrqkNctQza7wTDUZlfNqI0Y0kN7wBNdJAqcQgul/ISBt0ja9HSUx
+         24oqNM/bS5VlKbyeAGSVDrOv390/2jSLOD5C3VBU1dHcR9zdD6AcLhueUri6w+Obo/
+         RZQPBhowOylmw==
+Date:   Wed, 7 Dec 2022 16:40:05 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Bin Meng <bmeng@tinylab.org>
+Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 1/3] serial: earlycon-arm-semihost: Move smh_putc() variants in respective arch's semihost.h
-Date:   Wed,  7 Dec 2022 21:53:50 +0800
-Message-Id: <20221207135352.592556-1-bmeng@tinylab.org>
-X-Mailer: git-send-email 2.34.1
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH v2 2/3] riscv: Implement semihost.h for earlycon semihost
+ driver
+Message-ID: <Y5DB5c7O4oAMkTa/@spud>
+References: <20221207135352.592556-1-bmeng@tinylab.org>
+ <20221207135352.592556-2-bmeng@tinylab.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:tinylab.org:qybglogicsvr:qybglogicsvr3
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="P16++YdENF2wGyvg"
+Content-Disposition: inline
+In-Reply-To: <20221207135352.592556-2-bmeng@tinylab.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Move smh_putc() variants in respective arch/*/include/asm/semihost.h,
-in preparation to add RISC-V support.
 
-Signed-off-by: Bin Meng <bmeng@tinylab.org>
+--P16++YdENF2wGyvg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
----
+Hello,
 
-Changes in v2:
-- new patch: "serial: earlycon-arm-semihost: Move smh_putc() variants in respective arch's semihost.h"
+Two tiny nits for whenever other comments require a v3.
 
- arch/arm/include/asm/semihost.h            | 23 ++++++++++++++++++++
- arch/arm64/include/asm/semihost.h          | 17 +++++++++++++++
- drivers/tty/serial/earlycon-arm-semihost.c | 25 +---------------------
- 3 files changed, 41 insertions(+), 24 deletions(-)
- create mode 100644 arch/arm/include/asm/semihost.h
- create mode 100644 arch/arm64/include/asm/semihost.h
+On Wed, Dec 07, 2022 at 09:53:51PM +0800, Bin Meng wrote:
+> Per RISC-V semihosting spec [1], implement semihost.h for the existing
+> Arm semihosting earlycon driver to work on RISC-V.
+>=20
+> [1] https://github.com/riscv/riscv-semihosting-spec/blob/main/riscv-semih=
+osting-spec.adoc
 
-diff --git a/arch/arm/include/asm/semihost.h b/arch/arm/include/asm/semihost.h
-new file mode 100644
-index 000000000000..c33cb5124376
---- /dev/null
-+++ b/arch/arm/include/asm/semihost.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2012 ARM Ltd.
-+ * Author: Marc Zyngier <marc.zyngier@arm.com>
-+ *
-+ * Adapted for ARM and earlycon:
-+ * Copyright (C) 2014 Linaro Ltd.
-+ * Author: Rob Herring <robh@kernel.org>
-+ */
-+
-+#ifdef CONFIG_THUMB2_KERNEL
-+#define SEMIHOST_SWI	"0xab"
-+#else
-+#define SEMIHOST_SWI	"0x123456"
-+#endif
-+
-+static inline void smh_putc(struct uart_port *port, unsigned char c)
-+{
-+	asm volatile("mov  r1, %0\n"
-+		     "mov  r0, #3\n"
-+		     "svc  " SEMIHOST_SWI "\n"
-+		     : : "r" (&c) : "r0", "r1", "memory");
-+}
-diff --git a/arch/arm64/include/asm/semihost.h b/arch/arm64/include/asm/semihost.h
-new file mode 100644
-index 000000000000..9e56d38fe5fd
---- /dev/null
-+++ b/arch/arm64/include/asm/semihost.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2012 ARM Ltd.
-+ * Author: Marc Zyngier <marc.zyngier@arm.com>
-+ *
-+ * Adapted for ARM and earlycon:
-+ * Copyright (C) 2014 Linaro Ltd.
-+ * Author: Rob Herring <robh@kernel.org>
-+ */
-+
-+static inline void smh_putc(struct uart_port *port, unsigned char c)
-+{
-+	asm volatile("mov  x1, %0\n"
-+		     "mov  x0, #3\n"
-+		     "hlt  0xf000\n"
-+		     : : "r" (&c) : "x0", "x1", "memory");
-+}
-diff --git a/drivers/tty/serial/earlycon-arm-semihost.c b/drivers/tty/serial/earlycon-arm-semihost.c
-index fcdec5f42376..e4692a8433f9 100644
---- a/drivers/tty/serial/earlycon-arm-semihost.c
-+++ b/drivers/tty/serial/earlycon-arm-semihost.c
-@@ -11,30 +11,7 @@
- #include <linux/console.h>
- #include <linux/init.h>
- #include <linux/serial_core.h>
--
--#ifdef CONFIG_THUMB2_KERNEL
--#define SEMIHOST_SWI	"0xab"
--#else
--#define SEMIHOST_SWI	"0x123456"
--#endif
--
--/*
-- * Semihosting-based debug console
-- */
--static void smh_putc(struct uart_port *port, unsigned char c)
--{
--#ifdef CONFIG_ARM64
--	asm volatile("mov  x1, %0\n"
--		     "mov  x0, #3\n"
--		     "hlt  0xf000\n"
--		     : : "r" (&c) : "x0", "x1", "memory");
--#else
--	asm volatile("mov  r1, %0\n"
--		     "mov  r0, #3\n"
--		     "svc  " SEMIHOST_SWI "\n"
--		     : : "r" (&c) : "r0", "r1", "memory");
--#endif
--}
-+#include <asm/semihost.h>
- 
- static void smh_write(struct console *con, const char *s, unsigned n)
- {
--- 
-2.34.1
+Could you please use regular Link: tags? Also, for a multi-patch series
+please send a cover letter :)
 
+Thanks,
+Conor.
+
+
+--P16++YdENF2wGyvg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY5DB5QAKCRB4tDGHoIJi
+0pZKAQCwhsweZT35rE6Qa9nOrzhd5VKjCEPMMwbXWCfug86MmAEAmCRVZoYRpUvE
+E1k+9d6yojCvx8N+tjKoPiR/Bzb88w4=
+=64rp
+-----END PGP SIGNATURE-----
+
+--P16++YdENF2wGyvg--
