@@ -2,145 +2,212 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A9AC4708D
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 20:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F067FC4708D
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 20:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229441AbiLGUCr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Dec 2022 15:02:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33256 "EHLO
+        id S229702AbiLGUWS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Dec 2022 15:22:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiLGUCp (ORCPT
+        with ESMTP id S229456AbiLGUWR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Dec 2022 15:02:45 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E352B1EC;
-        Wed,  7 Dec 2022 12:02:43 -0800 (PST)
+        Wed, 7 Dec 2022 15:22:17 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868A57B546;
+        Wed,  7 Dec 2022 12:22:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670443363; x=1701979363;
+  t=1670444536; x=1701980536;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=QiA1odkP/pscG7ADNPdd2N2pEJ4aIYrRjeu1tiCya+Q=;
-  b=hsGRty4XNVkp+TO0q5smPEFkduI+mtNji1hQzVK6Z+9lrucvzVguOtJo
-   2Yxt1z1YlEHWkJAx4rGquIuAdlFGrCKYC7jjKOsqmdzrN8nqsElee07yx
-   aDM2KIT8OpETA5f430NCjh7LpYUxfTb5z6sIi/Gt84PmNAKi5WtlIxA9Z
-   bJRsuKxqr8xWAxuXRKXM/krFMm1J19AT4dlzvOzd+r4/yq0gc1yZw3eAd
-   aOyqY+0tz9tnN9clHRItqqi44bnXehApmuWdxBbl+L9eCcYO5oUT0Yz6G
-   e+6MfvlQceuoYCr8vJgdVvZGrwKZRnKB6pBGTQ8ApjqejdpZQRTTgnCA8
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="381283040"
+  bh=SodqFSDhcnwtxMcub58dUjY9JrZksyadfjH+6KyS0gs=;
+  b=JB6u4TIIrGko0dNfaK780yMJNa5AXAWml7nFE48LK55mYCRbouycJwZn
+   FYexH4Rz8vYz5pg/dQPWjgozD++DL7TF8sa/6llwvwSDcCdEoV11Wn1l7
+   J8y/1vBQ8K8JxBDO4rpNgrPNRcdH5NTCWrIsmMY8MNlEqk9zbEVk04GNd
+   ycqvyl8V3eyA/2RnE1OD4q+3mQ00+BnZ67gsHCiBH96z0eAMs0gTW8Llz
+   gp8i8G6KS0Rpjy1JipLHUooI1EcDatZRiyEMS9vVCHWMYzp7eM4JhCgrj
+   JlmMytp1K3K74UIYmjn8oDljIUCxQPFWwTdwxls1FoiXThNPoBcWO/kbN
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="296687285"
 X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="381283040"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 12:01:31 -0800
+   d="scan'208";a="296687285"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2022 12:22:16 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="679261930"
+X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="753251473"
 X-IronPort-AV: E=Sophos;i="5.96,225,1665471600"; 
-   d="scan'208";a="679261930"
+   d="scan'208";a="753251473"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP; 07 Dec 2022 12:01:26 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 07 Dec 2022 12:22:13 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p30bb-005yGd-17;
-        Wed, 07 Dec 2022 22:01:23 +0200
-Date:   Wed, 7 Dec 2022 22:01:22 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk, cang1@live.co.uk,
-        colin.i.king@gmail.com, phil.edworthy@renesas.com,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        lukas@wunner.de, u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v7 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
- quad-uart support
-Message-ID: <Y5DxEszrq0rXVqvl@smile.fi.intel.com>
-References: <20221207235305.695541-1-kumaravel.thiagarajan@microchip.com>
- <20221207235305.695541-3-kumaravel.thiagarajan@microchip.com>
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1p30vj-005yij-2e;
+        Wed, 07 Dec 2022 22:22:11 +0200
+Date:   Wed, 7 Dec 2022 22:22:11 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v4 1/1] serial: core: Start managing serial
+ controllers to enable runtime PM
+Message-ID: <Y5D187ygOvDEA0UK@smile.fi.intel.com>
+References: <20221207124305.49943-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221207235305.695541-3-kumaravel.thiagarajan@microchip.com>
+In-Reply-To: <20221207124305.49943-1-tony@atomide.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 08, 2022 at 05:23:03AM +0530, Kumaravel Thiagarajan wrote:
-> pci1xxxx is a PCIe switch with a multi-function endpoint on one of
-> its downstream ports. Quad-uart is one of the functions in the
-> multi-function endpoint. This driver loads for the quad-uart and
-> enumerates single or multiple instances of uart based on the PCIe
-> subsystem device ID.
+On Wed, Dec 07, 2022 at 02:43:05PM +0200, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
+> 
+> To do this, let's set up a struct device for the serial core controller
+> as suggested by Greg and Jiri. The serial core controller devices are
+> children of the physical serial port device. The serial core controller
+> device is needed to support multiple different kind of ports connected
+> to single physical serial port device.
+> 
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
 
 ...
 
-> +static int pci1xxxx_get_physical_port(int subsys_dev, int port)
+> +static struct platform_device *serial_core_device_add(struct uart_port *port,
+> +						      const char *name,
+> +						      struct device *parent_dev,
+> +						      void *pdata,
+> +						      int pdata_size)
 > +{
-> +	static int logical_to_physical_port_idx[][MAX_PORTS] = {
-> +		{0, 1, 2, 3},   /* PCI12000 PCI11010 PCI11101 PCI11400 PCI11414 */
-> +		{0, 1, 2, 3},   /* PCI4p */
-> +		{0, 1, 2, -1},  /* PCI3p012 */
-> +		{0, 1, 3, -1},  /* PCI3p013 */
-> +		{0, 2, 3, -1},  /* PCI3p023 */
-> +		{1, 2, 3, -1},  /* PCI3p123 */
-> +		{0, 1, -1, -1}, /* PCI2p01 */
-> +		{0, 2, -1, -1}, /* PCI2p02 */
-> +		{0, 3, -1, -1}, /* PCI2p03 */
-> +		{1, 2, -1, -1}, /* PCI2p12 */
-> +		{1, 3, -1, -1}, /* PCI2p13 */
-> +		{2, 3, -1, -1}, /* PCI2p23 */
-> +		{0, -1, -1, -1},/* PCI1p0 */
-> +		{1, -1, -1, -1},/* PCI1p1 */
-> +		{2, -1, -1, -1},/* PCI1p2 */
-> +		{3, -1, -1, -1},/* PCI1p3 */
+> +	struct platform_device_info pinfo;
 
-You can make columns nicely indented, but it is up to you,
+' = {}' can also work instead of memset(), but up to you.
 
-		...
-		{0,  1,  2,  3}, /* PCI4p */
-		...
-		{1,  2,  3, -1}, /* PCI3p123 */
-		...
-		{2,  3, -1, -1}, /* PCI2p23 */
-		{0, -1, -1, -1}, /* PCI1p0 */
-		...
-
-> +	};
+> +	memset(&pinfo, 0, sizeof(pinfo));
+> +	pinfo.name = name;
+> +	pinfo.id = PLATFORM_DEVID_AUTO;
+> +	pinfo.parent = parent_dev;
+> +	pinfo.data = pdata;
+> +	pinfo.size_data = pdata_size;
 > +
-> +	return logical_to_physical_port_idx[subsys_dev][port];
+> +	return platform_device_register_full(&pinfo);
 > +}
 
 ...
 
-> +	priv->membase = pcim_iomap(pdev, 0, 0);
+> +	struct serial_port_platdata pdata;
 
-Is any of those card can have an IO bar (instead of MEM)?
+Ditto.
 
-> +	if (!priv->membase)
-> +		return -ENOMEM;
-
-...
-
-> +	if (num_vectors == 4)
-> +		writeb(UART_PCI_CTRL_SET_MULTIPLE_MSI,
-> +		       priv->membase + UART_PCI_CTRL_REG);
-
-If you set this unconditionally when num_vectors < 4, would it still work?
-
-> +	else
-> +		uart.port.irq = pci_irq_vector(pdev, 0);
-
-I would move this to the below...
+> +	memset(&pdata, 0, sizeof(pdata));
 
 ...
 
-> +		if (num_vectors == 4)
-> +			uart.port.irq = pci_irq_vector(priv->pdev, port_idx);
+> +int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
+> +{
 
-...here as IRQ assignment to be seen at one place.
+> +	bool allocated = false;
+
+Not sure why this is needed.
+
+> +	struct device *ctrl_dev;
+> +	int ret;
+> +
+> +	ret = serial_core_add_one_port(drv, port);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mutex_lock(&port_mutex);
+> +
+> +	/* Inititalize a serial core controller device if needed */
+> +	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
+> +	if (!ctrl_dev) {
+> +		ctrl_dev = serial_core_ctrl_device_add(port);
+> +		if (!ctrl_dev)
+> +			goto err_remove_port;
+> +		allocated = true;
+> +	}
+
+Wouldn't be slightly better
+
+	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
+	if (!ctrl_dev)
+		ctrl_dev = serial_core_ctrl_device_add(port);
+	if (!ctrl_dev)
+		goto err_remove_port;
+
+?
+
+> +	/* Initialize a serial core port device */
+> +	ret = serial_core_port_device_add(ctrl_dev, port);
+> +	if (ret)
+> +		goto err_del_ctrl_dev;
+> +
+> +	mutex_unlock(&port_mutex);
+> +
+> +	return 0;
+> +
+> +err_del_ctrl_dev:
+> +	if (allocated)
+> +		platform_device_del(to_platform_device(ctrl_dev));
+
+Shouldn't you call platform_device_unregister()?
+
+> +err_remove_port:
+> +	mutex_unlock(&port_mutex);
+> +
+> +	return serial_core_remove_one_port(drv, port);
+> +}
+
+...
+
+> +	platform_device_del(to_platform_device(port_dev));
+
+Ditto?
+
+...
+
+> +	/* Drop the serial core controller device if no ports are using it */
+> +	if (!serial_core_ctrl_find(drv, port->dev, port->ctrl_id))
+> +		platform_device_del(to_platform_device(ctrl_dev));
+
+Ditto?
+
+...
+
+> +/* Serial core controller data. Serial port device drivers do not need this. */
+
+Some missing forward declarations?
+
+struct uart_driver:
+struct uart_port;
+
+?
+
+...
+
+> +static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm, NULL,
+> +				 serial_port_runtime_resume, NULL);
+
+Wouldn't be more logical to indent like
+
+static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
+				 NULL, serial_port_runtime_resume,
+				 NULL);
+
+?
 
 -- 
 With Best Regards,
