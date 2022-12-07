@@ -2,93 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A212DC3A5A7
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Dec 2022 22:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35172C352A1
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Dec 2022 01:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbiLFWSX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Dec 2022 17:18:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S229678AbiLGBaX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Dec 2022 20:30:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiLFWSW (ORCPT
+        with ESMTP id S229511AbiLGBaW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Dec 2022 17:18:22 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B02326F3;
-        Tue,  6 Dec 2022 14:18:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670365101; x=1701901101;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/olmYmXC19tWhkfaoBMr6nH/+/kzO9cHDjZv6Ovsm9c=;
-  b=dy64yFpzJjAZCDhx8RRMNAV6v3ZdH3Lha2teAbsQzMqgwdc/qEI3XXF0
-   AVmPDGd41GWW8wnnHxrctXkUTYBkNoF+So+Z7VyNLz03ZAzxHfkkPJ28w
-   QUxhd3qQ+W1qQ641W3UrAenbjrc2O+2fHyj83ydn4FkwB7PzaMH5Cq6ay
-   7FFda9Jkd/3laE3k5z6BsCychPHucq7nV3d+xDPtbt6akblki/FanyvbJ
-   YjWt10qKS7/o7f1fvspRehHH835Y5VfT3TrK0trDUoIX/+wTJZsAHrig/
-   5wefsMWHUji8wUTF53zrnUbUyVH0umQCnX4xPbhWGGf/VtMMSiPSlNudD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10553"; a="318600079"
-X-IronPort-AV: E=Sophos;i="5.96,223,1665471600"; 
-   d="scan'208";a="318600079"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2022 14:18:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10553"; a="820738324"
-X-IronPort-AV: E=Sophos;i="5.96,223,1665471600"; 
-   d="scan'208";a="820738324"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 06 Dec 2022 14:18:15 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p2gGS-005UOe-1m;
-        Wed, 07 Dec 2022 00:18:12 +0200
-Date:   Wed, 7 Dec 2022 00:18:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tharunkumar.Pasumarthi@microchip.com
-Cc:     ilpo.jarvinen@linux.intel.com, Kumaravel.Thiagarajan@microchip.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        macro@orcam.me.uk, jay.dolan@accesio.com, cang1@live.co.uk,
-        u.kleine-koenig@pengutronix.de, wander@redhat.com,
-        etremblay@distech-controls.com, jk@ozlabs.org,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        phil.edworthy@renesas.com, lukas@wunner.de,
-        UNGLinuxDriver@microchip.com, colin.i.king@gmail.com
-Subject: Re: [PATCH v6 tty-next 1/4] serial: 8250_pci: Add
- serial8250_pci_setup_port definition in 8250_pcilib.c
-Message-ID: <Y4+/pBgrHmAdp4FV@smile.fi.intel.com>
-References: <20221201045146.1055913-1-kumaravel.thiagarajan@microchip.com>
- <20221201045146.1055913-2-kumaravel.thiagarajan@microchip.com>
- <1189f5af-aaac-f4c8-b928-cda183e7f90@linux.intel.com>
- <Y4iaC7rRkBhyOIsI@smile.fi.intel.com>
- <PH7PR11MB5958A77F93BB2ABE244123909B1B9@PH7PR11MB5958.namprd11.prod.outlook.com>
+        Tue, 6 Dec 2022 20:30:22 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BE251C3B
+        for <linux-serial@vger.kernel.org>; Tue,  6 Dec 2022 17:30:20 -0800 (PST)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 0506784D1B;
+        Wed,  7 Dec 2022 02:30:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1670376618;
+        bh=tohH7pypOcixeecmj/QIDjZpzcdcYtyplcrz2GHeoCw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=awBEEh5FhfAEj7duplOYmgzthDJ8CuXyFbcQ+kAYkKo/P+RJzpuKlYf80sORbnZ1n
+         uPB/HB3s4H9hLuDiHChcUi+pG+xEZvYC8tLXxiIdIofIF6NqZ8XZxsaRaLPHuopw9/
+         2Z4wXEUt7jlHmb1hbptzOLS8H9H/29jhIiIM8az1pkFb84UnOvOSHfFxkdswhBkGqX
+         uLK0fNgRGuUdqzpH5eMXkk7nW4TSZLjc+c0B7VvwDOjia+Bzi/BeESLlF3CkeYRgmS
+         MFvDAP1+CJbvDsJFbC8V9SrCP08aCtUQrSZvpODDSdpPyWuHMK3kdG4LGKGutzcNWT
+         De0gXhEMwV0LA==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-serial@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean Philippe Romain <jean-philippe.romain@foss.st.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH] [RFC] serial: stm32: Move stm32_usart_transmit_chars() to interrupt thread
+Date:   Wed,  7 Dec 2022 02:30:12 +0100
+Message-Id: <20221207013012.395585-1-marex@denx.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH7PR11MB5958A77F93BB2ABE244123909B1B9@PH7PR11MB5958.namprd11.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 06, 2022 at 07:09:29PM +0000, Tharunkumar.Pasumarthi@microchip.com wrote:
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Sent: Thursday, December 1, 2022 5:42 PM
+Avoid locking in hard interrupt context, move the stm32_usart_transmit_chars()
+into the threaded IRQ handler. This fixes the following splat with preempt-rt:
 
-> > > struct pci_dev;
-> > 
-> > + blank line
-> > 
-> > struct uart_8250_port;
-> 
-> Is the blank line required here?
+ BUG: scheduling while atomic: (mount)/1289/0x00010001
+ Modules linked in:
+ Preemption disabled at:
+ [<c0119127>] irq_enter_rcu+0xb/0x42
+ CPU: 0 PID: 1289 Comm: (mount) Not tainted 6.1.0-rc7-rt5-stable-standard-00006-gd70aeccb9f0f #17
+ Hardware name: STM32 (Device Tree Support)
+  unwind_backtrace from show_stack+0xb/0xc
+  show_stack from dump_stack_lvl+0x2b/0x34
+  dump_stack_lvl from __schedule_bug+0x53/0x80
+  __schedule_bug from __schedule+0x47/0x404
+  __schedule from schedule_rtlock+0x15/0x34
+  schedule_rtlock from rtlock_slowlock_locked+0x1d7/0x57e
+  rtlock_slowlock_locked from rt_spin_lock+0x29/0x3c
+  rt_spin_lock from stm32_usart_interrupt+0xa9/0x110
+  stm32_usart_interrupt from __handle_irq_event_percpu+0x73/0x14e
+  __handle_irq_event_percpu from handle_irq_event_percpu+0x9/0x22
+  handle_irq_event_percpu from handle_irq_event+0x53/0x76
+  handle_irq_event from handle_fasteoi_irq+0x65/0xa8
+  handle_fasteoi_irq from handle_irq_desc+0xf/0x18
+  handle_irq_desc from gic_handle_irq+0x45/0x54
+  gic_handle_irq from generic_handle_arch_irq+0x19/0x2c
+  generic_handle_arch_irq from call_with_stack+0xd/0x10
 
-Strictly speaking no, it's not required. But it shows the group of generic
-forward declarations and specific to the topic (driver / subsystem).
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Erwan Le Ray <erwan.leray@foss.st.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jean Philippe Romain <jean-philippe.romain@foss.st.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Valentin Caron <valentin.caron@foss.st.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+To: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/stm32-usart.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index a1490033aa164..56357a7962edc 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -791,11 +791,8 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+ 		}
+ 	}
+ 
+-	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
+-		spin_lock(&port->lock);
+-		stm32_usart_transmit_chars(port);
+-		spin_unlock(&port->lock);
+-	}
++	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch))
++		return IRQ_WAKE_THREAD;
+ 
+ 	if (stm32_usart_rx_dma_enabled(port))
+ 		return IRQ_WAKE_THREAD;
+@@ -808,8 +805,18 @@ static irqreturn_t stm32_usart_threaded_interrupt(int irq, void *ptr)
+ 	struct uart_port *port = ptr;
+ 	struct tty_port *tport = &port->state->port;
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	unsigned int size;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	unsigned long flags;
++	unsigned int size;
++	u32 sr;
++
++	sr = readl_relaxed(port->membase + ofs->isr);
++
++	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
++		spin_lock_irqsave(&port->lock, flags);
++		stm32_usart_transmit_chars(port);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
+ 
+ 	/* Receiver timeout irq for DMA RX */
+ 	if (!stm32_port->throttled) {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
