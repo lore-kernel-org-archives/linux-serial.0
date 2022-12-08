@@ -2,90 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C61CC3A5A7
-	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 09:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC499C4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 10:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbiLHJhr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Dec 2022 04:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
+        id S229677AbiLHKCo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 8 Dec 2022 05:02:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiLHJhq (ORCPT
+        with ESMTP id S229479AbiLHKCn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Dec 2022 04:37:46 -0500
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1FA12D26;
-        Thu,  8 Dec 2022 01:37:46 -0800 (PST)
-Received: by mail-wm1-f48.google.com with SMTP id bg10so630954wmb.1;
-        Thu, 08 Dec 2022 01:37:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IE2BRq9L+0PqGquoqVrkYyY0LIMIc6GkCZYnscxNcAw=;
-        b=JpDbEKycMR+tvi1qzKUlX9g2eiPXj6nvzeA6bALI4eSZVGiDL47rMHfFtePahVMCM6
-         TtRjUHKeXxedgyxLkQVsy41w1GVoLRer6p2fyWOtD+A+KfR0wnczC0iKwZMUfuHJtwaA
-         Y4DEJsYP3LBNdOlTjZ9HKVxhCAJJzWiH9NagFsAaDplLudcv5rThaa091I4bmfX55/Qa
-         l4C7z6iCeeNj80HikaMf4SNq0D1gShA5DAKa38ZPTtR/pGt2K3MBOVULTH0yrNr/Couz
-         MwGbMn/IZYTu8Qp2lhVA/dLQJEICVpkvybUBMiW3RlnXkfwOyxqHMTP0HjdONmzJJYqT
-         1E0w==
-X-Gm-Message-State: ANoB5pn6YnSmLTxMDhbqfh3tjmUPNwVldHjQ3pGyqV1G7ezk1G9vtQoT
-        +Z+0M16scbvOP9V3T6xoikU=
-X-Google-Smtp-Source: AA0mqf6DS1fgI6lCdD1AjRyLiwjdw5l88iWUrUlwLzQPxLWVmcQUt3zi03en9VlUVHcUhixYmxMjfQ==
-X-Received: by 2002:a05:600c:21d8:b0:3d0:8d48:2993 with SMTP id x24-20020a05600c21d800b003d08d482993mr1655335wmj.36.1670492264474;
-        Thu, 08 Dec 2022 01:37:44 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id 6-20020a1c0206000000b003d1e90717ccsm4256666wmc.30.2022.12.08.01.37.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Dec 2022 01:37:44 -0800 (PST)
-Message-ID: <035f431c-15ee-b604-79be-ec2861b45b86@kernel.org>
-Date:   Thu, 8 Dec 2022 10:37:42 +0100
+        Thu, 8 Dec 2022 05:02:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B9511475;
+        Thu,  8 Dec 2022 02:02:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B25AB821EB;
+        Thu,  8 Dec 2022 10:02:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2286C433C1;
+        Thu,  8 Dec 2022 10:02:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1670493759;
+        bh=Gy+VgX0A4ENpBxacWi8qufdiwf6E1nyIHkyJFa2kRvo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S1zrO28RXl8xwIP2Ft5ugtlkCew3ye1WFfBtszRmbL9ok+4nuZfBVCEffyrccbCEa
+         CDQwpA55KrzTDhJ0gfDlxtY51ZNsrZnorZVH31dEuPbCibcK7wCBNsbgLN9cJjdkJM
+         DX3LYQnu40eskXmUlUk5F76TqjTU115nYx9nva1Y=
+Date:   Thu, 8 Dec 2022 11:02:36 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Johan Hovold <johan@kernel.org>,
+        Daniel Beer <daniel.beer@igorinstitute.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        Michael Zaidman <michael.zaidman@gmail.com>,
+        Christina Quast <contact@christina-quast.de>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH] hid-ft260: add UART support.
+Message-ID: <Y5G2PBEprjPp3FKR@kroah.com>
+References: <638c51a2.170a0220.3af16.18f8@mx.google.com>
+ <Y4xX7ILXMFHZtJkv@kroah.com>
+ <20221204091247.GA11195@nyquist.nev>
+ <Y4xqyRERBdr8fT7F@kroah.com>
+ <20221205012403.GA14904@nyquist.nev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 1/3] serial: earlycon-arm-semihost: Move smh_putc()
- variants in respective arch's semihost.h
-Content-Language: en-US
-To:     Bin Meng <bmeng@tinylab.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Cc:     "catalin.marinas" <catalin.marinas@arm.com>,
-        gregkh <gregkh@linuxfoundation.org>,
-        linux <linux@armlinux.org.uk>, will <will@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-References: <20221207135352.592556-1-bmeng@tinylab.org>
- <0443d5e9-b2ce-7e6b-c69b-708d67a5bf97@kernel.org>
- <em14380c7e-ee2b-45d5-8879-dde687f03b2b@eea79fc7.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <em14380c7e-ee2b-45d5-8879-dde687f03b2b@eea79fc7.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221205012403.GA14904@nyquist.nev>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 08. 12. 22, 10:32, Bin Meng wrote:
->>> +#ifdef CONFIG_THUMB2_KERNEL
->>> +#define SEMIHOST_SWI    "0xab"
->>> +#else
->>> +#define SEMIHOST_SWI    "0x123456"
->>> +#endif
->>> +
->>> +static inline void smh_putc(struct uart_port *port, unsigned char c)
->>
->> 2) port is unused in all implementations. So it should be dropped.
->> 3) can you make "c" an explicit u8?
+On Mon, Dec 05, 2022 at 02:24:03PM +1300, Daniel Beer wrote:
+> On Sun, Dec 04, 2022 at 10:39:21AM +0100, Greg Kroah-Hartman wrote:
+> > > Thanks for reviewing. This device is quite strange -- it presents itself
+> > > as a USB HID, but it provides both an I2C master and a UART. The
+> > > existing driver supports only the I2C functionality currently.
+> > 
+> > Lots of devices are a "fake HID" device as other operating systems make
+> > it easy to write userspace drivers that way.  Linux included.  What
+> > userspace programs are going to want to interact with this device and
+> > what api are they going to use?
 > 
-> The smh_putc function signature is defined by the uart_console_write 
-> helper. I don't think we can change it.
+> Hi Greg,
+> 
+> The application I'm looking at uses it as a debug console, so personally
+> I'd like to be able to use it with picocom and other terminal programs.
+> 
+> > > > > --- a/include/uapi/linux/major.h
+> > > > > +++ b/include/uapi/linux/major.h
+> > > > > @@ -175,4 +175,6 @@
+> > > > >  #define BLOCK_EXT_MAJOR		259
+> > > > >  #define SCSI_OSD_MAJOR		260	/* open-osd's OSD scsi device */
+> > > > >  
+> > > > > +#define FT260_MAJOR		261
+> > > > 
+> > > > A whole new major for just a single tty port?  Please no, use dynamic
+> > > > majors if you have to, or better yet, tie into the usb-serial
+> > > > implementation (this is a USB device, right?) and then you don't have to
+> > > > mess with this at all.
+> > > 
+> > > As far as I understand it, I don't think usb-serial is usable, due to
+> > > the fact that this is already an HID driver.
+> > 
+> > That should not be a restriction at all.  You are adding a tty device to
+> > this driver, no reason you can't interact with usb-serial instead.  That
+> > way you share the correct userspace tty name and major/minor numbers and
+> > all userspace tools should "just work" as they know that name and how to
+> > interact with it already.
+> > 
+> > Try doing that instead of your own "raw" tty device please.
+> 
+> Maybe I've misunderstood something. The reason I thought usb-serial was
+> unusable in this instance was that I couldn't see a way to create a port
+> except via usb-serial's own probe function (otherwise, the API looked
+> fine).
+> 
+> I don't know whether I'm looking at a serial or an I2C interface until
+> after it's already been probed by HID core, I have a struct hid_device
+> and I've asked what type of interface it is via an HID feature report.
+> This can't be determined otherwise, because strapping pins affect the
+> presentation of interfaces.
+> 
+> At that point, I (currently) call uart_add_one_port. I might have missed
+> it, but I didn't see anything analogous in the usb-serial API. Am I
+> going about this the wrong way?
 
-Ah. Of course. Then at least forward-declare struct uart_port here. So 
-that it works also when someone decides to include the header outside 
-serial.
+I thought that this could be done, but I might be wrong.  Johan, any
+ideas?
 
 thanks,
--- 
-js
-suse labs
 
+greg k-h
