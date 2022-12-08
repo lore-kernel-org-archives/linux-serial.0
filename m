@@ -2,92 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83FCC3A5A7
-	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 11:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5223DC4332F
+	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 13:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiLHLNe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Dec 2022 06:13:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
+        id S230085AbiLHN3u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 8 Dec 2022 08:29:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiLHLNd (ORCPT
+        with ESMTP id S229651AbiLHN3t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Dec 2022 06:13:33 -0500
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0778D3F05B;
-        Thu,  8 Dec 2022 03:13:32 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 4E1EA8109;
-        Thu,  8 Dec 2022 11:13:31 +0000 (UTC)
-Date:   Thu, 8 Dec 2022 13:13:30 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-omap@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 1/1] serial: core: Start managing serial
- controllers to enable runtime PM
-Message-ID: <Y5HG2okzlqX+xfWv@atomide.com>
-References: <20221207124305.49943-1-tony@atomide.com>
- <7f105ff9-cdc3-f98e-2557-812361faa94@linux.intel.com>
- <Y5G5Udw6FAEFdAYi@atomide.com>
- <3c87186b-336f-6884-a2c-6ee3c9d70@linux.intel.com>
+        Thu, 8 Dec 2022 08:29:49 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A328658F
+        for <linux-serial@vger.kernel.org>; Thu,  8 Dec 2022 05:29:47 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id B6D4381253;
+        Thu,  8 Dec 2022 14:29:39 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1670506185;
+        bh=4DUlDl/WRb+joognhqzxZXXrzOnsFPGMBRZ1TB+CdOc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TjpbJ/CGkLC7AM+EJQws5+wvpfR5lVl/dZ4lRQJqG2bc1xD6fpeatceMPEkO9qQdR
+         tzzszcc3XJEezvHtc3NhmBuuO9eruhE/FJHD+E25j3R3qnJfooQX3JBjLSBYvM4hsE
+         O/y4EdnHxhfB4vQ3n1ruEDUSDVatnOsfofZMzY7GxUt59VZxxwPfeIdMxt7okRVz/n
+         rPsHtTJ4ps6cUNmNo6kRJaOLnztUm025+DBa7o8q5HJ93fQLWEX2N67e5mB//AMMIO
+         yLQ+XQGSOYQGaDu8DSq5idI0MZ58xK96He+e5VCoYY9rH0aKr9xqsSwW0nJhzCDSN7
+         PHk+Kf7LQc2+Q==
+Message-ID: <a984e2aa-1fbf-4b6b-9326-d926221740d8@denx.de>
+Date:   Thu, 8 Dec 2022 14:19:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3c87186b-336f-6884-a2c-6ee3c9d70@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH] serial: stm32: Move hard IRQ handling to threaded
+ interrupt context
+To:     Valentin CARON <valentin.caron@foss.st.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean Philippe Romain <jean-philippe.romain@foss.st.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-serial@vger.kernel.org
+References: <20221207195929.160267-1-marex@denx.de>
+ <34ec91a2-2089-65ba-d5bb-fed03cda63b7@foss.st.com>
+Content-Language: en-US
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <34ec91a2-2089-65ba-d5bb-fed03cda63b7@foss.st.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [221208 10:48]:
-> On Thu, 8 Dec 2022, Tony Lindgren wrote:
+On 12/8/22 11:18, Valentin CARON wrote:
+> Hi Marek,
+
+Hi,
+
+> I've got a patch in the same spirit in downstream.
+> The test campaign reveals performance issues with this patch.
 > 
-> > * Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [221208 09:12]:
-> > > On Wed, 7 Dec 2022, Tony Lindgren wrote:
-> > > > +	ret = serial_core_add_one_port(drv, port);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	mutex_lock(&port_mutex);
-> > > > +
-> > > > +	/* Inititalize a serial core controller device if needed */
-> > > > +	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
-> > > > +	if (!ctrl_dev) {
-> > > > +		ctrl_dev = serial_core_ctrl_device_add(port);
-> > > > +		if (!ctrl_dev)
-> > > > +			goto err_remove_port;
-> > > > +		allocated = true;
-> > > > +	}
-> > > > +
-> > > > +	/* Initialize a serial core port device */
-> > > > +	ret = serial_core_port_device_add(ctrl_dev, port);
-> > > 
-> > > How is ->port_dev supposed to work here?
-> > > 
-> > > ->port_dev is not set until in serial_core_port_device_add() but you made
-> > > serial_core_add_one_port() call before that.
-> > 
-> > Hmm do you mean you want to call serial_core_add_one_port() later after
-> > serial_core_port_device_add()?
-> > 
-> > Or are you seeing some uninitialized use of port->port_dev (and not
-> > port->dev)?
+> In fact, hard IRQ have been introduced in stm32-usart driver to solve 
+> performance issues due to short FIFO size (16 bytes).
 > 
-> With the other patch on top of this, yes, I did see uninitialized 
-> port->port_dev already in serial_core_add_one_port()->uart_configure_port().
-> While that could be solved by removing the pm_runtime_*() calls from 
-> there, I think it's a generic problem because after 
-> serial_core_add_one_port() the port can have anything happening on it, no?
+> We are currently testing another patch, similar as your RFC proposition, 
+> for RT context.
+> But results are not ready yet. We can wait them before merging this big 
+> change into driver ?
 
-OK. Sounds like it should get sorted out by moving the call to
-serial_core_add_one_port() to happen after the devices are created.
-
-Regards,
-
-Tony
+Can you post your patch as an RFC so others can test as well ?
