@@ -2,160 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB5AC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 09:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D5FC3A5A7
+	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 09:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbiLHJNa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Dec 2022 04:13:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45218 "EHLO
+        id S229777AbiLHJdZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 8 Dec 2022 04:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiLHJND (ORCPT
+        with ESMTP id S229770AbiLHJdX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Dec 2022 04:13:03 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EF877203;
-        Thu,  8 Dec 2022 01:12:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670490751; x=1702026751;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=uG+z6YFt2KidzCc4wAWQpTKyaaYKkEtXode3ts7CuaQ=;
-  b=OBIcIlfCj8RcpK/l+/5WXyezC1DyNuNJLE5iha4IPMHVCqgtuB2KvF/n
-   3xl9nrT+/NjfsnrMjSOPFPLsotLNTEdDJr4zGKq0UX29KzVQY9xmOxN8M
-   AE4U0U1iit8iHfDrLW/+YjotJQdoIdXjhZFY+BxRy7u04o3YEk060lZZo
-   BxmQDGH1X21490kEgIwCIgKVWSWsbI9ryp1jH7oy9Zx2x0XpO44QgoAT5
-   8grEW7lagyIVgKmv82r6tdDFFI4YWE1bNgVLFSRIXjrAeWPcUjR8YXQgq
-   uBfRfrxgaUOiOj/rnpb3vbkvf2GAk+jjk5Ag8xiWWmkHRuhKXnaxC4ZDM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="381415870"
-X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
-   d="scan'208";a="381415870"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 01:12:27 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10554"; a="975790008"
-X-IronPort-AV: E=Sophos;i="5.96,227,1665471600"; 
-   d="scan'208";a="975790008"
-Received: from pors-mobl3.ger.corp.intel.com ([10.252.39.224])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2022 01:12:24 -0800
-Date:   Thu, 8 Dec 2022 11:12:14 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-omap@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-In-Reply-To: <20221207124305.49943-1-tony@atomide.com>
-Message-ID: <7f105ff9-cdc3-f98e-2557-812361faa94@linux.intel.com>
-References: <20221207124305.49943-1-tony@atomide.com>
+        Thu, 8 Dec 2022 04:33:23 -0500
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA1759FDE;
+        Thu,  8 Dec 2022 01:33:16 -0800 (PST)
+X-QQ-mid: bizesmtp80t1670491970tmadzmjb
+Received: from [192.168.3.2] ( [111.196.135.79])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 08 Dec 2022 17:32:48 +0800 (CST)
+X-QQ-SSF: 01200000000000B0B000000A0000000
+X-QQ-FEAT: zX46NWeZQGEPkwa09vvX1e9B/NktWgMjOM4wpw+/LIo80yqhwau4SCVAglcsW
+        9vsBVIHhCU9XlW9C/ACb/6mMlDXDUOlYQ36EXhCDA5boUGbllxcBEHLmNSXc2s3hXMCbtf0
+        RTJXfEdQWQnUzHr/ri13d1YrvY8+oCMmAwqK7DoYT8tcO0NqZQXJnA4B70etX7aItOsQjwY
+        M1wXkiYNJ0lqlMmHeQU388p4klUI6z3WLOtdfra37UihjKn0gZIuNhijHRPBp4wCt/SnebH
+        A652eiO6RR81OjgRhHYJSzeQ4MVQ9ACl5U2OHqBJTiMJLIc6q80/PBAtBa059m2JzfICZ2j
+        jwbaEhlvS3fBLJJ0QY=
+X-QQ-GoodBg: 0
+From:   "Bin Meng" <bmeng@tinylab.org>
+To:     "Jiri Slaby" <jirislaby@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] serial: earlycon-arm-semihost: Move smh_putc() variants in
+ respective arch's semihost.h
+Cc:     "catalin.marinas" <catalin.marinas@arm.com>,
+        gregkh <gregkh@linuxfoundation.org>,
+        linux <linux@armlinux.org.uk>, will <will@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Date:   Thu, 08 Dec 2022 09:32:48 +0000
+Message-Id: <em14380c7e-ee2b-45d5-8879-dde687f03b2b@eea79fc7.com>
+In-Reply-To: <0443d5e9-b2ce-7e6b-c69b-708d67a5bf97@kernel.org>
+References: <20221207135352.592556-1-bmeng@tinylab.org>
+ <0443d5e9-b2ce-7e6b-c69b-708d67a5bf97@kernel.org>
+Reply-To: "Bin Meng" <bmeng@tinylab.org>
+User-Agent: eM_Client/9.2.1222.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8BIT
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:tinylab.org:qybglogicsvr:qybglogicsvr3
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 7 Dec 2022, Tony Lindgren wrote:
+On 2022/12/8 14:08:33, "Jiri Slaby" <jirislaby@kernel.org> wrote:
 
-> We want to enable runtime PM for serial port device drivers in a generic
-> way. To do this, we want to have the serial core layer manage the
-> registered physical serial controller devices.
-> 
-> To do this, let's set up a struct device for the serial core controller
-> as suggested by Greg and Jiri. The serial core controller devices are
-> children of the physical serial port device. The serial core controller
-> device is needed to support multiple different kind of ports connected
-> to single physical serial port device.
-> 
-> Let's also set up a struct device for the serial core port. The serial
-> core port instances are children of the serial core controller device.
-> With the serial core port device we can now flush pending TX on the
-> runtime PM resume as suggested by Johan.
-> 
-> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> Suggested-by: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
-> 
-> Changes since v3:
-> 
-> - Simplify things by adding a serial core control device as the child of
->   the physical serial port as suggested by Jiri
-> 
-> - Drop the tinkering of the physical serial port device for runtime PM.
->   Serial core just needs to manage port->port_dev with the addition of
->   the serial core control device and the device hierarchy will keep the
->   pysical serial port device enabled as needed
-> 
-> - Simplify patch description with all the runtime PM tinkering gone
-> 
-> - Coding style improvments as noted by Andy
-> 
-> - Post as a single RFC patch as we're close to the merge window
-> 
-> Changes since v2:
-> 
-> - Make each serial port a proper device as suggested by Greg. This is
->   a separate patch that flushes the TX on runtime PM resume
-> 
-> Changes since v1:
-> 
-> - Use kref as suggested by Andy
-> 
-> - Fix memory leak on error as noted by Andy
-> 
-> - Use use unsigned char for supports_autosuspend as suggested by Andy
-> 
-> - Coding style improvments as suggested by Andy
-> 
-> ---
+>On 07. 12. 22, 14:53, Bin Meng wrote:
+>>Move smh_putc() variants in respective arch/*/include/asm/semihost.h,
+>>in preparation to add RISC-V support.
+>>
+>>Signed-off-by: Bin Meng <bmeng@tinylab.org>
+>...
+>>--- /dev/null
+>>+++ b/arch/arm/include/asm/semihost.h
+>>@@ -0,0 +1,23 @@
+>>+/* SPDX-License-Identifier: GPL-2.0 */
+>>+/*
+>>+ * Copyright (C) 2012 ARM Ltd.
+>>+ * Author: Marc Zyngier <marc.zyngier@arm.com>
+>>+ *
+>>+ * Adapted for ARM and earlycon:
+>>+ * Copyright (C) 2014 Linaro Ltd.
+>>+ * Author: Rob Herring <robh@kernel.org>
+>>+ */
+>
+>Much better. There are three minor issues:
+>1) protection against multiple #include-s is missing here.
 
-> +	ret = serial_core_add_one_port(drv, port);
-> +	if (ret)
-> +		return ret;
-> +
-> +	mutex_lock(&port_mutex);
-> +
-> +	/* Inititalize a serial core controller device if needed */
-> +	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
-> +	if (!ctrl_dev) {
-> +		ctrl_dev = serial_core_ctrl_device_add(port);
-> +		if (!ctrl_dev)
-> +			goto err_remove_port;
-> +		allocated = true;
-> +	}
-> +
-> +	/* Initialize a serial core port device */
-> +	ret = serial_core_port_device_add(ctrl_dev, port);
+Oops, will add in v3.
 
-How is ->port_dev supposed to work here?
+>
+>
+>>+#ifdef CONFIG_THUMB2_KERNEL
+>>+#define SEMIHOST_SWI	"0xab"
+>>+#else
+>>+#define SEMIHOST_SWI	"0x123456"
+>>+#endif
+>>+
+>>+static inline void smh_putc(struct uart_port *port, unsigned char c)
+>
+>2) port is unused in all implementations. So it should be dropped.
+>3) can you make "c" an explicit u8?
 
-->port_dev is not set until in serial_core_port_device_add() but you made
-serial_core_add_one_port() call before that.
+The smh_putc function signature is defined by the uart_console_write 
+helper. I don't think we can change it.
 
--- 
- i.
+>
+>>+{
+>>+	asm volatile("mov  r1, %0\n"
+>>+		     "mov  r0, #3\n"
+>>+		     "svc  " SEMIHOST_SWI "\n"
+>>+		     : : "r" (&c) : "r0", "r1", "memory");
+>>+}
 
-> +	if (ret)
-> +		goto err_del_ctrl_dev;
-> +
-> +	mutex_unlock(&port_mutex);
-> +
-> +	return 0;
-> +
-> +err_del_ctrl_dev:
-> +	if (allocated)
-> +		platform_device_del(to_platform_device(ctrl_dev));
-> +
-> +err_remove_port:
-> +	mutex_unlock(&port_mutex);
-> +
-> +	return serial_core_remove_one_port(drv, port);
-> +}
-> +EXPORT_SYMBOL_NS(serial_core_register_port, SERIAL_CORE);
+Regards,
+Bin
