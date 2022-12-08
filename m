@@ -2,89 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FA2C4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 07:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D4FC3A5A7
+	for <linux-serial@archiver.kernel.org>; Thu,  8 Dec 2022 09:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229546AbiLHHw2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Dec 2022 02:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        id S230054AbiLHJIq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 8 Dec 2022 04:08:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiLHHw1 (ORCPT
+        with ESMTP id S230081AbiLHJIP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Dec 2022 02:52:27 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680353E097
-        for <linux-serial@vger.kernel.org>; Wed,  7 Dec 2022 23:52:26 -0800 (PST)
-Date:   Thu, 8 Dec 2022 08:52:23 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1670485944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+xIQHUv5/3WeGfuuR2KGHZySpMyBf9GZ66WaBaNvos8=;
-        b=z58K1hQb59PXMR3szIMc1vcHX4pqCjgCuMH1p9edP+XCJgtIXbRUd00bMK2NhdcWr2MD7L
-        prwBEsgf/+MWendfnOVE/LuTCY1zfm9WraRYePV6PD6tP9b4tO0TyKt1Q5zG7GVkWRoX6n
-        /PiGtm4ATE9ngfHkpkEA9dXmww4JVG65YbPrCTsKZEfZmq5QgIILKGRvM3I1r29j0Y/j+9
-        MpGyshMt3qOAmXGRFvP1Q5Vh4rg6Hv1javeYHEx3zb3Rqv0GwAxXHG5xZFDT1TgSLycLXa
-        o6YuOBy486k34/86TCxuT7ijQ0ReBgL47oQOhOJVeMZTfkbg0lkbYJNiNIJYJQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1670485944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+xIQHUv5/3WeGfuuR2KGHZySpMyBf9GZ66WaBaNvos8=;
-        b=n6hd3evh580/6UFQlWbuCrmN8vOSyaswC11TwX4VnbDUBWRLGj22S0q2aKEuEkwTzrriTH
-        LOuRmaG6la8tU3DA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-serial@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH] serial: stm32: Move hard IRQ handling to threaded
- interrupt context
-Message-ID: <Y5GXt/NHCrODZ32S@linutronix.de>
-References: <20221207195929.160267-1-marex@denx.de>
+        Thu, 8 Dec 2022 04:08:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BFA5FC0;
+        Thu,  8 Dec 2022 01:08:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9AE5B80D67;
+        Thu,  8 Dec 2022 09:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C34E1C433D7;
+        Thu,  8 Dec 2022 09:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1670490477;
+        bh=DA/5HF7V2NSQkN54uky2gasVxMmd2cNnNAGMRQXALrI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hUSFMFEVBQn9ITl5BeybwRbPT7vgOeOeyiP4TUgB907EOmVknn+3axNxVOIP6odNR
+         mFA3dKr7PYIbfPVNdUDxTB+X8v5VoerBUD7jC3nSmD69KD/cVtRqnX3icWXhxrmvEg
+         pg0wqFZqMejbkYKKMGP9aGm3iMIWHAPiBWQ/DcSpFulHQqIQF0Z0H9QrumOfm2IAyC
+         tBSXHfJlbDn0URePQmOlQnMjO6Lf1UiubiV7mrt+pc0Kk1IlSBfIw2QjrKWq1P5unf
+         fcC/+Wj98ip88HYq2xArfn4RyG7rCnVhPL9oKQ/PmTRptWR1do1H7/06ugDh8fxYj7
+         +1iiLU26E5McA==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Winischhofer <thomas@winischhofer.net>,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH 2/3] USB: sisusbvga: rename sisusb.c to sisusbvga.c
+Date:   Thu,  8 Dec 2022 10:07:47 +0100
+Message-Id: <20221208090749.28056-2-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221208090749.28056-1-jirislaby@kernel.org>
+References: <20221208090749.28056-1-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221207195929.160267-1-marex@denx.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-- Jean Philippe Romain <jean-philippe.romain@foss.st.com>
+As it's the only source for the sisusbvga module, there is no need for a
+2-steps build.
 
-Could you please drop that email address in future post as I did? It
-comes back here with:
-| Remote-MTA: dns; mxb-00178001.gslb.pphosted.com
-| Diagnostic-Code: smtp; 550 5.1.1 User Unknown
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: Rich Felker <dalias@libc.org>
+Cc: Thomas Winischhofer <thomas@winischhofer.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-sh@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/usb/misc/sisusbvga/Makefile                  | 2 --
+ drivers/usb/misc/sisusbvga/{sisusb.c => sisusbvga.c} | 0
+ 2 files changed, 2 deletions(-)
+ rename drivers/usb/misc/sisusbvga/{sisusb.c => sisusbvga.c} (100%)
 
-On 2022-12-07 20:59:29 [+0100], Marek Vasut wrote:
-> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-> index a1490033aa164..f5bce0be02676 100644
-> --- a/drivers/tty/serial/stm32-usart.c
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -1015,7 +1002,7 @@ static int stm32_usart_startup(struct uart_port *port)
->  	u32 val;
->  	int ret;
->  
-> -	ret = request_threaded_irq(port->irq, stm32_usart_interrupt,
-> +	ret = request_threaded_irq(port->irq, NULL,
->  				   stm32_usart_threaded_interrupt,
->  				   IRQF_ONESHOT | IRQF_NO_SUSPEND,
->  				   name, port);
+diff --git a/drivers/usb/misc/sisusbvga/Makefile b/drivers/usb/misc/sisusbvga/Makefile
+index 93265de80eb9..28aa1e6ef823 100644
+--- a/drivers/usb/misc/sisusbvga/Makefile
++++ b/drivers/usb/misc/sisusbvga/Makefile
+@@ -4,5 +4,3 @@
+ #
+ 
+ obj-$(CONFIG_USB_SISUSBVGA) += sisusbvga.o
+-
+-sisusbvga-y := sisusb.o
+diff --git a/drivers/usb/misc/sisusbvga/sisusb.c b/drivers/usb/misc/sisusbvga/sisusbvga.c
+similarity index 100%
+rename from drivers/usb/misc/sisusbvga/sisusb.c
+rename to drivers/usb/misc/sisusbvga/sisusbvga.c
+-- 
+2.38.1
 
-So why don't you just
-	request_irq(port->irq, stm32_usart_interrupt, IRQF_NO_SUSPEND,
-		    name, port)
-? If there is a requirement to always run in threaded mode please
-document it by at least making it part of the commit description.
-
-Sebastian
