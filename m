@@ -2,167 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF48C04FDE
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Dec 2022 12:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B80C04FDE
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Dec 2022 14:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229545AbiLIMAl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Dec 2022 07:00:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
+        id S229811AbiLIOMU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Dec 2022 09:12:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiLIMAj (ORCPT
+        with ESMTP id S230107AbiLIOLb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Dec 2022 07:00:39 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AFB303C6
-        for <linux-serial@vger.kernel.org>; Fri,  9 Dec 2022 04:00:38 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id gh17so10977400ejb.6
-        for <linux-serial@vger.kernel.org>; Fri, 09 Dec 2022 04:00:38 -0800 (PST)
+        Fri, 9 Dec 2022 09:11:31 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4051D32D
+        for <linux-serial@vger.kernel.org>; Fri,  9 Dec 2022 06:07:47 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id c65-20020a1c3544000000b003cfffd00fc0so5849411wma.1
+        for <linux-serial@vger.kernel.org>; Fri, 09 Dec 2022 06:07:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CCwzWMPdgO9Dcc0FuYTNg8nT6gaYsC62geOPdirkTlQ=;
-        b=blV6eki9f/dE3yt8k9vQjmYbdmKqtjXhWL8aRDi0+PTy9DZ7PoASn6Hb4YDawt6/Pq
-         TOTWkNyJ1bQ0LXeAOKmZsgrohPEAxg4I9Vxq8Iql4MCfOpzd9bk59Kg8A1l2aCabzc1i
-         Pwb8zUD5pTagBDWz9wlqw8be8RXHOe4ntLhBEh7HXgPppKgizTPX68btz3fJ69iSfJef
-         zAFAyKFjvCY4s0mBfuw+77i/sj6ivMcyXsKkk5Q+7miuQY1uqqYMcxvazgbad3gQhSeN
-         osKwSC1CYREx2mikz7Rsbjiro/V/gVq1uBZVJYbtUMGcexuFEHFb/xJK0jJPCO1YVyoF
-         GpZg==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9ifEzYQVWgi27Tkh3vf+OK8A00LK9ON40E32Dr2itBE=;
+        b=a6iDHi2eu7tlyATy9Debb4go9/WqaTPOWZbnOyk9Hkmy54InAp41PPJhli2R67ffx9
+         J5uh6QxY4p4pXBWFFWcLuCtfXHVKJk1LO8ZEJaHvOgY/REFmcpjiZQI5c4mMfvTWSIUJ
+         9bJpamWU+J+Fl0pc56au/jTfMELC7GRvqQ8onw4kBTJZUl3BQDL68wPRWL28RD+B4rdR
+         s+QR01e+ZDAN1KYe0dUBJ1Rh2vc2AUbpcOXNhgskwJeUAyrF+xbiFGUMNnzZJd4YLuzR
+         LdmnrC/+n5EZe6TX7ZusU7Ye+fG/6lHh3zwMKI2npgEGgNekz2r3YTZJaBCZpVg3urQW
+         kiWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CCwzWMPdgO9Dcc0FuYTNg8nT6gaYsC62geOPdirkTlQ=;
-        b=Dmg0LdIENEAiQk002msQveHkiBUZA3nhBKv+qVVBadjorcGGbW78NpTSFavBHxG30t
-         3SEp6Y6s6zxkKoKebxivg698BGTSlaHb4/CzbI3TdPgWf2bO4yQVmC6y2KVXCGxDCOp+
-         Jr0cK0FBYmdXrXPAPEiUESLV2+qIIsuLm9p/aQ2vGl3YISVzX5y+1x/tqxjrcjy/SamK
-         oIRTEDViSO0tvcVNb9P4hWCuwq0Kh/3DfVIlMpUE4KnfsyOwyqteRrrGU/b3rSP5WF/g
-         stGkXwFQtfBcxVZ8jhqSGwpU3a5MYmK+RLQuPnaa5tAyUGERpTUVWKjvrk81JKbdxq5b
-         nLjA==
-X-Gm-Message-State: ANoB5plkaiITSYB+SjklLZczzU9lb1sDVP26+rgPy2GLjoPZ7zM93kUa
-        hvPX4BQ3sAVCPVd5HTaCZfGkkA==
-X-Google-Smtp-Source: AA0mqf7P1uuFrcKToZQL1Qs7OSMRUELHntqUphTx86r+y9eGx8OMntNtg5Twtz4wxSVo6DNFFYUZgg==
-X-Received: by 2002:a17:906:4907:b0:7c0:d4fa:3151 with SMTP id b7-20020a170906490700b007c0d4fa3151mr4765674ejq.17.1670587236522;
-        Fri, 09 Dec 2022 04:00:36 -0800 (PST)
-Received: from prec5560.. (freifunk-gw.bsa1-cpe1.syseleven.net. [176.74.57.43])
-        by smtp.gmail.com with ESMTPSA id o23-20020a170906861700b007c0a7286c0asm489597ejx.58.2022.12.09.04.00.34
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9ifEzYQVWgi27Tkh3vf+OK8A00LK9ON40E32Dr2itBE=;
+        b=KLB6XehyQn2Iwr2wHdgpY+pJGmbjhG6RFe7GnKeqPwJHj0ohbhTDH0nTmursOS/dM/
+         gXqV1C2P73je2fYWQOKKLAa59gvktyMUrvWWnc5Nd72rMRhuMl90FVQd/SiyjxvoRfYV
+         GZ1JNrYJXFNhKqUjk0C9qN2hlWi+7GfPLG51PzTRzxXPVytFc0YnmW5U/EMUBjx7fyIf
+         dHdQHABx42lBBcpswjtLSzVaMGI3F4YY1yD8g65hCjChd5LWNxy9kyAaSN/Ifj43dTgj
+         k32NK6wnbWr/ThJHyUs7YchRKsRlfsN8AANHgZ/6gfkTRArXqBwNqSlAGxef1Gf9Pp3x
+         5ohw==
+X-Gm-Message-State: ANoB5pkclFL9OO2F9f3EjL+FmXvb0SDxAmyFMxPyLeS6O073mxNsuGpA
+        dKM4UnFiqCQLIt9CwO212Gxddw==
+X-Google-Smtp-Source: AA0mqf5M5nFxDZ8gitSxEywysxN2WU8x6dsn9ZKZmkOe7rX95bLrnLlH5x5gUuy0Rd0g2/YD5oAPCg==
+X-Received: by 2002:a05:600c:1d83:b0:3d2:13c6:4740 with SMTP id p3-20020a05600c1d8300b003d213c64740mr1382557wms.39.1670594855337;
+        Fri, 09 Dec 2022 06:07:35 -0800 (PST)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:51db:8fd7:45e0:fe69])
+        by smtp.gmail.com with ESMTPSA id q3-20020a1c4303000000b003cfa81e2eb4sm1869848wma.38.2022.12.09.06.07.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 04:00:35 -0800 (PST)
-From:   Robert Foss <robert.foss@linaro.org>
-To:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
-        Grant Likely <grant.likely@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     Robert Foss <robert.foss@linaro.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-gpio@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-media@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-spi@vger.kernel.org, kernel@pengutronix.de,
-        Purism Kernel Team <kernel@puri.sm>,
-        linux-rpi-kernel@lists.infradead.org, linux-leds@vger.kernel.org,
-        linux-actions@lists.infradead.org, netdev@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-staging@lists.linux.dev, chrome-platform@lists.linux.dev,
-        linux-crypto@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linuxppc-dev@lists.ozlabs.org, patches@opensource.cirrus.com,
-        linux-omap@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: (subset) [PATCH 000/606] i2c: Complete conversion to i2c_probe_new
-Date:   Fri,  9 Dec 2022 13:00:14 +0100
-Message-Id: <167058708567.1651663.18170722235132459286.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221118224540.619276-1-uwe@kleine-koenig.org>
-References: <20221118224540.619276-1-uwe@kleine-koenig.org>
+        Fri, 09 Dec 2022 06:07:34 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH 0/2] tty: serial: add and use a managed variant of uart_add_one_port()
+Date:   Fri,  9 Dec 2022 15:07:29 +0100
+Message-Id: <20221209140731.573503-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 18 Nov 2022 23:35:34 +0100, Uwe Kleine-König wrote:
-> since commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
-> call-back type") from 2016 there is a "temporary" alternative probe
-> callback for i2c drivers.
-> 
-> This series completes all drivers to this new callback (unless I missed
-> something). It's based on current next/master.
-> A part of the patches depend on commit 662233731d66 ("i2c: core:
-> Introduce i2c_client_get_device_id helper function"), there is a branch that
-> you can pull into your tree to get it:
-> 
-> [...]
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Applied all patches that build.
+This series adds a managed variant of uart_add_one_port() and uses it in the
+qcom-geni-serial driver.
 
-Patches excluded:
- - ps8622
- - ti-sn65dsi83
- - adv7511
+I've been asked by Greg to send it separately and he didn't seem to be
+impressed by the proposition of adding devres interfaces to the tty layer
+in general. I can only assume it has something to do with the ongoing
+discussion about the supposed danger of using devres interfaces in conjunction
+with exporting character devices to user-space.
 
-Repo: https://cgit.freedesktop.org/drm/drm-misc/
+The bug in question can be triggered by opening a device file, unbinding the
+driver that exported it and then calling any of the system calls on the
+associated file descriptor.
 
+After some testing I noticed that many subsystems are indeed either crashing
+or deadlocking in the above situation. I've sent patches that attempt to fix
+the GPIO and I2C subsystems[1][2]. Neither of these issues have anything to
+do with devres and all to do with the fact that certain resources are freed
+on driver unbind and others need to live for as long as the character device
+exists. More details on that in the cover letters and commit messages in the
+links.
 
-[014/606] drm/bridge: adv7511: Convert to i2c's .probe_new()
-          (no commit info)
-[015/606] drm/bridge/analogix/anx6345: Convert to i2c's .probe_new()
-          (no commit info)
-[016/606] drm/bridge/analogix/anx78xx: Convert to i2c's .probe_new()
-          (no commit info)
-[017/606] drm/bridge: anx7625: Convert to i2c's .probe_new()
-          (no commit info)
-[018/606] drm/bridge: icn6211: Convert to i2c's .probe_new()
-          (no commit info)
-[019/606] drm/bridge: chrontel-ch7033: Convert to i2c's .probe_new()
-          commit: 8dc6de280f01c0f7b8d40435736f3c975368ad70
-[020/606] drm/bridge: it6505: Convert to i2c's .probe_new()
-          (no commit info)
-[021/606] drm/bridge: it66121: Convert to i2c's .probe_new()
-          (no commit info)
-[022/606] drm/bridge: lt8912b: Convert to i2c's .probe_new()
-          (no commit info)
-[023/606] drm/bridge: lt9211: Convert to i2c's .probe_new()
-          (no commit info)
-[024/606] drm/bridge: lt9611: Convert to i2c's .probe_new()
-          (no commit info)
-[025/606] drm/bridge: lt9611uxc: Convert to i2c's .probe_new()
-          (no commit info)
-[026/606] drm/bridge: megachips: Convert to i2c's .probe_new()
-          (no commit info)
-[027/606] drm/bridge: nxp-ptn3460: Convert to i2c's .probe_new()
-          (no commit info)
-[028/606] drm/bridge: parade-ps8622: Convert to i2c's .probe_new()
-          (no commit info)
-[029/606] drm/bridge: sii902x: Convert to i2c's .probe_new()
-          (no commit info)
-[030/606] drm/bridge: sii9234: Convert to i2c's .probe_new()
-          (no commit info)
-[031/606] drm/bridge: sii8620: Convert to i2c's .probe_new()
-          (no commit info)
-[032/606] drm/bridge: tc358767: Convert to i2c's .probe_new()
-          (no commit info)
-[033/606] drm/bridge: tc358768: Convert to i2c's .probe_new()
-          (no commit info)
-[034/606] drm/bridge/tc358775: Convert to i2c's .probe_new()
-          (no commit info)
-[035/606] drm/bridge: ti-sn65dsi83: Convert to i2c's .probe_new()
-          (no commit info)
-[037/606] drm/bridge: tfp410: Convert to i2c's .probe_new()
-          (no commit info)
+I'd like to point out that the serial code is immune to this issue as before
+every operation, the serial core takes the port lock and checks the uart
+state. If the device no longer exists (when the uart port is removed, the
+pointer to uart_port inside uart_state is to NULL), it gracefully returns
+-ENODEV to user-space.
 
+Please consider applying the patches in the series as devres is the easiest
+way to lessen the burden on driver developers when dealing with complex error
+paths and resource leaks. The general rule for devres is: if it can be freed
+in .remove() then it can be managed by devres, which is the case for this new
+helper.
 
+Bart
 
-rob
+[1] https://lkml.org/lkml/2022/12/8/826
+[2] https://lkml.org/lkml/2022/12/5/414
+
+Bartosz Golaszewski (2):
+  tty: serial: provide devm_uart_add_one_port()
+  tty: serial: qcom-geni-serial: use devres for uart port management
+
+ .../driver-api/driver-model/devres.rst        |  3 ++
+ drivers/tty/serial/qcom_geni_serial.c         |  8 +---
+ drivers/tty/serial/serial_core.c              | 48 +++++++++++++++++++
+ include/linux/serial_core.h                   |  6 +++
+ 4 files changed, 58 insertions(+), 7 deletions(-)
+
+-- 
+2.37.2
 
