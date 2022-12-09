@@ -2,130 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1CDC10F31
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Dec 2022 14:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE5EC4332F
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Dec 2022 15:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiLIOMV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Dec 2022 09:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
+        id S229819AbiLIPFN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Dec 2022 10:05:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbiLIOLg (ORCPT
+        with ESMTP id S230117AbiLIPFM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Dec 2022 09:11:36 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A872425C4E
-        for <linux-serial@vger.kernel.org>; Fri,  9 Dec 2022 06:07:51 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id v124-20020a1cac82000000b003cf7a4ea2caso5832298wme.5
-        for <linux-serial@vger.kernel.org>; Fri, 09 Dec 2022 06:07:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nofF3uq4mMCbmKOkK6zREu9Cnd568OqVIOgqPBzLczQ=;
-        b=7vgfFbEF2nf6NQkTEVbI4W1ni7qg48IYIHg46dDKOOO/5HNcsRjlzq3pRL8ZYe0X+Q
-         VonuKatsOY/CzkY4JOdxL4a8uzG94YJWp6vxqjuJIuSYDcwZPxPKQncRe8NDHknoMuyZ
-         IvYnnM68rI+nNRHSLqs6cJrlbqMzziLrSFTaoboDp3S21VpQvFSZw2OOT/bmaa3suZUj
-         Yzpnq/DDL6D/wSD3axjP4V50VmonoeN5+2sYGg09WRA1I/uqmUYH/djtSQPq9MmeS6t+
-         DghXv51PMutOGkAnEwtT4USksj8Cly2/oArCcG/a4yG4OmZVYjKqtn2zCVLOhsBevlfl
-         pBCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nofF3uq4mMCbmKOkK6zREu9Cnd568OqVIOgqPBzLczQ=;
-        b=sPtf7a/G8eBJhhoDUHUFSV9Y9BkSGKmVn/geeLHWYGU2uNasvQ4QWpXz699DQMUwXc
-         iSZxpdaqzSTwLN2qTU1enk4iqnl2K40iAf2SEE4J65ZJXf1gdPyAB1f2VaSS5BlkiEMN
-         PpMDNtPF2gQLLAvOxiH9u6hWoSt3WXHb6fITQxeiaV+4OCdQ9yInMw5UWm7pEhVINm9W
-         fB0XKIYcA9ZVF0+cR4RfUXrzVpliLtoBv5cempFBMF1Kellp5epQbtEO6qvkmtatT/AT
-         +88yT1yqru0ikdXpqTV7RM6eHEEo4L5pRc9gWBl5aixr04pIOK1RlRwWWpTt03xCEJxL
-         ZJew==
-X-Gm-Message-State: ANoB5pm584M6h5RegINGwMzZZ8Mfz1w4LGrcqOhSrAMbxn95ySuMO7v/
-        QTAPYVPQTaSTkWHirshOvvAQCQ==
-X-Google-Smtp-Source: AA0mqf6v7YakytNoN0NrAI81R1P8GQ1jxvefsU4UuQfsuRoqiC+9Hy8r1tsShgHTdWQ+OC29fqGWgQ==
-X-Received: by 2002:a05:600c:34cd:b0:3cf:c2a5:5abc with SMTP id d13-20020a05600c34cd00b003cfc2a55abcmr5244101wmq.17.1670594857347;
-        Fri, 09 Dec 2022 06:07:37 -0800 (PST)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:51db:8fd7:45e0:fe69])
-        by smtp.gmail.com with ESMTPSA id q3-20020a1c4303000000b003cfa81e2eb4sm1869848wma.38.2022.12.09.06.07.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 06:07:36 -0800 (PST)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH 2/2] tty: serial: qcom-geni-serial: use devres for uart port management
-Date:   Fri,  9 Dec 2022 15:07:31 +0100
-Message-Id: <20221209140731.573503-3-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221209140731.573503-1-brgl@bgdev.pl>
-References: <20221209140731.573503-1-brgl@bgdev.pl>
+        Fri, 9 Dec 2022 10:05:12 -0500
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736C7209B1;
+        Fri,  9 Dec 2022 07:05:06 -0800 (PST)
+X-QQ-mid: bizesmtp89t1670598288tzek7vk3
+Received: from ubuntu.. ( [111.196.135.79])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 09 Dec 2022 23:04:47 +0800 (CST)
+X-QQ-SSF: 01200000002000B0C000B00A0000000
+X-QQ-FEAT: ILHsT53NKPjG5kfsWPlb/E4DO94OjvdDf9wn6ttYvvCNpDY9/TDM9Ur27ag7K
+        a+Ax5aohk1b980KZ412GaxQBoChRTv+AMSpc0cjPxse+3RraLnlsCU639j5CVj+BPHJJori
+        Vbt2DGkCowbiBYA8NLOLGZJx6Z4e+EsHC6q48OfHeGuT3aDyUXYLgD5QC9lojnGNJv5HnnM
+        kx7xPEIQBZTjAEoA3RfLlTZr/mtVCE+AO/IG0Kgu7uyUxaFrmX+6fDEebWyg5ObPm4nKRfs
+        4sjlFW1iSHbVdyKJ+YuUNwEmbLfyVO/HuUj/iS7HnGCJuh+m8uyEXkwmL1/sKtrr5peQ3iT
+        v2BAZ+mqbzzGar3pYaRaxGHVuiPBILmUZyoUiia
+X-QQ-GoodBg: 0
+From:   Bin Meng <bmeng@tinylab.org>
+To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v3 3/3] serial: Rename earlycon semihost driver
+Date:   Fri,  9 Dec 2022 23:04:37 +0800
+Message-Id: <20221209150437.795918-4-bmeng@tinylab.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221209150437.795918-1-bmeng@tinylab.org>
+References: <20221209150437.795918-1-bmeng@tinylab.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:tinylab.org:qybglogicsvr:qybglogicsvr3
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Now that earlycon semihost driver works on RISC-V too, let's use a
+much more generic name for the driver.
 
-Shrink and simplify the probe() and remove() code by using the managed
-variant of uart_add_one_port().
+Signed-off-by: Bin Meng <bmeng@tinylab.org>
 
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 83b66b73303a..16532cb64465 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1469,7 +1469,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+(no changes since v1)
+
+ drivers/tty/serial/Kconfig                           | 12 ++++++------
+ drivers/tty/serial/Makefile                          |  2 +-
+ .../{earlycon-arm-semihost.c => earlycon-semihost.c} |  0
+ 3 files changed, 7 insertions(+), 7 deletions(-)
+ rename drivers/tty/serial/{earlycon-arm-semihost.c => earlycon-semihost.c} (100%)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index e94d1265151c..a3779472edf6 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -73,17 +73,17 @@ config SERIAL_AMBA_PL011_CONSOLE
+ 	  your boot loader (lilo or loadlin) about how to pass options to the
+ 	  kernel at boot time.)
  
--	ret = uart_add_one_port(drv, uport);
-+	ret = devm_uart_add_one_port(&pdev->dev, drv, uport);
- 	if (ret)
- 		return ret;
+-config SERIAL_EARLYCON_ARM_SEMIHOST
+-	bool "Early console using ARM semihosting"
++config SERIAL_EARLYCON_SEMIHOST
++	bool "Early console using Arm compatible semihosting"
+ 	depends on ARM64 || ARM || RISCV
+ 	select SERIAL_CORE
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 	help
+-	  Support for early debug console using ARM semihosting. This enables
+-	  the console before standard serial driver is probed. This is enabled
+-	  with "earlycon=smh" on the kernel command line. The console is
+-	  enabled when early_param is processed.
++	  Support for early debug console using Arm compatible semihosting.
++	  This enables the console before standard serial driver is probed.
++	  This is enabled with "earlycon=smh" on the kernel command line.
++	  The console is enabled when early_param is processed.
  
-@@ -1478,7 +1478,6 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			IRQF_TRIGGER_HIGH, port->name, uport);
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
--		uart_remove_one_port(drv, uport);
- 		return ret;
- 	}
+ config SERIAL_EARLYCON_RISCV_SBI
+ 	bool "Early console using RISC-V SBI"
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 238a9557b487..cd9afd9e3018 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -6,7 +6,7 @@
+ obj-$(CONFIG_SERIAL_CORE) += serial_core.o
  
-@@ -1495,7 +1494,6 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 						port->wakeup_irq);
- 		if (ret) {
- 			device_init_wakeup(&pdev->dev, false);
--			uart_remove_one_port(drv, uport);
- 			return ret;
- 		}
- 	}
-@@ -1505,12 +1503,8 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
+-obj-$(CONFIG_SERIAL_EARLYCON_ARM_SEMIHOST) += earlycon-arm-semihost.o
++obj-$(CONFIG_SERIAL_EARLYCON_SEMIHOST) += earlycon-semihost.o
+ obj-$(CONFIG_SERIAL_EARLYCON_RISCV_SBI) += earlycon-riscv-sbi.o
  
- static int qcom_geni_serial_remove(struct platform_device *pdev)
- {
--	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
--	struct uart_driver *drv = port->private_data.drv;
--
- 	dev_pm_clear_wake_irq(&pdev->dev);
- 	device_init_wakeup(&pdev->dev, false);
--	uart_remove_one_port(drv, &port->uport);
- 
- 	return 0;
- }
+ # These Sparc drivers have to appear before others such as 8250
+diff --git a/drivers/tty/serial/earlycon-arm-semihost.c b/drivers/tty/serial/earlycon-semihost.c
+similarity index 100%
+rename from drivers/tty/serial/earlycon-arm-semihost.c
+rename to drivers/tty/serial/earlycon-semihost.c
 -- 
-2.37.2
+2.34.1
 
