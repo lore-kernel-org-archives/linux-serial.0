@@ -2,177 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D65AC10F1E
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Dec 2022 15:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD92C04FDE
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Dec 2022 21:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiLIPFQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Dec 2022 10:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        id S230035AbiLIVpc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Dec 2022 16:45:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230060AbiLIPFO (ORCPT
+        with ESMTP id S230016AbiLIVpC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Dec 2022 10:05:14 -0500
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C596A209B1;
-        Fri,  9 Dec 2022 07:05:12 -0800 (PST)
-X-QQ-mid: bizesmtp89t1670598283t2j1lelf
-Received: from ubuntu.. ( [111.196.135.79])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 09 Dec 2022 23:04:41 +0800 (CST)
-X-QQ-SSF: 01200000002000B0C000B00A0000000
-X-QQ-FEAT: znfcQSa1hKZEkVEo5KsJPnztRM+YmWhuMP5lhz0A261j6bY6bsUz696ZFniYc
-        IU03XC1wSi2mTpJ4Oj7Nff0Mv/eMawGUQSZLZVoQMPCrpyyWZ45AOCUMkImiFB7XXhf4GPo
-        a4C1mosVhQKwwMj2rbWMSAz4HZoPpkuO2pn1BK3GOMlRTHgOhhbziFZ3fgK1f8z25438B/v
-        NhmUnGbLWn6VF9J+Oa6QZvy/nu/rKuzaAkhseY4+t0ypw7NT/Yqhovc9tG3jynzpXmE6+6g
-        NG4Qoz10dv3AG5/zN4SQRBb1AmUEmB+TLgvJnFXYCmlwI3Dghgs3w87u62UiIMuchUdvmWt
-        FOONZXRgMzi5ce4r0xcY4MuIdqC031oicLhrpoGk00mYjUHVWk=
-X-QQ-GoodBg: 0
-From:   Bin Meng <bmeng@tinylab.org>
-To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 1/3] serial: earlycon-arm-semihost: Move smh_putc() variants in respective arch's semihost.h
-Date:   Fri,  9 Dec 2022 23:04:35 +0800
-Message-Id: <20221209150437.795918-2-bmeng@tinylab.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221209150437.795918-1-bmeng@tinylab.org>
-References: <20221209150437.795918-1-bmeng@tinylab.org>
+        Fri, 9 Dec 2022 16:45:02 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE913D386;
+        Fri,  9 Dec 2022 13:45:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670622302; x=1702158302;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TuSrvu1jx9I5ZHmEkMMea0Y8tKsaVWKLe+FE0ZgyQOc=;
+  b=nGZSv+gwEgjeIptDiFQSHELWkNfMGmfN6+8A6AgGTKPfJR9cjixaVTum
+   Urmz88gqvg6PC/TZtSIlVzoLQw1sPZGVIYmn6lsxpghQfFQAG+bKwgATw
+   abGUF2M2aRloOkwrO1gmciyWOmzTdtNcDWOF5OPbkO22Ps90svZHl79cw
+   baY6oifccWHo4MnD3vNG3ZIycj/N0bIMNTRZpiFr1iqoeSv7yuKvdXtmR
+   yHb1WWt9FIRVa7+xgil5F5j9CvL/O0Exg7RUcg0weOxIUhXViyOQJer4U
+   uL9iZwAw+xZ4Cgrm9K1h8OsvtISweNNvDKe0qMuczeyxnIu2568k+u513
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10556"; a="300975520"
+X-IronPort-AV: E=Sophos;i="5.96,232,1665471600"; 
+   d="scan'208";a="300975520"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2022 13:45:00 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10556"; a="711031664"
+X-IronPort-AV: E=Sophos;i="5.96,232,1665471600"; 
+   d="scan'208";a="711031664"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2022 13:44:59 -0800
+From:   matthew.gerlach@linux.intel.com
+To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com
+Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v6 0/4] Enhance definition of DFH and use enhancements for UART driver
+Date:   Fri,  9 Dec 2022 13:45:19 -0800
+Message-Id: <20221209214523.3484193-1-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:tinylab.org:qybglogicsvr:qybglogicsvr3
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Move smh_putc() variants in respective arch/*/include/asm/semihost.h,
-in preparation to add RISC-V support.
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-Signed-off-by: Bin Meng <bmeng@tinylab.org>
+This patchset enhances the definition of the Device Feature Header (DFH) used by
+the Device Feature List (DFL) bus and then uses the new enhancements in a UART
+driver.
 
----
+The enhancements to the DFH includes the introduction of parameter blocks.
+Like PCI capabilities, the DFH parameter blocks further describe
+the hardware to software. In the case of the UART, the parameter blocks
+provide information for the interrupt, clock frequency, and register layout.
 
-Changes in v3:
-- add #ifdef in the header to prevent from multiple inclusion
-- add forward-declare struct uart_port
+Duplication of code parsing of the parameter blocks in multiple DFL drivers
+is a concern. Using swnodes was considered to help minimize parsing code 
+duplication, but their use did not help the problem. Furthermore the highly
+changeable nature of FPGAs employing the DFL bus makes the use of swnodes
+inappropriate. 
 
-Changes in v2:
-- new patch: "serial: earlycon-arm-semihost: Move smh_putc() variants in respective arch's semihost.h"
+Patch 1 updates the DFL documentation to describe the added functionality to DFH.
 
- arch/arm/include/asm/semihost.h            | 30 ++++++++++++++++++++++
- arch/arm64/include/asm/semihost.h          | 24 +++++++++++++++++
- drivers/tty/serial/earlycon-arm-semihost.c | 25 +-----------------
- 3 files changed, 55 insertions(+), 24 deletions(-)
- create mode 100644 arch/arm/include/asm/semihost.h
- create mode 100644 arch/arm64/include/asm/semihost.h
+Patch 2 adds the definitions for DFHv1.
 
-diff --git a/arch/arm/include/asm/semihost.h b/arch/arm/include/asm/semihost.h
-new file mode 100644
-index 000000000000..f365787e7c23
---- /dev/null
-+++ b/arch/arm/include/asm/semihost.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2012 ARM Ltd.
-+ * Author: Marc Zyngier <marc.zyngier@arm.com>
-+ *
-+ * Adapted for ARM and earlycon:
-+ * Copyright (C) 2014 Linaro Ltd.
-+ * Author: Rob Herring <robh@kernel.org>
-+ */
-+
-+#ifndef _ARM_SEMIHOST_H_
-+#define _ARM_SEMIHOST_H_
-+
-+#ifdef CONFIG_THUMB2_KERNEL
-+#define SEMIHOST_SWI	"0xab"
-+#else
-+#define SEMIHOST_SWI	"0x123456"
-+#endif
-+
-+struct uart_port;
-+
-+static inline void smh_putc(struct uart_port *port, unsigned char c)
-+{
-+	asm volatile("mov  r1, %0\n"
-+		     "mov  r0, #3\n"
-+		     "svc  " SEMIHOST_SWI "\n"
-+		     : : "r" (&c) : "r0", "r1", "memory");
-+}
-+
-+#endif /* _ARM_SEMIHOST_H_ */
-diff --git a/arch/arm64/include/asm/semihost.h b/arch/arm64/include/asm/semihost.h
-new file mode 100644
-index 000000000000..87e353dab868
---- /dev/null
-+++ b/arch/arm64/include/asm/semihost.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2012 ARM Ltd.
-+ * Author: Marc Zyngier <marc.zyngier@arm.com>
-+ *
-+ * Adapted for ARM and earlycon:
-+ * Copyright (C) 2014 Linaro Ltd.
-+ * Author: Rob Herring <robh@kernel.org>
-+ */
-+
-+#ifndef _ARM64_SEMIHOST_H_
-+#define _ARM64_SEMIHOST_H_
-+
-+struct uart_port;
-+
-+static inline void smh_putc(struct uart_port *port, unsigned char c)
-+{
-+	asm volatile("mov  x1, %0\n"
-+		     "mov  x0, #3\n"
-+		     "hlt  0xf000\n"
-+		     : : "r" (&c) : "x0", "x1", "memory");
-+}
-+
-+#endif /* _ARM64_SEMIHOST_H_ */
-diff --git a/drivers/tty/serial/earlycon-arm-semihost.c b/drivers/tty/serial/earlycon-arm-semihost.c
-index fcdec5f42376..e4692a8433f9 100644
---- a/drivers/tty/serial/earlycon-arm-semihost.c
-+++ b/drivers/tty/serial/earlycon-arm-semihost.c
-@@ -11,30 +11,7 @@
- #include <linux/console.h>
- #include <linux/init.h>
- #include <linux/serial_core.h>
--
--#ifdef CONFIG_THUMB2_KERNEL
--#define SEMIHOST_SWI	"0xab"
--#else
--#define SEMIHOST_SWI	"0x123456"
--#endif
--
--/*
-- * Semihosting-based debug console
-- */
--static void smh_putc(struct uart_port *port, unsigned char c)
--{
--#ifdef CONFIG_ARM64
--	asm volatile("mov  x1, %0\n"
--		     "mov  x0, #3\n"
--		     "hlt  0xf000\n"
--		     : : "r" (&c) : "x0", "x1", "memory");
--#else
--	asm volatile("mov  r1, %0\n"
--		     "mov  r0, #3\n"
--		     "svc  " SEMIHOST_SWI "\n"
--		     : : "r" (&c) : "r0", "r1", "memory");
--#endif
--}
-+#include <asm/semihost.h>
- 
- static void smh_write(struct console *con, const char *s, unsigned n)
- {
+Patch 3 adds basic support for DFHv1. It adds functionality to parse parameter blocks
+and adds the functionality to parse the explicit location of a feature's register set.
+
+Patch 4 adds a DFL UART driver that makes use of the new features of DFHv1.
+
+Basheer Ahmed Muddebihal (1):
+  fpga: dfl: Add DFHv1 Register Definitions
+
+Matthew Gerlach (3):
+  Documentation: fpga: dfl: Add documentation for DFHv1
+  fpga: dfl: add basic support for DFHv1
+  tty: serial: 8250: add DFL bus driver for Altera 16550.
+
+ Documentation/fpga/dfl.rst         | 103 +++++++++++++
+ drivers/fpga/dfl.c                 | 234 ++++++++++++++++++++++-------
+ drivers/fpga/dfl.h                 |  41 +++++
+ drivers/tty/serial/8250/8250_dfl.c | 154 +++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig    |  12 ++
+ drivers/tty/serial/8250/Makefile   |   1 +
+ include/linux/dfl.h                |   4 +
+ 7 files changed, 498 insertions(+), 51 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+
 -- 
-2.34.1
+2.25.1
 
