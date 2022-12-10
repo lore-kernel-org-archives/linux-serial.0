@@ -2,389 +2,179 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB84C04FDE
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Dec 2022 03:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EADDC4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Dec 2022 11:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbiLJDRU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Dec 2022 22:17:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        id S229665AbiLJLTZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 10 Dec 2022 06:19:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiLJDRS (ORCPT
+        with ESMTP id S229627AbiLJLTY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Dec 2022 22:17:18 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEBE31375;
-        Fri,  9 Dec 2022 19:17:15 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id fy4so6412106pjb.0;
-        Fri, 09 Dec 2022 19:17:15 -0800 (PST)
+        Sat, 10 Dec 2022 06:19:24 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEEA1AF2F;
+        Sat, 10 Dec 2022 03:19:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670671163; x=1702207163;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=YxHEgZn1HZhs/JPyF2L0KNh1PusT4bGvaNfUjfwq3fU=;
+  b=1mlaiSbI06TC0v9ZfW88a+uHDsnuDWYObFqcGJZw+0Cgudp3InJu2KID
+   WY9reIVSMMwCsdiKe1+9GaTkVnxyAxa/4cnus8rGDwPAwUqvQM4f+oLJa
+   3lkUopnIkXdFnsJsfeHkOxucrr9xibGlSCW2R9xohi8u5Dh9IM2lPcInq
+   51fUifMtlNCNprJeh5WDGJEuH0LphDFYotY30a/R42pPWZH4UiKxLEtPi
+   7U9rhUkHraf+35vaIjTHyii9HgbZOJkTJR0kmcaLYaqF29oz+R8CDK33N
+   RCJ9MKEr3dWoiHUKFc3LnQeUETgGOHGkmEB2JVVbsmdBx92vs5i1Hvw5a
+   g==;
+X-IronPort-AV: E=Sophos;i="5.96,232,1665471600"; 
+   d="scan'208";a="192495902"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Dec 2022 04:19:22 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Sat, 10 Dec 2022 04:19:20 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Sat, 10 Dec 2022 04:19:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W3H+KdjrUlTAL4CmWYwtYC6ayo3oM6wL1gZiaTE4cIS4HE4BcnAgZTKlswlLltiBv9+vIsNJP7laJdByttFtjsZ5WWb9Pep5wEvaSXSx7Gx6pM84QJELd0HM36Jv61i5DIT/+trudVFzbWo140iwxyzQjndwC2hTPusKKRLQHQQesaXgdUO2cHZ2rh2OWaKt1KWZit9aa4eo7CKGRlofOPOwt0llKu6L2Ehlc7GD7bbt5CPhIwJfDz6ZIOAolFfDl4sdV++yio/30a5631ZYMukcBYFp7g/rKa8Pvt5fvYH+k0ShvWzcR6M/FBnAs7+8olMVIjdNaFYMVfy70h51Hg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=q4GQYmZGbQ6xwxVXgrRCHgy+HJsc+UeLUZQ+iD7SShk=;
+ b=RYoEL1A0e+uYuoqF8SWZXf3g9gzs1t/GH/bcDA5aXPIJ6sK/F1AK1/0kRrwO2Vpn0Xdyl5CmLCxgyhHGiTypmg501+TUeE8x7attdaGxyd3fYd3Ue/ZUXEBWH7dA9al6GU/N0jSIZtn4EZFA69dLrB+Mcj8bTjxlMwCicBtRXn59a6VdK93UmehLRh8yRZAg+XCprOYb0C3mt6+1SaFIIm1iZej52AD1Ghzj8/TuaiqfIHWBeLSD8bEY5hRzBwUey2YQl1oKwJw01tQYFjf3YG58p4iq5t3OmcitkywaHf4OK3MasQTOcDNfrR94WBCbi7/NNLgH8+fk1ldh8kblBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IfcCAQaJ3kmduYpB+rQFe6/68zr6eEOSwUILoiuNatw=;
-        b=Xjq6quRw4g+29K0K78R7a4vLy44NwsFzw6TZSBK9OCfyQRx170exAX73wg3cm/uuov
-         FUNCfoF7IoEw4A3AxQw4s1uQRQKazTCWKnmF5OKGZeUPM9/2g2OUedRJA8GXMHgHM4CT
-         i0dfazNwsh7gDUk9x6QaOiQJgvk5FzoMdL7Ip9pFZKB5qfm/Hed02yyChkZGhjGy5Oes
-         PyrOqjq0FDGq876qkkckC5sOykLxGzUeGJOXzxeqrNVk8LcPvqM32orucn//1F4xOZW6
-         n9i7dY4kyyRFelPJo4Jkmth/Yx3CHpunRMRgIkAmOasILtalMGeWBLwvdkQpjQK2S5pp
-         AI4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IfcCAQaJ3kmduYpB+rQFe6/68zr6eEOSwUILoiuNatw=;
-        b=oVnCNFfnxzKcQtN3k0aExCkFjxA4CCrLwWW2auMA6FiLM2LiEAPMe0o6EdkWSx2+AP
-         TnjAWtciGsjnqR55mcCTAHSA3I90KdGfEplesAszecJhlhoX0TiBNdfsaqSS14LaIP25
-         T+uhLmnwRf2OsAikJZtaQBjVwFcgf7KQPtKEhDcYY07iJVM2Zhg26+kzFvkrikOmKWZs
-         X4APWIj53iXKtXQL4OIlGWFRcugK4EGT3tM3/AC66vLHNmqUBtkpaMF/E+91YqxfsAKV
-         a9NzZdk0x79y2aNMVdZNyI9GpbQjsWBiGDr1m1ApkHqGl/AfitDrpKcf4zdzoF9Gnl4m
-         cejA==
-X-Gm-Message-State: ANoB5pnArcc0gBNRkZ8WsAnQOnK5kiRG9RsbAUo9G2bN/7Izd+I6bZDW
-        TT/Nv/X+0YhvcyxFWJ8u0RIijl+K678=
-X-Google-Smtp-Source: AA0mqf6ojaModjo5JyfiHSc0P0dszlj8oHPmvLBUk1QMqMk0FkyE1RFBGz4RkV0BJXKBL+JL48Vytg==
-X-Received: by 2002:a17:902:f647:b0:189:101d:9bad with SMTP id m7-20020a170902f64700b00189101d9badmr9451391plg.59.1670642235205;
-        Fri, 09 Dec 2022 19:17:15 -0800 (PST)
-Received: from debian.me (subs02-180-214-232-76.three.co.id. [180.214.232.76])
-        by smtp.gmail.com with ESMTPSA id e6-20020a170902d38600b0018982bf03b4sm1970629pld.117.2022.12.09.19.17.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Dec 2022 19:17:14 -0800 (PST)
-Received: by debian.me (Postfix, from userid 1000)
-        id 241A3103E00; Sat, 10 Dec 2022 10:17:10 +0700 (WIB)
-Date:   Sat, 10 Dec 2022 10:17:10 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     matthew.gerlach@linux.intel.com, hao.wu@intel.com,
-        yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com
-Subject: Re: [PATCH v6 1/4] Documentation: fpga: dfl: Add documentation for
- DFHv1
-Message-ID: <Y5P6NjDxy/S7nlF7@debian.me>
-References: <20221209214523.3484193-1-matthew.gerlach@linux.intel.com>
- <20221209214523.3484193-2-matthew.gerlach@linux.intel.com>
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q4GQYmZGbQ6xwxVXgrRCHgy+HJsc+UeLUZQ+iD7SShk=;
+ b=C/XtSv9cyLjQ/XTmonJB24B+rQBOxOtUn8Bno102yCZzyTvVYaXvIyrUcxuntwMQ0sv8y50biY7XzsIsf24zyORVxGG5SV1HKxY9buh593pkkk6MrkTF9MXzSvTLTeSa535p1+jGTTSekwy4gw7Uef/DUR1W+6GC0xByz/0WalE=
+Received: from PH7PR11MB5958.namprd11.prod.outlook.com (2603:10b6:510:1e1::22)
+ by PH8PR11MB6830.namprd11.prod.outlook.com (2603:10b6:510:22e::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Sat, 10 Dec
+ 2022 11:19:18 +0000
+Received: from PH7PR11MB5958.namprd11.prod.outlook.com
+ ([fe80::fb4a:4d24:6de1:2084]) by PH7PR11MB5958.namprd11.prod.outlook.com
+ ([fe80::fb4a:4d24:6de1:2084%9]) with mapi id 15.20.5880.019; Sat, 10 Dec 2022
+ 11:19:18 +0000
+From:   <Tharunkumar.Pasumarthi@microchip.com>
+To:     <andriy.shevchenko@linux.intel.com>,
+        <Kumaravel.Thiagarajan@microchip.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ilpo.jarvinen@linux.intel.com>, <macro@orcam.me.uk>,
+        <cang1@live.co.uk>, <colin.i.king@gmail.com>,
+        <phil.edworthy@renesas.com>, <biju.das.jz@bp.renesas.com>,
+        <geert+renesas@glider.be>, <lukas@wunner.de>,
+        <u.kleine-koenig@pengutronix.de>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <jk@ozlabs.org>
+Subject: RE: [PATCH v7 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
+ quad-uart support
+Thread-Topic: [PATCH v7 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
+ quad-uart support
+Thread-Index: AQHZCi23nlvhMmG2bkuZfoGyMpcz2K5i2P8AgAQklKA=
+Date:   Sat, 10 Dec 2022 11:19:18 +0000
+Message-ID: <PH7PR11MB595857123B23F27D1E9DE2D39B1F9@PH7PR11MB5958.namprd11.prod.outlook.com>
+References: <20221207235305.695541-1-kumaravel.thiagarajan@microchip.com>
+ <20221207235305.695541-3-kumaravel.thiagarajan@microchip.com>
+ <Y5DxEszrq0rXVqvl@smile.fi.intel.com>
+In-Reply-To: <Y5DxEszrq0rXVqvl@smile.fi.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR11MB5958:EE_|PH8PR11MB6830:EE_
+x-ms-office365-filtering-correlation-id: 910726af-eafa-4502-65af-08dadaa06113
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: d8BQ0T5QrOG2ZO8d36rSbuLZrN34WU44S+d40olw9+406sMBBG//GZ6t8A7N446fLiUd4EpmRr+mXA9ahOTpm+fRLN6RKJgK4rw9WkMHbDg+htjVybCSHOGRQIyWepySyr+6imcuc59wafEWsjmPbyYK9oQnCugyJ3mENS2X8DwhXbWbsmq+3ZC0tRxV+zPu5MoR9mKBWLlyQX6RkQEG170fDhAprxZtMeSMwZVGD32UIizhG4JpowtdJcWashlasiVxCXCKEh64Zw6jr/tsZpuumqSEx1W7mxLaIyUFxAep9Ow/99sdfxifZwGdJcYvt55dOIT5WFbbE1linA9c6NWgS5TYKLZsoHyF4ECTXmqSDxHs68Tk1cXsHJ5JnbUYKjCGWO/gM6XI0G+cFCr3cRT+dN0JpwiF5i1Rde2ZOaNKhdNO3xOV78Ie3rDAtv2CclH1NlLSt6kfNsHN4VhQOKHkS12LJgYmkm8VnZYGUQa/Qog+xYqAZX3qD/FEJi8B9KJdz6//rxGzEphirHWUFOlyUgZCjCe7rKROisXuAYOT4Eb7z2n4aHz2c0Zz8Bp6dDubVLv1aQLDDyiCqcGmufyh9lQig74nW56MCzqDXcrqSND0OtCJ6x9763UPPMcCrLN+UL2qOhc2CLiH3zwkVWjmFkV7QCi90YJa+qaCU2ycyfpXQyUvVne8URsb45Wd+8snBtJP3iT6bm1maFe8xw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR11MB5958.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(376002)(396003)(366004)(136003)(39860400002)(451199015)(6636002)(71200400001)(38100700002)(122000001)(6506007)(53546011)(26005)(9686003)(7696005)(83380400001)(186003)(33656002)(478600001)(66946007)(52536014)(66446008)(66476007)(66556008)(64756008)(55016003)(5660300002)(41300700001)(8936002)(2906002)(316002)(110136005)(54906003)(7416002)(4744005)(38070700005)(86362001)(4326008)(76116006)(8676002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?pnAPJ/kNFzx566INF11WWbqdNLa2VBzFqJ+xj9yfvbxwG++yez1/b1+c6WdK?=
+ =?us-ascii?Q?hV4KoPhcgRLs3EvcTFrVmbiq86apY+f5nrjcsDhkcLiscY88MmM3CL2u3eoT?=
+ =?us-ascii?Q?/0oaFC8sSW+sixF+j2wJxsJ/JCMzhMlEJ0DHd7mieXj5BkcEwAB3P4rkCO4H?=
+ =?us-ascii?Q?9K7JwK8xkyWUK9XuwNHGi2b2FBEoWf/LPzay5qOYLXyO4XOG3c6EEZ8S/934?=
+ =?us-ascii?Q?tNMZymV+YFckB4BvQ5KPeOdqmijElsUrdoJ/Cgv0pLnIetr2Fxu1QxDmwxMC?=
+ =?us-ascii?Q?AOu8GQKedvGUpcySgW2n7nkLC0bK7hw8uOX9OlOZKIfxbtQ8uRUwyLrKTRtZ?=
+ =?us-ascii?Q?9km7ZwRn2IxBdfx3EDPtb41iAQxhju7zTFOvmW0PbkO3oMFK1lUachXVd83j?=
+ =?us-ascii?Q?A2ymoIgIIzSX1s/9gaZV/1fqKTobuQOexS1YIlIXyrVF8Xq95/rwT4KK+VcV?=
+ =?us-ascii?Q?vnfERD4/rvo3JV/H3/fZjx77VbDM/t2h8YeNyMsfjVSMJuadfv7VQIRnqa6N?=
+ =?us-ascii?Q?1EO/ERrCBHPg4l7hTYOHgKf6RrCdahqTv6hR6Juw40czgIaPRDvVTv+Roj6o?=
+ =?us-ascii?Q?6vn6kk79HDoe8B55D4l9xqBRQrVJaySkpqaMXx1bGDitnBVHzqUxPqi4rLr+?=
+ =?us-ascii?Q?Kv3WeBUxTEdoPr9j0GGvT9kwZkC+uvrGHzjKyv9mm1vyqENvETu302SIjciu?=
+ =?us-ascii?Q?PSAy8nq1gjFVJ2H3qv3/H78BgIl0ihfHgglfA9xlsPhH/s6CMG5neoR/Hs6m?=
+ =?us-ascii?Q?gbyNDpglbNSdTL1ongZDDShiHR1L8RnJ3oF3H4Babq/TFvm9RIDVN2nyi1qg?=
+ =?us-ascii?Q?GCAdwPT6GX0Pyov/jNt2LDrxw5xNI5CTZ36EGT5DhLg/+YNiZzl9jAIJoKNt?=
+ =?us-ascii?Q?Q4zt4z401ur9mvkKWFUwrsImcd7goqXz3wupUjsEQPVIqdSFVKYQgCc1qy+R?=
+ =?us-ascii?Q?nf+N5AmIL75J1gI+AO2jcLkC1Lyuk+IWsAdQCwHc9iJeUDpZgf70BuKY0T8e?=
+ =?us-ascii?Q?GHQ4L76mVA19Z92xZBcxr+k55RJTsc3BWacWwX5YyAwdt7O1tmpS2zG+4jOl?=
+ =?us-ascii?Q?sX3e50jE4Som59rInHs5h3LJkxyswlLjisUw/DK9qSOO1Km1U9Sk6umRE8nF?=
+ =?us-ascii?Q?neDI7GMHYl+QPWFNMM2Nc+WI+960aHpzcZ7zVJBdT2v9wfOHjmTq+GxaRnKL?=
+ =?us-ascii?Q?9uj4aQFOnZ3XhZ+p24dSNmDRcenjfJPlo3mgGP6kXcJRAKs/Qb6OSwtk5dvq?=
+ =?us-ascii?Q?/5d2yhE5fBlqnTNN+UW+vB7ISSFN0PWCbubIa7KVrZMFWmLhHciu4WkN0lvE?=
+ =?us-ascii?Q?NchmzfeFhB8u8AL39gjOeFxF9O8ZdRERPdloVLaE676gnTic2jzkeEZEenI+?=
+ =?us-ascii?Q?Vem8s4v5ndR2WSA+k9mfJddn3PyL5Fwe7Zhj05yWsBe2JBjmaQ03hebUJcpw?=
+ =?us-ascii?Q?YxeKWGCcDKsXg5BOr3fwQcdhqSZaBhEXYFf9zawVQrepIabSzPDRDUckMzKi?=
+ =?us-ascii?Q?mb6+c0F7Vn1/XVojVOIf02qLnafRUuZFn+PTs/7paKXfkDY8CkN5Xd90susS?=
+ =?us-ascii?Q?6ULn1Y/6zBz6FQCJ6f2AbkfrEj8y3gx46mAVm6nAXaf7CzxjTLUnosXSRfya?=
+ =?us-ascii?Q?mEl/yrGpG/AVNi5ESxvl8bg=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="HlPKI/korhvKEuYx"
-Content-Disposition: inline
-In-Reply-To: <20221209214523.3484193-2-matthew.gerlach@linux.intel.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR11MB5958.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 910726af-eafa-4502-65af-08dadaa06113
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2022 11:19:18.4473
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2bMgEjjokq3kK/8EJqJggoBavNr4kPZAHFWDD0oXDRDff9WkQCcQLKCi0ROJpdMY3Sq8WmEcYMUPXBGMS7mBfmvGkKc20g7JcQE2dyz2tUeW8ovl6bJXp4RON+/vDh4J
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6830
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Sent: Thursday, December 8, 2022 1:31 AM
+> To: Kumaravel Thiagarajan - I21417
+> <Kumaravel.Thiagarajan@microchip.com>
+> Subject: Re: [PATCH v7 tty-next 2/4] serial: 8250_pci1xxxx: Add driver fo=
+r
+> quad-uart support
+>=20
+> > +     priv->membase =3D pcim_iomap(pdev, 0, 0);
+>=20
+> Is any of those card can have an IO bar (instead of MEM)?
 
---HlPKI/korhvKEuYx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+No Andy
 
-On Fri, Dec 09, 2022 at 01:45:20PM -0800, matthew.gerlach@linux.intel.com w=
-rote:
-> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-> index 15b670926084..606b4b070c33 100644
-> --- a/Documentation/fpga/dfl.rst
-> +++ b/Documentation/fpga/dfl.rst
-> @@ -561,6 +561,109 @@ new DFL feature via UIO direct access, its feature =
-id should be added to the
->  driver's id_table.
-> =20
-> =20
-> +Device Feature Header - Version 0
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +Version 0 (DFHv0) is the original version of the Device Feature Header.
-> +The format of DFHv0 is shown below::
-> +
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 =
-ID 0| 0x00
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                                 GUID_L                          =
-   0| 0x08
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                                 GUID_H                          =
-   0| 0x10
-> +    +-------------------------------------------------------------------=
-----+
-> +
-> +- Offset 0x00
-> +
-> +  * Type - The type of DFH (e.g. FME, AFU, or private feature).
-> +  * DFH VER - The version of the DFH.
-> +  * Rsvd - Currently unused.
-> +  * EOL - Set if this DFH is the end of the Device Feature List (DFL).
-> +  * Next - The offset of the next DFH in the DFL from the start of the D=
-FH. If EOL is set, Next is the size of MMIO ofthe last feature in the list.
-> +  * ID - The ID of the feature if Type is private feature.
-> +
-> +- Offset 0x08
-> +
-> +  * GUID_L - Least significant 64 bits of a 128 bit Globally Unique Iden=
-tifier (present only if Type is FME or AFU).
-> +
-> +- Offset 0x10
-> +
-> +  * GUID_H - Most significant 64 bits of a 128 bit Globally Unique Ident=
-ifier (present only if Type is FME or AFU).
-> +
-> +
-> +Device Feature Header - Version 1
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +Version 1 (DFHv1) of the Device Feature Header adds the following functi=
-onality:
-> +
-> +* Provides a standardized mechanism for features to describe parameters/=
-capabilities to software.
-> +* Standardize the use of a GUID for all DFHv1 types.
-> +* Decouples the location of the DFH from the register space of the featu=
-re itself.
-> +
-> +The format of Version 1 of the Device Feature Header (DFH) is shown belo=
-w::
-> +
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 =
-ID 0| 0x00
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                                 GUID_L                          =
-   0| 0x08
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                                 GUID_H                          =
-   0| 0x10
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                   Reg Address/Offset                      1|  Re=
-l  0| 0x18
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63        Reg Size       32|Params 31|30 Group    16|15 Instance   =
-   0| 0x20
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63 Next    35|34RSV33|EOP32|31 Param Version 16|15 Param ID        =
-   0| 0x28
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                 Parameter Data                                  =
-   0| 0x30
-> +    +-------------------------------------------------------------------=
-----+
-> +
-> +                                  ...
-> +
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63 Next    35|34RSV33|EOP32|31 Param Version 16|15 Param ID        =
-   0|
-> +    +-------------------------------------------------------------------=
-----+
-> +    |63                 Parameter Data                                  =
-   0|
-> +    +-------------------------------------------------------------------=
-----+
-> +
-> +- Offset 0x00
-> +
-> +  * Type - The type of DFH (e.g. FME, AFU, or private feature).
-> +  * DFH VER - The version of the DFH.
-> +  * Rsvd - Currently unused.
-> +  * EOL - Set if this DFH is the end of the Device Feature List (DFL).
-> +  * Next - The offset of the next DFH in the DFL from the start of the D=
-FH.
-> +  * ID - The ID of the feature if Type is private feature.
-> +
-> +- Offset 0x08
-> +
-> +  * GUID_L - Least significant 64 bits of a 128 bit Globally Unique Iden=
-tifier.
-> +
-> +- Offset 0x10
-> +
-> +  * GUID_H - Most significant 64 bits of a 128 bit Globally Unique Ident=
-ifier.
-> +
-> +- Offset 0x18
-> +
-> +  * Reg Address/Offset - If Rel bit is set, then the value is the high 6=
-3 bits of a 16 bit aligned absolute address of the feature's registers. If =
-Rel bit is clear, then the value is the offset from the start of the DFH of=
- the feature's registers.
-> +
-> +- Offset 0x20
-> +
-> +  * Reg Size - Size of feature's register set in bytes.
-> +  * Params - Set if DFH has a list of parameter blocks.
-> +  * Group - Id of group if feature is part of a group.
-> +  * Instance - Id of instance of feature within a group.
-> +
-> +- Offset 0x28 if feature has parameters
-> +
-> +  * Next - Offset to the next parameter block in 8 byte words. If EOP se=
-t, size in 8 byte words of last parameter.
-> +  * Param Version - Version of Param ID.
-> +  * Param ID - ID of parameter.
-> +
-> +- Offset 0x30
-> +
-> +  * Parameter Data - Parameter data whose size and format is defined by =
-version and ID of the parameter.
-> +
->  Open discussion
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->  FME driver exports one ioctl (DFL_FPGA_FME_PORT_PR) for partial reconfig=
-uration
+> > +     if (num_vectors =3D=3D 4)
+> > +             writeb(UART_PCI_CTRL_SET_MULTIPLE_MSI,
+> > +                    priv->membase + UART_PCI_CTRL_REG);
+>=20
+> If you set this unconditionally when num_vectors < 4, would it still work=
+?
 
-What about this wording below (including fitting the prose within 80 column=
-s)?
+UART_PCI_CTRL_SET_MULTIPLE_MSI must be set only when all the requested inte=
+rrupt vectors   =20
+are allocated by the pci_alloc_irq_vectors API. Number of interrupt vectors=
+ requested was always
+4 previously and that logic will be modified to request only which is requi=
+red in V8 patch.=20
 
----- >8 ----
-diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-index 606b4b070c3321..3d8f8dde6021db 100644
---- a/Documentation/fpga/dfl.rst
-+++ b/Documentation/fpga/dfl.rst
-@@ -579,26 +579,30 @@ The format of DFHv0 is shown below::
-   * Type - The type of DFH (e.g. FME, AFU, or private feature).
-   * DFH VER - The version of the DFH.
-   * Rsvd - Currently unused.
--  * EOL - Set if this DFH is the end of the Device Feature List (DFL).
--  * Next - The offset of the next DFH in the DFL from the start of the DFH=
-=2E If EOL is set, Next is the size of MMIO ofthe last feature in the list.
--  * ID - The ID of the feature if Type is private feature.
-+  * EOL - Set if the DFH is the end of the Device Feature List (DFL).
-+  * Next - The offset of the next DFH in the DFL from the DFH start. If EO=
-L is
-+    set, Next is the size of MMIO of the last feature in the list.
-+  * ID - The feature ID if Type is private feature.
-=20
- - Offset 0x08
-=20
--  * GUID_L - Least significant 64 bits of a 128 bit Globally Unique Identi=
-fier (present only if Type is FME or AFU).
-+  * GUID_L - Least significant 64 bits of a 128-bit Globally Unique Identi=
-fier
-+    (present only if Type is FME or AFU).
-=20
- - Offset 0x10
-=20
--  * GUID_H - Most significant 64 bits of a 128 bit Globally Unique Identif=
-ier (present only if Type is FME or AFU).
-+  * GUID_H - Most significant 64 bits of a 128-bit Globally Unique Identif=
-ier
-+    (present only if Type is FME or AFU).
-=20
-=20
- Device Feature Header - Version 1
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
- Version 1 (DFHv1) of the Device Feature Header adds the following function=
-ality:
-=20
--* Provides a standardized mechanism for features to describe parameters/ca=
-pabilities to software.
-+* Provides a standardized mechanism for features to describe
-+  parameters/capabilities to software.
- * Standardize the use of a GUID for all DFHv1 types.
--* Decouples the location of the DFH from the register space of the feature=
- itself.
-+* Decouples the DFH location from the register space of the feature itself.
-=20
- The format of Version 1 of the Device Feature Header (DFH) is shown below::
-=20
-@@ -631,38 +635,43 @@ The format of Version 1 of the Device Feature Header =
-(DFH) is shown below::
-   * Type - The type of DFH (e.g. FME, AFU, or private feature).
-   * DFH VER - The version of the DFH.
-   * Rsvd - Currently unused.
--  * EOL - Set if this DFH is the end of the Device Feature List (DFL).
--  * Next - The offset of the next DFH in the DFL from the start of the DFH.
--  * ID - The ID of the feature if Type is private feature.
-+  * EOL - Set if the DFH is the end of the Device Feature List (DFL).
-+  * Next - The offset of the next DFH in the DFL from the DFH start.
-+  * ID - The feature ID if Type is private feature.
-=20
- - Offset 0x08
-=20
--  * GUID_L - Least significant 64 bits of a 128 bit Globally Unique Identi=
-fier.
-+  * GUID_L - Least significant 64 bits of a 128-bit Globally Unique Identi=
-fier.
-=20
- - Offset 0x10
-=20
--  * GUID_H - Most significant 64 bits of a 128 bit Globally Unique Identif=
-ier.
-+  * GUID_H - Most significant 64 bits of a 128-bit Globally Unique Identif=
-ier.
-=20
- - Offset 0x18
-=20
--  * Reg Address/Offset - If Rel bit is set, then the value is the high 63 =
-bits of a 16 bit aligned absolute address of the feature's registers. If Re=
-l bit is clear, then the value is the offset from the start of the DFH of t=
-he feature's registers.
-+  * Reg Address/Offset - If Rel bit is set, then the value is the high 63 =
-bits
-+    of a 16-bit aligned absolute address of the feature's registers. Other=
-wise
-+    the value is the offset from the start of the DFH of the feature's
-+    registers.
-=20
- - Offset 0x20
-=20
-   * Reg Size - Size of feature's register set in bytes.
-   * Params - Set if DFH has a list of parameter blocks.
--  * Group - Id of group if feature is part of a group.
--  * Instance - Id of instance of feature within a group.
-+  * Group - ID of group if feature is part of a group.
-+  * Instance - ID of feature instance within a group.
-=20
- - Offset 0x28 if feature has parameters
-=20
--  * Next - Offset to the next parameter block in 8 byte words. If EOP set,=
- size in 8 byte words of last parameter.
-+  * Next - Offset to the next parameter block in 8 byte words. If EOP set,
-+    the value is size in 8 byte words of last parameter.
-   * Param Version - Version of Param ID.
-   * Param ID - ID of parameter.
-=20
- - Offset 0x30
-=20
--  * Parameter Data - Parameter data whose size and format is defined by ve=
-rsion and ID of the parameter.
-+  * Parameter Data - Parameter data whose size and format is defined by
-+    version and ID of the parameter.
-=20
- Open discussion
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-Thanks.
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---HlPKI/korhvKEuYx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCY5P6LAAKCRD2uYlJVVFO
-o85tAQCQ/X7C1BEESFknhpc4XhzPdvuzYCUGCrYY8DoHuUzFcwEApc18F0w7QxFL
-9q1TeTSERdjvegYjcO0UIpLDCmSE2Qc=
-=0Q96
------END PGP SIGNATURE-----
-
---HlPKI/korhvKEuYx--
+Thanks,
+Tharun Kumar P
