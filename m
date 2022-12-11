@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEE8C10F1B
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Dec 2022 13:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C247C4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Dec 2022 13:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiLJNNL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 10 Dec 2022 08:13:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
+        id S229715AbiLJNNg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 10 Dec 2022 08:13:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiLJNNF (ORCPT
+        with ESMTP id S229746AbiLJNNL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 10 Dec 2022 08:13:05 -0500
+        Sat, 10 Dec 2022 08:13:11 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AACEE0D;
-        Sat, 10 Dec 2022 05:13:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E1BE019;
+        Sat, 10 Dec 2022 05:13:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1670677982; x=1702213982;
+  t=1670677990; x=1702213990;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=J0cDZjfgb9QtBEeL+5fiJ3N+bzN0LSv55hnEj+yf8QE=;
-  b=XLTcEgvgANxVfD748pFtdQbiz5VK2lmorwZc6c1WDd9d8alPyQ4/XC6D
-   dxSWeSwArpVPxFzhqeVRGfYb0yBPHMu/UCgJMvT3zyW0VaYv98oHwqQ2J
-   0dr67nL3FkX93x4W1h9lzr1gQMoqcv2J0+dd41+kwUWr4BOhg8RhQqOMC
-   5yqMoLYz+cTm2rrV7rixDINzg6wNFcpu7Tx5YGRIk0+8Y1MVqVGwPYOQU
-   p4VxXG0lEb/TVl1mpnkIRwHuXt0cDyWFY23BiuqHJrZNlX0fBdY74mAcG
-   qRXEyLbHkva01DLhZD1FchsfaLx4bRc98KIQ1f69IBInA4jzcBf1+Gznx
-   w==;
+  bh=mrkqcNvltIR0FVDb8leL5+vBXxZP/C/rJqlshPmIueA=;
+  b=DGbrMH/Tnh0OaLu2zCZiwGrLD4F0NLVAwq8w6yQPaDlKH03Gut0MeNeM
+   7NfneroDBQxzLVxOobZdYvJh45TaN4JpE23KlQre+tTWOqX9dgFPHLGrQ
+   fP5A/EYMCWS2AzO2+iQ/Ha2+UAx9QMe2qC5AIOArRUi0eABmJobmLuKnm
+   /b24LNmrsB71Y8P6ECtGN/RMym//fnZe7ceA1l4ofwjt+Na6wWdNTsQ8O
+   bfkiiKKq748WDAyxJf6OvMNXcjA5esi2x3nnNMTeXe825zom+po46RXig
+   qj4Vee2g9Xc6YQYLXkfOZ3hv149OtF9EJoeqvf2ktZn5XUnve87Bn6rhO
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.96,234,1665471600"; 
-   d="scan'208";a="191021575"
+   d="scan'208";a="191021807"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Dec 2022 06:12:52 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Dec 2022 06:13:09 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Sat, 10 Dec 2022 06:12:52 -0700
+ 15.1.2507.12; Sat, 10 Dec 2022 06:13:09 -0700
 Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Sat, 10 Dec 2022 06:12:47 -0700
+ 15.1.2507.16 via Frontend Transport; Sat, 10 Dec 2022 06:13:03 -0700
 From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <linux-serial@vger.kernel.org>, <gregkh@linuxfoundation.org>,
@@ -51,9 +51,9 @@ CC:     <linux-serial@vger.kernel.org>, <gregkh@linuxfoundation.org>,
         <etremblay@distech-controls.com>, <jk@ozlabs.org>,
         <UNGLinuxDriver@microchip.com>,
         Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: [PATCH v8 tty-next 1/4] serial: 8250_pci: Add serial8250_pci_setup_port definition in 8250_pcilib.c
-Date:   Sun, 11 Dec 2022 07:17:27 +0530
-Message-ID: <20221211014730.1233272-2-kumaravel.thiagarajan@microchip.com>
+Subject: [PATCH v8 tty-next 3/4] serial: 8250_pci1xxxx: Add RS485 support to quad-uart driver
+Date:   Sun, 11 Dec 2022 07:17:29 +0530
+Message-ID: <20221211014730.1233272-4-kumaravel.thiagarajan@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221211014730.1233272-1-kumaravel.thiagarajan@microchip.com>
 References: <20221211014730.1233272-1-kumaravel.thiagarajan@microchip.com>
@@ -64,179 +64,109 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Move implementation of setup_port func() to serial8250_pci_setup_port.
+pci1xxxx uart supports RS485 mode of operation in the hardware with
+auto-direction control with configurable delay for releasing RTS after
+the transmission. This patch adds support for the RS485 mode.
 
 Co-developed-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
 Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
 Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 Changes in v8:
-- Moved SERIAL_8250_PCILIB above 8250_PCI
+- Modified datatype of delay_in_baud_periods to u32
 
 Changes in v7:
-- Used namespace 'SERIAL_8250_PCI' while exporting and importing symbols
-- Included structures used in function declaration in 8250_pcilib.h file
+- No Change
 
 Changes in v6:
-- Made this patch first patch of the patch series
+- Modified datatype of delay_in_baud_periods to u64 to avoid overflows
 
 Changes in v5:
-- This is the new patch added in v5 version of this patchset
-- Moved implementation of setup_port from 8250_pci.c to 8250_pcilib.c
----
- drivers/tty/serial/8250/8250_pci.c    | 25 +++---------------
- drivers/tty/serial/8250/8250_pcilib.c | 38 +++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_pcilib.h | 15 +++++++++++
- drivers/tty/serial/8250/Kconfig       |  4 +++
- drivers/tty/serial/8250/Makefile      |  1 +
- 5 files changed, 61 insertions(+), 22 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_pcilib.c
- create mode 100644 drivers/tty/serial/8250/8250_pcilib.h
+- Removed unnecessary assignments
+- Corrected styling issues in comments
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 6f66dc2ebacc..58cc9e19bd20 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -24,6 +24,7 @@
- #include <asm/io.h>
- 
- #include "8250.h"
-+#include "8250_pcilib.h"
- 
- /*
-  * init function returns:
-@@ -89,28 +90,7 @@ static int
- setup_port(struct serial_private *priv, struct uart_8250_port *port,
- 	   u8 bar, unsigned int offset, int regshift)
- {
--	struct pci_dev *dev = priv->dev;
--
--	if (bar >= PCI_STD_NUM_BARS)
--		return -EINVAL;
--
--	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
--		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
--			return -ENOMEM;
--
--		port->port.iotype = UPIO_MEM;
--		port->port.iobase = 0;
--		port->port.mapbase = pci_resource_start(dev, bar) + offset;
--		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
--		port->port.regshift = regshift;
--	} else {
--		port->port.iotype = UPIO_PORT;
--		port->port.iobase = pci_resource_start(dev, bar) + offset;
--		port->port.mapbase = 0;
--		port->port.membase = NULL;
--		port->port.regshift = 0;
--	}
--	return 0;
-+	return serial8250_pci_setup_port(priv->dev, port, bar, offset, regshift);
+Changes in v4:
+- No Change
+
+Changes in v3:
+- Remove flags sanitization in driver which is taken care in core
+
+Changes in v2:
+- move pci1xxxx_rs485_config to a separate patch with
+  pci1xxxx_rs485_supported.
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 50 +++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index 05d1bd386f07..c4e44bfbd9e2 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -145,6 +145,54 @@ static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
+ 	       port->membase + UART_BAUD_CLK_DIVISOR_REG);
  }
  
- /*
-@@ -5759,3 +5739,4 @@ module_pci_driver(serial_pci_driver);
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Generic 8250/16x50 PCI serial probe module");
- MODULE_DEVICE_TABLE(pci, serial_pci_tbl);
-+MODULE_IMPORT_NS(SERIAL_8250_PCI);
-diff --git a/drivers/tty/serial/8250/8250_pcilib.c b/drivers/tty/serial/8250/8250_pcilib.c
-new file mode 100644
-index 000000000000..090385172a09
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_pcilib.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * 8250 PCI library.
-+ *
-+ * Copyright (C) 2001 Russell King, All Rights Reserved.
-+ */
-+#include <linux/errno.h>
-+#include <linux/ioport.h>
-+#include <linux/pci.h>
-+#include <linux/types.h>
-+
-+#include "8250.h"
-+
-+int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
-+		   u8 bar, unsigned int offset, int regshift)
++static int pci1xxxx_rs485_config(struct uart_port *port,
++				 struct ktermios *termios,
++				 struct serial_rs485 *rs485)
 +{
-+	if (bar >= PCI_STD_NUM_BARS)
-+		return -EINVAL;
++	u32 delay_in_baud_periods;
++	u32 baud_period_in_ns;
++	u32 mode_cfg = 0;
++	u32 clock_div;
 +
-+	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
-+		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
-+			return -ENOMEM;
++	/*
++	 * pci1xxxx's uart hardware supports only RTS delay after
++	 * Tx and in units of bit times to a maximum of 15
++	 */
++	if (rs485->flags & SER_RS485_ENABLED) {
++		mode_cfg = ADCL_CFG_EN | ADCL_CFG_PIN_SEL;
 +
-+		port->port.iotype = UPIO_MEM;
-+		port->port.iobase = 0;
-+		port->port.mapbase = pci_resource_start(dev, bar) + offset;
-+		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
-+		port->port.regshift = regshift;
-+	} else {
-+		port->port.iotype = UPIO_PORT;
-+		port->port.iobase = pci_resource_start(dev, bar) + offset;
-+		port->port.mapbase = 0;
-+		port->port.membase = NULL;
-+		port->port.regshift = 0;
++		if (!(rs485->flags & SER_RS485_RTS_ON_SEND))
++			mode_cfg |= ADCL_CFG_POL_SEL;
++
++		if (rs485->delay_rts_after_send) {
++			clock_div = readl(port->membase + UART_BAUD_CLK_DIVISOR_REG);
++			baud_period_in_ns =
++				FIELD_GET(BAUD_CLOCK_DIV_INT_MSK, clock_div) *
++				UART_BIT_SAMPLE_CNT;
++			delay_in_baud_periods =
++				rs485->delay_rts_after_send * NSEC_PER_MSEC /
++				baud_period_in_ns;
++			delay_in_baud_periods =
++				min_t(u32, delay_in_baud_periods,
++				      FIELD_MAX(ADCL_CFG_RTS_DELAY_MASK));
++			mode_cfg |= FIELD_PREP(ADCL_CFG_RTS_DELAY_MASK,
++					   delay_in_baud_periods);
++			rs485->delay_rts_after_send =
++				baud_period_in_ns * delay_in_baud_periods /
++				NSEC_PER_MSEC;
++		}
 +	}
++	writel(mode_cfg, port->membase + ADCL_CFG_REG);
 +	return 0;
 +}
-+EXPORT_SYMBOL_NS_GPL(serial8250_pci_setup_port, SERIAL_8250_PCI);
-diff --git a/drivers/tty/serial/8250/8250_pcilib.h b/drivers/tty/serial/8250/8250_pcilib.h
-new file mode 100644
-index 000000000000..1aaf1b50ce9c
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_pcilib.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * 8250 PCI library header file.
-+ *
-+ * Copyright (C) 2001 Russell King, All Rights Reserved.
-+ */
 +
-+#include <linux/types.h>
++static const struct serial_rs485 pci1xxxx_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
++		 SER_RS485_RTS_AFTER_SEND,
++	.delay_rts_after_send = 1,
++	/* Delay RTS before send is not supported */
++};
 +
-+struct pci_dev;
-+
-+struct uart_8250_port;
-+
-+int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port, u8 bar,
-+		   unsigned int offset, int regshift);
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index d0b49e15fbf5..768b73d5cb9a 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -129,9 +129,13 @@ config SERIAL_8250_DMA
- 	  This builds DMA support that can be used with 8250/16650
- 	  compatible UART controllers that support DMA signaling.
+ static int pci1xxxx_setup(struct pci1xxxx_8250 *priv,
+ 			  struct uart_8250_port *port, int port_idx)
+ {
+@@ -155,6 +203,8 @@ static int pci1xxxx_setup(struct pci1xxxx_8250 *priv,
+ 	port->port.set_termios = serial8250_do_set_termios;
+ 	port->port.get_divisor = pci1xxxx_get_divisor;
+ 	port->port.set_divisor = pci1xxxx_set_divisor;
++	port->port.rs485_config = pci1xxxx_rs485_config;
++	port->port.rs485_supported = pci1xxxx_rs485_supported;
  
-+config SERIAL_8250_PCILIB
-+	bool
-+
- config SERIAL_8250_PCI
- 	tristate "8250/16550 PCI device support"
- 	depends on SERIAL_8250 && PCI
-+	select SERIAL_8250_PCILIB
- 	default SERIAL_8250
- 	help
- 	  This builds standard PCI serial support. You may be able to
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index bee908f99ea0..b9179d1f104b 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
- 8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
- 8250_base-$(CONFIG_SERIAL_8250_DWLIB)	+= 8250_dwlib.o
- 8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
-+8250_base-$(CONFIG_SERIAL_8250_PCILIB)	+= 8250_pcilib.o
- obj-$(CONFIG_SERIAL_8250_GSC)		+= 8250_gsc.o
- obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
- obj-$(CONFIG_SERIAL_8250_EXAR)		+= 8250_exar.o
+ 	ret = serial8250_pci_setup_port(priv->pdev, port, 0, port_idx * 256, 0);
+ 	if (ret < 0)
 -- 
 2.25.1
 
