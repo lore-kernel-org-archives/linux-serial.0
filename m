@@ -2,275 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B619DC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Dec 2022 07:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C60C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Dec 2022 08:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiLLHot (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Dec 2022 02:44:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
+        id S231324AbiLLI3s (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Dec 2022 03:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiLLHor (ORCPT
+        with ESMTP id S231293AbiLLI3s (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Dec 2022 02:44:47 -0500
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583B3B4A5;
-        Sun, 11 Dec 2022 23:44:46 -0800 (PST)
-Received: by mail-ed1-f54.google.com with SMTP id v8so11656460edi.3;
-        Sun, 11 Dec 2022 23:44:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bBnZPykCAh4sz3+fqSfhGJ93byeEe48wc65Uoxz5KJI=;
-        b=eP6VHVOoH01W69+PcOWPuSTVRWTL7l0+vMMLk/bOopKjQotxTJcSIeeMV116XQ1EH3
-         +LxdplPa5pdAOcttHx7InYVkYXamdQcSl0mdgKVi4KLWX2Es1khWemuaa6/YnjvffdMs
-         LWgLrdFCbxQNEJcqT+08zvwvUVjP8h4fSua9eRh6kNOoocoqtsjB/HAk6oy2HwG4ksKg
-         vcjQEEItaP772qcYFWJh2opIliclKN885JeKgwdfV5d4paaM+Ykqx7WF3vG4dMKHtdvf
-         KJzVgljM/ibkUf6vyrCpFqPAF+rDC9Gn6cTxM5FBmlpGCVmXzxA5HZWVG95QsT93rgdq
-         XV8A==
-X-Gm-Message-State: ANoB5pm34GhJuLhI1Hsrrdp9J3igdEDZKPtQ+A1vNTnYb3ErBjHuG9nj
-        Qssw5Lcig9bOWLVhXelVuMg=
-X-Google-Smtp-Source: AA0mqf7GTwdzFULDPutFIxOEnMDdHclihgf/piSLsKw4XrRTobM+SOI7TzOtirheArkbDLvQiR1xxg==
-X-Received: by 2002:a50:8d1c:0:b0:46c:97c2:8d75 with SMTP id s28-20020a508d1c000000b0046c97c28d75mr14230916eds.21.1670831084654;
-        Sun, 11 Dec 2022 23:44:44 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id l4-20020aa7c304000000b0046b1d63cfc1sm3479639edq.88.2022.12.11.23.44.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Dec 2022 23:44:44 -0800 (PST)
-Message-ID: <29c707e3-be9f-24fe-107e-591f3b3b3d49@kernel.org>
-Date:   Mon, 12 Dec 2022 08:44:41 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Content-Language: en-US
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        andriy.shevchenko@linux.intel.com, cang1@live.co.uk,
-        colin.i.king@gmail.com, phil.edworthy@renesas.com,
-        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
-        lukas@wunner.de, u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        Mon, 12 Dec 2022 03:29:48 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F86B7F7;
+        Mon, 12 Dec 2022 00:29:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670833787; x=1702369787;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4dNviz02Ym3Lpa3zAdpmD6jepk2MvQbhR+/jMPnbllo=;
+  b=Tz0y/stPdnSF+Akm1EwlILgFctqr6A+/vCDT5rb1y9PggMhFyoUdBMD1
+   iDFo3aqy/MuzIkPq8i7mJEohR5aBaCC7EmUUI/k+W5oJ6pwIZLpL36tsM
+   y9MfafckmnbESh1oL0NdJDfoVnFA5kGgNWsv1hRSCuMdnWioyG6ikAMUY
+   yZU/JiPxEHSLBHepzi4DBnqMuux1olpBaU00g+LCYUr6x8ns40v39ap63
+   7TDomwqgKFrxONjVIIPTDABGEv2DbLqJEe7gx1aKQBVTERjz/4jRvemAR
+   tEmqBkP+qgmmKBg4abbqukWGKtWHeFyK1boa4LtEr0pNUHQ9MD2Ovx6Ww
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10558"; a="317827675"
+X-IronPort-AV: E=Sophos;i="5.96,237,1665471600"; 
+   d="scan'208";a="317827675"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2022 00:29:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10558"; a="625815522"
+X-IronPort-AV: E=Sophos;i="5.96,237,1665471600"; 
+   d="scan'208";a="625815522"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP; 12 Dec 2022 00:29:35 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1p4eBo-008NYI-12;
+        Mon, 12 Dec 2022 10:29:32 +0200
+Date:   Mon, 12 Dec 2022 10:29:31 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tharunkumar.Pasumarthi@microchip.com
+Cc:     Kumaravel.Thiagarajan@microchip.com, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        macro@orcam.me.uk, cang1@live.co.uk, colin.i.king@gmail.com,
+        phil.edworthy@renesas.com, biju.das.jz@bp.renesas.com,
+        geert+renesas@glider.be, lukas@wunner.de,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
         etremblay@distech-controls.com, jk@ozlabs.org,
-        UNGLinuxDriver@microchip.com,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-References: <20221211014730.1233272-1-kumaravel.thiagarajan@microchip.com>
- <20221211014730.1233272-3-kumaravel.thiagarajan@microchip.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
+        UNGLinuxDriver@microchip.com
 Subject: Re: [PATCH v8 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
  quad-uart support
-In-Reply-To: <20221211014730.1233272-3-kumaravel.thiagarajan@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <Y5bma3Gp7pr+Ta7U@smile.fi.intel.com>
+References: <20221211014730.1233272-1-kumaravel.thiagarajan@microchip.com>
+ <20221211014730.1233272-3-kumaravel.thiagarajan@microchip.com>
+ <Y5T2ymgsCQhggtvz@smile.fi.intel.com>
+ <PH7PR11MB5958DC96634CFF28AFA8695D9BE29@PH7PR11MB5958.namprd11.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH7PR11MB5958DC96634CFF28AFA8695D9BE29@PH7PR11MB5958.namprd11.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11. 12. 22, 2:47, Kumaravel Thiagarajan wrote:
-> pci1xxxx is a PCIe switch with a multi-function endpoint on one of
-> its downstream ports. Quad-uart is one of the functions in the
-> multi-function endpoint. This driver loads for the quad-uart and
-> enumerates single or multiple instances of uart based on the PCIe
-> subsystem device ID.
+On Mon, Dec 12, 2022 at 07:16:55AM +0000, Tharunkumar.Pasumarthi@microchip.com wrote:
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Sent: Sunday, December 11, 2022 2:45 AM
+> > To: Kumaravel Thiagarajan - I21417
+> > <Kumaravel.Thiagarajan@microchip.com>
+
+...
+
+> > > +             4,/* PCI1p3 */
+> > > +     };
+> > 
+> > If you move this outside of the function you may use static_assert(), see
+> > below why.
 > 
-> Co-developed-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-> Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-...
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-> @@ -0,0 +1,337 @@
+> If you move this outside of the function -> Do you suggest to move the array outside
+> the function
+
+Yes.
+
+> and make it global?
+
+I don't get this, sorry.
+The array is already global, only name is scoped inside the certain function.
 
 ...
-> +struct pci1xxxx_8250 {
-> +	struct pci_dev *pdev;
-> +	unsigned int nr;
-> +	void __iomem *membase;
-> +	int line[];
-> +};
+
+> >         if (subsys_dev <= ARRAY_SIZE(max_port))
+> >                 return max_port[subsys_dev];
+> > 
+> > (in this case you can make sure it is the same as the above using
+> > static_assert(), so it won't compile otherwise)
+> 
+> I am not getting this. You suggest doing something like this:
+> static_assert(subsys_dev <= ARRAY_SIZE(max_port)) ?
+
+No, you need to compare ARRAY_SIZE() to the macro that you removed from
+the context here.
+
 ...
-> +static int pci1xxxx_get_max_port(int subsys_dev)
 
-Both look like should be unsigned.
+> > > +     priv->nr = nr_ports;
+> > > +     pci_set_master(pdev);
+> > > +     max_vec_reqd = pci1xxxx_get_max_port(subsys_dev);
+> > 
+> > The above needs a bit of reshuffling and perhaps a blank line or lines.
+> > Make it ordered and grouped more logically.
+> 
+> Okay. I will do something like this:
+> 	pci_set_master(pdev);
+> 	<NL>
+> 	priv->pdev = pdev;
+> 	priv->nr = nr_ports;
+> 	<NL>
 
-> +{
-> +	static int max_port[] = {
+> 	subsys_dev = priv->pdev->subsystem_device;
 
-const unsigned
+Almost good, but why priv is still here?
 
-> +		1,/* PCI12000 PCI11010 PCI11101 PCI11400 */
-> +		4,/* PCI4p */
-> +		3,/* PCI3p012 */
-> +		4,/* PCI3p013 */
-> +		4,/* PCI3p023 */
-> +		4,/* PCI3p123 */
-> +		2,/* PCI2p01 */
-> +		3,/* PCI2p02 */
-> +		4,/* PCI2p03 */
-> +		3,/* PCI2p12 */
-> +		4,/* PCI2p13 */
-> +		4,/* PCI2p23 */
-> +		1,/* PCI1p0 */
-> +		2,/* PCI1p1 */
-> +		3,/* PCI1p2 */
-> +		4,/* PCI1p3 */
-> +	};
-> +
-> +	if (subsys_dev > PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3)
-> +		if (subsys_dev != PCI_SUBDEVICE_ID_EFAR_PCI11414)
-> +			return max_port[0];
-> +		else
-> +			return 4;
-> +	else
+> 	max_vec_reqd = pci1xxxx_get_max_port(subsys_dev);
+> 	<NL>
+> 	num_vectors = pci_alloc_irq_vectors(pdev, 1, max_vec_reqd, PCI_IRQ_ALL_TYPES);
+> 	if (num_vectors < 0)
+> 		return num_vectors;
 
-No need for this else. And you should use {}.
-
-> +		return max_port[subsys_dev];
-> +
-> +}
-> +
-> +static int pci1xxxx_logical_to_physical_port_translate(int subsys_dev, int port)
-> +{
-> +	static int logical_to_physical_port_idx[][MAX_PORTS] = {
-
-const unsigned.
-
-> +		{0,  1,  2,  3},/* PCI12000 PCI11010 PCI11101 PCI11400 PCI11414 */
-> +		{0,  1,  2,  3},/* PCI4p */
-> +		{0,  1,  2, -1},/* PCI3p012 */
-> +		{0,  1,  3, -1},/* PCI3p013 */
-> +		{0,  2,  3, -1},/* PCI3p023 */
-> +		{1,  2,  3, -1},/* PCI3p123 */
-> +		{0,  1, -1, -1},/* PCI2p01 */
-> +		{0,  2, -1, -1},/* PCI2p02 */
-> +		{0,  3, -1, -1},/* PCI2p03 */
-> +		{1,  2, -1, -1},/* PCI2p12 */
-> +		{1,  3, -1, -1},/* PCI2p13 */
-> +		{2,  3, -1, -1},/* PCI2p23 */
-> +		{0, -1, -1, -1},/* PCI1p0 */
-> +		{1, -1, -1, -1},/* PCI1p1 */
-> +		{2, -1, -1, -1},/* PCI1p2 */
-> +		{3, -1, -1, -1},/* PCI1p3 */
-> +	};
-> +
-> +	if (subsys_dev > PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3)
-> +		return logical_to_physical_port_idx[0][port];
-> +	else
-
-No need for this else.
-
-> +		return logical_to_physical_port_idx[subsys_dev][port];
-> +}
-> +
-> +static int pci1xxxx_serial_probe(struct pci_dev *pdev,
-> +				 const struct pci_device_id *id)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct pci1xxxx_8250 *priv;
-> +	struct uart_8250_port uart;
-> +	unsigned int nr_ports, i;
-> +	int max_vec_reqd;
-> +	int num_vectors;
-> +	int subsys_dev;
-> +	int port_idx;
-> +	int rc;
-> +
-> +	rc = pcim_enable_device(pdev);
-> +	if (rc)
-> +		return rc;
-> +
-> +	nr_ports = pci1xxxx_get_num_ports(pdev);
-> +
-> +	priv = devm_kzalloc(dev, struct_size(priv, line, nr_ports), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->membase = pcim_iomap(pdev, 0, 0);
-> +	if (!priv->membase)
-> +		return -ENOMEM;
-> +
-> +	priv->pdev = pdev;
-
-What do you need pdev in priv for? It looks superfluous after passing it 
-to pci1xxxx_setup().
-
-> +	subsys_dev = priv->pdev->subsystem_device;
-> +	priv->nr = nr_ports;
-> +	pci_set_master(pdev);
-> +	max_vec_reqd = pci1xxxx_get_max_port(subsys_dev);
-> +	num_vectors = pci_alloc_irq_vectors(pdev, 1, max_vec_reqd,
-> +					    PCI_IRQ_ALL_TYPES);
-> +	if (num_vectors < 0)
-> +		return num_vectors;
-> +
-> +	memset(&uart, 0, sizeof(uart));
-> +	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT;
-> +	uart.port.uartclk = UART_CLOCK_DEFAULT;
-> +	uart.port.dev = dev;
-> +
-> +	if (num_vectors == max_vec_reqd)
-> +		writeb(UART_PCI_CTRL_SET_MULTIPLE_MSI,
-> +		       priv->membase + UART_PCI_CTRL_REG);
-> +
-> +	for (i = 0; i < nr_ports; i++)
-> +		priv->line[i] = -ENODEV;
-
-Why is this not a part of the following (same) loop?
-
-> +
-> +	for (i = 0; i < nr_ports; i++) {
-> +		port_idx = pci1xxxx_logical_to_physical_port_translate(subsys_dev, i);
-> +
-> +		if (num_vectors == max_vec_reqd)
-> +			uart.port.irq = pci_irq_vector(priv->pdev, port_idx);
-> +		else
-> +			uart.port.irq = pci_irq_vector(pdev, 0);
-> +
-> +		rc = pci1xxxx_setup(priv, &uart, port_idx);
-> +		if (rc) {
-> +			dev_warn(dev, "Failed to setup port %u\n", i);
-> +			continue;
-> +		}
-> +
-> +		priv->line[i] = serial8250_register_8250_port(&uart);
-> +		if (priv->line[i] < 0) {
-> +			dev_warn(dev,
-> +				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
-> +				uart.port.iobase, uart.port.irq, uart.port.iotype,
-> +				priv->line[i]);
-> +		}
-> +	}
-> +
-> +	pci_set_drvdata(pdev, priv);
-> +
-> +	return 0;
-> +}
-> +
-> +static void pci1xxxx_serial_remove(struct pci_dev *dev)
-> +{
-> +	struct pci1xxxx_8250 *priv = pci_get_drvdata(dev);
-> +	int i;
-
-unsigned as priv->nr is.
-
-> +
-> +	for (i = 0; i < priv->nr; i++) {
-> +		if (priv->line[i] >= 0)
-> +			serial8250_unregister_port(priv->line[i]);
-> +	}
-> +}
-> +
-> +static const struct pci_device_id pci1xxxx_pci_tbl[] = {
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_EFAR, PCI_DEVICE_ID_EFAR_PCI11010) },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_EFAR, PCI_DEVICE_ID_EFAR_PCI11101) },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_EFAR, PCI_DEVICE_ID_EFAR_PCI11400) },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_EFAR, PCI_DEVICE_ID_EFAR_PCI11414) },
-> +	{ PCI_DEVICE(PCI_VENDOR_ID_EFAR, PCI_DEVICE_ID_EFAR_PCI12000) },
-> +	{}
-
-thanks,
 -- 
-js
-suse labs
+With Best Regards,
+Andy Shevchenko
+
 
