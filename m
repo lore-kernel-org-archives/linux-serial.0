@@ -2,586 +2,214 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEB1C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Dec 2022 07:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 161C8C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Dec 2022 07:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbiLLHKo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Dec 2022 02:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50916 "EHLO
+        id S231476AbiLLHRD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Dec 2022 02:17:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiLLHK3 (ORCPT
+        with ESMTP id S231481AbiLLHRB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Dec 2022 02:10:29 -0500
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BACDDF4B;
-        Sun, 11 Dec 2022 23:09:23 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 02BC380B3;
-        Mon, 12 Dec 2022 07:09:22 +0000 (UTC)
-Date:   Mon, 12 Dec 2022 09:09:20 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-omap@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 1/1] serial: core: Start managing serial
- controllers to enable runtime PM
-Message-ID: <Y5bToLirsgA5NK/j@atomide.com>
-References: <20221207124305.49943-1-tony@atomide.com>
- <7f105ff9-cdc3-f98e-2557-812361faa94@linux.intel.com>
- <Y5G5Udw6FAEFdAYi@atomide.com>
- <3c87186b-336f-6884-a2c-6ee3c9d70@linux.intel.com>
- <Y5HG2okzlqX+xfWv@atomide.com>
+        Mon, 12 Dec 2022 02:17:01 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207EC959B;
+        Sun, 11 Dec 2022 23:17:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1670829419; x=1702365419;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=bFgMO3IVpnhcqzRQxeZnVQ95+y+RRZXXXMeJALRxyjY=;
+  b=PM914bLT4cZ+cVYLr3LWEiooF1FAaQe8ul50OqB2G3sREXrlRETCHo4T
+   BMZYoEgf5IJO5nObwTF84pbvvmSsVo6ZHuQ6ah5WuvH1bYCtz65bZS+0L
+   dJJ01tGyexb8EAOM7JhtTcDisa/RQ3FZwx0psboO0EMMJ5LaMDPCOHzQs
+   4ljK2ZyTtyO+4hYjzFmmaWHV/H74obiAn5hhmUeGRvw8+tpt2dc5+AgnR
+   evnHgJ5W+SLIdTXNWO/YCH2SAofxHXMwa8tNcjehYL+1R3r1uHGoChpOG
+   La5jXC5l9H6pLzUAnSRq74L+PcJE1MXKZsBwrdbf8/PrP6VMKFVIee/QS
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,237,1665471600"; 
+   d="scan'208";a="127631766"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Dec 2022 00:16:58 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 12 Dec 2022 00:16:58 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 12 Dec 2022 00:16:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SLE9rkcw46r4PZJsFvdHj6uN20D5uZYcbujLwdbiQSHwk0ebtpeo0SN0KtFIlFnJLa3PHfeD0VXaAKrpd6kmuLW584mF4T2wRdvJKei1P0+ggC6K78PObcdMwhoLTHi5SDUl2Hzw8vbnHyHWIZ+vwskU07jNDvbor4vearZA0faSpPsPJ8cW/8FU4DLKsWgrXsLvloWSUNAcjs3tyremp+zUCuw95Qg9lV5qLJnHFnYZitckDdpkiTTn4hnlfWDL3DKyoyQmQHjLHO9esARh097WQ+9QeyaL+Cu/qrerfqMr4a8SCJNJCR0JUT2WNop7QD8a+bYOaAXic2H4Jgd61A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rhLf4+YuGcGqvTbg10QNyJ5Mh56mYx3OcuG0l4CV0ek=;
+ b=Ae9FXrIuNbZXuegYO28o2VYrFVBGKrJhqw5KF2wQTJLCIXqEAoRdfJb+xj1vOHIB+rP2oXQpJzsrEYZ8kMc9SP33F/wXRBtl1PU5oOPoI57iu8fKR6uiJTr6yrW9SP8ZpJb80wJvUokqOZNRHRDGnsrx6LhU0lg211YY0WFFZZ9Oy5oqbxzonDrhOdpssGoTU6/kDwXhJu+vDhyywZrlDYVqiN8x5b652GSzBxIM/R9UHSZV8rJX2qQajlPebV24tZoHEiRSGkXY6dCxcs+h1SiVTWTA0aaz29fFcEUtK2BV8pvH0tEnPH6cPrLxOJ9LrlMchfl7z3+Dzc1bD647OA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rhLf4+YuGcGqvTbg10QNyJ5Mh56mYx3OcuG0l4CV0ek=;
+ b=K55yWajd9JmuTHvYqVBs3Jiedxh4Tc07Bk0eF/LuULEvtScWjsEDINbN/fGfzFIpWaDvax8aQnScz7Ay2trMd4ChhzGb88ZAckX/P+cB+IdKhEletBEBpGWkUP2sYkkPUIOPMOpulDftQYlmZiSf9pf5ELoC/WTscrOOI1Nk8cY=
+Received: from PH7PR11MB5958.namprd11.prod.outlook.com (2603:10b6:510:1e1::22)
+ by SJ0PR11MB5814.namprd11.prod.outlook.com (2603:10b6:a03:423::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Mon, 12 Dec
+ 2022 07:16:56 +0000
+Received: from PH7PR11MB5958.namprd11.prod.outlook.com
+ ([fe80::fb4a:4d24:6de1:2084]) by PH7PR11MB5958.namprd11.prod.outlook.com
+ ([fe80::fb4a:4d24:6de1:2084%9]) with mapi id 15.20.5880.019; Mon, 12 Dec 2022
+ 07:16:55 +0000
+From:   <Tharunkumar.Pasumarthi@microchip.com>
+To:     <andriy.shevchenko@linux.intel.com>,
+        <Kumaravel.Thiagarajan@microchip.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ilpo.jarvinen@linux.intel.com>, <macro@orcam.me.uk>,
+        <cang1@live.co.uk>, <colin.i.king@gmail.com>,
+        <phil.edworthy@renesas.com>, <biju.das.jz@bp.renesas.com>,
+        <geert+renesas@glider.be>, <lukas@wunner.de>,
+        <u.kleine-koenig@pengutronix.de>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <jk@ozlabs.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH v8 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
+ quad-uart support
+Thread-Topic: [PATCH v8 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
+ quad-uart support
+Thread-Index: AQHZDJkj7rnAVfXmX0mY3XTqVMobIK5nn64AgAI24uA=
+Date:   Mon, 12 Dec 2022 07:16:55 +0000
+Message-ID: <PH7PR11MB5958DC96634CFF28AFA8695D9BE29@PH7PR11MB5958.namprd11.prod.outlook.com>
+References: <20221211014730.1233272-1-kumaravel.thiagarajan@microchip.com>
+ <20221211014730.1233272-3-kumaravel.thiagarajan@microchip.com>
+ <Y5T2ymgsCQhggtvz@smile.fi.intel.com>
+In-Reply-To: <Y5T2ymgsCQhggtvz@smile.fi.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR11MB5958:EE_|SJ0PR11MB5814:EE_
+x-ms-office365-filtering-correlation-id: 904ff5ff-18a5-4a87-0183-08dadc10d9df
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WPqb+452FPkWnz4H3XSOxJQRmLW1H7PjsPQnElXPnodoaO8MFBSBxy9gdquV3UM4Ulqo+BNTdghNjkW/MtW9EN4/EAlpju9f1O1ln/DgHT9TRruC/4PJzrSaCHO4WpRsdJFEYnh9a16Iy3+btzyUrRoe7y2ZfGbGqnsG+tqXdmmFWQvtDgXMNSW64DTLKwlk5AbwvUaqNDylr9JpbCj7zFuFBvTRdupnwEDmgapIxubPOZSUjYKfyn06w81jCYgjdv0/spGVdN78HgaR5gPik2d/Tp5sl6/uy+6yneJ8s16yp+0fsB1RTmpIIryZUd6FhZPaJDWKSjRjrHR2s+6ybLQtAgLZlm14+0oWiNDynsnRMFEzIb16YiaqTvx86U23pgbGNppvl4/k/SBe3jEOnj1fI1RK6K6cjj82FJ4XCBsRVkxKIyawhiUiZjXQ/UmqCaFhQ4PWvuUD6RtmfG94vTp5fKobPAQdGAposjOGtmLq0ukpBpz48RkWpiX3/zBjvjDSBVyr2mAM900aPC5Lfc5ZqZFs6K1KZvuZtFm7Zg73YIQSQZBl2MgnUJnqQHK505af8/RYj8AiOLfVKB70m6K5edyRBnPVpvmrMKkU6avu93OfTWR/KjMdZE7c1Obsma+Ai8kGc1nViX1KzubX5SbT363W7I1d8AQaMuLWIe0R9RVtwZPtHQzSRzRF7Fc0qdebQb7gEP1YiNH78llm3Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR11MB5958.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(346002)(39860400002)(136003)(376002)(451199015)(38070700005)(38100700002)(110136005)(33656002)(86362001)(122000001)(4326008)(8676002)(76116006)(316002)(9686003)(66946007)(71200400001)(6636002)(52536014)(478600001)(7416002)(5660300002)(66556008)(64756008)(66446008)(8936002)(66476007)(41300700001)(55016003)(2906002)(83380400001)(26005)(186003)(54906003)(7696005)(107886003)(53546011)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3GIdT8rVWUTZRGiivk1feLWra61YSZFNzMXOV/MQbxAX5mBVSfenwElsMn3N?=
+ =?us-ascii?Q?1HOMauXiOHvhp134FoHU9ctfpgeYTI+kKZxwJZcGmMcM42cDUoyLqofk7X4v?=
+ =?us-ascii?Q?wm6KyWSLZcipNbLVpuBJekqz30lMN2dPPFf29+btXW+aOJrC+p2KgFOfbvz1?=
+ =?us-ascii?Q?gOe6BNVUExlLpY0qOExpSnUgID1BsKuCANTtdZOQY/UHiRLM8jy2oxGGQLwL?=
+ =?us-ascii?Q?4n1xdydNdVGTzk2dD6Gq2iyy14AestdpHTenvArcATrmYu9qNZlyKJh/1vZt?=
+ =?us-ascii?Q?fYOZsKQYJXNTIQbdiV6N0e/2vqayTJdjqVKjulizYbYtp37KhIi5ubRnwWbT?=
+ =?us-ascii?Q?FHl7TPq5ceqeu6FXZBpLrZFNpxFfipqVHBs+HRIqWWnzkeKn+I4aQBLTl6QE?=
+ =?us-ascii?Q?zwhRk86xv7Rs5n02zBOZQNRCe6Fxhj2OL2l3hLKOW9r60PviTWMELHsEE/PM?=
+ =?us-ascii?Q?i873l357wMDhZh4vS22o5lPHjnFw73NBvJVvotZ4L4raIsrCw5AY5//sFlA7?=
+ =?us-ascii?Q?25GdG1J4PGYSBffYWftwBu3yPKmRsmF8lArrnw988p/a4GSimiQ532GiKveB?=
+ =?us-ascii?Q?fLMZy43q4bsovDTCxzXaPJlh5uh8wQcG7QFTebHFMULXT7+2mksTPfK1LoPb?=
+ =?us-ascii?Q?UF8YgKjCrfyDPWW89tmDwX1Q5MKxOD1zQuDvsQLs0L3XHEHHoj7jHLEpOS2t?=
+ =?us-ascii?Q?qFWrsv0C0Jecp9v5ucMrLFAhJvMFbTRONBdFYTRQmLa3CGCBrR2NUlSOHw5W?=
+ =?us-ascii?Q?0GxYjsVnh33ZqqYr9LEkS2mI7XXQn6bAoQNJrlMXbFomaOBR1PW6+k+VhwNx?=
+ =?us-ascii?Q?8xv1gizhaAcrmWT6++wKMZBA9bYPB7BD0XMWCj9Doh4e5/qf8oTac+6ueR2b?=
+ =?us-ascii?Q?5bjFZgEz6cIYPVByZsJ0eZfidUwM7ahwr2GvPOllFC0zPjrZYQyIrIV4uX4u?=
+ =?us-ascii?Q?AvuveosUZfaht0szPn2zPfk7CmbprIgHt+nnsO+P0LsXYrmZmb+8AYWu0LV1?=
+ =?us-ascii?Q?HcC1EwVJCpkElZ6tN2g683bJIJAfk/ZxPXLCx3hFShXRq+NBhp0uBB3JVAD5?=
+ =?us-ascii?Q?94jKuB1b053sGXxgPotlrJonjQo1EOTFcch0t3yTNVlSMRIrIp+QcpQtKYcl?=
+ =?us-ascii?Q?Hyl0jh0SwRL/9r2mw4Oya0inCLXpoojKVYqnZPA6GkZs5uupOwpKTVV4M7DC?=
+ =?us-ascii?Q?Xy/k4BsGiME4Fyxbaacb2yg8A+dnf2WM1aROcgB6nHbVR3An68SPRLozNNRh?=
+ =?us-ascii?Q?1NzFLkqUrqmMWSas8vwm53LwL6Cr8dplnQbGTWlw3avwjgpmStmicrcixTk5?=
+ =?us-ascii?Q?/7Elh4u6W+tRWmEXrrskDzuMlm5oYwkf+hhm9KARj7RSNcfE5oJPxKMV/5v4?=
+ =?us-ascii?Q?P4lc9JMxKIJ0GLUHs7uIqLuD9jCwS+abFg6DdZ6wwWq7KJRT0QgjUj6yhauB?=
+ =?us-ascii?Q?ViGvt+h+h9+ydSAstfq54PuQYElareqYSUg2GmXyEH/kkac0vyWOzGegXMrB?=
+ =?us-ascii?Q?iImkzPKGEGIBnQvJWYJkzQ3YcbFIJkkaGBrAgFkI/MfyeustiKviGZEXs9z7?=
+ =?us-ascii?Q?lukpwngYd0xYef6RMA8nv5m3dAwmOTZOjwexoThJTERuVjttnlyZhNkRAte1?=
+ =?us-ascii?Q?k8jcC48vyHe9Oh3DePX5Jw4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Y5HG2okzlqX+xfWv@atomide.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR11MB5958.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 904ff5ff-18a5-4a87-0183-08dadc10d9df
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Dec 2022 07:16:55.8579
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6trd3wXVVmwYX7x21Jea0wO7f/M56yvLHlOGhsYUg3sWcR3Ueh8xrYUxlXRKocEEskkCMNg8kP3Zn65a5+6T71KcR2XdClPZVtxYxUtiC+n6DV91d4y1lpYKqNzCwwVq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5814
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Ilpo,
+> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Sent: Sunday, December 11, 2022 2:45 AM
+> To: Kumaravel Thiagarajan - I21417
+> <Kumaravel.Thiagarajan@microchip.com>
+> Subject: Re: [PATCH v8 tty-next 2/4] serial: 8250_pci1xxxx: Add driver fo=
+r
+> quad-uart support
+>=20
+> > +             4,/* PCI1p3 */
+> > +     };
+>=20
+> If you move this outside of the function you may use static_assert(), see
+> below why.
 
-* Tony Lindgren <tony@atomide.com> [221208 11:13]:
-> * Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [221208 10:48]:
-> > With the other patch on top of this, yes, I did see uninitialized 
-> > port->port_dev already in serial_core_add_one_port()->uart_configure_port().
-> > While that could be solved by removing the pm_runtime_*() calls from 
-> > there, I think it's a generic problem because after 
-> > serial_core_add_one_port() the port can have anything happening on it, no?
-> 
-> OK. Sounds like it should get sorted out by moving the call to
-> serial_core_add_one_port() to happen after the devices are created.
+If you move this outside of the function -> Do you suggest to move the arra=
+y outside
+the function and make it global?
 
-Can you give a try with the patch below and see if it works for you?
+>=20
+>         if (subsys_dev <=3D ARRAY_SIZE(max_port))
+>                 return max_port[subsys_dev];
+>=20
+> (in this case you can make sure it is the same as the above using
+> static_assert(), so it won't compile otherwise)
 
-Regards,
+I am not getting this. You suggest doing something like this:
+static_assert(subsys_dev <=3D ARRAY_SIZE(max_port)) ?
 
-Tony
+> > +     priv->membase =3D pcim_iomap(pdev, 0, 0);
+>=20
+> As you said there will be no hardware that uses IO ports, why do you need
+> pci_iomap()? I guess what you may use pci_ioremap_bar().
+>=20
+> > +     if (!priv->membase)
+> > +             return -ENOMEM;
 
-8< --------------------
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -995,6 +995,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 		if (uart->port.dev)
- 			uart_remove_one_port(&serial8250_reg, &uart->port);
- 
-+		uart->port.ctrl_id	= up->port.ctrl_id;
- 		uart->port.iobase       = up->port.iobase;
- 		uart->port.membase      = up->port.membase;
- 		uart->port.irq          = up->port.irq;
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the kernel serial device drivers.
- #
- 
--obj-$(CONFIG_SERIAL_CORE) += serial_core.o
-+obj-$(CONFIG_SERIAL_CORE) += serial_core.o serial_ctrl.o serial_port.o
- 
- obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
- obj-$(CONFIG_SERIAL_EARLYCON_ARM_SEMIHOST) += earlycon-arm-semihost.o
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -16,6 +16,8 @@
- #include <linux/console.h>
- #include <linux/gpio/consumer.h>
- #include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/proc_fs.h>
- #include <linux/seq_file.h>
- #include <linux/device.h>
-@@ -30,6 +32,8 @@
- #include <linux/irq.h>
- #include <linux/uaccess.h>
- 
-+#include "serial_ctrl.h"
-+
- /*
-  * This is used to lock changes in serial line configuration.
-  */
-@@ -136,9 +140,31 @@ static void __uart_start(struct tty_struct *tty)
- {
- 	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port = state->uart_port;
-+	struct device *port_dev;
-+	int err;
-+
-+	if (!port || uart_tx_stopped(port))
-+		return;
- 
--	if (port && !uart_tx_stopped(port))
-+	port_dev = port->port_dev;
-+
-+	err = pm_runtime_get(port_dev);
-+	if (err < 0) {
-+		/* Something went wrong, attempt to start TX anyways */
- 		port->ops->start_tx(port);
-+		pm_runtime_put_noidle(port_dev);
-+		return;
-+	}
-+
-+	/*
-+	 * Start TX if enabled, and kick runtime PM. Otherwise we must
-+	 * wait for a retry. See also serial_port.c for runtime PM
-+	 * autosuspend timeout.
-+	 */
-+	if (pm_runtime_active(port_dev))
-+		port->ops->start_tx(port);
-+	pm_runtime_mark_last_busy(port_dev);
-+	pm_runtime_put_autosuspend(port_dev);
- }
- 
- static void uart_start(struct tty_struct *tty)
-@@ -3035,7 +3061,7 @@ static const struct attribute_group tty_dev_attr_group = {
- };
- 
- /**
-- * uart_add_one_port - attach a driver-defined port structure
-+ * serial_core_add_one_port - attach a driver-defined port structure
-  * @drv: pointer to the uart low level driver structure for this port
-  * @uport: uart port structure to use for this port.
-  *
-@@ -3045,7 +3071,7 @@ static const struct attribute_group tty_dev_attr_group = {
-  * core driver. The main purpose is to allow the low level uart drivers to
-  * expand uart_port, rather than having yet more levels of structures.
-  */
--int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
-+static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- {
- 	struct uart_state *state;
- 	struct tty_port *port;
-@@ -3135,10 +3161,9 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 
- 	return ret;
- }
--EXPORT_SYMBOL(uart_add_one_port);
- 
- /**
-- * uart_remove_one_port - detach a driver defined port structure
-+ * serial_core_remove_one_port - detach a driver defined port structure
-  * @drv: pointer to the uart low level driver structure for this port
-  * @uport: uart port structure for this port
-  *
-@@ -3147,7 +3172,8 @@ EXPORT_SYMBOL(uart_add_one_port);
-  * This unhooks (and hangs up) the specified port structure from the core
-  * driver. No further calls will be made to the low-level code for this port.
-  */
--int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
-+static int serial_core_remove_one_port(struct uart_driver *drv,
-+				       struct uart_port *uport)
- {
- 	struct uart_state *state = drv->state + uport->line;
- 	struct tty_port *port = &state->port;
-@@ -3204,6 +3230,8 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	 * Indicate that there isn't a port here anymore.
- 	 */
- 	uport->type = PORT_UNKNOWN;
-+	uport->port_dev = NULL;
-+	uport->ctrl_id = -ENODEV;
- 
- 	mutex_lock(&port->mutex);
- 	WARN_ON(atomic_dec_return(&state->refcount) < 0);
-@@ -3215,7 +3243,6 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 
- 	return ret;
- }
--EXPORT_SYMBOL(uart_remove_one_port);
- 
- /**
-  * uart_match_port - are the two ports equivalent?
-@@ -3250,6 +3277,154 @@ bool uart_match_port(const struct uart_port *port1,
- }
- EXPORT_SYMBOL(uart_match_port);
- 
-+/*
-+ * Find a registered serial core controller device if one exists. Returns
-+ * the first device matching the ctrl_id. Caller must hold port_mutex.
-+ */
-+static struct device *serial_core_ctrl_find(struct uart_driver *drv,
-+					    struct device *phys_dev,
-+					    int ctrl_id)
-+{
-+	struct uart_state *state;
-+	int i;
-+
-+	if (ctrl_id < 0)
-+		return NULL;
-+
-+	lockdep_assert_held(&port_mutex);
-+
-+	for (i = 0; i < drv->nr; i++) {
-+		state = drv->state + i;
-+		if (!state->uart_port || !state->uart_port->port_dev)
-+			continue;
-+
-+		if (state->uart_port->dev == phys_dev &&
-+		    state->uart_port->ctrl_id == ctrl_id)
-+			return state->uart_port->port_dev->parent;
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct platform_device *serial_core_device_add(struct uart_port *port,
-+						      const char *name,
-+						      struct device *parent_dev,
-+						      void *pdata,
-+						      int pdata_size)
-+{
-+	struct platform_device_info pinfo = {};
-+
-+	pinfo.name = name;
-+	pinfo.id = PLATFORM_DEVID_AUTO;
-+	pinfo.parent = parent_dev;
-+	pinfo.data = pdata;
-+	pinfo.size_data = pdata_size;
-+
-+	return platform_device_register_full(&pinfo);
-+}
-+
-+static struct device *serial_core_ctrl_device_add(struct uart_port *port)
-+{
-+	struct platform_device *pdev;
-+
-+	pdev = serial_core_device_add(port, "serial-ctrl", port->dev, NULL, 0);
-+	if (IS_ERR(pdev))
-+		return NULL;
-+
-+	return &pdev->dev;
-+}
-+
-+static int serial_core_port_device_add(struct device *ctrl_dev, struct uart_port *port)
-+{
-+	struct serial_port_platdata pdata = {};
-+	struct platform_device *pdev;
-+
-+	pdata.port = port;
-+
-+	pdev = serial_core_device_add(port, "serial-port", ctrl_dev, &pdata,
-+				      sizeof(pdata));
-+	if (IS_ERR(pdev))
-+		return PTR_ERR(pdev);
-+
-+	port->port_dev = &pdev->dev;
-+
-+	return 0;
-+}
-+
-+/*
-+ * Initialize a serial core port device, and a controller device if needed.
-+ */
-+int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
-+{
-+	struct platform_device *ctrl_pdev = NULL;
-+	struct device *ctrl_dev;
-+	int ret;
-+
-+	mutex_lock(&port_mutex);
-+
-+	/* Inititalize a serial core controller device if needed */
-+	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
-+	if (!ctrl_dev) {
-+		ctrl_dev = serial_core_ctrl_device_add(port);
-+		if (!ctrl_dev) {
-+			ret = -ENODEV;
-+			goto err_unlock;
-+		}
-+		ctrl_pdev = to_platform_device(ctrl_dev);
-+	}
-+
-+	/* Initialize a serial core port device */
-+	ret = serial_core_port_device_add(ctrl_dev, port);
-+	if (ret)
-+		goto err_unregister_ctrl_dev;
-+
-+	mutex_unlock(&port_mutex);
-+
-+	ret = serial_core_add_one_port(drv, port);
-+	if (ret)
-+		goto err_unregister_port_dev;
-+
-+	return 0;
-+
-+err_unregister_port_dev:
-+	mutex_lock(&port_mutex);
-+	platform_device_unregister(to_platform_device(port->port_dev));
-+
-+err_unregister_ctrl_dev:
-+	platform_device_unregister(ctrl_pdev);
-+
-+err_unlock:
-+	mutex_unlock(&port_mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS(serial_core_register_port, SERIAL_CORE);
-+
-+/*
-+ * Removes a serial core port device, and the related serial core controller
-+ * device if the last instance.
-+ */
-+void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port)
-+{
-+	struct device *phys_dev = port->dev;
-+	struct device *port_dev = port->port_dev;
-+	struct device *ctrl_dev = port_dev->parent;
-+	int ctrl_id = port->ctrl_id;
-+
-+	serial_core_remove_one_port(drv, port);
-+
-+	mutex_lock(&port_mutex);
-+
-+	platform_device_unregister(to_platform_device(port_dev));
-+
-+	/* Drop the serial core controller device if no ports are using it */
-+	if (!serial_core_ctrl_find(drv, phys_dev, ctrl_id))
-+		platform_device_unregister(to_platform_device(ctrl_dev));
-+
-+	mutex_unlock(&port_mutex);
-+}
-+EXPORT_SYMBOL_NS(serial_core_unregister_port, SERIAL_CORE);
-+
- /**
-  * uart_handle_dcd_change - handle a change of carrier detect state
-  * @uport: uart_port structure for the open port
-diff --git a/drivers/tty/serial/serial_ctrl.c b/drivers/tty/serial/serial_ctrl.c
-new file mode 100644
---- /dev/null
-+++ b/drivers/tty/serial/serial_ctrl.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+/*
-+ * Serial core controller driver
-+ *
-+ * This driver manages the serial core controller struct device instances.
-+ * The serial core controller devices are children of the physical serial
-+ * port device.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/serial_core.h>
-+
-+#include "serial_ctrl.h"
-+
-+static int serial_ctrl_probe(struct platform_device *pdev)
-+{
-+	pm_runtime_enable(&pdev->dev);
-+
-+	return 0;
-+}
-+
-+static int serial_ctrl_remove(struct platform_device *pdev)
-+{
-+	pm_runtime_disable(&pdev->dev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver serial_ctrl_driver = {
-+	.driver = {
-+		.name = "serial-ctrl",
-+		.suppress_bind_attrs = true,
-+	},
-+	.probe = serial_ctrl_probe,
-+	.remove = serial_ctrl_remove,
-+};
-+module_platform_driver(serial_ctrl_driver);
-+
-+/*
-+ * Serial core controller device init functions. Note that the physical
-+ * serial port device driver may not have completed probe at this point.
-+ */
-+int serial_ctrl_register_port(struct uart_driver *drv, struct uart_port *port)
-+{
-+	return serial_core_register_port(drv, port);
-+}
-+EXPORT_SYMBOL_NS(serial_ctrl_register_port, SERIAL_CORE);
-+
-+void serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port)
-+{
-+	serial_core_unregister_port(drv, port);
-+}
-+EXPORT_SYMBOL_NS(serial_ctrl_unregister_port, SERIAL_CORE);
-+
-+MODULE_AUTHOR("Tony Lindgren <tony@atomide.com>");
-+MODULE_DESCRIPTION("Serial core controller driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(SERIAL_CORE);
-diff --git a/drivers/tty/serial/serial_ctrl.h b/drivers/tty/serial/serial_ctrl.h
-new file mode 100644
---- /dev/null
-+++ b/drivers/tty/serial/serial_ctrl.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+/* Serial core controller data. Serial port device drivers do not need this. */
-+
-+struct uart_driver;
-+struct uart_port;
-+
-+/**
-+ * struct serial_port_platdata - Serial port platform data
-+ * @state: serial port state
-+ *
-+ * Used by serial_core and serial_port only. Allocated on uart_add_one_port(),
-+ * and freed on uart_remove_one_port().
-+ */
-+struct serial_port_platdata {
-+	struct uart_port *port;
-+};
-+
-+extern int serial_ctrl_register_port(struct uart_driver *drv, struct uart_port *port);
-+extern void serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port);
-+extern int serial_core_register_port(struct uart_driver *drv, struct uart_port *port);
-+extern void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port);
-diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
-new file mode 100644
---- /dev/null
-+++ b/drivers/tty/serial/serial_port.c
-@@ -0,0 +1,109 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+/*
-+ * Serial core port device driver
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/serial_core.h>
-+
-+#include "serial_ctrl.h"
-+
-+#define SERIAL_PORT_AUTOSUSPEND_DELAY_MS	500
-+
-+struct serial_port_data {
-+	struct uart_port *port;
-+};
-+
-+/* Only considers pending TX for now. Caller must take care of locking */
-+static int __serial_port_busy(struct uart_port *port)
-+{
-+	return !uart_tx_stopped(port) &&
-+		uart_circ_chars_pending(&port->state->xmit);
-+}
-+
-+static int serial_port_runtime_resume(struct device *dev)
-+{
-+	struct serial_port_data *ddata = dev_get_drvdata(dev);
-+	struct uart_port *port = ddata->port;
-+	unsigned long flags;
-+
-+	/* Flush any pending TX for the port */
-+	spin_lock_irqsave(&port->lock, flags);
-+	if (__serial_port_busy(port))
-+		port->ops->start_tx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+	pm_runtime_mark_last_busy(dev);
-+
-+	return 0;
-+}
-+
-+static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm, NULL,
-+				 serial_port_runtime_resume,
-+				 NULL);
-+
-+static int serial_port_probe(struct platform_device *pdev)
-+{
-+	struct serial_port_platdata *pd = dev_get_platdata(&pdev->dev);
-+	struct device *dev = &pdev->dev;
-+	struct serial_port_data *ddata;
-+
-+	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-+	if (!ddata)
-+		return -ENOMEM;
-+
-+	ddata->port = pd->port;
-+	platform_set_drvdata(pdev, ddata);
-+
-+	pm_runtime_enable(dev);
-+	pm_runtime_set_autosuspend_delay(dev, SERIAL_PORT_AUTOSUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
-+
-+	return 0;
-+}
-+
-+static int serial_port_remove(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+
-+	pm_runtime_dont_use_autosuspend(dev);
-+	pm_runtime_disable(dev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver serial_port_driver = {
-+	.driver = {
-+		.name = "serial-port",
-+		.suppress_bind_attrs = true,
-+		.pm = pm_ptr(&serial_port_pm),
-+	},
-+	.probe = serial_port_probe,
-+	.remove = serial_port_remove,
-+};
-+module_platform_driver(serial_port_driver);
-+
-+/*
-+ * Serial core port device init functions. Note that the physical serial
-+ * port device driver may not have completed probe at this point.
-+ */
-+int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
-+{
-+	return serial_ctrl_register_port(drv, port);
-+}
-+EXPORT_SYMBOL(uart_add_one_port);
-+
-+int uart_remove_one_port(struct uart_driver *drv, struct uart_port *port)
-+{
-+	serial_ctrl_unregister_port(drv, port);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(uart_remove_one_port);
-+
-+MODULE_AUTHOR("Tony Lindgren <tony@atomide.com>");
-+MODULE_DESCRIPTION("Serial controller port driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(SERIAL_CORE);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -458,6 +458,7 @@ struct uart_port {
- 						struct serial_rs485 *rs485);
- 	int			(*iso7816_config)(struct uart_port *,
- 						  struct serial_iso7816 *iso7816);
-+	int			ctrl_id;		/* optional serial core controller id */
- 	unsigned int		irq;			/* irq number */
- 	unsigned long		irqflags;		/* irq flags  */
- 	unsigned int		uartclk;		/* base uart clock */
-@@ -563,7 +564,8 @@ struct uart_port {
- 	unsigned int		minor;
- 	resource_size_t		mapbase;		/* for ioremap */
- 	resource_size_t		mapsize;
--	struct device		*dev;			/* parent device */
-+	struct device		*dev;			/* serial port physical parent device */
-+	struct device		*port_dev;		/* serial core port device */
- 
- 	unsigned long		sysrq;			/* sysrq timeout */
- 	unsigned int		sysrq_ch;		/* char for sysrq */
--- 
-2.38.1
+Okay, I will use pci_ioremap_bar(pdev, 0)
+
+> > +     priv->nr =3D nr_ports;
+> > +     pci_set_master(pdev);
+> > +     max_vec_reqd =3D pci1xxxx_get_max_port(subsys_dev);
+>=20
+> The above needs a bit of reshuffling and perhaps a blank line or lines.
+> Make it ordered and grouped more logically.
+
+Okay. I will do something like this:
+	pci_set_master(pdev);
+	<NL>
+	priv->pdev =3D pdev;
+	priv->nr =3D nr_ports;
+	<NL>
+	subsys_dev =3D priv->pdev->subsystem_device;
+	max_vec_reqd =3D pci1xxxx_get_max_port(subsys_dev);
+	<NL>
+	num_vectors =3D pci_alloc_irq_vectors(pdev, 1, max_vec_reqd, PCI_IRQ_ALL_T=
+YPES);
+	if (num_vectors < 0)
+		return num_vectors;
+
+> Can be simplified a bit by PCI_VDEVICE().
+
+Okay.
+
+Thanks,
+Tharun Kumar P
