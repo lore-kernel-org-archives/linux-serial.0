@@ -2,74 +2,58 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C43C4167B
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Dec 2022 12:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EFCC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Dec 2022 13:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbiLLMx1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Dec 2022 07:53:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
+        id S233227AbiLLN5W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Dec 2022 08:57:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbiLLMxZ (ORCPT
+        with ESMTP id S233212AbiLLN5U (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Dec 2022 07:53:25 -0500
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1CF3DFD3;
-        Mon, 12 Dec 2022 04:53:22 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id D172E80B3;
-        Mon, 12 Dec 2022 12:53:21 +0000 (UTC)
-Date:   Mon, 12 Dec 2022 14:53:20 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-omap@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v4 1/1] serial: core: Start managing serial
- controllers to enable runtime PM
-Message-ID: <Y5ckQKmQYwi8aWgi@atomide.com>
-References: <20221207124305.49943-1-tony@atomide.com>
- <7f105ff9-cdc3-f98e-2557-812361faa94@linux.intel.com>
- <Y5G5Udw6FAEFdAYi@atomide.com>
- <3c87186b-336f-6884-a2c-6ee3c9d70@linux.intel.com>
- <Y5HG2okzlqX+xfWv@atomide.com>
- <Y5bToLirsgA5NK/j@atomide.com>
- <ced9e9ea-317e-f2a2-d42f-97c2cd39f11b@linux.intel.com>
+        Mon, 12 Dec 2022 08:57:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAC4CC7;
+        Mon, 12 Dec 2022 05:57:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BF2D60FF4;
+        Mon, 12 Dec 2022 13:57:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B939C433D2;
+        Mon, 12 Dec 2022 13:57:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1670853438;
+        bh=mgb8zhVHcuWeR2Z4DGXOLQzTDYWFEAir/vKAyK/Bo/0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zR1SV6GfLhX+Tln/A3D6W/vlY8rS6OOyOgSoxgvu55xkfp0+fd2xHualnP1GUIEWB
+         5/f3qGuoIv20iYvJAz/S8Rgen9x5Mepo/A1Zc/TwAT9jL/SzWcV8BoYZ8/zTD2sSds
+         3JkuukCAUnP8z00APo4zQNUGwClw+f/8Uj3aXHlk=
+Date:   Mon, 12 Dec 2022 14:39:03 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ricardo Ribalda <ribalda@chromium.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] earlycon: Let users set the clock frequency
+Message-ID: <Y5cu9xyxYe7Lkn/l@kroah.com>
+References: <20221123-serial-clk-v3-0-49c516980ae0@chromium.org>
+ <20221123-serial-clk-v3-1-49c516980ae0@chromium.org>
+ <CANiDSCs-CdhdvZF1PsDWivWiTB-=66DK4XOrv5hzbgbC9Z=+Rg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ced9e9ea-317e-f2a2-d42f-97c2cd39f11b@linux.intel.com>
+In-Reply-To: <CANiDSCs-CdhdvZF1PsDWivWiTB-=66DK4XOrv5hzbgbC9Z=+Rg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [221212 12:49]:
-> On Mon, 12 Dec 2022, Tony Lindgren wrote:
+On Fri, Dec 02, 2022 at 06:24:19PM +0100, Ricardo Ribalda wrote:
+> Hi Jiri
 > 
-> > Hi Ilpo,
-> > 
-> > * Tony Lindgren <tony@atomide.com> [221208 11:13]:
-> > > * Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [221208 10:48]:
-> > > > With the other patch on top of this, yes, I did see uninitialized 
-> > > > port->port_dev already in serial_core_add_one_port()->uart_configure_port().
-> > > > While that could be solved by removing the pm_runtime_*() calls from 
-> > > > there, I think it's a generic problem because after 
-> > > > serial_core_add_one_port() the port can have anything happening on it, no?
-> > > 
-> > > OK. Sounds like it should get sorted out by moving the call to
-> > > serial_core_add_one_port() to happen after the devices are created.
-> > 
-> > Can you give a try with the patch below and see if it works for you?
-> 
-> This one worked, yes.
+> is there something else that I am missing here?
 
-OK good to hear. I'll send out v5 after -rc1 then.
+Sorry, been busy with other reviews.  I will queue this up after 6.2-rc1
+is out, thanks.
 
-Thanks,
-
-Tony
+greg k-h
