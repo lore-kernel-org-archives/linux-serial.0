@@ -2,110 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3646C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 16:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DA9C4167B
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 16:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbiLOQxx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Dec 2022 11:53:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
+        id S230316AbiLOQzE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Dec 2022 11:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230375AbiLOQxg (ORCPT
+        with ESMTP id S229948AbiLOQzB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Dec 2022 11:53:36 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8540C3B9F0
-        for <linux-serial@vger.kernel.org>; Thu, 15 Dec 2022 08:53:11 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BFG69VR001434;
-        Thu, 15 Dec 2022 17:52:40 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=foOTUizzoOwUhkqSNmKNIsjRp5o7VWjfsP3BMaaG1Ps=;
- b=p0giefhsz1cwfIgBu8ehm5f4vLroq6ZE32VbFy889Cv6yVHCKLqevG3CHENwTZXwQr/i
- OLzIq640gmjejFUtEfovN5HMgK1AhAI/Pjm5wDdek6SNHtoSHeWb8XE9heH/GbraKcxX
- /nJdEheuhcPo5BaZwb2trQxY3pOSOVBLNWONnAkCgYhQKkFHvFuWTzEToAfBkucLEJKa
- XGxYeC+WlohpV5Zm0XY3ZnwJibVmFonzbZEWl41bkIQYmO15edpCECKrFXOOyhJvqQKg
- 5R7Uc3hjysGkpPUm3ZkkmQm4hlx5mfUS8YC4Ha2lGBCAVoQkAb84S8w87N0YzOk6LLXy aQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3mf6uww1kb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Dec 2022 17:52:40 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AC23F100039;
-        Thu, 15 Dec 2022 17:52:34 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 724E223152E;
-        Thu, 15 Dec 2022 17:52:34 +0100 (CET)
-Received: from [10.201.20.168] (10.201.20.168) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.13; Thu, 15 Dec
- 2022 17:52:33 +0100
-Message-ID: <f2373a2b-8229-8af3-116c-7f3b8ccf8062@foss.st.com>
-Date:   Thu, 15 Dec 2022 17:52:33 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH] serial: stm32: Move hard IRQ handling to threaded
- interrupt context
-Content-Language: en-US
-To:     Marek Vasut <marex@denx.de>
-CC:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Thu, 15 Dec 2022 11:55:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA09389FF;
+        Thu, 15 Dec 2022 08:54:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B0DC61E50;
+        Thu, 15 Dec 2022 16:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27427C433F0;
+        Thu, 15 Dec 2022 16:54:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1671123299;
+        bh=ZKM76IKVl+oE/V0fQ6ck+h5jxYKKktSIJud+zEgrvtw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FUCD/0mGC+mr3xUpe1YDVg3Porf4rdwuX1j3GZbLYLmsTjoSJBArBSPXRWWMr18YM
+         +KCVjQWfZRGvxISu7QdnUE+ORzVgZstqZSyrXufueEmZphky1YTM45xgzczB5AxAIn
+         4iCRnmt3mV5vLaVJYl/+VOyKujyYwS1vQx+PEeRE7cwYx8GpmI9JP7jXvxH8Xh1l/a
+         rCil2nKv4khTnlniQ7uC/MuSekCXUc6Hjmf7MiqJvVF5FhT2yugGYujDS3TabPXiOk
+         aWEicCIQxvXf01s3v683x+mGYVkfVSudRvCh+vNi2bdCrwP9BRQYHCGhIXyytx7rhj
+         /2yMhk8sgtQIg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-serial@vger.kernel.org>
-References: <20221207195929.160267-1-marex@denx.de>
- <34ec91a2-2089-65ba-d5bb-fed03cda63b7@foss.st.com>
- <a984e2aa-1fbf-4b6b-9326-d926221740d8@denx.de>
-From:   Valentin CARON <valentin.caron@foss.st.com>
-In-Reply-To: <a984e2aa-1fbf-4b6b-9326-d926221740d8@denx.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.20.168]
-X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-15_10,2022-12-15_02,2022-06-22_01
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Aniket Randive <quic_arandive@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: qcom_geni: avoid duplicate struct member init
+Date:   Thu, 15 Dec 2022 17:54:24 +0100
+Message-Id: <20221215165453.1864836-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Marek,
+From: Arnd Bergmann <arnd@arndb.de>
 
-I test your patch with a loop-back test between usart3 and uart7 on 
-STM32MP157C-DK2. It
-shows a speed transfer diminution (about -1,5%), some locks during 
-transfer, RT throttling etc...
-(I use lszrz tool).
+When -Woverride-init is enabled in a build, gcc points out that
+qcom_geni_serial_pm_ops contains conflicting initializers:
 
-But finally, I think your patch is the best solution that we have.
-Other solutions always throws an RT exception on a spin_lock.
+drivers/tty/serial/qcom_geni_serial.c:1586:20: error: initialized field overwritten [-Werror=override-init]
+ 1586 |         .restore = qcom_geni_serial_sys_hib_resume,
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/tty/serial/qcom_geni_serial.c:1586:20: note: (near initialization for 'qcom_geni_serial_pm_ops.restore')
+drivers/tty/serial/qcom_geni_serial.c:1587:17: error: initialized field overwritten [-Werror=override-init]
+ 1587 |         .thaw = qcom_geni_serial_sys_hib_resume,
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Thanks,
-Valentin
+Open-code the initializers with the version that was already used,
+and use the pm_sleep_ptr() method to deal with unused ones,
+in place of the __maybe_unused annotation.
 
-On 12/8/22 14:19, Marek Vasut wrote:
-> On 12/8/22 11:18, Valentin CARON wrote:
->> Hi Marek,
->
-> Hi,
->
->> I've got a patch in the same spirit in downstream.
->> The test campaign reveals performance issues with this patch.
->>
->> In fact, hard IRQ have been introduced in stm32-usart driver to solve 
->> performance issues due to short FIFO size (16 bytes).
->>
->> We are currently testing another patch, similar as your RFC 
->> proposition, for RT context.
->> But results are not ready yet. We can wait them before merging this 
->> big change into driver ?
->
-> Can you post your patch as an RFC so others can test as well ?
+Fixes: 35781d8356a2 ("tty: serial: qcom-geni-serial: Add support for Hibernation feature")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index b487823f0e61..03dda47184d9 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1516,7 +1516,7 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
++static int qcom_geni_serial_sys_suspend(struct device *dev)
+ {
+ 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+ 	struct uart_port *uport = &port->uport;
+@@ -1533,7 +1533,7 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
+ 	return uart_suspend_port(private_data->drv, uport);
+ }
+ 
+-static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
++static int qcom_geni_serial_sys_resume(struct device *dev)
+ {
+ 	int ret;
+ 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+@@ -1581,10 +1581,12 @@ static int qcom_geni_serial_sys_hib_resume(struct device *dev)
+ }
+ 
+ static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_sys_suspend,
+-					qcom_geni_serial_sys_resume)
+-	.restore = qcom_geni_serial_sys_hib_resume,
+-	.thaw = qcom_geni_serial_sys_hib_resume,
++	.suspend = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
++	.resume = pm_sleep_ptr(qcom_geni_serial_sys_resume),
++	.freeze = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
++	.poweroff = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
++	.restore = pm_sleep_ptr(qcom_geni_serial_sys_hib_resume),
++	.thaw = pm_sleep_ptr(qcom_geni_serial_sys_hib_resume),
+ };
+ 
+ static const struct of_device_id qcom_geni_serial_match_table[] = {
+-- 
+2.35.1
+
