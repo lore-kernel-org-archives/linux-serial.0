@@ -2,245 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01653C4167B
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 16:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3646C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 16:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbiLOQxW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Dec 2022 11:53:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
+        id S230374AbiLOQxx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Dec 2022 11:53:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbiLOQwo (ORCPT
+        with ESMTP id S230375AbiLOQxg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Dec 2022 11:52:44 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4342337F94;
-        Thu, 15 Dec 2022 08:52:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1671123164; x=1702659164;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7c9jSwU2YvZekx3KGxksBJgmGj8DCsp74IgYm7As1Is=;
-  b=oQcI8knJ4brcIcH+hsirgTXdccia2npEU81OKxT4nGazu3/say1bAQuT
-   PJFzxBp0BtMkOB0XkgR1MEru2L0bnBqD0B0lXiZ20FpgRWIZ2gjUgMHsa
-   psETnH9qcI58Lb8Froi2vpa7SzCFjlxZIuYaLUwwzrd8p/F3iG8lyDJZi
-   k30VUAhK5Him3gVngKnPfB7PTfcqQ/bnQgKDh1c4U9R8DCJZmn42Jyv1i
-   Iz8TM9zBMToangvJ2tJMZoyk/AGd/H3ax37jbzROTn1l+08n2w+3YWGNX
-   +vyqhQkzx1kZ61/iFxsuYj8UHuAimtke/PSai9ZWaXWWiOwF1S76W4ToT
-   w==;
-X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
-   d="scan'208";a="193245156"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Dec 2022 09:52:43 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 15 Dec 2022 09:52:42 -0700
-Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Thu, 15 Dec 2022 09:52:36 -0700
-From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <ilpo.jarvinen@linux.intel.com>,
-        <macro@orcam.me.uk>, <andriy.shevchenko@linux.intel.com>,
-        <cang1@live.co.uk>, <colin.i.king@gmail.com>,
-        <phil.edworthy@renesas.com>, <biju.das.jz@bp.renesas.com>,
-        <geert+renesas@glider.be>, <lukas@wunner.de>,
-        <u.kleine-koenig@pengutronix.de>, <wander@redhat.com>,
-        <etremblay@distech-controls.com>, <jk@ozlabs.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: [PATCH v9 tty-next 4/4] serial: 8250_pci1xxxx: Add power management functions to quad-uart driver
-Date:   Fri, 16 Dec 2022 10:56:56 +0530
-Message-ID: <20221216052656.2098100-5-kumaravel.thiagarajan@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20221216052656.2098100-1-kumaravel.thiagarajan@microchip.com>
-References: <20221216052656.2098100-1-kumaravel.thiagarajan@microchip.com>
+        Thu, 15 Dec 2022 11:53:36 -0500
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8540C3B9F0
+        for <linux-serial@vger.kernel.org>; Thu, 15 Dec 2022 08:53:11 -0800 (PST)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BFG69VR001434;
+        Thu, 15 Dec 2022 17:52:40 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=foOTUizzoOwUhkqSNmKNIsjRp5o7VWjfsP3BMaaG1Ps=;
+ b=p0giefhsz1cwfIgBu8ehm5f4vLroq6ZE32VbFy889Cv6yVHCKLqevG3CHENwTZXwQr/i
+ OLzIq640gmjejFUtEfovN5HMgK1AhAI/Pjm5wDdek6SNHtoSHeWb8XE9heH/GbraKcxX
+ /nJdEheuhcPo5BaZwb2trQxY3pOSOVBLNWONnAkCgYhQKkFHvFuWTzEToAfBkucLEJKa
+ XGxYeC+WlohpV5Zm0XY3ZnwJibVmFonzbZEWl41bkIQYmO15edpCECKrFXOOyhJvqQKg
+ 5R7Uc3hjysGkpPUm3ZkkmQm4hlx5mfUS8YC4Ha2lGBCAVoQkAb84S8w87N0YzOk6LLXy aQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3mf6uww1kb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 15 Dec 2022 17:52:40 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AC23F100039;
+        Thu, 15 Dec 2022 17:52:34 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 724E223152E;
+        Thu, 15 Dec 2022 17:52:34 +0100 (CET)
+Received: from [10.201.20.168] (10.201.20.168) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.13; Thu, 15 Dec
+ 2022 17:52:33 +0100
+Message-ID: <f2373a2b-8229-8af3-116c-7f3b8ccf8062@foss.st.com>
+Date:   Thu, 15 Dec 2022 17:52:33 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] serial: stm32: Move hard IRQ handling to threaded
+ interrupt context
+Content-Language: en-US
+To:     Marek Vasut <marex@denx.de>
+CC:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-serial@vger.kernel.org>
+References: <20221207195929.160267-1-marex@denx.de>
+ <34ec91a2-2089-65ba-d5bb-fed03cda63b7@foss.st.com>
+ <a984e2aa-1fbf-4b6b-9326-d926221740d8@denx.de>
+From:   Valentin CARON <valentin.caron@foss.st.com>
+In-Reply-To: <a984e2aa-1fbf-4b6b-9326-d926221740d8@denx.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.20.168]
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-15_10,2022-12-15_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-pci1xxxx's quad-uart function has the capability to wake up UART
-from suspend state. Enable wakeup before entering into suspend and
-disable wakeup on resume.
+Hi Marek,
 
-Co-developed-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Signed-off-by: Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
----
-Changes in v9:
-- No Change
+I test your patch with a loop-back test between usart3 and uart7 on 
+STM32MP157C-DK2. It
+shows a speed transfer diminution (about -1,5%), some locks during 
+transfer, RT throttling etc...
+(I use lszrz tool).
 
-Changes in v8:
-- No Change
+But finally, I think your patch is the best solution that we have.
+Other solutions always throws an RT exception on a spin_lock.
 
-Changes in v7:
-- No Change
+Thanks,
+Valentin
 
-Changes in v6:
-- No Change
-
-Changes in v5:
-- Corrected commit message
-
-Changes in v4:
-- No Change
-
-Changes in v3:
-- Handled race condition in suspend and resume callbacks
-
-Changes in v2:
-- Use DEFINE_SIMPLE_DEV_PM_OPS instead of SIMPLE_DEV_PM_OPS.
-- Use pm_sleep_ptr instead of CONFIG_PM_SLEEP.
-- Change the return data type of pci1xxxx_port_suspend to bool from int.
----
- drivers/tty/serial/8250/8250_pci1xxxx.c | 115 ++++++++++++++++++++++++
- 1 file changed, 115 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index e46c6b835a36..31790c8b6087 100644
---- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-+++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -211,6 +211,116 @@ static const struct serial_rs485 pci1xxxx_rs485_supported = {
- 	/* Delay RTS before send is not supported */
- };
- 
-+static bool pci1xxxx_port_suspend(int line)
-+{
-+	struct uart_8250_port *up = serial8250_get_port(line);
-+	struct uart_port *port = &up->port;
-+	struct tty_port *tport = &port->state->port;
-+	unsigned long flags;
-+	bool ret = false;
-+	u8 wakeup_mask;
-+
-+	mutex_lock(&tport->mutex);
-+	if (port->suspended == 0 && port->dev) {
-+		wakeup_mask = readb(up->port.membase + UART_WAKE_MASK_REG);
-+
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl &= ~TIOCM_OUT2;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+
-+		ret = (wakeup_mask & UART_WAKE_SRCS) != UART_WAKE_SRCS;
-+	}
-+
-+	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
-+	mutex_unlock(&tport->mutex);
-+
-+	return ret;
-+}
-+
-+static void pci1xxxx_port_resume(int line)
-+{
-+	struct uart_8250_port *up = serial8250_get_port(line);
-+	struct uart_port *port = &up->port;
-+	struct tty_port *tport = &port->state->port;
-+	unsigned long flags;
-+
-+	mutex_lock(&tport->mutex);
-+	writeb(UART_BLOCK_SET_ACTIVE, port->membase + UART_ACTV_REG);
-+	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
-+
-+	if (port->suspended == 0) {
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl |= TIOCM_OUT2;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+	mutex_unlock(&tport->mutex);
-+}
-+
-+static int pci1xxxx_suspend(struct device *dev)
-+{
-+	struct pci1xxxx_8250 *priv = dev_get_drvdata(dev);
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	bool wakeup = false;
-+	unsigned int data;
-+	void __iomem *p;
-+	int i;
-+
-+	for (i = 0; i < priv->nr; i++) {
-+		if (priv->line[i] >= 0) {
-+			serial8250_suspend_port(priv->line[i]);
-+			wakeup |= pci1xxxx_port_suspend(priv->line[i]);
-+		}
-+	}
-+
-+	p = pci_ioremap_bar(pcidev, 0);
-+	if (!p) {
-+		dev_err(dev, "remapping of bar 0 memory failed");
-+		return -ENOMEM;
-+	}
-+
-+	data = readl(p + UART_RESET_REG);
-+	writel(data | UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
-+
-+	if (wakeup)
-+		writeb(UART_PCI_CTRL_D3_CLK_ENABLE, p + UART_PCI_CTRL_REG);
-+
-+	iounmap(p);
-+	device_set_wakeup_enable(dev, true);
-+	pci_wake_from_d3(pcidev, true);
-+
-+	return 0;
-+}
-+
-+static int pci1xxxx_resume(struct device *dev)
-+{
-+	struct pci1xxxx_8250 *priv = dev_get_drvdata(dev);
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	unsigned int data;
-+	void __iomem *p;
-+	int i;
-+
-+	p = pci_ioremap_bar(pcidev, 0);
-+	if (!p) {
-+		dev_err(dev, "remapping of bar 0 memory failed");
-+		return -ENOMEM;
-+	}
-+
-+	data = readl(p + UART_RESET_REG);
-+	writel(data & ~UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
-+	iounmap(p);
-+
-+	for (i = 0; i < priv->nr; i++) {
-+		if (priv->line[i] >= 0) {
-+			pci1xxxx_port_resume(priv->line[i]);
-+			serial8250_resume_port(priv->line[i]);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static int pci1xxxx_setup(struct pci_dev *pdev,
- 			  struct uart_8250_port *port, int port_idx)
- {
-@@ -350,6 +460,8 @@ static void pci1xxxx_serial_remove(struct pci_dev *dev)
- 	pci_iounmap(dev, priv->membase);
- }
- 
-+static DEFINE_SIMPLE_DEV_PM_OPS(pci1xxxx_pm_ops, pci1xxxx_suspend, pci1xxxx_resume);
-+
- static const struct pci_device_id pci1xxxx_pci_tbl[] = {
- 	{ PCI_VDEVICE(EFAR, PCI_DEVICE_ID_EFAR_PCI11010) },
- 	{ PCI_VDEVICE(EFAR, PCI_DEVICE_ID_EFAR_PCI11101) },
-@@ -364,6 +476,9 @@ static struct pci_driver pci1xxxx_pci_driver = {
- 	.name = "pci1xxxx serial",
- 	.probe = pci1xxxx_serial_probe,
- 	.remove = pci1xxxx_serial_remove,
-+	.driver = {
-+		.pm     = pm_sleep_ptr(&pci1xxxx_pm_ops),
-+	},
- 	.id_table = pci1xxxx_pci_tbl,
- };
- module_pci_driver(pci1xxxx_pci_driver);
--- 
-2.25.1
-
+On 12/8/22 14:19, Marek Vasut wrote:
+> On 12/8/22 11:18, Valentin CARON wrote:
+>> Hi Marek,
+>
+> Hi,
+>
+>> I've got a patch in the same spirit in downstream.
+>> The test campaign reveals performance issues with this patch.
+>>
+>> In fact, hard IRQ have been introduced in stm32-usart driver to solve 
+>> performance issues due to short FIFO size (16 bytes).
+>>
+>> We are currently testing another patch, similar as your RFC 
+>> proposition, for RT context.
+>> But results are not ready yet. We can wait them before merging this 
+>> big change into driver ?
+>
+> Can you post your patch as an RFC so others can test as well ?
