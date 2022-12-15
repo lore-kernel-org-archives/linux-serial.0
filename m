@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B68BC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 17:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4892DC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 17:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230328AbiLORmn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Dec 2022 12:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55158 "EHLO
+        id S229595AbiLORo2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Dec 2022 12:44:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiLORml (ORCPT
+        with ESMTP id S229460AbiLORo1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Dec 2022 12:42:41 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235A911C0E;
-        Thu, 15 Dec 2022 09:42:41 -0800 (PST)
+        Thu, 15 Dec 2022 12:44:27 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A344411C0E;
+        Thu, 15 Dec 2022 09:44:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671126161; x=1702662161;
+  t=1671126266; x=1702662266;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=7ORcbraRfGd7oELZedGg8ctUSrjqDFehZ6+LmmGW3YY=;
-  b=ThvF2sXHXvSfBYAR7tDZL/hPh0MeYj0AKjgo37Ut79opIvyBkS9Sdm4p
-   x+B1uCnX4H/Qxmnsqw+aHqrrLPgkSrBkAXreSy4PHRhYvfRkmcHPiZnt+
-   Qi3plqYHUfhyAOWhGm71+sfdw8kRA431phpiux4drec8ziwi5T/LNYELi
-   ht6xcxB9Lp2q2yvPrNkaAr4zuBXbDsPJ/qBZ8AfEbL8iuA58/UHZHiy3j
-   KARICLYrHHwTjslsXeU7iATJAv36PRyooxT6FbPwKZ4XVLq1mxgejsj1S
-   hwuvRjCuydnemmd6xZPYjJqCs1v7tOE8wDw3pc+MQTxtZatKRbFyTEJCv
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="319912012"
+  bh=MoLYUv/vRcgWjgEVHol3uf+9CH27suckkdQFhykR8hc=;
+  b=Az3DUrCoqaz7QkqGWNoFDkdzGdiYvRUpSTJm/K/LjQTJhPR0nqL7+FOo
+   2Jr/BcQVol6gXHcUKWxv5npVPSYtQQPHG/pRyqKqpI/13UAe5kD5q4VM8
+   PbZA0ZbVPqt9IV4imjq6xtxifXBbZrdc2yJEprj724EcFzT5JLy890gzy
+   /HNnHmCzRuxL8IDV2jHi7pINEK1kqrddq1BWbp2Qo8QZSV75mqjnv+Q3B
+   xP4O71usDBKT11Yz9Zene6S/QpuaUwiQTUOkKq9zBEZ8Q4YCbP3zXooaw
+   4L51bUzIeunttXS+gWguFc0SgQsEvp+BWEcgfy8a3BQJK/2jCqD1jZZhN
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="299093776"
 X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
-   d="scan'208";a="319912012"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2022 09:42:40 -0800
+   d="scan'208";a="299093776"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2022 09:44:25 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="681966231"
+X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="738212377"
 X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
-   d="scan'208";a="681966231"
+   d="scan'208";a="738212377"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001.jf.intel.com with ESMTP; 15 Dec 2022 09:42:35 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 15 Dec 2022 09:44:21 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1p5sFc-00ASLZ-1h;
-        Thu, 15 Dec 2022 19:42:32 +0200
-Date:   Thu, 15 Dec 2022 19:42:32 +0200
+        id 1p5sHK-00ASOL-2U;
+        Thu, 15 Dec 2022 19:44:18 +0200
+Date:   Thu, 15 Dec 2022 19:44:18 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
@@ -57,113 +57,60 @@ Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
 Subject: Re: [PATCH v9 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
  quad-uart support
-Message-ID: <Y5tciHzsEGU67h1Z@smile.fi.intel.com>
+Message-ID: <Y5tc8mjvxdphtgzj@smile.fi.intel.com>
 References: <20221216052656.2098100-1-kumaravel.thiagarajan@microchip.com>
  <20221216052656.2098100-3-kumaravel.thiagarajan@microchip.com>
+ <Y5tciHzsEGU67h1Z@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221216052656.2098100-3-kumaravel.thiagarajan@microchip.com>
+In-Reply-To: <Y5tciHzsEGU67h1Z@smile.fi.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 16, 2022 at 10:56:54AM +0530, Kumaravel Thiagarajan wrote:
-> pci1xxxx is a PCIe switch with a multi-function endpoint on one of
-> its downstream ports. Quad-uart is one of the functions in the
-> multi-function endpoint. This driver loads for the quad-uart and
-> enumerates single or multiple instances of uart based on the PCIe
-> subsystem device ID.
+On Thu, Dec 15, 2022 at 07:42:32PM +0200, Andy Shevchenko wrote:
+> On Fri, Dec 16, 2022 at 10:56:54AM +0530, Kumaravel Thiagarajan wrote:
 
 ...
 
-> +static const int logical_to_physical_port_idx[][MAX_PORTS] = {
-> +	{0,  1,  2,  3},/* PCI12000, PCI11010, PCI11101, PCI11400, PCI11414 */
-> +	{0,  1,  2,  3},/* PCI4p */
-> +	{0,  1,  2, -1},/* PCI3p012 */
-> +	{0,  1,  3, -1},/* PCI3p013 */
-> +	{0,  2,  3, -1},/* PCI3p023 */
-> +	{1,  2,  3, -1},/* PCI3p123 */
-> +	{0,  1, -1, -1},/* PCI2p01 */
-> +	{0,  2, -1, -1},/* PCI2p02 */
-> +	{0,  3, -1, -1},/* PCI2p03 */
-> +	{1,  2, -1, -1},/* PCI2p12 */
-> +	{1,  3, -1, -1},/* PCI2p13 */
-> +	{2,  3, -1, -1},/* PCI2p23 */
-> +	{0, -1, -1, -1},/* PCI1p0 */
-> +	{1, -1, -1, -1},/* PCI1p1 */
-> +	{2, -1, -1, -1},/* PCI1p2 */
-> +	{3, -1, -1, -1},/* PCI1p3 */
+> > +static unsigned int pci1xxxx_get_max_port(int subsys_dev)
+> > +{
+> > +	int i = 0;
+> 
+> What the point to assign this one?
+> 
+> Actually, better is
+> 
+> 	unsigned int = MAX_PORTS;
+> 
+> > +	if (subsys_dev < ARRAY_SIZE(logical_to_physical_port_idx))
+> 
+> > +		for (i = MAX_PORTS - 1; i >= 0; i--)
+> 
+> while (i--) {
+> 
+> > +			if (logical_to_physical_port_idx[subsys_dev][i] != -1)
+> > +				return logical_to_physical_port_idx[subsys_dev][i] + 1;
+> 
+> }
+> 
+> (Note missinng {} in the above code. Does checkpatch complain on this?)
+> 
+> > +	if (subsys_dev != PCI_SUBDEVICE_ID_EFAR_PCI11414)
+> > +		return 1;
+> > +
+> > +	return 4;
 
-One space or TAB before /* will increase readability.
+Also you can consider the positive check here:
 
-> +};
+	if (subsys_dev == PCI_SUBDEVICE_ID_EFAR_PCI11414)
+		return 4;
 
-...
+	return 1;
 
-> +	ret = serial8250_pci_setup_port(pdev, port, 0, port_idx * 256, 0);
-
-Actually isn't 0x100 better (show that there is an offset rather than
-a value of an register)?
-
-> +	if (ret < 0)
-> +		return ret;
-
-...
-
-> +static unsigned int pci1xxxx_get_max_port(int subsys_dev)
-> +{
-> +	int i = 0;
-
-What the point to assign this one?
-
-Actually, better is
-
-	unsigned int = MAX_PORTS;
-
-> +	if (subsys_dev < ARRAY_SIZE(logical_to_physical_port_idx))
-
-> +		for (i = MAX_PORTS - 1; i >= 0; i--)
-
-while (i--) {
-
-> +			if (logical_to_physical_port_idx[subsys_dev][i] != -1)
-> +				return logical_to_physical_port_idx[subsys_dev][i] + 1;
-
-}
-
-(Note missinng {} in the above code. Does checkpatch complain on this?)
-
-> +
-> +	if (subsys_dev != PCI_SUBDEVICE_ID_EFAR_PCI11414)
-> +		return 1;
-> +
-> +	return 4;
-> +}
-
-...
-
-> +	num_vectors = pci_alloc_irq_vectors(pdev, 1, max_vec_reqd, PCI_IRQ_ALL_TYPES);
-> +	if (num_vectors < 0) {
-
-> +		pci_iounmap(pdev, priv->membase);
-
-Here is inconsistency on how you interpret pci_*() calls when
-pcim_enable_device() has been used. I.e. for IRQ you don't
-deallocate resources explicitly (yes, it's done automatically
-anyway), but you explicitly call pci_iounmap(). Choose a single
-approach for all of them.
-
-> +		return num_vectors;
-> +	}
-
-...
-
-> +static_assert((ARRAY_SIZE(logical_to_physical_port_idx) ==
-> +	       PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3 + 1));
-
-Can be still one line.
+> > +}
 
 -- 
 With Best Regards,
