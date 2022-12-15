@@ -2,121 +2,171 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DA9C4167B
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 16:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B68BC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Dec 2022 17:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230316AbiLOQzE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Dec 2022 11:55:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
+        id S230328AbiLORmn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Dec 2022 12:42:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbiLOQzB (ORCPT
+        with ESMTP id S229680AbiLORml (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Dec 2022 11:55:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA09389FF;
-        Thu, 15 Dec 2022 08:54:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B0DC61E50;
-        Thu, 15 Dec 2022 16:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27427C433F0;
-        Thu, 15 Dec 2022 16:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671123299;
-        bh=ZKM76IKVl+oE/V0fQ6ck+h5jxYKKktSIJud+zEgrvtw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FUCD/0mGC+mr3xUpe1YDVg3Porf4rdwuX1j3GZbLYLmsTjoSJBArBSPXRWWMr18YM
-         +KCVjQWfZRGvxISu7QdnUE+ORzVgZstqZSyrXufueEmZphky1YTM45xgzczB5AxAIn
-         4iCRnmt3mV5vLaVJYl/+VOyKujyYwS1vQx+PEeRE7cwYx8GpmI9JP7jXvxH8Xh1l/a
-         rCil2nKv4khTnlniQ7uC/MuSekCXUc6Hjmf7MiqJvVF5FhT2yugGYujDS3TabPXiOk
-         aWEicCIQxvXf01s3v683x+mGYVkfVSudRvCh+vNi2bdCrwP9BRQYHCGhIXyytx7rhj
-         /2yMhk8sgtQIg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Aniket Randive <quic_arandive@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: qcom_geni: avoid duplicate struct member init
-Date:   Thu, 15 Dec 2022 17:54:24 +0100
-Message-Id: <20221215165453.1864836-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 15 Dec 2022 12:42:41 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235A911C0E;
+        Thu, 15 Dec 2022 09:42:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671126161; x=1702662161;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7ORcbraRfGd7oELZedGg8ctUSrjqDFehZ6+LmmGW3YY=;
+  b=ThvF2sXHXvSfBYAR7tDZL/hPh0MeYj0AKjgo37Ut79opIvyBkS9Sdm4p
+   x+B1uCnX4H/Qxmnsqw+aHqrrLPgkSrBkAXreSy4PHRhYvfRkmcHPiZnt+
+   Qi3plqYHUfhyAOWhGm71+sfdw8kRA431phpiux4drec8ziwi5T/LNYELi
+   ht6xcxB9Lp2q2yvPrNkaAr4zuBXbDsPJ/qBZ8AfEbL8iuA58/UHZHiy3j
+   KARICLYrHHwTjslsXeU7iATJAv36PRyooxT6FbPwKZ4XVLq1mxgejsj1S
+   hwuvRjCuydnemmd6xZPYjJqCs1v7tOE8wDw3pc+MQTxtZatKRbFyTEJCv
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="319912012"
+X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
+   d="scan'208";a="319912012"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2022 09:42:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10562"; a="681966231"
+X-IronPort-AV: E=Sophos;i="5.96,248,1665471600"; 
+   d="scan'208";a="681966231"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001.jf.intel.com with ESMTP; 15 Dec 2022 09:42:35 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1p5sFc-00ASLZ-1h;
+        Thu, 15 Dec 2022 19:42:32 +0200
+Date:   Thu, 15 Dec 2022 19:42:32 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk, cang1@live.co.uk,
+        colin.i.king@gmail.com, phil.edworthy@renesas.com,
+        biju.das.jz@bp.renesas.com, geert+renesas@glider.be,
+        lukas@wunner.de, u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        UNGLinuxDriver@microchip.com,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+Subject: Re: [PATCH v9 tty-next 2/4] serial: 8250_pci1xxxx: Add driver for
+ quad-uart support
+Message-ID: <Y5tciHzsEGU67h1Z@smile.fi.intel.com>
+References: <20221216052656.2098100-1-kumaravel.thiagarajan@microchip.com>
+ <20221216052656.2098100-3-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221216052656.2098100-3-kumaravel.thiagarajan@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Fri, Dec 16, 2022 at 10:56:54AM +0530, Kumaravel Thiagarajan wrote:
+> pci1xxxx is a PCIe switch with a multi-function endpoint on one of
+> its downstream ports. Quad-uart is one of the functions in the
+> multi-function endpoint. This driver loads for the quad-uart and
+> enumerates single or multiple instances of uart based on the PCIe
+> subsystem device ID.
 
-When -Woverride-init is enabled in a build, gcc points out that
-qcom_geni_serial_pm_ops contains conflicting initializers:
+...
 
-drivers/tty/serial/qcom_geni_serial.c:1586:20: error: initialized field overwritten [-Werror=override-init]
- 1586 |         .restore = qcom_geni_serial_sys_hib_resume,
-      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/tty/serial/qcom_geni_serial.c:1586:20: note: (near initialization for 'qcom_geni_serial_pm_ops.restore')
-drivers/tty/serial/qcom_geni_serial.c:1587:17: error: initialized field overwritten [-Werror=override-init]
- 1587 |         .thaw = qcom_geni_serial_sys_hib_resume,
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +static const int logical_to_physical_port_idx[][MAX_PORTS] = {
+> +	{0,  1,  2,  3},/* PCI12000, PCI11010, PCI11101, PCI11400, PCI11414 */
+> +	{0,  1,  2,  3},/* PCI4p */
+> +	{0,  1,  2, -1},/* PCI3p012 */
+> +	{0,  1,  3, -1},/* PCI3p013 */
+> +	{0,  2,  3, -1},/* PCI3p023 */
+> +	{1,  2,  3, -1},/* PCI3p123 */
+> +	{0,  1, -1, -1},/* PCI2p01 */
+> +	{0,  2, -1, -1},/* PCI2p02 */
+> +	{0,  3, -1, -1},/* PCI2p03 */
+> +	{1,  2, -1, -1},/* PCI2p12 */
+> +	{1,  3, -1, -1},/* PCI2p13 */
+> +	{2,  3, -1, -1},/* PCI2p23 */
+> +	{0, -1, -1, -1},/* PCI1p0 */
+> +	{1, -1, -1, -1},/* PCI1p1 */
+> +	{2, -1, -1, -1},/* PCI1p2 */
+> +	{3, -1, -1, -1},/* PCI1p3 */
 
-Open-code the initializers with the version that was already used,
-and use the pm_sleep_ptr() method to deal with unused ones,
-in place of the __maybe_unused annotation.
+One space or TAB before /* will increase readability.
 
-Fixes: 35781d8356a2 ("tty: serial: qcom-geni-serial: Add support for Hibernation feature")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/tty/serial/qcom_geni_serial.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+> +};
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index b487823f0e61..03dda47184d9 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1516,7 +1516,7 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
-+static int qcom_geni_serial_sys_suspend(struct device *dev)
- {
- 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
- 	struct uart_port *uport = &port->uport;
-@@ -1533,7 +1533,7 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
- 	return uart_suspend_port(private_data->drv, uport);
- }
- 
--static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
-+static int qcom_geni_serial_sys_resume(struct device *dev)
- {
- 	int ret;
- 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
-@@ -1581,10 +1581,12 @@ static int qcom_geni_serial_sys_hib_resume(struct device *dev)
- }
- 
- static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_sys_suspend,
--					qcom_geni_serial_sys_resume)
--	.restore = qcom_geni_serial_sys_hib_resume,
--	.thaw = qcom_geni_serial_sys_hib_resume,
-+	.suspend = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
-+	.resume = pm_sleep_ptr(qcom_geni_serial_sys_resume),
-+	.freeze = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
-+	.poweroff = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
-+	.restore = pm_sleep_ptr(qcom_geni_serial_sys_hib_resume),
-+	.thaw = pm_sleep_ptr(qcom_geni_serial_sys_hib_resume),
- };
- 
- static const struct of_device_id qcom_geni_serial_match_table[] = {
+...
+
+> +	ret = serial8250_pci_setup_port(pdev, port, 0, port_idx * 256, 0);
+
+Actually isn't 0x100 better (show that there is an offset rather than
+a value of an register)?
+
+> +	if (ret < 0)
+> +		return ret;
+
+...
+
+> +static unsigned int pci1xxxx_get_max_port(int subsys_dev)
+> +{
+> +	int i = 0;
+
+What the point to assign this one?
+
+Actually, better is
+
+	unsigned int = MAX_PORTS;
+
+> +	if (subsys_dev < ARRAY_SIZE(logical_to_physical_port_idx))
+
+> +		for (i = MAX_PORTS - 1; i >= 0; i--)
+
+while (i--) {
+
+> +			if (logical_to_physical_port_idx[subsys_dev][i] != -1)
+> +				return logical_to_physical_port_idx[subsys_dev][i] + 1;
+
+}
+
+(Note missinng {} in the above code. Does checkpatch complain on this?)
+
+> +
+> +	if (subsys_dev != PCI_SUBDEVICE_ID_EFAR_PCI11414)
+> +		return 1;
+> +
+> +	return 4;
+> +}
+
+...
+
+> +	num_vectors = pci_alloc_irq_vectors(pdev, 1, max_vec_reqd, PCI_IRQ_ALL_TYPES);
+> +	if (num_vectors < 0) {
+
+> +		pci_iounmap(pdev, priv->membase);
+
+Here is inconsistency on how you interpret pci_*() calls when
+pcim_enable_device() has been used. I.e. for IRQ you don't
+deallocate resources explicitly (yes, it's done automatically
+anyway), but you explicitly call pci_iounmap(). Choose a single
+approach for all of them.
+
+> +		return num_vectors;
+> +	}
+
+...
+
+> +static_assert((ARRAY_SIZE(logical_to_physical_port_idx) ==
+> +	       PCI_SUBDEVICE_ID_EFAR_PCI1XXXX_1p3 + 1));
+
+Can be still one line.
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
