@@ -2,71 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 664D7C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Dec 2022 16:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4669BC4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Dec 2022 16:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231751AbiLPQCS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Dec 2022 11:02:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        id S231462AbiLPQmT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 16 Dec 2022 11:42:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiLPQBu (ORCPT
+        with ESMTP id S231825AbiLPQlh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Dec 2022 11:01:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A4A70B8E;
-        Fri, 16 Dec 2022 08:00:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5505562163;
-        Fri, 16 Dec 2022 16:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 27299C433F1;
-        Fri, 16 Dec 2022 16:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671206410;
-        bh=QKBX8e/smCfnaCFSynF3es/bTxDiYc9fMRghta9Ho3Q=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=q0Qt4IwD04kzuHje76vY+cfIQEBsYfkcq8F/EN6NucxfkeN3fAgpmRXzVVLFw2s4U
-         U9GH1rFNwIBVWWbWgNCbQqg2iLg1Km42IETJ/5SPjcv2hKKDpQ5fKQQ1yD57mC/fz5
-         mh5haRXxUwcVG4FQwXzsO+NZVgQzKALh1IXjPZkVkbqGO07UytsdVZtojFdVUum5Sm
-         rNouuV3uHiRWyNEcmX8AIX/tZu5rlm9QXTzm6zu/QCsq/23DfB6vQ6ymdPjULKUlS1
-         2DhqTXtOmdZ6vZxpM0/KOa2xNvZPIO5ZcWHTSnDwQbosQwbPHp2OCrTNVRYZ9UVdP6
-         Thc0vNA+bQ+ww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0D4B2E21EF8;
-        Fri, 16 Dec 2022 16:00:10 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver changes for 6.2-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Y5wv/NvQl6MfRTSu@kroah.com>
-References: <Y5wv/NvQl6MfRTSu@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Y5wv/NvQl6MfRTSu@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.2-rc1
-X-PR-Tracked-Commit-Id: 6373ab4dfee731deec62b4452ea641611feff9b3
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: dd6f9b17cd7af68b6a5090deedf1f5e84f66f4e6
-Message-Id: <167120641002.30725.12650684841124129905.pr-tracker-bot@kernel.org>
-Date:   Fri, 16 Dec 2022 16:00:10 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Fri, 16 Dec 2022 11:41:37 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F12110C6
+        for <linux-serial@vger.kernel.org>; Fri, 16 Dec 2022 08:40:41 -0800 (PST)
+Date:   Fri, 16 Dec 2022 17:40:38 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1671208840;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GNKZeVQcAry86nfstfFYY4Z8ojpA3AomPqxbJOmxBDg=;
+        b=eh8MXYUWR+oKOoE5r9tRvwuj5hKNma90ywt/qLGa5VdqA0Uius83PDmGSAFt5Ydviv6sHm
+        qF+37jbkaWlGNuhSNCZw3ur1HENDEGwWqe40pcSa5u4DU+zE/vJYzNGz+OEvEVbKB+yi8t
+        UB4f7w6fsHLoXCXrxQvYoSYH71x20DpOLht6HBW3pjVj+2Y7QybIdx7eYeNyRUWt7LFMMo
+        O0CiWNVKxFmEF2OI4ozOKQXgokm/5OaPOa264zGZTUkrwfJrgJhwoiNY5iy8BHC8J4OyIa
+        U1dKuu9waprIr58JZVBhYZyf7ghv4Kyfdpl1i34C49rL8dVukdQaWMfO40IrtQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1671208840;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GNKZeVQcAry86nfstfFYY4Z8ojpA3AomPqxbJOmxBDg=;
+        b=yo6rtLibK+yvf2hbcAF29KBl6BJ96+We2rAs6GtzQ6KMCKVaB4ou8atTaZOV5/Bxs8SRc7
+        LKJs5UtOptmh04DA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-serial@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v2] serial: stm32: Merge hard IRQ and threaded IRQ
+ handling into single IRQ handler
+Message-ID: <Y5yfhkO4NAdxrxf6@linutronix.de>
+References: <20221216021504.457699-1-marex@denx.de>
+ <Y5wljLfx4bj1R9kl@linutronix.de>
+ <7eba06d4-4ea1-0a15-2bb0-a1837f342a34@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <7eba06d4-4ea1-0a15-2bb0-a1837f342a34@denx.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Fri, 16 Dec 2022 09:44:44 +0100:
+On 2022-12-16 12:52:43 [+0100], Marek Vasut wrote:
+> > Also it might be worth checking if the DMA mode makes any sense if the
+> > FIFO is so small.
+> 
+> If you want to push a lot of data through the UART without refilling the
+> small FIFO all the time and getting a lot of IRQs, that's where the DMA
+> comes in. Maybe I misunderstood this comment ?
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.2-rc1
+I have no idea how this works in detail. However: if you FIFO which is
+16 bytes deep then filling it means 16 writes and so one interrupt every
+16 bytes. If the DMA engine is the "average slave dma support" then it
+gets programmed to fill 16 bytes and then issues an interrupt again. The
+"lucky" case if you can program say 512 bytes (or so) and the DMA
+engines itself is able to fill the FIFO 32 times without involving the
+CPU. The last case is clear win.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/dd6f9b17cd7af68b6a5090deedf1f5e84f66f4e6
+If you have the 16 bytes-DMA case then you would have to check what is
+cheaper: programming the DMA engine for 16 bytes or stuffing it directly
+into the FIFO.
+If the DMA engine supports the larger case say 512 and refills the FIFO
+on its own, then using it makes sense. However this makes usually sense
+for larger transfers. Having a console on it usually leads to more
+overhead because you receive usually say two bytes a second (unless you
+are a fast typer). Sending depends on the usecase and the peak is
+usually during boot. People doing BT via UART usually want to use DMA
+because of the insane amount of data, that is pumped.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Sebastian
