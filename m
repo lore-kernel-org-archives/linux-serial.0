@@ -2,98 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C64C8C10F1B
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Dec 2022 02:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87902C4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 17 Dec 2022 06:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiLQC27 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Dec 2022 21:28:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
+        id S230040AbiLQGkX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 17 Dec 2022 01:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbiLQC26 (ORCPT
+        with ESMTP id S230084AbiLQGkV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Dec 2022 21:28:58 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C62D2F6
-        for <linux-serial@vger.kernel.org>; Fri, 16 Dec 2022 18:28:56 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 83CA384E8F;
-        Sat, 17 Dec 2022 03:28:53 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1671244134;
-        bh=Vx8cqL+nZJ2mCHK55sgVTq9WnS2+/3Lbg32HIFjo55A=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Q0tf4VqSMJZYG+bJv0j/WjHQduXefOJoD+fb1CkqPWtDtzBelW0bD236j7zL28InQ
-         hrEEoIfSV08NAl/wtBgyjcl7M55aQ5Y1cQ+jdwucb1e4GEhiiQiOW+d7gihibSMW1r
-         mrcZXvK9rek5aLIAi/tLatRYOmZSX617ioUowLkrL1wjCvf+w5l0n2+UdVtwUVrdIq
-         FjoA0O+DL2FCwLy7zpkZrs8HGLX1d/EM2cu6ooc8SFtvHX13Zjbglg5anzpPWHDWBG
-         lIgaIB5D6PKGrweGOsSARbhJgE7lg+6wFGnV/TA5mJ21uchC9K4IF7NdlvIgzORX51
-         QBv7pkJB0HmRA==
-Message-ID: <a8a3caa2-4be6-c672-8607-7c8795e5f583@denx.de>
-Date:   Sat, 17 Dec 2022 03:28:52 +0100
+        Sat, 17 Dec 2022 01:40:21 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A4967D90;
+        Fri, 16 Dec 2022 22:40:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1671259220; x=1702795220;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5OIgX8jvqnen4oGjgd76wyRg0mzkmPs0CoXk7Hupyak=;
+  b=U08dUqzPge8ZmJFtAG86UTINDeewemEFt2Y2eqVKQVC6679y1hs2FCm8
+   v80iOriQVRavxIr1njVMarE1UyU8EjLAK2d2vHI/RR9anmeMpl1fuCaF/
+   LoT8I+jt5R69sCmuO+fckQpEVeLUTer0Tg7mNz0dhW/8wYTvsPGXrJ3QR
+   1yxXDrrkuD84JJ654neJ/flW1BTz7XkmtONdGA/L9zsNKtavuX7HIa2zk
+   PvXJn5nyJsLcM5H4KfURavZRbFjZgpf3jsmy26WxhP7ME3+Uf8NEJBt9W
+   CxryNVPXPbGyC2+cz5ruZRS/ra0HY+ZXTIQaQEdN5dyq6xpzGxn4CvI1k
+   w==;
+X-IronPort-AV: E=Sophos;i="5.96,252,1665471600"; 
+   d="scan'208";a="193460256"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Dec 2022 23:40:19 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 16 Dec 2022 23:40:18 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Fri, 16 Dec 2022 23:40:13 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <linux-serial@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <ilpo.jarvinen@linux.intel.com>,
+        <macro@orcam.me.uk>, <andriy.shevchenko@linux.intel.com>,
+        <cang1@live.co.uk>, <colin.i.king@gmail.com>,
+        <phil.edworthy@renesas.com>, <biju.das.jz@bp.renesas.com>,
+        <geert+renesas@glider.be>, <lukas@wunner.de>,
+        <u.kleine-koenig@pengutronix.de>, <wander@redhat.com>,
+        <etremblay@distech-controls.com>, <jk@ozlabs.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v10 tty-next 0/4] serial: 8250_pci1xxxx: Add driver for the pci1xxxx's quad-uart function
+Date:   Sun, 18 Dec 2022 00:45:03 +0530
+Message-ID: <20221217191507.2359029-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH v2] serial: stm32: Merge hard IRQ and threaded IRQ
- handling into single IRQ handler
-Content-Language: en-US
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-serial@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-References: <20221216021504.457699-1-marex@denx.de>
- <Y5wljLfx4bj1R9kl@linutronix.de>
- <7eba06d4-4ea1-0a15-2bb0-a1837f342a34@denx.de>
- <Y5yfhkO4NAdxrxf6@linutronix.de>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <Y5yfhkO4NAdxrxf6@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/16/22 17:40, Sebastian Andrzej Siewior wrote:
-> On 2022-12-16 12:52:43 [+0100], Marek Vasut wrote:
->>> Also it might be worth checking if the DMA mode makes any sense if the
->>> FIFO is so small.
->>
->> If you want to push a lot of data through the UART without refilling the
->> small FIFO all the time and getting a lot of IRQs, that's where the DMA
->> comes in. Maybe I misunderstood this comment ?
-> 
-> I have no idea how this works in detail. However: if you FIFO which is
-> 16 bytes deep then filling it means 16 writes and so one interrupt every
-> 16 bytes. If the DMA engine is the "average slave dma support" then it
-> gets programmed to fill 16 bytes and then issues an interrupt again. The
-> "lucky" case if you can program say 512 bytes (or so) and the DMA
-> engines itself is able to fill the FIFO 32 times without involving the
-> CPU. The last case is clear win.
+pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+downstream ports. Quad-uart is one of the functions in the multi-function
+endpoint. This patch adds device driver for the quad-uart function and
+enumerates between 1 to 4 instances of uarts based on the PCIe subsystem
+device ID.
 
-Ah, no, on the STM32 the DMA should be capable of streaming arbitrary 
-amount of data from DRAM to the UART FIFO if needed I think.
+The changes from v1->v2->v3->v4->v5->v6->v7->v8->v9->v10 are mentioned in
+each patch in the patchset.
 
-> If you have the 16 bytes-DMA case then you would have to check what is
-> cheaper: programming the DMA engine for 16 bytes or stuffing it directly
-> into the FIFO.
-> If the DMA engine supports the larger case say 512 and refills the FIFO
-> on its own, then using it makes sense. However this makes usually sense
-> for larger transfers. Having a console on it usually leads to more
-> overhead because you receive usually say two bytes a second (unless you
-> are a fast typer). Sending depends on the usecase and the peak is
-> usually during boot. People doing BT via UART usually want to use DMA
-> because of the insane amount of data, that is pumped.
+Thanks to Andy Shevchenko, Ilpo Jarvinen, Chritophe JAILLET, Geert
+Uytterhoeven, Greg KH, Jiri Slaby for their review comments.
 
-Yes, I think we are in agreement here. The terse version was just a bit 
-too terse. Thanks
+Kumaravel Thiagarajan (4):
+  serial: 8250_pci: Add serial8250_pci_setup_port definition in
+    8250_pcilib.c
+  serial: 8250_pci1xxxx: Add driver for quad-uart support
+  serial: 8250_pci1xxxx: Add RS485 support to quad-uart driver
+  serial: 8250_pci1xxxx: Add power management functions to quad-uart
+    driver
+
+ MAINTAINERS                             |   7 +
+ drivers/tty/serial/8250/8250_pci.c      |  25 +-
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 494 ++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pcilib.c   |  39 ++
+ drivers/tty/serial/8250/8250_pcilib.h   |  15 +
+ drivers/tty/serial/8250/8250_port.c     |   8 +
+ drivers/tty/serial/8250/Kconfig         |  15 +
+ drivers/tty/serial/8250/Makefile        |   2 +
+ include/uapi/linux/serial_core.h        |   3 +
+ 9 files changed, 586 insertions(+), 22 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_pci1xxxx.c
+ create mode 100644 drivers/tty/serial/8250/8250_pcilib.c
+ create mode 100644 drivers/tty/serial/8250/8250_pcilib.h
+
+-- 
+2.25.1
+
