@@ -2,135 +2,165 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A0DC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 17:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F632C3DA79
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 17:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234674AbiLUR1j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Dec 2022 12:27:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
+        id S229728AbiLURiK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Dec 2022 12:38:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiLUR1i (ORCPT
+        with ESMTP id S229614AbiLURiJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Dec 2022 12:27:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B067A6359
-        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 09:26:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1671643611;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NuanpIiit3pxf0DfbjP3/X8tU6mOQsYwFdbXpF1jEBw=;
-        b=DvVylG8l1CN6snTGw6dp0XduVpbL2wxCPbaVcXtUqsLgmcdw/q3QLky/dxZXSqhldOwz7V
-        MfJCJ4m2kWO0HKAaSm2CAdyGXIZif8xeHkUHd1ynMAXJ9h5EgsdA91M+pxbrG1uJcHhjAt
-        lkw9A7vqvdPxuuJQVls82nyG7siJa7Q=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-592-0_a2JBmpPICNPD_r2fSO_g-1; Wed, 21 Dec 2022 12:26:50 -0500
-X-MC-Unique: 0_a2JBmpPICNPD_r2fSO_g-1
-Received: by mail-wr1-f71.google.com with SMTP id h5-20020adfa4c5000000b0026755f9b55eso1201453wrb.11
-        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 09:26:50 -0800 (PST)
+        Wed, 21 Dec 2022 12:38:09 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD4001E72E
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 09:38:02 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id b3so24613884lfv.2
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 09:38:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/AelPukw/Bge/7D4TE4mpS0Mi8DONwlQdwfLQqx7Viw=;
+        b=iJb7JPEhV43mASG2Opvh40XFlzzuj45UkNNp8P8ydysARPR109zfVZDGrsZmuwLTrg
+         ceSiJttmIcx/hPGt51w2jnUE8+AkQ1LhtP0xhAdfFeYzd0/A/c1vL8ualdpzX8UKH0i+
+         50+jYbnkZh+m1J/kssSPUq09UUk0gWgIY8n/noymyUZSy91AMG9H96Sa6ND7Grs5VMgw
+         2rHXxQQhcKlDyaweRtt6x7w8AOgZyRWh+n4AFg3YtFiQYhNtNVFzqmkIloctr2dGqFVs
+         8rGOb0DJOesd5ILuXXxVY1Tln7XBV2FWiA9plnNWDtpgp0lPTCt9P3sNlRmNH6hrsL1r
+         X9nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NuanpIiit3pxf0DfbjP3/X8tU6mOQsYwFdbXpF1jEBw=;
-        b=lTo+70sT+9/9hOpLvB1AhG6fNOgUufoDK+XBvSM9u2cbTYYxVFjaP8QxfGPOChKQ6u
-         JZxcKb5pTaaKCTYWqXsFqjoN8o4NFAQkyNxD8GM30GGN+v58nurOpYjaC3tS+Bbzaqcl
-         60Sk0mwWOwGEoMZrioZ3Zw20yfykWnLtS5I8Okl9s/l9kwwr3jZJY13mObZ8PhHmVXin
-         LCw/8f7woxzRRfz5zm+3tC5Gw9NqrcfNfBQ2xhvZZbI7f3mI4mgma35RXs2B2VKuK6UO
-         v7MYNuwIN5Ff6KqpBVQ4P6Njm0Xf+nGYRkk7wXx1S5ngrr6TP2z/A4+2RJ81iLc4wl15
-         cofA==
-X-Gm-Message-State: AFqh2kpro0ltc8b2tdfaLavFrNWyQ0QTzQRs52lf4nDZBR6Xg6IKUmS1
-        At0C5R+m2IctXBa7ZBHL9gb1NDiF1vIQbsPT4AB8N0Q12AJQLLHQrnruZ97MQVEd6xxW/a/tvzS
-        nizTEKuiROqG8c4e/ywcBkVg=
-X-Received: by 2002:a05:600c:1f12:b0:3cf:8155:2adc with SMTP id bd18-20020a05600c1f1200b003cf81552adcmr2334955wmb.33.1671643609357;
-        Wed, 21 Dec 2022 09:26:49 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXtmCCrwZo4nu1X4aGkuZsQZJ+WKxm5A/pgzSMDNUisKMUrHcMJkTIyFUzoV5mJaknfoOilw9A==
-X-Received: by 2002:a05:600c:1f12:b0:3cf:8155:2adc with SMTP id bd18-20020a05600c1f1200b003cf81552adcmr2334924wmb.33.1671643609137;
-        Wed, 21 Dec 2022 09:26:49 -0800 (PST)
-Received: from [192.168.9.16] (net-2-34-28-158.cust.vodafonedsl.it. [2.34.28.158])
-        by smtp.gmail.com with ESMTPSA id g15-20020a05600c310f00b003b47e75b401sm3174983wmo.37.2022.12.21.09.26.47
+        bh=/AelPukw/Bge/7D4TE4mpS0Mi8DONwlQdwfLQqx7Viw=;
+        b=m2wM7hCecQH5gdi4iywgKoouMph4ffk1zDqYjlXFdUzTUElvC3+L1yob1ki/QhOzIm
+         +c5N4B0ID/QTfk2Df4VlglAiRGMRqCwDLyCA2tNg25QOKiXdvFxmVR/VVEkZJwmGMjBb
+         9bctyyNk+Cpnt+/gSa6F9dx+BdSZJ+iAgTymOZJid5E3Dn3Wlr16DbzABdF74gGAOsnU
+         R/EASEZZUR8QouJ3Fp77jhDn2EbZqxVBHa9RsMcb4PT/NZ56lsBlToC+thm25vX/mB3y
+         dWv+LO6qmFWmxQB9Cd2pj21nqhltZZXIZWBKtOTQrcclbGDvJxCeDzb/VG4K7Ag+L4A8
+         rtZw==
+X-Gm-Message-State: AFqh2koKRA4rqdKMd9efF1qoBLfEFPepPWzzDefDltAn1vasMJJlCQQz
+        yUbAkf0bphwISoZC5KC78bhnkg==
+X-Google-Smtp-Source: AMrXdXsrPzQelHePCPmvLJQmIXtxQhBFg1PxGdLa73n0nJSt1ejn4gkd9JRT+ZtnUWrNzEkFDx5hkA==
+X-Received: by 2002:a05:6512:1395:b0:4b7:113:9296 with SMTP id p21-20020a056512139500b004b701139296mr1295156lfa.14.1671644281055;
+        Wed, 21 Dec 2022 09:38:01 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id v7-20020a056512348700b004b561202ea2sm1889034lfr.182.2022.12.21.09.38.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Dec 2022 09:26:48 -0800 (PST)
-Message-ID: <d34b021c-eec4-905e-f352-734db2d8338a@redhat.com>
-Date:   Wed, 21 Dec 2022 18:26:47 +0100
+        Wed, 21 Dec 2022 09:38:00 -0800 (PST)
+Message-ID: <e2925111-abcf-26fb-59e0-9bd4fb3f7b8e@linaro.org>
+Date:   Wed, 21 Dec 2022 18:37:59 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH v7 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        bagasdotme@gmail.com
-References: <20221220163652.499831-1-matthew.gerlach@linux.intel.com>
- <20221220163652.499831-5-matthew.gerlach@linux.intel.com>
- <Y6HsQJQMDnHgTesF@smile.fi.intel.com>
-From:   Marco Pagani <marpagan@redhat.com>
-In-Reply-To: <Y6HsQJQMDnHgTesF@smile.fi.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+ Thunderbird/102.6.0
+Subject: Re: [PATCH 1/2] serdev: ttyport: fix use-after-free on closed TTY
 Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Zijun Hu <zijuhu@codeaurora.org>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Sai Teja Aluvala <quic_saluvala@quicinc.com>,
+        Panicker Harish <quic_pharish@quicinc.com>,
+        Johan Hovold <johan@kernel.org>, stable@vger.kernel.org
+References: <20221221163249.1058459-1-krzysztof.kozlowski@linaro.org>
+ <Y6M2vLV9PM3HfXZY@kroah.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Y6M2vLV9PM3HfXZY@kroah.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 2022-12-20 18:09, Andy Shevchenko wrote:
-> On Tue, Dec 20, 2022 at 08:36:52AM -0800, matthew.gerlach@linux.intel.com wrote:
->> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+On 21/12/2022 17:39, Greg Kroah-Hartman wrote:
+> On Wed, Dec 21, 2022 at 05:32:48PM +0100, Krzysztof Kozlowski wrote:
+>> use-after-free is visible in serdev-ttyport, e.g. during system reboot
+>> with Qualcomm Atheros Bluetooth.  The TTY is closed, thus "struct
+>> tty_struct" is being released, but the hci_uart_qca driver performs
+>> writes and flushes during system shutdown in qca_serdev_shutdown().
 >>
->> Add a Device Feature List (DFL) bus driver for the Altera
->> 16550 implementation of UART.
+>>   Unable to handle kernel paging request at virtual address 0072662f67726fd7
+>>   ...
+>>   CPU: 6 PID: 1 Comm: systemd-shutdow Tainted: G        W          6.1.0-rt5-00325-g8a5f56bcfcca #8
+>>   Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
+>>   Call trace:
+>>    tty_driver_flush_buffer+0x4/0x30
+>>    serdev_device_write_flush+0x24/0x34
+>>    qca_serdev_shutdown+0x80/0x130 [hci_uart]
+>>    device_shutdown+0x15c/0x260
+>>    kernel_restart+0x48/0xac
+>>
+>> KASAN report:
+>>
+>>   BUG: KASAN: use-after-free in tty_driver_flush_buffer+0x1c/0x50
+>>   Read of size 8 at addr ffff16270c2e0018 by task systemd-shutdow/1
+>>
+>>   CPU: 7 PID: 1 Comm: systemd-shutdow Not tainted 6.1.0-next-20221220-00014-gb85aaf97fb01-dirty #28
+>>   Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
+>>   Call trace:
+>>    dump_backtrace.part.0+0xdc/0xf0
+>>    show_stack+0x18/0x30
+>>    dump_stack_lvl+0x68/0x84
+>>    print_report+0x188/0x488
+>>    kasan_report+0xa4/0xf0
+>>    __asan_load8+0x80/0xac
+>>    tty_driver_flush_buffer+0x1c/0x50
+>>    ttyport_write_flush+0x34/0x44
+>>    serdev_device_write_flush+0x48/0x60
+>>    qca_serdev_shutdown+0x124/0x274
+>>    device_shutdown+0x1e8/0x350
+>>    kernel_restart+0x48/0xb0
+>>    __do_sys_reboot+0x244/0x2d0
+>>    __arm64_sys_reboot+0x54/0x70
+>>    invoke_syscall+0x60/0x190
+>>    el0_svc_common.constprop.0+0x7c/0x160
+>>    do_el0_svc+0x44/0xf0
+>>    el0_svc+0x2c/0x6c
+>>    el0t_64_sync_handler+0xbc/0x140
+>>    el0t_64_sync+0x190/0x194
+>>
+>> Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+>> Cc: <stable@vger.kernel.org>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+>>  drivers/tty/serdev/serdev-ttyport.c | 24 ++++++++++++++++++++++++
+>>  1 file changed, 24 insertions(+)
+>>
+>> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+>> index d367803e2044..3d2bab91a988 100644
+>> --- a/drivers/tty/serdev/serdev-ttyport.c
+>> +++ b/drivers/tty/serdev/serdev-ttyport.c
+>> @@ -91,6 +91,9 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
+>>  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+>>  	struct tty_struct *tty = serport->tty;
+>>  
+>> +	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+>> +		return;
 > 
-> In general the code here looks good to me, but one thing to discuss due to
-> comment to the previous patch(es).
-> 
-> ...
-> 
->> +	u64 *p;
->> +
->> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ);
->> +	if (!p)
->> +		return dev_err_probe(dev, -EINVAL, "missing CLK_FRQ param\n");
->> +
->> +	p++;
->> +	uart->port.uartclk = *p;
-> 
-> So, here and the below is using always the second u64 from the returned data.
-> Does it mean:
-> - we always skip the first u64 from the returned buffer and hence... (see below)
-> - we may actually return the second u64 as a plain number (not a pointer) from
->   (an additional?) API? In such case we would not need to take care about this
->   p++; lines here and there.
-> - we have fixed length of the data, returned by find_param(), i.e. 2 u64 words?
-> 
+> Shouldn't that be a more useful macro/function instead?
+> 	serport_is_active(serport)
 
-I also had the impression that this method of getting and incrementing a pointer
-to the beginning of the parameter block is a bit more error-prone than necessary.
-Since parameter blocks are now standardized, wouldn't be easier and safer to wrap
-the access logic into a helper function like:
+Sure, makes sense.
 
-u16 dfh_get_param_data(struct dfl_device *dfl_dev, u16 param_id, u64 *data)
+> 
+> Anyway, what prevents this from changing _right_ after you test it and
+> before you call the next line in this function (same for all invocations
+> here.)
 
-that directly provides a copy of the parameter's data into a pointer provided by
-the caller and returns the parameter version or an error if not found?
+Eh, you're right. I got suggested by such solution in
+ttyport_write_buf() assuming it was correct in the first place. Is
+holding tty_lock for entire function here reasonable?
 
-Thanks,
-Marco
+Anyway the issue also is in the caller, which should not talk over
+closed TTY, which should be fixed in patch 2.
+
+Best regards,
+Krzysztof
 
