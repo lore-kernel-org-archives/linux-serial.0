@@ -2,138 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC80C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 07:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B93DC41535
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 10:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234040AbiLUHt3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Dec 2022 02:49:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
+        id S234501AbiLUKyh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Dec 2022 05:54:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiLUHt0 (ORCPT
+        with ESMTP id S229596AbiLUKyg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Dec 2022 02:49:26 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77EC1EED4
-        for <linux-serial@vger.kernel.org>; Tue, 20 Dec 2022 23:49:22 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id g14so14768404ljh.10
-        for <linux-serial@vger.kernel.org>; Tue, 20 Dec 2022 23:49:22 -0800 (PST)
+        Wed, 21 Dec 2022 05:54:36 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658591902F;
+        Wed, 21 Dec 2022 02:54:35 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id i7so14495569wrv.8;
+        Wed, 21 Dec 2022 02:54:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=W4dufR/uux43jl3M8hYAD4DGGD+INaD7xhuItQ1sxqM=;
-        b=jyKvA4SA0BID+x3dPHPHetTx8uuU2Ufv5v0ipUrni4s75mswft8Zvab98BtnldYOry
-         KN9IADGNThpeJYPKUhhXrVL4uhfYxknL3ZKnjQxxV3zvbXUGGKirQ2zIRTrNbOReyhqy
-         q2VltiJkqRFnrwPuMj8hUJ3DcCi1xzQ1HL5fd8unnMhgGWCxEtht5Z6c+riMiiX+jVuC
-         Oc7+OtNVFhU4v5zH84NH33TEVCLFhdhywNZwVQMZxDffUB6Ur/+VzKR1Oln3tqRoWd2C
-         RogMQ7nrujwdFH4duJWEBflzR8bkd0nwUQShcVVrRiSI7w57XmauDfKG4OCS267QFPsr
-         pRkw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=dYF4aCoOjNocXMp5ObQdxM+1IiESaniY5tGPacmK2hI=;
+        b=UPW7reYDRuGDUoiD+Lb3uTPFeJy8MKOAkABhUJagUeaIYU2k84h1Kbzb2indRGVCZ/
+         +nH3idszhlY/oUm6Zvg6tHwqhKOVw6u5cipKErnxKQsnKJ8G4IvA3UyMnfjorA8szIBA
+         I9JsUylJt8PX4aPDA8l4ich2/9lN6I4mEyMBRk5iXtA6hhfqo3IxHTZFJZRjqFMLKbsp
+         dEzycxHUNgzX6Ur9PxTwGkpja06mu+WlioLu0T/qj0rgpVbaFCaQJJdD17J208t5tQ1c
+         T3ywqFaYmQE6qB2qnWrGLYiyPdKqjcE/oxCRMdnGXpufnq9kZVHvaGfHYtDof2gIy8sE
+         hSEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=W4dufR/uux43jl3M8hYAD4DGGD+INaD7xhuItQ1sxqM=;
-        b=P6kSBDkkbmZtl2CY+bcgfDHoVPLBEV2to5mbV4cTkBsR87suWQdVi2FQgugfXUgiN6
-         VyjLX8hPyts7TguKcz/Lp6ZNEMkWE8ZXWhOihBMoS83ZHhmsPqimxgLarS9Qodc2UgfY
-         XaUeWnU53BE5WJQrhPpAXKAqUaSFG4NmzDvM6If+6c4oGt6LiQaWLgSL8FqpocgQZGYz
-         2LM1ZWx8zl3t1Z6oM8l5M3FGQE9tkEGbFwVar4UgrDIO/aDvB0fEvoYJ1Nq0Vvw6SEGO
-         YBDMwga+xXFxw0LLLzJhD6CbTeIuIPSauUwrgKu8mGfW69P5edHAhE2tsWQu2bTQrHEs
-         5bIg==
-X-Gm-Message-State: AFqh2koiQuzl8Xt2J99F9BClyJdhrOlBNhp+9at26A9h2pKuutJDPnd3
-        J2aSwaMc8omVSgozK40PMBY+fg==
-X-Google-Smtp-Source: AMrXdXuL8CIiSpj3KjFKlORDGshD2jdfuqOiS5wOIen9p5A4YK/CKXwv+XuGmNs1gZhtcEvzmJqFzQ==
-X-Received: by 2002:a2e:8503:0:b0:279:cd84:1f26 with SMTP id j3-20020a2e8503000000b00279cd841f26mr1325536lji.13.1671608961015;
-        Tue, 20 Dec 2022 23:49:21 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id m8-20020ac24288000000b004a2c3fd32edsm1762548lfh.144.2022.12.20.23.49.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Dec 2022 23:49:20 -0800 (PST)
-Message-ID: <bdddd72f-a118-ff43-c53f-5ffd724fbd55@linaro.org>
-Date:   Wed, 21 Dec 2022 08:49:19 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH] tty: serial: qcom-geni-serial: fix slab-out-of-bounds on
- RX FIFO buffer
-To:     Jiri Slaby <jirislaby@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dYF4aCoOjNocXMp5ObQdxM+1IiESaniY5tGPacmK2hI=;
+        b=rGkXSsGkQUFqrNl8Y6PB6rV6qGeF09jcwJIITNyimhs8vcI4JJHQd4RwPoObzcVSWy
+         7G+ZU/ZjqjwW9PBz6hE6cwJBtxSowiIdxXbw0cyColOHqIeUX/HhEKFxCUrQna4H1Wjy
+         SUvHMgSkfRZL7QRixBrBmYkSc7UWWPuOQwPvZhtKcnokiTeQQ31F+t7hrjIQ7Ym+M6yu
+         t53yO9/Pwf14xcQ3xM9vOTZat8EuXPwOAfbr3ZmtGwpo3N83TmzsfYWXSgVZFCVZ9wUl
+         iAQ7i4bzb3jp2i06NSwS28y+rDYwoMqE0ueN4VWG1bXBt14rFzS1zZMdVf+Zxkmj/rJL
+         uufg==
+X-Gm-Message-State: AFqh2kpibcl7xXPb6mtIkOrZ54fWUeQTiHMTj5EicASeu6P/QQgmgAxQ
+        9Q1uCtBX4mv4r4icJadMbASROYrkSa1GVw==
+X-Google-Smtp-Source: AMrXdXtIftRiBiFpiF6+MSGQS3GVWuGnzm/NgMFLOBRRFdQV+jBuHN9wNcOzPNqZa5/poEcZ9eVQBg==
+X-Received: by 2002:adf:eecf:0:b0:24a:852d:e292 with SMTP id a15-20020adfeecf000000b0024a852de292mr779711wrp.46.1671620073626;
+        Wed, 21 Dec 2022 02:54:33 -0800 (PST)
+Received: from localhost.localdomain ([37.55.203.63])
+        by smtp.gmail.com with ESMTPSA id y5-20020a056000108500b0023657e1b980sm15080156wrw.53.2022.12.21.02.54.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Dec 2022 02:54:33 -0800 (PST)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jami Kettunen <jami.kettunen@protonmail.com>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-References: <20221220161530.2098299-1-krzysztof.kozlowski@linaro.org>
- <b21a17c7-df9c-ce20-f986-8f093a33278c@kernel.org>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <b21a17c7-df9c-ce20-f986-8f093a33278c@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>, Borislav Petkov <bp@suse.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Muchun Song <muchun.song@linux.dev>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Kim Phillips <kim.phillips@amd.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH v3 0/3] Add generic framebuffer support to EFI earlycon driver
+Date:   Wed, 21 Dec 2022 12:53:57 +0200
+Message-Id: <20221221105402.6598-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.39.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21/12/2022 07:43, Jiri Slaby wrote:
-> On 20. 12. 22, 17:15, Krzysztof Kozlowski wrote:
->> Driver's probe allocates memory for RX FIFO (port->rx_fifo) based on
->> default RX FIFO depth, e.g. 16.  Later during serial startup the
->> qcom_geni_serial_port_setup() updates the RX FIFO depth
->> (port->rx_fifo_depth) to match real device capabilities, e.g. to 32.
-> ...
->> If the RX FIFO depth changes after probe, be sure to resize the buffer.
->>
->> Fixes: f9d690b6ece7 ("tty: serial: qcom_geni_serial: Allocate port->rx_fifo buffer in probe")
->> Cc: <stable@vger.kernel.org>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-> 
-> This patch LGTM, I only wonder:
-> 
->> --- a/drivers/tty/serial/qcom_geni_serial.c
->> +++ b/drivers/tty/serial/qcom_geni_serial.c
->> @@ -864,9 +864,10 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
->>   	return IRQ_HANDLED;
->>   }
->>   
->> -static void get_tx_fifo_size(struct qcom_geni_serial_port *port)
->> +static int get_tx_fifo_size(struct qcom_geni_serial_port *port)
-> 
-> ... why is this function dubbed get_tx_fifo_size(), provided it handles 
-> rx fifo too? And it does not "get" the tx fifo size. In fact, the 
-> function sets that :).
+Make the EFI earlycon driver be suitable for any linear framebuffers.
+This should be helpful for early porting of boards with no other means of
+output, like smartphones/tablets. There seems to be an issue with early_ioremap
+function on ARM32, but I am unable to find the exact cause. It appears the mappings
+returned by it are somehow incorrect, thus the driver is disabled on ARM. EFI early
+console was disabled on IA64 previously because of missing early_memremap_prot,
+and this is inherited to this driver.
 
-I reads the FIFO sizes from the device registers, so I guess that was
-behind the naming.
+This patch also changes behavior on EFI systems, by selecting the mapping type
+based on if the framebuffer region intersects with system RAM. If it does, it's
+common sense that it should be in RAM as a whole, and so the system RAM mapping is
+used. It was tested to be working on my PC (Intel Z490 platform), as well as several
+ARM64 boards (Samsung Galaxy S9 (Exynos), iPad Air 2, Xiaomi Mi Pad 4, ...).
 
-> 
->>   {
->>   	struct uart_port *uport;
->> +	u32 old_rx_fifo_depth = port->rx_fifo_depth;
->>   
->>   	uport = &port->uport;
->>   	port->tx_fifo_depth = geni_se_get_tx_fifo_depth(&port->se);
->> @@ -874,6 +875,16 @@ static void get_tx_fifo_size(struct qcom_geni_serial_port *port)
->>   	port->rx_fifo_depth = geni_se_get_rx_fifo_depth(&port->se);
->>   	uport->fifosize =
->>   		(port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
->> +
->> +	if (port->rx_fifo && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
->> +		port->rx_fifo = devm_krealloc(uport->dev, port->rx_fifo,
->> +					      port->rx_fifo_depth * sizeof(u32),
->> +					      GFP_KERNEL);
-> 
-> And now it even allocates memory.
-> 
-> So more appropriate name should be setup_fifos() or similar.
+Markuss Broks (2):
+  drivers: serial: earlycon: Pass device-tree node
+  efi: earlycon: Add support for generic framebuffers and move to fbdev
+    subsystem
 
-Sure, I'll rename it and keep your Rb tag.
 
-> 
+v1 -> v2:
 
-Best regards,
-Krzysztof
+- a new patch correcting serial/earlycon.c argument name to "offset" instead
+  of "node"
+- move IA64 exclusion from EFI earlycon Kconfig to earlycon driver Kconfig
+  (IA64 has no early_memremap_prot)
+- move driver from fbdev to console subsystem
+- select EFI earlycon by default
+- fetch stride manually from device-tree, as on some devices it seems stride
+  doesn't match the horizontal resolution * bpp.
+- use saner format (e.g. 1920x1080x32 instead of 1920,1080,32).
+
+
+Markuss Broks (3):
+  drivers: serial: earlycon: Pass device-tree node
+  efi: earlycon: move to video/console to prepare for changes
+  efi: earlycon: Add support for generic framebuffers
+
+ .../admin-guide/kernel-parameters.txt         |  12 +-
+ MAINTAINERS                                   |   5 +
+ drivers/firmware/efi/Kconfig                  |   7 +-
+ drivers/firmware/efi/Makefile                 |   1 -
+ drivers/firmware/efi/earlycon.c               | 246 --------------
+ drivers/tty/serial/earlycon.c                 |   3 +
+ drivers/video/console/Kconfig                 |  11 +
+ drivers/video/console/Makefile                |   1 +
+ drivers/video/console/earlycon.c              | 305 ++++++++++++++++++
+ include/linux/serial_core.h                   |   1 +
+ 10 files changed, 336 insertions(+), 256 deletions(-)
+ delete mode 100644 drivers/firmware/efi/earlycon.c
+ create mode 100644 drivers/video/console/earlycon.c
+
+-- 
+2.39.0
 
