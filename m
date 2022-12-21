@@ -2,83 +2,214 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC86C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 16:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D46C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 16:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiLUQJe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Dec 2022 11:09:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51970 "EHLO
+        id S234415AbiLUQd3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Dec 2022 11:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiLUQJd (ORCPT
+        with ESMTP id S229968AbiLUQd2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Dec 2022 11:09:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169372037A;
-        Wed, 21 Dec 2022 08:09:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B05A461737;
-        Wed, 21 Dec 2022 16:09:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E89C433EF;
-        Wed, 21 Dec 2022 16:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1671638971;
-        bh=WegjlHZSrUxyZMNhSDJru775pDVx95szKJ8e3B7Aeog=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QK5xUwZmJxxObJmEls87rAGucBZJ6W8OjeLiVl95LTXFoxW95UFG7boYHy5pL3o2O
-         GxYB1CpzmH6ITfFI401jAUqO1llQBDywynG98OLbwq5C1+JozHW9ei8iO+ZTEKsPx7
-         3r07rVP5otc87SecBDuro99rlqBsWPZmfnZ6qDME=
-Date:   Wed, 21 Dec 2022 17:09:28 +0100
-From:   gregkh <gregkh@linuxfoundation.org>
-To:     Bin Meng <bmeng@tinylab.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        aou <aou@eecs.berkeley.edu>,
-        "catalin.marinas" <catalin.marinas@arm.com>,
-        jirislaby <jirislaby@kernel.org>, palmer <palmer@dabbelt.com>,
-        "paul.walmsley" <paul.walmsley@sifive.com>,
-        linux <linux@armlinux.org.uk>, will <will@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v3 0/3] serial: Add RISC-V support to the earlycon
- semihost driver
-Message-ID: <Y6MvuJfocYIw9NPv@kroah.com>
-References: <20221209150437.795918-1-bmeng@tinylab.org>
- <em37536add-7867-4e7d-9294-9a8389a661e2@a9022134.com>
+        Wed, 21 Dec 2022 11:33:28 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EAE25E5
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 08:33:23 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id v11so16153202ljk.12
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 08:33:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TJ10izGoIOdb0NyolcdFdlWbSwOqjXskc/t42GB7GM4=;
+        b=XOXc3xLZszdoWmtt+ZvN8t6m7mKHHmln3SggcrsSIpJTqCPo3ak1WChXAxGlIJ8LTb
+         E9gAkCuSbjx6OiEpnRikBwofNfeR/inN37pXG5u2XpDPGSi4KjvxzTok1ljM3lYmfNaK
+         cBfcPgjPAGtMKTIy8QQsvs0UGtHYX/AXB2xR3r747DxQtq09NUGqzh4oZJb6pDdPHAza
+         MY9u5hkCNSA8EYotWFqXBMLbEl0bjxrCvMCoEFgtkGbD7K0gvtdvkQFL5ABZnANS5842
+         fSYAU12aM/p2wAu4UhEdQXbbm0FuYmwuvre7xapYE/Ek1gj/aZzVojy7DtncVq33Up/7
+         hdAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TJ10izGoIOdb0NyolcdFdlWbSwOqjXskc/t42GB7GM4=;
+        b=crc4sIDK+v/qonwTzxN0pf/iCZc+nacnkXitPOHQPhz6rJ8D8hm6Q0LbLgci3V5ShM
+         rzMMcLiFxvuF27nqlpbAdohQjfFcKlYoiaw8Ges2WWZm7H3NP7rc3vbpwDs9WlDXiE8v
+         9HzQVB0sZZSUqD4mfMprqRTY/umSlGR3/7rR5QHqqLX/oHAcize4ePE+3qwrXipALNMt
+         mf6YRWSdz7G8GPMnVwBgozczl4HsJzeo0Bj11Kc395JipkudicYyf8nhjMNuXCwnU4zg
+         30SIQ4fRjkvX1tuhXdRpMgA3Rp4gC5e3hbsoX0jiEa613gUzSIcLl9LVq9BbCeNeSm9C
+         728g==
+X-Gm-Message-State: AFqh2kqLHx/rd4up22+PTk4CQ7fBosuqdvQrCztIVfEA1klX3HykGXPE
+        F4QXtgptkMT5y8Ipm87g8hoQ0g==
+X-Google-Smtp-Source: AMrXdXslXN21g3hT3ZSbwFjJ3oR740+5jytuxh08Hj5/fXlJoDGFRfh8GmYiU9wrhKNNJdWA9Qfe3A==
+X-Received: by 2002:a2e:9dca:0:b0:26f:db34:a14b with SMTP id x10-20020a2e9dca000000b0026fdb34a14bmr740203ljj.14.1671640401761;
+        Wed, 21 Dec 2022 08:33:21 -0800 (PST)
+Received: from krzk-bin.NAT.warszawa.vectranet.pl (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id a7-20020a2eb547000000b0026daf4fc0f7sm1380147ljn.92.2022.12.21.08.33.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Dec 2022 08:33:21 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Zijun Hu <zijuhu@codeaurora.org>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Sai Teja Aluvala <quic_saluvala@quicinc.com>,
+        Panicker Harish <quic_pharish@quicinc.com>,
+        Johan Hovold <johan@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org
+Subject: [PATCH 1/2] serdev: ttyport: fix use-after-free on closed TTY
+Date:   Wed, 21 Dec 2022 17:32:48 +0100
+Message-Id: <20221221163249.1058459-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <em37536add-7867-4e7d-9294-9a8389a661e2@a9022134.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 21, 2022 at 03:51:59PM +0000, Bin Meng wrote:
-> On 2022/12/9 23:04:34, "Bin Meng" <bmeng@tinylab.org> wrote:
-> 
-> > RISC-V semihosting spec [1] is built on top of the existing Arm one;
-> > we can add RISC-V earlycon semihost driver easily.
-> > 
-> > This series refactors the existing driver a little bit, to move smh_putc()
-> > variants in respective arch's semihost.h, then we can implement RISC-V's
-> > version in the riscv arch directory.
-> > 
-> > Link: https://github.com/riscv/riscv-semihosting-spec/blob/main/riscv-semihosting-spec.adoc [1]
-> > 
-> > Changes in v3:
-> > - add #ifdef in the header to prevent from multiple inclusion
-> > - add forward-declare struct uart_port
-> > - add a Link tag in the commit message
-> > 
-> Ping?
+use-after-free is visible in serdev-ttyport, e.g. during system reboot
+with Qualcomm Atheros Bluetooth.  The TTY is closed, thus "struct
+tty_struct" is being released, but the hci_uart_qca driver performs
+writes and flushes during system shutdown in qca_serdev_shutdown().
 
-It is the middle of the merge window, we can not do anything until after
-6.2-rc1 is out, please be patient.
+  Unable to handle kernel paging request at virtual address 0072662f67726fd7
+  ...
+  CPU: 6 PID: 1 Comm: systemd-shutdow Tainted: G        W          6.1.0-rt5-00325-g8a5f56bcfcca #8
+  Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
+  Call trace:
+   tty_driver_flush_buffer+0x4/0x30
+   serdev_device_write_flush+0x24/0x34
+   qca_serdev_shutdown+0x80/0x130 [hci_uart]
+   device_shutdown+0x15c/0x260
+   kernel_restart+0x48/0xac
 
-While you wait, please take the time to review other patches on the
-mailing list to help with the workload of the maintainers.
+KASAN report:
 
-thanks,
+  BUG: KASAN: use-after-free in tty_driver_flush_buffer+0x1c/0x50
+  Read of size 8 at addr ffff16270c2e0018 by task systemd-shutdow/1
 
-greg k-h
+  CPU: 7 PID: 1 Comm: systemd-shutdow Not tainted 6.1.0-next-20221220-00014-gb85aaf97fb01-dirty #28
+  Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
+  Call trace:
+   dump_backtrace.part.0+0xdc/0xf0
+   show_stack+0x18/0x30
+   dump_stack_lvl+0x68/0x84
+   print_report+0x188/0x488
+   kasan_report+0xa4/0xf0
+   __asan_load8+0x80/0xac
+   tty_driver_flush_buffer+0x1c/0x50
+   ttyport_write_flush+0x34/0x44
+   serdev_device_write_flush+0x48/0x60
+   qca_serdev_shutdown+0x124/0x274
+   device_shutdown+0x1e8/0x350
+   kernel_restart+0x48/0xb0
+   __do_sys_reboot+0x244/0x2d0
+   __arm64_sys_reboot+0x54/0x70
+   invoke_syscall+0x60/0x190
+   el0_svc_common.constprop.0+0x7c/0x160
+   do_el0_svc+0x44/0xf0
+   el0_svc+0x2c/0x6c
+   el0t_64_sync_handler+0xbc/0x140
+   el0t_64_sync+0x190/0x194
+
+Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ drivers/tty/serdev/serdev-ttyport.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index d367803e2044..3d2bab91a988 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -91,6 +91,9 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+ 	struct tty_struct *tty = serport->tty;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return;
++
+ 	tty_driver_flush_buffer(tty);
+ }
+ 
+@@ -99,6 +102,9 @@ static int ttyport_write_room(struct serdev_controller *ctrl)
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+ 	struct tty_struct *tty = serport->tty;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return 0;
++
+ 	return tty_write_room(tty);
+ }
+ 
+@@ -172,6 +178,9 @@ static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigne
+ 	struct tty_struct *tty = serport->tty;
+ 	struct ktermios ktermios = tty->termios;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return -ENXIO;
++
+ 	ktermios.c_cflag &= ~CBAUD;
+ 	tty_termios_encode_baud_rate(&ktermios, speed, speed);
+ 
+@@ -186,6 +195,9 @@ static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable
+ 	struct tty_struct *tty = serport->tty;
+ 	struct ktermios ktermios = tty->termios;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return;
++
+ 	if (enable)
+ 		ktermios.c_cflag |= CRTSCTS;
+ 	else
+@@ -201,6 +213,9 @@ static int ttyport_set_parity(struct serdev_controller *ctrl,
+ 	struct tty_struct *tty = serport->tty;
+ 	struct ktermios ktermios = tty->termios;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return -ENXIO;
++
+ 	ktermios.c_cflag &= ~(PARENB | PARODD | CMSPAR);
+ 	if (parity != SERDEV_PARITY_NONE) {
+ 		ktermios.c_cflag |= PARENB;
+@@ -222,6 +237,9 @@ static void ttyport_wait_until_sent(struct serdev_controller *ctrl, long timeout
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+ 	struct tty_struct *tty = serport->tty;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return;
++
+ 	tty_wait_until_sent(tty, timeout);
+ }
+ 
+@@ -230,6 +248,9 @@ static int ttyport_get_tiocm(struct serdev_controller *ctrl)
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+ 	struct tty_struct *tty = serport->tty;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return -ENXIO;
++
+ 	if (!tty->ops->tiocmget)
+ 		return -ENOTSUPP;
+ 
+@@ -241,6 +262,9 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+ 	struct tty_struct *tty = serport->tty;
+ 
++	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
++		return -ENXIO;
++
+ 	if (!tty->ops->tiocmset)
+ 		return -ENOTSUPP;
+ 
+-- 
+2.34.1
+
