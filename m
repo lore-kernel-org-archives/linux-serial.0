@@ -2,53 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D46C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 16:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23448C4167B
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 16:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbiLUQd3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Dec 2022 11:33:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
+        id S234520AbiLUQdc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Dec 2022 11:33:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiLUQd2 (ORCPT
+        with ESMTP id S234467AbiLUQda (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Dec 2022 11:33:28 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EAE25E5
-        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 08:33:23 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id v11so16153202ljk.12
-        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 08:33:23 -0800 (PST)
+        Wed, 21 Dec 2022 11:33:30 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4EC21806
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 08:33:24 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id f16so16139564ljc.8
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 08:33:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=TJ10izGoIOdb0NyolcdFdlWbSwOqjXskc/t42GB7GM4=;
-        b=XOXc3xLZszdoWmtt+ZvN8t6m7mKHHmln3SggcrsSIpJTqCPo3ak1WChXAxGlIJ8LTb
-         E9gAkCuSbjx6OiEpnRikBwofNfeR/inN37pXG5u2XpDPGSi4KjvxzTok1ljM3lYmfNaK
-         cBfcPgjPAGtMKTIy8QQsvs0UGtHYX/AXB2xR3r747DxQtq09NUGqzh4oZJb6pDdPHAza
-         MY9u5hkCNSA8EYotWFqXBMLbEl0bjxrCvMCoEFgtkGbD7K0gvtdvkQFL5ABZnANS5842
-         fSYAU12aM/p2wAu4UhEdQXbbm0FuYmwuvre7xapYE/Ek1gj/aZzVojy7DtncVq33Up/7
-         hdAg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yYKTBXQj692clZmnUBZb/0OhG5GDW1ZOmKCzRmlI5HU=;
+        b=rcrlx8QU636cRDmAc1IWueD8zv/ImH3X9JV8jxzf26/ASpQdSBc68iqk7T7elbPK+C
+         UDmyjbl+/I/LkQOL4/XeUrLMAuWXRizkZbGOA4BiqpIhYNSoZNC+fNwoYl/Xmn4bVR/H
+         cKElIwKgGDqPEZ8f9fQaNlrUrW5LeVRogsCskfiVrWnbc7PZ4Lg6NVpkIgvKMLzV/wi2
+         3RI7mYQfQqX2ufRcNG1JWkmJ/jYW8WD66oKaykFwlX2h4NnAwaO1NVIsWqvAppDr3EBa
+         2xX6AA3JNhWYSZmM9Dn2h9DP9puCn++3EHyGYFiGKi8HSiuyNcfhfPadwB7zyVWcOPv+
+         iITA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TJ10izGoIOdb0NyolcdFdlWbSwOqjXskc/t42GB7GM4=;
-        b=crc4sIDK+v/qonwTzxN0pf/iCZc+nacnkXitPOHQPhz6rJ8D8hm6Q0LbLgci3V5ShM
-         rzMMcLiFxvuF27nqlpbAdohQjfFcKlYoiaw8Ges2WWZm7H3NP7rc3vbpwDs9WlDXiE8v
-         9HzQVB0sZZSUqD4mfMprqRTY/umSlGR3/7rR5QHqqLX/oHAcize4ePE+3qwrXipALNMt
-         mf6YRWSdz7G8GPMnVwBgozczl4HsJzeo0Bj11Kc395JipkudicYyf8nhjMNuXCwnU4zg
-         30SIQ4fRjkvX1tuhXdRpMgA3Rp4gC5e3hbsoX0jiEa613gUzSIcLl9LVq9BbCeNeSm9C
-         728g==
-X-Gm-Message-State: AFqh2kqLHx/rd4up22+PTk4CQ7fBosuqdvQrCztIVfEA1klX3HykGXPE
-        F4QXtgptkMT5y8Ipm87g8hoQ0g==
-X-Google-Smtp-Source: AMrXdXslXN21g3hT3ZSbwFjJ3oR740+5jytuxh08Hj5/fXlJoDGFRfh8GmYiU9wrhKNNJdWA9Qfe3A==
-X-Received: by 2002:a2e:9dca:0:b0:26f:db34:a14b with SMTP id x10-20020a2e9dca000000b0026fdb34a14bmr740203ljj.14.1671640401761;
-        Wed, 21 Dec 2022 08:33:21 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yYKTBXQj692clZmnUBZb/0OhG5GDW1ZOmKCzRmlI5HU=;
+        b=A8+GnI06/vOA9QtchSDHc7Y0O4cxSR02ugHrVipjvqJ05wCnQphAONtQqcum2fR/P8
+         oYE01GHMCpfVnovra4MA5WPoRGYpXd6VbU18mQ4Q2f5ee+NmbzPBwgLtEy+IuZFKbXYz
+         GImZG0PzPjB+oGhdfUeNObJ0LBulG9wNZ2AT+MWKxNIYRoveWFclrWNc1jDD0zcwHfVE
+         S2gOKB5taVin29o3bY18kFTmbjhH+Zfv6p41ltu7Op3gRHh/7DfZVuC/koxgBJjOrBOJ
+         mdZNbc5+0ix49L4WRe+KLUDJhDoLmp1gdXX0ZWdLdgMOCiqQAemQqb8pqbx3+IRRfuAP
+         N0aw==
+X-Gm-Message-State: AFqh2kq+bU1UiBe0FFuDjFss1KOZZ/IiyETTSHz5Xx5Zw7TrohfdZ/aJ
+        Vz06vC3HOclOp9hVm9cXYyjDzA==
+X-Google-Smtp-Source: AMrXdXs3QapjE8xmgWp0PDtBo95Hc2g1XqLaSMhwKgSzMSPHwQ2TtdVfVaZjOv3AhSIzo37T+IbgLw==
+X-Received: by 2002:a05:651c:154e:b0:27a:874:cd2d with SMTP id y14-20020a05651c154e00b0027a0874cd2dmr2300650ljp.9.1671640402963;
+        Wed, 21 Dec 2022 08:33:22 -0800 (PST)
 Received: from krzk-bin.NAT.warszawa.vectranet.pl (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id a7-20020a2eb547000000b0026daf4fc0f7sm1380147ljn.92.2022.12.21.08.33.20
+        by smtp.gmail.com with ESMTPSA id a7-20020a2eb547000000b0026daf4fc0f7sm1380147ljn.92.2022.12.21.08.33.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Dec 2022 08:33:21 -0800 (PST)
+        Wed, 21 Dec 2022 08:33:22 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -64,152 +65,53 @@ Cc:     Sai Teja Aluvala <quic_saluvala@quicinc.com>,
         Johan Hovold <johan@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         stable@vger.kernel.org
-Subject: [PATCH 1/2] serdev: ttyport: fix use-after-free on closed TTY
-Date:   Wed, 21 Dec 2022 17:32:48 +0100
-Message-Id: <20221221163249.1058459-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/2] Bluetooth: hci_qca: Fix driver shutdown on closed serdev
+Date:   Wed, 21 Dec 2022 17:32:49 +0100
+Message-Id: <20221221163249.1058459-2-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221221163249.1058459-1-krzysztof.kozlowski@linaro.org>
+References: <20221221163249.1058459-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-use-after-free is visible in serdev-ttyport, e.g. during system reboot
-with Qualcomm Atheros Bluetooth.  The TTY is closed, thus "struct
-tty_struct" is being released, but the hci_uart_qca driver performs
-writes and flushes during system shutdown in qca_serdev_shutdown().
+The driver shutdown callback (which sends EDL_SOC_RESET to the device
+over serdev) should not be invoked when HCI device is not open (e.g. if
+hci_dev_open_sync() failed), because the serdev and its TTY are not open
+either.  Also skip this step if device is powered off
+(qca_power_shutdown()).
 
-  Unable to handle kernel paging request at virtual address 0072662f67726fd7
-  ...
-  CPU: 6 PID: 1 Comm: systemd-shutdow Tainted: G        W          6.1.0-rt5-00325-g8a5f56bcfcca #8
-  Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
-  Call trace:
-   tty_driver_flush_buffer+0x4/0x30
-   serdev_device_write_flush+0x24/0x34
-   qca_serdev_shutdown+0x80/0x130 [hci_uart]
-   device_shutdown+0x15c/0x260
-   kernel_restart+0x48/0xac
-
-KASAN report:
-
-  BUG: KASAN: use-after-free in tty_driver_flush_buffer+0x1c/0x50
-  Read of size 8 at addr ffff16270c2e0018 by task systemd-shutdow/1
-
-  CPU: 7 PID: 1 Comm: systemd-shutdow Not tainted 6.1.0-next-20221220-00014-gb85aaf97fb01-dirty #28
-  Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
-  Call trace:
-   dump_backtrace.part.0+0xdc/0xf0
-   show_stack+0x18/0x30
-   dump_stack_lvl+0x68/0x84
-   print_report+0x188/0x488
-   kasan_report+0xa4/0xf0
-   __asan_load8+0x80/0xac
-   tty_driver_flush_buffer+0x1c/0x50
-   ttyport_write_flush+0x34/0x44
-   serdev_device_write_flush+0x48/0x60
-   qca_serdev_shutdown+0x124/0x274
-   device_shutdown+0x1e8/0x350
-   kernel_restart+0x48/0xb0
-   __do_sys_reboot+0x244/0x2d0
-   __arm64_sys_reboot+0x54/0x70
-   invoke_syscall+0x60/0x190
-   el0_svc_common.constprop.0+0x7c/0x160
-   do_el0_svc+0x44/0xf0
-   el0_svc+0x2c/0x6c
-   el0t_64_sync_handler+0xbc/0x140
-   el0t_64_sync+0x190/0x194
-
-Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+Fixes: 7e7bbddd029b ("Bluetooth: hci_qca: Fix qca6390 enable failure after warm reboot")
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/tty/serdev/serdev-ttyport.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/bluetooth/hci_qca.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index d367803e2044..3d2bab91a988 100644
---- a/drivers/tty/serdev/serdev-ttyport.c
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -91,6 +91,9 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
- 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
- 	struct tty_struct *tty = serport->tty;
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 6eddc23e49d9..3325c8be66f8 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2164,10 +2164,17 @@ static void qca_serdev_shutdown(struct device *dev)
+ 	int timeout = msecs_to_jiffies(CMD_TRANS_TIMEOUT_MS);
+ 	struct serdev_device *serdev = to_serdev_device(dev);
+ 	struct qca_serdev *qcadev = serdev_device_get_drvdata(serdev);
++	struct hci_uart *hu = &qcadev->serdev_hu;
++	struct hci_dev *hdev = hu->hdev;
++	struct qca_data *qca = hu->priv;
+ 	const u8 ibs_wake_cmd[] = { 0xFD };
+ 	const u8 edl_reset_soc_cmd[] = { 0x01, 0x00, 0xFC, 0x01, 0x05 };
  
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return;
+ 	if (qcadev->btsoc_type == QCA_QCA6390) {
++		if (test_bit(QCA_BT_OFF, &qca->flags) || \
++		    !test_bit(HCI_RUNNING, &hdev->flags))
++			return;
 +
- 	tty_driver_flush_buffer(tty);
- }
- 
-@@ -99,6 +102,9 @@ static int ttyport_write_room(struct serdev_controller *ctrl)
- 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
- 	struct tty_struct *tty = serport->tty;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return 0;
-+
- 	return tty_write_room(tty);
- }
- 
-@@ -172,6 +178,9 @@ static unsigned int ttyport_set_baudrate(struct serdev_controller *ctrl, unsigne
- 	struct tty_struct *tty = serport->tty;
- 	struct ktermios ktermios = tty->termios;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return -ENXIO;
-+
- 	ktermios.c_cflag &= ~CBAUD;
- 	tty_termios_encode_baud_rate(&ktermios, speed, speed);
- 
-@@ -186,6 +195,9 @@ static void ttyport_set_flow_control(struct serdev_controller *ctrl, bool enable
- 	struct tty_struct *tty = serport->tty;
- 	struct ktermios ktermios = tty->termios;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return;
-+
- 	if (enable)
- 		ktermios.c_cflag |= CRTSCTS;
- 	else
-@@ -201,6 +213,9 @@ static int ttyport_set_parity(struct serdev_controller *ctrl,
- 	struct tty_struct *tty = serport->tty;
- 	struct ktermios ktermios = tty->termios;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return -ENXIO;
-+
- 	ktermios.c_cflag &= ~(PARENB | PARODD | CMSPAR);
- 	if (parity != SERDEV_PARITY_NONE) {
- 		ktermios.c_cflag |= PARENB;
-@@ -222,6 +237,9 @@ static void ttyport_wait_until_sent(struct serdev_controller *ctrl, long timeout
- 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
- 	struct tty_struct *tty = serport->tty;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return;
-+
- 	tty_wait_until_sent(tty, timeout);
- }
- 
-@@ -230,6 +248,9 @@ static int ttyport_get_tiocm(struct serdev_controller *ctrl)
- 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
- 	struct tty_struct *tty = serport->tty;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return -ENXIO;
-+
- 	if (!tty->ops->tiocmget)
- 		return -ENOTSUPP;
- 
-@@ -241,6 +262,9 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
- 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
- 	struct tty_struct *tty = serport->tty;
- 
-+	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
-+		return -ENXIO;
-+
- 	if (!tty->ops->tiocmset)
- 		return -ENOTSUPP;
- 
+ 		serdev_device_write_flush(serdev);
+ 		ret = serdev_device_write_buf(serdev, ibs_wake_cmd,
+ 					      sizeof(ibs_wake_cmd));
 -- 
 2.34.1
 
