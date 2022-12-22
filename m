@@ -2,129 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2538DC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 11:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01346C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 14:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235327AbiLVLoZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Dec 2022 06:44:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
+        id S235273AbiLVOC7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Dec 2022 09:02:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235060AbiLVLoY (ORCPT
+        with ESMTP id S230299AbiLVOC6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Dec 2022 06:44:24 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4AB27DF3
-        for <linux-serial@vger.kernel.org>; Thu, 22 Dec 2022 03:44:22 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id m29so2312715lfo.11
-        for <linux-serial@vger.kernel.org>; Thu, 22 Dec 2022 03:44:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9ygg8cCj0qz0zed9Ni0rRxDgu3BA1WKymtQ3VddGBok=;
-        b=R2GQaW0Q5fBX6ixCUYu9m2260sTsoElZxWpPz8LVGXEtZ++6ZCiu7BNJ7EfjBk8p8m
-         rUVWo0Ywxvpv5q1W3iZtSz3VvzYYISXJF6zQvvfsbnjGkZvYNzHB4whtCFZVkCfAwNtj
-         lt9LZ9AM0Ir9/2TEVK+VoF7Nr7Ug0ga5SgYs8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9ygg8cCj0qz0zed9Ni0rRxDgu3BA1WKymtQ3VddGBok=;
-        b=c39g+jNnkQT6WFWeovUSY0Ler0eTF33dY4szBtXKgHrEcAshHnQxN+Pm8UgpmNFt05
-         1i/6oA3zqvV8aOB1PAYPB6E5jXBzRQkscCK1dPpVHcA6u5hRUIDnOrP4/wWDX233mUBo
-         awXNMQazJZRSFUhIsg02Ne44ycs/fBDeOecksIs2gbUYd9vbgZXTd8JjDIPu54Ym9Igk
-         C0I6EpZNU20mayXrFwG8K6pJb5iz6gh1fTnBng7mQ627sAAZx6d95OV0mmDH0SMhdWef
-         em6kM2J5neh/Nz0hHXX5QWdP+niB4gwu0ZiEyuvyuwTvRxEMGc9sM7dIOhFAjq4AycFq
-         Ym+A==
-X-Gm-Message-State: AFqh2kqMOaJZrN23zEcIVF5ps5xiJf7YmV5jJ9gRt4Yw9VPvsBd/Xinx
-        +ZkgFyfC26d178GZoiY2DDizpg==
-X-Google-Smtp-Source: AMrXdXt/Mh5V7Dzux6VZN/xlxRFgwiC+Jy35qwoh4IhMypGqbPz1by2hx5aixOUZqItwr5wXuxhnqA==
-X-Received: by 2002:a05:6512:4005:b0:4b5:9183:5ad0 with SMTP id br5-20020a056512400500b004b591835ad0mr3110798lfb.63.1671709461328;
-        Thu, 22 Dec 2022 03:44:21 -0800 (PST)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id c18-20020ac25f72000000b004a2386b8cf5sm43072lfc.215.2022.12.22.03.44.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Dec 2022 03:44:20 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 22 Dec 2022 09:02:58 -0500
+X-Greylist: delayed 65088 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 22 Dec 2022 06:02:56 PST
+Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5C86466;
+        Thu, 22 Dec 2022 06:02:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
+        t=1671717757; bh=rAiXl+mdpdCyxLsqZQpH6KekvLvHUkV0B51Cjb53HRA=;
+        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
+         MIME-Version:Content-Type:In-Reply-To;
+        b=i6BFp7rKXpgwTRO40SFxqhfrW02mMUMoJLjZTI+qZzI5AB/lStix1/QLLR5e80x3b
+         rXfO3HCVxI1+sCYIX4j+Avg2DgqyxuBH9tegUoiJTNaEN/5KunUeMb1udV/C/D6wgE
+         YgwnYM90DYx11Oobo7OSH2rmoiGHcjuvvi5F1s2s=
+Received: by b-6.in.mailobj.net [192.168.90.16] with ESMTP
+        via ip-206.mailobj.net [213.182.55.206]
+        Thu, 22 Dec 2022 15:02:37 +0100 (CET)
+X-EA-Auth: /Rb/X7L8cN/nRl02EkrqvOrn+ZbhNwuoCLwLDamRCNY6fwRTz1VkrjOc32l1B8MUotKGCIay5XAUGENZzl1xxEq2AY99KDTC
+Date:   Thu, 22 Dec 2022 19:32:32 +0530
+From:   Deepak R Varma <drv@mailo.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Dominique Martinet <dominique.martinet@atmark-techno.com>,
-        Daisuke Mizobuchi <mizo@atmark-techno.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, stable@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH 5.15.y v2] serial: fixup backport of "serial: Deassert Transmit Enable on probe in driver-specific way"
-Date:   Thu, 22 Dec 2022 12:44:14 +0100
-Message-Id: <20221222114414.1886632-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221220102316.1280393-1-linux@rasmusvillemoes.dk>
-References: <20221220102316.1280393-1-linux@rasmusvillemoes.dk>
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Praveen Kumar <kumarpraveen@linux.microsoft.com>, drv@mailo.com
+Subject: Re: [PATCH] tty: serial: convert atomic_* to refcount_* APIs
+Message-ID: <Y6RjeCvgReLWQ89A@qemulion>
+References: <Y6NlNB9c22XiYHdD@qemulion>
+ <Y6PxNRgzPAdukDs5@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y6PxNRgzPAdukDs5@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When 7c7f9bc986e6 ("serial: Deassert Transmit Enable on probe in
-driver-specific way") got backported to 5.15.y, there known as
-b079d3775237, some hunks were accidentally left out.
+On Thu, Dec 22, 2022 at 06:55:01AM +0100, Greg Kroah-Hartman wrote:
+> On Thu, Dec 22, 2022 at 01:27:40AM +0530, Deepak R Varma wrote:
+> > The refcount_* APIs are designed to address known issues with the
+> > atomic_t APIs for reference counting. They protect the reference
+> > counters from overflow/underflow, use-after-free errors, provide
+> > improved memory ordering guarantee schemes, are neater and safer.
+> > Hence, replace the atomic_* APIs by their equivalent refcount_t
+> > API functions.
+> >
+> > This patch proposal address the following warnings generated by
+> > the atomic_as_refcounter.cocci coccinelle script
+> > 	atomic_add_return(-1, ...)
+> >
+> >
+> > Signed-off-by: Deepak R Varma <drv@mailo.com>
+> > ---
+> > Note: The patch is compile tested using dec_station.defconfig for
+> >       MIPS architecture.
+>
+> Do you have this hardware?  If not, please just do
+> one-variable-at-a-time so that if there are real problems, we can revert
+> the offending change easier.  And it makes it simpler to review.
 
-In fsl_lpuart.c, this amounts to uart_remove_one_port() being called
-in an error path despite uart_add_one_port() not having been called.
+Hi Greg,
+I do not have the hardware. I will make a one variable per patch change as
+suggest and send in a patch set.
 
-In serial_core.c, it is possible that the omission in
-uart_suspend_port() is harmless, but the backport did have the
-corresponding hunk in uart_resume_port(), it runs counter to the
-original commit's intention of
+>
+> But, are you sure this is correct:
+>
+> > -	irq_guard = atomic_add_return(1, &mux->irq_guard);
+> > -	if (irq_guard != 1)
+> > +	refcount_inc(&mux->irq_guard);
+> > +	if (refcount_read(&mux->irq_guard) != 1)
+>
+> That is now different logic than before, why?  Are you sure this is ok?
 
-  Skip any invocation of ->set_mctrl() if RS485 is enabled.
+This is not correct. I read it wrong. I will correct this in the patch set.
 
-and it's certainly better to be aligned with upstream.
+>
+> I stopped reviewing here...
+Thanks. I will review the rest of the changes per your advise and make the
+corrections.
 
-Fixes: b079d3775237 ("serial: Deassert Transmit Enable on probe in driver-specific way")
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
+regards,
+./drv
 
-v2: Also amend uart_suspend_port(), update commit log accordingly.
+>
+> thanks,
+>
+> greg k-h
 
- drivers/tty/serial/fsl_lpuart.c  | 2 +-
- drivers/tty/serial/serial_core.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 595430aedc0d..fc311df9f1c9 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2784,9 +2784,9 @@ static int lpuart_probe(struct platform_device *pdev)
- 	return 0;
- 
- failed_irq_request:
--failed_get_rs485:
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
- failed_attach_port:
-+failed_get_rs485:
- failed_reset:
- 	lpuart_disable_clks(sport);
- 	return ret;
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 5f8f0a90ce55..45b721abaa2f 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2225,7 +2225,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 
- 		spin_lock_irq(&uport->lock);
- 		ops->stop_tx(uport);
--		ops->set_mctrl(uport, 0);
-+		if (!(uport->rs485.flags & SER_RS485_ENABLED))
-+			ops->set_mctrl(uport, 0);
- 		ops->stop_rx(uport);
- 		spin_unlock_irq(&uport->lock);
- 
-
-base-commit: 5827ddaf4534c52d31dd464679a186b41810ef76
--- 
-2.37.2
 
