@@ -2,165 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD076C001B2
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 10:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2538DC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 11:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiLVKaW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Dec 2022 05:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
+        id S235327AbiLVLoZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Dec 2022 06:44:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235225AbiLVKaU (ORCPT
+        with ESMTP id S235060AbiLVLoY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Dec 2022 05:30:20 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A40D1FCF7;
-        Thu, 22 Dec 2022 02:30:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671705019; x=1703241019;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Rbzof44+EtrdYScW9KjRxHkIGR0ZtgJFbtkIuoytGKc=;
-  b=PoCwBwtcO185hqvPbW60HJsWuCiNCRYw6jsg4jgsQwCXwyO4WKkv0yXk
-   nHuKA0137PU0bpOZV0+bFWC9W9kFl3c2oLWgyzcRVUs3mHUQ8WHbGqAv/
-   xuk2Ufxkwi9vgaV7o9SUrI7RVgIFJ4u9IWmnGtxRg6W27JmxXZ+rxPrRb
-   DaLNmarThN4xZoUh2Kw/lZcLJY0SyzZGP+NPyTLZbzAZs5trk7VcntPbd
-   ++ADwBIOZfacrPbRLOISvdPPAMP1yQcRUt2TjVGg2mmA4DhIcBD5Hac4S
-   +vjCOgXFCre89gFvbmmasQPxENs2B98AzdKwhHyI8qZkE9jWcVM9WRWE4
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="347239118"
-X-IronPort-AV: E=Sophos;i="5.96,265,1665471600"; 
-   d="scan'208";a="347239118"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2022 02:30:18 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="720268696"
-X-IronPort-AV: E=Sophos;i="5.96,265,1665471600"; 
-   d="scan'208";a="720268696"
-Received: from lardelea-mobl1.ger.corp.intel.com ([10.251.219.104])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2022 02:30:16 -0800
-Date:   Thu, 22 Dec 2022 12:30:14 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Richard Leitner <richard.leitner@linux.dev>
-cc:     "David R. Piegdon" <lkml@p23q.org>, linux-tegra@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Nicolas Chauvet <kwizart@gmail.com>,
+        Thu, 22 Dec 2022 06:44:24 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4AB27DF3
+        for <linux-serial@vger.kernel.org>; Thu, 22 Dec 2022 03:44:22 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id m29so2312715lfo.11
+        for <linux-serial@vger.kernel.org>; Thu, 22 Dec 2022 03:44:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9ygg8cCj0qz0zed9Ni0rRxDgu3BA1WKymtQ3VddGBok=;
+        b=R2GQaW0Q5fBX6ixCUYu9m2260sTsoElZxWpPz8LVGXEtZ++6ZCiu7BNJ7EfjBk8p8m
+         rUVWo0Ywxvpv5q1W3iZtSz3VvzYYISXJF6zQvvfsbnjGkZvYNzHB4whtCFZVkCfAwNtj
+         lt9LZ9AM0Ir9/2TEVK+VoF7Nr7Ug0ga5SgYs8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9ygg8cCj0qz0zed9Ni0rRxDgu3BA1WKymtQ3VddGBok=;
+        b=c39g+jNnkQT6WFWeovUSY0Ler0eTF33dY4szBtXKgHrEcAshHnQxN+Pm8UgpmNFt05
+         1i/6oA3zqvV8aOB1PAYPB6E5jXBzRQkscCK1dPpVHcA6u5hRUIDnOrP4/wWDX233mUBo
+         awXNMQazJZRSFUhIsg02Ne44ycs/fBDeOecksIs2gbUYd9vbgZXTd8JjDIPu54Ym9Igk
+         C0I6EpZNU20mayXrFwG8K6pJb5iz6gh1fTnBng7mQ627sAAZx6d95OV0mmDH0SMhdWef
+         em6kM2J5neh/Nz0hHXX5QWdP+niB4gwu0ZiEyuvyuwTvRxEMGc9sM7dIOhFAjq4AycFq
+         Ym+A==
+X-Gm-Message-State: AFqh2kqMOaJZrN23zEcIVF5ps5xiJf7YmV5jJ9gRt4Yw9VPvsBd/Xinx
+        +ZkgFyfC26d178GZoiY2DDizpg==
+X-Google-Smtp-Source: AMrXdXt/Mh5V7Dzux6VZN/xlxRFgwiC+Jy35qwoh4IhMypGqbPz1by2hx5aixOUZqItwr5wXuxhnqA==
+X-Received: by 2002:a05:6512:4005:b0:4b5:9183:5ad0 with SMTP id br5-20020a056512400500b004b591835ad0mr3110798lfb.63.1671709461328;
+        Thu, 22 Dec 2022 03:44:21 -0800 (PST)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id c18-20020ac25f72000000b004a2386b8cf5sm43072lfc.215.2022.12.22.03.44.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Dec 2022 03:44:20 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial8250 on tegra hsuart: recover from spurious
- interrupts due to tegra2 silicon bug
-In-Reply-To: <Y3tUWPCVnauLeuG2@skidata.com>
-Message-ID: <e48e8030-f15e-fe5b-84b7-44406937e51@linux.intel.com>
-References: <4676ea34-69ce-5422-1ded-94218b89f7d9@p23q.org> <Y3tUWPCVnauLeuG2@skidata.com>
+        Lukas Wunner <lukas@wunner.de>,
+        Dominique Martinet <dominique.martinet@atmark-techno.com>,
+        Daisuke Mizobuchi <mizo@atmark-techno.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, stable@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH 5.15.y v2] serial: fixup backport of "serial: Deassert Transmit Enable on probe in driver-specific way"
+Date:   Thu, 22 Dec 2022 12:44:14 +0100
+Message-Id: <20221222114414.1886632-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20221220102316.1280393-1-linux@rasmusvillemoes.dk>
+References: <20221220102316.1280393-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 21 Nov 2022, Richard Leitner wrote:
+When 7c7f9bc986e6 ("serial: Deassert Transmit Enable on probe in
+driver-specific way") got backported to 5.15.y, there known as
+b079d3775237, some hunks were accidentally left out.
 
-> Hi,
-> 
-> On Fri, Jul 13, 2018 at 11:32:42AM +0000, David R. Piegdon wrote:
-> > Hi,
-> > a while back I sent a few mails regarding spurious interrupts in the
-> > UARTA (hsuart) block of the Tegra2 SoC, when using the 8250 driver for
-> > it instead of the hsuart driver. After going down a pretty deep
-> > debugging/testing hole, I think I found a patch that fixes the issue. So
-> > far testing in a reboot-cycle suggests that the error frequency dropped
-> > from >3% of all reboots to at least <0.05% of all reboots. Tests
-> > continue to run over the weekend.
-> > 
-> > The patch below already is a second iteration; the first did not reset
-> > the MCR or contain the lines below '// clear interrupts'. This resulted
-> > in no more spurious interrupts, but in a few % of spurious interrupts
-> > that were recovered the UART block did not receive any characters any
-> > more. So further resetting was required to fully reacquire operational
-> > state of the UART block.
-> > 
-> > I'd love any comments/suggestions on this!
-> 
-> I'd like to follow up on this ancient patch as we are using it
-> successfully for a few years with different kernel versions on a
-> tegra20 SOM (tamonten) now and I'm currently cleaning up our tree.
-> 
-> David, have you done any work in regarding this issue since 2018?
-> 
-> What would be needed to get this solution mainline?
+In fsl_lpuart.c, this amounts to uart_remove_one_port() being called
+in an error path despite uart_add_one_port() not having been called.
 
-It seems that the code would belong to ->handle_irq() rather than 
-8250_core. Do the affected device belong under 8250_tegra.c? If they do, 
-then just create .handle_irq for it and detect this condition there after 
-call to serial8250_handle_irq().
+In serial_core.c, it is possible that the omission in
+uart_suspend_port() is harmless, but the backport did have the
+corresponding hunk in uart_resume_port(), it runs counter to the
+original commit's intention of
 
-> The recipient of this mail are from the initial thread [1] and
-> a current get_maintainers.pl run.
-> 
-> regards;rl
-> 
-> [1] https://patchwork.ozlabs.org/project/linux-tegra/patch/4676ea34-69ce-5422-1ded-94218b89f7d9@p23q.org/
-> 
-> > 
-> > Cheers,
-> > 
-> > David
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> > index e8819aa20415..1d76eebefd4e 100644
-> > --- a/drivers/tty/serial/8250/8250_core.c
-> > +++ b/drivers/tty/serial/8250/8250_core.c
-> > @@ -140,6 +140,38 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
-> >  				"serial8250: too much work for irq%d\n", irq);
-> >  			break;
-> >  		}
-> > +
-> > +#ifdef CONFIG_ARCH_TEGRA_2x_SOC
-> > +		if (!handled && (port->type == PORT_TEGRA)) {
-> > +			/*
-> > +			 * Fix Tegra 2 CPU silicon bug where sometimes
-> > +			 * "TX holding register empty" interrupts result in a
-> > +			 * bad (metastable?) state in Tegras HSUART IP core.
-> > +			 * Only way to recover seems to be to reset all
-> > +			 * interrupts as well as the TX queue and the MCR.
-> > +			 * But we don't want to loose any outgoing characters,
-> > +			 * so only do it if the RX and TX queues are empty.
-> > +			 */
-> > +			unsigned char lsr = port->serial_in(port, UART_LSR);
+  Skip any invocation of ->set_mctrl() if RS485 is enabled.
 
-serial_lsr_in(), make sure you take the port's lock btw.
+and it's certainly better to be aligned with upstream.
 
-> > +			const unsigned char fifo_empty_mask =
-> > +						(UART_LSR_TEMT | UART_LSR_THRE);
-> > +			if (((lsr & (UART_LSR_DR | fifo_empty_mask)) ==
-> > +							fifo_empty_mask)) {
+Fixes: b079d3775237 ("serial: Deassert Transmit Enable on probe in driver-specific way")
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
 
-uart_lsr_tx_empty(lsr) && !(lsr & UART_LSR_DR)
+v2: Also amend uart_suspend_port(), update commit log accordingly.
 
-fifo_empty_mask can be dropped.
+ drivers/tty/serial/fsl_lpuart.c  | 2 +-
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 595430aedc0d..fc311df9f1c9 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2784,9 +2784,9 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ failed_irq_request:
+-failed_get_rs485:
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ failed_attach_port:
++failed_get_rs485:
+ failed_reset:
+ 	lpuart_disable_clks(sport);
+ 	return ret;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 5f8f0a90ce55..45b721abaa2f 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2225,7 +2225,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 
+ 		spin_lock_irq(&uport->lock);
+ 		ops->stop_tx(uport);
+-		ops->set_mctrl(uport, 0);
++		if (!(uport->rs485.flags & SER_RS485_ENABLED))
++			ops->set_mctrl(uport, 0);
+ 		ops->stop_rx(uport);
+ 		spin_unlock_irq(&uport->lock);
+ 
+
+base-commit: 5827ddaf4534c52d31dd464679a186b41810ef76
 -- 
- i.
-
-> > +				port->serial_out(port, UART_IER, 0);
-> > +				port->serial_out(port, UART_MCR, 0);
-> > +				serial8250_clear_and_reinit_fifos(up);
-> > +				port->serial_out(port, UART_MCR, up->mcr);
-> > +				port->serial_out(port, UART_IER, up->ier);
-> > +				// clear interrupts
-> > +				serial_port_in(port, UART_LSR);
-> > +				serial_port_in(port, UART_RX);
-> > +				serial_port_in(port, UART_IIR);
-> > +				serial_port_in(port, UART_MSR);
-> > +				up->lsr_saved_flags = 0;
-> > +				up->msr_saved_flags = 0;
-> > +			}
-> > +		}
-> > +#endif
-> >  	} while (l != end);
-> >  
-> >  	spin_unlock(&i->lock);
-> 
+2.37.2
 
