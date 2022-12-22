@@ -2,132 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C26C41535
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Dec 2022 22:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0F6C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 04:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235243AbiLUWhO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Dec 2022 17:37:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
+        id S234779AbiLVEtq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Dec 2022 23:49:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235100AbiLUWgj (ORCPT
+        with ESMTP id S234459AbiLVEto (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Dec 2022 17:36:39 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8C0E36;
-        Wed, 21 Dec 2022 14:36:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671662198; x=1703198198;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=CSuTSRNf7BVJ26/vVNpg852swFu8pb0DaMkyR4IOx0Y=;
-  b=bd7CwxMNEUCU38Bf0Ez+ThbRhw/sW+Nuy4hpsVvdmdw039NEE/fLrXYh
-   LrMjBDkAh/YHPytNFnK3rgwU0quePCa0qZZOfXRy69aqDHYgGPmBw2qib
-   vfuw/zun33jio6aFMEEqAYQI7oX1zf0McZRDO8F2mCSOHEXh8osuYGdRA
-   0CiP1eHzeFN4pbFvazF0TgwHWXkl1P1rHCNch1u6jeRXjRb/kwkuWnriA
-   4/sow9Du8xUFgDk9bGPdse6Hjfwb9ba6vRn/55VsEWZLCgUjXNIenGjPv
-   7RU4Q2bBQvV1dX8xDpR6D5btvnfI9MRN7T0SYv34k7/PlV4gY3ufU6D2C
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="303419288"
-X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
-   d="scan'208";a="303419288"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2022 14:36:38 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="758693326"
-X-IronPort-AV: E=Sophos;i="5.96,263,1665471600"; 
-   d="scan'208";a="758693326"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2022 14:36:37 -0800
-Date:   Wed, 21 Dec 2022 14:37:02 -0800 (PST)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Marco Pagani <marpagan@redhat.com>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        bagasdotme@gmail.com
-Subject: Re: [PATCH v7 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-In-Reply-To: <70c7daf8-379e-1479-aba5-4476c4a93b9f@redhat.com>
-Message-ID: <alpine.DEB.2.22.394.2212211434520.570436@rhweight-WRK1>
-References: <20221220163652.499831-1-matthew.gerlach@linux.intel.com> <20221220163652.499831-5-matthew.gerlach@linux.intel.com> <Y6HsQJQMDnHgTesF@smile.fi.intel.com> <d34b021c-eec4-905e-f352-734db2d8338a@redhat.com>
- <70c7daf8-379e-1479-aba5-4476c4a93b9f@redhat.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+        Wed, 21 Dec 2022 23:49:44 -0500
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458211A80E;
+        Wed, 21 Dec 2022 20:49:44 -0800 (PST)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BM4bgBC032093;
+        Thu, 22 Dec 2022 04:49:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id; s=qcppdkim1;
+ bh=8NKz2ilz1nUXqtBqiyLd1bHJ5FljdNQMK8Gvb39Gb+M=;
+ b=n+Udh3cQtavIsBd7Gvp/Y8/e7hTm+JcmZW9dvs+paUTYlrdHICvLScco69KpADrCZxjT
+ 9YMrKAwIYVadYRAY3zDQZVd6U7FRmxwJX9D056yDlyPBZpvxW+F3UMDqGdV+J57uSj8y
+ VjtYaVqNa8nlvC6HssPwCVZ9MAZv3wR7xZGwaSt8pTZak4XkSz6rJ55W28UA4Z3mZGxd
+ jAIdaZNLgb92z7yvYGOMr7KHQNOC4DESFVukr2f8zvsbbyqgRefifvSw5vQPp2wxh2IX
+ EEvDaWNfKUWtqKLHgyCXDJsSPI/aLSZTGqDaNo3Z1WCWa+JL6xpr36dcCAqEHw2rm23a Rw== 
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3mm5r2h9x4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 22 Dec 2022 04:49:41 +0000
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+        by APBLRPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2BM4na0u017965;
+        Thu, 22 Dec 2022 04:49:36 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 3mh6ukhx2p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 22 Dec 2022 04:49:36 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2BM4naUo017958;
+        Thu, 22 Dec 2022 04:49:36 GMT
+Received: from hu-maiyas-hyd.qualcomm.com (hu-vdadhani-hyd.qualcomm.com [10.213.106.28])
+        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 2BM4nauk017957;
+        Thu, 22 Dec 2022 04:49:36 +0000
+Received: by hu-maiyas-hyd.qualcomm.com (Postfix, from userid 4047106)
+        id 87BE65001C2; Thu, 22 Dec 2022 10:19:35 +0530 (+0530)
+From:   Viken Dadhaniya <quic_vdadhani@quicinc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, quic_vnivarth@quicinc.com,
+        quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
+        Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Subject: [PATCH V1 1/1] Serial: core: Add compat ioctl support
+Date:   Thu, 22 Dec 2022 10:19:25 +0530
+Message-Id: <20221222044925.27846-1-quic_vdadhani@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ZhoE1F2HzIAuvtmtE_rav98Md3AnjTWj
+X-Proofpoint-ORIG-GUID: ZhoE1F2HzIAuvtmtE_rav98Md3AnjTWj
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-22_01,2022-12-21_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ priorityscore=1501 phishscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0
+ impostorscore=0 spamscore=0 clxscore=1011 adultscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2212220042
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Current serial core driver doesn't support compat_ioctl
+due to which 32-bit application is not able to send
+ioctls to driver on a 64-bit platform.
 
+Added compat_ioctl support in serial core to handle
+ioctls from 32-bit applications on a 64-bit platform.
 
-On Wed, 21 Dec 2022, Marco Pagani wrote:
+Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+---
+ drivers/tty/serial/serial_core.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
->
-> On 2022-12-21 18:26, Marco Pagani wrote:
->>
->>
->> On 2022-12-20 18:09, Andy Shevchenko wrote:
->>> On Tue, Dec 20, 2022 at 08:36:52AM -0800, matthew.gerlach@linux.intel.com wrote:
->>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>>>
->>>> Add a Device Feature List (DFL) bus driver for the Altera
->>>> 16550 implementation of UART.
->>>
->>> In general the code here looks good to me, but one thing to discuss due to
->>> comment to the previous patch(es).
->>>
->>> ...
->>>
->>>> +	u64 *p;
->>>> +
->>>> +	p = dfh_find_param(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ);
->>>> +	if (!p)
->>>> +		return dev_err_probe(dev, -EINVAL, "missing CLK_FRQ param\n");
->>>> +
->>>> +	p++;
->>>> +	uart->port.uartclk = *p;
->>>
->>> So, here and the below is using always the second u64 from the returned data.
->>> Does it mean:
->>> - we always skip the first u64 from the returned buffer and hence... (see below)
->>> - we may actually return the second u64 as a plain number (not a pointer) from
->>>   (an additional?) API? In such case we would not need to take care about this
->>>   p++; lines here and there.
->>> - we have fixed length of the data, returned by find_param(), i.e. 2 u64 words?
->>>
->>
->> I also had the impression that this method of getting and incrementing a pointer
->> to the beginning of the parameter block is a bit more error-prone than necessary.
->> Since parameter blocks are now standardized, wouldn't be easier and safer to wrap
->> the access logic into a helper function like:
->>
->> u16 dfh_get_param_data(struct dfl_device *dfl_dev, u16 param_id, u64 *data)
->>
->> that directly provides a copy of the parameter's data into a pointer provided by
->> the caller and returns the parameter version or an error if not found?
->
-> Please ignore the last part of my reply. The diagram in the documentation made
-> me think that parameter data are always 64-bit wide. Since the parameter data
-> "payload" size depends on the version and ID, an eventual helper function could
-> then return a pointer to the data payload and the version number to the caller.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b9fbbee598b8..5ffa0798db3b 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1601,6 +1601,22 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+ 	return ret;
+ }
+ 
++/**
++ * uart_compat_ioctl: uart compat IOCTL function.
++ * @tty: pointer to tty structure.
++ * @cmd: command code passed by user-space.
++ * @arg: argument  passed by user-space.
++ *
++ * This function will call normal uart IOCTL.
++ *
++ * Return: 0 for success, Negative number for error condition.
++ */
++static long
++uart_compat_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
++{
++	return (long)uart_ioctl(tty, cmd, arg);
++};
++
+ static void uart_set_ldisc(struct tty_struct *tty)
+ {
+ 	struct uart_state *state = tty->driver_data;
+@@ -2670,6 +2686,7 @@ static const struct tty_operations uart_ops = {
+ 	.chars_in_buffer= uart_chars_in_buffer,
+ 	.flush_buffer	= uart_flush_buffer,
+ 	.ioctl		= uart_ioctl,
++	.compat_ioctl   = uart_compat_ioctl,
+ 	.throttle	= uart_throttle,
+ 	.unthrottle	= uart_unthrottle,
+ 	.send_xchar	= uart_send_xchar,
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
 
-Certainly helper functions should be created to make accessing the actual 
-parameter easier and safer.
-
-Thanks for the feedback,
-Matthew Gerlach
-
->
-> Thanks,
-> Marco
->
->
->
