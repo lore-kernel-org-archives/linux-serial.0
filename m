@@ -2,85 +2,72 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F54C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 05:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B48C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 07:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229567AbiLVFzI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Dec 2022 00:55:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S229698AbiLVHOj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Dec 2022 02:14:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiLVFzH (ORCPT
+        with ESMTP id S229567AbiLVHOi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Dec 2022 00:55:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EADE99;
-        Wed, 21 Dec 2022 21:55:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B05A6619B6;
-        Thu, 22 Dec 2022 05:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57001C433EF;
-        Thu, 22 Dec 2022 05:55:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1671688505;
-        bh=TRscKl5gR6cr50JxhDtAZyUtxqv9kZrOWAk32Jm8tDk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cb5/JgXj7bheGLLuH7nYeDxU1yxbN/nfWGvuc2ljVOikHK8ZQOJ20sBlNeVjvb5mv
-         3a3gNDbR6XnTU631XArBepSMV2mHUgK7gSVn9QplTf1ubkXB0fpZLh33srIW4jSG4o
-         eUZhY3wGxLmC1Pc744bZD2yybA1bhho/afoamfWM=
-Date:   Thu, 22 Dec 2022 06:55:01 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Deepak R Varma <drv@mailo.com>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thu, 22 Dec 2022 02:14:38 -0500
+X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 21 Dec 2022 23:14:36 PST
+Received: from out-130.mta0.migadu.com (out-130.mta0.migadu.com [91.218.175.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D9C18E3A
+        for <linux-serial@vger.kernel.org>; Wed, 21 Dec 2022 23:14:36 -0800 (PST)
+Date:   Thu, 22 Dec 2022 08:07:06 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1671692859;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GA27Msw6p/zB5NqRtzleiY7vvKaWzvXonvXCWKB28rM=;
+        b=hzihvZGRnTZFLZqzjUQZtDqhdxaKsk8cVLfHnl2DAc6HFg9mjgAXm27nCfxnTMAMdAz8tv
+        AlUmg+XrccFrPItVs1suMKmKZdwKGkk+fFkK5ugHUxZSDCSOewqbPmtpVHIJ3QhrvH/7qV
+        b3xJYDmw45+WjvUPB0PhyhCwAkNC8NY=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Richard Leitner <richard.leitner@linux.dev>
+To:     "David R. Piegdon" <david@p23q.org>
+Cc:     Randolph =?utf-8?Q?Maa=C3=9Fen?= <randolph.maassen@indurad.com>,
+        linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Nicolas Chauvet <kwizart@gmail.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>
-Subject: Re: [PATCH] tty: serial: convert atomic_* to refcount_* APIs
-Message-ID: <Y6PxNRgzPAdukDs5@kroah.com>
-References: <Y6NlNB9c22XiYHdD@qemulion>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial8250 on tegra hsuart: recover from spurious
+ interrupts due to tegra2 silicon bug
+Message-ID: <Y6QCGuXXavQwnR/7@g0hl1n.net>
+References: <4676ea34-69ce-5422-1ded-94218b89f7d9@p23q.org>
+ <Y3tUWPCVnauLeuG2@skidata.com>
+ <73C64EC3-3F03-426F-833B-CC9FBA9205D8@p23q.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y6NlNB9c22XiYHdD@qemulion>
+In-Reply-To: <73C64EC3-3F03-426F-833B-CC9FBA9205D8@p23q.org>
+X-Migadu-Flow: FLOW_OUT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 22, 2022 at 01:27:40AM +0530, Deepak R Varma wrote:
-> The refcount_* APIs are designed to address known issues with the
-> atomic_t APIs for reference counting. They protect the reference
-> counters from overflow/underflow, use-after-free errors, provide
-> improved memory ordering guarantee schemes, are neater and safer.
-> Hence, replace the atomic_* APIs by their equivalent refcount_t
-> API functions.
+Hi,
+
+On Tue, Nov 22, 2022 at 06:47:39PM +0100, David R. Piegdon wrote:
+> Hallo Richard,
+> it's great to hear that the patch was helpful for someone other than us.
+> However, I no longer work on that project, or that company. I have added my old coworker Randolph to the recipients, who, I think, still maintains that platform (based on colibri t20 from toradex). Maybe he can be of help. If you come up with technical questions, I might still have a memory or two.
+
+Thanks for the feedback.
+
+As I'd love to see this mainline: Does one of you (David, Randolph) have
+interest/time to try to bring this mainline? If not I can try, altough
+I'm not into the Tegra UARTs details that deep...
+
+regards;rl
+
+> @Randolph: Cheers & I hope everything is going well!
 > 
-> This patch proposal address the following warnings generated by
-> the atomic_as_refcounter.cocci coccinelle script
-> 	atomic_add_return(-1, ...)
+> Yours,
+> David
 > 
-> 
-> Signed-off-by: Deepak R Varma <drv@mailo.com>
-> ---
-> Note: The patch is compile tested using dec_station.defconfig for
->       MIPS architecture.
-
-Do you have this hardware?  If not, please just do
-one-variable-at-a-time so that if there are real problems, we can revert
-the offending change easier.  And it makes it simpler to review.
-
-But, are you sure this is correct:
-
-> -	irq_guard = atomic_add_return(1, &mux->irq_guard);
-> -	if (irq_guard != 1)
-> +	refcount_inc(&mux->irq_guard);
-> +	if (refcount_read(&mux->irq_guard) != 1)
-
-That is now different logic than before, why?  Are you sure this is ok?
-
-I stopped reviewing here...
-
-thanks,
-
-greg k-h
