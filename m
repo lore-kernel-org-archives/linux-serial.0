@@ -2,101 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD6FC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 05:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F54C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Dec 2022 05:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbiLVFtd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Dec 2022 00:49:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
+        id S229567AbiLVFzI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Dec 2022 00:55:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiLVFtc (ORCPT
+        with ESMTP id S229601AbiLVFzH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Dec 2022 00:49:32 -0500
+        Thu, 22 Dec 2022 00:55:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1FA1903A;
-        Wed, 21 Dec 2022 21:49:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EADE99;
+        Wed, 21 Dec 2022 21:55:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DEDE619A9;
-        Thu, 22 Dec 2022 05:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2516AC433EF;
-        Thu, 22 Dec 2022 05:49:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B05A6619B6;
+        Thu, 22 Dec 2022 05:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57001C433EF;
+        Thu, 22 Dec 2022 05:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1671688168;
-        bh=nmkK+b6rO2+px289TNdsGXRo/I0rx3JEOKY+uOPK8+o=;
+        s=korg; t=1671688505;
+        bh=TRscKl5gR6cr50JxhDtAZyUtxqv9kZrOWAk32Jm8tDk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sxanfO0yJjrscX73PpAiSWzPJ63Y41V/jiTGYv2Z9axMIeVIS0D7Y+XrGfsssXVyB
-         pOmyOKGq4hGmpnWkBip6Pc/rU3k9wARlISEY8rDm6va6ieqwQQ5SlKhQHbooONTLT3
-         k/fw6veUUpU4CHQIT1qnW8PWnr2YHurhQw44HSy8=
-Date:   Thu, 22 Dec 2022 06:49:25 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Viken Dadhaniya <quic_vdadhani@quicinc.com>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_msavaliy@quicinc.com,
-        quic_vnivarth@quicinc.com, quic_vtanuku@quicinc.com,
-        quic_arandive@quicinc.com
-Subject: Re: [PATCH V1 1/1] Serial: core: Add compat ioctl support
-Message-ID: <Y6Pv5WWtM63DwCAl@kroah.com>
-References: <20221222044925.27846-1-quic_vdadhani@quicinc.com>
+        b=cb5/JgXj7bheGLLuH7nYeDxU1yxbN/nfWGvuc2ljVOikHK8ZQOJ20sBlNeVjvb5mv
+         3a3gNDbR6XnTU631XArBepSMV2mHUgK7gSVn9QplTf1ubkXB0fpZLh33srIW4jSG4o
+         eUZhY3wGxLmC1Pc744bZD2yybA1bhho/afoamfWM=
+Date:   Thu, 22 Dec 2022 06:55:01 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Deepak R Varma <drv@mailo.com>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Praveen Kumar <kumarpraveen@linux.microsoft.com>
+Subject: Re: [PATCH] tty: serial: convert atomic_* to refcount_* APIs
+Message-ID: <Y6PxNRgzPAdukDs5@kroah.com>
+References: <Y6NlNB9c22XiYHdD@qemulion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221222044925.27846-1-quic_vdadhani@quicinc.com>
+In-Reply-To: <Y6NlNB9c22XiYHdD@qemulion>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 22, 2022 at 10:19:25AM +0530, Viken Dadhaniya wrote:
-> Current serial core driver doesn't support compat_ioctl
-> due to which 32-bit application is not able to send
-> ioctls to driver on a 64-bit platform.
-
-Are you sure?
-
-> Added compat_ioctl support in serial core to handle
-> ioctls from 32-bit applications on a 64-bit platform.
+On Thu, Dec 22, 2022 at 01:27:40AM +0530, Deepak R Varma wrote:
+> The refcount_* APIs are designed to address known issues with the
+> atomic_t APIs for reference counting. They protect the reference
+> counters from overflow/underflow, use-after-free errors, provide
+> improved memory ordering guarantee schemes, are neater and safer.
+> Hence, replace the atomic_* APIs by their equivalent refcount_t
+> API functions.
 > 
-> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+> This patch proposal address the following warnings generated by
+> the atomic_as_refcounter.cocci coccinelle script
+> 	atomic_add_return(-1, ...)
+> 
+> 
+> Signed-off-by: Deepak R Varma <drv@mailo.com>
 > ---
->  drivers/tty/serial/serial_core.c | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index b9fbbee598b8..5ffa0798db3b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1601,6 +1601,22 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
->  	return ret;
->  }
->  
-> +/**
-> + * uart_compat_ioctl: uart compat IOCTL function.
-> + * @tty: pointer to tty structure.
-> + * @cmd: command code passed by user-space.
-> + * @arg: argument  passed by user-space.
-> + *
-> + * This function will call normal uart IOCTL.
-> + *
-> + * Return: 0 for success, Negative number for error condition.
+> Note: The patch is compile tested using dec_station.defconfig for
+>       MIPS architecture.
 
-Why create kernel doc for a static function?  uart_ioctl() does not have
-this, right?
+Do you have this hardware?  If not, please just do
+one-variable-at-a-time so that if there are real problems, we can revert
+the offending change easier.  And it makes it simpler to review.
 
-> + */
-> +static long
-> +uart_compat_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
-> +{
-> +	return (long)uart_ioctl(tty, cmd, arg);
-> +};
+But, are you sure this is correct:
 
-Really?  Why has this never shown up before as an issue?
+> -	irq_guard = atomic_add_return(1, &mux->irq_guard);
+> -	if (irq_guard != 1)
+> +	refcount_inc(&mux->irq_guard);
+> +	if (refcount_read(&mux->irq_guard) != 1)
 
-How was this tested?  What is currently broken that now works properly
-(or the other way around?)
+That is now different logic than before, why?  Are you sure this is ok?
 
-This patch implies that _every_ driver with an ioctl must create a
-compat_ioctl() callback, are you sure that is the case?
+I stopped reviewing here...
 
 thanks,
 
