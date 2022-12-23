@@ -2,112 +2,145 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C495AC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Dec 2022 11:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C297C3DA79
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Dec 2022 14:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbiLWLNm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Dec 2022 06:13:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
+        id S236340AbiLWOmt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Dec 2022 09:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiLWLNl (ORCPT
+        with ESMTP id S230157AbiLWOms (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Dec 2022 06:13:41 -0500
+        Fri, 23 Dec 2022 09:42:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF0533E;
-        Fri, 23 Dec 2022 03:13:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4AE40831;
+        Fri, 23 Dec 2022 06:42:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4109B61F1F;
-        Fri, 23 Dec 2022 11:13:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86546C433EF;
-        Fri, 23 Dec 2022 11:13:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26ABC61159;
+        Fri, 23 Dec 2022 14:42:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D39C433A4;
+        Fri, 23 Dec 2022 14:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1671794018;
-        bh=6k6qPOMW3plUmLr9uKjqG2VachpkpHPBQRLd+3OwQss=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Khjxud6QJi8oVSJXQBZmrqMYL9NAC+3GSwrI48dwsPyr+fbgwyg0MOaaAz+BAluLG
-         PRlhI2p2WZfMf3vB4xCAMfw8LhtQSXuT83ggO7UsneOEbGkHcla0M5+A7FLYijZLH0
-         45GFDDWnXZ4Hn3TahkVpRQeQ78zDybWLTOIEcCqgMAET1mr8HI5weIX4AyAY2JVHaT
-         WTH7JfdjK8bcC5kT5nzIN1/C7jF+Plk+T81oLw+3CQs/NhS4K0B7kKkVOb+QbQK/ho
-         SvgzbEzCSljlg3XBEmMB7AvC8TAit6WydPd9AnTB33qCr3OlOmJMXsSyerykOZLnYI
-         0f4Z2Wp+0HoHA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1p8g0V-00050v-5Q; Fri, 23 Dec 2022 12:14:31 +0100
-Date:   Fri, 23 Dec 2022 12:14:31 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Daniel Beer <daniel.beer@igorinstitute.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-i2c@vger.kernel.org,
-        Michael Zaidman <michael.zaidman@gmail.com>,
-        Christina Quast <contact@christina-quast.de>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] hid-ft260: add UART support.
-Message-ID: <Y6WNl6+ySy8zcSyg@hovoldconsulting.com>
-References: <638c51a2.170a0220.3af16.18f8@mx.google.com>
- <Y4xX7ILXMFHZtJkv@kroah.com>
- <20221204091247.GA11195@nyquist.nev>
- <Y4xqyRERBdr8fT7F@kroah.com>
- <20221205012403.GA14904@nyquist.nev>
- <Y5G2PBEprjPp3FKR@kroah.com>
+        s=k20201202; t=1671806566;
+        bh=5WSz7TH//n5BtaNgZRfsk+p6ujzCP/EjZAPHDEoOC98=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=olxxz20sE9VTDEToVcepShp6ZZa4Bp12yaWtO7oOBQta+a/sXX0eD23TtaEu706n7
+         dYllP031b6JfCc338/j7dE0aRJtMYFMF/Op/BWYY8WZWIEBVWdrJ7HzTVX9VasJsvc
+         FIbWpnPNK0jmNoe230W4DUArvIoamRMJ6UTBnPmGxouLbp9VvM5uzgArb1twRsptbk
+         5FXgas+e0Pg/F1ZBUf9QUMamromNWImKk2vjlak7t2YQxzb3CMrVlNqxq94NAxHXg/
+         jwqxTlLhDxWKXzzZ8XjG2NQMdyte63X7IJl19pnT/P1llWf/iPkM9R/eE0CgUDTpiG
+         5v1zhFgOy0PVA==
+Received: by mail-lf1-f51.google.com with SMTP id b3so7355794lfv.2;
+        Fri, 23 Dec 2022 06:42:46 -0800 (PST)
+X-Gm-Message-State: AFqh2krGy2jhKjbScvaXFIjc4iButlvppwu/Z5hP9yzq65966IgiXCWC
+        ivBGd4I1EODyxXThdPoiRmj/HuuYBa6YAvsdE6E=
+X-Google-Smtp-Source: AMrXdXsMS+IGHzYDCdkiTlPt8UpinmgPDyHMg5CLbMsP3Lf2KPNsaQeyjjbVXhzNJHHGAEQZqz4efhVo1rex3aoEMIw=
+X-Received: by 2002:a19:a411:0:b0:4b6:e28c:276d with SMTP id
+ q17-20020a19a411000000b004b6e28c276dmr947831lfc.110.1671806564479; Fri, 23
+ Dec 2022 06:42:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y5G2PBEprjPp3FKR@kroah.com>
+References: <20221221105402.6598-1-markuss.broks@gmail.com>
+In-Reply-To: <20221221105402.6598-1-markuss.broks@gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Fri, 23 Dec 2022 15:42:33 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXGUC7dsSwVEUsAMeAoqDYtbqrM7SDOJTXbPfi-LrcSk9g@mail.gmail.com>
+Message-ID: <CAMj1kXGUC7dsSwVEUsAMeAoqDYtbqrM7SDOJTXbPfi-LrcSk9g@mail.gmail.com>
+Subject: Re: [PATCH v3 0/3] Add generic framebuffer support to EFI earlycon driver
+To:     Markuss Broks <markuss.broks@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Jami Kettunen <jami.kettunen@protonmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>, Borislav Petkov <bp@suse.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Muchun Song <muchun.song@linux.dev>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Kim Phillips <kim.phillips@amd.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 08, 2022 at 11:02:36AM +0100, Greg Kroah-Hartman wrote:
-> On Mon, Dec 05, 2022 at 02:24:03PM +1300, Daniel Beer wrote:
-> > On Sun, Dec 04, 2022 at 10:39:21AM +0100, Greg Kroah-Hartman wrote:
-> > > > Thanks for reviewing. This device is quite strange -- it presents itself
-> > > > as a USB HID, but it provides both an I2C master and a UART. The
-> > > > existing driver supports only the I2C functionality currently.
+(cc Andy)
 
-> > > > > A whole new major for just a single tty port?  Please no, use dynamic
-> > > > > majors if you have to, or better yet, tie into the usb-serial
-> > > > > implementation (this is a USB device, right?) and then you don't have to
-> > > > > mess with this at all.
-> > > > 
-> > > > As far as I understand it, I don't think usb-serial is usable, due to
-> > > > the fact that this is already an HID driver.
-> > > 
-> > > That should not be a restriction at all.  You are adding a tty device to
-> > > this driver, no reason you can't interact with usb-serial instead.  That
-> > > way you share the correct userspace tty name and major/minor numbers and
-> > > all userspace tools should "just work" as they know that name and how to
-> > > interact with it already.
-> > > 
-> > > Try doing that instead of your own "raw" tty device please.
-> > 
-> > Maybe I've misunderstood something. The reason I thought usb-serial was
-> > unusable in this instance was that I couldn't see a way to create a port
-> > except via usb-serial's own probe function (otherwise, the API looked
-> > fine).
-> > 
-> > I don't know whether I'm looking at a serial or an I2C interface until
-> > after it's already been probed by HID core, I have a struct hid_device
-> > and I've asked what type of interface it is via an HID feature report.
-> > This can't be determined otherwise, because strapping pins affect the
-> > presentation of interfaces.
-> > 
-> > At that point, I (currently) call uart_add_one_port. I might have missed
-> > it, but I didn't see anything analogous in the usb-serial API. Am I
-> > going about this the wrong way?
-> 
-> I thought that this could be done, but I might be wrong.  Johan, any
-> ideas?
 
-It seems to me like this should be implemented as a new tty driver as
-neither USB-serial or serial (core) is a good fit for such a HID device.
+On Wed, 21 Dec 2022 at 11:54, Markuss Broks <markuss.broks@gmail.com> wrote:
+>
+> Make the EFI earlycon driver be suitable for any linear framebuffers.
+> This should be helpful for early porting of boards with no other means of
+> output, like smartphones/tablets. There seems to be an issue with early_ioremap
+> function on ARM32, but I am unable to find the exact cause. It appears the mappings
+> returned by it are somehow incorrect, thus the driver is disabled on ARM.
 
-So this appears to be right approach in general:
+The reason that this driver is disabled on ARM is because the struct
+screen_info is not populated early enough, as it is retrieved from a
+UEFI configuration table.
 
-	https://lore.kernel.org/all/20221207220617.116082-1-contact@christina-quast.de/
+early_ioremap() works fine on ARM as long as they mapping is torn down
+before paging_init()
 
-Johan
+> EFI early
+> console was disabled on IA64 previously because of missing early_memremap_prot,
+> and this is inherited to this driver.
+>
+> This patch also changes
+
+"This patch also changes ..." is usually a strong hint to self that
+the patches need to be split up.
+
+> behavior on EFI systems, by selecting the mapping type
+> based on if the framebuffer region intersects with system RAM. If it does, it's
+> common sense that it should be in RAM as a whole, and so the system RAM mapping is
+> used. It was tested to be working on my PC (Intel Z490 platform), as well as several
+> ARM64 boards (Samsung Galaxy S9 (Exynos), iPad Air 2, Xiaomi Mi Pad 4, ...).
+>
+> Markuss Broks (2):
+>   drivers: serial: earlycon: Pass device-tree node
+>   efi: earlycon: Add support for generic framebuffers and move to fbdev
+>     subsystem
+>
+>
+> v1 -> v2:
+>
+> - a new patch correcting serial/earlycon.c argument name to "offset" instead
+>   of "node"
+> - move IA64 exclusion from EFI earlycon Kconfig to earlycon driver Kconfig
+>   (IA64 has no early_memremap_prot)
+> - move driver from fbdev to console subsystem
+> - select EFI earlycon by default
+> - fetch stride manually from device-tree, as on some devices it seems stride
+>   doesn't match the horizontal resolution * bpp.
+> - use saner format (e.g. 1920x1080x32 instead of 1920,1080,32).
+>
+>
+> Markuss Broks (3):
+>   drivers: serial: earlycon: Pass device-tree node
+>   efi: earlycon: move to video/console to prepare for changes
+>   efi: earlycon: Add support for generic framebuffers
+>
+>  .../admin-guide/kernel-parameters.txt         |  12 +-
+>  MAINTAINERS                                   |   5 +
+>  drivers/firmware/efi/Kconfig                  |   7 +-
+>  drivers/firmware/efi/Makefile                 |   1 -
+>  drivers/firmware/efi/earlycon.c               | 246 --------------
+>  drivers/tty/serial/earlycon.c                 |   3 +
+>  drivers/video/console/Kconfig                 |  11 +
+>  drivers/video/console/Makefile                |   1 +
+>  drivers/video/console/earlycon.c              | 305 ++++++++++++++++++
+>  include/linux/serial_core.h                   |   1 +
+>  10 files changed, 336 insertions(+), 256 deletions(-)
+>  delete mode 100644 drivers/firmware/efi/earlycon.c
+>  create mode 100644 drivers/video/console/earlycon.c
+>
+> --
+> 2.39.0
+>
