@@ -2,144 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4D0C4332F
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Dec 2022 08:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AC1C10F1B
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Dec 2022 08:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiLXIRa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Dec 2022 03:17:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        id S229937AbiLXIhv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Dec 2022 03:37:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiLXIR3 (ORCPT
+        with ESMTP id S229487AbiLXIht (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Dec 2022 03:17:29 -0500
-Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A48DFA2;
-        Sat, 24 Dec 2022 00:17:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-        t=1671869837; bh=zGGbbuCFDi0fJZzEl65qs35uUNliyt5H98E+AQuRzag=;
-        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:MIME-Version:
-         Content-Type;
-        b=DP/vkiJcSd3PEEg4xqskXiTahRViQ5P31ekegAAxCjs8dmmtAFWZcgKt/Wglp7Zlp
-         QeS+N88LUL1FHh9X3D7sGKeoGWTstOR5P1yCvZxtyotnkEX9eA3C3kCx7kTnrKOekI
-         lOGgWSwuAjkmkMIzZysPmMhON7k56VI0wbg2i8No=
-Received: by b-1.in.mailobj.net [192.168.90.11] with ESMTP
-        via ip-206.mailobj.net [213.182.55.206]
-        Sat, 24 Dec 2022 09:17:17 +0100 (CET)
-X-EA-Auth: AEXDKs6VnpWAu5Q/NjyGfE/fHcrNKz18IDs33rsfJowVHSNknlD1UBEkvSnQchuJuGLbhSZu2gpwXZOXrGnOapzGsmtiYOie
-Date:   Sat, 24 Dec 2022 13:47:12 +0530
-From:   Deepak R Varma <drv@mailo.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sat, 24 Dec 2022 03:37:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF953B4BF;
+        Sat, 24 Dec 2022 00:37:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42F3D6020F;
+        Sat, 24 Dec 2022 08:37:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 028CDC433D2;
+        Sat, 24 Dec 2022 08:37:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1671871066;
+        bh=d2QlW2jzxm0TheGGe7a2wTTUh4ptonZr6C3QaKWYxXc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iadjt2PB/+8hlq5sX0aFgfK0T8sL1rQnLHW6s3+sx17rYBsMB9sRXxGNBy1oc92Mx
+         hbwtI7HyFV0CTdczeQj0pH4BxokJGe22rSu5IO2tKWeHZofZHaagRJnLavaB2iN3Lj
+         lOjvP2EYFglCh0pDxQfioVks+iIVEU1D9M0H7nQM=
+Date:   Sat, 24 Dec 2022 09:37:43 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Deepak R Varma <drv@mailo.com>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>,
-        Deepak R Varma <drv@mailo.com>
-Subject: [PATCH v2] tty: serial: dz: convert atomic_* to refcount_* APIs for
- irq_guard
-Message-ID: <Y6a1iJpxV0xV+NhP@qemulion>
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Praveen Kumar <kumarpraveen@linux.microsoft.com>
+Subject: Re: [PATCH v2] tty: serial: dz: convert atomic_* to refcount_* APIs
+ for irq_guard
+Message-ID: <Y6a6VyNwJ8yM44Rq@kroah.com>
+References: <Y6a1iJpxV0xV+NhP@qemulion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Y6a1iJpxV0xV+NhP@qemulion>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The refcount_* APIs are designed to address known issues with the
-atomic_t APIs for reference counting. They provide following distinct
-advantages:
-   - protect the reference counters from overflow/underflow
-   - avoid use-after-free errors
-   - provide improved memory ordering guarantee schemes
-   - neater and safer.
-Hence, replace the atomic_* APIs by their equivalent refcount_t
-API functions.
+On Sat, Dec 24, 2022 at 01:47:12PM +0530, Deepak R Varma wrote:
+> The refcount_* APIs are designed to address known issues with the
+> atomic_t APIs for reference counting. They provide following distinct
+> advantages:
+>    - protect the reference counters from overflow/underflow
+>    - avoid use-after-free errors
+>    - provide improved memory ordering guarantee schemes
+>    - neater and safer.
+> Hence, replace the atomic_* APIs by their equivalent refcount_t
+> API functions.
+> 
+> This patch proposal address the following warnings generated by
+> the atomic_as_refcounter.cocci coccinelle script
+> atomic_add_return(-1, ...)
+> 
+> Signed-off-by: Deepak R Varma <drv@mailo.com>
+> ---
 
-This patch proposal address the following warnings generated by
-the atomic_as_refcounter.cocci coccinelle script
-atomic_add_return(-1, ...)
+This depends on the previous patch you sent, so why wasn't this a patch
+series?  Always send patches as a series, otherwise I would have
+attempted to apply this one first and it would have failed.  You will
+recieve 0-day reports about that happening over the next few days as our
+testing infrastructure will also be confused.
 
-Signed-off-by: Deepak R Varma <drv@mailo.com>
----
+Please fix and resend all changes you wish to have done to this driver
+together.
 
-Changes in v2:
-   1. Separate the combined change into one variable per patch as
-      suggested by gregkh@linuxfoundation.org
-   2. There was additional feedback on validating the change as it appeared to
-      modify the existing logic. However, I found that the logic does not
-      change with the proposed refcount_* APIs used in this change. Hence that
-      feedback is not applied in this version.
+thanks,
 
-Please Note:
-   The patch is compile tested using dec_station.defconfig for MIPS architecture.
-
-
- drivers/tty/serial/dz.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-index b70edc248f8b..0aa59a9beeb7 100644
---- a/drivers/tty/serial/dz.c
-+++ b/drivers/tty/serial/dz.c
-@@ -46,7 +46,6 @@
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
-
--#include <linux/atomic.h>
- #include <linux/refcount.h>
- #include <linux/io.h>
- #include <asm/bootinfo.h>
-@@ -77,7 +76,7 @@ struct dz_port {
- struct dz_mux {
- 	struct dz_port		dport[DZ_NB_PORT];
- 	refcount_t		map_guard;
--	atomic_t		irq_guard;
-+	refcount_t		irq_guard;
- 	int			initialised;
- };
-
-@@ -400,18 +399,16 @@ static int dz_startup(struct uart_port *uport)
- 	struct dz_port *dport = to_dport(uport);
- 	struct dz_mux *mux = dport->mux;
- 	unsigned long flags;
--	int irq_guard;
- 	int ret;
- 	u16 tmp;
-
--	irq_guard = atomic_add_return(1, &mux->irq_guard);
--	if (irq_guard != 1)
-+	refcount_inc(&mux->irq_guard);
-+	if (refcount_read(&mux->irq_guard) != 1)
- 		return 0;
-
--	ret = request_irq(dport->port.irq, dz_interrupt,
--			  IRQF_SHARED, "dz", mux);
-+	ret = request_irq(dport->port.irq, dz_interrupt, IRQF_SHARED, "dz", mux);
- 	if (ret) {
--		atomic_add(-1, &mux->irq_guard);
-+		refcount_dec(&mux->irq_guard);
- 		printk(KERN_ERR "dz: Cannot get IRQ %d!\n", dport->port.irq);
- 		return ret;
- 	}
-@@ -441,15 +438,13 @@ static void dz_shutdown(struct uart_port *uport)
- 	struct dz_port *dport = to_dport(uport);
- 	struct dz_mux *mux = dport->mux;
- 	unsigned long flags;
--	int irq_guard;
- 	u16 tmp;
-
- 	spin_lock_irqsave(&dport->port.lock, flags);
- 	dz_stop_tx(&dport->port);
- 	spin_unlock_irqrestore(&dport->port.lock, flags);
-
--	irq_guard = atomic_add_return(-1, &mux->irq_guard);
--	if (!irq_guard) {
-+	if (refcount_dec_and_test(&mux->irq_guard)) {
- 		/* Disable interrupts.  */
- 		tmp = dz_in(dport, DZ_CSR);
- 		tmp &= ~(DZ_RIE | DZ_TIE);
---
-2.34.1
-
-
-
+greg k-h
