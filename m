@@ -2,31 +2,31 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16886C4332F
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Dec 2022 16:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE6EC4332F
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Dec 2022 16:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiLXQen (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Dec 2022 11:34:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
+        id S230294AbiLXQ4P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Dec 2022 11:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiLXQem (ORCPT
+        with ESMTP id S229688AbiLXQ4O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Dec 2022 11:34:42 -0500
+        Sat, 24 Dec 2022 11:56:14 -0500
 Received: from msg-2.mailo.com (msg-2.mailo.com [213.182.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BF6BC24;
-        Sat, 24 Dec 2022 08:34:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB162603;
+        Sat, 24 Dec 2022 08:56:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-        t=1671899673; bh=JOlABxyXfYqHNmeXEA2u7PKdxsmIADwnMI+IIPAofYs=;
-        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
-         MIME-Version:Content-Type:In-Reply-To;
-        b=G7fRU4wGfAc6gzasYNgExIne6OeHxLd2yQwgYqH9UVM9hGaioJ7GT+snkxYaZHzmF
-         T9rz25g8S5NVnzAC5x63nQIRo7d0WY5dNkAVSHrJJct00oswLDiQ/RkyEtlq3STeTa
-         A/YzBd4wTuc4D//7kxpGMBaj/TN4pLeXbOQkf9ns=
-Received: by b-4.in.mailobj.net [192.168.90.14] with ESMTP
+        t=1671900963; bh=3C2JvUsacwZN7GumK7kKdnt5r4dLheWUSYF11PIXW9w=;
+        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:MIME-Version:
+         Content-Type;
+        b=ggGjINSnf2Q/CriYnLlA/iPprvlC6WjH6Wt/FkK99/Y53G0FSxw1/ibA1aLHKTgsK
+         UVPBKZBrXwXm/Nqau3eQH3CsD3Sn/QwvcsuAflG7swohkGXlsjCb5RPTb/iHqPyGiZ
+         ZbhktDeh1d5ewav53hvbBeJKS+ZVgbvtxTpigp8A=
+Received: by b-2.in.mailobj.net [192.168.90.12] with ESMTP
         via ip-206.mailobj.net [213.182.55.206]
-        Sat, 24 Dec 2022 17:34:33 +0100 (CET)
-X-EA-Auth: u5gVJF6h2z6ranrprLxW6HFUwyiomyX6r//ovjc1j/VosSoEw1Ak2Lw/JbyumNnUO9AM56Ey8DrPTbNA0EQfj9lOo+WcqNpx
-Date:   Sat, 24 Dec 2022 22:04:28 +0530
+        Sat, 24 Dec 2022 17:56:03 +0100 (CET)
+X-EA-Auth: qanuojNqbxHKKlnmMrAkT89JArbMTly1Cg0TwjOlfKTX30ZqVjzUJ5YwEXDmBZyh+UamKiTd8vbOEEPYgb3JrzVBoS3zH88g
+Date:   Sat, 24 Dec 2022 22:25:58 +0530
 From:   Deepak R Varma <drv@mailo.com>
 To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -35,14 +35,12 @@ To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
 Cc:     Saurabh Singh Sengar <ssengar@microsoft.com>,
         Praveen Kumar <kumarpraveen@linux.microsoft.com>,
         Deepak R Varma <drv@mailo.com>
-Subject: [PATCH 2/2] tty: serial: dz: convert atomic_* to refcount_* APIs for
+Subject: [PATCH v2] tty: serial: zs: convert atomic_* to refcount_* APIs for
  irq_guard
-Message-ID: <51ef854f77779c82010379420139993e12c38776.1671898144.git.drv@mailo.com>
-References: <cover.1671898144.git.drv@mailo.com>
+Message-ID: <Y6cvHgOlkcG90j1J@qemulion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1671898144.git.drv@mailo.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -63,84 +61,79 @@ atomic_add_return(-1, ...)
 
 Signed-off-by: Deepak R Varma <drv@mailo.com>
 ---
-Please Note:
-   1. The patch is compile tested using dec_station.defconfig for MIPS architecture.
-   2. This patch should be applied after patch 1/2 of this series due to
-      dependency.
-
-Changes in v3:
-   1. Include the individual patches in a series and highlight dependency.
-      Feedback provided by gregkh@linuxfoundation.org
 
 Changes in v2:
    1. Separate the combined change into one variable per patch as
       suggested by gregkh@linuxfoundation.org
+   2. There was additional feedback on validating the change as it appeared to
+      modify the existing logic. However, I found that the logic does not
+      change with the proposed refcount_* APIs used in this change. Hence that
+      feedback is not applied in this version.
 
+Please Note:
+   The patch is compile tested using dec_station.defconfig for MIPS architecture.
 
- drivers/tty/serial/dz.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/tty/serial/zs.c | 14 +++++---------
+ drivers/tty/serial/zs.h |  2 +-
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-index b70edc248f8b..0aa59a9beeb7 100644
---- a/drivers/tty/serial/dz.c
-+++ b/drivers/tty/serial/dz.c
-@@ -46,7 +46,6 @@
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
-
--#include <linux/atomic.h>
- #include <linux/refcount.h>
- #include <linux/io.h>
- #include <asm/bootinfo.h>
-@@ -77,7 +76,7 @@ struct dz_port {
- struct dz_mux {
- 	struct dz_port		dport[DZ_NB_PORT];
- 	refcount_t		map_guard;
--	atomic_t		irq_guard;
-+	refcount_t		irq_guard;
- 	int			initialised;
- };
-
-@@ -400,18 +399,16 @@ static int dz_startup(struct uart_port *uport)
- 	struct dz_port *dport = to_dport(uport);
- 	struct dz_mux *mux = dport->mux;
+diff --git a/drivers/tty/serial/zs.c b/drivers/tty/serial/zs.c
+index 730c648e32ff..6be9933eff5c 100644
+--- a/drivers/tty/serial/zs.c
++++ b/drivers/tty/serial/zs.c
+@@ -753,17 +753,15 @@ static int zs_startup(struct uart_port *uport)
+ 	struct zs_port *zport = to_zport(uport);
+ 	struct zs_scc *scc = zport->scc;
  	unsigned long flags;
 -	int irq_guard;
  	int ret;
- 	u16 tmp;
 
--	irq_guard = atomic_add_return(1, &mux->irq_guard);
--	if (irq_guard != 1)
-+	refcount_inc(&mux->irq_guard);
-+	if (refcount_read(&mux->irq_guard) != 1)
- 		return 0;
-
--	ret = request_irq(dport->port.irq, dz_interrupt,
--			  IRQF_SHARED, "dz", mux);
-+	ret = request_irq(dport->port.irq, dz_interrupt, IRQF_SHARED, "dz", mux);
- 	if (ret) {
--		atomic_add(-1, &mux->irq_guard);
-+		refcount_dec(&mux->irq_guard);
- 		printk(KERN_ERR "dz: Cannot get IRQ %d!\n", dport->port.irq);
- 		return ret;
+-	irq_guard = atomic_add_return(1, &scc->irq_guard);
+-	if (irq_guard == 1) {
++	refcount_inc(&scc->irq_guard);
++	if (refcount_read(&scc->irq_guard) == 1) {
+ 		ret = request_irq(zport->port.irq, zs_interrupt,
+ 				  IRQF_SHARED, "scc", scc);
+ 		if (ret) {
+-			atomic_add(-1, &scc->irq_guard);
+-			printk(KERN_ERR "zs: can't get irq %d\n",
+-			       zport->port.irq);
++			refcount_dec(&scc->irq_guard);
++			printk(KERN_ERR "zs: can't get irq %d\n", zport->port.irq);
+ 			return ret;
+ 		}
  	}
-@@ -441,15 +438,13 @@ static void dz_shutdown(struct uart_port *uport)
- 	struct dz_port *dport = to_dport(uport);
- 	struct dz_mux *mux = dport->mux;
+@@ -806,7 +804,6 @@ static void zs_shutdown(struct uart_port *uport)
+ 	struct zs_port *zport = to_zport(uport);
+ 	struct zs_scc *scc = zport->scc;
  	unsigned long flags;
 -	int irq_guard;
- 	u16 tmp;
 
- 	spin_lock_irqsave(&dport->port.lock, flags);
- 	dz_stop_tx(&dport->port);
- 	spin_unlock_irqrestore(&dport->port.lock, flags);
+ 	spin_lock_irqsave(&scc->zlock, flags);
 
--	irq_guard = atomic_add_return(-1, &mux->irq_guard);
--	if (!irq_guard) {
-+	if (refcount_dec_and_test(&mux->irq_guard)) {
- 		/* Disable interrupts.  */
- 		tmp = dz_in(dport, DZ_CSR);
- 		tmp &= ~(DZ_RIE | DZ_TIE);
+@@ -816,8 +813,7 @@ static void zs_shutdown(struct uart_port *uport)
+
+ 	spin_unlock_irqrestore(&scc->zlock, flags);
+
+-	irq_guard = atomic_add_return(-1, &scc->irq_guard);
+-	if (!irq_guard)
++	if (refcount_dec_and_test(&scc->irq_guard))
+ 		free_irq(zport->port.irq, scc);
+ }
+
+diff --git a/drivers/tty/serial/zs.h b/drivers/tty/serial/zs.h
+index 26ef8eafa1c1..bd97b73d7e16 100644
+--- a/drivers/tty/serial/zs.h
++++ b/drivers/tty/serial/zs.h
+@@ -40,7 +40,7 @@ struct zs_port {
+ struct zs_scc {
+ 	struct zs_port	zport[2];
+ 	spinlock_t	zlock;
+-	atomic_t	irq_guard;
++	refcount_t	irq_guard;
+ 	int		initialised;
+ };
+
 --
 2.34.1
 
