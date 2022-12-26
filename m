@@ -2,192 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5065C4167B
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Dec 2022 17:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F84CC4708E
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Dec 2022 18:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbiLZRR5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Dec 2022 12:17:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
+        id S229737AbiLZSBQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 26 Dec 2022 13:01:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiLZRR4 (ORCPT
+        with ESMTP id S232363AbiLZSAs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Dec 2022 12:17:56 -0500
-Received: from mail.someserver.de (mail2.someserver.de [31.15.66.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6EEDBC3
-        for <linux-serial@vger.kernel.org>; Mon, 26 Dec 2022 09:17:55 -0800 (PST)
-Received: from localhost (unknown [46.128.84.4])
-        by mail.someserver.de (Postfix) with ESMTPSA id 11F1A8014D;
-        Mon, 26 Dec 2022 18:17:55 +0100 (CET)
-From:   Christina Quast <contact@christina-quast.de>
-To:     linux-serial@vger.kernel.org
-Cc:     Christina Quast <contact@christina-quast.de>,
-        ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
+        Mon, 26 Dec 2022 13:00:48 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3D4C58
+        for <linux-serial@vger.kernel.org>; Mon, 26 Dec 2022 10:00:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672077647; x=1703613647;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=k24bYdmKLn3wKSDbOaXHKHtUr5ffwGdk/EsoSzy8NAk=;
+  b=BNGm2F812ccsoDV96xX0ooLKsJXE+kYtcOWa3LJY9CndyCA+ZFDo+lCZ
+   EKCcscx7X7AmmhaPhJJyqhHSaFRk30hUdkM0dN7m+3EhkUb1Jf5SsL0jf
+   2RrN1tKgl856VwBKY6As3aCLbENQmGQVtq9ff4j1jd+2jxXh9WTjBWpdd
+   5Unb0UnApIxOyvvmsIlhQoiE/UO/kbPpgOShyi5ggVcqZysYpuRnAPRED
+   7zKRLadFPhWN1HtUSJ3Hn4mIqyoKV/Wf7Ue9OpQWFGMxoDmGJQ9kyAPr0
+   NduFopicJVJVEsEw0Zseoj+vamEP9Y3qsDcjGOVAM7ogXnMzS5YZKe2W6
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10572"; a="382888600"
+X-IronPort-AV: E=Sophos;i="5.96,276,1665471600"; 
+   d="scan'208";a="382888600"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Dec 2022 10:00:46 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10572"; a="652832484"
+X-IronPort-AV: E=Sophos;i="5.96,276,1665471600"; 
+   d="scan'208";a="652832484"
+Received: from ptelkov-mobl2.ccr.corp.intel.com ([10.249.41.4])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Dec 2022 10:00:44 -0800
+Date:   Mon, 26 Dec 2022 20:00:41 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Christina Quast <contact@christina-quast.de>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         daniel.beer@igorinstitute.com
-Subject: [PATCH tty-next v2 3/3] hid-ft260: Change u8 to __u8 for hw facing structs
-Date:   Mon, 26 Dec 2022 18:15:49 +0100
-Message-Id: <20221226171549.73645-4-contact@christina-quast.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221226171549.73645-1-contact@christina-quast.de>
-References: <20221226171549.73645-1-contact@christina-quast.de>
+Subject: Re: [PATCH tty-next v2 1/3] hid-ft260: Cleanup macro formatting
+In-Reply-To: <20221226171549.73645-2-contact@christina-quast.de>
+Message-ID: <b95f9df-9854-ca88-ca1d-9b79974e5773@linux.intel.com>
+References: <20221226171549.73645-1-contact@christina-quast.de> <20221226171549.73645-2-contact@christina-quast.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1014192351-1672077645=:1690"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Structures that come from a device should use __u8 instead of u8
-for their elements. Therefore change all elements in the HID report
-structs from u8 to __u8.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Christina Quast <contact@christina-quast.de>
----
- drivers/hid/hid-ft260.c | 92 ++++++++++++++++++++---------------------
- 1 file changed, 46 insertions(+), 46 deletions(-)
+--8323329-1014192351-1672077645=:1690
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
-index a67051f379a3..c2d1ded4a86b 100644
---- a/drivers/hid/hid-ft260.c
-+++ b/drivers/hid/hid-ft260.c
-@@ -137,93 +137,93 @@ enum {
- /* Feature In reports */
- 
- struct ft260_get_chip_version_report {
--	u8 report;		/* FT260_CHIP_VERSION */
--	u8 chip_code[4];	/* FTDI chip identification code */
--	u8 reserved[8];
-+	__u8 report;		/* FT260_CHIP_VERSION */
-+	__u8 chip_code[4];	/* FTDI chip identification code */
-+	__u8 reserved[8];
- } __packed;
- 
- struct ft260_get_system_status_report {
--	u8 report;		/* FT260_SYSTEM_SETTINGS */
--	u8 chip_mode;		/* DCNF0 and DCNF1 status, bits 0-1 */
--	u8 clock_ctl;		/* 0 - 12MHz, 1 - 24MHz, 2 - 48MHz */
--	u8 suspend_status;	/* 0 - not suspended, 1 - suspended */
--	u8 pwren_status;	/* 0 - FT260 is not ready, 1 - ready */
--	u8 i2c_enable;		/* 0 - disabled, 1 - enabled */
--	u8 uart_mode;		/* 0 - OFF; 1 - RTS_CTS, 2 - DTR_DSR, */
-+	__u8 report;		/* FT260_SYSTEM_SETTINGS */
-+	__u8 chip_mode;		/* DCNF0 and DCNF1 status, bits 0-1 */
-+	__u8 clock_ctl;		/* 0 - 12MHz, 1 - 24MHz, 2 - 48MHz */
-+	__u8 suspend_status;	/* 0 - not suspended, 1 - suspended */
-+	__u8 pwren_status;	/* 0 - FT260 is not ready, 1 - ready */
-+	__u8 i2c_enable;		/* 0 - disabled, 1 - enabled */
-+	__u8 uart_mode;		/* 0 - OFF; 1 - RTS_CTS, 2 - DTR_DSR, */
- 				/* 3 - XON_XOFF, 4 - No flow control */
--	u8 hid_over_i2c_en;	/* 0 - disabled, 1 - enabled */
--	u8 gpio2_function;	/* 0 - GPIO,  1 - SUSPOUT, */
-+	__u8 hid_over_i2c_en;	/* 0 - disabled, 1 - enabled */
-+	__u8 gpio2_function;	/* 0 - GPIO,  1 - SUSPOUT, */
- 				/* 2 - PWREN, 4 - TX_LED */
--	u8 gpioA_function;	/* 0 - GPIO, 3 - TX_ACTIVE, 4 - TX_LED */
--	u8 gpioG_function;	/* 0 - GPIO, 2 - PWREN, */
-+	__u8 gpioA_function;	/* 0 - GPIO, 3 - TX_ACTIVE, 4 - TX_LED */
-+	__u8 gpioG_function;	/* 0 - GPIO, 2 - PWREN, */
- 				/* 5 - RX_LED, 6 - BCD_DET */
--	u8 suspend_out_pol;	/* 0 - active-high, 1 - active-low */
--	u8 enable_wakeup_int;	/* 0 - disabled, 1 - enabled */
--	u8 intr_cond;		/* Interrupt trigger conditions */
--	u8 power_saving_en;	/* 0 - disabled, 1 - enabled */
--	u8 reserved[10];
-+	__u8 suspend_out_pol;	/* 0 - active-high, 1 - active-low */
-+	__u8 enable_wakeup_int;	/* 0 - disabled, 1 - enabled */
-+	__u8 intr_cond;		/* Interrupt trigger conditions */
-+	__u8 power_saving_en;	/* 0 - disabled, 1 - enabled */
-+	__u8 reserved[10];
- } __packed;
- 
- struct ft260_get_i2c_status_report {
--	u8 report;		/* FT260_I2C_STATUS */
--	u8 bus_status;		/* I2C bus status */
-+	__u8 report;		/* FT260_I2C_STATUS */
-+	__u8 bus_status;		/* I2C bus status */
- 	__le16 clock;		/* I2C bus clock in range 60-3400 KHz */
--	u8 reserved;
-+	__u8 reserved;
- } __packed;
- 
- /* Feature Out reports */
- 
- struct ft260_set_system_clock_report {
--	u8 report;		/* FT260_SYSTEM_SETTINGS */
--	u8 request;		/* FT260_SET_CLOCK */
--	u8 clock_ctl;		/* 0 - 12MHz, 1 - 24MHz, 2 - 48MHz */
-+	__u8 report;		/* FT260_SYSTEM_SETTINGS */
-+	__u8 request;		/* FT260_SET_CLOCK */
-+	__u8 clock_ctl;		/* 0 - 12MHz, 1 - 24MHz, 2 - 48MHz */
- } __packed;
- 
- struct ft260_set_i2c_mode_report {
--	u8 report;		/* FT260_SYSTEM_SETTINGS */
--	u8 request;		/* FT260_SET_I2C_MODE */
--	u8 i2c_enable;		/* 0 - disabled, 1 - enabled */
-+	__u8 report;		/* FT260_SYSTEM_SETTINGS */
-+	__u8 request;		/* FT260_SET_I2C_MODE */
-+	__u8 i2c_enable;		/* 0 - disabled, 1 - enabled */
- } __packed;
- 
- struct ft260_set_uart_mode_report {
--	u8 report;		/* FT260_SYSTEM_SETTINGS */
--	u8 request;		/* FT260_SET_UART_MODE */
--	u8 uart_mode;		/* 0 - OFF; 1 - RTS_CTS, 2 - DTR_DSR, */
-+	__u8 report;		/* FT260_SYSTEM_SETTINGS */
-+	__u8 request;		/* FT260_SET_UART_MODE */
-+	__u8 uart_mode;		/* 0 - OFF; 1 - RTS_CTS, 2 - DTR_DSR, */
- 				/* 3 - XON_XOFF, 4 - No flow control */
- } __packed;
- 
- struct ft260_set_i2c_reset_report {
--	u8 report;		/* FT260_SYSTEM_SETTINGS */
--	u8 request;		/* FT260_SET_I2C_RESET */
-+	__u8 report;		/* FT260_SYSTEM_SETTINGS */
-+	__u8 request;		/* FT260_SET_I2C_RESET */
- } __packed;
- 
- struct ft260_set_i2c_speed_report {
--	u8 report;		/* FT260_SYSTEM_SETTINGS */
--	u8 request;		/* FT260_SET_I2C_CLOCK_SPEED */
-+	__u8 report;		/* FT260_SYSTEM_SETTINGS */
-+	__u8 request;		/* FT260_SET_I2C_CLOCK_SPEED */
- 	__le16 clock;		/* I2C bus clock in range 60-3400 KHz */
- } __packed;
- 
- /* Data transfer reports */
- 
- struct ft260_i2c_write_request_report {
--	u8 report;		/* FT260_I2C_REPORT */
--	u8 address;		/* 7-bit I2C address */
--	u8 flag;		/* I2C transaction condition */
--	u8 length;		/* data payload length */
--	u8 data[FT260_WR_DATA_MAX]; /* data payload */
-+	__u8 report;		/* FT260_I2C_REPORT */
-+	__u8 address;		/* 7-bit I2C address */
-+	__u8 flag;		/* I2C transaction condition */
-+	__u8 length;		/* data payload length */
-+	__u8 data[FT260_WR_DATA_MAX]; /* data payload */
- } __packed;
- 
- struct ft260_i2c_read_request_report {
--	u8 report;		/* FT260_I2C_READ_REQ */
--	u8 address;		/* 7-bit I2C address */
--	u8 flag;		/* I2C transaction condition */
-+	__u8 report;		/* FT260_I2C_READ_REQ */
-+	__u8 address;		/* 7-bit I2C address */
-+	__u8 flag;		/* I2C transaction condition */
- 	__le16 length;		/* data payload length */
- } __packed;
- 
- struct ft260_input_report {
--	u8 report;		/* FT260_I2C_REPORT or FT260_UART_REPORT */
--	u8 length;		/* data payload length */
--	u8 data[2];		/* data payload */
-+	__u8 report;		/* FT260_I2C_REPORT or FT260_UART_REPORT */
-+	__u8 length;		/* data payload length */
-+	__u8 data[2];		/* data payload */
- } __packed;
- 
- static const struct hid_device_id ft260_devices[] = {
+On Mon, 26 Dec 2022, Christina Quast wrote:
+
+> Wrap macro arguments in braces.
+> 
+> Signed-off-by: Christina Quast <contact@christina-quast.de>
+> ---
+>  drivers/hid/hid-ft260.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
+> index 333341e80b0e..52a63b966ebc 100644
+> --- a/drivers/hid/hid-ft260.c
+> +++ b/drivers/hid/hid-ft260.c
+> @@ -29,7 +29,7 @@ MODULE_PARM_DESC(debug, "Toggle FT260 debugging messages");
+>  	} while (0)
+>  
+>  #define FT260_REPORT_MAX_LENGTH (64)
+> -#define FT260_I2C_DATA_REPORT_ID(len) (FT260_I2C_REPORT_MIN + (len - 1) / 4)
+> +#define FT260_I2C_DATA_REPORT_ID(len) (FT260_I2C_REPORT_MIN + ((len) - 1) / 4)
+>  
+>  #define FT260_WAKEUP_NEEDED_AFTER_MS (4800) /* 5s minus 200ms margin */
+>  
+> @@ -132,7 +132,7 @@ enum {
+>  	FT260_FLAG_START_STOP_REPEATED	= 0x07,
+>  };
+>  
+> -#define FT260_SET_REQUEST_VALUE(report_id) ((FT260_FEATURE << 8) | report_id)
+> +#define FT260_SET_REQUEST_VALUE(report_id) ((FT260_FEATURE << 8) | (report_id))
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
 -- 
-2.35.1
+ i.
 
+--8323329-1014192351-1672077645=:1690--
