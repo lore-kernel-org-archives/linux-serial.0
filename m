@@ -2,181 +2,131 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8336C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Dec 2022 14:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39519C3DA7A
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Dec 2022 14:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiL0O4x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 27 Dec 2022 09:56:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        id S230392AbiL1OEM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 28 Dec 2022 09:04:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiL0O4w (ORCPT
+        with ESMTP id S229630AbiL1OEL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 27 Dec 2022 09:56:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328931005
-        for <linux-serial@vger.kernel.org>; Tue, 27 Dec 2022 06:56:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFAA0B8106C
-        for <linux-serial@vger.kernel.org>; Tue, 27 Dec 2022 14:56:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB84C433F0;
-        Tue, 27 Dec 2022 14:56:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1672153008;
-        bh=bJ+XHdK7jEWRBA/2KeMxWPYu+OlRSkwMzYqcmBqueCc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MgrHQ2iCh1ZEESHLKpHBiBOZ4hTW9oHQnygLGgHQiLYSHG65T9r1A9ip+LArAlUlz
-         vOaA1ZtufXbHW/vtf3hW5OjIXyXzIwhjgnv/i46mZNP4b3nMQ3PTBgdGAJor8hBNxq
-         9tV9Br6USc1ukmBXSsgT4/yufbukr1VbYA7G23QiO/0Bo3ChnwPnMtQvEmCBZ8vtL+
-         mPi9lqCpQ10E/jyIYaJvhwtZIEC1GywKDAZ3jxT6EEnVGUzrvtjvCgWjSllMphB9xQ
-         RSGrtfTTzY+y0a6Z4Z5Ftl2JeDji41iVTdUdmAFP6FU8bwAyXZQ0GTYZBdvmkzHU5h
-         5GKQf/TN3fnxg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1pABNn-0006GC-ID; Tue, 27 Dec 2022 15:56:48 +0100
-Date:   Tue, 27 Dec 2022 15:56:47 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-serial@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Wed, 28 Dec 2022 09:04:11 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2E11099;
+        Wed, 28 Dec 2022 06:04:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672236249; x=1703772249;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lg126dF0ZRB51ZzT/H9t/6uTcxQgkla19QDrEd0Bge0=;
+  b=c2iP/ZA0uWkDdxNpHAOp0YCPyjxlv8h7aQGjKTZMRR6SF9YaM3bfiYBo
+   znnuls8vYhO1gaLI8oWuZ0LS1uu7CDIFWchzA0Bm52jf8k1gXX5ukVRGS
+   yQjFCK/Uyg1WSsPnfwkU1I6ZkA2N0fP+v7wT7LJci5FMbxPvNgbNBQ3Sb
+   trJLLyHX6b08mMxFr3/IEyVreRUFb8JhUOZscI71WMkXsnHO3DCKYLE6h
+   MhiDvWFxat86ZuPres05zdP8WimKmqBfpkojgFFT29JBeuJ4L8HEUyf0f
+   RzMhpsKGuVkrBKvQjXmNvZlxeTh770iy7IgB4+Iowwg9wednRPRO6uk59
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10574"; a="308631762"
+X-IronPort-AV: E=Sophos;i="5.96,280,1665471600"; 
+   d="scan'208";a="308631762"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2022 06:03:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10574"; a="655320885"
+X-IronPort-AV: E=Sophos;i="5.96,280,1665471600"; 
+   d="scan'208";a="655320885"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007.fm.intel.com with ESMTP; 28 Dec 2022 06:03:13 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pAX1S-000cPm-1R;
+        Wed, 28 Dec 2022 16:03:10 +0200
+Date:   Wed, 28 Dec 2022 16:03:10 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Jami Kettunen <jami.kettunen@protonmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
- handling into single IRQ handler
-Message-ID: <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
-References: <20221216115338.7150-1-marex@denx.de>
+        Helge Deller <deller@gmx.de>, Borislav Petkov <bp@suse.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Muchun Song <muchun.song@linux.dev>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Kim Phillips <kim.phillips@amd.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v3 0/3] Add generic framebuffer support to EFI earlycon
+ driver
+Message-ID: <Y6xMnuMqpThmFn1q@smile.fi.intel.com>
+References: <20221221105402.6598-1-markuss.broks@gmail.com>
+ <CAMj1kXGUC7dsSwVEUsAMeAoqDYtbqrM7SDOJTXbPfi-LrcSk9g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221216115338.7150-1-marex@denx.de>
+In-Reply-To: <CAMj1kXGUC7dsSwVEUsAMeAoqDYtbqrM7SDOJTXbPfi-LrcSk9g@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 16, 2022 at 12:53:38PM +0100, Marek Vasut wrote:
-> Requesting an interrupt with IRQF_ONESHOT will run the primary handler
-> in the hard-IRQ context even in the force-threaded mode. The
-> force-threaded mode is used by PREEMPT_RT in order to avoid acquiring
-> sleeping locks (spinlock_t) in hard-IRQ context. This combination
-> makes it impossible and leads to "sleeping while atomic" warnings.
+On Fri, Dec 23, 2022 at 03:42:33PM +0100, Ard Biesheuvel wrote:
+> (cc Andy)
+
+I believe there are two reasons I'm Cc'ed now:
+- the Cc was forgotten. because I remember reviewing some parts
+  of this contribution
+- this conflicts (to some extent) with my patch that speeds up
+  the scrolling
+
+For the first it's obvious what to do, I think Markuss can include me
+in his v4.
+
+For the second I don't see the functional clash. The scrolling in this
+series is not anyhow optimized. I think my patch should go first as
+- it is less intrusive
+- it has been tested, or can be tested easily
+
+Tell me if I'm missing something here.
+
+> On Wed, 21 Dec 2022 at 11:54, Markuss Broks <markuss.broks@gmail.com> wrote:
+> >
+> > Make the EFI earlycon driver be suitable for any linear framebuffers.
+> > This should be helpful for early porting of boards with no other means of
+> > output, like smartphones/tablets. There seems to be an issue with early_ioremap
+> > function on ARM32, but I am unable to find the exact cause. It appears the mappings
+> > returned by it are somehow incorrect, thus the driver is disabled on ARM.
 > 
-> Use one interrupt handler for both handlers (primary and secondary)
-> and drop the IRQF_ONESHOT flag which is not needed.
+> The reason that this driver is disabled on ARM is because the struct
+> screen_info is not populated early enough, as it is retrieved from a
+> UEFI configuration table.
 > 
-> Fixes: e359b4411c283 ("serial: stm32: fix threaded interrupt handling")
-
-I don't think a Fixes tag is warranted as this is only needed due to
-this undocumented quirk of PREEMPT_RT.
-
-And this should not be backported in any case.
-
-> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> ---
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: Erwan Le Ray <erwan.leray@foss.st.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Valentin Caron <valentin.caron@foss.st.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> To: linux-serial@vger.kernel.org
-> ---
-> V2: - Update patch subject, was:
->       serial: stm32: Move hard IRQ handling to threaded interrupt context
->     - Use request_irq() instead, rename the IRQ handler function
-> V3: - Update the commit message per suggestion from Sebastian
->     - Add RB from Sebastian
->     - Add Fixes tag
-> ---
->  drivers/tty/serial/stm32-usart.c | 29 +++++++----------------------
->  1 file changed, 7 insertions(+), 22 deletions(-)
+> early_ioremap() works fine on ARM as long as they mapping is torn down
+> before paging_init()
 > 
-> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-> index dfdbcf092facc..bbbab8dc2bfa9 100644
-> --- a/drivers/tty/serial/stm32-usart.c
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -752,8 +752,9 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
->  	struct tty_port *tport = &port->state->port;
->  	struct stm32_port *stm32_port = to_stm32_port(port);
->  	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-> -	u32 sr;
-> +	unsigned long flags;
->  	unsigned int size;
-> +	u32 sr;
->  
->  	sr = readl_relaxed(port->membase + ofs->isr);
->  
-> @@ -793,27 +794,13 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
->  	}
->  
->  	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
-> -		spin_lock(&port->lock);
-> +		spin_lock_irqsave(&port->lock, flags);
->  		stm32_usart_transmit_chars(port);
-> -		spin_unlock(&port->lock);
-> +		spin_unlock_irqrestore(&port->lock, flags);
+> > EFI early
+> > console was disabled on IA64 previously because of missing early_memremap_prot,
+> > and this is inherited to this driver.
+> >
+> > This patch also changes
+> 
+> "This patch also changes ..." is usually a strong hint to self that
+> the patches need to be split up.
+> 
+> > behavior on EFI systems, by selecting the mapping type
+> > based on if the framebuffer region intersects with system RAM. If it does, it's
+> > common sense that it should be in RAM as a whole, and so the system RAM mapping is
+> > used. It was tested to be working on my PC (Intel Z490 platform), as well as several
+> > ARM64 boards (Samsung Galaxy S9 (Exynos), iPad Air 2, Xiaomi Mi Pad 4, ...).
 
-This is not needed as the handler runs with interrupts disabled.
+-- 
+With Best Regards,
+Andy Shevchenko
 
->  	}
->  
-> -	if (stm32_usart_rx_dma_enabled(port))
-> -		return IRQ_WAKE_THREAD;
-> -	else
-> -		return IRQ_HANDLED;
-> -}
-> -
-> -static irqreturn_t stm32_usart_threaded_interrupt(int irq, void *ptr)
-> -{
-> -	struct uart_port *port = ptr;
-> -	struct tty_port *tport = &port->state->port;
-> -	struct stm32_port *stm32_port = to_stm32_port(port);
-> -	unsigned int size;
-> -	unsigned long flags;
-> -
->  	/* Receiver timeout irq for DMA RX */
-> -	if (!stm32_port->throttled) {
-> +	if (stm32_usart_rx_dma_enabled(port) && !stm32_port->throttled) {
->  		spin_lock_irqsave(&port->lock, flags);
 
-But you could change this to spin_lock() now.
-
->  		size = stm32_usart_receive_chars(port, false);
->  		uart_unlock_and_check_sysrq_irqrestore(port, flags);
-> @@ -1016,10 +1003,8 @@ static int stm32_usart_startup(struct uart_port *port)
->  	u32 val;
->  	int ret;
->  
-> -	ret = request_threaded_irq(port->irq, stm32_usart_interrupt,
-> -				   stm32_usart_threaded_interrupt,
-> -				   IRQF_ONESHOT | IRQF_NO_SUSPEND,
-> -				   name, port);
-> +	ret = request_irq(port->irq, stm32_usart_interrupt,
-> +			  IRQF_NO_SUSPEND, name, port);
->  	if (ret)
->  		return ret;
-
-You should also remove
-
-	/*
-	 * Using DMA and threaded handler for the console could lead to
-	 * deadlocks.
-	 */
-	if (uart_console(port))
-		return -ENODEV;
-
-from stm32_usart_of_dma_rx_probe() when removing the threaded handler.
-
-Johan
