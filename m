@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA9CC4167B
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 15:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2990C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 15:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233644AbiL2Pv1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Dec 2022 10:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
+        id S233662AbiL2Pv2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Dec 2022 10:51:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiL2Puo (ORCPT
+        with ESMTP id S233481AbiL2Pup (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Dec 2022 10:50:44 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D64319B
+        Thu, 29 Dec 2022 10:50:45 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DB01BD
         for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:50:42 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id b24-20020a05600c4a9800b003d21efdd61dso13451490wmp.3
+Received: by mail-wr1-x42d.google.com with SMTP id h16so17706016wrz.12
         for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:50:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=F2MzVRg5qsZeZ18MD/OVh4kRzP+Ug6N74PqvU/3Swas=;
-        b=Y5922RWr1l5HBO0JbK7W3Yjs7ASUaSdffFGQQEtjLvvPIEIvPMl8831AoB0e4ATkTn
-         6srnJDvyVx2vCYObMMJwu7Ok/5lBuhdxdlf2ucF18O2Xzt/jkCBiSyg/sMDbRM3ZBfIb
-         PyTGmtPihb1Xvd8QhM2KhNK1UmojfHGha+kcLYu7xer8H0Y/PbrMCcLSXTiShyhl7zbs
-         J+rOnMyw/ITsQE0l3Zg/HcmhcGwznCvl8bKx4UGEGl09jt46KxwrX59JRW5XM6a7FhIc
-         arF5yHwcWHqKDF4d1ZCrAd+ZRF8i5Z55YG+IsQh3My0iQJ+JfXM/pzhPCCA+VN3psBr5
-         IMpQ==
+        bh=lb0vU9ZSHO5r+oQcoBj4FnTeT47p74OitaDWVpDY66s=;
+        b=gn0PqKEDVwLS6qBr3pmBW87z/OJoS2PNkLt64lbjK6Nxa/8tXhL1R9OyzI9Zbz6Oq2
+         A0tfCA/nXyS2iNmM2u1F5MAYvIe3VJArlgMbRamIjnCwHDb4uyqULqYh13vWDDnodTZ2
+         9xamHppbjlLKf7kA8i6j+rad3yluIUnu2qJaJKnBceUiixmZtZLVEuzjeaHlolllmRgr
+         IZC1IKUzW1hGmOZTUdzR38vNxNN0REML789/w3e+20XkAjEJW8U9xHaeKGAfc/iBb4Ci
+         baaarDRd6Jv1ugxZ2BqtXvf6dmrDJ1ugoon4HRdxKYQfOqzWB6OT/5nzTnKNOIeyY5Th
+         zxUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=F2MzVRg5qsZeZ18MD/OVh4kRzP+Ug6N74PqvU/3Swas=;
-        b=EplRjTiOPR2KmWZK88eIVCkSuBST70tjSUlbOSKq77sKhYFkJw4Cm09t2+ygWBt5LG
-         FYxeIcdpkLAE2oZm77YAu1MPxax/xyy+SNeMLGoSuABOVXL+XzPMQjWMhnCNJ6Pbm+vZ
-         dyrTrbxVfnr0euphb+06jbPIDrR9nIQHfJPV4nx8rZDVWE5NllhmooW2DyqgDm8o4alY
-         YOgqbxdVGD7SC/OsG3hUIo1MhnuHvmYGW18Q3V0j+9VH7syo0IRJ9ExbOZdhQiZGm+tU
-         Rko21RdChMNbQPW3ObRluFlHvDsios/JnfVZ9qeWVCea37rSe/Ns3cWhgvaq8y47BtT7
-         Mq8A==
-X-Gm-Message-State: AFqh2koCugqlIVToVPdRX4ircizc2Zn48B3fDGLVD9nZNBTdXHnCM3LH
-        Q7LtT/Vhwm5IT3G5BsKsl49dGA==
-X-Google-Smtp-Source: AMrXdXtAkLnVo2ai/aPmHEOE8d9cd2QOOnUgDCzL++zMq+TxIIn/2285ryyO5APeXNQ7SkrNT1EWjg==
-X-Received: by 2002:a7b:c4c8:0:b0:3d3:5a4a:9101 with SMTP id g8-20020a7bc4c8000000b003d35a4a9101mr23683301wmk.23.1672329041742;
-        Thu, 29 Dec 2022 07:50:41 -0800 (PST)
+        bh=lb0vU9ZSHO5r+oQcoBj4FnTeT47p74OitaDWVpDY66s=;
+        b=S72d0EyMxhctruex5ictdCwoIZS6h/SS2EBHwmy9QgcUy8FiVlYjsN7ch7LOuCJTls
+         6wjqqNMQ/W83BRVeX8vLqsTUNisEKdJHQPtcnen1kvsTpLTjcgd1MEXRUtzQ9m+i+idi
+         qSqMjFUBGU6AdzMwHuGeKMiVH555i68dSMGf5WXdFe2jeekGLT5MW4bmVi3gwyZKD37q
+         RMp7qddOj4PgXEqcUvm+ufDYv7+OZkZWqyzPoeD6vX1pDJG/gYsVTZJ77ibTX4E1C+5W
+         mjI8a7Janj1aOkvaEPDLtBBrEPO53fCpqg5nJLNe8ef4KC/ck5DKQRNGI2gFRXlBUQ+z
+         eogA==
+X-Gm-Message-State: AFqh2kpt6vv0wLgTOEyhwYAryaMk1gJBjVuXDvIRGjdlwIUD/FEi/ULv
+        sZWh2DNbrPLtZJmViLXdmVHL+w==
+X-Google-Smtp-Source: AMrXdXuMwy3U4WcaXrx/yBwFi2f8h1TvwwsB8sikW66om9SJvxMkB7+tLhTlNPL3H0MO7rlqfGTNPA==
+X-Received: by 2002:a5d:65c4:0:b0:281:24c5:a533 with SMTP id e4-20020a5d65c4000000b0028124c5a533mr7550899wrw.23.1672329040793;
+        Thu, 29 Dec 2022 07:50:40 -0800 (PST)
 Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:8f7a:98d8:9d8d:ced8])
-        by smtp.gmail.com with ESMTPSA id bh12-20020a05600c3d0c00b003cfa81e2eb4sm25251647wmb.38.2022.12.29.07.50.40
+        by smtp.gmail.com with ESMTPSA id bh12-20020a05600c3d0c00b003cfa81e2eb4sm25251647wmb.38.2022.12.29.07.50.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Dec 2022 07:50:41 -0800 (PST)
+        Thu, 29 Dec 2022 07:50:40 -0800 (PST)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -64,13 +64,14 @@ Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
         Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: [PATCH v6 08/14] tty: serial: qcom-geni-serial: remove unneeded tabs
-Date:   Thu, 29 Dec 2022 16:50:24 +0100
-Message-Id: <20221229155030.418800-9-brgl@bgdev.pl>
+Subject: [PATCH v6 07/14] tty: serial: qcom-geni-serial: refactor qcom_geni_serial_isr()
+Date:   Thu, 29 Dec 2022 16:50:23 +0100
+Message-Id: <20221229155030.418800-8-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20221229155030.418800-1-brgl@bgdev.pl>
 References: <20221229155030.418800-1-brgl@bgdev.pl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -78,57 +79,44 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Remove redundant indentation in struct member assignment.
+Simplify the conditions in qcom_geni_serial_isr() and fix indentation.
 
 Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tty/serial/qcom_geni_serial.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 92aefd4f8527..e34fe56247d9 100644
+index f4e2486b2115..92aefd4f8527 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -141,26 +141,26 @@ static inline struct qcom_geni_serial_port *to_dev_port(struct uart_port *uport)
- static struct qcom_geni_serial_port qcom_geni_uart_ports[GENI_UART_PORTS] = {
- 	[0] = {
- 		.uport = {
--				.iotype = UPIO_MEM,
--				.ops = &qcom_geni_uart_pops,
--				.flags = UPF_BOOT_AUTOCONF,
--				.line = 0,
-+			.iotype = UPIO_MEM,
-+			.ops = &qcom_geni_uart_pops,
-+			.flags = UPF_BOOT_AUTOCONF,
-+			.line = 0,
- 		},
- 	},
- 	[1] = {
- 		.uport = {
--				.iotype = UPIO_MEM,
--				.ops = &qcom_geni_uart_pops,
--				.flags = UPF_BOOT_AUTOCONF,
--				.line = 1,
-+			.iotype = UPIO_MEM,
-+			.ops = &qcom_geni_uart_pops,
-+			.flags = UPF_BOOT_AUTOCONF,
-+			.line = 1,
- 		},
- 	},
- 	[2] = {
- 		.uport = {
--				.iotype = UPIO_MEM,
--				.ops = &qcom_geni_uart_pops,
--				.flags = UPF_BOOT_AUTOCONF,
--				.line = 2,
-+			.iotype = UPIO_MEM,
-+			.ops = &qcom_geni_uart_pops,
-+			.flags = UPF_BOOT_AUTOCONF,
-+			.line = 2,
- 		},
- 	},
- };
+@@ -827,20 +827,18 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+ 
+ 	if (m_irq_status & m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
+ 		qcom_geni_serial_handle_tx(uport, m_irq_status & M_CMD_DONE_EN,
+-					geni_status & M_GENI_CMD_ACTIVE);
++					   geni_status & M_GENI_CMD_ACTIVE);
+ 
+-	if (s_irq_status & S_GP_IRQ_0_EN || s_irq_status & S_GP_IRQ_1_EN) {
++	if (s_irq_status & (S_GP_IRQ_0_EN | S_GP_IRQ_1_EN)) {
+ 		if (s_irq_status & S_GP_IRQ_0_EN)
+ 			uport->icount.parity++;
+ 		drop_rx = true;
+-	} else if (s_irq_status & S_GP_IRQ_2_EN ||
+-					s_irq_status & S_GP_IRQ_3_EN) {
++	} else if (s_irq_status & (S_GP_IRQ_2_EN | S_GP_IRQ_3_EN)) {
+ 		uport->icount.brk++;
+ 		port->brk = true;
+ 	}
+ 
+-	if (s_irq_status & S_RX_FIFO_WATERMARK_EN ||
+-					s_irq_status & S_RX_FIFO_LAST_EN)
++	if (s_irq_status & (S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN))
+ 		qcom_geni_serial_handle_rx(uport, drop_rx);
+ 
+ out_unlock:
 -- 
 2.37.2
 
