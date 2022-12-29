@@ -2,129 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBAAC3DA79
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 16:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B30AC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 16:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbiL2QT7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Dec 2022 11:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
+        id S233470AbiL2QWt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Dec 2022 11:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233187AbiL2QT6 (ORCPT
+        with ESMTP id S233577AbiL2QWY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Dec 2022 11:19:58 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2213DF67
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:19:56 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id n3so17062234wrc.5
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:19:56 -0800 (PST)
+        Thu, 29 Dec 2022 11:22:24 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED7CDCE
+        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:22:22 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id c8-20020a17090a4d0800b00225c3614161so16215250pjg.5
+        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:22:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nDpCQXfYYeEajOv2TSbXiA18Zt/t8Tes9TDsjO3NMJY=;
-        b=yNLYjLmFkWgpBuxsj3eCtD/tewyWrBUjf/VDqz9k2I8wFreh2JLvBmkwy76s9K2bR0
-         NjIjDB5jdTOVn5I7OCol+10dKoOpfQDSmQsREjobtiiX+no1N6HDVDac63lGKrKVJHI7
-         a/dNQgrAgkkbX6eo8gyHKBWD9yzCRpHHF0r9Wv+4q7mBUQyxIEGYIw8d/V2Ev/Sv6P6o
-         70VS6oZnZq4wNuZ+4RA3ID0TQtRQLJnvpOtvu07/0mE5+IGovwljbG+qshXgqn8So+IN
-         W8/Ex4HcTs7FfWUC1aXRWR1q4M9guN1IOsi0ZCSeoyBKrtN90J6A1o80zu4/EZ9dtDYs
-         Fubg==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2OLkB5mMsHKDwbR+cM0W/wmV6jqAoejRkqxG5WHPUJQ=;
+        b=yQiDJFyvnV+prccj0GMjiX10frFzC9Mfv04bocJ0Bh8oX7y+0k1z6Z0xnkfyFjqKTN
+         tecrdMMOKsT+GF9HeX5ucR840RKiPVlcQdFksm2EpP7XAJ9W8nteo/euV7HUtU/7XVos
+         1gbq8i/EFYMDbJSxlFINjqZCWh0Or2riyQhU8vz0xkkzkh6Xzo+J8F5WBgOl4kH4tth7
+         8xSe/BGB6hbIfuiW/binFvc8fGWyKCJQHaCCfH+RS8RzQ2jbZpqI50KJAWYN2ASGpeVk
+         C4Ws88CuuQy79JJarYmebhTN4nklASG/JuK2M5upTdnlTHNIhG+lCB/FISII85YP2K5G
+         kyIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nDpCQXfYYeEajOv2TSbXiA18Zt/t8Tes9TDsjO3NMJY=;
-        b=ws++ZCdCUUpRugtezmfii/pk0GWMDTTFQy+rFe3KSXJse+Xd6MX7aHj/7EA9xgAVDV
-         Mc7GxhdvRKd+7zbQf3mRVnipDHpy40/6VQUzLQq94ilx4e3fPPVwDcr+9CvquxNGknVo
-         N1KgS87C/J3vx14b5vw4qFVhm1QNCDEj3UUZ2DmR0QG6jBtXJIGsZlGCGdIzjWFyxQyn
-         a7wZzWzq1PvNKYexL4Jqb2ZkU0ch0tUSxm5/UphZACKNETZCTf2ZnhSX6BbRfE7QE7Cf
-         ljmLgILbXRBuuHNCHssvMCKkqw25pezMYtCfSrBWOYPpi44tr1O6Vxqh0iQWdBVGn/3j
-         BzFg==
-X-Gm-Message-State: AFqh2kptmo74vuOtgbs3DnjHlsMf+ClbucLK0Ef8VgRBkT7IeAVN0+YB
-        fvX8OrBmu40Ba8QAs8vCSIwzFw==
-X-Google-Smtp-Source: AMrXdXvJkZIZ8ZCse4FEIYklGaB6f5dxdugGRdR7nEI4aKVZOu1OLJno2BcF9sbWPcmY//eCfxVizg==
-X-Received: by 2002:adf:e383:0:b0:267:b8df:932b with SMTP id e3-20020adfe383000000b00267b8df932bmr23522542wrm.23.1672330795175;
-        Thu, 29 Dec 2022 08:19:55 -0800 (PST)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:8f7a:98d8:9d8d:ced8])
-        by smtp.gmail.com with ESMTPSA id t5-20020a5d49c5000000b0028cf987d944sm1333199wrs.33.2022.12.29.08.19.54
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2OLkB5mMsHKDwbR+cM0W/wmV6jqAoejRkqxG5WHPUJQ=;
+        b=ZtzSVReZWAJ5r60TIRqxeT1r1k+KzcR0GaoaHkPuiBMzdlIq+OinRT3BJWRvktMBJ2
+         H7GizgaAoL3Ak/SMDdXv4ZaD2I00GVZu2Elk0ylaQD8p0n1UfH7I6Vlf3HZOQPGNTUHK
+         XBQmpf3/t9FjHsHpTe2QPVOe3YPFOYcdHIdwwlyM+U+ENgaEbgFVc/JBQ3SSmS5/AXXJ
+         pUzNc8vsixHom32OryC1twr2LnJMD+z5Q/r/B57JXXic043TiB5c82yLt6Ft6skYFOcs
+         2xKV6srqUW7yYAFDUZajdNOqtn+XTog8mrurkQTirtk9NLjkcUAfWPG6+fPRN3OcGEXl
+         5qgg==
+X-Gm-Message-State: AFqh2konEuKeKX8LjYmoOobmuR63VTPphhP9EvAMJcWY8WzjmdTlSfy6
+        DIUVRH4Rmfs2lqPlnAyJo+LLQQ==
+X-Google-Smtp-Source: AMrXdXvbOxeambP1FNrtoSqupKLHR5ZUV5b4qXQ2GRZNGFk8nmQRfBqHImgd60VPFJ/uowpsCdY3Pg==
+X-Received: by 2002:a17:90a:d511:b0:225:dce3:8b9e with SMTP id t17-20020a17090ad51100b00225dce38b9emr19076607pju.5.1672330942227;
+        Thu, 29 Dec 2022 08:22:22 -0800 (PST)
+Received: from localhost ([135.180.226.51])
+        by smtp.gmail.com with ESMTPSA id q60-20020a17090a4fc200b00225d963fbc2sm8493338pjh.34.2022.12.29.08.22.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Dec 2022 08:19:54 -0800 (PST)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [RESEND PATCH 2/2] tty: serial: qcom-geni-serial: use devres for uart port management
-Date:   Thu, 29 Dec 2022 17:19:48 +0100
-Message-Id: <20221229161948.594102-3-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221229161948.594102-1-brgl@bgdev.pl>
-References: <20221229161948.594102-1-brgl@bgdev.pl>
-MIME-Version: 1.0
+        Thu, 29 Dec 2022 08:22:21 -0800 (PST)
+Date:   Thu, 29 Dec 2022 08:22:21 -0800 (PST)
+X-Google-Original-Date: Thu, 29 Dec 2022 07:49:50 PST (-0800)
+Subject:     Re: [PATCH v3 0/3] serial: Add RISC-V support to the earlycon semihost driver
+In-Reply-To: <20221209150437.795918-1-bmeng@tinylab.org>
+CC:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, aou@eecs.berkeley.edu,
+        catalin.marinas@arm.com, Greg KH <gregkh@linuxfoundation.org>,
+        jirislaby@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>,
+        linux@armlinux.org.uk, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     bmeng@tinylab.org
+Message-ID: <mhng-93a78d3a-6372-4972-94fe-31607664bb67@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On Fri, 09 Dec 2022 07:04:34 PST (-0800), bmeng@tinylab.org wrote:
+>
+> RISC-V semihosting spec [1] is built on top of the existing Arm one;
+> we can add RISC-V earlycon semihost driver easily.
+>
+> This series refactors the existing driver a little bit, to move smh_putc()
+> variants in respective arch's semihost.h, then we can implement RISC-V's
+> version in the riscv arch directory.
+>
+> Link: https://github.com/riscv/riscv-semihosting-spec/blob/main/riscv-semihosting-spec.adoc [1]
+>
+> Changes in v3:
+> - add #ifdef in the header to prevent from multiple inclusion
+> - add forward-declare struct uart_port
+> - add a Link tag in the commit message
+>
+> Changes in v2:
+> - new patch: "serial: earlycon-arm-semihost: Move smh_putc() variants in respective arch's semihost.h"
+> - Move the RISC-V implementation to semihost.h
+>
+> Bin Meng (3):
+>   serial: earlycon-arm-semihost: Move smh_putc() variants in respective
+>     arch's semihost.h
+>   riscv: Implement semihost.h for earlycon semihost driver
+>   serial: Rename earlycon semihost driver
+>
+>  arch/arm/include/asm/semihost.h               | 30 +++++++++++++++++++
+>  arch/arm64/include/asm/semihost.h             | 24 +++++++++++++++
+>  arch/riscv/include/asm/semihost.h             | 26 ++++++++++++++++
+>  drivers/tty/serial/Kconfig                    | 14 ++++-----
+>  drivers/tty/serial/Makefile                   |  2 +-
+>  ...con-arm-semihost.c => earlycon-semihost.c} | 25 +---------------
+>  6 files changed, 89 insertions(+), 32 deletions(-)
+>  create mode 100644 arch/arm/include/asm/semihost.h
+>  create mode 100644 arch/arm64/include/asm/semihost.h
+>  create mode 100644 arch/riscv/include/asm/semihost.h
+>  rename drivers/tty/serial/{earlycon-arm-semihost.c => earlycon-semihost.c} (57%)
 
-Shrink and simplify the probe() and remove() code by using the managed
-variant of uart_add_one_port().
-
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index b487823f0e61..7d5b51d7fb9e 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1470,7 +1470,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
- 
--	ret = uart_add_one_port(drv, uport);
-+	ret = devm_uart_add_one_port(&pdev->dev, drv, uport);
- 	if (ret)
- 		return ret;
- 
-@@ -1479,7 +1479,6 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			IRQF_TRIGGER_HIGH, port->name, uport);
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
--		uart_remove_one_port(drv, uport);
- 		return ret;
- 	}
- 
-@@ -1496,7 +1495,6 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 						port->wakeup_irq);
- 		if (ret) {
- 			device_init_wakeup(&pdev->dev, false);
--			uart_remove_one_port(drv, uport);
- 			return ret;
- 		}
- 	}
-@@ -1506,12 +1504,8 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 
- static int qcom_geni_serial_remove(struct platform_device *pdev)
- {
--	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
--	struct uart_driver *drv = port->private_data.drv;
--
- 	dev_pm_clear_wake_irq(&pdev->dev);
- 	device_init_wakeup(&pdev->dev, false);
--	uart_remove_one_port(drv, &port->uport);
- 
- 	return 0;
- }
--- 
-2.37.2
-
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
