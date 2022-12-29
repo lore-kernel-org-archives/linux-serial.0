@@ -2,625 +2,614 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B97C3DA79
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 15:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794EBC4167B
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 16:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233638AbiL2PwH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Dec 2022 10:52:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
+        id S229611AbiL2QTI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Dec 2022 11:19:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233621AbiL2PvO (ORCPT
+        with ESMTP id S230515AbiL2QTG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Dec 2022 10:51:14 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03273D2E9
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:50:48 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id p1-20020a05600c1d8100b003d8c9b191e0so13433761wms.4
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:50:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xPo5nVt0Kpgd5EbSH8dlxDqDerGDGDTF8SgFZvR4FcE=;
-        b=a0tRJHg/m6eGmTtv+MwfxFWmYta87WnxiQP0HjPqexrT+cOQICdHPPquM33MoJ7Gcq
-         kHYOcH7RuCn9tSpgP/ryl6VV3QQfKF1S8WHUb0Ga/0tZxnBds1i9T/2tuYQbOExdZdlY
-         /qEZctAwNqDsaFiq8LRNmSmAYSAXvKXU/THf4UgPI5giuLzJe26wIYjqcGKvS30F929F
-         14pyxnIkFQ+ViOOT9+7CyaiIPyxdnyQUgPjg5Bi5lxiZj0D+ilaT+BsKi5uToZYiLqzh
-         dhdcjNt8kSa4POctMqW4aCFY24LxBNLhmAE1DV0lF/gaSPYdry6AwmEgLzHzAJ/369Xb
-         aw8Q==
+        Thu, 29 Dec 2022 11:19:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2346A12A80
+        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:18:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1672330692;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0cTT31HTvGe+Qe8n5FI5dXXO0PvHOsuqL6uctOPRNNQ=;
+        b=Z/+J4YtfYMoGPVR3cm5GI5dthM9w2NJyEg1aOb7VqEFknu3WB3IyIdmb5IWlQjPDWTViEp
+        c9mYMk+1hh7UDvrwpulVxpdlkO83lk92RTcV1p6/7elucr+dId3I/ID3bahkRJtgJQ8hGm
+        r5Sr0/8h1NtV9OgS1QLOF+hu0RtYStw=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-184-axciZnbNPimKnD35riu4JA-1; Thu, 29 Dec 2022 11:18:09 -0500
+X-MC-Unique: axciZnbNPimKnD35riu4JA-1
+Received: by mail-qt1-f199.google.com with SMTP id fg11-20020a05622a580b00b003a7eaa5cb47so7267416qtb.15
+        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:18:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xPo5nVt0Kpgd5EbSH8dlxDqDerGDGDTF8SgFZvR4FcE=;
-        b=Zp15+sv/L4hCgq0KzC7geAyKRE6yGLJy7YK83wpAK7mz2L9CFy/1+mFtpjlbqBqTLX
-         FiKh07pdSKqxOvM8ioi7KLY7UT20acpZwxhaYpN16na8DXTwB7rXiEbNB4NdQxP5+Nqx
-         uxqDyK5JHfR22W2CzCaSQglz8VKSufPdueavriY5olrcPTNt1WrHY14oEFAt00DD+swg
-         1SWdzYtgJ0njlZhTF4IXYKQLmcESADtcS5Z3i66mbcG9YpNbmAO+NM9jeZHFZkbEeQVA
-         a1wgoiaK+IGAo2uIOWPNkKBg72wFVYil3Pg6gAuAdoqZI4HD9lI7IFkC/Z289S07Wi2i
-         k5Cg==
-X-Gm-Message-State: AFqh2kqpXTK7A2FmOMsdEiwHIkhoeYNEyKFX2iFzFwKt6ic7aWp93Gd2
-        S9jSJ/MLUcJJ3zCLLfjDxbAJnw==
-X-Google-Smtp-Source: AMrXdXu9fJL0PfViWmOkUMZS8SdmdtmcB9MTmicIkWTq1zjJIp6RUmuwEWOjg9epco8KJP5axgwvgg==
-X-Received: by 2002:a05:600c:c07:b0:3d9:73fe:96f8 with SMTP id fm7-20020a05600c0c0700b003d973fe96f8mr12625796wmb.32.1672329047454;
-        Thu, 29 Dec 2022 07:50:47 -0800 (PST)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:8f7a:98d8:9d8d:ced8])
-        by smtp.gmail.com with ESMTPSA id bh12-20020a05600c3d0c00b003cfa81e2eb4sm25251647wmb.38.2022.12.29.07.50.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Dec 2022 07:50:47 -0800 (PST)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v6 14/14] tty: serial: qcom-geni-serial: add support for serial engine DMA
-Date:   Thu, 29 Dec 2022 16:50:30 +0100
-Message-Id: <20221229155030.418800-15-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20221229155030.418800-1-brgl@bgdev.pl>
-References: <20221229155030.418800-1-brgl@bgdev.pl>
+        h=content-language:content-transfer-encoding:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0cTT31HTvGe+Qe8n5FI5dXXO0PvHOsuqL6uctOPRNNQ=;
+        b=zQfd7SH5Z/PWg8Vt2m/FMAuD0dhRKN5/cA/1g1fXfhl3IkFvObABk4RhSROGqYctDP
+         5T0hvlmyBnjM4Ykykq7AkWa+K3bDh0lYYPxpf9NNRfTbfEyCrCaijks0lJrH+8cDNY4l
+         Ox8VQpcSxm6+EY2AVBHR4cmhaIb0xCybxkbj++xImy6ULxlwxCGmEDxyoKpSbkhQYDHG
+         dp0kSygzJnJZudkeTlNdWXlgPIbAMHGBwzZkoR8/9xB5ZiilgVs5K6DxBklORAumldeA
+         7NnfKIDN0hGUxu/25YfuODQ0tqwhuYlktiTDUQ+5Q10IyGHUI+Oa69o/VIQGpmsml27+
+         /M8w==
+X-Gm-Message-State: AFqh2kpqNd8vah8FtY3qkduBSAiZ8m/dRJSZNCM11DIwqBFeQOuP+peo
+        fhuitbJZI7fVMbwB3QImPhRJKgj+pJnXDi/pFzSnvNutesyKYAfy85ST6qqv9xKD6BQAnANEwgy
+        YmzZSIQbPd595R0tsn3FXZowM
+X-Received: by 2002:ac8:6ec4:0:b0:3a8:1fde:a394 with SMTP id f4-20020ac86ec4000000b003a81fdea394mr38243153qtv.59.1672330688455;
+        Thu, 29 Dec 2022 08:18:08 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXtUVx95SHC77nYwI2gNOyrd4kpfPBqQGccAgjJb+pvs4HiX6yCp9NU0cNSHtUauAkLEXrfOfA==
+X-Received: by 2002:ac8:6ec4:0:b0:3a8:1fde:a394 with SMTP id f4-20020ac86ec4000000b003a81fdea394mr38243122qtv.59.1672330688081;
+        Thu, 29 Dec 2022 08:18:08 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id j3-20020ac85503000000b003ab43dabfb1sm11733306qtq.55.2022.12.29.08.18.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Dec 2022 08:18:07 -0800 (PST)
+Subject: Re: [PATCH v8 3/4] fpga: dfl: add basic support for DFHv1
+To:     matthew.gerlach@linux.intel.com, hao.wu@intel.com,
+        yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org,
+        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tianfei.zhang@intel.com,
+        corbet@lwn.net, gregkh@linuxfoundation.org,
+        linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+References: <20221228181624.1793433-1-matthew.gerlach@linux.intel.com>
+ <20221228181624.1793433-4-matthew.gerlach@linux.intel.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <628c125a-5a84-e1bd-7724-2637315cc35e@redhat.com>
+Date:   Thu, 29 Dec 2022 08:18:03 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
+In-Reply-To: <20221228181624.1793433-4-matthew.gerlach@linux.intel.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On 12/28/22 10:16 AM, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>
+> Version 1 of the Device Feature Header (DFH) definition adds
+> functionality to the DFL bus.
+>
+> A DFHv1 header may have one or more parameter blocks that
+> further describes the HW to SW.  Add support to the DFL bus
+> to parse the MSI-X parameter.
+>
+> The location of a feature's register set is explicitly
+> described in DFHv1 and can be relative to the base of the DFHv1
+> or an absolute address.  Parse the location and pass the information
+> to DFL driver.
+>
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+> v8: use struct_size() from overflow.h
+>      add dfh_get_u64_param_vals()
+>
+> v7: no change
+>
+> v6: move MSI_X parameter definitions to drivers/fpga/dfl.h
+>
+> v5: update field names
+>      fix find_param/dfh_get_psize
+>      clean up mmio_res assignments
+>      use u64* instead of void*
+>      use FIELD_GET instead of masking
+>
+> v4: s/MSIX/MSI_X
+>      move kernel doc to implementation
+>      use structure assignment
+>      fix decode of absolute address
+>      clean up comment in parse_feature_irqs
+>      remove use of csr_res
+>
+> v3: remove unneeded blank line
+>      use clearer variable name
+>      pass finfo into parse_feature_irqs()
+>      refactor code for better indentation
+>      use switch statement for irq parsing
+>      squash in code parsing register location
+>
+> v2: fix kernel doc
+>      clarify use of DFH_VERSION field
+> ---
+>   drivers/fpga/dfl.c  | 265 +++++++++++++++++++++++++++++++++++---------
+>   drivers/fpga/dfl.h  |   9 ++
+>   include/linux/dfl.h |   6 +
+>   3 files changed, 229 insertions(+), 51 deletions(-)
+>
+> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+> index b9aae85ba930..403fa425c1fe 100644
+> --- a/drivers/fpga/dfl.c
+> +++ b/drivers/fpga/dfl.c
+> @@ -13,6 +13,7 @@
+>   #include <linux/dfl.h>
+>   #include <linux/fpga-dfl.h>
+>   #include <linux/module.h>
+> +#include <linux/overflow.h>
+>   #include <linux/uaccess.h>
+>   
+>   #include "dfl.h"
+> @@ -342,6 +343,8 @@ static void release_dfl_dev(struct device *dev)
+>   	if (ddev->mmio_res.parent)
+>   		release_resource(&ddev->mmio_res);
+>   
+> +	kfree(ddev->params);
+> +
+>   	ida_free(&dfl_device_ida, ddev->id);
+>   	kfree(ddev->irqs);
+>   	kfree(ddev);
+> @@ -380,7 +383,16 @@ dfl_dev_add(struct dfl_feature_platform_data *pdata,
+>   	ddev->type = feature_dev_id_type(pdev);
+>   	ddev->feature_id = feature->id;
+>   	ddev->revision = feature->revision;
+> +	ddev->dfh_version = feature->dfh_version;
+>   	ddev->cdev = pdata->dfl_cdev;
+> +	if (feature->param_size) {
+> +		ddev->params = kmemdup(feature->params, feature->param_size, GFP_KERNEL);
+> +		if (!ddev->params) {
+> +			ret = -ENOMEM;
+> +			goto put_dev;
+> +		}
+> +		ddev->param_size = feature->param_size;
+> +	}
+>   
+>   	/* add mmio resource */
+>   	parent_res = &pdev->resource[feature->resource_index];
+> @@ -708,20 +720,27 @@ struct build_feature_devs_info {
+>    * struct dfl_feature_info - sub feature info collected during feature dev build
+>    *
+>    * @fid: id of this sub feature.
+> + * @revision: revision of this sub feature
+> + * @dfh_version: version of Device Feature Header (DFH)
+>    * @mmio_res: mmio resource of this sub feature.
+>    * @ioaddr: mapped base address of mmio resource.
+>    * @node: node in sub_features linked list.
+>    * @irq_base: start of irq index in this sub feature.
+>    * @nr_irqs: number of irqs of this sub feature.
+> + * @param_size: size DFH parameters.
+> + * @params: DFH parameter data.
+>    */
+>   struct dfl_feature_info {
+>   	u16 fid;
+>   	u8 revision;
+> +	u8 dfh_version;
+>   	struct resource mmio_res;
+>   	void __iomem *ioaddr;
+>   	struct list_head node;
+>   	unsigned int irq_base;
+>   	unsigned int nr_irqs;
+> +	unsigned int param_size;
+> +	u64 params[];
+u64 *params
+>   };
+>   
+>   static void dfl_fpga_cdev_add_port_dev(struct dfl_fpga_cdev *cdev,
+> @@ -797,7 +816,17 @@ static int build_info_commit_dev(struct build_feature_devs_info *binfo)
+>   		feature->dev = fdev;
+>   		feature->id = finfo->fid;
+>   		feature->revision = finfo->revision;
+> +		feature->dfh_version = finfo->dfh_version;
+>   
+> +		if (finfo->param_size) {
+> +			feature->params = devm_kmemdup(binfo->dev,
+> +						       finfo->params, finfo->param_size,
+> +						       GFP_KERNEL);
+> +			if (!feature->params)
+> +				return -ENOMEM;
+> +
+> +			feature->param_size = finfo->param_size;
+> +		}
+>   		/*
+>   		 * the FIU header feature has some fundamental functions (sriov
+>   		 * set, port enable/disable) needed for the dfl bus device and
+> @@ -934,56 +963,135 @@ static u16 feature_id(u64 value)
+>   	return 0;
+>   }
+>   
+> +static u64 *find_param(u64 *params, resource_size_t max, int param_id)
+> +{
+> +	u64 *end = params + max / sizeof(u64);
+> +	u64 v, next;
+> +
+> +	while (params < end) {
+> +		v = *params;
+> +		if (param_id == FIELD_GET(DFHv1_PARAM_HDR_ID, v))
+> +			return params;
+> +
+> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
+> +		params += next;
+> +		if (FIELD_GET(DFHv1_PARAM_HDR_NEXT_EOP, v))
+> +			break;
+Move before next =, and save some work calculating unsed next
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +/**
+> + * dfh_find_param() - find parameter block for the given parameter id
+> + * @dfl_dev: dfl device
+> + * @param: id of dfl parameter
+> + *
+> + * Return: pointer to start of parameter block, NULL otherwise.
+> + */
+> +u64 *dfh_find_param(struct dfl_device *dfl_dev, int param_id)
+> +{
+> +	return find_param(dfl_dev->params, dfl_dev->param_size, param_id);
+> +}
+> +EXPORT_SYMBOL_GPL(dfh_find_param);
 
-The qcom-geni-serial driver currently only works in SE FIFO mode. This
-limits the UART speed to around 180 kB/s. In order to achieve higher
-speeds we need to use SE DMA mode.
+This and similar should be noop's for dfh v0
 
-Keep the console port working in FIFO mode but extend the code to use DMA
-for the high-speed port.
+Generally there should be better checking if code is running a v1 vs  v0 
+header.
 
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 314 +++++++++++++++++++++-----
- 1 file changed, 255 insertions(+), 59 deletions(-)
+> +
+> +/**
+> + * dfh_get_u64_param_vals() - get array of u64 param values for given parameter id
+> + * @dfl_dev: dfl device
+> + * @param: id of dfl parameter
+> + * @pval: location of parameter data destination
+> + * @nvals: number of u64 elements of parameter data
+> + *
+> + * Return: pointer to start of parameter block, PTR_ERR otherwise
+> + */
+> +u64 *dfh_get_u64_param_vals(struct dfl_device *dfl_dev, int param_id, u64 *pval, int nvals)
+nvals should be unsigned
+> +{
+> +	u64 *param = find_param(dfl_dev->params, dfl_dev->param_size, param_id);
+> +	u64 next;
+> +	int i;
+> +
+> +	if (!param)
+> +		return ERR_PTR(-ENOENT);
+> +
+> +	next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, *param);
+> +
+> +	if (nvals >= next)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	for (i = 0; i < nvals; i++)
+> +		*pval++ = param[i + 1];
+memcpy ?
+> +
+> +	return param;
+> +}
+> +EXPORT_SYMBOL_GPL(dfh_get_u64_param_vals);
+> +
+>   static int parse_feature_irqs(struct build_feature_devs_info *binfo,
+> -			      resource_size_t ofst, u16 fid,
+> -			      unsigned int *irq_base, unsigned int *nr_irqs)
+> +			      resource_size_t ofst, struct dfl_feature_info *finfo)
+>   {
+>   	void __iomem *base = binfo->ioaddr + ofst;
+>   	unsigned int i, ibase, inr = 0;
+> +	void *params = finfo->params;
+>   	enum dfl_id_type type;
+> +	u16 fid = finfo->fid;
+>   	int virq;
+> +	u64 *p;
+>   	u64 v;
+>   
+> -	type = feature_dev_id_type(binfo->feature_dev);
+> +	switch (finfo->dfh_version) {
+> +	case 0:
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 0b3786040bfb..c1aea9d1dc16 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -70,6 +70,8 @@
- #define UART_START_TX			0x1
- /* UART S_CMD OP codes */
- #define UART_START_READ			0x1
-+#define UART_PARAM			0x1
-+#define UART_PARAM_RFR_OPEN		BIT(7)
- 
- #define UART_OVERSAMPLING		32
- #define STALE_TIMEOUT			16
-@@ -95,9 +97,11 @@
- /* We always configure 4 bytes per FIFO word */
- #define BYTES_PER_FIFO_WORD		4U
- 
-+#define DMA_RX_BUF_SIZE		2048
-+
- struct qcom_geni_device_data {
- 	bool console;
--	void (*handle_rx)(struct uart_port *uport, u32 bytes, bool drop);
-+	enum geni_se_xfer_mode mode;
- };
- 
- struct qcom_geni_private_data {
-@@ -118,9 +122,11 @@ struct qcom_geni_serial_port {
- 	u32 tx_fifo_depth;
- 	u32 tx_fifo_width;
- 	u32 rx_fifo_depth;
-+	dma_addr_t tx_dma_addr;
-+	dma_addr_t rx_dma_addr;
- 	bool setup;
- 	unsigned int baud;
--	void *rx_fifo;
-+	void *rx_buf;
- 	u32 loopback;
- 	bool brk;
- 
-@@ -249,6 +255,16 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console)
- 	return port;
- }
- 
-+static bool qcom_geni_serial_main_active(struct uart_port *uport)
-+{
-+	return readl(uport->membase + SE_GENI_STATUS) & M_GENI_CMD_ACTIVE;
-+}
-+
-+static bool qcom_geni_serial_secondary_active(struct uart_port *uport)
-+{
-+	return readl(uport->membase + SE_GENI_STATUS) & S_GENI_CMD_ACTIVE;
-+}
-+
- static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
- 				int offset, int field, bool set)
- {
-@@ -552,18 +568,11 @@ static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
- 
- static void handle_rx_uart(struct uart_port *uport, u32 bytes, bool drop)
- {
--	struct tty_port *tport;
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
--	u32 num_bytes_pw = port->tx_fifo_width / BITS_PER_BYTE;
--	u32 words = ALIGN(bytes, num_bytes_pw) / num_bytes_pw;
-+	struct tty_port *tport = &uport->state->port;
- 	int ret;
- 
--	tport = &uport->state->port;
--	ioread32_rep(uport->membase + SE_GENI_RX_FIFOn, port->rx_fifo, words);
--	if (drop)
--		return;
--
--	ret = tty_insert_flip_string(tport, port->rx_fifo, bytes);
-+	ret = tty_insert_flip_string(tport, port->rx_buf, bytes);
- 	if (ret != bytes) {
- 		dev_err(uport->dev, "%s:Unable to push data ret %d_bytes %d\n",
- 				__func__, ret, bytes);
-@@ -578,16 +587,75 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *uport)
- 	return !readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
- }
- 
--static void qcom_geni_serial_start_tx(struct uart_port *uport)
-+static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
- {
--	u32 irq_en;
--	u32 status;
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	bool done;
-+	u32 m_irq_en;
-+
-+	if (!qcom_geni_serial_main_active(uport))
-+		return;
-+
-+	if (port->rx_dma_addr) {
-+		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
-+				      port->tx_remaining);
-+		port->tx_dma_addr = 0;
-+		port->tx_remaining = 0;
-+	}
-+
-+	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
-+	writel(m_irq_en, uport->membase + SE_GENI_M_IRQ_EN);
-+	geni_se_cancel_m_cmd(&port->se);
-+
-+	done = qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
-+					 S_CMD_CANCEL_EN, true);
-+	if (!done) {
-+		geni_se_abort_m_cmd(&port->se);
-+		done = qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-+						 M_CMD_ABORT_EN, true);
-+		if (!done)
-+			dev_err_ratelimited(uport->dev, "M_CMD_ABORT_EN not set");
-+		writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
-+	}
-+
-+	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
-+}
-+
-+static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	struct circ_buf *xmit = &uport->state->xmit;
-+	unsigned int xmit_size;
-+	int ret;
-+
-+	if (port->tx_dma_addr)
-+		return;
-+
-+	xmit_size = uart_circ_chars_pending(xmit);
-+	if (xmit_size < WAKEUP_CHARS)
-+		uart_write_wakeup(uport);
- 
--	status = readl(uport->membase + SE_GENI_STATUS);
--	if (status & M_GENI_CMD_ACTIVE)
-+	xmit_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-+
-+	qcom_geni_serial_setup_tx(uport, xmit_size);
-+
-+	ret = geni_se_tx_dma_prep(&port->se, &xmit->buf[xmit->tail],
-+				  xmit_size, &port->tx_dma_addr);
-+	if (ret) {
-+		dev_err(uport->dev, "unable to start TX SE DMA: %d\n", ret);
-+		qcom_geni_serial_stop_tx_dma(uport);
- 		return;
-+	}
-+
-+	port->tx_remaining = xmit_size;
-+}
-+
-+static void qcom_geni_serial_start_tx_fifo(struct uart_port *uport)
-+{
-+	u32 irq_en;
- 
--	if (!qcom_geni_serial_tx_empty(uport))
-+	if (qcom_geni_serial_main_active(uport) ||
-+	    !qcom_geni_serial_tx_empty(uport))
- 		return;
- 
- 	irq_en = readl(uport->membase +	SE_GENI_M_IRQ_EN);
-@@ -597,19 +665,17 @@ static void qcom_geni_serial_start_tx(struct uart_port *uport)
- 	writel(irq_en, uport->membase +	SE_GENI_M_IRQ_EN);
- }
- 
--static void qcom_geni_serial_stop_tx(struct uart_port *uport)
-+static void qcom_geni_serial_stop_tx_fifo(struct uart_port *uport)
- {
- 	u32 irq_en;
--	u32 status;
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 
- 	irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
- 	irq_en &= ~(M_CMD_DONE_EN | M_TX_FIFO_WATERMARK_EN);
- 	writel(0, uport->membase + SE_GENI_TX_WATERMARK_REG);
- 	writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
--	status = readl(uport->membase + SE_GENI_STATUS);
- 	/* Possible stop tx is called multiple times. */
--	if (!(status & M_GENI_CMD_ACTIVE))
-+	if (!qcom_geni_serial_main_active(uport))
- 		return;
- 
- 	geni_se_cancel_m_cmd(&port->se);
-@@ -623,14 +689,13 @@ static void qcom_geni_serial_stop_tx(struct uart_port *uport)
- 	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
- }
- 
--static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
-+static void qcom_geni_serial_handle_rx_fifo(struct uart_port *uport, bool drop)
- {
- 	u32 status;
- 	u32 word_cnt;
- 	u32 last_word_byte_cnt;
- 	u32 last_word_partial;
- 	u32 total_bytes;
--	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 
- 	status = readl(uport->membase +	SE_GENI_RX_FIFO_STATUS);
- 	word_cnt = status & RX_FIFO_WC_MSK;
-@@ -645,13 +710,12 @@ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop)
- 		total_bytes += last_word_byte_cnt;
- 	else
- 		total_bytes += BYTES_PER_FIFO_WORD;
--	port->dev_data->handle_rx(uport, total_bytes, drop);
-+	handle_rx_console(uport, total_bytes, drop);
- }
- 
--static void qcom_geni_serial_stop_rx(struct uart_port *uport)
-+static void qcom_geni_serial_stop_rx_fifo(struct uart_port *uport)
- {
- 	u32 irq_en;
--	u32 status;
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	u32 s_irq_status;
- 
-@@ -663,9 +727,7 @@ static void qcom_geni_serial_stop_rx(struct uart_port *uport)
- 	irq_en &= ~(M_RX_FIFO_WATERMARK_EN | M_RX_FIFO_LAST_EN);
- 	writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
- 
--	status = readl(uport->membase + SE_GENI_STATUS);
--	/* Possible stop rx is called multiple times. */
--	if (!(status & S_GENI_CMD_ACTIVE))
-+	if (!qcom_geni_serial_secondary_active(uport))
- 		return;
- 
- 	geni_se_cancel_s_cmd(&port->se);
-@@ -678,23 +740,20 @@ static void qcom_geni_serial_stop_rx(struct uart_port *uport)
- 	s_irq_status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
- 	/* Flush the Rx buffer */
- 	if (s_irq_status & S_RX_FIFO_LAST_EN)
--		qcom_geni_serial_handle_rx(uport, true);
-+		qcom_geni_serial_handle_rx_fifo(uport, true);
- 	writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
- 
--	status = readl(uport->membase + SE_GENI_STATUS);
--	if (status & S_GENI_CMD_ACTIVE)
-+	if (qcom_geni_serial_secondary_active(uport))
- 		qcom_geni_serial_abort_rx(uport);
- }
- 
--static void qcom_geni_serial_start_rx(struct uart_port *uport)
-+static void qcom_geni_serial_start_rx_fifo(struct uart_port *uport)
- {
- 	u32 irq_en;
--	u32 status;
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 
--	status = readl(uport->membase + SE_GENI_STATUS);
--	if (status & S_GENI_CMD_ACTIVE)
--		qcom_geni_serial_stop_rx(uport);
-+	if (qcom_geni_serial_secondary_active(uport))
-+		qcom_geni_serial_stop_rx_fifo(uport);
- 
- 	geni_se_setup_s_cmd(&port->se, UART_START_READ, 0);
- 
-@@ -707,6 +766,94 @@ static void qcom_geni_serial_start_rx(struct uart_port *uport)
- 	writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
- }
- 
-+static void qcom_geni_serial_stop_rx_dma(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+
-+	if (!qcom_geni_serial_secondary_active(uport))
-+		return;
-+
-+	geni_se_cancel_s_cmd(&port->se);
-+	qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
-+				  S_CMD_CANCEL_EN, true);
-+
-+	if (qcom_geni_serial_secondary_active(uport))
-+		qcom_geni_serial_abort_rx(uport);
-+
-+	if (port->rx_dma_addr) {
-+		geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr,
-+				      DMA_RX_BUF_SIZE);
-+		port->rx_dma_addr = 0;
-+	}
-+}
-+
-+static void qcom_geni_serial_start_rx_dma(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	int ret;
-+
-+	if (qcom_geni_serial_secondary_active(uport))
-+		qcom_geni_serial_stop_rx_dma(uport);
-+
-+	geni_se_setup_s_cmd(&port->se, UART_START_READ, UART_PARAM_RFR_OPEN);
-+
-+	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
-+				  DMA_RX_BUF_SIZE,
-+				  &port->rx_dma_addr);
-+	if (ret) {
-+		dev_err(uport->dev, "unable to start RX SE DMA: %d\n", ret);
-+		qcom_geni_serial_stop_rx_dma(uport);
-+	}
-+}
-+
-+static void qcom_geni_serial_handle_rx_dma(struct uart_port *uport, bool drop)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	u32 rx_in;
-+	int ret;
-+
-+	if (!qcom_geni_serial_secondary_active(uport))
-+		return;
-+
-+	if (!port->rx_dma_addr)
-+		return;
-+
-+	geni_se_rx_dma_unprep(&port->se, port->rx_dma_addr, DMA_RX_BUF_SIZE);
-+	port->rx_dma_addr = 0;
-+
-+	rx_in = readl(uport->membase + SE_DMA_RX_LEN_IN);
-+	if (!rx_in) {
-+		dev_warn(uport->dev, "serial engine reports 0 RX bytes in!\n");
-+		return;
-+	}
-+
-+	if (!drop)
-+		handle_rx_uart(uport, rx_in, drop);
-+
-+	ret = geni_se_rx_dma_prep(&port->se, port->rx_buf,
-+				  DMA_RX_BUF_SIZE,
-+				  &port->rx_dma_addr);
-+	if (ret) {
-+		dev_err(uport->dev, "unable to start RX SE DMA: %d\n", ret);
-+		qcom_geni_serial_stop_rx_dma(uport);
-+	}
-+}
-+
-+static void qcom_geni_serial_start_rx(struct uart_port *uport)
-+{
-+	uport->ops->start_rx(uport);
-+}
-+
-+static void qcom_geni_serial_stop_rx(struct uart_port *uport)
-+{
-+	uport->ops->stop_rx(uport);
-+}
-+
-+static void qcom_geni_serial_stop_tx(struct uart_port *uport)
-+{
-+	uport->ops->stop_tx(uport);
-+}
-+
- static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
- 					     unsigned int chunk)
- {
-@@ -731,8 +878,8 @@ static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
- 	}
- }
- 
--static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
--		bool active)
-+static void qcom_geni_serial_handle_tx_fifo(struct uart_port *uport,
-+					    bool done, bool active)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	struct circ_buf *xmit = &uport->state->xmit;
-@@ -752,7 +899,7 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
- 
- 	/* All data has been transmitted and acknowledged as received */
- 	if (!pending && !status && done) {
--		qcom_geni_serial_stop_tx(uport);
-+		qcom_geni_serial_stop_tx_fifo(uport);
- 		goto out_write_wakeup;
- 	}
- 
-@@ -795,12 +942,32 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
- 		uart_write_wakeup(uport);
- }
- 
-+static void qcom_geni_serial_handle_tx_dma(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	struct circ_buf *xmit = &uport->state->xmit;
-+
-+	uart_xmit_advance(uport, port->tx_remaining);
-+	geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr, port->tx_remaining);
-+	port->tx_dma_addr = 0;
-+	port->tx_remaining = 0;
-+
-+	if (!uart_circ_empty(xmit))
-+		qcom_geni_serial_start_tx_dma(uport);
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(uport);
-+}
-+
- static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- {
- 	u32 m_irq_en;
- 	u32 m_irq_status;
- 	u32 s_irq_status;
- 	u32 geni_status;
-+	u32 dma;
-+	u32 dma_tx_status;
-+	u32 dma_rx_status;
- 	struct uart_port *uport = dev;
- 	bool drop_rx = false;
- 	struct tty_port *tport = &uport->state->port;
-@@ -813,10 +980,15 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 
- 	m_irq_status = readl(uport->membase + SE_GENI_M_IRQ_STATUS);
- 	s_irq_status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
-+	dma_tx_status = readl(uport->membase + SE_DMA_TX_IRQ_STAT);
-+	dma_rx_status = readl(uport->membase + SE_DMA_RX_IRQ_STAT);
- 	geni_status = readl(uport->membase + SE_GENI_STATUS);
-+	dma = readl(uport->membase + SE_GENI_DMA_MODE_EN);
- 	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
- 	writel(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
- 	writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
-+	writel(dma_tx_status, uport->membase + SE_DMA_TX_IRQ_CLR);
-+	writel(dma_rx_status, uport->membase + SE_DMA_RX_IRQ_CLR);
- 
- 	if (WARN_ON(m_irq_status & M_ILLEGAL_CMD_EN))
- 		goto out_unlock;
-@@ -826,10 +998,6 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
- 	}
- 
--	if (m_irq_status & m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
--		qcom_geni_serial_handle_tx(uport, m_irq_status & M_CMD_DONE_EN,
--					   geni_status & M_GENI_CMD_ACTIVE);
--
- 	if (s_irq_status & (S_GP_IRQ_0_EN | S_GP_IRQ_1_EN)) {
- 		if (s_irq_status & S_GP_IRQ_0_EN)
- 			uport->icount.parity++;
-@@ -839,8 +1007,35 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 		port->brk = true;
- 	}
- 
--	if (s_irq_status & (S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN))
--		qcom_geni_serial_handle_rx(uport, drop_rx);
-+	if (dma) {
-+		if (dma_tx_status & TX_DMA_DONE)
-+			qcom_geni_serial_handle_tx_dma(uport);
-+
-+		if (dma_rx_status) {
-+			if (dma_rx_status & RX_RESET_DONE)
-+				goto out_unlock;
-+
-+			if (dma_rx_status & RX_DMA_PARITY_ERR) {
-+				uport->icount.parity++;
-+				drop_rx = true;
-+			}
-+
-+			if (dma_rx_status & RX_DMA_BREAK)
-+				uport->icount.brk++;
-+
-+			if (dma_rx_status & (RX_DMA_DONE | RX_EOT))
-+				qcom_geni_serial_handle_rx_dma(uport, drop_rx);
-+		}
-+	} else {
-+		if (m_irq_status & m_irq_en &
-+		    (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
-+			qcom_geni_serial_handle_tx_fifo(uport,
-+					m_irq_status & M_CMD_DONE_EN,
-+					geni_status & M_GENI_CMD_ACTIVE);
-+
-+		if (s_irq_status & (S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN))
-+			qcom_geni_serial_handle_rx_fifo(uport, drop_rx);
-+	}
- 
- out_unlock:
- 	uart_unlock_and_check_sysrq(uport);
-@@ -909,7 +1104,7 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 	geni_se_config_packing(&port->se, BITS_PER_BYTE, BYTES_PER_FIFO_WORD,
- 			       false, true, true);
- 	geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
--	geni_se_select_mode(&port->se, GENI_SE_FIFO);
-+	geni_se_select_mode(&port->se, port->dev_data->mode);
- 	qcom_geni_serial_start_rx(uport);
- 	port->setup = true;
- 
-@@ -1308,10 +1503,10 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 
- static const struct uart_ops qcom_geni_console_pops = {
- 	.tx_empty = qcom_geni_serial_tx_empty,
--	.stop_tx = qcom_geni_serial_stop_tx,
--	.start_tx = qcom_geni_serial_start_tx,
--	.stop_rx = qcom_geni_serial_stop_rx,
--	.start_rx = qcom_geni_serial_start_rx,
-+	.stop_tx = qcom_geni_serial_stop_tx_fifo,
-+	.start_tx = qcom_geni_serial_start_tx_fifo,
-+	.stop_rx = qcom_geni_serial_stop_rx_fifo,
-+	.start_rx = qcom_geni_serial_start_rx_fifo,
- 	.set_termios = qcom_geni_serial_set_termios,
- 	.startup = qcom_geni_serial_startup,
- 	.request_port = qcom_geni_serial_request_port,
-@@ -1329,9 +1524,10 @@ static const struct uart_ops qcom_geni_console_pops = {
- 
- static const struct uart_ops qcom_geni_uart_pops = {
- 	.tx_empty = qcom_geni_serial_tx_empty,
--	.stop_tx = qcom_geni_serial_stop_tx,
--	.start_tx = qcom_geni_serial_start_tx,
--	.stop_rx = qcom_geni_serial_stop_rx,
-+	.stop_tx = qcom_geni_serial_stop_tx_dma,
-+	.start_tx = qcom_geni_serial_start_tx_dma,
-+	.start_rx = qcom_geni_serial_start_rx_dma,
-+	.stop_rx = qcom_geni_serial_stop_rx_dma,
- 	.set_termios = qcom_geni_serial_set_termios,
- 	.startup = qcom_geni_serial_startup,
- 	.request_port = qcom_geni_serial_request_port,
-@@ -1400,9 +1596,9 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
- 
- 	if (!data->console) {
--		port->rx_fifo = devm_kcalloc(uport->dev,
--			port->rx_fifo_depth, sizeof(u32), GFP_KERNEL);
--		if (!port->rx_fifo)
-+		port->rx_buf = devm_kzalloc(uport->dev,
-+					    DMA_RX_BUF_SIZE, GFP_KERNEL);
-+		if (!port->rx_buf)
- 			return -ENOMEM;
- 	}
- 
-@@ -1564,12 +1760,12 @@ static int qcom_geni_serial_sys_hib_resume(struct device *dev)
- 
- static const struct qcom_geni_device_data qcom_geni_console_data = {
- 	.console = true,
--	.handle_rx = handle_rx_console,
-+	.mode = GENI_SE_FIFO,
- };
- 
- static const struct qcom_geni_device_data qcom_geni_uart_data = {
- 	.console = false,
--	.handle_rx = handle_rx_uart,
-+	.mode = GENI_SE_DMA,
- };
- 
- static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
--- 
-2.37.2
+A switch makes this code complicated to read.
+
+Have you thought about a function pointer table to separate out similar 
+v1 vs v0 code blocks?
+
+> +		/*
+> +		 * DFHv0 only provides MMIO resource information for each feature
+> +		 * in the DFL header.  There is no generic interrupt information.
+> +		 * Instead, features with interrupt functionality provide
+> +		 * the information in feature specific registers.
+> +		 */
+> +		type = feature_dev_id_type(binfo->feature_dev);
+> +		if (type == PORT_ID) {
+> +			switch (fid) {
+> +			case PORT_FEATURE_ID_UINT:
+> +				v = readq(base + PORT_UINT_CAP);
+> +				ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
+> +				inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
+> +				break;
+> +			case PORT_FEATURE_ID_ERROR:
+> +				v = readq(base + PORT_ERROR_CAP);
+> +				ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
+> +				inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
+> +				break;
+> +			}
+> +		} else if (type == FME_ID) {
+> +			switch (fid) {
+> +			case FME_FEATURE_ID_GLOBAL_ERR:
+> +				v = readq(base + FME_ERROR_CAP);
+> +				ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
+> +				inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
+> +				break;
+> +			}
+> +		}
+> +		break;
+>   
+> -	/*
+> -	 * Ideally DFL framework should only read info from DFL header, but
+> -	 * current version DFL only provides mmio resources information for
+> -	 * each feature in DFL Header, no field for interrupt resources.
+> -	 * Interrupt resource information is provided by specific mmio
+> -	 * registers of each private feature which supports interrupt. So in
+> -	 * order to parse and assign irq resources, DFL framework has to look
+> -	 * into specific capability registers of these private features.
+> -	 *
+> -	 * Once future DFL version supports generic interrupt resource
+> -	 * information in common DFL headers, the generic interrupt parsing
+> -	 * code will be added. But in order to be compatible to old version
+> -	 * DFL, the driver may still fall back to these quirks.
+> -	 */
+> -	if (type == PORT_ID) {
+> -		switch (fid) {
+> -		case PORT_FEATURE_ID_UINT:
+> -			v = readq(base + PORT_UINT_CAP);
+> -			ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
+> -			inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
+> -			break;
+> -		case PORT_FEATURE_ID_ERROR:
+> -			v = readq(base + PORT_ERROR_CAP);
+> -			ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
+> -			inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
+> +	case 1:
+> +		/*
+> +		 * DFHv1 provides interrupt resource information in DFHv1
+> +		 * parameter blocks.
+> +		 */
+> +		p = find_param(params, finfo->param_size, DFHv1_PARAM_ID_MSI_X);
+> +		if (!p)
+>   			break;
+> -		}
+> -	} else if (type == FME_ID) {
+> -		if (fid == FME_FEATURE_ID_GLOBAL_ERR) {
+> -			v = readq(base + FME_ERROR_CAP);
+> -			ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
+> -			inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
+> -		}
+> +
+> +		p++;
+> +		ibase = FIELD_GET(DFHv1_PARAM_MSI_X_STARTV, *p);
+> +		inr = FIELD_GET(DFHv1_PARAM_MSI_X_NUMV, *p);
+> +		break;
+> +
+> +	default:
+> +		dev_warn(binfo->dev, "unexpected DFH version %d\n", finfo->dfh_version);
+> +		break;
+>   	}
+>   
+>   	if (!inr) {
+> -		*irq_base = 0;
+> -		*nr_irqs = 0;
+> +		finfo->irq_base = 0;
+> +		finfo->nr_irqs = 0;
+>   		return 0;
+>   	}
+>   
+> @@ -1006,12 +1114,37 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
+>   		}
+>   	}
+>   
+> -	*irq_base = ibase;
+> -	*nr_irqs = inr;
+> +	finfo->irq_base = ibase;
+> +	finfo->nr_irqs = inr;
+>   
+>   	return 0;
+>   }
+>   
+> +static int dfh_get_psize(void __iomem *dfh_base, resource_size_t max)
+for clarity, psize should be expanded to param_size
+> +{
+> +	int size = 0;
+> +	u64 v, next;
+> +
+> +	if (!FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS,
+> +		       readq(dfh_base + DFHv1_CSR_SIZE_GRP)))
+> +		return 0;
+> +
+> +	while (size + DFHv1_PARAM_HDR < max) {
+> +		v = readq(dfh_base + DFHv1_PARAM_HDR + size);
+> +
+> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
+> +		if (!next)
+> +			return -EINVAL;
+> +
+> +		size += next * sizeof(u64);
+> +
+> +		if (FIELD_GET(DFHv1_PARAM_HDR_NEXT_EOP, v))
+> +			return size;
+> +	}
+> +
+> +	return -ENOENT;
+> +}
+> +
+>   /*
+>    * when create sub feature instances, for private features, it doesn't need
+>    * to provide resource size and feature id as they could be read from DFH
+> @@ -1023,39 +1156,69 @@ static int
+>   create_feature_instance(struct build_feature_devs_info *binfo,
+>   			resource_size_t ofst, resource_size_t size, u16 fid)
+>   {
+> -	unsigned int irq_base, nr_irqs;
+>   	struct dfl_feature_info *finfo;
+> +	resource_size_t start, end;
+> +	int dfh_psize = 0;
+>   	u8 revision = 0;
+> +	u64 v, addr_off;
+> +	u8 dfh_ver = 0;
+>   	int ret;
+> -	u64 v;
+>   
+>   	if (fid != FEATURE_ID_AFU) {
+>   		v = readq(binfo->ioaddr + ofst);
+>   		revision = FIELD_GET(DFH_REVISION, v);
+> -
+> +		dfh_ver = FIELD_GET(DFH_VERSION, v);
+>   		/* read feature size and id if inputs are invalid */
+>   		size = size ? size : feature_size(v);
+>   		fid = fid ? fid : feature_id(v);
+> +		if (dfh_ver == 1) {
+> +			dfh_psize = dfh_get_psize(binfo->ioaddr + ofst, size);
+> +			if (dfh_psize < 0) {
+> +				dev_err(binfo->dev,
+> +					"failed to read size of DFHv1 parameters %d\n",
+> +					dfh_psize);
+> +				return dfh_psize;
+> +			}
+> +			dev_dbg(binfo->dev, "dfhv1_psize %d\n", dfh_psize);
+> +		}
+>   	}
+>   
+>   	if (binfo->len - ofst < size)
+>   		return -EINVAL;
+>   
+> -	ret = parse_feature_irqs(binfo, ofst, fid, &irq_base, &nr_irqs);
+> -	if (ret)
+> -		return ret;
+> -
+> -	finfo = kzalloc(sizeof(*finfo), GFP_KERNEL);
+> +	finfo = kzalloc(struct_size(finfo, params, dfh_psize/sizeof(u64)), GFP_KERNEL);
+>   	if (!finfo)
+>   		return -ENOMEM;
+>   
+> +	memcpy_fromio(finfo->params, binfo->ioaddr + ofst + DFHv1_PARAM_HDR, dfh_psize);
+> +	finfo->param_size = dfh_psize;
+> +
+>   	finfo->fid = fid;
+>   	finfo->revision = revision;
+> -	finfo->mmio_res.start = binfo->start + ofst;
+> -	finfo->mmio_res.end = finfo->mmio_res.start + size - 1;
+> +	finfo->dfh_version = dfh_ver;
+> +	if (dfh_ver == 1) {
+> +		v = readq(binfo->ioaddr + ofst + DFHv1_CSR_ADDR);
+> +		addr_off = FIELD_GET(DFHv1_CSR_ADDR_MASK, v);
+> +		if (FIELD_GET(DFHv1_CSR_ADDR_REL, v))
+> +			start = addr_off << 1;
+> +		else
+> +			start = binfo->start + ofst + addr_off;
+> +
+> +		v = readq(binfo->ioaddr + ofst + DFHv1_CSR_SIZE_GRP);
+> +		end = start + FIELD_GET(DFHv1_CSR_SIZE_GRP_SIZE, v) - 1;
+> +	} else {
+> +		start = binfo->start + ofst;
+> +		end = start + size - 1;
+> +	}
+>   	finfo->mmio_res.flags = IORESOURCE_MEM;
+> -	finfo->irq_base = irq_base;
+> -	finfo->nr_irqs = nr_irqs;
+> +	finfo->mmio_res.start = start;
+> +	finfo->mmio_res.end = end;
+> +
+> +	ret = parse_feature_irqs(binfo, ofst, finfo);
+> +	if (ret) {
+> +		kfree(finfo);
+> +		return ret;
+> +	}
+>   
+>   	list_add_tail(&finfo->node, &binfo->sub_features);
+>   	binfo->feature_num++;
+> diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
+> index fc59f33367ee..a21065cec04e 100644
+> --- a/drivers/fpga/dfl.h
+> +++ b/drivers/fpga/dfl.h
+> @@ -111,6 +111,10 @@
+>   #define DFHv1_PARAM_HDR_NEXT_EOP	BIT_ULL(32)
+>   #define DFHv1_PARAM_DATA		0x08  /* Offset of Param data from Param header */
+>   
+> +#define DFHv1_PARAM_ID_MSI_X		0x1
+> +#define DFHv1_PARAM_MSI_X_NUMV		GENMASK_ULL(63, 32)
+> +#define DFHv1_PARAM_MSI_X_STARTV	GENMASK_ULL(31, 0)
+> +
+>   /* Next AFU Register Bitfield */
+>   #define NEXT_AFU_NEXT_DFH_OFST	GENMASK_ULL(23, 0)	/* Offset to next AFU */
+>   
+> @@ -272,11 +276,14 @@ struct dfl_feature_irq_ctx {
+>    * @ops: ops of this sub feature.
+>    * @ddev: ptr to the dfl device of this sub feature.
+>    * @priv: priv data of this feature.
+> + * @param_size: size of dfh parameters
+> + * @params: point to memory copy of dfh parameters
+>    */
+>   struct dfl_feature {
+>   	struct platform_device *dev;
+>   	u16 id;
+>   	u8 revision;
+> +	u8 dfh_version;
+
+Needs a description in the comments above.
+
+I am concerned generally about backward compatibility and oot drivers 
+that are dfh v0.
+
+Adding an element in the middle will break things.
+
+These structures could be more explicit about what is common, and what 
+is v0 and v1 specific.
+
+Tom
+
+>   	int resource_index;
+>   	void __iomem *ioaddr;
+>   	struct dfl_feature_irq_ctx *irq_ctx;
+> @@ -284,6 +291,8 @@ struct dfl_feature {
+>   	const struct dfl_feature_ops *ops;
+>   	struct dfl_device *ddev;
+>   	void *priv;
+> +	unsigned int param_size;
+> +	void *params;
+>   };
+>   
+>   #define FEATURE_DEV_ID_UNUSED	(-1)
+> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
+> index 431636a0dc78..3138ea42d02e 100644
+> --- a/include/linux/dfl.h
+> +++ b/include/linux/dfl.h
+> @@ -39,9 +39,12 @@ struct dfl_device {
+>   	u16 type;
+>   	u16 feature_id;
+>   	u8 revision;
+> +	u8 dfh_version;
+>   	struct resource mmio_res;
+>   	int *irqs;
+>   	unsigned int num_irqs;
+> +	unsigned int param_size;
+> +	void *params;
+>   	struct dfl_fpga_cdev *cdev;
+>   	const struct dfl_device_id *id_entry;
+>   };
+> @@ -84,4 +87,7 @@ void dfl_driver_unregister(struct dfl_driver *dfl_drv);
+>   	module_driver(__dfl_driver, dfl_driver_register, \
+>   		      dfl_driver_unregister)
+>   
+> +u64 *dfh_find_param(struct dfl_device *dfl_dev, int param);
+> +
+> +u64 *dfh_get_u64_param_vals(struct dfl_device *dfl_dev, int param_id, u64 *pval, int nvals);
+>   #endif /* __LINUX_DFL_H */
 
