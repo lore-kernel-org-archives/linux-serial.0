@@ -2,267 +2,139 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFCBC4167B
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 15:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A79B8C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 15:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbiL2Pci (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Dec 2022 10:32:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
+        id S233504AbiL2Pui (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Dec 2022 10:50:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233383AbiL2Pch (ORCPT
+        with ESMTP id S233383AbiL2Pui (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Dec 2022 10:32:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A3813DFD
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:31:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1672327911;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h3NN2Mip5QK+Z02dH68Rq+WIBZOSpgwllYxpq3yU+XE=;
-        b=dGU8a0f6+mUhu0S7oFRn7P0dv3TyjN1J4g1SDcYvSKOkLttW3olyl2qHpRgtQtHFJGDogT
-        ZB8SZV3ZBR1gj79rpK/V6eKFAHY4ifXmqwVJ6YACXyiPP78OB3bla9k56reXLa497J1/zu
-        BGpM1Pnyv+o62pMifs8363H5nruYpgE=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-569-LYhwTxmcOQaqPYUKd7fe0Q-1; Thu, 29 Dec 2022 10:31:50 -0500
-X-MC-Unique: LYhwTxmcOQaqPYUKd7fe0Q-1
-Received: by mail-qk1-f200.google.com with SMTP id bq39-20020a05620a46a700b006ffd5db9fe9so12980708qkb.2
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:31:50 -0800 (PST)
+        Thu, 29 Dec 2022 10:50:38 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C69B13F4F
+        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:50:35 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id o15so13397621wmr.4
+        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 07:50:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mxBRWEKdxDoxUmsf4m1Rf+wCWTOWa4yctJPkk6Ti6eA=;
+        b=mAWTeny0sqvADkOky+spceEmg9syZ8nm2BawGZXoEyTRWH6pr2xqeTmQP6z3nF7ga4
+         vJTk2fXB0ynr/dpSkhgIGH/AYtGa7mMVG+z0M/JjcThAmVF0p0wUVjpVmPj3lOfhTAU/
+         1Dh/x3SgVJpZYdoD2JxwQb4be7nzV0WLkdsPScKFuwHreV9O5FsSUmYEHeonc8ncGQBL
+         if+w7MFVFw/znWnPebEOCHBeErX1HH/SZZa+fqeAEu+TrfHwwvximtCfQSB0ZKsycRTx
+         OjveQ4o2aMYzc0HaY5yF5E0kXS30j6QPurPra3G9a3fVSClCvTlbDvp8i1f+mElmsU84
+         v3cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-language:content-transfer-encoding:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=h3NN2Mip5QK+Z02dH68Rq+WIBZOSpgwllYxpq3yU+XE=;
-        b=og5KlI10QjcCVp6BOLL1qrnH2kPJXa+sJ+svihuI/48PlaTWmbBRNvc5KjO4mpdIne
-         yx/4GlgOa7JF3bZRekE2NM+cU+8B0veDt/IOpNC8akRBKzEioc2kl8CaPHEYYB99niKn
-         hMPz3F2QjFHh8oKDGFIsmGQu6ZMZldOABjHURCPNFGbm0SHXUU04Gy+F9/QSuDEwlUnt
-         uWp81eJYunfZiWfQXWEEVmoiDKX0vHoMVsEt7AsZWPXQNuPZjk5D2mLHOFUOTcEqdtCn
-         b9438zaDpg50Eqzctp49zWdMz4FGB3fwjmJvGQC2WFgTCDry6F+u6HBhMmU8qTVli0vL
-         GO2w==
-X-Gm-Message-State: AFqh2krcLvsI9hzia+GgR2W4TC83UWP39C6kKY7FWr8TMjY7Bo5ICZMM
-        0uoXR16DZAFODwuSG6P5Wtl+TIhZeVJUc0BTCYidCe/kjLt8/wPdX3bl+xPW6GWsQuz7ZW/BexQ
-        lCqzhznjcPFfkzR9j5SLFsh4m
-X-Received: by 2002:ac8:4f49:0:b0:3a9:7ae4:eecb with SMTP id i9-20020ac84f49000000b003a97ae4eecbmr41615982qtw.54.1672327910071;
-        Thu, 29 Dec 2022 07:31:50 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXsFAbnEpVvVC08+mn1l6MRytL6XVCY561sPWW44HBrRRMIslfh8TDoAaiAqAv1h+8aMiZ9g0Q==
-X-Received: by 2002:ac8:4f49:0:b0:3a9:7ae4:eecb with SMTP id i9-20020ac84f49000000b003a97ae4eecbmr41615959qtw.54.1672327909765;
-        Thu, 29 Dec 2022 07:31:49 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id 6-20020ac85646000000b003a6947863e1sm11466198qtt.11.2022.12.29.07.31.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Dec 2022 07:31:49 -0800 (PST)
-Subject: Re: [PATCH v8 1/4] Documentation: fpga: dfl: Add documentation for
- DFHv1
-To:     matthew.gerlach@linux.intel.com, hao.wu@intel.com,
-        yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org,
-        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tianfei.zhang@intel.com,
-        corbet@lwn.net, gregkh@linuxfoundation.org,
-        linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com, bagasdotme@gmail.com
-References: <20221228181624.1793433-1-matthew.gerlach@linux.intel.com>
- <20221228181624.1793433-2-matthew.gerlach@linux.intel.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <e12481e4-9d2c-9afe-a3e9-9c995c788134@redhat.com>
-Date:   Thu, 29 Dec 2022 07:31:44 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mxBRWEKdxDoxUmsf4m1Rf+wCWTOWa4yctJPkk6Ti6eA=;
+        b=CGBdldFIGJ2ouq1SLUtw3DAZA6uLKbaa+bsloeO1BgACygjgDHA1fcvKGlkP+yjlGP
+         tvIsnkAllfhaLwTLO+rEwH24nNWVoXGzadOPSyMCDJXcwPSXEtQdwfo4z1lRkvU7fGWv
+         BsEYde7hi1UCP/WmfVaZjXDvTJ82RyJ8UDgdm7Riw8s0YEMpaMkLp1SU90e18+08982T
+         vm3XWJMXakf582sXofb1it/ST/txQ+26NdRgemgwVSJukaLfCEKmN6D1rmvmwKMj/FEH
+         y8g3faJkeojzsHz1DEkRU9sy8K2AjeqaciiRo9BBUhCd+ev3QGeEUJKIxaI1M3z0clib
+         1tPA==
+X-Gm-Message-State: AFqh2kpMUUPSRm6ESVTNqgsUSHdAzAGt3LQCUzHLERgbzUlkRseFeI4J
+        8K85yIoQc0uqtEb/i8HPFLyiug==
+X-Google-Smtp-Source: AMrXdXt180PN5Ceh/nenWRord0+ZdJloEExn/Z1fAmgzdQZ3Flv/bOvzy0bNwEZKtBazgUjhZSX2hg==
+X-Received: by 2002:a05:600c:1603:b0:3d1:c895:930c with SMTP id m3-20020a05600c160300b003d1c895930cmr20392802wmn.35.1672329033991;
+        Thu, 29 Dec 2022 07:50:33 -0800 (PST)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:8f7a:98d8:9d8d:ced8])
+        by smtp.gmail.com with ESMTPSA id bh12-20020a05600c3d0c00b003cfa81e2eb4sm25251647wmb.38.2022.12.29.07.50.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Dec 2022 07:50:33 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: [PATCH v6 00/14] serial: qcom-geni-serial: implement support for SE DMA
+Date:   Thu, 29 Dec 2022 16:50:16 +0100
+Message-Id: <20221229155030.418800-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-In-Reply-To: <20221228181624.1793433-2-matthew.gerlach@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-On 12/28/22 10:16 AM, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->
-> Add documentation describing the extensions provided by Version
-> 1 of the Device Feature Header (DFHv1).
->
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
-> v8: fix section titles
->
-> v7: shorten long lines and wording suggestions by bagasdotme@gmail.com
->
-> v6: no change
->
-> v5: use nested list for field descriptions
->      clean up prose
->      add reviewed-by and comments from Ilpo Järvinen
->
-> v4: Remove marketing speak and separate v0 and v1 descriptions.
->      Fix errors reported by "make htmldocs".
->
-> v3: no change
->
-> v2: s/GUILD/GUID/
->      add picture
-> ---
->   Documentation/fpga/dfl.rst | 112 +++++++++++++++++++++++++++++++++++++
->   1 file changed, 112 insertions(+)
->
-> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-> index 15b670926084..264b476fc6ac 100644
-> --- a/Documentation/fpga/dfl.rst
-> +++ b/Documentation/fpga/dfl.rst
-> @@ -561,6 +561,118 @@ new DFL feature via UIO direct access, its feature id should be added to the
->   driver's id_table.
->   
->   
+The goal of this series is to update the qcom-geni-serial driver to use
+the DMA mode of the QUPv3 serial engine. This is accomplished by the last
+patch in the series. The previous ones contain either various tweaks,
+reworks and refactoring or prepare the driver for adding DMA support.
 
-I think a better location for this section would be in the beginning 
-after the
+More work will follow on the serial engine in order to reduce code
+redundancy among its users and add support for SE DMA to the qcom GENI
+SPI driver.
 
-Device Feature List (DFL) Overview
+v5 -> v6:
+- move patch 12/14 to the front of the series and mark it as a fix
+- rebase on top of v6.2-rc1 (there were some updates to the driver)
 
-The reader will be looking for the details of the Header once they have 
-read the overview.
+v4 -> v5:
+- split patch 8/13 into two: one for splitting out the chunk sending code
+  and one for refactoring it (for easier review)
+- when stopping uart: disable the irq first before stopping transfers in
+  progress, otherwise we rist rescheduling additional transfers after
+  interrupt
+- make types even nore consistent in qcom_geni_serial_send_chunk_fifo()
 
-It would be handy if they were next
+v3 -> v4:
+- don't assign NULL (even cast) to variables of type dma_addr_t
+- refactor checking the SE_GENI_STATUS into two inline functions
+- drop min_t() in favor of regular min() after adding some consistency to types
+- check if the abort command was successful and emit a message if not when
+  stopping TX in DMA mode
 
-> +Device Feature Header - Version 0
-> +=================================
-> +Version 0 (DFHv0) is the original version of the Device Feature Header.
-> +The format of DFHv0 is shown below::
-> +
-> +    +-----------------------------------------------------------------------+
-> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 ID 0| 0x00
-> +    +-----------------------------------------------------------------------+
-> +    |63                                 GUID_L                             0| 0x08
-> +    +-----------------------------------------------------------------------+
-> +    |63                                 GUID_H                             0| 0x10
-> +    +-----------------------------------------------------------------------+
-> +
-> +- Offset 0x00
-> +
-> +  * Type - The type of DFH (e.g. FME, AFU, or private feature).
-> +  * DFH VER - The version of the DFH.
-> +  * Rsvd - Currently unused.
-> +  * EOL - Set if the DFH is the end of the Device Feature List (DFL).
-> +  * Next - The offset of the next DFH in the DFL from the DFH start.
-> +    If EOL is set, Next is the size of MMIO of the last feature in the list.
+v2 -> v3:
+- drop devres patches from the series
 
-Missed describing feature revision bits 12-15
+v1 -> v2:
+- turn to_dev_uport() macro into a static inline function
+- use CIRC_CNT_TO_END() and uart_xmit_advance() where applicable and don't
+  handle xmit->tail directly
+- drop sizeof() where BYTES_PER_FIFO_WORD can be used
+- further refactor qcom_geni_serial_handle_tx_fifo()
+- collect review tags
 
-There as two VER's, it would be clearer if they were different. maybe 
-REV for bits 12-15
+Bartosz Golaszewski (14):
+  tty: serial: qcom-geni-serial: stop operations in progress at shutdown
+  tty: serial: qcom-geni-serial: drop unneeded forward definitions
+  tty: serial: qcom-geni-serial: remove unused symbols
+  tty: serial: qcom-geni-serial: align #define values
+  tty: serial: qcom-geni-serial: improve the to_dev_port() macro
+  tty: serial: qcom-geni-serial: remove stray newlines
+  tty: serial: qcom-geni-serial: refactor qcom_geni_serial_isr()
+  tty: serial: qcom-geni-serial: remove unneeded tabs
+  tty: serial: qcom-geni-serial: split out the FIFO tx code
+  tty: serial: qcom-geni-serial: refactor
+    qcom_geni_serial_send_chunk_fifo()
+  tty: serial: qcom-geni-serial: drop the return value from handle_rx
+  tty: serial: qcom-geni-serial: use of_device_id data
+  soc: qcom-geni-se: add more symbol definitions
+  tty: serial: qcom-geni-serial: add support for serial engine DMA
 
-Similar below.
+ drivers/tty/serial/qcom_geni_serial.c | 626 +++++++++++++++++---------
+ include/linux/qcom-geni-se.h          |   3 +
+ 2 files changed, 413 insertions(+), 216 deletions(-)
 
-> +  * ID - The feature ID if Type is private feature.
-> +
-> +- Offset 0x08
-> +
-> +  * GUID_L - Least significant 64 bits of a 128-bit Globally Unique Identifier
-> +    (present only if Type is FME or AFU).
-> +
-> +- Offset 0x10
-> +
-> +  * GUID_H - Most significant 64 bits of a 128-bit Globally Unique Identifier
-> +    (present only if Type is FME or AFU).
-> +
-> +
-> +Device Feature Header - Version 1
-> +=================================
-> +Version 1 (DFHv1) of the Device Feature Header adds the following functionality:
-> +
-> +* Provides a standardized mechanism for features to describe
-> +  parameters/capabilities to software.
-> +* Standardize the use of a GUID for all DFHv1 types.
-> +* Decouples the DFH location from the register space of the feature itself.
-> +
-> +The format of Version 1 of the Device Feature Header (DFH) is shown below::
-> +
-> +    +-----------------------------------------------------------------------+
-> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 ID 0| 0x00
-> +    +-----------------------------------------------------------------------+
-> +    |63                                 GUID_L                             0| 0x08
-> +    +-----------------------------------------------------------------------+
-> +    |63                                 GUID_H                             0| 0x10
-> +    +-----------------------------------------------------------------------+
-> +    |63                   Reg Address/Offset                      1|  Rel  0| 0x18
-> +    +-----------------------------------------------------------------------+
-> +    |63        Reg Size       32|Params 31|30 Group    16|15 Instance      0| 0x20
-> +    +-----------------------------------------------------------------------+
-> +    |63 Next    35|34RSV33|EOP32|31 Param Version 16|15 Param ID           0| 0x28
-> +    +-----------------------------------------------------------------------+
-> +    |63                 Parameter Data                                     0| 0x30
-> +    +-----------------------------------------------------------------------+
-> +
-> +                                  ...
-> +
-> +    +-----------------------------------------------------------------------+
-> +    |63 Next    35|34RSV33|EOP32|31 Param Version 16|15 Param ID           0|
-> +    +-----------------------------------------------------------------------+
-> +    |63                 Parameter Data                                     0|
-> +    +-----------------------------------------------------------------------+
-> +
-> +- Offset 0x00
-> +
-> +  * Type - The type of DFH (e.g. FME, AFU, or private feature).
-> +  * DFH VER - The version of the DFH.
-> +  * Rsvd - Currently unused.
-> +  * EOL - Set if the DFH is the end of the Device Feature List (DFL).
-> +  * Next - The offset of the next DFH in the DFL from the DFH start.
-> +    If EOL is set, Next is the size of MMIO of the last feature in the list.
-
-Units of size ?
-
-Tom
-
-> +  * ID - The feature ID if Type is private feature.
-> +
-> +- Offset 0x08
-> +
-> +  * GUID_L - Least significant 64 bits of a 128-bit Globally Unique Identifier.
-> +
-> +- Offset 0x10
-> +
-> +  * GUID_H - Most significant 64 bits of a 128-bit Globally Unique Identifier.
-> +
-> +- Offset 0x18
-> +
-> +  * Reg Address/Offset - If Rel bit is set, then the value is the high 63 bits
-> +    of a 16-bit aligned absolute address of the feature's registers. Otherwise
-> +    the value is the offset from the start of the DFH of the feature's registers.
-> +
-> +- Offset 0x20
-> +
-> +  * Reg Size - Size of feature's register set in bytes.
-> +  * Params - Set if DFH has a list of parameter blocks.
-> +  * Group - Id of group if feature is part of a group.
-> +  * Instance - Id of feature instance within a group.
-> +
-> +- Offset 0x28 if feature has parameters
-> +
-> +  * Next - Offset to the next parameter block in 8 byte words. If EOP set,
-> +    size in 8 byte words of last parameter.
-> +  * Param Version - Version of Param ID.
-> +  * Param ID - ID of parameter.
-> +
-> +- Offset 0x30
-> +
-> +  * Parameter Data - Parameter data whose size and format is defined by
-> +    version and ID of the parameter.
-> +
->   Open discussion
->   ===============
->   FME driver exports one ioctl (DFL_FPGA_FME_PORT_PR) for partial reconfiguration
+-- 
+2.37.2
 
