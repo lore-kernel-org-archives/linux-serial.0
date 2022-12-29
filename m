@@ -2,110 +2,164 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B30AC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 16:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA714C3DA79
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Dec 2022 17:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233470AbiL2QWt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Dec 2022 11:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
+        id S233601AbiL2RbO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Dec 2022 12:31:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233577AbiL2QWY (ORCPT
+        with ESMTP id S233860AbiL2Ras (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Dec 2022 11:22:24 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED7CDCE
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:22:22 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id c8-20020a17090a4d0800b00225c3614161so16215250pjg.5
-        for <linux-serial@vger.kernel.org>; Thu, 29 Dec 2022 08:22:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2OLkB5mMsHKDwbR+cM0W/wmV6jqAoejRkqxG5WHPUJQ=;
-        b=yQiDJFyvnV+prccj0GMjiX10frFzC9Mfv04bocJ0Bh8oX7y+0k1z6Z0xnkfyFjqKTN
-         tecrdMMOKsT+GF9HeX5ucR840RKiPVlcQdFksm2EpP7XAJ9W8nteo/euV7HUtU/7XVos
-         1gbq8i/EFYMDbJSxlFINjqZCWh0Or2riyQhU8vz0xkkzkh6Xzo+J8F5WBgOl4kH4tth7
-         8xSe/BGB6hbIfuiW/binFvc8fGWyKCJQHaCCfH+RS8RzQ2jbZpqI50KJAWYN2ASGpeVk
-         C4Ws88CuuQy79JJarYmebhTN4nklASG/JuK2M5upTdnlTHNIhG+lCB/FISII85YP2K5G
-         kyIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2OLkB5mMsHKDwbR+cM0W/wmV6jqAoejRkqxG5WHPUJQ=;
-        b=ZtzSVReZWAJ5r60TIRqxeT1r1k+KzcR0GaoaHkPuiBMzdlIq+OinRT3BJWRvktMBJ2
-         H7GizgaAoL3Ak/SMDdXv4ZaD2I00GVZu2Elk0ylaQD8p0n1UfH7I6Vlf3HZOQPGNTUHK
-         XBQmpf3/t9FjHsHpTe2QPVOe3YPFOYcdHIdwwlyM+U+ENgaEbgFVc/JBQ3SSmS5/AXXJ
-         pUzNc8vsixHom32OryC1twr2LnJMD+z5Q/r/B57JXXic043TiB5c82yLt6Ft6skYFOcs
-         2xKV6srqUW7yYAFDUZajdNOqtn+XTog8mrurkQTirtk9NLjkcUAfWPG6+fPRN3OcGEXl
-         5qgg==
-X-Gm-Message-State: AFqh2konEuKeKX8LjYmoOobmuR63VTPphhP9EvAMJcWY8WzjmdTlSfy6
-        DIUVRH4Rmfs2lqPlnAyJo+LLQQ==
-X-Google-Smtp-Source: AMrXdXvbOxeambP1FNrtoSqupKLHR5ZUV5b4qXQ2GRZNGFk8nmQRfBqHImgd60VPFJ/uowpsCdY3Pg==
-X-Received: by 2002:a17:90a:d511:b0:225:dce3:8b9e with SMTP id t17-20020a17090ad51100b00225dce38b9emr19076607pju.5.1672330942227;
-        Thu, 29 Dec 2022 08:22:22 -0800 (PST)
-Received: from localhost ([135.180.226.51])
-        by smtp.gmail.com with ESMTPSA id q60-20020a17090a4fc200b00225d963fbc2sm8493338pjh.34.2022.12.29.08.22.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Dec 2022 08:22:21 -0800 (PST)
-Date:   Thu, 29 Dec 2022 08:22:21 -0800 (PST)
-X-Google-Original-Date: Thu, 29 Dec 2022 07:49:50 PST (-0800)
-Subject:     Re: [PATCH v3 0/3] serial: Add RISC-V support to the earlycon semihost driver
-In-Reply-To: <20221209150437.795918-1-bmeng@tinylab.org>
-CC:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, aou@eecs.berkeley.edu,
-        catalin.marinas@arm.com, Greg KH <gregkh@linuxfoundation.org>,
-        jirislaby@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>,
-        linux@armlinux.org.uk, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     bmeng@tinylab.org
-Message-ID: <mhng-93a78d3a-6372-4972-94fe-31607664bb67@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Thu, 29 Dec 2022 12:30:48 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC99396;
+        Thu, 29 Dec 2022 09:30:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672335043; x=1703871043;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=jzJmJ8hNoMsewqwbxcPd1etes2MnlJv/Rt5CviLAz5E=;
+  b=N17Q1U+j0UPm09zmjsfo2XlGVatUgI0QMpU9RjFvRhyJn+GSovwuTYD2
+   TYSm2mWi96kKOpcYTYGBYUaE4jMzyaIOHkvSOJqRLLKroJBAXW2aK2/Z1
+   g70eSzy63Z+PnZvGn6vpOwWPwnUWsmaP4wHvSZud0QG556lFZAAXwnDFD
+   SETjXtSaF57/THypDrtkC42Sz6CYBssMVatSea4tnRVeAW62q+y0RzqPM
+   RKCDy7pyGPqJxtxZsczTiDTOOeMRkypLCEMJTGX9lmbb68ubB2NR3U/fl
+   kq7DDtyHYlnfNrA/bs4+CiBvEaYOyVrI9HjE4zP7pes9Du3BQIn2DxJF2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10575"; a="319798857"
+X-IronPort-AV: E=Sophos;i="5.96,284,1665471600"; 
+   d="scan'208";a="319798857"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2022 09:30:43 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10575"; a="777740202"
+X-IronPort-AV: E=Sophos;i="5.96,284,1665471600"; 
+   d="scan'208";a="777740202"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2022 09:30:43 -0800
+Date:   Thu, 29 Dec 2022 09:31:02 -0800 (PST)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v8 3/4] fpga: dfl: add basic support for DFHv1
+In-Reply-To: <Y61kb9OGikxLvAcr@smile.fi.intel.com>
+Message-ID: <alpine.DEB.2.22.394.2212290911001.1857691@rhweight-WRK1>
+References: <20221228181624.1793433-1-matthew.gerlach@linux.intel.com> <20221228181624.1793433-4-matthew.gerlach@linux.intel.com> <Y61kb9OGikxLvAcr@smile.fi.intel.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 09 Dec 2022 07:04:34 PST (-0800), bmeng@tinylab.org wrote:
->
-> RISC-V semihosting spec [1] is built on top of the existing Arm one;
-> we can add RISC-V earlycon semihost driver easily.
->
-> This series refactors the existing driver a little bit, to move smh_putc()
-> variants in respective arch's semihost.h, then we can implement RISC-V's
-> version in the riscv arch directory.
->
-> Link: https://github.com/riscv/riscv-semihosting-spec/blob/main/riscv-semihosting-spec.adoc [1]
->
-> Changes in v3:
-> - add #ifdef in the header to prevent from multiple inclusion
-> - add forward-declare struct uart_port
-> - add a Link tag in the commit message
->
-> Changes in v2:
-> - new patch: "serial: earlycon-arm-semihost: Move smh_putc() variants in respective arch's semihost.h"
-> - Move the RISC-V implementation to semihost.h
->
-> Bin Meng (3):
->   serial: earlycon-arm-semihost: Move smh_putc() variants in respective
->     arch's semihost.h
->   riscv: Implement semihost.h for earlycon semihost driver
->   serial: Rename earlycon semihost driver
->
->  arch/arm/include/asm/semihost.h               | 30 +++++++++++++++++++
->  arch/arm64/include/asm/semihost.h             | 24 +++++++++++++++
->  arch/riscv/include/asm/semihost.h             | 26 ++++++++++++++++
->  drivers/tty/serial/Kconfig                    | 14 ++++-----
->  drivers/tty/serial/Makefile                   |  2 +-
->  ...con-arm-semihost.c => earlycon-semihost.c} | 25 +---------------
->  6 files changed, 89 insertions(+), 32 deletions(-)
->  create mode 100644 arch/arm/include/asm/semihost.h
->  create mode 100644 arch/arm64/include/asm/semihost.h
->  create mode 100644 arch/riscv/include/asm/semihost.h
->  rename drivers/tty/serial/{earlycon-arm-semihost.c => earlycon-semihost.c} (57%)
 
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+
+On Thu, 29 Dec 2022, Andy Shevchenko wrote:
+
+> On Wed, Dec 28, 2022 at 10:16:23AM -0800, matthew.gerlach@linux.intel.com wrote:
+>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>
+>> Version 1 of the Device Feature Header (DFH) definition adds
+>> functionality to the DFL bus.
+>>
+>> A DFHv1 header may have one or more parameter blocks that
+>> further describes the HW to SW.  Add support to the DFL bus
+>
+> Single space is enough.
+
+Yes, single space is enough. Two spaces after a period is hard habit for 
+me break. I will update in v9.
+
+>
+>> to parse the MSI-X parameter.
+>>
+>> The location of a feature's register set is explicitly
+>> described in DFHv1 and can be relative to the base of the DFHv1
+>> or an absolute address.  Parse the location and pass the information
+>> to DFL driver.
+>
+> I'm wondering what DFL states for.
+
+I will define DFL in the commit message like DFH in the next revision.
+
+>
+> ...
+>
+>> +/**
+>> + * dfh_get_u64_param_vals() - get array of u64 param values for given parameter id
+>> + * @dfl_dev: dfl device
+>> + * @param: id of dfl parameter
+>> + * @pval: location of parameter data destination
+>> + * @nvals: number of u64 elements of parameter data
+>> + *
+>> + * Return: pointer to start of parameter block, PTR_ERR otherwise
+>> + */
+>> +u64 *dfh_get_u64_param_vals(struct dfl_device *dfl_dev, int param_id, u64 *pval, int nvals)
+>> +{
+>> +	u64 *param = find_param(dfl_dev->params, dfl_dev->param_size, param_id);
+>> +	u64 next;
+>> +	int i;
+>> +
+>> +	if (!param)
+>> +		return ERR_PTR(-ENOENT);
+>> +
+>> +	next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, *param);
+>> +
+>> +	if (nvals >= next)
+>> +		return ERR_PTR(-ENOMEM);
+>
+> ENODATA ?
+
+ENODATA does seem to be more accurate than ENOMEM in this case.
+
+>
+>> +	for (i = 0; i < nvals; i++)
+>> +		*pval++ = param[i + 1];
+>
+> memcpy() ?
+
+Using memcpy() will make code cleaner.
+
+>
+>> +	return param;
+>> +}
+>
+> ...
+>
+>> +	finfo = kzalloc(struct_size(finfo, params, dfh_psize/sizeof(u64)), GFP_KERNEL);
+>
+> ' / ' (mind the spaces)
+
+Yes, I will mind the spaces.
+
+>
+> Also, perhaps better to use sizeof(*params) or what is the member of that
+> structure. So it will be more robust against possible changes.
+
+params is the name of the structure member that is the trailing array.
+
+>
+>>  	if (!finfo)
+>>  		return -ENOMEM;
+>
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+
+Thanks for the feedback,
+Matthew Gerlach
+
+>
+>
+>
