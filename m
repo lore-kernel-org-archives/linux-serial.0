@@ -2,131 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D53AC3DA7D
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Dec 2022 11:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08033C4167B
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Dec 2022 13:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234964AbiL3Lq2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 30 Dec 2022 06:46:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42542 "EHLO
+        id S229746AbiL3NEn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Dec 2022 08:04:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234736AbiL3LqZ (ORCPT
+        with ESMTP id S229441AbiL3NEm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 30 Dec 2022 06:46:25 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1545B101CD;
-        Fri, 30 Dec 2022 03:46:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672400784; x=1703936784;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Qkr8VlMp1FCP45ObtIhRsGdRw0bmPjZ8QjRvKFCk7e0=;
-  b=Xa0KgrGSugxiXwQtstjFsb5OoS/9NgbTCxE2pO/M/JXKjMuOD8ERG1dL
-   +mBc2LKFcppO7F597APoMdkgpk0R7DHiEaZOuk35MCU00/SH/UK+MKbsS
-   xZTVGxHp+89T5EDBUUfkwO1GqxE5XB7inaKY5Iqu2hn/AV9vlsLY1Sp4W
-   1Z3b6eWNoxoLQFRRufkAYIlxb79GrAajqj9I3QtMJ1iQfrxmg7in3x1q9
-   1XMsiZkk7ZdA3gfgoBLk79wJD18bHRmZRzzidnn3MkbjDVktbAYWVzUze
-   t1rvduEIP1/G4Milv0SEoqsrwLGMGyrroaTHTFw4RZTyZ9ssp0awrXnTw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10575"; a="301568014"
-X-IronPort-AV: E=Sophos;i="5.96,287,1665471600"; 
-   d="scan'208";a="301568014"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2022 03:46:23 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10575"; a="653865361"
-X-IronPort-AV: E=Sophos;i="5.96,287,1665471600"; 
-   d="scan'208";a="653865361"
-Received: from vsemouch-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.41.102])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2022 03:46:21 -0800
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 30 Dec 2022 08:04:42 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC4318B07
+        for <linux-serial@vger.kernel.org>; Fri, 30 Dec 2022 05:04:41 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id w1so7742976wrt.8
+        for <linux-serial@vger.kernel.org>; Fri, 30 Dec 2022 05:04:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=F5y32Pwzonf3CvozRM4PbPvchTD4/JJcNSUxK5NgDiw=;
+        b=MiC76c5v65Pcm6BqsYSlUf9eYBhZoqPc3E4li4ui9tz3xsMKSzaO3kDZQbpquQ+lVD
+         4cUWq33Psv+D7/luW993MrT2eRTbta4OIM1hbegtIQuHqoanOOi4f2W2w76GR+sTUk+h
+         zLZPBRyYbZW+MD2YP8dyPWoKFY9ZO/GonwNfUN8UYs3+7qY65dmdzVWmQZ4+/Gu03TS4
+         bYmNW+1zcjgsVxz6XYAGHESUmb0aEiZNOpuf3G9Xt/2qqjxqX/uf1e9Sn6HS5C7D2wa1
+         ctiQahjDbIgu9J0R4Ik2SBTZdz9AP+f/JLj/Wk/BcTmEZ2pjNMDB80udsERz6rVa48yJ
+         TcBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=F5y32Pwzonf3CvozRM4PbPvchTD4/JJcNSUxK5NgDiw=;
+        b=cCsVTqT/rL22ThAyyBsds39yaksXghdPAvusGXim3uRATK80STlSsfLAquEnMAJ4Cp
+         oEG8NLZ8ckdCgP807NzGEIbxNnrrr3n/mZEHZ8PU7wdPUUDqCfH8rNmUig8UQzCvnOKY
+         ceLOuPEbB66/YSmLFet7j4NanZ1GOo88g7AfovDeDJGLADd8whDia3+nYqfEjU0FJrg8
+         aH1nVxBYl3lB6J7RWxlc6TYS0u6pkLgETmfD3Pk23nrdghu3DoZC1gfEtcFvb4yQNZ+a
+         mXCAs4QGce0Tf9GzPgfcsLwntILNlnQhKBN1OwqogKv3sBCYT8IBY96c1qlIZ9Zsvujo
+         7NJw==
+X-Gm-Message-State: AFqh2kqMHSiWD7IFm2AdpD8rAs5aPcBGqOVHMv1mcHiybLQQjuDq1Ayz
+        o/xBxUksfyz96Io8+jlzYMPMZw==
+X-Google-Smtp-Source: AMrXdXv91qDvoe0E3LEX2Nuy9saUPb8byz4g95rRpux1Byxvl4qHdzte7BwNCRiTG81APPPgHaNKjQ==
+X-Received: by 2002:adf:f010:0:b0:242:4c28:c9b3 with SMTP id j16-20020adff010000000b002424c28c9b3mr20611808wro.43.1672405480108;
+        Fri, 30 Dec 2022 05:04:40 -0800 (PST)
+Received: from [192.168.30.216] ([81.0.6.76])
+        by smtp.gmail.com with ESMTPSA id q1-20020adffec1000000b00281b594c725sm10978387wrs.38.2022.12.30.05.04.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Dec 2022 05:04:39 -0800 (PST)
+Message-ID: <d62f206e-f5c7-b0f0-d0f1-516669d31352@linaro.org>
+Date:   Fri, 30 Dec 2022 14:04:38 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH 2/3] serial: 8250_rt288x: Name non-standard divisor latch
+ reg
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     inux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 3/3] serial: 8250_rt288x: Remove unnecessary UART_REG_UNMAPPED
-Date:   Fri, 30 Dec 2022 13:46:03 +0200
-Message-Id: <20221230114603.16946-4-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221230114603.16946-1-ilpo.jarvinen@linux.intel.com>
+Cc:     inux-kernel@vger.kernel.org
 References: <20221230114603.16946-1-ilpo.jarvinen@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+ <20221230114603.16946-3-ilpo.jarvinen@linux.intel.com>
+From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
+In-Reply-To: <20221230114603.16946-3-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As unmapped registers are at the tail of the array, the ARRAY_SIZE()
-condition will catch them just fine. No need to define special
-value for them.
+On 30/12/22 12:46, Ilpo Järvinen wrote:
+> Instead of a literal, add proper name for the non-standard divisor
+> latch register.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>   drivers/tty/serial/8250/8250_rt288x.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
 
-Also, let the compiler to calculate the size of the array instead of
-providing it manually.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_rt288x.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_rt288x.c b/drivers/tty/serial/8250/8250_rt288x.c
-index 3015afb99722..da8be9a802c1 100644
---- a/drivers/tty/serial/8250/8250_rt288x.c
-+++ b/drivers/tty/serial/8250/8250_rt288x.c
-@@ -14,10 +14,8 @@
- 
- #define RT288X_DL	0x28
- 
--#define UART_REG_UNMAPPED	-1
--
- /* Au1x00/RT288x UART hardware has a weird register layout */
--static const s8 au_io_in_map[8] = {
-+static const s8 au_io_in_map[] = {
- 	[UART_RX]	= 0,
- 	[UART_IER]	= 2,
- 	[UART_IIR]	= 3,
-@@ -25,18 +23,14 @@ static const s8 au_io_in_map[8] = {
- 	[UART_MCR]	= 6,
- 	[UART_LSR]	= 7,
- 	[UART_MSR]	= 8,
--	[UART_SCR]	= UART_REG_UNMAPPED,
- };
- 
--static const s8 au_io_out_map[8] = {
-+static const s8 au_io_out_map[] = {
- 	[UART_TX]	= 1,
- 	[UART_IER]	= 2,
- 	[UART_FCR]	= 4,
- 	[UART_LCR]	= 5,
- 	[UART_MCR]	= 6,
--	[UART_LSR]	= UART_REG_UNMAPPED,
--	[UART_MSR]	= UART_REG_UNMAPPED,
--	[UART_SCR]	= UART_REG_UNMAPPED,
- };
- 
- static unsigned int au_serial_in(struct uart_port *p, int offset)
-@@ -44,8 +38,7 @@ static unsigned int au_serial_in(struct uart_port *p, int offset)
- 	if (offset >= ARRAY_SIZE(au_io_in_map))
- 		return UINT_MAX;
- 	offset = au_io_in_map[offset];
--	if (offset == UART_REG_UNMAPPED)
--		return UINT_MAX;
-+
- 	return __raw_readl(p->membase + (offset << p->regshift));
- }
- 
-@@ -54,8 +47,7 @@ static void au_serial_out(struct uart_port *p, int offset, int value)
- 	if (offset >= ARRAY_SIZE(au_io_out_map))
- 		return;
- 	offset = au_io_out_map[offset];
--	if (offset == UART_REG_UNMAPPED)
--		return;
-+
- 	__raw_writel(value, p->membase + (offset << p->regshift));
- }
- 
--- 
-2.30.2
+Reviewed-by: Philippe Mathieu-Daudé <philmd@linaro.org>
 
