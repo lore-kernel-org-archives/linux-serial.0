@@ -2,105 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC026C3DA7D
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 09:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9E7C3DA7D
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 09:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbjACJAy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Jan 2023 04:00:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        id S237110AbjACJes (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Jan 2023 04:34:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233088AbjACJAx (ORCPT
+        with ESMTP id S233155AbjACJeo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Jan 2023 04:00:53 -0500
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7DD2668;
-        Tue,  3 Jan 2023 01:00:51 -0800 (PST)
-Received: by mail-ej1-f49.google.com with SMTP id u19so72017143ejm.8;
-        Tue, 03 Jan 2023 01:00:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OWuBtAVQiXhHtOCFE/dLo/ozknPRfRlKEoY8cqTUGrg=;
-        b=O3WdqP7TlsVM27d6kRkSqaaay/Pg/Jb/WCcIR101fMKKiGYZoZvuH2nRHJoxFjUt9D
-         cvnvsvIZRRSHOkEmrRzZ8G53Het6mv47meNh6DSzN6YfbGEFovEqNCLgZm6sURn1EO/Z
-         ZiH8Mwjhwog67mPeRc9guKBHjAxwAaGDp6C1orIgQSmwcv3tuAACUCX0mcAYYtt80zrp
-         7ffIsH0GyOpmNeXikSAB4kcVLd6ZNFy1BKLCkSEItX/+uZcQ80S8zG8ynIez0Z0CO76D
-         TMHJE7Et1+Sb6owcKrO0SQaXWlATOVvt6S3mRZ5wsLalwawrjyRkGb6ZRqW6U6ObPx/I
-         9rQQ==
-X-Gm-Message-State: AFqh2kqUGA5HcEzA9Iwo9RzQEhVUm97IoJ1Z71s+kbQZ3jryN6wQFyUl
-        dHl8L2AVMDDRuzEC20zRad2n9yjpn4k=
-X-Google-Smtp-Source: AMrXdXvjjVtmb+IPI41f0KEHX6NQ/BQWLfXBVEzM+4TZL33Mu52QyaHDY+TvdpL+zFdhqW/MqztWIA==
-X-Received: by 2002:a17:906:9688:b0:7c1:1c7:3bad with SMTP id w8-20020a170906968800b007c101c73badmr35605095ejx.36.1672736450357;
-        Tue, 03 Jan 2023 01:00:50 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id nd12-20020a170907628c00b0084cc87c03ebsm2388616ejc.110.2023.01.03.01.00.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Jan 2023 01:00:49 -0800 (PST)
-Message-ID: <3c4e744f-c313-e195-af93-a22382c81bb6@kernel.org>
-Date:   Tue, 3 Jan 2023 10:00:48 +0100
+        Tue, 3 Jan 2023 04:34:44 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8D9E3C;
+        Tue,  3 Jan 2023 01:34:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672738483; x=1704274483;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8AGwAjvHJ0btsKD9yaGewvpaJNJi1fzYP5R08FbNXhE=;
+  b=Hy7yKxPG/QcoBCZA/qBJXtN0Sc5SS2De5rgyTW9VOEa1IK2tvjMjz4JV
+   NdDL0OjdtvwqQswn9wyYuZj4tUnsIBYTBSzfXgnWova/Ib29Uh5xJnOON
+   eSUrnCtufUFiqxtoP5d8CbYxIhqAtnnXJgnqr8VimudqGfj3jCSVPCDHJ
+   PH95rayWxnMd0ONT+TZpAEeygBzGGb8i4raSifbkSGYtz73qb3/p1BQXt
+   Z3vQ/Aq1fGrdJ4OjECwCqV7viSrZjrK7XtXrnoXgmFhhoX3VVPXJHfqJB
+   /Dt8FZwb19A7KKfIAZBE1qMpBJcGVLrXHkoWfz8k05lYMA6is6bv3Y1q7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="305128061"
+X-IronPort-AV: E=Sophos;i="5.96,296,1665471600"; 
+   d="scan'208";a="305128061"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 01:34:43 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="654721808"
+X-IronPort-AV: E=Sophos;i="5.96,296,1665471600"; 
+   d="scan'208";a="654721808"
+Received: from pdaniel-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.48.214])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 01:34:40 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 1/1] serial: pch_uart: Pass correct sg to dma_unmap_sg()
+Date:   Tue,  3 Jan 2023 11:34:35 +0200
+Message-Id: <20230103093435.4396-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v4 2/2] tty: serial: dz: convert atomic_* to refcount_*
- APIs for irq_guard
-Content-Language: en-US
-To:     Deepak R Varma <drv@mailo.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>
-References: <cover.1671898144.git.drv@mailo.com>
- <51ef854f77779c82010379420139993e12c38776.1671898144.git.drv@mailo.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <51ef854f77779c82010379420139993e12c38776.1671898144.git.drv@mailo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 26. 12. 22, 7:21, Deepak R Varma wrote:
-> The refcount_* APIs are designed to address known issues with the
-> atomic_t APIs for reference counting. They provide following distinct
-> advantages:
->     - protect the reference counters from overflow/underflow
->     - avoid use-after-free errors
->     - provide improved memory ordering guarantee schemes
->     - neater and safer.
-> Hence, replace the atomic_* APIs by their equivalent refcount_t
-> API functions.
-> 
-> This patch proposal address the following warnings generated by
-> the atomic_as_refcounter.cocci coccinelle script
-> atomic_add_return(-1, ...)
-...
-> --- a/drivers/tty/serial/dz.c
-> +++ b/drivers/tty/serial/dz.c
-...
-> @@ -400,18 +399,16 @@ static int dz_startup(struct uart_port *uport)
->   	struct dz_port *dport = to_dport(uport);
->   	struct dz_mux *mux = dport->mux;
->   	unsigned long flags;
-> -	int irq_guard;
->   	int ret;
->   	u16 tmp;
-> 
-> -	irq_guard = atomic_add_return(1, &mux->irq_guard);
-> -	if (irq_guard != 1)
-> +	refcount_inc(&mux->irq_guard);
-> +	if (refcount_read(&mux->irq_guard) != 1)
->   		return 0;
-> 
-> -	ret = request_irq(dport->port.irq, dz_interrupt,
-> -			  IRQF_SHARED, "dz", mux);
-> +	ret = request_irq(dport->port.irq, dz_interrupt, IRQF_SHARED, "dz", mux);
+A local variable sg is used to store scatterlist pointer in
+pch_dma_tx_complete(). The for loop doing Tx byte accounting before
+dma_unmap_sg() alters sg in its increment statement. Therefore, the
+pointer passed into dma_unmap_sg() won't match to the one given to
+dma_map_sg().
 
-How is this related to the above described change?
+To fix the problem, use priv->sg_tx_p directly in dma_unmap_sg()
+instead of the local variable.
 
+Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/pch_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 3d54a43768cd..9576ba8bbc40 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -749,7 +749,7 @@ static void pch_dma_tx_complete(void *arg)
+ 		uart_xmit_advance(port, sg_dma_len(sg));
+ 
+ 	async_tx_ack(priv->desc_tx);
+-	dma_unmap_sg(port->dev, sg, priv->orig_nent, DMA_TO_DEVICE);
++	dma_unmap_sg(port->dev, priv->sg_tx_p, priv->orig_nent, DMA_TO_DEVICE);
+ 	priv->tx_dma_use = 0;
+ 	priv->nent = 0;
+ 	priv->orig_nent = 0;
 -- 
-js
-suse labs
+2.30.2
 
