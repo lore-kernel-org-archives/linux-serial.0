@@ -2,68 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A26C3DA7D
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 17:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12401C3DA7D
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 18:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238469AbjACRM4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Jan 2023 12:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
+        id S233929AbjACS5h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Jan 2023 13:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238813AbjACRM2 (ORCPT
+        with ESMTP id S238698AbjACS4x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Jan 2023 12:12:28 -0500
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 396D9DF89;
-        Tue,  3 Jan 2023 09:11:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=O4rnvdDDpajkGG7+Qi
-        rOiKaOcHU3GFAj6R1dSdlfTWE=; b=ererlTOdzCFPlDlgxm/CQyHMaw6ONUxmrP
-        djlksrRdCBk7Wox0S3b/OF/TKJxIaTz7xHytxoR95cT7Fg+RFtOHSvSvZCjrwSGJ
-        3lrOWjqdY4yGyc+aWin5HRqZdvH6xNO0eQqPDylMkP8vN9nVDA2kF3bJeZvFJgEy
-        ZIDsACK7k=
-Received: from localhost.localdomain (unknown [36.4.209.174])
-        by zwqz-smtp-mta-g0-4 (Coremail) with SMTP id _____wDXM4VfYbRjveN8AA--.3535S4;
-        Wed, 04 Jan 2023 01:10:29 +0800 (CST)
-From:   lizhe <sensor1010@163.com>
-To:     jirislaby@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lizhe <sensor1010@163.com>
-Subject: [PATCH v2] serial: linflexuart: remove redundant uart type _assignment_
-Date:   Tue,  3 Jan 2023 09:09:48 -0800
-Message-Id: <20230103170948.3777-1-sensor1010@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: _____wDXM4VfYbRjveN8AA--.3535S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw4rAw47XF48uw13Jr1fJFb_yoW3uFb_Cw
-        1DA34xWr109FWayFnrJFyYkrZagrsYvF48AF40vasaqw4DZa1fXryIqrZruwsrA3y8X3sr
-        G3yxWF4ayrsrXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRN5l17UUUUU==
-X-Originating-IP: [36.4.209.174]
-X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/1tbiKAXrq17WLufu+QABs6
+        Tue, 3 Jan 2023 13:56:53 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C8813F1D;
+        Tue,  3 Jan 2023 10:56:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672772206; x=1704308206;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=HVRTMi7XmWwdUqTpmRFqp97f3A9pblLnUiN8eyVbfVQ=;
+  b=m2svwfRJKkxkaOTCqtDMWYt+NV2MhjYNEielM+K/gHNl1MpAVji/3Orl
+   ToOjK9/oWWyv69uulZhjiSWMDbFkc1AYDFpi9NcdofLEc5Yg+u5uJ13rf
+   BOhF6xdMwJxwBHarWapj9Oujuyh/PkVDVivMptdE88kMCzltP+HFAFu0v
+   admtD8iSauqYy2dIxz4Iu0T52pJJpFOrGfpZV6tMUgdLoEwwHazGwXv+/
+   1Ngchj11uEpE4MVjjAdp0xFMtYak0/C0yCYwqhhemOn6Kj2tC0p3wiN1v
+   M56uuvXT72rVAvftxAy+AXf/zEffeTieRG7aiQjvi8ARTdTKPM77v2vHL
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="309504357"
+X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
+   d="scan'208";a="309504357"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 10:56:40 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="762407581"
+X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
+   d="scan'208";a="762407581"
+Received: from pdaniel-mobl1.ger.corp.intel.com ([10.252.48.214])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 10:56:38 -0800
+Date:   Tue, 3 Jan 2023 20:56:40 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     lizhe <sensor1010@163.com>
+cc:     jirislaby@kernel.org, gregkh@linuxfoundation.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] serial: linflexuart: remove redundant uart type
+ _assignment_
+In-Reply-To: <20230103170948.3777-1-sensor1010@163.com>
+Message-ID: <8f433e5-fb46-d3b8-431b-4bddcc938f6b@linux.intel.com>
+References: <20230103170948.3777-1-sensor1010@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-	in linflex_config_port() the member variable type will be
-assigned again. see linflex_connfig_port()
+On Tue, 3 Jan 2023, lizhe wrote:
 
-Signed-off-by: lizhe <sensor1010@163.com>
-Acked-by: Jiri Slaby <jslaby@suse.com>
----
- drivers/tty/serial/fsl_linflexuart.c | 1 -
- 1 file changed, 1 deletion(-)
+> 	in linflex_config_port() the member variable type will be
 
-diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
-index 6fc21b6684e6..34400cc6ac7f 100644
---- a/drivers/tty/serial/fsl_linflexuart.c
-+++ b/drivers/tty/serial/fsl_linflexuart.c
-@@ -837,7 +837,6 @@ static int linflex_probe(struct platform_device *pdev)
- 		return PTR_ERR(sport->membase);
- 
- 	sport->dev = &pdev->dev;
--	sport->type = PORT_LINFLEXUART;
- 	sport->iotype = UPIO_MEM;
- 	sport->irq = platform_get_irq(pdev, 0);
- 	sport->ops = &linflex_pops;
+Rmoeve these extra spaces and start right from the leftmost column. 
+
+And don't include the underscores (_) into the shortlog around assignment. 
+Jiri just used the underscores to highlight for you what he considered 
+important part to be corrected.
+
+
+> assigned again. see linflex_connfig_port()
+> 
+> Signed-off-by: lizhe <sensor1010@163.com>
+> Acked-by: Jiri Slaby <jslaby@suse.com>
+> ---
+
+When sending version xx, please remember to include the list of changes 
+made per version (they go here below the first --- marker, see mailinglist 
+archives for format examples if you don't know that alread).
+
 -- 
-2.17.1
+ i.
 
+>  drivers/tty/serial/fsl_linflexuart.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+> index 6fc21b6684e6..34400cc6ac7f 100644
+> --- a/drivers/tty/serial/fsl_linflexuart.c
+> +++ b/drivers/tty/serial/fsl_linflexuart.c
+> @@ -837,7 +837,6 @@ static int linflex_probe(struct platform_device *pdev)
+>  		return PTR_ERR(sport->membase);
+>  
+>  	sport->dev = &pdev->dev;
+> -	sport->type = PORT_LINFLEXUART;
+>  	sport->iotype = UPIO_MEM;
+>  	sport->irq = platform_get_irq(pdev, 0);
+>  	sport->ops = &linflex_pops;
+> 
