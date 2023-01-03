@@ -2,87 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9E7C3DA7D
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 09:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E25EC4708E
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 10:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237110AbjACJes (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Jan 2023 04:34:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56578 "EHLO
+        id S232898AbjACKFn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Jan 2023 05:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233155AbjACJeo (ORCPT
+        with ESMTP id S232179AbjACKFm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Jan 2023 04:34:44 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8D9E3C;
-        Tue,  3 Jan 2023 01:34:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672738483; x=1704274483;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8AGwAjvHJ0btsKD9yaGewvpaJNJi1fzYP5R08FbNXhE=;
-  b=Hy7yKxPG/QcoBCZA/qBJXtN0Sc5SS2De5rgyTW9VOEa1IK2tvjMjz4JV
-   NdDL0OjdtvwqQswn9wyYuZj4tUnsIBYTBSzfXgnWova/Ib29Uh5xJnOON
-   eSUrnCtufUFiqxtoP5d8CbYxIhqAtnnXJgnqr8VimudqGfj3jCSVPCDHJ
-   PH95rayWxnMd0ONT+TZpAEeygBzGGb8i4raSifbkSGYtz73qb3/p1BQXt
-   Z3vQ/Aq1fGrdJ4OjECwCqV7viSrZjrK7XtXrnoXgmFhhoX3VVPXJHfqJB
-   /Dt8FZwb19A7KKfIAZBE1qMpBJcGVLrXHkoWfz8k05lYMA6is6bv3Y1q7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="305128061"
-X-IronPort-AV: E=Sophos;i="5.96,296,1665471600"; 
-   d="scan'208";a="305128061"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 01:34:43 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="654721808"
-X-IronPort-AV: E=Sophos;i="5.96,296,1665471600"; 
-   d="scan'208";a="654721808"
-Received: from pdaniel-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.48.214])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 01:34:40 -0800
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 1/1] serial: pch_uart: Pass correct sg to dma_unmap_sg()
-Date:   Tue,  3 Jan 2023 11:34:35 +0200
-Message-Id: <20230103093435.4396-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 3 Jan 2023 05:05:42 -0500
+Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D962AC1;
+        Tue,  3 Jan 2023 02:05:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
+        t=1672740326; bh=mbJPsA4UDzDHjFi3vHuznbJvnwuV6TpmkKB2pWQH7KI=;
+        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
+         MIME-Version:Content-Type:In-Reply-To;
+        b=h5rr47Do9/K9HgrgcJReCWc2VQnHaWLaGQUJzyhtPrh+j4PiKlaJPcSwLnZnwK/8W
+         oDE+/Y+tiPkhYz3twYLaTCTXaPn1p/ChbIcyhE+butNq/q/tyO0MZR8ZFsCVlfR8va
+         MgIkYuyE5dlBTBg33qiaJz2m5ckV43g9LaKTsY7U=
+Received: by b-3.in.mailobj.net [192.168.90.13] with ESMTP
+        via ip-206.mailobj.net [213.182.55.206]
+        Tue,  3 Jan 2023 11:05:26 +0100 (CET)
+X-EA-Auth: NWGOiTN8/a9U6L2da4zFkljN32D3PAKpjqUOxmBnNMRIyLGwe7HRfPX9VWV1/c/hVHp+27ccTDNeG4gONjBSjqot74kdHD3V
+Date:   Tue, 3 Jan 2023 15:35:15 +0530
+From:   Deepak R Varma <drv@mailo.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Praveen Kumar <kumarpraveen@linux.microsoft.com>,
+        Deepak R Varma <drv@mailo.com>
+Subject: Re: [PATCH v4 1/2] tty: serial: dz: convert atomic_* to refcount_*
+ APIs for map_guard
+Message-ID: <Y7P926/+N9IDKCyR@qemulion>
+References: <cover.1671898144.git.drv@mailo.com>
+ <d85c7441b96ce387d9010142efc3469d53b6aedc.1671898144.git.drv@mailo.com>
+ <e42d5d19-7ed5-468b-98cc-13d0187dc555@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e42d5d19-7ed5-468b-98cc-13d0187dc555@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A local variable sg is used to store scatterlist pointer in
-pch_dma_tx_complete(). The for loop doing Tx byte accounting before
-dma_unmap_sg() alters sg in its increment statement. Therefore, the
-pointer passed into dma_unmap_sg() won't match to the one given to
-dma_map_sg().
+On Tue, Jan 03, 2023 at 09:59:52AM +0100, Jiri Slaby wrote:
+> On 26. 12. 22, 7:21, Deepak R Varma wrote:
+> > The refcount_* APIs are designed to address known issues with the
+> > atomic_t APIs for reference counting. They provide following distinct
+> > advantages
+> >     - protect the reference counters from overflow/underflow
+> >     - avoid use-after-free errors
+> >     - provide improved memory ordering guarantee schemes
+> >     - neater and safer.
+>
+> Really? (see below)
+>
+> > --- a/drivers/tty/serial/dz.c
+> > +++ b/drivers/tty/serial/dz.c
+> ...
+> > @@ -687,23 +686,19 @@ static int dz_map_port(struct uart_port *uport)
+> >   static int dz_request_port(struct uart_port *uport)
+> >   {
+> >   	struct dz_mux *mux = to_dport(uport)->mux;
+> > -	int map_guard;
+> >   	int ret;
+> >
+> > -	map_guard = atomic_add_return(1, &mux->map_guard);
+> > -	if (map_guard == 1) {
+> > -		if (!request_mem_region(uport->mapbase, dec_kn_slot_size,
+> > -					"dz")) {
+> > -			atomic_add(-1, &mux->map_guard);
+> > -			printk(KERN_ERR
+> > -			       "dz: Unable to reserve MMIO resource\n");
+> > +	refcount_inc(&mux->map_guard);
+> > +	if (refcount_read(&mux->map_guard) == 1) {
+>
+> This is now racy, right?
 
-To fix the problem, use priv->sg_tx_p directly in dma_unmap_sg()
-instead of the local variable.
+Hello Jiri,
+Thank you for the feedback. You are correct. I have split a single instruction
+in two (or more?) instructions potentially resulting in race conditions. I
+looked through the refcount_* APIs but did not find a direct match.
 
-Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/pch_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 3d54a43768cd..9576ba8bbc40 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -749,7 +749,7 @@ static void pch_dma_tx_complete(void *arg)
- 		uart_xmit_advance(port, sg_dma_len(sg));
- 
- 	async_tx_ack(priv->desc_tx);
--	dma_unmap_sg(port->dev, sg, priv->orig_nent, DMA_TO_DEVICE);
-+	dma_unmap_sg(port->dev, priv->sg_tx_p, priv->orig_nent, DMA_TO_DEVICE);
- 	priv->tx_dma_use = 0;
- 	priv->nent = 0;
- 	priv->orig_nent = 0;
--- 
-2.30.2
+Can you please comment if the the following variation will avoid race condition?
+
+	if (!refcount_add_not_zero(1, &mux->map_guard)) {
+		refcount_inc(&mux->map_guard);
+		...
+	}
+
+Here, refcount_add_not_zero would return false if &mux->map_guard is already 0.
+Which means, incrementing it by 1 would have met the earlier if evaluation.
+Whereas, if &mux->map_guard is something other than 0, refcount_add_not_zero
+will increment it by 1 and return true, in which case the if condition will
+fail, similar to the previous if evaluation.
+
+Hope that helps clarify my revised thought. Can you please let me know if this
+revision looks safe?
+
+Thank you,
+./drv
+
+
+
+>
+> thanks,
+> --
+> js
+> suse labs
+>
+
 
