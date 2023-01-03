@@ -2,104 +2,68 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F164FC3DA7D
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 10:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F3DC46467
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Jan 2023 11:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232990AbjACKJf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Jan 2023 05:09:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
+        id S236814AbjACLTO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 Jan 2023 06:19:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231250AbjACKJe (ORCPT
+        with ESMTP id S237429AbjACLTK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Jan 2023 05:09:34 -0500
-Received: from msg-2.mailo.com (msg-2.mailo.com [213.182.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7575D19A;
-        Tue,  3 Jan 2023 02:09:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-        t=1672740562; bh=ghGTnVbTjH8LiFna82e0PxqupzzWGkv+g5lVNa8Ra5I=;
-        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
-         MIME-Version:Content-Type:In-Reply-To;
-        b=iqIzdZ4tQYmJk5OtJ7aZApM2fdnlKovj+4vA3SW33uAS9+NTu/XMvNvuyLdWJoXYB
-         JmWffC3rZzFckNwPEyaa6tL32vZL9LLx0/0z2Dch805CAeVNGJAmYXP3LeQoE7QcHk
-         1fXy0FDM6k6z9KDZuYF1LGaCABOn2oJ5jCsI4JoE=
-Received: by b-6.in.mailobj.net [192.168.90.16] with ESMTP
-        via ip-206.mailobj.net [213.182.55.206]
-        Tue,  3 Jan 2023 11:09:22 +0100 (CET)
-X-EA-Auth: uEjUie4sn4W6bvDFzFMTM7q+IgRB6xROsIEPD8IO5ghbYWbhFVxnAngRRwyvmwuzsbcToaSgF1rKxGg44uNLn9OhdaptVPzw
-Date:   Tue, 3 Jan 2023 15:39:17 +0530
-From:   Deepak R Varma <drv@mailo.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>,
-        Deepak R Varma <drv@mailo.com>
-Subject: Re: [PATCH v4 2/2] tty: serial: dz: convert atomic_* to refcount_*
- APIs for irq_guard
-Message-ID: <Y7P+zZEF09YWs5yW@qemulion>
-References: <cover.1671898144.git.drv@mailo.com>
- <51ef854f77779c82010379420139993e12c38776.1671898144.git.drv@mailo.com>
- <3c4e744f-c313-e195-af93-a22382c81bb6@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3c4e744f-c313-e195-af93-a22382c81bb6@kernel.org>
+        Tue, 3 Jan 2023 06:19:10 -0500
+X-Greylist: delayed 905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 Jan 2023 03:19:08 PST
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D65F7F035
+        for <linux-serial@vger.kernel.org>; Tue,  3 Jan 2023 03:19:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=GHdossT2byz3FqStEt
+        qVa55bg+jCObJwbTHYvOwN8s8=; b=DGV4X3BtLm/3TLos2Wj+DmKVH25CHJQjni
+        nCc+eqa5AEZqduKjZnUCCL8+zHlEaf3umoq1KTTww92kDotIC3Mby58F8l5mrf8k
+        m703AbpY9zXdFBHI5hMZi4hE9WUtR54BW2yrjCX3/raY/zhaixxywGXyM9MrPuF/
+        JzIGuEk5U=
+Received: from localhost.localdomain (unknown [36.4.209.174])
+        by zwqz-smtp-mta-g0-0 (Coremail) with SMTP id _____wBX5gFjC7Rji6FaAA--.47821S4;
+        Tue, 03 Jan 2023 19:03:39 +0800 (CST)
+From:   lizhe <sensor1010@163.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lizhe <sensor1010@163.com>
+Subject: [PATCH v1] drivers/fsl_linflexuart.c : remove redundant uart type
+Date:   Tue,  3 Jan 2023 03:02:55 -0800
+Message-Id: <20230103110255.2699-1-sensor1010@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: _____wBX5gFjC7Rji6FaAA--.47821S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWruFykZryrZr4xCr15tw1rtFb_yoW3WFb_Cw
+        1DC34xWr109FyayFnrXFWYkrZagrs5ZF48ZF10vasaqw4DZw4rXryIqrZrursxJ3yUXr9r
+        G397Wr12yrsrXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRM5l8UUUUUU==
+X-Originating-IP: [36.4.209.174]
+X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/xtbBXhLrq1aEAVEOTAAAsM
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 03, 2023 at 10:00:48AM +0100, Jiri Slaby wrote:
-> On 26. 12. 22, 7:21, Deepak R Varma wrote:
-> > The refcount_* APIs are designed to address known issues with the
-> > atomic_t APIs for reference counting. They provide following distinct
-> > advantages:
-> >     - protect the reference counters from overflow/underflow
-> >     - avoid use-after-free errors
-> >     - provide improved memory ordering guarantee schemes
-> >     - neater and safer.
-> > Hence, replace the atomic_* APIs by their equivalent refcount_t
-> > API functions.
-> >
-> > This patch proposal address the following warnings generated by
-> > the atomic_as_refcounter.cocci coccinelle script
-> > atomic_add_return(-1, ...)
-> ...
-> > --- a/drivers/tty/serial/dz.c
-> > +++ b/drivers/tty/serial/dz.c
-> ...
-> > @@ -400,18 +399,16 @@ static int dz_startup(struct uart_port *uport)
-> >   	struct dz_port *dport = to_dport(uport);
-> >   	struct dz_mux *mux = dport->mux;
-> >   	unsigned long flags;
-> > -	int irq_guard;
-> >   	int ret;
-> >   	u16 tmp;
-> >
-> > -	irq_guard = atomic_add_return(1, &mux->irq_guard);
-> > -	if (irq_guard != 1)
-> > +	refcount_inc(&mux->irq_guard);
-> > +	if (refcount_read(&mux->irq_guard) != 1)
-> >   		return 0;
-> >
-> > -	ret = request_irq(dport->port.irq, dz_interrupt,
-> > -			  IRQF_SHARED, "dz", mux);
-> > +	ret = request_irq(dport->port.irq, dz_interrupt, IRQF_SHARED, "dz", mux);
->
-> How is this related to the above described change?
+	in linflex_config_port() the member variable will be
+	assigned again . see linflex_config_port()
 
-No, it is not. My apologies. I must have joined the lines for improved readability
-and forgot to revert. I will restore this in next revision based on the feedback
-on the other patch of this series. OR I can include this change in the current
-change log as a "while at it..." statement. Would you advise me?
+Signed-off-by: lizhe <sensor1010@163.com>
+---
+ drivers/tty/serial/fsl_linflexuart.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thank you,
-./drv
-
->
-> --
-> js
-> suse labs
->
-
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 6fc21b6684e6..34400cc6ac7f 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -837,7 +837,6 @@ static int linflex_probe(struct platform_device *pdev)
+ 		return PTR_ERR(sport->membase);
+ 
+ 	sport->dev = &pdev->dev;
+-	sport->type = PORT_LINFLEXUART;
+ 	sport->iotype = UPIO_MEM;
+ 	sport->irq = platform_get_irq(pdev, 0);
+ 	sport->ops = &linflex_pops;
+-- 
+2.17.1
 
