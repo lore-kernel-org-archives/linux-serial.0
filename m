@@ -2,88 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 374E7C4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 15:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18815C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 15:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbjADPOn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Jan 2023 10:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        id S234813AbjADPPu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Jan 2023 10:15:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231197AbjADPOl (ORCPT
+        with ESMTP id S230056AbjADPPn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Jan 2023 10:14:41 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6841AD80;
-        Wed,  4 Jan 2023 07:14:40 -0800 (PST)
+        Wed, 4 Jan 2023 10:15:43 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CDF193DD;
+        Wed,  4 Jan 2023 07:15:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672845280; x=1704381280;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=QZCwprZw1+mKr5+bFcTpFv2qhvbs1l7/XdAVfCoIPFs=;
-  b=SEWb8UTYJVdEng0I/h37yeXnyehRTINh3OVUjh+Qxi5vCmxykG9KwM0R
-   CYAWGq6L056TrF4xFwYxSLfjsrNPrcOtVqq44HAaXy4KAZWfYW+GMH3YA
-   klR5isnF83F4v16iu9T84tAi/TeqnplFU+OJFifh4M3+E9dDln1WcTsm1
-   IDFrTHHxWhSNfrCUY31SW3hfVq27lgHbPwGIHFy1hkHujMi4hN/NG6wfN
-   FRNwcfTEwHBPeV2FvXOdCdIablmtkc+BimR4v7xDauyjgw2tyPQEXXj9z
-   LSjgo8UvKJ/qOY3p9iZcyF2CglyRW5sehPohJoTSgFuWiIOj4I5XHuTR9
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="320663935"
+  t=1672845342; x=1704381342;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tJ3bj3MrfiZCAxDXbBCyEWZjTJi5n8tfV2A1B0+qdBM=;
+  b=dFu/L8Bdj6gG4dNeANl50zz7iXZwgDE4dLDVL5laMNP0hRlB1V5bICua
+   Mv6sHLlaTb/dFirGnsTKco1Z2+SwruHBO6htwzFoZZI5H2lGA8SPrnaid
+   2OdV6iByTmLXXyf+6kXkeRtowNEXZ5/7vF1AwKLy3WTgfstytUqaaoPUm
+   GukutDmYyubFWunYcClPo86t2lewORcF9l+O69PE8EaBob3xfBWIKJoVE
+   L7iR0AOfTFS7gejiBIs6Yv5TTv+JXd1600KIBDOHUlPg4mZ4zyC6iJrAJ
+   zfE1FMScpp7/R7j8054YvyrDkblp7ChRpQxvaCjNUAReR5+NRntSHd0vQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="301644274"
 X-IronPort-AV: E=Sophos;i="5.96,300,1665471600"; 
-   d="scan'208";a="320663935"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 07:08:22 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="900578039"
+   d="scan'208";a="301644274"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 07:15:41 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="762700641"
 X-IronPort-AV: E=Sophos;i="5.96,300,1665471600"; 
-   d="scan'208";a="900578039"
-Received: from msvoboda-mobl.ger.corp.intel.com ([10.252.48.119])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 07:08:19 -0800
-Date:   Wed, 4 Jan 2023 17:08:10 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     lizhe <sensor1010@163.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] serial: linflexuart: remove redundant uart type
- PORT_LINFLEXUART
-In-Reply-To: <20230104150023.3115-1-sensor1010@163.com>
-Message-ID: <2f726128-29c-b7dd-ad8-f8b536fbe5f@linux.intel.com>
-References: <20230104150023.3115-1-sensor1010@163.com>
+   d="scan'208";a="762700641"
+Received: from msvoboda-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.48.119])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 07:15:39 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 00/10] tty/serial: bool conversions and cleanups
+Date:   Wed,  4 Jan 2023 17:15:21 +0200
+Message-Id: <20230104151531.73994-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-339339727-1672844700=:1783"
-Content-ID: <e93d745b-9e9c-5d3a-543a-e85c32f3afa1@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+There are number of functions in tty/serial which have arguments or
+return types that expect/behave like bool. Likely due to them existing
+before bool was available, other types are used. Make conversions to
+bool and cleanups.
 
---8323329-339339727-1672844700=:1783
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <b2fb696-3a25-6625-2514-ca3ac3e980ac@linux.intel.com>
+Ilpo JÃ¤rvinen (10):
+  tty: Cleanup tty_port_set_initialized() bool parameter
+  tty: Cleamup tty_port_set_suspended() bool parameter
+  tty: Cleanup tty_port_set_active() bool parameter
+  tty: moxa: Make local var storing tty_port_initialized() bool
+  serial: Convert uart_{,port_}startup() init_hw param to bool
+  tty: Convert ->carrier_raised() and callchains to bool
+  tty: Convert ->dtr_rts() to take bool argument
+  tty/serial: Make ->dcd_change()+uart_handle_dcd_change() status bool
+  serial: Make uart_handle_cts_change() status param bool
+  tty: Return bool from tty_termios_hw_change()
 
-On Wed, 4 Jan 2023, lizhe wrote:
+ drivers/char/pcmcia/synclink_cs.c    | 16 ++++----
+ drivers/ipack/devices/ipoctal.c      |  4 +-
+ drivers/mmc/core/sdio_uart.c         | 11 +++---
+ drivers/pps/clients/pps-ldisc.c      |  2 +-
+ drivers/s390/char/con3215.c          |  4 +-
+ drivers/staging/greybus/uart.c       |  2 +-
+ drivers/tty/amiserial.c              | 10 ++---
+ drivers/tty/hvc/hvc_console.c        |  4 +-
+ drivers/tty/hvc/hvc_console.h        |  2 +-
+ drivers/tty/hvc/hvc_iucv.c           |  4 +-
+ drivers/tty/moxa.c                   | 24 ++++++------
+ drivers/tty/mxser.c                  |  9 +++--
+ drivers/tty/n_gsm.c                  | 14 +++----
+ drivers/tty/serial/imx.c             |  2 +-
+ drivers/tty/serial/max3100.c         |  2 +-
+ drivers/tty/serial/max310x.c         |  3 +-
+ drivers/tty/serial/serial_core.c     | 55 +++++++++++++---------------
+ drivers/tty/serial/sunhv.c           |  8 ++--
+ drivers/tty/synclink_gt.c            | 19 +++++-----
+ drivers/tty/tty_ioctl.c              | 10 ++---
+ drivers/tty/tty_port.c               | 22 +++++------
+ drivers/usb/class/cdc-acm.c          |  2 +-
+ drivers/usb/serial/ch341.c           |  9 ++---
+ drivers/usb/serial/console.c         |  2 +-
+ drivers/usb/serial/cp210x.c          |  4 +-
+ drivers/usb/serial/cypress_m8.c      |  6 +--
+ drivers/usb/serial/digi_acceleport.c |  6 +--
+ drivers/usb/serial/f81232.c          |  8 ++--
+ drivers/usb/serial/f81534.c          |  2 +-
+ drivers/usb/serial/ftdi_sio.c        |  2 +-
+ drivers/usb/serial/generic.c         |  2 +-
+ drivers/usb/serial/ipw.c             |  2 +-
+ drivers/usb/serial/keyspan.c         |  2 +-
+ drivers/usb/serial/keyspan_pda.c     |  2 +-
+ drivers/usb/serial/mct_u232.c        |  4 +-
+ drivers/usb/serial/mxuport.c         |  2 +-
+ drivers/usb/serial/pl2303.c          |  9 ++---
+ drivers/usb/serial/quatech2.c        |  2 +-
+ drivers/usb/serial/sierra.c          |  2 +-
+ drivers/usb/serial/spcp8x5.c         |  9 ++---
+ drivers/usb/serial/ssu100.c          |  2 +-
+ drivers/usb/serial/upd78f0730.c      |  6 +--
+ drivers/usb/serial/usb-serial.c      |  6 +--
+ drivers/usb/serial/usb-wwan.h        |  2 +-
+ drivers/usb/serial/usb_wwan.c        |  2 +-
+ drivers/usb/serial/xr_serial.c       |  6 +--
+ include/linux/serial_core.h          |  6 +--
+ include/linux/tty.h                  |  2 +-
+ include/linux/tty_ldisc.h            |  4 +-
+ include/linux/tty_port.h             | 10 ++---
+ include/linux/usb/serial.h           |  6 +--
+ net/bluetooth/rfcomm/tty.c           |  2 +-
+ 52 files changed, 170 insertions(+), 188 deletions(-)
 
-> in linflex_config_port() the member variable type will be
-> assigned again. see linflex_connfig_port()
-> 
-> Signed-off-by: lizhe <sensor1010@163.com>
+-- 
+2.30.2
 
-> Acked-by: Jiri Slaby <jslaby@suse.com>
-> Acked-by: Ilpo Järvinen<ilpo.jarvinen@linux.intel.com>
-
-Eh, you're not supposed to invent these Acked-by tags yourself. Don't add 
-any tags besides your own unless somebody explicitly gives them to you in 
-a reply!
-
-And the subject was supposed to be (as per Jiri's recommendation):
-serial: linflexuart: remove redundant uart type assignment
-
-You also didn't include the history of what was changed in v3.
-
---
- i.
---8323329-339339727-1672844700=:1783--
