@@ -2,31 +2,31 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EAB1C46467
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 09:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC88CC4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 09:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbjADJAJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Jan 2023 04:00:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56068 "EHLO
+        id S233514AbjADJCj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Jan 2023 04:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238646AbjADI7u (ORCPT
+        with ESMTP id S238902AbjADJBk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Jan 2023 03:59:50 -0500
-Received: from msg-4.mailo.com (msg-4.mailo.com [213.182.54.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3324B222;
-        Wed,  4 Jan 2023 00:59:49 -0800 (PST)
+        Wed, 4 Jan 2023 04:01:40 -0500
+Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7E513F94;
+        Wed,  4 Jan 2023 01:00:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-        t=1672822777; bh=MI19Bt6j5+vEb0xMTmFMufyPhjb/G2VdVdfSJyngXD4=;
+        t=1672822851; bh=LLQeTnvNuZCdPg+E7Hbr+aQYgS8XCWQxD7iW+7QqbBY=;
         h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
          MIME-Version:Content-Type:In-Reply-To;
-        b=D26SDwqEZYm04/bd7F7nTISPscO8ULSmnLTq+oeBqdx25JKeKRDQIMNIC379hjrIT
-         v5eDcg5AL6MP0grpr5R4oY0uX01fvTPpSV+zr6333naHzMbYupbBIhMthVU4V9QRS+
-         5M6r2Ega5TMYW4PCCcHIf1qJ/+Lhkbl0IYUj1yZU=
-Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
+        b=mf1vJ+9V0G/y85PujC+0RQeuHmVEKg0KbhD2ZRzibsziGPrJhkp77Ker8evTtf3T9
+         rhNjx8Ei/9a4A0oR61B/Hi2oUGy7pdNHM06xJ2qVClIemBlerJjiCu5Vb0WkXZPUqU
+         xJ0ocnKL6aQnJXISzbxHPjYwZGEdVNo7RS10BK7U=
+Received: by b-3.in.mailobj.net [192.168.90.13] with ESMTP
         via ip-206.mailobj.net [213.182.55.206]
-        Wed,  4 Jan 2023 09:59:37 +0100 (CET)
-X-EA-Auth: 3dYqcVzlZK1WvubetNrJWt8ppfWde/HMNvQ0EK01li/n4JhPYD5rf0RiytvtHMVkS3hYJaukvBTjexSuWZHOcVytsiYiLNcD
-Date:   Wed, 4 Jan 2023 14:29:31 +0530
+        Wed,  4 Jan 2023 10:00:51 +0100 (CET)
+X-EA-Auth: /EDdEHgOuYMl2jkDd/7fB7flqOZUzBVHc0UeQJUETcM2XHO9lRxSq5Qo1WuH0wT4Lqgum8EJLwjsiulvrm0y8bRAPX7Ra2Sl
+Date:   Wed, 4 Jan 2023 14:30:44 +0530
 From:   Deepak R Varma <drv@mailo.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>,
@@ -35,65 +35,42 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Saurabh Singh Sengar <ssengar@microsoft.com>,
         Praveen Kumar <kumarpraveen@linux.microsoft.com>,
         Deepak R Varma <drv@mailo.com>
-Subject: Re: [PATCH v4 1/2] tty: serial: dz: convert atomic_* to refcount_*
- APIs for map_guard
-Message-ID: <Y7U/8zMVwTP7NKXI@qemulion>
+Subject: Re: [PATCH v4 2/2] tty: serial: dz: convert atomic_* to refcount_*
+ APIs for irq_guard
+Message-ID: <Y7VAPI7Y5tfVUdvR@qemulion>
 References: <cover.1671898144.git.drv@mailo.com>
- <d85c7441b96ce387d9010142efc3469d53b6aedc.1671898144.git.drv@mailo.com>
- <e42d5d19-7ed5-468b-98cc-13d0187dc555@kernel.org>
- <Y7P926/+N9IDKCyR@qemulion>
- <Y7U4ncG4Gkd5uRsb@kroah.com>
+ <51ef854f77779c82010379420139993e12c38776.1671898144.git.drv@mailo.com>
+ <3c4e744f-c313-e195-af93-a22382c81bb6@kernel.org>
+ <Y7P+zZEF09YWs5yW@qemulion>
+ <Y7U4wiLM/z+H/rOc@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y7U4ncG4Gkd5uRsb@kroah.com>
+In-Reply-To: <Y7U4wiLM/z+H/rOc@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 09:28:13AM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Jan 03, 2023 at 03:35:15PM +0530, Deepak R Varma wrote:
-> > > > -			printk(KERN_ERR
-> > > > -			       "dz: Unable to reserve MMIO resource\n");
-> > > > +	refcount_inc(&mux->map_guard);
-> > > > +	if (refcount_read(&mux->map_guard) == 1) {
+On Wed, Jan 04, 2023 at 09:28:50AM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Jan 03, 2023 at 03:39:17PM +0530, Deepak R Varma wrote:
+> > On Tue, Jan 03, 2023 at 10:00:48AM +0100, Jiri Slaby wrote:
+> > > On 26. 12. 22, 7:21, Deepak R Varma wrote:
+> > > > +	ret = request_irq(dport->port.irq, dz_interrupt, IRQF_SHARED, "dz", mux);
 > > >
-> > > This is now racy, right?
+> > > How is this related to the above described change?
 > >
-> > Hello Jiri,
-> > Thank you for the feedback. You are correct. I have split a single instruction
-> > in two (or more?) instructions potentially resulting in race conditions. I
-> > looked through the refcount_* APIs but did not find a direct match.
-> >
-> >
-> > Can you please comment if the the following variation will avoid race condition?
-> >
-> > 	if (!refcount_add_not_zero(1, &mux->map_guard)) {
-> > 		refcount_inc(&mux->map_guard);
-> > 		...
-> > 	}
+> > No, it is not. My apologies. I must have joined the lines for improved readability
+> > and forgot to revert. I will restore this in next revision based on the feedback
+> > on the other patch of this series. OR I can include this change in the current
+> > change log as a "while at it..." statement. Would you advise me?
 >
-> What do you think?  The onus is on you to prove the conversion is
-> correct, otherwise, why do the conversion at all?
+> NEVER have a "while at it..." change as part of a commit unless it is
+> relevant to the main change being made.  You know better...
 
-Hello Greg,
-Okay. Sounds good. I think the revised approach should be safer. I will work on
-finding a means to prove that.
+Sounds very good. Thank you for the advise. I will revert the change in the next
+revision.
 
->
-> Actually, why do this at all, what is the goal here?  And how was this
-> tested?
-
-The objective here is to migrate to specific and improved APIs that are already
-proved to be better for different reasons as mentioned in the patch log
-messages. This is as per the Linux Kernel documentation.
-
-In terms of testing, First, I did a compile and build test of the changes.
-I also wrote separate small dummy modules and tested the API transformation.
-However, these modules were standalone and limited in complexity and intensity.
-I will try to make these more intense, multithreaded and run the test again.
-
-Thank you as always :)
+Thank you,
 ./drv
 
 >
