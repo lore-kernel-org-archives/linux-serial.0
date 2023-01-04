@@ -2,77 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA80FC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 08:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EAB1C46467
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 09:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233720AbjADIc1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Jan 2023 03:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
+        id S233121AbjADJAJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Jan 2023 04:00:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234002AbjADIcZ (ORCPT
+        with ESMTP id S238646AbjADI7u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Jan 2023 03:32:25 -0500
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A69A186CF;
-        Wed,  4 Jan 2023 00:32:16 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 9A467125C;
-        Wed,  4 Jan 2023 09:32:13 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1672821133;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+CX2NGoUNf89QdEBh+WKylLZ5iHDV6P+xXO7uYU7z6A=;
-        b=XaAGmCM3jt1/wQgfq4Z0ImuBrzqfwTYgEaukK/7+47wBQu6PuzODUHLNIK7JsRAwXVUEun
-        aNyEl8a9Z7E5HQxPlNeo2yMu2xBUD34iuqnD6+r38HXxuLeG/bMCjp466sKTlMpxDQ1js3
-        HMMM+BK4J5k6PJ+CZCsCppx61vsFpfyfr7j5dGSkDVhww0C3y8Uome4iW2W4Oss0TZMZpo
-        qOVkhCwLJrPjB5vNRbVGBy5FgrBiax+eHWmOmUa/82KYd3NeJon9PeQgqMewjO+Z7qxP/u
-        8Kq0HX8JZBiDjihmn12NUdppIv+9fVr2glSqWZW8HpLzayLI152BrhmkNUujLw==
-From:   Michael Walle <michael@walle.cc>
-To:     jszhang@kernel.org
-Cc:     aou@eecs.berkeley.edu, conor@kernel.org,
-        devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
-        ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        palmer@dabbelt.com, paul.walmsley@sifive.com, robh+dt@kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v2 6/9] riscv: dts: bouffalolab: add the bl808 SoC base device tree
-Date:   Wed,  4 Jan 2023 09:32:04 +0100
-Message-Id: <20230104083204.1865526-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221127132448.4034-7-jszhang@kernel.org>
-References: <20221127132448.4034-7-jszhang@kernel.org>
+        Wed, 4 Jan 2023 03:59:50 -0500
+Received: from msg-4.mailo.com (msg-4.mailo.com [213.182.54.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3324B222;
+        Wed,  4 Jan 2023 00:59:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
+        t=1672822777; bh=MI19Bt6j5+vEb0xMTmFMufyPhjb/G2VdVdfSJyngXD4=;
+        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
+         MIME-Version:Content-Type:In-Reply-To;
+        b=D26SDwqEZYm04/bd7F7nTISPscO8ULSmnLTq+oeBqdx25JKeKRDQIMNIC379hjrIT
+         v5eDcg5AL6MP0grpr5R4oY0uX01fvTPpSV+zr6333naHzMbYupbBIhMthVU4V9QRS+
+         5M6r2Ega5TMYW4PCCcHIf1qJ/+Lhkbl0IYUj1yZU=
+Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
+        via ip-206.mailobj.net [213.182.55.206]
+        Wed,  4 Jan 2023 09:59:37 +0100 (CET)
+X-EA-Auth: 3dYqcVzlZK1WvubetNrJWt8ppfWde/HMNvQ0EK01li/n4JhPYD5rf0RiytvtHMVkS3hYJaukvBTjexSuWZHOcVytsiYiLNcD
+Date:   Wed, 4 Jan 2023 14:29:31 +0530
+From:   Deepak R Varma <drv@mailo.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Praveen Kumar <kumarpraveen@linux.microsoft.com>,
+        Deepak R Varma <drv@mailo.com>
+Subject: Re: [PATCH v4 1/2] tty: serial: dz: convert atomic_* to refcount_*
+ APIs for map_guard
+Message-ID: <Y7U/8zMVwTP7NKXI@qemulion>
+References: <cover.1671898144.git.drv@mailo.com>
+ <d85c7441b96ce387d9010142efc3469d53b6aedc.1671898144.git.drv@mailo.com>
+ <e42d5d19-7ed5-468b-98cc-13d0187dc555@kernel.org>
+ <Y7P926/+N9IDKCyR@qemulion>
+ <Y7U4ncG4Gkd5uRsb@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y7U4ncG4Gkd5uRsb@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Wed, Jan 04, 2023 at 09:28:13AM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Jan 03, 2023 at 03:35:15PM +0530, Deepak R Varma wrote:
+> > > > -			printk(KERN_ERR
+> > > > -			       "dz: Unable to reserve MMIO resource\n");
+> > > > +	refcount_inc(&mux->map_guard);
+> > > > +	if (refcount_read(&mux->map_guard) == 1) {
+> > >
+> > > This is now racy, right?
+> >
+> > Hello Jiri,
+> > Thank you for the feedback. You are correct. I have split a single instruction
+> > in two (or more?) instructions potentially resulting in race conditions. I
+> > looked through the refcount_* APIs but did not find a direct match.
+> >
+> >
+> > Can you please comment if the the following variation will avoid race condition?
+> >
+> > 	if (!refcount_add_not_zero(1, &mux->map_guard)) {
+> > 		refcount_inc(&mux->map_guard);
+> > 		...
+> > 	}
+>
+> What do you think?  The onus is on you to prove the conversion is
+> correct, otherwise, why do the conversion at all?
 
-> +		uart0: serial@30002000 {
+Hello Greg,
+Okay. Sounds good. I think the revised approach should be safer. I will work on
+finding a means to prove that.
 
-According to the reference manual of the bl808, this is uart3. Can we also
-use that name here?
+>
+> Actually, why do this at all, what is the goal here?  And how was this
+> tested?
 
-> +			compatible = "bouffalolab,bl808-uart";
-> +			reg = <0x30002000 0x1000>;
-> +			interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&xtal>;
+The objective here is to migrate to specific and improved APIs that are already
+proved to be better for different reasons as mentioned in the patch log
+messages. This is as per the Linux Kernel documentation.
 
-This is a shortcut and is likely to change in the future. The xtal
-isn't really connected to the uart block, but instead there is a
-clock mux and clock gate in between.
+In terms of testing, First, I did a compile and build test of the changes.
+I also wrote separate small dummy modules and tested the API transformation.
+However, these modules were standalone and limited in complexity and intensity.
+I will try to make these more intense, multithreaded and run the test again.
 
-> +			status = "disabled";
-> +		};
+Thank you as always :)
+./drv
 
-Thanks,
--michael
+>
+> thanks,
+>
+> greg k-h
+
+
