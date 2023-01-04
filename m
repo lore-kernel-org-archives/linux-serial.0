@@ -2,80 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC88CC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 09:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C44AC46467
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Jan 2023 15:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233514AbjADJCj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Jan 2023 04:02:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
+        id S233904AbjADPCA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 Jan 2023 10:02:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238902AbjADJBk (ORCPT
+        with ESMTP id S239538AbjADPBu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Jan 2023 04:01:40 -0500
-Received: from msg-1.mailo.com (msg-1.mailo.com [213.182.54.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7E513F94;
-        Wed,  4 Jan 2023 01:00:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailo.com; s=mailo;
-        t=1672822851; bh=LLQeTnvNuZCdPg+E7Hbr+aQYgS8XCWQxD7iW+7QqbBY=;
-        h=X-EA-Auth:Date:From:To:Cc:Subject:Message-ID:References:
-         MIME-Version:Content-Type:In-Reply-To;
-        b=mf1vJ+9V0G/y85PujC+0RQeuHmVEKg0KbhD2ZRzibsziGPrJhkp77Ker8evTtf3T9
-         rhNjx8Ei/9a4A0oR61B/Hi2oUGy7pdNHM06xJ2qVClIemBlerJjiCu5Vb0WkXZPUqU
-         xJ0ocnKL6aQnJXISzbxHPjYwZGEdVNo7RS10BK7U=
-Received: by b-3.in.mailobj.net [192.168.90.13] with ESMTP
-        via ip-206.mailobj.net [213.182.55.206]
-        Wed,  4 Jan 2023 10:00:51 +0100 (CET)
-X-EA-Auth: /EDdEHgOuYMl2jkDd/7fB7flqOZUzBVHc0UeQJUETcM2XHO9lRxSq5Qo1WuH0wT4Lqgum8EJLwjsiulvrm0y8bRAPX7Ra2Sl
-Date:   Wed, 4 Jan 2023 14:30:44 +0530
-From:   Deepak R Varma <drv@mailo.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>,
-        Deepak R Varma <drv@mailo.com>
-Subject: Re: [PATCH v4 2/2] tty: serial: dz: convert atomic_* to refcount_*
- APIs for irq_guard
-Message-ID: <Y7VAPI7Y5tfVUdvR@qemulion>
-References: <cover.1671898144.git.drv@mailo.com>
- <51ef854f77779c82010379420139993e12c38776.1671898144.git.drv@mailo.com>
- <3c4e744f-c313-e195-af93-a22382c81bb6@kernel.org>
- <Y7P+zZEF09YWs5yW@qemulion>
- <Y7U4wiLM/z+H/rOc@kroah.com>
+        Wed, 4 Jan 2023 10:01:50 -0500
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.216])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01495A45E;
+        Wed,  4 Jan 2023 07:01:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version:
+        Content-Type; bh=YpZiooOJEO/DV1XqfZfR0XmS7SEZ4HwmdG0B2nCsIk8=;
+        b=fu07e0lUeJS3NEFHej4CLn9BjlqH21fEgrbnxVVD+TRwYWP0cFsDilynu0UE8m
+        gKUAQ0dhR9IjS7oj+nwUTdDZYYcf4usSxuI85B33hKNZQEt7GsENEKp8uWn3+MNz
+        mt8MrgwNTcGTtdQup3lYZT1tei6Pp4/FjgMfEp6HmgPrM=
+Received: from localhost.localdomain (unknown [36.4.209.174])
+        by zwqz-smtp-mta-g4-1 (Coremail) with SMTP id _____wDHPj+JlLVjDUduAA--.8610S4;
+        Wed, 04 Jan 2023 23:01:00 +0800 (CST)
+From:   lizhe <sensor1010@163.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lizhe <sensor1010@163.com>
+Subject: [PATCH v3] serial: linflexuart: remove redundant uart type PORT_LINFLEXUART
+Date:   Wed,  4 Jan 2023 07:00:23 -0800
+Message-Id: <20230104150023.3115-1-sensor1010@163.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7U4wiLM/z+H/rOc@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wDHPj+JlLVjDUduAA--.8610S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtw4rAw47XFW5Aw4fGF1kAFb_yoWDJrc_ur
+        1DC34xWr10kFWakFn7tFyakr9agrsYvF48JF40va9aqw4DZw4fJr97XrZruwsrA3y8Zry7
+        W3yxGF4ayrnrXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRMeHqJUUUUU==
+X-Originating-IP: [36.4.209.174]
+X-CM-SenderInfo: 5vhq20jurqiii6rwjhhfrp/xtbBdBTsq1gi4+vLdQAAsr
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 04, 2023 at 09:28:50AM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Jan 03, 2023 at 03:39:17PM +0530, Deepak R Varma wrote:
-> > On Tue, Jan 03, 2023 at 10:00:48AM +0100, Jiri Slaby wrote:
-> > > On 26. 12. 22, 7:21, Deepak R Varma wrote:
-> > > > +	ret = request_irq(dport->port.irq, dz_interrupt, IRQF_SHARED, "dz", mux);
-> > >
-> > > How is this related to the above described change?
-> >
-> > No, it is not. My apologies. I must have joined the lines for improved readability
-> > and forgot to revert. I will restore this in next revision based on the feedback
-> > on the other patch of this series. OR I can include this change in the current
-> > change log as a "while at it..." statement. Would you advise me?
->
-> NEVER have a "while at it..." change as part of a commit unless it is
-> relevant to the main change being made.  You know better...
+in linflex_config_port() the member variable type will be
+assigned again. see linflex_connfig_port()
 
-Sounds very good. Thank you for the advise. I will revert the change in the next
-revision.
+Signed-off-by: lizhe <sensor1010@163.com>
+Acked-by: Jiri Slaby <jslaby@suse.com>
+Acked-by: Ilpo Järvinen<ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/all/20230103170948.3777-1-sensor1010@163.com/
+---
+ drivers/tty/serial/fsl_linflexuart.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thank you,
-./drv
-
->
-> thanks,
->
-> greg k-h
-
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 6fc21b6684e6..34400cc6ac7f 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -837,7 +837,6 @@ static int linflex_probe(struct platform_device *pdev)
+ 		return PTR_ERR(sport->membase);
+ 
+ 	sport->dev = &pdev->dev;
+-	sport->type = PORT_LINFLEXUART;
+ 	sport->iotype = UPIO_MEM;
+ 	sport->irq = platform_get_irq(pdev, 0);
+ 	sport->ops = &linflex_pops;
+-- 
+2.17.1
 
