@@ -2,64 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B910C3DA7D
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Jan 2023 06:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA04C3DA7D
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Jan 2023 06:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbjAEGYA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Jan 2023 01:24:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        id S230452AbjAEG2f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Jan 2023 01:28:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbjAEGXy (ORCPT
+        with ESMTP id S230262AbjAEG23 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Jan 2023 01:23:54 -0500
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEEA51334;
-        Wed,  4 Jan 2023 22:23:53 -0800 (PST)
-Received: by mail-wm1-f51.google.com with SMTP id c65-20020a1c3544000000b003cfffd00fc0so578177wma.1;
-        Wed, 04 Jan 2023 22:23:53 -0800 (PST)
+        Thu, 5 Jan 2023 01:28:29 -0500
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679BA50F55;
+        Wed,  4 Jan 2023 22:28:28 -0800 (PST)
+Received: by mail-ej1-f53.google.com with SMTP id gh17so87995595ejb.6;
+        Wed, 04 Jan 2023 22:28:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S09kCi2B6W+kvjfavNwp/x7TIDaE6qjmKIYQzABeYWU=;
-        b=2msMzmi40nC77FxE46rxpWT+z5YQUMPLVDCCeCH1e45S9qFIokmbdV9rQ13Adi0QxN
-         pZr8wxm+zqF0IxMK20w0vd32jeqGLi7mWaxwCKiu1Oq3gYoTDUPPTzPkBcyrrV0r6lEz
-         YmLviOTKxmh3Mffg0nWRy77SRvFHch0e0Jk3XFWeUQphJAU1T2wG4pgU9pmRb/eZqZN0
-         oJInm+FIU2RWn23rruzx4KztNZJAKdwM36MpBN/J5F5OglJPw9Yf+49F/Gcd/KaTRqUL
-         avDi725/ZtjkmGzlQj3Ds41/fzeLu/GmrYYnH74KlJR04fbicnmsMCe/axOGX5SnImp6
-         8DEQ==
-X-Gm-Message-State: AFqh2krlv1SXOpw+UP6wYOFyLLa1xnipBPhmUOCABdlBIBMrMxPoNwDp
-        dYkoAZuQKxKUKHBq3Pa3/sve8Terdk2uYw==
-X-Google-Smtp-Source: AMrXdXta3kcpToCjpDWKphQJt7JPvVt6ThBOAAgGR2aeSl3+CyUHKyydRa1aJXm3/RFSQop3seLLiA==
-X-Received: by 2002:a05:600c:4255:b0:3d3:3d34:5d63 with SMTP id r21-20020a05600c425500b003d33d345d63mr37230769wmm.8.1672899832451;
-        Wed, 04 Jan 2023 22:23:52 -0800 (PST)
+        bh=M6ns4ugZeKhq6AEZuEwHEVN2cWVAPxdt18M+sWa8jps=;
+        b=jhi53DJNdnkr6+ZOVD5bgfuZ/wK3wo2NJNJ08V3+ILq1Mtq8OzG6/VQ+ocsiQl4Q1D
+         0IoWHmIgwDek83Kl+6y2HKr1HD4S3QuhTWHw4QyI9hpwxxgTSt0O4a+Ew/ZE0cghdwWA
+         U2jYR8t42v8RhzexxasVXmW8YIUFlwmXkaPzXyWeSi5APnHbrcLX/gTjWfOT0na/uY3d
+         9MS0RNFhKJepFXAwwvk5NBO2lTRmZfRy2EFEGPIRXWYVkRe05dB2OFHcvj8Ll7bLHyYX
+         pMFQRnzWU+nXjIGRUtDY3nGls+bahpRK5TgXWRnfzOx6kwwQ9o460y+IhJ5eXtPbbbfc
+         3HcA==
+X-Gm-Message-State: AFqh2krlFWqSqADS/5QXezjlN3vW3dSVhedmMagZ4NpDXA/hV9Zd3P8s
+        i8/4ifhTw8bNID7QXnezsgQ=
+X-Google-Smtp-Source: AMrXdXuFMK4nHIdmvrTluR1wPLW23pwWT8qD02Jm9O9l81qxkKLjpIoT94SwlYpr4DA2/WiQulXcxQ==
+X-Received: by 2002:a17:906:6dcb:b0:7e7:4dd7:bbcc with SMTP id j11-20020a1709066dcb00b007e74dd7bbccmr44144221ejt.73.1672900106951;
+        Wed, 04 Jan 2023 22:28:26 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id iv14-20020a05600c548e00b003b47b80cec3sm1206435wmb.42.2023.01.04.22.23.50
+        by smtp.gmail.com with ESMTPSA id tz6-20020a170907c78600b007c0d0dad9c6sm16098840ejc.108.2023.01.04.22.28.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Jan 2023 22:23:52 -0800 (PST)
-Message-ID: <1a25b930-e003-6326-86ab-4d8cdc9b7da5@kernel.org>
-Date:   Thu, 5 Jan 2023 07:23:49 +0100
+        Wed, 04 Jan 2023 22:28:26 -0800 (PST)
+Message-ID: <349bca60-7d64-6329-8d3d-d645fc297ea3@kernel.org>
+Date:   Thu, 5 Jan 2023 07:28:24 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH 09/10] serial: Make uart_handle_cts_change() status param
- bool
+Subject: Re: [PATCH 10/10] tty: Return bool from tty_termios_hw_change()
 Content-Language: en-US
 To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org
 Cc:     Johan Hovold <johan@kernel.org>
 References: <20230104151531.73994-1-ilpo.jarvinen@linux.intel.com>
- <20230104151531.73994-10-ilpo.jarvinen@linux.intel.com>
+ <20230104151531.73994-11-ilpo.jarvinen@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230104151531.73994-10-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20230104151531.73994-11-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -67,33 +61,59 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 04. 01. 23, 16:15, Ilpo Järvinen wrote:
-> Convert uart_handle_cts_change() to bool which is more appropriate
-> than unsigned int.
-> 
-> Cleanup callsites from operations that are not necessary with bool.
-> 
+> Change tty_termios_hw_change() return to bool and convert it to
+
+If you are going to resend, should it be "to return bool" instead?
+
+> a or-chained return statement.
+
+and s/a/an/
+
 > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-...
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3285,11 +3285,11 @@ EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
->   /**
->    * uart_handle_cts_change - handle a change of clear-to-send state
->    * @uport: uart_port structure for the open port
-> - * @status: new clear to send status, nonzero if active
-> + * @status: new clear to send status, true if active
 
-ANyone else having troubles to parse "new clear to send status"?
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
->    *
->    * Caller must hold uport->lock.
+> ---
+>   drivers/tty/tty_ioctl.c | 10 ++++------
+>   include/linux/tty.h     |  2 +-
+>   2 files changed, 5 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+> index ce511557b98b..4a80fabf6d5e 100644
+> --- a/drivers/tty/tty_ioctl.c
+> +++ b/drivers/tty/tty_ioctl.c
+> @@ -270,13 +270,11 @@ EXPORT_SYMBOL(tty_termios_copy_hw);
+>    *	between the two termios structures, or a speed change is needed.
 >    */
-> -void uart_handle_cts_change(struct uart_port *uport, unsigned int status)
-> +void uart_handle_cts_change(struct uart_port *uport, bool status)
+>   
+> -int tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b)
+> +bool tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b)
+>   {
+> -	if (a->c_ispeed != b->c_ispeed || a->c_ospeed != b->c_ospeed)
+> -		return 1;
+> -	if ((a->c_cflag ^ b->c_cflag) & ~(HUPCL | CREAD | CLOCAL))
+> -		return 1;
+> -	return 0;
+> +	return a->c_ispeed != b->c_ispeed ||
+> +	       a->c_ospeed != b->c_ospeed ||
+> +	       (a->c_cflag ^ b->c_cflag) & ~(HUPCL | CREAD | CLOCAL);
+>   }
+>   EXPORT_SYMBOL(tty_termios_hw_change);
+>   
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 730c3301d710..093935e97f42 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -453,7 +453,7 @@ unsigned char tty_get_char_size(unsigned int cflag);
+>   unsigned char tty_get_frame_size(unsigned int cflag);
+>   
+>   void tty_termios_copy_hw(struct ktermios *new, const struct ktermios *old);
+> -int tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b);
+> +bool tty_termios_hw_change(const struct ktermios *a, const struct ktermios *b);
+>   int tty_set_termios(struct tty_struct *tty, struct ktermios *kt);
+>   
+>   void tty_wakeup(struct tty_struct *tty);
 
-This should be "bool active" then.
-
-thanks,
 -- 
 js
 suse labs
