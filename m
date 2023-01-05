@@ -2,127 +2,180 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7641CC54EBD
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Jan 2023 12:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45824C3DA7D
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Jan 2023 14:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233195AbjAEMsL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Jan 2023 07:48:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
+        id S234020AbjAEO5a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Jan 2023 09:57:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233152AbjAEMsF (ORCPT
+        with ESMTP id S232676AbjAEO52 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Jan 2023 07:48:05 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216E14C72E;
-        Thu,  5 Jan 2023 04:48:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672922885; x=1704458885;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gBllpDNVCKeKdbc9yaBSuxUO7hrUZrjNNGgoCldFUrw=;
-  b=l9P96e6gF93vZvgD5HcKqA0WXMAMQEW6IgGikPfTlkMKas4V8DtppbgN
-   RAW3D+QuRWLuZ32SB059n3l53+norS5I4KKzhgS5mDts77JFre0xRm+2X
-   bBxW5SKPfX+KTGOJ3rhO9qiC6IC7RccJ68qhA9oN/ifYxQR74kzy8jwWK
-   VHR1+mAtPpZoNjy4ENqIlpHPFSD6Ob7ByTqYS+7RCMfg0WWWBoGtTFSor
-   5e8g5zhKRIAXimXPeMgXKZ5SD5gJSTRSCxuFguR+0CkcMNkW9lcn2k6jq
-   u/SRKxiF6LAQGoNSKnKZnspOr/7Vo2gqS1477Jbm1cNNtRJUDTU+Cf4Ye
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="301889842"
-X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
-   d="scan'208";a="301889842"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2023 04:48:04 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="984287804"
-X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
-   d="scan'208";a="984287804"
-Received: from khaunx-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.35.181])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2023 04:48:03 -0800
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org,
+        Thu, 5 Jan 2023 09:57:28 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E26C762
+        for <linux-serial@vger.kernel.org>; Thu,  5 Jan 2023 06:57:26 -0800 (PST)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 305DZJw2011073;
+        Thu, 5 Jan 2023 15:56:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=Mew+7fmHkIYYdhg84QO79/nh/BSAmntjt9cf0imkRPU=;
+ b=nZx+6Jb2NxpxcWihscTNZ46ouc23twO6yRv0F+JKQHzHFSoanTSm79yrJBDSRgjKlk5I
+ OAZkOSzqirmPB3Hx68phUpT4rLLtj8r0klvPd2/KE+ofrkisGqaYfhHiL7yIqw8flsJ/
+ +KivJIfwB69tl4/9MgaosOIn/4QMvgrKtKrbIUFUeDROx14qsTOZ4yYG3OeOFzrMBqdi
+ sXkghhNA16UfixGpZCQOGHqslWCyuQe+8q6fYkyq35ijPcwPHFLpQZgL0+wy9fvf3Ulb
+ Zav4cjcSe/QNDT/M+EGrODbCcjZR1IGk1b0Q4BeVj67NeGMspWENe9THob20+wAHukYC Kw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3mtbcq9q2k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Jan 2023 15:56:55 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4905310002A;
+        Thu,  5 Jan 2023 15:56:54 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3A95926027C;
+        Thu,  5 Jan 2023 15:56:54 +0100 (CET)
+Received: from [10.201.20.168] (10.201.20.168) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.13; Thu, 5 Jan
+ 2023 15:56:53 +0100
+Message-ID: <b4e13643-0494-329a-2d41-06da985b9dfe@foss.st.com>
+Date:   Thu, 5 Jan 2023 15:56:48 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
+ handling into single IRQ handler
+Content-Language: en-US
+To:     Marek Vasut <marex@denx.de>
+CC:     <linux-serial@vger.kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <philmd@linaro.org>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 3/3] serial: 8250_rt288x: Remove unnecessary UART_REG_UNMAPPED
-Date:   Thu,  5 Jan 2023 14:47:44 +0200
-Message-Id: <20230105124744.105950-4-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230105124744.105950-1-ilpo.jarvinen@linux.intel.com>
-References: <20230105124744.105950-1-ilpo.jarvinen@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+References: <20221216115338.7150-1-marex@denx.de>
+From:   Valentin CARON <valentin.caron@foss.st.com>
+In-Reply-To: <20221216115338.7150-1-marex@denx.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.20.168]
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-05_06,2023-01-05_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As unmapped registers are at the tail of the array, the ARRAY_SIZE()
-condition will catch them just fine. No need to define special
-value for them.
+Hi Marek,
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_rt288x.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
+It is OK for me.
 
-diff --git a/drivers/tty/serial/8250/8250_rt288x.c b/drivers/tty/serial/8250/8250_rt288x.c
-index 3015afb99722..7399fea6dfc1 100644
---- a/drivers/tty/serial/8250/8250_rt288x.c
-+++ b/drivers/tty/serial/8250/8250_rt288x.c
-@@ -14,10 +14,8 @@
- 
- #define RT288X_DL	0x28
- 
--#define UART_REG_UNMAPPED	-1
--
- /* Au1x00/RT288x UART hardware has a weird register layout */
--static const s8 au_io_in_map[8] = {
-+static const s8 au_io_in_map[7] = {
- 	[UART_RX]	= 0,
- 	[UART_IER]	= 2,
- 	[UART_IIR]	= 3,
-@@ -25,18 +23,14 @@ static const s8 au_io_in_map[8] = {
- 	[UART_MCR]	= 6,
- 	[UART_LSR]	= 7,
- 	[UART_MSR]	= 8,
--	[UART_SCR]	= UART_REG_UNMAPPED,
- };
- 
--static const s8 au_io_out_map[8] = {
-+static const s8 au_io_out_map[5] = {
- 	[UART_TX]	= 1,
- 	[UART_IER]	= 2,
- 	[UART_FCR]	= 4,
- 	[UART_LCR]	= 5,
- 	[UART_MCR]	= 6,
--	[UART_LSR]	= UART_REG_UNMAPPED,
--	[UART_MSR]	= UART_REG_UNMAPPED,
--	[UART_SCR]	= UART_REG_UNMAPPED,
- };
- 
- static unsigned int au_serial_in(struct uart_port *p, int offset)
-@@ -44,8 +38,7 @@ static unsigned int au_serial_in(struct uart_port *p, int offset)
- 	if (offset >= ARRAY_SIZE(au_io_in_map))
- 		return UINT_MAX;
- 	offset = au_io_in_map[offset];
--	if (offset == UART_REG_UNMAPPED)
--		return UINT_MAX;
-+
- 	return __raw_readl(p->membase + (offset << p->regshift));
- }
- 
-@@ -54,8 +47,7 @@ static void au_serial_out(struct uart_port *p, int offset, int value)
- 	if (offset >= ARRAY_SIZE(au_io_out_map))
- 		return;
- 	offset = au_io_out_map[offset];
--	if (offset == UART_REG_UNMAPPED)
--		return;
-+
- 	__raw_writel(value, p->membase + (offset << p->regshift));
- }
- 
--- 
-2.30.2
+Tested-by: Valentin Caron <valentin.caron@foss.st.com>
 
+Thanks,
+Valentin
+
+On 12/16/22 12:53, Marek Vasut wrote:
+> Requesting an interrupt with IRQF_ONESHOT will run the primary handler
+> in the hard-IRQ context even in the force-threaded mode. The
+> force-threaded mode is used by PREEMPT_RT in order to avoid acquiring
+> sleeping locks (spinlock_t) in hard-IRQ context. This combination
+> makes it impossible and leads to "sleeping while atomic" warnings.
+>
+> Use one interrupt handler for both handlers (primary and secondary)
+> and drop the IRQF_ONESHOT flag which is not needed.
+>
+> Fixes: e359b4411c283 ("serial: stm32: fix threaded interrupt handling")
+> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> ---
+> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Cc: Erwan Le Ray <erwan.leray@foss.st.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Valentin Caron <valentin.caron@foss.st.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-stm32@st-md-mailman.stormreply.com
+> To: linux-serial@vger.kernel.org
+> ---
+> V2: - Update patch subject, was:
+>        serial: stm32: Move hard IRQ handling to threaded interrupt context
+>      - Use request_irq() instead, rename the IRQ handler function
+> V3: - Update the commit message per suggestion from Sebastian
+>      - Add RB from Sebastian
+>      - Add Fixes tag
+> ---
+>   drivers/tty/serial/stm32-usart.c | 29 +++++++----------------------
+>   1 file changed, 7 insertions(+), 22 deletions(-)
+>
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index dfdbcf092facc..bbbab8dc2bfa9 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -752,8 +752,9 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+>   	struct tty_port *tport = &port->state->port;
+>   	struct stm32_port *stm32_port = to_stm32_port(port);
+>   	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+> -	u32 sr;
+> +	unsigned long flags;
+>   	unsigned int size;
+> +	u32 sr;
+>   
+>   	sr = readl_relaxed(port->membase + ofs->isr);
+>   
+> @@ -793,27 +794,13 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+>   	}
+>   
+>   	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
+> -		spin_lock(&port->lock);
+> +		spin_lock_irqsave(&port->lock, flags);
+>   		stm32_usart_transmit_chars(port);
+> -		spin_unlock(&port->lock);
+> +		spin_unlock_irqrestore(&port->lock, flags);
+>   	}
+>   
+> -	if (stm32_usart_rx_dma_enabled(port))
+> -		return IRQ_WAKE_THREAD;
+> -	else
+> -		return IRQ_HANDLED;
+> -}
+> -
+> -static irqreturn_t stm32_usart_threaded_interrupt(int irq, void *ptr)
+> -{
+> -	struct uart_port *port = ptr;
+> -	struct tty_port *tport = &port->state->port;
+> -	struct stm32_port *stm32_port = to_stm32_port(port);
+> -	unsigned int size;
+> -	unsigned long flags;
+> -
+>   	/* Receiver timeout irq for DMA RX */
+> -	if (!stm32_port->throttled) {
+> +	if (stm32_usart_rx_dma_enabled(port) && !stm32_port->throttled) {
+>   		spin_lock_irqsave(&port->lock, flags);
+>   		size = stm32_usart_receive_chars(port, false);
+>   		uart_unlock_and_check_sysrq_irqrestore(port, flags);
+> @@ -1016,10 +1003,8 @@ static int stm32_usart_startup(struct uart_port *port)
+>   	u32 val;
+>   	int ret;
+>   
+> -	ret = request_threaded_irq(port->irq, stm32_usart_interrupt,
+> -				   stm32_usart_threaded_interrupt,
+> -				   IRQF_ONESHOT | IRQF_NO_SUSPEND,
+> -				   name, port);
+> +	ret = request_irq(port->irq, stm32_usart_interrupt,
+> +			  IRQF_NO_SUSPEND, name, port);
+>   	if (ret)
+>   		return ret;
+>   
