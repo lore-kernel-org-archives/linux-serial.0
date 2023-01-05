@@ -2,63 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 222BFC3DA7D
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Jan 2023 11:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C75C3DA7A
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Jan 2023 12:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232154AbjAEL2W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Jan 2023 06:28:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        id S232370AbjAEMr6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 Jan 2023 07:47:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233284AbjAEL1z (ORCPT
+        with ESMTP id S232952AbjAEMrz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Jan 2023 06:27:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC8B58FB4;
-        Thu,  5 Jan 2023 03:26:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C02BB619E1;
-        Thu,  5 Jan 2023 11:26:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84619C433EF;
-        Thu,  5 Jan 2023 11:26:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1672918004;
-        bh=O5GmPEzr+xFYw/w0H4Xxa05p2bpbCoIWBEtThkWuw7A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ztsAuA2tx6y/3blx8TwG2zSfpWKrObrd/twX7YaQi+2k+w8lIl9Fsf0NV3Rv6Uel+
-         8E2t+k0ORucpZDAeKEXUQhxycrqpyfIZfPpZhetVX1HbC4Q12oCGwpcsHMUSJ7X0VB
-         Q9ZdPSMKVJ4ijfCC3SOCEsmrnHVI/tUHbCbyZ+AU=
-Date:   Thu, 5 Jan 2023 12:26:41 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     lizhe <sensor1010@163.com>
-Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: Re: [PATCH v4] serial: linflexuart: remove redundant uart
- type assignment
-Message-ID: <Y7az8STWuaS5wsZx@kroah.com>
-References: <20230104152444.3407-1-sensor1010@163.com>
- <Y7WdpQkqJA03z8w0@kroah.com>
- <41a69271.666a.1857d7827c3.Coremail.sensor1010@163.com>
- <Y7Wgk0W1vpiZMi52@kroah.com>
- <42d1b3d4.6710.1857dac01d8.Coremail.sensor1010@163.com>
+        Thu, 5 Jan 2023 07:47:55 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A12E479E8;
+        Thu,  5 Jan 2023 04:47:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672922874; x=1704458874;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jXQCTdIu2ZeMuZ/yZOgheaRyF6UCRmg5kST3NNxQhro=;
+  b=LnrnqHmyvMATPd6RpuaCaPW1waiSAUd/+j+NDcNnYHxRPj2aiCsk7yyD
+   7TBg+KfGRJvDd08gPsl67FUa/0APmPQqVAswGl2tWpX+Y2UoHD/QZ1Z7a
+   p8rfFxkyM2GDxw2X4T0sqPCJ0CP7YaRIagK8B6McWEC7/vxDVA1l7jjLf
+   KeDvY6FYVamJvF/I16GUZ/efX2qW8JhYfDWMvjqTE61GlyHnQ41IUl6Qn
+   g+Ciry2SdAHQeJRPAKEOzNDpEjEy35PWOH0+w4TQvflEXyURQFERomQkS
+   X+Y/QoJNDosoeYszXSsbnqnOnmcN8jUXCtPZ2UXO86+NsBMlvWbMoCZCc
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="301889805"
+X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
+   d="scan'208";a="301889805"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2023 04:47:54 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="984287770"
+X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
+   d="scan'208";a="984287770"
+Received: from khaunx-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.35.181])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2023 04:47:52 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <philmd@linaro.org>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 0/3] serial: Separate RT288x/Au1xxx code into own file
+Date:   Thu,  5 Jan 2023 14:47:41 +0200
+Message-Id: <20230105124744.105950-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42d1b3d4.6710.1857dac01d8.Coremail.sensor1010@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 12:45:02AM +0800, lizhe wrote:
-> HI : 
->     thanks. Modified to LIZHE
+A non-trivial amount of RT288x/Au1xxx code is encapsulated into
+ifdeffery in 8250_port / 8250_early and some if/switch UPIO_AU blocks.
+Create a separate file from them and do a few additional cleanups.
 
-Why?  Again, why not just use the proper Chinese characters that you use
-to sign your name with in documents in your country?
+I kept the Kconfig entry as bool because the code has somewhat tricky
+dependency chain (mips arch code and 8250_of driver). It would be nice
+to make it tristate but I don't know how blocking some invalid =m + =y
+combinations would be best addressed. It should probably be best done
+on top of this series independent of the split itself anyway.
 
-And again, please do not top-post.  Nor send html-formatted emails...
+UPIO_AU could now be removed because it's same as UPIO_MEM for the
+remaining code path but I'm unsure if that's allowed (is the port
+iotype part of stable ABI or not)?
 
-thanks,
+v2:
+- Define register map array lengths explicitly to avoid creating
+  declaration trap.
 
-greg k-h
+Ilpo Järvinen (3):
+  serial: 8250: RT288x/Au1xxx code away from core
+  serial: 8250_rt288x: Name non-standard divisor latch reg
+  serial: 8250_rt288x: Remove unnecessary UART_REG_UNMAPPED
+
+ arch/mips/alchemy/common/platform.c   |  10 +-
+ drivers/tty/serial/8250/8250_core.c   |   4 +
+ drivers/tty/serial/8250/8250_early.c  |  21 ----
+ drivers/tty/serial/8250/8250_of.c     |   4 +-
+ drivers/tty/serial/8250/8250_port.c   |  78 ---------------
+ drivers/tty/serial/8250/8250_rt288x.c | 135 ++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Makefile      |   1 +
+ include/linux/serial_8250.h           |  14 ++-
+ 8 files changed, 163 insertions(+), 104 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_rt288x.c
+
+-- 
+2.30.2
+
