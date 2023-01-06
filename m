@@ -2,114 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8F9C3DA7A
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 08:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0F6C3DA7A
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 10:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231404AbjAFIQY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Jan 2023 03:16:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S229869AbjAFK42 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Jan 2023 05:56:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbjAFIQY (ORCPT
+        with ESMTP id S229746AbjAFK40 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Jan 2023 03:16:24 -0500
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB8919C1D;
-        Fri,  6 Jan 2023 00:16:23 -0800 (PST)
-Received: by mail-wm1-f43.google.com with SMTP id fm16-20020a05600c0c1000b003d96fb976efso3010603wmb.3;
-        Fri, 06 Jan 2023 00:16:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hzn+fC87PtV3ySGJzwCU5mfDve+3HpOp/GtT1ffSV+E=;
-        b=Yp1F6pys/bPvIZk+X3WxpOKu+qsaZLwxc7z5tJy6KYtBwDcwLmr8C6rsw/j+2V/fH/
-         2R0WrBS5b0+2VgSXq52z2bic3m7o9ysCojnQtDaj7RDrfXy5U5II/KrM9HhPnUNlDtoK
-         8s2Ix9RMxtioymeJX5lCFiQHLRLIFzQTD+fSqfsiYunO3LUUdmvlewQZP6dto5Xy48gj
-         ckjQUYMi0+uYnFhyPxZh4AGJqcI8q6fSBqxGyIqYogPq2BCikMenIybjlksr6kAkxIbC
-         y5IPARebiyUt01LXSUwWYYoNTzuydYOG9UiMJx4nUWficL1bAEAdND8q+LWZ4N+WS6DV
-         FWfw==
-X-Gm-Message-State: AFqh2kpoPMFJIyGC8k2AketHWXRKHTtu7C6Hd7CuTEhh+o4YIzMrtycO
-        fUNhXJoiTGetB4IOUCBE1mld1hWr5Xs=
-X-Google-Smtp-Source: AMrXdXtpWRNe5q8yMTB+/W75VSsW4BtQSDDq/dieL+0yb8xs2nILPbtlyIQybvyfMu8mqzWqgNma2Q==
-X-Received: by 2002:a05:600c:c87:b0:3d9:73fb:8aaa with SMTP id fj7-20020a05600c0c8700b003d973fb8aaamr29003169wmb.8.1672992981845;
-        Fri, 06 Jan 2023 00:16:21 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id s23-20020a1cf217000000b003d1e3b1624dsm5269919wmc.2.2023.01.06.00.16.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Jan 2023 00:16:21 -0800 (PST)
-Message-ID: <7c569ef3-4dc5-8901-ee12-e5567a21ead9@kernel.org>
-Date:   Fri, 6 Jan 2023 09:16:20 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 3/3] serial: 8250_rt288x: Remove unnecessary
- UART_REG_UNMAPPED
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org,
+        Fri, 6 Jan 2023 05:56:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351DF6B5B4
+        for <linux-serial@vger.kernel.org>; Fri,  6 Jan 2023 02:56:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C797261D7F
+        for <linux-serial@vger.kernel.org>; Fri,  6 Jan 2023 10:56:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DEDBC433D2;
+        Fri,  6 Jan 2023 10:56:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1673002584;
+        bh=nbW5XajoK2QVAl0EVdOaNOkV2Y1wIBpQ9zgctDUR4Qw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gJ/A9EFgN6C5ZcWvpw+6eYLSOs5onyQmxZhit8VHS7NHySUkhhUuOm3V73dloz+/w
+         vKhy3Hlg7nYn+OcBm+PqfrAS4KpLS6Ti2c8KHoFwKb1PcCtIZC8O6ECMz+uGnwXv8l
+         gNWrdIa+T4G7fsmXqQiSv+rKcn0+tuq1b8VWvnPdAP0Wu2RGzhhj0LvL8Mv3yjfXpw
+         aBS3/DS86W08XqhlgMK6n7mqxfAUdGQTPCpPXAmm3MHg3RD2f7A4ReO9/CEHCkMHWc
+         jgGr2SJ6Jgdv5UEYjTDCCNMxEVHwJRgOQE/qWmGH1SrLV7BASJue+wUtUNUaAVZzAc
+         FmO72MEp0bUBQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1pDkP0-0001c3-ME; Fri, 06 Jan 2023 11:56:47 +0100
+Date:   Fri, 6 Jan 2023 11:56:46 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-serial@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20230105124744.105950-1-ilpo.jarvinen@linux.intel.com>
- <20230105124744.105950-4-ilpo.jarvinen@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230105124744.105950-4-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
+ handling into single IRQ handler
+Message-ID: <Y7f+birb2KpTygxI@hovoldconsulting.com>
+References: <20221216115338.7150-1-marex@denx.de>
+ <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
+ <a66988fd-af44-63cd-e962-47ffa6205a6a@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a66988fd-af44-63cd-e962-47ffa6205a6a@denx.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05. 01. 23, 13:47, Ilpo Järvinen wrote:
-> As unmapped registers are at the tail of the array, the ARRAY_SIZE()
-> condition will catch them just fine. No need to define special
-> value for them.
+On Thu, Jan 05, 2023 at 09:46:57PM +0100, Marek Vasut wrote:
+> On 12/27/22 15:56, Johan Hovold wrote:
 > 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->   drivers/tty/serial/8250/8250_rt288x.c | 16 ++++------------
->   1 file changed, 4 insertions(+), 12 deletions(-)
+> [...]
 > 
-> diff --git a/drivers/tty/serial/8250/8250_rt288x.c b/drivers/tty/serial/8250/8250_rt288x.c
-> index 3015afb99722..7399fea6dfc1 100644
-> --- a/drivers/tty/serial/8250/8250_rt288x.c
-> +++ b/drivers/tty/serial/8250/8250_rt288x.c
-> @@ -14,10 +14,8 @@
->   
->   #define RT288X_DL	0x28
->   
-> -#define UART_REG_UNMAPPED	-1
-> -
->   /* Au1x00/RT288x UART hardware has a weird register layout */
-> -static const s8 au_io_in_map[8] = {
-> +static const s8 au_io_in_map[7] = {
->   	[UART_RX]	= 0,
->   	[UART_IER]	= 2,
->   	[UART_IIR]	= 3,
-> @@ -25,18 +23,14 @@ static const s8 au_io_in_map[8] = {
->   	[UART_MCR]	= 6,
->   	[UART_LSR]	= 7,
->   	[UART_MSR]	= 8,
-> -	[UART_SCR]	= UART_REG_UNMAPPED,
->   };
->   
-> -static const s8 au_io_out_map[8] = {
-> +static const s8 au_io_out_map[5] = {
+> >> @@ -793,27 +794,13 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+> >>   	}
+> >>   
+> >>   	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
+> >> -		spin_lock(&port->lock);
+> >> +		spin_lock_irqsave(&port->lock, flags);
+> >>   		stm32_usart_transmit_chars(port);
+> >> -		spin_unlock(&port->lock);
+> >> +		spin_unlock_irqrestore(&port->lock, flags);
+> > 
+> > This is not needed as the handler runs with interrupts disabled.
+> 
+> On SMP system, another thread on another core can call 
+> stm32_usart_transmit_chars() . I don't think removing the locking is 
+> correct ?
 
-And what about making them u8 at last?
+I didn't say that you should remove the locking, which is very much
+needed. There's just no need to disable interrupts in a (non-threaded)
+interrupt handler as that has already been done by IRQ core (and, yes,
+that is also the case with forced threading).
 
->   	[UART_TX]	= 1,
->   	[UART_IER]	= 2,
->   	[UART_FCR]	= 4,
->   	[UART_LCR]	= 5,
->   	[UART_MCR]	= 6,
-> -	[UART_LSR]	= UART_REG_UNMAPPED,
-> -	[UART_MSR]	= UART_REG_UNMAPPED,
-> -	[UART_SCR]	= UART_REG_UNMAPPED,
-
-thanks,
--- 
-js
-suse labs
-
+Johan
