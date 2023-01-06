@@ -2,59 +2,59 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53343C54E76
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 07:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8F9C3DA7A
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 08:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbjAFHhP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Jan 2023 02:37:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        id S231404AbjAFIQY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Jan 2023 03:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbjAFHgn (ORCPT
+        with ESMTP id S229554AbjAFIQY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Jan 2023 02:36:43 -0500
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EBDB43;
-        Thu,  5 Jan 2023 23:36:42 -0800 (PST)
-Received: by mail-wr1-f44.google.com with SMTP id s9so514208wru.13;
-        Thu, 05 Jan 2023 23:36:42 -0800 (PST)
+        Fri, 6 Jan 2023 03:16:24 -0500
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB8919C1D;
+        Fri,  6 Jan 2023 00:16:23 -0800 (PST)
+Received: by mail-wm1-f43.google.com with SMTP id fm16-20020a05600c0c1000b003d96fb976efso3010603wmb.3;
+        Fri, 06 Jan 2023 00:16:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:to
-         :content-language:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RzVe0pLyjmPge14+7JwNFlVI9TqNDRuuVylOl2kg1Co=;
-        b=lI6epv+Y5sX3ssp9XynYH8y+m+luFo6GyWUtpBL+kXwvoKfjjzcFvi+xyu73XqHuXO
-         siAbQzHpcv0hHPtHzdfHmGius642dYcJ5wymj//N53ZEhhpMWBltBSnJsCpgoiSl18nz
-         gyYRjUX/MHO2LCPhEK+3WeD0QVw2DTPxPoRj/dqEf1AhrcxATHk55WpeOi2Ky0G3rZoF
-         SzeI4Wq53jKu9Vg7NlIwCZC4Lzz4qBEJdbcaoB0lveOtkojJ2mgf7PKprmKmL7zHuRAX
-         HFiAnXWCyQ0wF5fkvGd438y8YN38IS31nyzxFOEfxAbu0WvSf6Ml+3VQoik5aB3CImgH
-         RSjg==
-X-Gm-Message-State: AFqh2krdw1stMQjn1XofBm6xjXDQ2RovywESTCAqe99JdmAXTI/zGWv4
-        q3wmsd95ARyKqo1xF7anO3W2dI+c7Wg=
-X-Google-Smtp-Source: AMrXdXtPt0ag0rkCaE4nqXFoISH+uK3Zzq0fB085NZaWE0JE1aLA0Qe/fAu/SFnXktbO+CQ3h3sAGQ==
-X-Received: by 2002:a5d:67c3:0:b0:2a4:bd16:2931 with SMTP id n3-20020a5d67c3000000b002a4bd162931mr6037393wrw.62.1672990600904;
-        Thu, 05 Jan 2023 23:36:40 -0800 (PST)
+        bh=Hzn+fC87PtV3ySGJzwCU5mfDve+3HpOp/GtT1ffSV+E=;
+        b=Yp1F6pys/bPvIZk+X3WxpOKu+qsaZLwxc7z5tJy6KYtBwDcwLmr8C6rsw/j+2V/fH/
+         2R0WrBS5b0+2VgSXq52z2bic3m7o9ysCojnQtDaj7RDrfXy5U5II/KrM9HhPnUNlDtoK
+         8s2Ix9RMxtioymeJX5lCFiQHLRLIFzQTD+fSqfsiYunO3LUUdmvlewQZP6dto5Xy48gj
+         ckjQUYMi0+uYnFhyPxZh4AGJqcI8q6fSBqxGyIqYogPq2BCikMenIybjlksr6kAkxIbC
+         y5IPARebiyUt01LXSUwWYYoNTzuydYOG9UiMJx4nUWficL1bAEAdND8q+LWZ4N+WS6DV
+         FWfw==
+X-Gm-Message-State: AFqh2kpoPMFJIyGC8k2AketHWXRKHTtu7C6Hd7CuTEhh+o4YIzMrtycO
+        fUNhXJoiTGetB4IOUCBE1mld1hWr5Xs=
+X-Google-Smtp-Source: AMrXdXtpWRNe5q8yMTB+/W75VSsW4BtQSDDq/dieL+0yb8xs2nILPbtlyIQybvyfMu8mqzWqgNma2Q==
+X-Received: by 2002:a05:600c:c87:b0:3d9:73fb:8aaa with SMTP id fj7-20020a05600c0c8700b003d973fb8aaamr29003169wmb.8.1672992981845;
+        Fri, 06 Jan 2023 00:16:21 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id v14-20020adff68e000000b002365730eae8sm362278wrp.55.2023.01.05.23.36.40
+        by smtp.gmail.com with ESMTPSA id s23-20020a1cf217000000b003d1e3b1624dsm5269919wmc.2.2023.01.06.00.16.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Jan 2023 23:36:40 -0800 (PST)
-Message-ID: <d5c3269e-b91b-087f-6b85-f5d55a9f7185@kernel.org>
-Date:   Fri, 6 Jan 2023 08:36:39 +0100
+        Fri, 06 Jan 2023 00:16:21 -0800 (PST)
+Message-ID: <7c569ef3-4dc5-8901-ee12-e5567a21ead9@kernel.org>
+Date:   Fri, 6 Jan 2023 09:16:20 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
+Subject: Re: [PATCH v2 3/3] serial: 8250_rt288x: Remove unnecessary
+ UART_REG_UNMAPPED
 Content-Language: en-US
 To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org
 References: <20230105124744.105950-1-ilpo.jarvinen@linux.intel.com>
- <20230105124744.105950-2-ilpo.jarvinen@linux.intel.com>
+ <20230105124744.105950-4-ilpo.jarvinen@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 1/3] serial: 8250: RT288x/Au1xxx code away from core
-In-Reply-To: <20230105124744.105950-2-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20230105124744.105950-4-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -62,48 +62,51 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 05. 01. 23, 13:47, Ilpo Järvinen wrote:
-> A non-trivial amount of RT288x/Au1xxx code is encapsulated into
-> ifdeffery in 8250_port / 8250_early and some if UPIO_AU blocks.
-> 
-> Create a separate file from them. Add mapsize, bugs, and divisor latch
-> read/write functions into plat_serial8250_port to carry the setup
-> necessary for these devices over to uart port.
-> 
-> Also handle errors properly in the cases where RT288x/Au1xxx code is
-> not configured.
-> 
-> It seems that 0x1000 mapsize is likely overkill but I've kept it the
-> same as previously (the value was shrunk to that value in b2b13cdfd05e
-> ("SERIAL 8250: Fixes for Alchemy UARTs.")). Seemingly, the driver only
-> needs to access register at 0x28 for the divisor latch.
+> As unmapped registers are at the tail of the array, the ARRAY_SIZE()
+> condition will catch them just fine. No need to define special
+> value for them.
 > 
 > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-...
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-...
-> @@ -28,8 +32,11 @@ struct plat_serial8250_port {
->   	unsigned char	has_sysrq;	/* supports magic SysRq */
->   	upf_t		flags;		/* UPF_* flags */
->   	unsigned int	type;		/* If UPF_FIXED_TYPE */
-> +	unsigned short	bugs;		/* port bugs */
->   	unsigned int	(*serial_in)(struct uart_port *, int);
->   	void		(*serial_out)(struct uart_port *, int, int);
-> +	int		(*dl_read)(struct uart_8250_port *);
-> +	void		(*dl_write)(struct uart_8250_port *, int);
+> ---
+>   drivers/tty/serial/8250/8250_rt288x.c | 16 ++++------------
+>   1 file changed, 4 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_rt288x.c b/drivers/tty/serial/8250/8250_rt288x.c
+> index 3015afb99722..7399fea6dfc1 100644
+> --- a/drivers/tty/serial/8250/8250_rt288x.c
+> +++ b/drivers/tty/serial/8250/8250_rt288x.c
+> @@ -14,10 +14,8 @@
+>   
+>   #define RT288X_DL	0x28
+>   
+> -#define UART_REG_UNMAPPED	-1
+> -
+>   /* Au1x00/RT288x UART hardware has a weird register layout */
+> -static const s8 au_io_in_map[8] = {
+> +static const s8 au_io_in_map[7] = {
+>   	[UART_RX]	= 0,
+>   	[UART_IER]	= 2,
+>   	[UART_IIR]	= 3,
+> @@ -25,18 +23,14 @@ static const s8 au_io_in_map[8] = {
+>   	[UART_MCR]	= 6,
+>   	[UART_LSR]	= 7,
+>   	[UART_MSR]	= 8,
+> -	[UART_SCR]	= UART_REG_UNMAPPED,
+>   };
+>   
+> -static const s8 au_io_out_map[8] = {
+> +static const s8 au_io_out_map[5] = {
 
-int sounds very weird in the write-to-HW context. Even though both the 
-others and the original are ints. They all should be simply u32.
+And what about making them u8 at last?
 
->   	void		(*set_termios)(struct uart_port *,
->   			               struct ktermios *new,
->   			               const struct ktermios *old);
-
-Could you document the new ones in the kernel-doc manner above the 
-structure (but so far without the kernel-doc tag /**). So that:
-1) they are documented
-2) once someone decides to document them all, they can simply stick the 
-kernel-doc tag and document only the rest.
+>   	[UART_TX]	= 1,
+>   	[UART_IER]	= 2,
+>   	[UART_FCR]	= 4,
+>   	[UART_LCR]	= 5,
+>   	[UART_MCR]	= 6,
+> -	[UART_LSR]	= UART_REG_UNMAPPED,
+> -	[UART_MSR]	= UART_REG_UNMAPPED,
+> -	[UART_SCR]	= UART_REG_UNMAPPED,
 
 thanks,
 -- 
