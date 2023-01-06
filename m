@@ -2,98 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25F5C54E76
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 07:17:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53343C54E76
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 07:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjAFHRH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Jan 2023 02:17:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        id S230164AbjAFHhP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 6 Jan 2023 02:37:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbjAFHRA (ORCPT
+        with ESMTP id S230059AbjAFHgn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Jan 2023 02:17:00 -0500
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18BA6318E;
-        Thu,  5 Jan 2023 23:16:59 -0800 (PST)
-Received: by mail-wm1-f45.google.com with SMTP id b24-20020a05600c4a9800b003d21efdd61dso496363wmp.3;
-        Thu, 05 Jan 2023 23:16:59 -0800 (PST)
+        Fri, 6 Jan 2023 02:36:43 -0500
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EBDB43;
+        Thu,  5 Jan 2023 23:36:42 -0800 (PST)
+Received: by mail-wr1-f44.google.com with SMTP id s9so514208wru.13;
+        Thu, 05 Jan 2023 23:36:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:subject:from:references:to
          :content-language:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=e3oD7bMS69zVKw5Q7q+cfUlP0OCwYHUp/5JgUO/Td48=;
-        b=1Bp+4ppmvJ+iv+deHms5dkcHhNjgLr9GOSjikcRecY1e7sMAspSYs+7M/nCWrQL3AT
-         sIdokC6Hygt0cuptnkGRGN7+Z1ZWr/bRGjp8LkpwpZ3vc5izqbnADnk7GVwOa5GzzV5R
-         6osCJnJewwDtx5r3AYigZqpvKUytA9ZUgxMJUDm/nFTUQfE+kzcK5saQQH1+mbThdg22
-         ZkQbQ+NSqXPvkpi4oZkCAtFMUP10PW6pxJnqdSVkU03WkmWxOuNPLfLZ4c74tDv8eNbw
-         mL+997JoJltaOFrLAMtZxMfneE3r2duj5+WJN7EsCAaxmDKd8/MOM1g5LcbJS1ymLMb5
-         A4yg==
-X-Gm-Message-State: AFqh2koPPM7mbPqA76Qbd6iEv2ibdXY4hK4ssGl+gey13M1FAG+Xn25t
-        fbwjZtD0VJHK+tmZVmwBk7Y=
-X-Google-Smtp-Source: AMrXdXsuo3Q9oGVFFKSoI/xq2ikhuLa+PSk+sys8M1Ur5DY43mC27VP00GbopeuAHdJfTB/8K2hm9w==
-X-Received: by 2002:a05:600c:b4d:b0:3d3:49db:d84 with SMTP id k13-20020a05600c0b4d00b003d349db0d84mr37638594wmr.20.1672989418331;
-        Thu, 05 Jan 2023 23:16:58 -0800 (PST)
+        bh=RzVe0pLyjmPge14+7JwNFlVI9TqNDRuuVylOl2kg1Co=;
+        b=lI6epv+Y5sX3ssp9XynYH8y+m+luFo6GyWUtpBL+kXwvoKfjjzcFvi+xyu73XqHuXO
+         siAbQzHpcv0hHPtHzdfHmGius642dYcJ5wymj//N53ZEhhpMWBltBSnJsCpgoiSl18nz
+         gyYRjUX/MHO2LCPhEK+3WeD0QVw2DTPxPoRj/dqEf1AhrcxATHk55WpeOi2Ky0G3rZoF
+         SzeI4Wq53jKu9Vg7NlIwCZC4Lzz4qBEJdbcaoB0lveOtkojJ2mgf7PKprmKmL7zHuRAX
+         HFiAnXWCyQ0wF5fkvGd438y8YN38IS31nyzxFOEfxAbu0WvSf6Ml+3VQoik5aB3CImgH
+         RSjg==
+X-Gm-Message-State: AFqh2krdw1stMQjn1XofBm6xjXDQ2RovywESTCAqe99JdmAXTI/zGWv4
+        q3wmsd95ARyKqo1xF7anO3W2dI+c7Wg=
+X-Google-Smtp-Source: AMrXdXtPt0ag0rkCaE4nqXFoISH+uK3Zzq0fB085NZaWE0JE1aLA0Qe/fAu/SFnXktbO+CQ3h3sAGQ==
+X-Received: by 2002:a5d:67c3:0:b0:2a4:bd16:2931 with SMTP id n3-20020a5d67c3000000b002a4bd162931mr6037393wrw.62.1672990600904;
+        Thu, 05 Jan 2023 23:36:40 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id v4-20020a05600c214400b003d9980c5e7asm639177wml.21.2023.01.05.23.16.57
+        by smtp.gmail.com with ESMTPSA id v14-20020adff68e000000b002365730eae8sm362278wrp.55.2023.01.05.23.36.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Jan 2023 23:16:57 -0800 (PST)
-Message-ID: <67a7681a-ca4a-0ac7-97b6-2c7db8f2bb3c@kernel.org>
-Date:   Fri, 6 Jan 2023 08:16:56 +0100
+        Thu, 05 Jan 2023 23:36:40 -0800 (PST)
+Message-ID: <d5c3269e-b91b-087f-6b85-f5d55a9f7185@kernel.org>
+Date:   Fri, 6 Jan 2023 08:36:39 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
 Content-Language: en-US
-To:     =?UTF-8?B?5p2O5ZOy?= <sensor1010@163.com>,
-        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230105170437.4437-1-sensor1010@163.com>
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230105124744.105950-1-ilpo.jarvinen@linux.intel.com>
+ <20230105124744.105950-2-ilpo.jarvinen@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v6] serial: linflexuart: Remove redundant uart type
- assignment
-In-Reply-To: <20230105170437.4437-1-sensor1010@163.com>
+Subject: Re: [PATCH v2 1/3] serial: 8250: RT288x/Au1xxx code away from core
+In-Reply-To: <20230105124744.105950-2-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05. 01. 23, 18:04, 李哲 wrote:
-> in linflex_config_port() the member variable type will be
-> assigned again. see linflex_connfig_port()
-
-I wrote to v5:
-Please use capitals when you start a sentence. And periods at the ends 
-of them.
-
-> Signed-off-by: 李哲 <sensor1010@163.com>
-
-
-> V4 -> V5: Link: https://lore.kernel.org/all/ddcf396b-7b91-00f3-8c16-7de5dc891aef@kernel.org/
-> V3 -> V4: Link: https://lore.kernel.org/all/2f726128-29c-b7dd-ad8-f8b536fbe5f@linux.intel.com/
-> V2 -> V3: Link: https://lore.kernel.org/all/8f433e5-fb46-d3b8-431b-4bddcc938f6b@linux.intel.com/
-> V1 -> V2: Link: https://lore.kernel.org/all/1c33a2af-cd0d-cdde-5bc7-49b418665784@kernel.org/
-
-This is not the proper way. PLease see:
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#the-canonical-patch-format
-
-> ---
->   drivers/tty/serial/fsl_linflexuart.c | 1 -
->   1 file changed, 1 deletion(-)
+On 05. 01. 23, 13:47, Ilpo Järvinen wrote:
+> A non-trivial amount of RT288x/Au1xxx code is encapsulated into
+> ifdeffery in 8250_port / 8250_early and some if UPIO_AU blocks.
 > 
-> diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
-> index 6fc21b6684e6..34400cc6ac7f 100644
-> --- a/drivers/tty/serial/fsl_linflexuart.c
-> +++ b/drivers/tty/serial/fsl_linflexuart.c
-> @@ -837,7 +837,6 @@ static int linflex_probe(struct platform_device *pdev)
->   		return PTR_ERR(sport->membase);
->   
->   	sport->dev = &pdev->dev;
-> -	sport->type = PORT_LINFLEXUART;
->   	sport->iotype = UPIO_MEM;
->   	sport->irq = platform_get_irq(pdev, 0);
->   	sport->ops = &linflex_pops;
+> Create a separate file from them. Add mapsize, bugs, and divisor latch
+> read/write functions into plat_serial8250_port to carry the setup
+> necessary for these devices over to uart port.
+> 
+> Also handle errors properly in the cases where RT288x/Au1xxx code is
+> not configured.
+> 
+> It seems that 0x1000 mapsize is likely overkill but I've kept it the
+> same as previously (the value was shrunk to that value in b2b13cdfd05e
+> ("SERIAL 8250: Fixes for Alchemy UARTs.")). Seemingly, the driver only
+> needs to access register at 0x28 for the divisor latch.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+...
+> --- a/include/linux/serial_8250.h
+> +++ b/include/linux/serial_8250.h
+...
+> @@ -28,8 +32,11 @@ struct plat_serial8250_port {
+>   	unsigned char	has_sysrq;	/* supports magic SysRq */
+>   	upf_t		flags;		/* UPF_* flags */
+>   	unsigned int	type;		/* If UPF_FIXED_TYPE */
+> +	unsigned short	bugs;		/* port bugs */
+>   	unsigned int	(*serial_in)(struct uart_port *, int);
+>   	void		(*serial_out)(struct uart_port *, int, int);
+> +	int		(*dl_read)(struct uart_8250_port *);
+> +	void		(*dl_write)(struct uart_8250_port *, int);
 
+int sounds very weird in the write-to-HW context. Even though both the 
+others and the original are ints. They all should be simply u32.
+
+>   	void		(*set_termios)(struct uart_port *,
+>   			               struct ktermios *new,
+>   			               const struct ktermios *old);
+
+Could you document the new ones in the kernel-doc manner above the 
+structure (but so far without the kernel-doc tag /**). So that:
+1) they are documented
+2) once someone decides to document them all, they can simply stick the 
+kernel-doc tag and document only the rest.
+
+thanks,
 -- 
 js
 suse labs
