@@ -2,91 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0F6C3DA7A
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Jan 2023 10:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78981C63797
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Jan 2023 18:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbjAFK42 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Jan 2023 05:56:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
+        id S233244AbjAHSSN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 8 Jan 2023 13:18:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbjAFK40 (ORCPT
+        with ESMTP id S233668AbjAHSSH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Jan 2023 05:56:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351DF6B5B4
-        for <linux-serial@vger.kernel.org>; Fri,  6 Jan 2023 02:56:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C797261D7F
-        for <linux-serial@vger.kernel.org>; Fri,  6 Jan 2023 10:56:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DEDBC433D2;
-        Fri,  6 Jan 2023 10:56:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673002584;
-        bh=nbW5XajoK2QVAl0EVdOaNOkV2Y1wIBpQ9zgctDUR4Qw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gJ/A9EFgN6C5ZcWvpw+6eYLSOs5onyQmxZhit8VHS7NHySUkhhUuOm3V73dloz+/w
-         vKhy3Hlg7nYn+OcBm+PqfrAS4KpLS6Ti2c8KHoFwKb1PcCtIZC8O6ECMz+uGnwXv8l
-         gNWrdIa+T4G7fsmXqQiSv+rKcn0+tuq1b8VWvnPdAP0Wu2RGzhhj0LvL8Mv3yjfXpw
-         aBS3/DS86W08XqhlgMK6n7mqxfAUdGQTPCpPXAmm3MHg3RD2f7A4ReO9/CEHCkMHWc
-         jgGr2SJ6Jgdv5UEYjTDCCNMxEVHwJRgOQE/qWmGH1SrLV7BASJue+wUtUNUaAVZzAc
-         FmO72MEp0bUBQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1pDkP0-0001c3-ME; Fri, 06 Jan 2023 11:56:47 +0100
-Date:   Fri, 6 Jan 2023 11:56:46 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-serial@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
- handling into single IRQ handler
-Message-ID: <Y7f+birb2KpTygxI@hovoldconsulting.com>
-References: <20221216115338.7150-1-marex@denx.de>
- <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
- <a66988fd-af44-63cd-e962-47ffa6205a6a@denx.de>
+        Sun, 8 Jan 2023 13:18:07 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF941DA;
+        Sun,  8 Jan 2023 10:18:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1673201876; bh=Ue64tR1L9y9zqhBq+z1LUgoa2umwcYX39u8aBNldhkU=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=nsFplF0j940ChYwpMPhXePVg1LaweDnJIMNnDfU9HsB8m19+bh1+EUagej/6KV/vd
+         bRCuavSg8gro4GbbRif9SvQ7ateVxCW3NFp8cY66oGIG/4BQmcECrJLCEEAAGgsjNm
+         QmaF3APuUeoIxP5wrRr3QZudUlIOMlg0bnlZG8g6+gQ0sLieVddp9rm8+nMEyIMGoe
+         ZvIy3nwf0idhL21DY/EUgES6V749Ok4mGjf7zN/S1FOBZuQZQSEa3ahIsIvSuUXgNE
+         6LYtMEeLihr6uGpBcDVY6G2JCo/eRhANTTK5WuzpIjurGEyM1ORr+BzUEHZfXmnzGl
+         0S8rsz9Uv57cA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from Venus.speedport.ip ([84.162.7.17]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MD9XF-1p5Xpl358r-0099D8; Sun, 08
+ Jan 2023 19:17:56 +0100
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux@armlinux.org.uk, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
+        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
+        stable@vger.kernel.org
+Subject: [PATCH] serial: amba-pl011: fix high priority character transmission in rs486 mode
+Date:   Sun,  8 Jan 2023 19:17:35 +0100
+Message-Id: <20230108181735.10937-1-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a66988fd-af44-63cd-e962-47ffa6205a6a@denx.de>
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:wjqYc8SNEaE4jlrIZG5Osc3vN+ELeRU7LHPoC3iLh6qm4AykcZ9
+ +Og6ZfK+ZBqkqoQma8XzayY5F0zgF7ozCrch7/q9NkLZD00c6Wram5zcGqMm+dTze4rH4n2
+ hSwSLg1i1l/9CODvtDOjlMXCSUgIxuXzQlmwh9gyL94Ul+1f3aVps+uCqZuR3M52o7k1t4k
+ t6dlAGMdTCTm2NL4lbBig==
+UI-OutboundReport: notjunk:1;M01:P0:9bzYUfwnTaw=;4W8UX6PCPm3CIzddWsYVLzW937E
+ QdBoQVS2ndbg57qNKGmG31AQFVnOR9yN1OFsrz+nXWyaVlD3uZUGMbaqklm/bJBnPCZXr3/nA
+ SMwJNN6VFfJbMNpjG5M50DF7r8MrkZedWe5S6/1JvGrUNCY9TgNp2NQDNuIeHzoxXQ3MiISHu
+ MxY1TxgqYtitfTNoJd/JiEInSpKfBZECrf9SJI99njtJ9DLytnSbCgx6ib19GjfLW2ZCmhrOa
+ hlJq2tn/oOIDj6rR0J4z0sxNH7whv9QEXZOlxosTmC2bkjfup3yUpW3A7sZOuJ2r378RqAmDI
+ sp93+jkmEQdEqztATVYVsgfU2NF4Rt1/ATnY2VbTJWWwjX+UXRpQ8jqdotrpvqjvAjRvkUhcG
+ eEYIwoyO9ZRR2XJis58AeSxWj5dhGvnK5u4UbJ+qs21tL9x6z9/A133iLR9Myuo0HWc1pK1s8
+ HxYs+IVZ6DULM2wUj0L7sKbGYVHqopALdUeAxFXi/e7j1ehJ/T10eUd4uJJOat51bzwY1io4n
+ guOZ42UHKkJHnjg4CiIsyD58snsgOttRZz/Aji2C7IZ1/pz1mNuuE+61zD3bhdJIKZ7Ho7gZB
+ ogHXf5PoTb34oRI32uSuB6rtnR+ZcFSh6/91R9pRi02fqD4r1Utj4dkkV3u/zsQu0hZ+WJNSx
+ NCJ7R5KENqySdQu26m8TQGyaBcAIUjNQ4TugGSsy6UoVJItQV3GUK/G0qS6Ag2Y0WrXRmkbb5
+ mOvZSIXrjK8RELMsGQ+u/1jytY0ONPewe3mvF3k9VHBlI1Muo1ozpk3xBvXm5mGdIb9AMXVcd
+ cvWCblvZ6SU+P89+qr2qNiwQxN7BaXY8QbKiwK5Zs8KsygWU0i9Fv75KOc6No857FUdL5tJUH
+ kILSWkkQ8TgshG8K8QA2qy3Omdx9OK8hNNoeXIUgycsK+y0tidr44aU5PY9ASuP+L4OaR6qbw
+ w9TYWthZD8gI6r+E8HPVvaLJ3AI=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 05, 2023 at 09:46:57PM +0100, Marek Vasut wrote:
-> On 12/27/22 15:56, Johan Hovold wrote:
-> 
-> [...]
-> 
-> >> @@ -793,27 +794,13 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
-> >>   	}
-> >>   
-> >>   	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
-> >> -		spin_lock(&port->lock);
-> >> +		spin_lock_irqsave(&port->lock, flags);
-> >>   		stm32_usart_transmit_chars(port);
-> >> -		spin_unlock(&port->lock);
-> >> +		spin_unlock_irqrestore(&port->lock, flags);
-> > 
-> > This is not needed as the handler runs with interrupts disabled.
-> 
-> On SMP system, another thread on another core can call 
-> stm32_usart_transmit_chars() . I don't think removing the locking is 
-> correct ?
-
-I didn't say that you should remove the locking, which is very much
-needed. There's just no need to disable interrupts in a (non-threaded)
-interrupt handler as that has already been done by IRQ core (and, yes,
-that is also the case with forced threading).
-
-Johan
+RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KCkluIFJTNDg1
+IG1vZGUgdGhlIHRyYW5zbWlzc2lvbiBvZiBhIGhpZ2ggcHJpb3JpdHkgY2hhcmFjdGVyIGZhaWxz
+IHNpbmNlIGl0CmlzIHdyaXR0ZW4gdG8gdGhlIGRhdGEgcmVnaXN0ZXIgYmVmb3JlIHRoZSB0cmFu
+c21pdHRlciBpcyBlbmFibGVkLiBGaXggdGhpcwppbiBwbDAxMV90eF9jaGFycygpIGJ5IGVuYWJs
+aW5nIFJTNDg1IHRyYW5zbWlzc2lvbiBiZWZvcmUgd3JpdGluZyB0aGUKY2hhcmFjdGVyLgoKRml4
+ZXM6IDhkNDc5MjM3NzI3YyAoInNlcmlhbDogYW1iYS1wbDAxMTogYWRkIFJTNDg1IHN1cHBvcnQi
+KQpDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwpTaWduZWQtb2ZmLWJ5OiBMaW5vIFNhbmZpbGlw
+cG8gPGwuc2FuZmlsaXBwb0BrdW5idXMuY29tPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9hbWJh
+LXBsMDExLmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0
+IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDEx
+LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCmluZGV4IGQ3NWMzOWY0NjIyYi4u
+ZDhjMmYzNDU1ZWViIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5j
+CisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKQEAgLTE0NjYsNiArMTQ2Niwx
+MCBAQCBzdGF0aWMgYm9vbCBwbDAxMV90eF9jaGFycyhzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVh
+cCwgYm9vbCBmcm9tX2lycSkKIAlzdHJ1Y3QgY2lyY19idWYgKnhtaXQgPSAmdWFwLT5wb3J0LnN0
+YXRlLT54bWl0OwogCWludCBjb3VudCA9IHVhcC0+Zmlmb3NpemUgPj4gMTsKIAorCWlmICgodWFw
+LT5wb3J0LnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpICYmCisJICAgICF1YXAtPnJz
+NDg1X3R4X3N0YXJ0ZWQpCisJCXBsMDExX3JzNDg1X3R4X3N0YXJ0KHVhcCk7CisKIAlpZiAodWFw
+LT5wb3J0LnhfY2hhcikgewogCQlpZiAoIXBsMDExX3R4X2NoYXIodWFwLCB1YXAtPnBvcnQueF9j
+aGFyLCBmcm9tX2lycSkpCiAJCQlyZXR1cm4gdHJ1ZTsKQEAgLTE0NzcsMTAgKzE0ODEsNiBAQCBz
+dGF0aWMgYm9vbCBwbDAxMV90eF9jaGFycyhzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCwgYm9v
+bCBmcm9tX2lycSkKIAkJcmV0dXJuIGZhbHNlOwogCX0KIAotCWlmICgodWFwLT5wb3J0LnJzNDg1
+LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpICYmCi0JICAgICF1YXAtPnJzNDg1X3R4X3N0YXJ0
+ZWQpCi0JCXBsMDExX3JzNDg1X3R4X3N0YXJ0KHVhcCk7Ci0KIAkvKiBJZiB3ZSBhcmUgdXNpbmcg
+RE1BIG1vZGUsIHRyeSB0byBzZW5kIHNvbWUgY2hhcmFjdGVycy4gKi8KIAlpZiAocGwwMTFfZG1h
+X3R4X2lycSh1YXApKQogCQlyZXR1cm4gdHJ1ZTsKCmJhc2UtY29tbWl0OiA5MzkyOGQ0ODVkOWRm
+MTJiZTcyNGNiZGYxY2FhN2QxOTdiNjUwMDFlCi0tIAoyLjM5LjAKCg==
