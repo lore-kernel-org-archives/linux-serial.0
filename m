@@ -2,136 +2,78 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB5EC5479D
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 06:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6F7C54EBD
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 07:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234243AbjAIGzF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Jan 2023 01:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
+        id S230491AbjAIHIK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Jan 2023 02:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbjAIGzB (ORCPT
+        with ESMTP id S233682AbjAIHIA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Jan 2023 01:55:01 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8969E1275B;
-        Sun,  8 Jan 2023 22:54:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673247299; x=1704783299;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=h14Ky+gxZkW2WnGWN9E+VGFINdCzmMuf5XUAHnYvEro=;
-  b=GnU4WhmCVCAIUKxylujt/9qepmSppyZX756eF7tK+zg2kVo784y9E2YT
-   nUSgyMnUll1FW/4MsKJs7rliOI0ys9U1Gh33dTTG+t5nWVomKF/QweWOY
-   cgGMqTFGubnZDd3/l0bVirAKi6aMFBNrS+gws8CKMTc1jqkYR+WZBiu3P
-   g9a1xoEJqy2JiR4MtZU1zBq1oWTW5OlElvTRUUeYadLYWWyYCNs25U6se
-   XEpzi/1WxjNt0YzoBrtMXTj4u3zFglKnacF9kYZTGdGkChEJZQWBOFLsc
-   7LNX7ipBMhBzAO3nLo+7F/JywQmCR2/I2nYoIpbDg9SsdiTPlyUav2jht
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="321509833"
-X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="321509833"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 22:54:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="798914008"
-X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="798914008"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga001.fm.intel.com with ESMTP; 08 Jan 2023 22:54:53 -0800
-Date:   Mon, 9 Jan 2023 14:44:37 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com, bagasdotme@gmail.com
-Subject: Re: [PATCH v9 3/4] fpga: dfl: add basic support for DFHv1
-Message-ID: <Y7u31S8aba1L+VeA@yilunxu-OptiPlex-7050>
-References: <20230104232253.24743-1-matthew.gerlach@linux.intel.com>
- <20230104232253.24743-4-matthew.gerlach@linux.intel.com>
+        Mon, 9 Jan 2023 02:08:00 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4061157;
+        Sun,  8 Jan 2023 23:07:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C06F9CE0E95;
+        Mon,  9 Jan 2023 07:07:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 001ACC433F0;
+        Mon,  9 Jan 2023 07:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1673248075;
+        bh=Zwa/0Kc9RycNQnqCv0qfKsVWUve+AEFePq/i81NsDEY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=I3zMiOBPFIu23E6+s5kU6iMY1QAgTfsXd/W2nB40wUjffSrgdl1xdlnUPfcdq539z
+         sR8cX8glQzBoUdDdR87J3aQETNpL3xAOCp+ZhAcYyl19hKv9dXZgQW24Al20mZzV2a
+         sVwtWQzw+wCf3u99Gvag9CKunlSPbaPQ2pM4SJuI=
+Date:   Mon, 9 Jan 2023 08:07:52 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tobias Schramm <t.schramm@manjaro.org>
+Cc:     Richard Genoud <richard.genoud@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: atmel: fix incorrect baudrate setup
+Message-ID: <Y7u9SAX++YsXvnVC@kroah.com>
+References: <20230109070200.200181-1-t.schramm@manjaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230104232253.24743-4-matthew.gerlach@linux.intel.com>
+In-Reply-To: <20230109070200.200181-1-t.schramm@manjaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-01-04 at 15:22:52 -0800, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+On Mon, Jan 09, 2023 at 08:02:00AM +0100, Tobias Schramm wrote:
+> Commit ba47f97a18f2 ("serial: core: remove baud_rates when serial console
+> setup") changed uart_set_options to select the correct baudrate
+> configuration based on the absolute error between requested baudrate and
+> available standard baudrate settings.
+> Prior to that commit the baudrate was selected based on which predefined
+> standard baudrate did not exceed the requested baudrate.
+> This change of selection logic was never reflected in the atmel serial
+> driver. Thus the comment left in the atmel serial driver is no longer
+> accurate.
+> Additionally the manual rounding up described in that comment and applied
+> via (quot - 1) requests an incorrect baudrate. Since uart_set_options uses
+> tty_termios_encode_baud_rate to determine the appropriate baudrate flags
+> this can cause baudrate selection to fail entirely because
+> tty_termios_encode_baud_rate will only select a baudrate if relative error
+> between requested and selected baudrate does not exceed +/-2%.
+> Fix that by requesting actual, exact baudrate used by the serial.
 > 
-> Version 1 of the Device Feature Header (DFH) definition adds
-> functionality to the Device Feature List (DFL) bus.
-> 
-> A DFHv1 header may have one or more parameter blocks that
-> further describes the HW to SW. Add support to the DFL bus
-> to parse the MSI-X parameter.
-> 
-> The location of a feature's register set is explicitly
-> described in DFHv1 and can be relative to the base of the DFHv1
-> or an absolute address. Parse the location and pass the information
-> to DFL driver.
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
->
+> Signed-off-by: Tobias Schramm <t.schramm@manjaro.org>
+> ---
 
-[...]
-  
-> +static u64 *find_param(u64 *params, resource_size_t max, int param_id)
-> +{
-> +	u64 *end = params + max / sizeof(u64);
-> +	u64 v, next;
-> +
-> +	while (params < end) {
-> +		v = *params;
-> +		if (param_id == FIELD_GET(DFHv1_PARAM_HDR_ID, v))
-> +			return params;
-> +
-> +		if (FIELD_GET(DFHv1_PARAM_HDR_NEXT_EOP, v))
-> +			break;
-> +
-> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
-> +		params += next;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
-> +/**
-> + * dfh_find_param() - find parameter block for the given parameter id
-> + * @dfl_dev: dfl device
-> + * @param_id: id of dfl parameter
-> + * @pcount: destination to store size of parameter data in u64 bit words
+What commit id does this fix?  Please list that as a the "Fixes:" tag.
 
-As I mentioned before, could the size of the parameter data just be number
-of bytes? This is the most common way for a data block.
+Also, does this need to go to older/stable kernels?
 
-Thanks,
-Yilun
+thanks,
 
-> + *
-> + * Return: pointer to start of parameter data, PTR_ERR otherwise.
-> + */
-> +void *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t *pcount)
-> +{
-> +	u64 *phdr = find_param(dfl_dev->params, dfl_dev->param_size, param_id);
-> +
-> +	if (!phdr)
-> +		return ERR_PTR(-ENOENT);
-> +
-> +	if (pcount)
-> +		*pcount = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, *phdr) - 1;
-> +
-> +	return phdr + 1;
-> +}
-> +EXPORT_SYMBOL_GPL(dfh_find_param);
+greg k-h
