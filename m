@@ -2,91 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78981C63797
-	for <linux-serial@archiver.kernel.org>; Sun,  8 Jan 2023 18:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB5EC5479D
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 06:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233244AbjAHSSN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 8 Jan 2023 13:18:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        id S234243AbjAIGzF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Jan 2023 01:55:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233668AbjAHSSH (ORCPT
+        with ESMTP id S233865AbjAIGzB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 8 Jan 2023 13:18:07 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF941DA;
-        Sun,  8 Jan 2023 10:18:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1673201876; bh=Ue64tR1L9y9zqhBq+z1LUgoa2umwcYX39u8aBNldhkU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=nsFplF0j940ChYwpMPhXePVg1LaweDnJIMNnDfU9HsB8m19+bh1+EUagej/6KV/vd
-         bRCuavSg8gro4GbbRif9SvQ7ateVxCW3NFp8cY66oGIG/4BQmcECrJLCEEAAGgsjNm
-         QmaF3APuUeoIxP5wrRr3QZudUlIOMlg0bnlZG8g6+gQ0sLieVddp9rm8+nMEyIMGoe
-         ZvIy3nwf0idhL21DY/EUgES6V749Ok4mGjf7zN/S1FOBZuQZQSEa3ahIsIvSuUXgNE
-         6LYtMEeLihr6uGpBcDVY6G2JCo/eRhANTTK5WuzpIjurGEyM1ORr+BzUEHZfXmnzGl
-         0S8rsz9Uv57cA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from Venus.speedport.ip ([84.162.7.17]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MD9XF-1p5Xpl358r-0099D8; Sun, 08
- Jan 2023 19:17:56 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux@armlinux.org.uk, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
-        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
-        stable@vger.kernel.org
-Subject: [PATCH] serial: amba-pl011: fix high priority character transmission in rs486 mode
-Date:   Sun,  8 Jan 2023 19:17:35 +0100
-Message-Id: <20230108181735.10937-1-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.39.0
+        Mon, 9 Jan 2023 01:55:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8969E1275B;
+        Sun,  8 Jan 2023 22:54:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673247299; x=1704783299;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=h14Ky+gxZkW2WnGWN9E+VGFINdCzmMuf5XUAHnYvEro=;
+  b=GnU4WhmCVCAIUKxylujt/9qepmSppyZX756eF7tK+zg2kVo784y9E2YT
+   nUSgyMnUll1FW/4MsKJs7rliOI0ys9U1Gh33dTTG+t5nWVomKF/QweWOY
+   cgGMqTFGubnZDd3/l0bVirAKi6aMFBNrS+gws8CKMTc1jqkYR+WZBiu3P
+   g9a1xoEJqy2JiR4MtZU1zBq1oWTW5OlElvTRUUeYadLYWWyYCNs25U6se
+   XEpzi/1WxjNt0YzoBrtMXTj4u3zFglKnacF9kYZTGdGkChEJZQWBOFLsc
+   7LNX7ipBMhBzAO3nLo+7F/JywQmCR2/I2nYoIpbDg9SsdiTPlyUav2jht
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="321509833"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="321509833"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 22:54:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="798914008"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="798914008"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga001.fm.intel.com with ESMTP; 08 Jan 2023 22:54:53 -0800
+Date:   Mon, 9 Jan 2023 14:44:37 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v9 3/4] fpga: dfl: add basic support for DFHv1
+Message-ID: <Y7u31S8aba1L+VeA@yilunxu-OptiPlex-7050>
+References: <20230104232253.24743-1-matthew.gerlach@linux.intel.com>
+ <20230104232253.24743-4-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:wjqYc8SNEaE4jlrIZG5Osc3vN+ELeRU7LHPoC3iLh6qm4AykcZ9
- +Og6ZfK+ZBqkqoQma8XzayY5F0zgF7ozCrch7/q9NkLZD00c6Wram5zcGqMm+dTze4rH4n2
- hSwSLg1i1l/9CODvtDOjlMXCSUgIxuXzQlmwh9gyL94Ul+1f3aVps+uCqZuR3M52o7k1t4k
- t6dlAGMdTCTm2NL4lbBig==
-UI-OutboundReport: notjunk:1;M01:P0:9bzYUfwnTaw=;4W8UX6PCPm3CIzddWsYVLzW937E
- QdBoQVS2ndbg57qNKGmG31AQFVnOR9yN1OFsrz+nXWyaVlD3uZUGMbaqklm/bJBnPCZXr3/nA
- SMwJNN6VFfJbMNpjG5M50DF7r8MrkZedWe5S6/1JvGrUNCY9TgNp2NQDNuIeHzoxXQ3MiISHu
- MxY1TxgqYtitfTNoJd/JiEInSpKfBZECrf9SJI99njtJ9DLytnSbCgx6ib19GjfLW2ZCmhrOa
- hlJq2tn/oOIDj6rR0J4z0sxNH7whv9QEXZOlxosTmC2bkjfup3yUpW3A7sZOuJ2r378RqAmDI
- sp93+jkmEQdEqztATVYVsgfU2NF4Rt1/ATnY2VbTJWWwjX+UXRpQ8jqdotrpvqjvAjRvkUhcG
- eEYIwoyO9ZRR2XJis58AeSxWj5dhGvnK5u4UbJ+qs21tL9x6z9/A133iLR9Myuo0HWc1pK1s8
- HxYs+IVZ6DULM2wUj0L7sKbGYVHqopALdUeAxFXi/e7j1ehJ/T10eUd4uJJOat51bzwY1io4n
- guOZ42UHKkJHnjg4CiIsyD58snsgOttRZz/Aji2C7IZ1/pz1mNuuE+61zD3bhdJIKZ7Ho7gZB
- ogHXf5PoTb34oRI32uSuB6rtnR+ZcFSh6/91R9pRi02fqD4r1Utj4dkkV3u/zsQu0hZ+WJNSx
- NCJ7R5KENqySdQu26m8TQGyaBcAIUjNQ4TugGSsy6UoVJItQV3GUK/G0qS6Ag2Y0WrXRmkbb5
- mOvZSIXrjK8RELMsGQ+u/1jytY0ONPewe3mvF3k9VHBlI1Muo1ozpk3xBvXm5mGdIb9AMXVcd
- cvWCblvZ6SU+P89+qr2qNiwQxN7BaXY8QbKiwK5Zs8KsygWU0i9Fv75KOc6No857FUdL5tJUH
- kILSWkkQ8TgshG8K8QA2qy3Omdx9OK8hNNoeXIUgycsK+y0tidr44aU5PY9ASuP+L4OaR6qbw
- w9TYWthZD8gI6r+E8HPVvaLJ3AI=
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230104232253.24743-4-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KCkluIFJTNDg1
-IG1vZGUgdGhlIHRyYW5zbWlzc2lvbiBvZiBhIGhpZ2ggcHJpb3JpdHkgY2hhcmFjdGVyIGZhaWxz
-IHNpbmNlIGl0CmlzIHdyaXR0ZW4gdG8gdGhlIGRhdGEgcmVnaXN0ZXIgYmVmb3JlIHRoZSB0cmFu
-c21pdHRlciBpcyBlbmFibGVkLiBGaXggdGhpcwppbiBwbDAxMV90eF9jaGFycygpIGJ5IGVuYWJs
-aW5nIFJTNDg1IHRyYW5zbWlzc2lvbiBiZWZvcmUgd3JpdGluZyB0aGUKY2hhcmFjdGVyLgoKRml4
-ZXM6IDhkNDc5MjM3NzI3YyAoInNlcmlhbDogYW1iYS1wbDAxMTogYWRkIFJTNDg1IHN1cHBvcnQi
-KQpDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwpTaWduZWQtb2ZmLWJ5OiBMaW5vIFNhbmZpbGlw
-cG8gPGwuc2FuZmlsaXBwb0BrdW5idXMuY29tPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9hbWJh
-LXBsMDExLmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0
-IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDEx
-LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCmluZGV4IGQ3NWMzOWY0NjIyYi4u
-ZDhjMmYzNDU1ZWViIDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5j
-CisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKQEAgLTE0NjYsNiArMTQ2Niwx
-MCBAQCBzdGF0aWMgYm9vbCBwbDAxMV90eF9jaGFycyhzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVh
-cCwgYm9vbCBmcm9tX2lycSkKIAlzdHJ1Y3QgY2lyY19idWYgKnhtaXQgPSAmdWFwLT5wb3J0LnN0
-YXRlLT54bWl0OwogCWludCBjb3VudCA9IHVhcC0+Zmlmb3NpemUgPj4gMTsKIAorCWlmICgodWFw
-LT5wb3J0LnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpICYmCisJICAgICF1YXAtPnJz
-NDg1X3R4X3N0YXJ0ZWQpCisJCXBsMDExX3JzNDg1X3R4X3N0YXJ0KHVhcCk7CisKIAlpZiAodWFw
-LT5wb3J0LnhfY2hhcikgewogCQlpZiAoIXBsMDExX3R4X2NoYXIodWFwLCB1YXAtPnBvcnQueF9j
-aGFyLCBmcm9tX2lycSkpCiAJCQlyZXR1cm4gdHJ1ZTsKQEAgLTE0NzcsMTAgKzE0ODEsNiBAQCBz
-dGF0aWMgYm9vbCBwbDAxMV90eF9jaGFycyhzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCwgYm9v
-bCBmcm9tX2lycSkKIAkJcmV0dXJuIGZhbHNlOwogCX0KIAotCWlmICgodWFwLT5wb3J0LnJzNDg1
-LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpICYmCi0JICAgICF1YXAtPnJzNDg1X3R4X3N0YXJ0
-ZWQpCi0JCXBsMDExX3JzNDg1X3R4X3N0YXJ0KHVhcCk7Ci0KIAkvKiBJZiB3ZSBhcmUgdXNpbmcg
-RE1BIG1vZGUsIHRyeSB0byBzZW5kIHNvbWUgY2hhcmFjdGVycy4gKi8KIAlpZiAocGwwMTFfZG1h
-X3R4X2lycSh1YXApKQogCQlyZXR1cm4gdHJ1ZTsKCmJhc2UtY29tbWl0OiA5MzkyOGQ0ODVkOWRm
-MTJiZTcyNGNiZGYxY2FhN2QxOTdiNjUwMDFlCi0tIAoyLjM5LjAKCg==
+On 2023-01-04 at 15:22:52 -0800, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Version 1 of the Device Feature Header (DFH) definition adds
+> functionality to the Device Feature List (DFL) bus.
+> 
+> A DFHv1 header may have one or more parameter blocks that
+> further describes the HW to SW. Add support to the DFL bus
+> to parse the MSI-X parameter.
+> 
+> The location of a feature's register set is explicitly
+> described in DFHv1 and can be relative to the base of the DFHv1
+> or an absolute address. Parse the location and pass the information
+> to DFL driver.
+> 
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>
+
+[...]
+  
+> +static u64 *find_param(u64 *params, resource_size_t max, int param_id)
+> +{
+> +	u64 *end = params + max / sizeof(u64);
+> +	u64 v, next;
+> +
+> +	while (params < end) {
+> +		v = *params;
+> +		if (param_id == FIELD_GET(DFHv1_PARAM_HDR_ID, v))
+> +			return params;
+> +
+> +		if (FIELD_GET(DFHv1_PARAM_HDR_NEXT_EOP, v))
+> +			break;
+> +
+> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
+> +		params += next;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +/**
+> + * dfh_find_param() - find parameter block for the given parameter id
+> + * @dfl_dev: dfl device
+> + * @param_id: id of dfl parameter
+> + * @pcount: destination to store size of parameter data in u64 bit words
+
+As I mentioned before, could the size of the parameter data just be number
+of bytes? This is the most common way for a data block.
+
+Thanks,
+Yilun
+
+> + *
+> + * Return: pointer to start of parameter data, PTR_ERR otherwise.
+> + */
+> +void *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t *pcount)
+> +{
+> +	u64 *phdr = find_param(dfl_dev->params, dfl_dev->param_size, param_id);
+> +
+> +	if (!phdr)
+> +		return ERR_PTR(-ENOENT);
+> +
+> +	if (pcount)
+> +		*pcount = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, *phdr) - 1;
+> +
+> +	return phdr + 1;
+> +}
+> +EXPORT_SYMBOL_GPL(dfh_find_param);
