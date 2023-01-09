@@ -2,143 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1803DC5479D
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 08:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1382C54EBD
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 10:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbjAIIyT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Jan 2023 03:54:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S236785AbjAIKOg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Jan 2023 05:14:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236692AbjAIIxP (ORCPT
+        with ESMTP id S236743AbjAIKOE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Jan 2023 03:53:15 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E9119C23;
-        Mon,  9 Jan 2023 00:45:27 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3098dFOC016302;
-        Mon, 9 Jan 2023 08:45:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=3DGgtcvzBS3erm7QfVEqUU4i8HSjdPmckD78sbQivms=;
- b=g6MEUvRNhASqwdG5ZSL7HeG0KyFtF8g8Ar3RWDEC20VIQe5aevtT5jHvRgjz0ui6luQh
- dS7lk1GnVwO10hXJwxDirbAMfHJlIMDJ9A6JuV4l/bnP4AtMoB4JO/fXLYe3nIbG3ZAt
- +fc/Esw0Dtzy9/M3+tqc8OqSQThAl6ULQSViyfFPelQcE+5zAbvDuabYTN7wW4gbKM0b
- +T/7DRurUvFR2BFyLHfZVcz8Wexn0gLu8HDkmHpUeCDixMjqNeLK3lYAI4xnSoP/J2zD
- UobCrEVStkOXLzxek509BVdusQw0C7gV84EjsOV4UzQx5e+yHlwX2zoOE5x9tkB6lINk NA== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3myj6j81dm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Jan 2023 08:45:10 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 308FR0aa000570;
-        Mon, 9 Jan 2023 08:45:08 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3my0c6jmm7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Jan 2023 08:45:08 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3098j4nu39518602
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 9 Jan 2023 08:45:04 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C573B20043;
-        Mon,  9 Jan 2023 08:45:04 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 66A0C2004B;
-        Mon,  9 Jan 2023 08:45:04 +0000 (GMT)
-Received: from [9.171.86.101] (unknown [9.171.86.101])
-        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Mon,  9 Jan 2023 08:45:04 +0000 (GMT)
-Message-ID: <5f6a4b1e0a5a85f6e2e9f674bc88843c5ab623c6.camel@linux.ibm.com>
-Subject: Re: [niks:has_ioport_v3] [tty] aa0652d7f1:
- BUG:kernel_NULL_pointer_dereference,address
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        kernel test robot <yujie.liu@intel.com>
-Cc:     oe-lkp@lists.linux.dev, kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Date:   Mon, 09 Jan 2023 09:45:04 +0100
-In-Reply-To: <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
-References: <202301051008.a8468257-yujie.liu@intel.com>
-         <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.2 (3.46.2-1.fc37) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: hquSNgfW-DyJfvPVpS4omgMCJSc_qgmu
-X-Proofpoint-GUID: hquSNgfW-DyJfvPVpS4omgMCJSc_qgmu
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Mon, 9 Jan 2023 05:14:04 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721C1654E
+        for <linux-serial@vger.kernel.org>; Mon,  9 Jan 2023 02:13:18 -0800 (PST)
+Date:   Mon, 9 Jan 2023 11:13:15 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1673259197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BFnYGz3uQ0ZPdkPZZNuXygm5ApMSSYWsgWYIkJd8NV8=;
+        b=ceZrPFWU0BKTEN6iDyiA4MEYP4eYct7mjuR6n90DIua8FM3wgxVMaKSPhj2+aS/P0pV7X+
+        0C0qDGz8wGCS8NYu35iQxlDAU9GwrmtagxVOFKjUQNYd5qyfR2lmizjx3hR5dqkvDPWXne
+        TGGXdFhE560wYuDmLNmogcnSWp0CDuHSsoWh6Y07gtmw8CKFBUEUdZ/gJf7LByHxCeqCq8
+        W8KXoF4hDvmVeUW3NfYE0kUOfxx36iX3JyATF50wE+C7r680ZaJUNCpc9GeNZccFW7OnHG
+        zt9fBA/snsuBOwmRiXWY5PVpfUy/LXKYAPGzKuu5qoV9Kyjl9o6qB9RNO46X1w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1673259197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BFnYGz3uQ0ZPdkPZZNuXygm5ApMSSYWsgWYIkJd8NV8=;
+        b=flPEUkggKxOeUluO3V4bQQVDLUaQy8YQatp726WllHL4rmlWtB1n9mhc45txPwJ2fnljod
+        wxhFrpOyHU34TiDg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Marek Vasut <marex@denx.de>, linux-serial@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
+ handling into single IRQ handler
+Message-ID: <Y7vou3wAeLP4X+TY@linutronix.de>
+References: <20221216115338.7150-1-marex@denx.de>
+ <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-09_03,2023-01-06_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- lowpriorityscore=0 mlxlogscore=999 phishscore=0 adultscore=0 mlxscore=0
- suspectscore=0 impostorscore=0 priorityscore=1501 bulkscore=0 spamscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301090061
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 2023-01-05 at 09:03 +0100, Arnd Bergmann wrote:
-> On Thu, Jan 5, 2023, at 06:54, kernel test robot wrote:
-> > Greeting,
-> >=20
-> > FYI, we noticed BUG:kernel_NULL_pointer_dereference,address due to=20
-> > commit (built with clang-14):
-> >=20
-> > commit: aa0652d7f1b311e55232a8153522fdaaba0f197a ("tty: serial: handle=
-=20
-> > HAS_IOPORT dependencies")
-> > https://git.kernel.org/cgit/linux/kernel/git/niks/linux.git=20
-> > has_ioport_v3
-> >=20
-> > in testcase: boot
-> >=20
-> > on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 4G
-> >=20
-> > caused below changes (please refer to attached dmesg/kmsg for entire=20
-> > log/backtrace):
-> >=20
-> >=20
-> > [    2.166733][    T0] calling  univ8250_console_init+0x0/0x30 @ 0
-> > [    2.167555][    T0] BUG: kernel NULL pointer dereference, address:=20
-> > 00000000
->=20
-> I think it's this bit:
->=20
-> @@ -508,12 +523,13 @@ static void set_io_from_upio(struct uart_port *p)
->                 up->dl_read =3D au_serial_dl_read;
->                 up->dl_write =3D au_serial_dl_write;
->                 break;
-> -#endif
-> -
-> +#ifdef CONFIG_HAS_IOPORT
->         default:
->                 p->serial_in =3D io_serial_in;
->                 p->serial_out =3D io_serial_out;
->                 break;
-> +#endif
-> +#endif
->         }
->         /* Remember loaded iotype */
->         up->cur_iotype =3D p->iotype;
->=20
->=20
-> which puts the 'default' case inside of '#ifdef
-> CONFIG_SERIAL_8250_RT288X'. x86 does not use the
-> RT288x variant but relies on the default, so any
-> call to io_serial_{in,out} will cause a NULL
-> pointer dereference.
->=20
->        Arnd
+On 2022-12-27 15:56:47 [+0100], Johan Hovold wrote:
+> On Fri, Dec 16, 2022 at 12:53:38PM +0100, Marek Vasut wrote:
+> > Requesting an interrupt with IRQF_ONESHOT will run the primary handler
+> > in the hard-IRQ context even in the force-threaded mode. The
+> > force-threaded mode is used by PREEMPT_RT in order to avoid acquiring
+> > sleeping locks (spinlock_t) in hard-IRQ context. This combination
+> > makes it impossible and leads to "sleeping while atomic" warnings.
+> > 
+> > Use one interrupt handler for both handlers (primary and secondary)
+> > and drop the IRQF_ONESHOT flag which is not needed.
+> > 
+> > Fixes: e359b4411c283 ("serial: stm32: fix threaded interrupt handling")
+> 
+> I don't think a Fixes tag is warranted as this is only needed due to
+> this undocumented quirk of PREEMPT_RT.
 
-Thanks for looking into it Arnd, your reasoning makes sense to me, I'll
-try to look into this and test this case before I sent out the v3 of
-the HAS_IOPORT patches. I still also have a few nitpicks from Bjorn,
-mostly about the commit messages, to work in. Hope to do that soon but
-got a few things going on at the moment.
+It is not an undocumented quirk of PREEMPT_RT. The part that might not
+be well documented is that IRQF_ONESHOT won't run the primary handler as
+a threaded handler. This is also the case for IRQF_NO_THREAD and
+IRQF_PERCPU but might be more obvious.
+Anyway, if the primary handler is not threaded then it runs in HARDIRQ
+context and here you must not use a spinlock_t. This is documented in
+Documentation/locking/locktypes.rst and there is also a LOCKDEP warning
+for this on !RT which is off by default because it triggers with printk
+(and this is worked on).
+
+> And this should not be backported in any case.
+
+Such things have been backported via -stable in the past. If you
+disagree, please keep me in loop while is merged so I can poke people to
+backport it as part of the RT patch for the relevant kernels.
+
+> Johan
+
+Sebastian
