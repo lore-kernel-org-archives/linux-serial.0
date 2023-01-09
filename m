@@ -2,92 +2,293 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C5CC54EBD
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 15:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2186CC5479D
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 16:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234001AbjAIPW6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Jan 2023 10:22:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
+        id S231583AbjAIQkp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Jan 2023 11:40:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237139AbjAIPWj (ORCPT
+        with ESMTP id S233666AbjAIQk0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Jan 2023 10:22:39 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956A032195
-        for <linux-serial@vger.kernel.org>; Mon,  9 Jan 2023 07:22:18 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id g19-20020a05600c4ed300b003d9eb1dbc0aso4159474wmq.3
-        for <linux-serial@vger.kernel.org>; Mon, 09 Jan 2023 07:22:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2vOTKWnDZmwehJAU6Nl1hb49nz4Cs660rzRHE7sjmWA=;
-        b=AGc30VpVOrKwF+dKIvUbevde6oEnt0lII78VVfHLfyT53Wz0n1Yh/KCOEybIswI2zD
-         2xxjsJidh6GvzQ2K1+Oxy5V4RKPOVuLgTexEgK1e/MEJIMRqfTjWKjQvFVE7e1XEnxSA
-         Ns3U7whvAy8xH9apVcq6bypl6/NrOj1V1hz7bu0TVBxinqNgwQT7SUgoxl2RuYroxL0/
-         3QPhi9+xNcKCelo5p1EJ++1aQvXHGU80JKC7ZazNkAG+d/rlhmUzpqRtOinhTctxZEUm
-         l7BiIN0qNf9jrqlFznod+Yo1bi4BVSZav2FDu4G1YF6N1r3rHbJGTsrgki87TCzb8MXm
-         tUlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2vOTKWnDZmwehJAU6Nl1hb49nz4Cs660rzRHE7sjmWA=;
-        b=0yxjZxZvDlAqGeALByt+0vN/d4hu5QkR5Ipll/JuXl5N/XiF4xwBOv2H604HOGjzlB
-         PlI8RqPeSW4D1ui3Basv//Vj7hVp/baDe+duaU/h72F5RIHb0+Zv6ovvLE2rECmeKRWb
-         U5/0opVc6klJWMaNF+aPY68zbbuOy3WQrnb2U3YbKtCQqu6Fs6G0q5uVnxFGi83jAmT5
-         1eTGv9Q1QVa59uPCPU6BMHtiJYNdlbyUE7nEwz8jD0LbFIKfdiX3bwvmJbFY/34kw+QT
-         OlFQ4FxbPDNgVs26+IIcjEruy0xEg+oTy0OsT8tpCw0R2Pii/cJtMQmVy4/KSWP7zCgw
-         C9iA==
-X-Gm-Message-State: AFqh2kor75uV8/gyOsld5GDbKrtB+GteD/Ha8JykK+1x0IvOSOl6rLW9
-        WUms3LW3XniXEkv34tDCqChqsQ==
-X-Google-Smtp-Source: AMrXdXtRAL3NMvlUqZrrkSZbPdNqDQn6dQLhR41NfSr1it0b0iJqWDDrRJBt7KxQZX/oUuox/jGqyA==
-X-Received: by 2002:a05:600c:1d20:b0:3d2:2aaf:316 with SMTP id l32-20020a05600c1d2000b003d22aaf0316mr47036944wms.36.1673277737004;
-        Mon, 09 Jan 2023 07:22:17 -0800 (PST)
-Received: from krzk-bin.. ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id r10-20020a05600c458a00b003d35acb0fd7sm17314027wmo.34.2023.01.09.07.22.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jan 2023 07:22:16 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] serial: msm: add lock annotation to msm_set_baud_rate()
-Date:   Mon,  9 Jan 2023 16:22:12 +0100
-Message-Id: <20230109152212.343476-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 9 Jan 2023 11:40:26 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553BF1C928;
+        Mon,  9 Jan 2023 08:40:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673282425; x=1704818425;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=bKBjn2mW2FE+vH8pSgLn7FxbJRs046nNQ3GlEkmoTvE=;
+  b=NjTZcnCVzywAD7VE6jgSJncva1LZNWL6KpWx27CapbApVnI/LtJ8rG7j
+   KuQoHC1NGvrFOKWPgvtkuwsUrXuJo3/amlHCcSQSoLSIgn6pQSCPf3AxU
+   zUi+KbkPEkKSwOzf00lQqCrWsZ6V2mqehQIa1nain/f/pJyLknLNXaJSj
+   VNG9AX6PMDN6jSjBQawStMxwVwEp60SoXuIpMTyQxVufOQo6LME6fC434
+   B/RRIRh7WZOpJlBuqLUb446N4fuyPVhgz4ogf/EFWnXesBcGx9UvoQT9S
+   9oioCY+XcB+GGF4CgA49AGnrYkX9yDqJMWmCEIuWydudDKMBwlRPUCjNI
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="306434898"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="306434898"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:40:05 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="634271084"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="634271084"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 08:40:05 -0800
+Date:   Mon, 9 Jan 2023 08:40:37 -0800 (PST)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Tom Rix <trix@redhat.com>
+cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org,
+        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tianfei.zhang@intel.com,
+        corbet@lwn.net, gregkh@linuxfoundation.org,
+        linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v9 1/4] Documentation: fpga: dfl: Add documentation for
+ DFHv1
+In-Reply-To: <4e7f84ff-8bab-019d-3858-4c545834a354@redhat.com>
+Message-ID: <alpine.DEB.2.22.394.2301090840020.211949@rhweight-WRK1>
+References: <20230104232253.24743-1-matthew.gerlach@linux.intel.com> <20230104232253.24743-2-matthew.gerlach@linux.intel.com> <4e7f84ff-8bab-019d-3858-4c545834a354@redhat.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323328-119339409-1673282443=:211949"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-msm_set_baud_rate() releases and re-acquires the port->lock, thus add
-lock annotation for Sparse static code checks.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/tty/serial/msm_serial.c | 1 +
- 1 file changed, 1 insertion(+)
+--8323328-119339409-1673282443=:211949
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 7dd19a281579..44e1e83127ac 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1125,6 +1125,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud,
- 
- static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
- 			     unsigned long *saved_flags)
-+	__must_hold(&port->lock)
- {
- 	unsigned int rxstale, watermark, mask;
- 	struct msm_port *msm_port = to_msm_port(port);
--- 
-2.34.1
 
+
+On Mon, 9 Jan 2023, Tom Rix wrote:
+
+>
+> On 1/4/23 3:22 PM, matthew.gerlach@linux.intel.com wrote:
+>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> 
+>> Add documentation describing the extensions provided by Version
+>> 1 of the Device Feature Header (DFHv1).
+>> 
+>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>
+> Thanks for the changes.
+>
+> Reviewed-by: Tom Rix <trix@redhat.com>
+
+Thanks for the review,
+Matthew Gerlach
+
+
+>
+>> ---
+>> v9: move DFH definitions to after the Overview
+>>      fix name of feature revision field
+>>      clarify next field in DFH
+>> 
+>> v8: fix section titles
+>> 
+>> v7: shorten long lines and wording suggestions by bagasdotme@gmail.com
+>> 
+>> v6: no change
+>> 
+>> v5: use nested list for field descriptions
+>>      clean up prose
+>>      add reviewed-by and comments from Ilpo Järvinen
+>> 
+>> v4: Remove marketing speak and separate v0 and v1 descriptions.
+>>      Fix errors reported by "make htmldocs".
+>> 
+>> v3: no change
+>> 
+>> v2: s/GUILD/GUID/
+>>      add picture
+>> ---
+>>   Documentation/fpga/dfl.rst | 117 +++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 117 insertions(+)
+>> 
+>> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+>> index 15b670926084..7e015249785b 100644
+>> --- a/Documentation/fpga/dfl.rst
+>> +++ b/Documentation/fpga/dfl.rst
+>> @@ -75,6 +75,123 @@ convenient for software to locate each feature by 
+>> walking through this list,
+>>   and can be implemented in register regions of any FPGA device.
+>>     +Device Feature Header - Version 0
+>> +=================================
+>> +Version 0 (DFHv0) is the original version of the Device Feature Header.
+>> +The format of DFHv0 is shown below::
+>> +
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 REV 12|11 ID 
+>> 0| 0x00
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                                 GUID_L 
+>> 0| 0x08
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                                 GUID_H 
+>> 0| 0x10
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +
+>> +- Offset 0x00
+>> +
+>> +  * Type - The type of DFH (e.g. FME, AFU, or private feature).
+>> +  * DFH VER - The version of the DFH.
+>> +  * Rsvd - Currently unused.
+>> +  * EOL - Set if the DFH is the end of the Device Feature List (DFL).
+>> +  * Next - The offset in bytes of the next DFH in the DFL from the DFH 
+>> start,
+>> +    and the start of a DFH must be aligned to an 8 byte boundary.
+>> +    If EOL is set, Next is the size of MMIO of the last feature in the 
+>> list.
+>> +  * REV - The revision of the feature associated with this header.
+>> +  * ID - The feature ID if Type is private feature.
+>> +
+>> +- Offset 0x08
+>> +
+>> +  * GUID_L - Least significant 64 bits of a 128-bit Globally Unique 
+>> Identifier
+>> +    (present only if Type is FME or AFU).
+>> +
+>> +- Offset 0x10
+>> +
+>> +  * GUID_H - Most significant 64 bits of a 128-bit Globally Unique 
+>> Identifier
+>> +    (present only if Type is FME or AFU).
+>> +
+>> +
+>> +Device Feature Header - Version 1
+>> +=================================
+>> +Version 1 (DFHv1) of the Device Feature Header adds the following 
+>> functionality:
+>> +
+>> +* Provides a standardized mechanism for features to describe
+>> +  parameters/capabilities to software.
+>> +* Standardize the use of a GUID for all DFHv1 types.
+>> +* Decouples the DFH location from the register space of the feature 
+>> itself.
+>> +
+>> +The format of Version 1 of the Device Feature Header (DFH) is shown 
+>> below::
+>> +
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 REV 12|11 ID 
+>> 0| 0x00
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                                 GUID_L 
+>> 0| 0x08
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                                 GUID_H 
+>> 0| 0x10
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                   Reg Address/Offset                      1|  Rel 
+>> 0| 0x18
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63        Reg Size       32|Params 31|30 Group    16|15 Instance 
+>> 0| 0x20
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63 Next    35|34RSV33|EOP32|31 Param Version 16|15 Param ID 
+>> 0| 0x28
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                 Parameter Data 
+>> 0| 0x30
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +
+>> +                                  ...
+>> +
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63 Next    35|34RSV33|EOP32|31 Param Version 16|15 Param ID 
+>> 0|
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +    |63                 Parameter Data 
+>> 0|
+>> + 
+>> +-----------------------------------------------------------------------+
+>> +
+>> +- Offset 0x00
+>> +
+>> +  * Type - The type of DFH (e.g. FME, AFU, or private feature).
+>> +  * DFH VER - The version of the DFH.
+>> +  * Rsvd - Currently unused.
+>> +  * EOL - Set if the DFH is the end of the Device Feature List (DFL).
+>> +  * Next - The offset in bytes of the next DFH in the DFL from the DFH 
+>> start,
+>> +    and the start of a DFH must be aligned to an 8 byte boundary.
+>> +    If EOL is set, Next is the size of MMIO of the last feature in the 
+>> list.
+>> +  * REV - The revision of the feature associated with this header.
+>> +  * ID - The feature ID if Type is private feature.
+>> +
+>> +- Offset 0x08
+>> +
+>> +  * GUID_L - Least significant 64 bits of a 128-bit Globally Unique 
+>> Identifier.
+>> +
+>> +- Offset 0x10
+>> +
+>> +  * GUID_H - Most significant 64 bits of a 128-bit Globally Unique 
+>> Identifier.
+>> +
+>> +- Offset 0x18
+>> +
+>> +  * Reg Address/Offset - If Rel bit is set, then the value is the high 63 
+>> bits
+>> +    of a 16-bit aligned absolute address of the feature's registers. 
+>> Otherwise
+>> +    the value is the offset from the start of the DFH of the feature's 
+>> registers.
+>> +
+>> +- Offset 0x20
+>> +
+>> +  * Reg Size - Size of feature's register set in bytes.
+>> +  * Params - Set if DFH has a list of parameter blocks.
+>> +  * Group - Id of group if feature is part of a group.
+>> +  * Instance - Id of feature instance within a group.
+>> +
+>> +- Offset 0x28 if feature has parameters
+>> +
+>> +  * Next - Offset to the next parameter block in 8 byte words. If EOP set,
+>> +    size in 8 byte words of last parameter.
+>> +  * Param Version - Version of Param ID.
+>> +  * Param ID - ID of parameter.
+>> +
+>> +- Offset 0x30
+>> +
+>> +  * Parameter Data - Parameter data whose size and format is defined by
+>> +    version and ID of the parameter.
+>> +
+>> +
+>>   FIU - FME (FPGA Management Engine)
+>>   ==================================
+>>   The FPGA Management Engine performs reconfiguration and other 
+>> infrastructure
+>
+>
+--8323328-119339409-1673282443=:211949--
