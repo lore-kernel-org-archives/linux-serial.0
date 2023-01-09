@@ -2,154 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FC7C67871
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 18:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321E4C61DB3
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Jan 2023 19:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237690AbjAISFc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Jan 2023 13:05:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
+        id S237641AbjAITT3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Jan 2023 14:19:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237650AbjAISEu (ORCPT
+        with ESMTP id S235527AbjAITT0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Jan 2023 13:04:50 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF4A43E64;
-        Mon,  9 Jan 2023 10:04:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673287451; x=1704823451;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=yGPCCnwR0gm5/eGURTOcLZCYZz5bk0RgAbSzmUX9Ns8=;
-  b=cVwpJ8mBtyoLk82bjToU/p5W0H5TUBnQzneQkb9mxWFZS37FBr5FKn7m
-   47Vav6FbUO0DfaxyGO04Cpv6lyElEOgMHui1f0wn4AiOj7Szoh3QBoPQc
-   3YZwUismwjXtBooTpiBKKTgrp5nvt45w1QdZXsd4ax1bGEmXQWAbavcMA
-   AEAUsXRIO8AEbfRU+jpjXzqIweWfBJmvX/JecRG+nMkLit07wld3N5zU8
-   AqlBIkDBJ6Co1pilbS6V2qn4dBDquUwedzOETPsg2tgXnoXvzx18EXIXS
-   EOrQjwUXCz6IRPhVnKnPghIknXGWFPRk/4E98AjgRjWhW8shg7Le5w9j5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="323016827"
-X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="323016827"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 10:04:10 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="745452384"
-X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="745452384"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 10:04:09 -0800
-Date:   Mon, 9 Jan 2023 10:04:32 -0800 (PST)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Xu Yilun <yilun.xu@intel.com>
-cc:     hao.wu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com, bagasdotme@gmail.com
-Subject: Re: [PATCH v9 3/4] fpga: dfl: add basic support for DFHv1
-In-Reply-To: <Y7u31S8aba1L+VeA@yilunxu-OptiPlex-7050>
-Message-ID: <alpine.DEB.2.22.394.2301091003330.801533@rhweight-WRK1>
-References: <20230104232253.24743-1-matthew.gerlach@linux.intel.com> <20230104232253.24743-4-matthew.gerlach@linux.intel.com> <Y7u31S8aba1L+VeA@yilunxu-OptiPlex-7050>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 9 Jan 2023 14:19:26 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89132111C
+        for <linux-serial@vger.kernel.org>; Mon,  9 Jan 2023 11:19:24 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 746208091A;
+        Mon,  9 Jan 2023 20:19:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1673291962;
+        bh=Za+Qn8GL5zyzuLQ75VP6smK4HEYZvNIVeKoLRdHkEaI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bDRqQUbKdNgPUv3l5tasRagUEZm5I69hHVYg1NyFMk+iLyyHw1o+3fGRuIyEFTJk6
+         3c3sbLlVzuX3c7wqkZqcVgAiLtLqw6mJJ0cjIchWr5BY6IvKP4e4QRfZIzBjuI0+aS
+         bnUE6mul5m6wX7XCpJgfg7UNUnRYHyV1hdT++OVLYqeVLbzXXKPUZb42JMMH9qsvtc
+         0Y7Emn58g8VPu+cn9fyKAa8bg4E2zp6u43Mlv2HQVKoLLh1eMU3mvkrJi/ee8QJ99B
+         +FgZKI9Z2tDrsZ2M6US0cF3/0keEdSndlVs7u17/xEMjdcXQjPslaIvSNQrziZ6yf5
+         cb7jeyY9c1thg==
+Message-ID: <d6cd2874-71ed-d9ae-67fe-5390da1ade24@denx.de>
+Date:   Mon, 9 Jan 2023 20:19:20 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1694820295-1673287487=:801533"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
+ handling into single IRQ handler
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-serial@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+References: <20221216115338.7150-1-marex@denx.de>
+ <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
+ <a66988fd-af44-63cd-e962-47ffa6205a6a@denx.de>
+ <Y7f+birb2KpTygxI@hovoldconsulting.com>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <Y7f+birb2KpTygxI@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-1694820295-1673287487=:801533
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
-
-
-
-On Mon, 9 Jan 2023, Xu Yilun wrote:
-
-> On 2023-01-04 at 15:22:52 -0800, matthew.gerlach@linux.intel.com wrote:
->> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+On 1/6/23 11:56, Johan Hovold wrote:
+> On Thu, Jan 05, 2023 at 09:46:57PM +0100, Marek Vasut wrote:
+>> On 12/27/22 15:56, Johan Hovold wrote:
 >>
->> Version 1 of the Device Feature Header (DFH) definition adds
->> functionality to the Device Feature List (DFL) bus.
+>> [...]
 >>
->> A DFHv1 header may have one or more parameter blocks that
->> further describes the HW to SW. Add support to the DFL bus
->> to parse the MSI-X parameter.
+>>>> @@ -793,27 +794,13 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
+>>>>    	}
+>>>>    
+>>>>    	if ((sr & USART_SR_TXE) && !(stm32_port->tx_ch)) {
+>>>> -		spin_lock(&port->lock);
+>>>> +		spin_lock_irqsave(&port->lock, flags);
+>>>>    		stm32_usart_transmit_chars(port);
+>>>> -		spin_unlock(&port->lock);
+>>>> +		spin_unlock_irqrestore(&port->lock, flags);
+>>>
+>>> This is not needed as the handler runs with interrupts disabled.
 >>
->> The location of a feature's register set is explicitly
->> described in DFHv1 and can be relative to the base of the DFHv1
->> or an absolute address. Parse the location and pass the information
->> to DFL driver.
->>
->> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
->>
->
-> [...]
->
->> +static u64 *find_param(u64 *params, resource_size_t max, int param_id)
->> +{
->> +	u64 *end = params + max / sizeof(u64);
->> +	u64 v, next;
->> +
->> +	while (params < end) {
->> +		v = *params;
->> +		if (param_id == FIELD_GET(DFHv1_PARAM_HDR_ID, v))
->> +			return params;
->> +
->> +		if (FIELD_GET(DFHv1_PARAM_HDR_NEXT_EOP, v))
->> +			break;
->> +
->> +		next = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, v);
->> +		params += next;
->> +	}
->> +
->> +	return NULL;
->> +}
->> +
->> +/**
->> + * dfh_find_param() - find parameter block for the given parameter id
->> + * @dfl_dev: dfl device
->> + * @param_id: id of dfl parameter
->> + * @pcount: destination to store size of parameter data in u64 bit words
->
-> As I mentioned before, could the size of the parameter data just be number
-> of bytes? This is the most common way for a data block.
+>> On SMP system, another thread on another core can call
+>> stm32_usart_transmit_chars() . I don't think removing the locking is
+>> correct ?
+> 
+> I didn't say that you should remove the locking, which is very much
+> needed. There's just no need to disable interrupts in a (non-threaded)
+> interrupt handler as that has already been done by IRQ core (and, yes,
+> that is also the case with forced threading).
 
-returning a void* and a size_t in bytes would be more consistent.  I will 
-make your suggested change.
-
-Thanks,
-Matthew Gerlach
-
->
-> Thanks,
-> Yilun
->
->> + *
->> + * Return: pointer to start of parameter data, PTR_ERR otherwise.
->> + */
->> +void *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t *pcount)
->> +{
->> +	u64 *phdr = find_param(dfl_dev->params, dfl_dev->param_size, param_id);
->> +
->> +	if (!phdr)
->> +		return ERR_PTR(-ENOENT);
->> +
->> +	if (pcount)
->> +		*pcount = FIELD_GET(DFHv1_PARAM_HDR_NEXT_OFFSET, *phdr) - 1;
->> +
->> +	return phdr + 1;
->> +}
->> +EXPORT_SYMBOL_GPL(dfh_find_param);
->
---8323328-1694820295-1673287487=:801533--
+Ah, understood.
