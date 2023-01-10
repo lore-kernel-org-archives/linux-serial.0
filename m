@@ -2,57 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E94C61DB3
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 08:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF35C54EBE
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 10:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237848AbjAJIlc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Jan 2023 03:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
+        id S232527AbjAJKW5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Jan 2023 05:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbjAJIlX (ORCPT
+        with ESMTP id S231210AbjAJKWe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Jan 2023 03:41:23 -0500
-Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D881D0C1
-        for <linux-serial@vger.kernel.org>; Tue, 10 Jan 2023 00:41:22 -0800 (PST)
-Received: by mail.lokoho.com (Postfix, from userid 1001)
-        id 347BC82DFF; Tue, 10 Jan 2023 08:40:52 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
-        t=1673340081; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
-        h=Date:From:To:Subject:From;
-        b=JQCm7GtOACt4kRSeBKLzG0SHd8DLjGmPAGI4xp6sY+nqOVIfg07K7n02xRsZ7WUSM
-         hOomgMSycxykPAWuDHmgWdkjJ1OV0iBLD+Q8NV1B254Hw/p9R5MnlOWrycz5bKPEQE
-         lSMWDIX6RnsW9Y85LoWXJJNNk2ms/tIcH6jdqBGx3jvr7qt8llhGwksVfCKUmWHZkL
-         /FiYqNqmk2FsjObHaHcZIAp8EKdiK0Zb+XDE4bAWAI50HCiAmwuLMNmqzQ5ZAGa4qI
-         R94fhuNH3oJ6Uij+3h5d7KPAv59c/Vq73da56uLu/44Iv52scszxbbeGkzN4xBoS9y
-         KNoUoQpvDJQ5g==
-Received: by mail.lokoho.com for <linux-serial@vger.kernel.org>; Tue, 10 Jan 2023 08:40:32 GMT
-Message-ID: <20230110074501-0.1.3b.lhz1.0.udasyf392f@lokoho.com>
-Date:   Tue, 10 Jan 2023 08:40:32 GMT
-From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
-X-Mailer: mail.lokoho.com
+        Tue, 10 Jan 2023 05:22:34 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0AD5AC55;
+        Tue, 10 Jan 2023 02:21:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673346104; x=1704882104;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PkKqqmBLchSYZl+hz18MXJzVs0JIqEvfTbNCyQox3Kg=;
+  b=l4HmJekwWMewq0ZaT40iKFit+vY69pAYZGQUfo76PO0kBnsdAevlGBB3
+   iuK/xwp0rqnvleewzfGuX5eY3/KvR63An3HH1o5QseCY3CZM/NEXfsAan
+   pYZ4ICv273K7o1aUk0nDpXazU8U5T/U4SF9bB1Y3hmW4KM2//sSSDmq2h
+   NxotBgCkKS17VF/WnApKL2OnayQ+hP/b943auGlcNFQPRODlF6vYOX7zl
+   1Mtv0OwiBk9UsfIbxJc8xS1U/6DGhdyscPtm2jcKSRJK3bemBKFIbKAta
+   DveKSMaxBVKd08KmTF4+g8JLxINE3MD0RFPb7mn6SxzGXrGXowp2ZuntN
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="306625517"
+X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
+   d="scan'208";a="306625517"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 02:21:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="658937444"
+X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
+   d="scan'208";a="658937444"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Jan 2023 02:21:38 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pFBlA-006yvn-04;
+        Tue, 10 Jan 2023 12:21:36 +0200
+Date:   Tue, 10 Jan 2023 12:21:35 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v10 3/4] fpga: dfl: add basic support for DFHv1
+Message-ID: <Y708L2rRc1RDVkui@smile.fi.intel.com>
+References: <20230110003029.806022-1-matthew.gerlach@linux.intel.com>
+ <20230110003029.806022-4-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230110003029.806022-4-matthew.gerlach@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Mon, Jan 09, 2023 at 04:30:28PM -0800, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Version 1 of the Device Feature Header (DFH) definition adds
+> functionality to the Device Feature List (DFL) bus.
+> 
+> A DFHv1 header may have one or more parameter blocks that
+> further describes the HW to SW. Add support to the DFL bus
+> to parse the MSI-X parameter.
+> 
+> The location of a feature's register set is explicitly
+> described in DFHv1 and can be relative to the base of the DFHv1
+> or an absolute address. Parse the location and pass the information
+> to DFL driver.
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+...
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+> v10: change dfh_find_param to return size of parameter data in bytes
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+The problem that might occur with this approach is byte ordering.
+When we have u64 items, we know that they all are placed in CPU
+ordering by the bottom layer. What's the contract now? Can it be
+a problematic? Please double check this (always keep in mind BE32
+as most interesting case for u64/unsigned long representation and
+other possible byte ordering outcomes).
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Pozdrawiam
-Adam Charachuta
