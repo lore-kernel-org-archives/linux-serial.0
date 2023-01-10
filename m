@@ -2,172 +2,57 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18420C54EBE
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 07:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E94C61DB3
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 08:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238061AbjAJH7M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Jan 2023 02:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        id S237848AbjAJIlc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Jan 2023 03:41:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237597AbjAJH6n (ORCPT
+        with ESMTP id S238055AbjAJIlX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Jan 2023 02:58:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0094A1AA1C;
-        Mon,  9 Jan 2023 23:57:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6390BB810D2;
-        Tue, 10 Jan 2023 07:57:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A450C433D2;
-        Tue, 10 Jan 2023 07:57:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1673337475;
-        bh=xE48saHTLnYwBKfywpNkPCy00BCpa0LnBT94bNOVB50=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ws8isfKLXhbiiTiqjxK0Pkte1GA4y9XipdWi6EfYG5c12sUI45Cpou3/S8MD4C8tt
-         qtd0QYeZY09yCBIaYwxRtLhGjNTbxnrumKMwXfiU4n+M/sNkqLlEVG2wFj81pxS3hb
-         DXuwPhrNYBf8bnhVOu5GEQ8ZfD/7anUnj+cKXrF0=
-Date:   Tue, 10 Jan 2023 08:57:52 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Deepak R Varma <drv@mailo.com>
-Cc:     "Reshetova, Elena" <elena.reshetova@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>,
-        "ishkamiel@gmail.com" <ishkamiel@gmail.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "dwindsor@gmail.com" <dwindsor@gmail.com>
-Subject: Re: [PATCH v4 1/2] tty: serial: dz: convert atomic_* to refcount_*
- APIs for map_guard
-Message-ID: <Y70agALZ+PX3ju4f@kroah.com>
-References: <cover.1671898144.git.drv@mailo.com>
- <d85c7441b96ce387d9010142efc3469d53b6aedc.1671898144.git.drv@mailo.com>
- <e42d5d19-7ed5-468b-98cc-13d0187dc555@kernel.org>
- <Y70DbEvxDDGXDv4i@ubun2204.myguest.virtualbox.org>
- <DM8PR11MB575088A17680C124D6B9EB73E7FF9@DM8PR11MB5750.namprd11.prod.outlook.com>
- <Y70YKqt+Ej4kU9+h@ubun2204.myguest.virtualbox.org>
+        Tue, 10 Jan 2023 03:41:23 -0500
+Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D881D0C1
+        for <linux-serial@vger.kernel.org>; Tue, 10 Jan 2023 00:41:22 -0800 (PST)
+Received: by mail.lokoho.com (Postfix, from userid 1001)
+        id 347BC82DFF; Tue, 10 Jan 2023 08:40:52 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
+        t=1673340081; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
+        h=Date:From:To:Subject:From;
+        b=JQCm7GtOACt4kRSeBKLzG0SHd8DLjGmPAGI4xp6sY+nqOVIfg07K7n02xRsZ7WUSM
+         hOomgMSycxykPAWuDHmgWdkjJ1OV0iBLD+Q8NV1B254Hw/p9R5MnlOWrycz5bKPEQE
+         lSMWDIX6RnsW9Y85LoWXJJNNk2ms/tIcH6jdqBGx3jvr7qt8llhGwksVfCKUmWHZkL
+         /FiYqNqmk2FsjObHaHcZIAp8EKdiK0Zb+XDE4bAWAI50HCiAmwuLMNmqzQ5ZAGa4qI
+         R94fhuNH3oJ6Uij+3h5d7KPAv59c/Vq73da56uLu/44Iv52scszxbbeGkzN4xBoS9y
+         KNoUoQpvDJQ5g==
+Received: by mail.lokoho.com for <linux-serial@vger.kernel.org>; Tue, 10 Jan 2023 08:40:32 GMT
+Message-ID: <20230110074501-0.1.3b.lhz1.0.udasyf392f@lokoho.com>
+Date:   Tue, 10 Jan 2023 08:40:32 GMT
+From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
+To:     <linux-serial@vger.kernel.org>
+Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
+X-Mailer: mail.lokoho.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y70YKqt+Ej4kU9+h@ubun2204.myguest.virtualbox.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 10, 2023 at 01:17:54PM +0530, Deepak R Varma wrote:
-> On Tue, Jan 10, 2023 at 07:27:44AM +0000, Reshetova, Elena wrote:
-> >  
-> > > On Tue, Jan 03, 2023 at 09:59:52AM +0100, Jiri Slaby wrote:
-> > > > On 26. 12. 22, 7:21, Deepak R Varma wrote:
-> > > > > The refcount_* APIs are designed to address known issues with the
-> > > > > atomic_t APIs for reference counting. They provide following distinct
-> > > > > advantages
-> > > > >     - protect the reference counters from overflow/underflow
-> > > > >     - avoid use-after-free errors
-> > > > >     - provide improved memory ordering guarantee schemes
-> > > > >     - neater and safer.
-> > > >
-> > > > Really? (see below)
-> > > >
-> > > > > --- a/drivers/tty/serial/dz.c
-> > > > > +++ b/drivers/tty/serial/dz.c
-> > > > ...
-> > > > > @@ -687,23 +686,19 @@ static int dz_map_port(struct uart_port *uport)
-> > > > >   static int dz_request_port(struct uart_port *uport)
-> > > > >   {
-> > > > >   	struct dz_mux *mux = to_dport(uport)->mux;
-> > > > > -	int map_guard;
-> > > > >   	int ret;
-> > > > >
-> > > > > -	map_guard = atomic_add_return(1, &mux->map_guard);
-> > > > > -	if (map_guard == 1) {
-> > > > > -		if (!request_mem_region(uport->mapbase, dec_kn_slot_size,
-> > > > > -					"dz")) {
-> > > > > -			atomic_add(-1, &mux->map_guard);
-> > > > > -			printk(KERN_ERR
-> > > > > -			       "dz: Unable to reserve MMIO resource\n");
-> > > > > +	refcount_inc(&mux->map_guard);
-> > > > > +	if (refcount_read(&mux->map_guard) == 1) {
-> > > >
-> > > > This is now racy, right?
-> > > 
-> > > Hello Jiri,
-> > > I found this [1] commit which introduced similar transformation in a
-> > > neighbouring driver. Can you please comment how is this different from the
-> > > current patch proposal?
-> > > 
-> > > [1] commit ID: 22a33651a56f ("convert sbd_duart.map_guard from atomic_t to
-> > > refcount_t")
-> > > 
-> > > On a side note, I have not been able to find an exact 1:1 map to the
-> > > atomic_add_result API. I am wondering should we have one?
-> > 
-> 
-> Hello Elena,
-> 
-> > In past we have decided not to provide this API for refcount_t
-> > because for truly correctly behaving reference counters it should not be needed
-> > (vs atomics that cover a broader range of use cases). 
-> 
-> So, there is no FAA refcount wrapper? I think this is a pretty common need.
-> Please correct me if I am wrong.
-> 
-> > Can you use !refcount_inc_not_zero in the above case?
-> 
-> I actually did try that but was not sure if truly addresses the objection.
-> Please attached and let me know if you have a feedback on the alternate
-> approach.
-> 
-> Thank you,
-> ./drv
-> 
-> 
-> > 
-> > Best Regards,
-> > Elena.
+Dzie=C5=84 dobry,
 
-> ############## ORIGINAL CODE ##################################
-> -       map_guard = atomic_add_return(1, &mux->map_guard);
-> -       if (map_guard == 1) {
-> -               if (!request_mem_region(uport->mapbase, dec_kn_slot_size,
-> -                                       "dz")) {
-> -                       atomic_add(-1, &mux->map_guard);
-> -                       printk(KERN_ERR
-> -                              "dz: Unable to reserve MMIO resource\n");
->                         return -EBUSY;
->                 }
->         }
-> 
-> ############## INITIAL APPROACH ##################################
-> +       refcount_inc(&mux->map_guard);
-> +       if (refcount_read(&mux->map_guard) == 1) {
-> +               if (!request_mem_region(uport->mapbase, dec_kn_slot_size, "dz")) {
-> +                       refcount_dec(&mux->map_guard);
-> +                       printk(KERN_ERR "dz: Unable to reserve MMIO resource\n");
->                         return -EBUSY;
->                 }
->         }
-> 
-> ############## ALTERNATE APPROACH ##################################
-> 
-> +       if (!refcount_inc_not_zero(&mux->map_guard)) {
-> +               refcount_inc(&mux->map_guard);
-> +               if (!request_mem_region(uport->mapbase, dec_kn_slot_size, "dz")) {
-> +                       refcount_dec(&mux->map_guard);
-> +                       printk(KERN_ERR "dz: Unable to reserve MMIO resource\n");
->                         return -EBUSY;
->                 }
->         }
-> 
+zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
+=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
+o dalszych rozm=C3=B3w.=20
 
-This feels odd to me, why not just use a normal lock instead?
+Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
+=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
+=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
+strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
 
-thanks,
+Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
 
-greg k-h
 
+Pozdrawiam
+Adam Charachuta
