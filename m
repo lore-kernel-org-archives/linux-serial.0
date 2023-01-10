@@ -2,40 +2,40 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71D0C54EBD
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 00:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE01C54EBD
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 00:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbjAJA34 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Jan 2023 19:29:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59816 "EHLO
+        id S230233AbjAJA37 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 Jan 2023 19:29:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235368AbjAJA3z (ORCPT
+        with ESMTP id S237022AbjAJA35 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Jan 2023 19:29:55 -0500
+        Mon, 9 Jan 2023 19:29:57 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC713E0CE;
-        Mon,  9 Jan 2023 16:29:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D003E0F5;
+        Mon,  9 Jan 2023 16:29:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673310594; x=1704846594;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WkdfgZxzNh8MTB9VLy6eNylsSALpzw0WgKG1HPdLwjk=;
-  b=Y8+JWceDxb3sGW5gJXiFbeiS1FJPqedsG3uK4mD6lq7vA58LQufIKeW+
-   j0bBPtSmG0ZSTZnAXahTtvHwKsiB+zZRjD1fIfmaFGMwq9iHgoNUSGb7s
-   Z8ElVWIosMGzy8Vvx7o8rDmuOHBgADZxXBRPeWfP75fvOb7LjCdCz+PYl
-   nBNR/EyLe5uwpNjUXo9wqXx0MHLQZeUOJLEnq9PXbRk42t/8xlYjqBPQH
-   V9MYbBZE3Tr+m0baB2y/1cJ0Z60IN715bpuMJdlCBjgsTw8poA0rUb9yV
-   MbNkaPuH7wxP6mUXC4TvMaqIjaPOKqzYHvQ+5I25v0JvjOmhCGIDtRkuz
+  t=1673310596; x=1704846596;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=97E2BSirr4B+fKCh/DPTUyzjDzPfoMnNZocI//RrRj0=;
+  b=cfjSN26KHT5HuX1ttfgFOyU4CQRTj4ort2jydFqctEfukUOVSUKrkhtr
+   IvYCXhYJKesYjXO8asatUOoXKWYvSr6CkB/s+42JKZUg8/27szFrjIIcp
+   zrDAKCg6b41aV4ac8tTX4KQ2NpeHTAWIJ1oFTFvJgIFCkwmBkFcCCA7NT
+   iRPxc6kgtvr+wwehrC5O2DaWc05xgbp48h6/h+Flz28QiUm3O96qmJspd
+   1kMzHcPbI4P12LjLDXkv6hFoX71rh0WC1lqlDJph/XpmkPfZd3+cEJeTr
+   nO3bG44PiyA1EacOhs0jJ86k1wOIPvjFJyPCQq+IOHAHCsGrouhOMYlZO
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="324265522"
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="324265548"
 X-IronPort-AV: E=Sophos;i="5.96,313,1665471600"; 
-   d="scan'208";a="324265522"
+   d="scan'208";a="324265548"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 16:29:53 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="687381572"
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="687381578"
 X-IronPort-AV: E=Sophos;i="5.96,313,1665471600"; 
-   d="scan'208";a="687381572"
+   d="scan'208";a="687381578"
 Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 16:29:53 -0800
 From:   matthew.gerlach@linux.intel.com
@@ -50,11 +50,15 @@ To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
         niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
         johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
         marpagan@redhat.com, bagasdotme@gmail.com
-Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Subject: [PATCH v10 0/4] Enhance definition of DFH and use enhancements for UART driver
-Date:   Mon,  9 Jan 2023 16:30:25 -0800
-Message-Id: <20230110003029.806022-1-matthew.gerlach@linux.intel.com>
+Cc:     Basheer Ahmed Muddebihal 
+        <basheer.ahmed.muddebihal@linux.intel.com>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v10 2/4] fpga: dfl: Add DFHv1 Register Definitions
+Date:   Mon,  9 Jan 2023 16:30:27 -0800
+Message-Id: <20230110003029.806022-3-matthew.gerlach@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230110003029.806022-1-matthew.gerlach@linux.intel.com>
+References: <20230110003029.806022-1-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -62,50 +66,95 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+From: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
 
-This patchset enhances the definition of the Device Feature Header (DFH) used by
-the Device Feature List (DFL) bus and then uses the new enhancements in a UART
-driver.
+This patch adds the definitions for DFHv1 header and related register
+bitfields.
 
-The enhancements to the DFH includes the introduction of parameter blocks.
-Like PCI capabilities, the DFH parameter blocks further describe
-the hardware to software. In the case of the UART, the parameter blocks
-provide information for the interrupt, clock frequency, and register layout.
+Signed-off-by: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
+Co-developed-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v10: no change
 
-Duplication of code parsing of the parameter blocks in multiple DFL drivers
-is a concern. Using swnodes was considered to help minimize parsing code 
-duplication, but their use did not help the problem. Furthermore the highly
-changeable nature of FPGAs employing the DFL bus makes the use of swnodes
-inappropriate. 
+v9: no change
 
-Patch 1 updates the DFL documentation to describe the added functionality to DFH.
+v8: add Rb Andy Shevchenko
 
-Patch 2 adds the definitions for DFHv1.
+v7: no change
 
-Patch 3 adds basic support for DFHv1. It adds functionality to parse parameter blocks
-and adds the functionality to parse the explicit location of a feature's register set.
+v6: remove parameter definitions from include/linux/dfl.h
 
-Patch 4 adds a DFL UART driver that makes use of the new features of DFHv1.
+v5: consistently use fields for parameter data
+    s/EOL/EOP/ to match doc
+    remove unneeded mask
+    added Co-developed-by
 
-Basheer Ahmed Muddebihal (1):
-  fpga: dfl: Add DFHv1 Register Definitions
+v4: s/MSIX/MSI_X/g
+    move kerneldoc to implementation
+    don't change copyright date
 
-Matthew Gerlach (3):
-  Documentation: fpga: dfl: Add documentation for DFHv1
-  fpga: dfl: add basic support for DFHv1
-  tty: serial: 8250: add DFL bus driver for Altera 16550.
+v3:
+    keep DFHv1 definitions "hidden" in drivers/fpga/dfl.h
 
- Documentation/fpga/dfl.rst         | 117 ++++++++++++++
- drivers/fpga/dfl.c                 | 245 +++++++++++++++++++++++------
- drivers/fpga/dfl.h                 |  43 +++++
- drivers/tty/serial/8250/8250_dfl.c | 167 ++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig    |  12 ++
- drivers/tty/serial/8250/Makefile   |   1 +
- include/linux/dfl.h                |   8 +
- 7 files changed, 542 insertions(+), 51 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+v2: clean up white space and one line comments
+    remove extra space in commit
+    use uniform number of digits in constants
+    don't change copyright date because of removed content
+---
+ drivers/fpga/dfl.h | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
+diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
+index 06cfcd5e84bb..fc59f33367ee 100644
+--- a/drivers/fpga/dfl.h
++++ b/drivers/fpga/dfl.h
+@@ -74,11 +74,43 @@
+ #define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
+ #define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
+ #define DFH_EOL			BIT_ULL(40)		/* End of list */
++#define DFH_VERSION		GENMASK_ULL(59, 52)	/* DFH version */
+ #define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
+ #define DFH_TYPE_AFU		1
+ #define DFH_TYPE_PRIVATE	3
+ #define DFH_TYPE_FIU		4
+ 
++/*
++ * DFHv1 Register Offset definitons
++ * In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA
++ * as common header registers
++ */
++#define DFHv1_CSR_ADDR		0x18  /* CSR Register start address */
++#define DFHv1_CSR_SIZE_GRP	0x20  /* Size of Reg Block and Group/tag */
++#define DFHv1_PARAM_HDR		0x28  /* Optional First Param header */
++
++/*
++ * CSR Rel Bit, 1'b0 = relative (offset from feature DFH start),
++ * 1'b1 = absolute (ARM or other non-PCIe use)
++ */
++#define DFHv1_CSR_ADDR_REL	BIT_ULL(0)
++
++/* CSR Header Register Bit Definitions */
++#define DFHv1_CSR_ADDR_MASK       GENMASK_ULL(63, 1)  /* 63:1 of CSR address */
++
++/* CSR SIZE Goup Register Bit Definitions */
++#define DFHv1_CSR_SIZE_GRP_INSTANCE_ID	GENMASK_ULL(15, 0)	/* Enumeration instantiated IP */
++#define DFHv1_CSR_SIZE_GRP_GROUPING_ID	GENMASK_ULL(30, 16)	/* Group Features/interfaces */
++#define DFHv1_CSR_SIZE_GRP_HAS_PARAMS	BIT_ULL(31)		/* Presence of Parameters */
++#define DFHv1_CSR_SIZE_GRP_SIZE		GENMASK_ULL(63, 32)	/* Size of CSR Block in bytes */
++
++/* PARAM Header Register Bit Definitions */
++#define DFHv1_PARAM_HDR_ID		GENMASK_ULL(15, 0) /* Id of this Param  */
++#define DFHv1_PARAM_HDR_VER		GENMASK_ULL(31, 16) /* Version Param */
++#define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 35) /* Offset of next Param */
++#define DFHv1_PARAM_HDR_NEXT_EOP	BIT_ULL(32)
++#define DFHv1_PARAM_DATA		0x08  /* Offset of Param data from Param header */
++
+ /* Next AFU Register Bitfield */
+ #define NEXT_AFU_NEXT_DFH_OFST	GENMASK_ULL(23, 0)	/* Offset to next AFU */
+ 
 -- 
 2.25.1
 
