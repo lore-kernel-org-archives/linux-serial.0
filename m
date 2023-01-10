@@ -2,126 +2,143 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71D38C63797
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 10:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247E8C46467
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 12:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbjAJKci (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Jan 2023 05:32:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
+        id S232957AbjAJMCw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Jan 2023 07:02:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbjAJKcX (ORCPT
+        with ESMTP id S232297AbjAJMCu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Jan 2023 05:32:23 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76594086E;
-        Tue, 10 Jan 2023 02:32:21 -0800 (PST)
+        Tue, 10 Jan 2023 07:02:50 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB875833B;
+        Tue, 10 Jan 2023 04:02:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673346741; x=1704882741;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9/kJ2xAAlDxaM8+ITKEhkvbhwMba0eMpEUpzikqaENM=;
-  b=N7Szr+QIQlZc/N+GIDc3aEzK3bWtm1U7dBj60yxo/SVACW3xnnL26ZGf
-   5KOVxLMeyl7z3JU2OSxvMx4AOz/p7UXnWdc4LnAWNdtFzcUKNt8tkiF2S
-   dULsiirsNyZPGFcggWL/VKZF4w6DIxO2lXrUtggtt0PF9oqjxqKJVKRMh
-   +tLDJ3OfixWOxxkNuDubXaX5fmsot7vWmbsUQPOem0Pft6ZCbaDZ/0zig
-   mDaQS3JCrGqskrmwjOJg5wxyoCLiP50Kfl+B508PAyUninojxY5lkERx9
-   S/t08ncGI/TuWfiak9VyPm+s6dZII3QkchF+JostfpXQ96C7484yVbXuv
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="387566158"
+  t=1673352170; x=1704888170;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QZcrQpD296rETq2BwPSG/FvirBfldy66OrzZH3oanCI=;
+  b=Vb3QCIF0HGPZjc0HSu0K9rBH5fvCwAShmcWxLMgOF381+sWAyCt8/5xe
+   TupqufVWzWzmbm6bnEmk7IcEl3SoRiTuf4BFHEnNDM+vU3Kfj4U80q4yx
+   FfRC30GjZQv/zPV0R0R30Mgds6uA/pAcy+T9I2dI7OfOfuemwpmClVh5H
+   lXqJQzYLkSEeHtZsdZVGsGmChNuCfVPhpCwJGcz0fpjQuI4rtB8FjEnco
+   m5KP9WSghhMF9uJPMkRybG8q4iRraQN+Pq99ByQFuRVmjblg+kE2J2HZs
+   RHMM2N84qFjKibui+0uxo0XG1Usmacwv8inCaqY2rIlEOu6iuKLUoDETv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="350349957"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="387566158"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 02:32:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="902322641"
+   d="scan'208";a="350349957"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 04:02:50 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="799406755"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="902322641"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Jan 2023 02:32:15 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pFBvQ-006zAK-2s;
-        Tue, 10 Jan 2023 12:32:12 +0200
-Date:   Tue, 10 Jan 2023 12:32:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com, bagasdotme@gmail.com
-Subject: Re: [PATCH v10 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-Message-ID: <Y70+rAq1QoS4ohdG@smile.fi.intel.com>
-References: <20230110003029.806022-1-matthew.gerlach@linux.intel.com>
- <20230110003029.806022-5-matthew.gerlach@linux.intel.com>
+   d="scan'208";a="799406755"
+Received: from gbocanex-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.115])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 04:02:47 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Samuel=20Iglesias=20Gons=C3=A1lvez?= 
+        <siglesias@igalia.com>, Rodolfo Giometti <giometti@enneenne.com>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 00/13] tty/serial: bool conversions and cleanups
+Date:   Tue, 10 Jan 2023 14:02:13 +0200
+Message-Id: <20230110120226.14972-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230110003029.806022-5-matthew.gerlach@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 04:30:29PM -0800, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add a Device Feature List (DFL) bus driver for the Altera
-> 16550 implementation of UART.
+There are number of functions in tty/serial which have arguments or
+return types that expect/behave like bool. Likely due to them existing
+before bool was available, other types are used. Make conversions to
+bool and cleanups.
 
-...
+v2:
+- Call dtr/rts parameters/variables consistently "active"
+- Don't chain one return statement with ||
+- Don't change function signatures to >80 chars ("while at it")
+- moxa: differentiated dtr and status variables
 
-> +static int dfh_get_u64_param_val(struct dfl_device *dfl_dev, int param_id, u64 *pval)
-> +{
-> +	size_t psize;
-> +	u64 *p;
-> +
-> +	p = dfh_find_param(dfl_dev, param_id, &psize);
-> +	if (IS_ERR(p))
-> +		return PTR_ERR(p);
+Ilpo Järvinen (13):
+  tty: Cleanup tty_port_set_initialized() bool parameter
+  tty: Cleamup tty_port_set_suspended() bool parameter
+  tty: Cleanup tty_port_set_active() bool parameter
+  tty: moxa: Make local var storing tty_port_initialized() bool
+  serial: Convert uart_{,port_}startup() init_hw param to bool
+  tty: Convert ->carrier_raised() and callchains to bool
+  tty: Convert ->dtr_rts() to take bool argument
+  tty/serial: Make ->dcd_change()+uart_handle_dcd_change() status bool
+    active
+  serial: Make uart_handle_cts_change() status param bool active
+  tty: Return bool from tty_termios_hw_change()
+  tty/serial: Call ->dtr_rts() parameter active consistently
+  tty: moxa: Rename dtr/rts parameters/variables to active
+  usb/serial: Rename dtr/rts parameters/variables to active
 
-> +	if (psize != sizeof(u64))
-> +		return -EINVAL;
-
-If this code stays in the newer versions, make it more robust against changes,
-i.e. by using sizeof(*pval).
-
-> +	*pval = *p;
-> +
-> +	return 0;
-> +}
-
-...
-
-> +config SERIAL_8250_DFL
-> +	tristate "DFL bus driver for Altera 16550 UART"
-
-5
-
-> +	depends on SERIAL_8250 && FPGA_DFL
-> +	help
-> +	  This option enables support for a Device Feature List (DFL) bus
-> +	  driver for the Altera 16650 UART. One or more Altera 16650 UARTs
-
-6
-
-Which one is correct?
-
-> +	  can be instantiated in a FPGA and then be discovered during
-> +	  enumeration of the DFL bus.
-> +
-> +	  To compile this driver as a module, chose M here: the
-> +	  module will be called 8250_dfl.
+ drivers/char/pcmcia/synclink_cs.c    | 18 +++----
+ drivers/ipack/devices/ipoctal.c      |  4 +-
+ drivers/mmc/core/sdio_uart.c         | 13 +++--
+ drivers/pps/clients/pps-ldisc.c      |  6 +--
+ drivers/s390/char/con3215.c          |  4 +-
+ drivers/staging/greybus/uart.c       |  4 +-
+ drivers/tty/amiserial.c              | 12 ++---
+ drivers/tty/hvc/hvc_console.c        |  4 +-
+ drivers/tty/hvc/hvc_console.h        |  2 +-
+ drivers/tty/hvc/hvc_iucv.c           |  6 +--
+ drivers/tty/moxa.c                   | 80 ++++++++++++++--------------
+ drivers/tty/mxser.c                  | 11 ++--
+ drivers/tty/n_gsm.c                  | 16 +++---
+ drivers/tty/serial/imx.c             |  2 +-
+ drivers/tty/serial/max3100.c         |  2 +-
+ drivers/tty/serial/max310x.c         |  3 +-
+ drivers/tty/serial/serial_core.c     | 65 +++++++++++-----------
+ drivers/tty/serial/sunhv.c           |  8 +--
+ drivers/tty/synclink_gt.c            | 21 ++++----
+ drivers/tty/tty_ioctl.c              |  8 +--
+ drivers/tty/tty_port.c               | 22 ++++----
+ drivers/usb/class/cdc-acm.c          |  4 +-
+ drivers/usb/serial/ch341.c           | 11 ++--
+ drivers/usb/serial/console.c         |  2 +-
+ drivers/usb/serial/cp210x.c          |  6 +--
+ drivers/usb/serial/cypress_m8.c      |  6 +--
+ drivers/usb/serial/digi_acceleport.c |  6 +--
+ drivers/usb/serial/f81232.c          | 10 ++--
+ drivers/usb/serial/f81534.c          |  4 +-
+ drivers/usb/serial/ftdi_sio.c        |  6 +--
+ drivers/usb/serial/generic.c         | 10 ++--
+ drivers/usb/serial/ipw.c             |  8 +--
+ drivers/usb/serial/keyspan.c         |  6 +--
+ drivers/usb/serial/keyspan_pda.c     |  4 +-
+ drivers/usb/serial/mct_u232.c        |  6 +--
+ drivers/usb/serial/mxuport.c         |  4 +-
+ drivers/usb/serial/pl2303.c          | 11 ++--
+ drivers/usb/serial/quatech2.c        |  6 +--
+ drivers/usb/serial/sierra.c          |  6 +--
+ drivers/usb/serial/spcp8x5.c         | 11 ++--
+ drivers/usb/serial/ssu100.c          |  6 +--
+ drivers/usb/serial/upd78f0730.c      |  8 +--
+ drivers/usb/serial/usb-serial.c      |  8 +--
+ drivers/usb/serial/usb-wwan.h        |  2 +-
+ drivers/usb/serial/usb_wwan.c        |  6 +--
+ drivers/usb/serial/xr_serial.c       |  8 +--
+ include/linux/serial_core.h          |  6 +--
+ include/linux/tty.h                  |  2 +-
+ include/linux/tty_ldisc.h            |  4 +-
+ include/linux/tty_port.h             | 10 ++--
+ include/linux/usb/serial.h           |  6 +--
+ net/bluetooth/rfcomm/tty.c           |  2 +-
+ 52 files changed, 247 insertions(+), 259 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
