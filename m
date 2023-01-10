@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C04C63797
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 12:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4219CC46467
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Jan 2023 12:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238229AbjAJMDF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Jan 2023 07:03:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
+        id S232031AbjAJMDk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 Jan 2023 07:03:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbjAJMDD (ORCPT
+        with ESMTP id S238160AbjAJMDV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Jan 2023 07:03:03 -0500
+        Tue, 10 Jan 2023 07:03:21 -0500
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052D35833B;
-        Tue, 10 Jan 2023 04:03:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A8958F81;
+        Tue, 10 Jan 2023 04:03:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673352182; x=1704888182;
+  t=1673352196; x=1704888196;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=p/abY3EvdT/9LBFynpim0jdmH9McxhRPFImaHI0+/DE=;
-  b=nYRyAgau1SET0FhgNaZ4vs423kc6qZAPa+INouVOD9tKwuChVcpLqh6b
-   e3NRMN+Bq086y1RotcqulJW+vyXVgov3FWl18skCEyZqeSJEQrN1/5C/d
-   5IdUAYRswxogKlmUxsCEMTbdwvRpQQms8KdGWfs3YBOtXS4f1fHNjZIh+
-   rx3LmuJlQ8prf2K9gU1lzNM/I0kgc8/NncVV7nWeS3Q5wY9WJouxekKpj
-   kg/KIlpN5stTaGigItQja77vHm6hnv0M70VmFcXJP5WCnb95JCXDFmTIx
-   M2qKUWWeSG8CTDCGwgP5c5r6Os10SagDT0mnKubV8Ks6iRzi/djwI8Rxl
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="350349997"
+  bh=0aHYPToS/jABucyxHBUjjp3ckI/iQBTA/kh5jyn5eAU=;
+  b=cHkLED3xkaW8bBvZiskCbthBT1UVTDW//xIAlwPYerflWbeQv5XZKjcJ
+   ZjP3zwrUCrt0kZWuvYInrlBgVIqjDSa4LEWK5/6sniP++G4ByRASAN/Ag
+   NL23V49UnAXAhYixlKwXIhVRH26Ho+XSf0LC4uNPOPUHr92VinnefrUvF
+   EKocW4vr+ay0S42whP8oolg/kKrjl0Ac4WHUWk1t127dFRy7kaFwmtUM2
+   4KOzoKfXCnkW4Ob3db6v6H2HseBA/Van/GJ5qL8yLT9F9lZZ3mE21BD4r
+   80DOAQALEU4Pbt583TSQqrWrtDp+5rNraYDpa7lW5EWMMZ73Wb6X8RaST
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="350350042"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="350349997"
+   d="scan'208";a="350350042"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 04:03:02 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="799406782"
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 04:03:16 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="799406815"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="799406782"
+   d="scan'208";a="799406815"
 Received: from gbocanex-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.115])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 04:03:00 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 04:03:14 -0800
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -47,9 +47,9 @@ To:     linux-serial@vger.kernel.org,
         <siglesias@igalia.com>, Rodolfo Giometti <giometti@enneenne.com>,
         linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 02/13] tty: Cleamup tty_port_set_suspended() bool parameter
-Date:   Tue, 10 Jan 2023 14:02:15 +0200
-Message-Id: <20230110120226.14972-3-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 04/13] tty: moxa: Make local var storing tty_port_initialized() bool
+Date:   Tue, 10 Jan 2023 14:02:17 +0200
+Message-Id: <20230110120226.14972-5-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230110120226.14972-1-ilpo.jarvinen@linux.intel.com>
 References: <20230110120226.14972-1-ilpo.jarvinen@linux.intel.com>
@@ -60,54 +60,31 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Make callers pass true/false consistently for bool val.
+Return type of tty_port_initialized() is bool, use matching type for
+the local variable.
+
+Also reorder the local vars to reverse-xmas-tree while at it.
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/serial_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/moxa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index e049c760b738..f9564b1e3dfb 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -312,7 +312,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	 * a DCD drop (hangup) at just the right time.  Clear suspended bit so
- 	 * we don't try to resume a port that has been shutdown.
- 	 */
--	tty_port_set_suspended(port, 0);
-+	tty_port_set_suspended(port, false);
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index bc474f3c3f8f..2d9635e14ded 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1664,8 +1664,8 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
+ 		u16 __iomem *ip)
+ {
+ 	struct tty_struct *tty = tty_port_tty_get(&p->port);
++	bool inited = tty_port_initialized(&p->port);
+ 	void __iomem *ofsAddr;
+-	unsigned int inited = tty_port_initialized(&p->port);
+ 	u16 intr;
  
- 	/*
- 	 * Do not free() the transmit buffer page under the port lock since
-@@ -1725,7 +1725,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	 * a DCD drop (hangup) at just the right time.  Clear suspended bit so
- 	 * we don't try to resume a port that has been shutdown.
- 	 */
--	tty_port_set_suspended(port, 0);
-+	tty_port_set_suspended(port, false);
- 
- 	/*
- 	 * Free the transmit buffer.
-@@ -2346,7 +2346,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 		int tries;
- 		unsigned int mctrl;
- 
--		tty_port_set_suspended(port, 1);
-+		tty_port_set_suspended(port, true);
- 		tty_port_set_initialized(port, false);
- 
- 		spin_lock_irq(&uport->lock);
-@@ -2469,7 +2469,7 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 			}
- 		}
- 
--		tty_port_set_suspended(port, 0);
-+		tty_port_set_suspended(port, false);
- 	}
- 
- 	mutex_unlock(&port->mutex);
+ 	if (tty) {
 -- 
 2.30.2
 
