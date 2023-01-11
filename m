@@ -2,151 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D8FC61DB3
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 02:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D195CC5479D
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 05:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233452AbjAKCX5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Jan 2023 21:23:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
+        id S229905AbjAKFxn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Jan 2023 00:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbjAKCX5 (ORCPT
+        with ESMTP id S230340AbjAKFxm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Jan 2023 21:23:57 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361461A4;
-        Tue, 10 Jan 2023 18:23:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673403836; x=1704939836;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=O6W8EEZZDpgsAPj45+hyJPC7dzxMaVkD0nu6O0WNFoY=;
-  b=f+csRMx2wpoxqtBXHluN4VTPrhg/CiLrPYUAnz2DqCp7eIR1riGtwvTv
-   ZRDwqDLG8SfD+7TioQTYw1bqqOGBDjBdlqorCyci2PjdDJLBaPlSdEljG
-   d5bvPnH7mzTsw28Fp7OZpOJnUv23ZrbKGqh8qyjpqbF2w7RjqB/+d2v6G
-   AWNFL2ymgG7QDc5CS6KB1jfimPs9+gkW70mThSXD5T2+XNS+P6R0g5Zz+
-   TU9nk6Dn+qSnjjAp3LTiV9+Z9RvbHBU9SJPg78YsLHt2MYioys2jcXVKD
-   FzGuUkorZ0Uy42z8nBuhmTTteX2Mt5uO43MrZWCU3lIeqPVPEUjGCoNHE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="324549812"
-X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="324549812"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 18:23:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="687766202"
-X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="687766202"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orsmga008.jf.intel.com with ESMTP; 10 Jan 2023 18:23:50 -0800
-Date:   Wed, 11 Jan 2023 10:13:31 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        hao.wu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com, bagasdotme@gmail.com
-Subject: Re: [PATCH v10 3/4] fpga: dfl: add basic support for DFHv1
-Message-ID: <Y74bSzUBLYH4cLDh@yilunxu-OptiPlex-7050>
-References: <20230110003029.806022-1-matthew.gerlach@linux.intel.com>
- <20230110003029.806022-4-matthew.gerlach@linux.intel.com>
- <Y708L2rRc1RDVkui@smile.fi.intel.com>
- <alpine.DEB.2.22.394.2301101310150.815911@rhweight-WRK1>
+        Wed, 11 Jan 2023 00:53:42 -0500
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7F7A1BC;
+        Tue, 10 Jan 2023 21:53:36 -0800 (PST)
+Received: by mail-wm1-f45.google.com with SMTP id m8-20020a05600c3b0800b003d96f801c48so13557589wms.0;
+        Tue, 10 Jan 2023 21:53:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GFEcAp58L6/Lgz+twHfiRQkPVjyan/i1u3ORD6cFNFI=;
+        b=KeZowzqQ9MspAdIJzDlAMNZMC6iod3fcHDzB2oGMsZbZ6D+znLnWt/w/ynWG5fdCDo
+         bELmunWvazlZ1b57OXPqP7TI3cn8WPTXFDsyqqxlaElUXSxav7dCNx+pVADxS0582Obb
+         3uHrpzUTpsNLdOZYYacDoQWR700M/gpEgtAbUxJex5IVmZKEWHgRqFBXzKL9wrzOmTLt
+         sSL1zDcVvUc02gKQ/oHVvZvU9bcMalWHWVuveyC5G2Fsx8MBiLcpf+f1xK2QxNIzhQkR
+         ER/0If6Xq6VqlxTbEdZ2dC6rbfWbwIWFhDJusgxdxKtQKca6D2aQSkWzCDG012jQB10E
+         slTw==
+X-Gm-Message-State: AFqh2ko8IwH80FmSIT7p2HC9E2Pce48riYYQU6KSu6SgzKg0ZWGj/qPE
+        gk90bUo9QjSPMYAgjkCruO4=
+X-Google-Smtp-Source: AMrXdXvrZE3tVJsikm25JOmVQtF8OzCR58hY5jxObYKZSL9DUDk/2N2c4Ldzo4F4+cEgUa9gGqsbSQ==
+X-Received: by 2002:a7b:cd11:0:b0:3d9:e9ad:d9bf with SMTP id f17-20020a7bcd11000000b003d9e9add9bfmr9546875wmj.6.1673416414956;
+        Tue, 10 Jan 2023 21:53:34 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id 2-20020a05600c228200b003d9e00dfccfsm14455359wmf.8.2023.01.10.21.53.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Jan 2023 21:53:34 -0800 (PST)
+Message-ID: <8d3470db-b0c9-017a-fac3-c23239da3413@kernel.org>
+Date:   Wed, 11 Jan 2023 06:53:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2301101310150.815911@rhweight-WRK1>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 05/13] serial: Convert uart_{,port_}startup() init_hw
+ param to bool
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?Q?Samuel_Iglesias_Gons=c3=a1lvez?= <siglesias@igalia.com>,
+        Rodolfo Giometti <giometti@enneenne.com>,
+        linux-kernel@vger.kernel.org
+References: <20230110120226.14972-1-ilpo.jarvinen@linux.intel.com>
+ <20230110120226.14972-6-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230110120226.14972-6-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-01-10 at 14:07:16 -0800, matthew.gerlach@linux.intel.com wrote:
+On 10. 01. 23, 13:02, Ilpo Järvinen wrote:
+> Convert init_hw parameter in uart_startup() and uart_port_startup() to
+> bool as code treats them like bool.
 > 
-> 
-> On Tue, 10 Jan 2023, Andy Shevchenko wrote:
-> 
-> > On Mon, Jan 09, 2023 at 04:30:28PM -0800, matthew.gerlach@linux.intel.com wrote:
-> > > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> > > 
-> > > Version 1 of the Device Feature Header (DFH) definition adds
-> > > functionality to the Device Feature List (DFL) bus.
-> > > 
-> > > A DFHv1 header may have one or more parameter blocks that
-> > > further describes the HW to SW. Add support to the DFL bus
-> > > to parse the MSI-X parameter.
-> > > 
-> > > The location of a feature's register set is explicitly
-> > > described in DFHv1 and can be relative to the base of the DFHv1
-> > > or an absolute address. Parse the location and pass the information
-> > > to DFL driver.
-> > 
-> > ...
-> > 
-> > > v10: change dfh_find_param to return size of parameter data in bytes
-> > 
-> > The problem that might occur with this approach is byte ordering.
-> > When we have u64 items, we know that they all are placed in CPU
-> > ordering by the bottom layer. What's the contract now? Can it be
-> > a problematic? Please double check this (always keep in mind BE32
-> > as most interesting case for u64/unsigned long representation and
-> > other possible byte ordering outcomes).
-> 
-> A number of u64 items certainly states explicit alignment of the memory, but
-> I think byte ordering is a different issue.
-> 
-> The bottom layer, by design, is still enforcing a number u64 items under the
-> hood. So the contract has not changed. Changing units of size from u64s to
-> bytes was suggested to match the general practice of size of memory being in
-> bytes. I think the suggestion was made because the return type for
-> dfh_find_param() changed from u64* to void* in version 9, when indirectly
-> returning the size of the parameter data was introduced.  So a void * with a
-> size in bytes makes sense. On the other hand, returning a u64 * is a more
-> precise reflection of the data alignment. I think the API should be as
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-I prefer (void *) + bytes. The properties in the parameter block are not
-guarateed to be u64 for each, e.g. the REG_LAYOUT, so (void *) could better
-indicate it is not. It is just a block of data unknown to DFL core and to
-be parsed by drivers.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-And why users/drivers need to care about the alignment of the parameter
-block?
+> ---
+>   drivers/tty/serial/serial_core.c | 10 +++++-----
+>   1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index c881fefa3d97..f7074ac02801 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -182,7 +182,7 @@ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
+>    * will be serialised by the per-port mutex.
+>    */
+>   static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+> -		int init_hw)
+> +			     bool init_hw)
+>   {
+>   	struct uart_port *uport = uart_port_check(state);
+>   	unsigned long flags;
+> @@ -254,7 +254,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+>   }
+>   
+>   static int uart_startup(struct tty_struct *tty, struct uart_state *state,
+> -		int init_hw)
+> +			bool init_hw)
+>   {
+>   	struct tty_port *port = &state->port;
+>   	int retval;
+> @@ -997,7 +997,7 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+>   			uart_change_speed(tty, state, NULL);
+>   		}
+>   	} else {
+> -		retval = uart_startup(tty, state, 1);
+> +		retval = uart_startup(tty, state, true);
+>   		if (retval == 0)
+>   			tty_port_set_initialized(port, true);
+>   		if (retval > 0)
+> @@ -1165,7 +1165,7 @@ static int uart_do_autoconfig(struct tty_struct *tty, struct uart_state *state)
+>   		 */
+>   		uport->ops->config_port(uport, flags);
+>   
+> -		ret = uart_startup(tty, state, 1);
+> +		ret = uart_startup(tty, state, true);
+>   		if (ret == 0)
+>   			tty_port_set_initialized(port, true);
+>   		if (ret > 0)
+> @@ -1943,7 +1943,7 @@ static int uart_port_activate(struct tty_port *port, struct tty_struct *tty)
+>   	/*
+>   	 * Start up the serial port.
+>   	 */
+> -	ret = uart_startup(tty, state, 0);
+> +	ret = uart_startup(tty, state, false);
+>   	if (ret > 0)
+>   		tty_port_set_active(port, true);
+>   
 
-Thanks,
-Yilun
+-- 
+js
+suse labs
 
-
-> follows:
-> 
-> /**
->  * dfh_find_param() - find parameter block for the given parameter id
->  * @dfl_dev: dfl device
->  * @param_id: id of dfl parameter
->  * @pcount: destination to store size of parameter data in u64 bit words
->  *
->  * Return: pointer to start of parameter data, PTR_ERR otherwise.
->  */
-> u64 *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t
-> *pcount)
-> 
-> Regarding byte ordering, Documentation/fpga/dfl.rst does not currently
-> mention endianness. All current HW implementations of DFL are little-endian.
-> I should add a statement in Documentation/fpga/dfl.rst that fields in the
-> Device Feature Header are little-endian.
-> 
-> Thanks for the feedback,
-> Matthew Gerlach
-> 
-> > 
-> > -- 
-> > With Best Regards,
-> > Andy Shevchenko
-> > 
-> > 
-> > 
