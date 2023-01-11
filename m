@@ -2,40 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26564C5479D
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 14:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FB2C5479D
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 16:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238568AbjAKOwa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Jan 2023 09:52:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
+        id S232320AbjAKQ1U (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Jan 2023 11:27:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238682AbjAKOv6 (ORCPT
+        with ESMTP id S239579AbjAKQ0f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Jan 2023 09:51:58 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AB819C24;
-        Wed, 11 Jan 2023 06:51:57 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1673448715;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C3ShpcOwOQrvdccdvZNmwpq5oNx/F35tbPLB2fWoef8=;
-        b=IxLWTMd44vVjt+DirBUWgQYJI/UOfvIW8vYd8ssjsPkHlrjpioQhApzLpwEmh6T3hICiOK
-        Vt2UE6NAVZRw8JydZxC6ukdxTmTvhFNNfeYB6iaDvBaVTy5AvSeNOvR86IL7KWStfVNQIR
-        L2Y6VwUxDpieUmqyo2V6KO6QtsF3syndBf7DzhElOpiQCMAgpF/lAhX6LtxuNHWmS/kROt
-        Rr5cOPYJDcRnA9mzbOMx7+vgmgG4htzS8p4gDm9NTTnMcR25EP/SQgr3TViTvmemDLzlUM
-        qRgM803Rro8yMRdOMR++SSbuhZV3WYHoTt44/mIo4BBvs2aRUGGenk0A87jyCw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1673448715;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C3ShpcOwOQrvdccdvZNmwpq5oNx/F35tbPLB2fWoef8=;
-        b=uoOqLfetODlsE968Zaka7g/1SL5Ga0HewEV2DZsZZXbcna0JECOq1/c8A+3uvgPhsO5i6W
-        v6OdmN8tCIo0HEDw==
-To:     Petr Mladek <pmladek@suse.com>
+        Wed, 11 Jan 2023 11:26:35 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5EE3AB1B
+        for <linux-serial@vger.kernel.org>; Wed, 11 Jan 2023 08:23:56 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 0B25C220DC;
+        Wed, 11 Jan 2023 16:23:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1673454235; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=B1LPsn+UgdaSd6bRvRcaJ0uMddyjKGSwwy0jj+RkHME=;
+        b=OpC/m2rfxOdfKE4y4JwM7fpNTjhU7kUuXTiO73um24Md9qZ32k8qAkPaufEQk7g2rH+9rT
+        4wDatTjmcaKLRYlGXrMrWkeJmzHTBw43K92JPJqNeec+/A20z3cGhuHIzYbvJPqDXE+g5F
+        4FhLEYBzFmJiohJRAZw4SWvsgd7LI2k=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 6D86A2C142;
+        Wed, 11 Jan 2023 16:23:54 +0000 (UTC)
+Date:   Wed, 11 Jan 2023 17:23:54 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -46,133 +44,81 @@ Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Subject: [PATCH] tty: serial: kgdboc: fix mutex locking order for configure_kgdboc()
-Date:   Wed, 11 Jan 2023 15:57:10 +0106
-Message-Id: <20230111145110.1327831-1-john.ogness@linutronix.de>
+Subject: Re: [PATCH] tty: serial: kgdboc: fix mutex locking order for
+ configure_kgdboc()
+Message-ID: <Y77imoYMaZZZz28x@alley>
+References: <20230111145110.1327831-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230111145110.1327831-1-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Several mutexes are taken while setting up console serial ports. In
-particular, the tty_port->mutex and @console_mutex are taken:
+On Wed 2023-01-11 15:57:10, John Ogness wrote:
+> Several mutexes are taken while setting up console serial ports. In
+> particular, the tty_port->mutex and @console_mutex are taken:
+> 
+>   serial_pnp_probe
+>     serial8250_register_8250_port
+>       uart_add_one_port (locks tty_port->mutex)
+>         uart_configure_port
+>           register_console (locks @console_mutex)
+> 
+> In order to synchronize kgdb's tty_find_polling_driver() with
+> register_console(), commit 6193bc90849a ("tty: serial: kgdboc:
+> synchronize tty_find_polling_driver() and register_console()") takes
+> the @console_mutex. However, this leads to the following call chain
+> (with locking):
+> 
+>   platform_probe
+>     kgdboc_probe
+>       configure_kgdboc (locks @console_mutex)
+>         tty_find_polling_driver
+>           uart_poll_init (locks tty_port->mutex)
+>             uart_set_options
+> 
+> This is clearly deadlock potential due to the reverse lock ordering.
 
-  serial_pnp_probe
-    serial8250_register_8250_port
-      uart_add_one_port (locks tty_port->mutex)
-        uart_configure_port
-          register_console (locks @console_mutex)
+Great catch!
 
-In order to synchronize kgdb's tty_find_polling_driver() with
-register_console(), commit 6193bc90849a ("tty: serial: kgdboc:
-synchronize tty_find_polling_driver() and register_console()") takes
-the @console_mutex. However, this leads to the following call chain
-(with locking):
+> Since uart_set_options() requires holding @console_mutex in order to
+> serialize early initialization of the serial-console lock, take the
+> @console_mutex in uart_poll_init() instead of configure_kgdboc().
+> 
+> Since configure_kgdboc() was using @console_mutex for safe traversal
+> of the console list, change it to use the SRCU iterator instead.
+> 
+> Add comments to uart_set_options() kerneldoc mentioning that it
+> requires holding @console_mutex (aka the console_list_lock).
+> 
+> Fixes: 6193bc90849a ("tty: serial: kgdboc: synchronize tty_find_polling_driver() and register_console()")
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-  platform_probe
-    kgdboc_probe
-      configure_kgdboc (locks @console_mutex)
-        tty_find_polling_driver
-          uart_poll_init (locks tty_port->mutex)
-            uart_set_options
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -189,15 +190,6 @@ static int configure_kgdboc(void)
+>  	if (kgdboc_register_kbd(&cptr))
+>  		goto do_register;
+>  
+> -	/*
+> -	 * tty_find_polling_driver() can call uart_set_options()
+> -	 * (via poll_init) to configure the uart. Take the console_list_lock
+> -	 * in order to synchronize against register_console(), which can also
+> -	 * configure the uart via uart_set_options(). This also allows safe
+> -	 * traversal of the console list.
+> -	 */
+> -	console_list_lock();
+> -
+>  	p = tty_find_polling_driver(cptr, &tty_line);
+>  	if (!p) {
+>  		console_list_unlock();
 
-This is clearly deadlock potential due to the reverse lock ordering.
+This console_list_unlock() should be removed here as well.
 
-Since uart_set_options() requires holding @console_mutex in order to
-serialize early initialization of the serial-console lock, take the
-@console_mutex in uart_poll_init() instead of configure_kgdboc().
+Best Regards,
+Petr
 
-Since configure_kgdboc() was using @console_mutex for safe traversal
-of the console list, change it to use the SRCU iterator instead.
-
-Add comments to uart_set_options() kerneldoc mentioning that it
-requires holding @console_mutex (aka the console_list_lock).
-
-Fixes: 6193bc90849a ("tty: serial: kgdboc: synchronize tty_find_polling_driver() and register_console()")
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/kgdboc.c      | 16 ++++------------
- drivers/tty/serial/serial_core.c |  5 +++++
- 2 files changed, 9 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index a3ed9b34e2ab..f7df46cc1890 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -171,6 +171,7 @@ static int configure_kgdboc(void)
- 	int err = -ENODEV;
- 	char *cptr = config;
- 	struct console *cons;
-+	int cookie;
- 
- 	if (!strlen(config) || isspace(config[0])) {
- 		err = 0;
-@@ -189,15 +190,6 @@ static int configure_kgdboc(void)
- 	if (kgdboc_register_kbd(&cptr))
- 		goto do_register;
- 
--	/*
--	 * tty_find_polling_driver() can call uart_set_options()
--	 * (via poll_init) to configure the uart. Take the console_list_lock
--	 * in order to synchronize against register_console(), which can also
--	 * configure the uart via uart_set_options(). This also allows safe
--	 * traversal of the console list.
--	 */
--	console_list_lock();
--
- 	p = tty_find_polling_driver(cptr, &tty_line);
- 	if (!p) {
- 		console_list_unlock();
-@@ -211,7 +203,8 @@ static int configure_kgdboc(void)
- 	 */
- 	console_lock();
- 
--	for_each_console(cons) {
-+	cookie = console_srcu_read_lock();
-+	for_each_console_srcu(cons) {
- 		int idx;
- 		if (cons->device && cons->device(cons, &idx) == p &&
- 		    idx == tty_line) {
-@@ -219,11 +212,10 @@ static int configure_kgdboc(void)
- 			break;
- 		}
- 	}
-+	console_srcu_read_unlock(cookie);
- 
- 	console_unlock();
- 
--	console_list_unlock();
--
- 	kgdb_tty_driver = p;
- 	kgdb_tty_line = tty_line;
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index b9fbbee598b8..ec874f3a567c 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2212,6 +2212,9 @@ EXPORT_SYMBOL_GPL(uart_parse_options);
-  * @parity: parity character - 'n' (none), 'o' (odd), 'e' (even)
-  * @bits: number of data bits
-  * @flow: flow control character - 'r' (rts)
-+ *
-+ * Locking: Caller must hold console_list_lock in order to serialize
-+ * early initialization of the serial-console lock.
-  */
- int
- uart_set_options(struct uart_port *port, struct console *co,
-@@ -2619,7 +2622,9 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- 
- 	if (!ret && options) {
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+		console_list_lock();
- 		ret = uart_set_options(port, NULL, baud, parity, bits, flow);
-+		console_list_unlock();
- 	}
- out:
- 	mutex_unlock(&tport->mutex);
-
-base-commit: b7bfaa761d760e72a969d116517eaa12e404c262
--- 
-2.30.2
-
+PS: I still have to double check all the dependencies. I think that I need
+to do it with a fresh head tomorrow.
