@@ -2,199 +2,177 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DBEC5479D
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 14:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26564C5479D
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 14:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239157AbjAKOZp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Jan 2023 09:25:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        id S238568AbjAKOwa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 Jan 2023 09:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239364AbjAKOZA (ORCPT
+        with ESMTP id S238682AbjAKOv6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Jan 2023 09:25:00 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4921E5F44;
-        Wed, 11 Jan 2023 06:24:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673447099; x=1704983099;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=azs8MhAXaT8ciQ/+X9QDrSPGZ0tpeX4mV+5vi33IK0c=;
-  b=a+oRc5VazYi5a98TMWzjIneynLMgh7eJdRPstXuW4i3hvdb88RLqlLS6
-   WUjXwWgCV0tA/wDwzMRICIvUosMNh4dBzE1SXSjFYMdDKzCmnGYakTOAl
-   3m7r2ZmfATG8EE7wqAFs0BXs8PXnM1Mcl7p06Fle510B6HaLtB3wJ9pPY
-   oclbgqqhq3fon1JRMDeO4QvSSC14X1CocZwT9jveLT1jcaOlz6SSwJCpS
-   CHkaJ6QSZYb7yFzFTAA/Z7oZtdg8Gck7/2pyAcs606aPZwlCeHD3bttWw
-   erwgA6jDUm9zy+CS/zIltqFK/Qxkm36wTwiXQK2ou+VokhywjjwccFe2x
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="303793796"
-X-IronPort-AV: E=Sophos;i="5.96,317,1665471600"; 
-   d="scan'208";a="303793796"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2023 06:24:58 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="607382106"
-X-IronPort-AV: E=Sophos;i="5.96,317,1665471600"; 
-   d="scan'208";a="607382106"
-Received: from mihaiana-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.222.62])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2023 06:24:55 -0800
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org,
+        Wed, 11 Jan 2023 09:51:58 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AB819C24;
+        Wed, 11 Jan 2023 06:51:57 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1673448715;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=C3ShpcOwOQrvdccdvZNmwpq5oNx/F35tbPLB2fWoef8=;
+        b=IxLWTMd44vVjt+DirBUWgQYJI/UOfvIW8vYd8ssjsPkHlrjpioQhApzLpwEmh6T3hICiOK
+        Vt2UE6NAVZRw8JydZxC6ukdxTmTvhFNNfeYB6iaDvBaVTy5AvSeNOvR86IL7KWStfVNQIR
+        L2Y6VwUxDpieUmqyo2V6KO6QtsF3syndBf7DzhElOpiQCMAgpF/lAhX6LtxuNHWmS/kROt
+        Rr5cOPYJDcRnA9mzbOMx7+vgmgG4htzS8p4gDm9NTTnMcR25EP/SQgr3TViTvmemDLzlUM
+        qRgM803Rro8yMRdOMR++SSbuhZV3WYHoTt44/mIo4BBvs2aRUGGenk0A87jyCw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1673448715;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=C3ShpcOwOQrvdccdvZNmwpq5oNx/F35tbPLB2fWoef8=;
+        b=uoOqLfetODlsE968Zaka7g/1SL5Ga0HewEV2DZsZZXbcna0JECOq1/c8A+3uvgPhsO5i6W
+        v6OdmN8tCIo0HEDw==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        =?UTF-8?q?Samuel=20Iglesias=20Gons=C3=A1lvez?= 
-        <siglesias@igalia.com>, Rodolfo Giometti <giometti@enneenne.com>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v3 12/13] tty: moxa: Rename dtr/rts parameters/variables to active
-Date:   Wed, 11 Jan 2023 16:23:30 +0200
-Message-Id: <20230111142331.34518-13-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230111142331.34518-1-ilpo.jarvinen@linux.intel.com>
-References: <20230111142331.34518-1-ilpo.jarvinen@linux.intel.com>
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: [PATCH] tty: serial: kgdboc: fix mutex locking order for configure_kgdboc()
+Date:   Wed, 11 Jan 2023 15:57:10 +0106
+Message-Id: <20230111145110.1327831-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use active consistently for naming parameters and variables.
+Several mutexes are taken while setting up console serial ports. In
+particular, the tty_port->mutex and @console_mutex are taken:
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+  serial_pnp_probe
+    serial8250_register_8250_port
+      uart_add_one_port (locks tty_port->mutex)
+        uart_configure_port
+          register_console (locks @console_mutex)
+
+In order to synchronize kgdb's tty_find_polling_driver() with
+register_console(), commit 6193bc90849a ("tty: serial: kgdboc:
+synchronize tty_find_polling_driver() and register_console()") takes
+the @console_mutex. However, this leads to the following call chain
+(with locking):
+
+  platform_probe
+    kgdboc_probe
+      configure_kgdboc (locks @console_mutex)
+        tty_find_polling_driver
+          uart_poll_init (locks tty_port->mutex)
+            uart_set_options
+
+This is clearly deadlock potential due to the reverse lock ordering.
+
+Since uart_set_options() requires holding @console_mutex in order to
+serialize early initialization of the serial-console lock, take the
+@console_mutex in uart_poll_init() instead of configure_kgdboc().
+
+Since configure_kgdboc() was using @console_mutex for safe traversal
+of the console list, change it to use the SRCU iterator instead.
+
+Add comments to uart_set_options() kerneldoc mentioning that it
+requires holding @console_mutex (aka the console_list_lock).
+
+Fixes: 6193bc90849a ("tty: serial: kgdboc: synchronize tty_find_polling_driver() and register_console()")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/tty/moxa.c | 52 +++++++++++++++++++++++-----------------------
- 1 file changed, 26 insertions(+), 26 deletions(-)
+ drivers/tty/serial/kgdboc.c      | 16 ++++------------
+ drivers/tty/serial/serial_core.c |  5 +++++
+ 2 files changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index 9be3d585d5a9..42fa4c878b2e 100644
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -1443,10 +1443,10 @@ static bool moxa_carrier_raised(struct tty_port *port)
- 	return dcd;
- }
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index a3ed9b34e2ab..f7df46cc1890 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -171,6 +171,7 @@ static int configure_kgdboc(void)
+ 	int err = -ENODEV;
+ 	char *cptr = config;
+ 	struct console *cons;
++	int cookie;
  
--static void moxa_dtr_rts(struct tty_port *port, bool onoff)
-+static void moxa_dtr_rts(struct tty_port *port, bool active)
- {
- 	struct moxa_port *ch = container_of(port, struct moxa_port, port);
--	MoxaPortLineCtrl(ch, onoff, onoff);
-+	MoxaPortLineCtrl(ch, active, active);
- }
+ 	if (!strlen(config) || isspace(config[0])) {
+ 		err = 0;
+@@ -189,15 +190,6 @@ static int configure_kgdboc(void)
+ 	if (kgdboc_register_kbd(&cptr))
+ 		goto do_register;
  
+-	/*
+-	 * tty_find_polling_driver() can call uart_set_options()
+-	 * (via poll_init) to configure the uart. Take the console_list_lock
+-	 * in order to synchronize against register_console(), which can also
+-	 * configure the uart via uart_set_options(). This also allows safe
+-	 * traversal of the console list.
+-	 */
+-	console_list_lock();
+-
+ 	p = tty_find_polling_driver(cptr, &tty_line);
+ 	if (!p) {
+ 		console_list_unlock();
+@@ -211,7 +203,8 @@ static int configure_kgdboc(void)
+ 	 */
+ 	console_lock();
  
-@@ -1557,14 +1557,14 @@ static unsigned int moxa_chars_in_buffer(struct tty_struct *tty)
- static int moxa_tiocmget(struct tty_struct *tty)
- {
- 	struct moxa_port *ch = tty->driver_data;
--	bool dtr, rts;
-+	bool dtr_active, rts_active;
- 	int flag = 0;
- 	int status;
- 
--	MoxaPortGetLineOut(ch, &dtr, &rts);
--	if (dtr)
-+	MoxaPortGetLineOut(ch, &dtr_active, &rts_active);
-+	if (dtr_active)
- 		flag |= TIOCM_DTR;
--	if (rts)
-+	if (rts_active)
- 		flag |= TIOCM_RTS;
- 	status = MoxaPortLineStatus(ch);
- 	if (status & 1)
-@@ -1579,8 +1579,8 @@ static int moxa_tiocmget(struct tty_struct *tty)
- static int moxa_tiocmset(struct tty_struct *tty,
- 			 unsigned int set, unsigned int clear)
- {
-+	bool dtr_active, rts_active;
- 	struct moxa_port *ch;
--	bool dtr, rts;
- 
- 	mutex_lock(&moxa_openlock);
- 	ch = tty->driver_data;
-@@ -1589,16 +1589,16 @@ static int moxa_tiocmset(struct tty_struct *tty,
- 		return -EINVAL;
+-	for_each_console(cons) {
++	cookie = console_srcu_read_lock();
++	for_each_console_srcu(cons) {
+ 		int idx;
+ 		if (cons->device && cons->device(cons, &idx) == p &&
+ 		    idx == tty_line) {
+@@ -219,11 +212,10 @@ static int configure_kgdboc(void)
+ 			break;
+ 		}
  	}
++	console_srcu_read_unlock(cookie);
  
--	MoxaPortGetLineOut(ch, &dtr, &rts);
-+	MoxaPortGetLineOut(ch, &dtr_active, &rts_active);
- 	if (set & TIOCM_RTS)
--		rts = true;
-+		rts_active = true;
- 	if (set & TIOCM_DTR)
--		dtr = true;
-+		dtr_active = true;
- 	if (clear & TIOCM_RTS)
--		rts = false;
-+		rts_active = false;
- 	if (clear & TIOCM_DTR)
--		dtr = false;
--	MoxaPortLineCtrl(ch, dtr, rts);
-+		dtr_active = false;
-+	MoxaPortLineCtrl(ch, dtr_active, rts_active);
- 	mutex_unlock(&moxa_openlock);
- 	return 0;
- }
-@@ -1881,10 +1881,10 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
-  *      Syntax:
-  *      int  MoxaPortGetLineOut(int port, bool *dtrState, bool *rtsState);
-  *           int port           : port number (0 - 127)
-- *           bool * dtrState    : pointer to bool to receive the current DTR
-+ *           bool * dtr_active  : pointer to bool to receive the current DTR
-  *                                state. (if NULL, this function will not
-  *                                write to this address)
-- *           bool * rtsState    : pointer to bool to receive the current RTS
-+ *           bool * rts_active  : pointer to bool to receive the current RTS
-  *                                state. (if NULL, this function will not
-  *                                write to this address)
-  *
-@@ -1896,8 +1896,8 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
-  *      Syntax:
-  *      void MoxaPortLineCtrl(int port, bool dtrState, bool rtsState);
-  *           int port           : port number (0 - 127)
-- *           bool dtrState      : DTR output state
-- *           bool rtsState      : RTS output state
-+ *           bool dtr_active    : DTR output state
-+ *           bool rts_active    : RTS output state
-  *
-  *
-  *      Function 15:    Setting the flow control of this port.
-@@ -2105,24 +2105,24 @@ static int MoxaPortSetTermio(struct moxa_port *port, struct ktermios *termio,
- 	return baud;
- }
+ 	console_unlock();
  
--static int MoxaPortGetLineOut(struct moxa_port *port, bool *dtrState,
--		bool *rtsState)
-+static int MoxaPortGetLineOut(struct moxa_port *port, bool *dtr_active,
-+		bool *rts_active)
- {
--	if (dtrState)
--		*dtrState = port->lineCtrl & DTR_ON;
--	if (rtsState)
--		*rtsState = port->lineCtrl & RTS_ON;
-+	if (dtr_active)
-+		*dtr_active = port->lineCtrl & DTR_ON;
-+	if (rts_active)
-+		*rts_active = port->lineCtrl & RTS_ON;
+-	console_list_unlock();
+-
+ 	kgdb_tty_driver = p;
+ 	kgdb_tty_line = tty_line;
  
- 	return 0;
- }
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b9fbbee598b8..ec874f3a567c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2212,6 +2212,9 @@ EXPORT_SYMBOL_GPL(uart_parse_options);
+  * @parity: parity character - 'n' (none), 'o' (odd), 'e' (even)
+  * @bits: number of data bits
+  * @flow: flow control character - 'r' (rts)
++ *
++ * Locking: Caller must hold console_list_lock in order to serialize
++ * early initialization of the serial-console lock.
+  */
+ int
+ uart_set_options(struct uart_port *port, struct console *co,
+@@ -2619,7 +2622,9 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
  
--static void MoxaPortLineCtrl(struct moxa_port *port, bool dtr, bool rts)
-+static void MoxaPortLineCtrl(struct moxa_port *port, bool dtr_active, bool rts_active)
- {
- 	u8 mode = 0;
- 
--	if (dtr)
-+	if (dtr_active)
- 		mode |= DTR_ON;
--	if (rts)
-+	if (rts_active)
- 		mode |= RTS_ON;
- 	port->lineCtrl = mode;
- 	moxafunc(port->tableAddr, FC_LineControl, mode);
+ 	if (!ret && options) {
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
++		console_list_lock();
+ 		ret = uart_set_options(port, NULL, baud, parity, bits, flow);
++		console_list_unlock();
+ 	}
+ out:
+ 	mutex_unlock(&tport->mutex);
+
+base-commit: b7bfaa761d760e72a969d116517eaa12e404c262
 -- 
 2.30.2
 
