@@ -2,125 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F14C54EBD
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 16:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F44C6379F
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 16:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbjALQT2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Jan 2023 11:19:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        id S240694AbjALQw5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 11:52:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232772AbjALQSK (ORCPT
+        with ESMTP id S241109AbjALQs6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Jan 2023 11:18:10 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E36B1CB06;
-        Thu, 12 Jan 2023 08:15:13 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id j16-20020a05600c1c1000b003d9ef8c274bso11145175wms.0;
-        Thu, 12 Jan 2023 08:15:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vHGKsGfjuxBNZeCDD82bELPKj131qyJQ2Bd7A7NbU7Q=;
-        b=Ww9qNjvgkREaAu0zU9cwlii9y7ovC6P0Q9rSF5TqJXOMJ5ER7HUQamdRJ4LMaAIq0p
-         Hjx7K8W9OccmfOxB0CxwH55NaO0rnYgttspggkk5fXr43yIH2bXmVygin0nSKasSs+jO
-         tE3IMYmWSTT1r0oya7L/6HsK8f/FcNuBSaDYt9exM5yoxIWTUmzuhxzU5AzlLDOBIDOV
-         2/qJmgcb03SeXWcTOIsYyXHRPZA38+kfqATLpo9MRxsTqsVAcGmX2D99ZRJAAiiMCRtV
-         Ukgz4qD0ZkxDJ35+Sbyl8kHi9lr8kd482xtuDRqJNgQIGQdGoJRSdre+OydLPICnd/Bg
-         jSsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vHGKsGfjuxBNZeCDD82bELPKj131qyJQ2Bd7A7NbU7Q=;
-        b=2u5exSTEDmXYhYBVLRCG9K65eQeWMEAC7T78Qgmzv/ck/G7cycaUFtmGX5HOT885BX
-         r7G/dTC5ofTq7xNf74Lac9cF2pHtK8SO0FnGQo1f0ovAHen9whjd2nyQvPtczDVL5Vir
-         c6Ssk51n92zqCQs6WgBgXKb8Y2K7Qkc8MjnzwUXZSCCUdWSZGJt+UH0I5EhZTXBEayiH
-         bmoNFef+bBQFV6sSgEAYXbICdTy3MLFy6eTAgHs/JJZmNwllxiLDfvakHzl7qwudT10C
-         UOuG75kkOpXz6t98tmWbf2FUQYt1RgPS+4/9aGo6v3pmSoM1xyseQwO6PkbPueAyEjyq
-         hOYA==
-X-Gm-Message-State: AFqh2ko3F8q65+yBR8/BSSQxQmLZKMfVLB0ocCSc2Hi/AN7UYyAshBvq
-        Ok8DBQ5yFsohlc84WBkqAWA59HRkXdY=
-X-Google-Smtp-Source: AMrXdXsUlAv4+Kk/nAWfqgFCh6Fdg4bI6Crndu/JHl81fSX9vtPAEFWb+zlE2PjU1jowl8VhoAp9rw==
-X-Received: by 2002:a7b:c449:0:b0:3d1:e1f4:21dc with SMTP id l9-20020a7bc449000000b003d1e1f421dcmr55886195wmi.14.1673540112150;
-        Thu, 12 Jan 2023 08:15:12 -0800 (PST)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id n14-20020a05600c4f8e00b003c6b7f5567csm10425907wmq.0.2023.01.12.08.15.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Jan 2023 08:15:11 -0800 (PST)
-Message-ID: <97b5621c-f75c-a19d-0759-b19a8a7eb83f@gmail.com>
-Date:   Thu, 12 Jan 2023 17:15:10 +0100
+        Thu, 12 Jan 2023 11:48:58 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88045C1D9
+        for <linux-serial@vger.kernel.org>; Thu, 12 Jan 2023 08:39:04 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 5B5F680CB0;
+        Thu, 12 Jan 2023 17:38:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1673541530;
+        bh=4f4T7bt3j8qj7FQzMPy1igU/EfnhB12Tggy+VjN0tmI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=R4v8PDRRR7HBH5GHlxkBZOlCTLuS4eDI1P1nA5VlwoVAfC6+22eESTJYM6OihXPN/
+         HQ7670gY0hT5IF3yoQwykY8epoV9z/IxQQmPQyx67XMJecAlWMFHvVtaj4MieebrEz
+         NSeNxLuAhZX3T6QepWHMXCqyEHo8DIqJ2yge2wpf0BcWl2g+p2IDfIA03Iuzy8E+TU
+         ZbGqcDvy3AyugzXOl/mjRahpxjKtb0GH6ZzK8+kdtPrHhRIkmh38VU8AkvdC8/MB+t
+         bsgvOVmDfHfRpKmeVAf8yWD5FHAequdlkOLWH8z0HEGhkDWARnHQlB6JHWM+CkiwSl
+         +UbqTHxSmoV7A==
+Message-ID: <78e3f61f-4f87-9ac5-7c7c-172714da69d3@denx.de>
+Date:   Thu, 12 Jan 2023 17:38:48 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.0
-Subject: Re: [PATCH v2] serial: atmel: fix incorrect baudrate setup
-Content-Language: fr
-To:     Tobias Schramm <t.schramm@manjaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230109072940.202936-1-t.schramm@manjaro.org>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <20230109072940.202936-1-t.schramm@manjaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
+ handling into single IRQ handler
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-serial@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+References: <20221216115338.7150-1-marex@denx.de>
+ <Y6sHr5kuxUoahlzJ@hovoldconsulting.com> <Y7vou3wAeLP4X+TY@linutronix.de>
+ <Y8AHaJIttNga68q4@hovoldconsulting.com>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <Y8AHaJIttNga68q4@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 09/01/2023 à 08:29, Tobias Schramm a écrit :
-> Commit ba47f97a18f2 ("serial: core: remove baud_rates when serial console
-> setup") changed uart_set_options to select the correct baudrate
-> configuration based on the absolute error between requested baudrate and
-> available standard baudrate settings.
-> Prior to that commit the baudrate was selected based on which predefined
-> standard baudrate did not exceed the requested baudrate.
-> This change of selection logic was never reflected in the atmel serial
-> driver. Thus the comment left in the atmel serial driver is no longer
-> accurate.
-> Additionally the manual rounding up described in that comment and applied
-> via (quot - 1) requests an incorrect baudrate. Since uart_set_options uses
-> tty_termios_encode_baud_rate to determine the appropriate baudrate flags
-> this can cause baudrate selection to fail entirely because
-> tty_termios_encode_baud_rate will only select a baudrate if relative error
-> between requested and selected baudrate does not exceed +/-2%.
-> Fix that by requesting actual, exact baudrate used by the serial.
+On 1/12/23 14:13, Johan Hovold wrote:
+> On Mon, Jan 09, 2023 at 11:13:15AM +0100, Sebastian Andrzej Siewior wrote:
+>> On 2022-12-27 15:56:47 [+0100], Johan Hovold wrote:
+>>> On Fri, Dec 16, 2022 at 12:53:38PM +0100, Marek Vasut wrote:
+>>>> Requesting an interrupt with IRQF_ONESHOT will run the primary handler
+>>>> in the hard-IRQ context even in the force-threaded mode. The
+>>>> force-threaded mode is used by PREEMPT_RT in order to avoid acquiring
+>>>> sleeping locks (spinlock_t) in hard-IRQ context. This combination
+>>>> makes it impossible and leads to "sleeping while atomic" warnings.
+>>>>
+>>>> Use one interrupt handler for both handlers (primary and secondary)
+>>>> and drop the IRQF_ONESHOT flag which is not needed.
+>>>>
+>>>> Fixes: e359b4411c283 ("serial: stm32: fix threaded interrupt handling")
+>>>
+>>> I don't think a Fixes tag is warranted as this is only needed due to
+>>> this undocumented quirk of PREEMPT_RT.
+>>
+>> It is not an undocumented quirk of PREEMPT_RT. The part that might not
+>> be well documented is that IRQF_ONESHOT won't run the primary handler as
+>> a threaded handler. This is also the case for IRQF_NO_THREAD and
+>> IRQF_PERCPU but might be more obvious.
 > 
-> Fixes: ba47f97a18f2 ("serial: core: remove baud_rates when serial console setup")
-> Signed-off-by: Tobias Schramm <t.schramm@manjaro.org>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-
-Tested-on sam9g35
-> ---
->  drivers/tty/serial/atmel_serial.c | 8 +-------
->  1 file changed, 1 insertion(+), 7 deletions(-)
+> Yeah, that not being documented seems like an oversight as generally
+> drivers should not need be changed to continue working on PREEMPT_RT (or
+> with forced-threading generally).
 > 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index f1c06e12efa0..9cd7479b03c0 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2657,13 +2657,7 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
->  	else if (mr == ATMEL_US_PAR_ODD)
->  		*parity = 'o';
->  
-> -	/*
-> -	 * The serial core only rounds down when matching this to a
-> -	 * supported baud rate. Make sure we don't end up slightly
-> -	 * lower than one of those, as it would make us fall through
-> -	 * to a much lower baud rate than we really want.
-> -	 */
-> -	*baud = port->uartclk / (16 * (quot - 1));
-> +	*baud = port->uartclk / (16 * quot);
->  }
->  
->  static int __init atmel_console_setup(struct console *co, char *options)
-Thanks !
+>> Anyway, if the primary handler is not threaded then it runs in HARDIRQ
+>> context and here you must not use a spinlock_t. This is documented in
+>> Documentation/locking/locktypes.rst and there is also a LOCKDEP warning
+>> for this on !RT which is off by default because it triggers with printk
+>> (and this is worked on).
+> 
+> All interrupt handlers typically run in hard interrupt context unless
+> explicitly requested to be threaded on !RT and drivers still use
+> spinlock_t for that so not sure how that lockdep warning is supposed to
+> work. Or do you mean that you have a lockdep warning specifically for
+> IRQF_ONESHOT primary handlers?
+>   
+>>> And this should not be backported in any case.
+>>
+>> Such things have been backported via -stable in the past. If you
+>> disagree, please keep me in loop while is merged so I can poke people to
+>> backport it as part of the RT patch for the relevant kernels.
+> 
+> The author did not seem to think this was stable material as there is no
+> cc-stable tag and it also seems fairly intrusive.
 
+The author does not have enough experience with preempt-rt to make that 
+determination, hence deferred to Sebastian for better judgement.
 
-Regards,
-Richard
+> But if the ST guys or whoever cares about this driver are fine with this
+> being backported, I don't really mind either.
+
+[...]
