@@ -2,142 +2,76 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EFBC61DB3
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 08:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BC0C54EBD
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 08:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236674AbjALICi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Jan 2023 03:02:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        id S236034AbjALIn5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 03:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239504AbjALICN (ORCPT
+        with ESMTP id S239869AbjALInc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Jan 2023 03:02:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73324FD2B;
-        Thu, 12 Jan 2023 00:01:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30C34B81D8E;
-        Thu, 12 Jan 2023 08:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3816C433F1;
-        Thu, 12 Jan 2023 08:01:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673510512;
-        bh=DnqvmF2aWahKM6zVZyQwE90cv9Dp02hz9VBXVjL20Pw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WmZOmhiOag8SJaiXECdA5eTpqRdvsNxnA0S9wm2lTUl+bSLoeURIvZSq0Gw8ZoAqy
-         BrmiTm60/hX1krQwEqx9s5cLZ3WVEXBxCyqnd3/OAp6hfIyjsI962ku3CbAqNL55h6
-         g6YCVMqKMk09OtKPiFC6cexTY2Crd5h7WvMoG9tPAJi80xArnkziPYkNSvUYutUBCM
-         csJ+mPL6ghZm+ORVNHdLO5zuLlz7DfTZo38NNSf4M1t8gGz1Hb++yFjy+VicrbNR5q
-         /yhBKZ2YXmOq6tkhxb2R16gxAicQyznAAWog7d4D6LP8wu+3AX3QCLmJpStvl4X3yq
-         B7XPEhA20mhrQ==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     gregkh@linuxfoundation.org
-Cc:     Kees Cook <keescook@chromium.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 09/11] tty: vt: separate array juggling to juggle_array()
-Date:   Thu, 12 Jan 2023 09:01:34 +0100
-Message-Id: <20230112080136.4929-9-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230112080136.4929-1-jirislaby@kernel.org>
-References: <20230112080136.4929-1-jirislaby@kernel.org>
+        Thu, 12 Jan 2023 03:43:32 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48555274A;
+        Thu, 12 Jan 2023 00:41:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673512879; x=1705048879;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=+yHyE9ATjVCE06kM12+yzDWxrejUryPNZr0eQsaD0Fo=;
+  b=eJfDrHwdlERSzfx4HavjPOPdcgXs/njXHMeSUk8iTYlnimQYQYkYcYCV
+   GdwQN2XqQ1unq0D/KW5X6NVDac+Midy7e/1X6E62ny52aBVOHlAza9EPp
+   LDNjaf2nZltJGBnBCwVIC9rFzOB6cgBFES2vVBxNbmw+7DeFfqWazqhjv
+   fs5ilQlT3IjHT7xf9bRK76lZzrcRVcX8JiEBAEexV/LkOBr+5GzR35LzE
+   9ZzW7vvGb3yw7DMXUdCdwc/O2i53koiP0eMC7ayukMPQlCyJwJgAn1XE/
+   iZZgMiLQ3/MVURztUPp9ut4cfFqRWRwZgZZP2tQYSOWsuep/jSTzcjSqf
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="311470876"
+X-IronPort-AV: E=Sophos;i="5.96,319,1665471600"; 
+   d="scan'208";a="311470876"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 00:41:19 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="659700505"
+X-IronPort-AV: E=Sophos;i="5.96,319,1665471600"; 
+   d="scan'208";a="659700505"
+Received: from vbucoci-mobl1.ger.corp.intel.com ([10.252.52.43])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 00:41:17 -0800
+Date:   Thu, 12 Jan 2023 10:41:11 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc:     gregkh@linuxfoundation.org, Kees Cook <keescook@chromium.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/11] tty: vt: drop get_vc_uniscr()
+In-Reply-To: <20230112080136.4929-2-jirislaby@kernel.org>
+Message-ID: <f7854019-b7da-27ce-5b97-17196e2fab72@linux.intel.com>
+References: <20230112080136.4929-1-jirislaby@kernel.org> <20230112080136.4929-2-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-151321998-1673512878=:1665"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The algorithm used for scrolling is the array juggling. It has
-complexity O(N) and space complexity O(1). I.e. quite fast w/o
-requirements for temporary storage.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Move the algorithm to a separate function so it is obvious what it is.
-It is almost generic (except the array type), so if anyone else wants
-array rotation, feel free to make it generic and move it to include/.
+--8323329-151321998-1673512878=:1665
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-And rename all the variables from i, j, k, sz, d, and so on to something
-saner.
+On Thu, 12 Jan 2023, Jiri Slaby (SUSE) wrote:
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
----
- drivers/tty/vt/vt.c | 52 ++++++++++++++++++++++++---------------------
- 1 file changed, 28 insertions(+), 24 deletions(-)
+> Its definition depends on the NO_VC_UNI_SCREEN macro. But that is never
+> defined, so remove all this completely. I.e. expand the macro to
+> vc->vc_uni_screen everywhere.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 74db07b32abe..7cda18b7ee3d 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -398,40 +398,44 @@ static void vc_uniscr_clear_lines(struct vc_data *vc, unsigned int y,
- 			memset32(vc->vc_uni_lines[y++], ' ', vc->vc_cols);
- }
- 
-+/* juggling array rotation algorithm (complexity O(N), size complexity O(1)) */
-+static void juggle_array(u32 **array, unsigned int size, unsigned int nr)
-+{
-+	unsigned int gcd_idx;
-+
-+	for (gcd_idx = 0; gcd_idx < gcd(nr, size); gcd_idx++) {
-+		u32 *gcd_idx_val = array[gcd_idx];
-+		unsigned int dst_idx = gcd_idx;
-+
-+		while (1) {
-+			unsigned int src_idx = (dst_idx + nr) % size;
-+			if (src_idx == gcd_idx)
-+				break;
-+
-+			array[dst_idx] = array[src_idx];
-+			dst_idx = src_idx;
-+		}
-+
-+		array[dst_idx] = gcd_idx_val;
-+	}
-+}
-+
- static void vc_uniscr_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
- 			     enum con_scroll dir, unsigned int nr)
- {
- 	u32 **uni_lines = vc->vc_uni_lines;
--	unsigned int i, j, k, sz, d, clear;
-+	unsigned int size = b - t;
- 
- 	if (!uni_lines)
- 		return;
- 
--	sz = b - t;
--	clear = b - nr;
--	d = nr;
--
- 	if (dir == SM_DOWN) {
--		clear = t;
--		d = sz - nr;
--	}
--
--	for (i = 0; i < gcd(d, sz); i++) {
--		u32 *tmp = uni_lines[t + i];
--		j = i;
--		while (1) {
--			k = j + d;
--			if (k >= sz)
--				k -= sz;
--			if (k == i)
--				break;
--			uni_lines[t + j] = uni_lines[t + k];
--			j = k;
--		}
--		uni_lines[t + j] = tmp;
-+		juggle_array(&uni_lines[top], size, size - nr);
-+		vc_uniscr_clear_lines(vc, t, nr);
-+	} else {
-+		juggle_array(&uni_lines[top], size, nr);
-+		vc_uniscr_clear_lines(vc, b - nr, nr);
- 	}
--
--	vc_uniscr_clear_lines(vc, clear, nr);
- }
- 
- static void vc_uniscr_copy_area(u32 **dst_lines,
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+
 -- 
-2.39.0
+ i.
 
+--8323329-151321998-1673512878=:1665--
