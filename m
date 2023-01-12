@@ -2,124 +2,170 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A82C4C67871
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Jan 2023 17:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBB1C54EBC
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 08:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235351AbjAKRal (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Jan 2023 12:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
+        id S231278AbjALIBo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 03:01:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239779AbjAKR3B (ORCPT
+        with ESMTP id S235746AbjALIBn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Jan 2023 12:29:01 -0500
+        Thu, 12 Jan 2023 03:01:43 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B510ECFA;
-        Wed, 11 Jan 2023 09:26:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE2D5F52;
+        Thu, 12 Jan 2023 00:01:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ED6761DA8;
-        Wed, 11 Jan 2023 17:26:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEBF8C433D2;
-        Wed, 11 Jan 2023 17:26:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BD4C61F22;
+        Thu, 12 Jan 2023 08:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54543C433D2;
+        Thu, 12 Jan 2023 08:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673457961;
-        bh=NP2y6S++5x5+MUjd094n7ofaKtyxtCts0E9o4Nm2WhA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fTRr1wKfHYmqMZ5v6bSHbTdMA2ka1a7Nnlw8K+fSSkbq5Nr2+xsgG8Vvz5DEPQD52
-         XR2Cznr9+ibqxJEcnihsl/sg6Vh2djlx3pRKodDWjmQRIBlAKjzo7+kIlVPkgvQHMI
-         yrw5+uzjR5x1ilAAvGAbjb6VtLqjULGI7zS64eanDyOLLjzf/PkwGczFQO7xcQqQjd
-         FJmDKFouwNkx7lnnjYBz0EgNP2G6vmdBMkX0pkssT+PSVrx7K+jv8jWH2S94kyAu9L
-         cBIRYZTienPKKu4yaJKGBFHwJd3LvTBTgHgoanYP7+r7vzXHHbGTegkozs3mIeN3J1
-         y63M2Wkx05RMw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1pFerW-00047W-B0; Wed, 11 Jan 2023 18:26:06 +0100
-Date:   Wed, 11 Jan 2023 18:26:06 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Samuel Iglesias =?utf-8?Q?Gons=C3=A1lvez?= 
-        <siglesias@igalia.com>, Rodolfo Giometti <giometti@enneenne.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        David Lin <dtwlin@gmail.com>, Alex Elder <elder@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH v3 07/13] tty: Convert ->dtr_rts() to take bool argument
-Message-ID: <Y77xLmLCbldH1VOX@hovoldconsulting.com>
-References: <20230111142331.34518-1-ilpo.jarvinen@linux.intel.com>
- <20230111142331.34518-8-ilpo.jarvinen@linux.intel.com>
+        s=k20201202; t=1673510501;
+        bh=AUd9BP1H6PrTlB87Yq1IOGc/Bm8jrbLRoRhOWz62syw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Nj5KuNiPjFfExtgXUtXVwd6rcpw/WegnC5dAlOuro8LsqeQsFcQiW7QCkJYQUmAmQ
+         xZ6t5B0X9kaH2jKyzmVN1DDWZ5FdZAkXCU8xrLZFy1KZOd6rARkCkyxVW0trd5c8HE
+         Y5+DzKsH7EukjataO2sAXVKofBRx3cak4I6piDhBcwVDOxOdI3FHe80YaKRtqWaqHZ
+         fTAeBHgsFZPKRIaTn55Vum8fzxAyKwSsWo5ngwOYcWepTWaKD02em5hCfb7y9TK3Ye
+         grCXSTNvcwiB2AFnsDFQ/9c2uGfmU3b5/nZlmY8pU9fbd97EEYPonE+cEyc3OXUZEz
+         fRQCMz6lT4Ntw==
+From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     Kees Cook <keescook@chromium.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 02/11] tty: vt: drop get_vc_uniscr()
+Date:   Thu, 12 Jan 2023 09:01:27 +0100
+Message-Id: <20230112080136.4929-2-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230112080136.4929-1-jirislaby@kernel.org>
+References: <20230112080136.4929-1-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230111142331.34518-8-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 11, 2023 at 04:23:25PM +0200, Ilpo Järvinen wrote:
-> Convert the raise/on parameter in ->dtr_rts() to bool through the
-> callchain. The parameter is used like bool. In USB serial, there
-> remains a few implicit bool -> larger type conversions because some
-> devices use u8 in their control messages.
-> 
-> In moxa_tiocmget(), dtr variable was reused for line status which
-> requires int so use a separate variable for status.
-> 
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/char/pcmcia/synclink_cs.c    |  4 +--
->  drivers/mmc/core/sdio_uart.c         |  4 +--
->  drivers/staging/greybus/uart.c       |  2 +-
->  drivers/tty/amiserial.c              |  2 +-
->  drivers/tty/hvc/hvc_console.c        |  4 +--
->  drivers/tty/hvc/hvc_console.h        |  2 +-
->  drivers/tty/hvc/hvc_iucv.c           |  4 +--
->  drivers/tty/moxa.c                   | 54 ++++++++++++++--------------
->  drivers/tty/mxser.c                  |  2 +-
->  drivers/tty/n_gsm.c                  |  2 +-
->  drivers/tty/serial/serial_core.c     |  8 ++---
->  drivers/tty/synclink_gt.c            |  2 +-
->  drivers/tty/tty_port.c               |  4 +--
->  drivers/usb/class/cdc-acm.c          |  2 +-
->  drivers/usb/serial/ch341.c           |  2 +-
->  drivers/usb/serial/cp210x.c          |  4 +--
->  drivers/usb/serial/cypress_m8.c      |  6 ++--
->  drivers/usb/serial/digi_acceleport.c |  6 ++--
->  drivers/usb/serial/f81232.c          |  2 +-
->  drivers/usb/serial/f81534.c          |  2 +-
->  drivers/usb/serial/ftdi_sio.c        |  2 +-
->  drivers/usb/serial/ipw.c             |  2 +-
->  drivers/usb/serial/keyspan.c         |  2 +-
->  drivers/usb/serial/keyspan_pda.c     |  2 +-
->  drivers/usb/serial/mct_u232.c        |  4 +--
->  drivers/usb/serial/mxuport.c         |  2 +-
->  drivers/usb/serial/pl2303.c          |  2 +-
->  drivers/usb/serial/quatech2.c        |  2 +-
->  drivers/usb/serial/sierra.c          |  2 +-
->  drivers/usb/serial/spcp8x5.c         |  2 +-
->  drivers/usb/serial/ssu100.c          |  2 +-
->  drivers/usb/serial/upd78f0730.c      |  6 ++--
->  drivers/usb/serial/usb-serial.c      |  2 +-
->  drivers/usb/serial/usb-wwan.h        |  2 +-
->  drivers/usb/serial/usb_wwan.c        |  2 +-
->  drivers/usb/serial/xr_serial.c       |  6 ++--
->  include/linux/tty_port.h             |  4 +--
->  include/linux/usb/serial.h           |  2 +-
->  38 files changed, 84 insertions(+), 82 deletions(-)
+Its definition depends on the NO_VC_UNI_SCREEN macro. But that is never
+defined, so remove all this completely. I.e. expand the macro to
+vc->vc_uni_screen everywhere.
 
-Same here. No need to lump the tty-port changes with USB-serial changes.
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/tty/vt/vt.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
 
-Johan
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 4b804665c51f..7e5baf9f8ad8 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -316,13 +316,6 @@ void schedule_console_callback(void)
+  * Code to manage unicode-based screen buffers
+  */
+ 
+-#ifdef NO_VC_UNI_SCREEN
+-/* this disables and optimizes related code away at compile time */
+-#define get_vc_uniscr(vc) NULL
+-#else
+-#define get_vc_uniscr(vc) vc->vc_uni_screen
+-#endif
+-
+ typedef uint32_t char32_t;
+ 
+ /*
+@@ -369,7 +362,7 @@ static void vc_uniscr_set(struct vc_data *vc, struct uni_screen *new_uniscr)
+ 
+ static void vc_uniscr_putc(struct vc_data *vc, char32_t uc)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr)
+ 		uniscr->lines[vc->state.y][vc->state.x] = uc;
+@@ -377,7 +370,7 @@ static void vc_uniscr_putc(struct vc_data *vc, char32_t uc)
+ 
+ static void vc_uniscr_insert(struct vc_data *vc, unsigned int nr)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr) {
+ 		char32_t *ln = uniscr->lines[vc->state.y];
+@@ -390,7 +383,7 @@ static void vc_uniscr_insert(struct vc_data *vc, unsigned int nr)
+ 
+ static void vc_uniscr_delete(struct vc_data *vc, unsigned int nr)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr) {
+ 		char32_t *ln = uniscr->lines[vc->state.y];
+@@ -404,7 +397,7 @@ static void vc_uniscr_delete(struct vc_data *vc, unsigned int nr)
+ static void vc_uniscr_clear_line(struct vc_data *vc, unsigned int x,
+ 				 unsigned int nr)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr) {
+ 		char32_t *ln = uniscr->lines[vc->state.y];
+@@ -416,7 +409,7 @@ static void vc_uniscr_clear_line(struct vc_data *vc, unsigned int x,
+ static void vc_uniscr_clear_lines(struct vc_data *vc, unsigned int y,
+ 				  unsigned int nr)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr) {
+ 		unsigned int cols = vc->vc_cols;
+@@ -429,7 +422,7 @@ static void vc_uniscr_clear_lines(struct vc_data *vc, unsigned int y,
+ static void vc_uniscr_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
+ 			     enum con_scroll dir, unsigned int nr)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr) {
+ 		unsigned int i, j, k, sz, d, clear;
+@@ -545,7 +538,7 @@ int vc_uniscr_check(struct vc_data *vc)
+ void vc_uniscr_copy_line(const struct vc_data *vc, void *dest, bool viewed,
+ 			 unsigned int row, unsigned int col, unsigned int nr)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 	int offset = row * vc->vc_size_row + col * 2;
+ 	unsigned long pos;
+ 
+@@ -1206,7 +1199,7 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
+ 	if (!newscreen)
+ 		return -ENOMEM;
+ 
+-	if (get_vc_uniscr(vc)) {
++	if (vc->vc_uni_screen) {
+ 		new_uniscr = vc_uniscr_alloc(new_cols, new_rows);
+ 		if (!new_uniscr) {
+ 			kfree(newscreen);
+@@ -1258,7 +1251,7 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
+ 	end = old_origin + old_row_size * min(old_rows, new_rows);
+ 
+ 	vc_uniscr_copy_area(new_uniscr, new_cols, new_rows,
+-			    get_vc_uniscr(vc), rlth/2, first_copied_row,
++			    vc->vc_uni_screen, rlth/2, first_copied_row,
+ 			    min(old_rows, new_rows));
+ 	vc_uniscr_set(vc, new_uniscr);
+ 
+@@ -4700,7 +4693,7 @@ EXPORT_SYMBOL_GPL(screen_glyph);
+ 
+ u32 screen_glyph_unicode(const struct vc_data *vc, int n)
+ {
+-	struct uni_screen *uniscr = get_vc_uniscr(vc);
++	struct uni_screen *uniscr = vc->vc_uni_screen;
+ 
+ 	if (uniscr)
+ 		return uniscr->lines[n / vc->vc_cols][n % vc->vc_cols];
+-- 
+2.39.0
+
