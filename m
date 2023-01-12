@@ -2,53 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85130C54EBC
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 09:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D55C54EBD
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 10:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231706AbjALJzY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Jan 2023 04:55:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35882 "EHLO
+        id S233069AbjALKCd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 05:02:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231222AbjALJym (ORCPT
+        with ESMTP id S230523AbjALKAr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Jan 2023 04:54:42 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41CA64FF;
-        Thu, 12 Jan 2023 01:52:18 -0800 (PST)
+        Thu, 12 Jan 2023 05:00:47 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004536338;
+        Thu, 12 Jan 2023 01:59:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673517138; x=1705053138;
+  t=1673517587; x=1705053587;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=eLWDeyC8QQXWhFINsIlAtVneYWu8MSfnph1t9h36pHw=;
-  b=l3Prdq69spzyqUqucMGPxMT8sxK8h0LB+QlI+0qbGymvwxo+qgm5L+SR
-   vxv1KeGAdNUbUp+jN/DDXQnogRpsJ7oK2r+08Nyrsb6YqavWu3cuw6OhW
-   /Kfb2LSEfybAhDESyVS0h8yeWMWg1rVlkRhI3NNPbVoEr5H/KROwc9KnH
-   Kw43aOw7cHfaTVCpZBwxLrtZM1aJEfRZt0nGiqRXC8rRV/riB8jB5kBnw
-   8nTwtj2Pqqw02ZMcPD3Tz5mPFGuO96C1u67pDKaPrj+YnSPNHz7y2UqCF
-   AONb81rrtf5ohXKZ4R+XWB6LnCfaZynytXhLnP4hZG6Tyq8nfDxsdyoqE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="304037584"
+  bh=oIV2dTHN9s8ehW+g1hEbVndTxm7Mu3+RjFEWQXYtaTg=;
+  b=LVocnUAmoO/pv5EUeF37lScxeJw9LrcrNtf5Kuh7WkHAVw77grryJLIe
+   952ALYazGkGCiphNkM064+uB7KI8OkPgQvQmCOKTbLsS35w5jXvEfOqyQ
+   QRt/TVwTX93nRYaemD+fhHQfOMoyigTfKEb/eqUSVON4m6ytSiP7241lz
+   h3OXq7qPct3cAwH67LGc8mb8cibS/C8rzx/tsOdNnh3MGPaQJXzEk6Gz2
+   221grizPa3O0hi/1gFucJ/H3fDKEiVvUSMRiZ3BtrZv1xQyD1b6LYRTR5
+   lsN1av3qCUlUc64+b6EAZsYa3v62M8FvIHpzkp3yW3NlcR+XLTw0oZNT/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="303363452"
 X-IronPort-AV: E=Sophos;i="5.96,319,1665471600"; 
-   d="scan'208";a="304037584"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 01:52:18 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="903116283"
+   d="scan'208";a="303363452"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 01:59:47 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="800155083"
 X-IronPort-AV: E=Sophos;i="5.96,319,1665471600"; 
-   d="scan'208";a="903116283"
+   d="scan'208";a="800155083"
 Received: from vbucoci-mobl1.ger.corp.intel.com ([10.252.52.43])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 01:52:16 -0800
-Date:   Thu, 12 Jan 2023 11:52:14 +0200 (EET)
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 01:59:46 -0800
+Date:   Thu, 12 Jan 2023 11:59:43 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc:     gregkh@linuxfoundation.org, Kees Cook <keescook@chromium.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 08/11] tty: vt: simplify some unicode conditions
-In-Reply-To: <20230112080136.4929-8-jirislaby@kernel.org>
-Message-ID: <2a1c8867-92e9-edce-257e-89a343efe836@linux.intel.com>
-References: <20230112080136.4929-1-jirislaby@kernel.org> <20230112080136.4929-8-jirislaby@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 10/11] tty: vt: saner names for more scroll variables
+In-Reply-To: <20230112080136.4929-10-jirislaby@kernel.org>
+Message-ID: <f48acfdd-779d-2f6-27a5-39168e6f4ac0@linux.intel.com>
+References: <20230112080136.4929-1-jirislaby@kernel.org> <20230112080136.4929-10-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1038312899-1673517137=:1665"
+Content-Type: multipart/mixed; boundary="8323329-1577497597-1673517587=:1665"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -56,161 +58,104 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1038312899-1673517137=:1665
+--8323329-1577497597-1673517587=:1665
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Thu, 12 Jan 2023, Jiri Slaby (SUSE) wrote:
 
-> After previous patches, we can simply test vc->vc_uni_lines, so do so in
-> many unicode functions. This makes the code more compact. And even use
->   if (!)
->     return;
-> in vc_uniscr_scroll(), so that the whole code is indented on the left.
+> Rename more variables (t, b, s, d) -> (top, bottom, src, dst) to make
+> them more obvious.
 > 
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > ---
->  drivers/tty/vt/vt.c | 85 +++++++++++++++++++--------------------------
->  1 file changed, 36 insertions(+), 49 deletions(-)
+>  drivers/tty/vt/vt.c | 40 ++++++++++++++++++++++------------------
+>  1 file changed, 22 insertions(+), 18 deletions(-)
 > 
 > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index db72375141b0..74db07b32abe 100644
+> index 7cda18b7ee3d..165c81211bdc 100644
 > --- a/drivers/tty/vt/vt.c
 > +++ b/drivers/tty/vt/vt.c
-> @@ -357,18 +357,14 @@ static void vc_uniscr_set(struct vc_data *vc, u32 **new_uni_lines)
->  
->  static void vc_uniscr_putc(struct vc_data *vc, u32 uc)
->  {
-> -	u32 **uni_lines = vc->vc_uni_lines;
-> -
-> -	if (uni_lines)
-> -		uni_lines[vc->state.y][vc->state.x] = uc;
-> +	if (vc->vc_uni_lines)
-> +		vc->vc_uni_lines[vc->state.y][vc->state.x] = uc;
+> @@ -420,21 +420,22 @@ static void juggle_array(u32 **array, unsigned int size, unsigned int nr)
+>  	}
 >  }
 >  
->  static void vc_uniscr_insert(struct vc_data *vc, unsigned int nr)
->  {
-> -	u32 **uni_lines = vc->vc_uni_lines;
-> -
-> -	if (uni_lines) {
-> -		u32 *ln = uni_lines[vc->state.y];
-> +	if (vc->vc_uni_lines) {
-> +		u32 *ln = vc->vc_uni_lines[vc->state.y];
->  		unsigned int x = vc->state.x, cols = vc->vc_cols;
->  
->  		memmove(&ln[x + nr], &ln[x], (cols - x - nr) * sizeof(*ln));
-> @@ -378,10 +374,8 @@ static void vc_uniscr_insert(struct vc_data *vc, unsigned int nr)
->  
->  static void vc_uniscr_delete(struct vc_data *vc, unsigned int nr)
->  {
-> -	u32 **uni_lines = vc->vc_uni_lines;
-> -
-> -	if (uni_lines) {
-> -		u32 *ln = uni_lines[vc->state.y];
-> +	if (vc->vc_uni_lines) {
-> +		u32 *ln = vc->vc_uni_lines[vc->state.y];
->  		unsigned int x = vc->state.x, cols = vc->vc_cols;
->  
->  		memcpy(&ln[x], &ln[x + nr], (cols - x - nr) * sizeof(*ln));
-> @@ -392,59 +386,52 @@ static void vc_uniscr_delete(struct vc_data *vc, unsigned int nr)
->  static void vc_uniscr_clear_line(struct vc_data *vc, unsigned int x,
->  				 unsigned int nr)
->  {
-> -	u32 **uni_lines = vc->vc_uni_lines;
-> -
-> -	if (uni_lines) {
-> -		u32 *ln = uni_lines[vc->state.y];
-> -
-> -		memset32(&ln[x], ' ', nr);
-> -	}
-> +	if (vc->vc_uni_lines)
-> +		memset32(&vc->vc_uni_lines[vc->state.y][x], ' ', nr);
->  }
->  
->  static void vc_uniscr_clear_lines(struct vc_data *vc, unsigned int y,
->  				  unsigned int nr)
->  {
-> -	u32 **uni_lines = vc->vc_uni_lines;
-> -
-> -	if (uni_lines) {
-> -		unsigned int cols = vc->vc_cols;
-> -
-> +	if (vc->vc_uni_lines)
->  		while (nr--)
-> -			memset32(uni_lines[y++], ' ', cols);
-> -	}
-> +			memset32(vc->vc_uni_lines[y++], ' ', vc->vc_cols);
->  }
->  
->  static void vc_uniscr_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
->  			     enum con_scroll dir, unsigned int nr)
+> -static void vc_uniscr_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
+> -			     enum con_scroll dir, unsigned int nr)
+> +static void vc_uniscr_scroll(struct vc_data *vc, unsigned int top,
+> +			     unsigned int bottom, enum con_scroll dir,
+> +			     unsigned int nr)
 >  {
 >  	u32 **uni_lines = vc->vc_uni_lines;
-> +	unsigned int i, j, k, sz, d, clear;
+> -	unsigned int size = b - t;
+> +	unsigned int size = bottom - top;
 >  
-> -	if (uni_lines) {
-> -		unsigned int i, j, k, sz, d, clear;
-> +	if (!uni_lines)
-> +		return;
+>  	if (!uni_lines)
+>  		return;
 >  
-> -		sz = b - t;
-> -		clear = b - nr;
-> -		d = nr;
-> -		if (dir == SM_DOWN) {
-> -			clear = t;
-> -			d = sz - nr;
-> -		}
-> -		for (i = 0; i < gcd(d, sz); i++) {
-> -			u32 *tmp = uni_lines[t + i];
-> -			j = i;
-> -			while (1) {
-> -				k = j + d;
-> -				if (k >= sz)
-> -					k -= sz;
-> -				if (k == i)
-> -					break;
-> -				uni_lines[t + j] = uni_lines[t + k];
-> -				j = k;
-> -			}
-> -			uni_lines[t + j] = tmp;
-> +	sz = b - t;
-> +	clear = b - nr;
-> +	d = nr;
-> +
-> +	if (dir == SM_DOWN) {
-> +		clear = t;
-> +		d = sz - nr;
-> +	}
-> +
-> +	for (i = 0; i < gcd(d, sz); i++) {
-> +		u32 *tmp = uni_lines[t + i];
-> +		j = i;
-> +		while (1) {
-> +			k = j + d;
-> +			if (k >= sz)
-> +				k -= sz;
-> +			if (k == i)
-> +				break;
-> +			uni_lines[t + j] = uni_lines[t + k];
-> +			j = k;
->  		}
-> -		vc_uniscr_clear_lines(vc, clear, nr);
-> +		uni_lines[t + j] = tmp;
+>  	if (dir == SM_DOWN) {
+>  		juggle_array(&uni_lines[top], size, size - nr);
+> -		vc_uniscr_clear_lines(vc, t, nr);
+> +		vc_uniscr_clear_lines(vc, top, nr);
+>  	} else {
+>  		juggle_array(&uni_lines[top], size, nr);
+> -		vc_uniscr_clear_lines(vc, b - nr, nr);
+> +		vc_uniscr_clear_lines(vc, bottom - nr, nr);
 >  	}
-> +
-> +	vc_uniscr_clear_lines(vc, clear, nr);
 >  }
 >  
->  static void vc_uniscr_copy_area(u32 **dst_lines,
+> @@ -556,27 +557,30 @@ void vc_uniscr_copy_line(const struct vc_data *vc, void *dest, bool viewed,
+>  	}
+>  }
+>  
+> -static void con_scroll(struct vc_data *vc, unsigned int t, unsigned int b,
+> -		enum con_scroll dir, unsigned int nr)
+> +static void con_scroll(struct vc_data *vc, unsigned int top,
+> +		       unsigned int bottom, enum con_scroll dir,
+> +		       unsigned int nr)
+>  {
+> -	u16 *clear, *d, *s;
+> +	u16 *clear, *dst, *src;
+>  
+> -	if (t + nr >= b)
+> -		nr = b - t - 1;
+> -	if (b > vc->vc_rows || t >= b || nr < 1)
+> +	if (top + nr >= bottom)
+> +		nr = bottom - top - 1;
+> +	if (bottom > vc->vc_rows || top >= bottom || nr < 1)
+>  		return;
+> -	vc_uniscr_scroll(vc, t, b, dir, nr);
+> -	if (con_is_visible(vc) && vc->vc_sw->con_scroll(vc, t, b, dir, nr))
+> +
+> +	vc_uniscr_scroll(vc, top, bottom, dir, nr);
+> +	if (con_is_visible(vc) &&
+> +			vc->vc_sw->con_scroll(vc, top, bottom, dir, nr))
+
+I'd keep this on one line.
+
+>  		return;
+>  
+> -	s = clear = (u16 *)(vc->vc_origin + vc->vc_size_row * t);
+> -	d = (u16 *)(vc->vc_origin + vc->vc_size_row * (t + nr));
+> +	src = clear = (u16 *)(vc->vc_origin + vc->vc_size_row * top);
+> +	dst = (u16 *)(vc->vc_origin + vc->vc_size_row * (top + nr));
+>  
+>  	if (dir == SM_UP) {
+> -		clear = s + (b - t - nr) * vc->vc_cols;
+> -		swap(s, d);
+> +		clear = src + (bottom - top - nr) * vc->vc_cols;
+> +		swap(src, dst);
+>  	}
+> -	scr_memmovew(d, s, (b - t - nr) * vc->vc_size_row);
+> +	scr_memmovew(dst, src, (bottom - top - nr) * vc->vc_size_row);
+>  	scr_memsetw(clear, vc->vc_video_erase_char, vc->vc_size_row * nr);
+>  }
+>  
 > 
 
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-With the note that increased density of "vc[-_]" per line feels a step 
-backwards on readability even if the number of lines is less, IMHO.
-
 -- 
  i.
 
---8323329-1038312899-1673517137=:1665--
+--8323329-1577497597-1673517587=:1665--
