@@ -2,134 +2,184 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841A3C61DB3
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 15:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE1EC54EBC
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 16:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232215AbjALP5K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Jan 2023 10:57:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S233322AbjALQQN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 11:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjALP4Z (ORCPT
+        with ESMTP id S232596AbjALQPg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Jan 2023 10:56:25 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB59A5A8B1;
-        Thu, 12 Jan 2023 07:46:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673538398; x=1705074398;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=rZdVhyovnZwLRgUV7awB0Pfol4ouRAVFDTvxApxMr2g=;
-  b=IowAaLT+HC1pWN9l9MSwt5jVGt4xIqpIyXQtoR0NSkZM8rwd9zDvCvjf
-   AYvmg6X5DxIZRuVDi1KoKxZ9vOpyH/wHE/HPCDcmfDRrDmaybytq9oVRb
-   Iedey8cxYGt6WuCua/8XfJlbEjRSM4iIJ+FyDDfaXCZwifWp6m3ITCmrq
-   SatOX83LomXgU87VBrb3Bwld8i7elWMdp8HCrL8fqduhx1EerOIOfOurJ
-   2pXjlycMA1uCrkSkXPDvg60eMQvBlEqPvnRy5S5srT87sq9+jPfu1VgLq
-   MglKmSwsrEBChoautvnmYZ/AJMKSnrU9AAARNl51WNraUlvrnlzsTHaMV
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="388223956"
-X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
-   d="scan'208";a="388223956"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 07:35:52 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="690171248"
-X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
-   d="scan'208";a="690171248"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 07:35:51 -0800
-Date:   Thu, 12 Jan 2023 07:36:29 -0800 (PST)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Xu Yilun <yilun.xu@intel.com>, hao.wu@intel.com,
-        russell.h.weight@intel.com, basheer.ahmed.muddebihal@intel.com,
-        trix@redhat.com, mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
-        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
-        marpagan@redhat.com, bagasdotme@gmail.com
-Subject: Re: [PATCH v10 3/4] fpga: dfl: add basic support for DFHv1
-In-Reply-To: <Y7/ggajPS2WNrPPU@smile.fi.intel.com>
-Message-ID: <alpine.DEB.2.22.394.2301120732500.845139@rhweight-WRK1>
-References: <20230110003029.806022-1-matthew.gerlach@linux.intel.com> <20230110003029.806022-4-matthew.gerlach@linux.intel.com> <Y708L2rRc1RDVkui@smile.fi.intel.com> <alpine.DEB.2.22.394.2301101310150.815911@rhweight-WRK1> <Y74bSzUBLYH4cLDh@yilunxu-OptiPlex-7050>
- <Y7/ggajPS2WNrPPU@smile.fi.intel.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Thu, 12 Jan 2023 11:15:36 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8025ADEC3;
+        Thu, 12 Jan 2023 08:13:01 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1673539980;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Zio+51P9JQjITYvWQp49hE5xV03adpaYIVB4A9ebG0s=;
+        b=oeH67rocXqFE0wOjpM0qYGrT7qnKT79gavwGqxgwH02OT4+XbIKGAuQ7c+UL7SEKDU8Z8w
+        zOlZkgBo3zIgTEttTGKRcN7Bt77mZm5bKr3CMzaQkHO1Gcp6XgiX6Egg+VYRNifRAHtntR
+        ZJwz0HgjlPX4oS3FddvKdyYV4h2XWdsFrCd+YL1jwzmEgucmsg9ufJpIEZ7L0X74lEDk78
+        mJW0NCIwfgaG5UWqGETAyZPkO2unqAVLIXuk7nfDuXdAcvs/RpH7KuIyMYKZnZ/AzyRM43
+        oSwSAyUdkRnP0WRG4Id+7gXZYlepdGWKYLqs6FRmjnMzLH0WtaAg0wjMe8o4Zg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1673539980;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Zio+51P9JQjITYvWQp49hE5xV03adpaYIVB4A9ebG0s=;
+        b=2tI6D3LysuGwg+CiOyQT626xIs49+W49l8rirwzqVSC7m7rK/geYH9Se5JebkDWpEpo4yM
+        lnE7YjwxKN9wVFDg==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: [PATCH v2] tty: serial: kgdboc: fix mutex locking order for configure_kgdboc()
+Date:   Thu, 12 Jan 2023 17:18:13 +0106
+Message-Id: <20230112161213.1434854-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Several mutexes are taken while setting up console serial ports. In
+particular, the tty_port->mutex and @console_mutex are taken:
 
+  serial_pnp_probe
+    serial8250_register_8250_port
+      uart_add_one_port (locks tty_port->mutex)
+        uart_configure_port
+          register_console (locks @console_mutex)
 
-On Thu, 12 Jan 2023, Andy Shevchenko wrote:
+In order to synchronize kgdb's tty_find_polling_driver() with
+register_console(), commit 6193bc90849a ("tty: serial: kgdboc:
+synchronize tty_find_polling_driver() and register_console()") takes
+the @console_mutex. However, this leads to the following call chain
+(with locking):
 
-> On Wed, Jan 11, 2023 at 10:13:31AM +0800, Xu Yilun wrote:
->> On 2023-01-10 at 14:07:16 -0800, matthew.gerlach@linux.intel.com wrote:
->>> On Tue, 10 Jan 2023, Andy Shevchenko wrote:
->>>> On Mon, Jan 09, 2023 at 04:30:28PM -0800, matthew.gerlach@linux.intel.com wrote:
->>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->
-> ...
->
->>>>> v10: change dfh_find_param to return size of parameter data in bytes
->>>>
->>>> The problem that might occur with this approach is byte ordering.
->>>> When we have u64 items, we know that they all are placed in CPU
->>>> ordering by the bottom layer. What's the contract now? Can it be
->>>> a problematic? Please double check this (always keep in mind BE32
->>>> as most interesting case for u64/unsigned long representation and
->>>> other possible byte ordering outcomes).
->>>
->>> A number of u64 items certainly states explicit alignment of the memory, but
->>> I think byte ordering is a different issue.
->>>
->>> The bottom layer, by design, is still enforcing a number u64 items under the
->>> hood. So the contract has not changed. Changing units of size from u64s to
->>> bytes was suggested to match the general practice of size of memory being in
->>> bytes. I think the suggestion was made because the return type for
->>> dfh_find_param() changed from u64* to void* in version 9, when indirectly
->>> returning the size of the parameter data was introduced.  So a void * with a
->>> size in bytes makes sense. On the other hand, returning a u64 * is a more
->>> precise reflection of the data alignment. I think the API should be as
->>
->> I prefer (void *) + bytes. The properties in the parameter block are not
->> guarateed to be u64 for each, e.g. the REG_LAYOUT, so (void *) could better
->> indicate it is not. It is just a block of data unknown to DFL core and to
->> be parsed by drivers.
->
-> If the hardware / protocol is capable of communicating the arbitrary lengths
-> of parameters, then yes, bytes make sense. But this should be clear what byte
-> ordering is there if the items can be words / dwords / qwords.
+  platform_probe
+    kgdboc_probe
+      configure_kgdboc (locks @console_mutex)
+        tty_find_polling_driver
+          uart_poll_init (locks tty_port->mutex)
+            uart_set_options
 
-The hardware does communicate the arbitrary lengths of the parameter data; 
-so bytes make sense.  I will update Documentation/fpga/dfl.rst to 
-explicitly say that multi-byte quantities are little-endian.
+This is clearly deadlock potential due to the reverse lock ordering.
 
->
-> TL;DR: The Q is: Is the parameter block a byte stream? If yes, then your
-> proposal is okay. If no, no void * should be used. In the latter it should
-> be union of possible items or a like as defined by a protocol.
+Since uart_set_options() requires holding @console_mutex in order to
+serialize early initialization of the serial-console lock, take the
+@console_mutex in uart_poll_init() instead of configure_kgdboc().
 
-The parameter block is not a byte stream; so void * should be used.
+Since configure_kgdboc() was using @console_mutex for safe traversal
+of the console list, change it to use the SRCU iterator instead.
 
-Thanks,
-Matthew Gerlach
+Add comments to uart_set_options() kerneldoc mentioning that it
+requires holding @console_mutex (aka the console_list_lock).
 
+Fixes: 6193bc90849a ("tty: serial: kgdboc: synchronize tty_find_polling_driver() and register_console()")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+ drivers/tty/serial/kgdboc.c      | 20 +++++---------------
+ drivers/tty/serial/serial_core.c |  5 +++++
+ 2 files changed, 10 insertions(+), 15 deletions(-)
 
->
->> And why users/drivers need to care about the alignment of the parameter
->> block?
->>
->>> follows:
->
-> -- 
-> With Best Regards,
-> Andy Shevchenko
->
->
->
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index a3ed9b34e2ab..7ce7bb164005 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -171,6 +171,7 @@ static int configure_kgdboc(void)
+ 	int err = -ENODEV;
+ 	char *cptr = config;
+ 	struct console *cons;
++	int cookie;
+ 
+ 	if (!strlen(config) || isspace(config[0])) {
+ 		err = 0;
+@@ -189,20 +190,9 @@ static int configure_kgdboc(void)
+ 	if (kgdboc_register_kbd(&cptr))
+ 		goto do_register;
+ 
+-	/*
+-	 * tty_find_polling_driver() can call uart_set_options()
+-	 * (via poll_init) to configure the uart. Take the console_list_lock
+-	 * in order to synchronize against register_console(), which can also
+-	 * configure the uart via uart_set_options(). This also allows safe
+-	 * traversal of the console list.
+-	 */
+-	console_list_lock();
+-
+ 	p = tty_find_polling_driver(cptr, &tty_line);
+-	if (!p) {
+-		console_list_unlock();
++	if (!p)
+ 		goto noconfig;
+-	}
+ 
+ 	/*
+ 	 * Take console_lock to serialize device() callback with
+@@ -211,7 +201,8 @@ static int configure_kgdboc(void)
+ 	 */
+ 	console_lock();
+ 
+-	for_each_console(cons) {
++	cookie = console_srcu_read_lock();
++	for_each_console_srcu(cons) {
+ 		int idx;
+ 		if (cons->device && cons->device(cons, &idx) == p &&
+ 		    idx == tty_line) {
+@@ -219,11 +210,10 @@ static int configure_kgdboc(void)
+ 			break;
+ 		}
+ 	}
++	console_srcu_read_unlock(cookie);
+ 
+ 	console_unlock();
+ 
+-	console_list_unlock();
+-
+ 	kgdb_tty_driver = p;
+ 	kgdb_tty_line = tty_line;
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index b9fbbee598b8..ec874f3a567c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2212,6 +2212,9 @@ EXPORT_SYMBOL_GPL(uart_parse_options);
+  * @parity: parity character - 'n' (none), 'o' (odd), 'e' (even)
+  * @bits: number of data bits
+  * @flow: flow control character - 'r' (rts)
++ *
++ * Locking: Caller must hold console_list_lock in order to serialize
++ * early initialization of the serial-console lock.
+  */
+ int
+ uart_set_options(struct uart_port *port, struct console *co,
+@@ -2619,7 +2622,9 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
+ 
+ 	if (!ret && options) {
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
++		console_list_lock();
+ 		ret = uart_set_options(port, NULL, baud, parity, bits, flow);
++		console_list_unlock();
+ 	}
+ out:
+ 	mutex_unlock(&tport->mutex);
+
+base-commit: b7bfaa761d760e72a969d116517eaa12e404c262
+-- 
+2.30.2
+
