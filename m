@@ -2,114 +2,164 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D6EC54EBD
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 13:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F21F4C54EBD
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 15:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbjALNNI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Jan 2023 08:13:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
+        id S240589AbjALPkX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 10:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbjALNNH (ORCPT
+        with ESMTP id S240554AbjALPjo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Jan 2023 08:13:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56D5AE4A
-        for <linux-serial@vger.kernel.org>; Thu, 12 Jan 2023 05:13:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6328561A59
-        for <linux-serial@vger.kernel.org>; Thu, 12 Jan 2023 13:13:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4369C433EF;
-        Thu, 12 Jan 2023 13:13:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1673529185;
-        bh=71WCD2LYTHvB/FQ8+vaLVwWxU8IB40Qvo5Km4Lbz8Pk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RqxufPvOzIAyPAnyGVSCFxgrAu7uNssmK+q7P829ela4qcXC26u08NKHCi5sUk376
-         cP1evOZfOInZku9T5QpMqwczl1hjlQoc0EJhbBUFdpzFn0GqW2n22a3wXiQ1NdYd90
-         Bhf7ef8TW3NfA/tMHH0vGcekWbD3GidLKF9USZ2tyDPKRSS2gmS5/MvbH+9yKtiCsm
-         qQWCQ5hjZq6juAcP5FZjLndLsDgWsXMHRYa8y97d+ScJOd3v/Es9dyk9qtQUxOdcUX
-         lKZG9ScSWtu0xuOZHDzxRLXTcONyBrQt1dbrXghuGzaIDhDzaf+WuG1J5kHOQuv/Us
-         97OREQoWnPhng==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1pFxOK-0001PG-31; Thu, 12 Jan 2023 14:13:12 +0100
-Date:   Thu, 12 Jan 2023 14:13:12 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Marek Vasut <marex@denx.de>, linux-serial@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH v3] serial: stm32: Merge hard IRQ and threaded IRQ
- handling into single IRQ handler
-Message-ID: <Y8AHaJIttNga68q4@hovoldconsulting.com>
-References: <20221216115338.7150-1-marex@denx.de>
- <Y6sHr5kuxUoahlzJ@hovoldconsulting.com>
- <Y7vou3wAeLP4X+TY@linutronix.de>
+        Thu, 12 Jan 2023 10:39:44 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E62A48CD4;
+        Thu, 12 Jan 2023 07:30:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673537432; x=1705073432;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=0ritdKUn0cRU7l3A1Ps2Js7vFq3raQ8V5MfOb3WntQg=;
+  b=k3iy8YuMV4//PXat6nX0NbgVotHUkqsi97AFxsXfINhXIN7GcrK7iFvl
+   rzl7N2yyN0aQdpPEswhFSVoVb2TUg5oZkCxBvQ1MY83p44LLeeWa64Otc
+   AxYI+Xp4eFT3hIO4I9JdCjysmLzOfgLb3non8tn7czMDEYx7qGuAKX3w1
+   9wDe1RJaPB7OnK109XyMIUm/NR1LJsNoTTbP53mqxYZZikLG9ykE5Ok+y
+   RUviUtOIb+yki9n/X97yldU1Z80JLz+f3D70QNHpWRaMd8J8w0yMg8140
+   tlHV9DCNli5GD/6pVJSOmdcf5QfvyQKQHtltdFXOr79/Lm+wsVl93S5Xh
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="350958895"
+X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
+   d="scan'208";a="350958895"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 07:30:24 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="659820546"
+X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
+   d="scan'208";a="659820546"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 07:30:23 -0800
+Date:   Thu, 12 Jan 2023 07:30:54 -0800 (PST)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Xu Yilun <yilun.xu@intel.com>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v10 3/4] fpga: dfl: add basic support for DFHv1
+In-Reply-To: <Y74bSzUBLYH4cLDh@yilunxu-OptiPlex-7050>
+Message-ID: <alpine.DEB.2.22.394.2301120728210.845139@rhweight-WRK1>
+References: <20230110003029.806022-1-matthew.gerlach@linux.intel.com> <20230110003029.806022-4-matthew.gerlach@linux.intel.com> <Y708L2rRc1RDVkui@smile.fi.intel.com> <alpine.DEB.2.22.394.2301101310150.815911@rhweight-WRK1>
+ <Y74bSzUBLYH4cLDh@yilunxu-OptiPlex-7050>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7vou3wAeLP4X+TY@linutronix.de>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 09, 2023 at 11:13:15AM +0100, Sebastian Andrzej Siewior wrote:
-> On 2022-12-27 15:56:47 [+0100], Johan Hovold wrote:
-> > On Fri, Dec 16, 2022 at 12:53:38PM +0100, Marek Vasut wrote:
-> > > Requesting an interrupt with IRQF_ONESHOT will run the primary handler
-> > > in the hard-IRQ context even in the force-threaded mode. The
-> > > force-threaded mode is used by PREEMPT_RT in order to avoid acquiring
-> > > sleeping locks (spinlock_t) in hard-IRQ context. This combination
-> > > makes it impossible and leads to "sleeping while atomic" warnings.
-> > > 
-> > > Use one interrupt handler for both handlers (primary and secondary)
-> > > and drop the IRQF_ONESHOT flag which is not needed.
-> > > 
-> > > Fixes: e359b4411c283 ("serial: stm32: fix threaded interrupt handling")
-> > 
-> > I don't think a Fixes tag is warranted as this is only needed due to
-> > this undocumented quirk of PREEMPT_RT.
-> 
-> It is not an undocumented quirk of PREEMPT_RT. The part that might not
-> be well documented is that IRQF_ONESHOT won't run the primary handler as
-> a threaded handler. This is also the case for IRQF_NO_THREAD and
-> IRQF_PERCPU but might be more obvious.
 
-Yeah, that not being documented seems like an oversight as generally
-drivers should not need be changed to continue working on PREEMPT_RT (or
-with forced-threading generally).
 
-> Anyway, if the primary handler is not threaded then it runs in HARDIRQ
-> context and here you must not use a spinlock_t. This is documented in
-> Documentation/locking/locktypes.rst and there is also a LOCKDEP warning
-> for this on !RT which is off by default because it triggers with printk
-> (and this is worked on).
+On Wed, 11 Jan 2023, Xu Yilun wrote:
 
-All interrupt handlers typically run in hard interrupt context unless
-explicitly requested to be threaded on !RT and drivers still use
-spinlock_t for that so not sure how that lockdep warning is supposed to
-work. Or do you mean that you have a lockdep warning specifically for
-IRQF_ONESHOT primary handlers?
- 
-> > And this should not be backported in any case.
-> 
-> Such things have been backported via -stable in the past. If you
-> disagree, please keep me in loop while is merged so I can poke people to
-> backport it as part of the RT patch for the relevant kernels.
+> On 2023-01-10 at 14:07:16 -0800, matthew.gerlach@linux.intel.com wrote:
+>>
+>>
+>> On Tue, 10 Jan 2023, Andy Shevchenko wrote:
+>>
+>>> On Mon, Jan 09, 2023 at 04:30:28PM -0800, matthew.gerlach@linux.intel.com wrote:
+>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>>
+>>>> Version 1 of the Device Feature Header (DFH) definition adds
+>>>> functionality to the Device Feature List (DFL) bus.
+>>>>
+>>>> A DFHv1 header may have one or more parameter blocks that
+>>>> further describes the HW to SW. Add support to the DFL bus
+>>>> to parse the MSI-X parameter.
+>>>>
+>>>> The location of a feature's register set is explicitly
+>>>> described in DFHv1 and can be relative to the base of the DFHv1
+>>>> or an absolute address. Parse the location and pass the information
+>>>> to DFL driver.
+>>>
+>>> ...
+>>>
+>>>> v10: change dfh_find_param to return size of parameter data in bytes
+>>>
+>>> The problem that might occur with this approach is byte ordering.
+>>> When we have u64 items, we know that they all are placed in CPU
+>>> ordering by the bottom layer. What's the contract now? Can it be
+>>> a problematic? Please double check this (always keep in mind BE32
+>>> as most interesting case for u64/unsigned long representation and
+>>> other possible byte ordering outcomes).
+>>
+>> A number of u64 items certainly states explicit alignment of the memory, but
+>> I think byte ordering is a different issue.
+>>
+>> The bottom layer, by design, is still enforcing a number u64 items under the
+>> hood. So the contract has not changed. Changing units of size from u64s to
+>> bytes was suggested to match the general practice of size of memory being in
+>> bytes. I think the suggestion was made because the return type for
+>> dfh_find_param() changed from u64* to void* in version 9, when indirectly
+>> returning the size of the parameter data was introduced.  So a void * with a
+>> size in bytes makes sense. On the other hand, returning a u64 * is a more
+>> precise reflection of the data alignment. I think the API should be as
+>
+> I prefer (void *) + bytes. The properties in the parameter block are not
+> guarateed to be u64 for each, e.g. the REG_LAYOUT, so (void *) could better
+> indicate it is not. It is just a block of data unknown to DFL core and to
+> be parsed by drivers.
 
-The author did not seem to think this was stable material as there is no
-cc-stable tag and it also seems fairly intrusive.
+OK, (void *) + size in bytes is fine.
 
-But if the ST guys or whoever cares about this driver are fine with this
-being backported, I don't really mind either.
+>
+> And why users/drivers need to care about the alignment of the parameter
+> block?
 
-Johan
+Consumers of the parameter block data might try access data that is 
+unaligned for a particular CPU.  The good news is that the definition of 
+the parameter blocks ensures the data is u64 aligned.
+
+Thanks,
+Matthew Gerlach
+>
+> Thanks,
+> Yilun
+>
+>
+>> follows:
+>>
+>> /**
+>>  * dfh_find_param() - find parameter block for the given parameter id
+>>  * @dfl_dev: dfl device
+>>  * @param_id: id of dfl parameter
+>>  * @pcount: destination to store size of parameter data in u64 bit words
+>>  *
+>>  * Return: pointer to start of parameter data, PTR_ERR otherwise.
+>>  */
+>> u64 *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t
+>> *pcount)
+>>
+>> Regarding byte ordering, Documentation/fpga/dfl.rst does not currently
+>> mention endianness. All current HW implementations of DFL are little-endian.
+>> I should add a statement in Documentation/fpga/dfl.rst that fields in the
+>> Device Feature Header are little-endian.
+>>
+>> Thanks for the feedback,
+>> Matthew Gerlach
+>>
+>>>
+>>> --
+>>> With Best Regards,
+>>> Andy Shevchenko
+>>>
+>>>
+>>>
+>
