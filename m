@@ -2,63 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75659C677F1
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 08:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0628C54EBC
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Jan 2023 09:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239643AbjALI6Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Jan 2023 03:58:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S231162AbjALJD6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 12 Jan 2023 04:03:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239725AbjALI5E (ORCPT
+        with ESMTP id S239942AbjALJCN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Jan 2023 03:57:04 -0500
-Received: from mail.glencoeaur.com (mail.glencoeaur.com [217.61.97.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E61750F7A
-        for <linux-serial@vger.kernel.org>; Thu, 12 Jan 2023 00:55:00 -0800 (PST)
-Received: by mail.glencoeaur.com (Postfix, from userid 1001)
-        id 98F3A82022; Thu, 12 Jan 2023 08:35:38 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=glencoeaur.com;
-        s=mail; t=1673512539;
-        bh=2S0GQFScndXkBEK4sqdoOhOYLqsB2sEH8Q5XQfVvKpo=;
-        h=Date:From:To:Subject:From;
-        b=J6h44YW/TbKFOPSo245aafVRGlTiU7by6cG4uGQHVBa3UwKMESAo86Lmg1UP0kI9v
-         u/aLo1l9vNVW9U7CDUyPMiZB9utI8swYeojyxm6DAwDUolA5WVQXIR226EwbWddkRF
-         CGZ3B5nwVXN36kmK48zJcVdl2TX9JZGXaYf6xy7xVNq7mkqPPv4IuHEhvWOY2TxgNV
-         2wzIR79NQ0cw+XAn5QdBwBloc6cAc83sKhCawUVulEjxrz1hUrsi59ajh+NiG+qt9p
-         Ktrrpq36puP1NKY8kb/YQ/oKnd1Er3XJ8nIPq2gyEWt0AuocLR/xD6qgVQNEXoUgM5
-         gcaXH33A0q5RA==
-Received: by mail.glencoeaur.com for <linux-serial@vger.kernel.org>; Thu, 12 Jan 2023 08:35:33 GMT
-Message-ID: <20230112074500-0.1.z.3fla.0.k8ibhbelmi@glencoeaur.com>
-Date:   Thu, 12 Jan 2023 08:35:33 GMT
-From:   "Zbynek Spacek" <zbynek.spacek@glencoeaur.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: Silikonmischungen
-X-Mailer: mail.glencoeaur.com
+        Thu, 12 Jan 2023 04:02:13 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AAD5005C;
+        Thu, 12 Jan 2023 00:58:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673513899; x=1705049899;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=vQleIK3d6nlYiV7q13AvoUrr9DXrvzpJ21QDzCiLFLE=;
+  b=aDo/J4GwlHcteVh2SPklznr8t7siMypIarpkQgskHqCJYfCw4eTNZMUD
+   /sJxaqDP6sKZs47qgEIfvco5YvuHYpuddSNlSxGz2ogG3vvJ7krQpAatm
+   SBrlGOx4T2Yp2aFJqLp94LbjIgW+TJfqdxM2YSn7AUefe5oq1OcRt9Yup
+   1piSpBvcfymeeB2ckU/8ngTKi6EOwVaHiRLEWdZYSSjVwd3KphSA877cg
+   pcDnE9WFEwdqDoIPAxhszgHzjxiniXuospwLUX4xVjT7rkUPu1BAri8sf
+   s0Il1i3uBxw7syUgWzK8LcE75LICLD2JPUuP6BFX10oLGGGIAmhLpEWUZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="350877468"
+X-IronPort-AV: E=Sophos;i="5.96,319,1665471600"; 
+   d="scan'208";a="350877468"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 00:58:18 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="986459213"
+X-IronPort-AV: E=Sophos;i="5.96,319,1665471600"; 
+   d="scan'208";a="986459213"
+Received: from vbucoci-mobl1.ger.corp.intel.com ([10.252.52.43])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 00:58:11 -0800
+Date:   Thu, 12 Jan 2023 10:58:08 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 04/11] tty: vt: use sizeof(*variable) where possible
+In-Reply-To: <20230112080136.4929-4-jirislaby@kernel.org>
+Message-ID: <c6cf55b6-194c-47c8-a44-5266711cd3b@linux.intel.com>
+References: <20230112080136.4929-1-jirislaby@kernel.org> <20230112080136.4929-4-jirislaby@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Good morning,
+On Thu, 12 Jan 2023, Jiri Slaby (SUSE) wrote:
 
-do you need intermediates for processing, plastics (e.g. rubber) or silic=
-one mixtures?
+> Instead of sizeof(type), use sizeof(*variable) which is preferred. We
+> are going to remove the unicode's char32_t typedef, so this makes the
+> switch easier.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> ---
+>  drivers/tty/vt/vt.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 561c82e120cf..3ae0212f1aa7 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -330,11 +330,11 @@ static struct uni_screen *vc_uniscr_alloc(unsigned int cols, unsigned int rows)
+>  {
+>  	struct uni_screen *uniscr;
+>  	void *p;
+> -	unsigned int memsize, i;
+> +	unsigned int memsize, i, col_size = cols * sizeof(**uniscr->lines);
+>  
+>  	/* allocate everything in one go */
+> -	memsize = cols * rows * sizeof(char32_t);
+> -	memsize += rows * sizeof(char32_t *);
+> +	memsize = col_size * rows;
+> +	memsize += rows * sizeof(*uniscr->lines);
 
-We provide a wide range of silicone rubbers with various properties, sili=
-cone mixtures from renowned manufacturers such as Wacker, Elastosil LR an=
-d dyes, stabilizers, primers and anti-adhesive additives.
+Wouldn't something from linux/overflow.h be more appropriate for these?
 
-We also produce technical silicone compounds with increased resistance to=
- oils, resistant to high temperatures and water vapor, conductive and man=
-y more.
+-- 
+ i.
 
-We provide fast order fulfillment, timely deliveries and cost optimizatio=
-n.
+>  	p = vzalloc(memsize);
+>  	if (!p)
+>  		return NULL;
+> @@ -344,7 +344,7 @@ static struct uni_screen *vc_uniscr_alloc(unsigned int cols, unsigned int rows)
+>  	p = uniscr->lines + rows;
+>  	for (i = 0; i < rows; i++) {
+>  		uniscr->lines[i] = p;
+> -		p += cols * sizeof(char32_t);
+> +		p += col_size;
+>  	}
+>  	return uniscr;
+>  }
+> @@ -469,7 +469,7 @@ static void vc_uniscr_copy_area(struct uni_screen *dst,
+>  		char32_t *src_line = src->lines[src_top_row];
+>  		char32_t *dst_line = dst->lines[dst_row];
+>  
+> -		memcpy(dst_line, src_line, src_cols * sizeof(char32_t));
+> +		memcpy(dst_line, src_line, src_cols * sizeof(*src_line));
+>  		if (dst_cols - src_cols)
+>  			memset32(dst_line + src_cols, ' ', dst_cols - src_cols);
+>  		src_top_row++;
+> 
 
-Can I introduce what we can offer you?
-
-
-Best regards
-Zbynek Spacek
