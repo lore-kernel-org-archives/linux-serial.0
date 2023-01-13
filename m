@@ -2,91 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A2FC678DA
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Jan 2023 09:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A45AC54EBD
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Jan 2023 09:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241175AbjAMJKj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Jan 2023 04:10:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
+        id S240644AbjAMJUM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Jan 2023 04:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241102AbjAMJI2 (ORCPT
+        with ESMTP id S240593AbjAMJTR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Jan 2023 04:08:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698B895B2;
-        Fri, 13 Jan 2023 01:06:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 13 Jan 2023 04:19:17 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694A619C06
+        for <linux-serial@vger.kernel.org>; Fri, 13 Jan 2023 01:14:02 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id D131B4ECED;
+        Fri, 13 Jan 2023 09:14:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1673601240; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=22DFHnDxPptAxbZRoG0bfrp/Xo+pGFjmLGSMAbfetfs=;
+        b=OeKmqSXK6BMh1+XSb4Yht+FwtZ3vbNAUYn424dWwVqnXft2E2H2qY4xnZSv22j+3Fcid6W
+        qxBw9EAKsq2DQhg2mMhVMuPEGYRmGDmvhiXWmQmur3NNywDeUBr0Dmd35RlipU3MLxMox7
+        9MDbEt0p7ut324nkAcMAKEvRCh42KMQ=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92488B820D0;
-        Fri, 13 Jan 2023 09:06:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E4C4C433D2;
-        Fri, 13 Jan 2023 09:05:55 +0000 (UTC)
-Message-ID: <649a45a5-1680-dd71-ed74-df16d4353638@xs4all.nl>
-Date:   Fri, 13 Jan 2023 10:05:54 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 20/22] media: remove sh_vou
-Content-Language: en-US
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        by relay2.suse.de (Postfix) with ESMTPS id 576AB2C141;
+        Fri, 13 Jan 2023 09:14:00 +0000 (UTC)
+Date:   Fri, 13 Jan 2023 10:13:59 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-References: <20230113062339.1909087-1-hch@lst.de>
- <20230113062339.1909087-21-hch@lst.de>
- <Y8EPvllOwhODRUiP@pendragon.ideasonboard.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <Y8EPvllOwhODRUiP@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] tty: serial: kgdboc: fix mutex locking order for
+ configure_kgdboc()
+Message-ID: <Y8Eg1wDOOkSCAh2E@alley>
+References: <20230112161213.1434854-1-john.ogness@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230112161213.1434854-1-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13/01/2023 09:01, Laurent Pinchart wrote:
-> Hi Christoph,
+On Thu 2023-01-12 17:18:13, John Ogness wrote:
+> Several mutexes are taken while setting up console serial ports. In
+> particular, the tty_port->mutex and @console_mutex are taken:
 > 
-> Thank you for the patch.
+>   serial_pnp_probe
+>     serial8250_register_8250_port
+>       uart_add_one_port (locks tty_port->mutex)
+>         uart_configure_port
+>           register_console (locks @console_mutex)
 > 
-> On Fri, Jan 13, 2023 at 07:23:37AM +0100, Christoph Hellwig wrote:
->> Now that arch/sh is removed this driver is dead code.
->>
->> Signed-off-by: Christoph Hellwig <hch@lst.de>
->> ---
->>  drivers/media/platform/renesas/Kconfig  |    9 -
->>  drivers/media/platform/renesas/Makefile |    1 -
->>  drivers/media/platform/renesas/sh_vou.c | 1375 -----------------------
+> In order to synchronize kgdb's tty_find_polling_driver() with
+> register_console(), commit 6193bc90849a ("tty: serial: kgdboc:
+> synchronize tty_find_polling_driver() and register_console()") takes
+> the @console_mutex. However, this leads to the following call chain
+> (with locking):
 > 
-> You can also emove include/media/drv-intf/sh_vou.sh. With that, and the
-> corresponding MAINTAINERS entry dropped,
+>   platform_probe
+>     kgdboc_probe
+>       configure_kgdboc (locks @console_mutex)
+>         tty_find_polling_driver
+>           uart_poll_init (locks tty_port->mutex)
+>             uart_set_options
 > 
-> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-And with that you can also add my Ack:
-
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-
-Regards,
-
-	Hans
-
+> This is clearly deadlock potential due to the reverse lock ordering.
 > 
->>  3 files changed, 1385 deletions(-)
->>  delete mode 100644 drivers/media/platform/renesas/sh_vou.c
+> Since uart_set_options() requires holding @console_mutex in order to
+> serialize early initialization of the serial-console lock, take the
+> @console_mutex in uart_poll_init() instead of configure_kgdboc().
 > 
+> Since configure_kgdboc() was using @console_mutex for safe traversal
+> of the console list, change it to use the SRCU iterator instead.
+> 
+> Add comments to uart_set_options() kerneldoc mentioning that it
+> requires holding @console_mutex (aka the console_list_lock).
+> 
+> Fixes: 6193bc90849a ("tty: serial: kgdboc: synchronize tty_find_polling_driver() and register_console()")
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
 
+JFYI, the patch has been committed into printk/linux.git,
+branch rework/console-list-lock.
+
+I am going to give it few days in linux-next. If there is no problem
+I will send a pull request for 6.2-rc5 later the following week.
+
+Please, let me known if you have another preference.
+
+Best Regards,
+Petr
