@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E35C678D9
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Jan 2023 06:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F07A4C678DE
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Jan 2023 06:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240995AbjAMG2G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Jan 2023 01:28:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
+        id S241011AbjAMG2I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Jan 2023 01:28:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240200AbjAMGZH (ORCPT
+        with ESMTP id S234671AbjAMGYw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Jan 2023 01:25:07 -0500
+        Fri, 13 Jan 2023 01:24:52 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F136ADB3;
-        Thu, 12 Jan 2023 22:24:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A176AD8E;
+        Thu, 12 Jan 2023 22:24:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=JbdvnYG1GWIlI+mjR040Fz2HmYek241Q0TguaG7+sfY=; b=tzfdnSJqgAUXBCbR9jbeCtdG+k
-        Wi2+ukoLPUYfwY4oRYG2G65CrLpHfCH7IZIGEmOBzuo2AOm57p4YVKhyyUSErQ/iIGMHRToCCfdf/
-        ktArnslU9c1GvDmR4UkceU2GUGqLzdTYlWtq3WsFqI46PrezV3almirhHOY1EgLXgwetLPHLE3dz4
-        2GoK8l9g2L+uO3MM192VOrBKVPmFiTXFEqVyPchcY6p43ebcOag5FCHnp6JVdvVjlJ96YLX/45Mi9
-        BCvOZVDckZcIaWRSsQl7roLaFbisbPzI3+C2vMQZUL7wC/PjrWG2okWzz8h9wGWMS/aXQsfNTjHUX
-        1o7HZ5UA==;
+        bh=iaAi+zESrNMNvvfEXFwVvV/C96H0o/Wg4Lh/ijTH/Rs=; b=bFRj3MYFOTjA0PSj1DEyvNksix
+        /txq5zuehZaq1Obp5gHKz5id8DzeGGV7lKL1AlhZOUgWtvxuhMVAbMwGri/ic3+f0enD9lYjxMQxR
+        Gf9Y2f2aOQpWUPFvfhpJhFzN7A8d5hLtjyalZeqPDUM7QjO4XAjWCeiOpKaBwU207o9TIBRxH7mXv
+        9vW0R9Uv9WQi52i2Oie2Pb8ur8xtcT8EDzxlRsm/eP88LuKtf9xnY5QQhes6Rk2Hh9F25LQMh2HOL
+        FXdK9tEz8XfVNXQMf+wriv4ySdq3dT2hm7Zg5AxsfkPpD1KGm+e/o6nTrxQgdrQp+txMqv4euPuCk
+        mWxG2tow==;
 Received: from [2001:4bb8:181:656b:9509:7d20:8d39:f895] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pGDUB-000leH-Ap; Fri, 13 Jan 2023 06:24:19 +0000
+        id 1pGDU1-000lXq-5b; Fri, 13 Jan 2023 06:24:09 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Yoshinori Sato <ysato@users.sourceforge.jp>,
         Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
@@ -46,9 +46,9 @@ Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-sh@vger.kernel.org
-Subject: [PATCH 10/22] input: remove sh_keysc
-Date:   Fri, 13 Jan 2023 07:23:27 +0100
-Message-Id: <20230113062339.1909087-11-hch@lst.de>
+Subject: [PATCH 07/22] cpufreq: remove the sh-cpufreq driver
+Date:   Fri, 13 Jan 2023 07:23:24 +0100
+Message-Id: <20230113062339.1909087-8-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230113062339.1909087-1-hch@lst.de>
 References: <20230113062339.1909087-1-hch@lst.de>
@@ -63,384 +63,228 @@ Now that arch/sh is removed this driver is dead code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/input/keyboard/Kconfig    |  10 -
- drivers/input/keyboard/Makefile   |   1 -
- drivers/input/keyboard/sh_keysc.c | 334 ------------------------------
- 3 files changed, 345 deletions(-)
- delete mode 100644 drivers/input/keyboard/sh_keysc.c
+ drivers/cpufreq/Kconfig      |  14 ---
+ drivers/cpufreq/Makefile     |   1 -
+ drivers/cpufreq/sh-cpufreq.c | 175 -----------------------------------
+ 3 files changed, 190 deletions(-)
+ delete mode 100644 drivers/cpufreq/sh-cpufreq.c
 
-diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
-index 84490915ae4d5a..882ec5fef214ac 100644
---- a/drivers/input/keyboard/Kconfig
-+++ b/drivers/input/keyboard/Kconfig
-@@ -625,16 +625,6 @@ config KEYBOARD_SUNKBD
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called sunkbd.
+diff --git a/drivers/cpufreq/Kconfig b/drivers/cpufreq/Kconfig
+index 2a84fc63371e2e..75a7a486308d8c 100644
+--- a/drivers/cpufreq/Kconfig
++++ b/drivers/cpufreq/Kconfig
+@@ -298,20 +298,6 @@ config SPARC_US2E_CPUFREQ
+ 	  If in doubt, say N.
+ endif
  
--config KEYBOARD_SH_KEYSC
--	tristate "SuperH KEYSC keypad support"
--	depends on ARCH_SHMOBILE || COMPILE_TEST
+-if SUPERH
+-config SH_CPU_FREQ
+-	tristate "SuperH CPU Frequency driver"
 -	help
--	  Say Y here if you want to use a keypad attached to the KEYSC block
--	  on SuperH processors such as sh7722 and sh7343.
+-	  This adds the cpufreq driver for SuperH. Any CPU that supports
+-	  clock rate rounding through the clock framework can use this
+-	  driver. While it will make the kernel slightly larger, this is
+-	  harmless for CPUs that don't support rate rounding. The driver
+-	  will also generate a notice in the boot log before disabling
+-	  itself if the CPU in question is not capable of rate rounding.
 -
--	  To compile this driver as a module, choose M here: the
--	  module will be called sh_keysc.
+-	  If unsure, say N.
+-endif
 -
- config KEYBOARD_STMPE
- 	tristate "STMPE keypad support"
- 	depends on MFD_STMPE
-diff --git a/drivers/input/keyboard/Makefile b/drivers/input/keyboard/Makefile
-index 5f67196bb2c1ea..8aba0b052b4504 100644
---- a/drivers/input/keyboard/Makefile
-+++ b/drivers/input/keyboard/Makefile
-@@ -60,7 +60,6 @@ obj-$(CONFIG_KEYBOARD_QT1050)           += qt1050.o
- obj-$(CONFIG_KEYBOARD_QT1070)           += qt1070.o
- obj-$(CONFIG_KEYBOARD_QT2160)		+= qt2160.o
- obj-$(CONFIG_KEYBOARD_SAMSUNG)		+= samsung-keypad.o
--obj-$(CONFIG_KEYBOARD_SH_KEYSC)		+= sh_keysc.o
- obj-$(CONFIG_KEYBOARD_SNVS_PWRKEY)	+= snvs_pwrkey.o
- obj-$(CONFIG_KEYBOARD_SPEAR)		+= spear-keyboard.o
- obj-$(CONFIG_KEYBOARD_STMPE)		+= stmpe-keypad.o
-diff --git a/drivers/input/keyboard/sh_keysc.c b/drivers/input/keyboard/sh_keysc.c
+ config QORIQ_CPUFREQ
+ 	tristate "CPU frequency scaling driver for Freescale QorIQ SoCs"
+ 	depends on OF && COMMON_CLK
+diff --git a/drivers/cpufreq/Makefile b/drivers/cpufreq/Makefile
+index 32a7029e25ed81..9c16e77e3e87c0 100644
+--- a/drivers/cpufreq/Makefile
++++ b/drivers/cpufreq/Makefile
+@@ -112,6 +112,5 @@ obj-$(CONFIG_BMIPS_CPUFREQ)		+= bmips-cpufreq.o
+ obj-$(CONFIG_IA64_ACPI_CPUFREQ)		+= ia64-acpi-cpufreq.o
+ obj-$(CONFIG_LOONGSON2_CPUFREQ)		+= loongson2_cpufreq.o
+ obj-$(CONFIG_LOONGSON1_CPUFREQ)		+= loongson1-cpufreq.o
+-obj-$(CONFIG_SH_CPU_FREQ)		+= sh-cpufreq.o
+ obj-$(CONFIG_SPARC_US2E_CPUFREQ)	+= sparc-us2e-cpufreq.o
+ obj-$(CONFIG_SPARC_US3_CPUFREQ)		+= sparc-us3-cpufreq.o
+diff --git a/drivers/cpufreq/sh-cpufreq.c b/drivers/cpufreq/sh-cpufreq.c
 deleted file mode 100644
-index 2c00320f739fc1..00000000000000
---- a/drivers/input/keyboard/sh_keysc.c
+index b8704232c27b24..00000000000000
+--- a/drivers/cpufreq/sh-cpufreq.c
 +++ /dev/null
-@@ -1,334 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
+@@ -1,175 +0,0 @@
 -/*
-- * SuperH KEYSC Keypad Driver
+- * cpufreq driver for the SuperH processors.
 - *
-- * Copyright (C) 2008 Magnus Damm
+- * Copyright (C) 2002 - 2012 Paul Mundt
+- * Copyright (C) 2002 M. R. Brown
 - *
-- * Based on gpio_keys.c, Copyright 2005 Phil Blundell
+- * Clock framework bits from arch/avr32/mach-at32ap/cpufreq.c
+- *
+- *   Copyright (C) 2004-2007 Atmel Corporation
+- *
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
 - */
+-#define pr_fmt(fmt) "cpufreq: " fmt
 -
+-#include <linux/types.h>
+-#include <linux/cpufreq.h>
 -#include <linux/kernel.h>
 -#include <linux/module.h>
--#include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/delay.h>
--#include <linux/platform_device.h>
--#include <linux/input.h>
--#include <linux/input/sh_keysc.h>
--#include <linux/bitmap.h>
--#include <linux/pm_runtime.h>
--#include <linux/io.h>
--#include <linux/slab.h>
+-#include <linux/init.h>
+-#include <linux/err.h>
+-#include <linux/cpumask.h>
+-#include <linux/cpu.h>
+-#include <linux/smp.h>
+-#include <linux/clk.h>
+-#include <linux/percpu.h>
+-#include <linux/sh_clk.h>
 -
--static const struct {
--	unsigned char kymd, keyout, keyin;
--} sh_keysc_mode[] = {
--	[SH_KEYSC_MODE_1] = { 0, 6, 5 },
--	[SH_KEYSC_MODE_2] = { 1, 5, 6 },
--	[SH_KEYSC_MODE_3] = { 2, 4, 7 },
--	[SH_KEYSC_MODE_4] = { 3, 6, 6 },
--	[SH_KEYSC_MODE_5] = { 4, 6, 7 },
--	[SH_KEYSC_MODE_6] = { 5, 8, 8 },
+-static DEFINE_PER_CPU(struct clk, sh_cpuclk);
+-
+-struct cpufreq_target {
+-	struct cpufreq_policy	*policy;
+-	unsigned int		freq;
 -};
 -
--struct sh_keysc_priv {
--	void __iomem *iomem_base;
--	DECLARE_BITMAP(last_keys, SH_KEYSC_MAXKEYS);
--	struct input_dev *input;
--	struct sh_keysc_info pdata;
--};
--
--#define KYCR1 0
--#define KYCR2 1
--#define KYINDR 2
--#define KYOUTDR 3
--
--#define KYCR2_IRQ_LEVEL    0x10
--#define KYCR2_IRQ_DISABLED 0x00
--
--static unsigned long sh_keysc_read(struct sh_keysc_priv *p, int reg_nr)
+-static unsigned int sh_cpufreq_get(unsigned int cpu)
 -{
--	return ioread16(p->iomem_base + (reg_nr << 2));
+-	return (clk_get_rate(&per_cpu(sh_cpuclk, cpu)) + 500) / 1000;
 -}
 -
--static void sh_keysc_write(struct sh_keysc_priv *p, int reg_nr,
--			   unsigned long value)
+-static long __sh_cpufreq_target(void *arg)
 -{
--	iowrite16(value, p->iomem_base + (reg_nr << 2));
--}
+-	struct cpufreq_target *target = arg;
+-	struct cpufreq_policy *policy = target->policy;
+-	int cpu = policy->cpu;
+-	struct clk *cpuclk = &per_cpu(sh_cpuclk, cpu);
+-	struct cpufreq_freqs freqs;
+-	struct device *dev;
+-	long freq;
 -
--static void sh_keysc_level_mode(struct sh_keysc_priv *p,
--				unsigned long keys_set)
--{
--	struct sh_keysc_info *pdata = &p->pdata;
+-	if (smp_processor_id() != cpu)
+-		return -ENODEV;
 -
--	sh_keysc_write(p, KYOUTDR, 0);
--	sh_keysc_write(p, KYCR2, KYCR2_IRQ_LEVEL | (keys_set << 8));
+-	dev = get_cpu_device(cpu);
 -
--	if (pdata->kycr2_delay)
--		udelay(pdata->kycr2_delay);
--}
+-	/* Convert target_freq from kHz to Hz */
+-	freq = clk_round_rate(cpuclk, target->freq * 1000);
 -
--static void sh_keysc_map_dbg(struct device *dev, unsigned long *map,
--			     const char *str)
--{
--	int k;
+-	if (freq < (policy->min * 1000) || freq > (policy->max * 1000))
+-		return -EINVAL;
 -
--	for (k = 0; k < BITS_TO_LONGS(SH_KEYSC_MAXKEYS); k++)
--		dev_dbg(dev, "%s[%d] 0x%lx\n", str, k, map[k]);
--}
+-	dev_dbg(dev, "requested frequency %u Hz\n", target->freq * 1000);
 -
--static irqreturn_t sh_keysc_isr(int irq, void *dev_id)
--{
--	struct platform_device *pdev = dev_id;
--	struct sh_keysc_priv *priv = platform_get_drvdata(pdev);
--	struct sh_keysc_info *pdata = &priv->pdata;
--	int keyout_nr = sh_keysc_mode[pdata->mode].keyout;
--	int keyin_nr = sh_keysc_mode[pdata->mode].keyin;
--	DECLARE_BITMAP(keys, SH_KEYSC_MAXKEYS);
--	DECLARE_BITMAP(keys0, SH_KEYSC_MAXKEYS);
--	DECLARE_BITMAP(keys1, SH_KEYSC_MAXKEYS);
--	unsigned char keyin_set, tmp;
--	int i, k, n;
+-	freqs.old	= sh_cpufreq_get(cpu);
+-	freqs.new	= (freq + 500) / 1000;
+-	freqs.flags	= 0;
 -
--	dev_dbg(&pdev->dev, "isr!\n");
+-	cpufreq_freq_transition_begin(target->policy, &freqs);
+-	clk_set_rate(cpuclk, freq);
+-	cpufreq_freq_transition_end(target->policy, &freqs, 0);
 -
--	bitmap_fill(keys1, SH_KEYSC_MAXKEYS);
--	bitmap_zero(keys0, SH_KEYSC_MAXKEYS);
--
--	do {
--		bitmap_zero(keys, SH_KEYSC_MAXKEYS);
--		keyin_set = 0;
--
--		sh_keysc_write(priv, KYCR2, KYCR2_IRQ_DISABLED);
--
--		for (i = 0; i < keyout_nr; i++) {
--			n = keyin_nr * i;
--
--			/* drive one KEYOUT pin low, read KEYIN pins */
--			sh_keysc_write(priv, KYOUTDR, 0xffff ^ (3 << (i * 2)));
--			udelay(pdata->delay);
--			tmp = sh_keysc_read(priv, KYINDR);
--
--			/* set bit if key press has been detected */
--			for (k = 0; k < keyin_nr; k++) {
--				if (tmp & (1 << k))
--					__set_bit(n + k, keys);
--			}
--
--			/* keep track of which KEYIN bits that have been set */
--			keyin_set |= tmp ^ ((1 << keyin_nr) - 1);
--		}
--
--		sh_keysc_level_mode(priv, keyin_set);
--
--		bitmap_complement(keys, keys, SH_KEYSC_MAXKEYS);
--		bitmap_and(keys1, keys1, keys, SH_KEYSC_MAXKEYS);
--		bitmap_or(keys0, keys0, keys, SH_KEYSC_MAXKEYS);
--
--		sh_keysc_map_dbg(&pdev->dev, keys, "keys");
--
--	} while (sh_keysc_read(priv, KYCR2) & 0x01);
--
--	sh_keysc_map_dbg(&pdev->dev, priv->last_keys, "last_keys");
--	sh_keysc_map_dbg(&pdev->dev, keys0, "keys0");
--	sh_keysc_map_dbg(&pdev->dev, keys1, "keys1");
--
--	for (i = 0; i < SH_KEYSC_MAXKEYS; i++) {
--		k = pdata->keycodes[i];
--		if (!k)
--			continue;
--
--		if (test_bit(i, keys0) == test_bit(i, priv->last_keys))
--			continue;
--
--		if (test_bit(i, keys1) || test_bit(i, keys0)) {
--			input_event(priv->input, EV_KEY, k, 1);
--			__set_bit(i, priv->last_keys);
--		}
--
--		if (!test_bit(i, keys1)) {
--			input_event(priv->input, EV_KEY, k, 0);
--			__clear_bit(i, priv->last_keys);
--		}
--
--	}
--	input_sync(priv->input);
--
--	return IRQ_HANDLED;
--}
--
--static int sh_keysc_probe(struct platform_device *pdev)
--{
--	struct sh_keysc_priv *priv;
--	struct sh_keysc_info *pdata;
--	struct resource *res;
--	struct input_dev *input;
--	int i;
--	int irq, error;
--
--	if (!dev_get_platdata(&pdev->dev)) {
--		dev_err(&pdev->dev, "no platform data defined\n");
--		error = -EINVAL;
--		goto err0;
--	}
--
--	error = -ENXIO;
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (res == NULL) {
--		dev_err(&pdev->dev, "failed to get I/O memory\n");
--		goto err0;
--	}
--
--	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		goto err0;
--
--	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
--	if (priv == NULL) {
--		dev_err(&pdev->dev, "failed to allocate driver data\n");
--		error = -ENOMEM;
--		goto err0;
--	}
--
--	platform_set_drvdata(pdev, priv);
--	memcpy(&priv->pdata, dev_get_platdata(&pdev->dev), sizeof(priv->pdata));
--	pdata = &priv->pdata;
--
--	priv->iomem_base = ioremap(res->start, resource_size(res));
--	if (priv->iomem_base == NULL) {
--		dev_err(&pdev->dev, "failed to remap I/O memory\n");
--		error = -ENXIO;
--		goto err1;
--	}
--
--	priv->input = input_allocate_device();
--	if (!priv->input) {
--		dev_err(&pdev->dev, "failed to allocate input device\n");
--		error = -ENOMEM;
--		goto err2;
--	}
--
--	input = priv->input;
--	input->evbit[0] = BIT_MASK(EV_KEY);
--
--	input->name = pdev->name;
--	input->phys = "sh-keysc-keys/input0";
--	input->dev.parent = &pdev->dev;
--
--	input->id.bustype = BUS_HOST;
--	input->id.vendor = 0x0001;
--	input->id.product = 0x0001;
--	input->id.version = 0x0100;
--
--	input->keycode = pdata->keycodes;
--	input->keycodesize = sizeof(pdata->keycodes[0]);
--	input->keycodemax = ARRAY_SIZE(pdata->keycodes);
--
--	error = request_threaded_irq(irq, NULL, sh_keysc_isr, IRQF_ONESHOT,
--				     dev_name(&pdev->dev), pdev);
--	if (error) {
--		dev_err(&pdev->dev, "failed to request IRQ\n");
--		goto err3;
--	}
--
--	for (i = 0; i < SH_KEYSC_MAXKEYS; i++)
--		__set_bit(pdata->keycodes[i], input->keybit);
--	__clear_bit(KEY_RESERVED, input->keybit);
--
--	error = input_register_device(input);
--	if (error) {
--		dev_err(&pdev->dev, "failed to register input device\n");
--		goto err4;
--	}
--
--	pm_runtime_enable(&pdev->dev);
--	pm_runtime_get_sync(&pdev->dev);
--
--	sh_keysc_write(priv, KYCR1, (sh_keysc_mode[pdata->mode].kymd << 8) |
--		       pdata->scan_timing);
--	sh_keysc_level_mode(priv, 0);
--
--	device_init_wakeup(&pdev->dev, 1);
--
--	return 0;
--
-- err4:
--	free_irq(irq, pdev);
-- err3:
--	input_free_device(input);
-- err2:
--	iounmap(priv->iomem_base);
-- err1:
--	kfree(priv);
-- err0:
--	return error;
--}
--
--static int sh_keysc_remove(struct platform_device *pdev)
--{
--	struct sh_keysc_priv *priv = platform_get_drvdata(pdev);
--
--	sh_keysc_write(priv, KYCR2, KYCR2_IRQ_DISABLED);
--
--	input_unregister_device(priv->input);
--	free_irq(platform_get_irq(pdev, 0), pdev);
--	iounmap(priv->iomem_base);
--
--	pm_runtime_put_sync(&pdev->dev);
--	pm_runtime_disable(&pdev->dev);
--
--	kfree(priv);
--
+-	dev_dbg(dev, "set frequency %lu Hz\n", freq);
 -	return 0;
 -}
 -
--static int sh_keysc_suspend(struct device *dev)
+-/*
+- * Here we notify other drivers of the proposed change and the final change.
+- */
+-static int sh_cpufreq_target(struct cpufreq_policy *policy,
+-			     unsigned int target_freq,
+-			     unsigned int relation)
 -{
--	struct platform_device *pdev = to_platform_device(dev);
--	struct sh_keysc_priv *priv = platform_get_drvdata(pdev);
--	int irq = platform_get_irq(pdev, 0);
--	unsigned short value;
+-	struct cpufreq_target data = { .policy = policy, .freq = target_freq };
 -
--	value = sh_keysc_read(priv, KYCR1);
+-	return work_on_cpu(policy->cpu, __sh_cpufreq_target, &data);
+-}
 -
--	if (device_may_wakeup(dev)) {
--		sh_keysc_write(priv, KYCR1, value | 0x80);
--		enable_irq_wake(irq);
+-static int sh_cpufreq_verify(struct cpufreq_policy_data *policy)
+-{
+-	struct clk *cpuclk = &per_cpu(sh_cpuclk, policy->cpu);
+-	struct cpufreq_frequency_table *freq_table;
+-
+-	freq_table = cpuclk->nr_freqs ? cpuclk->freq_table : NULL;
+-	if (freq_table)
+-		return cpufreq_frequency_table_verify(policy, freq_table);
+-
+-	cpufreq_verify_within_cpu_limits(policy);
+-
+-	policy->min = (clk_round_rate(cpuclk, 1) + 500) / 1000;
+-	policy->max = (clk_round_rate(cpuclk, ~0UL) + 500) / 1000;
+-
+-	cpufreq_verify_within_cpu_limits(policy);
+-	return 0;
+-}
+-
+-static int sh_cpufreq_cpu_init(struct cpufreq_policy *policy)
+-{
+-	unsigned int cpu = policy->cpu;
+-	struct clk *cpuclk = &per_cpu(sh_cpuclk, cpu);
+-	struct cpufreq_frequency_table *freq_table;
+-	struct device *dev;
+-
+-	dev = get_cpu_device(cpu);
+-
+-	cpuclk = clk_get(dev, "cpu_clk");
+-	if (IS_ERR(cpuclk)) {
+-		dev_err(dev, "couldn't get CPU clk\n");
+-		return PTR_ERR(cpuclk);
+-	}
+-
+-	freq_table = cpuclk->nr_freqs ? cpuclk->freq_table : NULL;
+-	if (freq_table) {
+-		policy->freq_table = freq_table;
 -	} else {
--		sh_keysc_write(priv, KYCR1, value & ~0x80);
--		pm_runtime_put_sync(dev);
+-		dev_notice(dev, "no frequency table found, falling back "
+-			   "to rate rounding.\n");
+-
+-		policy->min = policy->cpuinfo.min_freq =
+-			(clk_round_rate(cpuclk, 1) + 500) / 1000;
+-		policy->max = policy->cpuinfo.max_freq =
+-			(clk_round_rate(cpuclk, ~0UL) + 500) / 1000;
 -	}
 -
 -	return 0;
 -}
 -
--static int sh_keysc_resume(struct device *dev)
+-static int sh_cpufreq_cpu_exit(struct cpufreq_policy *policy)
 -{
--	struct platform_device *pdev = to_platform_device(dev);
--	int irq = platform_get_irq(pdev, 0);
+-	unsigned int cpu = policy->cpu;
+-	struct clk *cpuclk = &per_cpu(sh_cpuclk, cpu);
 -
--	if (device_may_wakeup(dev))
--		disable_irq_wake(irq);
--	else
--		pm_runtime_get_sync(dev);
+-	clk_put(cpuclk);
 -
 -	return 0;
 -}
 -
--static DEFINE_SIMPLE_DEV_PM_OPS(sh_keysc_dev_pm_ops,
--				sh_keysc_suspend, sh_keysc_resume);
--
--static struct platform_driver sh_keysc_device_driver = {
--	.probe		= sh_keysc_probe,
--	.remove		= sh_keysc_remove,
--	.driver		= {
--		.name	= "sh_keysc",
--		.pm	= pm_sleep_ptr(&sh_keysc_dev_pm_ops),
--	}
+-static struct cpufreq_driver sh_cpufreq_driver = {
+-	.name		= "sh",
+-	.flags		= CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING,
+-	.get		= sh_cpufreq_get,
+-	.target		= sh_cpufreq_target,
+-	.verify		= sh_cpufreq_verify,
+-	.init		= sh_cpufreq_cpu_init,
+-	.exit		= sh_cpufreq_cpu_exit,
+-	.attr		= cpufreq_generic_attr,
 -};
--module_platform_driver(sh_keysc_device_driver);
 -
--MODULE_AUTHOR("Magnus Damm");
--MODULE_DESCRIPTION("SuperH KEYSC Keypad Driver");
+-static int __init sh_cpufreq_module_init(void)
+-{
+-	pr_notice("SuperH CPU frequency driver.\n");
+-	return cpufreq_register_driver(&sh_cpufreq_driver);
+-}
+-
+-static void __exit sh_cpufreq_module_exit(void)
+-{
+-	cpufreq_unregister_driver(&sh_cpufreq_driver);
+-}
+-
+-module_init(sh_cpufreq_module_init);
+-module_exit(sh_cpufreq_module_exit);
+-
+-MODULE_AUTHOR("Paul Mundt <lethal@linux-sh.org>");
+-MODULE_DESCRIPTION("cpufreq driver for SuperH");
 -MODULE_LICENSE("GPL");
 -- 
 2.39.0
