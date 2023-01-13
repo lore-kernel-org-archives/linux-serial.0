@@ -2,116 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51C3C3DA78
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Jan 2023 18:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73054C3DA78
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Jan 2023 18:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbjAMSoV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Jan 2023 13:44:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        id S230436AbjAMS75 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 Jan 2023 13:59:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbjAMSoF (ORCPT
+        with ESMTP id S229379AbjAMS7y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Jan 2023 13:44:05 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DBC32EA1
-        for <linux-serial@vger.kernel.org>; Fri, 13 Jan 2023 10:43:53 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id y25so34307948lfa.9
-        for <linux-serial@vger.kernel.org>; Fri, 13 Jan 2023 10:43:53 -0800 (PST)
+        Fri, 13 Jan 2023 13:59:54 -0500
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEC85585A
+        for <linux-serial@vger.kernel.org>; Fri, 13 Jan 2023 10:59:50 -0800 (PST)
+Received: by mail-oo1-xc36.google.com with SMTP id h3-20020a4aa283000000b004ead187bd6eso5772274ool.5
+        for <linux-serial@vger.kernel.org>; Fri, 13 Jan 2023 10:59:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Yv7yYu+svGwVLgS8wyxzW693EiE4HtsBGRbigAy1MWs=;
-        b=CP0QKj9lJa+BeUqD8mjzJAzZER4o144dB1FKlqUxhlS8kvXAxLI1Zx0PSlEwZxhtpz
-         A1HItOSE1W9IH0lAmNpXNdj5aXi+Jz3NXTWPeqfhJqrykhBMM8HcMPiSM1INLAp0Dksu
-         N+t/ZsVCAiUJmkuv2QdCm+8qC22E0xZg+HB2GCsdIRSpXNlinC16hWmm9gAJrhAlKQxU
-         ay0wMGuX63vB0rXHiNQv230xrMgyLGz+vNUHCRkdUdbH1iO1v6VRAHsVN4G3RJhlpZGe
-         3Gs8pau5Tq1YiQ+/mYwyg4MfAS0eQd+TupXow1yPoP790TblXOt0ELIH1HOwtbarFusq
-         IbJw==
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bTIDomgS8mXkDJCvxm5Zm+LjWmMOagP4MCI8VhlfZ4M=;
+        b=PS9bts8WEYUdHc2dq03MseWIdo5SmkGasWJ1IHK/82VNd2x1nauvFpnIRKJHReewV4
+         qHgmemCtG+n4JzEug1j/TkXXGr7XuvlNF4IBzbNfnN6lagwFrOKhEymKlD3N/LDBaGvv
+         sKYDqBaLKXsSv5VTvSWrpB1Ro6mV2B1zSTvwS3WrXPPhGJgdWKpIwnEsYL1x49CphPxG
+         SL4YOgYdR5jGUY39ZZius3Ig7i4WfTYOC67k8Vh1lto4GbCgV9uKa97KEalM5EmLMGPn
+         3yGQHE93+pmLVFjd1TlIZLJrfjBmFeNgyn5vD6/2wKe8LZIYKJC7joRnrftdzonfyS0K
+         +t4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Yv7yYu+svGwVLgS8wyxzW693EiE4HtsBGRbigAy1MWs=;
-        b=m7V58f8TtGzChoD28W4iYVzUDsGCLn0F71GIKv50koSKhJVpSoSxAZ7VnL42c77WA0
-         k/qlvXmuHs2Xrh+z0XF0bmBn6J4qc6og4cDT/8P52v6Pp2wM74nPZ3akW7gwtV6GfY7L
-         m58uhHoOoTOR5yfFNyG2z7rmoKbiAR310+GZcXgxdTJk8OIXhbCHz2cfaiy9wu8fGRR8
-         0O7YMPnvlwhZ1kt75+l+aANyzqhRX/3RMf+5083HYgME6mfMgrSlyOTBoHhWIgVG0YYi
-         7tM90qZjXR5vdAxPWThEXpXWJQ0fEx0ABTnlabTiuR6UTzkss+Af9dQlQoOrJfCQOKwu
-         f1Fg==
-X-Gm-Message-State: AFqh2krmrB7hj9LVkYqPhK/0ZjP0NvUtcY9zh7PP5+bj15e13I7IiFbG
-        mhBWwoRJ/Cp10DMRwGyn/bWKgpX7FdE=
-X-Google-Smtp-Source: AMrXdXvt1TMVuja3Y+Zq+MhsrzFa4qgMzz0RT70F2OE4C6YFu2bzKAp9gyGVW7pWlLPpu2ApvjCcEA==
-X-Received: by 2002:a05:6512:1597:b0:4b6:f4bb:e53f with SMTP id bp23-20020a056512159700b004b6f4bbe53fmr26621541lfb.60.1673635432565;
-        Fri, 13 Jan 2023 10:43:52 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id o11-20020ac2434b000000b004cc9ddce3adsm1261439lfl.82.2023.01.13.10.43.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 10:43:52 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH 8/8] serial: imx: refine local variables in rxint()
-Date:   Fri, 13 Jan 2023 21:43:34 +0300
-Message-Id: <20230113184334.287130-9-sorganov@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230113184334.287130-1-sorganov@gmail.com>
-References: <87bko4e65y.fsf@osv.gnss.ru>
- <20230113184334.287130-1-sorganov@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bTIDomgS8mXkDJCvxm5Zm+LjWmMOagP4MCI8VhlfZ4M=;
+        b=ckPfnbrggAI9FL9lBsW0cn1TUcPOGysLDaOXqlTQeqycU7RBSuI2ZKjIEj1HjTeuf0
+         u/NM9BvL3CxngB4V41pcA6hVLt7rwIDE8ygNNTdTIKN+sqA4VbaguqqFkzHffZewiM9u
+         /uAwNFc6IvL4jrAfuvO/DGGvv/ARCCu2T0V/Orn0/yQsQtw+zc/CzwxSLb4WVPRiidbg
+         aNPiyOS1MQwsw7lTv2pBUsxBw2EjHAN5P+MV/tVQjaYzicGiHJn7/0Qs8uhYd7zS14/2
+         glJ6oe/4XHxl/QfPwWC18TwOCIkK0g04SwUx23XN9bjBwTkjNlovlnAl+Go2TjQhRnwW
+         WiTA==
+X-Gm-Message-State: AFqh2kpLhyuHUWWSVBx6RNKtj9SoKg0zslU32NQNI4n3P9dIawjgTezM
+        NZS/xH5wLEjyTbhlPYuKTGeVZA==
+X-Google-Smtp-Source: AMrXdXvaOiO0G10Az4EGLc64Vx6N+KrZr3PuLGXv0M+M3iF7lrA3WUc8R2fIq6AYtp8ZC6Mk4E9lCQ==
+X-Received: by 2002:a4a:c594:0:b0:4e7:5d43:a654 with SMTP id x20-20020a4ac594000000b004e75d43a654mr22358114oop.0.1673636389556;
+        Fri, 13 Jan 2023 10:59:49 -0800 (PST)
+Received: from [192.168.86.224] ([136.62.38.22])
+        by smtp.gmail.com with ESMTPSA id bc31-20020a056820169f00b0049f8b4b2095sm10111163oob.44.2023.01.13.10.59.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Jan 2023 10:59:48 -0800 (PST)
+Message-ID: <6891afb6-4190-6a52-0319-745b3f138d97@landley.net>
+Date:   Fri, 13 Jan 2023 13:11:56 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: remove arch/sh
+Content-Language: en-US
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+References: <20230113062339.1909087-1-hch@lst.de>
+ <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+ <CAMuHMdUcnP6a9Ch5=_CMPq-io-YWK5pshkOT2nZmP1hvNcwBAg@mail.gmail.com>
+ <142532fb-5997-bdc1-0811-a80ae33f4ba4@physik.fu-berlin.de>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <142532fb-5997-bdc1-0811-a80ae33f4ba4@physik.fu-berlin.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The 'rx' is chip register, similar to 'usr2', so let it be of 'u32' type as
-well.
+On 1/13/23 02:52, John Paul Adrian Glaubitz wrote:
+> Hi Geert!
+> 
+> On 1/13/23 09:26, Geert Uytterhoeven wrote:
+>> Indeed.  The main issue is not the lack of people sending patches and
+>> fixes, but those patches never being applied by the maintainers.
+>> Perhaps someone is willing to stand up to take over maintainership?
+> 
+> I actually would be willing to do it but I'm a bit hesitant as I'm not 100%
+> sure my skills are sufficient. Maybe if someone can assist me?
 
-Move 'flg' to be FIFO read loop local as it's not used outside.
+My skills aren't sufficient and I dunno how much time I have, but I can
+certainly assist. I test sh4 regularlyish and it's in the list of architectures
+I ship binaries and tiny VM images for, just refreshed tuesday:
 
-Signed-off-by: Sergey Organov <sorganov@gmail.com>
----
- drivers/tty/serial/imx.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+https://landley.net/toybox/downloads/binaries/0.8.9/
+https://landley.net/toybox/downloads/binaries/mkroot/0.8.9/
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index f4236e8995fa..45327ff6dd14 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -888,10 +888,9 @@ static void imx_uart_check_flood(struct imx_port *sport, u32 usr2)
- static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
--	unsigned int rx, flg;
- 	struct tty_port *port = &sport->port.state->port;
- 	typeof(sport->port.membase) membase = sport->port.membase;
--	u32 usr2;
-+	u32 usr2, rx;
- 
- 	/* If we received something, check for 0xff flood */
- 	usr2 = readl(membase + USR2);
-@@ -899,7 +898,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
- 		imx_uart_check_flood(sport, usr2);
- 
- 	while ((rx = readl(membase + URXD0)) & URXD_CHARRDY) {
--		flg = TTY_NORMAL;
-+		unsigned int flg = TTY_NORMAL;
- 		sport->port.icount.rx++;
- 
- 		if (unlikely(rx & URXD_ERR)) {
--- 
-2.30.1
+(The sh2eb isn't a VM, it's a physical board I have here...)
 
+There is definitely interest in this architecture. I'm aware Rich hasn't been
+the most responsive maintainer. (I'm told he's on vacation with his family at
+the moment, according to the text I got about this issue from the J-core
+hardware guys in Japan.)
+
+The main reason we haven't converted everything to device tree is we only have
+access to test hardware for a subset of the boards. Pruning the list of
+supported boards and converting the rest to device tree might make sense. We can
+always add/convert boards back later...
+
+Rob
