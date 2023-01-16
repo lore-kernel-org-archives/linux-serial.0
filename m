@@ -2,104 +2,133 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD42C54EBE
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 11:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12185C63797
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 14:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbjAPLDm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Jan 2023 06:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37660 "EHLO
+        id S231376AbjAPOji (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Jan 2023 09:39:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230402AbjAPLDa (ORCPT
+        with ESMTP id S230466AbjAPOjR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Jan 2023 06:03:30 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8D744A7
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 03:03:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673867009; x=1705403009;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=nVzUMlIkcRKOW6FyXKII1uOTS/tz/e2GWzpaNPjVds8=;
-  b=iRpN7G63JDfmKMeJ4X4Ajn4jG0yRlLKtsQxHHOUFX4OW6yaMRLFkr0lh
-   xq6Gs8qhRVEM6Bcw2P1MifGE973QJw1UiULtbWD9VfhCKqYizgna0VDyV
-   FVhraKd9QkvfLouyacRgLK/b6CDIsAHFoi4KXVAXS6Yst0dHKmHMHJGsw
-   px86WcQs4BVZUoV7xtp2qfOit5WykwITxxB7kU2nggujJ+3W8YBYspt3I
-   l7whbUzaJjxyqwMds0H6tXs3h/r47r0Ip0TqqK+CNYLvx6TTG8bLJlvC+
-   ppHR7odLHawIbcXUrRRvbrCsrnMUw403dKA+Ry0eANY0uIjzdenPOsXTk
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="351687761"
-X-IronPort-AV: E=Sophos;i="5.97,220,1669104000"; 
-   d="scan'208";a="351687761"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 03:03:29 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="747685689"
-X-IronPort-AV: E=Sophos;i="5.97,220,1669104000"; 
-   d="scan'208";a="747685689"
-Received: from xsanroma-mobl.ger.corp.intel.com ([10.252.39.155])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 03:03:26 -0800
-Date:   Mon, 16 Jan 2023 13:03:23 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Sergey Organov <sorganov@gmail.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
+        Mon, 16 Jan 2023 09:39:17 -0500
+Received: from air.basealt.ru (air.basealt.ru [194.107.17.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6B45AB74;
+        Mon, 16 Jan 2023 06:17:40 -0800 (PST)
+Received: by air.basealt.ru (Postfix, from userid 490)
+        id 351C02F20230; Mon, 16 Jan 2023 14:17:00 +0000 (UTC)
+Received: from localhost (broadband-188-32-10-232.ip.moscow.rt.ru [188.32.10.232])
+        by air.basealt.ru (Postfix) with ESMTPSA id 9612F2F2022E;
+        Mon, 16 Jan 2023 14:16:58 +0000 (UTC)
+Date:   Mon, 16 Jan 2023 17:16:58 +0300
+From:   "Alexey V. Vissarionov" <gremlin@altlinux.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        =?ISO-8859-2?Q?Tomasz_Mo=F1?= <tomasz.mon@camlingroup.com>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kukjin Kim <kgene.kim@samsung.com>,
         linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH 7/8] serial: imx: use readl() to optimize FIFO reading
- loop
-In-Reply-To: <20230113184334.287130-8-sorganov@gmail.com>
-Message-ID: <48ba84e3-7f52-9cfb-426a-a432587c1c9@linux.intel.com>
-References: <87bko4e65y.fsf@osv.gnss.ru> <20230113184334.287130-1-sorganov@gmail.com> <20230113184334.287130-8-sorganov@gmail.com>
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        lvc-project@linuxtesting.org, gremlin@altlinux.org
+Subject: [PATCH] serial: samsung: fix buffer size for clk_name
+Message-ID: <20230116141658.GC8107@altlinux.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nmemrqcdn5VTmUEE"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 13 Jan 2023, Sergey Organov wrote:
 
-> Use readl() instead of heavier imx_uart_readl() in the Rx ISR, as we know
-> we read registers that must not be cached.
-> 
-> Signed-off-by: Sergey Organov <sorganov@gmail.com>
-> ---
->  drivers/tty/serial/imx.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index be00362b8b67..f4236e8995fa 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -890,14 +890,15 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
->  	struct imx_port *sport = dev_id;
->  	unsigned int rx, flg;
->  	struct tty_port *port = &sport->port.state->port;
-> +	typeof(sport->port.membase) membase = sport->port.membase;
->  	u32 usr2;
->  
->  	/* If we received something, check for 0xff flood */
-> -	usr2 = imx_uart_readl(sport, USR2);
-> +	usr2 = readl(membase + USR2);
->  	if (usr2 & USR2_RDR)
->  		imx_uart_check_flood(sport, usr2);
->  
-> -	while ((rx = imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
-> +	while ((rx = readl(membase + URXD0)) & URXD_CHARRDY) {
->  		flg = TTY_NORMAL;
->  		sport->port.icount.rx++;
+--nmemrqcdn5VTmUEE
+Content-Type: text/plain; charset=koi8-r
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I'd just make a uport local variable and use uport->membase + xx. There 
-are plenty of sport->port constructs to replace with uport in that 
-function anyway.
+Although very unlikely, the 'clk_num' value may be as big as
+2**32 - 1 (uint32_max), so the buffer should have enough
+space for storing "clk_uart_baud4294967295\0".
+Also, the numbers in clk_name are expected to be unsigned.
 
--- 
- i.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
+Fixes: 5f5a7a5578c58852 ("serial: samsung: switch to clkdev based clock loo=
+kup")
+Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_=
+tty.c
+index 0fce856434dafd80..2c701dc7c6a37191 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -1407,7 +1407,7 @@ static void s3c24xx_serial_pm(struct uart_port *port,=
+ unsigned int level,
+  *
+  */
+=20
+-#define MAX_CLK_NAME_LENGTH 15
++#define MAX_CLK_NAME_LENGTH 24		/* "clk_uart_baud4294967295\0" */
+=20
+ static inline int s3c24xx_serial_getsource(struct uart_port *port)
+ {
+@@ -1457,7 +1457,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c2=
+4xx_uart_port *ourport,
+ 			!(ourport->cfg->clk_sel & (1 << cnt)))
+ 			continue;
+=20
+-		sprintf(clkname, "clk_uart_baud%d", cnt);
++		sprintf(clkname, "clk_uart_baud%u", cnt);
+ 		clk =3D clk_get(ourport->port.dev, clkname);
+ 		if (IS_ERR(clk))
+ 			continue;
+@@ -1957,7 +1957,7 @@ static int s3c24xx_serial_enable_baudclk(struct s3c24=
+xx_uart_port *ourport)
+ 		if (!(clk_sel & (1 << clk_num)))
+ 			continue;
+=20
+-		sprintf(clk_name, "clk_uart_baud%d", clk_num);
++		sprintf(clk_name, "clk_uart_baud%u", clk_num);
+ 		clk =3D clk_get(dev, clk_name);
+ 		if (IS_ERR(clk))
+ 			continue;
+@@ -2522,7 +2522,7 @@ s3c24xx_serial_get_options(struct uart_port *port, in=
+t *baud,
+ 		/* now calculate the baud rate */
+=20
+ 		clk_sel =3D s3c24xx_serial_getsource(port);
+-		sprintf(clk_name, "clk_uart_baud%d", clk_sel);
++		sprintf(clk_name, "clk_uart_baud%u", clk_sel);
+=20
+ 		clk =3D clk_get(port->dev, clk_name);
+ 		if (!IS_ERR(clk))
+
+
+
+--=20
+Alexey V. Vissarionov
+gremlin =F0=F2=E9 altlinux =F4=FE=EB org; +vii-cmiii-ccxxix-lxxix-xlii
+GPG: 0D92F19E1C0DC36E27F61A29CD17E2B43D879005 @ hkp://keys.gnupg.net
+
+--nmemrqcdn5VTmUEE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCgAGBQJjxVxaAAoJEFv2F9znRj5K0MsP/1QGXpm/Axd8kWH2EW7QmnUo
+q8LW8ox4wZMJCgzT0dObphT3N7IK9ElbtgauBsn6bYeBy4gB/QHv850tpoysVVb2
+QQ/Lr2hxWmuYd9s5/FAyJEHKwLGQWIJw/A2aR3Cz+Cq8FgB5rL0FJQAkMPrJ8bhk
+/A4zn7fqJ+hzNxiTA5GI4bGWeIrMNCLP4ASAjjZFz8FfJpPv3S9c3xRTnDnTi4cc
+W7+56nK3Ee1Ag6F+rPWtMYLUBuBZlK6lORR/t1+tgtlUk4n45lnjMllLq2lNMLj5
+BV0uLGfioPyvu5tK4GIr3bXqi30Fg18teCYTd/bL34fzwZ0tirOnVQGePlg8YEjg
+O4Lm/YW0EvEiCK41RDUAJeMtrvhuoyBhfEt6KoA9L2NzORTjOmDGc8x57U755Ghi
++4VNGAPUm6RENMuL95ckR6c3ip2XP6TL+49dmzMGme1TxeI/CfteSXmTYiwOF1/E
+885S7KKiuMcmc+Ve1XLoQnJICDY9MFx4TJzcrgCNazTzxvBWs36kvgbVQe6MCkiR
+MjGRXPbqF9fPKOagZuXKsJYLIXVzsYiio3Q7DYahA893V7DvGHqSEnEwN+rDQlR2
+LaGQ7YauHx5CkdR3s1XhftBEdxrJHy5E7cbVAk4d9r6PjSOi5yWuBnEbILvoqNni
+w9bv2xruDpeq4td4y7vt
+=18iO
+-----END PGP SIGNATURE-----
+
+--nmemrqcdn5VTmUEE--
