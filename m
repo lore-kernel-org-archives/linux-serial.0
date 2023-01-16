@@ -2,88 +2,199 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1A0C54EBE
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 08:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC365C677F1
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 10:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232392AbjAPIwd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Jan 2023 03:52:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
+        id S230201AbjAPKa0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Jan 2023 05:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbjAPIw0 (ORCPT
+        with ESMTP id S229744AbjAPKaW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Jan 2023 03:52:26 -0500
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2646044A1;
-        Mon, 16 Jan 2023 00:52:24 -0800 (PST)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.95)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1pHLDw-0003Fv-T9; Mon, 16 Jan 2023 09:52:12 +0100
-Received: from p57bd9464.dip0.t-ipconnect.de ([87.189.148.100] helo=[192.168.178.81])
-          by inpost2.zedat.fu-berlin.de (Exim 4.95)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1pHLDw-000TdQ-Lf; Mon, 16 Jan 2023 09:52:12 +0100
-Message-ID: <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
-Date:   Mon, 16 Jan 2023 09:52:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: remove arch/sh
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Mon, 16 Jan 2023 05:30:22 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0691ABD3
+        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 02:30:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673865021; x=1705401021;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=yJDfpYIfJ4cNCU+UT6KVDi1+17A4H5SZeqrr9v+j6/o=;
+  b=VoojAelrVhu/jBvCIHiGmISwfQ8dI6mR1+F0IZQhB7Fjv43cnNkXHcQA
+   LGt7FE4shR7lXRJseEWE+OqFpgmsXdV4hSUDdj5omqMW4uXGU62JHh0Pr
+   EjZWvwHXFYGy63iUvLkTesL5gNIByMbeNBI3WUpwbtdfRy4w1pHTQS0bo
+   3X1uO7jeeNMDfSP6RGGJbOUb0mX2o35YdVsQAWHr4u/ldTB6JdfYbXv/1
+   FV//Qwo220RYHH0RrkcKzvHOgDl1OAjN2x5EtA9iabyaEd+2WzF9MwE78
+   g2P1013GuG9fGvBdWVZ6iMRFkkhL9yNkmEO5C89TkIhpbg0NQs/UDzrN3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="323134755"
+X-IronPort-AV: E=Sophos;i="5.97,220,1669104000"; 
+   d="scan'208";a="323134755"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 02:30:20 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="747678790"
+X-IronPort-AV: E=Sophos;i="5.97,220,1669104000"; 
+   d="scan'208";a="747678790"
+Received: from xsanroma-mobl.ger.corp.intel.com ([10.252.39.155])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 02:30:17 -0800
+Date:   Mon, 16 Jan 2023 12:30:11 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sergey Organov <sorganov@gmail.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-References: <20230113062339.1909087-1-hch@lst.de>
- <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de>
-Content-Language: en-US
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <20230116071306.GA15848@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 87.189.148.100
+        Jiri Slaby <jirislaby@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        =?ISO-8859-2?Q?Tomasz_Mo=F1?= <tomasz.mon@camlingroup.com>,
+        linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: Re: [PATCH 1/8] serial: imx: factor-out common code to
+ imx_uart_soft_reset()
+In-Reply-To: <20230113184334.287130-2-sorganov@gmail.com>
+Message-ID: <aa3d9c37-369b-5163-79f6-6dc213e92bc9@linux.intel.com>
+References: <87bko4e65y.fsf@osv.gnss.ru> <20230113184334.287130-1-sorganov@gmail.com> <20230113184334.287130-2-sorganov@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Christoph!
+On Fri, 13 Jan 2023, Sergey Organov wrote:
 
-On 1/16/23 08:13, Christoph Hellwig wrote:
-> On Fri, Jan 13, 2023 at 09:09:52AM +0100, John Paul Adrian Glaubitz wrote:
->> I'm still maintaining and using this port in Debian.
->>
->> It's a bit disappointing that people keep hammering on it. It works fine for me.
+> We perform soft reset in 2 places, slightly differently for no sufficient
+> reasons, so move more generic variant to a function, and re-use the code.
 > 
-> What platforms do you (or your users) use it on?
+> Out of 2 repeat counters, 10 and 100, select 10, as the code works at
+> interrupts disabled, and in practice the reset happens immediately.
+> 
+> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> ---
+>  drivers/tty/serial/imx.c | 73 ++++++++++++++++++++--------------------
+>  1 file changed, 37 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 757825edb0cd..bf222d8568a9 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -397,6 +397,39 @@ static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
+>         hrtimer_start(hrt, ms_to_ktime(msec), HRTIMER_MODE_REL);
+>  }
+>  
+> +/* called with port.lock taken and irqs off */
+> +static void imx_uart_soft_reset(struct imx_port *sport)
+> +{
+> +	int i = 10;
+> +	u32 ucr2, ubir, ubmr, uts;
+> +
+> +	/*
+> +	 * According to the Reference Manual description of the UART SRST bit:
+> +	 *
+> +	 * "Reset the transmit and receive state machines,
+> +	 * all FIFOs and register USR1, USR2, UBIR, UBMR, UBRC, URXD, UTXD
+> +	 * and UTS[6-3]".
+> +	 *
+> +	 * We don't need to restore the old values from USR1, USR2, URXD and
+> +	 * UTXD. UBRC is read only, so only save/restore the other three
+> +	 * registers.
+> +	 */
+> +	ubir = imx_uart_readl(sport, UBIR);
+> +	ubmr = imx_uart_readl(sport, UBMR);
+> +	uts = imx_uart_readl(sport, IMX21_UTS);
+> +
+> +	ucr2 = imx_uart_readl(sport, UCR2);
+> +	imx_uart_writel(sport, ucr2 & ~UCR2_SRST, UCR2);
+> +
+> +	while (!(imx_uart_readl(sport, UCR2) & UCR2_SRST) && (--i > 0))
+> +		udelay(1);
 
-We have had a discussion between multiple people invested in the SuperH port and
-I have decided to volunteer as a co-maintainer of the port to support Rich Felker
-when he isn't available.
-
-Adrian
+This could use read_poll_timeout_atomic().
 
 -- 
-  .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+ i.
 
+
+> +	/* Restore the registers */
+> +	imx_uart_writel(sport, ubir, UBIR);
+> +	imx_uart_writel(sport, ubmr, UBMR);
+> +	imx_uart_writel(sport, uts, IMX21_UTS);
+> +}
+> +
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_start_rx(struct uart_port *port)
+>  {
+> @@ -1398,7 +1431,7 @@ static void imx_uart_disable_dma(struct imx_port *sport)
+>  static int imx_uart_startup(struct uart_port *port)
+>  {
+>  	struct imx_port *sport = (struct imx_port *)port;
+> -	int retval, i;
+> +	int retval;
+>  	unsigned long flags;
+>  	int dma_is_inited = 0;
+>  	u32 ucr1, ucr2, ucr3, ucr4, uts;
+> @@ -1430,15 +1463,9 @@ static int imx_uart_startup(struct uart_port *port)
+>  		dma_is_inited = 1;
+>  
+>  	spin_lock_irqsave(&sport->port.lock, flags);
+> +
+>  	/* Reset fifo's and state machines */
+> -	i = 100;
+> -
+> -	ucr2 = imx_uart_readl(sport, UCR2);
+> -	ucr2 &= ~UCR2_SRST;
+> -	imx_uart_writel(sport, ucr2, UCR2);
+> -
+> -	while (!(imx_uart_readl(sport, UCR2) & UCR2_SRST) && (--i > 0))
+> -		udelay(1);
+> +	imx_uart_soft_reset(sport);
+>  
+>  	/*
+>  	 * Finally, clear and enable interrupts
+> @@ -1593,8 +1620,6 @@ static void imx_uart_flush_buffer(struct uart_port *port)
+>  {
+>  	struct imx_port *sport = (struct imx_port *)port;
+>  	struct scatterlist *sgl = &sport->tx_sgl[0];
+> -	u32 ucr2;
+> -	int i = 100, ubir, ubmr, uts;
+>  
+>  	if (!sport->dma_chan_tx)
+>  		return;
+> @@ -1612,32 +1637,8 @@ static void imx_uart_flush_buffer(struct uart_port *port)
+>  		sport->dma_is_txing = 0;
+>  	}
+>  
+> -	/*
+> -	 * According to the Reference Manual description of the UART SRST bit:
+> -	 *
+> -	 * "Reset the transmit and receive state machines,
+> -	 * all FIFOs and register USR1, USR2, UBIR, UBMR, UBRC, URXD, UTXD
+> -	 * and UTS[6-3]".
+> -	 *
+> -	 * We don't need to restore the old values from USR1, USR2, URXD and
+> -	 * UTXD. UBRC is read only, so only save/restore the other three
+> -	 * registers.
+> -	 */
+> -	ubir = imx_uart_readl(sport, UBIR);
+> -	ubmr = imx_uart_readl(sport, UBMR);
+> -	uts = imx_uart_readl(sport, IMX21_UTS);
+> +	imx_uart_soft_reset(sport);
+>  
+> -	ucr2 = imx_uart_readl(sport, UCR2);
+> -	ucr2 &= ~UCR2_SRST;
+> -	imx_uart_writel(sport, ucr2, UCR2);
+> -
+> -	while (!(imx_uart_readl(sport, UCR2) & UCR2_SRST) && (--i > 0))
+> -		udelay(1);
+> -
+> -	/* Restore the registers */
+> -	imx_uart_writel(sport, ubir, UBIR);
+> -	imx_uart_writel(sport, ubmr, UBMR);
+> -	imx_uart_writel(sport, uts, IMX21_UTS);
+>  }
+>  
+>  static void
+> 
