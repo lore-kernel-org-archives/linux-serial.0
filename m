@@ -2,357 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFE0C54EBE
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 18:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E95BFC46467
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 20:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233524AbjAPSjB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Jan 2023 13:39:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
+        id S234266AbjAPUvB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Jan 2023 15:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234641AbjAPSiY (ORCPT
+        with ESMTP id S233335AbjAPUuM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Jan 2023 13:38:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9212428852
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 10:29:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1673893742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DfE/0f7WicUarpkQ6xDKer55vlLFOFPNhSrmueY6UH0=;
-        b=K+Xqh0LVaFrKoe/N1FR0Tb7mhwMz8bA1X+RpoyWy19l1yko0Sdons+0tT5RWfCx7lQI5Yr
-        7XlPNMZ1rDqy+YD1M5jmZky5SfetcpxF5E+sKUowAqatrHjdc7izHHKfAMZXKAtYz17quA
-        ZHRZcjznUyfUV6D2sg9ni5GGahB5Smk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-322-znmtbdrON12ZqLK-m-kTgg-1; Mon, 16 Jan 2023 13:29:01 -0500
-X-MC-Unique: znmtbdrON12ZqLK-m-kTgg-1
-Received: by mail-wm1-f71.google.com with SMTP id 9-20020a05600c228900b003daf72fc827so2451375wmf.9
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 10:29:00 -0800 (PST)
+        Mon, 16 Jan 2023 15:50:12 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2632E0CE
+        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 12:49:11 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id d13so20269799qvj.8
+        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 12:49:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=g-clemson-edu.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:user-agent:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=htxDw6oxhXjqQbE1UgetSmDIGG+7VDNJASjMOKXVnjk=;
+        b=ifNKwmQjvP4wEv0ACZ0sU2EaMtXih+2zwcX3PKKV+vUjr17tUWbI2gJUVXkaxEGwRh
+         +TWxshF/FYFZmHJG7hRDyF2o1a7WakZRqFfgJ8ko/5+bT4TVe+Dzam6kvrjeKwQw3mUN
+         IjJdYyfyUKwR6AiFOSuLQMHxFiHWnshUZj2LpykT1XqjYfDs84fI23b7/ZhWQ1UwNGqx
+         xBtt16u+zLw9xYO2Escvntc1eSztwxIAe+7+FOh5EV4/D6PHlz9MB4atJhWtTQd6yaM/
+         R0xKI0M4Sn6eY3Z2cdmeLSRWduWKP9XSvYjgmaF1fhsQ04XV1jyoIB/DxziNlykBKbQE
+         p/Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:cc:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
+        h=mime-version:user-agent:message-id:subject:cc:to:date:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DfE/0f7WicUarpkQ6xDKer55vlLFOFPNhSrmueY6UH0=;
-        b=joH72zrRABfsWPY8/kcPy/qSQzaNtmOiwj9dEXys+dmewqSo+dbvqVLYWAqLtdqx/m
-         k4Nu4S/5OSoFjfojcEy6KrTb8oEUy41q/l0PumrYBWyRcv+i9ykiShR7bntSO/VCmK07
-         hIPsfdghTjqy1a+RUqACyWtwao6UXc2KZu7aZVnrHeLTPsG+Rh7BpWbQbd03PdSclVUm
-         qFHRtd/1QHUcjJGI21CTgVmpuslFqfHuP5wu7x9r3Iuy5RwrNp3VX12h+bIZAMDoP6VD
-         imuom1nOnudTym1aDAVFBjV+27qlbY8G89hk5yFLvNAQn/U8q7i8FllwoWOEf8HxH/O7
-         /oFg==
-X-Gm-Message-State: AFqh2kq23Ry4m0FWdXkHdN5JDjqmtM/8V/sgE37XWc8xL+PRL98wJyxO
-        76+DPeWOX/EF+H9X7sfcc9h2n8SXlDia1U3qrqxu7BUydKDlKsGGDGGeST3bSV83uEfhNh5PoyR
-        eZ3UZES4k4jfdz1cxyfbEFEw=
-X-Received: by 2002:a1c:7415:0:b0:3da:fd07:1e3 with SMTP id p21-20020a1c7415000000b003dafd0701e3mr418540wmc.22.1673893736364;
-        Mon, 16 Jan 2023 10:28:56 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvV870LGFYDRPc4DzkE5HF0Vy/AvtCIRmRYLTNYiUIhmJUMPByHsR2pTQhgRTCP0dBKTbiKqg==
-X-Received: by 2002:a1c:7415:0:b0:3da:fd07:1e3 with SMTP id p21-20020a1c7415000000b003dafd0701e3mr418524wmc.22.1673893736156;
-        Mon, 16 Jan 2023 10:28:56 -0800 (PST)
-Received: from [192.168.9.16] (net-2-34-30-183.cust.vodafonedsl.it. [2.34.30.183])
-        by smtp.gmail.com with ESMTPSA id d8-20020a05600c34c800b003c5571c27a1sm41738207wmq.32.2023.01.16.10.28.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Jan 2023 10:28:55 -0800 (PST)
-Message-ID: <28f1f1bf-d490-2630-d41f-1344baa0eea9@redhat.com>
-Date:   Mon, 16 Jan 2023 19:28:54 +0100
+        bh=htxDw6oxhXjqQbE1UgetSmDIGG+7VDNJASjMOKXVnjk=;
+        b=zvI2TYRBvWqNQAULIJyqSCY9p6fW+NLHlS86LxPUJV5unRmsXjve4SwpZoBBpFVA31
+         M62paFdlWjSew5ucthmD5KjJqos21yecMsJk4Qvoahj3Xh7dYTSOwDZ4YHrVdbym6mAc
+         J5FPra6cZ3yL92tsXu8j+eqv6CY8YrJ4MMpqzUqdRKuOnYNYpZp5eugMyRseHEtKW457
+         HQkrLtZCJNiynetOQ9hKwbnzu0OFnH61Ky83btSlsIE9g3OYcbQzvglDtso9HLFSysQE
+         96Ty5wNIcFR9yCoeD1rffahZkZ31OFnVIMxBQPYwZFc+ajy07IonXJAEXTTAx9AnKuqQ
+         ZTeg==
+X-Gm-Message-State: AFqh2kpJKkqp+bABvVQuzGpXAZmUXDdDB6DspZWUIRTcRt4+V0AxhAVm
+        EiO+xztpX4itn3TRH3zobwywQVV/vhs+qlFeptI=
+X-Google-Smtp-Source: AMrXdXusqrefp38Nh6smDrOhjKHFsLh2pKlFrbtNYwNJvl9LloOTZBbFcIdO8fB5FXe3sOpNL6ahSA==
+X-Received: by 2002:a05:6214:3202:b0:4d7:45fb:f5ac with SMTP id ms2-20020a056214320200b004d745fbf5acmr1379588qvb.23.1673902150491;
+        Mon, 16 Jan 2023 12:49:10 -0800 (PST)
+Received: from tstest-VirtualBox.int.sealevel.com ([12.18.222.51])
+        by smtp.gmail.com with ESMTPSA id bj30-20020a05620a191e00b006bb82221013sm18711615qkb.0.2023.01.16.12.49.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jan 2023 12:49:09 -0800 (PST)
+From:   Matthew Howell <mrhowel@g.clemson.edu>
+X-Google-Original-From: Matthew Howell <ts-test@tstest-VirtualBox>
+Date:   Mon, 16 Jan 2023 15:49:08 -0500 (EST)
+To:     linux-serial@vger.kernel.org
+cc:     gregkh@linuxfoundation.org, jeff.baldwin@sealevel.com,
+        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com,
+        darren.beeson@sealevel.com
+Subject: [PATCH] serial: exar: Add support for Sealevel 7xxxC serial cards
+Message-ID: <alpine.DEB.2.21.2301161242150.19090@tstest-VirtualBox>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v11 4/4] tty: serial: 8250: add DFL bus driver for Altera
- 16550.
-To:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
-References: <20230115151447.1353428-1-matthew.gerlach@linux.intel.com>
- <20230115151447.1353428-5-matthew.gerlach@linux.intel.com>
-Cc:     andriy.shevchenko@linux.intel.com, bagasdotme@gmail.com,
-        basheer.ahmed.muddebihal@intel.com, corbet@lwn.net,
-        geert+renesas@glider.be, gregkh@linuxfoundation.org,
-        hao.wu@intel.com, ilpo.jarvinen@linux.intel.com,
-        jirislaby@kernel.org, johan@kernel.org, linux-doc@vger.kernel.org,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, lukas@wunner.de, macro@orcam.me.uk,
-        marpagan@redhat.com, mdf@kernel.org,
-        niklas.soderlund+renesas@ragnatech.se, russell.h.weight@intel.com,
-        tianfei.zhang@intel.com, trix@redhat.com, yilun.xu@intel.com
-From:   Marco Pagani <marpagan@redhat.com>
-In-Reply-To: <20230115151447.1353428-5-matthew.gerlach@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Add support for Sealevel 7xxxC serial cards.
 
-On 2023-01-15 16:14, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add a Device Feature List (DFL) bus driver for the Altera
-> 16550 implementation of UART.
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
 
-Reviewed-by: Marco Pagani <marpagan@redhat.com>
+This patch:
+* Adds IDs to recognize 7xxxC cards from Sealevel Systems.
+* Updates exar_pci_probe() to set nr_ports to last two bytes of primary
+dev ID for these cards.
 
-> ---
-> v11: sizeof(u64) -> sizeof(*pval)
->      16650 -> 16550
-> 
-> v10: track change to dfh_find_param()
-> 
-> v9: add Rb Andy Shevchenko
->     move dfh_get_u64_param_vals to static version of dfh_get_u64_param_val
-> 
-> v8: use dfh_get_u64_param_vals()
-> 
-> v7: no change
-> 
-> v6: move driver specific parameter definitions to limit scope
-> 
-> v5: removed unneeded blank line
->     removed unneeded includes
->     included device.h and types.h
->     removed unneeded local variable
->     remove calls to dev_dbg
->     memset -> { }
->     remove space after period
->     explicitly include used headers
->     remove redundant Inc from Copyright
->     fix format specifier
-> 
-> v4: use dev_err_probe() everywhere that is appropriate
->     clean up noise
->     change error messages to use the word, unsupported
->     tried again to sort Makefile and KConfig better
->     reorder probe function for easier error handling
->     use new dfh_find_param API
-> 
-> v3: use passed in location of registers
->     use cleaned up functions for parsing parameters
-> 
-> v2: clean up error messages
->     alphabetize header files
->     fix 'missing prototype' error by making function static
->     tried to sort Makefile and Kconfig better
-> ---
->  drivers/tty/serial/8250/8250_dfl.c | 167 +++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/Kconfig    |  12 +++
->  drivers/tty/serial/8250/Makefile   |   1 +
->  3 files changed, 180 insertions(+)
->  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dfl.c b/drivers/tty/serial/8250/8250_dfl.c
-> new file mode 100644
-> index 000000000000..6c5ff019df4b
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_dfl.c
-> @@ -0,0 +1,167 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Driver for FPGA UART
-> + *
-> + * Copyright (C) 2022 Intel Corporation.
-> + *
-> + * Authors:
-> + *   Ananda Ravuri <ananda.ravuri@intel.com>
-> + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/device.h>
-> +#include <linux/dfl.h>
-> +#include <linux/errno.h>
-> +#include <linux/ioport.h>
-> +#include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/types.h>
-> +
-> +#include <linux/serial.h>
-> +#include <linux/serial_8250.h>
-> +
-> +#define DFHv1_PARAM_ID_CLK_FRQ    0x2
-> +#define DFHv1_PARAM_ID_FIFO_LEN   0x3
-> +
-> +#define DFHv1_PARAM_ID_REG_LAYOUT	0x4
-> +#define DFHv1_PARAM_REG_LAYOUT_WIDTH	GENMASK_ULL(63, 32)
-> +#define DFHv1_PARAM_REG_LAYOUT_SHIFT	GENMASK_ULL(31, 0)
-> +
-> +struct dfl_uart {
-> +	int line;
-> +};
-> +
-> +static int dfh_get_u64_param_val(struct dfl_device *dfl_dev, int param_id, u64 *pval)
-> +{
-> +	size_t psize;
-> +	u64 *p;
-> +
-> +	p = dfh_find_param(dfl_dev, param_id, &psize);
-> +	if (IS_ERR(p))
-> +		return PTR_ERR(p);
-> +
-> +	if (psize != sizeof(*pval))
-> +		return -EINVAL;
-> +
-> +	*pval = *p;
-> +
-> +	return 0;
-> +}
-> +
-> +static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct uart_8250_port *uart)
-> +{
-> +	struct device *dev = &dfl_dev->dev;
-> +	u64 fifo_len, clk_freq, reg_layout;
-> +	u32 reg_width;
-> +	int ret;
-> +
-> +	ret = dfh_get_u64_param_val(dfl_dev, DFHv1_PARAM_ID_CLK_FRQ, &clk_freq);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "missing CLK_FRQ param\n");
-> +
-> +	uart->port.uartclk = clk_freq;
-> +
-> +	ret = dfh_get_u64_param_val(dfl_dev, DFHv1_PARAM_ID_FIFO_LEN, &fifo_len);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "missing FIFO_LEN param\n");
-> +
-> +	switch (fifo_len) {
-> +	case 32:
-> +		uart->port.type = PORT_ALTR_16550_F32;
-> +		break;
-> +
-> +	case 64:
-> +		uart->port.type = PORT_ALTR_16550_F64;
-> +		break;
-> +
-> +	case 128:
-> +		uart->port.type = PORT_ALTR_16550_F128;
-> +		break;
-> +
-> +	default:
-> +		return dev_err_probe(dev, -EINVAL, "unsupported FIFO_LEN %llu\n", fifo_len);
-> +	}
-> +
-> +	ret = dfh_get_u64_param_val(dfl_dev, DFHv1_PARAM_ID_REG_LAYOUT, &reg_layout);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "missing REG_LAYOUT param\n");
-> +
-> +	uart->port.regshift = FIELD_GET(DFHv1_PARAM_REG_LAYOUT_SHIFT, reg_layout);
-> +	reg_width = FIELD_GET(DFHv1_PARAM_REG_LAYOUT_WIDTH, reg_layout);
-> +	switch (reg_width) {
-> +	case 4:
-> +		uart->port.iotype = UPIO_MEM32;
-> +		break;
-> +
-> +	case 2:
-> +		uart->port.iotype = UPIO_MEM16;
-> +		break;
-> +
-> +	default:
-> +		return dev_err_probe(dev, -EINVAL, "unsupported reg-width %u\n", reg_width);
-> +
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int dfl_uart_probe(struct dfl_device *dfl_dev)
-> +{
-> +	struct device *dev = &dfl_dev->dev;
-> +	struct uart_8250_port uart = { };
-> +	struct dfl_uart *dfluart;
-> +	int ret;
-> +
-> +	uart.port.flags = UPF_IOREMAP;
-> +	uart.port.mapbase = dfl_dev->mmio_res.start;
-> +	uart.port.mapsize = resource_size(&dfl_dev->mmio_res);
-> +
-> +	ret = dfl_uart_get_params(dfl_dev, &uart);
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "failed uart feature walk\n");
-> +
-> +	if (dfl_dev->num_irqs == 1)
-> +		uart.port.irq = dfl_dev->irqs[0];
-> +
-> +	dfluart = devm_kzalloc(dev, sizeof(*dfluart), GFP_KERNEL);
-> +	if (!dfluart)
-> +		return -ENOMEM;
-> +
-> +	dfluart->line = serial8250_register_8250_port(&uart);
-> +	if (dfluart->line < 0)
-> +		return dev_err_probe(dev, dfluart->line, "unable to register 8250 port.\n");
-> +
-> +	dev_set_drvdata(dev, dfluart);
-> +
-> +	return 0;
-> +}
-> +
-> +static void dfl_uart_remove(struct dfl_device *dfl_dev)
-> +{
-> +	struct dfl_uart *dfluart = dev_get_drvdata(&dfl_dev->dev);
-> +
-> +	serial8250_unregister_port(dfluart->line);
-> +}
-> +
-> +#define FME_FEATURE_ID_UART 0x24
-> +
-> +static const struct dfl_device_id dfl_uart_ids[] = {
-> +	{ FME_ID, FME_FEATURE_ID_UART },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(dfl, dfl_uart_ids);
-> +
-> +static struct dfl_driver dfl_uart_driver = {
-> +	.drv = {
-> +		.name = "dfl-uart",
-> +	},
-> +	.id_table = dfl_uart_ids,
-> +	.probe = dfl_uart_probe,
-> +	.remove = dfl_uart_remove,
-> +};
-> +module_dfl_driver(dfl_uart_driver);
-> +
-> +MODULE_DESCRIPTION("DFL Intel UART driver");
-> +MODULE_AUTHOR("Intel Corporation");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index b0f62345bc84..020ef532940d 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -370,6 +370,18 @@ config SERIAL_8250_FSL
->  	  erratum for Freescale 16550 UARTs in the 8250 driver. It also
->  	  enables support for ACPI enumeration.
->  
-> +config SERIAL_8250_DFL
-> +	tristate "DFL bus driver for Altera 16550 UART"
-> +	depends on SERIAL_8250 && FPGA_DFL
-> +	help
-> +	  This option enables support for a Device Feature List (DFL) bus
-> +	  driver for the Altera 16550 UART. One or more Altera 16550 UARTs
-> +	  can be instantiated in a FPGA and then be discovered during
-> +	  enumeration of the DFL bus.
-> +
-> +	  To compile this driver as a module, chose M here: the
-> +	  module will be called 8250_dfl.
-> +
->  config SERIAL_8250_DW
->  	tristate "Support for Synopsys DesignWare 8250 quirks"
->  	depends on SERIAL_8250
-> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-> index 1615bfdde2a0..4e1a32812683 100644
-> --- a/drivers/tty/serial/8250/Makefile
-> +++ b/drivers/tty/serial/8250/Makefile
-> @@ -28,6 +28,7 @@ obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
->  obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
->  obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
->  obj-$(CONFIG_SERIAL_8250_MEN_MCB)	+= 8250_men_mcb.o
-> +obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
->  obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
->  obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
->  obj-$(CONFIG_SERIAL_8250_IOC3)		+= 8250_ioc3.o
+Let me know if I need to make any changes.
 
+diff --git a/drivers/tty/serial/8250/8250_exar.c
+b/drivers/tty/serial/8250/8250_exar.c
+index 314a05e00..64770c62b 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -43,6 +43,12 @@
+ #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
+ #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
+
++#define PCI_DEVICE_ID_SEALEVEL_710xC		0x1001
++#define PCI_DEVICE_ID_SEALEVEL_720xC		0x1002
++#define PCI_DEVICE_ID_SEALEVEL_740xC		0x1004
++#define PCI_DEVICE_ID_SEALEVEL_780xC		0x1008
++#define PCI_DEVICE_ID_SEALEVEL_716xC		0x1010
++
+ #define UART_EXAR_INT0		0x80
+ #define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
+ #define UART_EXAR_SLEEP	0x8b	/* Sleep mode */
+@@ -638,6 +644,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct
+pci_device_id *ent)
+ 		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
+ 	else if (board->num_ports)
+ 		nr_ports = board->num_ports;
++	else if (pcidev->vendor == PCI_VENDOR_ID_SEALEVEL)
++		nr_ports = pcidev->device & 0xff;
+ 	else
+ 		nr_ports = pcidev->device & 0x0f;
+
+@@ -864,6 +872,12 @@ static const struct pci_device_id exar_pci_tbl[] = {
+ 	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
+ 	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
+ 	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
++
++	EXAR_DEVICE(SEALEVEL, 710xC, pbn_exar_XR17V35x),
++	EXAR_DEVICE(SEALEVEL, 720xC, pbn_exar_XR17V35x),
++	EXAR_DEVICE(SEALEVEL, 740xC, pbn_exar_XR17V35x),
++	EXAR_DEVICE(SEALEVEL, 780xC, pbn_exar_XR17V35x),
++	EXAR_DEVICE(SEALEVEL, 716xC, pbn_exar_XR17V35x),
+ 	{ 0, }
+ };
+ MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
