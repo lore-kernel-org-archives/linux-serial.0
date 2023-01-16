@@ -2,46 +2,47 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934E9C677F1
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 10:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE07C46467
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 10:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbjAPKn6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Jan 2023 05:43:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
+        id S230035AbjAPKuu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 Jan 2023 05:50:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbjAPKnD (ORCPT
+        with ESMTP id S230145AbjAPKun (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Jan 2023 05:43:03 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982091E9DF
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 02:41:18 -0800 (PST)
+        Mon, 16 Jan 2023 05:50:43 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93E3196B1
+        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 02:50:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673865678; x=1705401678;
+  t=1673866242; x=1705402242;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=RfJT/JzRam+75L1tvavZrg0JqU9AGOUl5+//Cd9fB+8=;
-  b=PgKB9grCDNHArev90RJem+2FOtupr38fi7x0ULjeWSEHcmKm8SW9yOQn
-   TKO1y2ftLntuPXVRFcaV6/ee8nzUiR+pYHcrKYf6MdwWNV6Lxls619JP2
-   lTU2LZANZ39YAhqJ+/UR9YwDpm1MmDP3UarirCTv2f3hy1yqdh//L+uN7
-   3zSs+NhC4Z05WzpqBDdrAtaMucwJbjtWIkyIfoDIBeYmrxhyBNGm/Yesl
-   AiAMaIfLuLEyAGXujObgt6j1u/zBIklcV4MUug+uz+LQ2E+I7mGjFqjMy
-   CBpoqgl78NgXNhoZFxk/oo1lv1eJw08711q3uyY1UGi8o+/14iJVw57Ly
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="351684093"
+  bh=vJ1ctAqTpkAtaU0BcmAYC7zGY080YYDGaag4oLsWUfI=;
+  b=O5jFtIIoQcUdUnOzYB7EMh/aO12diZLbFUEZ+ie2rMJ2Xs9vPvicCNNR
+   XdbjTtjmWiD45dSTLtZI/b8+OpY8Sga6T4oW6SxL0L5KKUP/Dh+MlW4a5
+   i6w4qqv484xiWweA7ZQ2d4NpBJRh0j9XdyrwXztgo/EKy4xxJwsjKglk8
+   3NS+niSN/lKfQNs/iuy0Av7Z+SUphQ4t2HSE0DsFjNKMaf5tfRxciKskr
+   8R9Sdhn9hPG+hJI475EL7CD2GM9kR9ym3wgSOoKEEWXRSp8bXJiJ4FehG
+   inWVvjZQj0UWGJjYx10tAHek6hZbduNZF2mAMZl4zWKRJ9Hu4VLwPmZzN
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="326496162"
 X-IronPort-AV: E=Sophos;i="5.97,220,1669104000"; 
-   d="scan'208";a="351684093"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 02:41:18 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="747681335"
+   d="scan'208";a="326496162"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 02:50:42 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10591"; a="658981009"
 X-IronPort-AV: E=Sophos;i="5.97,220,1669104000"; 
-   d="scan'208";a="747681335"
+   d="scan'208";a="658981009"
 Received: from xsanroma-mobl.ger.corp.intel.com ([10.252.39.155])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 02:41:14 -0800
-Date:   Mon, 16 Jan 2023 12:41:11 +0200 (EET)
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 02:50:38 -0800
+Date:   Mon, 16 Jan 2023 12:50:35 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Sergey Organov <sorganov@gmail.com>
-cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Richard Genoud <richard.genoud@gmail.com>,
@@ -52,12 +53,13 @@ cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH 3/8] serial: imx: do not sysrq broken chars
-In-Reply-To: <20230113184334.287130-4-sorganov@gmail.com>
-Message-ID: <1239d563-f14e-6542-842e-3f2be0f574b0@linux.intel.com>
-References: <87bko4e65y.fsf@osv.gnss.ru> <20230113184334.287130-1-sorganov@gmail.com> <20230113184334.287130-4-sorganov@gmail.com>
+Subject: Re: [PATCH 5/8] serial: imx: remove redundant USR2 read from FIFO
+ reading loop
+In-Reply-To: <20230113184334.287130-6-sorganov@gmail.com>
+Message-ID: <d83872e5-4aac-baad-9d8-12df8c411fb8@linux.intel.com>
+References: <87bko4e65y.fsf@osv.gnss.ru> <20230113184334.287130-1-sorganov@gmail.com> <20230113184334.287130-6-sorganov@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2015868155-1673865677=:1723"
+Content-Type: multipart/mixed; boundary="8323329-1919270866-1673866241=:1723"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -65,49 +67,39 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-2015868155-1673865677=:1723
+--8323329-1919270866-1673866241=:1723
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Fri, 13 Jan 2023, Sergey Organov wrote:
 
-> Do not call uart_handle_sysrq_char() if we got any receive error along with
-> the character, as we don't want random junk to be considered a sysrq.
+> There is no need to read USR2 twice at every loop iteration: get rid of the
+> second read.
 > 
 > Signed-off-by: Sergey Organov <sorganov@gmail.com>
 > ---
->  drivers/tty/serial/imx.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  drivers/tty/serial/imx.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
 > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index e7fce31e460d..1c950112a598 100644
+> index b96b0edc7854..c44a7293c013 100644
 > --- a/drivers/tty/serial/imx.c
 > +++ b/drivers/tty/serial/imx.c
-> @@ -911,9 +911,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
->  				continue;
->  		}
+> @@ -904,7 +904,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
 >  
-> -		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
-> -			continue;
-> -
->  		if (unlikely(rx & URXD_ERR)) {
->  			if (rx & URXD_BRK)
->  				sport->port.icount.brk++;
-> @@ -942,7 +939,8 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
->  				flg = TTY_OVERRUN;
+>  		rx = imx_uart_readl(sport, URXD0);
 >  
->  			sport->port.sysrq = 0;
-> -		}
-> +		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
-> +			continue;
->  
->  		if (sport->port.ignore_status_mask & URXD_DUMMY_READ)
->  			goto out;
+> -		usr2 = imx_uart_readl(sport, USR2);
+>  		if (usr2 & USR2_BRCD) {
+>  			imx_uart_writel(sport, USR2_BRCD, USR2);
+>  			if (uart_handle_break(&sport->port))
+> 
+
+I was already wondering why it's read more than once.
 
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
 
 -- 
  i.
 
---8323329-2015868155-1673865677=:1723--
+--8323329-1919270866-1673866241=:1723--
