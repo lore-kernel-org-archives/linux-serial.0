@@ -2,117 +2,128 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E95BFC46467
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Jan 2023 20:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6387AC3DA78
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 09:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234266AbjAPUvB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Jan 2023 15:51:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        id S236440AbjAQJLQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Jan 2023 04:11:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233335AbjAPUuM (ORCPT
+        with ESMTP id S236454AbjAQJKx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Jan 2023 15:50:12 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2632E0CE
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 12:49:11 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id d13so20269799qvj.8
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jan 2023 12:49:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=g-clemson-edu.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:user-agent:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=htxDw6oxhXjqQbE1UgetSmDIGG+7VDNJASjMOKXVnjk=;
-        b=ifNKwmQjvP4wEv0ACZ0sU2EaMtXih+2zwcX3PKKV+vUjr17tUWbI2gJUVXkaxEGwRh
-         +TWxshF/FYFZmHJG7hRDyF2o1a7WakZRqFfgJ8ko/5+bT4TVe+Dzam6kvrjeKwQw3mUN
-         IjJdYyfyUKwR6AiFOSuLQMHxFiHWnshUZj2LpykT1XqjYfDs84fI23b7/ZhWQ1UwNGqx
-         xBtt16u+zLw9xYO2Escvntc1eSztwxIAe+7+FOh5EV4/D6PHlz9MB4atJhWtTQd6yaM/
-         R0xKI0M4Sn6eY3Z2cdmeLSRWduWKP9XSvYjgmaF1fhsQ04XV1jyoIB/DxziNlykBKbQE
-         p/Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=htxDw6oxhXjqQbE1UgetSmDIGG+7VDNJASjMOKXVnjk=;
-        b=zvI2TYRBvWqNQAULIJyqSCY9p6fW+NLHlS86LxPUJV5unRmsXjve4SwpZoBBpFVA31
-         M62paFdlWjSew5ucthmD5KjJqos21yecMsJk4Qvoahj3Xh7dYTSOwDZ4YHrVdbym6mAc
-         J5FPra6cZ3yL92tsXu8j+eqv6CY8YrJ4MMpqzUqdRKuOnYNYpZp5eugMyRseHEtKW457
-         HQkrLtZCJNiynetOQ9hKwbnzu0OFnH61Ky83btSlsIE9g3OYcbQzvglDtso9HLFSysQE
-         96Ty5wNIcFR9yCoeD1rffahZkZ31OFnVIMxBQPYwZFc+ajy07IonXJAEXTTAx9AnKuqQ
-         ZTeg==
-X-Gm-Message-State: AFqh2kpJKkqp+bABvVQuzGpXAZmUXDdDB6DspZWUIRTcRt4+V0AxhAVm
-        EiO+xztpX4itn3TRH3zobwywQVV/vhs+qlFeptI=
-X-Google-Smtp-Source: AMrXdXusqrefp38Nh6smDrOhjKHFsLh2pKlFrbtNYwNJvl9LloOTZBbFcIdO8fB5FXe3sOpNL6ahSA==
-X-Received: by 2002:a05:6214:3202:b0:4d7:45fb:f5ac with SMTP id ms2-20020a056214320200b004d745fbf5acmr1379588qvb.23.1673902150491;
-        Mon, 16 Jan 2023 12:49:10 -0800 (PST)
-Received: from tstest-VirtualBox.int.sealevel.com ([12.18.222.51])
-        by smtp.gmail.com with ESMTPSA id bj30-20020a05620a191e00b006bb82221013sm18711615qkb.0.2023.01.16.12.49.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jan 2023 12:49:09 -0800 (PST)
-From:   Matthew Howell <mrhowel@g.clemson.edu>
-X-Google-Original-From: Matthew Howell <ts-test@tstest-VirtualBox>
-Date:   Mon, 16 Jan 2023 15:49:08 -0500 (EST)
-To:     linux-serial@vger.kernel.org
-cc:     gregkh@linuxfoundation.org, jeff.baldwin@sealevel.com,
-        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com,
-        darren.beeson@sealevel.com
-Subject: [PATCH] serial: exar: Add support for Sealevel 7xxxC serial cards
-Message-ID: <alpine.DEB.2.21.2301161242150.19090@tstest-VirtualBox>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Tue, 17 Jan 2023 04:10:53 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DEF3A855;
+        Tue, 17 Jan 2023 01:04:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673946283; x=1705482283;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yEfwaA1ZLZIwJAyW/Vv2oWQYDGbEZLM/Ipw3HRQM2rk=;
+  b=FFLiT/G4rokiZeh1Kx/1Kr01hSebWqv6obqMOg8DJ0Ffe9uYkKDW1cTJ
+   WUil6UlqZRbVyja/GKi8L+yO8Yb1YDzcn0dnIBmm+USc5eOhQMqkQoen4
+   nkr6Gc8G1hfi7ENkbBsUOE1nOTZlqkv2izqqoGM9Rb8xC+g+Y1CPPNJe1
+   erRgug2N7DHU4V0rl1WM0UpS8i+72AdYGKyiz0gh2i2pm1eyUwHahcfrc
+   Ubgpar8mMFdfZOJ8yMfl5VGv3qW93Equ/hQSqwMbAtweLHAr9yZTEekoX
+   O/vbwgg2nGsO7FYDCdQOw8ZQn0WYr7aTUZCWLevmMoV2Bymy95OrAIOUK
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="324700896"
+X-IronPort-AV: E=Sophos;i="5.97,222,1669104000"; 
+   d="scan'208";a="324700896"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 01:04:24 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="783173965"
+X-IronPort-AV: E=Sophos;i="5.97,222,1669104000"; 
+   d="scan'208";a="783173965"
+Received: from tronach-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.40.3])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 01:04:20 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rodolfo Giometti <giometti@enneenne.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Johan Hovold <johan@kernel.org>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v4 00/12] tty/serial: bool conversions and cleanups
+Date:   Tue, 17 Jan 2023 11:03:46 +0200
+Message-Id: <20230117090358.4796-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add support for Sealevel 7xxxC serial cards.
+There are number of functions in tty/serial which have arguments or
+return types that expect/behave like bool. Likely due to them existing
+before bool was available, other types are used. Make conversions to
+bool and cleanups.
 
-Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
+v4:
+- Removed most of the USB serial changes from this series
 
-This patch:
-* Adds IDs to recognize 7xxxC cards from Sealevel Systems.
-* Updates exar_pci_probe() to set nr_ports to last two bytes of primary
-dev ID for these cards.
+v3:
+- moxa: Fix function signature in comment
+- moxa: Rearrange comment (0: off, 1: on) removal from rename change
+  to bool change (effect is internal to the series)
 
-Let me know if I need to make any changes.
+v2:
+- Call dtr/rts parameters/variables consistently "active"
+- Don't chain one return statement with ||
+- Don't change function signatures to >80 chars ("while at it")
+- moxa: differentiated dtr and status variables
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c
-b/drivers/tty/serial/8250/8250_exar.c
-index 314a05e00..64770c62b 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -43,6 +43,12 @@
- #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
- #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
+Ilpo Järvinen (12):
+  tty: Cleanup tty_port_set_initialized() bool parameter
+  tty: Cleamup tty_port_set_suspended() bool parameter
+  tty: Cleanup tty_port_set_active() bool parameter
+  tty: moxa: Make local var storing tty_port_initialized() bool
+  serial: Convert uart_{,port_}startup() init_hw param to bool
+  tty: Convert ->carrier_raised() and callchains to bool
+  tty: Convert ->dtr_rts() to take bool argument
+  tty/serial: Make ->dcd_change()+uart_handle_dcd_change() status bool
+    active
+  serial: Make uart_handle_cts_change() status param bool active
+  tty: Return bool from tty_termios_hw_change()
+  tty: Call ->dtr_rts() parameter active consistently
+  tty: moxa: Rename dtr/rts parameters/variables to active
 
-+#define PCI_DEVICE_ID_SEALEVEL_710xC		0x1001
-+#define PCI_DEVICE_ID_SEALEVEL_720xC		0x1002
-+#define PCI_DEVICE_ID_SEALEVEL_740xC		0x1004
-+#define PCI_DEVICE_ID_SEALEVEL_780xC		0x1008
-+#define PCI_DEVICE_ID_SEALEVEL_716xC		0x1010
-+
- #define UART_EXAR_INT0		0x80
- #define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
- #define UART_EXAR_SLEEP	0x8b	/* Sleep mode */
-@@ -638,6 +644,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct
-pci_device_id *ent)
- 		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
- 	else if (board->num_ports)
- 		nr_ports = board->num_ports;
-+	else if (pcidev->vendor == PCI_VENDOR_ID_SEALEVEL)
-+		nr_ports = pcidev->device & 0xff;
- 	else
- 		nr_ports = pcidev->device & 0x0f;
+ drivers/char/pcmcia/synclink_cs.c | 18 +++----
+ drivers/ipack/devices/ipoctal.c   |  4 +-
+ drivers/mmc/core/sdio_uart.c      | 13 +++--
+ drivers/pps/clients/pps-ldisc.c   |  6 +--
+ drivers/s390/char/con3215.c       |  4 +-
+ drivers/staging/greybus/uart.c    |  4 +-
+ drivers/tty/amiserial.c           | 12 ++---
+ drivers/tty/hvc/hvc_console.c     |  4 +-
+ drivers/tty/hvc/hvc_console.h     |  2 +-
+ drivers/tty/hvc/hvc_iucv.c        |  6 +--
+ drivers/tty/moxa.c                | 82 ++++++++++++++++---------------
+ drivers/tty/mxser.c               | 11 +++--
+ drivers/tty/n_gsm.c               | 16 +++---
+ drivers/tty/serial/imx.c          |  2 +-
+ drivers/tty/serial/max3100.c      |  2 +-
+ drivers/tty/serial/max310x.c      |  3 +-
+ drivers/tty/serial/serial_core.c  | 65 ++++++++++++------------
+ drivers/tty/serial/sunhv.c        |  8 +--
+ drivers/tty/synclink_gt.c         | 21 ++++----
+ drivers/tty/tty_ioctl.c           |  8 +--
+ drivers/tty/tty_port.c            | 22 ++++-----
+ drivers/usb/class/cdc-acm.c       |  4 +-
+ drivers/usb/serial/console.c      |  2 +-
+ drivers/usb/serial/usb-serial.c   |  6 +--
+ include/linux/serial_core.h       |  6 +--
+ include/linux/tty.h               |  2 +-
+ include/linux/tty_ldisc.h         |  4 +-
+ include/linux/tty_port.h          | 10 ++--
+ net/bluetooth/rfcomm/tty.c        |  2 +-
+ 29 files changed, 173 insertions(+), 176 deletions(-)
 
-@@ -864,6 +872,12 @@ static const struct pci_device_id exar_pci_tbl[] = {
- 	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
- 	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
- 	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
-+
-+	EXAR_DEVICE(SEALEVEL, 710xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 720xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 740xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 780xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 716xC, pbn_exar_XR17V35x),
- 	{ 0, }
- };
- MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
+-- 
+2.30.2
+
