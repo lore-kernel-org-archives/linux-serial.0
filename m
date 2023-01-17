@@ -2,56 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFA6C54E76
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 17:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF6CC3DA78
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 17:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230219AbjAQRqz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Jan 2023 12:46:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
+        id S231337AbjAQR4O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Jan 2023 12:56:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234508AbjAQRqD (ORCPT
+        with ESMTP id S231812AbjAQRyG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Jan 2023 12:46:03 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14123582AC
-        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 09:35:56 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id y19so12533075edc.2
-        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 09:35:56 -0800 (PST)
+        Tue, 17 Jan 2023 12:54:06 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3593D0A6
+        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 09:43:59 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id vm8so77116719ejc.2
+        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 09:43:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:user-agent:message-id:in-reply-to:date:references
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GBcV6TpSZek+zC6eLNUBmrWBC/v5aj5VGymFY1M5tEE=;
-        b=RA3xdITmXjDDedWzrBSj/TWs/AXIFYtLD23tw9KzzTLbe9tAPx23rFGLqE9t24OUVu
-         K3PWz6B40BPNNT1pMQHXbsTzy41GlIogcczWrMvbJy9NXPgU9WaHqLKJ87dOs2IM/6Zt
-         A0TWsqfdXJL7TzvlzSTlVGANEmOXctI9sbLnaXA50aDEvhphseamUN4gnpC2OozVhC2H
-         KssL82WmikXCCevOO/TkOddaS20zrNRWolv8d7bAzJkkjaPKthlAVEeGeGYFeCWMhQKp
-         TlFfw/vi22Y85j73RT2llVSFIPJT9cO7goAj+sTzAdZ3t3g2dXTEiL3iwOv1xM5lCgJi
-         Xyzw==
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ORyvxq+z9WkQfBJYa6nT9E5g6aSbxlC1oY+UU1ufU10=;
+        b=Biigjaa2oK4oOdDHQs7Lg4BifDSSLpsCHyAHV6s1JcONsN4saf9RLMjuS+Xxsrs8la
+         J+f3s4jd2Xn3xen2E3NX4075Y4xMgvTX6iSn1zJMBnTe/63YI7GX4Uo3Rukc25z+dntX
+         ELz2w7DtbHy3tHZ8ND2M4KdXqzo3DVipUBG2NlUGW6WmvVmIlu/Bzmqb+G9UMYUdpcXK
+         tKkATZJWbP+EKu6aSs6Gf9EXN+mueioHzEn8aGnGW5uaQ4HnuWLmqZLAyg+Nnbi1A6xW
+         KbVNBS1KtGhYMBBaeWuolvRE4Z9KuD3m74rXbCC0sd3l/L3mIIRld3pkuvnrvC/nmXFT
+         C1Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:message-id:in-reply-to:date:references
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GBcV6TpSZek+zC6eLNUBmrWBC/v5aj5VGymFY1M5tEE=;
-        b=JhhKMaPfaJNkov0KP9Do9x25glNIlwNkSlfRFF849ZcR/lFR3AiCnt1WaB3Csxtrri
-         59BfdkgO0Sp/K9J32iQqnct2tqrScGTI5dA9LLU3OTnTVAWZ2+PPWsbE5z3XUmFrbfTM
-         CidQlFSd+WT0RDEeDxw+r980uhLDqBJzBstHL9BuG+h2r9Oees/qSL8+LBoqCgcMpHlW
-         aCNVjrF5Y7RQUlFW0v4iXCX5+NHSeLwOgrHjGdDoOwCITzm+1i5QiSVKOhrKnQhm5qLn
-         po/jFtAWO27UocBQWOyR1SwW8IzAxc5pE23MzXgiAwXSHLicLWpqsxgyUHWCcT6TC6Ty
-         0pRQ==
-X-Gm-Message-State: AFqh2kqU0FQF+9fo0L9129T8N3uM8gxsVwwZd48zNK79bV3W55CPfQl8
-        wW7nye9ODZ8qUm438je3W9A=
-X-Google-Smtp-Source: AMrXdXsXZQZidqD8+utTNQkDN7Ji/DhtgsUO/MLJ6PODoHOXjmdB3mHBN8U+lXBE0VFmkB4Hrja4BQ==
-X-Received: by 2002:aa7:db8b:0:b0:49b:b274:b816 with SMTP id u11-20020aa7db8b000000b0049bb274b816mr4093847edt.37.1673976951462;
-        Tue, 17 Jan 2023 09:35:51 -0800 (PST)
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ORyvxq+z9WkQfBJYa6nT9E5g6aSbxlC1oY+UU1ufU10=;
+        b=NquK2ANwfWtorBUitWTjRdi/OgMP2WJsmKH3Xl6MqouyNT4nqgUyEHo1XNOEowozCG
+         L4YP4L4G2Syiw8PT55CKYtXfXHIoaBsUrGBTscGXTZfbXZemNB79C3xd4dJ4hgnjZ66g
+         WrPRiMq/VuA2FSsY9ezoSUk1RNGpSGq0+Jn0+y7EjVs5GZKaqzsh0RD+tEHXoeckkG2a
+         9QHnVpqyZ4r+JF63CRsO7SPYQpB9/dQoKYDF0m0plHlcsTCAHrmTrrkRPy5LdKDjyoMe
+         gljM1TsOxOhQx62TfTFP+jL/0dSF4JmKoxDRJhYUw4C46s9B2FoCLpOAHJAkTn+8YPM2
+         Jd0w==
+X-Gm-Message-State: AFqh2kq5SeS/1Cf8v7/rqPNNT/Qul4hfwltE5EtUgcbvYLNPZVOq13Oq
+        ZhTodC9+0PrQ+OWKPdPok4blGctkRNI=
+X-Google-Smtp-Source: AMrXdXsjr0BzsxRjthdH9Y7u8o4YXPgIZKlmz1+zVACKYtDl+WnXrJgQpeY26w04ZP1pf4viydxcLg==
+X-Received: by 2002:a17:906:e2cd:b0:870:2aa7:6509 with SMTP id gr13-20020a170906e2cd00b008702aa76509mr3897157ejb.43.1673977437598;
+        Tue, 17 Jan 2023 09:43:57 -0800 (PST)
 Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id g11-20020a056402428b00b004722d7e8c7csm13010862edc.14.2023.01.17.09.35.49
+        by smtp.gmail.com with ESMTPSA id g22-20020a170906595600b0087221268e49sm1647202ejr.186.2023.01.17.09.43.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 09:35:50 -0800 (PST)
+        Tue, 17 Jan 2023 09:43:57 -0800 (PST)
 From:   Sergey Organov <sorganov@gmail.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+To:     Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Richard Genoud <richard.genoud@gmail.com>,
@@ -62,62 +64,64 @@ Cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH 3/8] serial: imx: do not sysrq broken chars
+Subject: Re: [PATCH 7/8] serial: imx: use readl() to optimize FIFO reading loop
 References: <87bko4e65y.fsf@osv.gnss.ru>
         <20230113184334.287130-1-sorganov@gmail.com>
-        <20230113184334.287130-4-sorganov@gmail.com>
-        <Y8VsFx3p+viCp1It@hovoldconsulting.com>
-Date:   Tue, 17 Jan 2023 20:35:48 +0300
-In-Reply-To: <Y8VsFx3p+viCp1It@hovoldconsulting.com> (Johan Hovold's message
-        of "Mon, 16 Jan 2023 16:24:07 +0100")
-Message-ID: <87sfg92he3.fsf@osv.gnss.ru>
+        <20230113184334.287130-8-sorganov@gmail.com>
+        <48ba84e3-7f52-9cfb-426a-a432587c1c9@linux.intel.com>
+Date:   Tue, 17 Jan 2023 20:43:55 +0300
+In-Reply-To: <48ba84e3-7f52-9cfb-426a-a432587c1c9@linux.intel.com> ("Ilpo
+        =?utf-8?Q?J=C3=A4rvinen=22's?= message of "Mon, 16 Jan 2023 13:03:23 +0200
+ (EET)")
+Message-ID: <87lem12h0k.fsf@osv.gnss.ru>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Johan Hovold <johan@kernel.org> writes:
+Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> writes:
 
-> On Fri, Jan 13, 2023 at 09:43:29PM +0300, Sergey Organov wrote:
->> Do not call uart_handle_sysrq_char() if we got any receive error along with
->> the character, as we don't want random junk to be considered a sysrq.
+> On Fri, 13 Jan 2023, Sergey Organov wrote:
+>
+>> Use readl() instead of heavier imx_uart_readl() in the Rx ISR, as we know
+>> we read registers that must not be cached.
 >> 
 >> Signed-off-by: Sergey Organov <sorganov@gmail.com>
 >> ---
->>  drivers/tty/serial/imx.c | 6 ++----
->>  1 file changed, 2 insertions(+), 4 deletions(-)
+>>  drivers/tty/serial/imx.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
 >> 
 >> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index e7fce31e460d..1c950112a598 100644
+>> index be00362b8b67..f4236e8995fa 100644
 >> --- a/drivers/tty/serial/imx.c
 >> +++ b/drivers/tty/serial/imx.c
->> @@ -911,9 +911,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
->>  				continue;
->>  		}
+>> @@ -890,14 +890,15 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>>  	struct imx_port *sport = dev_id;
+>>  	unsigned int rx, flg;
+>>  	struct tty_port *port = &sport->port.state->port;
+>> +	typeof(sport->port.membase) membase = sport->port.membase;
+>>  	u32 usr2;
 >>  
->> -		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
->> -			continue;
->> -
->>  		if (unlikely(rx & URXD_ERR)) {
->>  			if (rx & URXD_BRK)
->>  				sport->port.icount.brk++;
->> @@ -942,7 +939,8 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
->>  				flg = TTY_OVERRUN;
+>>  	/* If we received something, check for 0xff flood */
+>> -	usr2 = imx_uart_readl(sport, USR2);
+>> +	usr2 = readl(membase + USR2);
+>>  	if (usr2 & USR2_RDR)
+>>  		imx_uart_check_flood(sport, usr2);
 >>  
->>  			sport->port.sysrq = 0;
->> -		}
->> +		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
->> +			continue;
+>> -	while ((rx = imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
+>> +	while ((rx = readl(membase + URXD0)) & URXD_CHARRDY) {
+>>  		flg = TTY_NORMAL;
+>>  		sport->port.icount.rx++;
 >
-> Nit: missing braces {}
->
-> Note that you could also place just place this after the block due to
-> the reset of the sysrq time stamp.
+> I'd just make a uport local variable and use uport->membase + xx. There 
+> are plenty of sport->port constructs to replace with uport in that 
+> function anyway.
 
-Thanks, I think I'll opt for adding braces. Relying on the reset of the
-timestamp feels a bit convoluted.
+OK, thanks, will do it this way. Probably with global rename over this
+function in a separate patch?
 
 -- 
 Sergey
