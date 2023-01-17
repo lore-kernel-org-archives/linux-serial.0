@@ -2,142 +2,207 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A5AC67871
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 22:01:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E297C00A5A
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 23:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbjAQWBb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Jan 2023 17:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42434 "EHLO
+        id S229928AbjAQX16 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Jan 2023 18:27:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbjAQV7m (ORCPT
+        with ESMTP id S229932AbjAQX1J (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Jan 2023 16:59:42 -0500
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2343C2A3;
-        Tue, 17 Jan 2023 12:26:42 -0800 (PST)
-Received: by mail-vs1-f49.google.com with SMTP id v127so29141213vsb.12;
-        Tue, 17 Jan 2023 12:26:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7rC0mNjXax5vqLz2OAo+EH0y+cJfjyIAm7sm9u5PvgQ=;
-        b=Yr9F31/7vLwBOZRKZ1DOhx7lv+07U9yCPU3kfK3htjNZou2RGjuLkdqwCn8yKk9eF3
-         GnyyMHiW3JgbPuw6+FCnbxXOm2pXbKR74ChWnRn/hHl+9by/VHS5XtgOFtV5OVc06ddw
-         LnzBWPfOsBT9fqwpqly0JUq8dnwIcMSuesyYy1KvIo27t7NfN87fYlhZwyNhgxs4TcFk
-         9BF4fB6bXw5YhS8+79SPrAO36Q1UAWE6lQ/eDxVYm9AGrYBuapnXFFs/g4Y/d3/65nEM
-         cNY+emfDCxLCn/w9cVLEEICPn6d8+Q4pdwHu1n/gCrT2Kr8MUafwGrFjLQWyaGQ2cHdv
-         bY8g==
-X-Gm-Message-State: AFqh2kqzy6dBVKRzPngOGJhrF0YAVXXu3mDkVZ//3HfOKs6E0G/PoFSo
-        ZhqezYlyMbvP27SJixa4hW2wxfnjUsABHg==
-X-Google-Smtp-Source: AMrXdXv8xG+OngFJXkL1EyBOzdj+k3Oc3D+zm5NnPdBiJa4B+CPjVzuCM17G+lAG+3CcyHApPWniCQ==
-X-Received: by 2002:a67:c116:0:b0:3b1:23bb:3087 with SMTP id d22-20020a67c116000000b003b123bb3087mr2147820vsj.26.1673987201149;
-        Tue, 17 Jan 2023 12:26:41 -0800 (PST)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id q22-20020a05620a2a5600b0070638ad5986sm7355016qkp.85.2023.01.17.12.26.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jan 2023 12:26:40 -0800 (PST)
-Received: by mail-yb1-f176.google.com with SMTP id o75so35606650yba.2;
-        Tue, 17 Jan 2023 12:26:39 -0800 (PST)
-X-Received: by 2002:a25:9012:0:b0:7b8:a0b8:f7ec with SMTP id
- s18-20020a259012000000b007b8a0b8f7ecmr707665ybl.36.1673987199250; Tue, 17 Jan
- 2023 12:26:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20230113062339.1909087-1-hch@lst.de> <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de> <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
-In-Reply-To: <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 17 Jan 2023 21:26:27 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com>
-Message-ID: <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com>
-Subject: Re: remove arch/sh
-To:     Rob Landley <rob@landley.net>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Tue, 17 Jan 2023 18:27:09 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051F9577F8
+        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 13:27:13 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pHtU6-0002Bg-7f; Tue, 17 Jan 2023 22:27:10 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pHtU4-006ldc-4i; Tue, 17 Jan 2023 22:27:08 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pHtU3-00DhPw-6n; Tue, 17 Jan 2023 22:27:07 +0100
+Date:   Tue, 17 Jan 2023 22:27:02 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Sergey Organov <sorganov@gmail.com>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Genoud <richard.genoud@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 7/8] serial: imx: use readl() to optimize FIFO reading
+ loop
+Message-ID: <20230117212702.vvwe3rqjedivqbhn@pengutronix.de>
+References: <87bko4e65y.fsf@osv.gnss.ru>
+ <20230113184334.287130-1-sorganov@gmail.com>
+ <20230113184334.287130-8-sorganov@gmail.com>
+ <20230117113205.l5byaz3srzpagzhz@pengutronix.de>
+ <87bkmx47o4.fsf@osv.gnss.ru>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gn5itvqwewrq6p2y"
+Content-Disposition: inline
+In-Reply-To: <87bkmx47o4.fsf@osv.gnss.ru>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Rob,
 
-On Tue, Jan 17, 2023 at 8:01 PM Rob Landley <rob@landley.net> wrote:
-> On 1/16/23 01:13, Christoph Hellwig wrote:
-> > On Fri, Jan 13, 2023 at 09:09:52AM +0100, John Paul Adrian Glaubitz wrote:
-> >> I'm still maintaining and using this port in Debian.
-> >>
-> >> It's a bit disappointing that people keep hammering on it. It works fine for me.
+--gn5itvqwewrq6p2y
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Sergey,
+
+On Tue, Jan 17, 2023 at 04:22:51PM +0300, Sergey Organov wrote:
+> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
+> > On Fri, Jan 13, 2023 at 09:43:33PM +0300, Sergey Organov wrote:
+> >> Use readl() instead of heavier imx_uart_readl() in the Rx ISR, as we k=
+now
+> >> we read registers that must not be cached.
+> >>=20
+> >> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> >> ---
+> >>  drivers/tty/serial/imx.c | 5 +++--
+> >>  1 file changed, 3 insertions(+), 2 deletions(-)
+> >>=20
+> >> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> >> index be00362b8b67..f4236e8995fa 100644
+> >> --- a/drivers/tty/serial/imx.c
+> >> +++ b/drivers/tty/serial/imx.c
+> >> @@ -890,14 +890,15 @@ static irqreturn_t __imx_uart_rxint(int irq, voi=
+d *dev_id)
+> >>  	struct imx_port *sport =3D dev_id;
+> >>  	unsigned int rx, flg;
+> >>  	struct tty_port *port =3D &sport->port.state->port;
+> >> +	typeof(sport->port.membase) membase =3D sport->port.membase;
+> >>  	u32 usr2;
+> >> =20
+> >>  	/* If we received something, check for 0xff flood */
+> >> -	usr2 =3D imx_uart_readl(sport, USR2);
+> >> +	usr2 =3D readl(membase + USR2);
+> >>  	if (usr2 & USR2_RDR)
+> >>  		imx_uart_check_flood(sport, usr2);
+> >> =20
+> >> -	while ((rx =3D imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
+> >> +	while ((rx =3D readl(membase + URXD0)) & URXD_CHARRDY) {
+> >>  		flg =3D TTY_NORMAL;
+> >>  		sport->port.icount.rx++;
 > >
-> > What platforms do you (or your users) use it on?
->
-> 3 j-core boards, two sh4 boards (the sh7760 one I patched the kernel of), and an
-> sh4 emulator.
->
-> I have multiple j-core systems (sh2 compatible with extensions, nommu, 3
-> different kinds of boards running it here). There's an existing mmu version of
-> j-core that's sh3 flavored but they want to redo it so it hasn't been publicly
-> released yet, I have yet to get that to run Linux because the mmu code would
-> need adapting, but the most recent customer projects were on the existing nommu
-> SOC, as was last year's ASIC work via sky130.
+> > One of the motivations to introduce imx_uart_readl was to have a single
+> > place to add a debug output to be able to inspect what the driver is
+> > doing.
+> >
+> > I wonder where your need for higher speed comes from and if the compiler
+> > really generates more effective code with your change.
+>=20
+> Mostly it's because I'm obviously slowing things down a bit with the
+> patch to fight the flood, so I feel obliged to get things back on par
+> with the origin. Then, higher speed, let alone the time spent with
+> interrupts disabled and/or spinlocks taken, is always one of generic
+> goals for me.
+>=20
+> As for the generated code, with this patch I don't aim to affect code
+> generation, I rather avoid execution of part of existing code while
+> being on the most critical path. It should be quite obvious that not
+> executing some code is at least not slower than executing it.
 
-J4 still vaporware?
+That's true, but I think it doesn't apply here.
 
-> My physical sh4 boards are a Johnson Controls N40 (sh7760 chipset) and the
-> little blue one is... sh4a I think? (It can run the same userspace, I haven't
-> replaced that board's kernel since I got it, I think it's the type Glaubitz is
-> using? It's mostly in case he had an issue I couldn't reproduce on different
-> hardware, or if I spill something on my N40.)
->
-> I also have a physical sh2 board on the shelf which I haven't touched in years
-> (used to comparison test during j2 development, and then the j2 boards replaced it).
->
-> I'm lazy and mostly test each new sh4 build under qemu -M r2d because it's
-> really convenient: neither of my physical boards boot from SD card so replacing
-> the kernel requires reflashing soldered in flash. (They'll net mount userspace
-> but I haven't gotten either bootloader to net-boot a kernel.)
+I would expect that the compiler "sees" for the call
 
-On my landisk (with boots from CompactFLASH), I boot the original 2.6.22
-kernel, and use kexec to boot-test each and every renesas-drivers
-release.  Note that this requires both the original 2.6.22 kernel
-and matching kexec-tools.  Apparently both upstreamed kernel and
-kexec-tools support for SH are different, and incompatible with each
-other, so you cannot kexec from a contemporary kernel.
-I tried working my way up from 2.6.22, but gave up around 2.6.29.
-Probably I should do this with r2d and qemu instead ;-)
+	imx_uart_readl(sport, USR2)
 
-Both r2d and landisk are SH7751.
+that the 2nd argument is constant and that for that value of offset the
+call is equivalent to readl(sport->port.membase + offset);
 
-Probably SH7722/'23'24 (e.g. Migo-R and Ecovec boards) are also
-worth keeping.  Most on-SoC blocks have drivers with DT support,
-as they are shared with ARM.  So the hardest part is clock and
-interrupt-controller support.
-Unfortunately I no longer have access to the (remote) Migo-R.
+So I doubt you're making anything quicker here.
 
-Gr{oetje,eeting}s,
+I tried the following patch on mainline (that is without the preceding
+patches in this series):
 
-                        Geert
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 757825edb0cd..cfc2f7057345 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -807,7 +807,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_=
+id)
+ 	unsigned int rx, flg, ignored =3D 0;
+ 	struct tty_port *port =3D &sport->port.state->port;
+=20
+-	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
++	while (readl(sport->port.membase + USR2) & USR2_RDR) {
+ 		u32 usr2;
+=20
+ 		flg =3D TTY_NORMAL;
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+and the resulting code didn't change at all. For a bigger change (i.e.
+adding a variable for sport->port.membase and replacing two
+imx_uart_readl) the code changed quite a bit (it got 28 bytes bigger for
+imx_v6_v7_defconfig) and in the short time I tried I couldn't judge if
+the resulting code is better or not.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+So a change that explicitly doesn't execute the code that the compiler
+optimizes away anyhow isn't a win. Together with the fact that your
+patch makes register access use different idioms and so makes it harder
+to understand for a human I'd say the net benefit of your patch is negative.
+
+> > Please either drop the patch from your series or provide the differences
+> > the compiler produces and a benchmark.
+>=20
+> If your only objection against this patch is the desire to keep a single
+> place to add debug output, I'll be happy to tune the resulting code to
+> still have one.
+
+I don't see the need to optimize it.
+
+> That said, before we make a decision, could you please tell why register
+> shadows that the imx_uart_readl/writel are dealing with are needed in
+> the first place? It looks like all the registers that are shadowed are
+> readable as well. What's going on here, and if it happens to be a
+> speed-up, do we have any benchmarks?
+
+Not sure I did benchmarks back then, probably not. The main motivation
+was really to have that single access function. So I admit being guilty
+to have implemented an optimization without hard numbers just assuming
+that access to (cached) RAM is quicker than the register space.
+
+Best regards,
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--gn5itvqwewrq6p2y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmPHEqIACgkQwfwUeK3K
+7Am1JggAkHU4M4ym5VpJ1x3BS+Yor31Tcmc2+tOyH9KhsbDWfpsHVvnCv6SlFsOn
+baRo7S7fvFYmKduujGC6tMtK7uEMl4o+diLMpBdImBa/ii6wwsTpFr+PJvfRiR9i
+EXQq+I1H61IsAX4tFYG1apWn1/F++SIZE+nvrOKZckg4QUG7MAoHS9pZKBGe19Tc
+wMnLzmamckrGStu6ISZ4IhTUcYKBmHWeanH4t3SrKgtPqJMOm5hml9YylanEaSqU
+BYqiazpF6KpOzNqCQa2GUl44MXRew4eRaeQ+/m3ad9YQWocxIltFBiyf8vs81auC
+qBKfg2FASSyVuoLd1TQX6h5hHiNchA==
+=xR5L
+-----END PGP SIGNATURE-----
+
+--gn5itvqwewrq6p2y--
