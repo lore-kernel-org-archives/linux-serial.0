@@ -2,136 +2,138 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E69C3DA78
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 18:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 834EBC3DA78
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Jan 2023 20:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231127AbjAQSGi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Jan 2023 13:06:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42154 "EHLO
+        id S231673AbjAQUKa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 Jan 2023 15:10:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbjAQSAY (ORCPT
+        with ESMTP id S231373AbjAQUHo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Jan 2023 13:00:24 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475D7539B6
-        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 09:48:18 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id v6so46102540edd.6
-        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 09:48:18 -0800 (PST)
+        Tue, 17 Jan 2023 15:07:44 -0500
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC30346709
+        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 11:01:24 -0800 (PST)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-15ed38a9b04so14344569fac.8
+        for <linux-serial@vger.kernel.org>; Tue, 17 Jan 2023 11:01:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:message-id
-         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=G67vv37nXrP7N2YLh8GUv3IGBHMNFwcEMn21AToWGSU=;
-        b=pHU7sSSdMsFN3vOEpx5899GSAchHDkxi0WTQJSK1D01Et60CqYw1BLQKvAAPDSrzID
-         r174o/2MLjSakXSWCLFJN1YCBtfRzcUd2nZytWV5Uo62wcijLPHJiy8wJS67EgDXOtxK
-         zAIeTYPJ/Ek5F4mfKPm/vQH05jS6lbRlHGybsL8PsqbZuN+MW++fokjpJiJx8H+QefAh
-         478Hd/NUP5U8KnpVup8n6hU2OwWwweIHlNcBXIDrOo9okCLMH+Dm3Fh+OsB/9ANzgRFr
-         /9f+lKd17bsRP2gLu1ViRhYCoN044MKL2x6Ny/08XZF4EFKSEbD9ZPwsm/jq1+5iZpMW
-         4cJg==
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OgaymgAXi9Z6g6pYwBOzM02/P477EqWitgDVTE3LFbU=;
+        b=7UFMvbpKkJyjWVLlq6ctk0nXiLL3RrLgvGqk+/g8pD0wAzMEFNodkoMNXxSPAzvJye
+         T4nqVDpRCF5Pkw4fe0ROrd1BjE8DZbycDcUSRlgnihtqJaZkkqELJ7TzEZYyPHojRNxM
+         MBh6YZCgcmJgLXwboxe3bvrjmez4qHhfCRIxGuc2G0+QOOJ/eKT38XBZ7MfSSmNLVm7z
+         gDt6C3Ymsnj+eKLcMZ0dj5q2KFKnZutgcY/1C6+IgeLmT5DwAU4QsUhG6TCQdnlD6nEb
+         fYtWfawIuB6wYahQA/cq89ISwAR2GZXbrrCFpCVxRJqHc9Mn337ID3jg/QgfKjbyHIu6
+         BObQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:message-id
-         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=G67vv37nXrP7N2YLh8GUv3IGBHMNFwcEMn21AToWGSU=;
-        b=zstRVltU5k1TvcneWgWv/D01gc+qClfA2jia6vjhJg2hqyB4GDXVsifGdI4d7EWLXF
-         LuSPIPw8tS3G4VvPOPWdTLZdzVV8hamLJO2SadAa2qGwvQXHGt2opF3s+TuoeXZPhIzP
-         KtCVhpI9CFFtFidYip4e/v5EStNsuBFwYmUKOJT8Azzs2ZKZvw/VzvxWDrmhIWi2JjC8
-         NMCt9OtCuEThCh9+g7JLe2xpRGtXbVVqVsoF6iRNM5Pu/E12WwWHM3RpY8pygRDnVa+v
-         pLW8puwyOawLYCXpQCfZRZIPrhw5zRHRNbdx6/U1+tup9IS+gJgcbMmDM6WJALAfu7VC
-         FAmA==
-X-Gm-Message-State: AFqh2kpGmDbKyaMOT9l0DMuWB7sqPWKupAf4ME8KAJ7jumbpBKopNQwR
-        +FexXx5Zkkqev5W81jxqb7Q=
-X-Google-Smtp-Source: AMrXdXuXGPY2gZRY8OvRioa91gubs1hQeOA69yaxAJJSmB5IT8zrZCkzv3fkcw0KWvcRY5Mvp9sbAg==
-X-Received: by 2002:a05:6402:25c4:b0:49e:24a4:4f32 with SMTP id x4-20020a05640225c400b0049e24a44f32mr4532026edb.13.1673977696795;
-        Tue, 17 Jan 2023 09:48:16 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id gh9-20020a170906e08900b0086f4b8f9e42sm3609058ejb.65.2023.01.17.09.48.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 09:48:16 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH 7/8] serial: imx: use readl() to optimize FIFO reading loop
-References: <87bko4e65y.fsf@osv.gnss.ru>
-        <20230113184334.287130-1-sorganov@gmail.com>
-        <20230113184334.287130-8-sorganov@gmail.com>
-        <AS8PR04MB8404679A61FA6BB7D913C3E192C69@AS8PR04MB8404.eurprd04.prod.outlook.com>
-Date:   Tue, 17 Jan 2023 20:48:14 +0300
-In-Reply-To: <AS8PR04MB8404679A61FA6BB7D913C3E192C69@AS8PR04MB8404.eurprd04.prod.outlook.com>
-        (Sherry Sun's message of "Tue, 17 Jan 2023 10:20:08 +0000")
-Message-ID: <87h6wp2gtd.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OgaymgAXi9Z6g6pYwBOzM02/P477EqWitgDVTE3LFbU=;
+        b=yFOW3Eip+YHFYT5D/gUlJ3CnvOtkx/w1yHbYDv+dQZ/nTVrJ6toa/yZhKyv1iAPt++
+         5VQlNTQsNnHWK/Uqvai9ZogPniSbycmbrQNoTKRrBcXKBXYqtBA7zwGWh/Nu8XTtb2bZ
+         pz0slKjeqlgtIpMAEkT7psCM+DnX22A79pmV+7/t1imkWf4/fbRB5dvvfDvZ+X20kiN5
+         N+LsvhwmbLPSh4tG1lm+EdA2C9bWuTASEmpBKocEat3adykdB54BNSsCYqvR+f0Y+z1E
+         FmOOOOG7VlazXagJP/UfT7hinHn1jS/Q+PeYgshbFkhOR9p2CH4tOieip68pSrH0OWnw
+         qRnw==
+X-Gm-Message-State: AFqh2ko6ISwqzWmmevDlMN2P/9M/ytUH6cTDwMFOegTqtGikWsdP5LAq
+        ogtFGlEo/ge5cuGvkkF6Bk1+lw==
+X-Google-Smtp-Source: AMrXdXsgzCxMhqm+bb3il7EsJjEv0NbGPCzT1qf9VREFYRxVllxrk/YEzaFAyrBdtefAaDgGfnk/UQ==
+X-Received: by 2002:a05:6870:c190:b0:15e:cfca:b312 with SMTP id h16-20020a056870c19000b0015ecfcab312mr2807015oad.52.1673982083592;
+        Tue, 17 Jan 2023 11:01:23 -0800 (PST)
+Received: from [192.168.86.224] ([136.62.38.22])
+        by smtp.gmail.com with ESMTPSA id r18-20020a05687080d200b0012763819bcasm16664335oab.50.2023.01.17.11.01.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Jan 2023 11:01:22 -0800 (PST)
+Message-ID: <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
+Date:   Tue, 17 Jan 2023 13:13:38 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: remove arch/sh
+Content-Language: en-US
+To:     Christoph Hellwig <hch@lst.de>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+References: <20230113062339.1909087-1-hch@lst.de>
+ <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+ <20230116071306.GA15848@lst.de>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <20230116071306.GA15848@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Sherry Sun <sherry.sun@nxp.com> writes:
+On 1/16/23 01:13, Christoph Hellwig wrote:
+> On Fri, Jan 13, 2023 at 09:09:52AM +0100, John Paul Adrian Glaubitz wrote:
+>> I'm still maintaining and using this port in Debian.
+>>
+>> It's a bit disappointing that people keep hammering on it. It works fine for me.
+> 
+> What platforms do you (or your users) use it on?
 
->> -----Original Message-----
->> From: Sergey Organov <sorganov@gmail.com>
->> Sent: 2023年1月14日 2:44
->> To: linux-serial@vger.kernel.org
->> Cc: Fabio Estevam <festevam@gmail.com>; Greg Kroah-Hartman
->> <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; Richard
->> Genoud <richard.genoud@gmail.com>; Sascha Hauer
->> <s.hauer@pengutronix.de>; Shawn Guo <shawnguo@kernel.org>;
->> tharvey@gateworks.com; Tomasz Moń <tomasz.mon@camlingroup.com>;
->> linux-arm-kernel@lists.infradead.org; dl-linux-imx <linux-imx@nxp.com>;
->> Pengutronix Kernel Team <kernel@pengutronix.de>; Sergey Organov
->> <sorganov@gmail.com>
->> Subject: [PATCH 7/8] serial: imx: use readl() to optimize FIFO reading loop
->> 
->> Use readl() instead of heavier imx_uart_readl() in the Rx ISR, as we know we
->> read registers that must not be cached.
->> 
->> Signed-off-by: Sergey Organov <sorganov@gmail.com>
->> ---
->>  drivers/tty/serial/imx.c | 5 +++--
->>  1 file changed, 3 insertions(+), 2 deletions(-)
->> 
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
->> be00362b8b67..f4236e8995fa 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -890,14 +890,15 @@ static irqreturn_t __imx_uart_rxint(int irq, void
->> *dev_id)
->>  	struct imx_port *sport = dev_id;
->>  	unsigned int rx, flg;
->>  	struct tty_port *port = &sport->port.state->port;
->> +	typeof(sport->port.membase) membase = sport->port.membase;
->>  	u32 usr2;
->> 
->>  	/* If we received something, check for 0xff flood */
->> -	usr2 = imx_uart_readl(sport, USR2);
->> +	usr2 = readl(membase + USR2);
->>  	if (usr2 & USR2_RDR)
->>  		imx_uart_check_flood(sport, usr2);
->> 
->> -	while ((rx = imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
->> +	while ((rx = readl(membase + URXD0)) & URXD_CHARRDY) {
->
-> Actually imx_uart_readl() only set shadow registers for UCRx and UFCR,
-> for the USR2 and URXD0 that you used here, they will not be cached.
+3 j-core boards, two sh4 boards (the sh7760 one I patched the kernel of), and an
+sh4 emulator.
 
-Sure, and that's why we here don't need to call imx_uart_readl(), that
-only needlessly checks for shadowing, thus producing pure overhead.
+I have multiple j-core systems (sh2 compatible with extensions, nommu, 3
+different kinds of boards running it here). There's an existing mmu version of
+j-core that's sh3 flavored but they want to redo it so it hasn't been publicly
+released yet, I have yet to get that to run Linux because the mmu code would
+need adapting, but the most recent customer projects were on the existing nommu
+SOC, as was last year's ASIC work via sky130.
 
-Best Regards,
-Sergey
+My physical sh4 boards are a Johnson Controls N40 (sh7760 chipset) and the
+little blue one is... sh4a I think? (It can run the same userspace, I haven't
+replaced that board's kernel since I got it, I think it's the type Glaubitz is
+using? It's mostly in case he had an issue I couldn't reproduce on different
+hardware, or if I spill something on my N40.)
+
+I also have a physical sh2 board on the shelf which I haven't touched in years
+(used to comparison test during j2 development, and then the j2 boards replaced it).
+
+I'm lazy and mostly test each new sh4 build under qemu -M r2d because it's
+really convenient: neither of my physical boards boot from SD card so replacing
+the kernel requires reflashing soldered in flash. (They'll net mount userspace
+but I haven't gotten either bootloader to net-boot a kernel.)
+
+I include sh4 in the my mkroot builds each toybox release, I have a ~300 line
+bash script that builds bootable toybox systems for a dozen-ish architectures,
+including building a kernel configured to run under qemu:
+
+  https://github.com/landley/toybox/blob/master/scripts/mkroot.sh
+
+And I ship the resulting bootable system images, most recent release is at:
+
+  https://landley.net/toybox/downloads/binaries/mkroot/0.8.9/
+
+As described at:
+
+  http://landley.net/toybox/faq.html#mkroot
+
+Various people in Japan have more hardware, but I haven't made it physically
+back there since 2020. (My residency card expired during the pandemic.)
+
+Rob
