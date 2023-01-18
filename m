@@ -2,157 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4ABC004D4
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Jan 2023 08:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 629D2C32793
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Jan 2023 08:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbjARI1c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Jan 2023 03:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43526 "EHLO
+        id S229969AbjARIzZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 Jan 2023 03:55:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbjARI0E (ORCPT
+        with ESMTP id S229970AbjARIwh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Jan 2023 03:26:04 -0500
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990695B44F;
-        Tue, 17 Jan 2023 23:53:12 -0800 (PST)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-15085b8a2f7so34666426fac.2;
-        Tue, 17 Jan 2023 23:53:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ckf5E8d0Cnw+micSJ5vxd9QO1KFnhxODfDAqVKF2Q0k=;
-        b=61XkuxeqbcHeN75KAIqN0uUIqXmdph5hqhUkIGSxuNJx5qSVY7Qe7agxlT1qiDrlxw
-         3kFFuSGU7Ttng175jPprkNzEj8Q31rAb/iKxlhsOuJm2rU94rdTGk7G9QabfsXqG/OmN
-         vdv/BnPWlZFAFFvbbuAcTnw3q6uwVKBQMkA8/tIS6GTpMvJ6Zui8/BjnIgOlOD1eAIUf
-         AnKxZF6pWIGReX8L5rf8vNToN1w0VnYFfBM8Ly+7EjvN3VgOJ6SzYiHtM3GhnsOu/4bA
-         1PB/3YuJ7+xQjZF5hpdLVaFg3aDYh1mVnzwq0DU4HqO02Xxb/ZIxlDIwGySTi7Sk8xnI
-         G+BQ==
-X-Gm-Message-State: AFqh2kpHI3jkAmTMFlBlHF71M7xU47YrSDzBu0sdApxrIOTb9DZDWDPb
-        vpcHzqLiV9kOxxWmg4iwt5u6+O+qXdkoYg==
-X-Google-Smtp-Source: AMrXdXv3HFvK0+bsQSmlhDxPYltMz33ZUPx1/VWAZsq50xvNYmaqoTLM2jLuhz36OLbrGzbjDA2hIQ==
-X-Received: by 2002:a05:6870:b4a5:b0:158:910:8956 with SMTP id y37-20020a056870b4a500b0015809108956mr3548325oap.54.1674028391734;
-        Tue, 17 Jan 2023 23:53:11 -0800 (PST)
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com. [209.85.210.48])
-        by smtp.gmail.com with ESMTPSA id v12-20020a056870b50c00b0014fc049fc0asm18147690oap.57.2023.01.17.23.53.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jan 2023 23:53:11 -0800 (PST)
-Received: by mail-ot1-f48.google.com with SMTP id k44-20020a9d19af000000b00683e176ab01so19217997otk.13;
-        Tue, 17 Jan 2023 23:53:11 -0800 (PST)
-X-Received: by 2002:a81:bd6:0:b0:48d:1334:6e38 with SMTP id
- 205-20020a810bd6000000b0048d13346e38mr726842ywl.316.1674028030903; Tue, 17
- Jan 2023 23:47:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20230113062339.1909087-1-hch@lst.de> <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de> <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
- <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com> <7329212f-b1a0-41eb-99b3-a56eb1d23138@landley.net>
-In-Reply-To: <7329212f-b1a0-41eb-99b3-a56eb1d23138@landley.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 18 Jan 2023 08:46:58 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
-Message-ID: <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
-Subject: Re: remove arch/sh
-To:     Rob Landley <rob@landley.net>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Wed, 18 Jan 2023 03:52:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D165DC01
+        for <linux-serial@vger.kernel.org>; Wed, 18 Jan 2023 00:06:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E83E61512
+        for <linux-serial@vger.kernel.org>; Wed, 18 Jan 2023 08:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB93C433D2;
+        Wed, 18 Jan 2023 08:06:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674029174;
+        bh=8NVjwudOduI7u7BsQHwbczYVXSuKJge/XeZAtAYqit0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S/0SJx0WmThRCWvOVuAC8ezN/3WhgWOWDayvvMC5HY3TAVxAUVBKZP1Dzf+j2fLoU
+         jFEFkhTah3JkFG3iUAntozSTD8XMfl/D/NBxKkcLPcBNQtHJNoV8Bu0pm/AOU7ZJ39
+         bPQ/3UmQZh3baSmlzgKblBPy4H3aD3i1i1wjUOyytJU1ZDsiQLtgTNeDbD9nPbenDa
+         hEi1pDysmRpaSAIPErbjp3bF5DrCJKGPHsDVY/Zbac7QrApoldsY4x8NZkRS7FcEy/
+         gYXlnfAhyzVHZbr9IYm8wDJvl1NAVKZyg0zfOSTAnDo7ALa3ubF7rjQypmrdrKI//w
+         dZ12EZLGKmudA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1pI3Sv-0000Rp-JO; Wed, 18 Jan 2023 09:06:38 +0100
+Date:   Wed, 18 Jan 2023 09:06:37 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Sergey Organov <sorganov@gmail.com>
+Cc:     linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jirislaby@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: Re: [PATCH 3/8] serial: imx: do not sysrq broken chars
+Message-ID: <Y8eojW29DNrx+F6D@hovoldconsulting.com>
+References: <87bko4e65y.fsf@osv.gnss.ru>
+ <20230113184334.287130-1-sorganov@gmail.com>
+ <20230113184334.287130-4-sorganov@gmail.com>
+ <Y8VsFx3p+viCp1It@hovoldconsulting.com>
+ <87sfg92he3.fsf@osv.gnss.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87sfg92he3.fsf@osv.gnss.ru>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Rob,
+On Tue, Jan 17, 2023 at 08:35:48PM +0300, Sergey Organov wrote:
+> Johan Hovold <johan@kernel.org> writes:
+> > On Fri, Jan 13, 2023 at 09:43:29PM +0300, Sergey Organov wrote:
 
-On Wed, Jan 18, 2023 at 5:50 AM Rob Landley <rob@landley.net> wrote:
-> On 1/17/23 14:26, Geert Uytterhoeven wrote:
-> > On Tue, Jan 17, 2023 at 8:01 PM Rob Landley <rob@landley.net> wrote:
-> >> I'm lazy and mostly test each new sh4 build under qemu -M r2d because it's
-> >> really convenient: neither of my physical boards boot from SD card so replacing
-> >> the kernel requires reflashing soldered in flash. (They'll net mount userspace
-> >> but I haven't gotten either bootloader to net-boot a kernel.)
+> >> @@ -911,9 +911,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+> >>  				continue;
+> >>  		}
+> >>  
+> >> -		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
+> >> -			continue;
+> >> -
+> >>  		if (unlikely(rx & URXD_ERR)) {
+> >>  			if (rx & URXD_BRK)
+> >>  				sport->port.icount.brk++;
+> >> @@ -942,7 +939,8 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+> >>  				flg = TTY_OVERRUN;
+> >>  
+> >>  			sport->port.sysrq = 0;
+> >> -		}
+> >> +		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
+> >> +			continue;
 > >
-> > On my landisk (with boots from CompactFLASH), I boot the original 2.6.22
-> > kernel, and use kexec to boot-test each and every renesas-drivers
-> > release.  Note that this requires both the original 2.6.22 kernel
-> > and matching kexec-tools.
->
-> I make it a point to run _current_ kernels in all my mkroot systems, including
-> sh4. What I shipped was 6.1 is:
->
-> # cat /proc/version
-> Linux version 6.1.0 (landley@driftwood) (sh4-linux-musl-cc (GCC) 9.4.0, GNU ld
-> (GNU Binutils) 2.33.1) #1 Tue Jan 10 16:32:07 CST 2023
+> > Nit: missing braces {}
+> >
+> > Note that you could also place just place this after the block due to
+> > the reset of the sysrq time stamp.
+> 
+> Thanks, I think I'll opt for adding braces. Relying on the reset of the
+> timestamp feels a bit convoluted.
 
-I think you misunderstood: renesas-drivers releases[1] are current
-kernels.
+I agree, it may be a bit too subtle.
 
-   Linux version 6.2.0-rc3-landisk-01864-g0c6453b3e5f6 (geert@rox)
-(sh4-linux-gnu-gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, GNU ld (GNU
-Binutils for Ubuntu) 2.38) #125 Tue Jan 10 14:29:01 CET 2023
-
-I use 2.6.22 and kexec as a boot loader for newer kernels, to avoid
-juggling CF cards.  I cannot install a newer base kernel on the CF,
-as kexec is broken upstream.
-
-> > Apparently both upstreamed kernel and
-> > kexec-tools support for SH are different, and incompatible with each
-> > other, so you cannot kexec from a contemporary kernel.
->
-> Sure you can. Using toybox's insmod and modprobe, anyway. (That's the target I
-> tested those on... :)
->
-> Haven't messed with signing or compression or anything yet, my insmod is just
-> doing syscall(SYS_finit_module) and then falling back to SYS_init_module if that
-> fails and either fd was 0 or errno was ENOSYS. (Don't ask me why
-> SYS_finit_module doesn't work on stdin...)
->
-> https://github.com/landley/toybox/blob/master/toys/other/insmod.c#L31
->
-> https://landley.net/toybox/downloads/binaries/0.8.9/toybox-sh4
-
-Again, I think you're talking about something different.
-Does kexec work for you?
-
-> > I tried working my way up from 2.6.22, but gave up around 2.6.29.
-> > Probably I should do this with r2d and qemu instead ;-)
->
-> I have current running there. I've had current running there for years. Config
-> attached...
->
-> > Both r2d and landisk are SH7751.
->
-> Cool. Shouldn't be hard to get landisk running current then.
-
-Current kernels work fine on landisk with an old Debian userspace
-on CF.  The 8139cp driver is a bit flaky: last time I tried nfsroot,
-that didn't work well.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Johan
