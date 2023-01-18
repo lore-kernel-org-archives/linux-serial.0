@@ -2,123 +2,222 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9214AC46467
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Jan 2023 11:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EB1C32793
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Jan 2023 15:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbjARLo3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Jan 2023 06:44:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
+        id S229591AbjARPkY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 Jan 2023 10:40:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbjARLnw (ORCPT
+        with ESMTP id S229522AbjARPkX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Jan 2023 06:43:52 -0500
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04AD66F8D
-        for <linux-serial@vger.kernel.org>; Wed, 18 Jan 2023 03:02:21 -0800 (PST)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-15b9c93848dso26799050fac.1
-        for <linux-serial@vger.kernel.org>; Wed, 18 Jan 2023 03:02:21 -0800 (PST)
+        Wed, 18 Jan 2023 10:40:23 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326AB1A1
+        for <linux-serial@vger.kernel.org>; Wed, 18 Jan 2023 07:40:22 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id x10so47285983edd.10
+        for <linux-serial@vger.kernel.org>; Wed, 18 Jan 2023 07:40:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KuI0iwHsMdHgi9UUhJbv/FF6Zx1hDWv0kF6EEdUlD2I=;
-        b=5PCGooyhPIEuUA8LfHpgz2E1NSo9q7mSLwwd+kP7a2WQx5oIObawC1SZ8b3GjlhI6w
-         k+aUwf08xYT06HES1GVAUttTfmtlU/+2mUQ+E6nwI3mvpykPVqpS3CT4T1OK8Y7wh8Lh
-         OxdivEq+CnvHPuPDLKxMirSIFn7kanNvD0azdCBrxVrZC626tljgU09Q5NwDlRdCl5Pm
-         h30BKW+O6Gpe2j8vZBVS7nQX0CZx9F+vnTsIKQmfF0oeOZkgBCg3IFGxtjTVee8Llq3v
-         VTgrTzM1eGIkuy0knsusfqmXW3O1e3iUrjIXv4sd1h2zvdReBrfi+vZn6Ejf/45OptwH
-         w5QQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=JdynXb9AFJSkLCiMWLmy2PGBzyt5yNCXHVTVGIouuMI=;
+        b=O8xBNI2mCGIsYXgLx553Aoj3TCRNj0uhB9jVEcmD6ZqiqK3soB23ZDQT4Cf6PvBATa
+         1jAFcOG5/s2vdQDHAEtu0zbqzoonva/sWtC4Q0YaKj0iFh+Cf3S14s5kTrIzFLQEd2rE
+         HEk9ryIEqALuTZIC2C15Eb6LVhZqb/UrWQc8+S9pMR2tjwScq/afi+GNA+wtjk3Kmc5A
+         LMo2DQQ8LaTEcTvgQs+EYlKMjaN+VvQblHfrTtppUOL+V4YVgWhl9b0eQgFxs507AGDz
+         G4ys4iFRdV7m4rWeog0kslUc6wLWxtNLLmZfLE19nDOH8076h35HVfoYMeGrrBoj9ZvR
+         SOhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KuI0iwHsMdHgi9UUhJbv/FF6Zx1hDWv0kF6EEdUlD2I=;
-        b=6Z6Q6lViqYx9Vjin7vS9cnYmG6oZBXdgrvzsEpHBeE4EXWque78Stw+hL9YR1Jtmmn
-         V2S9fO7OndmjEegnhWfyzTPpfOWkK0oH1PBlg7VgvnxrvVIIh/G1DiQaa5MH/cFrloCd
-         pTf5fkxWsexAaoowWY9NQGaDL98fZBuNwnNJ4diHWgk++ISQwqP9uJaCK/ROR4gyr2oi
-         jBRZoL+WnqMw/VSoWs9jiOOnSoVJ2b6EmESjNKelOpj8PWmru+UEYo3GWzN2URvOSv04
-         git5MmZMnrFWMCzoAujk/vUuDYSZgqOLEuxfq4EIX8MDT35t3DDp6H1mAdjzzI2TQ7fw
-         31lA==
-X-Gm-Message-State: AFqh2kpqHFxVDmMzHu7xgbNOi8EtqndjlW6DS5nNFuc7ykprtxJYLg5+
-        jAIIdLCE+VVINKJ2x5HBFFGZ/w==
-X-Google-Smtp-Source: AMrXdXvlrp1Ed3XBrrhA3zCnrQ6Rbb/wKmg6UrVk+wIslhGo+AMwXBPpNO4DwySZY2+3rtlEwlTN+A==
-X-Received: by 2002:a05:6870:c190:b0:15e:cc77:1e6d with SMTP id h16-20020a056870c19000b0015ecc771e6dmr4364085oad.13.1674039741194;
-        Wed, 18 Jan 2023 03:02:21 -0800 (PST)
-Received: from ?IPV6:2607:fb91:120e:1c84:8038:3fff:fe9f:cbb4? ([2607:fb91:120e:1c84:8038:3fff:fe9f:cbb4])
-        by smtp.gmail.com with ESMTPSA id e19-20020a056871045300b001442fada152sm18099522oag.46.2023.01.18.03.02.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Jan 2023 03:02:20 -0800 (PST)
-Message-ID: <efa6a8aa-466e-cfaa-0113-b85002af008e@landley.net>
-Date:   Wed, 18 Jan 2023 05:14:36 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: remove arch/sh
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=JdynXb9AFJSkLCiMWLmy2PGBzyt5yNCXHVTVGIouuMI=;
+        b=1xBTGE1Ukk441xceeaEKxsDOwP1nMcxUpGUyv6TNpy96VXFu9Ou1QylGwK/S8O8J87
+         gE+i4y1pq29S2YEauDGxg34WiKb3HCyxsiqkGlEX0lWrfm3qlq6tw40ojymrqPAYuQ2N
+         4zGJJtsp7aVL9UHx6mNxfkZcGfQh+pgFA4tILUwPHAlHbaXD1SINqYONXb7Y+B1cmlHP
+         4i4jVUj+pktjHR2ymmLflVHsGyyJMN73y1u+M6T45KECnnpXYrX0UUmaNeCccm9kWhlr
+         uLQWRiCCCAJ0rveRwwk52wIXjMwlcMSSVlSuYKgNTDV5463Sa3yOw51MhHtcYS99ghkI
+         DfDQ==
+X-Gm-Message-State: AFqh2kqNEGYA08WiL3vqYwE+EnqemEzyRvkyWdx0QmLlF0WVwkxOVWuq
+        IQa3FBD7sB0FgjGwsxd5j6knAA5llOE=
+X-Google-Smtp-Source: AMrXdXsNRgjbRp9/UsIp51mIZAsHt9N8Cv3aBOjVjdadVE0cAGrMeWpkj57fDfzBNrMGuFt7CfL8QQ==
+X-Received: by 2002:a05:6402:43ce:b0:461:2288:6808 with SMTP id p14-20020a05640243ce00b0046122886808mr8033780edc.21.1674056420402;
+        Wed, 18 Jan 2023 07:40:20 -0800 (PST)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id en6-20020a056402528600b00499b3d09bd2sm12083032edb.91.2023.01.18.07.40.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Jan 2023 07:40:19 -0800 (PST)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Genoud <richard.genoud@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-References: <20230113062339.1909087-1-hch@lst.de>
- <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de>
- <9325a949-8d19-435a-50bd-9ebe0a432012@landley.net>
- <CAMuHMdUJm5QvzH8hvqwvn9O6qSbzNOapabjw5nh9DJd0F55Zdg@mail.gmail.com>
- <7329212f-b1a0-41eb-99b3-a56eb1d23138@landley.net>
- <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
-From:   Rob Landley <rob@landley.net>
-In-Reply-To: <CAMuHMdXo3iR2C=CAaXO5tBRCncnQAAMR6BMPLOm_nBpFAeVhrA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 7/8] serial: imx: use readl() to optimize FIFO reading loop
+References: <87bko4e65y.fsf@osv.gnss.ru>
+        <20230113184334.287130-1-sorganov@gmail.com>
+        <20230113184334.287130-8-sorganov@gmail.com>
+        <20230117113205.l5byaz3srzpagzhz@pengutronix.de>
+        <87bkmx47o4.fsf@osv.gnss.ru>
+        <20230117212702.vvwe3rqjedivqbhn@pengutronix.de>
+Date:   Wed, 18 Jan 2023 18:40:17 +0300
+In-Reply-To: <20230117212702.vvwe3rqjedivqbhn@pengutronix.de> ("Uwe
+        =?utf-8?Q?Kleine-K=C3=B6nig=22's?= message of "Tue, 17 Jan 2023 22:27:02
+ +0100")
+Message-ID: <87ilh3zw9q.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 1/18/23 01:46, Geert Uytterhoeven wrote:
-> Again, I think you're talking about something different.
-> Does kexec work for you?
+Uwe Kleine-König <u.kleine-koenig@pengutronix.de> writes:
 
-Sorry, got woken up several hours early by sirens and flashy lights this morning
-(duplex on the corner caught fire, Austin has a LOT of emergency vehicles), been
-a bit underclocked all day.
+> Hello Sergey,
+>
+> On Tue, Jan 17, 2023 at 04:22:51PM +0300, Sergey Organov wrote:
+>> Uwe Kleine-König <u.kleine-koenig@pengutronix.de> writes:
+>> > On Fri, Jan 13, 2023 at 09:43:33PM +0300, Sergey Organov wrote:
+>> >> Use readl() instead of heavier imx_uart_readl() in the Rx ISR, as we know
+>> >> we read registers that must not be cached.
+>> >> 
+>> >> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+>> >> ---
+>> >>  drivers/tty/serial/imx.c | 5 +++--
+>> >>  1 file changed, 3 insertions(+), 2 deletions(-)
+>> >> 
+>> >> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+>> >> index be00362b8b67..f4236e8995fa 100644
+>> >> --- a/drivers/tty/serial/imx.c
+>> >> +++ b/drivers/tty/serial/imx.c
+>> >> @@ -890,14 +890,15 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>> >>  	struct imx_port *sport = dev_id;
+>> >>  	unsigned int rx, flg;
+>> >>  	struct tty_port *port = &sport->port.state->port;
+>> >> +	typeof(sport->port.membase) membase = sport->port.membase;
+>> >>  	u32 usr2;
+>> >>  
+>> >>  	/* If we received something, check for 0xff flood */
+>> >> -	usr2 = imx_uart_readl(sport, USR2);
+>> >> +	usr2 = readl(membase + USR2);
+>> >>  	if (usr2 & USR2_RDR)
+>> >>  		imx_uart_check_flood(sport, usr2);
+>> >>  
+>> >> -	while ((rx = imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
+>> >> +	while ((rx = readl(membase + URXD0)) & URXD_CHARRDY) {
+>> >>  		flg = TTY_NORMAL;
+>> >>  		sport->port.icount.rx++;
+>> >
+>> > One of the motivations to introduce imx_uart_readl was to have a single
+>> > place to add a debug output to be able to inspect what the driver is
+>> > doing.
+>> >
+>> > I wonder where your need for higher speed comes from and if the compiler
+>> > really generates more effective code with your change.
+>> 
+>> Mostly it's because I'm obviously slowing things down a bit with the
+>> patch to fight the flood, so I feel obliged to get things back on par
+>> with the origin. Then, higher speed, let alone the time spent with
+>> interrupts disabled and/or spinlocks taken, is always one of generic
+>> goals for me.
+>> 
+>> As for the generated code, with this patch I don't aim to affect code
+>> generation, I rather avoid execution of part of existing code while
+>> being on the most critical path. It should be quite obvious that not
+>> executing some code is at least not slower than executing it.
+>
+> That's true, but I think it doesn't apply here.
 
-No, I haven't tried kexec on sh4. I'll add it to the todo heap.
+Well, "at least not slower" still applies ;-)
 
->> > I tried working my way up from 2.6.22, but gave up around 2.6.29.
->> > Probably I should do this with r2d and qemu instead ;-)
->>
->> I have current running there. I've had current running there for years. Config
->> attached...
->>
->> > Both r2d and landisk are SH7751.
->>
->> Cool. Shouldn't be hard to get landisk running current then.
-> 
-> Current kernels work fine on landisk with an old Debian userspace
-> on CF.  The 8139cp driver is a bit flaky: last time I tried nfsroot,
-> that didn't work well.
+>
+> I would expect that the compiler "sees" for the call
+>
+> 	imx_uart_readl(sport, USR2)
+>
+> that the 2nd argument is constant and that for that value of offset the
+> call is equivalent to readl(sport->port.membase + offset);
+>
+> So I doubt you're making anything quicker here.
 
-I've never had luck with NFS, I was using NBD. Hadn't noticed the flake but
-haven't stress tested it too hard either?
+Yep, it's nice compiler is clever enough to optimize-out the switch for
+constant argument, though I still typically prefer to avoid over-relying
+on optimizations. That said, I now tend to agree with your POV in this
+particular case.
 
-Mostly new userspace is what I'm testing...
+>
+> I tried the following patch on mainline (that is without the preceding
+> patches in this series):
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 757825edb0cd..cfc2f7057345 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -807,7 +807,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>  	unsigned int rx, flg, ignored = 0;
+>  	struct tty_port *port = &sport->port.state->port;
+>  
+> -	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
+> +	while (readl(sport->port.membase + USR2) & USR2_RDR) {
+>  		u32 usr2;
+>  
+>  		flg = TTY_NORMAL;
+>
+> and the resulting code didn't change at all. For a bigger change (i.e.
+> adding a variable for sport->port.membase and replacing two
+> imx_uart_readl) the code changed quite a bit (it got 28 bytes bigger for
+> imx_v6_v7_defconfig) and in the short time I tried I couldn't judge if
+> the resulting code is better or not.
+>
+> So a change that explicitly doesn't execute the code that the compiler
+> optimizes away anyhow isn't a win. Together with the fact that your
+> patch makes register access use different idioms and so makes it harder
+> to understand for a human I'd say the net benefit of your patch is
+> negative.
 
-Rob
+OK, you convinced me to drop it.
+
+>
+>> > Please either drop the patch from your series or provide the differences
+>> > the compiler produces and a benchmark.
+>> 
+>> If your only objection against this patch is the desire to keep a single
+>> place to add debug output, I'll be happy to tune the resulting code to
+>> still have one.
+>
+> I don't see the need to optimize it.
+>
+>> That said, before we make a decision, could you please tell why register
+>> shadows that the imx_uart_readl/writel are dealing with are needed in
+>> the first place? It looks like all the registers that are shadowed are
+>> readable as well. What's going on here, and if it happens to be a
+>> speed-up, do we have any benchmarks?
+>
+> Not sure I did benchmarks back then, probably not. The main motivation
+> was really to have that single access function. So I admit being guilty
+> to have implemented an optimization without hard numbers just assuming
+> that access to (cached) RAM is quicker than the register space.
+
+Well, even if it is quicker, we still spend time writing to both RAM and
+register, and then there is no gain for the data Tx/Rx registers that
+aren't cached, yet are on most critical paths.
+
+So, if this is just caching and doesn't change behavior, I'd suggest to
+get rid of the shadowing altogether, making code simpler to follow.
+Besides, if it were so, I'd had no temptation to replace the
+imx_uart_readl() with raw readl().
+
+Thanks,
+-- Sergey
