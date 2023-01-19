@@ -2,139 +2,68 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3908EC46467
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 05:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1FBC678DC
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 05:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbjATFDT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Jan 2023 00:03:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        id S229986AbjATFLr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 Jan 2023 00:11:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230210AbjATFDG (ORCPT
+        with ESMTP id S230043AbjATFLM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Jan 2023 00:03:06 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F22BD0DBA
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 20:50:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674190231; x=1705726231;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XBPrToKy4m2DOzlnvfhFKnySJPpYetNXbadAdfNrD6A=;
-  b=DXFTWiJh69WYDkIh7VNMUzSHieK6zG02tc9S/5irCSiWijUtOpB6Qn4U
-   1ICPr69fUV/j1N4X4yE/QpcrQ/CdRhg/FHPST2LnTYtHKoOBHNcfiUm11
-   XXr+d5Hm93zdO6ZYTSnKqlcwBNxwKHFz+WdPfMZz0kC45pi7zE7q48qCS
-   Avx0sWQaMtwNn5heYjhjQVZnPOgdbsW7zi6zX2Xyo5L6vTUYemK6sd5Ye
-   iUvWddOHrJocadotIzEzAjeBkE5IRPP03D7YhBQr8utVg0IxONXm9Vc/h
-   W2kVaUXovJk1zvGadFYxJnmKtklE/Feej67t/jlTrz6Rc6dEQR9aW+3v+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="309077611"
-X-IronPort-AV: E=Sophos;i="5.97,231,1669104000"; 
-   d="scan'208";a="309077611"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 19:57:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="728988185"
-X-IronPort-AV: E=Sophos;i="5.97,231,1669104000"; 
-   d="scan'208";a="728988185"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 19 Jan 2023 19:57:38 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pIiX4-00029f-0E;
-        Fri, 20 Jan 2023 03:57:38 +0000
-Date:   Fri, 20 Jan 2023 11:57:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 05e2600cb0a4d73b0779cf29512819616252aeeb
-Message-ID: <63ca1111.EVUhSqgun+Q9g/Xk%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 20 Jan 2023 00:11:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3C072C14;
+        Thu, 19 Jan 2023 20:59:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BA15B824B4;
+        Thu, 19 Jan 2023 14:52:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C65C433EF;
+        Thu, 19 Jan 2023 14:52:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1674139966;
+        bh=pFEkGzZclr313dDw7QOuP7VKAbnZdzWUSenn71Hk3OM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lGjAcHMA3ALVP/Ub8bSHSnMxeSb+mrRUeNLQ3ks/BKM3BYvdkxeTiID7Q+T0ihS9F
+         Et0IullpHEj/1/lCzFmzmEGHj1eVINAd2ExZ/4rD4/aqGBGmo89xe5cZlAmcDJQJ/8
+         lUMJaZ4yl+PuT1dqIzpA+u0OqzSHKFCEGR1P9FAg=
+Date:   Thu, 19 Jan 2023 15:52:38 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Alexey V. Vissarionov" <gremlin@altlinux.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kukjin Kim <kgene.kim@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH] serial: samsung: fix buffer size for clk_name
+Message-ID: <Y8lZNi9pYVFkYvh9@kroah.com>
+References: <20230116141658.GC8107@altlinux.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20230116141658.GC8107@altlinux.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 05e2600cb0a4d73b0779cf29512819616252aeeb  VT: Bump font size limitation to 64x128 pixels
+On Mon, Jan 16, 2023 at 05:16:58PM +0300, Alexey V. Vissarionov wrote:
+> Although very unlikely, the 'clk_num' value may be as big as
+> 2**32 - 1 (uint32_max), so the buffer should have enough
+> space for storing "clk_uart_baud4294967295\0".
+> Also, the numbers in clk_name are expected to be unsigned.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> 
+> Fixes: 5f5a7a5578c58852 ("serial: samsung: switch to clkdev based clock lookup")
 
-elapsed time: 722m
+Please fix your scripts to use the proper number of SHA1 digits in a
+Fixes: line as the documentation asks for.
 
-configs tested: 62
-configs skipped: 2
+thanks,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-x86_64                            allnoconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-x86_64                    rhel-8.3-kselftests
-alpha                            allyesconfig
-x86_64                          rhel-8.3-func
-arc                              allyesconfig
-powerpc                           allnoconfig
-arm                                 defconfig
-x86_64                           rhel-8.3-syz
-x86_64                              defconfig
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-bpf
-x86_64                         rhel-8.3-kunit
-x86_64                        randconfig-a013
-x86_64                        randconfig-a004
-x86_64                        randconfig-a011
-x86_64                        randconfig-a002
-x86_64                               rhel-8.3
-x86_64                        randconfig-a015
-arm64                            allyesconfig
-x86_64                        randconfig-a006
-i386                          randconfig-a001
-i386                          randconfig-a003
-arm                              allyesconfig
-i386                                defconfig
-arc                                 defconfig
-x86_64                           allyesconfig
-arm                  randconfig-r046-20230119
-arc                  randconfig-r043-20230119
-i386                          randconfig-a005
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-ia64                             allmodconfig
-sh                               allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-i386                             allyesconfig
-alpha                               defconfig
-s390                                defconfig
-s390                             allmodconfig
-s390                             allyesconfig
-
-clang tested configs:
-x86_64                          rhel-8.3-rust
-x86_64                        randconfig-a014
-x86_64                        randconfig-a012
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a016
-i386                          randconfig-a002
-x86_64                        randconfig-a005
-i386                          randconfig-a004
-hexagon              randconfig-r041-20230119
-i386                          randconfig-a013
-i386                          randconfig-a015
-s390                 randconfig-r044-20230119
-hexagon              randconfig-r045-20230119
-i386                          randconfig-a006
-riscv                randconfig-r042-20230119
-i386                          randconfig-a011
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
