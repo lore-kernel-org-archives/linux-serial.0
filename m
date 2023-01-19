@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 962C2C46467
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Jan 2023 16:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55195C004D4
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Jan 2023 16:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbjASQ56 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Jan 2023 11:57:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46664 "EHLO
+        id S230329AbjASQ6M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Jan 2023 11:58:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbjASQ5t (ORCPT
+        with ESMTP id S230413AbjASQ6B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Jan 2023 11:57:49 -0500
+        Thu, 19 Jan 2023 11:58:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A1BB754
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 08:57:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E4311EAE
+        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 08:57:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F4A361CE5
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 16:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E84CC433EF;
-        Thu, 19 Jan 2023 16:57:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E53D661CE6
+        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 16:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1693C433D2;
+        Thu, 19 Jan 2023 16:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674147466;
-        bh=Y9vJMvIiWCosmY/YA/fZMG4a9V1ACyCXjX+DOe5LIjE=;
+        s=korg; t=1674147478;
+        bh=YYRKFgmaSmzQ9KoKC1aQPCflMONXgZNZuElXZAQpK1I=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qZQUlMx5m1xZlgfNJJTJoN7vnu+JTcur91GaHj9wULXb8l3OoTVe8PqcIK0dXiWTc
-         7zZ/RlCk1ZOPUyV/ItucpZ1I25ukn1QGyFnbth+e8NPamBZh+4iIE0abdLUH4Wd+6/
-         feMV8idMIfOhFUMcA7kv3MIhos2/5uSzeEU1su50=
-Date:   Thu, 19 Jan 2023 17:57:44 +0100
+        b=1m5CN82SXaavxoqe83GzjZZPfyyCOu6lMBwIL1beQKfxbo8jGxcLS11dq8HhUOjSm
+         kBknZKTZwPTSVEk9FIZDEou0mCAa/Q3BAwnWgpqO42Aqy+dIFU2UTQhYnrRHLUmtBJ
+         btlypZBEoYcQr4AEdK49QcmJBGM7DFor2Qb7KpYE=
+Date:   Thu, 19 Jan 2023 17:57:55 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Matthew Howell <mrhowel@g.clemson.edu>
 Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
@@ -37,7 +37,7 @@ Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
         darren.beeson@sealevel.com
 Subject: Re: [PATCH v2] serial: exar: Add support for Sealevel 7xxxC serial
  cards
-Message-ID: <Y8l2iFHi66NFaGGX@kroah.com>
+Message-ID: <Y8l2kxtRIBFUWVE/@kroah.com>
 References: <alpine.DEB.2.21.2301191117110.21493@tstest-VirtualBox>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -57,19 +57,6 @@ On Thu, Jan 19, 2023 at 11:23:51AM -0500, Matthew Howell wrote:
 > dev ID for these cards.
 > 
 > Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
-> 
-> Moved "This patch..." above signed-off line.
-> 
-> Let me know if I need to make any more changes.
 
-These lines need to go below the --- line, as the documentation asks,
-otherwise they will show up in the changelog.
+Also your From: line does not match up with this :(
 
-Also you need to list what changed in v2, again the documentation has
-examples.
-
-v3 please?
-
-thanks,
-
-greg k-h
