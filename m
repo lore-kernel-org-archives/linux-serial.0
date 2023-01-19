@@ -2,101 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6904EC678D6
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 05:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 245A3C38159
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 05:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjATFTz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Jan 2023 00:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52910 "EHLO
+        id S231335AbjATFXt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 Jan 2023 00:23:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbjATFTg (ORCPT
+        with ESMTP id S231337AbjATFXf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Jan 2023 00:19:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AFA7DFAB;
-        Thu, 19 Jan 2023 21:09:04 -0800 (PST)
+        Fri, 20 Jan 2023 00:23:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4207518D7;
+        Thu, 19 Jan 2023 21:13:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B087BB823C8;
-        Thu, 19 Jan 2023 13:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC78C433D2;
-        Thu, 19 Jan 2023 13:52:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9937BB82524;
+        Thu, 19 Jan 2023 15:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3E37C433EF;
+        Thu, 19 Jan 2023 15:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674136364;
-        bh=o+MRE6eQh3jzlCO0huiyyivHqXsZNKLN474B0e3rGRE=;
+        s=korg; t=1674140665;
+        bh=id1+Re7X1vZT7tf0fhU3RkTT29VB9Fy5VaB/3VxY2c4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L4nGtipd7FU1P1/x5hzKoWzI5HH1TKPIRz3pHdvW05AXZVhuGmgxNnaiOq8bPgEGp
-         tzd08EWg6bodxd/jMNDAtktV/Pc5rmfLKFrOe1yOltDXgrtze0tnReystUyT8H8u//
-         JLkQv3BbqAC8KBXElvwjapOzMa5JvSdrGRsEnzlc=
-Date:   Thu, 19 Jan 2023 14:52:36 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Deepak R Varma <drv@mailo.com>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        Praveen Kumar <kumarpraveen@linux.microsoft.com>
-Subject: Re: [PATCH v2] tty: serial: zs: convert atomic_* to refcount_* APIs
- for irq_guard
-Message-ID: <Y8lLJK3RH+oX8RgE@kroah.com>
-References: <Y6cvHgOlkcG90j1J@qemulion>
+        b=zGy0mfkQ4pC05tDv2oJBgoWZUkSAfQeXr4s6CreswKd7xfsDxUuWuBMf+YCtAr0Oo
+         reUgUPh700pR39JJ1RzyzPRiugZfWArCsDMLUnZwcuecpt79uhSf/2sfWJS4fWy1Gy
+         o0hsg7BapGLADsJMVSHNG/3MLiFz7QJC0miYaXKY=
+Date:   Thu, 19 Jan 2023 16:04:22 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        macro@orcam.me.uk, andriy.shevchenko@linux.intel.com,
+        cang1@live.co.uk, colin.i.king@gmail.com,
+        phil.edworthy@renesas.com, biju.das.jz@bp.renesas.com,
+        geert+renesas@glider.be, lukas@wunner.de,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com,
+        etremblay@distech-controls.com, jk@ozlabs.org,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v10 tty-next 0/4] serial: 8250_pci1xxxx: Add driver for
+ the pci1xxxx's quad-uart function
+Message-ID: <Y8lb9utGeeD02JJp@kroah.com>
+References: <20221217191507.2359029-1-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y6cvHgOlkcG90j1J@qemulion>
+In-Reply-To: <20221217191507.2359029-1-kumaravel.thiagarajan@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Dec 24, 2022 at 10:25:58PM +0530, Deepak R Varma wrote:
-> The refcount_* APIs are designed to address known issues with the
-> atomic_t APIs for reference counting. They provide following distinct
-> advantages:
->    - protect the reference counters from overflow/underflow
->    - avoid use-after-free errors
->    - provide improved memory ordering guarantee schemes
->    - neater and safer.
-> Hence, replace the atomic_* APIs by their equivalent refcount_t
-> API functions.
+On Sun, Dec 18, 2022 at 12:45:03AM +0530, Kumaravel Thiagarajan wrote:
+> pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+> downstream ports. Quad-uart is one of the functions in the multi-function
+> endpoint. This patch adds device driver for the quad-uart function and
+> enumerates between 1 to 4 instances of uarts based on the PCIe subsystem
+> device ID.
 > 
-> This patch proposal address the following warnings generated by
-> the atomic_as_refcounter.cocci coccinelle script
-> atomic_add_return(-1, ...)
+> The changes from v1->v2->v3->v4->v5->v6->v7->v8->v9->v10 are mentioned in
+> each patch in the patchset.
 > 
-> Signed-off-by: Deepak R Varma <drv@mailo.com>
-> ---
+> Thanks to Andy Shevchenko, Ilpo Jarvinen, Chritophe JAILLET, Geert
+> Uytterhoeven, Greg KH, Jiri Slaby for their review comments.
 > 
-> Changes in v2:
->    1. Separate the combined change into one variable per patch as
->       suggested by gregkh@linuxfoundation.org
->    2. There was additional feedback on validating the change as it appeared to
->       modify the existing logic. However, I found that the logic does not
->       change with the proposed refcount_* APIs used in this change. Hence that
->       feedback is not applied in this version.
-> 
-> Please Note:
->    The patch is compile tested using dec_station.defconfig for MIPS architecture.
-> 
->  drivers/tty/serial/zs.c | 14 +++++---------
->  drivers/tty/serial/zs.h |  2 +-
->  2 files changed, 6 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/zs.c b/drivers/tty/serial/zs.c
-> index 730c648e32ff..6be9933eff5c 100644
-> --- a/drivers/tty/serial/zs.c
-> +++ b/drivers/tty/serial/zs.c
-> @@ -753,17 +753,15 @@ static int zs_startup(struct uart_port *uport)
->  	struct zs_port *zport = to_zport(uport);
->  	struct zs_scc *scc = zport->scc;
->  	unsigned long flags;
-> -	int irq_guard;
->  	int ret;
-> 
-> -	irq_guard = atomic_add_return(1, &scc->irq_guard);
-> -	if (irq_guard == 1) {
-> +	refcount_inc(&scc->irq_guard);
-> +	if (refcount_read(&scc->irq_guard) == 1) {
+> Kumaravel Thiagarajan (4):
+>   serial: 8250_pci: Add serial8250_pci_setup_port definition in
+>     8250_pcilib.c
+>   serial: 8250_pci1xxxx: Add driver for quad-uart support
+>   serial: 8250_pci1xxxx: Add RS485 support to quad-uart driver
+>   serial: 8250_pci1xxxx: Add power management functions to quad-uart
+>     driver
 
-This conversion is wrong :(
+This doesn't apply to my tree anymore.  Can you rebase it against
+Linus's latest, or linux-next and resend?
 
+thanks,
+
+greg k-h
