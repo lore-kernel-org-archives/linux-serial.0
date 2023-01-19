@@ -2,134 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A96C46467
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 05:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6904EC678D6
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 05:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbjATFTz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S229742AbjATFTz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Fri, 20 Jan 2023 00:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbjATFTj (ORCPT
+        with ESMTP id S229597AbjATFTg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Jan 2023 00:19:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646307DFAD
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 21:09:08 -0800 (PST)
+        Fri, 20 Jan 2023 00:19:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AFA7DFAB;
+        Thu, 19 Jan 2023 21:09:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4399B826FB
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 19:02:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9C44C433F0;
-        Thu, 19 Jan 2023 19:02:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B087BB823C8;
+        Thu, 19 Jan 2023 13:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC78C433D2;
+        Thu, 19 Jan 2023 13:52:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674154971;
-        bh=FxmuMNY95tSkO6GCCRSUZcRsDNZLf64oi7FRyUtNuIE=;
+        s=korg; t=1674136364;
+        bh=o+MRE6eQh3jzlCO0huiyyivHqXsZNKLN474B0e3rGRE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KqQTNt+jVnN5jwTY4dMF/CkaRwSUxKbTu2cU6Hi2NA9rv7mbS7vfsuti6vt83HWCD
-         mqsb4iYS1g0P+gtB+A/vUEeUhuxT2hXAHC8v92qdzW4fWdGNWr/9TU0GQktxbIs0io
-         +15Lr6j6a9BRVlfa5mOqXKbrpzuUn8oeC2oRYa/Y=
-Date:   Thu, 19 Jan 2023 20:02:48 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Matthew Howell <mrhowel@g.clemson.edu>
-Cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
-        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com,
-        darren.beeson@sealevel.com
-Subject: Re: [PATCH v3] serial: exar: Add support for Sealevel 7xxxC serial
- cards
-Message-ID: <Y8mT2P4asFeTEOAB@kroah.com>
-References: <alpine.DEB.2.21.2301191204520.22332@tstest-VirtualBox>
+        b=L4nGtipd7FU1P1/x5hzKoWzI5HH1TKPIRz3pHdvW05AXZVhuGmgxNnaiOq8bPgEGp
+         tzd08EWg6bodxd/jMNDAtktV/Pc5rmfLKFrOe1yOltDXgrtze0tnReystUyT8H8u//
+         JLkQv3BbqAC8KBXElvwjapOzMa5JvSdrGRsEnzlc=
+Date:   Thu, 19 Jan 2023 14:52:36 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Deepak R Varma <drv@mailo.com>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Praveen Kumar <kumarpraveen@linux.microsoft.com>
+Subject: Re: [PATCH v2] tty: serial: zs: convert atomic_* to refcount_* APIs
+ for irq_guard
+Message-ID: <Y8lLJK3RH+oX8RgE@kroah.com>
+References: <Y6cvHgOlkcG90j1J@qemulion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2301191204520.22332@tstest-VirtualBox>
+In-Reply-To: <Y6cvHgOlkcG90j1J@qemulion>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 12:10:49PM -0500, Matthew Howell wrote:
-> From: Matthew Howell <matthew.howell@sealevel.com>
+On Sat, Dec 24, 2022 at 10:25:58PM +0530, Deepak R Varma wrote:
+> The refcount_* APIs are designed to address known issues with the
+> atomic_t APIs for reference counting. They provide following distinct
+> advantages:
+>    - protect the reference counters from overflow/underflow
+>    - avoid use-after-free errors
+>    - provide improved memory ordering guarantee schemes
+>    - neater and safer.
+> Hence, replace the atomic_* APIs by their equivalent refcount_t
+> API functions.
 > 
-> Add support for Sealevel 7xxxC serial cards.
+> This patch proposal address the following warnings generated by
+> the atomic_as_refcounter.cocci coccinelle script
+> atomic_add_return(-1, ...)
 > 
-> This patch:
-> * Adds IDs to recognize 7xxxC cards from Sealevel Systems.
-> * Updates exar_pci_probe() to set nr_ports to last two bytes of primary
-> dev ID for these cards.
-> 
-> Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
+> Signed-off-by: Deepak R Varma <drv@mailo.com>
 > ---
 > 
-> v2: Moved "This patch..." above signed-off line.
-> v3: "Added From: Matthew Howell <matthew.howell@sealevel.com>" to
-> submission.
+> Changes in v2:
+>    1. Separate the combined change into one variable per patch as
+>       suggested by gregkh@linuxfoundation.org
+>    2. There was additional feedback on validating the change as it appeared to
+>       modify the existing logic. However, I found that the logic does not
+>       change with the proposed refcount_* APIs used in this change. Hence that
+>       feedback is not applied in this version.
 > 
-> Let me know if I need to make any more changes.
+> Please Note:
+>    The patch is compile tested using dec_station.defconfig for MIPS architecture.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_exar.c
-> b/drivers/tty/serial/8250/8250_exar.c
-> index 314a05e00..64770c62b 100644
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -43,6 +43,12 @@
->  #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
->  #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
+>  drivers/tty/serial/zs.c | 14 +++++---------
+>  drivers/tty/serial/zs.h |  2 +-
+>  2 files changed, 6 insertions(+), 10 deletions(-)
 > 
-> +#define PCI_DEVICE_ID_SEALEVEL_710xC		0x1001
-> +#define PCI_DEVICE_ID_SEALEVEL_720xC		0x1002
-> +#define PCI_DEVICE_ID_SEALEVEL_740xC		0x1004
-> +#define PCI_DEVICE_ID_SEALEVEL_780xC		0x1008
-> +#define PCI_DEVICE_ID_SEALEVEL_716xC		0x1010
-> +
->  #define UART_EXAR_INT0		0x80
->  #define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
->  #define UART_EXAR_SLEEP	0x8b	/* Sleep mode */
-> @@ -638,6 +644,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct
-> pci_device_id *ent)
->  		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
->  	else if (board->num_ports)
->  		nr_ports = board->num_ports;
-> +	else if (pcidev->vendor == PCI_VENDOR_ID_SEALEVEL)
-> +		nr_ports = pcidev->device & 0xff;
->  	else
->  		nr_ports = pcidev->device & 0x0f;
+> diff --git a/drivers/tty/serial/zs.c b/drivers/tty/serial/zs.c
+> index 730c648e32ff..6be9933eff5c 100644
+> --- a/drivers/tty/serial/zs.c
+> +++ b/drivers/tty/serial/zs.c
+> @@ -753,17 +753,15 @@ static int zs_startup(struct uart_port *uport)
+>  	struct zs_port *zport = to_zport(uport);
+>  	struct zs_scc *scc = zport->scc;
+>  	unsigned long flags;
+> -	int irq_guard;
+>  	int ret;
 > 
-> @@ -864,6 +872,12 @@ static const struct pci_device_id exar_pci_tbl[] = {
->  	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
->  	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
->  	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
-> +
-> +	EXAR_DEVICE(SEALEVEL, 710xC, pbn_exar_XR17V35x),
-> +	EXAR_DEVICE(SEALEVEL, 720xC, pbn_exar_XR17V35x),
-> +	EXAR_DEVICE(SEALEVEL, 740xC, pbn_exar_XR17V35x),
-> +	EXAR_DEVICE(SEALEVEL, 780xC, pbn_exar_XR17V35x),
-> +	EXAR_DEVICE(SEALEVEL, 716xC, pbn_exar_XR17V35x),
->  	{ 0, }
->  };
->  MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
+> -	irq_guard = atomic_add_return(1, &scc->irq_guard);
+> -	if (irq_guard == 1) {
+> +	refcount_inc(&scc->irq_guard);
+> +	if (refcount_read(&scc->irq_guard) == 1) {
 
-Hi,
+This conversion is wrong :(
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
-  and can not be applied.  Please read the file,
-  Documentation/process/email-clients.rst in order to fix this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
