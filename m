@@ -2,124 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D95C004D4
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Jan 2023 19:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F6BC46467
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 02:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbjASTkh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Jan 2023 14:40:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        id S229515AbjATCtr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 Jan 2023 21:49:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbjASTkf (ORCPT
+        with ESMTP id S229457AbjATCtp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Jan 2023 14:40:35 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F129373D
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 11:40:34 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id j9so2423890qtv.4
-        for <linux-serial@vger.kernel.org>; Thu, 19 Jan 2023 11:40:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=g-clemson-edu.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:user-agent:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=UxiDazJ+Nutg44rKg7vbrQ22z5FdTpODyxYh5D8yOvU=;
-        b=kHc3XPur9V2u/VHPdZRXpwwU31Cf9zLAYODXO3KHeFlQJpWUXOD26foHnrOQkiqthS
-         gJcOU0WIcvyKh0iROHne1QD16qxT68GyCtOfcErU3xA8AlxBBC+2nMas9rhDUs/nZ3+j
-         4CPcIjhI1z9V5pp703LG/Em4j/uTWAktM1/KP+i+tuR/oRmiJauNbDAGnGyARln6ptHG
-         iB/9A3oTXvMWugpJgZvJD4N40RIc+0I4BXqRG2Quq8rr9oKEJYK7NaOWFr8g5hembcGK
-         NFr/cMVcHeEfhNejvUPNIXNn8n9GGKtGV9qHwLg5aHr58e+8fvpKc2wYJwwnbWlrQ/EO
-         JbpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UxiDazJ+Nutg44rKg7vbrQ22z5FdTpODyxYh5D8yOvU=;
-        b=hFHJcYoSl9zTyydR3SGtd9uI25Q33iIiKBXnzcCfX901ruf9HYsxlRHprzuB2Yta4U
-         79Tz9H9ra0Akw13IGbarP9kA1KaT79XdD89ZHUrUVytD7CjheR9y2EBvh5yooylrvpqn
-         4Xa0jhro64kTKVR4mOchkob9NIxtmCbOoBHg4tOLMfEP1/eCcQDaJZ6QPwBrGmsET9+C
-         J7Amf3vvr40+p083xdh0gIj5ggJnyiCvtocwx2bw9jGJdY3tdDBDvYfCmbBDrnc4LGV2
-         Qyh7kuM+5AO+sb4pEGqbB+F+S0wkqdrWtyZTXSQW8hJy9NOADqu4Bx36mPo+2aVU2Is6
-         uAyQ==
-X-Gm-Message-State: AFqh2koCsMODzyrAtaDfMZTmX4SA4tHJbPV/N8xiuaRh7wMV6Vo0aAGC
-        e8FgM4zkgTvnI1CmZaxtlEq1OR7a34iE1uOj2uw=
-X-Google-Smtp-Source: AMrXdXsP8qizp3ctluOP010+UUyLMkjAxfHqt5yO6gp4ycvi0KJdr3vGSeS9tL9crNqS2ufERMf2pA==
-X-Received: by 2002:ac8:6f09:0:b0:3b6:2d34:45ef with SMTP id bs9-20020ac86f09000000b003b62d3445efmr19633680qtb.7.1674157233838;
-        Thu, 19 Jan 2023 11:40:33 -0800 (PST)
-Received: from tstest-VirtualBox.int.sealevel.com ([12.18.222.51])
-        by smtp.gmail.com with ESMTPSA id y11-20020a05620a25cb00b006bbf85cad0fsm24863874qko.20.2023.01.19.11.40.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jan 2023 11:40:33 -0800 (PST)
-From:   Matthew Howell <mrhowel@g.clemson.edu>
-X-Google-Original-From: Matthew Howell <ts-test@tstest-VirtualBox>
-Date:   Thu, 19 Jan 2023 14:40:29 -0500 (EST)
-To:     gregkh@linuxfoundation.org
-cc:     linux-serial@vger.kernel.org, jeff.baldwin@sealevel.com,
-        ryan.wenglarz@sealevel.com, matthew.howell@sealevel.com,
-        darren.beeson@sealevel.com
-Subject: [PATCH v4] serial: exar: Add support for Sealevel 7xxxC serial
- cards
-Message-ID: <alpine.DEB.2.21.2301191440010.22558@tstest-VirtualBox>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 19 Jan 2023 21:49:45 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD4049567;
+        Thu, 19 Jan 2023 18:49:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674182985; x=1705718985;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xOt/pIp29WBfj1lDuuLWsw+OLGGWhFf5vFZBAOjOoHI=;
+  b=Zgb46PSiFryBiBetGnseg5E1U7ASywqa85T5F1/IVPs1glntg6GWBQ9M
+   OQzkJE5zwaS1pnqeRQUaPLOuIGRfZLqxiS/xvj3HMVBmyvIZTy0w1X04j
+   HZRMGOQUveYvSEqIRUJBx+WzBZzjaYDPRIm6FXfUOEijS5BViMVZM/dES
+   bqyYhANs9xPg0DXRwasY2Ge0mD+lgj9RBebzP/ANRZ7TJGmVvSwgRd5NY
+   hzrPcXG3YU2z4EAw4wt3ZlZDSs3CL+ZPUoAn0KOLKTfFsYDBemu8BwpFP
+   Qg6Q7lk+lWHHgIERBn7uPRI9VwOvt3CJmaP9Hqbqhz3GCO+KXvXS36yVd
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="325531033"
+X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
+   d="scan'208";a="325531033"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 18:49:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="749213525"
+X-IronPort-AV: E=Sophos;i="5.97,230,1669104000"; 
+   d="scan'208";a="749213525"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by FMSMGA003.fm.intel.com with ESMTP; 19 Jan 2023 18:49:39 -0800
+Date:   Fri, 20 Jan 2023 10:39:12 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, macro@orcam.me.uk,
+        johan@kernel.org, lukas@wunner.de, ilpo.jarvinen@linux.intel.com,
+        marpagan@redhat.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v11 0/4] Enhance definition of DFH and use enhancements
+ for UART driver
+Message-ID: <Y8n+0OUxnDtDfJgG@yilunxu-OptiPlex-7050>
+References: <20230115151447.1353428-1-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230115151447.1353428-1-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Matthew Howell <matthew.howell@sealevel.com>
+On 2023-01-15 at 07:14:43 -0800, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> This patchset enhances the definition of the Device Feature Header (DFH) used by
+> the Device Feature List (DFL) bus and then uses the new enhancements in a UART
+> driver.
+> 
+> The enhancements to the DFH includes the introduction of parameter blocks.
+> Like PCI capabilities, the DFH parameter blocks further describe
+> the hardware to software. In the case of the UART, the parameter blocks
+> provide information for the interrupt, clock frequency, and register layout.
+> 
+> Duplication of code parsing of the parameter blocks in multiple DFL drivers
+> is a concern. Using swnodes was considered to help minimize parsing code 
+> duplication, but their use did not help the problem. Furthermore the highly
+> changeable nature of FPGAs employing the DFL bus makes the use of swnodes
+> inappropriate. 
+> 
+> Patch 1 updates the DFL documentation to describe the added functionality to DFH.
+> 
+> Patch 2 adds the definitions for DFHv1.
+> 
+> Patch 3 adds basic support for DFHv1. It adds functionality to parse parameter blocks
+> and adds the functionality to parse the explicit location of a feature's register set.
+> 
+> Patch 4 adds a DFL UART driver that makes use of the new features of DFHv1.
 
-Add support for Sealevel 7xxxC serial cards.
+Looks good to me and see Greg has taken this patchset.
 
-This patch:
-* Adds IDs to recognize 7xxxC cards from Sealevel Systems.
-* Updates exar_pci_probe() to set nr_ports to last two bytes of primary dev 
-ID for these cards.
+Thanks,
+Yilun
 
-Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
----
-
-v2: Moved "This patch..." above signed-off line.
-v3: "Added From: Matthew Howell <matthew.howell@sealevel.com>" to
-submission.
-v4: Insert patch so it doesn't linewrap.
-
-Let me know if I need to make any more changes.
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 314a05e00..64770c62b 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -43,6 +43,12 @@
- #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
- #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
- 
-+#define PCI_DEVICE_ID_SEALEVEL_710xC		0x1001
-+#define PCI_DEVICE_ID_SEALEVEL_720xC		0x1002
-+#define PCI_DEVICE_ID_SEALEVEL_740xC		0x1004
-+#define PCI_DEVICE_ID_SEALEVEL_780xC		0x1008
-+#define PCI_DEVICE_ID_SEALEVEL_716xC		0x1010
-+
- #define UART_EXAR_INT0		0x80
- #define UART_EXAR_8XMODE	0x88	/* 8X sampling rate select */
- #define UART_EXAR_SLEEP	0x8b	/* Sleep mode */
-@@ -638,6 +644,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
- 		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
- 	else if (board->num_ports)
- 		nr_ports = board->num_ports;
-+	else if (pcidev->vendor == PCI_VENDOR_ID_SEALEVEL)
-+		nr_ports = pcidev->device & 0xff;
- 	else
- 		nr_ports = pcidev->device & 0x0f;
- 
-@@ -864,6 +872,12 @@ static const struct pci_device_id exar_pci_tbl[] = {
- 	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
- 	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
- 	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
-+
-+	EXAR_DEVICE(SEALEVEL, 710xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 720xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 740xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 780xC, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(SEALEVEL, 716xC, pbn_exar_XR17V35x),
- 	{ 0, }
- };
- MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
+> 
+> Basheer Ahmed Muddebihal (1):
+>   fpga: dfl: Add DFHv1 Register Definitions
+> 
+> Matthew Gerlach (3):
+>   Documentation: fpga: dfl: Add documentation for DFHv1
+>   fpga: dfl: add basic support for DFHv1
+>   tty: serial: 8250: add DFL bus driver for Altera 16550.
+> 
+>  Documentation/fpga/dfl.rst         | 119 ++++++++++++++
+>  drivers/fpga/dfl.c                 | 245 +++++++++++++++++++++++------
+>  drivers/fpga/dfl.h                 |  43 +++++
+>  drivers/tty/serial/8250/8250_dfl.c | 167 ++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig    |  12 ++
+>  drivers/tty/serial/8250/Makefile   |   1 +
+>  include/linux/dfl.h                |   8 +
+>  7 files changed, 544 insertions(+), 51 deletions(-)
+>  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+> 
+> -- 
+> 2.25.1
+> 
