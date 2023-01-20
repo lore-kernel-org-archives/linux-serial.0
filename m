@@ -2,167 +2,79 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 024A0C05027
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 16:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 201A0C05027
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Jan 2023 16:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbjATQDp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Jan 2023 11:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39210 "EHLO
+        id S230477AbjATQEg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 Jan 2023 11:04:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbjATQDo (ORCPT
+        with ESMTP id S230415AbjATQEf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Jan 2023 11:03:44 -0500
+        Fri, 20 Jan 2023 11:04:35 -0500
 Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EF9366A1;
-        Fri, 20 Jan 2023 08:03:43 -0800 (PST)
-Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE524707F7
+        for <linux-serial@vger.kernel.org>; Fri, 20 Jan 2023 08:04:34 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 7964E8543D;
-        Fri, 20 Jan 2023 17:03:40 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id 466948543D;
+        Fri, 20 Jan 2023 17:04:33 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1674230621;
-        bh=7iwSVJjWAqytyJHFAvrWcuyVaAWRsRuLmc4hzjx3SH4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=u4ucBSHkvElRXE7poayhV2cS1jbQdSrPpppaO5iY8Rod6E/jTl91xwwAGKn+4BRmS
-         R9RFuro0SPbq1h7t4MCcJEHJqFKVh3sgOmaa9uEge6nffl4kLBjVMjhvfEWTFsCjxp
-         sczbtXmiACT8DUB1zPWc4ms0ebuFOFOE866bXu4UBvxSiT3uLaBRUQjI4ki7mJ+ako
-         zqvGgyceWd3U1O03hsmvMVCzbVCNU2uH2pm/7289vBdhnAr80k64K7VjIEeoA2ISYw
-         FTorpQrE3GEv4mLzBmCAwXoyMhi4kLy44vXsVpq226rsMXubfLJL1fgL6J27/jNBsR
-         86rz1V7tQlhcQ==
-From:   Marek Vasut <marex@denx.de>
-To:     linux-serial@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        stable@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v6] serial: stm32: Merge hard IRQ and threaded IRQ handling into single IRQ handler
-Date:   Fri, 20 Jan 2023 17:03:32 +0100
-Message-Id: <20230120160332.57930-1-marex@denx.de>
-X-Mailer: git-send-email 2.39.0
+        s=phobos-20191101; t=1674230673;
+        bh=ChEFTyvP1yoNSN5rPCf8s5E4q+z4hqiovucKLUipOBA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=dpNpICU3MaINFIQjL+wTLSoVUJovvHaFaYyGSpnziNZRpoLjlaNmmdvR2Dz5FIDOK
+         M1f+jMXjQAPXcmA1gPDaPfO2gJBO6LvJqpt5ZbwFgFXjvX3N78ekEP2zxFk64YaVQk
+         eFCZNIiKJq2TJr7PAy8mtzhwY4G/UiAuHKM/KvLMWxdAXDKiE4f/7gk3IUD4PXsqIX
+         cDIRTVSimORRYcdBZi73H3KM5ejDVb+wdep0ivxf0n+bpob8FF9cYa/L1vl6YjsZrd
+         L4HQwWdu4kOuz5gAl3tCDer4BjbtyYG7M6stnBpxpUb5qDHStTZH5ymB8zdJUpR1fy
+         BTCKIxFwd4RDA==
+Message-ID: <7369bb81-782f-0c2e-8eee-c4b7dd8e13ae@denx.de>
+Date:   Fri, 20 Jan 2023 17:04:32 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [tty:tty-linus 4/7] drivers/tty/serial/stm32-usart.c:804:62:
+ error: 'flags' undeclared
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, oe-kbuild-all@lists.linux.dev,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+References: <202301200130.ttBiTzfO-lkp@intel.com>
+ <f5f4b504-8e58-2844-fa26-c8896a625794@denx.de>
+ <Y8pJNKb103VZvEpD@hovoldconsulting.com>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <Y8pJNKb103VZvEpD@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
 X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Requesting an interrupt with IRQF_ONESHOT will run the primary handler
-in the hard-IRQ context even in the force-threaded mode. The
-force-threaded mode is used by PREEMPT_RT in order to avoid acquiring
-sleeping locks (spinlock_t) in hard-IRQ context. This combination
-makes it impossible and leads to "sleeping while atomic" warnings.
+On 1/20/23 08:56, Johan Hovold wrote:
+> On Thu, Jan 19, 2023 at 07:08:00PM +0100, Marek Vasut wrote:
+>> On 1/19/23 18:33, kernel test robot wrote:
+>>
+>> [...]
+>>
+>>> cc58d0a3f0a475 Erwan Le Ray     2021-10-20  800  	/* Receiver timeout irq for DMA RX */
+>>> f24771b62a8323 Marek Vasut      2023-01-12  801  	if (stm32_usart_rx_dma_enabled(port) && !stm32_port->throttled) {
+>>> f24771b62a8323 Marek Vasut      2023-01-12  802  		spin_lock(&port->lock);
+>>> 6333a485062172 Erwan Le Ray     2021-10-25  803  		size = stm32_usart_receive_chars(port, false);
+>>> 6333a485062172 Erwan Le Ray     2021-10-25 @804  		uart_unlock_and_check_sysrq_irqrestore(port, flags);
+>>
+>> +CC Johan
+>>
+>> This one should be uart_unlock_and_check_sysrq(port); I think . If
+>> that's correct, then I'll send a patch.
+> 
+> That should be it. Next time, please compile-test your patches...
 
-Use one interrupt handler for both handlers (primary and secondary)
-and drop the IRQF_ONESHOT flag which is not needed.
-
-Fixes: e359b4411c283 ("serial: stm32: fix threaded interrupt handling")
-Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Tested-by: Valentin Caron <valentin.caron@foss.st.com> # V3
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: stable@vger.kernel.org
----
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Erwan Le Ray <erwan.leray@foss.st.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Valentin Caron <valentin.caron@foss.st.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-To: linux-serial@vger.kernel.org
----
-V2: - Update patch subject, was:
-      serial: stm32: Move hard IRQ handling to threaded interrupt context
-    - Use request_irq() instead, rename the IRQ handler function
-V3: - Update the commit message per suggestion from Sebastian
-    - Add RB from Sebastian
-    - Add Fixes tag
-V4: - Remove uart_console() deadlock check from
-      stm32_usart_of_dma_rx_probe()
-    - Use plain spin_lock()/spin_unlock() instead of the
-      _irqsave/_irqrestore variants in IRQ handler
-    - Add TB from Valentin
-V5: - Add CC stable@
-    - Do not move the sr variable, removes one useless hunk from the patch
-V6: - Replace uart_unlock_and_check_sysrq_irqrestore with uart_unlock_and_check_sysrq
-      and drop last instance of flags
----
- drivers/tty/serial/stm32-usart.c | 33 +++++---------------------------
- 1 file changed, 5 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index a1490033aa164..409e91d6829a5 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -797,25 +797,11 @@ static irqreturn_t stm32_usart_interrupt(int irq, void *ptr)
- 		spin_unlock(&port->lock);
- 	}
- 
--	if (stm32_usart_rx_dma_enabled(port))
--		return IRQ_WAKE_THREAD;
--	else
--		return IRQ_HANDLED;
--}
--
--static irqreturn_t stm32_usart_threaded_interrupt(int irq, void *ptr)
--{
--	struct uart_port *port = ptr;
--	struct tty_port *tport = &port->state->port;
--	struct stm32_port *stm32_port = to_stm32_port(port);
--	unsigned int size;
--	unsigned long flags;
--
- 	/* Receiver timeout irq for DMA RX */
--	if (!stm32_port->throttled) {
--		spin_lock_irqsave(&port->lock, flags);
-+	if (stm32_usart_rx_dma_enabled(port) && !stm32_port->throttled) {
-+		spin_lock(&port->lock);
- 		size = stm32_usart_receive_chars(port, false);
--		uart_unlock_and_check_sysrq_irqrestore(port, flags);
-+		uart_unlock_and_check_sysrq(port);
- 		if (size)
- 			tty_flip_buffer_push(tport);
- 	}
-@@ -1015,10 +1001,8 @@ static int stm32_usart_startup(struct uart_port *port)
- 	u32 val;
- 	int ret;
- 
--	ret = request_threaded_irq(port->irq, stm32_usart_interrupt,
--				   stm32_usart_threaded_interrupt,
--				   IRQF_ONESHOT | IRQF_NO_SUSPEND,
--				   name, port);
-+	ret = request_irq(port->irq, stm32_usart_interrupt,
-+			  IRQF_NO_SUSPEND, name, port);
- 	if (ret)
- 		return ret;
- 
-@@ -1601,13 +1585,6 @@ static int stm32_usart_of_dma_rx_probe(struct stm32_port *stm32port,
- 	struct dma_slave_config config;
- 	int ret;
- 
--	/*
--	 * Using DMA and threaded handler for the console could lead to
--	 * deadlocks.
--	 */
--	if (uart_console(port))
--		return -ENODEV;
--
- 	stm32port->rx_buf = dma_alloc_coherent(dev, RX_BUF_L,
- 					       &stm32port->rx_dma_buf,
- 					       GFP_KERNEL);
--- 
-2.39.0
-
+Sorry about that. I did a rebuild, retest on the hardware itself, and 
+sent V6. I wonder why the bot didn't detect the build failure however.
