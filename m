@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D9EC38159
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2DFC004D4
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbjAUPhS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S229750AbjAUPhS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Sat, 21 Jan 2023 10:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbjAUPhP (ORCPT
+        with ESMTP id S229706AbjAUPhP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sat, 21 Jan 2023 10:37:15 -0500
 Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4E62C64D
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:37:00 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id vw16so20786235ejc.12
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:37:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60F72C647
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:57 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id bk15so20786522ejb.9
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vxyxFeq00JGhfZF3lbLUVUOmxZ61KQdQmUjeiwFbgw8=;
-        b=kldlJnYn61XKUbTLQgEkhyKuWxwTsdBRY9Ll7uOoPNsALXEqmEhVnPDlmerDjm1+SI
-         l3TIDs/rQvzlfZ9dQ/8wynXwr/UVjWZHEx+xSCgZ5zSkQof+F1SPm23TTRz6NN56T2uV
-         Q4ASxS1ShBnp3YJgSMmwnGvglnU4JbvzSUFPjdAEmUOrAQ3zn82WjqOk4ZlouNJcRChk
-         Q0o2cy4DQp5M78/ssbHv1hxuUTPDLivZdvz8vrULXiXmyZgS8aGeMgBwfvbpVLQNngfj
-         6gwUUGL50A7Y2ugBbah6TUbNKJU42SjXkr4coaWcVjICxqXqHGjJ2SSAwT9IWQDfhAT4
-         zq1Q==
+        bh=t9PFvNqNRiBtgoK1FQlt2dgZjVa65hIZ+MQtdwTOsMQ=;
+        b=QEjQ5FTQ1p1l7Cd4SDXPKJZ6sDaKO4pSMir4BAS6hvoSdAFJ0cS+qBajfbwJV2pTJO
+         x2WivqetX72P82ztk/8BSNaqx/ZIMtwfufirIk+npl3/cZ8qUhMakCz94H1xBr/3WHxh
+         ywOmBlRnzvzzAP8cTsedv1lwu0D4+7aE74grKArkKVJ+WIeykONRA4PRV9/ucaH3FIYA
+         LKA0BxbFTXdRw785gtB1QIJ/DUO6JseDP+AXJDDPl7HIx8xK5E3MxQEVEZJp0Lev81sl
+         IJcbkwi+HZW2xqNRDkhDwV452ClQoPHLJKYRFMy1rg93qxkbztTQSFp0g2diIisN/LBz
+         YhYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vxyxFeq00JGhfZF3lbLUVUOmxZ61KQdQmUjeiwFbgw8=;
-        b=I2fFhqrnFGvZDuMK6B2XgbE855E3JYBpMdtZ5p4VJ7IH+fh4/3u5h7S2CoQy7c3bGD
-         h0eUi7SlpTHX8Es5WTwTqDjx5KH5HY8frSK0rMJcNzR030d/71iQN7RHEPixPvsQc7Zm
-         2tYdniO3X1vj+aKS3yF8g/oc0uOFAaMSbH4Ss/lK1TCe/utS2605uNMHqLFRqYUkEy+n
-         +usHwaLGX8SynUOEDugbk5JrlvGFbHAjDQCt/kb1GVqCWuLip0yUJOlSJX7KBW5aR2uC
-         /XOHP1GPtDqcqNzANG7gw9OuFjVHxUHrW+GZVt6nx+wTh5sGasF8K+1zP0VyeZWhVCKV
-         NzUg==
-X-Gm-Message-State: AFqh2kq2gDhzBNSJl0FZgiOdfcMDj33U7cBjXT6T2iPWLtwXS+OlpYJl
-        hrahk1ARQRsT9LcTubU49AfVafrH2kg=
-X-Google-Smtp-Source: AMrXdXvonJoeipl/pY2J/CP9AlfUhBFM3gUEP8NtlR3AA0ZkXjY/Wfqosqwf9POkbiMwrcQJ8pE1Zg==
-X-Received: by 2002:a17:906:7e0c:b0:877:60b3:3fce with SMTP id e12-20020a1709067e0c00b0087760b33fcemr13894333ejr.45.1674315419081;
-        Sat, 21 Jan 2023 07:36:59 -0800 (PST)
+        bh=t9PFvNqNRiBtgoK1FQlt2dgZjVa65hIZ+MQtdwTOsMQ=;
+        b=4D6ayM65y0V8Zwdpf4lgQGELHfdntp1ITp3qYioPheYUjp/MzMECOS6WwHuYYY8N1r
+         YrDihjaD3XQr4wGLwyYIRvxsXqLprm6zZImo3mm4MQx18cqRt+srtw2cUivqdSkAQ5BN
+         aEPsEJYfVqmmccLn1vBmfovnoysDsUe08nn+loDtHI1ws0dXhdKOVB9dKu+RZf5mCAtm
+         DiJINq5jy7uWYDqjxi2ZRzAqBk/oMdVmuOJuzhuNXVuynzSZ37TlXovkGMqignFA+jOt
+         caDbtE/sPNpWQknXuq05wdRbeUpOQZJBX9vnT8X6dm6aNVf+0Fnj+9NP43ii9BBaUuWf
+         T4tA==
+X-Gm-Message-State: AFqh2kqQtej3MKTjovf8RNpsqt46LKsfq0hyUEesLwYJ32Da27o8C6uh
+        zoGTDgKFvOvL6gQqP2yv5vWjDF2N1K8=
+X-Google-Smtp-Source: AMrXdXu8317LXKt67uugrjyibQpv8a3lJd/ELRzxu3nTo8TdR5m3rzZ6aUVDkVcdqpY+V2cnlpMPjQ==
+X-Received: by 2002:a17:906:2612:b0:83f:384f:ea23 with SMTP id h18-20020a170906261200b0083f384fea23mr19222886ejc.57.1674315415953;
+        Sat, 21 Jan 2023 07:36:55 -0800 (PST)
 Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id vc10-20020a170907d08a00b008717a377125sm8187030ejc.85.2023.01.21.07.36.57
+        by smtp.gmail.com with ESMTPSA id vc10-20020a170907d08a00b008717a377125sm8187030ejc.85.2023.01.21.07.36.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Jan 2023 07:36:58 -0800 (PST)
+        Sat, 21 Jan 2023 07:36:55 -0800 (PST)
 From:   Sergey Organov <sorganov@gmail.com>
 To:     linux-serial@vger.kernel.org
 Cc:     Fabio Estevam <festevam@gmail.com>,
@@ -68,9 +68,9 @@ Cc:     Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v1 5/7] serial: imx: remove redundant USR2 read from FIFO reading loop
-Date:   Sat, 21 Jan 2023 18:36:37 +0300
-Message-Id: <20230121153639.15402-6-sorganov@gmail.com>
+Subject: [PATCH v1 3/7] serial: imx: do not sysrq broken chars
+Date:   Sat, 21 Jan 2023 18:36:35 +0300
+Message-Id: <20230121153639.15402-4-sorganov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230121153639.15402-1-sorganov@gmail.com>
 References: <87bko4e65y.fsf@osv.gnss.ru>
@@ -81,26 +81,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There is no need to read USR2 twice at every loop iteration: get rid of the
-second read.
+Do not call uart_handle_sysrq_char() if we got any receive error along with
+the character, as we don't want random junk to be considered a sysrq.
 
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/imx.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 797c441088a9..af4349fe6970 100644
+index e7fce31e460d..e709118fe85c 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -904,7 +904,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+@@ -911,9 +911,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 				continue;
+ 		}
  
- 		rx = imx_uart_readl(sport, URXD0);
+-		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
+-			continue;
+-
+ 		if (unlikely(rx & URXD_ERR)) {
+ 			if (rx & URXD_BRK)
+ 				sport->port.icount.brk++;
+@@ -942,6 +939,8 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 				flg = TTY_OVERRUN;
  
--		usr2 = imx_uart_readl(sport, USR2);
- 		if (usr2 & USR2_BRCD) {
- 			imx_uart_writel(sport, USR2_BRCD, USR2);
- 			if (uart_handle_break(&sport->port))
+ 			sport->port.sysrq = 0;
++		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx)) {
++			continue;
+ 		}
+ 
+ 		if (sport->port.ignore_status_mask & URXD_DUMMY_READ)
 -- 
 2.30.1
 
