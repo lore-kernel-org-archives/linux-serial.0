@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E741C004D4
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76394C25B50
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbjAUPhP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Jan 2023 10:37:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
+        id S229769AbjAUPhR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 Jan 2023 10:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbjAUPhO (ORCPT
+        with ESMTP id S229680AbjAUPhP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Jan 2023 10:37:14 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2592CFC3
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:54 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id kt14so20876297ejc.3
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:54 -0800 (PST)
+        Sat, 21 Jan 2023 10:37:15 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD9F2CC5E
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:59 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id vw16so20786123ejc.12
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fGRQXniAfmCVOhEPry8KBc9X4/FRyELFse0MGdO3NRc=;
-        b=Mt91O6wsHDuq9PZCKox9+WJFhgaeFmwcOWWLL/2N5ObZAjE6d+mUtPcre6xI0qeZ1p
-         xAGWfUqn3Udu0VA5eFYCZUyV7Qj+nlNrkRgtNbcai4vq5AdxIuNZ2lOUtDMynwzaqZgW
-         7TsJnh4kg87opmBIzWtd8mzppl7aNW3YljRDTAY/h6zlff8vhiXopClVfSdEKcQMz98D
-         3VMTGsP4So01okN5M47ol8DM3F5en9qQs7dglNXQUSI6hHXK7SG1/aEF8v+T2Dj7Cnd9
-         /vZThwN6tTTyo6pYIuCMuoHzRA3Xc9XePRfRCE7s+AfPlHUzm+PFWmhbOw+qXAvjkNEd
-         DR2w==
+        bh=WEm5A99uTG2c238a+JDBkz/mOTpdwi/bBFV9FIiWCUw=;
+        b=hKOanOB+Jp4twUTrfXiXV8T4xU7zos4v0oiBi0NKbLmvUTU+eLWrdQvXmBhVaVndRP
+         VMVuYgvl43SPxyS042yXS1SrdssVRlpWla7n1BLoDIGOeVeoaEnMG3VqLsUzOMHyJ7Uv
+         hTBVuIdBBVN30aMgO3Pejg7iQ+Mo6jnmPm3SQtgKg1hJK4i1WNqQZQK/FuXjR5uIfCuw
+         zCjSW4OTXKoTx5DKqGUzNA8Dh7YAIxlPH+UBSyfPUn4V13t/uf7+vp5REfGqWc4JOzGX
+         lX7HTkdrO3ACsF9yAGxTZlED4Qe1cEwr1LSl6s8g8vj9dhSzj5p405tjEW4u+MtlMPxC
+         k9Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=fGRQXniAfmCVOhEPry8KBc9X4/FRyELFse0MGdO3NRc=;
-        b=JL6eLOafAySIggVoy//BINuWi6UMQTu3hTAXL+22Dxp8YRimhxVk29QcN++3skWcy4
-         JqdqFC8mQvxZaZ/t1rH9hu+4Mcx5fx4eu9OUeb7JvZFr18WBo9G2tYzRiglvZwDICvfP
-         Jrs8+6Wi0oFZYee3dCm/dS2zOEq/5ufF4zBYJ5kfZ0R3BKdhpYG61vChiAFI6jmp6mfh
-         YzxAj6JP1TBIUKlgXJyvtXy+ZOQjrWzknzgK3wip2W8jL4W6PplEC7cahXi9BLMTyEL5
-         ntCkFcFbsSz9RVOwoQS+qEzHnMUgaDDekdgNh1JAmKaYb3PCuhXtIIdzEpGuzXM76vWL
-         HfhQ==
-X-Gm-Message-State: AFqh2kqlv6oeXpnHKieSikrpft9EzN/HhasGn26nND3/6NtcVhfUi4Wq
-        er0B3pXcHGYsU5qfiNPaNJkKixhMsoM=
-X-Google-Smtp-Source: AMrXdXtubvnAryt3g7C8rOL6o559ps+y9uy/MSBM/mlbKGyY45wWmLQCWCYT6SvaX414gJFU/TGHNg==
-X-Received: by 2002:a17:906:3616:b0:870:e329:5f2e with SMTP id q22-20020a170906361600b00870e3295f2emr19580340ejb.20.1674315412643;
-        Sat, 21 Jan 2023 07:36:52 -0800 (PST)
+        bh=WEm5A99uTG2c238a+JDBkz/mOTpdwi/bBFV9FIiWCUw=;
+        b=W1E+A0pgbW+ph0Mse1S3LtGp4tfm2FpJ7NhtedXb+O3co47kYvfPgUO2+9Cc3Wrrfb
+         1/5J2+8Dd8njiDgvWlifKqF7Olduf6b9OqXLwpuCS3DD34ruX7K6pZqio3QkIBsVsyqS
+         /iQg8AFQusfKWpYvg9Ip+4lblPwADoKKi686z4W1x1eGZP2kLMWXSN5IcHyLvxSKAs+E
+         G6AdiOsA6iN9lF7V/VwieloXbAYX9fBZtSGYp1I2uxKryx/y9qHednWGKMaXr+QYaj1q
+         vM56ZxvlKUCRXEkqobUxP/zFJXJvG6FyZexe45sya97dBuEbFuF4zH1S96DH+spXOzgE
+         BGqg==
+X-Gm-Message-State: AFqh2kprnq0V0YzQAtKJJJm+XVdBe/vYGkXY6jZIrJvlljJnp24vPJzv
+        CYiD2ayQC7ZDNU/I7Uk7xdbWaEhhrzM=
+X-Google-Smtp-Source: AMrXdXud2vbRhpBZTL2WdDc/3x2g68JGn78+ZaUp9GYAg6ZI1mbhN9/TQRbZhqN8NeRWcVIpiEvVxg==
+X-Received: by 2002:a17:906:6bc6:b0:7c0:f684:9092 with SMTP id t6-20020a1709066bc600b007c0f6849092mr18559572ejs.37.1674315417507;
+        Sat, 21 Jan 2023 07:36:57 -0800 (PST)
 Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id vc10-20020a170907d08a00b008717a377125sm8187030ejc.85.2023.01.21.07.36.51
+        by smtp.gmail.com with ESMTPSA id vc10-20020a170907d08a00b008717a377125sm8187030ejc.85.2023.01.21.07.36.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Jan 2023 07:36:52 -0800 (PST)
+        Sat, 21 Jan 2023 07:36:57 -0800 (PST)
 From:   Sergey Organov <sorganov@gmail.com>
 To:     linux-serial@vger.kernel.org
 Cc:     Fabio Estevam <festevam@gmail.com>,
@@ -68,9 +68,9 @@ Cc:     Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v1 1/7] serial: imx: factor-out common code to imx_uart_soft_reset()
-Date:   Sat, 21 Jan 2023 18:36:33 +0300
-Message-Id: <20230121153639.15402-2-sorganov@gmail.com>
+Subject: [PATCH v1 4/7] serial: imx: do not break from FIFO reading loop prematurely
+Date:   Sat, 21 Jan 2023 18:36:36 +0300
+Message-Id: <20230121153639.15402-5-sorganov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230121153639.15402-1-sorganov@gmail.com>
 References: <87bko4e65y.fsf@osv.gnss.ru>
@@ -81,131 +81,56 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We perform soft reset in 2 places, slightly differently for no sufficient
-reasons, so move more generic variant to a function, and re-use the code.
-
-Out of 2 repeat counters, 10 and 100, select 10, as the code works at
-interrupts disabled, and in practice the reset happens immediately.
+There is no reason to prematurely break out of FIFO reading loop, and it
+might cause needless reenters into ISR, so keep reading until FIFO is
+empty.
 
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 73 ++++++++++++++++++++--------------------
- 1 file changed, 37 insertions(+), 36 deletions(-)
+ drivers/tty/serial/imx.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 757825edb0cd..bf222d8568a9 100644
+index e709118fe85c..797c441088a9 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -397,6 +397,39 @@ static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
-        hrtimer_start(hrt, ms_to_ktime(msec), HRTIMER_MODE_REL);
- }
- 
-+/* called with port.lock taken and irqs off */
-+static void imx_uart_soft_reset(struct imx_port *sport)
-+{
-+	int i = 10;
-+	u32 ucr2, ubir, ubmr, uts;
-+
-+	/*
-+	 * According to the Reference Manual description of the UART SRST bit:
-+	 *
-+	 * "Reset the transmit and receive state machines,
-+	 * all FIFOs and register USR1, USR2, UBIR, UBMR, UBRC, URXD, UTXD
-+	 * and UTS[6-3]".
-+	 *
-+	 * We don't need to restore the old values from USR1, USR2, URXD and
-+	 * UTXD. UBRC is read only, so only save/restore the other three
-+	 * registers.
-+	 */
-+	ubir = imx_uart_readl(sport, UBIR);
-+	ubmr = imx_uart_readl(sport, UBMR);
-+	uts = imx_uart_readl(sport, IMX21_UTS);
-+
-+	ucr2 = imx_uart_readl(sport, UCR2);
-+	imx_uart_writel(sport, ucr2 & ~UCR2_SRST, UCR2);
-+
-+	while (!(imx_uart_readl(sport, UCR2) & UCR2_SRST) && (--i > 0))
-+		udelay(1);
-+
-+	/* Restore the registers */
-+	imx_uart_writel(sport, ubir, UBIR);
-+	imx_uart_writel(sport, ubmr, UBMR);
-+	imx_uart_writel(sport, uts, IMX21_UTS);
-+}
-+
- /* called with port.lock taken and irqs off */
- static void imx_uart_start_rx(struct uart_port *port)
+@@ -888,7 +888,7 @@ static void imx_uart_check_flood(struct imx_port *sport, u32 usr2)
+ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
  {
-@@ -1398,7 +1431,7 @@ static void imx_uart_disable_dma(struct imx_port *sport)
- static int imx_uart_startup(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
--	int retval, i;
-+	int retval;
- 	unsigned long flags;
- 	int dma_is_inited = 0;
- 	u32 ucr1, ucr2, ucr3, ucr4, uts;
-@@ -1430,15 +1463,9 @@ static int imx_uart_startup(struct uart_port *port)
- 		dma_is_inited = 1;
+ 	struct imx_port *sport = dev_id;
+-	unsigned int rx, flg, ignored = 0;
++	unsigned int rx, flg;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	u32 usr2;
  
- 	spin_lock_irqsave(&sport->port.lock, flags);
-+
- 	/* Reset fifo's and state machines */
--	i = 100;
--
--	ucr2 = imx_uart_readl(sport, UCR2);
--	ucr2 &= ~UCR2_SRST;
--	imx_uart_writel(sport, ucr2, UCR2);
--
--	while (!(imx_uart_readl(sport, UCR2) & UCR2_SRST) && (--i > 0))
--		udelay(1);
-+	imx_uart_soft_reset(sport);
+@@ -921,11 +921,8 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 			if (rx & URXD_OVRRUN)
+ 				sport->port.icount.overrun++;
  
- 	/*
- 	 * Finally, clear and enable interrupts
-@@ -1593,8 +1620,6 @@ static void imx_uart_flush_buffer(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
- 	struct scatterlist *sgl = &sport->tx_sgl[0];
--	u32 ucr2;
--	int i = 100, ubir, ubmr, uts;
+-			if (rx & sport->port.ignore_status_mask) {
+-				if (++ignored > 100)
+-					goto out;
++			if (rx & sport->port.ignore_status_mask)
+ 				continue;
+-			}
  
- 	if (!sport->dma_chan_tx)
- 		return;
-@@ -1612,32 +1637,8 @@ static void imx_uart_flush_buffer(struct uart_port *port)
- 		sport->dma_is_txing = 0;
+ 			rx &= (sport->port.read_status_mask | 0xFF);
+ 
+@@ -944,13 +941,12 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 		}
+ 
+ 		if (sport->port.ignore_status_mask & URXD_DUMMY_READ)
+-			goto out;
++			continue;
+ 
+ 		if (tty_insert_flip_char(port, rx, flg) == 0)
+ 			sport->port.icount.buf_overrun++;
  	}
  
--	/*
--	 * According to the Reference Manual description of the UART SRST bit:
--	 *
--	 * "Reset the transmit and receive state machines,
--	 * all FIFOs and register USR1, USR2, UBIR, UBMR, UBRC, URXD, UTXD
--	 * and UTS[6-3]".
--	 *
--	 * We don't need to restore the old values from USR1, USR2, URXD and
--	 * UTXD. UBRC is read only, so only save/restore the other three
--	 * registers.
--	 */
--	ubir = imx_uart_readl(sport, UBIR);
--	ubmr = imx_uart_readl(sport, UBMR);
--	uts = imx_uart_readl(sport, IMX21_UTS);
-+	imx_uart_soft_reset(sport);
+-out:
+ 	tty_flip_buffer_push(port);
  
--	ucr2 = imx_uart_readl(sport, UCR2);
--	ucr2 &= ~UCR2_SRST;
--	imx_uart_writel(sport, ucr2, UCR2);
--
--	while (!(imx_uart_readl(sport, UCR2) & UCR2_SRST) && (--i > 0))
--		udelay(1);
--
--	/* Restore the registers */
--	imx_uart_writel(sport, ubir, UBIR);
--	imx_uart_writel(sport, ubmr, UBMR);
--	imx_uart_writel(sport, uts, IMX21_UTS);
- }
- 
- static void
+ 	return IRQ_HANDLED;
 -- 
 2.30.1
 
