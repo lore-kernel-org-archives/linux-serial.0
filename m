@@ -2,114 +2,146 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 691FAC004D4
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52874C25B50
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbjAUP32 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Jan 2023 10:29:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48036 "EHLO
+        id S229562AbjAUPhO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 Jan 2023 10:37:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbjAUP31 (ORCPT
+        with ESMTP id S229706AbjAUPhN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Jan 2023 10:29:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B962CFDB;
-        Sat, 21 Jan 2023 07:29:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D66760B3D;
-        Sat, 21 Jan 2023 15:29:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DCB8C433EF;
-        Sat, 21 Jan 2023 15:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674314954;
-        bh=5bscMmtzS4ZRjroRjKGURyNoErlZmoSg56KVpMFQZSM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=mXe0uKol6PUWi+6v+ZEwGiSgMSyGViYjsaXWps/jf73Ed0/eYFxEczA3n/PMKiJ5A
-         0kmK5xpWrwon3awi7rxzurwJXdsgNCYwxtFeA0abnHOGkLbqEFg+YGezLl74R9dGVo
-         t50Onfrr6JIvoPjCvAx5JrMfzgSOjqrrQBa0aEow=
-Date:   Sat, 21 Jan 2023 16:29:11 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 6.2-rc5
-Message-ID: <Y8wEx5F+nUsgqj4Z@kroah.com>
+        Sat, 21 Jan 2023 10:37:13 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7AE2CFD7
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:52 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id v6so20849412ejg.6
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:36:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZbE3Vyz7FEJBJTK44d6toywOKJ/fNH9oM8amuUNHVHc=;
+        b=g0IxxXcZdni3MvQefW4X+InxgH/pux2DG02UrrEhp3kc0Q9AT+/HLx1pKQtVzb3NIM
+         jhKUriY7zH1SzMS9QYyvWdrZSyvzt1u3mazS95qOkW6hblhQroNHGtXUP77+tN/ybdMD
+         vMbR05dEvnEciH8Anw0VVI1gHn/2l3IDGUcqWuX2TLt+ehZaTK9EphUDMWH23qb0jFkT
+         wS4f6Vvvm9jcXns1P/zGZlz8Pe//IY4hWHd9D1nNIfc6fkkFNJ09ENd3Lz/+K/OZBiM0
+         xAearXVmLrcxxHrf1fCIvQmw8lz90GB33vR7YJoBu8dYoyv7K+qbsr1Hqxq9MeVq85ey
+         S3ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZbE3Vyz7FEJBJTK44d6toywOKJ/fNH9oM8amuUNHVHc=;
+        b=6bw0Ozntrg0E9zHB+9Bt5t0yXrkiCWjr4owz7z+CXd/UDVJ5lYCHabTS5fO91m1L7L
+         z6Eoc+oVrteGplMsiOyqwzmZ8o1/TlZnTSvQF0TGYFeHQWkUBySTC6Irhy3VH6Fsncql
+         OkCKiY1fTbo4+Vh/ZFoA4Q+rxVlfG3xFH1ydt8cW+NZrIMdxLpaYzsP84n98ly9RZqPy
+         rNJu9jIXvRMAkvN5Wbjx7l+1T171bEq6SnbcpqQorE0k37o171J5U4vqOTUa5CPWjAT5
+         nC/L3ntH8jYbhBBuIrIdVtRKPTV8X6/W7eZGnZnj+8DWucatFabSvuGLdDufB0+b+8R1
+         GcQA==
+X-Gm-Message-State: AFqh2kozXYuuj7oFliXeMI2qF95flLtKOGA5/oEdIRcjJmlCB/xx+rBY
+        9EpWg6iLxasHUVlf5DkJMso+z4o60hw=
+X-Google-Smtp-Source: AMrXdXvXTRNVHgy6ypXQ7cuQfNYqYetzSg/T0mKpOwyL0ioQdx2HJ58aVfmb/nS1jZd8Qk5M7tU3rA==
+X-Received: by 2002:a17:907:11cd:b0:870:b950:18e7 with SMTP id va13-20020a17090711cd00b00870b95018e7mr20325963ejb.19.1674315410946;
+        Sat, 21 Jan 2023 07:36:50 -0800 (PST)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id vc10-20020a170907d08a00b008717a377125sm8187030ejc.85.2023.01.21.07.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Jan 2023 07:36:50 -0800 (PST)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Sherry Sun <sherry.sun@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH v1 0/7] serial: imx: work-around for hardware RX flood, and then isr improvements
+Date:   Sat, 21 Jan 2023 18:36:32 +0300
+Message-Id: <20230121153639.15402-1-sorganov@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <87bko4e65y.fsf@osv.gnss.ru>
+References: <87bko4e65y.fsf@osv.gnss.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 5dc4c995db9eb45f6373a956eb1f69460e69e6d4:
+These series contain a work-around for hardware RX flood in first 2
+commits, and then further cleanups and optimizations of the receive IRQ
+handler.
 
-  Linux 6.2-rc4 (2023-01-15 09:22:43 -0600)
+WARNING: the flood fix is extensively tested with older version of the
+kernel with DMA turned off. The DMA path is tested only a bit, as DMA has
+receive problems on my kernel version.
 
-are available in the Git repository at:
+Changes in v1:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.2-rc5
+  * Missing braces fixed.
 
-for you to fetch changes up to 14ee78d5932afeb710c8305196a676a715bfdea8:
+  * Withdrawn patch optimizing imx_uart_readl() -> readl(), on request of
+    Uwe Kleine-KÃ¶nig.
 
-  serial: exar: Add support for Sealevel 7xxxC serial cards (2023-01-20 13:38:38 +0100)
+Sergey Organov (7):
+  serial: imx: factor-out common code to imx_uart_soft_reset()
+  serial: imx: work-around for hardware RX flood
+  serial: imx: do not sysrq broken chars
+  serial: imx: do not break from FIFO reading loop prematurely
+  serial: imx: remove redundant USR2 read from FIFO reading loop
+  serial: imx: stop using USR2 in FIFO reading loop
+  serial: imx: refine local variables in rxint()
 
-----------------------------------------------------------------
-TTY/Serial driver fixes for 6.2-rc5
+ drivers/tty/serial/imx.c | 225 ++++++++++++++++++++++++---------------
+ 1 file changed, 140 insertions(+), 85 deletions(-)
 
-Here are some small tty and serial driver fixes for 6.2-rc5 that resolve
-a number of tiny reported issues and some new device ids.  They include:
-  - new device id for the exar serial driver
-  - speakup tty driver bugfix
-  - atmel serial driver baudrate fixup
-  - stm32 serial driver bugfix and then revert as the bugfix broke the
-    build.  That will come back in a later pull request once it is all
-    worked out properly.
-  - amba-pl011 serial driver rs486 mode bugfix
-  - qcom_geni serial driver bugfix
+Interdiff against v0:
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 45327ff6dd14..447b9060d9df 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -889,15 +889,14 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ {
+ 	struct imx_port *sport = dev_id;
+ 	struct tty_port *port = &sport->port.state->port;
+-	typeof(sport->port.membase) membase = sport->port.membase;
+ 	u32 usr2, rx;
+ 
+ 	/* If we received something, check for 0xff flood */
+-	usr2 = readl(membase + USR2);
++	usr2 = imx_uart_readl(sport, USR2);
+ 	if (usr2 & USR2_RDR)
+ 		imx_uart_check_flood(sport, usr2);
+ 
+-	while ((rx = readl(membase + URXD0)) & URXD_CHARRDY) {
++	while ((rx = imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
+ 		unsigned int flg = TTY_NORMAL;
+ 		sport->port.icount.rx++;
+ 
+@@ -929,8 +928,9 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+ 				flg = TTY_OVERRUN;
+ 
+ 			sport->port.sysrq = 0;
+-		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
++		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx)) {
+ 			continue;
++		}
+ 
+ 		if (sport->port.ignore_status_mask & URXD_DUMMY_READ)
+ 			continue;
+-- 
+2.30.1
 
-Most of these have been in linux-next with no reported problems (well,
-other than the build breakage which generated the revert), the new
-device id passed 0-day testing.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      tty: serial: qcom_geni: avoid duplicate struct member init
-
-Gaosheng Cui (1):
-      tty: fix possible null-ptr-defer in spk_ttyio_release
-
-Greg Kroah-Hartman (1):
-      Revert "serial: stm32: Merge hard IRQ and threaded IRQ handling into single IRQ handler"
-
-Ilpo Järvinen (1):
-      serial: pch_uart: Pass correct sg to dma_unmap_sg()
-
-Krzysztof Kozlowski (1):
-      tty: serial: qcom-geni-serial: fix slab-out-of-bounds on RX FIFO buffer
-
-Lino Sanfilippo (1):
-      serial: amba-pl011: fix high priority character transmission in rs486 mode
-
-Marek Vasut (1):
-      serial: stm32: Merge hard IRQ and threaded IRQ handling into single IRQ handler
-
-Matthew Howell (1):
-      serial: exar: Add support for Sealevel 7xxxC serial cards
-
-Tobias Schramm (1):
-      serial: atmel: fix incorrect baudrate setup
-
- drivers/accessibility/speakup/spk_ttyio.c |  3 +++
- drivers/tty/serial/8250/8250_exar.c       | 14 ++++++++++++++
- drivers/tty/serial/amba-pl011.c           |  8 ++++----
- drivers/tty/serial/atmel_serial.c         |  8 +-------
- drivers/tty/serial/pch_uart.c             |  2 +-
- drivers/tty/serial/qcom_geni_serial.c     | 32 +++++++++++++++++++++++--------
- 6 files changed, 47 insertions(+), 20 deletions(-)
