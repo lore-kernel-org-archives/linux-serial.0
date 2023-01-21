@@ -2,56 +2,30 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 953CFC25B50
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 15:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A7CC25B50
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 16:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbjAUPh1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Jan 2023 10:37:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
+        id S229698AbjAUQMg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 Jan 2023 11:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbjAUPhS (ORCPT
+        with ESMTP id S229484AbjAUQMg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Jan 2023 10:37:18 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253632CFD1
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:37:04 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id tz11so20949657ejc.0
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 07:37:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+fbiDWy8ZCeEEPo3XsRTUlzcMe3rsD7fkZwC6S0cFK0=;
-        b=cUKloTLrSAChI4BCO0eWJaaZnNF/rZJTMroMFj45nPKm8Z9uKUW1hn2uoyH8x1dr/0
-         w1VlsQmfIg1o7b6OnBcQBF7ScdzssVX39T1BJyaW5vGhZUCVfuvtusjP2f2wsweYbWGU
-         Q2kKYiAZXSvuGvoYgH/DJvfcVOUyqkvuSfov+dqbE9Pp07htHoqk0s6JrodKOdH7SXy3
-         2gN8DqLB/at+lhW8Mj8g65c2OTxTsoOL0D2/cnAlp5anyqC/pqMjObgXlrLcLNj1c1N+
-         +N6Uj0qqPAr1ZmEGr3RKQ0YJI+vUzOxRRiK5KECVbum/3RN02DXlumZ+givMw+S5gkXK
-         aQcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+fbiDWy8ZCeEEPo3XsRTUlzcMe3rsD7fkZwC6S0cFK0=;
-        b=jXgIyqSRlMKToVs3G+N3eWQmp1OVkx7mBBS2XkouhAsMx20/rs97dU7jPgPFd9uNBf
-         QBlEOCqC6K9CpntUKLrSGHoYIucN+eZ3MmO+ZAk/S03GcWT+xU4YHqJ2d8heRIcqF8rt
-         cZkAPm8mLufXVrDFSKB7hGH3ntiZ40qQQozeLBt1uEltTq2PZud0DtiCgqqTAa1XXpGh
-         UEuMwO2WZllC5vmXBS8tMdS77yLgCJwxmFpyQ59Nv/4bcsmhpSJfugO8qukmm01meYvR
-         Pmt6oYk1cgjg3iKjh0WEN48IiN2i6ZHoyMdcrjjiGcheUrHz04XHZwPh/m7xXBm8Ns7e
-         vaKQ==
-X-Gm-Message-State: AFqh2kpoTvtwgipHqurdEAX/z+oXhc6AzqRIKSZACbmtfB+P0Bp6r3x1
-        Pxa3TfaCNOLmNdlmGnt4Wh9AA/sI6BE=
-X-Google-Smtp-Source: AMrXdXu1qdNmIXsHJye5VL6FE77ShV+keQV6lziLd3CwABregAyifPuPk21u3ESwF1s20pxPZ5yisw==
-X-Received: by 2002:a17:906:b305:b0:86e:8b7b:adb9 with SMTP id n5-20020a170906b30500b0086e8b7badb9mr17195606ejz.34.1674315422275;
-        Sat, 21 Jan 2023 07:37:02 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id vc10-20020a170907d08a00b008717a377125sm8187030ejc.85.2023.01.21.07.37.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Jan 2023 07:37:01 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     linux-serial@vger.kernel.org
+        Sat, 21 Jan 2023 11:12:36 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC281E9D4
+        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 08:12:34 -0800 (PST)
+Received: from [192.168.1.139] ([37.4.248.41]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MPrXf-1p6yVu2Go7-00Muru; Sat, 21 Jan 2023 17:12:09 +0100
+Message-ID: <6dc81996-6ffc-c1bc-6c3f-ca65055c94a2@i2se.com>
+Date:   Sat, 21 Jan 2023 17:12:07 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v1 3/7] serial: imx: do not sysrq broken chars
+Content-Language: en-US
+To:     Sergey Organov <sorganov@gmail.com>, linux-serial@vger.kernel.org
 Cc:     Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -59,62 +33,77 @@ Cc:     Fabio Estevam <festevam@gmail.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Tim Harvey <tharvey@gateworks.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sherry Sun <sherry.sun@nxp.com>,
         linux-arm-kernel@lists.infradead.org,
         NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v1 7/7] serial: imx: refine local variables in rxint()
-Date:   Sat, 21 Jan 2023 18:36:39 +0300
-Message-Id: <20230121153639.15402-8-sorganov@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230121153639.15402-1-sorganov@gmail.com>
+        Pengutronix Kernel Team <kernel@pengutronix.de>
 References: <87bko4e65y.fsf@osv.gnss.ru>
  <20230121153639.15402-1-sorganov@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+ <20230121153639.15402-4-sorganov@gmail.com>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20230121153639.15402-4-sorganov@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:2YADwGzkJ2977gcN2dZbwsjc/4ttSWw7nzInE6yna05u6rGzVgz
+ t6iOnkoNzAUelkDVjAgwpIDfzPH2v9u56AWQjNDpCRKwNJEJ7iYFj3q1OOunwRiogZGPxRQ
+ hczz0Cn1u37yZTAX5YebVzYVhv/UEDM91teZ/fK/wJ4+WaOUpNMvQmZwfXRplu8D6OrBvTg
+ NDJMq4RRfGlWAGn7iSL8A==
+UI-OutboundReport: notjunk:1;M01:P0:Xj/MohnC4sw=;PGjFhCpmLQamjWN9SrdDJzNi9mI
+ sUF4zS+PBJhwPHtOlziiDad1rGPYd32MN5TDv6SbIJh5SSr9HB/Qz/IyD0kMBoFr1arwvT49P
+ KgUaalF2V39VLcMFkYO6qNXAbuenZGWQc3xrXCbzYqKjdl/BlUd1gCvN1UuHl9YBbCQ+L0mPr
+ +6weGI0UGuD6QmXTOkwl2Fu7esaeemRN2MPDauwsdHqZr9wyiomg2iQYHWY2fUpLdgD7/SHQD
+ qv9iDL7CPJytKAb4agnbQcqx4qdtyAVBF4j5WI2zG+AsuCsrmPj2/ziYUbjeDi+QAHbrLu4ik
+ KdAS1w7XpMu+Ic9OJY77DP51NqztE1JGrMwlccnDuWnDSpcBTnyzgBKgD6DhU0PHimQFWWjRj
+ vPr2oPIv1bEryVzwARAqr7A72dlc/09Cmj7JmUv+vhR3hKZVY0l0ZDMBxI0a5npIQjwaj0XS4
+ ZR/DSRtW/LnWzAGPwf2XgsHnu7yd234b34EJTRjjxXQ7jsjJHgwxCpGby+EPgiuDWYSt7DWtR
+ ZvQzkizcAdajEgCtsooPqsNNzlvgTStDmONQWyjdusvy0UKxcOJQYJtf42nge2JZtwBkGmwpV
+ 7263XTkPqrrtKTk5HKPrEKbNhhgpluFza0NPIjVwheyiZXtotKVpa8+CoefQjH2zh1TiRbxNK
+ KkXKMHnkRcpUBhWmdeW4vpLB0/W3Qjdw+2aF1BA1Iw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The 'rx' is chip register, similar to 'usr2', so let it be of 'u32' type as
-well.
+Hi Sergey,
 
-Move 'flg' to be FIFO read loop local as it's not used outside.
+Am 21.01.23 um 16:36 schrieb Sergey Organov:
+> Do not call uart_handle_sysrq_char() if we got any receive error along with
+> the character, as we don't want random junk to be considered a sysrq.
+>
+> Signed-off-by: Sergey Organov <sorganov@gmail.com>
 
-Signed-off-by: Sergey Organov <sorganov@gmail.com>
----
- drivers/tty/serial/imx.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+this looks like a bugfix to me. Since the relevant code is pretty old, 
+i'm not sure about the fixes tag here:
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 488d8119562e..447b9060d9df 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -888,9 +888,8 @@ static void imx_uart_check_flood(struct imx_port *sport, u32 usr2)
- static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
--	unsigned int rx, flg;
- 	struct tty_port *port = &sport->port.state->port;
--	u32 usr2;
-+	u32 usr2, rx;
- 
- 	/* If we received something, check for 0xff flood */
- 	usr2 = imx_uart_readl(sport, USR2);
-@@ -898,7 +897,7 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
- 		imx_uart_check_flood(sport, usr2);
- 
- 	while ((rx = imx_uart_readl(sport, URXD0)) & URXD_CHARRDY) {
--		flg = TTY_NORMAL;
-+		unsigned int flg = TTY_NORMAL;
- 		sport->port.icount.rx++;
- 
- 		if (unlikely(rx & URXD_ERR)) {
--- 
-2.30.1
+Fixes: 279a9acc9b72 ("2.6.11 import") ?
 
+> ---
+>   drivers/tty/serial/imx.c | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index e7fce31e460d..e709118fe85c 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -911,9 +911,6 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>   				continue;
+>   		}
+>   
+> -		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
+> -			continue;
+> -
+>   		if (unlikely(rx & URXD_ERR)) {
+>   			if (rx & URXD_BRK)
+>   				sport->port.icount.brk++;
+> @@ -942,6 +939,8 @@ static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>   				flg = TTY_OVERRUN;
+>   
+>   			sport->port.sysrq = 0;
+> +		} else if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx)) {
+> +			continue;
+>   		}
+>   
+>   		if (sport->port.ignore_status_mask & URXD_DUMMY_READ)
