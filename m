@@ -2,198 +2,165 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F3AC54E94
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Jan 2023 21:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C939FC25B4E
+	for <linux-serial@archiver.kernel.org>; Sun, 22 Jan 2023 19:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbjAUVbj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Jan 2023 16:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
+        id S229814AbjAVTsm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 22 Jan 2023 14:48:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjAUVbi (ORCPT
+        with ESMTP id S229795AbjAVTsl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Jan 2023 16:31:38 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28175233EA
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 13:31:37 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id v10so10499653edi.8
-        for <linux-serial@vger.kernel.org>; Sat, 21 Jan 2023 13:31:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2+QI71SDLqYU1/ObAyQOpTSEtqikOAQsZZOXnStGri4=;
-        b=Eawxr8Z3/Pnsn63vEEHJN3W33dvb7DcKmINAll3LAKomsZT3LwFyBtk57L7Jbta/fl
-         0mqHruCX0oQlroWQdyK0B+gajbNF5wacgb7TkeknuiZ4DGY5KbgLhK0cE0qy0/zW2aYz
-         NUx08X9rNg1ZXKh/wvN7MxTNH3SQTL/nzJyN/DzHwArZI1VFS4G5HKLqBe8NAQ5aRAr4
-         ne4kbQ+mZ70ciIp8cP2U7P4mbJE6NjsZBhGd8sryxLz/+xRJdeR4FKyDePg5lgflSjH3
-         EULhQhegqSsgyk4IitRfMNu4/5OeGaKXXC90nhxVZUnUM//8a87oX6VljMd1uQL5NzGS
-         YDnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2+QI71SDLqYU1/ObAyQOpTSEtqikOAQsZZOXnStGri4=;
-        b=AQFtKJXftQbth8Z8jXo1yERhkf6rVI4wflrbhkaZMJvpvjELbE/jqDDB/pf5t8VA+W
-         XF+3W6wkxOtBBqzJ3hfa1XiW48pHkGI22kYeJ/L6tbT8dzo485TkqjxAX3hl7jeiL+em
-         353eONl1VOZKtv+MpRxbdC+U9jRXIDN1LUI/9dYSli157b76ZNjsr77ncoxXzKuo8uxc
-         7nSnsqdXWhNmrod1skXSPHADGu9QuRrigc8ZUL+z0COjo3M3SX7F3djJOhdf0Z2/PL6o
-         g1vMw7dGKL/Kk20KGtBwY6msOw792eXwUfyZWdSKSM7vay5Ybn/Z3qThyIct3FAqKKX8
-         Oa6g==
-X-Gm-Message-State: AFqh2ko4KdlkuZBKNNpW6xoujp2Y/TOEOhcD9b+r0D/WHRBk3MFUn2ID
-        HPKwaKH+Pp/ufyT8gWc9f1CV39hd66s=
-X-Google-Smtp-Source: AMrXdXtH/nBGJKdjfpfX208LFVYXldFkuCkgrnbQsaW6RAsPoId1R+iXy7dX8yLQytuVLG8/Wxv7nQ==
-X-Received: by 2002:aa7:cd69:0:b0:499:bffb:7e58 with SMTP id ca9-20020aa7cd69000000b00499bffb7e58mr32782283edb.20.1674336695396;
-        Sat, 21 Jan 2023 13:31:35 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id w1-20020aa7dcc1000000b0047a3a407b49sm19217515edu.43.2023.01.21.13.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Jan 2023 13:31:34 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Sherry Sun <sherry.sun@nxp.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH] serial: imx: get rid of registers shadowing
-Date:   Sun, 22 Jan 2023 00:30:43 +0300
-Message-Id: <20230121213043.16314-1-sorganov@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Sun, 22 Jan 2023 14:48:41 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658AB1E1FE
+        for <linux-serial@vger.kernel.org>; Sun, 22 Jan 2023 11:48:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674416920; x=1705952920;
+  h=date:from:cc:subject:message-id:mime-version;
+  bh=/QIcTYvaADcdUOM93vVg1N1vdEHTZkD0vM5bgA0IS9o=;
+  b=iGLNjDIRChhfSnrIZYV1tE500SMwyF6tMwZu3p2jvAGOGKgJtlYksmej
+   bTosHxglEbr1KpmqNFw3Wd3akKWE0X/PRMWUJk/ul9Xc35dXIzf8tknbG
+   TGMRDpW+CtthXOvuQR+oTjeEr9QfdVnGtlhcv9NJ+NkEDv56NIZF9UI2h
+   kxpV/Z+9FCgDuuir3StFWX1brfK5gmus8TlHKU8kmPucxu88hpvPrQgve
+   +5Mf8PrcUIjQv71YBswWQtZiKTgtytVHTgI9vBdi7b25VOpXRwCsf9iB2
+   V3y5IDcS+W2Ueq4537F9G3hRjyiL6gCutkbyc7yGWa8OydBKcBXu56bE6
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10598"; a="309507530"
+X-IronPort-AV: E=Sophos;i="5.97,237,1669104000"; 
+   d="scan'208";a="309507530"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2023 11:48:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10598"; a="785368109"
+X-IronPort-AV: E=Sophos;i="5.97,237,1669104000"; 
+   d="scan'208";a="785368109"
+Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 22 Jan 2023 11:48:38 -0800
+Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pJgKT-0005D0-0f;
+        Sun, 22 Jan 2023 19:48:37 +0000
+Date:   Mon, 23 Jan 2023 03:48:35 +0800
+From:   kernel test robot <lkp@intel.com>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-testing 1/1] drivers/tty/serial/qcom_geni_serial.c:1058:12:
+ error: no member named 'rx_fifo' in 'struct qcom_geni_serial_port'
+Message-ID: <202301230337.8Ta23Xqp-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Neither registers shadowing is functionally needed as all the registers are
-read-write, nor the shadowing makes much sense for speed-up, as most speed
-critical reads/writes (of data Rx/Tx registers) are not shadowed anyway.
-Moreover, the shadowing code is obviously pure overhead on the write path.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   7a6aa989f2e844a22cfab5c8ff30e77d17dabb2f
+commit: 7a6aa989f2e844a22cfab5c8ff30e77d17dabb2f [1/1] Merge 6.2-rc5 into tty-next
+config: hexagon-randconfig-r041-20230122 (https://download.01.org/0day-ci/archive/20230123/202301230337.8Ta23Xqp-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 4196ca3278f78c6e19246e54ab0ecb364e37d66a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=7a6aa989f2e844a22cfab5c8ff30e77d17dabb2f
+        git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+        git fetch --no-tags tty tty-testing
+        git checkout 7a6aa989f2e844a22cfab5c8ff30e77d17dabb2f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
 
-Get rid of the shadowing code and variables due to above considerations.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Sergey Organov <sorganov@gmail.com>
----
+All errors (new ones prefixed by >>):
 
-NOTE: This patch is extracted from patch series "[PATCH 0/8] serial: imx:
-work-around for hardware RX flood, and then isr improvements" due to
-objection of Uwe Kleine-König <u.kleine-koenig@pengutronix.de>. I still
-believe this is an improvement, so I re-submit the patch separately.
+   In file included from drivers/tty/serial/qcom_geni_serial.c:9:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from drivers/tty/serial/qcom_geni_serial.c:9:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from drivers/tty/serial/qcom_geni_serial.c:9:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+>> drivers/tty/serial/qcom_geni_serial.c:1058:12: error: no member named 'rx_fifo' in 'struct qcom_geni_serial_port'
+           if (port->rx_fifo && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
+               ~~~~  ^
+   drivers/tty/serial/qcom_geni_serial.c:1059:9: error: no member named 'rx_fifo' in 'struct qcom_geni_serial_port'
+                   port->rx_fifo = devm_krealloc(uport->dev, port->rx_fifo,
+                   ~~~~  ^
+   drivers/tty/serial/qcom_geni_serial.c:1059:51: error: no member named 'rx_fifo' in 'struct qcom_geni_serial_port'
+                   port->rx_fifo = devm_krealloc(uport->dev, port->rx_fifo,
+                                                             ~~~~  ^
+   drivers/tty/serial/qcom_geni_serial.c:1062:14: error: no member named 'rx_fifo' in 'struct qcom_geni_serial_port'
+                   if (!port->rx_fifo)
+                        ~~~~  ^
+   6 warnings and 4 errors generated.
 
- drivers/tty/serial/imx.c | 65 ++--------------------------------------
- 1 file changed, 3 insertions(+), 62 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 757825edb0cd..f4e2db21d0fe 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -210,13 +210,6 @@ struct imx_port {
- 
- 	struct mctrl_gpios *gpios;
- 
--	/* shadow registers */
--	unsigned int ucr1;
--	unsigned int ucr2;
--	unsigned int ucr3;
--	unsigned int ucr4;
--	unsigned int ufcr;
--
- 	/* DMA fields */
- 	unsigned int		dma_is_enabled:1;
- 	unsigned int		dma_is_rxing:1;
-@@ -273,59 +266,14 @@ static const struct of_device_id imx_uart_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, imx_uart_dt_ids);
- 
--static void imx_uart_writel(struct imx_port *sport, u32 val, u32 offset)
-+static inline void imx_uart_writel(struct imx_port *sport, u32 val, u32 offset)
- {
--	switch (offset) {
--	case UCR1:
--		sport->ucr1 = val;
--		break;
--	case UCR2:
--		sport->ucr2 = val;
--		break;
--	case UCR3:
--		sport->ucr3 = val;
--		break;
--	case UCR4:
--		sport->ucr4 = val;
--		break;
--	case UFCR:
--		sport->ufcr = val;
--		break;
--	default:
--		break;
--	}
- 	writel(val, sport->port.membase + offset);
- }
- 
--static u32 imx_uart_readl(struct imx_port *sport, u32 offset)
-+static inline u32 imx_uart_readl(struct imx_port *sport, u32 offset)
- {
--	switch (offset) {
--	case UCR1:
--		return sport->ucr1;
--		break;
--	case UCR2:
--		/*
--		 * UCR2_SRST is the only bit in the cached registers that might
--		 * differ from the value that was last written. As it only
--		 * automatically becomes one after being cleared, reread
--		 * conditionally.
--		 */
--		if (!(sport->ucr2 & UCR2_SRST))
--			sport->ucr2 = readl(sport->port.membase + offset);
--		return sport->ucr2;
--		break;
--	case UCR3:
--		return sport->ucr3;
--		break;
--	case UCR4:
--		return sport->ucr4;
--		break;
--	case UFCR:
--		return sport->ufcr;
--		break;
--	default:
--		return readl(sport->port.membase + offset);
--	}
-+	return readl(sport->port.membase + offset);
- }
- 
- static inline unsigned imx_uart_uts_reg(struct imx_port *sport)
-@@ -2340,13 +2288,6 @@ static int imx_uart_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	/* initialize shadow register values */
--	sport->ucr1 = readl(sport->port.membase + UCR1);
--	sport->ucr2 = readl(sport->port.membase + UCR2);
--	sport->ucr3 = readl(sport->port.membase + UCR3);
--	sport->ucr4 = readl(sport->port.membase + UCR4);
--	sport->ufcr = readl(sport->port.membase + UFCR);
--
- 	ret = uart_get_rs485_mode(&sport->port);
- 	if (ret) {
- 		clk_disable_unprepare(sport->clk_ipg);
+vim +1058 drivers/tty/serial/qcom_geni_serial.c
 
-base-commit: 40c18f363a0806d4f566e8a9a9bd2d7766a72cf5
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1045  
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1046  static int setup_fifos(struct qcom_geni_serial_port *port)
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1047  {
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1048  	struct uart_port *uport;
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1049  	u32 old_rx_fifo_depth = port->rx_fifo_depth;
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1050  
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1051  	uport = &port->uport;
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1052  	port->tx_fifo_depth = geni_se_get_tx_fifo_depth(&port->se);
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1053  	port->tx_fifo_width = geni_se_get_tx_fifo_width(&port->se);
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1054  	port->rx_fifo_depth = geni_se_get_rx_fifo_depth(&port->se);
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1055  	uport->fifosize =
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1056  		(port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1057  
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21 @1058  	if (port->rx_fifo && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1059  		port->rx_fifo = devm_krealloc(uport->dev, port->rx_fifo,
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1060  					      port->rx_fifo_depth * sizeof(u32),
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1061  					      GFP_KERNEL);
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1062  		if (!port->rx_fifo)
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1063  			return -ENOMEM;
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1064  	}
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1065  
+b8caf69a6946e1 Krzysztof Kozlowski         2022-12-21  1066  	return 0;
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1067  }
+c4f528795d1add Karthikeyan Ramasubramanian 2018-03-14  1068  
+
+:::::: The code at line 1058 was first introduced by commit
+:::::: b8caf69a6946e18ffebad49847e258f5b6d52ac2 tty: serial: qcom-geni-serial: fix slab-out-of-bounds on RX FIFO buffer
+
+:::::: TO: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 -- 
-2.30.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
