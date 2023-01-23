@@ -2,140 +2,69 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DEEC61D9D
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 08:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0AEEC54EB4
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 09:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbjAWIkF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Jan 2023 03:40:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
+        id S231494AbjAWJuZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Jan 2023 04:50:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231682AbjAWIkD (ORCPT
+        with ESMTP id S231563AbjAWJuY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Jan 2023 03:40:03 -0500
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1BD1CF45;
-        Mon, 23 Jan 2023 00:40:02 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id F39765C00CD;
-        Mon, 23 Jan 2023 03:40:01 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Mon, 23 Jan 2023 03:40:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1674463201; x=1674549601; bh=w/xnBpY6hf
-        cSJp7QsVobDnUei84Cu91kfG5Ty8mZVFk=; b=pYnvhcLmN8HvMMcp4+fmBdl0lO
-        oZgrYlh4LAYA7ed0PDdouTryoJ3zzaBXossuzem6QeiJiskglPTxZjrCQQJMLtVv
-        +RX1WCOfAq0VtwsQ2jbJ+3s/pd6wlwqKr6xWwNRzPo6zuHO4LZd6mp/AUQ4kgnfX
-        QLpEbNe10D72PL1JJpO8KmMV/v3FSktvlRicW1gJT5QBwivjInWWXC0kSqVqiwiU
-        h3VqTSAm5KjUKiyxcj5E2/fq7xcGo4hSttFaei3BpOHP/VnFVfbZo9qrqKVMux1a
-        e7Bh4aRw0BUTvFJTovXvDqOhDe3t3xv5/WQqmPnMoDrmcu+D6LN0MtsjSb5Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1674463201; x=1674549601; bh=w/xnBpY6hfcSJp7QsVobDnUei84C
-        u91kfG5Ty8mZVFk=; b=j9mjnf21Vz/iIhzR9VMDfOIM5XcpVcqxRzqtzw00sjq1
-        4Cs6xzzTbSj3ltZCDBkNoV0lInqeXzN/hRdLbu2JrAhY5seMU6HEBWAsGmNZ/2sj
-        Y4LzkC3v58ZsXeBSmRksFGtmLv6kLO3l1oubTEm67PaDvbu1zokH8LcWdfn1iqk2
-        ldGXpxee5GvOCVxIlYxGe3EC7ycrPGP9FLym+OlwfCJwBGaJ0lnMJeclCgcG48P2
-        /3Juzc6j43gjWMENoYdsZI4GDaBI5gPpx6n/a1k1NdvNE5tkYEAU2tANLAMs54Yx
-        beKxrFW2c9ixIEq0gECuGVQ5VQzGMr5PTt6cBamDlg==
-X-ME-Sender: <xms:4EfOY6vpTDlhmMjSriH5ttsPa5qTSBcPgi6f66LsCrn1yKJ-kUKXjQ>
-    <xme:4EfOY_c7SXsGLPk2732pBYYqo5KtkLpKkx6hNUe56AfMFyOnocDShrOz3JDYhcwsD
-    QaNTqPfehJrjAWVCLw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedruddujedguddvfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
-    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:4EfOY1zKIrt6HgC3WlCgi1VoLkspNUJwKtTCZ2JbADae91lS3z6cLA>
-    <xmx:4EfOY1M9Uon-7Q3owh33nDPgVUvsW5JHhfYxbMoCqItEhaYZgJ1P6g>
-    <xmx:4EfOY69y5BmZLndAqUH-hZLYDhwo9QVHsuf2M00GsMrFfH-g1spOLQ>
-    <xmx:4UfOY49RJKSBbJhvhLTS5tzhjisCJi22pJdjgaXc05fhaTwQpRc9JQ>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 5FCCCB60086; Mon, 23 Jan 2023 03:40:00 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-85-gd6d859e0cf-fm-20230116.001-gd6d859e0
-Mime-Version: 1.0
-Message-Id: <a69a5ffc-0820-4adc-9ac4-f827ebf66cf0@app.fastmail.com>
-In-Reply-To: <20230123073305.149940-1-lchen@ambarella.com>
-References: <20230123073305.149940-1-lchen@ambarella.com>
-Date:   Mon, 23 Jan 2023 09:39:41 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Li Chen" <lchen@ambarella.com>
-Cc:     =?UTF-8?Q?Andreas_B=C3=B6hler?= <dev@aboehler.at>,
-        "Brian Norris" <briannorris@chromium.org>,
-        "Chris Morgan" <macromorgan@hotmail.com>,
-        "Christian Lamparter" <chunkeey@gmail.com>,
-        "Chuanhong Guo" <gch981213@gmail.com>,
-        "Conor.Dooley" <conor.dooley@microchip.com>,
-        "Daniel Palmer" <daniel@0x0f.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Guenter Roeck" <linux@roeck-us.net>,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        "Hitomi Hasegawa" <hasegawa-hitomi@fujitsu.com>,
-        "Jean Delvare" <jdelvare@suse.de>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        "Liang Yang" <liang.yang@amlogic.com>,
-        "Li Chen" <lchen@ambarella.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" 
-        <linux-mtd@lists.infradead.org>,
+        Mon, 23 Jan 2023 04:50:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E87D22010;
+        Mon, 23 Jan 2023 01:50:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38569B80CB4;
+        Mon, 23 Jan 2023 09:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 670F3C433D2;
+        Mon, 23 Jan 2023 09:50:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1674467418;
+        bh=FkPNJc0xLIxgv75yup8Gdo8quEm/AjModjlveLzw5O0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mfUShgyfjWMjib1bfWeQzsFR4YQ8ha2ssOL4WU5xDIIHagMCph8tGaF+N9RCYiEMW
+         BO9lWykf5aIGkxdHGzttym79JfnmlFXZ4EKTLinsiDFFeL6+mRRDbRll3QthxbqCUx
+         goZSwZdkQ3paLACQhbVep2/idfuhknJ7Pa8VflyE=
+Date:   Mon, 23 Jan 2023 10:50:16 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Li Chen <lchen@ambarella.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Li Chen <me@linux.beauty>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        open list <linux-kernel@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "Miquel Raynal" <miquel.raynal@bootlin.com>,
-        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        "Randy Dunlap" <rdunlap@infradead.org>,
-        "Richard Weinberger" <richard@nod.at>,
-        "Rickard x Andersson" <rickaran@axis.com>,
-        "Rob Herring" <robh@kernel.org>,
-        "Roger Quadros" <rogerq@kernel.org>,
-        "Samuel Holland" <samuel@sholland.org>,
-        "Shawn Guo" <shawnguo@kernel.org>,
-        "Sven Peter" <sven@svenpeter.dev>,
-        "Yinbo Zhu" <zhuyinbo@loongson.cn>
-Subject: Re: [PATCH 00/15] Ambarella S6LM SoC bring-up
-Content-Type: text/plain
+        "moderated list:ARM/Ambarella SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <dri-devel@lists.freedesktop.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>
+Subject: Re: [PATCH 10/15] serial: ambarella: add support for Ambarella
+ uart_port
+Message-ID: <Y85YWO6JzN++kdxe@kroah.com>
+References: <20230123073305.149940-1-lchen@ambarella.com>
+ <20230123073305.149940-11-lchen@ambarella.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230123073305.149940-11-lchen@ambarella.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 23, 2023, at 08:32, Li Chen wrote:
-> This series brings up initial support for the Ambarella S6LM
-> SoC.
->
-> The following features are supported in this initial port:
->
-> - UART with console support
-> - Pinctrl with GPIO controller
-> - Nand flash controller
-> - Devicetree
+On Mon, Jan 23, 2023 at 03:32:25PM +0800, Li Chen wrote:
+> This driver add support for Ambarella's uart, which
+> can be used for console and etc.
+> 
+> Signed-off-by: Li Chen <lchen@ambarella.com>
+> Change-Id: Ie68af7ad2187e21853e58d52cd97fd7145303730
 
-I seem to only have part of the series, please add both me and
-the linux-arm-kernel mailing list to each part of the initial
-submission.
+Please always use scripts/checkpatch.pl so you don't get grumpy
+maintainers asking you why you didn't run scripts/checkpatch.pl :(
 
-It's possible that some patches were already Cc'd to
-linux-arm-kernel but did not make it through because the Cc list
-was too long (it has to fit within 1024 characters for many lists).
-I think you too the Cc list from get_maintainers.pl, but when
-sending new drivers this does not work well because it picks
-up everyone that recently touched the Makefile/Kconfig.
-
-     Arnd
