@@ -2,167 +2,179 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021BCC05027
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 04:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0DBC54EB4
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 07:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbjAWEN7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 22 Jan 2023 23:13:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
+        id S231561AbjAWHgs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Jan 2023 02:36:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230122AbjAWEN6 (ORCPT
+        with ESMTP id S231558AbjAWHgs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 22 Jan 2023 23:13:58 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FAEB75F
-        for <linux-serial@vger.kernel.org>; Sun, 22 Jan 2023 20:13:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674447237; x=1705983237;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=apFwENabD7HCPLbiquQLbfy8hovH8b7o7eV6J6UHHRc=;
-  b=fEPt2Nos+tEjddQLLIBESYfAGYQmUd6CNn5KNP1tkAy/WPKYRJ20dxYX
-   Z3PqsKqpa994/dMACXqJSDXZ7XfAsSW8uNc5+IWqCOgamWr60DM/udNuv
-   XuPUDk9WF/S65TGX5/DcQxY0Qmb3iduzJ2Ez2/XiitHi8cwmOdgjYJ30R
-   iuzF90u/OXq/XmWbWmxCAw6KYSWyvXqJnpJHP2uD1tKNXQGXlBdEnJoph
-   nB83Lu1HIY7AGZTxWdYBoSyTFT1UzW9OcTss387RjG0fmrn8z6F9SwpuC
-   YhkKv18YX2wRaHeLWJ9ftn9prT3p84julGl5LLK/3R1CCyS1Qkn7XuLnI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10598"; a="328058839"
-X-IronPort-AV: E=Sophos;i="5.97,238,1669104000"; 
-   d="scan'208";a="328058839"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2023 20:13:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10598"; a="835330749"
-X-IronPort-AV: E=Sophos;i="5.97,238,1669104000"; 
-   d="scan'208";a="835330749"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 22 Jan 2023 20:13:55 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pJoDS-0005PQ-2b;
-        Mon, 23 Jan 2023 04:13:54 +0000
-Date:   Mon, 23 Jan 2023 12:13:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD REGRESSION
- 7a6aa989f2e844a22cfab5c8ff30e77d17dabb2f
-Message-ID: <63ce0955.zPL+AAYM8L6zdVxw%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 23 Jan 2023 02:36:48 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A5F18B24
+        for <linux-serial@vger.kernel.org>; Sun, 22 Jan 2023 23:36:46 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1674459357; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=H7BwwRZ01ZN1U1RMbNO1pzm8QIU76QnpD1Vo+T4QfTTTFJsT3KYL8TyQM5QLd8ot6lcCeraREJkrjla9Pa6uiBnni+LDreRm299NAp8epsAvhspRIBy8yb7emmnYILSR1hTvSerkrPNB0a4jIcLQa8+6JHBBEJJiU+215wfLyRo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1674459357; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject; 
+        bh=HkG+SmbIjA7sw7BLtfWk5YKVQYC6xM4eS1D5oo5HkRg=; 
+        b=CkpUrhKdNV6tLpuCqRjAYMct1rnU7+6ddITri4lxt2d1A0BgOASuGBeLothybj6CdE0RNaUqOMD6Ew9qaPweozGL+no3AP/39+41YOI77glP8KAOxpOowicvsncnZyL9ct6An7d8w5sVdtjg+1TXPy6fh9BJDFgR/8+8+W5EcZs=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=me@linux.beauty;
+        dmarc=pass header.from=<lchen@ambarella.com>
+Received: from shbuild9.ambarella.net (116.246.37.178 [116.246.37.178]) by mx.zohomail.com
+        with SMTPS id 1674459355500620.8753836206259; Sun, 22 Jan 2023 23:35:55 -0800 (PST)
+From:   Li Chen <lchen@ambarella.com>
+Cc:     Li Chen <lchen@ambarella.com>,
+        =?UTF-8?q?Andreas=20B=C3=B6hler?= <dev@aboehler.at>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Brian Norris <briannorris@chromium.org>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daniel Palmer <daniel@0x0f.com>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS), Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Liang Yang <liang.yang@amlogic.com>,
+        Li Chen <lchen@ambarella.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM64 PORT
+        (AARCH64 ARCHITECTURE)),
+        linux-clk@vger.kernel.org (open list:COMMON CLK FRAMEWORK),
+        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list),
+        linux-mtd@lists.infradead.org (open list:MEMORY TECHNOLOGY DEVICES
+        (MTD)), linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Rickard x Andersson <rickaran@axis.com>,
+        Rob Herring <robh@kernel.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Yinbo Zhu <zhuyinbo@loongson.cn>
+Subject: [PATCH 00/15] Ambarella S6LM SoC bring-up
+Date:   Mon, 23 Jan 2023 15:32:15 +0800
+Message-Id: <20230123073305.149940-1-lchen@ambarella.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 7a6aa989f2e844a22cfab5c8ff30e77d17dabb2f  Merge 6.2-rc5 into tty-next
+This series brings up initial support for the Ambarella S6LM
+SoC.
 
-Error/Warning reports:
+The following features are supported in this initial port:
 
-https://lore.kernel.org/oe-kbuild-all/202301230337.8Ta23Xqp-lkp@intel.com
+- UART with console support
+- Pinctrl with GPIO controller
+- Nand flash controller
+- Devicetree
 
-Error/Warning: (recently discovered and may have been fixed)
+Li Chen (15):
+  debugfs: allow to use regmap for print regs
+  dt-bindings: vendor-prefixes: add Ambarella prefix
+  dt-bindings: arm: ambarella: Add binding for Ambarella ARM platforms
+  dt-bindings: arm: add support for Ambarella SoC
+  arm64: Kconfig: Introduce CONFIG_ARCH_AMBARELLA
+  soc: add Ambarella driver
+  dt-bindings: clock: Add Ambarella clock bindings
+  clk: add support for Ambarella clocks
+  dt-bindings: serial: add support for Ambarella
+  serial: ambarella: add support for Ambarella uart_port
+  dt-bindings: mtd: Add binding for Ambarella
+  mtd: nand: add Ambarella nand support
+  dt-bindings: pinctrl: add support for Ambarella
+  pinctrl: Add pinctrl/GPIO for Ambarella SoCs
+  arm64: dts: ambarella: introduce Ambarella s6lm SoC
 
-drivers/tty/serial/qcom_geni_serial.c:1058:12: error: no member named 'rx_fifo' in 'struct qcom_geni_serial_port'
-
-Error/Warning ids grouped by kconfigs:
-
-clang_recent_errors
-|-- hexagon-randconfig-r041-20230122
-|   `-- drivers-tty-serial-qcom_geni_serial.c:error:no-member-named-rx_fifo-in-struct-qcom_geni_serial_port
-`-- s390-randconfig-r012-20230123
-    `-- drivers-tty-serial-qcom_geni_serial.c:error:no-member-named-rx_fifo-in-struct-qcom_geni_serial_port
-
-elapsed time: 722m
-
-configs tested: 76
-configs skipped: 2
-
-gcc tested configs:
-x86_64                            allnoconfig
-i386                                defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-powerpc                           allnoconfig
-x86_64                              defconfig
-i386                          randconfig-a016
-x86_64                               rhel-8.3
-x86_64               randconfig-a002-20230123
-arm                        shmobile_defconfig
-x86_64                           allyesconfig
-x86_64               randconfig-a001-20230123
-sh                          rsk7264_defconfig
-arc                                 defconfig
-x86_64               randconfig-a004-20230123
-sh                        sh7785lcr_defconfig
-x86_64               randconfig-a003-20230123
-parisc                           alldefconfig
-alpha                               defconfig
-arm                                 defconfig
-x86_64               randconfig-a005-20230123
-x86_64                           rhel-8.3-syz
-i386                          randconfig-a014
-sh                               allmodconfig
-ia64                             allmodconfig
-i386                          randconfig-a012
-x86_64                    rhel-8.3-kselftests
-m68k                             allmodconfig
-arc                  randconfig-r043-20230123
-alpha                            allyesconfig
-x86_64               randconfig-a006-20230123
-x86_64                         rhel-8.3-kunit
-s390                                defconfig
-arm                              allyesconfig
-arc                  randconfig-r043-20230122
-m68k                             allyesconfig
-arm64                            allyesconfig
-i386                          randconfig-a001
-arm                  randconfig-r046-20230123
-riscv                randconfig-r042-20230122
-powerpc                          allmodconfig
-arc                              allyesconfig
-x86_64                          rhel-8.3-func
-i386                          randconfig-a003
-s390                             allmodconfig
-powerpc                      cm5200_defconfig
-mips                             allyesconfig
-s390                 randconfig-r044-20230122
-x86_64                           rhel-8.3-kvm
-s390                             allyesconfig
-x86_64                           rhel-8.3-bpf
-i386                             allyesconfig
-i386                          randconfig-a005
-
-clang tested configs:
-i386                          randconfig-a015
-i386                          randconfig-a006
-x86_64               randconfig-a011-20230123
-hexagon              randconfig-r041-20230123
-x86_64               randconfig-a012-20230123
-hexagon              randconfig-r045-20230122
-x86_64               randconfig-a014-20230123
-x86_64               randconfig-a016-20230123
-hexagon              randconfig-r045-20230123
-x86_64               randconfig-a013-20230123
-arm                         hackkit_defconfig
-x86_64               randconfig-a015-20230123
-i386                          randconfig-a013
-arm                         lpc32xx_defconfig
-i386                          randconfig-a011
-s390                 randconfig-r044-20230123
-arm                  randconfig-r046-20230122
-hexagon              randconfig-r041-20230122
-arm                          pcm027_defconfig
-riscv                randconfig-r042-20230123
-x86_64                          rhel-8.3-rust
-i386                          randconfig-a002
-i386                          randconfig-a004
-powerpc                          allmodconfig
+ .../devicetree/bindings/arm/ambarella.yaml    |   22 +
+ .../arm/ambarella/ambarella,cpuid.yaml        |   24 +
+ .../bindings/arm/ambarella/ambarella,rct.yaml |   24 +
+ .../arm/ambarella/ambarella,scratchpad.yaml   |   24 +
+ .../bindings/arm/ambarella/ambarella.yaml     |   22 +
+ .../clock/ambarella,composite-clock.yaml      |   52 +
+ .../bindings/clock/ambarella,pll-clock.yaml   |   59 +
+ .../bindings/mtd/ambarella,nand.yaml          |   77 +
+ .../bindings/pinctrl/ambarella,pinctrl.yaml   |  160 ++
+ .../bindings/serial/ambarella_uart.yaml       |   57 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ Documentation/filesystems/debugfs.rst         |    2 +
+ MAINTAINERS                                   |   29 +
+ arch/arm64/Kconfig.platforms                  |    9 +
+ .../boot/dts/ambarella/ambarella-s6lm.dtsi    |  332 ++++
+ .../boot/dts/ambarella/s6lm_pineapple.dts     |   29 +
+ drivers/clk/Makefile                          |    1 +
+ drivers/clk/ambarella/Makefile                |    5 +
+ drivers/clk/ambarella/clk-composite.c         |  293 +++
+ drivers/clk/ambarella/clk-pll-common.c        |  308 ++++
+ drivers/clk/ambarella/clk-pll-common.h        |   96 +
+ drivers/clk/ambarella/clk-pll-normal.c        |  328 ++++
+ drivers/mtd/nand/raw/Kconfig                  |    8 +
+ drivers/mtd/nand/raw/Makefile                 |    1 +
+ drivers/mtd/nand/raw/ambarella_combo_nand.c   | 1519 ++++++++++++++++
+ drivers/mtd/nand/raw/ambarella_combo_nand.h   |  370 ++++
+ drivers/mtd/nand/raw/nand_ids.c               |    4 +
+ drivers/pinctrl/Kconfig                       |    6 +
+ drivers/pinctrl/Makefile                      |    1 +
+ drivers/pinctrl/pinctrl-ambarella.c           | 1357 ++++++++++++++
+ drivers/soc/Makefile                          |    1 +
+ drivers/soc/ambarella/Makefile                |    3 +
+ drivers/soc/ambarella/soc.c                   |  136 ++
+ drivers/tty/serial/Kconfig                    |   16 +
+ drivers/tty/serial/Makefile                   |    1 +
+ drivers/tty/serial/ambarella_uart.c           | 1581 +++++++++++++++++
+ drivers/tty/serial/ambarella_uart.h           |  120 ++
+ fs/debugfs/file.c                             |   43 +-
+ include/linux/debugfs.h                       |   11 +
+ include/soc/ambarella/misc.h                  |   17 +
+ 40 files changed, 7149 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/ambarella.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/ambarella/ambarella,cpuid.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/ambarella/ambarella,rct.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/ambarella/ambarella,scratchpad.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/ambarella/ambarella.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/ambarella,composite-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/ambarella,pll-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/mtd/ambarella,nand.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/ambarella,pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/ambarella_uart.yaml
+ create mode 100644 arch/arm64/boot/dts/ambarella/ambarella-s6lm.dtsi
+ create mode 100644 arch/arm64/boot/dts/ambarella/s6lm_pineapple.dts
+ create mode 100644 drivers/clk/ambarella/Makefile
+ create mode 100644 drivers/clk/ambarella/clk-composite.c
+ create mode 100644 drivers/clk/ambarella/clk-pll-common.c
+ create mode 100644 drivers/clk/ambarella/clk-pll-common.h
+ create mode 100644 drivers/clk/ambarella/clk-pll-normal.c
+ create mode 100644 drivers/mtd/nand/raw/ambarella_combo_nand.c
+ create mode 100644 drivers/mtd/nand/raw/ambarella_combo_nand.h
+ create mode 100644 drivers/pinctrl/pinctrl-ambarella.c
+ create mode 100644 drivers/soc/ambarella/Makefile
+ create mode 100644 drivers/soc/ambarella/soc.c
+ create mode 100644 drivers/tty/serial/ambarella_uart.c
+ create mode 100644 drivers/tty/serial/ambarella_uart.h
+ create mode 100644 include/soc/ambarella/misc.h
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
