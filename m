@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F7FC54E94
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 15:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8D6C38142
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 15:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232422AbjAWPOG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Jan 2023 10:14:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
+        id S232409AbjAWPOR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Jan 2023 10:14:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232417AbjAWPNz (ORCPT
+        with ESMTP id S232324AbjAWPOA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Jan 2023 10:13:55 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AA929413
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 07:13:28 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id r9so11123541wrw.4
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 07:13:28 -0800 (PST)
+        Mon, 23 Jan 2023 10:14:00 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFA12942F
+        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 07:13:31 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id z5so11122519wrt.6
+        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 07:13:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iisYcPXooI57UtkAF+HOVcsh+51Ufy433rxJDACay30=;
-        b=rI16xsFZkU0eDWMTKFE0Ksxp73pnRnnVBuMI8tFbs3EAC+MtLCqM+X8v/vyycGcC5O
-         USAChlzuDrcJtFWE5zuLInbgnGCpGbxV8/dQRqPYk53NiBrGIVppJYgEQ2zfRv7+YKSa
-         YgXA+r7Uufexm6x2hExkt/4SgVNyVq8GFmMZhbUftDEvVH7LmMktBcLLpFBqx5/chHt2
-         TeE20n5vBOYzlQtPwurLAxPiVEG5XNohtEKAMDt/NqKy4AnRpg/zhqZY49jckFfZ1deg
-         CtvZBVIzioBWs9VynvZ2UYazAhmLq1ctmNt+zbnVQ5BlNz377YWULvNPKig7igJrEKyo
-         vs5g==
+        bh=lf7sCIV+g7d4Io27nUeL8AFqRST4Uv3gC9DO+XLsu5c=;
+        b=cqVYvO11OXKCMxWS2m2N8CuvmAo04795P3glA3/QShNfksesNCwdIiapFJIUxHx8cg
+         3rS+IwE+nzmtwwJKmwEYmQW5HLkl7MmB54iys0Xhur69ZQg04gXhIFNjki1cNxhgM/hm
+         KVdVtMqmIHX9lNjdkHzp2HS8EYbgPuXUYi8+63DnFvCutve84+4ZjO1HvGNqiyFO7QiQ
+         0rkXFCKJMjZnLe10OEAwNQV/7I7wA0Qmxni0Mo/QqIeyhtr1qYNrtVfm7dhsM722pJ1P
+         sPnDVVZr0HkwjgZyaHNJBlv/Mmd2HgHSPEa6D8zIE0r8kuGKh0CVafLNIOC929NHP8Cs
+         Evnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=iisYcPXooI57UtkAF+HOVcsh+51Ufy433rxJDACay30=;
-        b=Q4B6VDM1/r36rv8miFbh2AjdMc8vusLoB0VH4c3J+q5/1ZVbcQGUojygzwy/HB0nqC
-         H5SSJ51tPlX2chH/wocgmkOuMwMPtTwi1h5/QOnig8BnwgjBqaRybiwyWfSi9rNX55ho
-         wx57UiBrhXcxOwFQvc0VEa851tZ0q+9xJAwkuwWkSkcDiLFqppSXGpxwWdhQF0kf4qYk
-         G0lqCph5vSbnWMvTscYYT8HiPSld8SD95I/t/Tisx44hfYdhfmYW9yTzioRoP+DrCQIo
-         QrO4xq9rRir9lmP97DXO3XvDyX8iUcd/5Xkr7KaFqOo6Q1ywYrEEf/Xl4jGoOP/kYhlT
-         PVjA==
-X-Gm-Message-State: AFqh2koTzX+6+JOLJLWQMTI3RJ8ZVjYp046+LzKp29YnqLuEIyFcj9ls
-        np4YHUzxcZihlHPC0KXloMJjEw==
-X-Google-Smtp-Source: AMrXdXt0/G7OJJgG09MWKAInBglkrtPYNcF28o6o5Fy6XNeVCLITjCuzgG4Lr6rNnIfwWhChDqTogg==
-X-Received: by 2002:a05:6000:3c2:b0:2bd:d45c:3929 with SMTP id b2-20020a05600003c200b002bdd45c3929mr23730627wrg.54.1674486807943;
-        Mon, 23 Jan 2023 07:13:27 -0800 (PST)
+        bh=lf7sCIV+g7d4Io27nUeL8AFqRST4Uv3gC9DO+XLsu5c=;
+        b=HVpzLOEVwSSuyKtRO0pJXAfW8TXtdr1p/jQUoa3rnUSKhzchn1zZ/BTGrVPs6WCi0y
+         +TkeFI+CJrbbkcM0FU4PovaH3YALpX7SzrlzJg7wQa2rTAK1tiVhfY05aseX6qde8K6o
+         xeBjyF885eon4bqZVXCLDE3pIlVLmbGJKdG0JpWoeSl830O/pCwTsbxQbhwbyfRUzM04
+         v/iMw4QywQeAbD3F0aSayKTX6jln5WBg80gDCBuOjwODxr52L09F0SgtNcCmOibP+jrt
+         mZd6EA/8vEaiDLqKCkJHJ6CaISrrJYQqeSPwhyF7bcQReXX4edbOk9mFHMhZev6ZXLjv
+         ctOA==
+X-Gm-Message-State: AFqh2kp6HllJyOKkMiDT+fMVlkyVoci1HSWQsXWvPb2BhuLziJBAyAVA
+        mNLgwt1LwijndkhAs8lB+VaIVg==
+X-Google-Smtp-Source: AMrXdXvPieFXZTI3YD37rAAxnRgL7EXzr2+7M2297WZ2GeWKED5O3/ADcQWZP+sLDJlxaXVyZ1+vHQ==
+X-Received: by 2002:adf:edd1:0:b0:2bc:7d12:e736 with SMTP id v17-20020adfedd1000000b002bc7d12e736mr21123596wro.1.1674486810209;
+        Mon, 23 Jan 2023 07:13:30 -0800 (PST)
 Received: from krzk-bin.. ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id n1-20020a5d67c1000000b002bc7f64efa3sm34737922wrw.29.2023.01.23.07.13.25
+        by smtp.gmail.com with ESMTPSA id n1-20020a5d67c1000000b002bc7f64efa3sm34737922wrw.29.2023.01.23.07.13.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 07:13:27 -0800 (PST)
+        Mon, 23 Jan 2023 07:13:29 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -83,9 +83,9 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 08/13] dt-bindings: serial: fsl-lpuart: drop rs485 properties
-Date:   Mon, 23 Jan 2023 16:12:57 +0100
-Message-Id: <20230123151302.368277-8-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 09/13] dt-bindings: serial: fsl-lpuart: allow other serial properties
+Date:   Mon, 23 Jan 2023 16:12:58 +0100
+Message-Id: <20230123151302.368277-9-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230123151302.368277-1-krzysztof.kozlowski@linaro.org>
 References: <20230123151302.368277-1-krzysztof.kozlowski@linaro.org>
@@ -95,28 +95,28 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The binding references rs485 schema, so there is no need to list its
-properties.  Simplify a bit by removing unneeded entries.
+Reference common serial properties bindings to allow typical serial
+properties:
+
+  imx8qxp-ai_ml.dtb: serial@5a060000: Unevaluated properties are not allowed ('uart-has-rtscts' were unexpected)
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 3 ---
- 1 file changed, 3 deletions(-)
+ Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-index 74f75f669e77..b1e81a6451a6 100644
+index b1e81a6451a6..26c3593fa98b 100644
 --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
 +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -64,9 +64,6 @@ properties:
-       - const: rx
-       - const: tx
+@@ -11,6 +11,7 @@ maintainers:
  
--  rs485-rts-active-low: true
--  linux,rs485-enabled-at-boot-time: true
--
- required:
-   - compatible
-   - reg
+ allOf:
+   - $ref: "rs485.yaml"
++  - $ref: serial.yaml#
+ 
+ properties:
+   compatible:
 -- 
 2.34.1
 
