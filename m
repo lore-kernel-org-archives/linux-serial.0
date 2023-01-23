@@ -2,132 +2,145 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE18C05027
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 16:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD81DC54EED
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 16:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232709AbjAWQev (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Jan 2023 11:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37126 "EHLO
+        id S233224AbjAWQik (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Jan 2023 11:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbjAWQev (ORCPT
+        with ESMTP id S233230AbjAWQii (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Jan 2023 11:34:51 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4038228874
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 08:34:50 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id b4so15320979edf.0
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 08:34:50 -0800 (PST)
+        Mon, 23 Jan 2023 11:38:38 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4502BEC7
+        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 08:38:36 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id kt14so32101236ejc.3
+        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 08:38:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:message-id
-         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=dHio8a3tIrQaWpph9OBwqj4XpRUo5bPq+VspbIj+xTs=;
-        b=QhAE20mnYiKKOlJhdSQ8kVPDlDvUjQNa3d25KqW/oAn8ghq5yRQdgPnUe/2lDAO+x0
-         kx4Kftcf1MA5y6PDWx0RQvPgZkYY+EtCIswLYZzhq5S0hDQBT3roLE4d4dzlVNv8n3z7
-         7WIAHbXBn/O6NQfY+5aNQiIew2tGAXIpdNBexsKOZfCr9mhWBvvvAJKsRrRbXGO3Eqc4
-         /6iWNbEzsCSDgt2F5zxU7gGw1G3i5M2PdjXiQV45qfnqtF0Azgz5c4Cxs2JTKmfobGGQ
-         CWkMYEeEw9Xga4YfWt+Rag8vTcMcYJ9zdTqf+s2Iy5J2zf6dFxJyXxs1kza/Y9upFmi7
-         Yd4w==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ImwX9kdkxyCrfSxchCRVxcHp/q4vXtkqJGNHQ8DEkjc=;
+        b=4far6+BsQeuVq4zWunDyumaobqqRyJHEgIeK3YLhZuroLjse6yoHs8JvXbmF/KqStg
+         rxnQhqZG9GFcdehTbyghgkiwxJ93Pb9M3tDf2TlghV/DYVS/COt7tR0621b3nBn6hwDN
+         fCokuOrFJ4eYLI0wThexPivBWg+hZXx/qnar0kNH+XWPhojhV+WdFwD+OgTEh/OCIlmc
+         srWpBYsWvgPJJM6MT1YWIhh2lNAYoAQMwz2lMr4PErN8gzHx7GKJwI7UGILIKg2kqUPw
+         Zs1f6CL1SMdLVl56CIIbUh/TVyG+bBRlhGabUBhfIhiFQ7DkrM7e+aeNcZkoAYNomyQ5
+         VaBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:message-id
-         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=dHio8a3tIrQaWpph9OBwqj4XpRUo5bPq+VspbIj+xTs=;
-        b=N2a51SunhLZAAk8n+JHOO7XCd+eZuF0F8qXmx1WI3eA1xIPKDRT49lO17ycJxfWN2s
-         TUByN0dspShcQDs0H2Ug1l0823ZuCRc+QeJbL7+svblWTx/o0g9818X56p+EKFJrNvR4
-         rFb9kEl47puZW3vpj6o0mqNCXxQsfInhWM/JUwxQn6e/Yj+2zjty5LohDXH+jXfaHmw0
-         Zymcy6c2Jv/eT4KB9DEPC7RrTtuHBa3RAoFvz0n8cE0/H4nf5f+8LTqwfW8Pc6fGH78l
-         rvbeJEnpyl7qKx2z9yHjAva3Zsb3B03HBxi93FJLMQHGjeutqZq5Lhd6uJ5rxQc6lkqQ
-         S32g==
-X-Gm-Message-State: AFqh2kpNIA5A5rnQU4JAC2xDuAOnxNzykhUPD7TOTfWv1jIyJZlFmZVP
-        3lNVFZxDcMj+mwdJMqTc8is=
-X-Google-Smtp-Source: AMrXdXvAEjqpa5P3+tgI4gAQbvm7ZLRbw4gaKg/RDH9IyV5sJy1FRpBmOJyUrxw8WilY66p6ZSbk5Q==
-X-Received: by 2002:a05:6402:cba:b0:49d:25f3:6b4e with SMTP id cn26-20020a0564020cba00b0049d25f36b4emr26145826edb.28.1674491688704;
-        Mon, 23 Jan 2023 08:34:48 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id n20-20020a05640205d400b0049e4458c991sm8610242edx.64.2023.01.23.08.34.46
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ImwX9kdkxyCrfSxchCRVxcHp/q4vXtkqJGNHQ8DEkjc=;
+        b=rTe/Pf8gVMDTb2SFJIV/7Nvsc4QZpqJ7o4zYvXc3aitAPcoHV82md7xEKwAFwMmYl9
+         XJNBJ/znEaK9rKcK8yeMMpejpbRKTYBFvGnOdxcApxKQqyo7AMnV6rRLRcEVTBJL3J6o
+         amgIoIHrF4ElYYL3v7G4KInfdunXNqJ0R+q4N1vf2rUuaE/DI7jkaChq5CUBkNIlmWI+
+         rns4mfgf5YPHr5A8R0f61MfPFywx0nv1yDhYZbf6LsyTtB+qYA449cQr0e1B0f3towZs
+         bFuTqEdLBmQ49BaLIFLGz3uRvSEVxOkUI6oyDFvjrHj7PJ1YtcQyH0IDTPEJ+/lU5QTB
+         rFKg==
+X-Gm-Message-State: AFqh2kr/JtvNAl+31p65k3JBjjSMdFkt08fZ2nF92jFYQot5g9pzL8+F
+        XWiPOC+EEC6ui5EFXjeDmEPCnA==
+X-Google-Smtp-Source: AMrXdXul5MwiqQPpuhaRDMh0z5iXKOLd18UX/Lh/JbvN2UZqcd23wEqRedFecww6DX+nHF1piP4TeQ==
+X-Received: by 2002:a17:906:4ed9:b0:7c1:7145:5b3c with SMTP id i25-20020a1709064ed900b007c171455b3cmr26822145ejv.46.1674491915346;
+        Mon, 23 Jan 2023 08:38:35 -0800 (PST)
+Received: from c64.fritz.box ([81.221.122.240])
+        by smtp.gmail.com with ESMTPSA id lb25-20020a170907785900b007c00323cc23sm22198562ejc.27.2023.01.23.08.38.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 08:34:47 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
-        Sherry Sun <sherry.sun@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH v1 3/7] serial: imx: do not sysrq broken chars
-References: <87bko4e65y.fsf@osv.gnss.ru>
-        <20230121153639.15402-1-sorganov@gmail.com>
-        <20230121153639.15402-4-sorganov@gmail.com>
-        <6dc81996-6ffc-c1bc-6c3f-ca65055c94a2@i2se.com>
-        <87fsc3wqdl.fsf@osv.gnss.ru>
-        <34438e1a-1978-7c66-26b-311258a86e30@linux.intel.com>
-Date:   Mon, 23 Jan 2023 19:34:46 +0300
-In-Reply-To: <34438e1a-1978-7c66-26b-311258a86e30@linux.intel.com> ("Ilpo
-        =?utf-8?Q?J=C3=A4rvinen=22's?= message of "Mon, 23 Jan 2023 14:38:15 +0200
- (EET)")
-Message-ID: <87o7qp43bt.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 23 Jan 2023 08:38:34 -0800 (PST)
+From:   =?UTF-8?q?Bernhard=20Rosenkr=C3=A4nzer?= <bero@baylibre.com>
+To:     linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
+        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
+        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
+        daniel.lezcano@linaro.org, chunfeng.yun@mediatek.com,
+        angelogioacchino.delregno@collabora.com,
+        allen-kh.cheng@mediatek.com, nfraprado@collabora.com,
+        andrew@lunn.ch, gtk3@inbox.ru, sean.wang@mediatek.com,
+        zhiyong.tao@mediatek.com
+Subject: [PATCH v8 0/9] Add minimal MT8365 and MT8365-EVK support
+Date:   Mon, 23 Jan 2023 17:38:24 +0100
+Message-Id: <20230123163833.1007181-1-bero@baylibre.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> writes:
+v8:
+  - Add binding descriptions for mediatek,mt8365-systimer and
+    mediatek,mt8365-uart
+  - Specify ranges with parameters for u3phy
 
-> On Sun, 22 Jan 2023, Sergey Organov wrote:
->
->> Hi Stefan,
->> 
->> Stefan Wahren <stefan.wahren@i2se.com> writes:
->> 
->> > Hi Sergey,
->> >
->> > Am 21.01.23 um 16:36 schrieb Sergey Organov:
->> >> Do not call uart_handle_sysrq_char() if we got any receive error
->> >> along with the character, as we don't want random junk to be
->> >> considered a sysrq.
->> >> Signed-off-by: Sergey Organov <sorganov@gmail.com>
->> >
->> > this looks like a bugfix to me. Since the relevant code is pretty old,
->> > i'm not sure about the fixes tag here:
->> >
->> > Fixes: 279a9acc9b72 ("2.6.11 import") ?
->> 
->> Dunno. I've checked a few drivers, and it seems that they don't care
->> either, e.g., look at atmel_serial.c, or mpc52xx_uart.c.
->> 
->> Either it doesn't matter, or a few drivers need similar fix? What's
->> going on here, I wonder?
->
-> Usually when one finds a bug from one of the drivers, the other drivers 
-> indeed turn out to have the same/similar bug(s).  It's not something 
-> uncommon.
+v7:
+  - Update GIC information in mt8365.dtsi (thanks to Marc Zyngier for
+    pointing out the problem)
+  - Adjust the timer to match the updated GIC information
 
-Yep, it looks like deriving from the same template, with the same issue.
+v6:
+  - Add systimer in mt8365.dtsi
+  - Add I/D caches and L2 cache details in mt8365.dtsi
+  - Move bl31_secmon_reserved from mt8365.dtsi to mt8365-evk.dts
+  - Fix inconsistent indentation in mt8365-pinctrl example
+  - Further mt8365.dtsi cleanups
+  - Submit to additional maintainers spotted by get_maintainer.pl
 
->
-> So just fix them all, it's very much appreciated. :-) I understand it 
-> might not be possible to test all such fixes on those other HWs but 
-> usually such bugs are simple enough to fix that it isn't be a big problem.
+v5:
+  - Reorder top-level entries in mediatek,mt8365-pinctrl.yaml to match
+    example-schema
+  - Use consistent quotes
 
-I'm not even sure this is really a bug, as nobody seems to confirm it
-with authority yet.
+v4:
+  - Remove pins-are-numbered references that have been holding things up
+    now that the patches removing it from dt-bindings have landed in linux-next
 
-Thanks,
--- Sergey Organov
+v3:
+  - Remove a number of components that are not yet supported (they will
+    come back alongside the corresponding drivers)
+  - Address issues found by dt_binding_check (mostly fixing pinctrl
+    bindings)
+  - Address issues pointed out in comments
+  - Reorder patches
+
+v2:
+  - Add missing dt-bindings documentation
+  - Small cleanups addressing issues in v1 pointed out by Krzysztof Kozlowski
+
+
+Bernhard Rosenkränzer (6):
+  dt-bindings: arm64: dts: mediatek: Add mt8365-evk board
+  dt-bindings: irq: mtk, sysirq: add support for mt8365
+  dt-bindings: mfd: syscon: Add mt8365-syscfg
+  dt-bindings: pinctrl: add bindings for Mediatek MT8365 SoC
+  dt-bindings: timer: mediatek,mtk-timer: add MT8365 SoC bindings
+  dt-bindings: serial: mediatek,uart: add MT8365 SoC bindings
+
+Fabien Parent (3):
+  dt-bindings: usb: mediatek,mtu3: add MT8365 SoC bindings
+  dt-bindings: usb: mediatek,mtk-xhci: add MT8365 SoC bindings
+  arm64: dts: mediatek: Initial mt8365-evk support
+
+ .../devicetree/bindings/arm/mediatek.yaml     |   4 +
+ .../interrupt-controller/mediatek,sysirq.txt  |   1 +
+ .../devicetree/bindings/mfd/syscon.yaml       |   1 +
+ .../pinctrl/mediatek,mt8365-pinctrl.yaml      | 197 +++++++++
+ .../bindings/serial/mediatek,uart.yaml        |   1 +
+ .../bindings/timer/mediatek,mtk-timer.txt     |   1 +
+ .../bindings/usb/mediatek,mtk-xhci.yaml       |   1 +
+ .../bindings/usb/mediatek,mtu3.yaml           |   1 +
+ arch/arm64/boot/dts/mediatek/Makefile         |   1 +
+ arch/arm64/boot/dts/mediatek/mt8365-evk.dts   | 169 ++++++++
+ arch/arm64/boot/dts/mediatek/mt8365.dtsi      | 378 ++++++++++++++++++
+ 11 files changed, 755 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/mediatek,mt8365-pinctrl.yaml
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
+
+-- 
+2.39.1
+
