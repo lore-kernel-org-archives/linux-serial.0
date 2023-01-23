@@ -2,98 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFECBC25B50
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 18:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4061C05027
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 19:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232206AbjAWSxI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Jan 2023 13:53:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S231589AbjAWTRS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Jan 2023 14:17:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232413AbjAWSxC (ORCPT
+        with ESMTP id S229436AbjAWTRR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Jan 2023 13:53:02 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF9831E33
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 10:53:00 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id bg13-20020a05600c3c8d00b003d9712b29d2so11321486wmb.2
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 10:53:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lr5MPaX+CPbj+uvLPSPuq0twot1PyuqJGLrkh8HJM0I=;
-        b=xBqRe6fEn+YI8ZmpAsJ+mDYVaEfFQmDshTw9/SjuAUTRT+O5TmYv12ERKaxeqsO8PQ
-         gkAmIjYGjk9UFYHwzHx7cJScZbISnCINuUppUbX9dpx+bWL6KNfbSxDtge00SKu7P0Mf
-         38xeqLn7nAaBGxSitBCxrhN/DiaA1WJW4yPi1DkmgG0gCtlShBuxLdiYIpWvv4mtHkci
-         6Enmd8efhtrU/63NgFCq8OKyzjasErOyl5Zw2GT/Kz4I9vW6rgmUJpsePZH45GfDTEbv
-         1FYjz1zOtaqMEK6BUz1AaFaiMvgs33Q039xxvOZEDI9gMmpwlnwcko6t3xwtbAit6zT+
-         4TFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lr5MPaX+CPbj+uvLPSPuq0twot1PyuqJGLrkh8HJM0I=;
-        b=EN9g3rWjybIjr8i9pradzz789afuhxJnfA6sLCObl/uj2SPYxWjqhDdBHY8idQLX6C
-         mVwf/TezmxH0wjMwaB47mz3GwNLZZ+zowYO6gL3uvGDNk6JI+54pZ6n/vwhJr0tydz+f
-         a2V4mSt0fTMpRYWDrwkjGtGQKBTCLr+ADTQyFiZDC/aoOSwTLDc41vHocTrAMV2y6EBj
-         3GLJrDhUCRyZoAGn4eaLoi7KzEdTK9Y6UZU/v+Yt9TpgE7NxMXPOL8py0Or2NBuYNSNP
-         F77pPiwJKVY9VGp/i8hWTMtUmzNAuTzWYfKhgOiOfn9h2Zi82O3W2WbEqSR38Oyx5wL2
-         91dQ==
-X-Gm-Message-State: AFqh2ko+nuZk4YxzAGhv1nb4bTvZHSot3Yj2xwQY420RMKPbocXafkxg
-        cGLu0posFioi7F35rtuFfZYNfQ==
-X-Google-Smtp-Source: AMrXdXuHygLwV0w4vccurHokoLTMYfXYMC3RwpOQYEmkkxITUtYbU06E92YaCyZXbM0xv/VucMgR4g==
-X-Received: by 2002:a05:600c:1e1f:b0:3db:2063:425d with SMTP id ay31-20020a05600c1e1f00b003db2063425dmr17101085wmb.2.1674499979190;
-        Mon, 23 Jan 2023 10:52:59 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id c7-20020a05600c0a4700b003d1e1f421bfsm12568074wmq.10.2023.01.23.10.52.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Jan 2023 10:52:58 -0800 (PST)
-Message-ID: <e75e5e1b-e7aa-e62d-1f12-f1543b6dbc25@linaro.org>
-Date:   Mon, 23 Jan 2023 19:52:56 +0100
+        Mon, 23 Jan 2023 14:17:17 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB6F65BD;
+        Mon, 23 Jan 2023 11:17:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674501436; x=1706037436;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xUd5gtdKQP9i7qQAzIxAFPhsw1u+3g5bDp1G9zgUY9w=;
+  b=R2t92l0rc6oq8nPlERA/18yUlUPwbDzM3gF4gPUR8YONlRwbhIPPxB/V
+   ftrHJG5KqRscBVwbxelKowUurJ9gMlWh5Uyxj562e+i0Knzbq4cPC3Y1N
+   nH03dh5kGWpVsUFGoiftA4WGm1m5PL5PRh7ChNB0Tt4nofumYJwnN40jp
+   4qYclTEiu0cDYPWgsi9pFH+n+gANLrXk+7kyDjuRBXJB5j8S1333x8Dsb
+   nj0nc+zUsfMOmLB7iN499o+lDZal+KjVK4rMk6CdgwD7PqOVtlkWExOQl
+   psQczJLz9WH4BBBVLTHoa3kpLLoVtOmn5v5bPuIDyDUciSfBJmPYH1omH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="327385790"
+X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
+   d="scan'208";a="327385790"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 11:17:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="611735871"
+X-IronPort-AV: E=Sophos;i="5.97,240,1669104000"; 
+   d="scan'208";a="611735871"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 23 Jan 2023 11:17:11 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id B24F9119; Mon, 23 Jan 2023 21:17:46 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: liteuart: Don't mix devm_*() with non-devm_*() calls
+Date:   Mon, 23 Jan 2023 21:17:41 +0200
+Message-Id: <20230123191741.79751-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.0
-Subject: Re: [PATCH v8 8/9] dt-bindings: serial: mediatek,uart: add MT8365 SoC
- bindings
-Content-Language: en-US
-To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
-        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
-        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
-        daniel.lezcano@linaro.org, chunfeng.yun@mediatek.com,
-        angelogioacchino.delregno@collabora.com,
-        allen-kh.cheng@mediatek.com, nfraprado@collabora.com,
-        andrew@lunn.ch, gtk3@inbox.ru, sean.wang@mediatek.com,
-        zhiyong.tao@mediatek.com
-References: <20230123163833.1007181-1-bero@baylibre.com>
- <20230123163833.1007181-9-bero@baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230123163833.1007181-9-bero@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23/01/2023 17:38, Bernhard Rosenkränzer wrote:
-> Add binding description for mediatek,mt8365-uart
+In the probe we need to call all devm_*() first followed by
+non-devm_*() calls. This is due to reversed clean up that
+may happen in a wrong order otherwise. The driver currently
+allocates xarray before calling
+devm_platform_get_and_ioremap_resource(). While it's not an
+issue in this certain case, it's still better to be pedantic.
 
-Subject: drop second/last, redundant "bindings". The "dt-bindings"
-prefix is already stating that these are bindings.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/liteuart.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
-> 
-> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> ---
-
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index 192ad681de35..562892395570 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -286,37 +286,35 @@ static int liteuart_probe(struct platform_device *pdev)
+ 	struct xa_limit limit;
+ 	int dev_id, ret;
+ 
+-	/* look for aliases; auto-enumerate for free index if not found */
+-	dev_id = of_alias_get_id(pdev->dev.of_node, "serial");
+-	if (dev_id < 0)
+-		limit = XA_LIMIT(0, CONFIG_SERIAL_LITEUART_MAX_PORTS);
+-	else
+-		limit = XA_LIMIT(dev_id, dev_id);
+-
+ 	uart = devm_kzalloc(&pdev->dev, sizeof(struct liteuart_port), GFP_KERNEL);
+ 	if (!uart)
+ 		return -ENOMEM;
+ 
+-	ret = xa_alloc(&liteuart_array, &dev_id, uart, limit, GFP_KERNEL);
+-	if (ret)
+-		return ret;
+-
+-	uart->id = dev_id;
+ 	port = &uart->port;
+ 
+ 	/* get membase */
+ 	port->membase = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+-	if (IS_ERR(port->membase)) {
+-		ret = PTR_ERR(port->membase);
+-		goto err_erase_id;
+-	}
++	if (IS_ERR(port->membase))
++		return PTR_ERR(port->membase);
+ 
+ 	ret = platform_get_irq_optional(pdev, 0);
+ 	if (ret < 0 && ret != -ENXIO)
+-		goto err_erase_id;
++		return ret;
+ 	if (ret > 0)
+ 		port->irq = ret;
+ 
++	/* look for aliases; auto-enumerate for free index if not found */
++	dev_id = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (dev_id < 0)
++		limit = XA_LIMIT(0, CONFIG_SERIAL_LITEUART_MAX_PORTS);
++	else
++		limit = XA_LIMIT(dev_id, dev_id);
++
++	ret = xa_alloc(&liteuart_array, &dev_id, uart, limit, GFP_KERNEL);
++	if (ret)
++		return ret;
++
++	uart->id = dev_id;
+ 	/* values not from device tree */
+ 	port->dev = &pdev->dev;
+ 	port->iotype = UPIO_MEM;
+-- 
+2.39.0
 
