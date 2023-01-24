@@ -2,139 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61DCC38142
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 06:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EFB8C54EAA
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 07:25:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232203AbjAXGIq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Jan 2023 01:08:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
+        id S232459AbjAXHZM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Jan 2023 02:25:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbjAXGIp (ORCPT
+        with ESMTP id S231538AbjAXHZL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Jan 2023 01:08:45 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C3D2CC41
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 22:08:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674540524; x=1706076524;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=4714TAaz3WLiC/6vHWaLuEvSs4Q9GZcuj24SoHHL1KQ=;
-  b=Zr1+3omvY/2Dz2qxviCpv7LbVoxeBTiXHK7EuHDz0XNoB9DqAUrfE+yJ
-   zG5xBiMBesnuDekOK09cGCeUHP8rWJ+17pPZZJzpM2HFr3CXyr0E8pLL2
-   w1zZq686D7IHJdRP4CuA0WzXICGVg7U4L8U8CR00HzVmrEBSRX1tD8do/
-   oOR8YdMVt0YfgwkZ7/zf//KZ/siVXHgXbN4EjAt8bh0V1BhpNLERjAoaq
-   VZx1x6Y2JV/iWoBxMPY4bKyNB8kCIcfI5aevGLpf4Hr0G8ZNMKnQ6XtxI
-   n4rZZ7BkLFQFvAF3/qYCpcQLr+uXO956PKQkb2icWdrCtUpDq/CiQ+GgY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="328322420"
-X-IronPort-AV: E=Sophos;i="5.97,241,1669104000"; 
-   d="scan'208";a="328322420"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2023 22:08:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10599"; a="804464451"
-X-IronPort-AV: E=Sophos;i="5.97,241,1669104000"; 
-   d="scan'208";a="804464451"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Jan 2023 22:08:42 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pKCU5-0006Bp-2M;
-        Tue, 24 Jan 2023 06:08:41 +0000
-Date:   Tue, 24 Jan 2023 14:08:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- ed0400ad547c0b88d2f06ecf22a089eb2e84c9b7
-Message-ID: <63cf75df.Lq957k9f6ldUsDKQ%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 24 Jan 2023 02:25:11 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628EF126EA
+        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 23:25:10 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id iv8-20020a05600c548800b003db04a0a46bso590910wmb.0
+        for <linux-serial@vger.kernel.org>; Mon, 23 Jan 2023 23:25:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tf2jkhDB/fcmN7gxB9BcFTlLK/uYEMsrGqgyWUEbIpY=;
+        b=Ey5ePlReG/n9vBilW4cfQNWTL/l/rns4G9TU3NjLnRqHlJJzRriYkfBLv5xkOYvf6k
+         tNxSvygXO6JmhBMATZP+4RWAM/qYoK+q58K2fGxlVf3UbxlZmZosyZyB7cVttv347tmV
+         ToZmZNkSArgBvXSky7SGWU5otTh8k17jeKQ6Uh0BaB+2hypaWFk51+cw5M9c8zLR4S3R
+         rbDfCUXeYIQrU4d9Pt7pOiZaZYPBWWhjidrvFXtsrwVzlgWlckyPuyElevm1lIgZxXFd
+         Sh35CcPBTdxpyV6N59BG7Xin73RUoxjOaqsLKKctlriqnkR8ys0RBffv86iFWpPani9v
+         EefQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tf2jkhDB/fcmN7gxB9BcFTlLK/uYEMsrGqgyWUEbIpY=;
+        b=LdXl3nV79xeakgjyOxCokriFFogYkSYCVoUARPCGIjHs5YpjrwxAGxtl0gc/09tRZc
+         lKlhwhCULtKkAfLSFof9Ax8enAHBfBJKzeQbJh+820JyLzJDQ3u0zq7s5TUzIzs2kgm+
+         Jw+/qFfZrhRd5MqSWq6gFHl7a92HZzYcSnQ81+ze7fFZxsS+mBl35IFYMRuGq2wAqmgu
+         WcQC56esbXtBtB1cp4F82VnWPPGunFUEY4nYsW4HMzb+0loBe21ADjDgY5AYDxOYMMOn
+         64KEx40GIBb2ZN8S2mBGBx3CloQOUMb3222qpMpctonHgan3SVumLJyAAtq8jjkA3unO
+         kj2w==
+X-Gm-Message-State: AFqh2kqbN6wFamCG36uDQ9YGV/bZfTRCcCm2/HdW8NKVb0+l/WUYoSww
+        wyMENMYgo3hAuPt131HVTg9AOF5h/BcZEO8R
+X-Google-Smtp-Source: AMrXdXvH5bGz6Fl5hSlEDfijg+poG9+NkFL619URN+WkIB9aNvhttf/yW+RHKBUEvSvYNh4NNDJZuw==
+X-Received: by 2002:a05:600c:5386:b0:3cf:9844:7b11 with SMTP id hg6-20020a05600c538600b003cf98447b11mr27831353wmb.23.1674545108902;
+        Mon, 23 Jan 2023 23:25:08 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id o25-20020a1c7519000000b003daf6e3bc2fsm1216707wmc.1.2023.01.23.23.25.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Jan 2023 23:25:08 -0800 (PST)
+Message-ID: <e0dd24e8-9d4b-ea23-d1de-190330c0e825@linaro.org>
+Date:   Tue, 24 Jan 2023 08:25:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.0
+Subject: Re: [PATCH 11/13] dt-bindings: serial: restrict possible child node
+ names
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, - <devicetree@vger.kernel.org>,
+        linux-riscv@lists.infradead.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Chester Lin <clin@suse.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Le Ray <erwan.leray@foss.st.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Pragnesh Patel <pragnesh.patel@sifive.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-amlogic@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-arm-kernel@lists.infradead.org
+References: <20230123151302.368277-1-krzysztof.kozlowski@linaro.org>
+ <20230123151302.368277-11-krzysztof.kozlowski@linaro.org>
+ <167451486467.2795286.1299932821783618559.robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <167451486467.2795286.1299932821783618559.robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: ed0400ad547c0b88d2f06ecf22a089eb2e84c9b7  serial: liteuart: Correct error rollback
+On 24/01/2023 00:05, Rob Herring wrote:
+> 
+> On Mon, 23 Jan 2023 16:13:00 +0100, Krzysztof Kozlowski wrote:
+>> The re-usable serial.yaml schema matches every property with ".*"
+>> pattern, thus any other schema referencing it will not report unknown
+>> (unevaluated) properties.  This hides several wrong properties.  It is
+>> a limitation of dtschema, thus provide a simple workaround: expect
+>> children to be only of few names matching upstream usage (Bluetooth,
+>> GNSS, GPS and MCU).
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+>>  Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/bus/intel,ixp4xx-expansion-bus-controller.example.dtb: serial@1,0: Unevaluated properties are not allowed ('intel,ixp4xx-eb-byte-access', 'intel,ixp4xx-eb-cycle-type', 'intel,ixp4xx-eb-t3', 'intel,ixp4xx-eb-write-enable' were unexpected)
+> 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/8250.yaml
 
-elapsed time: 723m
+Did I just forgot to test all the bindings (except the changed ones)? It
+seems so, therefoer note to myself:
 
-configs tested: 62
-configs skipped: 2
+Please run `make dt_binding_check` (see
+Documentation/devicetree/bindings/writing-schema.rst for instructions). :)
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Best regards,
+Krzysztof
 
-gcc tested configs:
-powerpc                           allnoconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-alpha                            allyesconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-sh                               allmodconfig
-arc                              allyesconfig
-x86_64                            allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-arc                                 defconfig
-s390                             allmodconfig
-alpha                               defconfig
-s390                                defconfig
-s390                             allyesconfig
-ia64                             allmodconfig
-arc                  randconfig-r043-20230123
-arm                  randconfig-r046-20230123
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                    rhel-8.3-kselftests
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-i386                 randconfig-a006-20230123
-x86_64               randconfig-a006-20230123
-i386                                defconfig
-arm                                 defconfig
-x86_64               randconfig-a002-20230123
-x86_64                           rhel-8.3-syz
-x86_64               randconfig-a004-20230123
-x86_64                         rhel-8.3-kunit
-x86_64               randconfig-a003-20230123
-x86_64                           rhel-8.3-kvm
-x86_64               randconfig-a001-20230123
-x86_64                           rhel-8.3-bpf
-x86_64               randconfig-a005-20230123
-i386                 randconfig-a003-20230123
-i386                 randconfig-a002-20230123
-i386                 randconfig-a001-20230123
-i386                 randconfig-a004-20230123
-i386                 randconfig-a005-20230123
-i386                             allyesconfig
-arm64                            allyesconfig
-arm                              allyesconfig
-
-clang tested configs:
-hexagon              randconfig-r041-20230123
-hexagon              randconfig-r045-20230123
-s390                 randconfig-r044-20230123
-riscv                randconfig-r042-20230123
-i386                 randconfig-a016-20230123
-x86_64               randconfig-a013-20230123
-x86_64               randconfig-a011-20230123
-x86_64               randconfig-a012-20230123
-x86_64               randconfig-a014-20230123
-i386                 randconfig-a012-20230123
-x86_64               randconfig-a016-20230123
-i386                 randconfig-a013-20230123
-x86_64               randconfig-a015-20230123
-i386                 randconfig-a011-20230123
-i386                 randconfig-a014-20230123
-i386                 randconfig-a015-20230123
-x86_64                          rhel-8.3-rust
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
