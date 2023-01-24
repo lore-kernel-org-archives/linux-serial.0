@@ -2,111 +2,155 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E823C54EAA
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 10:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2215CC54EAA
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 17:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233563AbjAXKxE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Jan 2023 05:53:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
+        id S233728AbjAXRsG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Jan 2023 12:48:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233482AbjAXKxD (ORCPT
+        with ESMTP id S233062AbjAXRsF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Jan 2023 05:53:03 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC9CE07E;
-        Tue, 24 Jan 2023 02:53:02 -0800 (PST)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id A82A36602E2A;
-        Tue, 24 Jan 2023 10:52:59 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1674557580;
-        bh=NWmvmgqxjDN/jBCODDrbg9zNDiVikX7EO6ENO6c0Zic=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=SNGCsNsHMDAFLtYIBRduuK0sPohTqsI2e0iD9w9vTLgyTcecBXdCzzSuyYX5oYdws
-         5lS2QTvUq6tENa2iDq84UgIT5m147bmipMRolxkbBv9s2LYDScN5l9sgUptByyUSP2
-         jzZPMOB9EpnWofduuZr/9SA7ZKT0KMb5xu32LcOhWZOSV7807S30YW93T7lLFF5If8
-         xOTowb3FWCsrWLUEOeQsfmz72K4+jptuFr3OGPd/u26uz5Idbidx5l5YH5/ymm1vHi
-         0p6Y3eQ2sB9bGfi5sluVrRxGqFlwvr+8QO4riFTTvrNiN7VhU7ud+IKPvrcjeiNbZl
-         6GxNtpeSeN4GA==
-Message-ID: <dec754f9-e79d-e1ce-e3ef-5a7eb4385dd7@collabora.com>
-Date:   Tue, 24 Jan 2023 11:52:57 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v8 9/9] arm64: dts: mediatek: Initial mt8365-evk support
-Content-Language: en-US
-To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
-        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
-        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
-        daniel.lezcano@linaro.org, chunfeng.yun@mediatek.com,
-        allen-kh.cheng@mediatek.com, nfraprado@collabora.com,
-        andrew@lunn.ch, gtk3@inbox.ru, sean.wang@mediatek.com,
-        zhiyong.tao@mediatek.com
-References: <20230123163833.1007181-1-bero@baylibre.com>
- <20230123163833.1007181-10-bero@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230123163833.1007181-10-bero@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Tue, 24 Jan 2023 12:48:05 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2041.outbound.protection.outlook.com [40.107.7.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BB536FC6;
+        Tue, 24 Jan 2023 09:48:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HUDEA8Lxt/rOu1BtbgKH5Hm6/He2AaZIqC78r/Sbay0myuz6fLooBjugxwHcIi5Vgaj1LB70vTVGX21P2gMi945eJMmpSwQCs18g3Ue4QdzVrgibucBJawfDO8tfSNWnlVR/Ad5TCRVkWsbtEkgdvvrJnmLH3LWeVxUPVOhRXIga6/tDKfbghmeGox8dwFCHKZY1kEhF51AbZ9D7WH9lMBZ17vm5IldVpKozHNv+KWgJwn7+gDYmgIyBoMYigVthsd2W6cgO5S7pPA96SiaAJtZo4xijvyhrXRMsMlO/jZ+peZNALyDWotY63MbQmK+4b2drHfPS/oMpf/2CqyQvlQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FQ3b2QLhz7WRUQJs4C8t3KFBNDEodREWIhI58Em3PYI=;
+ b=lyfCntKQn3yRiGhxe4mDbN5Rvemju+n34JPDGGSrflViqCnMZP1affLE8eA5PUIXu0aDtseK9hHsdauLDUXC0CptDcZztu4tcoxlt9T8RO/t4uetK7vR6UzWYj2FyozdYOk8p5V9Qcat90fvIY5IBWZtDVYxfQQLPoRKd3my4w1BmNuCdapi2m0g3TOMjcTWEZvG81KT+z4Ez62eKqj8eNkSgzkRWb3hnm90Czsnn/AuLqZSxH5M+cWogC6j20/zFDCyfGcy+G6yhpLqG+4vkbCW7m+W6Poo7ihMiJcIOTmP68BH7rVvyKrRpCumvR8ICP7E1GqFFC2q7JVST536XQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FQ3b2QLhz7WRUQJs4C8t3KFBNDEodREWIhI58Em3PYI=;
+ b=jpOgMfUy13DngAecsIL9eEk54ly8Ddr8RnKPtAZNVv63NqY4h88/2PtT72paPhrTGFa7OTS3YFUCbIhPfHo17izpMH4K3jqZQv7mGMYA/4+3Y9qEFGdIEGteK4Wj1/brbsg1wIX4I4Me4IWfzo3/ZbeiYBFB8v+hjmeL/IcJqvY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by AM0PR04MB7026.eurprd04.prod.outlook.com (2603:10a6:208:192::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.28; Tue, 24 Jan
+ 2023 17:48:01 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189%5]) with mapi id 15.20.6002.033; Tue, 24 Jan 2023
+ 17:48:01 +0000
+From:   Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com, neeraj.sanjaykale@nxp.com
+Subject: [PATCH v1 0/3] Add support for NXP bluetooth chipsets
+Date:   Tue, 24 Jan 2023 23:17:11 +0530
+Message-Id: <20230124174714.2775680-1-neeraj.sanjaykale@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0008.apcprd02.prod.outlook.com
+ (2603:1096:4:194::12) To AM9PR04MB8603.eurprd04.prod.outlook.com
+ (2603:10a6:20b:43a::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8603:EE_|AM0PR04MB7026:EE_
+X-MS-Office365-Filtering-Correlation-Id: b1087160-f287-49f3-22cd-08dafe332330
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P86tX+e0bNQ0DuxU5Q1v5BQaqOtloS7H/z2NZsiHvvcPmpzdqPFnZdZj0+KmeGgeFzgYMqSxUlmNIaaXNA53EOA79dogn4ZAKV19KZP4XwIoxqpOT/HYIsTzrUR2jolCOBWPBlaEiioCjJEEa+7uf2ktrRk9Xf3BV8LPeMf74IbEOt95XFZmKEAVFJyuBwJLJIScycdsfECPZJEkTqrtuiRleDWSwIOHdJADJtYNYZ/83QuQYKBlb+qckVB7oYkqStBaDQEcAWmjEZy9ug970/K0DNGzK2gcKJiG4ERdqnwyVrxszjYtelcYyS9gBk2VImPtsitOPZQi2p//0qwgfMRyxu1FsQthZkt4wmkaOEcCmpGkJux6wAAGhGpyBn7PI6ZxqKh4sAIWTC6FhzbY5IugN4+TB61CdbONIizNfsgv4e3aMaq7C+pIUTXu1rJ+Y8jeAR501ZXI0kjMyjSU19px3UrwECz2pvLNO+UKIhLUZTdAHs0Q+jGSVd/4ckXz2HyiBfCq2D5KXveOH2/K0E4Ix8FndmsIEAq286Upl+YBUDpqq3TUOgIIuSIm+agQd1a78pSrXBIAF9Csp0/U8IEjfqqkMSGoRyPHE2EeaLEmnGtVaiFxgY8kFd56iOA2yximrsFv1eROR7ckwfeuitKlgcRnmqcuvvpwZbGiqMSPYab7CivEIMUxNkizb7mr7+9aTD9YdI5EzJQXdqRSBywlR/X62UD2orwzyDivzd8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(376002)(396003)(39860400002)(136003)(451199015)(36756003)(86362001)(921005)(66556008)(66476007)(4326008)(66946007)(2906002)(8936002)(8676002)(5660300002)(7416002)(38350700002)(38100700002)(6666004)(52116002)(316002)(478600001)(6486002)(41300700001)(6506007)(26005)(83380400001)(2616005)(1076003)(186003)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GWbxvnBeEpmDUnJ6ApW5VcSx7ILJZsSbmqw9Aqc6NS8sAjBxDgYB7IlqJ+gB?=
+ =?us-ascii?Q?KmmA6QcfOBQFtjsglxUdlVnQnIiFEsBk+Dqz4wy+swdMqJdU5ADjNTFLqL0A?=
+ =?us-ascii?Q?F5s2p6z+ByLxRF0FrvAsd5cZgIxU0V1UonHxu9gO81MyVY5tFkGLEQK/rLuk?=
+ =?us-ascii?Q?AAry+MlAROPmrFmGMypiR1cgNtyGbBALSj/025ZBzI4HFh3kqnaZHJFtbPTa?=
+ =?us-ascii?Q?Ws533OVHe6ghRuPdEQVill9itMl8NLpoYntQnnj4y3iUWW1wK3F11H8iUz2O?=
+ =?us-ascii?Q?YRlHGOnnLks/xK9BG8YkTwN3aLAzzPLnmepl57E+pPc3JieDh8IuwBIhxxZ1?=
+ =?us-ascii?Q?YD90Q2pvkIrnNTAsqWUCTWpaxB8encRb3Qb3zTspT64kCsvfdNr+JTbLbNfo?=
+ =?us-ascii?Q?aqwpXJ1MK8+TjbsrM47zc/bagaFHfNhHbTZfM0WjUrSex8r9gHkWEiiTuJ0T?=
+ =?us-ascii?Q?es36usNEw6EyHaYvmYQucq9dhKozR78X2EXl5h4pK8aplVQ+7ndKgHnzLEO9?=
+ =?us-ascii?Q?fVwxiq3Gs4jVvndHexXj9mUwbSZKTp+7XGCJLptrapJatJdYaiJXyjGrMP5f?=
+ =?us-ascii?Q?4+9e5m5He57XEEMyd3563BaSqQK8Se4F4SGeYFZjZHMqC2JtENTgEG6vVXZG?=
+ =?us-ascii?Q?U7SUUvp3NMR4QONcNbXoP8JGIEGqgR3D+wA/wiv6zodwwbjzTObZcT340A00?=
+ =?us-ascii?Q?3JIGI7cB+WzgE9mrajbvxNncu81hjsTigAMIxSedskEsdFwg8CUI5XOudi4A?=
+ =?us-ascii?Q?3zD7lUEnhT1nPMS+hQjoGFSn7EEF9vQlltY9y6XS5142/Hpzd7dpVyab9JsF?=
+ =?us-ascii?Q?8a0cryS4hRguEDkJz9Izrl37JtGlx0/eB8TG2b/rM0w/S9enkuhycngrX2sb?=
+ =?us-ascii?Q?6EqFIxMLg/IuyG0dnH0IDpQ6eAFMYaHZz7Cn1imM46vgh48OK6YWu+4uWyJQ?=
+ =?us-ascii?Q?fiu6iuDVGDlwf8lcyjOPV18XVoi5i/OKyWeLfAW76fsHKKrPjwy/3G9lt7zD?=
+ =?us-ascii?Q?tZCc7+iM3sAnd+P8e/s1gfNf8WSrna/M4c2dqcgXljIVpGdH6SaTVCX5fRmr?=
+ =?us-ascii?Q?ZQOGJVjkTm1sFbE85lTHCUsu1TdgOXxz3M/pUshEDjST9NsxrRZ5LPJgbgxi?=
+ =?us-ascii?Q?baMWAAgvTmoAsR2/0VRUzJEcJ36au040eqtG0v09EvtO23/V7/e71Abx5pG4?=
+ =?us-ascii?Q?3vu70QqObYqOMrHkyxz0OJMTuuiEFjrKSezVNDGhI1VcCM0tY8S8Awe24N2e?=
+ =?us-ascii?Q?16jqOMDS1ncfzHIZi4cSaVbZNb/hoY0KUY6VSlIZ7/+pQWuWtpAWkutXaut0?=
+ =?us-ascii?Q?3l0JPkdlHAG1/qYxOFEdnJ53WzY97ETIC942RteRDGPqVeLbV5pGqlhl9CB0?=
+ =?us-ascii?Q?Sx9HypJAof3JbpwR5P/Y6rwPENCMyO5S4eApHW+7Q8tDr7+KljqaIz9dJFb7?=
+ =?us-ascii?Q?rT+zAofFA4JeZI9z0cMzlqi+U7pnaeuj5obwa7HrTBnHSBxUZ+VaU/bR2NxM?=
+ =?us-ascii?Q?ecFLAT1rtlIsJlqW3xy5Il6KBYhjj50OstAjrdBbx6GR5ZwOxoX2HGcq2Pj5?=
+ =?us-ascii?Q?LTKJIW+cZNxAbpF295E57gv9jY0SptM4L8LDwJYaUSrtYHVSEcMMxHGP4Cr9?=
+ =?us-ascii?Q?kg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1087160-f287-49f3-22cd-08dafe332330
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2023 17:48:01.6939
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gmGsVp55DAXbXq4VxqhWhM5Z0gwsyiCHvwAmqQLdO1lnIJlGmlv4TrPGy1N/jA6DDH4EQh4Qyv7M6oFlKfc+8JT2NOHaMuRLTn5ocPPER9A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB7026
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Il 23/01/23 17:38, Bernhard Rosenkränzer ha scritto:
-> From: Fabien Parent <fparent@baylibre.com>
-> 
-> This adds minimal support for the Mediatek 8365 SOC and the EVK reference
-> board, allowing the board to boot to initramfs with serial port I/O.
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> [bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
-> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> Tested-by: Kevin Hilman <khilman@baylibre.com>
-> ---
->   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->   arch/arm64/boot/dts/mediatek/mt8365-evk.dts | 169 +++++++++
->   arch/arm64/boot/dts/mediatek/mt8365.dtsi    | 378 ++++++++++++++++++++
->   3 files changed, 548 insertions(+)
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> 
+This patch adds a driver for NXP bluetooth chipsets.
+The driver is based on H4 protocol, and uses serdev
+APIs. It supports host to chip power save feature,
+which is signalled by the host by asserting break
+over UART TX lines, to put the chip into sleep state.
 
-..snip..
+To support this feature, break_ctl has also been
+added to serdev-tty along with a new serdev API
+serdev_device_break_ctl().
 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> new file mode 100644
-> index 0000000000000..04c666cab506a
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> @@ -0,0 +1,378 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * (C) 2018 MediaTek Inc.
-> + * Copyright (C) 2022 BayLibre SAS
-> + * Fabien Parent <fparent@baylibre.com>
-> + * Bernhard Rosenkränzer <bero@baylibre.com>
-> + */
-> +#include <dt-bindings/clock/mediatek,mt8365-clk.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/phy/phy.h>
-> +#include <dt-bindings/thermal/thermal.h>
+This driver is capable of downloading chip specific
+firmware, where user can either define the firmware
+file name in DTS file, or in the user-space config
+file. Each chip has a unique bootloader signature,
+and the driver is capable of selecting firmware file
+based on the signature received.
 
-thermal.h is unused... please remove it for now and add it back in a commit
-where you add the thermal node.
+The document specifying device tree bindings for
+this driver is also included in this patch series.
 
-Otherwise,
+Neeraj Sanjay Kale (3):
+  serdev: Add method to assert break
+  dt-bindings: net: bluetooth: Add NXP bluetooth support
+  Bluetooth: NXP: Add protocol support for NXP Bluetooth chipsets
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+ .../bindings/net/bluetooth/nxp-bluetooth.yaml |  45 +
+ MAINTAINERS                                   |   6 +
+ drivers/bluetooth/Kconfig                     |  11 +
+ drivers/bluetooth/Makefile                    |   1 +
+ drivers/bluetooth/btnxp.c                     | 947 ++++++++++++++++++
+ drivers/bluetooth/btnxp.h                     | 188 ++++
+ drivers/tty/serdev/core.c                     |  11 +
+ drivers/tty/serdev/serdev-ttyport.c           |  12 +
+ include/linux/serdev.h                        |   6 +
+ 9 files changed, 1227 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
+ create mode 100644 drivers/bluetooth/btnxp.c
+ create mode 100644 drivers/bluetooth/btnxp.h
 
+-- 
+2.34.1
 
