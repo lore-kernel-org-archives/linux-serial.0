@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E61AC54EAA
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 09:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47351C25B4E
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 09:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232981AbjAXJTx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S233208AbjAXJTx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 24 Jan 2023 04:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233205AbjAXJTr (ORCPT
+        with ESMTP id S233408AbjAXJTt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Jan 2023 04:19:47 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92183E087
-        for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2023 01:19:44 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id e19-20020a05600c439300b003db1cac0c1fso10852769wmn.5
-        for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2023 01:19:44 -0800 (PST)
+        Tue, 24 Jan 2023 04:19:49 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90A53C2B6
+        for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2023 01:19:48 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id q10-20020a1cf30a000000b003db0edfdb74so560574wmq.1
+        for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2023 01:19:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nb5CwN4fN4XTwRx3Tj+I+Ommhby0lGr2iuTrQcxIb/0=;
-        b=Erz+EhOmyjtVC8y8TD1tzEzfeEI+tUpI6auPlhOS+L8rFcrpspoGstb2EvkLgGuuAp
-         DpKD+EnP0qVzHF5BpeHg6bzd83CFhVrmFGWodo0QhT85JTbjUDY9rlI2F2q9CqFUqE8H
-         Mo/TmRVuwZRoWTTKcd5YrFHbXefcW6Vjg15ub+DUMbZ5/zXbGi+oynGVNw7VL8aiHpzk
-         yRUkxDf57i6EJjuOmrAQh0V5XQ3cJSG/q6lOFE89YcI0jNM4Yd9chTApm8BS3Tp2Lz0c
-         ytWEkYuRtJnN5GvA0nQYxCJPky8Tviyyop+mibt4vI/EKUDqf+YKvXMhb1EO2OGo3A4D
-         EEng==
+        bh=5uL5KX+lq7Bh76mZga/YGxKAjqZK+AdDiUOgEFy1RwQ=;
+        b=CqVtGiLsIQtBM5HC7e4JAs5ne7xOL0h7GAY2cRHqngOX6tAotoI4tdflCP332C9T1q
+         ebm2ELFU1+Ug/a1y0TeWu9aGwQiLKKnWDSIEmwUZRAghplQkjWEQxaYBf5Ey4BE2k4jJ
+         VK46ot2pwa00RBXGvfZYZg3SMXzA0Lh1pbW8jgf1rXVEeNuSnOQxiRAKaGRyvpkoNrei
+         OJxD/0sU9CSdaNJ+wGU8nRten2J4szDCSGuQdFgJyR2vdcLR496YmAH/kCqa87QhjOTP
+         DSyxz9sKiuG3/zXclPNhK65pMK0GXgVEoYgr0c13Sw0UIyWtsIz+fvqnELnsRql27WCf
+         Jpuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=nb5CwN4fN4XTwRx3Tj+I+Ommhby0lGr2iuTrQcxIb/0=;
-        b=Luli5axanKhayQ/3tqdfq6rJCx5qFZRcUT2ZWpArWiQXcU40X8l3vHNC1al0bfe/xx
-         TDau85D7GGuHoPbboDq5nwK/rICpLa67FWLw3v5+Ar3Rtd5VVoc3w9Ufk6nTHcqgjYsY
-         L8yaN9iw4fIE9FshNlpfHA/OXSgnFUC1rIc/p+bwPbFDALyvxkDo0EKEEVm3dHq4Ne9D
-         oxdcgk7WYdXe0DjZJUvrrNT+1fkwAz6nPr7ma+i7sYV67A6p/ODWjXlPxidNiFZMKvUP
-         ODszVXRM5XmWjh2mYFUes4VVMtp7tT2/cyu0RSnDS7b4psW0CjRTqOZzVQUtIAgj1X8O
-         OzVw==
-X-Gm-Message-State: AFqh2krCnTLBkD9BoqW9GrHPcclJUzbrMswBUql16CrckJnyPfPzeQqh
-        EBQ5cP2onaauO6ZBjaA1iaijFA==
-X-Google-Smtp-Source: AMrXdXtDAh7QFXNJKNHeXnVkYsOgnO5HNUP0pkqugffnYolM/QSylK27RP72alQg+Wi0pRiLhcw4xg==
-X-Received: by 2002:a05:600c:4928:b0:3da:909f:1f6b with SMTP id f40-20020a05600c492800b003da909f1f6bmr27413613wmp.1.1674551983490;
-        Tue, 24 Jan 2023 01:19:43 -0800 (PST)
+        bh=5uL5KX+lq7Bh76mZga/YGxKAjqZK+AdDiUOgEFy1RwQ=;
+        b=epvDOX/BiHYH7b8Fdkl5gGS10Sc+qo1+RBRS5rS2dVtNF0f48hZMJnaxAq+xPJkeMU
+         bJm2o167sACkZmGAC2l3mOMvO9vMFDEL4fBGmq1OGcltaK+T3QhBKSrQFFWm6w2uzR44
+         e2tQEMI0pkmQtm0XKdhZyJyrIWGeBo8SB7WG+OYK6+ntzvg+JguCQg/41lw0pn6cECDh
+         yjN6JsQsgwKhUA9WoFN6rdhR/8BhDDZyWtdDP+YOWXrqdv5Y7maPhPek0kCZPqKNKWCu
+         NaTqYXbjeQ/AI4U7IAshTkzaF14L1zEUrxtwgVTmz206cH04R5g0GdzX0DPIm+D9WHKL
+         UWOg==
+X-Gm-Message-State: AFqh2krKnLvgWK+dEODAiL8ZoEHoE+v7zmRZ8MC4GtQRi55TBk7yg1gB
+        HC/UM8HhBN1B+C5sYooVun/HQQ==
+X-Google-Smtp-Source: AMrXdXt6ZXjN2UR9CDMMCyR/xCneinHGOcEykSqybnBEASsnB1wxAPHlJm08OnK7Not9iguLyjZzVA==
+X-Received: by 2002:a1c:7216:0:b0:3cf:614e:b587 with SMTP id n22-20020a1c7216000000b003cf614eb587mr27496678wmc.26.1674551987275;
+        Tue, 24 Jan 2023 01:19:47 -0800 (PST)
 Received: from krzk-bin.. ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id i22-20020a05600c355600b003a84375d0d1sm13672242wmq.44.2023.01.24.01.19.40
+        by smtp.gmail.com with ESMTPSA id i22-20020a05600c355600b003a84375d0d1sm13672242wmq.44.2023.01.24.01.19.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 01:19:42 -0800 (PST)
+        Tue, 24 Jan 2023 01:19:46 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -83,9 +83,9 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-stm32@st-md-mailman.stormreply.com
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Michal Simek <michal.simek@amd.com>
-Subject: [PATCH v2 04/12] dt-bindings: serial: correct ref to serial.yaml
-Date:   Tue, 24 Jan 2023 10:19:08 +0100
-Message-Id: <20230124091916.45054-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 05/12] dt-bindings: serial: cdsn,uart: add power-domains
+Date:   Tue, 24 Jan 2023 10:19:09 +0100
+Message-Id: <20230124091916.45054-3-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org>
 References: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org>
@@ -95,47 +95,58 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The serial bindings should reference the local (in kernel) serial.yaml,
-not the /schemas/serial.yaml.  The latter comes from dtschema package
-and is a small subset of serial bindings.
+Few Xilinx DTS have power domains in serial node:
 
-Usage of the local serial.yaml allows typical properties and children:
-
-  xilinx/avnet-ultra96-rev1.dtb: serial@ff000000: Unevaluated properties are not allowed ('bluetooth' were unexpected)
+  zynqmp-zc1232-revA.dtb: serial@ff000000: Unevaluated properties are not allowed ('power-domains' was unexpected)
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Michal Simek <michal.simek@amd.com>
+Reviewed-by: Michal Simek <michal.simek@amd.com>
 ---
- Documentation/devicetree/bindings/serial/cdns,uart.yaml         | 2 +-
- Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/serial/cdns,uart.yaml   | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-index 876b8cf1cafb..0c118d5336cc 100644
+index 0c118d5336cc..38925b79cb38 100644
 --- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
 +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-@@ -10,7 +10,7 @@ maintainers:
+@@ -9,9 +9,6 @@ title: Cadence UART Controller
+ maintainers:
    - Michal Simek <michal.simek@xilinx.com>
  
- allOf:
--  - $ref: /schemas/serial.yaml#
-+  - $ref: serial.yaml#
- 
+-allOf:
+-  - $ref: serial.yaml#
+-
  properties:
    compatible:
-diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-index 2f4390e8d4e8..6f65e9a81c29 100644
---- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-+++ b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-@@ -63,7 +63,7 @@ required:
-   - xlnx,use-parity
+     oneOf:
+@@ -46,6 +43,9 @@ properties:
+       port does not use this pin.
+     type: boolean
  
- allOf:
--  - $ref: /schemas/serial.yaml#
++  power-domains:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -53,6 +53,17 @@ required:
+   - clocks
+   - clock-names
+ 
++allOf:
 +  - $ref: serial.yaml#
-   - if:
-       properties:
-         xlnx,use-parity:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: cdns,uart-r1p8
++    then:
++      properties:
++        power-domains: false
++
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
 2.34.1
 
