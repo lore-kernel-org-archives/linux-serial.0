@@ -2,94 +2,72 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76477C38142
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 10:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12966C54EAA
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 10:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbjAXKHH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Jan 2023 05:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
+        id S231772AbjAXKtT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Jan 2023 05:49:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229965AbjAXKHG (ORCPT
+        with ESMTP id S232771AbjAXKtK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Jan 2023 05:07:06 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5FC12F30;
-        Tue, 24 Jan 2023 02:07:03 -0800 (PST)
-Received: from [192.168.1.141] ([37.4.248.41]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MmD6U-1otgns42Vs-00i8Qx; Tue, 24 Jan 2023 11:06:29 +0100
-Message-ID: <45528830-d59a-4c8b-5b76-2e683c2c6964@i2se.com>
-Date:   Tue, 24 Jan 2023 11:06:25 +0100
+        Tue, 24 Jan 2023 05:49:10 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBB743933;
+        Tue, 24 Jan 2023 02:48:54 -0800 (PST)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9D27D6602E2A;
+        Tue, 24 Jan 2023 10:48:45 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1674557326;
+        bh=PWy/mEzY0rNRWO0R+jYtZffvemYuPS5FyuIJAM/aPmE=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=gBInqdT/EkDYIbquG+ZogkCItyYpL29Igf2pyntw/Nm9EUxi2vafnqP4x4eW0Mftg
+         5uOV4Didt65zhd5IVGhGIGSXGAHDd23uIn84Z3NYB+QOG09c3RdnR7dGrCnAKTkrGO
+         K65XlclnCWoxZnBLW+eHn7YMqbp4Tw03DYW4KKpCx4j1ZLAC4FBtS8q3RCjNGWS4Xb
+         wHrQ1tOgMADlaCVhIM6YD1Y9tkeikvhlL3SxK1CTUKJrK9JEOOiV3mvQT6SpOes7hJ
+         ybgR5a2TykPoTNhjkx3b3vT8VMNRp+dP9W7jDs/p9/ztJ/8PhxEuwwV9P2Rjf4uqaW
+         z3H9dnsDXqf1g==
+Message-ID: <c0c8fdad-a576-7ac5-f6c3-465a1b9392e6@collabora.com>
+Date:   Tue, 24 Jan 2023 11:48:41 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 03/12] dt-bindings: serial: pl011: allow ARM Primecell
- properties
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Chester Lin <clin@suse.com>, Fugang Duan <fugang.duan@nxp.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Pragnesh Patel <pragnesh.patel@sifive.com>,
-        Le Ray <erwan.leray@foss.st.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-References: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org>
- <20230124091916.45054-1-krzysztof.kozlowski@linaro.org>
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v8 8/9] dt-bindings: serial: mediatek,uart: add MT8365 SoC
+ bindings
+To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
+        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
+        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
+        daniel.lezcano@linaro.org, chunfeng.yun@mediatek.com,
+        allen-kh.cheng@mediatek.com, nfraprado@collabora.com,
+        andrew@lunn.ch, gtk3@inbox.ru, sean.wang@mediatek.com,
+        zhiyong.tao@mediatek.com
+References: <20230123163833.1007181-1-bero@baylibre.com>
+ <20230123163833.1007181-9-bero@baylibre.com>
 Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <20230124091916.45054-1-krzysztof.kozlowski@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230123163833.1007181-9-bero@baylibre.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:93ulo0PlqXqG5/52B3bZ3mfpX/fbI2HdhNtc3AuLxgKQl2dxSyA
- /kJkZ7NeRKreYzG5ax4gsYEQSTwH8yygbh7vEtHYYFwTpBZPdev84Mx3OJaAU1mPR2u2MKv
- vnOjns7+asiWML/aEgPvFrMy3n7cCAB7qWD90wKMTlXMsTG2OvRrP0vJoFgY7ANNIySelYu
- fM48s9RMBQWREZhb7cuBQ==
-UI-OutboundReport: notjunk:1;M01:P0:VczEPCxySYQ=;U0Lzc/tH6qc3i8FdF6E0O/w2p33
- Rf11TjOB+akTwm0k3YDF/CofSRH8x/BDseAI/U/Tn594gBt0St1mGo09JEYietjXutJGqAa38
- zaL10VqH0zF7IKZzZ5Z1m08FP08Hku7dGolSylwNAaZ2y1rLGrHYqFyc+M37tlOd4V/KYz/s/
- yPTfVxC1z8FodPfbMSQcVSl+rUIPp/vGCjgLT/ut4XDlL6w+TK7v/HFgJl0sHHVNaieHwS1Ea
- b4NV0O0fSO7293v0aENxUFLcK06FbqeaifKcoESN4aA8zQAFHfrYcQMOIEW282GMu10cwpWFd
- AdBAUt1TOyQGva+5yTnreOJjQuxcR5RsWNwO6OIj7FVzwe8OYZpcfvtzWiyAQPvaNDlZTFXOZ
- 4x9WSxOjyQMQo1PyKhAUMTtuQx85DunFFoRMThVzMM/6QUENiZuW9Rcd3PeP5Vnc/bgLd6rbl
- H4jigRxjDGgJuKqrKb5GnE23xpYOgwb8v4NX72tbbq/9P/kyvziwUZFOyeN/pDyt7VDJDlByy
- jZKE/3ERTx1japcd0XrLKLJAhUfA2UrgguOdT1zBQZpe7Nu3Xsa0vJSz07Orp1L8GV41dZTOk
- 57XR3M44hao1bm5JYn6UzhqkyhT70Zi3Iy8m3UNpsTcXFBzpT8t7SEoIryrsEG4qXm0djOnTI
- h58bXWDP2g/fsSCP4wz1Hu2KLbYyzj7GsP1bgbwh9Q==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am 24.01.23 um 10:19 schrieb Krzysztof Kozlowski:
-> Reference ARM Primecell bindings to allow typical Primecell device node properties:
->
->    broadcom/bcm2711-rpi-400.dtb: serial@7e201000: Unevaluated properties are not allowed ('arm,primecell-periphid' was unexpected)
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Il 23/01/23 17:38, Bernhard Rosenkränzer ha scritto:
+> Add binding description for mediatek,mt8365-uart
+> 
+> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
 
-Reviewed-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Thanks
 
