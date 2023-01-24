@@ -2,129 +2,143 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58184C25B50
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Jan 2023 23:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A529FC54EB4
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 02:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbjAWXFq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Jan 2023 18:05:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        id S231163AbjAXCJH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 Jan 2023 21:09:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbjAWXFo (ORCPT
+        with ESMTP id S229956AbjAXCJG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Jan 2023 18:05:44 -0500
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D568E195;
-        Mon, 23 Jan 2023 15:05:42 -0800 (PST)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-15085b8a2f7so15831711fac.2;
-        Mon, 23 Jan 2023 15:05:42 -0800 (PST)
+        Mon, 23 Jan 2023 21:09:06 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC306301B6;
+        Mon, 23 Jan 2023 18:09:01 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id h5-20020a17090a9c0500b0022bb85eb35dso8298779pjp.3;
+        Mon, 23 Jan 2023 18:09:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cDOI66t0q/oP7E/pKikemgOCe2s0l8GcG5GBgKQtNXE=;
+        b=fLS/Ec7hGZGwOF2csyyx7asmruxOhiKoolimG+J143sZaS3Dd9SI4B9Y+jRI/smyYM
+         7FTlvkrIihPwyL7KIhzRT5OmgwHmi0Ol2iPA72h6Ac6DsOK1n/8kUnfY/qv8dbaNArwt
+         K1LO71u0KJukhXLFhDqCcDJwxbkCfiCGzz1tJMsxGcxkZuw3dzWO97kbGLpt6gaPPWZY
+         IRrhV3aMPdfIa8kKQ4ii62OGb3odO2SvVHrnM5xrTO2zdYFb2LZ3H1FsdkinNkyqZesb
+         lDxkTRPtaLQidsvcONDyXXRDLab+zGkI36MC73q5SudTjGFm8sOUj90aitBwQfeeZR/q
+         F7ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=5K+QwMf3q1ON3JuiG+9OW2PVcrwMBDaRZk0RWszHFjI=;
-        b=5PUsjfWGiHp83fuOT3YG8x70/wiNbwX3eMg/RohK5wf54JkVheCe9eWrU6h8LFW31b
-         w2ZjL6VIIBmNh+51en7wdk/GyiA8mozur1O2GTJ6jeIFQmVoQKFvSrD0rgqZxBlxN+yH
-         VMsW0Sb3G3UJtlgxRe6Aoz03PuTjcRP4uIVZzBQfUbicH/5bZyZDLFOS73z8aiWaPMP1
-         BPd1tAvpwHR1k5xaZ8wGxgFPKOaF4OBiAqh23B2WcMgdOwud4BPWF1BYmRzFoByLQTwy
-         8/JS9Z/bt4OFsgy9deCbfYvrOeRF6kDQStaxU7qGdA+cAOrwFQyJyYpp5XKLjIBNGDYq
-         hXeQ==
-X-Gm-Message-State: AO0yUKWURauJMKSO51nf2pyNpgXvKPOfb/hFcYfLT8atogcf3+3wUgjM
-        VSboe3L8SGxQOuEwoWLBWA==
-X-Google-Smtp-Source: AK7set/h7sr6uhQW/0sGu9o6CylIQ3HnC2k/IV6qUD9neLaJawnkv+Apgu0382wuFxmdnJG73B65tg==
-X-Received: by 2002:a05:6870:ea93:b0:160:346c:dd97 with SMTP id s19-20020a056870ea9300b00160346cdd97mr1085832oap.24.1674515142027;
-        Mon, 23 Jan 2023 15:05:42 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r141-20020a4a3793000000b0050dc3c2f77asm104345oor.8.2023.01.23.15.05.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 15:05:41 -0800 (PST)
-Received: (nullmailer pid 2813085 invoked by uid 1000);
-        Mon, 23 Jan 2023 23:05:40 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cDOI66t0q/oP7E/pKikemgOCe2s0l8GcG5GBgKQtNXE=;
+        b=FZ7XNzT61TIPkr3duHalZfDLBc1Kk+DK6bF6+ZEFmTsqb+Ebj/GzFrQh91n1jLxf+d
+         CqtrAdjDlYSjachc7FfdDYtwYijSnSIcAMkexuVm+UUFJsCcpW244XxgXkn5V65pkzSC
+         yDjWs8S4LutQ9f8KFVuuXs6FZbcEl/Cmuslzye6HQUpqglWUYEx7gVcDroFbCqu28UoE
+         lxcv2mZmK+M6SLFsCATxeimhFxEzyEr/+MriwWfoFnMna2w+iSCbhvLitY3wdmg21/e0
+         j3xbhuWXwyowikN2jpONemyJd0qZ96WbSPNC+semWhfnqO90/+L4L63uULDL4rP3XIZS
+         anfQ==
+X-Gm-Message-State: AFqh2ko5qUW6TsBv1mh/tED2uU5gU2F92TGtTnOskOLu/WmdGPcD8lKk
+        2Qmg9EIJkIwZlVuWeMSjJT0=
+X-Google-Smtp-Source: AMrXdXvg/EPy6kakIOxMYkNEGMjnT9H8lLzdCwftb8iaw8taUrONL/r/vPS4ux4xrk13uYltzaEQhA==
+X-Received: by 2002:a17:902:7881:b0:192:bb38:c412 with SMTP id q1-20020a170902788100b00192bb38c412mr26040498pll.44.1674526141197;
+        Mon, 23 Jan 2023 18:09:01 -0800 (PST)
+Received: from [192.168.43.80] (subs02-180-214-232-19.three.co.id. [180.214.232.19])
+        by smtp.gmail.com with ESMTPSA id y7-20020a170902d64700b001929568afe9sm346624plh.306.2023.01.23.18.08.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Jan 2023 18:09:00 -0800 (PST)
+Message-ID: <679a3bed-e3fc-832e-8e5a-e6bca638ad26@gmail.com>
+Date:   Tue, 24 Jan 2023 09:08:49 +0700
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, - <devicetree@vger.kernel.org>,
-        linux-riscv@lists.infradead.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Chester Lin <clin@suse.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-kernel@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 00/15] Ambarella S6LM SoC bring-up
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>, Li Chen <lchen@ambarella.com>
+Cc:     =?UTF-8?Q?Andreas_B=c3=b6hler?= <dev@aboehler.at>,
+        Brian Norris <briannorris@chromium.org>,
+        Chris Morgan <macromorgan@hotmail.com>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        "Conor.Dooley" <conor.dooley@microchip.com>,
+        Daniel Palmer <daniel@0x0f.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Le Ray <erwan.leray@foss.st.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Pragnesh Patel <pragnesh.patel@sifive.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-amlogic@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20230123151302.368277-11-krzysztof.kozlowski@linaro.org>
-References: <20230123151302.368277-1-krzysztof.kozlowski@linaro.org>
- <20230123151302.368277-11-krzysztof.kozlowski@linaro.org>
-Message-Id: <167451486467.2795286.1299932821783618559.robh@kernel.org>
-Subject: Re: [PATCH 11/13] dt-bindings: serial: restrict possible child node names
-Date:   Mon, 23 Jan 2023 17:05:40 -0600
+        Guenter Roeck <linux@roeck-us.net>,
+        =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Liang Yang <liang.yang@amlogic.com>,
+        Li Chen <lchen@ambarella.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" 
+        <linux-mtd@lists.infradead.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Rickard x Andersson <rickaran@axis.com>,
+        Rob Herring <robh@kernel.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Yinbo Zhu <zhuyinbo@loongson.cn>
+References: <20230123073305.149940-1-lchen@ambarella.com>
+ <a69a5ffc-0820-4adc-9ac4-f827ebf66cf0@app.fastmail.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <a69a5ffc-0820-4adc-9ac4-f827ebf66cf0@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-On Mon, 23 Jan 2023 16:13:00 +0100, Krzysztof Kozlowski wrote:
-> The re-usable serial.yaml schema matches every property with ".*"
-> pattern, thus any other schema referencing it will not report unknown
-> (unevaluated) properties.  This hides several wrong properties.  It is
-> a limitation of dtschema, thus provide a simple workaround: expect
-> children to be only of few names matching upstream usage (Bluetooth,
-> GNSS, GPS and MCU).
+On 1/23/23 15:39, Arnd Bergmann wrote:
+> I seem to only have part of the series, please add both me and
+> the linux-arm-kernel mailing list to each part of the initial
+> submission.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/serial/serial.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+> It's possible that some patches were already Cc'd to
+> linux-arm-kernel but did not make it through because the Cc list
+> was too long (it has to fit within 1024 characters for many lists).
+> I think you too the Cc list from get_maintainers.pl, but when
+> sending new drivers this does not work well because it picks
+> up everyone that recently touched the Makefile/Kconfig.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Hi Arnd,
 
-yamllint warnings/errors:
+It is possible (and common) that people who recently touched these
+files, when given new drivers patches, aren't interested in reviewing
+them for many reasons.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/bus/intel,ixp4xx-expansion-bus-controller.example.dtb: serial@1,0: Unevaluated properties are not allowed ('intel,ixp4xx-eb-byte-access', 'intel,ixp4xx-eb-cycle-type', 'intel,ixp4xx-eb-t3', 'intel,ixp4xx-eb-write-enable' were unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/8250.yaml
+In that case, you may want to see Alison's trick posted on kernel
+outreachy list [1]. In summary, pass `--no-gitfallback` (don't give
+addresses of recent commit authors) and `--norolestats` (only name and
+email are printed; MLs don't get open list:-generated names). Also,
+another trick that I use is to condense the list by passing
+`--separator , ` so that it can be easily copy-pasted to
+git-send-email(1).
 
-doc reference errors (make refcheckdocs):
+Thanks.
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230123151302.368277-11-krzysztof.kozlowski@linaro.org
+[1]: https://lore.kernel.org/outreachy/20211015171331.GA431883@alison-desk/
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+-- 
+An old man doll... just what I always wanted! - Clara
 
