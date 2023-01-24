@@ -2,56 +2,31 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A314AC38142
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 09:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76477C38142
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Jan 2023 10:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbjAXJUw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Jan 2023 04:20:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        id S232978AbjAXKHH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Jan 2023 05:07:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233522AbjAXJUd (ORCPT
+        with ESMTP id S229965AbjAXKHG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Jan 2023 04:20:33 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5752941B46
-        for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2023 01:20:12 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id f19-20020a1c6a13000000b003db0ef4dedcso12335046wmc.4
-        for <linux-serial@vger.kernel.org>; Tue, 24 Jan 2023 01:20:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8ewopPFbg8lqGUnYqrIszF3Y9URN/YZNP6/Pco8hxa4=;
-        b=nVAyNq7IlPgNvvVVRS4p/0qgwBnQczGH8HVrJSQ7NfxO92fzYUnhoI1GzFgrtgzV+V
-         ZtTIHRF+d55RWOsXyvKFnya8EuQSagaPgG6Kx+8WD5f9KYOZ+C//4ivU0z43NApCuXeu
-         GGS87XEazvbYzV8+de9Q0sOoYxJ1D1MWwVaFiO8bsgJs39U0+JH67MHCQL8uj3daoUyL
-         ysv1qbeEkC82k+Kv50725n9wmm+PIm0+rRYXeNSXT0P5iEA2TBwn84Kcc9fbGGgj7iix
-         25fnnWMt+CkvVfz+wRcX+fOF/TLiGDVQZlvm4z5ORC15/YwOqdH6Qt5w4tRCXzBQ5mUZ
-         KAtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8ewopPFbg8lqGUnYqrIszF3Y9URN/YZNP6/Pco8hxa4=;
-        b=hDU8M20kpQsHUOT6MySAeJu6W7MkGnVLo+puXBILc5CMr3Sz3bBfXaqTCqYi2Ux0nJ
-         mBwcg+Y4ENCLfqDgLZAVNFETrix8KGGnem7gQskG/uXPSvV6kk/VMQ6YijEn9Lq4GR0z
-         AubR22R3YcxXc2BduC35Th6Qg2mG8JmftGYd3DntEki3PQHRA4JoEJiCNAlZAzqqQN3E
-         2b1p452cE/FRF45fHRZPVGiaz2vi/ZMafnwkVzD7sWp1tI/R2VtxZ5Rh4FQ22lGd6VPi
-         hheqPq8iFEzHDw/4VAIOMWUjN+/lfM34eb+RTo4fsMZiIob9diEF1IjtUYfHugcc1nUB
-         Uavw==
-X-Gm-Message-State: AFqh2kqYoRRNxEiQz5cW1qD8fLW5iU5yCXA8WUUZQAORa9aKeeHoD2OB
-        kpxoGHAgMuRJCbqGc681bX/zkg==
-X-Google-Smtp-Source: AMrXdXtHFdcqIZjtMTuVw/LpM136oty57IzZ7DREQ3Ar2E2pC7pPdCH/Dp/vKzCKoYwubiXGz2w4Zw==
-X-Received: by 2002:a05:600c:5390:b0:3d9:a145:4d1a with SMTP id hg16-20020a05600c539000b003d9a1454d1amr24023366wmb.34.1674552011719;
-        Tue, 24 Jan 2023 01:20:11 -0800 (PST)
-Received: from krzk-bin.. ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id i22-20020a05600c355600b003a84375d0d1sm13672242wmq.44.2023.01.24.01.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 01:20:11 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 24 Jan 2023 05:07:06 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5FC12F30;
+        Tue, 24 Jan 2023 02:07:03 -0800 (PST)
+Received: from [192.168.1.141] ([37.4.248.41]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MmD6U-1otgns42Vs-00i8Qx; Tue, 24 Jan 2023 11:06:29 +0100
+Message-ID: <45528830-d59a-4c8b-5b76-2e683c2c6964@i2se.com>
+Date:   Tue, 24 Jan 2023 11:06:25 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 03/12] dt-bindings: serial: pl011: allow ARM Primecell
+ properties
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Neil Armstrong <neil.armstrong@linaro.org>,
@@ -81,354 +56,40 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 12/12] dt-bindings: serial: example cleanup
-Date:   Tue, 24 Jan 2023 10:19:16 +0100
-Message-Id: <20230124091916.45054-10-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org>
 References: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+ <20230124091916.45054-1-krzysztof.kozlowski@linaro.org>
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20230124091916.45054-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:93ulo0PlqXqG5/52B3bZ3mfpX/fbI2HdhNtc3AuLxgKQl2dxSyA
+ /kJkZ7NeRKreYzG5ax4gsYEQSTwH8yygbh7vEtHYYFwTpBZPdev84Mx3OJaAU1mPR2u2MKv
+ vnOjns7+asiWML/aEgPvFrMy3n7cCAB7qWD90wKMTlXMsTG2OvRrP0vJoFgY7ANNIySelYu
+ fM48s9RMBQWREZhb7cuBQ==
+UI-OutboundReport: notjunk:1;M01:P0:VczEPCxySYQ=;U0Lzc/tH6qc3i8FdF6E0O/w2p33
+ Rf11TjOB+akTwm0k3YDF/CofSRH8x/BDseAI/U/Tn594gBt0St1mGo09JEYietjXutJGqAa38
+ zaL10VqH0zF7IKZzZ5Z1m08FP08Hku7dGolSylwNAaZ2y1rLGrHYqFyc+M37tlOd4V/KYz/s/
+ yPTfVxC1z8FodPfbMSQcVSl+rUIPp/vGCjgLT/ut4XDlL6w+TK7v/HFgJl0sHHVNaieHwS1Ea
+ b4NV0O0fSO7293v0aENxUFLcK06FbqeaifKcoESN4aA8zQAFHfrYcQMOIEW282GMu10cwpWFd
+ AdBAUt1TOyQGva+5yTnreOJjQuxcR5RsWNwO6OIj7FVzwe8OYZpcfvtzWiyAQPvaNDlZTFXOZ
+ 4x9WSxOjyQMQo1PyKhAUMTtuQx85DunFFoRMThVzMM/6QUENiZuW9Rcd3PeP5Vnc/bgLd6rbl
+ H4jigRxjDGgJuKqrKb5GnE23xpYOgwb8v4NX72tbbq/9P/kyvziwUZFOyeN/pDyt7VDJDlByy
+ jZKE/3ERTx1japcd0XrLKLJAhUfA2UrgguOdT1zBQZpe7Nu3Xsa0vJSz07Orp1L8GV41dZTOk
+ 57XR3M44hao1bm5JYn6UzhqkyhT70Zi3Iy8m3UNpsTcXFBzpT8t7SEoIryrsEG4qXm0djOnTI
+ h58bXWDP2g/fsSCP4wz1Hu2KLbYyzj7GsP1bgbwh9Q==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Adjust example DTS indentation to match recommended style of 4-spaces
-and use lower-case hex for address in reg.  No functional change.
+Am 24.01.23 um 10:19 schrieb Krzysztof Kozlowski:
+> Reference ARM Primecell bindings to allow typical Primecell device node properties:
+>
+>    broadcom/bcm2711-rpi-400.dtb: serial@7e201000: Unevaluated properties are not allowed ('arm,primecell-periphid' was unexpected)
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/serial/8250_omap.yaml | 18 ++++++-------
- .../bindings/serial/amlogic,meson-uart.yaml   | 10 +++----
- .../devicetree/bindings/serial/cdns,uart.yaml | 10 +++----
- .../bindings/serial/renesas,em-uart.yaml      | 10 +++----
- .../bindings/serial/renesas,hscif.yaml        | 26 +++++++++----------
- .../bindings/serial/renesas,sci.yaml          | 24 ++++++++---------
- .../bindings/serial/renesas,scif.yaml         | 24 ++++++++---------
- .../bindings/serial/renesas,scifa.yaml        | 22 ++++++++--------
- .../bindings/serial/renesas,scifb.yaml        | 12 ++++-----
- .../devicetree/bindings/serial/serial.yaml    | 18 ++++++-------
- .../bindings/serial/sifive-serial.yaml        |  6 ++---
- .../bindings/serial/xlnx,opb-uartlite.yaml    |  4 +--
- 12 files changed, 92 insertions(+), 92 deletions(-)
+Reviewed-by: Stefan Wahren <stefan.wahren@i2se.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-index 7db8e5477b03..eb3488d8f9ee 100644
---- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-@@ -104,12 +104,12 @@ else:
- 
- examples:
-   - |
--          serial@49042000 {
--            compatible = "ti,omap3-uart";
--            reg = <0x49042000 0x400>;
--            interrupts = <80>;
--            dmas = <&sdma 81 &sdma 82>;
--            dma-names = "tx", "rx";
--            ti,hwmods = "uart4";
--            clock-frequency = <48000000>;
--          };
-+    serial@49042000 {
-+        compatible = "ti,omap3-uart";
-+        reg = <0x49042000 0x400>;
-+        interrupts = <80>;
-+        dmas = <&sdma 81 &sdma 82>;
-+        dma-names = "tx", "rx";
-+        ti,hwmods = "uart4";
-+        clock-frequency = <48000000>;
-+    };
-diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-index 44cb3cf22bfb..3cbdde85ed71 100644
---- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-@@ -77,9 +77,9 @@ unevaluatedProperties: false
- examples:
-   - |
-     serial@84c0 {
--          compatible = "amlogic,meson-gx-uart";
--          reg = <0x84c0 0x14>;
--          interrupts = <26>;
--          clocks = <&xtal>, <&pclk>, <&xtal>;
--          clock-names = "xtal", "pclk", "baud";
-+        compatible = "amlogic,meson-gx-uart";
-+        reg = <0x84c0 0x14>;
-+        interrupts = <26>;
-+        clocks = <&xtal>, <&pclk>, <&xtal>;
-+        clock-names = "xtal", "pclk", "baud";
-     };
-diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-index 38925b79cb38..a8b323d7bf94 100644
---- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-@@ -69,9 +69,9 @@ unevaluatedProperties: false
- examples:
-   - |
-     uart0: serial@e0000000 {
--      compatible = "xlnx,xuartps", "cdns,uart-r1p8";
--      clocks = <&clkc 23>, <&clkc 40>;
--      clock-names = "uart_clk", "pclk";
--      reg = <0xE0000000 0x1000>;
--      interrupts = <0 27 4>;
-+        compatible = "xlnx,xuartps", "cdns,uart-r1p8";
-+        clocks = <&clkc 23>, <&clkc 40>;
-+        clock-names = "uart_clk", "pclk";
-+        reg = <0xe0000000 0x1000>;
-+        interrupts = <0 27 4>;
-     };
-diff --git a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-index b25aca733b72..12d0fa34f9f9 100644
---- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-@@ -66,9 +66,9 @@ examples:
-   - |
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
-     uart0: serial@e1020000 {
--            compatible = "renesas,em-uart";
--            reg = <0xe1020000 0x38>;
--            interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
--            clocks = <&usia_u0_sclk>;
--            clock-names = "sclk";
-+        compatible = "renesas,em-uart";
-+        reg = <0xe1020000 0x38>;
-+        interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&usia_u0_sclk>;
-+        clock-names = "sclk";
-     };
-diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-index 1957b9d782e8..afedb6edfc34 100644
---- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-@@ -131,20 +131,20 @@ examples:
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
-     #include <dt-bindings/power/r8a7795-sysc.h>
-     aliases {
--            serial1 = &hscif1;
-+        serial1 = &hscif1;
-     };
- 
-     hscif1: serial@e6550000 {
--            compatible = "renesas,hscif-r8a7795", "renesas,rcar-gen3-hscif",
--                         "renesas,hscif";
--            reg = <0xe6550000 96>;
--            interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
--            clocks = <&cpg CPG_MOD 519>, <&cpg CPG_CORE R8A7795_CLK_S3D1>,
--                     <&scif_clk>;
--            clock-names = "fck", "brg_int", "scif_clk";
--            dmas = <&dmac1 0x33>, <&dmac1 0x32>, <&dmac2 0x33>, <&dmac2 0x32>;
--            dma-names = "tx", "rx", "tx", "rx";
--            power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
--            resets = <&cpg 519>;
--            uart-has-rtscts;
-+        compatible = "renesas,hscif-r8a7795", "renesas,rcar-gen3-hscif",
-+                     "renesas,hscif";
-+        reg = <0xe6550000 96>;
-+        interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&cpg CPG_MOD 519>, <&cpg CPG_CORE R8A7795_CLK_S3D1>,
-+                 <&scif_clk>;
-+        clock-names = "fck", "brg_int", "scif_clk";
-+        dmas = <&dmac1 0x33>, <&dmac1 0x32>, <&dmac2 0x33>, <&dmac2 0x32>;
-+        dma-names = "tx", "rx", "tx", "rx";
-+        power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
-+        resets = <&cpg 519>;
-+        uart-has-rtscts;
-     };
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-index bf7708a7a2c0..dc445b327e0b 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-@@ -91,19 +91,19 @@ examples:
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
- 
-     aliases {
--            serial0 = &sci0;
-+        serial0 = &sci0;
-     };
- 
-     sci0: serial@1004d000 {
--            compatible = "renesas,r9a07g044-sci", "renesas,sci";
--            reg = <0x1004d000 0x400>;
--            interrupts = <GIC_SPI 405 IRQ_TYPE_LEVEL_HIGH>,
--                         <GIC_SPI 406 IRQ_TYPE_LEVEL_HIGH>,
--                         <GIC_SPI 407 IRQ_TYPE_LEVEL_HIGH>,
--                         <GIC_SPI 408 IRQ_TYPE_LEVEL_HIGH>;
--            interrupt-names = "eri", "rxi", "txi", "tei";
--            clocks = <&cpg CPG_MOD R9A07G044_SCI0_CLKP>;
--            clock-names = "fck";
--            power-domains = <&cpg>;
--            resets = <&cpg R9A07G044_SCI0_RST>;
-+        compatible = "renesas,r9a07g044-sci", "renesas,sci";
-+        reg = <0x1004d000 0x400>;
-+        interrupts = <GIC_SPI 405 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 406 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 407 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 408 IRQ_TYPE_LEVEL_HIGH>;
-+        interrupt-names = "eri", "rxi", "txi", "tei";
-+        clocks = <&cpg CPG_MOD R9A07G044_SCI0_CLKP>;
-+        clock-names = "fck";
-+        power-domains = <&cpg>;
-+        resets = <&cpg R9A07G044_SCI0_RST>;
-     };
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index f81f2d67a1ed..1989bd67d04e 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -180,19 +180,19 @@ examples:
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
-     #include <dt-bindings/power/r8a7791-sysc.h>
-     aliases {
--            serial0 = &scif0;
-+        serial0 = &scif0;
-     };
- 
-     scif0: serial@e6e60000 {
--            compatible = "renesas,scif-r8a7791", "renesas,rcar-gen2-scif",
--                         "renesas,scif";
--            reg = <0xe6e60000 64>;
--            interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>;
--            clocks = <&cpg CPG_MOD 721>, <&cpg CPG_CORE R8A7791_CLK_ZS>,
--                     <&scif_clk>;
--            clock-names = "fck", "brg_int", "scif_clk";
--            dmas = <&dmac0 0x29>, <&dmac0 0x2a>, <&dmac1 0x29>, <&dmac1 0x2a>;
--            dma-names = "tx", "rx", "tx", "rx";
--            power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
--            resets = <&cpg 721>;
-+        compatible = "renesas,scif-r8a7791", "renesas,rcar-gen2-scif",
-+                     "renesas,scif";
-+        reg = <0xe6e60000 64>;
-+        interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&cpg CPG_MOD 721>, <&cpg CPG_CORE R8A7791_CLK_ZS>,
-+                 <&scif_clk>;
-+        clock-names = "fck", "brg_int", "scif_clk";
-+        dmas = <&dmac0 0x29>, <&dmac0 0x2a>, <&dmac1 0x29>, <&dmac1 0x2a>;
-+        dma-names = "tx", "rx", "tx", "rx";
-+        power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
-+        resets = <&cpg 721>;
-     };
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-index 3c67d3202e1b..4c3b5e7270da 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-@@ -95,18 +95,18 @@ examples:
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
-     #include <dt-bindings/power/r8a7790-sysc.h>
-     aliases {
--            serial0 = &scifa0;
-+        serial0 = &scifa0;
-     };
- 
-     scifa0: serial@e6c40000 {
--            compatible = "renesas,scifa-r8a7790", "renesas,rcar-gen2-scifa",
--                         "renesas,scifa";
--            reg = <0xe6c40000 64>;
--            interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
--            clocks = <&cpg CPG_MOD 204>;
--            clock-names = "fck";
--            power-domains = <&sysc R8A7790_PD_ALWAYS_ON>;
--            resets = <&cpg 204>;
--            dmas = <&dmac0 0x21>, <&dmac0 0x22>, <&dmac1 0x21>, <&dmac1 0x22>;
--            dma-names = "tx", "rx", "tx", "rx";
-+        compatible = "renesas,scifa-r8a7790", "renesas,rcar-gen2-scifa",
-+                     "renesas,scifa";
-+        reg = <0xe6c40000 64>;
-+        interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&cpg CPG_MOD 204>;
-+        clock-names = "fck";
-+        power-domains = <&sysc R8A7790_PD_ALWAYS_ON>;
-+        resets = <&cpg 204>;
-+        dmas = <&dmac0 0x21>, <&dmac0 0x22>, <&dmac1 0x21>, <&dmac1 0x22>;
-+        dma-names = "tx", "rx", "tx", "rx";
-     };
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-index d5571c7a4424..2f7cbbb48960 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-@@ -94,10 +94,10 @@ examples:
-     #include <dt-bindings/clock/r8a7740-clock.h>
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
-     scifb: serial@e6c30000 {
--            compatible = "renesas,scifb-r8a7740", "renesas,scifb";
--            reg = <0xe6c30000 0x100>;
--            interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
--            clocks = <&mstp2_clks R8A7740_CLK_SCIFB>;
--            clock-names = "fck";
--            power-domains = <&pd_a3sp>;
-+        compatible = "renesas,scifb-r8a7740", "renesas,scifb";
-+        reg = <0xe6c30000 0x100>;
-+        interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&mstp2_clks R8A7740_CLK_SCIFB>;
-+        clock-names = "fck";
-+        power-domains = <&pd_a3sp>;
-     };
-diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
-index 11e822bf09e2..e05ad3ac2abc 100644
---- a/Documentation/devicetree/bindings/serial/serial.yaml
-+++ b/Documentation/devicetree/bindings/serial/serial.yaml
-@@ -141,13 +141,13 @@ additionalProperties: true
- examples:
-   - |
-     serial@1234 {
--            compatible = "ns16550a";
--            reg = <0x1234 0x20>;
--            interrupts = <1>;
--
--            bluetooth {
--                    compatible = "brcm,bcm4330-bt";
--                    interrupt-parent = <&gpio>;
--                    interrupts = <10>;
--            };
-+        compatible = "ns16550a";
-+        reg = <0x1234 0x20>;
-+        interrupts = <1>;
-+
-+        bluetooth {
-+            compatible = "brcm,bcm4330-bt";
-+            interrupt-parent = <&gpio>;
-+            interrupts = <10>;
-+        };
-     };
-diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.yaml b/Documentation/devicetree/bindings/serial/sifive-serial.yaml
-index b0a8871e3641..b0df1cac4968 100644
---- a/Documentation/devicetree/bindings/serial/sifive-serial.yaml
-+++ b/Documentation/devicetree/bindings/serial/sifive-serial.yaml
-@@ -53,13 +53,13 @@ unevaluatedProperties: false
- 
- examples:
-   - |
--      #include <dt-bindings/clock/sifive-fu540-prci.h>
--      serial@10010000 {
-+    #include <dt-bindings/clock/sifive-fu540-prci.h>
-+    serial@10010000 {
-         compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-         interrupt-parent = <&plic0>;
-         interrupts = <80>;
-         reg = <0x10010000 0x1000>;
-         clocks = <&prci FU540_PRCI_CLK_TLCLK>;
--      };
-+    };
- 
- ...
-diff --git a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-index 6f65e9a81c29..08dcb275d8e2 100644
---- a/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-+++ b/Documentation/devicetree/bindings/serial/xlnx,opb-uartlite.yaml
-@@ -76,7 +76,7 @@ unevaluatedProperties: false
- 
- examples:
-   - |
--      serial@800c0000 {
-+    serial@800c0000 {
-         compatible = "xlnx,xps-uartlite-1.00.a";
-         reg = <0x800c0000 0x10000>;
-         interrupts = <0x0 0x6e 0x1>;
-@@ -84,5 +84,5 @@ examples:
-         current-speed = <115200>;
-         xlnx,data-bits = <8>;
-         xlnx,use-parity = <0>;
--      };
-+    };
- ...
--- 
-2.34.1
+Thanks
 
