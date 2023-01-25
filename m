@@ -2,100 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED403C54EED
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 20:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860A7C54E94
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 20:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236198AbjAYUIV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Jan 2023 15:08:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41214 "EHLO
+        id S236249AbjAYUIc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Jan 2023 15:08:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236211AbjAYUIS (ORCPT
+        with ESMTP id S236258AbjAYUI1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Jan 2023 15:08:18 -0500
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405B84F358;
-        Wed, 25 Jan 2023 12:08:17 -0800 (PST)
-Received: by mail-ot1-f41.google.com with SMTP id a1-20020a056830008100b006864df3b1f8so11792778oto.3;
-        Wed, 25 Jan 2023 12:08:17 -0800 (PST)
+        Wed, 25 Jan 2023 15:08:27 -0500
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28C05CFF8;
+        Wed, 25 Jan 2023 12:08:25 -0800 (PST)
+Received: by mail-ot1-f44.google.com with SMTP id cm26-20020a056830651a00b00684e5c0108dso11784894otb.9;
+        Wed, 25 Jan 2023 12:08:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=t39EsIvvp67IzNGd+XHwSqU0K2A/vSnr7kxAVJ448Ms=;
-        b=ZHQiRtCJGC9Cc6oMU7YfDVnqJcILAFp9oGYwb1u7rZsAWQC6dRhxeaZZkF0nTVmUC4
-         d8nZoqXwRojdNzQw4S5MmxgYB/DFpoTW6AxmbADYG2E3ae1XaMWmbB8HiXmT6ZMdKzWd
-         VK5TQDvDTVbscZn+h2i+G1kas9IDdSs9ETebMyHseG0lkKpEwmWfaapRgZd+DttYMPOb
-         OXzXdrBxK1btBsXzGTSoYAZG7dVuWAzTjeZFK172gOAEs7AXZiHariJZiY9TPMMgP1XB
-         C7iLssjH5dEsf8SJban2k6QFwzi50Be5LoHhQ1/mHGTDjtV92Ll/HOtJEL6inkMEDXPa
-         nLtw==
-X-Gm-Message-State: AFqh2kqb4kt4Rl2lcrqRlqs1TJKxKD+3H5XYMg/X8hMDJm38yKXvyCQj
-        2i3zqLKszsai3uEpaBXAPw==
-X-Google-Smtp-Source: AMrXdXsmfTrkC6CB13iDEfae46rieh8cjr3v84kXPdnw8bCR8TEBh66uXMANGvdhEgd8e1uTEm4Jfw==
-X-Received: by 2002:a05:6830:1383:b0:684:dbfd:f239 with SMTP id d3-20020a056830138300b00684dbfdf239mr22688884otq.9.1674677296424;
-        Wed, 25 Jan 2023 12:08:16 -0800 (PST)
+        bh=cWgaUXrrfuDciYk4fQKTg/r1Izy/Hz1zVjtkeDOPneI=;
+        b=jFBf+IRpw99o1IXA/W2YfWXO3243+5cITUTZrAPSqE0X9d9fT9RRGKxjQ6UlqB6PA2
+         BxGOrFuz2E6PgX9t5zscfXXKSg/DIQmOGOx09eux5hMIR6/g1AoPHSC05FPXPkvYpFXm
+         wOx3tTvXEhPQKtANcscFZruPKoGh0qwRpt6zKuB/VAB55Zv+aFwa85TQeGfm0ya3Q4QT
+         bxcJppw/W/LG/NKdM9toJVocAOE0H6zhuGtbCrRZDvBFpc7k1B3gBgzfK83kNXojBmmU
+         oth76HKvAkiFAwn+HJZhMW8fXPGKeA8LQsljcH029iIAVKD78JZqgCJ3qaAbEh6IrAgS
+         37IA==
+X-Gm-Message-State: AFqh2krDIn9N4pu6IpfNSW4GgKmrok2hyzLzN7osIao/zmVbdrdl2eNh
+        NPUc9fJpNnCdc3lStc0B4A==
+X-Google-Smtp-Source: AMrXdXus3Z4ceRGOdNX1UqMgR5Jf06MXM2+F28K1Q1mS/DZ7M+aspNZLq1GQou47O7HCV+kd1rd9xA==
+X-Received: by 2002:a05:6830:1d6e:b0:66c:6c78:27f4 with SMTP id l14-20020a0568301d6e00b0066c6c7827f4mr17518733oti.3.1674677304813;
+        Wed, 25 Jan 2023 12:08:24 -0800 (PST)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id s15-20020a056830124f00b006864749f39csm2572694otp.36.2023.01.25.12.08.15
+        by smtp.gmail.com with ESMTPSA id j25-20020a056830015900b0068657984c22sm2553323otp.32.2023.01.25.12.08.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 12:08:16 -0800 (PST)
-Received: (nullmailer pid 2787324 invoked by uid 1000);
-        Wed, 25 Jan 2023 20:08:14 -0000
-Date:   Wed, 25 Jan 2023 14:08:14 -0600
+        Wed, 25 Jan 2023 12:08:24 -0800 (PST)
+Received: (nullmailer pid 2788919 invoked by uid 1000);
+        Wed, 25 Jan 2023 20:08:23 -0000
+Date:   Wed, 25 Jan 2023 14:08:23 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Le Ray <erwan.leray@foss.st.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-amlogic@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-riscv@lists.infradead.org,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        linux-serial@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>,
-        Chester Lin <clin@suse.com>, Rob Herring <robh+dt@kernel.org>,
-        Jerome Brunet <jbrunet@baylibre.com>,
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Pragnesh Patel <pragnesh.patel@sifive.com>,
-        Shawn Guo <shawnguo@kernel.org>,
         Lubomir Rintel <lkundrak@v3.sk>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-amlogic@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-riscv@lists.infradead.org,
+        Fabio Estevam <festevam@gmail.com>,
+        Le Ray <erwan.leray@foss.st.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Chester Lin <clin@suse.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Magnus Damm <magnus.damm@gmail.com>,
+        linux-serial@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Pragnesh Patel <pragnesh.patel@sifive.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Tomer Maimon <tmaimon77@gmail.com>,
         Peter Korsgaard <jacmet@sunsite.dk>
-Subject: Re: [PATCH v2 07/12] dt-bindings: serial: fsl-imx-uart: drop common
+Subject: Re: [PATCH v2 08/12] dt-bindings: serial: fsl-lpuart: drop rs485
  properties
-Message-ID: <167467729413.2787137.2431263317209271713.robh@kernel.org>
+Message-ID: <167467730194.2788619.6626868986212724244.robh@kernel.org>
 References: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org>
- <20230124091916.45054-5-krzysztof.kozlowski@linaro.org>
+ <20230124091916.45054-6-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230124091916.45054-5-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230124091916.45054-6-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On Tue, 24 Jan 2023 10:19:11 +0100, Krzysztof Kozlowski wrote:
-> The binding references serial and rs485 schemas, so there is no need to
-> list their properties.  Simplify a bit by removing unneeded entries.
+On Tue, 24 Jan 2023 10:19:12 +0100, Krzysztof Kozlowski wrote:
+> The binding references rs485 schema, so there is no need to list its
+> properties.  Simplify a bit by removing unneeded entries.
 > 
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml | 7 -------
->  1 file changed, 7 deletions(-)
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 3 ---
+>  1 file changed, 3 deletions(-)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
