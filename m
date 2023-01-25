@@ -2,141 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F1CC54E94
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 00:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 038A0C38142
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 01:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232753AbjAYAoh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Jan 2023 19:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        id S229809AbjAYBEV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 Jan 2023 20:04:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbjAYAoh (ORCPT
+        with ESMTP id S232542AbjAYBES (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Jan 2023 19:44:37 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCFF37F38;
-        Tue, 24 Jan 2023 16:44:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674607473; x=1706143473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QM2+POLX0q7xcehfBUAPRbRSsX9KORGrbBZHP2QA5B4=;
-  b=O4GwL7D/ILhQO5gWJIRepYIt246TNpqi36W31B9FgeoxDuFx+G+LQDaK
-   kQDHEI42L5ztwWWZlJxwq3r5X9Jc8wjXZ2IRxxUBZ3Z6DSNTxuwwTn4DM
-   V1TNoG9jPxpBZGdqNvbFPYr0fjxAOCVts5+igtb8iSrlEHhQa+ErkLIoC
-   xldLJow1OED4wLXtC7cLaa+tZBt8yDTtoRpmqZx7H4xhaD/AxqXDh0UGJ
-   VyjIVyj7Q4//PJIOa0+OZR48jak5qvk4Jd/0GiJcOoxMGf3vlJ0mRACP0
-   GBprQ2+wXfjzoEQJzSozrmPZ1Y7lKcXd3d8x17kfg6VQVDou2ejW2gLPv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="412684651"
-X-IronPort-AV: E=Sophos;i="5.97,243,1669104000"; 
-   d="scan'208";a="412684651"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2023 16:44:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10600"; a="804816336"
-X-IronPort-AV: E=Sophos;i="5.97,243,1669104000"; 
-   d="scan'208";a="804816336"
-Received: from lkp-server01.sh.intel.com (HELO 5646d64e7320) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2023 16:44:28 -0800
-Received: from kbuild by 5646d64e7320 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pKTtr-0006uW-1S;
-        Wed, 25 Jan 2023 00:44:27 +0000
-Date:   Wed, 25 Jan 2023 08:44:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com,
-        neeraj.sanjaykale@nxp.com
-Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Message-ID: <202301250824.iVWBIZts-lkp@intel.com>
-References: <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
+        Tue, 24 Jan 2023 20:04:18 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EDF530EC;
+        Tue, 24 Jan 2023 17:03:54 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id g14so18647113ljh.10;
+        Tue, 24 Jan 2023 17:03:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+n01u9NXtWcuGWgAPYEZfG87R2VPeQABZEmCZNZy7Ks=;
+        b=HBCuX9pXxLTHsYqFePasL0AEPRmLXa0YRu3t8+wIimZC+QLNDYeCBDDOnC4iy3Bb44
+         ZFxOrT4EcBGOtESECnVRBGb6X8GhJ6nDB28f1VcuzbERT5a+pej+B8J4101b4I3MP3yb
+         K1R4IYnkWJ3xXPMg40cGQ846lxzBaSDHUPHu2qZ2TW9YDDzD8BrlT8rhW071hYfAZsZs
+         NGJP624w9tmkKrBpNR9gF6ku/MLtM0g6YOy89wynOHQztnbqNCz/8VafsMvee+uJ2CP+
+         R/+xsXUkLB2ZCPM6wXe2l+ScKN/yjIWPK8ofAoQbQpAhEs8F42yvu//4hMAp/gy+BJbw
+         iblg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+n01u9NXtWcuGWgAPYEZfG87R2VPeQABZEmCZNZy7Ks=;
+        b=Up18YWvd1/wkLENmsK6hzEvXj0okiRGrf/3iw74OGBERBOjUYOKAQN4vCdkzXISR79
+         isiRqSOzc3kqGwfHklpMvrh4mZDlkq0FzLrbaew6LIFJGSmJKRYvF66mev92ga9squBP
+         QfzMg04aAw3mEpbJko/emHih8+L7JnsTeJ0IqDkO5ttva2qV508YJY3pogkgJ+lqQmE8
+         8CGlMaw3ifKuMsOFSvRb7Z2NVG2Ii+ieQ4e8DExDisZuObqadZ+nPhWV8Fk5iut8Zb1I
+         iB7EhCHTkOow2mKc+LztgjryiQFZbVceFYOGIB+Wh3IT0bU/NBIqsGD8aGoB11WpqZjT
+         R5zg==
+X-Gm-Message-State: AFqh2krDqgU3aJsmBf/O89a2eYUr14HnWcZsKoT6KGYNbrFm54evh+lE
+        zAzw8d2SBicqsDxcPk7BXpv5umJJYDm8sFWvxN0=
+X-Google-Smtp-Source: AMrXdXs3/97nZJqGIZCdAk2Lr/mMkpuqxNBScacxcEE9J2bNRl6LUVLx2X9lOu9oSZN3BN9Ma34T0Wbd3DsEpIdGoZI=
+X-Received: by 2002:a2e:9212:0:b0:28b:63dc:4c7 with SMTP id
+ k18-20020a2e9212000000b0028b63dc04c7mr1626927ljg.423.1674608629060; Tue, 24
+ Jan 2023 17:03:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
+References: <20230124174714.2775680-1-neeraj.sanjaykale@nxp.com>
+ <20230124174714.2775680-3-neeraj.sanjaykale@nxp.com> <167458712396.1259484.1395941797664824881.robh@kernel.org>
+ <CABBYNZKAwp3Wqjrcp4k3wvjZSNfJhRWA5ytH7oNWXCG7V4k2ow@mail.gmail.com> <CAL_JsqJged+SwGy5b1w2Cx-dV06=LKb1mX9ykN7GrpR6P4gUVw@mail.gmail.com>
+In-Reply-To: <CAL_JsqJged+SwGy5b1w2Cx-dV06=LKb1mX9ykN7GrpR6P4gUVw@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 24 Jan 2023 17:03:37 -0800
+Message-ID: <CABBYNZJusgf7vQU4g6zvOLj2dsJ7Pf1A6k2myjpzW+JKkw+sQw@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth support
+To:     Rob Herring <robh@kernel.org>
+Cc:     Tedd Ho-Jeong An <hj.tedd.an@gmail.com>,
+        Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>,
+        jirislaby@kernel.org, sherry.sun@nxp.com, marcel@holtmann.org,
+        linux-serial@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        rohit.fule@nxp.com, devicetree@vger.kernel.org,
+        amitkumar.karwar@nxp.com, linux-bluetooth@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        johan.hedberg@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Neeraj,
+Hi Rob,
 
-Thank you for the patch! Perhaps something to improve:
+On Tue, Jan 24, 2023 at 3:08 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Tue, Jan 24, 2023 at 3:44 PM Luiz Augusto von Dentz
+> <luiz.dentz@gmail.com> wrote:
+> >
+> > Hi Rob, Tedd,
+> >
+> > On Tue, Jan 24, 2023 at 11:06 AM Rob Herring <robh@kernel.org> wrote:
+> > >
+> > >
+> > > On Tue, 24 Jan 2023 23:17:13 +0530, Neeraj Sanjay Kale wrote:
+> > > > Add binding document for generic and legacy NXP bluetooth
+> > > > chipset.
+> > > >
+> > > > Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> > > > ---
+> > > >  .../bindings/net/bluetooth/nxp-bluetooth.yaml | 67 +++++++++++++++++++
+> > > >  1 file changed, 67 insertions(+)
+> > > >  create mode 100644 Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
+> > > >
+> > >
+> > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > >
+> > > yamllint warnings/errors:
+> > > ./Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml:67:1: [warning] too many blank lines (2 > 1) (empty-lines)
+> > >
+> > > dtschema/dtc warnings/errors:
+> > > Error: Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.example.dts:18.9-15 syntax error
+> > > FATAL ERROR: Unable to parse input tree
+> > > make[1]: *** [scripts/Makefile.lib:434: Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.example.dtb] Error 1
+> > > make[1]: *** Waiting for unfinished jobs....
+> > > make: *** [Makefile:1508: dt_binding_check] Error 2
+> >
+> > I wonder if that is something that we could incorporate to our CI,
+> > perhaps we can detect if the subject starts with dt-binding then we
+> > attempt to make with DT_CHECKER_FLAGS, thoughts?
+>
+> What CI is that?
 
-[auto build test WARNING on bluetooth-next/master]
-[also build test WARNING on bluetooth/master tty/tty-testing tty/tty-next tty/tty-linus linus/master v6.2-rc5 next-20230124]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+We have github actions that we run when a new patch appears on patchwork e.g:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Neeraj-Sanjay-Kale/serdev-Add-method-to-assert-break/20230125-015108
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
-patch link:    https://lore.kernel.org/r/20230124174714.2775680-4-neeraj.sanjaykale%40nxp.com
-patch subject: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP Bluetooth chipsets
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230125/202301250824.iVWBIZts-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e5f775c45ec84de38a4cadfb115c488cb44e5943
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Neeraj-Sanjay-Kale/serdev-Add-method-to-assert-break/20230125-015108
-        git checkout e5f775c45ec84de38a4cadfb115c488cb44e5943
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/
+https://patchwork.kernel.org/project/bluetooth/patch/20230124174714.2775680-3-neeraj.sanjaykale@nxp.com/
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+> Better to look at the diffstat of the patch than subject. Lots of
+> subjects are wrong and I suspect there would be a fairly high
+> correlation of wrong subjects to schema errors.
 
-All warnings (new ones prefixed by >>):
+For now I'd keep it simple since otherwise we would have to probably
+attempt to apply and make with DT_CHECKER_FLAGS every patch, well
+perhaps that is ok if that doesn't produce too many false positives,
+otherwise we have to filter the output like we do with the likes of
+smatch and building with make W=1 C=1.
 
-   drivers/bluetooth/btnxp.c: In function 'nxp_load_fw_params_for_chip_id':
->> drivers/bluetooth/btnxp.c:439:25: warning: 'strncpy' specified bound 50 equals destination size [-Wstringop-truncation]
-     439 |                         strncpy(nxpdev->fw_name, fw_mod_params[i].fw_name, MAX_FW_FILE_NAME_LEN);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Rob
 
 
-vim +/strncpy +439 drivers/bluetooth/btnxp.c
-
-   431	
-   432	static int nxp_load_fw_params_for_chip_id(u16 chip_id, struct hci_dev *hdev)
-   433	{
-   434		struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
-   435		int i;
-   436	
-   437		for (i = 0; i < MAX_NO_OF_CHIPS_SUPPORT; i++) {
-   438			if (chip_id == fw_mod_params[i].chip_id) {
- > 439				strncpy(nxpdev->fw_name, fw_mod_params[i].fw_name, MAX_FW_FILE_NAME_LEN);
-   440				nxpdev->oper_speed = fw_mod_params[i].oper_speed;
-   441				nxpdev->fw_dnld_pri_baudrate = fw_mod_params[i].fw_dnld_pri_baudrate;
-   442				nxpdev->fw_dnld_sec_baudrate = fw_mod_params[i].fw_dnld_sec_baudrate;
-   443				nxpdev->fw_init_baudrate = fw_mod_params[i].fw_init_baudrate;
-   444				break;
-   445			}
-   446		}
-   447		if (i == MAX_NO_OF_CHIPS_SUPPORT) {
-   448			if (chip_id == 0xffff)
-   449				BT_ERR("%s does not contain entry for 'legacy_chip'", BT_FW_CONF_FILE);
-   450			else
-   451				BT_ERR("Unsupported chip signature: %04X", chip_id);
-   452			clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
-   453			return -ENOENT;
-   454		}
-   455		return 0;
-   456	}
-   457	
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Luiz Augusto von Dentz
