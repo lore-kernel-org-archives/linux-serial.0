@@ -2,142 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19070C27C76
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 09:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C4FC54E94
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 10:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235327AbjAYJ4W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Jan 2023 04:56:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
+        id S235381AbjAYKCd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Jan 2023 05:02:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234264AbjAYJ4V (ORCPT
+        with ESMTP id S234689AbjAYKCd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Jan 2023 04:56:21 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 127803A88
-        for <linux-serial@vger.kernel.org>; Wed, 25 Jan 2023 01:56:19 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id k16so13304223wms.2
-        for <linux-serial@vger.kernel.org>; Wed, 25 Jan 2023 01:56:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jjtLqh6CEfr4H89H+JyTuRpUhaPVNfu/MoBCL57iE8g=;
-        b=ODOhudb7YsmvAXpdn+8pa/MNOwv5DzADahJDMPProUJMhx1ol0bho1WnV9L0b6k92z
-         krCqkWYW2KLb/0VzSEziwCXotCXFEoV6lTyRqX89u7FfzPWu/cnZ2hO319xZ64VUPbvR
-         qbNuNwd4wmhThS75a0oq1HrGyHmzlM8UFQPt8p6Md8RQDdiyegFanW87dq5eDRtrEFU8
-         tZqmFdkErGSz1UK4klDRkNF6z+mEzvba1l+6TlHgZLCHBfZfQvsyBoGV7IMZmEmfj4lV
-         18fq48rpuw66MdMUwCJjvUPj8Iv2KCetGNHyB3yAqS8KM4XfA94pSP2rIXz/wjlg3kfO
-         5CUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jjtLqh6CEfr4H89H+JyTuRpUhaPVNfu/MoBCL57iE8g=;
-        b=xppo4efOxps5vigFz3TxPRg4TJ2WW2Z0Y3e020lW2VBZ3Y3Elu4kCsNmY62R1UY4ZX
-         FAfXBhJ6uN1pCBzMMIsSsiPntHrb1sMwDvYOBUa+VDnllySRCxlI+/4n5BVA1vVbildc
-         3bnjQQrYYzo2s0SbJ3O6ZCe0masVGFGpSE/bBoe0ikoxhAha4woYh1W1pK28fNtUs2hD
-         FGMyjgIGhnJv9raLIdDqI3JjT255UXjKv7bpaga9WUANboDXeANq1D91VxwVi26jc8eL
-         x9fzulj+jwnG5M1UPUrY0zo5bR8MGu7CBs63HbVUmKmPueU+A18rbqFVhfc+MMafdi/E
-         HdpA==
-X-Gm-Message-State: AFqh2krT+nO9IxjHoC8fwbonTsKOvoHlBA5EGLpEhzuqaWykKaK0wW78
-        9YCpJxmwdZ71wERu1J2BRAOz0Q==
-X-Google-Smtp-Source: AMrXdXvuxRvcIjjVd2E4vmsSXXWrrMRWtGotsY9ODrzQowAqFDQIU1Hx8hv4NITTFxByu8Fu/SDf4Q==
-X-Received: by 2002:a05:600c:35cf:b0:3d3:49db:d95 with SMTP id r15-20020a05600c35cf00b003d349db0d95mr30676547wmq.37.1674640577575;
-        Wed, 25 Jan 2023 01:56:17 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id e22-20020a05600c439600b003cffd3c3d6csm1322464wmn.12.2023.01.25.01.56.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Jan 2023 01:56:17 -0800 (PST)
-Message-ID: <c1793a63-5691-a705-b2f2-4267c53934fe@linaro.org>
-Date:   Wed, 25 Jan 2023 10:56:15 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.0
-Subject: Re: [PATCH 09/15] dt-bindings: serial: add support for Ambarella
-Content-Language: en-US
-To:     Li Chen <me@linux.beauty>
-Cc:     Li Chen <lchen@ambarella.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Wed, 25 Jan 2023 05:02:33 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749B253B20;
+        Wed, 25 Jan 2023 02:02:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1674640935; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=bO0Jgi+NMLPOKv1n67AGYFqKmCmzSrXf+YbOLqb3lcnnMWBHWDOtPFf10qsY5r8Oyq6MU0l5ytB505qxUgElHtFhDNVPlqG1NmidiClxPMAV5qqPOGI5s3RXAM9pzB7cK7p0j6wxEbj6JrUrJen33B51iCkPGR9UEK+GPFyvdcQ=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1674640935; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=8T0jm15KjYlDRi1z8VGf6mV8Jc1j+El4vs+3OWm4xCQ=; 
+        b=K4rpu+Lm1I4RyX/haKCf4eFEA3j1w8Hnb/vYLU924EwdpvgcSpntciqqgsPVWpWUGlgkYdYLwts8cJGKGvXPtC8sw7W3wU4hsZRF2i7zlDTiBBQlfv+/NrxGHg1bsGqcpGkPoPD94Qcf/TeAh6K/SIg2ZzmrWo//NqU8zQetpzU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=linux.beauty;
+        spf=pass  smtp.mailfrom=me@linux.beauty;
+        dmarc=pass header.from=<me@linux.beauty>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1674640935;
+        s=zmail; d=linux.beauty; i=me@linux.beauty;
+        h=Date:Date:Message-ID:From:From:To:To:Cc:Cc:Subject:Subject:In-Reply-To:References:MIME-Version:Content-Type:Message-Id:Reply-To;
+        bh=8T0jm15KjYlDRi1z8VGf6mV8Jc1j+El4vs+3OWm4xCQ=;
+        b=TZmf638uRJ8i5kzEqJGwyC9lylJZDkugjFhadj2uJgHqErwhmlyxoI6IERd3bbhu
+        NEaH+mS+5DcVlZavIYXvUUHJd4q1LaocsJxMrst0I0jYW33iTQ+rMUweGjxkW5aY/VS
+        Sgosb8uQJRZQUrEJv18D1luK5zPaWxLeeYkcjXco=
+Received: from lchen-xiaoxin.linux.beauty (221.225.241.248 [221.225.241.248]) by mx.zohomail.com
+        with SMTPS id 1674640933874576.2974511908947; Wed, 25 Jan 2023 02:02:13 -0800 (PST)
+Date:   Wed, 25 Jan 2023 18:01:25 +0800
+Message-ID: <87v8kvgcga.wl-me@linux.beauty>
+From:   Li Chen <me@linux.beauty>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Li Chen <lchen@ambarella.com>, Jiri Slaby <jirislaby@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         "moderated list:ARM/Ambarella SoC support" 
         <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <dri-devel@lists.freedesktop.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>
+Subject: Re: [PATCH 10/15] serial: ambarella: add support for Ambarella uart_port
+In-Reply-To: <Y85YncUCtRyVnpvt@kroah.com>
 References: <20230123073305.149940-1-lchen@ambarella.com>
- <20230123073305.149940-10-lchen@ambarella.com>
- <bdff58bf-1a07-ab78-a782-d58d8c644e00@linaro.org>
- <87wn5bgcrv.wl-me@linux.beauty>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <87wn5bgcrv.wl-me@linux.beauty>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        <20230123073305.149940-11-lchen@ambarella.com>
+        <Y85YncUCtRyVnpvt@kroah.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?ISO-8859-4?Q?Goj=F2?=) APEL-LB/10.8 EasyPG/1.0.0
+ Emacs/28.2 (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25/01/2023 10:54, Li Chen wrote:
-> 
-> Hi Krzysztof Kozlowski,
-> 
-> Sorry for my late reply.
-> 
-> On Mon, 23 Jan 2023 16:11:52 +0800,
-> Krzysztof Kozlowski wrote:
->>
->> On 23/01/2023 08:32, Li Chen wrote:
->>> Add compatible for Ambarella.
->>>
->>> Signed-off-by: Li Chen <lchen@ambarella.com>
->>> Change-Id: I32513d98f52af0311dfb55dd5c4739a58f6b9fc1
->>> ---
->>>  .../bindings/serial/ambarella_uart.yaml       | 57 +++++++++++++++++++
->>>  MAINTAINERS                                   |  1 +
->>>  2 files changed, 58 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/serial/ambarella_uart.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/ambarella_uart.yaml b/Documentation/devicetree/bindings/serial/ambarella_uart.yaml
->>> new file mode 100644
->>> index 000000000000..238d68078270
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/serial/ambarella_uart.yaml
->>> @@ -0,0 +1,57 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/serial/ambarella_uart.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Ambarella S6LM SoC UART Controller
->>> +
->>> +maintainers:
->>> +  - Li Chen <lchen@ambarella.com>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: ambarella,uart
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  amb,ignore-fe:
->>> +    description: |
->>> +      ignore frame error report for CV2/CV22/CV25/S6LM because it's
->>> +      checked too strict so that normal stop may be treated as frame error.
->>
->> Missing type. I don't understand why this is property of DT.
-> 
-> Ok, I will add "type: boolean" to it.
+On Mon, 23 Jan 2023 17:51:25 +0800,
 
-I still do not understand why this is a property of DT. You need to
-justify it.
+Hi Greg,
 
-Otherwise: No. drop it.
+Sorry for my late reply.
 
-Best regards,
-Krzysztof
+Greg Kroah-Hartman wrote:
+> 
+> On Mon, Jan 23, 2023 at 03:32:25PM +0800, Li Chen wrote:
+> > This driver add support for Ambarella's uart, which
+> > can be used for console and etc.
+> > 
+> > Signed-off-by: Li Chen <lchen@ambarella.com>
+> > Change-Id: Ie68af7ad2187e21853e58d52cd97fd7145303730
+> > ---
+> >  MAINTAINERS                         |    1 +
+> >  drivers/tty/serial/Kconfig          |   16 +
+> >  drivers/tty/serial/Makefile         |    1 +
+> >  drivers/tty/serial/ambarella_uart.c | 1581 +++++++++++++++++++++++++++
+> >  drivers/tty/serial/ambarella_uart.h |  120 ++
+> 
+> Why do you need a .h file for a single .c file?  They should all be in
+> one file please.
 
+Ok, I will combine them into single source file.
+
+> Also, no change-id, you know this...
+> 
+> thanks,
+> 
+> greg k-h
+
+Regards,
+Li
