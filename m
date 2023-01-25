@@ -2,114 +2,123 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922CBC61DA3
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 11:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A374C54E94
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 12:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235430AbjAYLet (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Jan 2023 06:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53168 "EHLO
+        id S229778AbjAYMXD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 Jan 2023 07:23:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235689AbjAYLed (ORCPT
+        with ESMTP id S235089AbjAYMWx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Jan 2023 06:34:33 -0500
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736E115CB2;
-        Wed, 25 Jan 2023 03:34:31 -0800 (PST)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30PBVCWD001867;
-        Wed, 25 Jan 2023 11:34:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=/+VsR0WVfZgRKDbswEbML4hy6rt27/ONKz75RbjHZZ8=;
- b=J4xz1ELfTDUoHtKoY8WJNjsq6qVrhyXswcZjGyTLvNmzDPHXDZZfHjm1X/N1sE38Tr5s
- rXROvlnbncx1b8rIBSW+gOaJJhGP+8t7tH4M8ECpnJ+PRoxpOKrV6zwA6nvqeIZT86Vq
- 7T5zEsDA2Q2vUDAQDucW74b/ZK5Gj4RNH3fixwFO2h0Ol7b2CRBsImnhtpL5IjTbE26i
- +0HDjXUXF1LRUFHG3JaN7s9SaWrvmT97I8EloYuhPvhxwOYfDb2e47yQi853IjQje08U
- +RcHUitr/2MPcQ0Zw7H8EY6z3LBG7I287DGfsnKX2PWiupjP7oxo3pNpbYtLwdD6iLWs KQ== 
-Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3n89hk6ykh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 Jan 2023 11:34:28 +0000
-Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 30PBYOdA022986;
-        Wed, 25 Jan 2023 11:34:24 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 3n894ksyqm-1;
-        Wed, 25 Jan 2023 11:34:24 +0000
-Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30PBYOUR022981;
-        Wed, 25 Jan 2023 11:34:24 GMT
-Received: from hu-maiyas-hyd.qualcomm.com (hu-vdadhani-hyd.qualcomm.com [10.213.106.28])
-        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 30PBYN8f022980;
-        Wed, 25 Jan 2023 11:34:24 +0000
-Received: by hu-maiyas-hyd.qualcomm.com (Postfix, from userid 4047106)
-        id 3BEF65000AA; Wed, 25 Jan 2023 17:04:23 +0530 (+0530)
-From:   Viken Dadhaniya <quic_vdadhani@quicinc.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, quic_vnivarth@quicinc.com,
-        quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
-        Viken Dadhaniya <quic_vdadhani@quicinc.com>
-Subject: [PATCH V2] Serial: core: Add compat ioctl support
-Date:   Wed, 25 Jan 2023 17:04:18 +0530
-Message-Id: <20230125113418.7221-1-quic_vdadhani@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: Qju924ljFTlRTFPnG1rNQPYZUdI0OysZ
-X-Proofpoint-ORIG-GUID: Qju924ljFTlRTFPnG1rNQPYZUdI0OysZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-25_06,2023-01-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 phishscore=0
- suspectscore=0 clxscore=1011 mlxscore=0 impostorscore=0 spamscore=0
- adultscore=0 bulkscore=0 lowpriorityscore=0 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301250105
+        Wed, 25 Jan 2023 07:22:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B70A72BD;
+        Wed, 25 Jan 2023 04:22:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 259F0B8199F;
+        Wed, 25 Jan 2023 12:22:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A05C433D2;
+        Wed, 25 Jan 2023 12:22:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1674649368;
+        bh=vWlk6Pf2n+qySYXb7Jo8S4jGyJymWOjnRGQIVh7XVy4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lyGyLr8exeibpwwo7uart4zLX/2LvXCSzdZOrbS34B9uV0MFss8Dgkr5+q0bunFsO
+         SC9JDdVGISelH6NYeZ4K0VEn1vf3uncQMfMSepGdPrtgUWJKyz/NwCf1vIcvak2YWF
+         7ZnPq6lr8g6HKMOo8Xqi/cKsCVdpfTQHLY8akEMM=
+Date:   Wed, 25 Jan 2023 13:22:45 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Viken Dadhaniya <vdadhani@qti.qualcomm.com>
+Cc:     "Viken Dadhaniya (QUIC)" <quic_vdadhani@quicinc.com>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
+        "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>,
+        "Visweswara Tanuku (QUIC)" <quic_vtanuku@quicinc.com>,
+        "Aniket RANDIVE (QUIC)" <quic_arandive@quicinc.com>
+Subject: Re: [PATCH V1 1/1] Serial: core: Add compat ioctl support
+Message-ID: <Y9EfFQ33Mpms3tTF@kroah.com>
+References: <20221222044925.27846-1-quic_vdadhani@quicinc.com>
+ <Y6Pv5WWtM63DwCAl@kroah.com>
+ <PH0PR02MB7431B1CA343760B422D34B97EBCE9@PH0PR02MB7431.namprd02.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR02MB7431B1CA343760B422D34B97EBCE9@PH0PR02MB7431.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Current serial core driver doesn't support compat_ioctl
-due to which 32-bit application is not able to send
-ioctls to driver on a 64-bit platform.
+On Wed, Jan 25, 2023 at 11:27:49AM +0000, Viken Dadhaniya wrote:
+> Hi Greg,
+> 
+> Please find response inline.
 
-Added compat_ioctl support in serial core to handle
-ioctls from 32-bit applications on a 64-bit platform.
+As they should be :)
 
-Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
----
- drivers/tty/serial/serial_core.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Thursday, December 22, 2022 11:19 AM
+> > To: Viken Dadhaniya (QUIC) <quic_vdadhani@quicinc.com>
+> > Cc: jirislaby@kernel.org; linux-serial@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; Mukesh Savaliya (QUIC) <quic_msavaliy@quicinc.com>;
+> > Vijaya Krishna Nivarthi (Temp) (QUIC) <quic_vnivarth@quicinc.com>; Visweswara
+> > Tanuku (QUIC) <quic_vtanuku@quicinc.com>; Aniket RANDIVE (QUIC)
+> > <quic_arandive@quicinc.com>
+> > Subject: Re: [PATCH V1 1/1] Serial: core: Add compat ioctl support
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index b9fbbee598b8..ad4c3a5a3d29 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1601,6 +1601,12 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
- 	return ret;
- }
- 
-+static long
-+uart_compat_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
-+{
-+	return (long)uart_ioctl(tty, cmd, arg);
-+};
-+
- static void uart_set_ldisc(struct tty_struct *tty)
- {
- 	struct uart_state *state = tty->driver_data;
-@@ -2670,6 +2676,7 @@ static const struct tty_operations uart_ops = {
- 	.chars_in_buffer= uart_chars_in_buffer,
- 	.flush_buffer	= uart_flush_buffer,
- 	.ioctl		= uart_ioctl,
-+	.compat_ioctl   = uart_compat_ioctl,
- 	.throttle	= uart_throttle,
- 	.unthrottle	= uart_unthrottle,
- 	.send_xchar	= uart_send_xchar,
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+That's horrible, please fix your email client.
 
+> > How was this tested?  What is currently broken that now works properly (or the
+> > other way around?)
+> >
+> 
+> We are running 32-bit user-space application on 64-bit kernel, and vendor specific ioctl command issued by application is not reaching the vendor driver.
+> Without these changes, the IOCTL call was returning from the tty framework rather than reaching to the vendor driver. IOCTL call is successfully reaching the vendor uart driver via tty framework after adding compat ioctl and functionality is working as expected and below is the dump stack with compat ioctl.
+
+What in-kernel tty ioctl is having a problem that a compat ioctl layer
+is needed?  Let's fix that up.
+
+As you know, we can't do anything about out-of-tree drivers.  Nor do you
+want us to, so this really feels like a broken driver, it should NOT be
+creating random new ioctls on the tty device node, that is NOT what it
+is there for.
+
+> [ 1265.554002] Hardware name: Qualcomm Technologies, Inc. Monaco IDP V1.0 (DT)
+> [ 1265.554008] Call trace:
+> [ 1265.554011] dump_backtrace.cfi_jt+0x0/0x8
+> [ 1265.554023] show_stack+0x1c/0x2c
+> [ 1265.554032] dump_stack_lvl+0x80/0xc8
+> [ 1265.554041] dump_stack+0x1c/0x2c
+> [ 1265.554049] msm_geni_serial_ioctl+0x2cc/0x3d0 [msm_geni_serial]
+
+This function is not in our kernel tree, so it looks to be a bug in that
+driver, sorry.  Do NOT paper over out-of-tree driver bugs in the core
+kernel (hint, are you sure you are even allowed to do that?)
+
+> [ 1265.554099] uart_ioctl+0x1a4/0x1d8
+> [ 1265.554109] uart_compat_ioctl+0x14/0x28
+> [ 1265.554117] tty_compat_ioctl+0x1a8/0x2dc
+> [ 1265.554125] __arm64_compat_sys_ioctl+0x158/0x1d0
+> [ 1265.554132] invoke_syscall+0x60/0x150
+> [ 1265.554140] el0_svc_common.llvm.3148309083493694862+0xc8/0x114
+> [ 1265.554148] do_el0_svc_compat+0x20/0x30
+> [ 1265.554154] el0_svc_compat+0x28/0x90
+> [ 1265.554162] el0t_32_sync_handler+0x7c/0xbc
+> [ 1265.554169] el0t_32_sync+0x1b8/0x1bc
+>  
+> > This patch implies that _every_ driver with an ioctl must create a
+> > compat_ioctl() callback, are you sure that is the case?
+> > 
+> 
+> this depends on user application and kernel version. for 32-bit application to run on 64-bit kernel, compat_ioctl is requried.
+
+Again, what in-tree tty ioctls are affected by this?
+
+thanks,
+
+greg k-h
