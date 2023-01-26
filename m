@@ -2,82 +2,114 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C13B7C54E94
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Jan 2023 22:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C6AC54E94
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Jan 2023 08:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236254AbjAYWPs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Jan 2023 17:15:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
+        id S236240AbjAZIvB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Jan 2023 03:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236219AbjAYWPq (ORCPT
+        with ESMTP id S233264AbjAZIvA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Jan 2023 17:15:46 -0500
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931BE6469B;
-        Wed, 25 Jan 2023 14:15:24 -0800 (PST)
-Received: by mail-ot1-f46.google.com with SMTP id u13-20020a056830118d00b00686def09868so118367otq.7;
-        Wed, 25 Jan 2023 14:15:24 -0800 (PST)
+        Thu, 26 Jan 2023 03:51:00 -0500
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4F32194B;
+        Thu, 26 Jan 2023 00:50:58 -0800 (PST)
+Received: by mail-qt1-f182.google.com with SMTP id x5so772565qti.3;
+        Thu, 26 Jan 2023 00:50:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=EDWel5D8K3OWTSDRy2nSxUcJCBLjJjPnl4lOnIvqk60=;
-        b=usXyUAy9x9Le2IEIEb8ScuLGO/B9U6xfIdXM080zddQqK3ibXi/u46A5QyAWs9ZWWP
-         Hukb/1wbVQM8x/QlZ4iwuDPH42LsGMGJOoe4AsSd8Z4z9Lu4QZVDtJat+cX9ynooZMBj
-         qwHNEVKWYWEdIeUbQRbYzJVvb1PiIjhkgVo8Rm3d5WlGbM14MHJwzkqkfMFiJF86nO9G
-         RWzNEM5EwkoWpqZVJuLIB+OtXq47VctJQyCpiDx/0B/5vgYLTnfC/z/kuQpho3LVQ40Y
-         Ud2W7tG5aTm8hcGHt3l7siMzbx7vGJSWECqPKqy2IUenpxjU1D7MKXrxRtQ7aUWDUIYA
-         V5Ig==
-X-Gm-Message-State: AFqh2koHmna3mxCYfeo3j4xi2FvZ8jxRO2qvS16K9hYsInSqzn5muuzO
-        hKF+KKLaurHYypvi2uFqLJAwnG9XAA==
-X-Google-Smtp-Source: AMrXdXsfm+5e7bP6Ez53apRcW5O7aj/QeYKkciZJmLD3Ox1GllFhzNP9fOTlr3s8pMI0Dnt1dM71FQ==
-X-Received: by 2002:a9d:7096:0:b0:686:95e1:262c with SMTP id l22-20020a9d7096000000b0068695e1262cmr12246951otj.33.1674684923266;
-        Wed, 25 Jan 2023 14:15:23 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id br27-20020a056830391b00b006864346cbd1sm2682359otb.35.2023.01.25.14.15.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jan 2023 14:15:22 -0800 (PST)
-Received: (nullmailer pid 3059341 invoked by uid 1000);
-        Wed, 25 Jan 2023 22:15:22 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lubomir Rintel <lkundrak@v3.sk>, - <devicetree@vger.kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: 8250: Fix 'aspeed,lpc-io-reg' differing types
-Date:   Wed, 25 Jan 2023 16:15:12 -0600
-Message-Id: <20230125221513.3059177-1-robh@kernel.org>
-X-Mailer: git-send-email 2.39.0
+        bh=+8Yo/HtiEGSzYrRQZv+JkTOd1mtgjj1wSt54yjMvxXA=;
+        b=SZROYySYLQ79ARWLyy+D72ao69fKTTKeJB5Fm5QpQrttbUc9gkNnu7c9oeXh31hjSi
+         K1DvmeThZU1l4vZQz3HLLHl5EnjwdWRH1f2ZRDy9tqCYz8+Tl3Y9KJqRw/220MUjyuSk
+         OffYHePolouldghJSp4/APH7kU0wW1wuNymBU38wB9VLMBcfXl+adUwReOqXJ43StPdR
+         LebN6Pou+r+UYa8cFxDiEwYkRpgmDYyzUS02eWzqSQm/bG5nkUctypy6YF/uA3JvfcQO
+         3J59S8Qj+oXJ95d2jnQHvj8D/U24czvDVrIy5Gxs1bNOh4uatT21At9nEkKae8gPwU7g
+         g7eQ==
+X-Gm-Message-State: AFqh2kotavUKSE/i0kdHggKWJhgb2vnnJ3IsNF4mT9v8n2IBmHKjy9ke
+        cH5Nc/RKlrBWA0t8fphYmDiWuHoGYsto2w==
+X-Google-Smtp-Source: AMrXdXtqPmAMagtNmmrZZmv/mgdDOl34t48Vbh1iMpY2rNSQ9gDDkdfblHXG/sKtNniDa931jv8HIw==
+X-Received: by 2002:a05:622a:4a83:b0:3b6:3931:640d with SMTP id fw3-20020a05622a4a8300b003b63931640dmr50788197qtb.48.1674723057415;
+        Thu, 26 Jan 2023 00:50:57 -0800 (PST)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id 204-20020a3703d5000000b006f9ddaaf01esm551941qkd.102.2023.01.26.00.50.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Jan 2023 00:50:56 -0800 (PST)
+Received: by mail-yb1-f174.google.com with SMTP id e15so1162361ybn.10;
+        Thu, 26 Jan 2023 00:50:55 -0800 (PST)
+X-Received: by 2002:a25:37d4:0:b0:80b:8602:f3fe with SMTP id
+ e203-20020a2537d4000000b0080b8602f3femr1019227yba.36.1674723055416; Thu, 26
+ Jan 2023 00:50:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org> <20230124091916.45054-10-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230124091916.45054-10-krzysztof.kozlowski@linaro.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 26 Jan 2023 09:50:43 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXfD-G+SYQX5tJ8O-GSO3yTVL00xCX8A-Rc673zNkLbBw@mail.gmail.com>
+Message-ID: <CAMuHMdXfD-G+SYQX5tJ8O-GSO3yTVL00xCX8A-Rc673zNkLbBw@mail.gmail.com>
+Subject: Re: [PATCH v2 12/12] dt-bindings: serial: example cleanup
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Chester Lin <clin@suse.com>, Fugang Duan <fugang.duan@nxp.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Pragnesh Patel <pragnesh.patel@sifive.com>,
+        Le Ray <erwan.leray@foss.st.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The 'aspeed,lpc-io-reg' property is also defined in
-ipmi/aspeed,ast2400-kcs-bmc.yaml as a 'uint32-array'. Unify it to use
-'uint32-array' everywhere.
+On Tue, Jan 24, 2023 at 10:20 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> Adjust example DTS indentation to match recommended style of 4-spaces
+> and use lower-case hex for address in reg.  No functional change.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/serial/8250.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+>  .../bindings/serial/renesas,em-uart.yaml      | 10 +++----
+>  .../bindings/serial/renesas,hscif.yaml        | 26 +++++++++----------
+>  .../bindings/serial/renesas,sci.yaml          | 24 ++++++++---------
+>  .../bindings/serial/renesas,scif.yaml         | 24 ++++++++---------
+>  .../bindings/serial/renesas,scifa.yaml        | 22 ++++++++--------
+>  .../bindings/serial/renesas,scifb.yaml        | 12 ++++-----
 
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index 34b8e59aa9d4..bf570f17459e 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -200,7 +200,8 @@ properties:
-     deprecated: true
- 
-   aspeed,lpc-io-reg:
--    $ref: '/schemas/types.yaml#/definitions/uint32'
-+    $ref: '/schemas/types.yaml#/definitions/uint32-array'
-+    maxItems: 1
-     description: |
-       The VUART LPC address.  Only applicable to aspeed,ast2500-vuart.
- 
--- 
-2.39.0
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
