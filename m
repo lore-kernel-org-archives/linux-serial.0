@@ -2,114 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C6AC54E94
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Jan 2023 08:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D41B7C61DA3
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Jan 2023 13:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236240AbjAZIvB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Jan 2023 03:51:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S230432AbjAZNy2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Jan 2023 08:54:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbjAZIvA (ORCPT
+        with ESMTP id S229626AbjAZNyL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Jan 2023 03:51:00 -0500
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4F32194B;
-        Thu, 26 Jan 2023 00:50:58 -0800 (PST)
-Received: by mail-qt1-f182.google.com with SMTP id x5so772565qti.3;
-        Thu, 26 Jan 2023 00:50:58 -0800 (PST)
+        Thu, 26 Jan 2023 08:54:11 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6362643935
+        for <linux-serial@vger.kernel.org>; Thu, 26 Jan 2023 05:53:43 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id d132so2016906ybb.5
+        for <linux-serial@vger.kernel.org>; Thu, 26 Jan 2023 05:53:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bpuj4csXn4X99vb3I/8s21NoXDHeQ/0SUOopiJHmpcA=;
+        b=T1OCixkhNVvyqIZG02I05yLXMmu0eRtoy7a1SbHSvmaUaNSxhw1D3/LIvUbLquayXB
+         yV+BtLGzuQfszCSBlQ9R2P2LmFDhBpW5QHj6vNoet2lRvFj8mHM/2tGpoJwDJnX6vfGq
+         9aG1wkd9GjOd0Qo5EMgr5y9lhqsZraSPNFYsOSMgJ90jdp8NZdl4VDBVh7+UXOdvYoUv
+         aLPu8JIpl49wnMfa+jFlLrcWSoWGWtDdAWA31H+OqdURvRn2fO1wKsC98OoirxOfs102
+         psM27Q4jO2ZFe+Mw/uTheQ0YXYL6e1JXsDMIYsioyjJA6+a0xudWPVol+9wiSlfZMCqZ
+         1Ykw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+8Yo/HtiEGSzYrRQZv+JkTOd1mtgjj1wSt54yjMvxXA=;
-        b=SZROYySYLQ79ARWLyy+D72ao69fKTTKeJB5Fm5QpQrttbUc9gkNnu7c9oeXh31hjSi
-         K1DvmeThZU1l4vZQz3HLLHl5EnjwdWRH1f2ZRDy9tqCYz8+Tl3Y9KJqRw/220MUjyuSk
-         OffYHePolouldghJSp4/APH7kU0wW1wuNymBU38wB9VLMBcfXl+adUwReOqXJ43StPdR
-         LebN6Pou+r+UYa8cFxDiEwYkRpgmDYyzUS02eWzqSQm/bG5nkUctypy6YF/uA3JvfcQO
-         3J59S8Qj+oXJ95d2jnQHvj8D/U24czvDVrIy5Gxs1bNOh4uatT21At9nEkKae8gPwU7g
-         g7eQ==
-X-Gm-Message-State: AFqh2kotavUKSE/i0kdHggKWJhgb2vnnJ3IsNF4mT9v8n2IBmHKjy9ke
-        cH5Nc/RKlrBWA0t8fphYmDiWuHoGYsto2w==
-X-Google-Smtp-Source: AMrXdXtqPmAMagtNmmrZZmv/mgdDOl34t48Vbh1iMpY2rNSQ9gDDkdfblHXG/sKtNniDa931jv8HIw==
-X-Received: by 2002:a05:622a:4a83:b0:3b6:3931:640d with SMTP id fw3-20020a05622a4a8300b003b63931640dmr50788197qtb.48.1674723057415;
-        Thu, 26 Jan 2023 00:50:57 -0800 (PST)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id 204-20020a3703d5000000b006f9ddaaf01esm551941qkd.102.2023.01.26.00.50.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Jan 2023 00:50:56 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id e15so1162361ybn.10;
-        Thu, 26 Jan 2023 00:50:55 -0800 (PST)
-X-Received: by 2002:a25:37d4:0:b0:80b:8602:f3fe with SMTP id
- e203-20020a2537d4000000b0080b8602f3femr1019227yba.36.1674723055416; Thu, 26
- Jan 2023 00:50:55 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bpuj4csXn4X99vb3I/8s21NoXDHeQ/0SUOopiJHmpcA=;
+        b=TpD808BTnJshtz3BST9O4RSfzwdHPpXGTn0jlqT9JOnIjaWQREzSHbVy05lN8ZAy3H
+         EA8wcvccZinlyuZp7vYvfwO1selgJnotzxlaF7zavevYtuboW7KWnaulPo+KNCtnHPSw
+         YqYcGgycRh+DPfpEhBxfMK/dFVQPnFfb0j4nxEsS4RwvvFrbAU7sctMFJBfW2EM16eka
+         JcC8+98dPR1EoXeuV2DKEjz2zPZ+wAlBnc2hKZgTVoTuBo3xTgsitYXuSlvPKyI0OymG
+         PNP7qTv5K28+sMkX5TwMkzAANbZ1nGrxEEifm6YuIFXbetGKWd8LngYTPksyhnYvb+W+
+         kdrQ==
+X-Gm-Message-State: AO0yUKUWFj429MQuav+o+U9ZvWPHzIhd9oge3nLKKtcAR6MhbYdPrTPj
+        21ZclISJT7rkNCROfUf/QNUEoYoU4dbcHEB85B5gwg==
+X-Google-Smtp-Source: AK7set9K8VEvJWIIsQbzLpHPBdIj6YRdDIIsA2XTX+4WAVIQ5O4wlEhz7CX7+BOEhoz7cif/nbeZ9U+rSHTl2iHnGDQ=
+X-Received: by 2002:a25:f81b:0:b0:80b:821f:b621 with SMTP id
+ u27-20020a25f81b000000b0080b821fb621mr752679ybd.24.1674741217835; Thu, 26 Jan
+ 2023 05:53:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20230124091602.44027-1-krzysztof.kozlowski@linaro.org> <20230124091916.45054-10-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230124091916.45054-10-krzysztof.kozlowski@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 26 Jan 2023 09:50:43 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXfD-G+SYQX5tJ8O-GSO3yTVL00xCX8A-Rc673zNkLbBw@mail.gmail.com>
-Message-ID: <CAMuHMdXfD-G+SYQX5tJ8O-GSO3yTVL00xCX8A-Rc673zNkLbBw@mail.gmail.com>
-Subject: Re: [PATCH v2 12/12] dt-bindings: serial: example cleanup
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Chester Lin <clin@suse.com>, Fugang Duan <fugang.duan@nxp.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Pragnesh Patel <pragnesh.patel@sifive.com>,
-        Le Ray <erwan.leray@foss.st.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
+References: <20230125143503.1015424-1-bero@baylibre.com> <20230125143503.1015424-5-bero@baylibre.com>
+In-Reply-To: <20230125143503.1015424-5-bero@baylibre.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 26 Jan 2023 14:53:26 +0100
+Message-ID: <CACRpkdYMif0--zeKe-tccUJvjiQAkbzBq2nCYMS8qU_imZmCmg@mail.gmail.com>
+Subject: Re: [PATCH v9 4/9] dt-bindings: pinctrl: add bindings for Mediatek
+ MT8365 SoC
+To:     =?UTF-8?Q?Bernhard_Rosenkr=C3=A4nzer?= <bero@baylibre.com>
+Cc:     linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
+        maz@kernel.org, lee@kernel.org, matthias.bgg@gmail.com,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        chunfeng.yun@mediatek.com, angelogioacchino.delregno@collabora.com,
+        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
+        sean.wang@mediatek.com, zhiyong.tao@mediatek.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 24, 2023 at 10:20 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> Adjust example DTS indentation to match recommended style of 4-spaces
-> and use lower-case hex for address in reg.  No functional change.
+On Wed, Jan 25, 2023 at 3:35 PM Bernhard Rosenkr=C3=A4nzer <bero@baylibre.c=
+om> wrote:
+
+> Add devicetree bindings for Mediatek MT8365 pinctrl driver.
 >
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Signed-off-by: Bernhard Rosenkr=C3=A4nzer <bero@baylibre.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
->  .../bindings/serial/renesas,em-uart.yaml      | 10 +++----
->  .../bindings/serial/renesas,hscif.yaml        | 26 +++++++++----------
->  .../bindings/serial/renesas,sci.yaml          | 24 ++++++++---------
->  .../bindings/serial/renesas,scif.yaml         | 24 ++++++++---------
->  .../bindings/serial/renesas,scifa.yaml        | 22 ++++++++--------
->  .../bindings/serial/renesas,scifb.yaml        | 12 ++++-----
+This patch applied to the pinctrl tree, decreasing the depth of your
+patch stack by 1!
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Yours,
+Linus Walleij
