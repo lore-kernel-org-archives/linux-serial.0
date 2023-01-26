@@ -2,86 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D41B7C61DA3
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Jan 2023 13:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CC0C54E94
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Jan 2023 14:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbjAZNy2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Jan 2023 08:54:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
+        id S231879AbjAZOia (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 Jan 2023 09:38:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbjAZNyL (ORCPT
+        with ESMTP id S229948AbjAZOi3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Jan 2023 08:54:11 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6362643935
-        for <linux-serial@vger.kernel.org>; Thu, 26 Jan 2023 05:53:43 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id d132so2016906ybb.5
-        for <linux-serial@vger.kernel.org>; Thu, 26 Jan 2023 05:53:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bpuj4csXn4X99vb3I/8s21NoXDHeQ/0SUOopiJHmpcA=;
-        b=T1OCixkhNVvyqIZG02I05yLXMmu0eRtoy7a1SbHSvmaUaNSxhw1D3/LIvUbLquayXB
-         yV+BtLGzuQfszCSBlQ9R2P2LmFDhBpW5QHj6vNoet2lRvFj8mHM/2tGpoJwDJnX6vfGq
-         9aG1wkd9GjOd0Qo5EMgr5y9lhqsZraSPNFYsOSMgJ90jdp8NZdl4VDBVh7+UXOdvYoUv
-         aLPu8JIpl49wnMfa+jFlLrcWSoWGWtDdAWA31H+OqdURvRn2fO1wKsC98OoirxOfs102
-         psM27Q4jO2ZFe+Mw/uTheQ0YXYL6e1JXsDMIYsioyjJA6+a0xudWPVol+9wiSlfZMCqZ
-         1Ykw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bpuj4csXn4X99vb3I/8s21NoXDHeQ/0SUOopiJHmpcA=;
-        b=TpD808BTnJshtz3BST9O4RSfzwdHPpXGTn0jlqT9JOnIjaWQREzSHbVy05lN8ZAy3H
-         EA8wcvccZinlyuZp7vYvfwO1selgJnotzxlaF7zavevYtuboW7KWnaulPo+KNCtnHPSw
-         YqYcGgycRh+DPfpEhBxfMK/dFVQPnFfb0j4nxEsS4RwvvFrbAU7sctMFJBfW2EM16eka
-         JcC8+98dPR1EoXeuV2DKEjz2zPZ+wAlBnc2hKZgTVoTuBo3xTgsitYXuSlvPKyI0OymG
-         PNP7qTv5K28+sMkX5TwMkzAANbZ1nGrxEEifm6YuIFXbetGKWd8LngYTPksyhnYvb+W+
-         kdrQ==
-X-Gm-Message-State: AO0yUKUWFj429MQuav+o+U9ZvWPHzIhd9oge3nLKKtcAR6MhbYdPrTPj
-        21ZclISJT7rkNCROfUf/QNUEoYoU4dbcHEB85B5gwg==
-X-Google-Smtp-Source: AK7set9K8VEvJWIIsQbzLpHPBdIj6YRdDIIsA2XTX+4WAVIQ5O4wlEhz7CX7+BOEhoz7cif/nbeZ9U+rSHTl2iHnGDQ=
-X-Received: by 2002:a25:f81b:0:b0:80b:821f:b621 with SMTP id
- u27-20020a25f81b000000b0080b821fb621mr752679ybd.24.1674741217835; Thu, 26 Jan
- 2023 05:53:37 -0800 (PST)
-MIME-Version: 1.0
-References: <20230125143503.1015424-1-bero@baylibre.com> <20230125143503.1015424-5-bero@baylibre.com>
-In-Reply-To: <20230125143503.1015424-5-bero@baylibre.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 26 Jan 2023 14:53:26 +0100
-Message-ID: <CACRpkdYMif0--zeKe-tccUJvjiQAkbzBq2nCYMS8qU_imZmCmg@mail.gmail.com>
-Subject: Re: [PATCH v9 4/9] dt-bindings: pinctrl: add bindings for Mediatek
- MT8365 SoC
-To:     =?UTF-8?Q?Bernhard_Rosenkr=C3=A4nzer?= <bero@baylibre.com>
+        Thu, 26 Jan 2023 09:38:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6806180;
+        Thu, 26 Jan 2023 06:38:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58C52B81D15;
+        Thu, 26 Jan 2023 14:38:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 819EEC433D2;
+        Thu, 26 Jan 2023 14:38:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674743906;
+        bh=J6kTUDHhp3UX3SKN+nHetWZA+yyFDNmaZMGXaU/Kwxo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AYTqRKSW62JnHa+QPvCzuJ7D2W5Sd7w+SS+Gc0kWhW6sBEwV0WEY2ZuHBR5v2yJqW
+         gOTg417S8mg4dOOPMkiJ26ELSOjpVxezlY05fYHilegIrMTy6n/ONSO4VdXuJnQFvO
+         0SVTvHTgCwbRdcR4w7ZNDUiO1wsuOz9YZRme9IUOTMQds93NFLeJSiCYsDN6yw/DBi
+         uxPg6UxNhAGKostehxnl/tu8sS8gzTLppGnOWRvt4QQVO+51Aj4ddhEkv7JfT6SAG5
+         wngRELtMSbB/qu8QwRM3+FhYlIuT7B3E6jv0iwh5yF5ytRm8YliUnKog2E4Tkrr5il
+         Pyu2Yp1gItPMg==
+Date:   Thu, 26 Jan 2023 14:38:18 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Bernhard =?iso-8859-1?Q?Rosenkr=E4nzer?= <bero@baylibre.com>
 Cc:     linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         linux-usb@vger.kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
-        maz@kernel.org, lee@kernel.org, matthias.bgg@gmail.com,
+        maz@kernel.org, linus.walleij@linaro.org, matthias.bgg@gmail.com,
         gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
         chunfeng.yun@mediatek.com, angelogioacchino.delregno@collabora.com,
         nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
         sean.wang@mediatek.com, zhiyong.tao@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v9 3/9] dt-bindings: mfd: syscon: Add mt8365-syscfg
+Message-ID: <Y9KQWp1942TDjV1P@google.com>
+References: <20230125143503.1015424-1-bero@baylibre.com>
+ <20230125143503.1015424-4-bero@baylibre.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230125143503.1015424-4-bero@baylibre.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 25, 2023 at 3:35 PM Bernhard Rosenkr=C3=A4nzer <bero@baylibre.c=
-om> wrote:
+On Wed, 25 Jan 2023, Bernhard Rosenkränzer wrote:
 
-> Add devicetree bindings for Mediatek MT8365 pinctrl driver.
->
-> Signed-off-by: Bernhard Rosenkr=C3=A4nzer <bero@baylibre.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
+> Document Mediatek mt8365-syscfg
+> 
+> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  Documentation/devicetree/bindings/mfd/syscon.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-This patch applied to the pinctrl tree, decreasing the depth of your
-patch stack by 1!
+Applied, thanks
 
-Yours,
-Linus Walleij
+-- 
+Lee Jones [李琼斯]
