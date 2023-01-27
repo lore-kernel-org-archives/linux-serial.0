@@ -2,95 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A01C61DA3
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Jan 2023 15:04:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAE6C61DA7
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Jan 2023 09:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231700AbjAZPEc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Jan 2023 10:04:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
+        id S233019AbjA0Jcb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Jan 2023 04:32:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbjAZPEc (ORCPT
+        with ESMTP id S233003AbjA0Jc2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Jan 2023 10:04:32 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4946B981
-        for <linux-serial@vger.kernel.org>; Thu, 26 Jan 2023 07:04:30 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id w11so3395961lfu.11
-        for <linux-serial@vger.kernel.org>; Thu, 26 Jan 2023 07:04:30 -0800 (PST)
+        Fri, 27 Jan 2023 04:32:28 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62ACD38024
+        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 01:32:25 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id l8so2996844wms.3
+        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 01:32:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=85g64dsl/DcFY/LlzFQvHEB0mO6DyTsjvCN0CbsFtNw=;
-        b=RkiI+vwnnL7VCkolwfyJmz2pmhwyz1uPFgE9WrH3eTnJ0h1OjtfKBo3De8gNoeWD+X
-         l3xRPZIq/L9vFJzv6PULtvhXKKJtDa9LLTd2AiHrb4BZ60JZC+IqDP/SwDQlwxNDg3Lu
-         9JvSTWA0sLX1/2yvxrUmgT4h1TvymGWt7fVAn2xOTJDbbM8Feyi8EviAkCrynsKOph1z
-         JlCZLF6rHye2m3z2r22q6SSNhTHJoseOKvgJklu5p9zXC51NgfsruhZVLFQ0SRjjMd8L
-         sQonnT13MfN0mupzXLJTbk49qRIe8hctNAc3jWuKFq37gyG4sRWzTKJCqEAo/+pvSIr+
-         DyPw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+nr5yhr/+t2gpLfGOs+Jk9mqx4K88IomiY/057Wk89I=;
+        b=afmjeNTvz+QfUYiPvDH9aI4+T3r6PKox0Z9VZNkm/tf4SrNrWhmAcU/fV+6GKjKun0
+         eo9QyIGD2KagMefssAESDksaJXXFJRmKbfo1rmLaHPLpff+IelOR/8NStIUQfsWi55uS
+         qA+Vkq6u2u9jqDXXsflTi3MrPmYzdeVqSMDTaSRU+kZaMs9USDTu2cP8vy0U7WTP9hWf
+         NxrdpUjYK3tZ0pqfZrABbKlgk6Jg/0+eBZF8tzTept+x41W70ysQfVEoPC9ugQNzXPuM
+         s+CCp3ROSLUim+9jHenXJtiPJrg6FHgFAKQW/3155i8iK7ZkRBShMo40/I7t/oUoTRlM
+         kD7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=85g64dsl/DcFY/LlzFQvHEB0mO6DyTsjvCN0CbsFtNw=;
-        b=iwEk4Q5MZG5yTtKUcV4lcvW0o7R9IqrUT1xxtJc5U5Bk4/1rT0VEoJWFlvsd6kZ7Af
-         Ugll7xMnuI9/VjIH7CXH/mdDd9iYa6T0zWzR+uQq+fuABKxaev5Vie0RgpJItVQgyQu5
-         F8f6RdNjpEY/94F0uhjLisiyZgCfnI1HpoStPdfNHUOdqUtbX41Bo5BcyYPJST5xwxW4
-         J/rhG0F45JeESLNFm5+BSXsSO4j6Ra9NUyJurjzrBaBsPLnqQjXPdN9Mb5q5g9DC2xNc
-         rqpu7MDmxAc/JFOrJ3PMBeKkCeNSdLi8RiuR77xMuIoZmh+u0UXX8FCQi1jZpmDtwM4e
-         SJwA==
-X-Gm-Message-State: AFqh2koru2VJs38Y7onEQHjJUoGP2Qq6vxX/FAt2UgRfpfrjFGFDHFzO
-        CvV2wypoJF9Cjbo2a+hiJvFmWQ==
-X-Google-Smtp-Source: AMrXdXu6eyBeVwquiscq6dc3oKOQoMKYuh59bv0ZswxZ5ffCDxH44vMaC4VrsM+OBs46fi7tYToQIA==
-X-Received: by 2002:ac2:4f0c:0:b0:4ca:f887:fe99 with SMTP id k12-20020ac24f0c000000b004caf887fe99mr9661416lfr.25.1674745468435;
-        Thu, 26 Jan 2023 07:04:28 -0800 (PST)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id p8-20020adff208000000b002423edd7e50sm1618824wro.32.2023.01.26.07.04.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Jan 2023 07:04:27 -0800 (PST)
-Message-ID: <0a47dfbd-d786-c7bd-e4f5-c71e1b649b9f@linaro.org>
-Date:   Thu, 26 Jan 2023 16:04:25 +0100
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+nr5yhr/+t2gpLfGOs+Jk9mqx4K88IomiY/057Wk89I=;
+        b=LpsFGxZtes0txPwd7li1e1cLn5t25mHSsQuHmogsv7sBBG2hUOs4zRPStM0D66f0+C
+         kCnT2pWCK9F6QqCq6QOandSq5Mw+4PO5qZXn1KeSym5pgAVGx2PEUoxoldDhKdIXnJTQ
+         3Nu4Iedmgt7ajz4t5w/ijuRw0W4N5ksHSYo8sNacVrs/Sw1VbZr58i3xjLFjyWrngp/Y
+         PT64D4KNQnBhXickiRv/8Ks7zx3G1OuvfPcsF31T0cbwuPyOazpRWKXG+zKox2AduH9U
+         foO6ih0MrYmh2XXNdAM8OXYbeoXOMNCcOddRnYU3P/5hI0BMGzoF3qnOyDidjaYh3HS0
+         8R8w==
+X-Gm-Message-State: AFqh2krTfdp3fJ+D3dzHdMIC/VX+7F/yakluenSE2F2m9A/c/6eqawbb
+        bokuRRub6VUlOeKeIf4jIDC+/A==
+X-Google-Smtp-Source: AMrXdXuMTQOCdCJ4CvxFABguPpRWFrI5npvRZDl6tCte99HXwtgK6k0OjDxljIq3pESdxDzl3Zcb6A==
+X-Received: by 2002:a05:600c:1c1a:b0:3da:fbd2:a324 with SMTP id j26-20020a05600c1c1a00b003dafbd2a324mr38878286wms.36.1674811943923;
+        Fri, 27 Jan 2023 01:32:23 -0800 (PST)
+Received: from krzk-bin.. ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id e19-20020a05600c439300b003cfd4e6400csm3795265wmn.19.2023.01.27.01.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Jan 2023 01:32:23 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linusw@kernel.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Marek Vasut <marex@denx.de>, Lubomir Rintel <lkundrak@v3.sk>,
+        - <devicetree@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 0/3] dt-bindings: serial/mtd/mc/ata: use MC peripheral props
+Date:   Fri, 27 Jan 2023 10:32:14 +0100
+Message-Id: <20230127093217.60818-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v9 7/9] dt-bindings: timer: mediatek,mtk-timer: add MT8365
-Content-Language: en-US
-To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
-        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
-        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
-        chunfeng.yun@mediatek.com, angelogioacchino.delregno@collabora.com,
-        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
-        sean.wang@mediatek.com, zhiyong.tao@mediatek.com
-References: <20230125143503.1015424-1-bero@baylibre.com>
- <20230125143503.1015424-8-bero@baylibre.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20230125143503.1015424-8-bero@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25/01/2023 15:35, Bernhard Rosenkränzer wrote:
-> Add binding description for mediatek,mt8365-systimer
-> 
-> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
+Hi,
 
-Applied, thanks
+Dependencies
+============
+I think entire patchset should go via one tree (Rob's). Patch #2 depends on
+patch #1.  Patch #3 could go separate tree as long as others are in the
+linux-next.  However for simplicity let's push everything through Rob's DT
+tree?
+
+Changelog
+=========
+This is a v2 of this one patch:
+https://lore.kernel.org/linux-devicetree/20230123151302.368277-11-krzysztof.kozlowski@linaro.org/
+
+Changes since v1:
+1. Add patches 1 and 2 to fix dt_binding_check and few dtbs_check warnings
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (3):
+  dt-bindings: intel,ixp4xx-expansion-bus: split out peripheral
+    properties
+  dt-bindings: reference MC peripheral properties in relevant devices
+  dt-bindings: serial: restrict possible child node names
+
+ .../ata/intel,ixp4xx-compact-flash.yaml       |  1 +
+ ...intel,ixp4xx-expansion-bus-controller.yaml | 64 +--------------
+ ...tel,ixp4xx-expansion-peripheral-props.yaml | 80 +++++++++++++++++++
+ .../mc-peripheral-props.yaml                  |  1 +
+ .../devicetree/bindings/mtd/mtd-physmap.yaml  |  1 +
+ .../devicetree/bindings/serial/8250.yaml      |  1 +
+ .../devicetree/bindings/serial/serial.yaml    |  2 +-
+ .../bindings/watchdog/maxim,max63xx.yaml      |  1 +
+ 8 files changed, 87 insertions(+), 64 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml
 
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+2.34.1
 
