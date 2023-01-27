@@ -2,103 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6669AC54EAA
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Jan 2023 13:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE75C61DA3
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Jan 2023 14:14:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbjA0N32 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Jan 2023 08:29:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
+        id S233225AbjA0OON (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Jan 2023 09:14:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232266AbjA0N32 (ORCPT
+        with ESMTP id S233022AbjA0ON5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Jan 2023 08:29:28 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62F57448F
-        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 05:29:26 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id u72so5953172ybi.7
-        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 05:29:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=d90t2HT4axfU/qrUeGEIoyPWhawGVIFewaicVqJDUqg=;
-        b=bkF37mijcUJHRTb1p6rDKR/QOD6cFK2fbdggg39R9YmoMeA6tsJ6yvEJ14vk9DFsmT
-         cnWWi3EdLY4EgOwM0aFp0esXbWtzUduqqXAgTchHNp1iiaa8mDjQrvwF/FYs7Ezq1EiR
-         UD9b2YeYJPMGKbP99a4CO2DUdafwP48N2eGkFFcn4zdO8fQu3CVfLNPxagbHGVNi9Aid
-         LKTgkD2YpIKAt4xYqDBLxTKiuI2Bnpd+xENAUnjYKhH1WdkmL3iv9NjHp+q8EXfYVfUM
-         wFr6J8H/b6wmAOQ8UXn2NwQkBoN2rvU1BFiqJmNOisRwwkoqxs3IS/K9cTWqDBvwedN8
-         E8AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=d90t2HT4axfU/qrUeGEIoyPWhawGVIFewaicVqJDUqg=;
-        b=ftfGHlvdyEXQC/WLeotv1aTyA3wkv+K3/+teyTcQ9YOocllYea294cuYGz5MahmhD0
-         MucNM6lLBlOuH/sT1Lk3dAenmk2Z7tI9nPw596fVusmWvkTEgrey3g5IIiiMvGuio03F
-         BGatrQSuQASQduWQk/rg+9q6Lpn3cvLDUN9Xn3Gv7nWX08hfd1oo15Ek8zfgOQHk6Jco
-         GMt1U2x4TcRE42V21qIs79JreCJEmMHkCGVS7FN3Bb/isyyv1reP30mM5uC4l31559f7
-         0LilEz23v/NbKst1JV87Kk4L5/CKYNElf3kmsEaTiKNVijQcN8Kb3h0us50LOyaO7ns9
-         1naQ==
-X-Gm-Message-State: AO0yUKWLGOfZve6A+hhPTokbdsHOia+YIkDnGNBrlBSvg23aN1sOGjqY
-        cs3CTK5TswNfj+AjyiGr+Kzdb25WhYzCh75etUpUSA==
-X-Google-Smtp-Source: AK7set/ciBNiEBP0CiIy5i+btLQY0D92zzz0gwoYZYEZs0myOJXaIQEqBAz/mNtne8bob6i5oJYojtdtlEmDw9U92cM=
-X-Received: by 2002:a25:f81b:0:b0:80b:821f:b621 with SMTP id
- u27-20020a25f81b000000b0080b821fb621mr1098028ybd.24.1674826166163; Fri, 27
- Jan 2023 05:29:26 -0800 (PST)
+        Fri, 27 Jan 2023 09:13:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2CE783D8;
+        Fri, 27 Jan 2023 06:13:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1489861CB0;
+        Fri, 27 Jan 2023 14:13:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D437C433D2;
+        Fri, 27 Jan 2023 14:13:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1674828835;
+        bh=LJLYKX3J5X8hhM7+whZMdOoAPy1yjNgGrNf65NObbNk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tsznf9uEOUJO2JpQeb4rNpTHanfowhqletsU05eYDd8bBe2LrnC0OC+u4xLSLBI/i
+         hIJfBtvSmvIG0cNc6xVh9j+tpE2zw1T6pWoa+i/fv7CX2PNI26xzHt3VMg82qO3TXz
+         Os/Idw0126BgSQ3Xwn1agpERM0pIaw34zTRn4NhM=
+Date:   Fri, 27 Jan 2023 15:13:52 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     kernel@pengutronix.de,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
+        Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>,
+        Angel Iglesias <ang.iglesiasg@gmail.com>,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        Grant Likely <grant.likely@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 571/606] serial: sc16is7xx: Convert to i2c's .probe_new()
+Message-ID: <Y9PcIKLIbmsLB8lQ@kroah.com>
+References: <20221118224540.619276-1-uwe@kleine-koenig.org>
+ <20221118224540.619276-572-uwe@kleine-koenig.org>
+ <536ac08e-bdbd-b4d6-8309-8f6763f8db12@kernel.org>
+ <20221121070757.cqiybt5uk4qiczmr@pengutronix.de>
+ <0bfea903-5efd-a76d-5944-16a2c9362adb@kernel.org>
+ <20221123080912.lbmfgnco67psdu27@pengutronix.de>
+ <20230127101025.evefhpwpfikahd3k@pengutronix.de>
+ <Y9O5cMnC+uKrPToz@kroah.com>
+ <20230127131751.gupnp7l6wyrutpmw@pengutronix.de>
 MIME-Version: 1.0
-References: <20230127093217.60818-1-krzysztof.kozlowski@linaro.org> <20230127093217.60818-4-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230127093217.60818-4-krzysztof.kozlowski@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 27 Jan 2023 14:29:14 +0100
-Message-ID: <CACRpkdbOZLhQ1DTNJowNXF=O-Nvpqcb_A+PwkPWFiUSQUbkR9A@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] dt-bindings: serial: restrict possible child node names
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linusw@kernel.org>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Marek Vasut <marex@denx.de>, Lubomir Rintel <lkundrak@v3.sk>,
-        - <devicetree@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230127131751.gupnp7l6wyrutpmw@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 10:32 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+On Fri, Jan 27, 2023 at 02:17:51PM +0100, Uwe Kleine-König wrote:
+> Hello Greg,
+> 
+> On Fri, Jan 27, 2023 at 12:45:52PM +0100, Greg Kroah-Hartman wrote:
+> > On Fri, Jan 27, 2023 at 11:10:25AM +0100, Uwe Kleine-König wrote:
+> > > On Wed, Nov 23, 2022 at 09:09:12AM +0100, Uwe Kleine-König wrote:
+> > > > On Wed, Nov 23, 2022 at 07:36:52AM +0100, Jiri Slaby wrote:
+> > > > > BTW is this a performance issue? I.e. does it slow down the boot?
+> > > > 
+> > > > I don't know the start motivation for Lee (who triggered the conversion
+> > > > in b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new() call-back
+> > > > type")).
+> > > > Looking at the git history, he created 1e98dcd77970 ("mfd: 88pm860x:
+> > > > Move over to new I2C device .probe() call") converting a driver that
+> > > > doesn't benefit immensely. The lookup is more expensive for drivers with
+> > > > big .id_table, the converted driver has only one entry.
+> > > > 
+> > > > I think in the end is a mixture between:
+> > > > 
+> > > >  - A big part of the drivers doesn't benefit from the lookup.
+> > > >  - For most other busses the probe function only gets a device parameter
+> > > >    and no id (spi, platform, i3c). There are counter examples though:
+> > > >    amba, usb. Didn't check further.
+> > > 
+> > > The discussion somehow ended here without a real result.
+> > > 
+> > > As of today's next master there are only 9 drivers left using .probe().
+> > > So I'd like to stop this discussion and ask to apply the conversion for
+> > > the sc16is7xx driver to be able to complete the conversion.
+> > > 
+> > > My plan is to drop the .probe callback as it is today after the next
+> > > merge window. So I ask the serial maintainers to either take the patch
+> > > under discussion for the next merge window or accept that the conversion
+> > > is done together with the patch that drops .probe() that probably will
+> > > go in via the i2c tree.
+> > 
+> > I don't see the patch anymore,
+> 
+> If you want to take a look:
+> 
+> 	b4 am 20221118224540.619276-572-uwe@kleine-koenig.org
+> 
+> or
+> 
+> 	https://lore.kernel.org/lkml/20221118224540.619276-572-uwe@kleine-koenig.org
+> 
+> > so I have no objection for it going through the i2c tree.
+> 
+> Can I interpret that as an Ack? :-)
 
-> The re-usable serial.yaml schema matches every property with ".*"
-> pattern, thus any other schema referencing it will not report unknown
-> (unevaluated) properties.  This hides several wrong properties.  It is
-> a limitation of dtschema, thus provide a simple workaround: expect
-> children to be only of few names matching upstream usage (Bluetooth,
-> GNSS, GPS and MCU).
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Even better:
 
-Fair enough,
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-
-However I think V.35 WAN devices (high speed serial network links)
-should actually be using this? They are just some fancy serial port
-after all. Cf
-Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml
-
-No big deal I guess since they are mostly an anarchronism and not
-on the table right now.
-
-Yours,
-Linus Walleij
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
