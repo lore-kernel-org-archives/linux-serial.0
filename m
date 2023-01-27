@@ -2,115 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE75C61DA3
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Jan 2023 14:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 278F0C38142
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Jan 2023 14:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233225AbjA0OON (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Jan 2023 09:14:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
+        id S233511AbjA0OiY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Jan 2023 09:38:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbjA0ON5 (ORCPT
+        with ESMTP id S233561AbjA0OiW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Jan 2023 09:13:57 -0500
+        Fri, 27 Jan 2023 09:38:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2CE783D8;
-        Fri, 27 Jan 2023 06:13:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B948A13DD1;
+        Fri, 27 Jan 2023 06:38:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1489861CB0;
-        Fri, 27 Jan 2023 14:13:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D437C433D2;
-        Fri, 27 Jan 2023 14:13:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1674828835;
-        bh=LJLYKX3J5X8hhM7+whZMdOoAPy1yjNgGrNf65NObbNk=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53DEE61CBD;
+        Fri, 27 Jan 2023 14:38:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B39A1C433D2;
+        Fri, 27 Jan 2023 14:38:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1674830296;
+        bh=bTSW7NmUsG8tgCcNy2Sa9snhAmKGyq9mToBUWqqSejs=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tsznf9uEOUJO2JpQeb4rNpTHanfowhqletsU05eYDd8bBe2LrnC0OC+u4xLSLBI/i
-         hIJfBtvSmvIG0cNc6xVh9j+tpE2zw1T6pWoa+i/fv7CX2PNI26xzHt3VMg82qO3TXz
-         Os/Idw0126BgSQ3Xwn1agpERM0pIaw34zTRn4NhM=
-Date:   Fri, 27 Jan 2023 15:13:52 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     kernel@pengutronix.de,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>,
-        Angel Iglesias <ang.iglesiasg@gmail.com>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        Grant Likely <grant.likely@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH 571/606] serial: sc16is7xx: Convert to i2c's .probe_new()
-Message-ID: <Y9PcIKLIbmsLB8lQ@kroah.com>
-References: <20221118224540.619276-1-uwe@kleine-koenig.org>
- <20221118224540.619276-572-uwe@kleine-koenig.org>
- <536ac08e-bdbd-b4d6-8309-8f6763f8db12@kernel.org>
- <20221121070757.cqiybt5uk4qiczmr@pengutronix.de>
- <0bfea903-5efd-a76d-5944-16a2c9362adb@kernel.org>
- <20221123080912.lbmfgnco67psdu27@pengutronix.de>
- <20230127101025.evefhpwpfikahd3k@pengutronix.de>
- <Y9O5cMnC+uKrPToz@kroah.com>
- <20230127131751.gupnp7l6wyrutpmw@pengutronix.de>
+        b=tPljhGE8A8JrC03p17PQpzYPtj3u75TC2O/cCxPLGk7/Pmz5E/ImwxNSE8X1ldeAo
+         tTr7Y5V6jtLpeG/wzh6dpC6F4GtN0gucg5gzrvT7JOmJ++JYoUyGHXibvBBnZqorVM
+         hB9wqE7Vg9ddwFl+Ux8p5/6zmkVBUM0MMt36rd2+Yg5qcg/OsOFCTEIGxMX8F8SfEf
+         y36NhgZyoLpyXnJixgHK1oB/FMExUaFyk3A7kqqZKO1LrmDjqJA/SSBRw51/tNYBY9
+         5jPeHU6lRheS1fMNKS8pl8HJeTIyXFJz8MzJhdNhcfsqkRB9gOjLofn8lhEOsvOcZM
+         mHWz3+n54xWzw==
+Date:   Fri, 27 Jan 2023 14:38:08 +0000
+From:   Lee Jones <lee@kernel.org>
+To:     Bernhard =?iso-8859-1?Q?Rosenkr=E4nzer?= <bero@baylibre.com>
+Cc:     linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
+        maz@kernel.org, linus.walleij@linaro.org, matthias.bgg@gmail.com,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        chunfeng.yun@mediatek.com, angelogioacchino.delregno@collabora.com,
+        allen-kh.cheng@mediatek.com, nfraprado@collabora.com,
+        andrew@lunn.ch, gtk3@inbox.ru, sean.wang@mediatek.com,
+        zhiyong.tao@mediatek.com
+Subject: Re: [PATCH v8 3/9] dt-bindings: mfd: syscon: Add mt8365-syscfg
+Message-ID: <Y9Ph0E09GycQ20J4@google.com>
+References: <20230123163833.1007181-1-bero@baylibre.com>
+ <20230123163833.1007181-4-bero@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230127131751.gupnp7l6wyrutpmw@pengutronix.de>
+In-Reply-To: <20230123163833.1007181-4-bero@baylibre.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jan 27, 2023 at 02:17:51PM +0100, Uwe Kleine-Kˆnig wrote:
-> Hello Greg,
-> 
-> On Fri, Jan 27, 2023 at 12:45:52PM +0100, Greg Kroah-Hartman wrote:
-> > On Fri, Jan 27, 2023 at 11:10:25AM +0100, Uwe Kleine-Kˆnig wrote:
-> > > On Wed, Nov 23, 2022 at 09:09:12AM +0100, Uwe Kleine-Kˆnig wrote:
-> > > > On Wed, Nov 23, 2022 at 07:36:52AM +0100, Jiri Slaby wrote:
-> > > > > BTW is this a performance issue? I.e. does it slow down the boot?
-> > > > 
-> > > > I don't know the start motivation for Lee (who triggered the conversion
-> > > > in b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new() call-back
-> > > > type")).
-> > > > Looking at the git history, he created 1e98dcd77970 ("mfd: 88pm860x:
-> > > > Move over to new I2C device .probe() call") converting a driver that
-> > > > doesn't benefit immensely. The lookup is more expensive for drivers with
-> > > > big .id_table, the converted driver has only one entry.
-> > > > 
-> > > > I think in the end is a mixture between:
-> > > > 
-> > > >  - A big part of the drivers doesn't benefit from the lookup.
-> > > >  - For most other busses the probe function only gets a device parameter
-> > > >    and no id (spi, platform, i3c). There are counter examples though:
-> > > >    amba, usb. Didn't check further.
-> > > 
-> > > The discussion somehow ended here without a real result.
-> > > 
-> > > As of today's next master there are only 9 drivers left using .probe().
-> > > So I'd like to stop this discussion and ask to apply the conversion for
-> > > the sc16is7xx driver to be able to complete the conversion.
-> > > 
-> > > My plan is to drop the .probe callback as it is today after the next
-> > > merge window. So I ask the serial maintainers to either take the patch
-> > > under discussion for the next merge window or accept that the conversion
-> > > is done together with the patch that drops .probe() that probably will
-> > > go in via the i2c tree.
-> > 
-> > I don't see the patch anymore,
-> 
-> If you want to take a look:
-> 
-> 	b4 am 20221118224540.619276-572-uwe@kleine-koenig.org
-> 
-> or
-> 
-> 	https://lore.kernel.org/lkml/20221118224540.619276-572-uwe@kleine-koenig.org
-> 
-> > so I have no objection for it going through the i2c tree.
-> 
-> Can I interpret that as an Ack? :-)
+On Mon, 23 Jan 2023, Bernhard Rosenkr√§nzer wrote:
 
-Even better:
+> Document Mediatek mt8365-syscfg
+> 
+> Signed-off-by: Bernhard Rosenkr√§nzer <bero@baylibre.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> 
+> ---
+>  Documentation/devicetree/bindings/mfd/syscon.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Applied, thanks
+
+-- 
+Lee Jones [ÊùéÁêºÊñØ]
