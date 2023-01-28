@@ -2,176 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00053C636CB
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Jan 2023 17:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B26DDC54EAA
+	for <linux-serial@archiver.kernel.org>; Sat, 28 Jan 2023 00:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235202AbjA0Rbb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Jan 2023 12:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54396 "EHLO
+        id S231496AbjA1Ayd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 Jan 2023 19:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbjA0Rba (ORCPT
+        with ESMTP id S233518AbjA1Ayc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Jan 2023 12:31:30 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDD34224;
-        Fri, 27 Jan 2023 09:31:28 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30RE2pQv007570;
-        Fri, 27 Jan 2023 17:41:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=A6zmRHSUYsMdoUpGI6Iqs9zAp5mpTn+BpeTwOOm0jbw=;
- b=BjQh+a2gyUS4e2SpUe5ml/kLj/8c9clCSCwi7aRP7AfCw04Pmir3sHq9cWxy19gdvaOD
- k7WUOuAelYrcmDrWnNql4fYwM4Apin41sR4xT98In5iqcF6saiUKNUMTgqBMC+C3A5T/
- CWd+hHq68z8T3crOhn8JapMJUB7jDWW+oyRtGNmTSAENesaTuuDRFs2bnNiU8IMfD9SL
- zX42yPG7ub5KpvjONC5tW4gIZ5uDLT22oKWNxPMXauTIepQ7QzlWt/MUg968XhG5bHL+
- 5EDrIBWYQ/gYrYVVXBUdsPeZp8Fv9BB0ypr14IBausynlfE7/9Yzy504zHV9Rqi1z4Cq /A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3n89eqdd7n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 27 Jan 2023 17:41:26 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 33B7310002A;
-        Fri, 27 Jan 2023 17:41:21 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 15A4421D3EF;
-        Fri, 27 Jan 2023 17:41:21 +0100 (CET)
-Received: from localhost (10.201.21.177) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.13; Fri, 27 Jan
- 2023 17:41:20 +0100
-From:   Gatien Chevallier <gatien.chevallier@foss.st.com>
-To:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <jic23@kernel.org>, <olivier.moysan@foss.st.com>,
-        <arnaud.pouliquen@foss.st.com>, <mchehab@kernel.org>,
-        <fabrice.gasnier@foss.st.com>, <ulf.hansson@linaro.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Gatien Chevallier <gatien.chevallier@foss.st.com>
-Subject: [PATCH v3 0/6] Introduce STM32 system bus
-Date:   Fri, 27 Jan 2023 17:40:34 +0100
-Message-ID: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
-X-Mailer: git-send-email 2.35.3
+        Fri, 27 Jan 2023 19:54:32 -0500
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C0D83278
+        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 16:54:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1674867270; x=1706403270;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=8HroFzcMUn53K8eqs6JLXQhk7cTtRl6khnafxvlvf58=;
+  b=VVunoUzRW73PFTr+OUe6+WCXr7dQn1aH2Kki7QMTGHwg4J2uMo64R+w2
+   PDexZqS1RRjcKizTtf7jhwx2VRLXgI3ZbyoMrRvRMJfgZB17GCO5N6NXF
+   /Th+aQu3Jh8+LRSYD1gHYSofR94Tea0YP53bjChojz2AJ+XmNd3yH9bU9
+   PT3yzyPr5kRFM19F/nira5iKZKb/vMzmX86rKIIqakqZHG4gQ0ZY/A6zZ
+   869q0TGz7uQptjsPfA78cgE8E6OBQRNYCBaOJyUJX3uZwgULpiWy+Nz3u
+   f9yo+Vn9jOEE+rdegPXZzDd5MR5bIx4edQ/XetYq2RTtYXXViNPHQocVx
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,252,1669046400"; 
+   d="scan'208";a="221742372"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Jan 2023 08:54:18 +0800
+IronPort-SDR: Cw2ORc4w0LheX4DL/QaJDWJXOR414izs9rTbu5NQcQqsrafoAGMMqmTbxzj3vq5EInQQlJcS2e
+ OpQpTwuDDbsO8XkdG7h2ypPMOzGQPjtfo2eLJROIOnifqFDgwoCV7hH8RkVk4GirNcCdGWUWN+
+ Ag96fvTyDOXFLPq0CuYfXiO2YUCdBROu2Q3FDgU320bdU4tQuggmnCbOKv1x99INRlpuaQrmYj
+ EIzyuXTMv7w2PmvXgeBv6/dBcLK3F8JLo4dqQlAqK96atb3CCnLJSg34+rfkxfE78zpJTPAGBZ
+ GhE=
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jan 2023 16:06:03 -0800
+IronPort-SDR: 17yhW25kTap6XuBPUloT+sby6MsvH7p9HUqpfBIV+S2+BWB2ivXSlWKFCIJvuNQ2GjWpjk+hAk
+ AXa9fytVFXeb2SnpS51RTBbNmzLt/w08uxD5h6iArz4TWXTRX9Dyrur0iu5UfnnApOXK0ddY5m
+ tdY01r6vXY0GYvIzfxtFzSWJ0h6755zg4d7LPL8C9Bn0l70d0f8P/dJ1SqY+AM9FQ6DdBLjJCe
+ 0Fx76uBWXCTxe/8gMFpwdktCKtg3ILYV1a+7J3eT1xx6ViRgwt64qqqbgKE/EdYovd89+ImR+x
+ 998=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jan 2023 16:54:19 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4P3bYj6r87z1RwvT
+        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 16:54:17 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1674867256; x=1677459257; bh=8HroFzcMUn53K8eqs6JLXQhk7cTtRl6khna
+        fxvlvf58=; b=ShftbYmd37Un2N6WXeDLuDn368rIZ7rg0bPyrhOhRV4L+OujvBZ
+        9t8qHFpVJ9RP9zP8FBgxqvyARvggZHlQecr5g6REKIL7iS/I5mp/zcILc1CJIDnK
+        eNA5e0cb5clxhH30P9AwwNnBnpmc4eCQx23IrsUCGiFiYbpjuCzCe4nihmz/r/pb
+        a40GgA7aEk2TxXGdKxBIf7R5q8nNV1GLcsTNR48eKphEVQZb3leRSAv96TRrs2Xi
+        HvHLkNGrYeNxQEiJKcsmUXydBaOCiqhmUKI8Wog2rqzVCKrwuTaN1On12FtbYbv5
+        aQqi/qfXflV+L3rvEVEDNsMiNU0bzwX0V8Q==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id AXRkKoc6sFGe for <linux-serial@vger.kernel.org>;
+        Fri, 27 Jan 2023 16:54:16 -0800 (PST)
+Received: from [10.225.163.66] (unknown [10.225.163.66])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4P3bYd1nCCz1RvLy;
+        Fri, 27 Jan 2023 16:54:12 -0800 (PST)
+Message-ID: <75aa04c9-e173-6a2d-6b38-d0e16f3800aa@opensource.wdc.com>
+Date:   Sat, 28 Jan 2023 09:54:11 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.21.177]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-27_10,2023-01-27_01,2022-06-22_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v2 2/3] dt-bindings: reference MC peripheral properties in
+ relevant devices
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linusw@kernel.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Marek Vasut <marex@denx.de>, Lubomir Rintel <lkundrak@v3.sk>,
+        - <devicetree@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+References: <20230127093217.60818-1-krzysztof.kozlowski@linaro.org>
+ <20230127093217.60818-3-krzysztof.kozlowski@linaro.org>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20230127093217.60818-3-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Document STM32 System Bus. This bus is intended to control firewall
-access for the peripherals connected to it.
+On 1/27/23 18:32, Krzysztof Kozlowski wrote:
+> Several devices can be attached to memory controllers (or memory-mapped
+> buses), thus they can come with additional controller-specific
+> properties, e.g. devices wired under Intel IXP4XX bus: cfi-flash,
+> intel,ixp4xx-compact-flash, NS8250 serial and MAX6369 watchdog.
+> 
+> Referencing Memory Controller or IXP4XX bus peripheral properties fixes
+> few dtbs_check warnings like:
+> 
+>   intel-ixp42x-gateworks-gw2348.dtb: ide@1,0: Unevaluated properties are not allowed
+>     ('intel,ixp4xx-eb-ahb-split-transfers', 'intel,ixp4xx-eb-byte-access', ... ' were unexpected)
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-For every peripheral, the bus checks the firewall registers to see
-if the peripheral is configured as non-secure. If the peripheral
-is configured as secure, the node is marked populated, so the
-device won't be probed.
-
-This is useful as a firewall configuration sanity check and avoid
-platform crashes in case peripherals are incorrectly configured.
-
-The STM32 System Bus implements the feature-domain-controller
-bindings. It is used by peripherals to reference a domain
-controller, in this case the firewall feature domain.
-The bus uses the ID referenced by the feature-domains property to
-know where to look in the firewall to get the security configuration
-for the peripheral. This allows a device tree description rather
-than a hardcoded peripheral table in the bus driver.
-
-On STM32MP13/15 platforms, the firewall bus is represented by the
-ETZPC node, which is responsible for the securing / MCU isolating
-the capable peripherals.
-
-STM32MP13/15 device trees are updated in this series to implement
-the bus. All peripherals that are securable or MCU isolation capable
-by the ETZPC are connected to the bus.
-
-Changes in V2:
-	- Corrected YAMLS errors highlighted by Rob's robot
-	- Re-ordered Signed-off-by tags in two patches
-
-Changes in V3:
-	- Document feature-domains property in YAML documentation for
-	concerned periperals under the System Bus
-	- Fix STM32 System Bus YAML documentation
-	- Remove STM32 System bus bindings that were currently used
-	as helpers for device tree
-	- Correct few errors in driver
-	- Add missing peripherals under the System Bus that were in
-	SoC variation device tree files
-	- Fix node names
-
-Gatien Chevallier (5):
-  dt-bindings: treewide: add feature-domains description in binding
-    files
-  dt-bindings: bus: add STM32 System Bus
-  bus: stm32_sys_bus: add support for STM32MP15 and STM32MP13 system bus
-  ARM: dts: stm32: add ETZPC as a system bus for STM32MP15x boards
-  ARM: dts: stm32: add ETZPC as a system bus for STM32MP13x boards
-
-Oleksii Moisieiev (1):
-  dt-bindings: Document common device controller bindings
-
- .../devicetree/bindings/bus/st,sys-bus.yaml   |  127 +
- .../bindings/crypto/st,stm32-hash.yaml        |    5 +
- .../devicetree/bindings/dma/st,stm32-dma.yaml |    5 +
- .../bindings/dma/st,stm32-dmamux.yaml         |    5 +
- .../feature-domain-controller.yaml            |   84 +
- .../devicetree/bindings/i2c/st,stm32-i2c.yaml |    5 +
- .../bindings/iio/adc/st,stm32-adc.yaml        |    5 +
- .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |    5 +
- .../bindings/iio/dac/st,stm32-dac.yaml        |    5 +
- .../bindings/media/st,stm32-cec.yaml          |    5 +
- .../bindings/media/st,stm32-dcmi.yaml         |    5 +
- .../memory-controllers/st,stm32-fmc2-ebi.yaml |    5 +
- .../bindings/mfd/st,stm32-lptimer.yaml        |    5 +
- .../bindings/mfd/st,stm32-timers.yaml         |    6 +
- .../devicetree/bindings/mmc/arm,pl18x.yaml    |    5 +
- .../devicetree/bindings/net/stm32-dwmac.yaml  |    5 +
- .../bindings/phy/phy-stm32-usbphyc.yaml       |    5 +
- .../bindings/regulator/st,stm32-vrefbuf.yaml  |    5 +
- .../devicetree/bindings/rng/st,stm32-rng.yaml |    5 +
- .../bindings/serial/st,stm32-uart.yaml        |    5 +
- .../bindings/sound/st,stm32-i2s.yaml          |    5 +
- .../bindings/sound/st,stm32-sai.yaml          |    5 +
- .../bindings/sound/st,stm32-spdifrx.yaml      |    5 +
- .../bindings/spi/st,stm32-qspi.yaml           |    5 +
- .../devicetree/bindings/spi/st,stm32-spi.yaml |    5 +
- .../devicetree/bindings/usb/dwc2.yaml         |    5 +
- MAINTAINERS                                   |    6 +
- arch/arm/boot/dts/stm32mp131.dtsi             |  407 +--
- arch/arm/boot/dts/stm32mp133.dtsi             |   51 +-
- arch/arm/boot/dts/stm32mp13xc.dtsi            |   19 +-
- arch/arm/boot/dts/stm32mp13xf.dtsi            |   18 +-
- arch/arm/boot/dts/stm32mp151.dtsi             | 2722 +++++++++--------
- arch/arm/boot/dts/stm32mp153.dtsi             |   52 +-
- arch/arm/boot/dts/stm32mp15xc.dtsi            |   19 +-
- drivers/bus/Kconfig                           |    9 +
- drivers/bus/Makefile                          |    1 +
- drivers/bus/stm32_sys_bus.c                   |  168 +
- 37 files changed, 2208 insertions(+), 1596 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/bus/st,sys-bus.yaml
- create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
- create mode 100644 drivers/bus/stm32_sys_bus.c
+Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
 -- 
-2.35.3
+Damien Le Moal
+Western Digital Research
 
