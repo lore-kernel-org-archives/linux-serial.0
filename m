@@ -2,130 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B26DDC54EAA
-	for <linux-serial@archiver.kernel.org>; Sat, 28 Jan 2023 00:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CE0C38142
+	for <linux-serial@archiver.kernel.org>; Sat, 28 Jan 2023 09:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbjA1Ayd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Jan 2023 19:54:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
+        id S229464AbjA1JWV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 28 Jan 2023 04:22:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233518AbjA1Ayc (ORCPT
+        with ESMTP id S233373AbjA1JWU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Jan 2023 19:54:32 -0500
-Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C0D83278
-        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 16:54:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1674867270; x=1706403270;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=8HroFzcMUn53K8eqs6JLXQhk7cTtRl6khnafxvlvf58=;
-  b=VVunoUzRW73PFTr+OUe6+WCXr7dQn1aH2Kki7QMTGHwg4J2uMo64R+w2
-   PDexZqS1RRjcKizTtf7jhwx2VRLXgI3ZbyoMrRvRMJfgZB17GCO5N6NXF
-   /Th+aQu3Jh8+LRSYD1gHYSofR94Tea0YP53bjChojz2AJ+XmNd3yH9bU9
-   PT3yzyPr5kRFM19F/nira5iKZKb/vMzmX86rKIIqakqZHG4gQ0ZY/A6zZ
-   869q0TGz7uQptjsPfA78cgE8E6OBQRNYCBaOJyUJX3uZwgULpiWy+Nz3u
-   f9yo+Vn9jOEE+rdegPXZzDd5MR5bIx4edQ/XetYq2RTtYXXViNPHQocVx
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.97,252,1669046400"; 
-   d="scan'208";a="221742372"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 28 Jan 2023 08:54:18 +0800
-IronPort-SDR: Cw2ORc4w0LheX4DL/QaJDWJXOR414izs9rTbu5NQcQqsrafoAGMMqmTbxzj3vq5EInQQlJcS2e
- OpQpTwuDDbsO8XkdG7h2ypPMOzGQPjtfo2eLJROIOnifqFDgwoCV7hH8RkVk4GirNcCdGWUWN+
- Ag96fvTyDOXFLPq0CuYfXiO2YUCdBROu2Q3FDgU320bdU4tQuggmnCbOKv1x99INRlpuaQrmYj
- EIzyuXTMv7w2PmvXgeBv6/dBcLK3F8JLo4dqQlAqK96atb3CCnLJSg34+rfkxfE78zpJTPAGBZ
- GhE=
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jan 2023 16:06:03 -0800
-IronPort-SDR: 17yhW25kTap6XuBPUloT+sby6MsvH7p9HUqpfBIV+S2+BWB2ivXSlWKFCIJvuNQ2GjWpjk+hAk
- AXa9fytVFXeb2SnpS51RTBbNmzLt/w08uxD5h6iArz4TWXTRX9Dyrur0iu5UfnnApOXK0ddY5m
- tdY01r6vXY0GYvIzfxtFzSWJ0h6755zg4d7LPL8C9Bn0l70d0f8P/dJ1SqY+AM9FQ6DdBLjJCe
- 0Fx76uBWXCTxe/8gMFpwdktCKtg3ILYV1a+7J3eT1xx6ViRgwt64qqqbgKE/EdYovd89+ImR+x
- 998=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jan 2023 16:54:19 -0800
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4P3bYj6r87z1RwvT
-        for <linux-serial@vger.kernel.org>; Fri, 27 Jan 2023 16:54:17 -0800 (PST)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1674867256; x=1677459257; bh=8HroFzcMUn53K8eqs6JLXQhk7cTtRl6khna
-        fxvlvf58=; b=ShftbYmd37Un2N6WXeDLuDn368rIZ7rg0bPyrhOhRV4L+OujvBZ
-        9t8qHFpVJ9RP9zP8FBgxqvyARvggZHlQecr5g6REKIL7iS/I5mp/zcILc1CJIDnK
-        eNA5e0cb5clxhH30P9AwwNnBnpmc4eCQx23IrsUCGiFiYbpjuCzCe4nihmz/r/pb
-        a40GgA7aEk2TxXGdKxBIf7R5q8nNV1GLcsTNR48eKphEVQZb3leRSAv96TRrs2Xi
-        HvHLkNGrYeNxQEiJKcsmUXydBaOCiqhmUKI8Wog2rqzVCKrwuTaN1On12FtbYbv5
-        aQqi/qfXflV+L3rvEVEDNsMiNU0bzwX0V8Q==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id AXRkKoc6sFGe for <linux-serial@vger.kernel.org>;
-        Fri, 27 Jan 2023 16:54:16 -0800 (PST)
-Received: from [10.225.163.66] (unknown [10.225.163.66])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4P3bYd1nCCz1RvLy;
-        Fri, 27 Jan 2023 16:54:12 -0800 (PST)
-Message-ID: <75aa04c9-e173-6a2d-6b38-d0e16f3800aa@opensource.wdc.com>
-Date:   Sat, 28 Jan 2023 09:54:11 +0900
+        Sat, 28 Jan 2023 04:22:20 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88142EC55
+        for <linux-serial@vger.kernel.org>; Sat, 28 Jan 2023 01:22:19 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1674897723; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=jw5wUlkaB4m9q6pEVFsXF4b0811CfM9e1oARm78QqCfwHPUUfgsa9Wp29SR8pJnobS6IG5bmDeswqGzw1GrXYbTdaRdtQ7qHdH9po+flVI7v55xGzI1PNvj9199+C8KP5VqWdtWiT4z0KPWhj2ciEy05gPKV/CbPnXF/UChaA7U=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1674897723; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=c3mLu0aZy6uOCJK19gTsXRIo6vWN4vTKXGm5RXWhOI4=; 
+        b=iH+7iZmRSJ7e/C4oRmWspY9B4dtW4Tj//sFvEcs1qKd5H7GRMTPzUPFa0tUODkJpcOj9YRBEbQCC9X7+yJe/TcqLZqHL5qxsHdTl3WJfaDhcFIYmPfPmDmigTHm9Ljb92IX7QeNHGzt+H3OgjRPCITdxhVAV4yKPYfMrrVhNnn0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=linux.beauty;
+        spf=pass  smtp.mailfrom=me@linux.beauty;
+        dmarc=pass header.from=<me@linux.beauty>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1674897723;
+        s=zmail; d=linux.beauty; i=me@linux.beauty;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=c3mLu0aZy6uOCJK19gTsXRIo6vWN4vTKXGm5RXWhOI4=;
+        b=JxoTha8s2+otH6d+ax19Tof19CtLi63UqtDiyo0aXLmgjYvqpyaxsv+b0UCdAj2y
+        y4xrYVwt7gOijtCWM4C0vYarNj7tBJsQN2P1O4gXSeIf7VJruyrPZpNOBT3LPgJYn/J
+        yXnQZAHAV1H5t5UBduBdVTUBffOVPHy5vXpGpokU=
+Received: from mail.zoho.com by mx.zohomail.com
+        with SMTP id 1674897720911736.6953243528183; Sat, 28 Jan 2023 01:22:00 -0800 (PST)
+Date:   Sat, 28 Jan 2023 17:22:00 +0800
+From:   Li Chen <me@linux.beauty>
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     "li chen" <lchen@ambarella.com>,
+        "greg kroah-hartman" <gregkh@linuxfoundation.org>,
+        "rob herring" <robh+dt@kernel.org>,
+        "krzysztof kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        "moderated list:arm/ambarella soc support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:serial drivers" <linux-serial@vger.kernel.org>,
+        "open list:open firmware and flattened device tree bindings" 
+        <devicetree@vger.kernel.org>,
+        "open list" <linux-kernel@vger.kernel.org>
+Message-ID: <185f7af063c.f732379f485828.699470667125550366@linux.beauty>
+In-Reply-To: <c1793a63-5691-a705-b2f2-4267c53934fe@linaro.org>
+References: <20230123073305.149940-1-lchen@ambarella.com>
+ <20230123073305.149940-10-lchen@ambarella.com>
+ <bdff58bf-1a07-ab78-a782-d58d8c644e00@linaro.org>
+ <87wn5bgcrv.wl-me@linux.beauty> <c1793a63-5691-a705-b2f2-4267c53934fe@linaro.org>
+Subject: Re: [PATCH 09/15] dt-bindings: serial: add support for Ambarella
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v2 2/3] dt-bindings: reference MC peripheral properties in
- relevant devices
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linusw@kernel.org>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Marek Vasut <marex@denx.de>, Lubomir Rintel <lkundrak@v3.sk>,
-        - <devicetree@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-References: <20230127093217.60818-1-krzysztof.kozlowski@linaro.org>
- <20230127093217.60818-3-krzysztof.kozlowski@linaro.org>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20230127093217.60818-3-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 1/27/23 18:32, Krzysztof Kozlowski wrote:
-> Several devices can be attached to memory controllers (or memory-mapped
-> buses), thus they can come with additional controller-specific
-> properties, e.g. devices wired under Intel IXP4XX bus: cfi-flash,
-> intel,ixp4xx-compact-flash, NS8250 serial and MAX6369 watchdog.
-> 
-> Referencing Memory Controller or IXP4XX bus peripheral properties fixes
-> few dtbs_check warnings like:
-> 
->   intel-ixp42x-gateworks-gw2348.dtb: ide@1,0: Unevaluated properties are not allowed
->     ('intel,ixp4xx-eb-ahb-split-transfers', 'intel,ixp4xx-eb-byte-access', ... ' were unexpected)
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Hi Krzysztof,
 
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Sorry for my late reply.
 
--- 
-Damien Le Moal
-Western Digital Research
+ ---- On Wed, 25 Jan 2023 17:56:15 +0800  Krzysztof Kozlowski  wrote --- 
+ > On 25/01/2023 10:54, Li Chen wrote:
+ > > 
+ > > Hi Krzysztof Kozlowski,
+ > > 
+ > > Sorry for my late reply.
+ > > 
+ > > On Mon, 23 Jan 2023 16:11:52 +0800,
+ > > Krzysztof Kozlowski wrote:
+ > >>
+ > >> On 23/01/2023 08:32, Li Chen wrote:
+ > >>> Add compatible for Ambarella.
+ > >>>
+ > >>> Signed-off-by: Li Chen lchen@ambarella.com>
+ > >>> Change-Id: I32513d98f52af0311dfb55dd5c4739a58f6b9fc1
+ > >>> ---
+ > >>>  .../bindings/serial/ambarella_uart.yaml       | 57 +++++++++++++++++++
+ > >>>  MAINTAINERS                                   |  1 +
+ > >>>  2 files changed, 58 insertions(+)
+ > >>>  create mode 100644 Documentation/devicetree/bindings/serial/ambarella_uart.yaml
+ > >>>
+ > >>> diff --git a/Documentation/devicetree/bindings/serial/ambarella_uart.yaml b/Documentation/devicetree/bindings/serial/ambarella_uart.yaml
+ > >>> new file mode 100644
+ > >>> index 000000000000..238d68078270
+ > >>> --- /dev/null
+ > >>> +++ b/Documentation/devicetree/bindings/serial/ambarella_uart.yaml
+ > >>> @@ -0,0 +1,57 @@
+ > >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ > >>> +%YAML 1.2
+ > >>> +---
+ > >>> +$id: http://devicetree.org/schemas/serial/ambarella_uart.yaml#
+ > >>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+ > >>> +
+ > >>> +title: Ambarella S6LM SoC UART Controller
+ > >>> +
+ > >>> +maintainers:
+ > >>> +  - Li Chen lchen@ambarella.com>
+ > >>> +
+ > >>> +properties:
+ > >>> +  compatible:
+ > >>> +    const: ambarella,uart
+ > >>> +
+ > >>> +  reg:
+ > >>> +    maxItems: 1
+ > >>> +
+ > >>> +  amb,ignore-fe:
+ > >>> +    description: |
+ > >>> +      ignore frame error report for CV2/CV22/CV25/S6LM because it's
+ > >>> +      checked too strict so that normal stop may be treated as frame error.
+ > >>
+ > >> Missing type. I don't understand why this is property of DT.
+ > > 
+ > > Ok, I will add "type: boolean" to it.
+ > 
+ > I still do not understand why this is a property of DT. You need to
+ > justify it.
+ > 
+ > Otherwise: No. drop it.
 
+Yes, this property is not describing hardware. I will drop it from dts and handle it via soc_device_attribute->data
+or of_device_id->data instead.
+
+Regards,
+Li
