@@ -2,264 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50BF8C636CC
-	for <linux-serial@archiver.kernel.org>; Sat, 28 Jan 2023 15:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE092C05027
+	for <linux-serial@archiver.kernel.org>; Sun, 29 Jan 2023 15:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233439AbjA1P6h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 28 Jan 2023 10:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        id S231707AbjA2Psf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 29 Jan 2023 10:48:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbjA1P6f (ORCPT
+        with ESMTP id S229741AbjA2Pse (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 28 Jan 2023 10:58:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E081298DA;
-        Sat, 28 Jan 2023 07:58:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 816D460C23;
-        Sat, 28 Jan 2023 15:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC8FC433D2;
-        Sat, 28 Jan 2023 15:58:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1674921508;
-        bh=7R+Y0pFZ9qQaQE2Of8Zyt01fF+w51NH/3ezIsAynqvk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d4enHA5MJ371GrPucjk++EVvYqWfJUb0Rmdj7ygsHD6FdJSuKLpmLKZObRmyoduRb
-         F7/rgXbXthLnxMVJdAyroI/3tQf7IL+wc3TYMiY9DLLWZ9lgFPGplKFOxflb3tFuNt
-         UtYcUlsjz0il95gmiB3mk4Bvk/TbRiYPJ9FjEivIPmpDedLPGd1WcinaLHdellNT7Y
-         g/L7fp8K98T+nO5sT29tqenfN8c3UVjvN0Ncbjl4SfTpSGVwHHakRtS6Y7/70MN4yc
-         AsRCXMaJ9yLeFgwHKcot/dcC5xFelUPaBwh2MZkhTt1C1Gr3icbGZaQVBWurLjEUVb
-         0mCC0mntbHQgQ==
-Date:   Sat, 28 Jan 2023 16:12:17 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
-Cc:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
-        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
-        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Loic PALLARDY <loic.pallardy@st.com>
-Subject: Re: [PATCH v3 4/6] bus: stm32_sys_bus: add support for STM32MP15
- and STM32MP13 system bus
-Message-ID: <20230128161217.0e79436e@jic23-huawei>
-In-Reply-To: <20230127164040.1047583-5-gatien.chevallier@foss.st.com>
-References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
-        <20230127164040.1047583-5-gatien.chevallier@foss.st.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
+        Sun, 29 Jan 2023 10:48:34 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF1A12858
+        for <linux-serial@vger.kernel.org>; Sun, 29 Jan 2023 07:48:33 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id f47-20020a05600c492f00b003dc584a7b7eso437361wmp.3
+        for <linux-serial@vger.kernel.org>; Sun, 29 Jan 2023 07:48:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=U/1SEXBl/drT6B50+MLoCmrJXk4pQjWe0OUv8/ULGY0=;
+        b=bHbAg0NEPiDWyIAfDBCrE9YEnCjl9DimD46s0O9s+iGCLDRWKJDdoXkcdY8Ic/GYqk
+         2VhvBr3441g2GYPzGBEuPhINkeJobRkV+fA9OyuJTnTwZZwhDbxZLKrM0WHOwAAj6lI2
+         HFwwAC91xT02fgqj+3kiNoArc+FJiJusmsBxIiuKIY7nX5aykzq2ufFKxzYR0sx8dKW/
+         czTO6hUOkmOg009ruXF33CHuFXw6olcv/mH7T70GQDJ4txGZSElVEECurqVSKEkvqa/O
+         +kWyZBwG3obnXNN4d+fE51z2lLJTXOTyKFmyn2A6Fw8/+hytQ3G1P5MbyVqj8ryt8s1a
+         ymUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=U/1SEXBl/drT6B50+MLoCmrJXk4pQjWe0OUv8/ULGY0=;
+        b=7NDEUAr1pjDBbGAOiV4I5DZ6ESpmyewApsYpbX6Wyn4GUTnxlLyN7Mtqhim6HiVRrz
+         zVj0n2Vs0w3aSYEnJOLhLSmWu4lpwrTVhc2FhkthzVO7S2/nUph/6V1q2MOMBAxDlR/0
+         12Yi61/TJvbVFL0Mk1iCPGyj8w7gUE98pBz0Y9GXH+AzBjAypJjo7TpkFDK+4Q7oyUNI
+         mtQelI/C/d6+tsetyh65/p03JTTD6y0zxAf5xjFhmZtLnNMgKA4Ylg/JdBy2cDYrVyZI
+         j03+5JbHCHzq1oKyHNksNGCsyzhsHx4+Hb9wb4DYl7fZDDjcFf1JF8BIfBR0DXzCFcpU
+         4DNg==
+X-Gm-Message-State: AO0yUKWI0DgyhShPEmb8ykvNP4Q447htWQLrB/oFHJYSKx3ALvfXmaf6
+        YK7iDOWa0MB0DKtEUeIJUEBUAA==
+X-Google-Smtp-Source: AK7set+u31EI9YP+CMtlmZ0UQD0fuUfEjQ7CLKD/ky8YiQDj0Mgj7cggU1RQsvg6InTRJdV78D73sg==
+X-Received: by 2002:a05:600c:1994:b0:3dc:43cf:7302 with SMTP id t20-20020a05600c199400b003dc43cf7302mr6523633wmq.3.1675007311772;
+        Sun, 29 Jan 2023 07:48:31 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id j6-20020a05600c42c600b003dc521f336esm2984835wme.14.2023.01.29.07.48.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 29 Jan 2023 07:48:31 -0800 (PST)
+Message-ID: <755d4a78-0b23-a381-c422-d12b0063f06f@linaro.org>
+Date:   Sun, 29 Jan 2023 16:48:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2 3/3] dt-bindings: serial: restrict possible child node
+ names
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linusw@kernel.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Marek Vasut <marex@denx.de>, Lubomir Rintel <lkundrak@v3.sk>,
+        - <devicetree@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+References: <20230127093217.60818-1-krzysztof.kozlowski@linaro.org>
+ <20230127093217.60818-4-krzysztof.kozlowski@linaro.org>
+ <CACRpkdbOZLhQ1DTNJowNXF=O-Nvpqcb_A+PwkPWFiUSQUbkR9A@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CACRpkdbOZLhQ1DTNJowNXF=O-Nvpqcb_A+PwkPWFiUSQUbkR9A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 27 Jan 2023 17:40:38 +0100
-Gatien Chevallier <gatien.chevallier@foss.st.com> wrote:
-
-> This driver is checking the access rights of the different
-> peripherals connected to the system bus. If access is denied,
-> the associated device tree node is skipped so the platform bus
-> does not probe it.
+On 27/01/2023 14:29, Linus Walleij wrote:
+> On Fri, Jan 27, 2023 at 10:32 AM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
 > 
-> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
-> Signed-off-by: Loic PALLARDY <loic.pallardy@st.com>
+>> The re-usable serial.yaml schema matches every property with ".*"
+>> pattern, thus any other schema referencing it will not report unknown
+>> (unevaluated) properties.  This hides several wrong properties.  It is
+>> a limitation of dtschema, thus provide a simple workaround: expect
+>> children to be only of few names matching upstream usage (Bluetooth,
+>> GNSS, GPS and MCU).
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> Fair enough,
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> 
+> However I think V.35 WAN devices (high speed serial network links)
+> should actually be using this? They are just some fancy serial port
+> after all. Cf
+> Documentation/devicetree/bindings/net/intel,ixp4xx-hss.yaml
+> 
+> No big deal I guess since they are mostly an anarchronism and not
+> on the table right now.
 
-Hi Gatien,
-
-A few comments inline,
-
-Thanks,
-
-Jonathan
-
-> diff --git a/drivers/bus/stm32_sys_bus.c b/drivers/bus/stm32_sys_bus.c
-> new file mode 100644
-> index 000000000000..c12926466bae
-> --- /dev/null
-> +++ b/drivers/bus/stm32_sys_bus.c
-> @@ -0,0 +1,168 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/init.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/platform_device.h>
-> +
-> +/* ETZPC peripheral as firewall bus */
-> +/* ETZPC registers */
-> +#define ETZPC_DECPROT			0x10
-> +
-> +/* ETZPC miscellaneous */
-> +#define ETZPC_PROT_MASK			GENMASK(1, 0)
-> +#define ETZPC_PROT_A7NS			0x3
-> +#define ETZPC_DECPROT_SHIFT		1
-
-This define makes the code harder to read.  What we care about is
-the number of bits in the register divided by number of entries.
-(which is 2) hence the shift by 1. See below for more on this.
+intel,ixp4xx-hss is not part of the expansion bus node.
 
 
-> +
-> +#define IDS_PER_DECPROT_REGS		16
-
-> +#define STM32MP15_ETZPC_ENTRIES		96
-> +#define STM32MP13_ETZPC_ENTRIES		64
-
-These defines just make the code harder to check.
-They aren't magic numbers, but rather just telling us how many
-entries there are, so I would just put them in the structures directly.
-Their use make it clear what they are without needing to give them a name.
-
-
-> +struct stm32_sys_bus_match_data {
-
-Comment on naming of this below.
-
-> +	unsigned int max_entries;
-> +};
-> +
-
-+static int stm32_etzpc_get_access(struct sys_bus_data *pdata, struct device_node *np)
-+{
-+	int err;
-+	u32 offset, reg_offset, sec_val, id;
-+
-+	err = stm32_sys_bus_get_periph_id(pdata, np, &id);
-+	if (err)
-+		return err;
-+
-+	/* Check access configuration, 16 peripherals per register */
-+	reg_offset = ETZPC_DECPROT + 0x4 * (id / IDS_PER_DECPROT_REGS);
-+	offset = (id % IDS_PER_DECPROT_REGS) << ETZPC_DECPROT_SHIFT;
-
-Use of defines in here is actively unhelpful when it comes to review. I would suggest letting
-the maths be self explanatory (even if it's more code).
-
-	offset = (id % IDS_PER_DECPROT_REGS) * (sizeof(u32) * BITS_PER_BYTE / IDS_PER_DECPROT_REGS);
-
-Or if you prefer have a define of
-
-#define DECPROT_BITS_PER_ID (sizeof(u32) * BITS_PER_BYTE / IDS_PER_DECPROT_REGS)
-
-and
-	offset = (id % IDS_PER_DECPROT_REGS) * DECPROT_BITS_PER_ID;
-
-+
-+	/* Verify peripheral is non-secure and attributed to cortex A7 */
-+	sec_val = (readl(pdata->sys_bus_base + reg_offset) >> offset) & ETZPC_PROT_MASK;
-+	if (sec_val != ETZPC_PROT_A7NS) {
-+		dev_dbg(pdata->dev, "Invalid bus configuration: reg_offset %#x, value %d\n",
-+			reg_offset, sec_val);
-+		return -EACCES;
-+	}
-+
-+	return 0;
-+}
-+
-...
-
-> +static int stm32_sys_bus_probe(struct platform_device *pdev)
-> +{
-> +	struct sys_bus_data *pdata;
-> +	void __iomem *mmio;
-> +	struct device_node *np = pdev->dev.of_node;
-
-I'd be consistent. You use dev_of_node() accessor elsewhere, so should
-use it here as well.
-
-> +
-> +	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-> +	if (!pdata)
-> +		return -ENOMEM;
-> +
-> +	mmio = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(mmio))
-> +		return PTR_ERR(mmio);
-> +
-> +	pdata->sys_bus_base = mmio;
-> +	pdata->pconf = of_device_get_match_data(&pdev->dev);
-> +	pdata->dev = &pdev->dev;
-> +
-> +	platform_set_drvdata(pdev, pdata);
-
-Does this get used? I can't immediately spot where but maybe I just
-missed it.
-
-> +
-> +	stm32_sys_bus_populate(pdata);
-> +
-> +	/* Populate all available nodes */
-> +	return of_platform_populate(np, NULL, NULL, &pdev->dev);
-
-As np only used here, I'd not bother with the local variable in this function.
-
-> +}
-> +
-> +static const struct stm32_sys_bus_match_data stm32mp15_sys_bus_data = {
-
-Naming a structure after where it comes from is a little unusual and
-confusion when a given call gets it from somewhere else.
-
-I'd expect it to be named after what sort of thing it contains.
-stm32_sys_bus_info or something like that.
-
-> +	.max_entries = STM32MP15_ETZPC_ENTRIES,
-> +};
-> +
-> +static const struct stm32_sys_bus_match_data stm32mp13_sys_bus_data = {
-> +	.max_entries = STM32MP13_ETZPC_ENTRIES,
-> +};
-> +
-> +static const struct of_device_id stm32_sys_bus_of_match[] = {
-> +	{ .compatible = "st,stm32mp15-sys-bus", .data = &stm32mp15_sys_bus_data },
-> +	{ .compatible = "st,stm32mp13-sys-bus", .data = &stm32mp13_sys_bus_data },
-
-Alphabetical order usually preferred when there isn't a strong reason for
-another choice.
-
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, stm32_sys_bus_of_match);
-> +
-> +static struct platform_driver stm32_sys_bus_driver = {
-> +	.probe  = stm32_sys_bus_probe,
-> +	.driver = {
-> +		.name = "stm32-sys-bus",
-> +		.of_match_table = stm32_sys_bus_of_match,
-> +	},
-> +};
-> +
-> +static int __init stm32_sys_bus_init(void)
-> +{
-> +	return platform_driver_register(&stm32_sys_bus_driver);
-> +}
-> +arch_initcall(stm32_sys_bus_init);
-> +
-
-Unwanted trailing blank line.
-
+Best regards,
+Krzysztof
 
