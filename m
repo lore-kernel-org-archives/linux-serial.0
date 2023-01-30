@@ -2,118 +2,79 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB878C54EAA
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Jan 2023 11:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FADC64EC6
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Jan 2023 11:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235670AbjA3Liq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Jan 2023 06:38:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S236653AbjA3Lth (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 Jan 2023 06:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbjA3Lin (ORCPT
+        with ESMTP id S236693AbjA3Ltd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Jan 2023 06:38:43 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9902CC42;
-        Mon, 30 Jan 2023 03:38:42 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id q8so7757786wmo.5;
-        Mon, 30 Jan 2023 03:38:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=T8FHcl8FQ7LWPsHGvishUG9eXa2hE3G0FJT29OwvLWE=;
-        b=dQObpp8mkgw/42GS/NWrS1KwKrtRCNvP2/fPxxIxLSF/hT7TAgV3UJkSyMtA30zsLe
-         XoUcFq7r80b4ooaQm1vxsrQNkLPa/vt0gd+g4d1GKY8WL2b9OmKDKDNX9cbExq971M8a
-         +ns184Q+LtV4AFmjvgoCTv1tx35k5mLvHzG1nTvScKzLeKxS8jTcRfWVFJ6MeUlwiO1G
-         M48j8JmIwT8Mo4l+4RkLwJi/uM8AaOfsh3RZvOzaWnuzt3gHlZNSUDd8NG3xeJpXsWVV
-         hF3D7wDuV9Xu2PwTtg3BpqR7oMgEzGYoeaUHdonZ9300YzdgRwL05QjnK0FWu6leMQKd
-         vEhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=T8FHcl8FQ7LWPsHGvishUG9eXa2hE3G0FJT29OwvLWE=;
-        b=yXjvmQzYnDsejSw5vNxtC+qyKTkgjvJ/UfhM6AOTaqDTlFMxcd1fv2xwSyylSNRYct
-         FNZu1VQ3KG1f0HptBUProKMHpx6vAojfqYfAsDYgrFSAo366T6HDMZJ2h0ALonknyof1
-         5YNyRpicG3Vk9ioGkAfkKD+7/oa9ImM2H+AePE/MuqV5iaW4VDl8jPJWjLmiT8vcBWjJ
-         IKVSv2QbHHi/ci+62pGTjncbx2EfpIewWYEPPTNR1YgcyKMq9vIIem8X5ogRFj20IsWh
-         JfS5WcPngO96N9xmI+8iu/Vu0kX7qHa7aT3s1gaXpdsbFm1MriBE96asR8U69cAuBSeZ
-         K1kA==
-X-Gm-Message-State: AO0yUKW1ePmrjrA4zFNNULRT1wB6/qPHO14nQ6Z2mp+QPVw27BJvx+2l
-        xtOUDyDWm/w3yQyhH9FkWCk=
-X-Google-Smtp-Source: AK7set9SBbhpGl1UMgZ6IK9FggJEYs30pNmfKdhBsS3neeguVhniJ62uvheSsRHchaEktAYjlQHmBw==
-X-Received: by 2002:a7b:c38a:0:b0:3da:2ba4:b97 with SMTP id s10-20020a7bc38a000000b003da2ba40b97mr4480397wmj.19.1675078720531;
-        Mon, 30 Jan 2023 03:38:40 -0800 (PST)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id j22-20020a05600c485600b003cffd3c3d6csm12228110wmo.12.2023.01.30.03.38.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Jan 2023 03:38:39 -0800 (PST)
-Message-ID: <0dec66ce-424c-e682-3f73-594e5b1edb65@gmail.com>
-Date:   Mon, 30 Jan 2023 12:38:38 +0100
+        Mon, 30 Jan 2023 06:49:33 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4BA2CC5F;
+        Mon, 30 Jan 2023 03:49:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675079340; x=1706615340;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rKk3BcTrOaYcavGP7FjeV9tA755cnL8HiSR0t7sd6Fg=;
+  b=danzpZ975VUc2SLLAeo8HtPhjR+knyC1nescji9+GrDJBpJ+2K4zvgnt
+   umX3PiPVux8+Lie8ytG2PFEP7WOjxJBEPkOfUmcIp+0Kk5BECVeISG0Wb
+   sHbo0Rq8l+6iyj2K/IBgxCI27eXfY+K3Fe/kVapNszl/pmXzaHeKZE0hO
+   KqpBEKoSFteHXCZf5zJp8n9baqRBUFU6jWw8KXQaHyqdwz23/hqWKYYev
+   G+N1Bs1SGvIRJ3EE2axU15kv6UDvrAw895Mn1iNBDOZJkML1aOmKnPVhW
+   72kw8O6ldZuFoyOHN+xB8i43aYyCLAizlEkAtE3rLs4kFfuIi3fnVS/Sl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="307882334"
+X-IronPort-AV: E=Sophos;i="5.97,257,1669104000"; 
+   d="scan'208";a="307882334"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 03:48:52 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10605"; a="732672095"
+X-IronPort-AV: E=Sophos;i="5.97,257,1669104000"; 
+   d="scan'208";a="732672095"
+Received: from nbelenko-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.210.56])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 03:48:49 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Gilles BULOZ <gilles.buloz@kontron.com>,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org
+Subject: [PATCH 0/2] serial: 8250_dma: DMA Rx race fixes
+Date:   Mon, 30 Jan 2023 13:48:39 +0200
+Message-Id: <20230130114841.25749-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v9 8/9] dt-bindings: serial: mediatek,uart: add MT8365
-Content-Language: en-US
-To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
-        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        chunfeng.yun@mediatek.com, angelogioacchino.delregno@collabora.com,
-        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
-        sean.wang@mediatek.com, zhiyong.tao@mediatek.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20230125143503.1015424-1-bero@baylibre.com>
- <20230125143503.1015424-9-bero@baylibre.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20230125143503.1015424-9-bero@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Fix two races in DMA Rx completion and rearm handling.
 
+I know in advance that the first patch will not be backport friendly
+because of commit 56dc5074cbec ("serial: 8250_dma: Rearm DMA Rx if more
+data is pending") that is not even in 6.1 but I can create the custom
+backport on request.
 
-On 25/01/2023 15:35, Bernhard Rosenkränzer wrote:
-> Add binding description for mediatek,mt8365-uart
-> 
-> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: stable@vger.kernel.org
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Ilpo Järvinen (2):
+  serial: 8250_dma: Fix DMA Rx completion race
+  serial: 8250_dma: Fix DMA Rx rearm race
 
-Greg will you take 5,6 and 8 from this series through your branch or are you Ok 
-if I take them. They are all just adding a new compatible string to the 
-following files:
-Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
-Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-and
-Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+ drivers/tty/serial/8250/8250_dma.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-Best regards,
-Matthias
+-- 
+2.30.2
 
-> ---
->   Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> index fe098d98af6ee..303d02ca4e1ba 100644
-> --- a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> @@ -45,6 +45,7 @@ properties:
->                 - mediatek,mt8188-uart
->                 - mediatek,mt8192-uart
->                 - mediatek,mt8195-uart
-> +              - mediatek,mt8365-uart
->                 - mediatek,mt8516-uart
->             - const: mediatek,mt6577-uart
->   
