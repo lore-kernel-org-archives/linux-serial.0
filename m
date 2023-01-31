@@ -2,76 +2,144 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F13E8C636D3
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Jan 2023 10:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE47C38142
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Jan 2023 19:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjAaKKH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Jan 2023 05:10:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        id S231996AbjAaTFQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 Jan 2023 14:05:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231809AbjAaKKB (ORCPT
+        with ESMTP id S231954AbjAaTFQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Jan 2023 05:10:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30C255A0;
-        Tue, 31 Jan 2023 02:10:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97ABE614A0;
-        Tue, 31 Jan 2023 10:10:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B461C433EF;
-        Tue, 31 Jan 2023 10:09:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675159800;
-        bh=nwkS/pbOsJuXffQqTETQVuoDDHsBxdfFjcAQA16lTkM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wuq0S0qvVUihSCU+NDx02COKCc5IJJC4eZdalM6tZzBlXH4QGYwTMn/lvt/53pg7Z
-         Rf3pI4t/s6uhidvQ5/v4dF/rks2jN2GVRzozS08NKXeIwFgWpTySPKtQAR1JCp9FWY
-         fWk6Fy0Ne1B28LEFi+H2YOpNlaa76YscZJJhlKfI=
-Date:   Tue, 31 Jan 2023 11:09:57 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <Y9jo9bTnmejWYoH2@kroah.com>
-References: <20230116080002.47315-1-tony@atomide.com>
+        Tue, 31 Jan 2023 14:05:16 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC06423C79
+        for <linux-serial@vger.kernel.org>; Tue, 31 Jan 2023 11:05:14 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id o36so5057100wms.1
+        for <linux-serial@vger.kernel.org>; Tue, 31 Jan 2023 11:05:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YQzlHN8C5ytWD4LQULKZ+tnaW8K03J/011gZ4O7NdVs=;
+        b=vCbZXJ1rfzjUa5dN6FIKKkiKpeHVetK+tl7KKoqgwlPzhIQ+UooJsZ52A07VqUzGhI
+         PJ/6mVq88orxv5VJp5e5tzGnvj9cFS60KWJ18od5UR7/vEeUBXdhv0vyhLqaQZRLXCMQ
+         uD47GtMt8lSE5DwKzPOC7UlS6DFuVg4W8xpcaLIYCa2/Gi3T5pc0mzoBfgmioYHbqmuL
+         u1Mhz/7QY8cdU7eqyRmLLuvbKNU+hisKc/y/0Bum6ax/mXOQfnxLrtO7C5L0oS/gqeqs
+         0xS9f4N9A/3ZJTazAFLOK1X3o9xxTp/ag8mf8SnlzqJewKo0rBk6KQOqzJCSqfo/+Gep
+         4tow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YQzlHN8C5ytWD4LQULKZ+tnaW8K03J/011gZ4O7NdVs=;
+        b=CI/Psd5jdRAPz8OX52JA5p380P2l17mdeLkzHC1dAwZG5Ur/KFIWn7WwBmxzjsC+Q0
+         YV7BDJKxOzkoNzcvZDkpWymbEk4Y/eQvmomXHuROcN3vII/beaGe2Z00MaBqyUPfgw36
+         Fw+3/XHr3dGw9ej4sDPEyaARozO0NOXHUMWmAXQimdGZtuqTELbXA601AqVhDR/y5Pbj
+         sK6NnXV6ql+rVLk7Rx8gffb61ioaPcXIItRlhrzx5PHfBCJuNtVKdZVxdnxrgLAopa5D
+         6YlRnWiBSdAwytMm8qaYQCBJuTlWkq1h6D/20rpvVekJXeWdYHVWX+p6dYvsMfX2tFfC
+         pvDQ==
+X-Gm-Message-State: AO0yUKUXgctE4/cssdVWa5jmeLw0/PENH7kCHwiZj67cF2WFeDz8wHga
+        9z7220inKcEXk/6wgdHQcQ92BA==
+X-Google-Smtp-Source: AK7set+5BxSdzoPJgFTWK/Vh/UjrLFnT0l09EhoYMylWE8EAIswQxOqOvmFqGb/av2JpjnJH/tykmQ==
+X-Received: by 2002:a1c:7210:0:b0:3dc:46e8:982 with SMTP id n16-20020a1c7210000000b003dc46e80982mr13857728wmc.19.1675191913320;
+        Tue, 31 Jan 2023 11:05:13 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id p9-20020a05600c358900b003dc1f466a25sm21001542wmq.25.2023.01.31.11.04.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 11:05:12 -0800 (PST)
+Message-ID: <2a237ca0-15cd-b86c-7d9b-32014370d9dd@linaro.org>
+Date:   Tue, 31 Jan 2023 20:04:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230116080002.47315-1-tony@atomide.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth
+ support
+Content-Language: en-US
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        alok.a.tiwari@oracle.com, hdanton@sina.com,
+        ilpo.jarvinen@linux.intel.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com
+References: <20230130180504.2029440-1-neeraj.sanjaykale@nxp.com>
+ <20230130180504.2029440-3-neeraj.sanjaykale@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230130180504.2029440-3-neeraj.sanjaykale@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 09:59:58AM +0200, Tony Lindgren wrote:
-> We want to enable runtime PM for serial port device drivers in a generic
-> way. To do this, we want to have the serial core layer manage the
-> registered physical serial controller devices.
+On 30/01/2023 19:05, Neeraj Sanjay Kale wrote:
+> Add binding document for generic and legacy NXP bluetooth
+> chipsets.
 > 
-> To do this, let's set up a struct device for the serial core controller
-> as suggested by Greg and Jiri. The serial core controller devices are
-> children of the physical serial port device. The serial core controller
-> device is needed to support multiple different kind of ports connected
-> to single physical serial port device.
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> ---
+> v2: Resolved dt_binding_check errors. (Rob Herring)
+> v2: Modified description, added specific compatibility devices,
+> corrected indentations. (Krzysztof Kozlowski)
+> ---
+>  .../bindings/net/bluetooth/nxp-bluetooth.yaml | 40 +++++++++++++++++++
+>  MAINTAINERS                                   |  6 +++
+>  2 files changed, 46 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
 > 
-> Let's also set up a struct device for the serial core port. The serial
-> core port instances are children of the serial core controller device.
+> diff --git a/Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
+> new file mode 100644
+> index 000000000000..9c8a25396b49
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
 
-Looking better, but why is this new device a platform device?  That
-feels odd, you should never have a platform device hanging off of a
-non-platform device, right?
 
-What does the sysfs tree look like now with this patch applied?
+Filename based on family of devices or compatible (assuming it is
+correct): nxp,w8987-bt.yaml
 
-thanks,
+Hyphen is not a correct separator between vendor prefix and device name.
 
-greg k-h
+> @@ -0,0 +1,40 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/bluetooth/nxp-bluetooth.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NXP Bluetooth chips
+> +
+> +description:
+> +  This binding describes UART-attached NXP bluetooth chips.
+
+
+This is description of binding. So in description of binding for NXP
+bluetooth chips you say that it describes NXP bluetooth chips. I don't
+think it's useful. Describe the hardware instead.
+
+> +
+> +maintainers:
+> +  - Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - nxp,w8987-bt
+> +      - nxp,w8997-bt
+> +      - nxp,w9098-bt
+> +      - nxp,iw416-bt
+> +      - nxp,iw612-bt
+
+Why "bt" suffix? Are these chips coming with other functions?
+
+
+Best regards,
+Krzysztof
+
