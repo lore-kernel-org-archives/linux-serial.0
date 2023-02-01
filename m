@@ -2,147 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D462C636D4
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 07:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FCF5C05027
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 08:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231237AbjBAHcT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Feb 2023 02:32:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S229770AbjBAIDN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Feb 2023 03:03:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbjBAHcS (ORCPT
+        with ESMTP id S230249AbjBAIDL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Feb 2023 02:32:18 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A405F3B3DD;
-        Tue, 31 Jan 2023 23:32:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675236737; x=1706772737;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=WJdQDU6eYutrslnH2q1zwP0EX/AmFfykvUUq2z/VDt0=;
-  b=LUQDvIvcWa96TD+G82PBZB2/q+ZZpMAQmUy22TJu8Ex6elxKZkDUR+zE
-   Q/fnxBWbGURpfpcAaGKK50D8fLVS0CC2W0z/okrwPz9JU83bHBP0ng35g
-   m6Hwqu2pSBxKMFRxub3YRs7CkGHOl6qOUiBpvHco17k5waAINZTsd9Fnc
-   H6rQneOqIHMfBy4kCvKLLOEoQEI/TgRowd/DQS9viKVNBps26QPC4qVYC
-   9X7pQHjzuzB0ckd1iKbKcoJK11yISAUVvvjXIi2GcT6N/f2pGY6pWBxwp
-   /rmyagypwVIyND6SomObG4BnRqjprgIJBsj7bt0raVilfSWUkghv7ZnE2
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="329369102"
-X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="329369102"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 23:32:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="807465249"
-X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="807465249"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 31 Jan 2023 23:32:13 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Wed, 01 Feb 2023 09:32:12 +0200
-Date:   Wed, 1 Feb 2023 09:32:12 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gilles BULOZ <gilles.buloz@kontron.com>, stable@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250_dma: Fix DMA Rx rearm race
-Message-ID: <Y9oVfAmJpJfDSP1+@kuha.fi.intel.com>
-References: <20230130114841.25749-1-ilpo.jarvinen@linux.intel.com>
- <20230130114841.25749-3-ilpo.jarvinen@linux.intel.com>
+        Wed, 1 Feb 2023 03:03:11 -0500
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9636D7ECD
+        for <linux-serial@vger.kernel.org>; Wed,  1 Feb 2023 00:03:05 -0800 (PST)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20230201080303aab45c580edeccd61a
+        for <linux-serial@vger.kernel.org>;
+        Wed, 01 Feb 2023 09:03:03 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=elcIhDVoOIB5QTRWadNTq7kGuOttosLIVV3EInhEIOg=;
+ b=QJe70xUcaVZtN3xPn+QwR2XYEcGRuSBwTC2ObW7olOzpwnfJc5IaGj+3/eQmFMfHqcztxI
+ 0FdkTBkwL9U5auLn8njpo0dqTsVOYZRs1JH6V0wchnd0LvBi3uAR13SH4h1LbdK91tTkF70R
+ wcdijkWIqqQawVw0xlj6s9rf07foM=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 2/3] tty: n_gsm: add RING/CD control support
+Date:   Wed,  1 Feb 2023 09:01:50 +0100
+Message-Id: <20230201080151.2068-2-daniel.starke@siemens.com>
+In-Reply-To: <20230201080151.2068-1-daniel.starke@siemens.com>
+References: <20230201080151.2068-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230130114841.25749-3-ilpo.jarvinen@linux.intel.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 30, 2023 at 01:48:41PM +0200, Ilpo Järvinen wrote:
-> As DMA Rx can be completed from two places, it is possible that DMA Rx
-> completes before DMA completion callback had a chance to complete it.
-> Once the previous DMA Rx has been completed, a new one can be started
-> on the next UART interrupt. The following race is possible
-> (uart_unlock_and_check_sysrq_irqrestore() replaced with
-> spin_unlock_irqrestore() for simplicity/clarity):
-> 
-> CPU0					CPU1
-> 					dma_rx_complete()
-> serial8250_handle_irq()
->   spin_lock_irqsave(&port->lock)
->   handle_rx_dma()
->     serial8250_rx_dma_flush()
->       __dma_rx_complete()
->         dma->rx_running = 0
->         // Complete DMA Rx
->   spin_unlock_irqrestore(&port->lock)
-> 
-> serial8250_handle_irq()
->   spin_lock_irqsave(&port->lock)
->   handle_rx_dma()
->     serial8250_rx_dma()
->       dma->rx_running = 1
->       // Setup a new DMA Rx
->   spin_unlock_irqrestore(&port->lock)
-> 
-> 					  spin_lock_irqsave(&port->lock)
-> 					  // sees dma->rx_running = 1
-> 					  __dma_rx_complete()
-> 					    dma->rx_running = 0
-> 					    // Incorrectly complete
-> 					    // running DMA Rx
-> 
-> This race seems somewhat theoretical to occur for real but handle it
-> correctly regardless. Check what is the DMA status before complething
-> anything in __dma_rx_complete().
-> 
-> Reported-by: Gilles BULOZ <gilles.buloz@kontron.com>
-> Tested-by: Gilles BULOZ <gilles.buloz@kontron.com>
-> Fixes: 9ee4b83e51f7 ("serial: 8250: Add support for dmaengine")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+The status lines ring and carrier detect are used by the modem to signal
+incoming calls (RING) or an established connection (CD). This is
+implemented as physical lines on a standard RS232 connection. However,
+the muxer protocol encodes these status lines as modem bits IC and DV.
+These incoming lines are masked by tty driver (see tty_io.c) and cannot be
+set by a user application.
 
-> ---
->  drivers/tty/serial/8250/8250_dma.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index 5594883a96f8..7fa66501792d 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -43,15 +43,23 @@ static void __dma_rx_complete(struct uart_8250_port *p)
->  	struct uart_8250_dma	*dma = p->dma;
->  	struct tty_port		*tty_port = &p->port.state->port;
->  	struct dma_tx_state	state;
-> +	enum dma_status		dma_status;
->  	int			count;
->  
-> -	dma->rx_running = 0;
-> -	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> +	/*
-> +	 * New DMA Rx can be started during the completion handler before it
-> +	 * could acquire port's lock and it might still be ongoing. Don't to
-> +	 * anything in such case.
-> +	 */
-> +	dma_status = dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> +	if (dma_status == DMA_IN_PROGRESS)
-> +		return;
->  
->  	count = dma->rx_size - state.residue;
->  
->  	tty_insert_flip_string(tty_port, dma->rx_buf, count);
->  	p->port.icount.rx += count;
-> +	dma->rx_running = 0;
->  
->  	tty_flip_buffer_push(tty_port);
->  }
-> -- 
-> 2.30.2
+Allow setting RING via TIOCM_OUT1 and CD via TIOCM_OUT2 to allow
+implementation of a modem or modem emulator.
 
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 98577b54f1fd..118511c1fa37 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -546,6 +546,11 @@ static u8 gsm_encode_modem(const struct gsm_dlci *dlci)
+ 		modembits |= MDM_IC;
+ 	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
+ 		modembits |= MDM_DV;
++	/* special mappings for passive side to operate as UE */
++	if (dlci->modem_tx & TIOCM_OUT1)
++		modembits |= MDM_IC;
++	if (dlci->modem_tx & TIOCM_OUT2)
++		modembits |= MDM_DV;
+ 	return modembits;
+ }
+ 
 -- 
-heikki
+2.34.1
+
