@@ -2,133 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4A0C05027
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 12:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59618C05027
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 13:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbjBAMve (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Feb 2023 07:51:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        id S231725AbjBANGf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Feb 2023 08:06:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231438AbjBAMve (ORCPT
+        with ESMTP id S229935AbjBANGe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Feb 2023 07:51:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3688EC671;
-        Wed,  1 Feb 2023 04:51:33 -0800 (PST)
+        Wed, 1 Feb 2023 08:06:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A442D4C;
+        Wed,  1 Feb 2023 05:06:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D900CB8215F;
-        Wed,  1 Feb 2023 12:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21DF4C433D2;
-        Wed,  1 Feb 2023 12:51:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9299A61796;
+        Wed,  1 Feb 2023 13:06:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988ACC433EF;
+        Wed,  1 Feb 2023 13:06:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675255890;
-        bh=Hso2+wDezt629s0YjZW3kGWvktFxf9c1wVzkNT23w6w=;
+        s=korg; t=1675256793;
+        bh=GnaimmLKefZRjOPzvWP+ABUMPmzcZWg/oE0SlaIO8qA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zOrGrZQtzJFw1Cnt/C/TYSTybjanKs43odAn0WSpb4JurPU0+1Zj8i9kxvWpjXeNg
-         n9slVLpvLwoODBisBxaMi5BV/EDUap3Q4724MN3ynkxhs0XqyYBXLtvYCR7e65Y3iJ
-         jX6hnFOH2HwH6lBWTkKAnXNbGemIOqxfLejvhCnA=
-Date:   Wed, 1 Feb 2023 13:51:27 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] tty: n_gsm: add TIOCMIWAIT support
-Message-ID: <Y9pgT4VcW3oGaSbY@kroah.com>
-References: <20230201080151.2068-1-daniel.starke@siemens.com>
- <20230201080151.2068-3-daniel.starke@siemens.com>
- <Y9oluEimqDixw60I@kroah.com>
- <DB9PR10MB588166BD5DA668E4F6DEA597E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+        b=U9/871CFxrDT7QczJzo8MWNftedHmkpmn9hia5EiH2mxDCNB3+gr09zIaIRQJ0BUN
+         u7Lu5mSTWnwIf0zrI6oeo44lRLY/2XkPNdxp2cEeHVyYAKv6kS7bcv5n3sXsDGYecT
+         tJ5whSOP+pagxiKa9ZGxU7HLzk1SqAyp8lUiqYNI=
+Date:   Wed, 1 Feb 2023 14:06:29 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Alexey V. Vissarionov" <gremlin@altlinux.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kukjin Kim <kgene.kim@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH v2] serial: samsung: fix buffer size for clk_name
+Message-ID: <Y9pj1Sx7Nzjkp6pw@kroah.com>
+References: <20230116141658.GC8107@altlinux.org>
+ <Y8lZNi9pYVFkYvh9@kroah.com>
+ <20230201024457.GD446@altlinux.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DB9PR10MB588166BD5DA668E4F6DEA597E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+In-Reply-To: <20230201024457.GD446@altlinux.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 09:30:28AM +0000, Starke, Daniel wrote:
-> > > Add support for the TIOCMIWAIT ioctl on the virtual ttys. This enables the
-> > > user to wait for virtual modem signals like RING.
-> > > 
-> > > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> > > ---
-> > >  drivers/tty/n_gsm.c | 32 ++++++++++++++++++++++++++++++++
-> > >  1 file changed, 32 insertions(+)
-> > > 
-> > > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> > > index 118511c1fa37..48fb7dad44cd 100644
-> > > --- a/drivers/tty/n_gsm.c
-> > > +++ b/drivers/tty/n_gsm.c
-> > > @@ -1542,6 +1542,7 @@ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
-> > >  	if (brk & 0x01)
-> > >  		tty_insert_flip_char(&dlci->port, 0, TTY_BREAK);
-> > >  	dlci->modem_rx = mlines;
-> > > +	wake_up_interruptible(&dlci->gsm->event);
-> > >  }
-> > >  
-> > >  /**
-> > > @@ -3848,6 +3849,35 @@ static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
-> > >  	return -EPROTONOSUPPORT;
-> > >  }
-> > >  
-> > > +/**
-> > > + * gsm_wait_modem_change	-	wait for modem status line change
-> > 
-> > No need for tabs.
-> > 
-> > Or for kernel doc for static functions, but that's not a big deal.
+On Wed, Feb 01, 2023 at 05:44:57AM +0300, Alexey V. Vissarionov wrote:
+> serial: samsung: fix buffer size for clk_name
 > 
-> All other functions follow the same style here. Nevertheless, I will
-> replace the tabs with spaces. Originally, I had planned a code clean-up
-> after committing all the changes from my original RFC.
-
-Ah, ok, nevermind then, I didn't see that as it's not in the diffs.
-
-Cleaning up later is fine.
-
-> > > +static int gsm_wait_modem_change(struct gsm_dlci *dlci, u32 mask)
-> > > +{
-> > > +	struct gsm_mux *gsm = dlci->gsm;
-> > > +	u32 old = dlci->modem_rx & mask;
-> > > +	int ret;
-> > > +
-> > > +	if (gsm->dead)
-> > > +		return -ENODEV;
-> > > +
-> > > +	do {
-> > > +		ret = wait_event_interruptible(gsm->event, gsm->dead
-> > > +					      || old ^ (dlci->modem_rx & mask));
-> > > +		if (ret)
-> > > +			return ret;
-> > > +		if (dlci->state != DLCI_OPEN)
-> > > +			return -EL2NSYNC;
-> > > +		if (gsm->dead)
-> > > +			return -ENODEV;
-> > > +	} while ((old ^ (dlci->modem_rx & mask)) == 0);
-> > 
-> > No way to break out of the loop if it goes for forever?
+> Although very unlikely, the 'clk_num' value may be as big as
+> 2**32 - 1 (uint32_max), so the buffer should have enough
+> space for storing "clk_uart_baud4294967295\0".
+> Also, the numbers in clk_name are expected to be unsigned.
 > 
-> I assume that this is the expected behavior for TIOCMIWAIT. The functions
-> returns if:
-> - the requested modem signal changed
-> - the wait function got interrupted (e.g. by a signal)
-> - the underlying DLCI was closed
-> - the underlying ldisc device was removed
+> Found by ALT Linux Team (altlinux.org) and Linux Verification
+> Center (linuxtesting.org) using SVACE.
+> 
+> Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
+> Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
+> 
+> ---
+> 
+> On 2023-01-19 15:52:38 +0100, Greg Kroah-Hartman wrote:
+> 
+>  >> Fixes: 5f5a7a5578c58852 ("serial: samsung: switch to clkdev
+>  >> based clock lookup")
+>  > Please fix your scripts to use the proper number of SHA1 digits
+>  > in a Fixes: line as the documentation asks for.
+> 
+> Done. Also added the comment to the source regarding the buffer size.
+> 
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 0fce856434dafd80..2c701dc7c6a37191 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -1407,7 +1407,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+>   *
+>   */
+>  
+> -#define MAX_CLK_NAME_LENGTH 15
+> +#define MAX_CLK_NAME_LENGTH 24		/* "clk_uart_baud4294967295\0" */
+>  
+>  static inline int s3c24xx_serial_getsource(struct uart_port *port)
+>  {
+> @@ -1457,7 +1457,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+>  			!(ourport->cfg->clk_sel & (1 << cnt)))
+>  			continue;
+>  
+> -		sprintf(clkname, "clk_uart_baud%d", cnt);
+> +		sprintf(clkname, "clk_uart_baud%u", cnt);
 
-Hm, I guess you are right.  But wow, reading that
-wait_event_interruptible() condition is crazy, please document that
-really well to explain this properly so you will be able to understand
-it in a year when you next have to fix it up :)
+So you bump the size of the buffer and continue to use an "unsafe" call
+that could overflow the buffer?  Is this a plan to submit a series of
+patches all "fixing" something based on the last change?  :)
 
-> I can add that the function returns immediate if a mask has been passed
-> which matches no modem signal if this is preferred?
-
-I don't think that would work, try it on some existing serial ports to
-see what they do.
+As Krzysztof said, this whole thing is not needed at all.  Please fix
+your tool to generate valid changes.
 
 thanks,
 
