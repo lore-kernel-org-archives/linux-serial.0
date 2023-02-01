@@ -2,188 +2,163 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0532EC38142
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 09:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D9CC05027
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 12:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231786AbjBAJtE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Feb 2023 04:49:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
+        id S231989AbjBAMeG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Feb 2023 07:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbjBAJtD (ORCPT
+        with ESMTP id S231864AbjBAMeB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Feb 2023 04:49:03 -0500
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on20630.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaf::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D62E269F;
-        Wed,  1 Feb 2023 01:49:02 -0800 (PST)
+        Wed, 1 Feb 2023 07:34:01 -0500
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2043.outbound.protection.outlook.com [40.107.105.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8785C0D1;
+        Wed,  1 Feb 2023 04:33:52 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jm0Cl156Nlmf+dDxkk3/hL2XEgTxhT8eI9AsP2rgHnV93zJzCRZuep7D/UhS/Old1OicOcTZBz0HoNTkBfePNTXtwPHH8ZHGnpn333YtQXQ9/6kHUO6IlshT1jskIeLrkt4kx4H/nAPPSK6DxQzluu467p3LmlMGerTEUoJUXdu0cBryE04kXQgKOZZiK8fDtm6GuLFinsQfFLLBy0N00yO00Wa0rHhnVV6tt9OWAuJhJG2GOng56Fiib+NpRfWB4+fM1r0u1Jcux6s7fsyqgpvigOh1J725q74QMaRRgPYJmJBt7EIFW/fKGJKZUUlAFp6sSHRkNc18rBYHRNShCQ==
+ b=lEe+z717JjIz6hds6UG+GtJMCj9MpRITHk9xGW39h5tSuQtFY9MGdm0b4fdZBnMwN02ZPYsznet7cZ0ZPkIMVBi2oYH+1uIs/iV57zVMXXLpU4cwOxSbGzrmz8Jd6H8PllKrRSFKfTNUQXtZJljT2APwBVDSEYYtVJUpgNyxKwBRB8pFQa+g2d5AFSJ0BkOHLqm7YQItUjyJSMIiYnhDH3kqx1X9kj6kXOY0QnZJdaVr10/4P7w9qDtIvBXpecyFwa1Hp2N5zz29cJ2a2YyG3zLpE1IvzV4ufnCGPAV6ush3I16mzHjlWun7siQDsUMSeBCoyMFHKCGaohtkuG18zA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=72v1EzYIkSW0ZdpsnG6/NPILyd/HtpbaQ1mt+F3OCd4=;
- b=iafJrcZYNsLsrEO2ZDny8RmHw7gPBQ/M/Er9gd9yt0rJiorOoVkgERrdKNKwX49c9LV+8qOxsHJdlVRbHjsBDDPuKHqYs6jPlheuceXWPPGwg0NO820p9KTQ8x3zxOe0V5QDGYp647HtizFJ/KESHUsauLPunsBiOUUHryd8Chmhk3FQ0DKiYOcGnA8VzEKzYiy3A39v390Xi5yLdOoQqOLjeftmzD6ox9KZ4y48F7CjGtfRfjfBtfBzTOnzy1v3vXGM5HaQ946RPH9gmnS38mwZFkLevVoKnLVbaGADpMblyIUWPKIgWUd0vnxVyjzfjv1AmGTFNR/WeNuOZ46CjA==
+ bh=r9Kxf2+aq5UBylNWe1Bf4hw/bYTFukr6DAgKI9R8ZFM=;
+ b=aSa2jYjBHcScz85mdC0NR4n7WD7oMZMK2og1yBrgEBDb/Ugt6NuHvcehnoMyG+0bwwZqZ7QGIUPGT7DPSYY+tI5zB7V/7r3GO8msWYB0UZOmVaawEb5TOdgY8Ar1+FXfV/afn6ohCtRzE+BGd6sxQO6QBbdHbj5ajUP6+8rdnCS5t/OWJpYxBmtsBpl+h9YB93MAYZWyqQ37sDSwYvGYMNKXGlqsTQTv708EYK1C+ik4sziXEVzruXpUQOWPXkzqdGnopx9pYvmveMnhViz9+DMqy+XNiqFuLLMQt5zXq1lc+k8gUstV8ey3iA55ZfW9I+0p9Nn0BgSF239VeD1jnw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=72v1EzYIkSW0ZdpsnG6/NPILyd/HtpbaQ1mt+F3OCd4=;
- b=rquz5oz2OyDU7qD7fvcwQxRk3Wi5Zs7QGFrW4gCC8V+TtmMeURFsnQK8gU3ICuTmHxiT7bU6VOMw502AiEfOioM9Q+o1NmCjcH2hNxopWmQSyh172nDqa3ANciz9d/lmmwHAJ/EPS7XC80fWVx9Otcl6pEQS+n/jJ9gsKr5kK55wDio76Ch9UxuNJMBnolfGjq57hxx6gz8jJ+IzycCWVCWqd6vIwGuS4UMscGAabpjFLisF+btx5c+HqyKZmrtoak9owknLdERZ+k+oSU5tlcm8ajb8Cx5meqrOHNzMxO6YSYh08C5UbM5h0AEpYNGCMGs54+hR8ucgTb7tQHZ9XA==
-Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
- by DB8PR10MB3595.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:13d::17) with
+ bh=r9Kxf2+aq5UBylNWe1Bf4hw/bYTFukr6DAgKI9R8ZFM=;
+ b=gpUoNuU7nFFDj2u43bk4ailSuIsLdGkNhGQTVU/uB4taCfloPdVIkDBBNrUoOnZL4M0ysrbwdKhjDyHdbzX1NNIEPJiYX4raumffzD17ICMVFDr4+Hj9JNpeY67NFzqRmrILw21T0ZGqJXgunYXKTARXrcVKNgpYFBh1MmNGsGg=
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by AS8PR04MB7925.eurprd04.prod.outlook.com (2603:10a6:20b:2a2::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Wed, 1 Feb
- 2023 09:48:58 +0000
-Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::6515:6f15:71b9:713c]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::6515:6f15:71b9:713c%3]) with mapi id 15.20.6043.036; Wed, 1 Feb 2023
- 09:48:58 +0000
-From:   "Starke, Daniel" <daniel.starke@siemens.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24; Wed, 1 Feb
+ 2023 12:33:50 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189%6]) with mapi id 15.20.6043.036; Wed, 1 Feb 2023
+ 12:33:50 +0000
+From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
+        "hdanton@sina.com" <hdanton@sina.com>,
         "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/3] tty: n_gsm: add keep alive support
-Thread-Topic: [PATCH 1/3] tty: n_gsm: add keep alive support
-Thread-Index: AQHZNhjWVUvjeWMSkEi/GfrXE3Mzea65z9OQgAAC5oCAAAXj0A==
-Date:   Wed, 1 Feb 2023 09:48:58 +0000
-Message-ID: <DB9PR10MB588101762F5AA07EE43F0658E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
-References: <20230201080151.2068-1-daniel.starke@siemens.com>
- <Y9olcm0PiSCSikri@kroah.com>
- <DB9PR10MB58814F4711FC3403F7AF089BE0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <Y9owmfZwKn9+1xBf@kroah.com>
-In-Reply-To: <Y9owmfZwKn9+1xBf@kroah.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v2 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Topic: [PATCH v2 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Index: AQHZNjlvc3KPU/mXzUmdiUoieetwDA==
+Date:   Wed, 1 Feb 2023 12:33:50 +0000
+Message-ID: <AM9PR04MB86039B970C497F603BBAB74FE7D19@AM9PR04MB8603.eurprd04.prod.outlook.com>
+References: <20230130180504.2029440-1-neeraj.sanjaykale@nxp.com>
+ <20230130180504.2029440-4-neeraj.sanjaykale@nxp.com>
+ <20230131022041.GB4082140-robh@kernel.org>
+In-Reply-To: <20230131022041.GB4082140-robh@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-02-01T09:48:57Z;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Privileged;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=d3f68aaa-fad3-4656-a56b-0cf1933e559e;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0
-document_confidentiality: Restricted
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
+ header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR10MB5881:EE_|DB8PR10MB3595:EE_
-x-ms-office365-filtering-correlation-id: 64230821-a126-404c-d567-08db04398aa5
+x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|AS8PR04MB7925:EE_
+x-ms-office365-filtering-correlation-id: 58051d51-ec87-4082-3f8e-08db04509258
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KWGWMSvJC1QCB69irWJGAWuFfJf9m6NYrCge8ZUrwlXSGIxMEfg690nQBeJEcbpo+6/37PnqWVIGl5nEt6yxMyaYyu/C7713L5skPLQmYFp4Xlwl3qhmKgLP6CbuMOiSomDkqh//+AdGbbf6jI3Dk2oEGJVRxr3v9+Xee66EesB9qC70F29LByaALhNPseN2GX+lWAHCCCK1fdedFPrQ8atzXTK4cPQeEEvzojVgie4Zj/aLWCNx2036cp+pBtBQrHzf5TPapmvy1bgqG5b6UM9f/4G76W84CsWOjrXGuG3lYx4Uey9llVxrhYCr8RoiIWIVuQZqEQu60C7S8shHBnJ29HGrZSY0ChzW6/6C66i2y8PkrjIH3+Ik4pLHn6/jxL4akgSl5TML2cn+mejybtja9alFzM3m0Ju6aBF0efS2InsHitvcCz4Da0Atd07gpt1zQZWvxSNMVHVC+isgIzysf7wS4KHT7JkYmgBMq4fnHIqkRgucC12NFyUW3ptL9csEo6r039UekIgsT4DWc1e5mHIijtOCF96Dmfva7AmWQpwzCwCb1b2FBaKOkuaAz+AJl+SVDoCMV14RQ7+yrJofauq6+hF21C9ag06y9b9Uk/SsuYjAEh1ysUoQVm03QY7+L3Z/F/jnIihmQHJkl/Dg7p6dNkwnuXgwFOQt4+oxP6IjbBnyizpcQdyrT5xctOTtlcMub6doIS12TW9mZA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(396003)(136003)(376002)(451199018)(8936002)(52536014)(316002)(6506007)(86362001)(7696005)(38100700002)(26005)(38070700005)(478600001)(122000001)(9686003)(186003)(71200400001)(54906003)(82960400001)(5660300002)(2906002)(33656002)(55016003)(41300700001)(4326008)(76116006)(66446008)(66476007)(64756008)(66946007)(66556008)(8676002)(6916009);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: RTukSMjdzKa0sSXZWzZJ4i8vfMPobR9YaT0iBVfyOuh/gFXk7KnH/YnHzjMex0YzKK3PwVUvz6IcrW8EGq1rz/GJOirDJa04vfICNdUuCTwJZYS0gn+4fAZ1FHiGYbGt0tC2afeN5UcZdxwHS0Zwh6Z43ml07LXbeHrJzHA6zF2DNfgi0AjowMP6Oeo2yPjsU27WdthMy7ajHSORnYlQi38Mz/6S0zn9CDfsokrKSO6/QJ+RuFHFiEG6Hv/Se7CdcTOlM3QLJRsUfaToh/A1RH6XJ/rnZHqcYh6u8piPhDFaqXcVsWsLVb08cXRXY7T+seJ3aa9RRk4nKR+umWEKiASDvS2c8jRKX703GneOMACc7rL3q97qw7WP+yo3YXlsDF3cdfPcZamonLeYKe4SPQXDz6bfpnxhUWh8FdlmCoEl1SUQmEyTw3CIWKdycRwW/APXgv4MtPa+OPTdlgDyOxmuWS1WRymklvXpOdIjGmkn7qjHf+1FQHsoGIvIQbWo0pwUfZ5GYvSggqO8T0cB81cHNXhcSkmBF5p+H50os6B7zEyPplywlceZJdfl1/6whdxq8xWt75Fr6NnwvqNkdF9lMG6JBVq9xtsXESLxsW1dZdEU0mcys/vlqw7+2Momfu+lxbwdBHMpeZl/CMOfjbrMZXv/dpiTNK7Fk+EFEE7weSDxsnsGdke9yiJ6GIyKW8R/BTyXQmwrRV/fF4/btQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(451199018)(478600001)(33656002)(55016003)(52536014)(54906003)(5660300002)(38070700005)(6506007)(55236004)(2906002)(7416002)(9686003)(26005)(4744005)(186003)(86362001)(122000001)(316002)(38100700002)(7696005)(76116006)(66946007)(4326008)(6916009)(66556008)(66476007)(64756008)(66446008)(83380400001)(71200400001)(8676002)(8936002)(41300700001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?M765IlE7zqDzkf1O3De9Zgmn0RFASluGiEfeAA+T0lgghrXkkFjUaf+dFEJo?=
- =?us-ascii?Q?nuUhiFDR4llS9OwTlHZ3HwNHijB4zSZileC6w2GVNngkEuuNY2YzdIKWOZb9?=
- =?us-ascii?Q?lQvWasjj0c+sN2mzz2hK6LRjrPWtX/A/gc4gSneDxfuLLldPzvYWBWE9r5oQ?=
- =?us-ascii?Q?oJfgYBQJmhodz6qTJGZJGdHrmkrAHAY12tU0uG+ns+62B5/K8ZYW77Vqoykn?=
- =?us-ascii?Q?igmqE52QJnBl4HVWoHtXMFOPRUuDQ26EDJi45B/STvoX2pIQh+4ER1WiWw+Y?=
- =?us-ascii?Q?ql2auuogh/7O0VDcnqr1oWvsPJ+JljKKB7RF4VWHSeV+fLOjPjx6JZCoSOvu?=
- =?us-ascii?Q?U8xv9kKu1+CP2hye2fRo5R2Tr2Tild+Kya280CL+Mw2Ak8NCF5G76k92td6A?=
- =?us-ascii?Q?zlQwy0m4lDs1TjyrxUtYgnqwPeKnWwcyqiiSCR2OmSFoU/D9Rd4DjQngiWvq?=
- =?us-ascii?Q?EIOKjaYz6wefQ45J1ojXbuct0qPb0FgoO+N8tvBz8DgCVCckLvIXen+niWzi?=
- =?us-ascii?Q?s3xVbBQxeAhLmSI8/5YQDl8Yc8cC5z0I+xnPh3aabREPHa1CuPOFx1uTGLpv?=
- =?us-ascii?Q?bxwaSj5v3AmkK7eqW6i+iBspUWVY8QcB4PKF7UtJSYuNEDValjy4y05o+zFT?=
- =?us-ascii?Q?5vLLS9Rg703LaoBex8/ljWXg+lac5GdOB3k6ZCMsScZxvZno1Gdes7ob17tN?=
- =?us-ascii?Q?oAWXWWgdKCb/n+J7NaPtWRD5kir5YZ0j2Bw1g5ZxSJyGoNYcSca10+GqykUx?=
- =?us-ascii?Q?EIp8b36R9nhjJdfMPRO4fNV1CYK5aFgHMR2uQ2fT0QBlkGgZ2nvK/xEnQSDO?=
- =?us-ascii?Q?FFnuPXx4nJ2/m94IraHZmSM41Sz3CSgH7Lt9OkAr3rGEOf04dQZLmyJznOUl?=
- =?us-ascii?Q?olCZg+sXhoAMTWBO/4esHEfBlh42hy0fBfChpmMb4jc9WDzxz+BRwVnZHel8?=
- =?us-ascii?Q?m/zq/kSAQztFG3M7V2vzUCDgSSAnjy7joHQF0qzzWlqso5Fc279hymxs9ox2?=
- =?us-ascii?Q?eNAWp4uzSOOJCKsJI1sl4ZiVweyAdDBuv1sHqm07VNUkedOfaRQ3xH8HobeR?=
- =?us-ascii?Q?MnmMtze0EXY+WwV/jXyB3sihaKlLRoiWJFsD8XPDq+BNMu3O7YK1YuWtZ7UN?=
- =?us-ascii?Q?uxFbEarFA0cbXuTuGDGV1lBx4yFzQxuUAQyiUKGyMabgPYqxA6w+debs9Cv0?=
- =?us-ascii?Q?QcP/EMArCI3p7gTFEb2ivoP+FRFNW1clvUGSfC6pKwZFQSIDlWmQbbBUomTB?=
- =?us-ascii?Q?i9qwpUKthzF1fFXskwKmJfgu+lE/PxHiiUgt+vmnaqayeI/PjtIaq87eNo0Y?=
- =?us-ascii?Q?kAY1fneIgIKfyapjqJIDfxHErUHxDZgQ2hK8AqVsbJoO5vW7eLMLBHjZ8oTS?=
- =?us-ascii?Q?r6lwLGSGQ9LKpw7FdldlOFbQ48hUJiqV/9CljFVb89zJgXiAVIKN1sJ9dukO?=
- =?us-ascii?Q?9UV6USk2KFAhOOFG+9xtzluSUH87UWY3pVl9sv7mdGwZWCdn3+KUrAi7rU/A?=
- =?us-ascii?Q?FeiRfvALh+ZSU2j8exqzzyfEtsvXMoqfLaJeoS72DQe0govFZwiiU3BVQchB?=
- =?us-ascii?Q?V3s5FBmnrmwPGSbTLFWEA8wuP/Uz5oE8njpBftrRF2jxeoYlekmwXBQysH0G?=
- =?us-ascii?Q?yQ=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/vjxAvvSgNz7NQn2Fg8jo7F0JsU/+wLMJXGYsgXI/SWCIlHSHcriTsPpq4F0?=
+ =?us-ascii?Q?mu8rNkenyg0Maopk6cAvHpWFoAsj2181SwqaZKvs89qKdN4KcQFMcofP1Xau?=
+ =?us-ascii?Q?0iab52FPUAUPS5kagZFrvyh+4q9VxLLxzm4JvuTyFgP6uiS8aePjd4CmjRpa?=
+ =?us-ascii?Q?+gEzbNyBohWjRvZaNntb6jdPSK0dd4pa6TCB1rRgyRaxnelzWGCCkxjigTA0?=
+ =?us-ascii?Q?64cQuOf743XTfFNHQWyUH6H5jx91RR9kf9R8yxhHJx9mgsyC36OrCx5L3PMD?=
+ =?us-ascii?Q?U1Pa0eP8H8sgyR0T58M8r3tujRIwO2SM5B7Apa8BDTmaV0UKVNwHQ3k5fMf/?=
+ =?us-ascii?Q?qgaN8l1HGo2KWfATGKbGIJUub3CERmJDyTcUKzimUyv/IkhgEU22hWYLIGUn?=
+ =?us-ascii?Q?rtEcjurzLpv57nU+C+EPNgrVhAvUrEnewY62KaK+WIU+1yMQz3kbQ6BFNRoL?=
+ =?us-ascii?Q?H/u/5qxgy5HC5yx0RLNeBnMfTrP5kDlwD1OHkC7owOIzM4Uw4BYW/GXqtQst?=
+ =?us-ascii?Q?sL8Vbli5NtRYfEwAmSApWxuEsDlNs7rX3Wu1LURy3VT6nqk8/hpNIbPL7oRR?=
+ =?us-ascii?Q?lYHAClMbzBDfONza3ra73KWdQsB16pcvjODYsiwzJi8pXSrLmz9X6c1j1NPh?=
+ =?us-ascii?Q?rZIanRVh7MpzEuEoYyFRYmOrEbBYJz1DuOWJGB4Tz94lXgtSIKIYKK6I65LJ?=
+ =?us-ascii?Q?s3A5Rvqectw7XSiOMtGlGT26tvccp8ragh7haJ9vBf9R1z8BFH5N+v/OpKXJ?=
+ =?us-ascii?Q?xJSqI0nqVxdn6aqzzUs5GZQYMSnVke0SdNYAyQP1ceDzGr0//tYTH9U6pRCZ?=
+ =?us-ascii?Q?47QFcPG9YqjntTW6+Xu7l2NHnEI10DUxLTU6y1wany0fdZabcXdBMRizgGnh?=
+ =?us-ascii?Q?YDMENBW9EQVggCiefH0evgaY4RgFOzg8xf3VBUqRFfx1UpwV9dHx5Fwyjyus?=
+ =?us-ascii?Q?p26Rm+PNcY1TXEoDjwTZE2ZNbc1XJab5BzSC+sh2dTk17inNfL6XVWXJ986s?=
+ =?us-ascii?Q?xgc0UDFlETbARPtsVPHU02IAMoUSXRjHPXTHTr/2wTYv7NBmu1803y79DN/q?=
+ =?us-ascii?Q?7Zi5rlTC3FcYUFOkpx8a5hARbCKlfo+jsfU9BckBGKv2yCVPf3gTPiOMC1LO?=
+ =?us-ascii?Q?LqxQXLCPA2tRt3sbbzu1Xp8ttAMnUrArJZAM5Jo5ugjqESH/g676cCPYzLZn?=
+ =?us-ascii?Q?LYjZclCKNi/h/HNuLRgsM9eS97XahGhhgmmTEAP6fyDFQK337l+SaiUKaFrS?=
+ =?us-ascii?Q?CKseVIB8Kar51XLj8CV973jWMEq8bT56D0fbwjEjerKaWETpuocm7hKkKYZW?=
+ =?us-ascii?Q?8hh1CSbowdBYeVq6mfBMEWs+/VZjK4RNLpk3XiXXQAyERo97EN2TzKDZFu0Q?=
+ =?us-ascii?Q?5PBb3MWXsXO+bYdQ+LKbJFEihiJ5/B8A6WVr3R8g5qPR0MLxQyyz7Vw+tv2x?=
+ =?us-ascii?Q?eRsWT1vE6DXSn/4YdAZyx5VEB/QXtTTlwQMl024Zjv6Wz2yNP6nAY6fKahbg?=
+ =?us-ascii?Q?5T30h5OOuYRgqZTAMNV1OKxtZ/a5hrfRrIK9yP+Mlz6CT0KjE7qFBAMtxh7K?=
+ =?us-ascii?Q?iX7VWBRWHqPnfF24/68o4p8Y45ByLYeJzAzP58Kb+N8xaMA2ZelMFlqIkKyE?=
+ =?us-ascii?Q?nQ=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: siemens.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64230821-a126-404c-d567-08db04398aa5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Feb 2023 09:48:58.8359
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58051d51-ec87-4082-3f8e-08db04509258
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Feb 2023 12:33:50.1896
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7wWBs8juSfj37FcRaKQose61nrZwtvroGR9OGKpQlXRjr6JRWitNrz/IZCR0ht9/wqiIEAlluldMYyRABLaEbmaHI1gmSuIXk0QiblJqJGg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3595
+X-MS-Exchange-CrossTenant-userprincipalname: FwW4VRFAHdP/gyc2pgeOoN7bOX1TfTP2p+HNh6NrHHVfOL8ej6FWQh/5tMWuaQ/vvP7xnqpoH1lydO2b8sGtRx2ELaR91/iKZL7NHPYdaXE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7925
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> > > > index cb8693b39cb7..b64360aca1f9 100644
-> > > > --- a/include/uapi/linux/gsmmux.h
-> > > > +++ b/include/uapi/linux/gsmmux.h
-> > > > @@ -19,7 +19,8 @@ struct gsm_config
-> > > >  	unsigned int mtu;
-> > > >  	unsigned int k;
-> > > >  	unsigned int i;
-> > > > -	unsigned int unused[8];		/* Padding for expansion without
-> > > > +	unsigned int keep_alive;
-> > > > +	unsigned int unused[7];		/* Padding for expansion without
-> > >=20
-> > > "unsigned int" is not really a valid uapi variable type.
-> > >=20
-> > > Shouldn't this be __u32 instead?
-> >=20
-> > I know but changing it to a fixed size data type may break compatibilit=
-y
-> > as this may change the overall size of the structure.
+Hi Rob,
+
+Thank you for your feedback. I am working on all the review comments receiv=
+ed.
+
 >=20
-> Will it?  It shouldn't that's why using the correct data types is
-> essencial.
-
-Well, unsigned int is defined to be at least 16 bit. Using __u32 will break
-systems where this is true. I am not sure if the Linux kernel targets any
-system which defines unsigned int with 16 bit. But sure, I can change it to
-__u32.
-
-> > This is why I
-> > took a field out of the "unused" array for the "keep_alive" parameter.
-> > A value of zero disables keep-alive polling.
-> >=20
-> > > Should you document this field as to what the value is and the units =
-as
-> > > you are creating a new user/kernel api here.
-> >=20
-> > I will add a comment here. Comments for the other fields remain subject=
- to
-> > another patch.
-> >=20
-> > > And finally, "unused" here is being properly checked to be all 0, rig=
-ht?
-> > > If not, then this change can't happen for obvious reasons :(
-> >=20
-> > This was not the case until now. I assumed there was some coding guidel=
-ine
-> > that unused fields need to be initialized to zero. Obviously, checking =
-it
-> > prevents misuse here. I will add relevant checks for this.
+> On Mon, Jan 30, 2023 at 11:35:04PM +0530, Neeraj Sanjay Kale wrote:
+> > This adds a driver based on serdev driver for the NXP BT serial
+> > protocol based on running H:4, which can enable the built-in
+> > Bluetooth device inside a generic NXP BT chip.
 >=20
-> If the value was not checked previously, then you can not use the field
-> now, otherwise things will break, sorry.  Those are useless fields and
-> should be marked as such :(
+> These are rebranded or descend from Marvell chips, right? Maybe this
+> should be merged with the 88w8897. The firmware download seems to
+> match
+> the v1 protocol.
+>=20
+The 88w8897 was a legacy Marvell chipset, while the newer chipsets we are t=
+rying to add here are branded under "NXP".
+Most of the newer chipset download FW using V3 protocol and few of them use=
+ V1 protocol, which is still different from the V1 protocol seen for 8897 c=
+hip.
 
-What is the way forward here? Should I introduce a complete new ioctl?
-Or should I use a different size for this structure to break existing code
-intentionally? Does this mean that we cannot extend this structure at all
-in the future? I had planned another extension here to properly support
-parameter negotiation.
-In case we need to keep the structure as it is: Would a comment be
-sufficient to mark this field accordingly?
+Initially we tried to add support for NXP chipsets in hci line-discipline, =
+but Marcel Holtmann advised us to implement this standalone driver based on=
+ serdev.
 
-Best regards,
-Daniel Starke
+Thanks,
+Neeraj
