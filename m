@@ -2,123 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D6EC38142
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 06:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8749CC38142
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 07:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbjBAGiq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Feb 2023 01:38:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
+        id S230269AbjBAHJM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Feb 2023 02:09:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbjBAGiq (ORCPT
+        with ESMTP id S230177AbjBAHJL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Feb 2023 01:38:46 -0500
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6A3010AB6;
-        Tue, 31 Jan 2023 22:38:44 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id ABB2B8154;
-        Wed,  1 Feb 2023 06:38:43 +0000 (UTC)
-Date:   Wed, 1 Feb 2023 08:38:42 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <Y9oI8m132aQOeSed@atomide.com>
-References: <20230116080002.47315-1-tony@atomide.com>
- <Y9jo9bTnmejWYoH2@kroah.com>
+        Wed, 1 Feb 2023 02:09:11 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276EE7AA6
+        for <linux-serial@vger.kernel.org>; Tue, 31 Jan 2023 23:09:07 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id o18so6854829wrj.3
+        for <linux-serial@vger.kernel.org>; Tue, 31 Jan 2023 23:09:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AG203x/uKQJsIwhObu5QUpAihpZS37VrG6M7sV+EOHQ=;
+        b=td8ozKEtyub8HUecu01AxE++XpWb6erclPFizSlD5n0kKKUmqmnrsdsSk1JfmtwM6X
+         M6GGtGi/KAMAou57dCdfUbw7fnl5OyS0y0hcSvtPNbR/xPgPIgqj14yIcTDEuNzSz7p6
+         WGxpWjpeF2oYwqkGIKV9XORfvf7t3dgisgwSezw3GCzGCa/uS8YB8/A0td8eikGmsXBX
+         jsbS7OU0HPApmpMb4QexjYrEuMy30961OPEkr46ITH0cA07QeaCJzNj9+R6/USvB9mgX
+         LJNVsfurwou1gKGpzocZTXIKtva/6cpQFqPn9VC7Rbj0X01uduRw3ooWvumiXNX+3QX/
+         Scnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AG203x/uKQJsIwhObu5QUpAihpZS37VrG6M7sV+EOHQ=;
+        b=cPqs0ewjsJShzwDZH5hw/Sr91TrhBB2WfmBYlFJPYhRs9whAO01pDVh0YGzCHkd3s6
+         Dkjgp3p0vaxhplc23lXaFHmewD9vNb1AqhPuRt+dUAPUdOaCV9er9Ras9K3pOyHzSC+0
+         HgjimwIb7PL8cdZlThgX24PxHLz9nQkG5B76nep7fREVHdAHCXcwpKkc9/0z3q58pk5t
+         hkP6LW77mmJhgaiFKfUmB4thTp/ry8jbmuzhNmuXgNKCN0vxLCss9sPqXz3WT5MpWU/B
+         SYoYzbe22Wsini/rmbSZdbWnIzAkvuFVdVoT0vX4NIR2+nOpr5KdRgAy+JF209MX52g0
+         5aiw==
+X-Gm-Message-State: AO0yUKUpNpf1mJMzCyLacBOhzOg09i+Fp+f0fOPHtuV+v/Otexc1tzjy
+        bfTG1P/HY9JLRyff/8Spv7CBZGT3SQVXPR2K
+X-Google-Smtp-Source: AK7set/p11ubEqSrtB7a9mTly8krn3N6vc2HKyLQLtylmc0YmLRn32psEZg0nOrSKfM+qMGRwBRTMQ==
+X-Received: by 2002:a05:6000:1f98:b0:2bf:affa:c83a with SMTP id bw24-20020a0560001f9800b002bfaffac83amr4796260wrb.65.1675235345599;
+        Tue, 31 Jan 2023 23:09:05 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id v12-20020a5d610c000000b0028965dc7c6bsm16261945wrt.73.2023.01.31.23.09.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 23:09:05 -0800 (PST)
+Message-ID: <149edeac-3a5c-4157-b63a-678016c22369@linaro.org>
+Date:   Wed, 1 Feb 2023 08:09:03 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y9jo9bTnmejWYoH2@kroah.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2] serial: samsung: fix buffer size for clk_name
+To:     "Alexey V. Vissarionov" <gremlin@altlinux.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kukjin Kim <kgene.kim@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        lvc-project@linuxtesting.org
+References: <20230116141658.GC8107@altlinux.org> <Y8lZNi9pYVFkYvh9@kroah.com>
+ <20230201024457.GD446@altlinux.org>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230201024457.GD446@altlinux.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230131 10:10]:
-> On Mon, Jan 16, 2023 at 09:59:58AM +0200, Tony Lindgren wrote:
-> > We want to enable runtime PM for serial port device drivers in a generic
-> > way. To do this, we want to have the serial core layer manage the
-> > registered physical serial controller devices.
-> > 
-> > To do this, let's set up a struct device for the serial core controller
-> > as suggested by Greg and Jiri. The serial core controller devices are
-> > children of the physical serial port device. The serial core controller
-> > device is needed to support multiple different kind of ports connected
-> > to single physical serial port device.
-> > 
-> > Let's also set up a struct device for the serial core port. The serial
-> > core port instances are children of the serial core controller device.
+On 01/02/2023 03:44, Alexey V. Vissarionov wrote:
+> serial: samsung: fix buffer size for clk_name
+
+This does not belong here.
+
 > 
-> Looking better, but why is this new device a platform device?  That
-> feels odd, you should never have a platform device hanging off of a
-> non-platform device, right?
+> Although very unlikely, the 'clk_num' value may be as big as
+> 2**32 - 1 (uint32_max), so the buffer should have enough
+> space for storing "clk_uart_baud4294967295\0".
+> Also, the numbers in clk_name are expected to be unsigned.
+> 
+> Found by ALT Linux Team (altlinux.org) and Linux Verification
+> Center (linuxtesting.org) using SVACE.
+> 
+> Signed-off-by: Alexey V. Vissarionov <gremlin@altlinux.org>
+> Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
 
-No special need for it to be a platform device. It just is easy to set
-up, and for my test case the serial port physical device is also a
-platform device.
+How did you address my comments? the clk_num cannot be beig as 2^32-1.
+It's not possible, if I understand correctly.
+> 
+> ---
+> 
+> On 2023-01-19 15:52:38 +0100, Greg Kroah-Hartman wrote:
+> 
+>  >> Fixes: 5f5a7a5578c58852 ("serial: samsung: switch to clkdev
+>  >> based clock lookup")
+>  > Please fix your scripts to use the proper number of SHA1 digits
+>  > in a Fixes: line as the documentation asks for.
+> 
+> Done. Also added the comment to the source regarding the buffer size.
+> 
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 0fce856434dafd80..2c701dc7c6a37191 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -1407,7 +1407,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
+>   *
+>   */
+>  
+> -#define MAX_CLK_NAME_LENGTH 15
+> +#define MAX_CLK_NAME_LENGTH 24		/* "clk_uart_baud4294967295\0" */
 
-What's your preference here?
+NAK. It's just waste of space.
 
-> What does the sysfs tree look like now with this patch applied?
+Best regards,
+Krzysztof
 
-Below are two examples of what's in sysfs.
-
-Regards,
-
-Tony
-
-8< -----------------
-On arm64 with two physical 8250 devices I have:
-
-# ls -l /sys/devices/platform/serial8250/
-total 0
-lrwxrwxrwx    1 root     root             0 Jan  1  1970 driver -> ../../../bus/platform/drivers/serial8250
--rw-r--r--    1 root     root          4096 Jan  1  1970 driver_override
--r--r--r--    1 root     root          4096 Jan  1  1970 modalias
-drwxr-xr-x    2 root     root             0 Jan  1  1970 power
-drwxr-xr-x    5 root     root             0 Jan  1  1970 serial-ctrl.0.auto
-lrwxrwxrwx    1 root     root             0 Jan  1  1970 subsystem -> ../../../bus/platform
-drwxr-xr-x    4 root     root             0 Jan  1  1970 tty
--rw-r--r--    1 root     root          4096 Jan  1  1970 uevent
-
-# ls -l /sys/devices/platform/serial8250/serial-ctrl*
-total 0
-lrwxrwxrwx    1 root     root             0 Jan  1  1970 driver -> ../../../../bus/platform/drivers/serial-ctrl
--rw-r--r--    1 root     root          4096 Jan  1  1970 driver_override
--r--r--r--    1 root     root          4096 Jan  1  1970 modalias
-drwxr-xr-x    2 root     root             0 Jan  1  1970 power
-drwxr-xr-x    3 root     root             0 Jan  1  1970 serial-port.1.auto
-drwxr-xr-x    3 root     root             0 Jan  1  1970 serial-port.4.auto
-lrwxrwxrwx    1 root     root             0 Jan  1  1970 subsystem -> ../../../../bus/platform
--rw-r--r--    1 root     root          4096 Jan  1  1970 uevent
-
-On x86_64 qemu with one port I have:
-
-# ls -l /sys/devices/pnp0/00:04/
-total 0
-lrwxrwxrwx    1 root     root             0 Feb  1 06:13 driver -> ../../../bus/pnp/drivers/serial
-lrwxrwxrwx    1 root     root             0 Feb  1 06:13 firmware_node -> ../../LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:01/PNP0501:00
--r--r--r--    1 root     root          4096 Feb  1 06:13 id
--r--r--r--    1 root     root          4096 Feb  1 06:13 options
--rw-r--r--    1 root     root          4096 Feb  1 06:13 resources
-drwxr-xr-x    3 root     root             0 Feb  1 06:12 serial-ctrl.0.auto
-lrwxrwxrwx    1 root     root             0 Feb  1 06:13 subsystem -> ../../../bus/pnp
-drwxr-xr-x    3 root     root             0 Feb  1 06:12 tty
--rw-r--r--    1 root     root          4096 Feb  1 06:12 uevent
-
-# ls -l /sys/devices/pnp0/00:04/serial-ctrl.0.auto/
-total 0
-lrwxrwxrwx    1 root     root             0 Feb  1 06:13 driver -> ../../../../bus/platform/drivers/serial-ctrl
--rw-r--r--    1 root     root          4096 Feb  1 06:13 driver_override
--r--r--r--    1 root     root          4096 Feb  1 06:13 modalias
-drwxr-xr-x    2 root     root             0 Feb  1 06:12 serial-port.1.auto
-lrwxrwxrwx    1 root     root             0 Feb  1 06:13 subsystem -> ../../../../bus/platform
--rw-r--r--    1 root     root          4096 Feb  1 06:12 uevent
