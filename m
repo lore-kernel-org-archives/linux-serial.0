@@ -2,134 +2,133 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED157C636CD
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 12:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4A0C05027
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Feb 2023 12:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbjBAMsw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Feb 2023 07:48:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
+        id S231564AbjBAMve (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Feb 2023 07:51:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbjBAMsv (ORCPT
+        with ESMTP id S231438AbjBAMve (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Feb 2023 07:48:51 -0500
+        Wed, 1 Feb 2023 07:51:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5953A9D;
-        Wed,  1 Feb 2023 04:48:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3688EC671;
+        Wed,  1 Feb 2023 04:51:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FAB0B8204A;
-        Wed,  1 Feb 2023 12:48:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 874CCC433D2;
-        Wed,  1 Feb 2023 12:48:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D900CB8215F;
+        Wed,  1 Feb 2023 12:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21DF4C433D2;
+        Wed,  1 Feb 2023 12:51:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675255727;
-        bh=gQ5ykPhITwYFSRSgdfkrS0T30uD5xET28MqxXO6rQWc=;
+        s=korg; t=1675255890;
+        bh=Hso2+wDezt629s0YjZW3kGWvktFxf9c1wVzkNT23w6w=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RbSOWMm8j1n+Ho4B9J8/8OkQ/kwgrGAJJwGPS7+Lr05AiMCjxokKWkHuYKZV7hsxh
-         gU/zqI69+4SQvXgm/FdRvCfK6tJ0ah0jzuocC+5/wAGZOeTMCNv9Jah/a7Y5gCaHIx
-         KUj2F2qFBPPlj7lQqfcwU1QJV+72Msd9G5RSHLGk=
-Date:   Wed, 1 Feb 2023 13:48:44 +0100
+        b=zOrGrZQtzJFw1Cnt/C/TYSTybjanKs43odAn0WSpb4JurPU0+1Zj8i9kxvWpjXeNg
+         n9slVLpvLwoODBisBxaMi5BV/EDUap3Q4724MN3ynkxhs0XqyYBXLtvYCR7e65Y3iJ
+         jX6hnFOH2HwH6lBWTkKAnXNbGemIOqxfLejvhCnA=
+Date:   Wed, 1 Feb 2023 13:51:27 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "Starke, Daniel" <daniel.starke@siemens.com>
 Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "jirislaby@kernel.org" <jirislaby@kernel.org>,
         "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] tty: n_gsm: add keep alive support
-Message-ID: <Y9pfrFPngFVgQUN7@kroah.com>
+Subject: Re: [PATCH 3/3] tty: n_gsm: add TIOCMIWAIT support
+Message-ID: <Y9pgT4VcW3oGaSbY@kroah.com>
 References: <20230201080151.2068-1-daniel.starke@siemens.com>
- <Y9olcm0PiSCSikri@kroah.com>
- <DB9PR10MB58814F4711FC3403F7AF089BE0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
- <Y9owmfZwKn9+1xBf@kroah.com>
- <DB9PR10MB588101762F5AA07EE43F0658E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+ <20230201080151.2068-3-daniel.starke@siemens.com>
+ <Y9oluEimqDixw60I@kroah.com>
+ <DB9PR10MB588166BD5DA668E4F6DEA597E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DB9PR10MB588101762F5AA07EE43F0658E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+In-Reply-To: <DB9PR10MB588166BD5DA668E4F6DEA597E0D19@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 09:48:58AM +0000, Starke, Daniel wrote:
-> > > > > index cb8693b39cb7..b64360aca1f9 100644
-> > > > > --- a/include/uapi/linux/gsmmux.h
-> > > > > +++ b/include/uapi/linux/gsmmux.h
-> > > > > @@ -19,7 +19,8 @@ struct gsm_config
-> > > > >  	unsigned int mtu;
-> > > > >  	unsigned int k;
-> > > > >  	unsigned int i;
-> > > > > -	unsigned int unused[8];		/* Padding for expansion without
-> > > > > +	unsigned int keep_alive;
-> > > > > +	unsigned int unused[7];		/* Padding for expansion without
-> > > > 
-> > > > "unsigned int" is not really a valid uapi variable type.
-> > > > 
-> > > > Shouldn't this be __u32 instead?
+On Wed, Feb 01, 2023 at 09:30:28AM +0000, Starke, Daniel wrote:
+> > > Add support for the TIOCMIWAIT ioctl on the virtual ttys. This enables the
+> > > user to wait for virtual modem signals like RING.
 > > > 
-> > > I know but changing it to a fixed size data type may break compatibility
-> > > as this may change the overall size of the structure.
+> > > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> > > ---
+> > >  drivers/tty/n_gsm.c | 32 ++++++++++++++++++++++++++++++++
+> > >  1 file changed, 32 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> > > index 118511c1fa37..48fb7dad44cd 100644
+> > > --- a/drivers/tty/n_gsm.c
+> > > +++ b/drivers/tty/n_gsm.c
+> > > @@ -1542,6 +1542,7 @@ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
+> > >  	if (brk & 0x01)
+> > >  		tty_insert_flip_char(&dlci->port, 0, TTY_BREAK);
+> > >  	dlci->modem_rx = mlines;
+> > > +	wake_up_interruptible(&dlci->gsm->event);
+> > >  }
+> > >  
+> > >  /**
+> > > @@ -3848,6 +3849,35 @@ static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
+> > >  	return -EPROTONOSUPPORT;
+> > >  }
+> > >  
+> > > +/**
+> > > + * gsm_wait_modem_change	-	wait for modem status line change
 > > 
-> > Will it?  It shouldn't that's why using the correct data types is
-> > essencial.
-> 
-> Well, unsigned int is defined to be at least 16 bit.
-
-In the kernel, it should just be 32 bits, but as this is a userspace
-header, it's pretty undefined :(
-
-> Using __u32 will break
-> systems where this is true. I am not sure if the Linux kernel targets any
-> system which defines unsigned int with 16 bit. But sure, I can change it to
-> __u32.
-
-Please do, that's what those types are for.
-
-> > > This is why I
-> > > took a field out of the "unused" array for the "keep_alive" parameter.
-> > > A value of zero disables keep-alive polling.
-> > > 
-> > > > Should you document this field as to what the value is and the units as
-> > > > you are creating a new user/kernel api here.
-> > > 
-> > > I will add a comment here. Comments for the other fields remain subject to
-> > > another patch.
-> > > 
-> > > > And finally, "unused" here is being properly checked to be all 0, right?
-> > > > If not, then this change can't happen for obvious reasons :(
-> > > 
-> > > This was not the case until now. I assumed there was some coding guideline
-> > > that unused fields need to be initialized to zero. Obviously, checking it
-> > > prevents misuse here. I will add relevant checks for this.
+> > No need for tabs.
 > > 
-> > If the value was not checked previously, then you can not use the field
-> > now, otherwise things will break, sorry.  Those are useless fields and
-> > should be marked as such :(
+> > Or for kernel doc for static functions, but that's not a big deal.
 > 
-> What is the way forward here? Should I introduce a complete new ioctl?
+> All other functions follow the same style here. Nevertheless, I will
+> replace the tabs with spaces. Originally, I had planned a code clean-up
+> after committing all the changes from my original RFC.
 
-You are going to have to, as if the unused fields were never verified to
-be 0, you will have bugs where old userspace code could have data in
-that location that previously worked just fine, and now it does not at
-all.  We can not cause regressions like that, sorry.
+Ah, ok, nevermind then, I didn't see that as it's not in the diffs.
 
-> Or should I use a different size for this structure to break existing code
-> intentionally?
+Cleaning up later is fine.
 
-You can not break userspace, sorry.
+> > > +static int gsm_wait_modem_change(struct gsm_dlci *dlci, u32 mask)
+> > > +{
+> > > +	struct gsm_mux *gsm = dlci->gsm;
+> > > +	u32 old = dlci->modem_rx & mask;
+> > > +	int ret;
+> > > +
+> > > +	if (gsm->dead)
+> > > +		return -ENODEV;
+> > > +
+> > > +	do {
+> > > +		ret = wait_event_interruptible(gsm->event, gsm->dead
+> > > +					      || old ^ (dlci->modem_rx & mask));
+> > > +		if (ret)
+> > > +			return ret;
+> > > +		if (dlci->state != DLCI_OPEN)
+> > > +			return -EL2NSYNC;
+> > > +		if (gsm->dead)
+> > > +			return -ENODEV;
+> > > +	} while ((old ^ (dlci->modem_rx & mask)) == 0);
+> > 
+> > No way to break out of the loop if it goes for forever?
+> 
+> I assume that this is the expected behavior for TIOCMIWAIT. The functions
+> returns if:
+> - the requested modem signal changed
+> - the wait function got interrupted (e.g. by a signal)
+> - the underlying DLCI was closed
+> - the underlying ldisc device was removed
 
-> Does this mean that we cannot extend this structure at all in the
-> future?
+Hm, I guess you are right.  But wow, reading that
+wait_event_interruptible() condition is crazy, please document that
+really well to explain this properly so you will be able to understand
+it in a year when you next have to fix it up :)
 
-That is correct, it is a broken interface it seems :(
+> I can add that the function returns immediate if a mask has been passed
+> which matches no modem signal if this is preferred?
 
-> I had planned another extension here to properly support parameter
-> negotiation.
-> In case we need to keep the structure as it is: Would a comment be
-> sufficient to mark this field accordingly?
-
-Yes, mark it as "can not be used" or something like that, and then just
-create a new ioctl, sorry.
+I don't think that would work, try it on some existing serial ports to
+see what they do.
 
 thanks,
 
