@@ -2,139 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3601FC05027
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1497C636D3
 	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 22:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232466AbjBBW2n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 17:28:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        id S232850AbjBBW2p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 17:28:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbjBBW20 (ORCPT
+        with ESMTP id S233259AbjBBW22 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 17:28:26 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C072BF2B
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:22 -0800 (PST)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312LfxA0015192;
-        Thu, 2 Feb 2023 22:28:17 GMT
+        Thu, 2 Feb 2023 17:28:28 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035C218B1A
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:25 -0800 (PST)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312MIm7m004137;
+        Thu, 2 Feb 2023 22:28:21 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=9szCe/pMSxH3ejAhsLxrEZP38yMrVIthoS8DpxwfO28=;
- b=Bg4z7aM4Oue1yDsx7/PbP5p5l9X7Z5sXrDWxrAO0hpdx8i9C2q8PzgfE79L9ssnnGP9M
- snHFQCm+hLfX+rbPDFhTZEmf/+Rs2J16qqEjUpxwlUnK5BARBMm46274qC7z82HKWA1C
- WWr8m3X7BYMT5RZsA3WEAUGd9TuxDp8Y5eCdhxnayfGo6c04UmlrHVccNS3BnJZX+RtC
- TrKbjW2DBfICHrRd2eNfmnDnmS0bpCXYzcNdIjxbS3LEnDx7fatBhspM0N8QmXcSujx4
- KvQxFAWIqiE9DoaL5qs85Qzo5WrBlb8EI7hwxJnxBiabYQfpqIigOqQYQqszEM2O5t7s dw== 
+ bh=agxVn6mCQto2PW6GZvC87iuY+VpvsK83XTypwOizQaU=;
+ b=QvQPhEVqUQ5Kv9ToRLooPVg7dFBn21HEVV6XdQoMxLOH6T/GoDTInLpwh6evr4vZbHhj
+ ZyHNBMG3mbOrTPIpb/k61inIXnIJUIvwDXXxjFsPk0I9SvOH4kTmV3HYq9z+UEunoHmi
+ UIf2HMMvT0iBbpwi5RA9Q9UGZw8Il88DFrCNEm8Ju8gsKLU1Lk4cMnGMm0OpGfNrauAh
+ BTeQ0VfRQXp+xnUB2eJE67aEdcAXURYkyU+7ivfLpZei14xUQHXFdx9JPMa+ohK7ymvP
+ uS9p5YwDIff3qvTe8U9bhAzzpmUmWs27Ll2t5la3iHbEquDqm9h+M2RI7xZc1Fndk/cx dA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmy41apy-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngnv0850b-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:17 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312MRXKI031258;
-        Thu, 2 Feb 2023 22:28:17 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmy41apu-1
+        Thu, 02 Feb 2023 22:28:21 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312MQqj3029927;
+        Thu, 2 Feb 2023 22:28:21 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngnv08506-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:17 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312IewGs028518;
-        Thu, 2 Feb 2023 22:28:16 GMT
-Received: from smtprelay05.wdc07v.mail.ibm.com ([9.208.129.117])
-        by ppma04wdc.us.ibm.com (PPS) with ESMTPS id 3ncvuywrt0-1
+        Thu, 02 Feb 2023 22:28:21 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312L64tm008452;
+        Thu, 2 Feb 2023 22:28:20 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
+        by ppma04dal.us.ibm.com (PPS) with ESMTPS id 3ncvw355q9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:16 +0000
+        Thu, 02 Feb 2023 22:28:20 +0000
 Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-        by smtprelay05.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSFnL6619830
+        by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSJch8979160
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Feb 2023 22:28:15 GMT
+        Thu, 2 Feb 2023 22:28:19 GMT
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7DF0458059;
-        Thu,  2 Feb 2023 22:28:15 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 1B6D55804B;
+        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C45355804B;
-        Thu,  2 Feb 2023 22:28:14 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 57F0458059;
+        Thu,  2 Feb 2023 22:28:18 +0000 (GMT)
 Received: from li-6bf4d4cc-31f5-11b2-a85c-838e9310af65.ibm.com.com (unknown [9.211.158.218])
         by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Feb 2023 22:28:14 +0000 (GMT)
+        Thu,  2 Feb 2023 22:28:18 +0000 (GMT)
 From:   Brian King <brking@linux.vnet.ibm.com>
 To:     gregkh@linuxfoundation.org
 Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
         mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org,
         Brian King <brking@linux.vnet.ibm.com>
-Subject: [PATCH v2 1/6] hvcs: Fix hvcs port reference counting
-Date:   Thu,  2 Feb 2023 16:27:59 -0600
-Message-Id: <20230202222804.383229-2-brking@linux.vnet.ibm.com>
+Subject: [PATCH v2 5/6] hvcs: Use vhangup in hotplug remove
+Date:   Thu,  2 Feb 2023 16:28:03 -0600
+Message-Id: <20230202222804.383229-6-brking@linux.vnet.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
 References: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: DE94K9Xyp_eFSCENItyjRZw9TDQUdf6A
-X-Proofpoint-GUID: UEoP2wzfO0cBG9aB-PnGwSzaCt8DVQQC
+X-Proofpoint-GUID: IXFOA_hNk_lAh2YcO45u8o-oWPYPWIHt
+X-Proofpoint-ORIG-GUID: 3TC3CQu4cvH40UKtWanu8bjABSrD24tm
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-02-02_14,2023-02-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- mlxscore=0 malwarescore=0 clxscore=1015 phishscore=0 bulkscore=0
- mlxlogscore=999 lowpriorityscore=0 impostorscore=0 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302020196
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 phishscore=0 suspectscore=0 spamscore=0
+ priorityscore=1501 mlxscore=0 adultscore=0 bulkscore=0 malwarescore=0
+ impostorscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2302020196
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The hvcs driver only ever gets two references to the port. One
-at initialization time, and one at install time. Remove the code
-that was trying to do multiple port puts for each open, which
-would result in more puts than gets.
+When hotplug removing an hvcs device, we need to ensure the
+hangup processing is done prior to exiting the remove function,
+so use tty_vhangup to do the hangup processing directly
+rather than using tty_hangup which simply schedules the hangup
+work for later execution.
 
 Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
 ---
- drivers/tty/hvc/hvcs.c | 18 ------------------
- 1 file changed, 18 deletions(-)
+ drivers/tty/hvc/hvcs.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 4ba24963685e..faf5ccfc561e 100644
+index 04c58ac4fec2..2e9e45f06916 100644
 --- a/drivers/tty/hvc/hvcs.c
 +++ b/drivers/tty/hvc/hvcs.c
-@@ -1215,12 +1215,9 @@ static void hvcs_hangup(struct tty_struct * tty)
- {
- 	struct hvcs_struct *hvcsd = tty->driver_data;
- 	unsigned long flags;
--	int temp_open_count;
- 	int irq;
- 
- 	spin_lock_irqsave(&hvcsd->lock, flags);
--	/* Preserve this so that we know how many kref refs to put */
--	temp_open_count = hvcsd->port.count;
+@@ -824,12 +824,11 @@ static void hvcs_remove(struct vio_dev *dev)
+ 	tty_port_put(&hvcsd->port);
  
  	/*
- 	 * Don't kref put inside the spinlock because the destruction
-@@ -1247,21 +1244,6 @@ static void hvcs_hangup(struct tty_struct * tty)
- 	spin_unlock_irqrestore(&hvcsd->lock, flags);
+-	 * The hangup is a scheduled function which will auto chain call
+-	 * hvcs_hangup.  The tty should always be valid at this time unless a
++	 * The tty should always be valid at this time unless a
+ 	 * simultaneous tty close already cleaned up the hvcs_struct.
+ 	 */
+ 	if (tty) {
+-		tty_hangup(tty);
++		tty_vhangup(tty);
+ 		tty_kref_put(tty);
+ 	}
  
- 	free_irq(irq, hvcsd);
--
--	/*
--	 * We need to kref_put() for every open_count we have since the
--	 * tty_hangup() function doesn't invoke a close per open connection on a
--	 * non-console device.
--	 */
--	while(temp_open_count) {
--		--temp_open_count;
--		/*
--		 * The final put will trigger destruction of the hvcs_struct.
--		 * NOTE:  If this hangup was signaled from user space then the
--		 * final put will never happen.
--		 */
--		tty_port_put(&hvcsd->port);
--	}
- }
- 
- /*
 -- 
 2.31.1
 
