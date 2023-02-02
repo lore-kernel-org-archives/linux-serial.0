@@ -2,104 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE98DC61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 13:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E77A9C61DA4
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 13:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbjBBNlW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 08:41:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        id S231748AbjBBN7L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 08:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232056AbjBBNlR (ORCPT
+        with ESMTP id S231726AbjBBN7K (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 08:41:17 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB708B7D3
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 05:41:12 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pNZpl-0004iH-Vh; Thu, 02 Feb 2023 14:41:02 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pNZpj-002BXc-KB; Thu, 02 Feb 2023 14:41:00 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pNZpk-000Hi5-3f; Thu, 02 Feb 2023 14:41:00 +0100
-Date:   Thu, 2 Feb 2023 14:40:57 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thu, 2 Feb 2023 08:59:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C828D431
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 05:59:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A798B8240B
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 13:59:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BA6DC4339E;
+        Thu,  2 Feb 2023 13:59:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1675346345;
+        bh=eiOpgmYE9Qx2kvkXgFydGk8ijP5XpELRA22P1whzCXQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sSQk7VbOg2xbaL581svhjciBZDOP86d2bVPcbzoZhSd4oXrLZ4mzNLp4fH95WT6y/
+         VNk+G4UGlireW+88V6vIg90x4GREk7/Hi4cfxHka3T/miuyap9V/ph1IqZoFLjpm2O
+         zQWic19TL24crmJODTRmPvxriDfRw2Sr56qOZyIw=
+Date:   Thu, 2 Feb 2023 14:59:03 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-serial <linux-serial@vger.kernel.org>,
         kernel@pengutronix.de
 Subject: Re: [PATCH] serial: 8250: Fix mismerge regarding serial_lsr_in()
-Message-ID: <20230202134057.v6mjwvbrxdvfackb@pengutronix.de>
+Message-ID: <Y9vBp5FDi5leXQyA@kroah.com>
 References: <20230202104501.264686-1-u.kleine-koenig@pengutronix.de>
  <f157ed1b-3856-7ac9-f054-265536ba3b3@linux.intel.com>
  <20230202120428.fo5fswdwki46vnjz@pengutronix.de>
  <af49e8f-6c1b-39fa-923e-f0a99edab17c@linux.intel.com>
+ <20230202134057.v6mjwvbrxdvfackb@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cpcmb53nu7twtc5m"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <af49e8f-6c1b-39fa-923e-f0a99edab17c@linux.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230202134057.v6mjwvbrxdvfackb@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Feb 02, 2023 at 02:40:57PM +0100, Uwe Kleine-König wrote:
+> Hello Ilpo,
+> 
+> On Thu, Feb 02, 2023 at 02:09:38PM +0200, Ilpo Järvinen wrote:
+> > On Thu, 2 Feb 2023, Uwe Kleine-König wrote:
+> > > On Thu, Feb 02, 2023 at 01:26:08PM +0200, Ilpo Järvinen wrote:
+> > > > I don't know if Fixes tag is appropriate here. This fixes the mismerge 
+> > > > yes, however, the removed line itself seems harmless so there's no real 
+> > > > problem to fix.
+> > > 
+> > > It might make a difference if LSR_SAVE_FLAGS != p->lsr_save_mask.
+> > 
+> > But currently lsr_save_mask always has at least LSR_SAVE_FLAGS bits so 
+> > that OR is no-op.
+> 
+> Oh indeed. So it's even more harmless than I thought. Thanks.
+> 
+> @gregkh: I don't feel strong about the Fixes line, drop it if you prefer
+> to not have it.
 
---cpcmb53nu7twtc5m
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'll drop it, thanks!
 
-Hello Ilpo,
-
-On Thu, Feb 02, 2023 at 02:09:38PM +0200, Ilpo J=E4rvinen wrote:
-> On Thu, 2 Feb 2023, Uwe Kleine-K=F6nig wrote:
-> > On Thu, Feb 02, 2023 at 01:26:08PM +0200, Ilpo J=E4rvinen wrote:
-> > > I don't know if Fixes tag is appropriate here. This fixes the mismerg=
-e=20
-> > > yes, however, the removed line itself seems harmless so there's no re=
-al=20
-> > > problem to fix.
-> >=20
-> > It might make a difference if LSR_SAVE_FLAGS !=3D p->lsr_save_mask.
->=20
-> But currently lsr_save_mask always has at least LSR_SAVE_FLAGS bits so=20
-> that OR is no-op.
-
-Oh indeed. So it's even more harmless than I thought. Thanks.
-
-@gregkh: I don't feel strong about the Fixes line, drop it if you prefer
-to not have it.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---cpcmb53nu7twtc5m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmPbvWYACgkQwfwUeK3K
-7Amzzgf+JWB14gTjRvIfE6ena+G9FIAKLwk29SHxap5BJ124KxwLjNwz5OdgVKds
-TyyjyUek5WdPrcFNU82ITEpZTH5j/6O1my9oHyikr8R9faAAon5LKZjs0sPvMN+o
-utUOhbRaom0g3BbwpSYj5Ykrny6ZRKn7RSpT8a8VeMGh22UxGJVHxeT86AsNHOwa
-Bvu+W0nSXxlTG7j0XvYFyf+2Fe4lXyntzRBZhN2N5FW8O99bA1cgoWPCI7a7s6vP
-eoiRSwINyLWLSGLpkqXK84ZGxg/xlLgD2Jt9X3k9bEjpUjVb2iXEjcXJklWgiJUQ
-QFJZ0letL2NZ9+jMZI3cYPqgPjrLlg==
-=sTY7
------END PGP SIGNATURE-----
-
---cpcmb53nu7twtc5m--
+greg k-h
