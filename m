@@ -2,157 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C51AC636D3
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 01:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F966C05027
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 07:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbjBBBmG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Feb 2023 20:42:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
+        id S229608AbjBBHOQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 02:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbjBBBmF (ORCPT
+        with ESMTP id S229546AbjBBHOP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Feb 2023 20:42:05 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0447750D
-        for <linux-serial@vger.kernel.org>; Wed,  1 Feb 2023 17:42:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675302125; x=1706838125;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FHXQTZMnpTe4aIc9nMRJQdTfL7W8w0H4uIK8yc+XX6A=;
-  b=BHahd3lhC41anfC5JppNo2jk0Qyq3RfqQPyNjQv/IEOPN9y4pASyrXLZ
-   VUOpqb4H63xhHQGql2D1rNymYRGt3CjOe1698aPJB24X8LPjDZdXvjXGy
-   jCRIiebGqTU/vvksdCaDHYqefLLxlSzsHll6Bz4hvWf46AZnhC06TCydy
-   xPNnBJKTS7J/NyHck2Fd3GrIP2mv+SHtabWjT4r00Wg0iLK6ZU8n+HN4Q
-   nQB4eOt0ZWP7rsRR878gw76na4E7dVaPea+SfOJmPpHoiCXmedma5A6sU
-   LPC3oBLWb7jXxiD9N9q74eq7VYVjCdTWQK43ww+jB/vIypUMzD7GWI5A2
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="329615006"
-X-IronPort-AV: E=Sophos;i="5.97,266,1669104000"; 
-   d="scan'208";a="329615006"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2023 17:42:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="733771789"
-X-IronPort-AV: E=Sophos;i="5.97,266,1669104000"; 
-   d="scan'208";a="733771789"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 01 Feb 2023 17:42:02 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pNObx-00060G-1R;
-        Thu, 02 Feb 2023 01:42:01 +0000
-Date:   Thu, 02 Feb 2023 09:41:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 2115a84d3688faef106abd19581a5a3b77845824
-Message-ID: <63db14ce.vsfDdoOo6HUFBHbB%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 2 Feb 2023 02:14:15 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02C75AB6B;
+        Wed,  1 Feb 2023 23:14:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1675322054; x=1706858054;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uE2BQGQx6uGEr8YuYrHWqmG3mhW3rD/PWGl31Wb2xCI=;
+  b=Pnr4KlSN7BVVRHq4hu/QSmqyouCGD0tiVHZF7oMcikuD73RnLoTV4/5f
+   Hdo3IyvZ6QciD32wqJDtkcNeqmwYHpzqmIPdC/Sk0um0Zzo1qyVHpvULm
+   og1C2D34hvgIPWHQOn+AHiT+VGRhAhEbcHppROIClWZ3Fi/UIcPeMVqfH
+   9k+uL+2hOyGXqhHIburXe44kfbaSd5gO4nA2Caa9ERObFgXrntmb0EEca
+   wHNVmmNLlnchwk7K0KloblHV+3SQZdjP1XFr0YfT3icaWr/d9pSIwySP1
+   +rXo41nRyGfEAwX93FQ6IP7uxnJgj7+B7ZGH+24bNtS+1HeOSxNpfcvy4
+   w==;
+X-IronPort-AV: E=Sophos;i="5.97,266,1669071600"; 
+   d="scan'208";a="28816808"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 02 Feb 2023 08:14:11 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 02 Feb 2023 08:14:11 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 02 Feb 2023 08:14:11 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1675322051; x=1706858051;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uE2BQGQx6uGEr8YuYrHWqmG3mhW3rD/PWGl31Wb2xCI=;
+  b=osOsAn0tOwjbQZj8gR1MYNnrkFdY4eyaDq28o5MnR1tDUXRoAwsM/EWl
+   wmhvNOuwXc54yh5Nv7ggE7ZhzU5YMl5IzG6OFsmLepF+TnLcfxjCoVS14
+   8yeUglyJb8kXBN7hl0lJWlleIyuc786GARAlWR1D+ATvf5roa5IXc/z+N
+   HU0FnIgMONIyvMfiE9fIOaLiO64Zt8LPM0yl2a2SXin6LEbkspVLGdG9F
+   FUInYn57wB5pqTp752pcQpZocbZ3GrwaJCwHkzmY58QuuC2eow070UDPm
+   OyaQbN/Sq2hoQ05L0ve6SlSDGJzNjgNI4Tz4lwkmPQ0gXqrY1zgIgFbDe
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,266,1669071600"; 
+   d="scan'208";a="28816807"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 02 Feb 2023 08:14:11 +0100
+Received: from steina-w.localnet (unknown [10.123.53.21])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 91F4E280056;
+        Thu,  2 Feb 2023 08:14:11 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: Re: [PATCH 5/6] tty: serial: fsl_lpuart: set RTS watermark for lpuart
+Date:   Thu, 02 Feb 2023 08:14:09 +0100
+Message-ID: <5646686.DvuYhMxLoT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20230130064449.9564-6-sherry.sun@nxp.com>
+References: <20230130064449.9564-1-sherry.sun@nxp.com> <20230130064449.9564-6-sherry.sun@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 2115a84d3688faef106abd19581a5a3b77845824  dt-bindings: serial: example cleanup
+Am Montag, 30. Januar 2023, 07:44:48 CET schrieb Sherry Sun:
+> Add RTS watermark support for LPUART. The RX RTS_B output negates when
+> the number of empty words in the receive FIFO is greater or equal to
+> RTSWATER. Here set the RTSWATER to half of the rxfifo_size.
+> 
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c
+> b/drivers/tty/serial/fsl_lpuart.c index 2789749d3d0d..c35e49a09bcc 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -201,6 +201,7 @@
+>  #define UARTDATA_MASK		0x3ff
+> 
+>  #define UARTMODIR_IREN		0x00020000
+> +#define UARTMODIR_RTSWATER	GENMASK(10, 8)
+>  #define UARTMODIR_TXCTSSRC	0x00000020
+>  #define UARTMODIR_TXCTSC	0x00000010
+>  #define UARTMODIR_RXRTSE	0x00000008
+> @@ -1573,6 +1574,13 @@ static void lpuart32_setup_watermark(struct
+> lpuart_port *sport) (0x0 << UARTWATER_TXWATER_OFF);
+>  	lpuart32_write(&sport->port, val, UARTWATER);
+> 
+> +	/* set RTS watermark */
+> +	if (!uart_console(&sport->port)) {
+> +		val = lpuart32_read(&sport->port, UARTMODIR);
+> +		val |= FIELD_PREP(UARTMODIR_RTSWATER, sport->rxfifo_size 
+>> 1);
+> +		lpuart32_write(&sport->port, val, UARTMODIR);
 
-elapsed time: 1222m
+On LS1021A these bits are reserved (please refer to QorIQ LS1021A Reference 
+manual Rev 3.1 02/2020 section 27.3.6). Is it okay to write to them?
 
-configs tested: 79
-configs skipped: 2
+Best regards
+Alexander
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> +	}
+> +
+>  	/* Restore cr2 */
+>  	lpuart32_write(&sport->port, ctrl_saved, UARTCTRL);
+>  }
 
-gcc tested configs:
-x86_64                            allnoconfig
-alpha                            allyesconfig
-arc                                 defconfig
-m68k                             allyesconfig
-arc                              allyesconfig
-s390                             allmodconfig
-m68k                             allmodconfig
-alpha                               defconfig
-s390                                defconfig
-s390                             allyesconfig
-ia64                             allmodconfig
-i386                 randconfig-a002-20230130
-i386                 randconfig-a001-20230130
-i386                 randconfig-a005-20230130
-i386                 randconfig-a004-20230130
-i386                 randconfig-a003-20230130
-i386                 randconfig-a006-20230130
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64               randconfig-a006-20230130
-x86_64               randconfig-a005-20230130
-x86_64               randconfig-a003-20230130
-x86_64               randconfig-a002-20230130
-x86_64               randconfig-a001-20230130
-x86_64               randconfig-a004-20230130
-x86_64                          rhel-8.3-func
-x86_64                    rhel-8.3-kselftests
-powerpc                           allnoconfig
-sh                               allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-i386                             allyesconfig
-i386                                defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-syz
-x86_64                           rhel-8.3-bpf
-x86_64                         rhel-8.3-kunit
-arm                                 defconfig
-i386                          randconfig-c001
-arc                          axs101_defconfig
-m68k                       m5475evb_defconfig
-arm                              allyesconfig
-powerpc                        warp_defconfig
-sh                            shmin_defconfig
-sh                            titan_defconfig
-mips                  decstation_64_defconfig
-arm                         cm_x300_defconfig
-m68k                           virt_defconfig
-arm64                            allyesconfig
 
-clang tested configs:
-x86_64                          rhel-8.3-rust
-x86_64               randconfig-a016-20230130
-x86_64               randconfig-a014-20230130
-x86_64               randconfig-a013-20230130
-x86_64               randconfig-a011-20230130
-x86_64               randconfig-a012-20230130
-x86_64               randconfig-a015-20230130
-i386                 randconfig-a014-20230130
-i386                 randconfig-a013-20230130
-i386                 randconfig-a015-20230130
-i386                 randconfig-a016-20230130
-i386                 randconfig-a012-20230130
-i386                 randconfig-a011-20230130
-arm                  colibri_pxa300_defconfig
-mips                      pic32mzda_defconfig
-hexagon              randconfig-r045-20230130
-s390                 randconfig-r044-20230130
-riscv                randconfig-r042-20230129
-hexagon              randconfig-r041-20230129
-hexagon              randconfig-r045-20230129
-hexagon              randconfig-r041-20230130
-riscv                randconfig-r042-20230130
-s390                 randconfig-r044-20230129
-x86_64                        randconfig-k001
-powerpc                     akebono_defconfig
-i386                             allyesconfig
-arm                          pcm027_defconfig
-powerpc                       ebony_defconfig
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+
