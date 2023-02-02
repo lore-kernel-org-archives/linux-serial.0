@@ -2,123 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C984C61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 12:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE98DC61DA4
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 13:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231939AbjBBMJp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 07:09:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46488 "EHLO
+        id S230047AbjBBNlW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 08:41:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231949AbjBBMJo (ORCPT
+        with ESMTP id S232056AbjBBNlR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 07:09:44 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3750189367
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 04:09:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675339783; x=1706875783;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=tybr/ioLU2IhberAFsiwRc2T/3mIJ9lOy7g2m9JrZF0=;
-  b=ErePRHzDmh26M64RDiccCDg72UNtbCz2WwYibdtTyaf9oTq7Tdds2EU3
-   dsPtofMY/GdG2MX8pkJKnWE0MSukXsJM2Kps/9l8GSqn9Rm2KICtvJH5e
-   kJed9fmck9sYbdXIKvLRAXoTe9VcPvEmiDabW6o3haTuTuYt8fVIdVjAq
-   h/qNGxz8h2AxkCO3tnMYJHzGT7GXWDNlxzDMx6FnkqG8fYSpeiQasTVdD
-   OGrD+j+dO4EjkpBpcpTj6yVLwv3wRb63/Rrf07NnDCc4HxzWUgX7m9pGz
-   adk/YQlh8cntD2E/413NKeOP4RsrwCoWGwEEOcpxY7tvcvreUu0O3rzTe
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="308768158"
-X-IronPort-AV: E=Sophos;i="5.97,267,1669104000"; 
-   d="scan'208";a="308768158"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 04:09:42 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10608"; a="658699049"
-X-IronPort-AV: E=Sophos;i="5.97,267,1669104000"; 
-   d="scan'208";a="658699049"
-Received: from apaczko-mobl3.ger.corp.intel.com ([10.252.36.45])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 04:09:40 -0800
-Date:   Thu, 2 Feb 2023 14:09:38 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        kernel@pengutronix.de, linux-serial <linux-serial@vger.kernel.org>
+        Thu, 2 Feb 2023 08:41:17 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB708B7D3
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 05:41:12 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pNZpl-0004iH-Vh; Thu, 02 Feb 2023 14:41:02 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pNZpj-002BXc-KB; Thu, 02 Feb 2023 14:41:00 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pNZpk-000Hi5-3f; Thu, 02 Feb 2023 14:41:00 +0100
+Date:   Thu, 2 Feb 2023 14:40:57 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        kernel@pengutronix.de
 Subject: Re: [PATCH] serial: 8250: Fix mismerge regarding serial_lsr_in()
-In-Reply-To: <20230202120428.fo5fswdwki46vnjz@pengutronix.de>
-Message-ID: <af49e8f-6c1b-39fa-923e-f0a99edab17c@linux.intel.com>
-References: <20230202104501.264686-1-u.kleine-koenig@pengutronix.de> <f157ed1b-3856-7ac9-f054-265536ba3b3@linux.intel.com> <20230202120428.fo5fswdwki46vnjz@pengutronix.de>
+Message-ID: <20230202134057.v6mjwvbrxdvfackb@pengutronix.de>
+References: <20230202104501.264686-1-u.kleine-koenig@pengutronix.de>
+ <f157ed1b-3856-7ac9-f054-265536ba3b3@linux.intel.com>
+ <20230202120428.fo5fswdwki46vnjz@pengutronix.de>
+ <af49e8f-6c1b-39fa-923e-f0a99edab17c@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1588438286-1675339782=:2215"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cpcmb53nu7twtc5m"
+Content-Disposition: inline
+In-Reply-To: <af49e8f-6c1b-39fa-923e-f0a99edab17c@linux.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1588438286-1675339782=:2215
+--cpcmb53nu7twtc5m
 Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2 Feb 2023, Uwe Kleine-König wrote:
+Hello Ilpo,
 
-> On Thu, Feb 02, 2023 at 01:26:08PM +0200, Ilpo Järvinen wrote:
-> > On Thu, 2 Feb 2023, Uwe Kleine-König wrote:
-> > 
-> > > The relevant history introducing serial_lsr_in() looks as follows:
-> > > 
-> > > 	$ git log --graph --oneline --boundary 9fafe733514b..df36f3e3fbb7 -- drivers/tty/serial/8250/8250_port.c
-> > > 	*   df36f3e3fbb7 Merge tag 'v5.19-rc3' into tty-next
-> > > 	|\
-> > > 	| * be03b0651ffd serial: 8250: Store to lsr_save_flags after lsr read
-> > > 	* | ...
-> > > 	* | bdb70c424df1 serial: 8250: Create serial_lsr_in()
-> > > 	* | ce338e4477cf serial: 8250: Store to lsr_save_flags after lsr read
-> > > 	* | ...
-> > > 	|/
-> > > 	o 9fafe733514b tty: remove CMSPAR ifdefs
-> > > 
-> > > So the patch "serial: 8250: Store to lsr_save_flags after lsr read" was
-> > > introduced twice and in one branch it was followed up by commit
-> > > bdb70c424df1 ("serial: 8250: Create serial_lsr_in()") which moved
-> > > explicit lsr_saved_flags handling into a new function serial_lsr_in().
-> > > When the two branches were merged in commit df36f3e3fbb7, we got both,
-> > > serial_lsr_in() and the explicit lsr_saved_flags handling.
-> > > 
-> > > So drop the explicit lsr_saved_flags handling.
-> > > 
-> > > Fixes: df36f3e3fbb7 ("Merge tag 'v5.19-rc3' into tty-next")
-> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > > ---
-> > >  drivers/tty/serial/8250/8250_port.c | 2 --
-> > >  1 file changed, 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > > index 33be7aad11ef..e61753c295d5 100644
-> > > --- a/drivers/tty/serial/8250/8250_port.c
-> > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > > @@ -1512,8 +1512,6 @@ static inline void __stop_tx(struct uart_8250_port *p)
-> > >  		u16 lsr = serial_lsr_in(p);
-> > >  		u64 stop_delay = 0;
-> > >  
-> > > -		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-> > > -
-> > >  		if (!(lsr & UART_LSR_THRE))
-> > >  			return;
-> > >  		/*
-> > 
-> > I don't know if Fixes tag is appropriate here. This fixes the mismerge 
-> > yes, however, the removed line itself seems harmless so there's no real 
-> > problem to fix.
-> 
-> It might make a difference if LSR_SAVE_FLAGS != p->lsr_save_mask.
+On Thu, Feb 02, 2023 at 02:09:38PM +0200, Ilpo J=E4rvinen wrote:
+> On Thu, 2 Feb 2023, Uwe Kleine-K=F6nig wrote:
+> > On Thu, Feb 02, 2023 at 01:26:08PM +0200, Ilpo J=E4rvinen wrote:
+> > > I don't know if Fixes tag is appropriate here. This fixes the mismerg=
+e=20
+> > > yes, however, the removed line itself seems harmless so there's no re=
+al=20
+> > > problem to fix.
+> >=20
+> > It might make a difference if LSR_SAVE_FLAGS !=3D p->lsr_save_mask.
+>=20
+> But currently lsr_save_mask always has at least LSR_SAVE_FLAGS bits so=20
+> that OR is no-op.
 
-But currently lsr_save_mask always has at least LSR_SAVE_FLAGS bits so 
-that OR is no-op.
+Oh indeed. So it's even more harmless than I thought. Thanks.
 
--- 
- i.
+@gregkh: I don't feel strong about the Fixes line, drop it if you prefer
+to not have it.
 
---8323329-1588438286-1675339782=:2215--
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--cpcmb53nu7twtc5m
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmPbvWYACgkQwfwUeK3K
+7Amzzgf+JWB14gTjRvIfE6ena+G9FIAKLwk29SHxap5BJ124KxwLjNwz5OdgVKds
+TyyjyUek5WdPrcFNU82ITEpZTH5j/6O1my9oHyikr8R9faAAon5LKZjs0sPvMN+o
+utUOhbRaom0g3BbwpSYj5Ykrny6ZRKn7RSpT8a8VeMGh22UxGJVHxeT86AsNHOwa
+Bvu+W0nSXxlTG7j0XvYFyf+2Fe4lXyntzRBZhN2N5FW8O99bA1cgoWPCI7a7s6vP
+eoiRSwINyLWLSGLpkqXK84ZGxg/xlLgD2Jt9X3k9bEjpUjVb2iXEjcXJklWgiJUQ
+QFJZ0letL2NZ9+jMZI3cYPqgPjrLlg==
+=sTY7
+-----END PGP SIGNATURE-----
+
+--cpcmb53nu7twtc5m--
