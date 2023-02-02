@@ -2,75 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CED5C61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 14:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A230C61DA4
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 15:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232111AbjBBOMs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 09:12:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
+        id S232182AbjBBPA5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 10:00:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbjBBOMq (ORCPT
+        with ESMTP id S229916AbjBBPA4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 09:12:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC5C8F25B;
-        Thu,  2 Feb 2023 06:12:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A7A61B6F;
-        Thu,  2 Feb 2023 14:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B8A0C433EF;
-        Thu,  2 Feb 2023 14:12:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675347148;
-        bh=CKWzMGXU0WqJTApZJUD8QlCgcpBKwEoffsnd8sluork=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nrkehhi/oELFgt26QD6zVBIoMjtIVlbv6FpkZaMLEiWYLbkmR5ft1RFPhTwXr2c6t
-         PVvsBptp8Qaw3KbC7EhdhZ19uSPLr2P/w8XhHlBc1fywrkha8gjR0g8ywcZIVX1U2T
-         vf7S4ubu6zFHqwBR7ERhEchVnKlZ4JR1QvSiZ4A0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-serial@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: pcn_uart: fix memory leak with using debugfs_lookup()
-Date:   Thu,  2 Feb 2023 15:12:21 +0100
-Message-Id: <20230202141221.2293012-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.39.1
+        Thu, 2 Feb 2023 10:00:56 -0500
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A4F24103
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 07:00:53 -0800 (PST)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230202150051505bf481a34e84b1ee
+        for <linux-serial@vger.kernel.org>;
+        Thu, 02 Feb 2023 16:00:51 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=CGxEhyAoxwEddJ0xl4OF2ojfXEmQZFbiyIt4XcYZYMI=;
+ b=oFm7tsEbzNjln8ACwbYSnM8fp5u8CRuWKKLUxzh4QBJSiSe2NXcTPMrOAYNrMOFzYSSOXe
+ sUVP86thOq5sefEzlqiL2VWEeT2g6n9SZXzRotnTvT5jn43+U3w7lzz0bJf9HwLO/k8Kj6pG
+ /quUsM1DNz0abYmXxhdJlbTsB3LBU=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 2/3] tty: n_gsm: add RING/CD control support
+Date:   Thu,  2 Feb 2023 15:59:33 +0100
+Message-Id: <20230202145934.22641-2-daniel.starke@siemens.com>
+In-Reply-To: <20230202145934.22641-1-daniel.starke@siemens.com>
+References: <20230202145934.22641-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1060; i=gregkh@linuxfoundation.org; h=from:subject; bh=CKWzMGXU0WqJTApZJUD8QlCgcpBKwEoffsnd8sluork=; b=owGbwMvMwCRo6H6F97bub03G02pJDMm3jxydnnBQ4N4Cdb2ui869guouaaZhfzS3Xq7xuPZR9PQ6 gxfsHbEsDIJMDLJiiixftvEc3V9xSNHL0PY0zBxWJpAhDFycAjARuWsMC6ZyFT70nLuvod+Sq7ZEdS tj7MvQUoZ51ucKz155Gn8lrf/0m071OxmnpnVvAwA=
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When calling debugfs_lookup() the result must have dput() called on it,
-otherwise the memory will leak over time.  To make things simpler, just
-call debugfs_lookup_and_remove() instead which handles all of the logic
-at once.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The status lines ring and carrier detect are used by the modem to signal
+incoming calls (RING) or an established connection (CD). This is
+implemented as physical lines on a standard RS232 connection. However,
+the muxer protocol encodes these status lines as modem bits IC and DV.
+These incoming lines are masked by tty driver (see tty_io.c) and cannot be
+set by a user application.
+
+Allow setting RING via TIOCM_OUT1 and CD via TIOCM_OUT2 to allow
+implementation of a modem or modem emulator.
+
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/serial/pch_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 9576ba8bbc40..cc83b772b7ca 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -1775,7 +1775,7 @@ static void pch_uart_exit_port(struct eg20t_port *priv)
- 	char name[32];
- 
- 	snprintf(name, sizeof(name), "uart%d_regs", priv->port.line);
--	debugfs_remove(debugfs_lookup(name, NULL));
-+	debugfs_lookup_and_remove(name, NULL);
- 	uart_remove_one_port(&pch_uart_driver, &priv->port);
- 	free_page((unsigned long)priv->rxbuf.buf);
+v1 -> v2:
+No changes.
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index d068df1cf2fd..cf1ab7d619d9 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -546,6 +546,11 @@ static u8 gsm_encode_modem(const struct gsm_dlci *dlci)
+ 		modembits |= MDM_IC;
+ 	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
+ 		modembits |= MDM_DV;
++	/* special mappings for passive side to operate as UE */
++	if (dlci->modem_tx & TIOCM_OUT1)
++		modembits |= MDM_IC;
++	if (dlci->modem_tx & TIOCM_OUT2)
++		modembits |= MDM_DV;
+ 	return modembits;
  }
+ 
 -- 
-2.39.1
+2.34.1
 
