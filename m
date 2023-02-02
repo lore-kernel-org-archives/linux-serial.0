@@ -2,170 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B520DC61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 22:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D1DC05027
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 22:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232806AbjBBW2l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 17:28:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        id S232755AbjBBW2m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 17:28:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233249AbjBBW21 (ORCPT
+        with ESMTP id S233238AbjBBW20 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 17:28:27 -0500
+        Thu, 2 Feb 2023 17:28:26 -0500
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C9130EAE
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:23 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312KrFZt004389;
-        Thu, 2 Feb 2023 22:28:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=AiZTmifYs+4xG39q2dNGwfbChtkRg6LjLeKsv8ePRQI=;
- b=p3b5qokEVw24UZJVoL+BlE16jUCNxH1Jk0q4s01MuCbEJ9WzwA8oqEhTMNu3z4CmZQ/n
- x0n0d17xZX8lqMGGbpmNkc6fT86Xm0K/WAMT7MLmYq7P5o0yzWHaYXAdVm/4AP0yJuOR
- NQXY6eVd9LPJ5eS9JdQJQzKFwFXEE5YN80noVcBsymsCLFrPNC2WQ5YcuoCJ5XaQttVu
- OfZNJ7f93ZxGv8n2KUrXJ2Qi1FWK4tcRWb4YMMsLXzLm9kC4bLWeaKISq3tv4u+IM7DN
- khhdH366LkwH6cgqJSWGnmrwFAG4xE71HLnPZ8S4sBSxIajeLpgzzGzBxbms9aDQMclL ew== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngkm0bgd7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:19 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312M0Wlc006476;
-        Thu, 2 Feb 2023 22:28:18 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngkm0bgcv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:18 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312LUBrY006449;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B71332E4D
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:22 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312M2O0q001636;
         Thu, 2 Feb 2023 22:28:17 GMT
-Received: from smtprelay06.wdc07v.mail.ibm.com ([9.208.129.118])
-        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3ncvtmw298-1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=L5xvp/ZXaJhUOeQVt/xt1pj3sBqLKWkx35fd2Y9EOnY=;
+ b=s0Sfj1IHTjEdTDyu4eY0sDGCJpRza2h9fxXjepOjKCDWTbBiXdy0hmOEneDrOxaxo+Ld
+ hqsGilsKVBDhQi8znw3pSAefjfEPyQdtRa6BqAuvN4pLAMPcsTxDBccI423jGSL3/u4T
+ PVzgbOT/eu0/k1bdjG8ylHfSKLtGPbVP7exse60hgprOy8Uf9GgZ3yZClcYDz4OjmitI
+ ilUQknGYwseYazI4PJJ3RS7PsoZ0AvhKdzs0rnTbDzOnXKRx6zaw3h5JxRX0pbNf28jP
+ 4K7Qf+E06hYbLaaqkYzEMBZHdFrHcf5j/supMeWDviCb9Focxs2Gqvfuc2x1WYLuGvZG gQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmhqj34f-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 02 Feb 2023 22:28:17 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312LvI6T009631;
+        Thu, 2 Feb 2023 22:28:17 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmhqj346-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 02 Feb 2023 22:28:16 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312JE0iO028721;
+        Thu, 2 Feb 2023 22:28:15 GMT
+Received: from smtprelay04.wdc07v.mail.ibm.com ([9.208.129.114])
+        by ppma04wdc.us.ibm.com (PPS) with ESMTPS id 3ncvuywrsx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 02 Feb 2023 22:28:15 +0000
 Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-        by smtprelay06.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSGT88192628
+        by smtprelay04.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSEsD27656814
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Feb 2023 22:28:16 GMT
+        Thu, 2 Feb 2023 22:28:14 GMT
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5FEE85804B;
-        Thu,  2 Feb 2023 22:28:16 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 9BBB058059;
+        Thu,  2 Feb 2023 22:28:14 +0000 (GMT)
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A6B7A58055;
-        Thu,  2 Feb 2023 22:28:15 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id D87B45804B;
+        Thu,  2 Feb 2023 22:28:13 +0000 (GMT)
 Received: from li-6bf4d4cc-31f5-11b2-a85c-838e9310af65.ibm.com.com (unknown [9.211.158.218])
         by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Feb 2023 22:28:15 +0000 (GMT)
+        Thu,  2 Feb 2023 22:28:13 +0000 (GMT)
 From:   Brian King <brking@linux.vnet.ibm.com>
 To:     gregkh@linuxfoundation.org
 Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
         mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org,
         Brian King <brking@linux.vnet.ibm.com>
-Subject: [PATCH v2 2/6] hvcs: Use dev_groups to manage hvcs device attributes
-Date:   Thu,  2 Feb 2023 16:28:00 -0600
-Message-Id: <20230202222804.383229-3-brking@linux.vnet.ibm.com>
+Subject: [PATCH v2 0/6] hvcs: Various hvcs device hotplug fixes
+Date:   Thu,  2 Feb 2023 16:27:58 -0600
+Message-Id: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
-References: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: oFDDLA-gS-oDZzkh7-wPyFIVTAq1wFCX
-X-Proofpoint-GUID: 0IgVWNrYR7TZFMejvjX6ouq8GJr3e7Ad
+X-Proofpoint-ORIG-GUID: MruKkP72eyf1RBTdxxrafLzvCiOB7hAf
+X-Proofpoint-GUID: _PrEsV4mBqkMyu3Zd8Tv_B4bOaA6rwgS
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-02-02_14,2023-02-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- mlxlogscore=999 lowpriorityscore=0 spamscore=0 impostorscore=0
- adultscore=0 priorityscore=1501 phishscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302020196
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
+ bulkscore=0 mlxlogscore=999 adultscore=0 priorityscore=1501 suspectscore=0
+ mlxscore=0 phishscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302020196
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use the dev_groups functionality to manage the attribute groups
-for hvcs devices. This simplifies the code and also eliminates
-errors coming from kernfs when attempting to remove a console
-device that is in use.
+This patch series fixes a number of issues with hotplugging
+hvcs devices including memory leaks as well as, the inability
+to reconnect to a console device after it has been hot added
+back, since it was not getting cleaned up properly on the
+hotplug remove path.
 
-Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
----
- drivers/tty/hvc/hvcs.c | 24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+Changes since initial version:
+- Change to use driver default groups to manage attribute lifecycle
 
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index faf5ccfc561e..7f79444b4d89 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -432,7 +432,7 @@ static ssize_t hvcs_index_show(struct device *dev, struct device_attribute *attr
- 
- static DEVICE_ATTR(index, S_IRUGO, hvcs_index_show, NULL);
- 
--static struct attribute *hvcs_attrs[] = {
-+static struct attribute *hvcs_dev_attrs[] = {
- 	&dev_attr_partner_vtys.attr,
- 	&dev_attr_partner_clcs.attr,
- 	&dev_attr_current_vty.attr,
-@@ -441,8 +441,13 @@ static struct attribute *hvcs_attrs[] = {
- 	NULL,
- };
- 
--static struct attribute_group hvcs_attr_group = {
--	.attrs = hvcs_attrs,
-+static struct attribute_group hvcs_attr_dev_group = {
-+	.attrs = hvcs_dev_attrs,
-+};
-+
-+const static struct attribute_group *hvcs_attr_dev_groups[] = {
-+	&hvcs_attr_dev_group,
-+	NULL,
- };
- 
- static ssize_t rescan_show(struct device_driver *ddp, char *buf)
-@@ -688,8 +693,6 @@ static void hvcs_destruct_port(struct tty_port *p)
- 	spin_unlock_irqrestore(&hvcsd->lock, flags);
- 	spin_unlock(&hvcs_structs_lock);
- 
--	sysfs_remove_group(&vdev->dev.kobj, &hvcs_attr_group);
--
- 	kfree(hvcsd);
- }
- 
-@@ -721,7 +724,6 @@ static int hvcs_probe(
- {
- 	struct hvcs_struct *hvcsd;
- 	int index, rc;
--	int retval;
- 
- 	if (!dev || !id) {
- 		printk(KERN_ERR "HVCS: probed with invalid parameter.\n");
-@@ -778,13 +780,6 @@ static int hvcs_probe(
- 	list_add_tail(&(hvcsd->next), &hvcs_structs);
- 	spin_unlock(&hvcs_structs_lock);
- 
--	retval = sysfs_create_group(&dev->dev.kobj, &hvcs_attr_group);
--	if (retval) {
--		printk(KERN_ERR "HVCS: Can't create sysfs attrs for vty-server@%X\n",
--		       hvcsd->vdev->unit_address);
--		return retval;
--	}
--
- 	printk(KERN_INFO "HVCS: vty-server@%X added to the vio bus.\n", dev->unit_address);
- 
- 	/*
-@@ -831,6 +826,9 @@ static struct vio_driver hvcs_vio_driver = {
- 	.probe		= hvcs_probe,
- 	.remove		= hvcs_remove,
- 	.name		= hvcs_driver_name,
-+	.driver = {
-+		.dev_groups = hvcs_attr_dev_groups,
-+	},
- };
- 
- /* Only called from hvcs_get_pi please */
+Brian King (6):
+  hvcs: Fix hvcs port reference counting
+  hvcs: Use dev_groups to manage hvcs device attributes
+  hvcs: Use driver groups to manage driver attributes
+  hvcs: Get reference to tty in remove
+  hvcs: Use vhangup in hotplug remove
+  hvcs: Synchronize hotplug remove with port free
+
+ drivers/tty/hvc/hvcs.c | 103 +++++++++++++++++++----------------------
+ 1 file changed, 47 insertions(+), 56 deletions(-)
+
 -- 
 2.31.1
 
