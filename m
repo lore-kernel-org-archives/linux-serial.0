@@ -2,156 +2,209 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EEB7C636D7
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 22:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E236DC61DA4
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 22:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232889AbjBBW2r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 17:28:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
+        id S232908AbjBBW2q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 17:28:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233252AbjBBW21 (ORCPT
+        with ESMTP id S232866AbjBBW22 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 17:28:27 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0B837F33
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:23 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312M0Hkm013919;
-        Thu, 2 Feb 2023 22:28:20 GMT
+        Thu, 2 Feb 2023 17:28:28 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1914A1EBD3
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:26 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312Lfxil015159;
+        Thu, 2 Feb 2023 22:28:22 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=vuoLPSHhS7Z7dJ4H2wqwi9wDT+zAXQJtQtlZ/tbiFqY=;
- b=j0IcR4crzBsiOlPYRzM82hH2wTBh/K8WtvOQshvNzbBpwbPiWdCrYlDt4d9D1XzbBN6X
- Pjdv88MKTdHJB6AikGAGG26REsstVlUW7h6jxSCr0MfTy/eg0r0nrLFLtIJ3RKWcQJCm
- 9rc8tQo1Rrb45v8KAGMOkC9+GsBqv3JohGwzoDTINzJdTrCPHKF+vuPWeXjsQiRHGM6t
- I/fuKrf18XgKc1qUwnSPoEavmiO/7XHmKTL0BgYuWk/YtEqm4G0fLOX5b+GHP7Xtj6UB
- HayPWS54M1I0WKlp7L0C8dJawIGR85gWoLCx0YYY/d0Ya5Eb9CsKkHcpATVQ4XuQ2Xjy +w== 
+ bh=JMLDYZJGOfsxpi3oilVM4Bp0wb4SQR9TLpUeJcrDszQ=;
+ b=tZs9vPN+gPAbYtx27ZthPPJ5XqIRBR6um1BN8OipO46eKJkNgE91O3qZ8in3Fo756RUf
+ rIMKbRrW8mHy9ZwlU92Yh/bR+ANEaoCREOOEXr6aKIsg/dX/6VT1hSkju6yV2i3kaax1
+ VpipO/+PQeMLmvhlK/G/INSTp0qZa34AYXRzW0xwfiWWqZI1PdBgoK4WfAAvlFwaU617
+ WTOvXEzQnqNqNI425+DNvcDVNZDa6F6QCTXP+UhyGVY8IkwJEd+f3mVQfEXesY9dyDmz
+ euKp85/1OJo6t42CKIjCDz6QjGVmO9ppL3F34id7c+I49hVSOm/KOAenCeSyfKjdNnYA Ug== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngkm0bgdn-1
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmy41ars-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:20 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312M2HLj017219;
-        Thu, 2 Feb 2023 22:28:19 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngkm0bgd2-1
+        Thu, 02 Feb 2023 22:28:22 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312MIbXb001502;
+        Thu, 2 Feb 2023 22:28:21 GMT
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmy41arb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:19 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312IewGt028518;
-        Thu, 2 Feb 2023 22:28:18 GMT
-Received: from smtprelay07.wdc07v.mail.ibm.com ([9.208.129.116])
-        by ppma04wdc.us.ibm.com (PPS) with ESMTPS id 3ncvuywrt1-1
+        Thu, 02 Feb 2023 22:28:21 +0000
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312Ie0rO012329;
+        Thu, 2 Feb 2023 22:28:21 GMT
+Received: from smtprelay04.dal12v.mail.ibm.com ([9.208.130.102])
+        by ppma05wdc.us.ibm.com (PPS) with ESMTPS id 3ncvvdwqus-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:18 +0000
+        Thu, 02 Feb 2023 22:28:21 +0000
 Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-        by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSH7x7078438
+        by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSKjf4850368
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Feb 2023 22:28:17 GMT
+        Thu, 2 Feb 2023 22:28:20 GMT
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 426E258065;
-        Thu,  2 Feb 2023 22:28:17 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id F1FBD58063;
+        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8908758055;
-        Thu,  2 Feb 2023 22:28:16 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 446A758059;
+        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
 Received: from li-6bf4d4cc-31f5-11b2-a85c-838e9310af65.ibm.com.com (unknown [9.211.158.218])
         by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Feb 2023 22:28:16 +0000 (GMT)
+        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
 From:   Brian King <brking@linux.vnet.ibm.com>
 To:     gregkh@linuxfoundation.org
 Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
         mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org,
         Brian King <brking@linux.vnet.ibm.com>
-Subject: [PATCH v2 3/6] hvcs: Use driver groups to manage driver attributes
-Date:   Thu,  2 Feb 2023 16:28:01 -0600
-Message-Id: <20230202222804.383229-4-brking@linux.vnet.ibm.com>
+Subject: [PATCH v2 6/6] hvcs: Synchronize hotplug remove with port free
+Date:   Thu,  2 Feb 2023 16:28:04 -0600
+Message-Id: <20230202222804.383229-7-brking@linux.vnet.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
 References: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: cRucB6oEl7GlOYdxPrFRMR30JAN5nxCq
-X-Proofpoint-GUID: 3W7Gb8FZaFcubAQk9LYYCcf2bxD_pGoh
+X-Proofpoint-ORIG-GUID: oIlUNwsazyijjNosx2ldOIl886jdG4On
+X-Proofpoint-GUID: FcaJBeLK3YKY1y4fA48L7eKmrfD3Bs31
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-02-02_14,2023-02-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- mlxlogscore=999 lowpriorityscore=0 spamscore=0 impostorscore=0
- adultscore=0 priorityscore=1501 phishscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
+ mlxscore=0 malwarescore=0 clxscore=1015 phishscore=0 bulkscore=0
+ mlxlogscore=999 lowpriorityscore=0 impostorscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2212070000 definitions=main-2302020196
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rather than manually creating attributes for the hvcs driver,
-let the driver core do this for us. This also fixes some hotplug
-remove issues and ensures that cleanup of these attributes
-is done in the right order.
+Synchronizes hotplug remove with the freeing of the port.
+This ensures we have freed all the memory associated with
+this port and are not leaking memory.
 
 Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
 ---
- drivers/tty/hvc/hvcs.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ drivers/tty/hvc/hvcs.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 7f79444b4d89..5de7ad555540 100644
+index 2e9e45f06916..c360965e9c1b 100644
 --- a/drivers/tty/hvc/hvcs.c
 +++ b/drivers/tty/hvc/hvcs.c
-@@ -473,6 +473,20 @@ static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
+@@ -52,6 +52,7 @@
  
- static DRIVER_ATTR_RW(rescan);
- 
-+static struct attribute *hvcs_attrs[] = {
-+	&driver_attr_rescan.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group hvcs_attr_group = {
-+	.attrs = hvcs_attrs,
-+};
-+
-+const static struct attribute_group *hvcs_attr_groups[] = {
-+	&hvcs_attr_group,
-+	NULL,
-+};
-+
- static void hvcs_kick(void)
- {
- 	hvcs_kicked = 1;
-@@ -827,6 +841,7 @@ static struct vio_driver hvcs_vio_driver = {
- 	.remove		= hvcs_remove,
- 	.name		= hvcs_driver_name,
- 	.driver = {
-+		.groups = hvcs_attr_groups,
- 		.dev_groups = hvcs_attr_dev_groups,
- 	},
+ #include <linux/device.h>
+ #include <linux/init.h>
++#include <linux/completion.h>
+ #include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/kref.h>
+@@ -285,6 +286,7 @@ struct hvcs_struct {
+ 	char p_location_code[HVCS_CLC_LENGTH + 1]; /* CLC + Null Term */
+ 	struct list_head next; /* list management */
+ 	struct vio_dev *vdev;
++	struct completion *destroyed;
  };
-@@ -1505,13 +1520,6 @@ static int __init hvcs_module_init(void)
  
- 	pr_info("HVCS: Driver registered.\n");
+ static LIST_HEAD(hvcs_structs);
+@@ -677,11 +679,13 @@ static void hvcs_destruct_port(struct tty_port *p)
+ {
+ 	struct hvcs_struct *hvcsd = container_of(p, struct hvcs_struct, port);
+ 	struct vio_dev *vdev;
++	struct completion *comp;
+ 	unsigned long flags;
  
--	/* This needs to be done AFTER the vio_register_driver() call or else
--	 * the kobjects won't be initialized properly.
--	 */
--	rc = driver_create_file(&(hvcs_vio_driver.driver), &driver_attr_rescan);
--	if (rc)
--		pr_warn("HVCS: Failed to create rescan file (err %d)\n", rc);
--
- 	return 0;
+ 	spin_lock(&hvcs_structs_lock);
+ 	spin_lock_irqsave(&hvcsd->lock, flags);
+ 
++	comp = hvcsd->destroyed;
+ 	/* the list_del poisons the pointers */
+ 	list_del(&(hvcsd->next));
+ 
+@@ -701,6 +705,7 @@ static void hvcs_destruct_port(struct tty_port *p)
+ 
+ 	hvcsd->p_unit_address = 0;
+ 	hvcsd->p_partition_ID = 0;
++	hvcsd->destroyed = NULL;
+ 	hvcs_return_index(hvcsd->index);
+ 	memset(&hvcsd->p_location_code[0], 0x00, HVCS_CLC_LENGTH + 1);
+ 
+@@ -708,6 +713,8 @@ static void hvcs_destruct_port(struct tty_port *p)
+ 	spin_unlock(&hvcs_structs_lock);
+ 
+ 	kfree(hvcsd);
++	if (comp)
++		complete(comp);
  }
  
-@@ -1536,8 +1544,6 @@ static void __exit hvcs_module_exit(void)
- 	hvcs_pi_buff = NULL;
- 	spin_unlock(&hvcs_pi_lock);
+ static const struct tty_port_operations hvcs_port_ops = {
+@@ -806,6 +813,7 @@ static int hvcs_probe(
+ static void hvcs_remove(struct vio_dev *dev)
+ {
+ 	struct hvcs_struct *hvcsd = dev_get_drvdata(&dev->dev);
++	DECLARE_COMPLETION_ONSTACK(comp);
+ 	unsigned long flags;
+ 	struct tty_struct *tty;
  
--	driver_remove_file(&hvcs_vio_driver.driver, &driver_attr_rescan);
+@@ -813,16 +821,11 @@ static void hvcs_remove(struct vio_dev *dev)
+ 
+ 	spin_lock_irqsave(&hvcsd->lock, flags);
+ 
++	hvcsd->destroyed = &comp;
+ 	tty = tty_port_tty_get(&hvcsd->port);
+ 
+ 	spin_unlock_irqrestore(&hvcsd->lock, flags);
+ 
+-	/*
+-	 * Let the last holder of this object cause it to be removed, which
+-	 * would probably be tty_hangup below.
+-	 */
+-	tty_port_put(&hvcsd->port);
 -
- 	tty_unregister_driver(hvcs_tty_driver);
+ 	/*
+ 	 * The tty should always be valid at this time unless a
+ 	 * simultaneous tty close already cleaned up the hvcs_struct.
+@@ -832,6 +835,8 @@ static void hvcs_remove(struct vio_dev *dev)
+ 		tty_kref_put(tty);
+ 	}
  
- 	hvcs_free_index_list();
++	tty_port_put(&hvcsd->port);
++	wait_for_completion(&comp);
+ 	printk(KERN_INFO "HVCS: vty-server@%X removed from the"
+ 			" vio bus.\n", dev->unit_address);
+ };
+@@ -1185,7 +1190,10 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
+ 	hvcsd = tty->driver_data;
+ 
+ 	spin_lock_irqsave(&hvcsd->lock, flags);
+-	if (--hvcsd->port.count == 0) {
++	if (hvcsd->port.count == 0) {
++		spin_unlock_irqrestore(&hvcsd->lock, flags);
++		return;
++	} else if (--hvcsd->port.count == 0) {
+ 
+ 		vio_disable_interrupts(hvcsd->vdev);
+ 
+@@ -1241,11 +1249,7 @@ static void hvcs_hangup(struct tty_struct * tty)
+ 	vio_disable_interrupts(hvcsd->vdev);
+ 
+ 	hvcsd->todo_mask = 0;
+-
+-	/* I don't think the tty needs the hvcs_struct pointer after a hangup */
+-	tty->driver_data = NULL;
+ 	hvcsd->port.tty = NULL;
+-
+ 	hvcsd->port.count = 0;
+ 
+ 	/* This will drop any buffered data on the floor which is OK in a hangup
 -- 
 2.31.1
 
