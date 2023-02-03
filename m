@@ -2,209 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E236DC61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Feb 2023 22:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B80C636D3
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 02:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232908AbjBBW2q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Feb 2023 17:28:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        id S230156AbjBCCaQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Feb 2023 21:30:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbjBBW22 (ORCPT
+        with ESMTP id S230117AbjBCCaP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Feb 2023 17:28:28 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1914A1EBD3
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 14:28:26 -0800 (PST)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312Lfxil015159;
-        Thu, 2 Feb 2023 22:28:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=JMLDYZJGOfsxpi3oilVM4Bp0wb4SQR9TLpUeJcrDszQ=;
- b=tZs9vPN+gPAbYtx27ZthPPJ5XqIRBR6um1BN8OipO46eKJkNgE91O3qZ8in3Fo756RUf
- rIMKbRrW8mHy9ZwlU92Yh/bR+ANEaoCREOOEXr6aKIsg/dX/6VT1hSkju6yV2i3kaax1
- VpipO/+PQeMLmvhlK/G/INSTp0qZa34AYXRzW0xwfiWWqZI1PdBgoK4WfAAvlFwaU617
- WTOvXEzQnqNqNI425+DNvcDVNZDa6F6QCTXP+UhyGVY8IkwJEd+f3mVQfEXesY9dyDmz
- euKp85/1OJo6t42CKIjCDz6QjGVmO9ppL3F34id7c+I49hVSOm/KOAenCeSyfKjdNnYA Ug== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmy41ars-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:22 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312MIbXb001502;
-        Thu, 2 Feb 2023 22:28:21 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngmy41arb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:21 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312Ie0rO012329;
-        Thu, 2 Feb 2023 22:28:21 GMT
-Received: from smtprelay04.dal12v.mail.ibm.com ([9.208.130.102])
-        by ppma05wdc.us.ibm.com (PPS) with ESMTPS id 3ncvvdwqus-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 22:28:21 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-        by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312MSKjf4850368
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Feb 2023 22:28:20 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F1FBD58063;
-        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 446A758059;
-        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
-Received: from li-6bf4d4cc-31f5-11b2-a85c-838e9310af65.ibm.com.com (unknown [9.211.158.218])
-        by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Feb 2023 22:28:19 +0000 (GMT)
-From:   Brian King <brking@linux.vnet.ibm.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
-        mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org,
-        Brian King <brking@linux.vnet.ibm.com>
-Subject: [PATCH v2 6/6] hvcs: Synchronize hotplug remove with port free
-Date:   Thu,  2 Feb 2023 16:28:04 -0600
-Message-Id: <20230202222804.383229-7-brking@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
-References: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
+        Thu, 2 Feb 2023 21:30:15 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969282278F
+        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 18:30:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675391414; x=1706927414;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=LzE9b4D8HAXqwnPUd6q/5VA1qc0z/DdCRj9RVtiSvF0=;
+  b=EzMvQeXAqFYzX7WJbJ3i05YNnuco8zmiJA/ckKYnUbVfcIf78D9YYD6i
+   wlFN65vC4G1pLxUHsC8ygvOugMC4W1EF7Cu6j55Xiq3Gu3vtD9nUBIozU
+   vpfpt4ZzojvptfkyyJS67xk3VwJUjoX2+dNxSc3FIPs1qPrlJJqhopoIM
+   SH2TTyauk21dca8c0bzDxuf6dWWWpJfbvKb+au5bgRzG5w2o3r77+Ztr4
+   7Gq01YbardBkaSmC0X9Lcex/CC2zJrwAo7Un+E1IstnK7VQ4ZmBi9vJC7
+   +UWxPfsru83tSw71l3FcmEUOOvxLKgPuM0p4GRZa/2jQ8L6aefDnZ4qxJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="326333213"
+X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
+   d="scan'208";a="326333213"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 18:30:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="910986578"
+X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
+   d="scan'208";a="910986578"
+Received: from lkp-server01.sh.intel.com (HELO 0572c01a5cf9) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 02 Feb 2023 18:30:13 -0800
+Received: from kbuild by 0572c01a5cf9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNlq8-00002G-2f;
+        Fri, 03 Feb 2023 02:30:12 +0000
+Date:   Fri, 03 Feb 2023 10:29:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ fbe7e38f3e57e38916ae7f248fd6efafeb9ecdd3
+Message-ID: <63dc71a3.I2u1FuHVjRO9i2l7%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: oIlUNwsazyijjNosx2ldOIl886jdG4On
-X-Proofpoint-GUID: FcaJBeLK3YKY1y4fA48L7eKmrfD3Bs31
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-02_14,2023-02-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- mlxscore=0 malwarescore=0 clxscore=1015 phishscore=0 bulkscore=0
- mlxlogscore=999 lowpriorityscore=0 impostorscore=0 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302020196
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Synchronizes hotplug remove with the freeing of the port.
-This ensures we have freed all the memory associated with
-this port and are not leaking memory.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: fbe7e38f3e57e38916ae7f248fd6efafeb9ecdd3  serial: 8250: Fix mismerge regarding serial_lsr_in()
 
-Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
----
- drivers/tty/hvc/hvcs.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+elapsed time: 724m
 
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 2e9e45f06916..c360965e9c1b 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -52,6 +52,7 @@
- 
- #include <linux/device.h>
- #include <linux/init.h>
-+#include <linux/completion.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/kref.h>
-@@ -285,6 +286,7 @@ struct hvcs_struct {
- 	char p_location_code[HVCS_CLC_LENGTH + 1]; /* CLC + Null Term */
- 	struct list_head next; /* list management */
- 	struct vio_dev *vdev;
-+	struct completion *destroyed;
- };
- 
- static LIST_HEAD(hvcs_structs);
-@@ -677,11 +679,13 @@ static void hvcs_destruct_port(struct tty_port *p)
- {
- 	struct hvcs_struct *hvcsd = container_of(p, struct hvcs_struct, port);
- 	struct vio_dev *vdev;
-+	struct completion *comp;
- 	unsigned long flags;
- 
- 	spin_lock(&hvcs_structs_lock);
- 	spin_lock_irqsave(&hvcsd->lock, flags);
- 
-+	comp = hvcsd->destroyed;
- 	/* the list_del poisons the pointers */
- 	list_del(&(hvcsd->next));
- 
-@@ -701,6 +705,7 @@ static void hvcs_destruct_port(struct tty_port *p)
- 
- 	hvcsd->p_unit_address = 0;
- 	hvcsd->p_partition_ID = 0;
-+	hvcsd->destroyed = NULL;
- 	hvcs_return_index(hvcsd->index);
- 	memset(&hvcsd->p_location_code[0], 0x00, HVCS_CLC_LENGTH + 1);
- 
-@@ -708,6 +713,8 @@ static void hvcs_destruct_port(struct tty_port *p)
- 	spin_unlock(&hvcs_structs_lock);
- 
- 	kfree(hvcsd);
-+	if (comp)
-+		complete(comp);
- }
- 
- static const struct tty_port_operations hvcs_port_ops = {
-@@ -806,6 +813,7 @@ static int hvcs_probe(
- static void hvcs_remove(struct vio_dev *dev)
- {
- 	struct hvcs_struct *hvcsd = dev_get_drvdata(&dev->dev);
-+	DECLARE_COMPLETION_ONSTACK(comp);
- 	unsigned long flags;
- 	struct tty_struct *tty;
- 
-@@ -813,16 +821,11 @@ static void hvcs_remove(struct vio_dev *dev)
- 
- 	spin_lock_irqsave(&hvcsd->lock, flags);
- 
-+	hvcsd->destroyed = &comp;
- 	tty = tty_port_tty_get(&hvcsd->port);
- 
- 	spin_unlock_irqrestore(&hvcsd->lock, flags);
- 
--	/*
--	 * Let the last holder of this object cause it to be removed, which
--	 * would probably be tty_hangup below.
--	 */
--	tty_port_put(&hvcsd->port);
--
- 	/*
- 	 * The tty should always be valid at this time unless a
- 	 * simultaneous tty close already cleaned up the hvcs_struct.
-@@ -832,6 +835,8 @@ static void hvcs_remove(struct vio_dev *dev)
- 		tty_kref_put(tty);
- 	}
- 
-+	tty_port_put(&hvcsd->port);
-+	wait_for_completion(&comp);
- 	printk(KERN_INFO "HVCS: vty-server@%X removed from the"
- 			" vio bus.\n", dev->unit_address);
- };
-@@ -1185,7 +1190,10 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
- 	hvcsd = tty->driver_data;
- 
- 	spin_lock_irqsave(&hvcsd->lock, flags);
--	if (--hvcsd->port.count == 0) {
-+	if (hvcsd->port.count == 0) {
-+		spin_unlock_irqrestore(&hvcsd->lock, flags);
-+		return;
-+	} else if (--hvcsd->port.count == 0) {
- 
- 		vio_disable_interrupts(hvcsd->vdev);
- 
-@@ -1241,11 +1249,7 @@ static void hvcs_hangup(struct tty_struct * tty)
- 	vio_disable_interrupts(hvcsd->vdev);
- 
- 	hvcsd->todo_mask = 0;
--
--	/* I don't think the tty needs the hvcs_struct pointer after a hangup */
--	tty->driver_data = NULL;
- 	hvcsd->port.tty = NULL;
--
- 	hvcsd->port.count = 0;
- 
- 	/* This will drop any buffered data on the floor which is OK in a hangup
+configs tested: 59
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+x86_64                            allnoconfig
+arc                                 defconfig
+um                             i386_defconfig
+alpha                               defconfig
+um                           x86_64_defconfig
+s390                             allmodconfig
+s390                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+s390                             allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                          rhel-8.3-func
+alpha                            allyesconfig
+x86_64                              defconfig
+ia64                             allmodconfig
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+powerpc                           allnoconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+x86_64                           rhel-8.3-bpf
+i386                             allyesconfig
+i386                                defconfig
+riscv                randconfig-r042-20230202
+s390                 randconfig-r044-20230202
+arc                  randconfig-r043-20230202
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+m68k                             alldefconfig
+arm                          gemini_defconfig
+
+clang tested configs:
+x86_64                          rhel-8.3-rust
+i386                          randconfig-a004
+i386                          randconfig-a002
+i386                          randconfig-a006
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+powerpc                     pq2fads_defconfig
+mips                         cobalt_defconfig
+x86_64                        randconfig-k001
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+
 -- 
-2.31.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
