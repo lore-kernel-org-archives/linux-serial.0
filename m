@@ -2,125 +2,149 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA854C64ED9
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 15:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA4AC636D7
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 15:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233312AbjBCP5p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Feb 2023 10:57:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        id S233117AbjBCP6U (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Feb 2023 10:58:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233117AbjBCP5k (ORCPT
+        with ESMTP id S233260AbjBCP6S (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Feb 2023 10:57:40 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF0B9E9C9;
-        Fri,  3 Feb 2023 07:57:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=RABYZKQEnf0QK23SEeW3xVSQhJGlQ3o0a9xB2pxXdFg=; b=mxbhKN8eDLHf3sRbpUD1Pm5ad9
-        DUxn/adCxDe6jPyxHF/gdCrJDf3lsIsIixEOuV8CpNuzkiX752ZBaf0wsnY0b2i3cM9FUEcN20eX2
-        rIR05AXVLD17i/oQNhbkjja3UIifH2qUWnxDkJqAUC7NG8o6c1/1J2q0zeQmeJMRLojURzkVBUv7W
-        j9O4rmt4LMN1wjI6tRgPyBaBqiFphCrvwmB0uTJBDK4DzjkMj6rO8E5wNKaysJXqmttqL9r4yHFrh
-        f47+XS3tx6LOOWc7AZ91W6sFA96KtfzRuvr3oItFzuKm5u8MGjDHAAIf0SDJC5iX+lV71N215QhEo
-        +ggV+adQ==;
-Received: from [2601:1c2:d00:6a60::9526]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pNyR8-002pf0-3m; Fri, 03 Feb 2023 15:57:14 +0000
-Message-ID: <f6a60193-a5d1-c42c-158a-4b0bfe9c7538@infradead.org>
-Date:   Fri, 3 Feb 2023 07:57:12 -0800
+        Fri, 3 Feb 2023 10:58:18 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E67116AD0
+        for <linux-serial@vger.kernel.org>; Fri,  3 Feb 2023 07:58:16 -0800 (PST)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 313EiF1X021184;
+        Fri, 3 Feb 2023 15:58:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=wo7Tb3LptoObWpz/saZLrLdh3Gx5qXEfusOJKRb2fmo=;
+ b=JJbZbFv6BXMp8HgaGAmROazTICCF4vC/6g3cS7HDTLGQ62//TNxFIKZRlPM8Ubb56gV5
+ 6VVMV/MHa12Qtw2QDUJJohojkKXUD1wVdmZ0xLceV39qPRBfw8hC9uhrCSMgWN8uG8B7
+ GLokBt/TMq/XVjHX+12Cr1dHoZ3fDLXU6A9EK93M/PEN/8V0pZhLSzjxqZh5ENifqh6I
+ LY61Zvj9QQOcPUxZyttSlYnZI1s/0z3TRyQKWp2BFJYKK8JPNKy0cA7y4MxYXsM2flWM
+ 8pXXxuAuw5CKX5/0jGZft2JoDiGIOU34kvMOyhzM0IhCqr+wVRQbHUUyuwCJG0YJeeTK 4w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nh49u9t61-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Feb 2023 15:58:11 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 313EjC38024197;
+        Fri, 3 Feb 2023 15:58:10 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nh49u9t5r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Feb 2023 15:58:10 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 313FpV9H004994;
+        Fri, 3 Feb 2023 15:58:10 GMT
+Received: from smtprelay01.wdc07v.mail.ibm.com ([9.208.129.119])
+        by ppma02wdc.us.ibm.com (PPS) with ESMTPS id 3ncvv29hpn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Feb 2023 15:58:10 +0000
+Received: from smtpav03.dal12v.mail.ibm.com (smtpav03.dal12v.mail.ibm.com [10.241.53.102])
+        by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 313Fw8Tv39780868
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 3 Feb 2023 15:58:09 GMT
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B69E458061;
+        Fri,  3 Feb 2023 15:58:08 +0000 (GMT)
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4316258056;
+        Fri,  3 Feb 2023 15:58:08 +0000 (GMT)
+Received: from li-6bf4d4cc-31f5-11b2-a85c-838e9310af65.ibm.com.com (unknown [9.211.110.209])
+        by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Fri,  3 Feb 2023 15:58:08 +0000 (GMT)
+From:   Brian King <brking@linux.vnet.ibm.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
+        mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org,
+        Brian King <brking@linux.vnet.ibm.com>
+Subject: [PATCH v3 2/5] hvcs: Use driver groups to manage driver attributes
+Date:   Fri,  3 Feb 2023 09:57:59 -0600
+Message-Id: <20230203155802.404324-3-brking@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20230203155802.404324-1-brking@linux.vnet.ibm.com>
+References: <20230203155802.404324-1-brking@linux.vnet.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: remove arch/sh
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
-References: <20230113062339.1909087-1-hch@lst.de>
- <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de>
- <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
- <20230203071423.GA24833@lst.de>
- <afd056a95d21944db1dc0c9708f692dd1f7bb757.camel@physik.fu-berlin.de>
- <20230203083037.GA30738@lst.de>
- <d10fe31b2af6cf4e03618f38ca9d3ca5c72601ed.camel@physik.fu-berlin.de>
- <CAMuHMdUitVfW088YOmqYm4kwbKwkwb22fAakHcu6boxv7dXDfQ@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <CAMuHMdUitVfW088YOmqYm4kwbKwkwb22fAakHcu6boxv7dXDfQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: o3XiLjNl6fhvpoXo96qK1R3eflp4Cd-i
+X-Proofpoint-ORIG-GUID: YbernrDTxERiCmy45HWPNqc-p-P9nMnf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-03_15,2023-02-03_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=999 impostorscore=0 clxscore=1015
+ priorityscore=1501 spamscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302030142
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi--
+Rather than manually creating attributes for the hvcs driver,
+let the driver core do this for us. This also fixes some hotplug
+remove issues and ensures that cleanup of these attributes
+is done in the right order.
 
-On 2/3/23 02:33, Geert Uytterhoeven wrote:
-> Hi Adrian,
-> 
-> On Fri, Feb 3, 2023 at 11:29 AM John Paul Adrian Glaubitz
-> <glaubitz@physik.fu-berlin.de> wrote:
->> On Fri, 2023-02-03 at 09:30 +0100, Christoph Hellwig wrote:
->>> On Fri, Feb 03, 2023 at 09:24:46AM +0100, John Paul Adrian Glaubitz wrote:
->>>> Since this is my very first time stepping up as a kernel maintainer, I was hoping
->>>> to get some pointers on what to do to make this happen.
->>>>
->>>> So far, we have set up a new kernel tree and I have set up a local development and
->>>> test environment for SH kernels using my SH7785LCR board as the target platform.
->>>>
->>>> Do I just need to send a patch asking to change the corresponding entry in the
->>>> MAINTAINERS file?
->>>
->>> I'm not sure a there is a document, but:
->>>
->>>  - add the MAINTAINERS change to your tree
->>>  - ask Stephen to get your tree included in linux-next
->>>
->>> then eventually send a pull request to Linus with all of that.  Make
->>> sure it's been in linux-next for a while.
->>
->> OK, thanks for the pointers! Will try to get this done by next week.
->>
->> We're still discussing among SuperH developer community whether there will be a second
->> maintainer, so please bear with us a few more days. I will collect patches in the
->> meantime.
-> 
-> Thanks a lot!
-> 
-> If you need any help with process, setup, ... don't hesitate to ask
-> (on e.g. #renesas-soc on Libera).
+Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
+---
+ drivers/tty/hvc/hvcs.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-While Adrian and Geert are reading this, I have a question:
-
-Is this "sh64" still accurate and applicable? from Documentation/kbuild/kbuild.rst:
-
-But some architectures such as x86 and sparc have aliases.
-
-- x86: i386 for 32 bit, x86_64 for 64 bit
-- sh: sh for 32 bit, sh64 for 64 bit <<<<<<<<<<<<<<<
-- sparc: sparc32 for 32 bit, sparc64 for 64 bit
-
-
-
-Thanks.
+diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+index 0416601357e1..522910716025 100644
+--- a/drivers/tty/hvc/hvcs.c
++++ b/drivers/tty/hvc/hvcs.c
+@@ -466,6 +466,13 @@ static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
+ 
+ static DRIVER_ATTR_RW(rescan);
+ 
++static struct attribute *hvcs_attrs[] = {
++	&driver_attr_rescan.attr,
++	NULL,
++};
++
++ATTRIBUTE_GROUPS(hvcs);
++
+ static void hvcs_kick(void)
+ {
+ 	hvcs_kicked = 1;
+@@ -820,6 +827,7 @@ static struct vio_driver hvcs_vio_driver = {
+ 	.remove		= hvcs_remove,
+ 	.name		= hvcs_driver_name,
+ 	.driver = {
++		.groups = hvcs_groups,
+ 		.dev_groups = hvcs_dev_groups,
+ 	},
+ };
+@@ -1498,13 +1506,6 @@ static int __init hvcs_module_init(void)
+ 
+ 	pr_info("HVCS: Driver registered.\n");
+ 
+-	/* This needs to be done AFTER the vio_register_driver() call or else
+-	 * the kobjects won't be initialized properly.
+-	 */
+-	rc = driver_create_file(&(hvcs_vio_driver.driver), &driver_attr_rescan);
+-	if (rc)
+-		pr_warn("HVCS: Failed to create rescan file (err %d)\n", rc);
+-
+ 	return 0;
+ }
+ 
+@@ -1529,8 +1530,6 @@ static void __exit hvcs_module_exit(void)
+ 	hvcs_pi_buff = NULL;
+ 	spin_unlock(&hvcs_pi_lock);
+ 
+-	driver_remove_file(&hvcs_vio_driver.driver, &driver_attr_rescan);
+-
+ 	tty_unregister_driver(hvcs_tty_driver);
+ 
+ 	hvcs_free_index_list();
 -- 
-~Randy
+2.31.1
+
