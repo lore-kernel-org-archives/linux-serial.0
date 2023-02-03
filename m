@@ -2,86 +2,59 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E97C636CC
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 05:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47906C64EC7
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 07:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbjBCFLJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Feb 2023 00:11:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
+        id S232230AbjBCHOh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Feb 2023 02:14:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbjBCFLI (ORCPT
+        with ESMTP id S231748AbjBCHOd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Feb 2023 00:11:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA823C3A
-        for <linux-serial@vger.kernel.org>; Thu,  2 Feb 2023 21:11:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5245EB82966
-        for <linux-serial@vger.kernel.org>; Fri,  3 Feb 2023 05:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9475BC433EF;
-        Fri,  3 Feb 2023 05:11:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675401065;
-        bh=dUOhQ6hNe3dggdDGLK7/bWxkEVbMRTxh5/gan/XL6mY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pVFKaflMctQb/ML/0ajJVSDSBT7PpApdYW8gG1YINZAkcXebWWWpu23h5dR4qfko3
-         gB7sFiekxNcrFvo8h0s5vYAtxsApkK28xENkaK87MRHMexYfS2DPCspVRU1HN0PmN1
-         NeVPWxCteb6VzBLc8Ad/ptWTAAXLyNJzuhCGUeTI=
-Date:   Fri, 3 Feb 2023 06:11:02 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Brian King <brking@linux.vnet.ibm.com>
-Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
-        mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] hvcs: Use driver groups to manage driver
- attributes
-Message-ID: <Y9yXZpwa7TDmRd+H@kroah.com>
-References: <20230202222804.383229-1-brking@linux.vnet.ibm.com>
- <20230202222804.383229-4-brking@linux.vnet.ibm.com>
+        Fri, 3 Feb 2023 02:14:33 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52A770997;
+        Thu,  2 Feb 2023 23:14:28 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 9CB7868C4E; Fri,  3 Feb 2023 08:14:23 +0100 (CET)
+Date:   Fri, 3 Feb 2023 08:14:23 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+Subject: Re: remove arch/sh
+Message-ID: <20230203071423.GA24833@lst.de>
+References: <20230113062339.1909087-1-hch@lst.de> <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de> <20230116071306.GA15848@lst.de> <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202222804.383229-4-brking@linux.vnet.ibm.com>
+In-Reply-To: <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 04:28:01PM -0600, Brian King wrote:
-> Rather than manually creating attributes for the hvcs driver,
-> let the driver core do this for us. This also fixes some hotplug
-> remove issues and ensures that cleanup of these attributes
-> is done in the right order.
-> 
-> Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
-> ---
->  drivers/tty/hvc/hvcs.c | 24 +++++++++++++++---------
->  1 file changed, 15 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-> index 7f79444b4d89..5de7ad555540 100644
-> --- a/drivers/tty/hvc/hvcs.c
-> +++ b/drivers/tty/hvc/hvcs.c
-> @@ -473,6 +473,20 @@ static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
->  
->  static DRIVER_ATTR_RW(rescan);
->  
-> +static struct attribute *hvcs_attrs[] = {
-> +	&driver_attr_rescan.attr,
-> +	NULL,
-> +};
-> +
-> +static struct attribute_group hvcs_attr_group = {
-> +	.attrs = hvcs_attrs,
-> +};
-> +
-> +const static struct attribute_group *hvcs_attr_groups[] = {
-> +	&hvcs_attr_group,
-> +	NULL,
-> +};
+On Mon, Jan 16, 2023 at 09:52:10AM +0100, John Paul Adrian Glaubitz wrote:
+> We have had a discussion between multiple people invested in the SuperH port and
+> I have decided to volunteer as a co-maintainer of the port to support Rich Felker
+> when he isn't available.
 
-Again, ATTRIBUTE_GROUPS()?
-
-thanks,
-
-greg k-h
+So, this still isn't reflected in MAINTAINERS in linux-next.  When
+do you plan to take over?  What platforms will remain supported and
+what can we start dropping due to being unused and unmaintained?
