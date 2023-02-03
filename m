@@ -2,209 +2,105 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BF0C636D4
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 15:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF87C64EC6
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 16:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233282AbjBCP6X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Feb 2023 10:58:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
+        id S233362AbjBCQFL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Feb 2023 11:05:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233385AbjBCP6T (ORCPT
+        with ESMTP id S233297AbjBCQFG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Feb 2023 10:58:19 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADB87ED8
-        for <linux-serial@vger.kernel.org>; Fri,  3 Feb 2023 07:58:17 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 313Efw5e019843;
-        Fri, 3 Feb 2023 15:58:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=XKd9IXJu6WajZTpMeR5fNtzh3X12+AZdL0P60/EEdj4=;
- b=VB19n7ZVYzUChTGQeXtHTkuRVYmq01j4LeUjRecgtQVoP0guPZR+sMlTvtLv2U5sOEzJ
- xotxPt07urgewRLWN63XlZnjZVfvirvgughrbC2rEU2nmpdnJ0mhg3md1wN+vOpAvCXc
- pT66bRW3W1uiJI6ZermwENqMpjqkKjfc4pM4IRxu6jD02y67eKtZLDbnFZmBELL/XuCK
- Y7UwzzQn+ZAR3AuiGEDQc439kHN13o1vFnO4OYN6dvUshfFlFyz/nCPjFBTTRdu9usdD
- As+eipHZQQr7/+qjZv7cdW3UdBVf6lVQegfPKob9JdwV9MJMEgBXXghoqTQnkckp0WYx 2Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nh48r1yw3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Feb 2023 15:58:13 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 313EgF7D020825;
-        Fri, 3 Feb 2023 15:58:13 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nh48r1yvt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Feb 2023 15:58:13 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 313EHbuH019280;
-        Fri, 3 Feb 2023 15:58:12 GMT
-Received: from smtprelay03.wdc07v.mail.ibm.com ([9.208.129.113])
-        by ppma02dal.us.ibm.com (PPS) with ESMTPS id 3ncvur9tue-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Feb 2023 15:58:12 +0000
-Received: from smtpav03.dal12v.mail.ibm.com (smtpav03.dal12v.mail.ibm.com [10.241.53.102])
-        by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 313FwA8E61407694
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 3 Feb 2023 15:58:11 GMT
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E78058061;
-        Fri,  3 Feb 2023 15:58:10 +0000 (GMT)
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1B0C55803F;
-        Fri,  3 Feb 2023 15:58:10 +0000 (GMT)
-Received: from li-6bf4d4cc-31f5-11b2-a85c-838e9310af65.ibm.com.com (unknown [9.211.110.209])
-        by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
-        Fri,  3 Feb 2023 15:58:10 +0000 (GMT)
-From:   Brian King <brking@linux.vnet.ibm.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linuxppc-dev@lists.ozlabs.org, brking@pobox.com,
-        mmc@linux.vnet.ibm.com, linux-serial@vger.kernel.org,
-        Brian King <brking@linux.vnet.ibm.com>
-Subject: [PATCH v3 5/5] hvcs: Synchronize hotplug remove with port free
-Date:   Fri,  3 Feb 2023 09:58:02 -0600
-Message-Id: <20230203155802.404324-6-brking@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230203155802.404324-1-brking@linux.vnet.ibm.com>
-References: <20230203155802.404324-1-brking@linux.vnet.ibm.com>
+        Fri, 3 Feb 2023 11:05:06 -0500
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F866A2A4C;
+        Fri,  3 Feb 2023 08:05:03 -0800 (PST)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-51ba4b1b9feso73909487b3.11;
+        Fri, 03 Feb 2023 08:05:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7wIYdPVdo9w8wJeFawgcWpGlCHgpXqP0aU2proD/z4A=;
+        b=h7Y+KCF7rYYuzKa23/XVH7EqKMk5LTZnVw2PqeMnOFM+xWLo9NJHdhJ7VXQEzh/jEQ
+         43USwhMjApuBXpP8uDT4/9ZWtcfiac4as5JkOYvgtFByz33C36/DfwkQOIfY4SCuqGDK
+         Hv9r2B8MXFnnKurrI2YIIpkW+iLxoK+7IxwMN41GkLxe5SYkAMuhmyEdUiIf3h+NbtlV
+         Vjrsgdy/0uWZlA6GCyhPVQQLTybtIXlZAYgovWjXFPEmbkXmJ1R6oNLeW1Q9wjp7INOt
+         dpYwOYdzkRdvH3M1sRrIE5bOaaFyPkuU4ojNBjyPoq103GnN5D0iyOl6ib+Yx3KeeBsY
+         CkPA==
+X-Gm-Message-State: AO0yUKUt0cK5Wr875sm9z9U0bJzP+91+5+O4ghRPfaBfRmU8ORcDIFi3
+        96J/1/Ux8eteagW4UXGq2OK0nBZCNN5sEw==
+X-Google-Smtp-Source: AK7set/a/Eq2gP6R7fciPiamzKQR29gjZ+vbzZcYT0ptMjiTbNLQIWRvobf0piyfY0iq11BERjizRw==
+X-Received: by 2002:a0d:d648:0:b0:506:4342:1a2d with SMTP id y69-20020a0dd648000000b0050643421a2dmr7042060ywd.12.1675440302426;
+        Fri, 03 Feb 2023 08:05:02 -0800 (PST)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id r195-20020a37a8cc000000b0071ddbe8fe23sm2101905qke.24.2023.02.03.08.05.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Feb 2023 08:05:02 -0800 (PST)
+Received: by mail-yb1-f179.google.com with SMTP id 74so6528236ybl.12;
+        Fri, 03 Feb 2023 08:05:01 -0800 (PST)
+X-Received: by 2002:a5b:941:0:b0:865:e214:f4e3 with SMTP id
+ x1-20020a5b0941000000b00865e214f4e3mr352487ybq.604.1675440301482; Fri, 03 Feb
+ 2023 08:05:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gF7gUO72P36_NPqrHn7qzjPWt1NmjNBy
-X-Proofpoint-ORIG-GUID: ADZMIGab6Ex_d95DljWIHvkXDkSGUWr1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-03_15,2023-02-03_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- priorityscore=1501 malwarescore=0 impostorscore=0 bulkscore=0
- mlxlogscore=999 lowpriorityscore=0 phishscore=0 mlxscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302030142
+References: <20230113062339.1909087-1-hch@lst.de> <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+ <20230116071306.GA15848@lst.de> <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
+ <20230203071423.GA24833@lst.de> <afd056a95d21944db1dc0c9708f692dd1f7bb757.camel@physik.fu-berlin.de>
+ <20230203083037.GA30738@lst.de> <d10fe31b2af6cf4e03618f38ca9d3ca5c72601ed.camel@physik.fu-berlin.de>
+ <CAMuHMdUitVfW088YOmqYm4kwbKwkwb22fAakHcu6boxv7dXDfQ@mail.gmail.com> <f6a60193-a5d1-c42c-158a-4b0bfe9c7538@infradead.org>
+In-Reply-To: <f6a60193-a5d1-c42c-158a-4b0bfe9c7538@infradead.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 3 Feb 2023 17:04:49 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWJ3XOBewDoU8umAHc6b83hJQge5xjY3Cxx03AvoiR7iQ@mail.gmail.com>
+Message-ID: <CAMuHMdWJ3XOBewDoU8umAHc6b83hJQge5xjY3Cxx03AvoiR7iQ@mail.gmail.com>
+Subject: Re: remove arch/sh
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Synchronizes hotplug remove with the freeing of the port.
-This ensures we have freed all the memory associated with
-this port and are not leaking memory.
+Hi Randy,
 
-Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
----
- drivers/tty/hvc/hvcs.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+On Fri, Feb 3, 2023 at 4:57 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> Is this "sh64" still accurate and applicable? from Documentation/kbuild/kbuild.rst:
+>
+> But some architectures such as x86 and sparc have aliases.
+>
+> - x86: i386 for 32 bit, x86_64 for 64 bit
+> - sh: sh for 32 bit, sh64 for 64 bit <<<<<<<<<<<<<<<
+> - sparc: sparc32 for 32 bit, sparc64 for 64 bit
 
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index ecf24195b1e9..1de1a09bf82d 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -52,6 +52,7 @@
- 
- #include <linux/device.h>
- #include <linux/init.h>
-+#include <linux/completion.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/kref.h>
-@@ -285,6 +286,7 @@ struct hvcs_struct {
- 	char p_location_code[HVCS_CLC_LENGTH + 1]; /* CLC + Null Term */
- 	struct list_head next; /* list management */
- 	struct vio_dev *vdev;
-+	struct completion *destroyed;
- };
- 
- static LIST_HEAD(hvcs_structs);
-@@ -663,11 +665,13 @@ static void hvcs_destruct_port(struct tty_port *p)
- {
- 	struct hvcs_struct *hvcsd = container_of(p, struct hvcs_struct, port);
- 	struct vio_dev *vdev;
-+	struct completion *comp;
- 	unsigned long flags;
- 
- 	spin_lock(&hvcs_structs_lock);
- 	spin_lock_irqsave(&hvcsd->lock, flags);
- 
-+	comp = hvcsd->destroyed;
- 	/* the list_del poisons the pointers */
- 	list_del(&(hvcsd->next));
- 
-@@ -687,6 +691,7 @@ static void hvcs_destruct_port(struct tty_port *p)
- 
- 	hvcsd->p_unit_address = 0;
- 	hvcsd->p_partition_ID = 0;
-+	hvcsd->destroyed = NULL;
- 	hvcs_return_index(hvcsd->index);
- 	memset(&hvcsd->p_location_code[0], 0x00, HVCS_CLC_LENGTH + 1);
- 
-@@ -694,6 +699,8 @@ static void hvcs_destruct_port(struct tty_port *p)
- 	spin_unlock(&hvcs_structs_lock);
- 
- 	kfree(hvcsd);
-+	if (comp)
-+		complete(comp);
- }
- 
- static const struct tty_port_operations hvcs_port_ops = {
-@@ -792,6 +799,7 @@ static int hvcs_probe(
- static void hvcs_remove(struct vio_dev *dev)
- {
- 	struct hvcs_struct *hvcsd = dev_get_drvdata(&dev->dev);
-+	DECLARE_COMPLETION_ONSTACK(comp);
- 	unsigned long flags;
- 	struct tty_struct *tty;
- 
-@@ -799,16 +807,11 @@ static void hvcs_remove(struct vio_dev *dev)
- 
- 	spin_lock_irqsave(&hvcsd->lock, flags);
- 
-+	hvcsd->destroyed = &comp;
- 	tty = tty_port_tty_get(&hvcsd->port);
- 
- 	spin_unlock_irqrestore(&hvcsd->lock, flags);
- 
--	/*
--	 * Let the last holder of this object cause it to be removed, which
--	 * would probably be tty_hangup below.
--	 */
--	tty_port_put(&hvcsd->port);
--
- 	/*
- 	 * The tty should always be valid at this time unless a
- 	 * simultaneous tty close already cleaned up the hvcs_struct.
-@@ -818,6 +821,8 @@ static void hvcs_remove(struct vio_dev *dev)
- 		tty_kref_put(tty);
- 	}
- 
-+	tty_port_put(&hvcsd->port);
-+	wait_for_completion(&comp);
- 	printk(KERN_INFO "HVCS: vty-server@%X removed from the"
- 			" vio bus.\n", dev->unit_address);
- };
-@@ -1171,7 +1176,10 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
- 	hvcsd = tty->driver_data;
- 
- 	spin_lock_irqsave(&hvcsd->lock, flags);
--	if (--hvcsd->port.count == 0) {
-+	if (hvcsd->port.count == 0) {
-+		spin_unlock_irqrestore(&hvcsd->lock, flags);
-+		return;
-+	} else if (--hvcsd->port.count == 0) {
- 
- 		vio_disable_interrupts(hvcsd->vdev);
- 
-@@ -1227,11 +1235,7 @@ static void hvcs_hangup(struct tty_struct * tty)
- 	vio_disable_interrupts(hvcsd->vdev);
- 
- 	hvcsd->todo_mask = 0;
--
--	/* I don't think the tty needs the hvcs_struct pointer after a hangup */
--	tty->driver_data = NULL;
- 	hvcsd->port.tty = NULL;
--
- 	hvcsd->port.count = 0;
- 
- 	/* This will drop any buffered data on the floor which is OK in a hangup
--- 
-2.31.1
+No, support for sh64 was removed in commit 37744feebc086908
+("sh: remove sh5 support") in v5.8.
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
