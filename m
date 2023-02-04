@@ -2,115 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D15C636D3
-	for <linux-serial@archiver.kernel.org>; Sat,  4 Feb 2023 05:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EC2C61DA4
+	for <linux-serial@archiver.kernel.org>; Sat,  4 Feb 2023 07:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbjBDFbj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 4 Feb 2023 00:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
+        id S233410AbjBDHE5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 4 Feb 2023 02:04:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbjBDFbj (ORCPT
+        with ESMTP id S233294AbjBDHEw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 4 Feb 2023 00:31:39 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3912291193;
-        Fri,  3 Feb 2023 21:31:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675488698; x=1707024698;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wiaDjmTVDYP3++nmiG+UiFzVdmXO51IFqJJgfa6KODM=;
-  b=LqSbY5juRrN778HwjmG8VNQzoXeWT3s6h73XjPXeLjKeCXYk8yPhphq2
-   GiMDi1xfIZ07Wn0xBH6Y54WVCT2hYOwWn8VSHKbcBH2WIBlRXGa++49ev
-   b6j5N6apSnvc28twrMHcZqDP3n79dmG6euSgXLmKPmTQr/ZAHXNdanxlU
-   CNmaHEefk15dFrWa5JeQkozXKprqpmq57snqwAokOqAYkDQsKCbgZQ4H2
-   L4tPKHpDm/iZej3rmyK5zAg3oNNs6tKEeZR80+ZK1SWd5l4ZYgLuVsqoj
-   DoC34ji9NROA5YPbHjci0aMVK8MD45vPBVqcTyHqUPfEP5YDoKuuEz5U/
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="331048661"
-X-IronPort-AV: E=Sophos;i="5.97,272,1669104000"; 
-   d="scan'208";a="331048661"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 21:31:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="696350014"
-X-IronPort-AV: E=Sophos;i="5.97,272,1669104000"; 
-   d="scan'208";a="696350014"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 03 Feb 2023 21:31:33 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pOB9A-00014L-1O;
-        Sat, 04 Feb 2023 05:31:32 +0000
-Date:   Sat, 4 Feb 2023 13:30:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        linux-kernel@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk,
-        andriy.shevchenko@linux.intel.com, lukas@wunner.de,
-        cang1@live.co.uk, matthew.gerlach@linux.intel.com, deller@gmx.de,
-        phil.edworthy@renesas.com, geert+renesas@glider.be,
-        marpagan@redhat.com, u.kleine-koenig@pengutronix.de,
-        etremblay@distech-controls.com, wander@redhat.com,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v11 tty-next 1/4] serial: 8250_pci: Add
- serial8250_pci_setup_port definition in 8250_pcilib.c
-Message-ID: <202302041334.aXx6dVcJ-lkp@intel.com>
-References: <20230204053138.2520105-2-kumaravel.thiagarajan@microchip.com>
+        Sat, 4 Feb 2023 02:04:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301833EC59;
+        Fri,  3 Feb 2023 23:04:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD5D960691;
+        Sat,  4 Feb 2023 07:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2374C433D2;
+        Sat,  4 Feb 2023 07:04:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675494262;
+        bh=JN93OI468Pq5vFrv67NUsNRkkIKDhT/nw+2BHNcWjl8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j8BtA73v2+I7jXyr2alef2JqWE0EeIkZzxY/WsUNPw2kSRpleZbHS7C073bAIZ2hD
+         AAVc4DK1wvrVyUvUvLaQ/R0Xm01aX4xerWwX77GLL/DqHjrBjHCAY0V0jnHetMlp5H
+         UbUMBK/to77cJO3rMG4zMVjAmcnEvNyMV2pqsclmypwk2nsxXuEmY33yORYQDjUvf7
+         2J+Qv6yfpWC2Jc7fGjiu2mxeGeCpjT6I5ndtz8QBuf7sTMBHKKYbGD5SxOAWtS7aLB
+         X3NnVZTWNn0IYr0uNGGcrDbViitQb5gaKxPpZgOI7zitwxjPXiDqsaQfQoPZ61+fAq
+         /HkfI1txHvDaw==
+Date:   Sat, 4 Feb 2023 08:04:18 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Elliot Berman <quic_eberman@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Visweswara Tanuku <quic_vtanuku@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH] soc: qcom: geni-se: Move qcom-geni-se.h to
+ linux/soc/qcom/geni-se.h
+Message-ID: <Y94DcuAIe4kuhMXP@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Elliot Berman <quic_eberman@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Visweswara Tanuku <quic_vtanuku@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20230203210133.3552796-1-quic_eberman@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="OrII+0Os16jN/lnY"
 Content-Disposition: inline
-In-Reply-To: <20230204053138.2520105-2-kumaravel.thiagarajan@microchip.com>
+In-Reply-To: <20230203210133.3552796-1-quic_eberman@quicinc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Kumaravel,
 
-I love your patch! Perhaps something to improve:
+--OrII+0Os16jN/lnY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.2-rc6 next-20230203]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+On Fri, Feb 03, 2023 at 01:01:32PM -0800, Elliot Berman wrote:
+> Move include/linux/qcom-geni-se.h to include/linux/soc/qcom/geni-se.h.
+> This removes 1 of a few remaining Qualcomm-specific headers into a more
+> approciate subdirectory under include/.
+>=20
+> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Kumaravel-Thiagarajan/serial-8250_pci-Add-serial8250_pci_setup_port-definition-in-8250_pcilib-c/20230204-005851
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20230204053138.2520105-2-kumaravel.thiagarajan%40microchip.com
-patch subject: [PATCH v11 tty-next 1/4] serial: 8250_pci: Add serial8250_pci_setup_port definition in 8250_pcilib.c
-config: alpha-defconfig (https://download.01.org/0day-ci/archive/20230204/202302041334.aXx6dVcJ-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/cd5f521fabae71343d59d524ad57221e2b7524fe
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kumaravel-Thiagarajan/serial-8250_pci-Add-serial8250_pci_setup_port-definition-in-8250_pcilib-c/20230204-005851
-        git checkout cd5f521fabae71343d59d524ad57221e2b7524fe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/tty/serial/8250/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/tty/serial/8250/8250_pcilib.c:14:5: warning: no previous prototype for 'serial8250_pci_setup_port' [-Wmissing-prototypes]
-      14 | int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C
 
 
-vim +/serial8250_pci_setup_port +14 drivers/tty/serial/8250/8250_pcilib.c
+--OrII+0Os16jN/lnY
+Content-Type: application/pgp-signature; name="signature.asc"
 
-    13	
-  > 14	int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
+-----BEGIN PGP SIGNATURE-----
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmPeA24ACgkQFA3kzBSg
+KbYPew/9HfpmkSdGzIZ6cHygo1EIyP/lzY7ml5kSwt1VinA0plVn9fOGoONJgNYf
+YV6ZK5tofsNwK18mwhAqQjjAFr6BAlG/G1z1TCgomIj6kqGaVZMIKDuIcZGtFaCA
+4fuWAXi4Sb8MR/7gBfu+r4K/dRDi6byoTSsp32O1yfu2pl3dO+a9DHZCTBVumMHp
+nfopYoR1w4qQkNbXmaIev15pxojqxfm/lanTjq3peyu7KIllxgMU+DlyGcoAJaCo
+An7cqk30w0i+hw5ZEf7pq1y1wKjMfI0kNovtBH0WhEu27b+1IHjrnYpqG62E8WGk
+1oe7R5Mb+iHoVZzhPTiUcarJc1sUuh8MM1knYuuGITj2w0TqTAQUWiWSWDx3q5nn
+XEoVDhJHcZ14kv2J1QI0ZgXEHnYKDu2nUDUz29LPuEoEFoy5pMrxCLvKzZevoK/0
+8cK/aYATxicSl1D+DE+Veq+ViOW6dMY1ljYHZ7Rzqp+dEukDS6v+Md97rdaqo6Z8
+jqEkPMFSGTEWAYFVNIyPrsuwh+w4nDIoxfJRuavuVPfCRpxW4s0Ry3Nk/0tNOyyJ
+SJ9fRUQqkw3QPBCgWcauHHDdVGnpRhfuLh8pYvQVUx0lC/qGGh9blxn3HrQIsdL9
+M0BcwfbrXJC6UKjgg8N5PTkrhGsPGXr+Cvt8ZQ3+Q8o2G37MYic=
+=JgIb
+-----END PGP SIGNATURE-----
+
+--OrII+0Os16jN/lnY--
