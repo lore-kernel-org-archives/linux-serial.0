@@ -2,66 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B29EC05027
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 16:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BDFC05027
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Feb 2023 16:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233537AbjBCQzp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Feb 2023 11:55:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
+        id S232054AbjBCQ4a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Feb 2023 11:56:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233469AbjBCQzn (ORCPT
+        with ESMTP id S232479AbjBCQ43 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Feb 2023 11:55:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BE592ED8;
-        Fri,  3 Feb 2023 08:55:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B589B82B5D;
-        Fri,  3 Feb 2023 16:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67AB0C433D2;
-        Fri,  3 Feb 2023 16:55:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675443336;
-        bh=B//YUVaIiSV2E2LbWZWR0CqUFx1R9kgHWXA//oVYOPY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BkABXimJeg2L6LOoJYfXZJzHkkQRBWIYRK3PhqIho3/A8ztv4tFpTnyVEcqnNmMf2
-         rTHntBckGDws8SYRWPN8XIO0o7cgWwqY7oeXW/wN5lmBcJwJLHVoxuc7zCWc4jGt3c
-         X6QZDqacUsj/8VLWyCJ3Bdd1ZZjhJcTtdZ7B3ATs=
-Date:   Fri, 3 Feb 2023 17:55:32 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "D. Starke" <daniel.starke@siemens.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/4] tty: n_gsm: add keep alive support
-Message-ID: <Y908hEeZdDw/0Wkp@kroah.com>
-References: <20230203145023.6012-1-daniel.starke@siemens.com>
- <20230203145023.6012-2-daniel.starke@siemens.com>
+        Fri, 3 Feb 2023 11:56:29 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC064FADE;
+        Fri,  3 Feb 2023 08:56:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1675443379; x=1706979379;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xWwEliwH3/2TbdcPq4FPWGC/tiCdnGbtpLGpXFn3YDc=;
+  b=E9CGWVVE3nXW51I9GvJnFqU6NZLAX+r2aiICUw859C1PoDt+Pf3Q4ftK
+   3Ow6p/KMbsX6NpVJLJ3fu1wMeHYl2OulPwDoGmwWfjLm6CtpC1KwNzrFE
+   6hEZgVFAC5WdgIiDJYNCzGJwP+e2ZxNMS9/pho9zFMGiXn5zKwFb3fv/4
+   tnVeae7Q5w7KggNSKcrHYvwMGJlWVOeIRjcCuinX/XD9qhIcRIQLQCssd
+   AZxyoLsYyWaHNauIWPm+0OK6+lJCRPsKkDx1FycuGMqqpvftJAUGK9uNx
+   ANLymy4R7tw1Yz85uKnERcfXnJO+0MDMw89CZdxH8i3evlWvMNRGRue92
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,271,1669100400"; 
+   d="scan'208";a="198833319"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Feb 2023 09:56:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 3 Feb 2023 09:56:18 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Fri, 3 Feb 2023 09:56:12 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <linux-serial@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <ilpo.jarvinen@linux.intel.com>,
+        <macro@orcam.me.uk>, <andriy.shevchenko@linux.intel.com>,
+        <lukas@wunner.de>, <cang1@live.co.uk>,
+        <matthew.gerlach@linux.intel.com>, <deller@gmx.de>,
+        <phil.edworthy@renesas.com>, <geert+renesas@glider.be>,
+        <marpagan@redhat.com>, <u.kleine-koenig@pengutronix.de>,
+        <etremblay@distech-controls.com>, <wander@redhat.com>
+Subject: [PATCH v11 tty-next 0/4] serial: 8250_pci1xxxx: Add driver for the pci1xxxx's quad-uart function
+Date:   Sat, 4 Feb 2023 11:01:34 +0530
+Message-ID: <20230204053138.2520105-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230203145023.6012-2-daniel.starke@siemens.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 03, 2023 at 03:50:21PM +0100, D. Starke wrote:
-> +struct gsm_config_ext {
-> +	__u32 keep_alive;	/* Control channel keep-alive in 1/100th of a
-> +				 * second (0 to disable)
-> +				 */
-> +	__u32 reserved[7];	/* For future use */
+pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+downstream ports. Quad-uart is one of the functions in the multi-function
+endpoint. This patch adds device driver for the quad-uart function and
+enumerates between 1 to 4 instances of uarts based on the PCIe subsystem
+device ID.
 
-You are not checking these fields, so this means any future use of them
-will not be allowed (like the problem you have which required this new
-structure.)
+The changes from v1->v2->v3->v4->v5->v6->v7->v8->v9->v10->v11 are mentioned
+in each patch in the patchset.
 
-Please, always verify that the values here are 0, and if not, error out
-with -EINVAL.  That's the only way you can properly reserve this for
-future use.  The kernel documentation about "how to write an ioctl"
-should describe all of this, right?
+Thanks to Andy Shevchenko, Ilpo Jarvinen, Chritophe JAILLET, Geert
+Uytterhoeven, Greg KH, Jiri Slaby for their review comments.
 
-thanks,
+Kumaravel Thiagarajan (4):
+  serial: 8250_pci: Add serial8250_pci_setup_port definition in
+    8250_pcilib.c
+  serial: 8250_pci1xxxx: Add driver for quad-uart support
+  serial: 8250_pci1xxxx: Add RS485 support to quad-uart driver
+  serial: 8250_pci1xxxx: Add power management functions to quad-uart
+    driver
 
-greg k-h
+ MAINTAINERS                             |   7 +
+ drivers/tty/serial/8250/8250_pci.c      |  25 +-
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 494 ++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pcilib.c   |  39 ++
+ drivers/tty/serial/8250/8250_pcilib.h   |  15 +
+ drivers/tty/serial/8250/8250_port.c     |   8 +
+ drivers/tty/serial/8250/Kconfig         |  15 +
+ drivers/tty/serial/8250/Makefile        |   2 +
+ include/uapi/linux/serial_core.h        |   3 +
+ 9 files changed, 586 insertions(+), 22 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_pci1xxxx.c
+ create mode 100644 drivers/tty/serial/8250/8250_pcilib.c
+ create mode 100644 drivers/tty/serial/8250/8250_pcilib.h
+
+-- 
+2.25.1
+
