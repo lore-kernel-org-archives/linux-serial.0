@@ -2,120 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD09C636CC
-	for <linux-serial@archiver.kernel.org>; Sun,  5 Feb 2023 01:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21707C636CC
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Feb 2023 11:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbjBEBAK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 4 Feb 2023 20:00:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53050 "EHLO
+        id S229508AbjBELxn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Feb 2023 06:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjBEBAK (ORCPT
+        with ESMTP id S229490AbjBELxm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 4 Feb 2023 20:00:10 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BA3233DA;
-        Sat,  4 Feb 2023 17:00:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675558808; x=1707094808;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HYzoEAObKmco2oMwJFZ9Ok0gbxNT7DUEeDIgbmPNHJs=;
-  b=NJ+IPAdePjUQQii7SUjy2FCF5rvtIiaEGR1sr4F9FOoWptVYL0t74/9x
-   1lPYQPHQre6nQ0t20hpgnXPFvj19EfDibef5A94A8KhDs85J98TYR9Kz9
-   iBHSc7XchDVWR/XCTwuYqVyPTgo69XHt2+MUrWhFpkLLEp5jXUdVbdP3J
-   6VyAdiLdpEiRDBrgjiPzwUVc7+4BtlEtN9ThyNAPJWbGG4f0S/zDwnEU0
-   7TCzUgu/HGdy3z6EJpajzjk+XCtlDh2vhnm7vmiV3IAGR4oOLanH1gyK2
-   LQWRhc6vFPQIHBdIfuKzNTHm4Op+203EJpKqnaqROgwSEg/LZ5tRJ1/+C
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10611"; a="331140830"
-X-IronPort-AV: E=Sophos;i="5.97,274,1669104000"; 
-   d="scan'208";a="331140830"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2023 17:00:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10611"; a="666123637"
-X-IronPort-AV: E=Sophos;i="5.97,274,1669104000"; 
-   d="scan'208";a="666123637"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 04 Feb 2023 17:00:02 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pOTNx-0001cK-2s;
-        Sun, 05 Feb 2023 01:00:01 +0000
-Date:   Sun, 5 Feb 2023 08:59:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        macro@orcam.me.uk, andriy.shevchenko@linux.intel.com,
-        lukas@wunner.de, cang1@live.co.uk, matthew.gerlach@linux.intel.com,
-        deller@gmx.de, phil.edworthy@renesas.com, geert+renesas@glider.be,
-        marpagan@redhat.com, u.kleine-koenig@pengutronix.de,
-        etremblay@distech-controls.com, wander@redhat.com,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v11 tty-next 1/4] serial: 8250_pci: Add
- serial8250_pci_setup_port definition in 8250_pcilib.c
-Message-ID: <202302050831.9fyXKlIq-lkp@intel.com>
-References: <20230204053138.2520105-2-kumaravel.thiagarajan@microchip.com>
+        Sun, 5 Feb 2023 06:53:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6722128A;
+        Sun,  5 Feb 2023 03:53:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3A12B80B7C;
+        Sun,  5 Feb 2023 11:53:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B07BC433EF;
+        Sun,  5 Feb 2023 11:53:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1675598018;
+        bh=8uKoyJmBWvFr8Ye1clEqrh8+DypoYZR3LS7emY5Aerg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=q8VnEvYcYzz2IqRolwBhWKp76T3uAG7yZm4J7rkZVQfv1srvAvq4Okw/SvFADBkt5
+         az8U2CV4jZVitcNK/MRUpXGm8KrhWEXksf+dSQVsxq56+h8rgr3k8BxTVfnqwrRL/g
+         5V1EXtmschuNKuIqSTxrowiIcochxf/lKCtFO/E0=
+Date:   Sun, 5 Feb 2023 12:53:35 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 6.2-rc7
+Message-ID: <Y9+Yv1CQKNP0Bwqq@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230204053138.2520105-2-kumaravel.thiagarajan@microchip.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Kumaravel,
+The following changes since commit 2241ab53cbb5cdb08a6b2d4688feb13971058f65:
 
-I love your patch! Perhaps something to improve:
+  Linux 6.2-rc5 (2023-01-21 16:27:01 -0800)
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.2-rc6 next-20230203]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+are available in the Git repository at:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Kumaravel-Thiagarajan/serial-8250_pci-Add-serial8250_pci_setup_port-definition-in-8250_pcilib-c/20230204-005851
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20230204053138.2520105-2-kumaravel.thiagarajan%40microchip.com
-patch subject: [PATCH v11 tty-next 1/4] serial: 8250_pci: Add serial8250_pci_setup_port definition in 8250_pcilib.c
-config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20230205/202302050831.9fyXKlIq-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/cd5f521fabae71343d59d524ad57221e2b7524fe
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kumaravel-Thiagarajan/serial-8250_pci-Add-serial8250_pci_setup_port-definition-in-8250_pcilib-c/20230204-005851
-        git checkout cd5f521fabae71343d59d524ad57221e2b7524fe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/tty/serial/8250/
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.2-rc7
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+for you to fetch changes up to 226fae124b2dac217ea5436060d623ff3385bc34:
 
-All warnings (new ones prefixed by >>):
+  vc_screen: move load of struct vc_data pointer in vcs_read() to avoid UAF (2023-01-31 15:51:52 +0100)
 
->> drivers/tty/serial/8250/8250_pcilib.c:14:5: warning: no previous prototype for function 'serial8250_pci_setup_port' [-Wmissing-prototypes]
-   int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
-       ^
-   drivers/tty/serial/8250/8250_pcilib.c:14:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
-   ^
-   static 
-   1 warning generated.
+----------------------------------------------------------------
+TTY/Serial driver fixes for 6.2-rc7
 
+Here are some small serial and vt fixes for 6.2-rc7.  These include:
+  - 8250 driver fixes relating to dma issues
+  - stm32 serial driver fix for threaded irqs
+  - vc_screen bugfix for reported problems.
 
-vim +/serial8250_pci_setup_port +14 drivers/tty/serial/8250/8250_pcilib.c
+All have been in linux-next for a while with no reported problems.
 
-    13	
-  > 14	int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+----------------------------------------------------------------
+George Kennedy (1):
+      vc_screen: move load of struct vc_data pointer in vcs_read() to avoid UAF
+
+Ilpo Järvinen (2):
+      serial: 8250_dma: Fix DMA Rx completion race
+      serial: 8250_dma: Fix DMA Rx rearm race
+
+Marek Vasut (1):
+      serial: stm32: Merge hard IRQ and threaded IRQ handling into single IRQ handler
+
+ drivers/tty/serial/8250/8250_dma.c | 21 +++++++++++++++++----
+ drivers/tty/serial/stm32-usart.c   | 33 +++++----------------------------
+ drivers/tty/vt/vc_screen.c         |  9 +++++----
+ 3 files changed, 27 insertions(+), 36 deletions(-)
