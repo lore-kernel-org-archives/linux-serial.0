@@ -2,144 +2,160 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3818EC636D3
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 18:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32149C636D3
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 18:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbjBFSNE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Feb 2023 13:13:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S230079AbjBFSRw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Feb 2023 13:17:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbjBFSND (ORCPT
+        with ESMTP id S230088AbjBFSRu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Feb 2023 13:13:03 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A75C1DB82
-        for <linux-serial@vger.kernel.org>; Mon,  6 Feb 2023 10:13:02 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id hr39so7070169ejc.7
-        for <linux-serial@vger.kernel.org>; Mon, 06 Feb 2023 10:13:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=IbOerbB6Db4L6+uUF0dvyyeN+e3XbuhovaEigXR7JOo=;
-        b=A/jcSkWXsSowAd58l8d13+VgQh9TsgzUaVo1nJSFX9naivnf9Yd6haYjw8kHzBe1z7
-         UneVQ0rvM32DeaHE8jor/GQ3SBcTjQgik8aNzLu+itYqZmBvqop8MxyjkmB7XKB3zriR
-         tCY2xJ6smzX7/eu07fFHqYc+xZ6Gf7IZQCw4g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IbOerbB6Db4L6+uUF0dvyyeN+e3XbuhovaEigXR7JOo=;
-        b=IqjRAUoiaWpjmbP+ZeKMhCduyKAYRQ9Xd3MR+kulG2SOWT1vLKNSzAteglgSoUh3Qi
-         Og1ITy4ieQwtft83EMzbinwDumKvHITIIKY4W+UPo2Gf1V3HPf8kL9h6jJDqZgdiSbXh
-         Z/1U7A4slONIj/EuZ0Yb/MzcBGgKQ51XDoD/ok317r3kxmZoOktqkZFTtsPIzsQFujit
-         zeKj2W105Svaz0hKzDG3Pps7++SKJgI3LeRUlmdWHCDWDKaoPU9uE0Up9Q6q5yBraWV6
-         q12PCiVT71wBSa27VMxLZkJZjzd6TMfyMa2z7N2TqZ5GFPmlbSHpIyp+Y4WSQX8hyOEB
-         nr9A==
-X-Gm-Message-State: AO0yUKWVY6ZB6rtqp7zsL9hhCiVPAbtwefsIvt/nykkXCYDuvIdWPEIw
-        DxEaNTdqq+I5KxW3uJTZxrheFDDnRLVwPAzdPzwFWA==
-X-Google-Smtp-Source: AK7set/aKqxQTTlN6BrosMhhfFzpkd4a9WrCfkAMI3FsBxNNHqNa2Gjeym2ZYkzvLCELA6lbRkjujQ==
-X-Received: by 2002:a17:906:f74b:b0:88c:bc3e:de46 with SMTP id jp11-20020a170906f74b00b0088cbc3ede46mr268276ejb.34.1675707180936;
-        Mon, 06 Feb 2023 10:13:00 -0800 (PST)
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com. [209.85.218.53])
-        by smtp.gmail.com with ESMTPSA id h20-20020a1709066d9400b0088c224bf5adsm5821696ejt.147.2023.02.06.10.13.00
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 10:13:00 -0800 (PST)
-Received: by mail-ej1-f53.google.com with SMTP id m2so36662211ejb.8
-        for <linux-serial@vger.kernel.org>; Mon, 06 Feb 2023 10:13:00 -0800 (PST)
-X-Received: by 2002:a17:906:4e46:b0:87a:7098:ca09 with SMTP id
- g6-20020a1709064e4600b0087a7098ca09mr69422ejw.78.1675707179872; Mon, 06 Feb
- 2023 10:12:59 -0800 (PST)
+        Mon, 6 Feb 2023 13:17:50 -0500
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50E922A37;
+        Mon,  6 Feb 2023 10:17:44 -0800 (PST)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 316Dw1Mr003538;
+        Mon, 6 Feb 2023 18:17:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=dJJ13g6rj+xIrq0T3eUEIbV10GxuSSR5Gcak2Juy/lM=;
+ b=XtQxUCLz6Y3AyjDUMsjJ1ieYJ2KdSaDxIulaEFH/QGB/1BDDVbTGFvu+MyFGgXqd3317
+ +xNLSS1PvD+e09Y3jKpiWxOmkvCb2Ev0IECUyt+BlHOPjOvQzPUHzfsT+ZQwf5VkLpX7
+ iEorYsQCNOeZAbupmHVEdJTDI/rI5+0fVjqGhvh7vx79GJALjqK0xOzYwswhQc3/w/4s
+ JnWDniGmAmD1y0DCOC2kSGQDSPVVTYyLaDy95RraLHg2bWHDxpqbxB/rTPDywqM130Re
+ /tPne3FMszTdgHZrnqA5toXJQSeZXdYB86jKm+fypK3AqDmv0az5REO2E2TqfeAS0i/E Sw== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3nheb0vdak-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Feb 2023 18:17:40 +0000
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+        by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 316IHdfF011629
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 6 Feb 2023 18:17:39 GMT
+Received: from [10.134.67.48] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 6 Feb 2023
+ 10:17:39 -0800
+Message-ID: <298c709e-5873-7aa8-3c00-b1a0ddc5c436@quicinc.com>
+Date:   Mon, 6 Feb 2023 10:17:39 -0800
 MIME-Version: 1.0
-References: <1675704844-17228-1-git-send-email-george.kennedy@oracle.com>
-In-Reply-To: <1675704844-17228-1-git-send-email-george.kennedy@oracle.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 6 Feb 2023 10:12:43 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wi5h32VBgzYgFy8KoXbcDMa9K_ihDjfxD-iScy7L+M=QQ@mail.gmail.com>
-Message-ID: <CAHk-=wi5h32VBgzYgFy8KoXbcDMa9K_ihDjfxD-iScy7L+M=QQ@mail.gmail.com>
-Subject: Re: [PATCH] vc_screen: break from vcs_read() while loop if vcs_vc()
- returns NULL
-To:     George Kennedy <george.kennedy@oracle.com>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.cz, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Content-Type: multipart/mixed; boundary="000000000000346cf405f40bfb2d"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH] soc: qcom: geni-se: Move qcom-geni-se.h to
+ linux/soc/qcom/geni-se.h
+Content-Language: en-US
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     Visweswara Tanuku <quic_vtanuku@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>
+References: <20230203210133.3552796-1-quic_eberman@quicinc.com>
+From:   Elliot Berman <quic_eberman@quicinc.com>
+In-Reply-To: <20230203210133.3552796-1-quic_eberman@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: UDYBliO-YNogq6ZqeomTMFdH1cyj3V5s
+X-Proofpoint-GUID: UDYBliO-YNogq6ZqeomTMFdH1cyj3V5s
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-06_07,2023-02-06_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 mlxscore=0 suspectscore=0
+ mlxlogscore=999 adultscore=0 phishscore=0 clxscore=1015 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302060158
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---000000000000346cf405f40bfb2d
-Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Feb 6, 2023 at 9:34 AM George Kennedy <george.kennedy@oracle.com> wrote:
->
->
-> -               ret = -ENXIO;
->                 vc = vcs_vc(inode, &viewed);
-> -               if (!vc)
-> +               if (!vc) {
-> +                       if (read)
-> +                               break;
-> +                       ret = -ENXIO;
->                         goto unlock_out;
-> +               }
 
-That works, but the whole "if (read)" thing is already done after the
-loop, so instead of essentially duplicating that logic, I really think
-the patch should be just a plain
+On 2/3/2023 1:01 PM, Elliot Berman wrote:
+> Move include/linux/qcom-geni-se.h to include/linux/soc/qcom/geni-se.h.
+> This removes 1 of a few remaining Qualcomm-specific headers into a more
+> approciate subdirectory under include/.
 
-                vc = vcs_vc(inode, &viewed);
-                if (!vc)
--                       goto unlock_out;
-+                       break;
+Need to s/approciate/appropriate/ (Thanks Mukesh!)
 
-and nothing else.
-
-And yes, the pre-existing vcs_size() error handling has that same ugly pattern.
-
-It might be worth cleaning up too, although right now that
-
-                size = vcs_size(vc, attr, uni_mode);
-                if (size < 0) {
-                        if (read)
-                                break;
-
-pattern means that if we 'break' there, 'read' is non-zero, so 'ret'
-doesn't matter. Which is also ugly, but works.
-
-I *think* it could all be rewritten to just use 'break' everywhere in
-the loop, and make 'ret' handling be saner.
-
-Something like the attached patch, but while I tried to think about
-it, I didn't spend a lot of effort on it, and I certainly didn't test
-it. So I'm sending this out as a "Hmm. This _looks_ better to me, but
-whatever" patch.
-
-               Linus
-
---000000000000346cf405f40bfb2d
-Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
-Content-Disposition: attachment; filename="patch.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_ldt4rzjr0>
-X-Attachment-Id: f_ldt4rzjr0
-
-IGRyaXZlcnMvdHR5L3Z0L3ZjX3NjcmVlbi5jIHwgMTQgKysrKysrLS0tLS0tLS0KIDEgZmlsZSBj
-aGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
-dmVycy90dHkvdnQvdmNfc2NyZWVuLmMgYi9kcml2ZXJzL3R0eS92dC92Y19zY3JlZW4uYwppbmRl
-eCBmNTY2ZWIxODM5ZGMuLmM1OTliNDUyOTY5ZiAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvdnQv
-dmNfc2NyZWVuLmMKKysrIGIvZHJpdmVycy90dHkvdnQvdmNfc2NyZWVuLmMKQEAgLTQwNiwxOSAr
-NDA2LDE3IEBAIHZjc19yZWFkKHN0cnVjdCBmaWxlICpmaWxlLCBjaGFyIF9fdXNlciAqYnVmLCBz
-aXplX3QgY291bnQsIGxvZmZfdCAqcHBvcykKIAkJcmV0ID0gLUVOWElPOwogCQl2YyA9IHZjc192
-Yyhpbm9kZSwgJnZpZXdlZCk7CiAJCWlmICghdmMpCi0JCQlnb3RvIHVubG9ja19vdXQ7CisJCQli
-cmVhazsKIAogCQkvKiBDaGVjayB3aGV0aGVyIHdlIGFyZSBhYm92ZSBzaXplIGVhY2ggcm91bmQs
-CiAJCSAqIGFzIGNvcHlfdG9fdXNlciBhdCB0aGUgZW5kIG9mIHRoaXMgbG9vcAogCQkgKiBjb3Vs
-ZCBzbGVlcC4KIAkJICovCi0JCXNpemUgPSB2Y3Nfc2l6ZSh2YywgYXR0ciwgdW5pX21vZGUpOwot
-CQlpZiAoc2l6ZSA8IDApIHsKLQkJCWlmIChyZWFkKQotCQkJCWJyZWFrOwotCQkJcmV0ID0gc2l6
-ZTsKLQkJCWdvdG8gdW5sb2NrX291dDsKLQkJfQorCQlyZXQgPSB2Y3Nfc2l6ZSh2YywgYXR0ciwg
-dW5pX21vZGUpOworCQlpZiAocmV0IDwgMCkKKwkJCWJyZWFrOworCQlzaXplID0gcmV0OworCQly
-ZXQgPSAwOwogCQlpZiAocG9zID49IHNpemUpCiAJCQlicmVhazsKIAkJaWYgKGNvdW50ID4gc2l6
-ZSAtIHBvcykK
---000000000000346cf405f40bfb2d--
+> 
+> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
+> ---
+>   drivers/i2c/busses/i2c-qcom-geni.c                   | 2 +-
+>   drivers/soc/qcom/qcom-geni-se.c                      | 2 +-
+>   drivers/spi/spi-geni-qcom.c                          | 2 +-
+>   drivers/tty/serial/qcom_geni_serial.c                | 2 +-
+>   include/linux/{qcom-geni-se.h => soc/qcom/geni-se.h} | 0
+>   5 files changed, 4 insertions(+), 4 deletions(-)
+>   rename include/linux/{qcom-geni-se.h => soc/qcom/geni-se.h} (100%)
+> 
+> diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
+> index fd70794bfcee..80d586b0be7a 100644
+> --- a/drivers/i2c/busses/i2c-qcom-geni.c
+> +++ b/drivers/i2c/busses/i2c-qcom-geni.c
+> @@ -14,7 +14,7 @@
+>   #include <linux/of.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/pm_runtime.h>
+> -#include <linux/qcom-geni-se.h>
+> +#include <linux/soc/qcom/geni-se.h>
+>   #include <linux/spinlock.h>
+>   
+>   #define SE_I2C_TX_TRANS_LEN		0x26c
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+> index f0475b93ca73..795a2e1d59b3 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
+> @@ -14,7 +14,7 @@
+>   #include <linux/of_platform.h>
+>   #include <linux/pinctrl/consumer.h>
+>   #include <linux/platform_device.h>
+> -#include <linux/qcom-geni-se.h>
+> +#include <linux/soc/qcom/geni-se.h>
+>   
+>   /**
+>    * DOC: Overview
+> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+> index 4e83cc5b445d..e05e40a49294 100644
+> --- a/drivers/spi/spi-geni-qcom.c
+> +++ b/drivers/spi/spi-geni-qcom.c
+> @@ -12,7 +12,7 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/pm_opp.h>
+>   #include <linux/pm_runtime.h>
+> -#include <linux/qcom-geni-se.h>
+> +#include <linux/soc/qcom/geni-se.h>
+>   #include <linux/spi/spi.h>
+>   #include <linux/spinlock.h>
+>   
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index b487823f0e61..52f3a0184577 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -16,7 +16,7 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/pm_runtime.h>
+>   #include <linux/pm_wakeirq.h>
+> -#include <linux/qcom-geni-se.h>
+> +#include <linux/soc/qcom/geni-se.h>
+>   #include <linux/serial.h>
+>   #include <linux/serial_core.h>
+>   #include <linux/slab.h>
+> diff --git a/include/linux/qcom-geni-se.h b/include/linux/soc/qcom/geni-se.h
+> similarity index 100%
+> rename from include/linux/qcom-geni-se.h
+> rename to include/linux/soc/qcom/geni-se.h
+> 
+> base-commit: 3866989ec2c319341e2cf69ec6116269b634a271
