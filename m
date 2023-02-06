@@ -2,136 +2,93 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 048FAC61DA4
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 11:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281ECC61DA4
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 12:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbjBFLsB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Feb 2023 06:48:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
+        id S229630AbjBFMXF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Feb 2023 07:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbjBFLrl (ORCPT
+        with ESMTP id S229514AbjBFMXE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Feb 2023 06:47:41 -0500
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4150230E9
-        for <linux-serial@vger.kernel.org>; Mon,  6 Feb 2023 03:47:40 -0800 (PST)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20230206114738b9fcd7482b6f437ac3
-        for <linux-serial@vger.kernel.org>;
-        Mon, 06 Feb 2023 12:47:38 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=domF8YVtcGEgafqQbH+2EimrKfYiC4Tyhq8j6uN7Cl8=;
- b=G3QSpwrViFPBEsQfV/TVUPLvxOREDjSYVk8g7XNjwMOmS4oV6KNiEwVvsfZsBCgyiW56aI
- pbynbUEVI3mVskAoKL3/KN7nBaGKLCmYoNAFVF4xuRGDKcajeJb9xH7iVaa3Clpt3Cn5QClk
- G1ONb7BIHH1A0kZ8FppdC2N0XBmFU=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v4 4/4] tty: n_gsm: add TIOCMIWAIT support
-Date:   Mon,  6 Feb 2023 12:46:06 +0100
-Message-Id: <20230206114606.2133-4-daniel.starke@siemens.com>
-In-Reply-To: <20230206114606.2133-1-daniel.starke@siemens.com>
-References: <20230206114606.2133-1-daniel.starke@siemens.com>
+        Mon, 6 Feb 2023 07:23:04 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63009126F8;
+        Mon,  6 Feb 2023 04:23:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675686183; x=1707222183;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ry0VCACyy2TSCeYzgySUR4+4oUdolFw8BbatCEgmyHg=;
+  b=CVq9iefHBnBm63oQd4lo2akw70NmoANhjhq014MabyV+IKvJiJJ5yKJy
+   KLSims16H+M4iwQewqlI6rfNwbBl/F+8oN9sIXLV/fyknZTb+C5Way1Ov
+   HbLVEfX98JB8kHJAtvpem+cv+emmS2m4JujHUjtFWOFelhjtCqrcvm6pz
+   vwt6+UeSIvzPD0RsiEKOB6gclwLnR/2tLXtKd3F17gJN9rN82vtHBMQMO
+   2hYyzUYGvTzRXWM4DjqcSV8JF/kJclRjrBO+ZCbmouSwPedim91ZjfpKc
+   0Mf2wFdyl0aSphRaX075t9cbj/0iR/uyw9AJNdUPwxd2wOFtx6zA8uA7o
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10612"; a="326880278"
+X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
+   d="scan'208";a="326880278"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 04:23:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10612"; a="696858397"
+X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
+   d="scan'208";a="696858397"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga008.jf.intel.com with ESMTP; 06 Feb 2023 04:22:57 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pP0WM-003ASn-2q;
+        Mon, 06 Feb 2023 14:22:54 +0200
+Date:   Mon, 6 Feb 2023 14:22:54 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk, lukas@wunner.de,
+        cang1@live.co.uk, matthew.gerlach@linux.intel.com, deller@gmx.de,
+        phil.edworthy@renesas.com, geert+renesas@glider.be,
+        marpagan@redhat.com, u.kleine-koenig@pengutronix.de,
+        etremblay@distech-controls.com, wander@redhat.com,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+Subject: Re: [PATCH v12 tty-next 1/4] serial: 8250_pci: Add
+ serial8250_pci_setup_port definition in 8250_pcilib.c
+Message-ID: <Y+DxHsudEDlMEoH6@smile.fi.intel.com>
+References: <20230206172614.2928838-1-kumaravel.thiagarajan@microchip.com>
+ <20230206172614.2928838-2-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230206172614.2928838-2-kumaravel.thiagarajan@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Mon, Feb 06, 2023 at 10:56:10PM +0530, Kumaravel Thiagarajan wrote:
+> Move implementation of setup_port func() to serial8250_pci_setup_port.
 
-Add support for the TIOCMIWAIT ioctl on the virtual ttys. This enables the
-user to wait for virtual modem signals like RING.
+...
 
-More work is needed to support also TIOCGICOUNT.
+>  #include "8250.h"
+> +#include "8250_pcilib.h"
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+...
 
-v3 -> v4:
-No changes.
+> +#include <linux/ioport.h>
+> +#include <linux/pci.h>
+> +#include <linux/types.h>
+> +#include "8250_pcilib.h"
+> +
+> +#include "8250.h"
 
-Link: https://lore.kernel.org/all/20230203145023.6012-4-daniel.starke@siemens.com/
+I would expect consistency as per above.
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 79efbfd27171..e405d76cb696 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1542,6 +1542,7 @@ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
- 	if (brk & 0x01)
- 		tty_insert_flip_char(&dlci->port, 0, TTY_BREAK);
- 	dlci->modem_rx = mlines;
-+	wake_up_interruptible(&dlci->gsm->event);
- }
- 
- /**
-@@ -2129,7 +2130,7 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 	/* A DLCI 0 close is a MUX termination so we need to kick that
- 	   back to userspace somehow */
- 	gsm_dlci_data_kick(dlci);
--	wake_up(&dlci->gsm->event);
-+	wake_up_all(&dlci->gsm->event);
- }
- 
- /**
-@@ -2339,6 +2340,7 @@ static void gsm_dlci_begin_close(struct gsm_dlci *dlci)
- 	dlci->state = DLCI_CLOSING;
- 	gsm_command(dlci->gsm, dlci->addr, DISC|PF);
- 	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
-+	wake_up_interruptible(&gsm->event);
- }
- 
- /**
-@@ -3878,6 +3880,33 @@ static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
- 	return -EPROTONOSUPPORT;
- }
- 
-+/**
-+ * gsm_wait_modem_change - wait for modem status line change
-+ * @dlci: channel
-+ * @mask: modem status line bits
-+ *
-+ * The function returns if:
-+ * - any given modem status line bit changed
-+ * - the wait event function got interrupted (e.g. by a signal)
-+ * - the underlying DLCI was closed
-+ * - the underlying ldisc device was removed
-+ */
-+static int gsm_wait_modem_change(struct gsm_dlci *dlci, u32 mask)
-+{
-+	struct gsm_mux *gsm = dlci->gsm;
-+	u32 old = dlci->modem_rx;
-+	int ret;
-+
-+	ret = wait_event_interruptible(gsm->event, gsm->dead ||
-+				       dlci->state != DLCI_OPEN ||
-+				       (old ^ dlci->modem_rx) & mask);
-+	if (gsm->dead)
-+		return -ENODEV;
-+	if (dlci->state != DLCI_OPEN)
-+		return -EL2NSYNC;
-+	return ret;
-+}
-+
- static bool gsm_carrier_raised(struct tty_port *port)
- {
- 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
-@@ -4137,6 +4166,8 @@ static int gsmtty_ioctl(struct tty_struct *tty,
- 		gsm_destroy_network(dlci);
- 		mutex_unlock(&dlci->mutex);
- 		return 0;
-+	case TIOCMIWAIT:
-+		return gsm_wait_modem_change(dlci, (u32)arg);
- 	default:
- 		return -ENOIOCTLCMD;
- 	}
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
