@@ -2,87 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AB3C61DA4
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 11:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A25C61DA4
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 11:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229525AbjBFLlh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Feb 2023 06:41:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53474 "EHLO
+        id S229918AbjBFLrk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Feb 2023 06:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbjBFLle (ORCPT
+        with ESMTP id S229630AbjBFLrk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Feb 2023 06:41:34 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E2C65B0;
-        Mon,  6 Feb 2023 03:41:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675683693; x=1707219693;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rAwgKYBPGk0QzlYFoRspv9OXHXIL5K6iZ1/300XtFMM=;
-  b=f052frIl+KNoSqAaXdtHu9WNIBenaoE1ReYJcC+sg+1cTkfi701uIVEB
-   XzF12GjwZcQY3UsoN08kjqLszWXwYF9xCiGWcNbb2WS6iRCv2NoKDaeNs
-   tKNjVDId0NTKFHLGm+YtNeO5h1JD7DxC3m00u7YVYXybcPNbyHfCflDAi
-   ffm7HjyuYwl9LQhU2QUL75rxZjp1z6AruqsKMK01soZfhLWaOTYspgVSC
-   3MNKt3Ag+Sh4m+v+vlwNj7Z98p9eHft9YDCV74LhrlFFGzmBuKTwIDUYx
-   k3Tx/JYvBtFaY0L6EC+3opfDP9k6LQH4TNLNT/wi4N0gUzEffcdkQuEQ7
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10612"; a="327817719"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="327817719"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 03:41:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10612"; a="840328319"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="840328319"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005.jf.intel.com with ESMTP; 06 Feb 2023 03:41:25 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pOzsA-0039To-21;
-        Mon, 06 Feb 2023 13:41:22 +0200
-Date:   Mon, 6 Feb 2023 13:41:22 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, macro@orcam.me.uk, lukas@wunner.de,
-        cang1@live.co.uk, matthew.gerlach@linux.intel.com, deller@gmx.de,
-        phil.edworthy@renesas.com, geert+renesas@glider.be,
-        marpagan@redhat.com, u.kleine-koenig@pengutronix.de,
-        etremblay@distech-controls.com, wander@redhat.com,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
-Subject: Re: [PATCH v11 tty-next 1/4] serial: 8250_pci: Add
- serial8250_pci_setup_port definition in 8250_pcilib.c
-Message-ID: <Y+DnYrc03wyY74hv@smile.fi.intel.com>
-References: <20230204053138.2520105-1-kumaravel.thiagarajan@microchip.com>
- <20230204053138.2520105-2-kumaravel.thiagarajan@microchip.com>
- <Y+DnLV6Zfdy2Bz8S@smile.fi.intel.com>
+        Mon, 6 Feb 2023 06:47:40 -0500
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F5B1CF4C
+        for <linux-serial@vger.kernel.org>; Mon,  6 Feb 2023 03:47:37 -0800 (PST)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230206114734b0ebcdd613d742d7d6
+        for <linux-serial@vger.kernel.org>;
+        Mon, 06 Feb 2023 12:47:34 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=wS7DCQJ3CnjHhUZAXPDyQtVIoeoWJA5RCvr8dQtB6ns=;
+ b=e/KSb6r7YnuAcqRH1RaUxjgAutpUc7UdxF4/5oW+APJ3S88wqhSV/2O+sRiy7hpIMlqk2a
+ mmt+Ej/38zRQeMdgP/+bUK6dOkodF5vbt4ODti05gn7qKkzZF/QZ+pvxxARhtM91FaBn2KMg
+ drfdyw+BBUIYuE2sGd+I17qat+L98=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v4 1/4] tty: n_gsm: mark unusable ioctl structure fields accordingly
+Date:   Mon,  6 Feb 2023 12:46:03 +0100
+Message-Id: <20230206114606.2133-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y+DnLV6Zfdy2Bz8S@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 06, 2023 at 01:40:30PM +0200, Andy Shevchenko wrote:
-> On Sat, Feb 04, 2023 at 11:01:35AM +0530, Kumaravel Thiagarajan wrote:
+From: Daniel Starke <daniel.starke@siemens.com>
 
-> Ah, of course, you missed
-> 
-> #include "8250_pcilib.h"
-> 
-> here.
+gsm_config and gsm_netconfig includes unused fields that have been included
+to allow future extension without changing the structure size.
+Unfortunately, no checks have been included for these field. The actual
+value set by old user space code remains undefined.
+This means that future extensions can not use these fields without breaking
+old user space code which may set unexpected values.
 
-That said, please make sure before sending v12 that you have it compiled with
-`make W=1 ...`.
+Mark these fields accordingly to avoid breaking code changes.
 
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ include/uapi/linux/gsmmux.h | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+v3 -> v4:
+No changes.
+
+Link: https://lore.kernel.org/all/20230203145023.6012-1-daniel.starke@siemens.com/
+
+diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+index cb8693b39cb7..785d6b253f6d 100644
+--- a/include/uapi/linux/gsmmux.h
++++ b/include/uapi/linux/gsmmux.h
+@@ -19,8 +19,7 @@ struct gsm_config
+ 	unsigned int mtu;
+ 	unsigned int k;
+ 	unsigned int i;
+-	unsigned int unused[8];		/* Padding for expansion without
+-					   breaking stuff */
++	unsigned int unused[8];	/* Can not be used */
+ };
+ 
+ #define GSMIOC_GETCONF		_IOR('G', 0, struct gsm_config)
+@@ -29,9 +28,9 @@ struct gsm_config
+ struct gsm_netconfig {
+ 	unsigned int adaption;  /* Adaption to use in network mode */
+ 	unsigned short protocol;/* Protocol to use - only ETH_P_IP supported */
+-	unsigned short unused2;
++	unsigned short unused2;	/* Can not be used */
+ 	char if_name[IFNAMSIZ];	/* interface name format string */
+-	__u8 unused[28];        /* For future use */
++	__u8 unused[28];        /* Can not be used */
+ };
+ 
+ #define GSMIOC_ENABLE_NET      _IOW('G', 2, struct gsm_netconfig)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
