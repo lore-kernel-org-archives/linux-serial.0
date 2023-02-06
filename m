@@ -2,71 +2,222 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F667C61DA4
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 07:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA03BC61DA4
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 08:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbjBFHiw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Feb 2023 02:38:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
+        id S230040AbjBFIl6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Feb 2023 03:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjBFHiw (ORCPT
+        with ESMTP id S229784AbjBFIlp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Feb 2023 02:38:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E7318A83;
-        Sun,  5 Feb 2023 23:38:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00FC160D33;
-        Mon,  6 Feb 2023 07:38:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00200C433EF;
-        Mon,  6 Feb 2023 07:38:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675669130;
-        bh=smzP3YNn8roFY5Mdez0Fv3NsByYPwnoN/wK6IdF3Yls=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rGYUvlHwzclrSSWIzdFXCKSjD+Xuq87sN7JmpLkhWdc4ECUCjJ3sGn2CgEhsAEuaP
-         AkjDHllUgZVBjpb84FOYW5wLYEHRt9YiA6kdvNP/uZD6Mj6JWhPZ85e5oBXF47aM69
-         0qcnEfEIQzid9tkLgin8zP588nlfmYgliCUusPyE=
-Date:   Mon, 6 Feb 2023 08:38:47 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        George Kennedy <george.kennedy@oracle.com>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.2-rc7
-Message-ID: <Y+Cuh3LmsF9PGO6z@kroah.com>
-References: <Y9+Yv1CQKNP0Bwqq@kroah.com>
- <CAHk-=whSQFHVzgQ+s8cbCSyE_yrd+BFuYktHe2=0h-nLXBi__Q@mail.gmail.com>
+        Mon, 6 Feb 2023 03:41:45 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6C81E2A1
+        for <linux-serial@vger.kernel.org>; Mon,  6 Feb 2023 00:41:35 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id i5so2420819wrc.0
+        for <linux-serial@vger.kernel.org>; Mon, 06 Feb 2023 00:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3VF3j3MRDdF8n8OyA+nQrmUxdMViUka5P0dDhKvF9Cs=;
+        b=RZmvbBqJPu59NEcQKGTy+NuU00/pyxdiCciV3lY+ZJFkGWY6lOKgPO/3EBgdLcFsAs
+         BJ2U0KiOrNWMTyU8NvdlStDETJowb2CVP0ZVeaVML1WknTuU+/NHEfxN/xRQZRINva9E
+         EyBOnkYYlfkc1ZtjwD8QUmkV7YkZ5T6TMK3BnhVZe76K1R49T8YbUmvtx+lJ2vOMzkOr
+         GiWbiuZGZhvnUsI0g0g4LjTXzQhH2HajjN/5ZZG7GqZy3QHa2SU0Kj5SKTBvuRYTsuIE
+         zAXDGHc0E8cBDb5YtxEg4MIfQSZgVAHVdPol3O+QQz14huxaKG1/YvIBNVcOQmuzVemm
+         yT2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3VF3j3MRDdF8n8OyA+nQrmUxdMViUka5P0dDhKvF9Cs=;
+        b=dYGRwZYv8sCHGZJj89iS5WVkuMfRIsrX8+/VicD2b8BWvr2C58DvaH+khHNOT2kRFu
+         fkiwMbwl0yFhTP2rhmioIqYaqg5Wfwt0xp4S/Szlhdr03ld8+VIrTu0TLxnDSP95c/Js
+         pn+YH9Nym7Wd69HVOn0LO1kOzmAmiDAEfqNMsZ6L9GdTI5ZNFp9SoDpCdHP8mFBvBy9i
+         RUXd3rwu0sc0z0zRZqCbzpIN3Ktj0c6zwUGltyttGgkkrMIdG57cpvSntyhXHv3MW7Pl
+         w7rznHNuTA4kQHHDAJ4EGigkhnyYXtcf8/9WGTX2DbCvy9BmUH3+2owFjdyfKpqxCxA/
+         NRBQ==
+X-Gm-Message-State: AO0yUKW7CWHXSZydFk71XQYDy7W3+a5iMY4oORuUitx3aDXiKnuO2B0/
+        xaBAvtT59gsg4bSID9u4zN3vmg==
+X-Google-Smtp-Source: AK7set+LmJWRqmstWTgtfJr2oiq1AohLOY1rh7Fjr5hdugHUF6tO0yD4dWs5rOvm8gyGxzUBtmE5nw==
+X-Received: by 2002:a5d:66cc:0:b0:2c3:dafd:c729 with SMTP id k12-20020a5d66cc000000b002c3dafdc729mr8449746wrw.47.1675672894408;
+        Mon, 06 Feb 2023 00:41:34 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id w5-20020a5d6085000000b0029100e8dedasm8198595wrt.28.2023.02.06.00.41.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 00:41:34 -0800 (PST)
+Message-ID: <177cbf68-4e13-dabe-f14c-17a36c201e26@linaro.org>
+Date:   Mon, 6 Feb 2023 09:41:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whSQFHVzgQ+s8cbCSyE_yrd+BFuYktHe2=0h-nLXBi__Q@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2 1/3] dt-bindings: intel,ixp4xx-expansion-bus: split out
+ peripheral properties
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linusw@kernel.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Marek Vasut <marex@denx.de>, Lubomir Rintel <lkundrak@v3.sk>,
+        - <devicetree@vger.kernel.org>, Marc Zyngier <maz@kernel.org>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+References: <20230127093217.60818-1-krzysztof.kozlowski@linaro.org>
+ <20230127093217.60818-2-krzysztof.kozlowski@linaro.org>
+ <20230130191215.GA3125737-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230130191215.GA3125737-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Feb 05, 2023 at 12:17:05PM -0800, Linus Torvalds wrote:
-> On Sun, Feb 5, 2023 at 3:53 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > George Kennedy (1):
-> >       vc_screen: move load of struct vc_data pointer in vcs_read() to avoid UAF
+On 30/01/2023 20:12, Rob Herring wrote:
+> On Fri, Jan 27, 2023 at 10:32:15AM +0100, Krzysztof Kozlowski wrote:
+>> The properties of devices in IXP4xx expansion bus need to be also
+>> applied to actual devices' bindings.  Prepare for this by splitting them
+>> to separate intel,ixp4xx-expansion-peripheral-props binding, just like
+>> other memory-controller peripheral properties.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+>>  ...intel,ixp4xx-expansion-bus-controller.yaml | 64 +--------------
+>>  ...tel,ixp4xx-expansion-peripheral-props.yaml | 80 +++++++++++++++++++
 > 
-> Hmm.
-> 
-> I think the "goto unlock_out" should be a "break". A partial read
-> should return the partial success, not an error.
-> 
-> That situation didn't exist when the check was outside the loop, but does now.
-> 
-> Now, I don't think this matters for any sane situation, but since I
-> looked at this patch I thought I'd mention it.
+> Kind of odd to have these in 2 directories. Can we move 
+> intel,ixp4xx-expansion-bus-controller.yaml to 
+> bindings/memory-controllers/?
 
-Fair enough, George, can you send a follow-on patch to fix this up?
+Indeed mostly we kept them so far in memory-controllers. Some of these
+buses are used for attaching some type of memory, but I don't know if
+ixp4xx can work like this.
 
-thanks,
+> 
+> Or maybe all the external/parallel bus interfaces need their own 
+> directory?
 
-greg k-h
+Except the IXP4xx, I wouldn't know which one goes where... Example is
+exynos-srom which can work with memory (SRAM, ROM, flash) or devices.
+
+I'll move it to memory-controllers.
+
+
+> 
+>>  .../mc-peripheral-props.yaml                  |  1 +
+>>  3 files changed, 82 insertions(+), 63 deletions(-)
+>>  create mode 100644 Documentation/devicetree/bindings/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/bus/intel,ixp4xx-expansion-bus-controller.yaml b/Documentation/devicetree/bindings/bus/intel,ixp4xx-expansion-bus-controller.yaml
+>> index 5fb4e7bfa4da..a771796ec499 100644
+>> --- a/Documentation/devicetree/bindings/bus/intel,ixp4xx-expansion-bus-controller.yaml
+>> +++ b/Documentation/devicetree/bindings/bus/intel,ixp4xx-expansion-bus-controller.yaml
+>> @@ -56,69 +56,7 @@ patternProperties:
+>>      description: Devices attached to chip selects are represented as
+>>        subnodes.
+>>      type: object
+>> -
+>> -    properties:
+>> -      intel,ixp4xx-eb-t1:
+>> -        description: Address timing, extend address phase with n cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        maximum: 3
+>> -
+>> -      intel,ixp4xx-eb-t2:
+>> -        description: Setup chip select timing, extend setup phase with n cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        maximum: 3
+>> -
+>> -      intel,ixp4xx-eb-t3:
+>> -        description: Strobe timing, extend strobe phase with n cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        maximum: 15
+>> -
+>> -      intel,ixp4xx-eb-t4:
+>> -        description: Hold timing, extend hold phase with n cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        maximum: 3
+>> -
+>> -      intel,ixp4xx-eb-t5:
+>> -        description: Recovery timing, extend recovery phase with n cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        maximum: 15
+>> -
+>> -      intel,ixp4xx-eb-cycle-type:
+>> -        description: The type of cycles to use on the expansion bus for this
+>> -          chip select. 0 = Intel cycles, 1 = Motorola cycles, 2 = HPI cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1, 2]
+>> -
+>> -      intel,ixp4xx-eb-byte-access-on-halfword:
+>> -        description: Allow byte read access on half word devices.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1]
+>> -
+>> -      intel,ixp4xx-eb-hpi-hrdy-pol-high:
+>> -        description: Set HPI HRDY polarity to active high when using HPI.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1]
+>> -
+>> -      intel,ixp4xx-eb-mux-address-and-data:
+>> -        description: Multiplex address and data on the data bus.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1]
+>> -
+>> -      intel,ixp4xx-eb-ahb-split-transfers:
+>> -        description: Enable AHB split transfers.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1]
+>> -
+>> -      intel,ixp4xx-eb-write-enable:
+>> -        description: Enable write cycles.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1]
+>> -
+>> -      intel,ixp4xx-eb-byte-access:
+>> -        description: Expansion bus uses only 8 bits. The default is to use
+>> -          16 bits.
+>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>> -        enum: [0, 1]
+>> +    $ref: /schemas/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml#
+>>  
+>>  required:
+>>    - compatible
+>> diff --git a/Documentation/devicetree/bindings/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml b/Documentation/devicetree/bindings/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml
+>> new file mode 100644
+>> index 000000000000..8f782c80e88b
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml
+>> @@ -0,0 +1,80 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/memory-controllers/intel,ixp4xx-expansion-peripheral-props.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Peripheral properties for Intel IXP4xx Expansion Bus
+>> +
+>> +description: |
+> 
+> Don't need '|'.
+
+Right.
+
+
+Best regards,
+Krzysztof
+
