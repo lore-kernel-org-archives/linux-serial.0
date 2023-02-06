@@ -2,268 +2,146 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C36C05027
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 10:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDEEC61DA4
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Feb 2023 10:38:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjBFKZ6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Feb 2023 05:25:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
+        id S229939AbjBFKiz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Feb 2023 05:38:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbjBFKZ6 (ORCPT
+        with ESMTP id S230481AbjBFKim (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Feb 2023 05:25:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363121165D;
-        Mon,  6 Feb 2023 02:25:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3A9FB80E9E;
-        Mon,  6 Feb 2023 10:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D908CC433EF;
-        Mon,  6 Feb 2023 10:25:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675679149;
-        bh=YQ0RMAR4jJGj50YRD32k5TMYNkgy5qegOCfRojQMnzA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UtPYo5lsCG4me+PidNkk2hoG0CQrA7k0qRs90/l0ghYvmLQFQ5LgdcGyQcZ7LyZJ+
-         F2NDGWxJBPxkKCoRT1aeFFB2DCCiPRDaCiampM2Z3QbfirJv7dK3PgYKe5eg9UZMis
-         8LAmJtRUy9N6f0OTpu3S6X9H5sV1ButSAhVO4dDE=
-Date:   Mon, 6 Feb 2023 11:25:46 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "D. Starke" <daniel.starke@siemens.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/4] tty: n_gsm: add keep alive support
-Message-ID: <Y+DVqtfBRytURnov@kroah.com>
+        Mon, 6 Feb 2023 05:38:42 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on20618.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1a::618])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E394EE1;
+        Mon,  6 Feb 2023 02:37:49 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mjjoBZwwbuLWLWnpm8RSLkllQAuiw2sLWzxBJCsr/3sBek46/nX27j7xKBOj7+VDOnEw0GPWqCLK8D5kfuI3rZN9ogNmwi9liWjSdHswkVup1pim7CKc23MnrSpoeFjdfiPzg1xcR66143hJ1iBen+CYOr8QPlTXLAPlAj1XiVGYydWTHQQUINGG8dqB1YElfkP4AmSZIa9fKVqPO3EhGDEQIRzgSTFdJGApoBY4iF9lHelKcPNuXL5kk7qW90E/P2Wm2V55975AY4Kh5Hwepvyo8MZRgT2/Pld+V/twPV+U8+WscKA1H3JhVahKzLsFv2Y5KO/2XcWkiHbAU9LCPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cfBCuvw/JzdHGUTshhDzLh5Y1XtzvTLh57ukYqMrvBk=;
+ b=IL8mYJXMbUI70vFeVtQV2JApd4vkY92Zx1jmZEE3k2pv246TOuv+lywnUFIye61iFxW3c495SMlIbzRuPnaJnGxkAfWqBND4yRQ0cAlovowPnUppMzqtjpHC5VuTWOTpAtS8qIyLY9A6vc0dfPQKe+cof8D9ObnUGmoBNkHx48VbVmNIngzbi9UgpXkiC9UzeZNw0vaPuw/RMLG8klAQs6siWgDpdiDu46E4Xz5lxUpAoacQWJuL+lwPWLGAJmMMS+6Q9LJptI7ReIc0Q6V9xe3BkmIl60/vYdvOFQ8cRFxwOwBomWD0zOE9S3gcwL2ojB+vvz/SyV+JDFj7Vnw3dQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cfBCuvw/JzdHGUTshhDzLh5Y1XtzvTLh57ukYqMrvBk=;
+ b=QXWtQhqbScy73K5/zNSmiYAg0z8gBmZiSOHLBNQx3LpJgRSe2eLuZFLpwSh7hqH8L9urekWnPyb0YyQeXUrIyUcFrwyIW13Com2m+3nyY9qLOug7IMdJVSxC0Bars5PDuuVCL65XVXyv+jLsEjaVGB/pfsoCYr9vHptCzASf/JLp73nE3Q1JMZDPdTmb10WabpGeCIqYsWB04m4naCKAwm+ZOLUUhcpeEe7IE85AMlmsFJ3SRxk7tQI3Wf75Kph+/LPRvP0Ya7hvC52lOSNmiStBm9rkBuinAmOv2uNely+hUeBiJlOcFiPvcipA338A2qtdnKeCo6ERdnIL4Ltxug==
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
+ by AM7PR10MB3287.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:10e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Mon, 6 Feb
+ 2023 10:32:07 +0000
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::6515:6f15:71b9:713c]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::6515:6f15:71b9:713c%3]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
+ 10:32:06 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3 2/4] tty: n_gsm: add keep alive support
+Thread-Topic: [PATCH v3 2/4] tty: n_gsm: add keep alive support
+Thread-Index: AQHZOhVfXHwi/lQ56UCRVZUPmitX+67BuFng
+Date:   Mon, 6 Feb 2023 10:32:06 +0000
+Message-ID: <DB9PR10MB5881A1920E49A1B03E64C5CBE0DA9@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 References: <20230203145023.6012-1-daniel.starke@siemens.com>
  <20230203145023.6012-2-daniel.starke@siemens.com>
+ <Y+DVqtfBRytURnov@kroah.com>
+In-Reply-To: <Y+DVqtfBRytURnov@kroah.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-02-06T10:32:05Z;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Privileged;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=2e8398c2-9cf0-4058-bda9-452c64917d1b;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0
+document_confidentiality: Restricted
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB9PR10MB5881:EE_|AM7PR10MB3287:EE_
+x-ms-office365-filtering-correlation-id: 56713918-010f-4935-d3c4-08db082d6541
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BsYpLsavt7RxWJl5w6zHbAklvprPPPh3G1Jp7O8NUUQ1r4m+sebzGCvogc+eN1jK876xp8a3ouPwnzXFRfYUjnbgxyvypjuEppAyQuBhOFPCbLgWwAGCA7Ei8+3yCinZ2CSY31Y6r0uxCmG1iIdw4TQe/vwbRYBPC2Do815CVpUHmAwJNpKeGHsjg5jUS5cfeFoubJkMimDz7MPkIZc44umJAdJHazcG0v8grLCSSV8jIJ/OUP3ePy+iPKTJxqt9uCt3RlWtbz92L+/iRtwoKnkWcoP8CJhX1QaFLFC+OdK3CEqSCw7IfOIwSuguApjSfJ5K7FjIMfaPI7Z4JHGDqeAWDRA7dfKeSFEjq/OooT+0Bs6Kj0J3GrFXVYcaFgztgjqAJAZRTRc2TzbYrGL1e2Fc/epOvHqDpxtUsPwxkx7sZih7pfyLtmzTV/wyDPTxQKFLxH2s+aYBKwEme+tpCfBg9JYQs0prYKGHgyOPN/QXNop16LzGtSsrJ+faqqWcsbp7d8PhAh36pqiPle28jL9y7TGZXgTYS5HJs+mqoZgWAquwWeD7s8xJRZVABmOq3O2gtxAFQjZLGfAB8bB0aT08owrYZeMfQR8ANB+da1e8PRRynrwZS+3SPtWzESUlxwfc0DO9Vf4AYjhNDV31O6904fN8ZkVlJGIWEDKRj3ylYdaGItUW+62Za1hknuZ8hc6vi5dLmy4wS3IXfxwJbQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(39860400002)(136003)(396003)(346002)(451199018)(478600001)(6506007)(26005)(186003)(54906003)(9686003)(4326008)(64756008)(8676002)(6916009)(316002)(71200400001)(7696005)(33656002)(66556008)(76116006)(66946007)(66476007)(66446008)(41300700001)(86362001)(5660300002)(52536014)(8936002)(2906002)(4744005)(122000001)(38100700002)(82960400001)(55016003)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?pdachOAo2hvjZIOlFeNPN9lbDvneqNc+uNZn8kI7hLqoOC2MDX1TCTW55FiO?=
+ =?us-ascii?Q?YjpQL+fRLCtZesK7/OFWV+vcu6NI82GgaUWd9tZfPPMNY/vpV0FAT9T5Ik0Q?=
+ =?us-ascii?Q?uTNCtI641PRBleBtu+lCj7DLgkpR8eG8P7pg9lpgKnkgteW4cpdz8IHkkd6R?=
+ =?us-ascii?Q?G9oaa7L/YV/LJ31A9v8PDQawmtlFPVE4ryqyoh9h/Cfa8LiXj5iji/UE0qLC?=
+ =?us-ascii?Q?sPIOvQ49bt5u3yiB93M9LcF1teZZmiYc1hfXhlhNSYd92vXgHkJD3M10RSRb?=
+ =?us-ascii?Q?A0l3znW6w1tWjG+ucSZfdV+QLozVmkPbDfbB7ps05XZ1tevDZXG1P65LBjsT?=
+ =?us-ascii?Q?2GEo/Bowv6CehrW5h6DniJicsoAfg/UMV3cWkuCEzHAwTQuC6DjgJvgaYZCI?=
+ =?us-ascii?Q?VE15EUJOZXoaYFdD+ggGEVZloEM7iCshRAsBJFHjLzZOShOVKtX0D6focvfw?=
+ =?us-ascii?Q?Q/Zv2r10rypuajAehwu+87s8/7zdgDZSGsixlK4AunWshCtitXIr2q2emRQR?=
+ =?us-ascii?Q?0xVp1cS+/2rXTD3/uVojHsH0rv05MnqIDo9ViMlKErL2kT2m0My96X41dpxw?=
+ =?us-ascii?Q?+AIi4zUH59EfYSVcO2GqjPe6Xgd4Xk+5mbJWJGlJdd4LTkgBm3G3Kqev2XYG?=
+ =?us-ascii?Q?Kgds0bR34mkB9vhrbda1CQJnSnd7dG4h+O5BLnZ39F8tl62LcUXhBmzdz+nl?=
+ =?us-ascii?Q?o+AAaV4tUFSB7RuKzGUYmBLEsOaRDJlL7/umIp2ysNDnaGOjwG7VniOqji5B?=
+ =?us-ascii?Q?Bk1Df4i6uQCHDxuEwWNS780LnYcfx9H5zevisugMQFhK2ZuwBkGdzXYSZmzK?=
+ =?us-ascii?Q?vHnWdU9no7k3YHyVOhGNMEsMLRk7530aIsXqnqXLw+hyQ7pKu3oNkSfQeE3r?=
+ =?us-ascii?Q?n8LzZeZKaxsks+paDqaEzCCCb4CP51UYh2ooHD5sDTmoH0l8Nhjj+lqTx/aI?=
+ =?us-ascii?Q?mh+eLI6VBjs9QFolEgaPqt1Dx2LkO0a/EL1eGm6VGcMc5lkvBxXizHkWqPQL?=
+ =?us-ascii?Q?229GZkH/4lJ71xK8Fpy8Ni6NRWYcuGl+UbFaQFAO8TISUh71kkxEMxJnUkI3?=
+ =?us-ascii?Q?3BBx2BrAaGspl1Sx4pyzDlnbVzD7T+K6r1F5NR6rzKkqu6a6uFHXY3R6tdBz?=
+ =?us-ascii?Q?KcDua3aFb3lJnYpUf1BwVpjQgmrjJ9iVkNjoAtLX/X/muxXIQ46wDUbk1UX4?=
+ =?us-ascii?Q?25h0c0OuI80vN0GAI46A43PJDzs5G95tsFoPu2kCOsGgVMFarFIbVDshYnxg?=
+ =?us-ascii?Q?y81RIygN79zJb3ZpCT9UMkK8vY2D6iZSrdluEBLxfJoAxoWtC88Yki0OCgSz?=
+ =?us-ascii?Q?ZZD3WSaaK2o/LfjYMiuhYfB5lwfFo51ePbofletbl8hqHJTsVO7W4ts0jUn3?=
+ =?us-ascii?Q?P+mG36VcDqlBgkfoDEDmqqhD/Qn4UEG1Ri4pvl8gmaba93Gh8XPW3NbiwVw4?=
+ =?us-ascii?Q?m35KDWDDDwe4V/WskCTZ4/TI1c7brtxqZ7jw2g6pizsa5MQZv0ZOZvxyUFGM?=
+ =?us-ascii?Q?hX1yygJLRtAzlDsMJcyr21MO6qip2for1A7pXuJTi8WOqfSUckL1i5OAfdcR?=
+ =?us-ascii?Q?V9eHH/ky1Ltx/zs1BqaBaG+GgTqAOcZpgPRKIu1D05EVRgsVYhq0VVfgTlAl?=
+ =?us-ascii?Q?lg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230203145023.6012-2-daniel.starke@siemens.com>
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56713918-010f-4935-d3c4-08db082d6541
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Feb 2023 10:32:06.7794
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: no2F6WD1GgvY0bzgpHYK9m2TDPP9mHd/CF7anS+q5hOEkpJLVbi6mYaqqbhCWMQYnw7DDR6W86JCm6ISGTJ0t0GSdMHn8X4BcyzaMwE+2Ck=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3287
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 03, 2023 at 03:50:21PM +0100, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-> See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-> The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-> the newer 27.010 here. Chapters 5.4.6.3.4 and 5.1.8.1.3 describe the test
-> command which can be used to test the mux connection between both sides.
-> 
-> Currently, no algorithm is implemented to make use of this command. This
-> requires that each multiplexed upper layer protocol supervises the
-> underlying muxer connection to handle possible connection losses.
-> 
-> Introduce an ioctl commands and functions to optionally enable keep alive
-> handling via the test command as described in chapter 5.4.6.3.4. A single
-> incrementing octet is being used to distinguish between multiple retries.
-> Retry count and interval are taken from the general parameters N2 and T2.
-> 
-> Note that support for the test command is mandatory and already present in
-> the muxer implementation since the very first version.
-> Also note that the previous ioctl structure gsm_config cannot be extended
-> due to missing checks against zero of the field "unused".
-> 
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->  drivers/tty/n_gsm.c         | 106 +++++++++++++++++++++++++++++++++++-
->  include/uapi/linux/gsmmux.h |  10 ++++
->  2 files changed, 114 insertions(+), 2 deletions(-)
-> 
-> v2 -> v3:
-> Split previous patch 1/3 into two commits as recommended in the review.
-> No other changes.
-> 
-> Link: https://lore.kernel.org/all/Y9vYxgGd6kC+ZIgR@kroah.com/
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 5783801d6524..d068df1cf2fd 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -318,6 +318,11 @@ struct gsm_mux {
->  	struct gsm_control *pending_cmd;/* Our current pending command */
->  	spinlock_t control_lock;	/* Protects the pending command */
->  
-> +	/* Keep-alive */
-> +	struct timer_list ka_timer;	/* Keep-alive response timer */
-> +	u8 ka_num;			/* Keep-alive match pattern */
-> +	int ka_retries;			/* Keep-alive retry counter */
-> +
->  	/* Configuration */
->  	int adaption;		/* 1 or 2 supported */
->  	u8 ftype;		/* UI or UIH */
-> @@ -325,6 +330,7 @@ struct gsm_mux {
->  	unsigned int t3;	/* Power wake-up timer in seconds. */
->  	int n2;			/* Retry count */
->  	u8 k;			/* Window size */
-> +	u32 keep_alive;		/* Control channel keep-alive in ms */
->  
->  	/* Statistics (not currently exposed) */
->  	unsigned long bad_fcs;
-> @@ -1897,11 +1903,13 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
->  						const u8 *data, int clen)
->  {
->  	struct gsm_control *ctrl;
-> +	struct gsm_dlci *dlci;
->  	unsigned long flags;
->  
->  	spin_lock_irqsave(&gsm->control_lock, flags);
->  
->  	ctrl = gsm->pending_cmd;
-> +	dlci = gsm->dlci[0];
->  	command |= 1;
->  	/* Does the reply match our command */
->  	if (ctrl != NULL && (command == ctrl->cmd || command == CMD_NSC)) {
-> @@ -1916,6 +1924,54 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
->  	/* Or did we receive the PN response to our PN command */
->  	} else if (command == CMD_PN) {
->  		gsm_control_negotiation(gsm, 0, data, clen);
-> +	/* Or did we receive the TEST response to our TEST command */
-> +	} else if (command == CMD_TEST && clen == 1 && *data == gsm->ka_num) {
-> +		gsm->ka_retries = -1; /* trigger new keep-alive message */
-> +		if (dlci && !dlci->dead)
-> +			mod_timer(&gsm->ka_timer,
-> +				  jiffies + gsm->keep_alive * HZ / 100);
-> +	}
-> +	spin_unlock_irqrestore(&gsm->control_lock, flags);
-> +}
-> +
-> +/**
-> + * gsm_control_keep_alive	-	check timeout or start keep-alive
-> + * @t: timer contained in our gsm object
-> + *
-> + * Called off the keep-alive timer expiry signaling that our link
-> + * partner is not responding anymore. Link will be closed.
-> + * This is also called to startup our timer.
-> + */
-> +
-> +static void gsm_control_keep_alive(struct timer_list *t)
-> +{
-> +	struct gsm_mux *gsm = from_timer(gsm, t, ka_timer);
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&gsm->control_lock, flags);
-> +	if (gsm->ka_num && gsm->ka_retries == 0) {
-> +		/* Keep-alive expired -> close the link */
-> +		if (debug & DBG_ERRORS)
-> +			pr_info("%s keep-alive timed out\n", __func__);
-> +		spin_unlock_irqrestore(&gsm->control_lock, flags);
-> +		if (gsm->dlci[0])
-> +			gsm_dlci_begin_close(gsm->dlci[0]);
-> +		return;
-> +	} else if (gsm->keep_alive && gsm->dlci[0] && !gsm->dlci[0]->dead) {
-> +		if (gsm->ka_retries > 0) {
-> +			/* T2 expired for keep-alive -> resend */
-> +			gsm->ka_retries--;
-> +		} else {
-> +			/* Start keep-alive timer */
-> +			gsm->ka_num++;
-> +			if (!gsm->ka_num)
-> +				gsm->ka_num++;
-> +			gsm->ka_retries = gsm->n2;
-> +		}
-> +		gsm_control_command(gsm, CMD_TEST, &gsm->ka_num,
-> +				    sizeof(gsm->ka_num));
-> +		mod_timer(&gsm->ka_timer,
-> +			  jiffies + gsm->t2 * HZ / 100);
->  	}
->  	spin_unlock_irqrestore(&gsm->control_lock, flags);
->  }
-> @@ -2061,8 +2117,10 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
->  		/* Ensure that gsmtty_open() can return. */
->  		tty_port_set_initialized(&dlci->port, false);
->  		wake_up_interruptible(&dlci->port.open_wait);
-> -	} else
-> +	} else {
-> +		del_timer(&dlci->gsm->ka_timer);
->  		dlci->gsm->dead = true;
-> +	}
->  	/* A DLCI 0 close is a MUX termination so we need to kick that
->  	   back to userspace somehow */
->  	gsm_dlci_data_kick(dlci);
-> @@ -2078,6 +2136,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
->  
->  static void gsm_dlci_open(struct gsm_dlci *dlci)
->  {
-> +	struct gsm_mux *gsm = dlci->gsm;
-> +
->  	/* Note that SABM UA .. SABM UA first UA lost can mean that we go
->  	   open -> open */
->  	del_timer(&dlci->t1);
-> @@ -2087,8 +2147,15 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
->  	if (debug & DBG_ERRORS)
->  		pr_debug("DLCI %d goes open.\n", dlci->addr);
->  	/* Send current modem state */
-> -	if (dlci->addr)
-> +	if (dlci->addr) {
->  		gsm_modem_update(dlci, 0);
-> +	} else {
-> +		/* Start keep-alive control */
-> +		gsm->ka_num = 0;
-> +		gsm->ka_retries = -1;
-> +		mod_timer(&gsm->ka_timer,
-> +			  jiffies + gsm->keep_alive * HZ / 100);
-> +	}
->  	gsm_dlci_data_kick(dlci);
->  	wake_up(&dlci->gsm->event);
->  }
-> @@ -2840,6 +2907,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
->  	/* Finish outstanding timers, making sure they are done */
->  	del_timer_sync(&gsm->kick_timer);
->  	del_timer_sync(&gsm->t2_timer);
-> +	del_timer_sync(&gsm->ka_timer);
->  
->  	/* Finish writing to ldisc */
->  	flush_work(&gsm->tx_work);
-> @@ -2987,6 +3055,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
->  	INIT_LIST_HEAD(&gsm->tx_data_list);
->  	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
->  	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
-> +	timer_setup(&gsm->ka_timer, gsm_control_keep_alive, 0);
->  	INIT_WORK(&gsm->tx_work, gsmld_write_task);
->  	init_waitqueue_head(&gsm->event);
->  	spin_lock_init(&gsm->control_lock);
-> @@ -3003,6 +3072,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
->  	gsm->mru = 64;	/* Default to encoding 1 so these should be 64 */
->  	gsm->mtu = 64;
->  	gsm->dead = true;	/* Avoid early tty opens */
-> +	gsm->keep_alive = 0;	/* Disabled */
->  
->  	/* Store the instance to the mux array or abort if no space is
->  	 * available.
-> @@ -3138,6 +3208,28 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
->  	return 0;
->  }
->  
-> +static void gsm_copy_config_ext_values(struct gsm_mux *gsm,
-> +				       struct gsm_config_ext *ce)
-> +{
-> +	memset(ce, 0, sizeof(*ce));
-> +	ce->keep_alive = gsm->keep_alive;
-> +}
-> +
-> +static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
-> +{
-> +	unsigned int i;
-> +
-> +	gsm->keep_alive = ce->keep_alive;
-> +	/*
-> +	 * Check that userspace doesn't put stuff in here to prevent breakages
-> +	 * in the future.
-> +	 */
-> +	for (i = 0; i < ARRAY_SIZE(ce->reserved); i++)
-> +		if (ce->reserved[i])
-> +			return -EINVAL;
+> > +static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *=
+ce)
+> > +{
+> > +	unsigned int i;
+> > +
+> > +	gsm->keep_alive =3D ce->keep_alive;
+> > +	/*
+> > +	 * Check that userspace doesn't put stuff in here to prevent breakage=
+s
+> > +	 * in the future.
+> > +	 */
+> > +	for (i =3D 0; i < ARRAY_SIZE(ce->reserved); i++)
+> > +		if (ce->reserved[i])
+> > +			return -EINVAL;
+>=20
+> Do the check before you save off the keep_alive variable?
 
-Do the check before you save off the keep_alive variable?
+Thank you for this hint!
+I will change this and send a new version of this patch series.
 
-Sorry I missed this check before.
-
-thanks,
-
-greg k-h
+Best regards,
+Daniel Starke
