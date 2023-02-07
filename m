@@ -2,113 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC673C636CC
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Feb 2023 12:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D76DBC64EC6
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Feb 2023 13:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbjBGMtD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Feb 2023 07:49:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
+        id S232094AbjBGNcR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Feb 2023 08:32:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231902AbjBGMs5 (ORCPT
+        with ESMTP id S230303AbjBGNcP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Feb 2023 07:48:57 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E201CF4A;
-        Tue,  7 Feb 2023 04:48:53 -0800 (PST)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 317BwvTm011461;
-        Tue, 7 Feb 2023 12:48:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2022-7-12;
- bh=TGkF2tOO4frLvPts9ZwsXb2QPUj+1HoDuf+5oC5qBMs=;
- b=zogrOpzSNhuymsZ2J7Hj7yr0POlZj7LuKS6sJWnOzssC/32PJYxNlFa9rR9z2Pz4qE23
- AxMYoviUZwTIz+Xy4+NC2o2yKrfbM3AXpBldGvHVv4/LDwtUHpD4TV0e4n9+PIIgvf85
- FgPXrSFCmjura9s/mOKrKl/joqxmiEMvEPo/Tj6YShKDtsLaKYslw4HgcU5sLfUTk2GG
- 2TkbOhPSoednafKu62/Wz7yqnsJUd7Aa4kUIn0PQn/74vItSsNq4EjieWgopXGcUt93p
- x5yHEgTCaIRlPHHh/W09Usg2xY8tgKUcq4xhNx7/sjeTmgVTrU5o5UgjJAikciqyICFi QQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3nhdsdne4w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Feb 2023 12:48:42 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 317CipCR040797;
-        Tue, 7 Feb 2023 12:48:41 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3nhdtbu8uh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Feb 2023 12:48:41 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 317Cd0lN029118;
-        Tue, 7 Feb 2023 12:48:41 GMT
-Received: from dhcp-10-152-13-169.usdhcp.oraclecorp.com.com (dhcp-10-152-13-169.usdhcp.oraclecorp.com [10.152.13.169])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3nhdtbu8uc-1;
-        Tue, 07 Feb 2023 12:48:41 +0000
-From:   George Kennedy <george.kennedy@oracle.com>
-To:     gregkh@linuxfoundation.org, jslaby@suse.cz,
-        torvalds@linux-foundation.org
-Cc:     george.kennedy@oracle.com, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v2] vc_screen: break from vcs_read() while loop if vcs_vc() returns NULL
-Date:   Tue,  7 Feb 2023 07:48:18 -0500
-Message-Id: <1675774098-17722-1-git-send-email-george.kennedy@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
+        Tue, 7 Feb 2023 08:32:15 -0500
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2208B126EB;
+        Tue,  7 Feb 2023 05:32:12 -0800 (PST)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 317ArI1e008460;
+        Tue, 7 Feb 2023 14:31:34 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=DvaNpdrSgE+lHP2IkmzvxSLVAaIdRRvLf0BwPPBEci4=;
+ b=aQaSbkCpRXS5PTBvs/7A4rURHj3O8ll9TldW/dJbYL96OW9dyidgNbpqQ2IMwlJcHYfV
+ PCVnikmHA0+/GU/YHrkk37G8Rh1vwsakP87ID7Au4i9IPIaHZeIDNhs3YvOTq1WTSruH
+ P/8HpNo2WO25T81982igFgAtil5zgYjG1s7tQEMU059ZhJ/Ri0m3Ps7/HUr6/6js0yXH
+ 74wlbwkqH4zm93ascw8YJ8mG5y0V5j0ZKxb4kjWICzncOKYOnHM36Ik5nhtQdo8YyV1/
+ CkELeSEYnoaCyUnTE4l4Y2LIuOvGfr53WsS7P8Z1L0NcrxY6EwxnjvkuyxgzkO+gacI9 kw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3nhdcfk48x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Feb 2023 14:31:34 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B91DA10002A;
+        Tue,  7 Feb 2023 14:31:21 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id F17372194F5;
+        Tue,  7 Feb 2023 14:31:20 +0100 (CET)
+Received: from [10.201.20.249] (10.201.20.249) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16; Tue, 7 Feb
+ 2023 14:31:19 +0100
+Message-ID: <d283ef50-7807-b928-83a5-63ef4565f9e4@foss.st.com>
+Date:   Tue, 7 Feb 2023 14:31:18 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v3 3/6] dt-bindings: bus: add STM32 System Bus
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Loic PALLARDY <loic.pallardy@st.com>
+References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
+ <20230127164040.1047583-4-gatien.chevallier@foss.st.com>
+ <20230128154827.4f23534e@jic23-huawei>
+Content-Language: en-US
+From:   Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
+In-Reply-To: <20230128154827.4f23534e@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.20.249]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-02-07_05,2023-02-06_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 adultscore=0
- malwarescore=0 mlxscore=0 phishscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2302070114
-X-Proofpoint-ORIG-GUID: 4r_C2QQumyNCCkEnwvirGRvLf103Pp_g
-X-Proofpoint-GUID: 4r_C2QQumyNCCkEnwvirGRvLf103Pp_g
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-If vcs_vc() returns NULL in vcs_read(), break from while loop if partial
-read, else if no reads have been done, go to unlock_out and return -ENXIO.
-In addition, change the goto unlock_out after vcs_size() to a break
-to conform to the break handling after vcs_vc().
+Hello Jonathan,
 
-Fixes: ac751efa6a0d ("console: rename acquire/release_console_sem() to console_lock/unlock()")
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
----
- drivers/tty/vt/vc_screen.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+On 1/28/23 16:48, Jonathan Cameron wrote:
+> On Fri, 27 Jan 2023 17:40:37 +0100
+> Gatien Chevallier <gatien.chevallier@foss.st.com> wrote:
+> 
+>> Document STM32 System Bus. This bus is intended to control firewall
+>> access for the peripherals connected to it.
+>>
+>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+>> Signed-off-by: Loic PALLARDY <loic.pallardy@st.com>
+> Trivial comment on formatting.
+> 
+>> +
+>> +examples:
+>> +  - |
+>> +    // In this example, the rng1 device refers to etzpc as its domain controller.
+>> +    // Same goes for fmc.
+>> +    // Access rights are verified before creating devices.
+>> +
+>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +    #include <dt-bindings/clock/stm32mp1-clks.h>
+>> +    #include <dt-bindings/reset/stm32mp1-resets.h>
+>> +
+>> +    etzpc: bus@5c007000 {
+>> +        compatible = "st,stm32mp15-sys-bus";
+>> +        reg = <0x5c007000 0x400>;
+>> +        #address-cells = <1>;
+>> +        #size-cells = <1>;
+>> +        ranges;
+>> +        feature-domain-controller;
+>> +        #feature-domain-cells = <1>;
+>> +
+>> +        rng1: rng@54003000 {
+> 
+> Odd mixture of 4 spacing and 2 spacing in this example.
+> I'd suggest one or the other (slight preference for 4 space indents).
+> 
 
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index f566eb1839dc..c599b452969f 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -406,19 +406,17 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		ret = -ENXIO;
- 		vc = vcs_vc(inode, &viewed);
- 		if (!vc)
--			goto unlock_out;
-+			break;
- 
- 		/* Check whether we are above size each round,
- 		 * as copy_to_user at the end of this loop
- 		 * could sleep.
- 		 */
--		size = vcs_size(vc, attr, uni_mode);
--		if (size < 0) {
--			if (read)
--				break;
--			ret = size;
--			goto unlock_out;
--		}
-+		ret = vcs_size(vc, attr, uni_mode);
-+		if (ret < 0)
-+			break;
-+		size = ret;
-+		ret = 0;
- 		if (pos >= size)
- 			break;
- 		if (count > size - pos)
--- 
-2.31.1
+Thank you for spotting this, I'll change to 4 space indents
 
+> 
+>> +          compatible = "st,stm32-rng";
+>> +          reg = <0x54003000 0x400>;
+>> +          clocks = <&rcc RNG1_K>;
+>> +          resets = <&rcc RNG1_R>;
+>> +          feature-domains = <&etzpc 7>;
+>> +          status = "disabled";
+>> +        };
+
+Best regards,
+Gatien
