@@ -2,119 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B985C05027
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Feb 2023 05:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7167EC64ED6
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Feb 2023 12:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbjBHFsQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Feb 2023 00:48:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        id S231322AbjBHMOL convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Feb 2023 07:14:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbjBHFsP (ORCPT
+        with ESMTP id S231186AbjBHMOJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Feb 2023 00:48:15 -0500
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35F511EAF;
-        Tue,  7 Feb 2023 21:48:14 -0800 (PST)
-Received: by mail-ej1-f49.google.com with SMTP id lu11so48546997ejb.3;
-        Tue, 07 Feb 2023 21:48:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OYe6aqMu2x9+vN3yhcrZtZHWGal5Z5H51jOu9lqDUVU=;
-        b=e+SKcUC8SeP4FEi2kVPT6is6VGew+DGNvXL+BEFIzRqkCb9loj23DYuczkt+UERuhU
-         8ErJoFs/4ZpejYECX1MGpTfm2Rf2mwbZVcW+ah1mSCdD+6XggRsBLAojgZYcrDQ6PF1L
-         Dvgk59kKA7l+wAR8uEsxHM0Bbds8DQIBzeQoJjubnFuNRBm9HdqKzdPU8HygCMhiMXIW
-         ucCqb3d2WJxXyQYSSjw5KgOKL3db3qKM/ZMtqyWlhZHfyhHAgvQ+tbtg3LBVjp52TFWA
-         W3pQpMpX1Ple95zHk3NiWn4hVSMrE+fJtvrQbFtU/GL/tdgLDwp2L6yfyqaKfWyb/oNC
-         GGzw==
-X-Gm-Message-State: AO0yUKVOHAeuScJE69bJC3fvcdKu+w6EuMMrJqtix9Vpzt/knvMxhYXI
-        qohVU79qQMKITGVUPSktYYnO4powCMc=
-X-Google-Smtp-Source: AK7set+cVv7jF6uzVc/ZvERg4iwXP/HeLZJ/9NGLwUoVvhZz4KwIR8Avr3Yb5rdYLPJ16Yni/J+dNw==
-X-Received: by 2002:a17:906:1252:b0:889:7781:f62e with SMTP id u18-20020a170906125200b008897781f62emr6344857eja.22.1675835292979;
-        Tue, 07 Feb 2023 21:48:12 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id s24-20020a1709060c1800b0088a0d645a5asm7906972ejf.99.2023.02.07.21.48.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Feb 2023 21:48:12 -0800 (PST)
-Message-ID: <8dffe187-240d-746e-ed84-885ffd2785f6@kernel.org>
-Date:   Wed, 8 Feb 2023 06:48:11 +0100
+        Wed, 8 Feb 2023 07:14:09 -0500
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C543C212A4;
+        Wed,  8 Feb 2023 04:14:04 -0800 (PST)
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.95)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1pPjKb-0028L0-7w; Wed, 08 Feb 2023 13:13:45 +0100
+Received: from p57bd9464.dip0.t-ipconnect.de ([87.189.148.100] helo=[192.168.178.81])
+          by inpost2.zedat.fu-berlin.de (Exim 4.95)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1pPjKa-000FU0-W6; Wed, 08 Feb 2023 13:13:45 +0100
+Message-ID: <f6317e9073362b13b10df57de23e63945becea32.camel@physik.fu-berlin.de>
+Subject: Re: remove arch/sh
+From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Christoph Hellwig <hch@lst.de>
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+Date:   Wed, 08 Feb 2023 13:13:43 +0100
+In-Reply-To: <0e26bf17-864e-eb22-0d07-5b91af4fde92@infradead.org>
+References: <20230113062339.1909087-1-hch@lst.de>
+         <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+         <20230116071306.GA15848@lst.de>
+         <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
+         <20230203071423.GA24833@lst.de>
+         <60ed320c8f5286e8dbbf71be29b760339fd25069.camel@physik.fu-berlin.de>
+         <0e26bf17-864e-eb22-0d07-5b91af4fde92@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2] vc_screen: break from vcs_read() while loop if
- vcs_vc() returns NULL
-Content-Language: en-US
-To:     George Kennedy <george.kennedy@oracle.com>,
-        gregkh@linuxfoundation.org, torvalds@linux-foundation.org
-Cc:     sfr@canb.auug.org.au, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <1675774098-17722-1-git-send-email-george.kennedy@oracle.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <1675774098-17722-1-git-send-email-george.kennedy@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-Originating-IP: 87.189.148.100
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07. 02. 23, 13:48, George Kennedy wrote:
-> If vcs_vc() returns NULL in vcs_read(), break from while loop if partial
-> read, else if no reads have been done, go to unlock_out and return -ENXIO.
-> In addition, change the goto unlock_out after vcs_size() to a break
-> to conform to the break handling after vcs_vc().
+Hi Randy!
+
+On Tue, 2023-02-07 at 17:31 -0800, Randy Dunlap wrote:
 > 
-> Fixes: ac751efa6a0d ("console: rename acquire/release_console_sem() to console_lock/unlock()")
-> Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: George Kennedy <george.kennedy@oracle.com>
-> ---
->   drivers/tty/vt/vc_screen.c | 14 ++++++--------
->   1 file changed, 6 insertions(+), 8 deletions(-)
+> On 2/7/23 01:06, John Paul Adrian Glaubitz wrote:
+> > Hello Christoph!
+> > 
+> > On Fri, 2023-02-03 at 08:14 +0100, Christoph Hellwig wrote:
+> > > On Mon, Jan 16, 2023 at 09:52:10AM +0100, John Paul Adrian Glaubitz wrote:
+> > > > We have had a discussion between multiple people invested in the SuperH port and
+> > > > I have decided to volunteer as a co-maintainer of the port to support Rich Felker
+> > > > when he isn't available.
+> > > 
+> > > So, this still isn't reflected in MAINTAINERS in linux-next.  When
+> > > do you plan to take over?  What platforms will remain supported and
+> > > what can we start dropping due to being unused and unmaintained?
+> > 
+> > I'm getting everything ready now with Geert's help and I have a probably dumb
+> > question regarding the MAINTAINERS file change: Shall I just add myself as an
+> > additional maintainer first or shall I also drop Yoshinori Sato?
+> > 
+> > Also, is it desirable to add a "T:" entry for the kernel tree?
 > 
-> diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-> index f566eb1839dc..c599b452969f 100644
-> --- a/drivers/tty/vt/vc_screen.c
-> +++ b/drivers/tty/vt/vc_screen.c
-> @@ -406,19 +406,17 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
->   		ret = -ENXIO;
->   		vc = vcs_vc(inode, &viewed);
->   		if (!vc)
-> -			goto unlock_out;
-> +			break;
->   
->   		/* Check whether we are above size each round,
->   		 * as copy_to_user at the end of this loop
->   		 * could sleep.
->   		 */
-> -		size = vcs_size(vc, attr, uni_mode);
-> -		if (size < 0) {
-> -			if (read)
-> -				break;
-> -			ret = size;
-> -			goto unlock_out;
-> -		}
-> +		ret = vcs_size(vc, attr, uni_mode);
-> +		if (ret < 0)
-> +			break;
-> +		size = ret;
-> +		ret = 0;
+> Yes, definitely.
 
-I think the previous "size = vcs_size()" and "ret = size" in the error 
-path looked better than this "size = ret" and "ret = 0" here. I mean why 
-not to preserve:
+Geert has suggested to wait with adding a tree source to the entry until I get my
+own kernel.org account. I have enough GPG signatures from multiple kernel developers
+on my GPG key, so I think it shouldn't be too difficult to qualify for an account.
 
-	size = vcs_size(vc, attr, uni_mode);
-	if (size < 0) {
-		ret = size;
-		break;
-	}
+Adrian
 
-?
-
-thanks,
 -- 
-js
-suse labs
-
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
