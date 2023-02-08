@@ -2,90 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14825C05027
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Feb 2023 17:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F21C64EC7
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Feb 2023 18:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231800AbjBHRSM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Feb 2023 12:18:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
+        id S231235AbjBHSyj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Feb 2023 13:54:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231788AbjBHRSK (ORCPT
+        with ESMTP id S229479AbjBHSyh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Feb 2023 12:18:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BCE10AA6;
-        Wed,  8 Feb 2023 09:17:47 -0800 (PST)
+        Wed, 8 Feb 2023 13:54:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7ED18A95;
+        Wed,  8 Feb 2023 10:54:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86D636174A;
-        Wed,  8 Feb 2023 17:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 695ABC433D2;
-        Wed,  8 Feb 2023 17:17:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C5BEB81F4D;
+        Wed,  8 Feb 2023 18:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB21C433D2;
+        Wed,  8 Feb 2023 18:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675876667;
-        bh=IYH2Y4ODFkY1kTcBDDNXIx49akbBHzGilU5aXrsBM0c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mbKUSl8kK8Vt110dm77g0TJeL3JF1O89RUJ3GkVhi/7EaP1h2YXAkCfIE7oFh7Bz7
-         qDeOrSgH60QZz7gMElZA7lQY0moRIJIg4EcuqXKV30WQCARLCe91+IxbmYgBMjvubm
-         Gtn1QJ4GgkWg1hbQrTgQtj20WPDOF5guTpVzPaM2XLQTY1wXM4c7Bn9hJwrpuRucgx
-         tdl6o2rFtMLZq1nmHbjHG4irgorHnr4g1lp8bOWfuMqHW6qV/vDTZDU+H6/vwmSazb
-         BT9iQ87NX8Q6HztIRXt5sQ0yds5izvCBakybLyZZK4lmCpokLBv7GLiU8JBHOFuIqW
-         v9MplqD9Uncig==
-From:   Conor Dooley <conor@kernel.org>
-To:     robh+dt@kernel.org, gregkh@linuxfoundation.org
-Cc:     conor@kernel.org, Conor Dooley <conor.dooley@microchip.com>,
-        krzysztof.kozlowski+dt@linaro.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] dt-bindings: serial: snps-dw-apb-uart: add dma & dma-names properties
-Date:   Wed,  8 Feb 2023 17:17:16 +0000
-Message-Id: <20230208171715.70862-1-conor@kernel.org>
-X-Mailer: git-send-email 2.39.1
+        s=k20201202; t=1675882473;
+        bh=xTtM9WlSf7bwExmahb6XOjPHbEjpNPb+C9ZLErT3mV8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kJN28UveNEt23ZFALxkKRAduymcXqKXXhl5ZE6krYfbalb6HMbzHo9qeVzvcHI7Wm
+         H7S6jcL16vD7PqCbUM676t6Ujn2JFJPW6F8SYQEY0t+JColJ5tdmzL8HnmWP59Mv+N
+         h1XG21jruiC7Pqu0lZhIHvhdf8KfE3r2XiOfPuEIw7UtbGW+1gt8cYhRh3sZd6iQB0
+         OKQT0joBdQfoYqU3AXs0x+0ro+BNaKQvYiFcCdFS93pX8FTqdLs62iSLZQceti8ikH
+         8vqlPouh7hbFMq94LAL+5Wj+RTZZwiFzYMUZ+IE2R0duumYDsHSZLH3uCg57RDgxC5
+         5i80rfFHy/R9Q==
+Date:   Wed, 8 Feb 2023 19:08:33 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
+Cc:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Loic PALLARDY <loic.pallardy@st.com>
+Subject: Re: [PATCH v3 4/6] bus: stm32_sys_bus: add support for STM32MP15
+ and STM32MP13 system bus
+Message-ID: <20230208190833.532cd60c@jic23-huawei>
+In-Reply-To: <d6c659d8-2e5c-cb60-d950-685c4ba319e2@foss.st.com>
+References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
+        <20230127164040.1047583-5-gatien.chevallier@foss.st.com>
+        <20230128161217.0e79436e@jic23-huawei>
+        <d6c659d8-2e5c-cb60-d950-685c4ba319e2@foss.st.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1376; i=conor.dooley@microchip.com; h=from:subject; bh=xSxJD2irQlzPRyhGvv2ObBjMIMpYQW5PWeCkcZOME+w=; b=owGbwMvMwCFWscWwfUFT0iXG02pJDMmPb0opay6fN03sk4SYUoNF2uymk2ue6x9zvPi/bwpbZfSy uRyBHaUsDGIcDLJiiiyJt/tapNb/cdnh3PMWZg4rE8gQBi5OAZjIDllGhsOJhy9p+ax+eyHRakI2T0 02V3X939XGf7+Xr+gOybv3qomR4defw5cFTPmT5+1OaouJeDjhwGOTZWfi+r7y9+67OSXkIgsA
-X-Developer-Key: i=conor.dooley@microchip.com; a=openpgp; fpr=F9ECA03CF54F12CD01F1655722E2C55B37CF380C
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Tue, 7 Feb 2023 15:12:23 +0100
+Gatien CHEVALLIER <gatien.chevallier@foss.st.com> wrote:
 
-Commit 0c559bc8abfb ("dt-bindings: serial: restrict possible child node
-names") exposed the Allwinner D1 devicetrees as users of unevaluated
-properties, with a slew of similar warnings now appearing during
-dtbs_check:
-sun20i-d1-nezha.dtb: serial@2500400: Unevaluated properties are not allowed ('dma-names', 'dmas' were unexpected)
+> Hi Jonathan,
+> 
+> On 1/28/23 17:12, Jonathan Cameron wrote:
+> > On Fri, 27 Jan 2023 17:40:38 +0100
+> > Gatien Chevallier <gatien.chevallier@foss.st.com> wrote:
+> >   
+> >> This driver is checking the access rights of the different
+> >> peripherals connected to the system bus. If access is denied,
+> >> the associated device tree node is skipped so the platform bus
+> >> does not probe it.
+> >>
+> >> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+> >> Signed-off-by: Loic PALLARDY <loic.pallardy@st.com>  
+> > 
+> > Hi Gatien,
+> > 
+> > A few comments inline,
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> >> diff --git a/drivers/bus/stm32_sys_bus.c b/drivers/bus/stm32_sys_bus.c
+> >> new file mode 100644
+> >> index 000000000000..c12926466bae
+> >> --- /dev/null
+> >> +++ b/drivers/bus/stm32_sys_bus.c
+> >> @@ -0,0 +1,168 @@
+> >> +// SPDX-License-Identifier: GPL-2.0
+> >> +/*
+> >> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
+> >> + */
+> >> +
+> >> +#include <linux/bitfield.h>
+> >> +#include <linux/bits.h>
+> >> +#include <linux/device.h>
+> >> +#include <linux/err.h>
+> >> +#include <linux/io.h>
+> >> +#include <linux/init.h>
+> >> +#include <linux/kernel.h>
+> >> +#include <linux/module.h>
+> >> +#include <linux/of.h>
+> >> +#include <linux/of_platform.h>
+> >> +#include <linux/platform_device.h>
+> >> +
+> >> +/* ETZPC peripheral as firewall bus */
+> >> +/* ETZPC registers */
+> >> +#define ETZPC_DECPROT			0x10
+> >> +
+> >> +/* ETZPC miscellaneous */
+> >> +#define ETZPC_PROT_MASK			GENMASK(1, 0)
+> >> +#define ETZPC_PROT_A7NS			0x3
+> >> +#define ETZPC_DECPROT_SHIFT		1  
+> > 
+> > This define makes the code harder to read.  What we care about is
+> > the number of bits in the register divided by number of entries.
+> > (which is 2) hence the shift by 1. See below for more on this.
+> > 
+> >   
+> >> +
+> >> +#define IDS_PER_DECPROT_REGS		16  
+> >   
+> >> +#define STM32MP15_ETZPC_ENTRIES		96
+> >> +#define STM32MP13_ETZPC_ENTRIES		64  
+> > 
+> > These defines just make the code harder to check.
+> > They aren't magic numbers, but rather just telling us how many
+> > entries there are, so I would just put them in the structures directly.
+> > Their use make it clear what they are without needing to give them a name.
+> >   
+> 
+> Honestly, I'd rather read the hardware configuration registers to get 
+> this information instead of differentiating MP13/15. Would you agree on 
+> that?
 
-Document the missing properties.
+Sure, if they are discoverable even better.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
-The commit exposing it is in Rob's tree, but I figure this can go either
-way as it has no dependancy.
----
- .../devicetree/bindings/serial/snps-dw-apb-uart.yaml      | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index b9c2287c5d1e..2becdfab4f15 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -67,6 +67,14 @@ properties:
-       - const: baudclk
-       - const: apb_pclk
- 
-+  dmas:
-+    minItems: 2
-+
-+  dma-names:
-+    items:
-+      - const: rx
-+      - const: tx
-+
-   snps,uart-16550-compatible:
-     description: reflects the value of UART_16550_COMPATIBLE configuration
-       parameter. Define this if your UART does not implement the busy functionality.
--- 
-2.39.1
 
