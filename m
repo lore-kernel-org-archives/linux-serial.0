@@ -2,93 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A89E4C636D7
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 09:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EAAC64ED8
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 09:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbjBIJL7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Feb 2023 04:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46096 "EHLO
+        id S229984AbjBIJQP convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Feb 2023 04:16:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbjBIJL5 (ORCPT
+        with ESMTP id S229567AbjBIJQM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Feb 2023 04:11:57 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551448680
-        for <linux-serial@vger.kernel.org>; Thu,  9 Feb 2023 01:11:49 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id r2so1054706wrv.7
-        for <linux-serial@vger.kernel.org>; Thu, 09 Feb 2023 01:11:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kxvn5OMzyzBqETwPzu80u7hwe8zuuXrGX7TuXlP4qi0=;
-        b=hdwCkAFjfCYSHKqw8+smBlNg4fCdRKpQTd4YEielegmV0s3MRAorwpnoPeMHJRHWHZ
-         GSvgXupwKUkkicopfmiS+Mhm7bdK6XBHbi9bzTFk2R/ZzSb++inmoaePtx+UHfa6OMs7
-         sOXNRKvNfjnJUQimFfTKrLj6FaEdGF3O+xWdLkEVZM227bDBXkECuoNcOQzzIuseQ3I3
-         /UyOU1t2PmDa9FhOgyXYwE6+wn7rO01aREcZeah/2FK6ILNklzPOPZd24gaq7OWtqYS2
-         aZJPCbLPFraHKUl8NkZtCXTY50WKCHbt5D0BYV0wu5NcvhmoLDLi5wzzA5EeBOo3fmRO
-         YpRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kxvn5OMzyzBqETwPzu80u7hwe8zuuXrGX7TuXlP4qi0=;
-        b=e6ngi1CgIG2DtJCfOptxrPEU/4PpmKoBxgiifgVfgEOTpvjyFDuWA4ZjzVlF0ydIW8
-         j0t220jb0z21gZQxmPde5aOFv1f+9yYm4vteW0/M1LvAzSUQRVjC5HRX/Fvemak1GmCT
-         cQfoGRmzZwBqrhwG9tWJ57nYxt6RQXBSaq6yNXrVHLvPj/jjfS7Z+zMM1UtgQCJHUnJs
-         MALe43ih7ZwllZLZHvWhp7ElIWsHjdXpHBm79eX2yXe6y9pI68D1bBSZo67576SfjQVt
-         cw94IERKGSz6quUSh3LYuE6DEVibTsenf5uyi4nD7a12XGPz5CEwKiGUbW/HPKRM4L+p
-         BeTg==
-X-Gm-Message-State: AO0yUKUb/Vyc2pUDcZkF+XhYyy1RoAklAT8rD8kxhRfoWNUVVT29EF+R
-        3RcYAj4UOWOyCiFEiLd9EVWzGg==
-X-Google-Smtp-Source: AK7set8552ZGuPTfdL9T1or1CEjqNNE+WiEnvbxdUuMToBkzo+xCAMUKemqN2e8NlMREeQahOvMNug==
-X-Received: by 2002:a5d:6b4b:0:b0:2c3:ed18:2e96 with SMTP id x11-20020a5d6b4b000000b002c3ed182e96mr9711597wrw.13.1675933907856;
-        Thu, 09 Feb 2023 01:11:47 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id s11-20020adfeccb000000b002bfcc9d9607sm720564wro.68.2023.02.09.01.11.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Feb 2023 01:11:47 -0800 (PST)
-Message-ID: <7ad7710b-2318-4c20-da2f-b0ee1a1a9cef@linaro.org>
-Date:   Thu, 9 Feb 2023 10:11:46 +0100
+        Thu, 9 Feb 2023 04:16:12 -0500
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558EB5B92;
+        Thu,  9 Feb 2023 01:16:10 -0800 (PST)
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.95)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1pQ323-003ncL-Bt; Thu, 09 Feb 2023 10:15:55 +0100
+Received: from p57bd9464.dip0.t-ipconnect.de ([87.189.148.100] helo=suse-laptop.fritz.box)
+          by inpost2.zedat.fu-berlin.de (Exim 4.95)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1pQ323-0012H8-3k; Thu, 09 Feb 2023 10:15:55 +0100
+Message-ID: <ed4a36508c3d047f9e9a882475388be18b790b76.camel@physik.fu-berlin.de>
+Subject: Re: remove arch/sh
+From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To:     Rob Landley <rob@landley.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christoph Hellwig <hch@lst.de>
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-sh@vger.kernel.org
+Date:   Thu, 09 Feb 2023 10:15:52 +0100
+In-Reply-To: <1c6e7a19-a650-1852-6f74-ca5547db44c4@landley.net>
+References: <20230113062339.1909087-1-hch@lst.de>
+         <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
+         <20230116071306.GA15848@lst.de>
+         <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
+         <20230203071423.GA24833@lst.de>
+         <60ed320c8f5286e8dbbf71be29b760339fd25069.camel@physik.fu-berlin.de>
+         <0e26bf17-864e-eb22-0d07-5b91af4fde92@infradead.org>
+         <f6317e9073362b13b10df57de23e63945becea32.camel@physik.fu-berlin.de>
+         <1c6e7a19-a650-1852-6f74-ca5547db44c4@landley.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v1] dt-bindings: serial: snps-dw-apb-uart: add dma &
- dma-names properties
-Content-Language: en-US
-To:     Conor Dooley <conor@kernel.org>, robh+dt@kernel.org,
-        gregkh@linuxfoundation.org
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        krzysztof.kozlowski+dt@linaro.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230208171715.70862-1-conor@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230208171715.70862-1-conor@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-Originating-IP: 87.189.148.100
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 08/02/2023 18:17, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Wed, 2023-02-08 at 21:09 -0600, Rob Landley wrote:
+> > Geert has suggested to wait with adding a tree source to the entry until I get my
+> > own kernel.org account. I have enough GPG signatures from multiple kernel developers
+> > on my GPG key, so I think it shouldn't be too difficult to qualify for an account.
 > 
-> Commit 0c559bc8abfb ("dt-bindings: serial: restrict possible child node
-> names") exposed the Allwinner D1 devicetrees as users of unevaluated
-> properties, with a slew of similar warnings now appearing during
-> dtbs_check:
-> sun20i-d1-nezha.dtb: serial@2500400: Unevaluated properties are not allowed ('dma-names', 'dmas' were unexpected)
-> 
-> Document the missing properties.
-> 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> So you're not planning to use https://lk.j-core.org/J-Core-Developers/sh-linux
+> but push to kernel.org and ask Linus to pull from there?
 
+Yes, that's what Geert recommended.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Adrian
 
-
-Best regards,
-Krzysztof
-
+-- 
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
