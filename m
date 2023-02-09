@@ -2,37 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4BAC6379F
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 13:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 218E6C64EC5
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 13:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbjBIN0z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Feb 2023 08:26:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53486 "EHLO
+        id S230175AbjBIN04 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Feb 2023 08:26:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbjBIN0y (ORCPT
+        with ESMTP id S230174AbjBIN0x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Feb 2023 08:26:54 -0500
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A06093E8;
-        Thu,  9 Feb 2023 05:26:50 -0800 (PST)
+        Thu, 9 Feb 2023 08:26:53 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79035212A;
+        Thu,  9 Feb 2023 05:26:45 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.97,283,1669042800"; 
-   d="scan'208";a="149040873"
+   d="scan'208";a="152255803"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 09 Feb 2023 22:26:50 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 09 Feb 2023 22:26:44 +0900
 Received: from localhost.localdomain (unknown [10.226.92.132])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 1B70A4334957;
-        Thu,  9 Feb 2023 22:26:47 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id D93D5433495E;
+        Thu,  9 Feb 2023 22:26:40 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Eric Tremblay <etremblay@distech-controls.com>,
+        Wander Lairson Costa <wander@redhat.com>,
         linux-serial@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH 3/3] serial: 8250_em: Add serial8250_rzv2m_reg_update()
-Date:   Thu,  9 Feb 2023 13:26:30 +0000
-Message-Id: <20230209132630.194947-4-biju.das.jz@bp.renesas.com>
+Subject: [PATCH 1/3] serial: 8250: Identify Renesas RZ/V2M 16750 UART
+Date:   Thu,  9 Feb 2023 13:26:28 +0000
+Message-Id: <20230209132630.194947-2-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230209132630.194947-1-biju.das.jz@bp.renesas.com>
 References: <20230209132630.194947-1-biju.das.jz@bp.renesas.com>
@@ -42,111 +49,66 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As per HW manual section 40.6.1, we need to perform FIFO reset + SW
-reset before updating the below registers
+Add identification support for RZ/V2M 16750 UART.
 
-FCR[7:5], FCR[3:0], LCR[7][5:0], MCR[6:4], DLL[7:0], DLM[7:0] and
-HCR0[6:5][3:2].
+Currently, RZ/V2M UART is detected as 16550A instead of 16750.
+"a4040000.serial: ttyS0 at MMIO 0xa4040000 (irq = 14, base_baud = 3000000)
+is a 16550A"
 
-This patch adds serial8250_rzv2m_reg_update() to handle it.
-
-DLL/DLM register can be updated only by setting LCR[7]. So the
-updation of LCR[7] will perform reset for DLL/DLM register changes.
+After adding identification support, it is detected as
+"a4040000.serial: ttyS0 at MMIO 0xa4040000 (irq = 24, base_baud = 3000000)
+is a Renesas RZ/V2M 16750".
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- drivers/tty/serial/8250/8250_em.c | 49 +++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ drivers/tty/serial/8250/8250_port.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index 3a45aa066d3d..a1e42b8ef99d 100644
---- a/drivers/tty/serial/8250/8250_em.c
-+++ b/drivers/tty/serial/8250/8250_em.c
-@@ -9,6 +9,7 @@
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/of.h>
- #include <linux/serial_8250.h>
- #include <linux/serial_reg.h>
- #include <linux/platform_device.h>
-@@ -18,14 +19,53 @@
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index e61753c295d5..e4b205e3756b 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -111,6 +111,15 @@ static const struct serial8250_config uart_config[] = {
+ 		.rxtrig_bytes	= {1, 16, 32, 56},
+ 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP | UART_CAP_AFE,
+ 	},
++	[PORT_16750] = {
++		.name		= "Renesas RZ/V2M 16750",
++		.fifo_size	= 64,
++		.tx_loadsz	= 64,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
++				  UART_FCR7_64BYTE,
++		.rxtrig_bytes	= {1, 16, 32, 56},
++		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
++	},
+ 	[PORT_STARTECH] = {
+ 		.name		= "Startech",
+ 		.fifo_size	= 1,
+@@ -1142,6 +1151,24 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+ 		return;
+ 	}
  
- #define UART_DLL_EM 9
- #define UART_DLM_EM 10
-+#define UART_HCR0 11
++	/*
++	 * No EFR.  Try to detect a Renesas RZ/V2M 16750, which only sets bit 5
++	 * of the IIR when 64 byte FIFO mode is enabled.
++	 * Try setting/clear bit5 of FCR.
++	 */
++	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO);
++	status1 = serial_in(up, UART_IIR) & (UART_IIR_64BYTE_FIFO | UART_IIR_FIFO_ENABLED);
 +
-+#define UART_HCR0_SW_RESET	BIT(7) /* SW Reset */
- 
- struct serial8250_em_priv {
- 	struct clk *sclk;
- 	int line;
-+	bool is_rzv2m;
- };
- 
-+static void serial8250_rzv2m_reg_update(struct uart_port *p, int off, int value)
-+{
-+	unsigned int ier, fcr, lcr, mcr, hcr0;
++	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO | UART_FCR7_64BYTE);
++	status2 = serial_in(up, UART_IIR) & (UART_IIR_64BYTE_FIFO | UART_IIR_FIFO_ENABLED);
 +
-+	ier = readl(p->membase + (UART_IER << 2));
-+	hcr0 = readl(p->membase + (UART_HCR0 << 2));
-+	fcr = readl(p->membase + ((UART_FCR + 1) << 2));
-+	lcr = readl(p->membase + ((UART_LCR + 1) << 2));
-+	mcr = readl(p->membase + ((UART_MCR + 1) << 2));
-+
-+	writel(fcr | UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT, p->membase + ((UART_FCR + 1) << 2));
-+	writel(hcr0 | UART_HCR0_SW_RESET, p->membase + (UART_HCR0 << 2));
-+	writel(hcr0 & ~UART_HCR0_SW_RESET, p->membase + (UART_HCR0 << 2));
-+
-+	switch (off) {
-+	case UART_FCR:
-+		fcr = value;
-+		break;
-+	case UART_LCR:
-+		lcr = value;
-+		break;
-+	case UART_MCR:
-+		mcr = value;
-+		break;
++	if (status1 == UART_IIR_FIFO_ENABLED_16550A &&
++	    status2 == (UART_IIR_64BYTE_FIFO | UART_IIR_FIFO_ENABLED_16550A)) {
++		up->port.type = PORT_16750;
++		up->capabilities |= UART_CAP_AFE;
++		return;
 +	}
 +
-+	writel(ier, p->membase + (UART_IER << 2));
-+	writel(fcr, p->membase + ((UART_FCR + 1) << 2));
-+	writel(mcr, p->membase + ((UART_MCR + 1) << 2));
-+	writel(lcr, p->membase + ((UART_LCR + 1) << 2));
-+	writel(hcr0, p->membase + (UART_HCR0 << 2));
-+}
-+
- static void serial8250_em_serial_out(struct uart_port *p, int offset, int value)
- {
-+	struct serial8250_em_priv *priv = p->private_data;
-+
- 	switch (offset) {
- 	case UART_TX: /* TX @ 0x00 */
- 		writeb(value, p->membase);
-@@ -33,6 +73,11 @@ static void serial8250_em_serial_out(struct uart_port *p, int offset, int value)
- 	case UART_FCR: /* FCR @ 0x0c (+1) */
- 	case UART_LCR: /* LCR @ 0x10 (+1) */
- 	case UART_MCR: /* MCR @ 0x14 (+1) */
-+		if (priv->is_rzv2m)
-+			serial8250_rzv2m_reg_update(p, offset, value);
-+		else
-+			writel(value, p->membase + ((offset + 1) << 2));
-+		break;
- 	case UART_SCR: /* SCR @ 0x20 (+1) */
- 		writel(value, p->membase + ((offset + 1) << 2));
- 		break;
-@@ -111,6 +156,10 @@ static int serial8250_em_probe(struct platform_device *pdev)
- 	up.port.uartclk = clk_get_rate(priv->sclk);
- 
- 	up.port.iotype = UPIO_MEM32;
-+
-+	if (of_device_is_compatible(dev->of_node, "renesas,r9a09g011-uart"))
-+		priv->is_rzv2m = true;
-+
- 	up.port.serial_in = serial8250_em_serial_in;
- 	up.port.serial_out = serial8250_em_serial_out;
- 	up.dl_read = serial8250_em_serial_dl_read;
+ 	/*
+ 	 * Try writing and reading the UART_IER_UUE bit (b6).
+ 	 * If it works, this is probably one of the Xscale platform's
 -- 
 2.25.1
 
