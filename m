@@ -2,85 +2,73 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9786FC636D3
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 12:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918B7C636D6
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 13:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229725AbjBIM1i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Feb 2023 07:27:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38654 "EHLO
+        id S229915AbjBIN0u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Feb 2023 08:26:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbjBIM1h (ORCPT
+        with ESMTP id S230168AbjBIN0s (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Feb 2023 07:27:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1CE2D6D;
-        Thu,  9 Feb 2023 04:27:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7CA2B8164F;
-        Thu,  9 Feb 2023 12:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEECFC433D2;
-        Thu,  9 Feb 2023 12:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1675945653;
-        bh=D+nGnWzczf+mcGc087BP9v6X7kdlHtQOfrzRsw8KHUY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wnhBsLWELkudMkbnGpP+vqDJIEiLLygGEbdZCHbKO5wL7nGpO8cAiKW1Vqe0NfE55
-         mxFCARMiHekcT/gvuaBCLgpc/UMcOUn6EtC9kTt4S8j9VkiEQ32VsHeDetktt9w9m4
-         Fu9WY8auL5zROXDX2O/84GzanYdXGr7AFfUY2spY=
-Date:   Thu, 9 Feb 2023 13:27:30 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bjorn Andersson <andersson@kernel.org>
-Cc:     Elliot Berman <quic_eberman@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        Thu, 9 Feb 2023 08:26:48 -0500
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4D6755E49;
+        Thu,  9 Feb 2023 05:26:40 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.97,283,1669042800"; 
+   d="scan'208";a="149040862"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 09 Feb 2023 22:26:40 +0900
+Received: from localhost.localdomain (unknown [10.226.92.132])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 047C54334957;
+        Thu,  9 Feb 2023 22:26:35 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Visweswara Tanuku <quic_vtanuku@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] soc: qcom: geni-se: Move qcom-geni-se.h to
- linux/soc/qcom/geni-se.h
-Message-ID: <Y+TmsqQZvX/rJW2U@kroah.com>
-References: <20230203210133.3552796-1-quic_eberman@quicinc.com>
- <Y94On1PIUQw4/qX2@kroah.com>
- <20230209031440.yu3mentazf6gk4m7@ripper>
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Eric Tremblay <etremblay@distech-controls.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH 0/3] Add Identification and 64 bit fifo support to Renesas RZ/V2M 16750 UART
+Date:   Thu,  9 Feb 2023 13:26:27 +0000
+Message-Id: <20230209132630.194947-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230209031440.yu3mentazf6gk4m7@ripper>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 07:14:40PM -0800, Bjorn Andersson wrote:
-> On Sat, Feb 04, 2023 at 08:51:59AM +0100, Greg Kroah-Hartman wrote:
-> > On Fri, Feb 03, 2023 at 01:01:32PM -0800, Elliot Berman wrote:
-> > > Move include/linux/qcom-geni-se.h to include/linux/soc/qcom/geni-se.h.
-> > > This removes 1 of a few remaining Qualcomm-specific headers into a more
-> > > approciate subdirectory under include/.
-> > > 
-> > > Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-> > > ---
-> > >  drivers/i2c/busses/i2c-qcom-geni.c                   | 2 +-
-> > >  drivers/soc/qcom/qcom-geni-se.c                      | 2 +-
-> > >  drivers/spi/spi-geni-qcom.c                          | 2 +-
-> > >  drivers/tty/serial/qcom_geni_serial.c                | 2 +-
-> > >  include/linux/{qcom-geni-se.h => soc/qcom/geni-se.h} | 0
-> > >  5 files changed, 4 insertions(+), 4 deletions(-)
-> > >  rename include/linux/{qcom-geni-se.h => soc/qcom/geni-se.h} (100%)
-> > 
-> > Who do you want to take this patch?  Through what tree?  I can take it
-> > through the tty tree if no one objects, otherwise if someone else is:
-> > 
-> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> I'm happy with that, please go ahead Greg.
-> 
-> Acked-by: Bjorn Andersson <andersson@kernel.org>
+Add identification and 64 bit fifo support to Renesas RZ/V2M 16750 UART.
+This patch series also simplifies 8250_em_probe() and also updates the
+RZ/V2M specific register handling for the below restriction mentioned in
+hardware manual
 
-Great, now queued up, thanks.
+40.6.1 Point for Caution when Changing the Register Settings:
 
-greg k-h
+When changing the settings of the following registers, a PRESETn master
+reset or FIFO reset + SW reset (FCR[2],FCR[1], HCR0[7]) must be input to
+re-initialize them.
+
+Target Registers: FCR, LCR, MCR, DLL, DLM, HCR0.
+
+Biju Das (3):
+  serial: 8250: Identify Renesas RZ/V2M 16750 UART
+  serial: 8250_em: Use dev_err_probe()
+  serial: 8250_em: Add serial8250_rzv2m_reg_update()
+
+ drivers/tty/serial/8250/8250_em.c   | 70 +++++++++++++++++++++++------
+ drivers/tty/serial/8250/8250_port.c | 27 +++++++++++
+ 2 files changed, 84 insertions(+), 13 deletions(-)
+
+-- 
+2.25.1
+
