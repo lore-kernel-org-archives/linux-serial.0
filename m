@@ -2,249 +2,158 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB20C61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 16:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FA9C636D7
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 17:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbjBIQR4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Feb 2023 11:17:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35170 "EHLO
+        id S229642AbjBIRti (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Feb 2023 12:49:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbjBIQRx (ORCPT
+        with ESMTP id S229583AbjBIRth (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Feb 2023 11:17:53 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBC746BA;
-        Thu,  9 Feb 2023 08:17:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675959471; x=1707495471;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=a/E7KSmtv3G539B0tt8tIVjLISlpbH9X9w1Ki9UW8Zk=;
-  b=di7yWCOgvPbsTmyXpdESVGzEY8C13Vv1hQonW5jqaqqIvAM5TJ7GNqVP
-   58Q5LDvj/h9s1TesUpOPj36quXCN1TnlHIaEZv4MknYlOE/n3XvscHj9z
-   lumS9FV/Z9GKh6bE1ekok9pRJnH9H8mfU51YuCpDU+dm5RpA5soPEuI5k
-   UblFEBOUyofegmye1VT8LNIa1EN2a7d5AFMIG6rYOuCwI1qHqRn1IUWD5
-   uzPZ7aDe97wyS8SndaKk090sME+40AEAfK0znT9hp1ODTAElpz9gxZNlO
-   UcrRmbLCG8XEvVqdmILm6HAxJpLb/hJGJoHd7MM6M160L8UMKidIpFZYZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="416370166"
-X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
-   d="scan'208";a="416370166"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2023 08:17:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="669628646"
-X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
-   d="scan'208";a="669628646"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 09 Feb 2023 08:17:48 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pQ9cK-0005AC-08;
-        Thu, 09 Feb 2023 16:17:48 +0000
-Date:   Fri, 10 Feb 2023 00:17:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-usb@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-can@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        alsa-devel@alsa-project.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 20f513df926fac0594a3b65f79d856bd64251861
-Message-ID: <63e51ca6.38vYfMSoflHo1I8c%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 9 Feb 2023 12:49:37 -0500
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A234E55BA;
+        Thu,  9 Feb 2023 09:49:36 -0800 (PST)
+Received: by mail-qt1-f182.google.com with SMTP id ch10so1735923qtb.11;
+        Thu, 09 Feb 2023 09:49:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j1UOiRiXKpFUFG3joAn14r25qu/viqxeIuGM84d4gxs=;
+        b=gnXwNfcFk3a358TuZ0YxQv4wmQHoqHHcqY2dXByvix6fgvcO6Khto4MrhBjbAe+TDw
+         xBkwoMFAbnLp+ly9XbFsJPfGzWZyK9KE2FMwR8RugTeWE3BwNuE3bE6Eq4Y/8dTvREmc
+         sq8GxYloO1CiZpkppAXjuQieJuHfVuAKGHr9cTcdyxAZyID7HKPg+2eusMP9zIfGbMYO
+         FXkhZ+TMwv3crm8CrU2TqWYeZrN0i7DakqkyvcwOL5+ZFgz4medzb5ewUvv7f+5rg1zg
+         GFowCl6LWTKYKDT49dUi26C3pVj5RQ2gq6deXWAbIXGMYuaR7W8USlEh44GodKwTgBQC
+         n9wg==
+X-Gm-Message-State: AO0yUKVTQzgW/WvrqLX52RrK4tOIWrEcp5b1kK0+Z51sbtyz+AsdA/CX
+        3tMBzcjL+nS8DyOMYFt8caI5Asyt1y2WffT4
+X-Google-Smtp-Source: AK7set9FgWSGxbwzM+5j9uA70UBEHJxY5xXhSbcnnxxoaZ+goMZfXCFWutaaO8InxfWN5My6syMiLQ==
+X-Received: by 2002:a05:622a:199b:b0:3b9:bd1f:1de6 with SMTP id u27-20020a05622a199b00b003b9bd1f1de6mr20919935qtc.40.1675964974872;
+        Thu, 09 Feb 2023 09:49:34 -0800 (PST)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id d4-20020ac86144000000b003b9bca1e093sm1669916qtm.27.2023.02.09.09.49.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Feb 2023 09:49:34 -0800 (PST)
+Received: by mail-yb1-f173.google.com with SMTP id x4so3356677ybp.1;
+        Thu, 09 Feb 2023 09:49:33 -0800 (PST)
+X-Received: by 2002:a25:8e84:0:b0:8be:8c5f:9d58 with SMTP id
+ q4-20020a258e84000000b008be8c5f9d58mr742872ybl.202.1675964973101; Thu, 09 Feb
+ 2023 09:49:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20230209132630.194947-1-biju.das.jz@bp.renesas.com> <20230209132630.194947-3-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20230209132630.194947-3-biju.das.jz@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 9 Feb 2023 18:49:19 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVbR4612RAN3h16iHwPr-1vLERfoEa4-=K3iqvueYn-Lg@mail.gmail.com>
+Message-ID: <CAMuHMdVbR4612RAN3h16iHwPr-1vLERfoEa4-=K3iqvueYn-Lg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] serial: 8250_em: Use dev_err_probe()
+To:     biju.das.jz@bp.renesas.com
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 20f513df926fac0594a3b65f79d856bd64251861  Add linux-next specific files for 20230209
+Hi Biju,
 
-Error/Warning reports:
+On Thu, Feb 9, 2023 at 2:26 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> This patch simplify probe() function by using dev_err_probe()
+> instead of dev_err in probe().
+>
+> While at it, remove the unused header file slab.h and added a
+> local variable 'dev' to replace '&pdev->dev' in probe().
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-https://lore.kernel.org/oe-kbuild-all/202301302110.mEtNwkBD-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202301310939.TAgCOEZb-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202302061911.C7xvHX9v-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202302062224.ByzeTXh1-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202302092211.54EYDhYH-lkp@intel.com
+Thanks for your patch!
 
-Error/Warning: (recently discovered and may have been fixed)
+> --- a/drivers/tty/serial/8250/8250_em.c
+> +++ b/drivers/tty/serial/8250/8250_em.c
+> @@ -13,7 +13,6 @@
+>  #include <linux/serial_reg.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/clk.h>
+> -#include <linux/slab.h>
+>
+>  #include "8250.h"
+>
+> @@ -79,6 +78,7 @@ static void serial8250_em_serial_dl_write(struct uart_8250_port *up, int value)
+>  static int serial8250_em_probe(struct platform_device *pdev)
+>  {
+>         struct serial8250_em_priv *priv;
+> +       struct device *dev = &pdev->dev;
+>         struct uart_8250_port up;
+>         struct resource *regs;
+>         int irq, ret;
+> @@ -88,27 +88,23 @@ static int serial8250_em_probe(struct platform_device *pdev)
+>                 return irq;
+>
+>         regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -       if (!regs) {
+> -               dev_err(&pdev->dev, "missing registers\n");
+> -               return -EINVAL;
+> -       }
+> +       if (!regs)
+> +               return dev_err_probe(dev, -EINVAL, "missing registers\n");
+>
+> -       priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> +       priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+>         if (!priv)
+>                 return -ENOMEM;
+>
+>         priv->sclk = devm_clk_get(&pdev->dev, "sclk");
 
-Documentation/sphinx/templates/kernel-toc.html: 1:36 Invalid token: #}
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/idma64.ko] undefined!
-FAILED: load BTF from vmlinux: No data available
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubbub.c:1011:6: warning: no previous prototype for 'hubbub31_init' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn32/dcn32_hubbub.c:948:6: warning: no previous prototype for 'hubbub32_init' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn32/dcn32_hubp.c:158:6: warning: no previous prototype for 'hubp32_init' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn32/dcn32_resource_helpers.c:62:18: warning: variable 'cursor_bpp' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:1296:32: warning: variable 'result_write_min_hblank' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:280:42: warning: variable 'ds_port' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_training.c:1586:38: warning: variable 'result' set but not used [-Wunused-but-set-variable]
-drivers/net/can/dev/bittiming.c:145:24: error: too many arguments to function 'can_calc_bittiming'
-ftrace-ops.c:(.init.text+0x2c3): undefined reference to `__udivdi3'
-libbpf: failed to find '.BTF' ELF section in vmlinux
+One missed opportunity to use "dev".
+And to use the new devm_clk_get_enabled() ;-)
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
+> -       if (IS_ERR(priv->sclk)) {
+> -               dev_err(&pdev->dev, "unable to get clock\n");
+> -               return PTR_ERR(priv->sclk);
+> -       }
+> +       if (IS_ERR(priv->sclk))
+> +               return dev_err_probe(dev, PTR_ERR(priv->sclk), "unable to get clock\n");
+>
+>         memset(&up, 0, sizeof(up));
+>         up.port.mapbase = regs->start;
+>         up.port.irq = irq;
+>         up.port.type = PORT_UNKNOWN;
+>         up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP;
+> -       up.port.dev = &pdev->dev;
+> +       up.port.dev = dev;
+>         up.port.private_data = priv;
+>
+>         clk_prepare_enable(priv->sclk);
+> @@ -122,9 +118,8 @@ static int serial8250_em_probe(struct platform_device *pdev)
+>
+>         ret = serial8250_register_8250_port(&up);
+>         if (ret < 0) {
+> -               dev_err(&pdev->dev, "unable to register 8250 port\n");
+>                 clk_disable_unprepare(priv->sclk);
+> -               return ret;
+> +               return dev_err_probe(dev, ret, "unable to register 8250 port\n");
+>         }
+>
+>         priv->line = ret;
 
-drivers/tty/serial/8250/8250_dfl.c:63 dfl_uart_get_params() error: uninitialized symbol 'clk_freq'.
-drivers/tty/serial/8250/8250_dfl.c:69 dfl_uart_get_params() error: uninitialized symbol 'fifo_len'.
-drivers/tty/serial/8250/8250_dfl.c:90 dfl_uart_get_params() error: uninitialized symbol 'reg_layout'.
-drivers/usb/gadget/composite.c:2082:33: sparse: sparse: restricted __le16 degrades to integer
-drivers/usb/gadget/function/uvc_configfs.c:537:2-8: preceding lock on line 528
-drivers/usb/gadget/udc/renesas_usbf.c:2284:37: sparse:    left side has type unsigned short
-drivers/usb/gadget/udc/renesas_usbf.c:2284:37: sparse:    right side has type restricted __le16
-drivers/usb/gadget/udc/renesas_usbf.c:2284:37: sparse: sparse: invalid assignment: |=
-drivers/usb/gadget/udc/renesas_usbf.c:2325:31: sparse: sparse: restricted __le16 degrades to integer
-drivers/usb/host/xhci-plat.c:371 xhci_generic_plat_probe() error: we previously assumed 'sysdev' could be null (see line 361)
-sound/firewire/amdtp-stream.c:1187 process_rx_packets() error: uninitialized symbol 'curr_cycle_time'.
+As the patch is correct:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Error/Warning ids grouped by kconfigs:
+Gr{oetje,eeting}s,
 
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- alpha-randconfig-s043-20230209
-|   `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- arc-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arm-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- arm-randconfig-r046-20230209
-|   `-- drivers-net-can-dev-bittiming.c:error:too-many-arguments-to-function-can_calc_bittiming
-|-- arm64-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubbub.c:warning:no-previous-prototype-for-hubbub31_init
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubbub.c:warning:no-previous-prototype-for-hubbub32_init
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubp.c:warning:no-previous-prototype-for-hubp32_init
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_resource_helpers.c:warning:variable-cursor_bpp-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- csky-randconfig-m041-20230209
-|   |-- drivers-usb-host-xhci-plat.c-xhci_generic_plat_probe()-error:we-previously-assumed-sysdev-could-be-null-(see-line-)
-|   `-- sound-firewire-amdtp-stream.c-process_rx_packets()-error:uninitialized-symbol-curr_cycle_time-.
-|-- i386-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubbub.c:warning:no-previous-prototype-for-hubbub31_init
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubbub.c:warning:no-previous-prototype-for-hubbub32_init
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubp.c:warning:no-previous-prototype-for-hubp32_init
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_resource_helpers.c:warning:variable-cursor_bpp-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|   `-- ftrace-ops.c:(.init.text):undefined-reference-to-__udivdi3
-|-- i386-randconfig-m021
-|   `-- kernel-trace-trace_events_synth.c-trace_event_raw_event_synth()-warn:inconsistent-indenting
-|-- ia64-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- microblaze-randconfig-r013-20230209
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|-- mips-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-ds_port-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
-|-- nios2-randconfig-c031-20230209
-clang_recent_errors
-`-- s390-randconfig-r022-20230209
-    `-- ERROR:devm_platform_ioremap_resource-drivers-dma-idma64.ko-undefined
+                        Geert
 
-elapsed time: 725m
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-configs tested: 75
-configs skipped: 4
-
-gcc tested configs:
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                            allnoconfig
-arc                                 defconfig
-alpha                               defconfig
-i386                                defconfig
-s390                             allmodconfig
-s390                                defconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-s390                             allyesconfig
-x86_64                        randconfig-a004
-i386                             allyesconfig
-x86_64                        randconfig-a002
-x86_64                              defconfig
-arm                                 defconfig
-arm                           u8500_defconfig
-i386                          randconfig-a005
-nios2                               defconfig
-powerpc                           allnoconfig
-x86_64                          rhel-8.3-func
-powerpc                          allmodconfig
-x86_64                        randconfig-a013
-x86_64                    rhel-8.3-kselftests
-x86_64                               rhel-8.3
-x86_64                           rhel-8.3-bpf
-parisc                generic-64bit_defconfig
-x86_64                        randconfig-a006
-mips                             allyesconfig
-riscv             nommu_k210_sdcard_defconfig
-x86_64                           rhel-8.3-syz
-powerpc                  storcenter_defconfig
-sh                               allmodconfig
-powerpc                      pcm030_defconfig
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-arc                  randconfig-r043-20230209
-ia64                             allmodconfig
-arm                  randconfig-r046-20230209
-x86_64                        randconfig-a011
-m68k                             allmodconfig
-x86_64                        randconfig-a015
-alpha                            allyesconfig
-x86_64                           allyesconfig
-m68k                             allyesconfig
-arm                              allyesconfig
-arc                              allyesconfig
-arm64                            allyesconfig
-i386                          randconfig-a014
-sh                   sh7724_generic_defconfig
-sh                        edosk7760_defconfig
-sh                        sh7785lcr_defconfig
-xtensa                          iss_defconfig
-sh                          landisk_defconfig
-sh                         microdev_defconfig
-mips                         cobalt_defconfig
-sh                          rsk7269_defconfig
-
-clang tested configs:
-x86_64                          rhel-8.3-rust
-i386                          randconfig-a002
-i386                          randconfig-a006
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-i386                          randconfig-a004
-x86_64                        randconfig-a016
-x86_64                        randconfig-a003
-hexagon              randconfig-r041-20230209
-hexagon              randconfig-r045-20230209
-x86_64                        randconfig-a012
-s390                 randconfig-r044-20230209
-x86_64                        randconfig-a014
-riscv                randconfig-r042-20230209
-i386                          randconfig-a013
-powerpc                   bluestone_defconfig
-mips                      pic32mzda_defconfig
-powerpc                      ppc64e_defconfig
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
