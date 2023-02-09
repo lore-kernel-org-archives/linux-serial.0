@@ -2,151 +2,145 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F21C64EC7
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Feb 2023 18:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EF2C636CC
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 00:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231235AbjBHSyj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Feb 2023 13:54:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S229582AbjBIA61 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Feb 2023 19:58:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbjBHSyh (ORCPT
+        with ESMTP id S229482AbjBIA60 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Feb 2023 13:54:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7ED18A95;
-        Wed,  8 Feb 2023 10:54:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C5BEB81F4D;
-        Wed,  8 Feb 2023 18:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB21C433D2;
-        Wed,  8 Feb 2023 18:54:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675882473;
-        bh=xTtM9WlSf7bwExmahb6XOjPHbEjpNPb+C9ZLErT3mV8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kJN28UveNEt23ZFALxkKRAduymcXqKXXhl5ZE6krYfbalb6HMbzHo9qeVzvcHI7Wm
-         H7S6jcL16vD7PqCbUM676t6Ujn2JFJPW6F8SYQEY0t+JColJ5tdmzL8HnmWP59Mv+N
-         h1XG21jruiC7Pqu0lZhIHvhdf8KfE3r2XiOfPuEIw7UtbGW+1gt8cYhRh3sZd6iQB0
-         OKQT0joBdQfoYqU3AXs0x+0ro+BNaKQvYiFcCdFS93pX8FTqdLs62iSLZQceti8ikH
-         8vqlPouh7hbFMq94LAL+5Wj+RTZZwiFzYMUZ+IE2R0duumYDsHSZLH3uCg57RDgxC5
-         5i80rfFHy/R9Q==
-Date:   Wed, 8 Feb 2023 19:08:33 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gatien CHEVALLIER <gatien.chevallier@foss.st.com>
-Cc:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <alexandre.torgue@foss.st.com>, <vkoul@kernel.org>,
-        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
-        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
-        <ulf.hansson@linaro.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Loic PALLARDY <loic.pallardy@st.com>
-Subject: Re: [PATCH v3 4/6] bus: stm32_sys_bus: add support for STM32MP15
- and STM32MP13 system bus
-Message-ID: <20230208190833.532cd60c@jic23-huawei>
-In-Reply-To: <d6c659d8-2e5c-cb60-d950-685c4ba319e2@foss.st.com>
-References: <20230127164040.1047583-1-gatien.chevallier@foss.st.com>
-        <20230127164040.1047583-5-gatien.chevallier@foss.st.com>
-        <20230128161217.0e79436e@jic23-huawei>
-        <d6c659d8-2e5c-cb60-d950-685c4ba319e2@foss.st.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
+        Wed, 8 Feb 2023 19:58:26 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1F4222FF
+        for <linux-serial@vger.kernel.org>; Wed,  8 Feb 2023 16:58:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675904305; x=1707440305;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9P+lAjvfsykuA/mByVkrisFXimILp24qZcbEfBkAiiU=;
+  b=QaX402ONzU9bZ8y5SdJgKxLlCW9IfzN+EDcuC3KGSiV3S1vpqZ4BGh8/
+   ZhULZD6YltKx1yZuCAKwFz+EiJ6cPcTzfr97kY93At1LAvC3o059w5prx
+   J1uQYbPx01mCzmMFU6wcyyHyYt2zTh3G6XZUT13j0My/00edGP7AYwpah
+   o/2CWiFcFYkmvkX9ZbInLdp2TIjjg155vQ5DASaAPMDylLXa54SHyk19E
+   5kQTBIKs90um5F+3rqXV45B7riiHl+Qc/gX7Fjd+VmOZMb439S27rPmJQ
+   BG4356O7Q+cMbtDJQjnBFvNd8yPtF+zpWnCA/G1u4Y3EXqBwMWT1YZJIY
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="357375948"
+X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
+   d="scan'208";a="357375948"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 16:58:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="645070633"
+X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
+   d="scan'208";a="645070633"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 08 Feb 2023 16:58:24 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pPvGU-0004j2-1d;
+        Thu, 09 Feb 2023 00:58:18 +0000
+Date:   Thu, 09 Feb 2023 08:58:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 684ae4f9513c2bb9443794608b7fc754c4ca2483
+Message-ID: <63e44522.t0PyHXeqeeaLxdUU%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 7 Feb 2023 15:12:23 +0100
-Gatien CHEVALLIER <gatien.chevallier@foss.st.com> wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 684ae4f9513c2bb9443794608b7fc754c4ca2483  tty: n_gsm: add TIOCMIWAIT support
 
-> Hi Jonathan,
-> 
-> On 1/28/23 17:12, Jonathan Cameron wrote:
-> > On Fri, 27 Jan 2023 17:40:38 +0100
-> > Gatien Chevallier <gatien.chevallier@foss.st.com> wrote:
-> >   
-> >> This driver is checking the access rights of the different
-> >> peripherals connected to the system bus. If access is denied,
-> >> the associated device tree node is skipped so the platform bus
-> >> does not probe it.
-> >>
-> >> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
-> >> Signed-off-by: Loic PALLARDY <loic.pallardy@st.com>  
-> > 
-> > Hi Gatien,
-> > 
-> > A few comments inline,
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> >   
-> >> diff --git a/drivers/bus/stm32_sys_bus.c b/drivers/bus/stm32_sys_bus.c
-> >> new file mode 100644
-> >> index 000000000000..c12926466bae
-> >> --- /dev/null
-> >> +++ b/drivers/bus/stm32_sys_bus.c
-> >> @@ -0,0 +1,168 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +/*
-> >> + * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
-> >> + */
-> >> +
-> >> +#include <linux/bitfield.h>
-> >> +#include <linux/bits.h>
-> >> +#include <linux/device.h>
-> >> +#include <linux/err.h>
-> >> +#include <linux/io.h>
-> >> +#include <linux/init.h>
-> >> +#include <linux/kernel.h>
-> >> +#include <linux/module.h>
-> >> +#include <linux/of.h>
-> >> +#include <linux/of_platform.h>
-> >> +#include <linux/platform_device.h>
-> >> +
-> >> +/* ETZPC peripheral as firewall bus */
-> >> +/* ETZPC registers */
-> >> +#define ETZPC_DECPROT			0x10
-> >> +
-> >> +/* ETZPC miscellaneous */
-> >> +#define ETZPC_PROT_MASK			GENMASK(1, 0)
-> >> +#define ETZPC_PROT_A7NS			0x3
-> >> +#define ETZPC_DECPROT_SHIFT		1  
-> > 
-> > This define makes the code harder to read.  What we care about is
-> > the number of bits in the register divided by number of entries.
-> > (which is 2) hence the shift by 1. See below for more on this.
-> > 
-> >   
-> >> +
-> >> +#define IDS_PER_DECPROT_REGS		16  
-> >   
-> >> +#define STM32MP15_ETZPC_ENTRIES		96
-> >> +#define STM32MP13_ETZPC_ENTRIES		64  
-> > 
-> > These defines just make the code harder to check.
-> > They aren't magic numbers, but rather just telling us how many
-> > entries there are, so I would just put them in the structures directly.
-> > Their use make it clear what they are without needing to give them a name.
-> >   
-> 
-> Honestly, I'd rather read the hardware configuration registers to get 
-> this information instead of differentiating MP13/15. Would you agree on 
-> that?
+elapsed time: 727m
 
-Sure, if they are discoverable even better.
+configs tested: 68
+configs skipped: 2
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+x86_64                            allnoconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+arc                                 defconfig
+s390                             allmodconfig
+alpha                               defconfig
+s390                                defconfig
+s390                             allyesconfig
+powerpc                           allnoconfig
+x86_64                           rhel-8.3-bpf
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+sh                               allmodconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+mips                             allyesconfig
+alpha                            allyesconfig
+arm                                 defconfig
+x86_64                              defconfig
+i386                          randconfig-a014
+powerpc                          allmodconfig
+i386                                defconfig
+i386                          randconfig-a012
+x86_64                               rhel-8.3
+i386                          randconfig-a016
+m68k                             allyesconfig
+x86_64               randconfig-a014-20230206
+x86_64               randconfig-a013-20230206
+x86_64               randconfig-a011-20230206
+x86_64               randconfig-a012-20230206
+x86_64               randconfig-a015-20230206
+x86_64               randconfig-a016-20230206
+x86_64                           allyesconfig
+arm64                            allyesconfig
+s390                 randconfig-r044-20230206
+arm                              allyesconfig
+arc                  randconfig-r043-20230205
+arm                  randconfig-r046-20230205
+arc                  randconfig-r043-20230206
+i386                             allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                          rhel-8.3-func
+riscv                randconfig-r042-20230206
+ia64                             allmodconfig
+
+clang tested configs:
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+x86_64               randconfig-a001-20230206
+hexagon              randconfig-r041-20230205
+riscv                randconfig-r042-20230205
+x86_64               randconfig-a002-20230206
+i386                 randconfig-a004-20230206
+i386                 randconfig-a003-20230206
+i386                 randconfig-a001-20230206
+hexagon              randconfig-r045-20230206
+x86_64               randconfig-a004-20230206
+i386                 randconfig-a002-20230206
+hexagon              randconfig-r041-20230206
+x86_64               randconfig-a003-20230206
+x86_64               randconfig-a005-20230206
+x86_64               randconfig-a006-20230206
+i386                 randconfig-a005-20230206
+arm                  randconfig-r046-20230206
+i386                 randconfig-a006-20230206
+x86_64                          rhel-8.3-rust
+s390                 randconfig-r044-20230205
+hexagon              randconfig-r045-20230205
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
