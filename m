@@ -2,80 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC29C636D7
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 15:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF68C636CD
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 15:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232225AbjBJPzE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Feb 2023 10:55:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
+        id S232244AbjBJP4l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Feb 2023 10:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232026AbjBJPzD (ORCPT
+        with ESMTP id S232340AbjBJP4k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Feb 2023 10:55:03 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C497F4B749;
-        Fri, 10 Feb 2023 07:55:02 -0800 (PST)
+        Fri, 10 Feb 2023 10:56:40 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF3678D5A;
+        Fri, 10 Feb 2023 07:56:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676044502; x=1707580502;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=TyUHHmCPATP1lTLZ8QD7F3FBaAklMw8Mo4NnSwvAAGA=;
-  b=STGWdYt14ston01GwI7uk8kYdtmge0Q88flBIQmhLZLLnhu3kjWJmjK0
-   NFaY0vRJ9ZGwbU+ZBpp7SLOIenyI+ELf6dSVwP9aEk6XaR8UbpCAor1PM
-   ruOGgytdChWxaIDgzlguwDkokR44+rQAnlOE5EzArBn5cQm37n0Hmi7z8
-   IVE+o92MdRrDtNnoUegZis9NadiP8wVOvS03KR6fELx4G+G+okbjiWMLM
-   tI9hVtiDwk3MvRCiXaE9F4SBT63ZWvmsQfhpDRVNymfFF1j8mZdfqUt6l
-   WR/1OWVz67BoO27Q722t0pvSnCCgkfwoJYpQSNMXbGWUZxuqhVVfLfyfS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="331752994"
+  t=1676044599; x=1707580599;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fkT5K6peTGGXSVyjcxxXx7c6n3QEMd4i+IqyHTTd1HM=;
+  b=BcV9MaookHpC3JvS2ll3P96NRQpfYrGx4t75VH35RtUsT6uE/1pho2zH
+   Fgx2XD2bqwb818Wn3njqIxe1u0fWpGVgUDaVTGbS3AFOjwLhYqn1Dhoy0
+   OwgQ7jUun6Eli+lhfgXcTXI4JJKvtKU+jG15uSYrlPEoyOzjmaKZ9SIZn
+   RF/EVavaHaJuQH3I8m0YAkCB2faQYjmykROg/KpGnlEcclQbUWu48V5tw
+   yq7vGXSDyRCwgXFEBJ8pbi7PXTM0PR+2J/PMxnx34FwbbP2CgzYC5Qtfr
+   CYFTJ/31F8Lmtoviy4XqvAMetZS3r4zeYp08WnXSgbrYXY4HN/CcmtqU0
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="416675311"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="331752994"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 07:55:02 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="700514829"
+   d="scan'208";a="416675311"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 07:56:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="996988881"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="700514829"
-Received: from tnemeth-mobl1.ger.corp.intel.com ([10.251.213.60])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 07:54:59 -0800
-Date:   Fri, 10 Feb 2023 17:54:57 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+   d="scan'208";a="996988881"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Feb 2023 07:56:35 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pQVlJ-005742-0G;
+        Fri, 10 Feb 2023 17:56:33 +0200
+Date:   Fri, 10 Feb 2023 17:56:32 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Biju Das <biju.das.jz@bp.renesas.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Eric Tremblay <etremblay@distech-controls.com>,
+        Wander Lairson Costa <wander@redhat.com>,
         linux-serial <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] serial: 8250_em: Update RZ/V2M port type as
- PORT_16750
-In-Reply-To: <20230210154140.338352-3-biju.das.jz@bp.renesas.com>
-Message-ID: <c4df46fb-6f89-90bb-3d21-70538794ae40@linux.intel.com>
-References: <20230210154140.338352-1-biju.das.jz@bp.renesas.com> <20230210154140.338352-3-biju.das.jz@bp.renesas.com>
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH 1/3] serial: 8250: Identify Renesas RZ/V2M 16750 UART
+Message-ID: <Y+ZpMEqKwFzJaDat@smile.fi.intel.com>
+References: <20230209132630.194947-1-biju.das.jz@bp.renesas.com>
+ <20230209132630.194947-2-biju.das.jz@bp.renesas.com>
+ <4470e054-ebe6-b3ca-ffd7-1c7c3ae09f1a@linux.intel.com>
+ <OS0PR01MB5922AC5FF10FFF5F8590B8AA86D99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <Y+VrOGR+7LbBMahz@smile.fi.intel.com>
+ <OS0PR01MB5922C55E79014C84C742AE0886DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <Y+YjdghwT2msRriZ@smile.fi.intel.com>
+ <OS0PR01MB5922760B8431C526369EED7986DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-472954745-1676044501=:1761"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OS0PR01MB5922760B8431C526369EED7986DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, Feb 10, 2023 at 11:53:43AM +0000, Biju Das wrote:
+> > Subject: Re: [PATCH 1/3] serial: 8250: Identify Renesas RZ/V2M 16750 UART
+> > On Fri, Feb 10, 2023 at 07:14:54AM +0000, Biju Das wrote:
 
---8323329-472954745-1676044501=:1761
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+...
 
-On Fri, 10 Feb 2023, Biju Das wrote:
-
-> The UART IP found on RZ/V2M SoC is Register-compatible with the
-> general-purpose 16750 UART chip. This patch updates RZ/V2M
-> port type from 16550A->16750 and also enables 64-bytes fifo support.
+> > What I don't like is increasing quirks in the 8250_port. Can't you simply
+> > use FIXED_PORT facility?
+> > Again, look how 8250_mid is written.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Coll. I have referred 8250_mid and added below changes and it is working as expected.
+> I will sent next version after incorporating comments from Geert and ilpo.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Glad to hear that and thank you for cooperation!
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
---8323329-472954745-1676044501=:1761--
+
