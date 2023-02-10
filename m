@@ -2,103 +2,133 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4F2C61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Feb 2023 21:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC92C61DA4
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 02:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbjBIVxG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Feb 2023 16:53:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
+        id S229554AbjBJCHS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Feb 2023 21:07:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjBIVxG (ORCPT
+        with ESMTP id S229483AbjBJCHR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Feb 2023 16:53:06 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1BB63116;
-        Thu,  9 Feb 2023 13:53:05 -0800 (PST)
+        Thu, 9 Feb 2023 21:07:17 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DEE6A730
+        for <linux-serial@vger.kernel.org>; Thu,  9 Feb 2023 18:07:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675979585; x=1707515585;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=/FbvXg6uwopqHqmN55eSAsWS8YDh01Z5Chb6f9kp8jo=;
-  b=mYSARyRQqMnVtSy6d+YH2n10wnmkjv8soqsjE41Zh/ZqofEMlSWy2ULk
-   DTDYf7QMIIq1U217OKrhx6FX2WxbF/v+Ajca8MvYb6b4pYryiA8BFW4JI
-   VOaJX4ejhkxWVP3emuTRZlnUcIeDdvlFcZLf2b9RY+ZITZMGpW0621yzQ
-   k3v9KuXXN+RRrahpFFgOfF0mLf3zM9S9RgVcNaV/ItsFOybHAVn7sR9oP
-   cYW5xr63FadLYoMVqPmjPbUlzDz8A5G5DpDixxipPMLgXL+jbD3njEtwE
-   xHaINMkonHEIHeeM3Zq2w3CPSKindXospOF5uTxj3esSYJutmy2Kns0TN
+  t=1675994836; x=1707530836;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yCLkDkybS6dnNM0PjdHdKpC7YEL4OYxKZdBFmKPp908=;
+  b=i8TmDaSN1qxR0lrwH+ChLAqI5ie3ha6m0s3jYO+TWbrLXOio+yWrwzuN
+   lM4Aho/gALPQroA7b/G4X83Jga80Z9OPOaXwljscIJ43ZbM9a9E8UeV3+
+   VKItD0RQzO+LyO9E2JTiBRXOYZkO+DH6FEM+PZG2xtymUHWhVJ0/YJjqJ
+   pxe61FiC02+cL7L37ws20H91RZq0g+jsMgqhDo/RSMXXRyNV+l89qIx2Z
+   chojj1MQg8zBCP3WDyFUaFmNImMro16hBQjb6GXyRdCK6HIUJhwnZz/Ff
+   /N3IiaSHSccdWCZ5E/l6OaoDOYze94a6mzkaq3nkuQjgfMMx1EfCFMGK1
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10616"; a="313901631"
-X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
-   d="scan'208";a="313901631"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2023 13:53:02 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10616"; a="318328589"
+X-IronPort-AV: E=Sophos;i="5.97,285,1669104000"; 
+   d="scan'208";a="318328589"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2023 18:07:16 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10616"; a="617684713"
-X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
-   d="scan'208";a="617684713"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 09 Feb 2023 13:52:59 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pQEqe-004n6z-1Z;
-        Thu, 09 Feb 2023 23:52:56 +0200
-Date:   Thu, 9 Feb 2023 23:52:56 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH 1/3] serial: 8250: Identify Renesas RZ/V2M 16750 UART
-Message-ID: <Y+VrOGR+7LbBMahz@smile.fi.intel.com>
-References: <20230209132630.194947-1-biju.das.jz@bp.renesas.com>
- <20230209132630.194947-2-biju.das.jz@bp.renesas.com>
- <4470e054-ebe6-b3ca-ffd7-1c7c3ae09f1a@linux.intel.com>
- <OS0PR01MB5922AC5FF10FFF5F8590B8AA86D99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+X-IronPort-AV: E=McAfee;i="6500,9779,10616"; a="669829224"
+X-IronPort-AV: E=Sophos;i="5.97,285,1669104000"; 
+   d="scan'208";a="669829224"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 09 Feb 2023 18:07:14 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pQIok-0005Rz-0q;
+        Fri, 10 Feb 2023 02:07:14 +0000
+Date:   Fri, 10 Feb 2023 10:06:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 370f696e44745b321054496fa351dade03fc4bd9
+Message-ID: <63e5a69f.OjfwvM2khhI7nLjc%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <OS0PR01MB5922AC5FF10FFF5F8590B8AA86D99@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 09, 2023 at 02:28:55PM +0000, Biju Das wrote:
-> > From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > Sent: Thursday, February 9, 2023 2:09 PM
-> > On Thu, 9 Feb 2023, Biju Das wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 370f696e44745b321054496fa351dade03fc4bd9  dt-bindings: serial: snps-dw-apb-uart: add dma & dma-names properties
 
-> > > +	[PORT_16750] = {
-> > > +		.name		= "Renesas RZ/V2M 16750",
-> > > +		.fifo_size	= 64,
-> > > +		.tx_loadsz	= 64,
-> > > +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
-> > > +				  UART_FCR7_64BYTE,
-> > > +		.rxtrig_bytes	= {1, 16, 32, 56},
-> > > +		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
-> > > +	},
-> > 
-> > Eh, how can you reuse [PORT_16750] again in the initializer like that?
-> 
-> Oops. Missed it. Is it ok to introduce PORT_RENESAS_16750_F64 instead
-> as PORT_16750 is used by TI16750?
+elapsed time: 721m
 
-What the difference to the 16750 from TI that prevents you from using it?
+configs tested: 56
+configs skipped: 2
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+x86_64                            allnoconfig
+powerpc                           allnoconfig
+x86_64                              defconfig
+i386                                defconfig
+x86_64                           allyesconfig
+i386                          randconfig-a001
+x86_64                               rhel-8.3
+arm                                 defconfig
+i386                          randconfig-a003
+x86_64                           rhel-8.3-bpf
+x86_64                           rhel-8.3-syz
+i386                          randconfig-a005
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+arm64                            allyesconfig
+arm                              allyesconfig
+x86_64                        randconfig-a006
+arc                  randconfig-r043-20230209
+x86_64                        randconfig-a013
+i386                             allyesconfig
+x86_64                        randconfig-a011
+arm                  randconfig-r046-20230209
+x86_64                        randconfig-a015
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+m68k                             allyesconfig
+m68k                             allmodconfig
+alpha                            allyesconfig
+arc                              allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                          rhel-8.3-func
+um                             i386_defconfig
+um                           x86_64_defconfig
+arc                                 defconfig
+s390                             allmodconfig
+sh                               allmodconfig
+alpha                               defconfig
+s390                                defconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+s390                             allyesconfig
+
+clang tested configs:
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+hexagon              randconfig-r045-20230209
+hexagon              randconfig-r041-20230209
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+s390                 randconfig-r044-20230209
+i386                          randconfig-a013
+i386                          randconfig-a011
+riscv                randconfig-r042-20230209
+i386                          randconfig-a015
+x86_64                          rhel-8.3-rust
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
