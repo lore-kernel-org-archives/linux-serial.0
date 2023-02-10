@@ -2,89 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD537C636D7
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 13:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACC9C636CD
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 13:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbjBJNwN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Feb 2023 08:52:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
+        id S232144AbjBJN4l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Feb 2023 08:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232329AbjBJNwM (ORCPT
+        with ESMTP id S231902AbjBJN4l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Feb 2023 08:52:12 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131D91C5BC;
-        Fri, 10 Feb 2023 05:52:11 -0800 (PST)
+        Fri, 10 Feb 2023 08:56:41 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9541CAE3;
+        Fri, 10 Feb 2023 05:56:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676037131; x=1707573131;
+  t=1676037400; x=1707573400;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=r4w/CErbxaJzMbH7832T/6D/ahn1FgUG57ZITj5IzaQ=;
-  b=br2AjmrslSKiAD96sEqS3M0uZj6ZLLQx0EtxEBC55chAqIkg378H2UaM
-   sM35r/W7GPs2NCsvPaxQCVxKLqPB2QvqAkySZuQI3GjRavp7eDOXpb5et
-   A5kD+jytRCvM50eMK0paM4CnlqcydhBGosvbgmesGuY2i0/3gDiNxrB1e
-   j8hjw31OT8mD1fio+seJvphpiSVUbtzRYFAj/tLkFErAqp0wOcK+3FiUt
-   1k1heezVYtJGVSqhAE6ZbTN5DWjbdBoOpK+aAJtxem4VUfRPb1SPluAhJ
-   /csUXEAQ56H6g0wT9g2raMfgdYL8m4IBdRaPGkLYIzL72IsMdkKe64wEF
+  bh=v8NE3/F8qgvoNCANg6oXXPOIUamxd7g40DX5qbhdbyQ=;
+  b=AVPD3DT6Pwv0LgCkdjTHXKLyirOEwKDSPARggMSc/IoqpTXrsikurJY9
+   SBRU1iWJCKpmyodOrKIl/FuljIf9Tez5mmReHHBYIFWkEoxHzrrJawWMH
+   7PjVLvK5u8fwtY4Kd3fOXCRF8dqaRDR+RiZbejbxMDG5zA9uj8UIKjvm5
+   M/nLQEal/SfkKT/3Rp/7k86IWcfLYLQ2Uq0wYgh6F7Hn3tOryEkihT0Hg
+   PyxdhKvAk9XiFmYo4ACgMMZ5o/hpuyvSRTFmG4OB+mAAERJ8eXRPmCjHG
+   CFIoRaodnX6CdH6j3Fjjfu5+T6VvXB8D/uHpO/Tx/1Jv/bIEdnQ9aM1H/
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="392826850"
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="395029302"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="392826850"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 05:52:10 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="736748179"
+   d="scan'208";a="395029302"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 05:56:39 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="776930791"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="736748179"
+   d="scan'208";a="776930791"
 Received: from tnemeth-mobl1.ger.corp.intel.com ([10.251.213.60])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 05:52:06 -0800
-Date:   Fri, 10 Feb 2023 15:52:03 +0200 (EET)
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 05:56:36 -0800
+Date:   Fri, 10 Feb 2023 15:56:34 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        joel@jms.id.au, andrew@aj.id.au, Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, LKML <linux-kernel@vger.kernel.org>,
-        openbmc@lists.ozlabs.org
-Subject: Re: [PATCH 3/4] serial: 8250: Add Aspeed UART driver
-In-Reply-To: <20230210072643.2772-4-chiawei_wang@aspeedtech.com>
-Message-ID: <2d389fc9-0d5-42a1-b6d7-695c70dcf0fe@linux.intel.com>
-References: <20230210072643.2772-1-chiawei_wang@aspeedtech.com> <20230210072643.2772-4-chiawei_wang@aspeedtech.com>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH 3/3] serial: 8250_em: Add serial8250_rzv2m_reg_update()
+In-Reply-To: <OS0PR01MB5922F0B044AC56675BE5E6A786DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Message-ID: <732c82a0-6421-6a65-f6ac-6ac846f9f4@linux.intel.com>
+References: <20230209132630.194947-1-biju.das.jz@bp.renesas.com> <20230209132630.194947-4-biju.das.jz@bp.renesas.com> <CAMuHMdUXyM52qK1=yPq10i9n2apqO_Xvkvbvo6m5pYQebrJ7DQ@mail.gmail.com>
+ <OS0PR01MB5922F0B044AC56675BE5E6A786DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 10 Feb 2023, Chia-Wei Wang wrote:
+On Fri, 10 Feb 2023, Biju Das wrote:
 
-> Add the driver for Aspeed UART/VUART devices, which are 16550A
-> compatible. It is an wrapper to cover the generic 16550A operation
-> while exetending DMA feature for the devices.
+> Hi Geert,
 > 
-> Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-> ---
->  drivers/tty/serial/8250/8250_aspeed.c | 502 ++++++++++++++++++++++++++
->  drivers/tty/serial/8250/Kconfig       |   8 +
->  drivers/tty/serial/8250/Makefile      |   1 +
+> Thanks for the feedback.
+> 
+> > Subject: Re: [PATCH 3/3] serial: 8250_em: Add serial8250_rzv2m_reg_update()
+> > 
+> > Hi Biju,
+> > 
+> > On Thu, Feb 9, 2023 at 2:30 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > As per HW manual section 40.6.1, we need to perform FIFO reset + SW
+> > > reset before updating the below registers
+> > >
+> > > FCR[7:5], FCR[3:0], LCR[7][5:0], MCR[6:4], DLL[7:0], DLM[7:0] and
+> > > HCR0[6:5][3:2].
+> > >
+> > > This patch adds serial8250_rzv2m_reg_update() to handle it.
+> > >
+> > > DLL/DLM register can be updated only by setting LCR[7]. So the
+> > > updation of LCR[7] will perform reset for DLL/DLM register changes.
+> > >
+> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > 
+> > Thanks for your patch!
+> > 
+> > > --- a/drivers/tty/serial/8250/8250_em.c
+> > > +++ b/drivers/tty/serial/8250/8250_em.c
+> > 
+> > > @@ -111,6 +156,10 @@ static int serial8250_em_probe(struct platform_device
+> > *pdev)
+> > >         up.port.uartclk = clk_get_rate(priv->sclk);
+> > >
+> > >         up.port.iotype = UPIO_MEM32;
+> > > +
+> > > +       if (of_device_is_compatible(dev->of_node, "renesas,r9a09g011-
+> > uart"))
+> > > +               priv->is_rzv2m = true;
+> > 
+> > Please add an entry to serial8250_em_dt_ids[] instead, providing a feature
+> > flag in of_device_id.data.
+> 
+> OK, will add a feature flag in next version.
 
-Hi,
+> > > +
+> > >         up.port.serial_in = serial8250_em_serial_in;
+> > >         up.port.serial_out = serial8250_em_serial_out;
 
-Before I look any further into this, could you please explain why this is 
-made to be entirely separate from what we have in 
-  drivers/tty/serial/8250/8250_aspeed_vuart.c
-?
-
-I quickly went through some functions and they've significant parts in 
-common with no variations at all in many functions and you're defines 
-are 1:1 too (except for the DMA buf sizes). It would seem much better to 
-add the missing functionality into 8250_aspeed_vuart.c rather than 
-creating something from scratch with large overlap with existing code.
-
-If you intend to keep it as a separate one, you should have a rather good 
-justification for it.
+AFAICT, you don't need the feature flag at all. Just provide a different 
+.serial_out function for this device that handles your special registers 
+(and make that handler call serial8250_em_serial_out() when the write is 
+into other regs than those special ones).
 
 
 -- 
