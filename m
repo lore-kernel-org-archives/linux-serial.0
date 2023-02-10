@@ -2,163 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE5BC636D4
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 17:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5801AC636D4
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 18:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbjBJRNE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Feb 2023 12:13:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S232807AbjBJSj4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Feb 2023 13:39:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232661AbjBJRNE (ORCPT
+        with ESMTP id S232575AbjBJSj4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Feb 2023 12:13:04 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035CAA24F;
-        Fri, 10 Feb 2023 09:12:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676049145; x=1707585145;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=+EsEt6HHc4IIrsUYA7mNJFzPUgMjidNj8u4ijGhwsYE=;
-  b=jyuiopMPNL7v3fpRmZ2punkLLUZn6An6sFji2t3ooHERfk8kJKGoW61x
-   Smyg2sTcEibp11ue58Wz3Ar6zs0zNxEd/qHw6nHYun1BLU/VMRliTsp6w
-   zdZrqRZQwcSMOYIZ8wZGdi6bnZH9LQ8SFYfL34wI6w5J/A6E9xGnR9Zwa
-   ISwINpNx6bFocCr6VS+HKf2L5u0lDI3KdbTeV0Ndm2JaPyzNC328ZmY70
-   kzy1/TkzNm8g0/IB8G2Gm8MzY1p7SP8r6pBriVpGroytsewpdvhmQN+hN
-   IMkc8kdByh+64gV5Li5Gz3to+Dmk/h/hTyRp5t81H9UUUQEO79n53EfTv
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="310101299"
-X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="310101299"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 09:09:10 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="645682514"
-X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="645682514"
-Received: from tnemeth-mobl1.ger.corp.intel.com ([10.251.213.60])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 09:09:05 -0800
-Date:   Fri, 10 Feb 2023 19:09:02 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v2 3/3] serial: 8250_em: Add serial_out() to struct
- serial8250_em_hw_info
-In-Reply-To: <OS0PR01MB592222F997B7CB5976B7618186DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Message-ID: <4c78b3bd-ef1-5015-8269-b0c2c3c8d592@linux.intel.com>
-References: <20230210154140.338352-1-biju.das.jz@bp.renesas.com> <20230210154140.338352-4-biju.das.jz@bp.renesas.com> <954bb490-b516-6624-5bb9-e82434fc95f0@linux.intel.com> <OS0PR01MB592222F997B7CB5976B7618186DE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        Fri, 10 Feb 2023 13:39:56 -0500
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8D722A23;
+        Fri, 10 Feb 2023 10:39:54 -0800 (PST)
+Received: by mail-qt1-f181.google.com with SMTP id q13so6868340qtx.2;
+        Fri, 10 Feb 2023 10:39:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=h0YSePjb0L3KZWyxU8wMeNkMM7neyI5evs0/4kJAdso=;
+        b=OgIdas6PrWi559bJ5F639I83FgWd5EqtAyRkICMgcDWp/TWAJ2LidaVqJxsJbEzVBA
+         2gkGOJao2FkWzxUh7aO1P74YuCl7zkcM2ymrcPqdPsZicNYDsFJ7kmeihTm6LGtJVlkz
+         4ghbIfv2h68jC43gkygEDegYrggReTBK3oQfUBOFqlhIMANaRcqHbGZDrPCTDhWO/DEg
+         cNd4IOulWC2idubtn9vUIZMTW6hDcq/aCnez1wRx1ot01feRyZUaVMjcPR0xm6apq6NQ
+         WiwHkS3VdrepSREupJdHh1l+zuzg3fAMh19P8pSv76HNGXGG6V7+DMhr+FqaNJPZBj4Q
+         Q57Q==
+X-Gm-Message-State: AO0yUKUbMB56P19HNV/RKMkErWU7YVE1Q3svsvK7aoqNsnXIZIjR3vql
+        oENaa9CnFpTNPZHCStAjO13eAu0LGucZTg==
+X-Google-Smtp-Source: AK7set/RCV9vkV+xX0Je4abKQV1HhLxmnI0Su/8Qkj7Jhoz5wrGhBuRTc3grH/H0emuopaOxklfC+g==
+X-Received: by 2002:a05:622a:1386:b0:3b8:58d0:b4d5 with SMTP id o6-20020a05622a138600b003b858d0b4d5mr26559939qtk.0.1676054393803;
+        Fri, 10 Feb 2023 10:39:53 -0800 (PST)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id t3-20020a379103000000b0070617deb4b7sm3986682qkd.134.2023.02.10.10.39.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Feb 2023 10:39:53 -0800 (PST)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-52ec329dc01so60127407b3.10;
+        Fri, 10 Feb 2023 10:39:53 -0800 (PST)
+X-Received: by 2002:a0d:e28f:0:b0:52b:f563:2da3 with SMTP id
+ l137-20020a0de28f000000b0052bf5632da3mr957207ywe.235.1676054392940; Fri, 10
+ Feb 2023 10:39:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20230210154140.338352-1-biju.das.jz@bp.renesas.com> <20230210154140.338352-2-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20230210154140.338352-2-biju.das.jz@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 10 Feb 2023 19:39:41 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUhzBj88AkZ_DR5mzbPKYX2eRH7wvFAn8zF_nq2ytCaJQ@mail.gmail.com>
+Message-ID: <CAMuHMdUhzBj88AkZ_DR5mzbPKYX2eRH7wvFAn8zF_nq2ytCaJQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] serial: 8250_em: Use dev_err_probe()
+To:     biju.das.jz@bp.renesas.com
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 10 Feb 2023, Biju Das wrote:
+Hi Biju,
 
-> Hi Ilpo,
-> 
-> Thanks for the update.
-> 
-> > Subject: Re: [PATCH v2 3/3] serial: 8250_em: Add serial_out() to struct
-> > serial8250_em_hw_info
-> > 
-> > On Fri, 10 Feb 2023, Biju Das wrote:
-> > 
-> > > As per HW manual section 40.6.1, we need to perform FIFO reset + SW
-> > > reset before updating the below registers.
-> > >
-> > > FCR[7:5], FCR[3:0], LCR[7][5:0], MCR[6:4], DLL[7:0], DLM[7:0] and
-> > > HCR0[6:5][3:2].
-> > >
-> > > This patch adds serial_out() to struct serial8250_em_hw_info to handle
-> > > this difference between emma mobile and rz/v2m.
-> > >
-> > > DLL/DLM register can be updated only by setting LCR[7]. So the
-> > > updation of LCR[7] will perform reset for DLL/DLM register changes.
-> > >
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > ---
-> > > v1->v2:
-> > >  * Added serial_out to struct serial8250_em_hw_info
-> > 
-> > Thanks, this looks much better. One additional comment below.
-> > 
-> > > ---
-> > >  drivers/tty/serial/8250/8250_em.c | 59
-> > > ++++++++++++++++++++++++++++++-
-> > >  1 file changed, 58 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/tty/serial/8250/8250_em.c
-> > > b/drivers/tty/serial/8250/8250_em.c
-> > > index 628a6846bfdc..1816362a3a3a 100644
-> > > --- a/drivers/tty/serial/8250/8250_em.c
-> > > +++ b/drivers/tty/serial/8250/8250_em.c
-> > > @@ -19,10 +19,14 @@
-> > >
-> > >  #define UART_DLL_EM 9
-> > >  #define UART_DLM_EM 10
-> > > +#define UART_HCR0 11
-> > > +
-> > > +#define UART_HCR0_SW_RESET	BIT(7) /* SW Reset */
-> > >
-> > >  struct serial8250_em_hw_info {
-> > >  	unsigned int type;
-> > >  	upf_t flags;
-> > > +	void (*serial_out)(struct uart_port *p, int off, int value);
-> > >  };
-> > >
-> > >  struct serial8250_em_priv {
-> > > @@ -31,6 +35,40 @@ struct serial8250_em_priv {
-> > >  	const struct serial8250_em_hw_info *info;  };
-> > >
-> > > +static void serial8250_rzv2m_reg_update(struct uart_port *p, int off,
-> > > +int value) {
-> > > +	unsigned int ier, fcr, lcr, mcr, hcr0;
-> > > +
-> > > +	ier = readl(p->membase + (UART_IER << 2));
-> > > +	hcr0 = readl(p->membase + (UART_HCR0 << 2));
-> > > +	fcr = readl(p->membase + ((UART_FCR + 1) << 2));
-> > > +	lcr = readl(p->membase + ((UART_LCR + 1) << 2));
-> > > +	mcr = readl(p->membase + ((UART_MCR + 1) << 2));
-> > > +
-> > > +	writel(fcr | UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
-> > > +	       p->membase + ((UART_FCR + 1) << 2));
-> > > +	writel(hcr0 | UART_HCR0_SW_RESET, p->membase + (UART_HCR0 << 2));
-> > > +	writel(hcr0 & ~UART_HCR0_SW_RESET, p->membase + (UART_HCR0 << 2));
-> > > +
-> > > +	switch (off) {
-> > > +	case UART_FCR:
-> > > +		fcr = value;
-> > > +		break;
-> > > +	case UART_LCR:
-> > > +		lcr = value;
-> > > +		break;
-> > > +	case UART_MCR:
-> > > +		mcr = value;
-> > > +		break;
-> > > +	}
-> > > +
-> > > +	writel(ier, p->membase + (UART_IER << 2));
-> > > +	writel(fcr, p->membase + ((UART_FCR + 1) << 2));
-> > > +	writel(mcr, p->membase + ((UART_MCR + 1) << 2));
-> > > +	writel(lcr, p->membase + ((UART_LCR + 1) << 2));
-> > > +	writel(hcr0, p->membase + (UART_HCR0 << 2));
-> > 
-> > Perhaps it would make sense to instead of using readl/writel() directly to
-> > call serial8250_em_serial_in/out() so all the offset trickery wouldn't need
-> > to be duplicated inside this function?
-> 
-> HCR0 register is not available for emma mobile. Is it ok if I just do readl/writel for
-> that register and rest will use serial8250_em_serial_in/out()??
+On Fri, Feb 10, 2023 at 4:41 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> This patch simplifies probe() function by using dev_err_probe()
+> instead of dev_err in probe().
+>
+> While at it, remove the unused header file slab.h and added a
+> local variable 'dev' to replace '&pdev->dev' in probe().
+>
+> Also replace devm_clk_get->devm_clk_get_enabled and updated the
+> clk handling in probe().
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v1->v2:
+>  * replaced devm_clk_get->devm_clk_get_enabled() and updated clk
+>    handling in probe().
+>  * Added Rb tag from Geert.
 
-Yes, it's fine.
+Thanks for the update!
+
+> --- a/drivers/tty/serial/8250/8250_em.c
+> +++ b/drivers/tty/serial/8250/8250_em.c
+
+> @@ -121,11 +116,8 @@ static int serial8250_em_probe(struct platform_device *pdev)
+>         up.dl_write = serial8250_em_serial_dl_write;
+>
+>         ret = serial8250_register_8250_port(&up);
+> -       if (ret < 0) {
+> -               dev_err(&pdev->dev, "unable to register 8250 port\n");
+> -               clk_disable_unprepare(priv->sclk);
+
+You forgot to remove the call to clk_disable_unprepare()
+in serial8250_em_remove().
+After that, there is no longer a need to store the clock pointer
+in priv->sclk.
+
+> -               return ret;
+> -       }
+> +       if (ret < 0)
+> +               return dev_err_probe(dev, ret, "unable to register 8250 port\n");
+>
+>         priv->line = ret;
+>         platform_set_drvdata(pdev, priv);
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
- i.
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
