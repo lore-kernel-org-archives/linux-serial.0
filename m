@@ -2,101 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA0EC05027
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Feb 2023 20:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77142C61DA4
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Feb 2023 15:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232979AbjBJUgw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Feb 2023 15:36:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
+        id S229551AbjBKPqq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 11 Feb 2023 10:46:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233858AbjBJUex (ORCPT
+        with ESMTP id S229545AbjBKPqp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Feb 2023 15:34:53 -0500
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 241FF57775;
-        Fri, 10 Feb 2023 12:34:46 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.97,287,1669042800"; 
-   d="scan'208";a="149208010"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 11 Feb 2023 05:34:46 +0900
-Received: from localhost.localdomain (unknown [10.226.93.19])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id B08504002652;
-        Sat, 11 Feb 2023 05:34:41 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        linux-serial@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v3 0/3] Update Renesas RZ/V2M UART Port type
-Date:   Fri, 10 Feb 2023 20:34:36 +0000
-Message-Id: <20230210203439.174913-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 11 Feb 2023 10:46:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB6A274AB
+        for <linux-serial@vger.kernel.org>; Sat, 11 Feb 2023 07:46:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676130364;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=O7XkEjMNE8+iiPDaPqXuL/eN3ShpzX6KK4M/D+SJvvE=;
+        b=iscWVRCvWWO/bgcmDwWFnmPz0eH1uHPZTg0HAN8DTzoAXYk/n5mFvUV2EaBewX2tWE4r46
+        KvqjZ79iB75urkRf4MWw9j/4dWtyKxzrRtaVPlNyeZA4MqMBPqmmSukSfRHNJ7p569shVM
+        ssb609fdPVr8X6FoHIpIPHx8DgVghf0=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-673-Qu75kHI-OyS92CGiOZSpQA-1; Sat, 11 Feb 2023 10:46:01 -0500
+X-MC-Unique: Qu75kHI-OyS92CGiOZSpQA-1
+Received: by mail-qt1-f197.google.com with SMTP id t5-20020a05622a180500b003b9c03cd525so4925031qtc.20
+        for <linux-serial@vger.kernel.org>; Sat, 11 Feb 2023 07:46:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=O7XkEjMNE8+iiPDaPqXuL/eN3ShpzX6KK4M/D+SJvvE=;
+        b=NzzvZtvk0Gb189Ede76oXeMvUCl466V4JQRuZFJ4JCCtXg3ClxqJVb9wE/3MJdjFGq
+         1aflQRUFpDUSvlpiNTQa1xYal21B8s3ivinSsQUiimBWSQKATT8oza1eEk4KtEQG/Khw
+         HDq69PrOVYalb8kEWQoYoZnW5sQ4yWInCJHJQ8H5TTEdWMxwKOLWSGxYE6b0IVwvyGxb
+         UxWAfC2oa9pWcin2Se2ns+GR/ZUar9FHq5d2b4Mf+2SqgSrJ5WQUeZzlsA0XlXZpR5wD
+         BCiYx/O336kZM4pRJIHK6fIPt26aPUsXmxfbgHBcAptg68AzOzlsxmQCsWqBylj+JJG0
+         /LaA==
+X-Gm-Message-State: AO0yUKUkNWkSuS5wCFLhaFuyboND1hJVpHd5CgaZdZzZx5wdR8v+6wOs
+        lkvEWQNBa6HUxLDgvEGHHoCDXkT9tJWckzbNYP9oZK1DAlyEnFGsin0MEdfrC9OBaOpR7dFznFT
+        Q72mR7wqVXhgWc7oNxexhI7Yo
+X-Received: by 2002:a05:622a:64b:b0:3bb:89be:8b45 with SMTP id a11-20020a05622a064b00b003bb89be8b45mr12440596qtb.65.1676130361197;
+        Sat, 11 Feb 2023 07:46:01 -0800 (PST)
+X-Google-Smtp-Source: AK7set8TgpagNQyMM/EhhmI5d/iFi5OKGZteX6jyu06UbjTHrtPOUeLawnKurMDXLzcWPn3V5YiZCA==
+X-Received: by 2002:a05:622a:64b:b0:3bb:89be:8b45 with SMTP id a11-20020a05622a064b00b003bb89be8b45mr12440558qtb.65.1676130360863;
+        Sat, 11 Feb 2023 07:46:00 -0800 (PST)
+Received: from borg.redhat.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id t187-20020ae9dfc4000000b0073902217c00sm4697750qkf.23.2023.02.11.07.45.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Feb 2023 07:46:00 -0800 (PST)
+From:   Tom Rix <trix@redhat.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] serial: imx: remove a redundant check
+Date:   Sat, 11 Feb 2023 07:45:50 -0800
+Message-Id: <20230211154550.2130670-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Renesas RZ/V2M UART compatible with the general-purpose 16750 UART chip.
-This patch updates Renesas RZ/V2M UART type from 16550a->16750 and also
-enables 64-bytes fifo.
+cpp_check reports
+drivers/tty/serial/imx.c:1207:15: style: Condition 'r_bytes>0' is always true [knownConditionTrueFalse]
+  if (r_bytes > 0) {
 
-This patch series also simplifies 8250_em_probe() and also updates the
-RZ/V2M specific register handling for the below restriction mentioned in
-hardware manual
+r_byte is set to
+  r_bytes = rx_ring->head - rx_ring->tail;
 
-40.6.1 Point for Caution when Changing the Register Settings:
+The head - tail calculation is also done by the earlier check
+  if (rx_ring->head <= sg_dma_len(sgl) &&
+      rx_ring->head > rx_ring->tail) {
 
-When changing the settings of the following registers, a PRESETn master
-reset or FIFO reset + SW reset (FCR[2],FCR[1], HCR0[7]) must be input to
-re-initialize them.
+so r_bytes will always be > 0, so the second check is not needed.
 
-Target Registers: FCR, LCR, MCR, DLL, DLM, HCR0.
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/tty/serial/imx.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-v2->v3:
- * Dropped sclk from priv.
- * Dropped unneeded clk_disable_unprepare from remove().
- * Retained Rb tags from Geert,Andy and Ilpo as the changes are trivial.
- * Replaced of_device_get_match_data()->device_get_match_data().
- * Replaced of_device.h->property.h
- * Dropped struct serial8250_em_hw_info *info from priv and started
-   using a local variable info in probe().
- * Retained Rb tag from Ilpo as changes are trivial.
- * Replaced readl/writel()->serial8250_em_serial_in/out() in serial8250_rzv2m_
-   reg_update() to avoid duplication of offset trickery.
- * Added support for HCR0 read/write in serial8250_em_{serial_in, serial_out}
- * Added UART_LCR macro support in serial8250_em_serial_in() to read LCR
- * Reordered serial8250_em_{serial_in, serial_out} above serial8250_rzv2m_
-   reg_update().
- * Replaced priv->info->serial_out to info->serial_out.
-v1->v2:
- * Dropped patch#1 from previous series
- * Replaced devm_clk_get->devm_clk_get_enabled() and updated clk
-   handling in probe().
- * Added Rb tag from Geert.
- * Added patch for updating Renesas RZ/V2M UART type from 16550a->16750
-   and also enables 64-bytes fifo.
- * Used .data for taking h/w differences between EMMA mobile and RZ/V2M UART.
- * Added serial_out() to struct serial8250_em_hw_info for the write register
-   differences between EMMA mobile and RZ/V2M UART.
-Biju Das (3):
-  serial: 8250_em: Use dev_err_probe()
-  serial: 8250_em: Update RZ/V2M port type as PORT_16750
-  serial: 8250_em: Add serial_out() to struct serial8250_em_hw_info
-
- drivers/tty/serial/8250/8250_em.c | 128 ++++++++++++++++++++++++------
- 1 file changed, 102 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 363c77a140f0..523f296d5747 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1204,11 +1204,9 @@ static void imx_uart_dma_rx_callback(void *data)
+ 		r_bytes = rx_ring->head - rx_ring->tail;
+ 
+ 		/* If we received something, check for 0xff flood */
+-		if (r_bytes > 0) {
+-			spin_lock(&sport->port.lock);
+-			imx_uart_check_flood(sport, imx_uart_readl(sport, USR2));
+-			spin_unlock(&sport->port.lock);
+-		}
++		spin_lock(&sport->port.lock);
++		imx_uart_check_flood(sport, imx_uart_readl(sport, USR2));
++		spin_unlock(&sport->port.lock);
+ 
+ 		if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ)) {
+ 
 -- 
-2.25.1
+2.26.3
 
