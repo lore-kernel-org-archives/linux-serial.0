@@ -2,163 +2,329 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A4FC636CC
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 08:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC02DC636D4
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 08:53:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229841AbjBMIsO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Feb 2023 03:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52322 "EHLO
+        id S230141AbjBMIxZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Feb 2023 03:53:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbjBMIsK (ORCPT
+        with ESMTP id S229468AbjBMIxX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Feb 2023 03:48:10 -0500
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2050.outbound.protection.outlook.com [40.107.249.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758B56E93;
-        Mon, 13 Feb 2023 00:48:09 -0800 (PST)
+        Mon, 13 Feb 2023 03:53:23 -0500
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2122.outbound.protection.outlook.com [40.107.255.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8434D13525;
+        Mon, 13 Feb 2023 00:53:20 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KjachhBxsmO/nMkES3699HfB2Y4kOz4DJRWP236ok+3Sln5RQG7c7cyaK4A7Rp6876t77v94Cx4WUmJvvRO3FVcuJts5526o8mCMuoRKRjdBVNbPDs3LrIOnLydol9CIFZxIUofOlg9LxiKcSesfBkNGOTWO6z0OX+3KOKqWscPEWk51/NDujrB5H84cohxOhCcAkD2Gt/CjLvwrpzWGYTnGU3yYATCQAaiYXpb6PouxXCyl3RHKf4Hr3Nyd4naNnAKjlSR2XHGfAUOzsSIo3vEwi0xqhMDjXYXpykO1M61MKQNU506TMiwV6+Q3IzIQRCI8S0GnZodM75S0AiOjDQ==
+ b=k3ATI6zmWKok3OFupBxH1F7t69azrmTVVxaUpaZMICY84QIT1eX4ci9Xp78PI0JRciDLkQJYLyEv7lsYGW3gJyIVxWKrxJj4vQ9W+JAsj2x1XsIJ9+Swuh+qdEuo7M9vuTPvEeSECA6tYTlQbsYa6pIb7kMlclpcyIgcUXB312yuFNl4UeEWWeVQH1GafGMKdIfq769onEJC9Luij/iELWK8REt8E3Z/mqes0gcRWv/IpWEwTAVLIrvQb8z3l4ZVhdvo6KuHVUv/VRy+T8ikh7QHBv1kegpYJUU1t6umezUwGJP8k7WJMfvE/CnbtoffpiFCDA8OIQzCqaWlDoKBDA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/uUH710WJMBChzrJt/PG2BxC8x+hpb79WTmacERFf8U=;
- b=aFI0t7Ib4dwWhsmu7B/vh9BqKDbJly7ixMsF5SUQzxAxFM4Yr1ldxy4sT4mNzZ/yS2Y2CNZE6YIyL6CtA3mdw+TSZtk3/nS+QRzHiUgEh7xhPpresziMb+XVz1FedXExobpuprLDXVj0jvtBfLlTL8lifED/48y1dl2KfFs3BH6KdELfWkxSLHtdv5TyI/24fhOgtaY1Slvk9dJjlC7mFdk3q55Xtsb+HAOEL8Qzr6VpIeqD22eUW+69E2XeEl0thH2WuT5QRlg5bMplAkMw8LYAGFipfnGN1QkAOZI3krjfRUkNKLbg1c1q+uzMCbJJXjOOAISS5UJ7tnTHfUV0PA==
+ bh=gN+D0Ez0WhtYfo1eOsHci4ZEHuxK+glBghIcSKb14oI=;
+ b=ejuh8ABfdpOl6yVqYCLsxKZMnhtCqtQ+c4DY5xj6RBR8DqL/8bBHCqIT3+kBKDQezGQYr9z+dVRaFlySPkOlRsX6ZdkXWlHYouKbA0p6UAOY5bamVbfmabGrd6tTl2esZokKYibwat6o2438VEcwaqxgmaYpDWI3hcAa5fklQRVd+TPTHC3p6Z4nHfTseE6aZOFYEQDtXSrnpbGtQ50DbTdaWdXsPRs5OeKvEBjT0wQ0WUJ+gWOKsfjOGi7XO481km+T1WwgcQs1zk6bjaAH4Rc2AMqLqSelVx/kAC9U59mBjArzKuh5jwV2YZUDcK3g0Jpn8IcTtYVTbGtahCBWCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/uUH710WJMBChzrJt/PG2BxC8x+hpb79WTmacERFf8U=;
- b=IR6e0edMMFYL53q4OP1nQLnjVAtJsSt2zZ/Fz+Mi2FRRxJpqGBTS2e+uUXQmb/Kv0ELwsKNjshAXadGN/woeSHea673znFrXhYP1NUam/VlCgstp4C7NnhDPi3jbyb4bAjSwWluwLFClbC38i24KRBp5oDxaLTMJ5nmSouTb0rE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB9628.eurprd04.prod.outlook.com (2603:10a6:10:30b::14)
- by AS8PR04MB9093.eurprd04.prod.outlook.com (2603:10a6:20b:444::20) with
+ bh=gN+D0Ez0WhtYfo1eOsHci4ZEHuxK+glBghIcSKb14oI=;
+ b=WuueRax31yN7yhv4JYYg4BSJ+kcsv3Yxl2h3+vX4MK1PRKuaDbZgDOfh1wx/1vl/wEd5eabIB2Gzu97S52Md9VyOkJlW5HbZo99TT1Rg2MQl4jgOygxqyqO1g2i6LJbEsLBF17DD7bGQAbwzCBl1cWO8Nn8QVZkMOT/TTu5cvrc=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TY3PR01MB11561.jpnprd01.prod.outlook.com (2603:1096:400:374::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Mon, 13 Feb
- 2023 08:48:06 +0000
-Received: from DB9PR04MB9628.eurprd04.prod.outlook.com
- ([fe80::aec2:20b6:cf99:2886]) by DB9PR04MB9628.eurprd04.prod.outlook.com
- ([fe80::aec2:20b6:cf99:2886%5]) with mapi id 15.20.6086.022; Mon, 13 Feb 2023
- 08:48:06 +0000
-Message-ID: <ec674bf1-95e6-a238-4a40-721f004a6161@nxp.com>
-Date:   Mon, 13 Feb 2023 10:46:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH] serial: imx: remove a redundant check
-To:     Tom Rix <trix@redhat.com>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20230211154550.2130670-1-trix@redhat.com>
+ 2023 08:53:17 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::343d:7339:78e5:a46e]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::343d:7339:78e5:a46e%7]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
+ 08:53:15 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
+ serial8250_em_hw_info
+Thread-Topic: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
+ serial8250_em_hw_info
+Thread-Index: AQHZPY8kj9QN2R7bt0udUTepz/GAba7Mkw8AgAAAZ9A=
+Date:   Mon, 13 Feb 2023 08:53:15 +0000
+Message-ID: <OS0PR01MB5922A860B77A9BC0C9E5E3AC86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20230210203439.174913-1-biju.das.jz@bp.renesas.com>
+ <20230210203439.174913-4-biju.das.jz@bp.renesas.com>
+ <56b431df-be7f-474c-8cf5-30c2eaa2745a@linux.intel.com>
+In-Reply-To: <56b431df-be7f-474c-8cf5-30c2eaa2745a@linux.intel.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-From:   Iuliana Prodan <iuliana.prodan@nxp.com>
-In-Reply-To: <20230211154550.2130670-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM4PR0202CA0008.eurprd02.prod.outlook.com
- (2603:10a6:200:89::18) To DB9PR04MB9628.eurprd04.prod.outlook.com
- (2603:10a6:10:30b::14)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TY3PR01MB11561:EE_
+x-ms-office365-filtering-correlation-id: f1ca90ec-e98d-4a08-aee8-08db0d9fbec2
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: i9aylI5nz8mpg9oTSxyfX/t0PltFVAtSfAZfIJYnPSdzAD9wLpjzdCgK8XnscbqSzNsgDj67SrKpb2RVA3bRvMlz4aBcPxZWiXBk4YdA4Spsx63zBaceqM/xfVk6vyIVl73tYdBfOnLjFAHbyWiZnaUHYUSlOqf92i/NN9P7OQVJ+h1FBOCpO2hUYKT139k5nEcFvO7EFDimC+029o4Q+WP8DL+MmLFZdm6GByxsBJyuyEt2aKCRTqxbfNwRDSIYQh9SuNoa0IIvIgGQT+COOT0Oe5mkTVuurSeGCWWojA2Uqe7C5H8V8ZJJsrxkJpkQrf5l/jFnhOkgwayOlxbMSCKhhbARIidyDLtth8evgcZcNcEBqdaCn9KxVQAl2dmA27emLEiDjdli7Y6jsBx3TCuWt7uLCIOMeCl934xhT27tguiXRNjdV+nGBp2hu8b0NcoOPDM52BMQLqmOLJpLoMAB94P2hAOmxy8rN7UpxjhYj4o5+FgmsfQPJAFb6wkDQO8iUSMGm3NJ4GMrvzqWA+M0eL8TbegmK7WOu5rhesBOqsIPzk6nONgOOTscuicuahE7ZiGnBJJrfLIpuYqElzgHNESRXK6qe48harDnqvUOImHpjuZevuam1XOAPhHpXLzr4/kA6lVrNjU4UpR4XqG3jxa/xO3AabDndCTVbXZdkV5e7DwW3FwkbFR2gNrkLwRWyWS2nkRpzrzdC0zL2g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(39860400002)(376002)(366004)(346002)(451199018)(2906002)(86362001)(52536014)(55016003)(38100700002)(478600001)(9686003)(5660300002)(33656002)(186003)(26005)(7696005)(6506007)(8936002)(71200400001)(38070700005)(41300700001)(83380400001)(8676002)(66446008)(66476007)(6916009)(66556008)(4326008)(76116006)(122000001)(66946007)(54906003)(316002)(64756008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?VIV0JPl3rFFSn24rXXkC6aS6nxqHDabYcsKOYgbLij1zrO5aHiqU9sRwha?=
+ =?iso-8859-1?Q?7qpAT/N6zFQwZFp5xJ+GKs/FXNCWKwSZzv0bfPTv1lc+v8D/dNAGWg5BFp?=
+ =?iso-8859-1?Q?MkRM3+I/s+gIKMwJKtcakZ9c++FollfO1TFZkkOZx6VhYhbbnygqo3WEOH?=
+ =?iso-8859-1?Q?56K2tQhtSBOGZzefiQsY1t+3Sc6E9/5FH6sAjanEOSVhcjzyY+s6/ppk1T?=
+ =?iso-8859-1?Q?hlk98+ez9ekQb37DqwcDGL7FFLJ+h4ab0p5O3n6nETEFxRF5u0u3PcZgd3?=
+ =?iso-8859-1?Q?FmUi4i0K7FxOTN2fnYOTAG5zDYDFf4AfwNfM2VWGjrTAL4MxXrFw3pU7kN?=
+ =?iso-8859-1?Q?0Eur+TmbIHpxPOS2yWcuI60IsAXkcyxsgKEJL1M8vyuxjhXBD9FXgkZz2X?=
+ =?iso-8859-1?Q?sSCwyIv/UtaaIwM2kPpsqIUAk8x11mGgKj/+NOor8qL+hKDTesbOVe2j4b?=
+ =?iso-8859-1?Q?rMAF2J+GIV6JWSKV0mXgFlyxrqJ426ku91LO66JuhKUkyZE5ex6P2JrWQw?=
+ =?iso-8859-1?Q?OZTM/+MeU88y4yUlURSAQ4qP/CEYJi3h0wq+330u/9UMUADIZlZ5gSDzAz?=
+ =?iso-8859-1?Q?fevYS6JqfmrliShOytZ8W6uX147ojUGJ6B7TrdtwzHoFE+cCG+ldhDKL5P?=
+ =?iso-8859-1?Q?yesBwEAFcPjHF/0+6iF1g2OGT2lsgL/qfRCcf0ZOoTjEQ59Lp0NbEvAwWf?=
+ =?iso-8859-1?Q?EHnz27mlcyieuPYa0TaMymEyGItalt5otL+z0M3MYDc/rPPvT4ws73ZCJZ?=
+ =?iso-8859-1?Q?80clGd7vl6z8FLE5ZAgkU2zel9orzttTqL9CT55Vj5RwkBd3PgENes9ncq?=
+ =?iso-8859-1?Q?3QpqBDpNrClxjd3fJpY48hmvAXrotEOXVE5dLAKjnxhcnxIC6bqagFxjae?=
+ =?iso-8859-1?Q?5oG7sI5SodOSjYay/+kel0gegmbne5A2A4ng5DtE3FxgAFhRka2K7eKYlf?=
+ =?iso-8859-1?Q?EkN5iLtptVaQnyHkvmypI6kq+vX5qDcoVDzLU4b5k//mxYPPFf0UJBwQRz?=
+ =?iso-8859-1?Q?z6y8k1/qjLbEkygiGsjtQ7higtINvCJdPZ7XQ+cXZPga3a3W4U1eNOmba0?=
+ =?iso-8859-1?Q?ryQPbkp2ZsKb/wdQWZZLGNuyd82qssgyYi5SCp7tFrikV9dO2tNLvJ65q8?=
+ =?iso-8859-1?Q?r9i/sQuv76s0OkbvDUX8e7ewbNUgkio512gBhj9HrhCONz2f+aBqIzEzDP?=
+ =?iso-8859-1?Q?Tbpp3JtbrdaRlUbPBmzfOa2AjdMRrbg49lzkwowJyiFsacdOOmlSY3pCiR?=
+ =?iso-8859-1?Q?b+loCVHE5TyjrddEbLsasmFp+N+6dh7rQXGlBTX2ki0Kxeq7i1IqJrO2Li?=
+ =?iso-8859-1?Q?tXhO0NN6/kX17wbSjPKQIGyErsCaOrrkXZxqGc3GSoWB1WlBgGqBvQ8Yug?=
+ =?iso-8859-1?Q?ihvOnINoo4MyizUIKyn1vMw23UyResIf+H6pLMzscIPNvCYLfPBVrI2c6L?=
+ =?iso-8859-1?Q?iI0hxARLoNZfYjeYgim6crEe0v8O4syRRJ4YpaKufc9RisOiAPw5XI4Xma?=
+ =?iso-8859-1?Q?7uN+YOGtdrY3C6pD2qS2UCy7J9QUMJPzu6FdyNIYaybu05k+R0OgVQ07AO?=
+ =?iso-8859-1?Q?lYLaLj5aqyZETNVeFb/DSz6x8hXOQX+dbdJDEUh1d6XnIDvCX7ABrFOuH6?=
+ =?iso-8859-1?Q?Sv6pkcuA7r42yKL7vB4FhLX10i/Luv+Hx9EbkIbXAete/nJOa4Ea//Ow?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR04MB9628:EE_|AS8PR04MB9093:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8fa05b8e-9b70-4b1f-4f25-08db0d9f0665
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Wvi/IIkWljAgQz6YfPQU1X+gBDi9ryKt0IEn0na+Xxgfu8IlOUXoV077s7JnqPiRd1vofmqh5+fPSlhLidPbTKs2oUWZRwhHp+UzTJuHNbe9imuGy63m8JFW/dzcxFVKGBaowvttuCI0b60D4Xe3eexNEpIMopubHy5gVIlfyZSX9gJukBfZpGhDJrxsqsX/CMwfA+yPxUTWAuNx2XfhrxYWlStlcdpk1wFlYzS9yqqJ74XbtG0utwoQ3TVOGNuhQNlAKVTMpHVuA4wXGwkCRR3TLqZBHtL54qhjEHSTEamLjBEIxCdt7eugFiZLBZBpBLS8B/vM3r9RgNFnR5ishi5LbaeU60zDymFQt953OOLd/e+9iVxRM5hup1/Arh3iL35h7Szle7AkONMkVCe+9jJ3qRS4YwEEGkQJKFn1vzGwEwcvAzlj00sd7pX/3j8+YXptKpUxOW17UqNPQz7BId7nSJnIqdB+VTSFECcRdAFtjQfBXKFhy43tJq3n0eenKcVkFvwPTQuNrUHRCbYzZyaGs63oYQsifmhsQpmQsfJN43q5XBXfzKkEHZClo8Yu3nuW/sJvmIB4Olcsc9dWNZsvp79AYFsTi7EYBM5b9Px5DHcF8/EfFv8nmqJAuR2Vm25nGxB8csZzmovTimgOw53hz4FIANl0Nn9c+rPJMZXyw5ka5Dz1oQCtLqza9A4mw3fpRatwpJjACGs7kSiVwJG1JRcD9q/4fhivx+igHMQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9628.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39860400002)(346002)(376002)(136003)(396003)(451199018)(2906002)(44832011)(36756003)(53546011)(55236004)(186003)(6512007)(26005)(38100700002)(6506007)(83380400001)(66946007)(2616005)(4326008)(8676002)(66556008)(316002)(5660300002)(8936002)(7416002)(41300700001)(66476007)(478600001)(6636002)(6666004)(31696002)(86362001)(31686004)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZUE1RC9EelNZM3VBc2ZPYUFsNFg4cWNKS1lvZS90MUZzQi9IMFFQWmJqNkda?=
- =?utf-8?B?WU1xdlpGU0JlVTdNNXlEZzVjUVhUN3MyeUU4NHdXdWRWY2pyOVdLWUNGYjR3?=
- =?utf-8?B?bnJpT0YvMnZSemZkMGRBRGtVOWh0Vk1uaVYvRU5LU2tKZUdiY2hJUEp5czZo?=
- =?utf-8?B?OE8vTXBKOFhEVCs5ejNlRllXVC9hSndoUVNRZFB4dEhORVkrUDlxMGs0RUdn?=
- =?utf-8?B?VWFwb1JDc3pnZlpwSVFJbTdRdXZsVmtXNFZGNGMvcVdNWU9qY0JqUDF3Y20v?=
- =?utf-8?B?OXJmMVdUYU5ZemFZcGNIZzJTRWJhWXRrNGVEcVF4WUNSYkhZYmczdlJwYTh4?=
- =?utf-8?B?bzFaMjhORTU4TkVXUndEbWxPdHFmc25RdDFIZ0FSVHdmc1hLZ0hZVkN3TUdK?=
- =?utf-8?B?ZmFXUEx4T0dwOUNSRUZxTFN3QzNqSkJ6RmhkU1hBSkx6R1VlNld0dUF2Zzh0?=
- =?utf-8?B?cUkzZC9qQkhRSUxaVk5rdHFTRTJjclhPM20vTlhUUTlMZHlwOUxVSFJIZk8w?=
- =?utf-8?B?MmxxM1lZUERBN2ZONENLRWlZTEZVQkhpR29FRHc0ZGFoV2VKTVdaYkMzVWpm?=
- =?utf-8?B?SGRtSW5mMTcwd1ZLN040Mm5xS2tndTRQNW9SNWkwZm1yZFkvQ2hXaXl1MHRo?=
- =?utf-8?B?UkQxK002ZE1JZ2V2N1JRZUZFWTlwNW0xcDNSeW4vZURuK3llRFlhRjUwTjZv?=
- =?utf-8?B?aFErTEhoYXVValhOanVHd01TZFpFNFI0LzZlU1lGRGt3TjZIN3M3alAwUTFy?=
- =?utf-8?B?UGdNUWh5bUxYRndNMkpYSmxzaXc5SmlLdWc5ajdteHNGd1JSdlhOR0VpRTBq?=
- =?utf-8?B?enZReG1zNXkrKzdEdVRGOTJXNkIxaVkvR1JxZFNjY3ptZ0xxM1lReGVoYi9F?=
- =?utf-8?B?MjJWWnhRQnlRY1k5TFJxRFR2cS9wdmlmMnlFL01jMVFQZDFzTVNOM2xKOWxz?=
- =?utf-8?B?b1ByV1NaRktkcFNDNzhwSXpGYTVKYjZicWxVNkx6SzRDSkdSTTJZWndzNUhJ?=
- =?utf-8?B?b21HdHN1dXlWMFUzMEVQcEx0c3lTRGQzRXF2QnNlV3NPTG9KTEZhc1FIWlQy?=
- =?utf-8?B?aWJ4b2lRUjQ0eE9UNExSOTUyVnRMVm1yaXE0RUR6T0FuY1FSZVhqT3N3VkFw?=
- =?utf-8?B?N1Jpamlzd0dzWDVXdWFYTEUxT016aS9VQ0RodzZjQXkwTWZERDlNOHBnYkZT?=
- =?utf-8?B?OGEzWVZnejMwSy96TndpMzcybkpRWFlHaEtzTlhoSDZaUStxVVEyRWRwU0V6?=
- =?utf-8?B?NFBDYzJZcUxTa3k2VGdvQWxBTm1JbjJFTUZWeTArdDBpWEhBQ05RR2Z2M09B?=
- =?utf-8?B?UUdGTFVaTndZRmhhbGtVaStvcmYxRzBXSkZITmtGT2FEdm5zNjBEd3FnMzRP?=
- =?utf-8?B?NGV4K09pUzV3anlLaFlPNU81ZVpWaWNIYW1BM1JmZVo0aTNGS2tyOHdVdUFa?=
- =?utf-8?B?Q1dYMXRhTjUzNFJPT1pVS1FMWG52UUxVb0YzT2x1OXVPS1dwWE5PSGdRMGln?=
- =?utf-8?B?SXllbElHLzdJTFQxQ0VBUW9tQXdzeGdQQnpXWVNCdHo5NmUwY3RQS2VCNjJW?=
- =?utf-8?B?eUNscWdsY093S2JKSkFLZG4rOE43NXBqVW14UG5YNmU0ZHl2RE9VRkRVclA1?=
- =?utf-8?B?aDZKYmNVOFdvUkREMzhBdVE5S0U4ZmtkR1lZYkduTHRpeHpwTjhhZnJVSU1o?=
- =?utf-8?B?ejNpcUdQS01OU3VHczg1SUxqZHVpYTFrNTllSVJiKzc0bmY0VkN4TzA5VjlF?=
- =?utf-8?B?cDZlaFg5TzVYVjhSYVJIclB5S25HRk5UajV4eWFGalhGQVFzeDZVZ2dIY3l5?=
- =?utf-8?B?b0NOZXorTGFGZUNTN05rTWtzb2p2cWJGQmlvRm40c21uaUN4RmhzV3FRb0li?=
- =?utf-8?B?N2tLcXBsT2d5dXFjMXBTYWZvWGtHVGEvY0hrbkxlbWlZSmd3a2F6U05KS3lT?=
- =?utf-8?B?UjNzZmlLeXVCL3AzdkdXamNjTXA0TDdCZnNqYlhHdWt1WDVhRVRNTkY4cHd6?=
- =?utf-8?B?Q0JPVU1CaCtHNnJpSStyUC9XUE5FVzh0T1lQWStySUlKdThJRmw2K1NYWTF2?=
- =?utf-8?B?V2tOQjJpUHVnNlJwTUlDNFUrdnpFR01oVGEyL2hsVVhxb2JCZk8zdUxCV1hI?=
- =?utf-8?B?bC9FcnN3NEFtS0t3Rm5kQnNocGV0Z1A3RWJleFJZUEYwaE5UZmRyS1NSbVlk?=
- =?utf-8?B?Q0E9PQ==?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8fa05b8e-9b70-4b1f-4f25-08db0d9f0665
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9628.eurprd04.prod.outlook.com
+X-OriginatorOrg: bp.renesas.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 08:48:06.2570
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1ca90ec-e98d-4a08-aee8-08db0d9fbec2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 08:53:15.3979
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hXORZ1aiX0QqS8mMb4Q7gV5b5ddPPhEgEwPWT7dbTtUlwyzMRBSDdlREWwu2l6qfMYpNQ4Mtsx7gFYjkrGGm5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB9093
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pVVmc8wnQrUfHjESRr7tsawe1Ss7URRuFiPq740339AcjV8y0dojxySWscaMO83T1/jTDHPi78HFptIzxYitypu47XmyfHPQyfxDw9x17Pw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY3PR01MB11561
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2/11/2023 5:45 PM, Tom Rix wrote:
-> cpp_check reports
-> drivers/tty/serial/imx.c:1207:15: style: Condition 'r_bytes>0' is always true [knownConditionTrueFalse]
->    if (r_bytes > 0) {
->
-> r_byte is set to
->    r_bytes = rx_ring->head - rx_ring->tail;
->
-> The head - tail calculation is also done by the earlier check
->    if (rx_ring->head <= sg_dma_len(sgl) &&
->        rx_ring->head > rx_ring->tail) {
->
-> so r_bytes will always be > 0, so the second check is not needed.
->
-> Signed-off-by: Tom Rix <trix@redhat.com>
+HI Ilpo,
 
-Reviewed-by: Iuliana Prodan <iuliana.prodan@nxp.com>
+Thanks for the feedback.
 
-> ---
->   drivers/tty/serial/imx.c | 8 +++-----
->   1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 363c77a140f0..523f296d5747 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1204,11 +1204,9 @@ static void imx_uart_dma_rx_callback(void *data)
->   		r_bytes = rx_ring->head - rx_ring->tail;
->   
->   		/* If we received something, check for 0xff flood */
-> -		if (r_bytes > 0) {
-> -			spin_lock(&sport->port.lock);
-> -			imx_uart_check_flood(sport, imx_uart_readl(sport, USR2));
-> -			spin_unlock(&sport->port.lock);
-> -		}
-> +		spin_lock(&sport->port.lock);
-> +		imx_uart_check_flood(sport, imx_uart_readl(sport, USR2));
-> +		spin_unlock(&sport->port.lock);
->   
->   		if (!(sport->port.ignore_status_mask & URXD_DUMMY_READ)) {
->   
+> Subject: Re: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
+> serial8250_em_hw_info
+>=20
+> On Fri, 10 Feb 2023, Biju Das wrote:
+>=20
+> > As per HW manual section 40.6.1, we need to perform FIFO reset + SW
+> > reset before updating the below registers.
+> >
+> > FCR[7:5], FCR[3:0], LCR[7][5:0], MCR[6:4], DLL[7:0], DLM[7:0] and
+> > HCR0[6:5][3:2].
+> >
+> > This patch adds serial_out() to struct serial8250_em_hw_info to handle
+> > this difference between emma mobile and rz/v2m.
+> >
+> > DLL/DLM register can be updated only by setting LCR[7]. So the
+> > updation of LCR[7] will perform reset for DLL/DLM register changes.
+> >
+> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > ---
+> > v2->v3:
+> >  * Replaced readl/writel()->serial8250_em_serial_in/out() in
+> serial8250_rzv2m_
+> >    reg_update() to avoid duplication of offset trickery.
+> >  * Added support for HCR0 read/write in serial8250_em_{serial_in,
+> > serial_out}
+> >  * Added UART_LCR macro support in serial8250_em_serial_in() to read
+> > LCR
+> >  * Reordered serial8250_em_{serial_in, serial_out} above serial8250_rzv=
+2m_
+> >    reg_update().
+> >  * Replaced priv->info->serial_out to info->serial_out.
+> > v1->v2:
+> >  * Added serial_out to struct serial8250_em_hw_info
+> > ---
+> >  drivers/tty/serial/8250/8250_em.c | 67
+> > ++++++++++++++++++++++++++++++-
+> >  1 file changed, 66 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_em.c
+> > b/drivers/tty/serial/8250/8250_em.c
+> > index 69cd3b611501..a90a5cc4234a 100644
+> > --- a/drivers/tty/serial/8250/8250_em.c
+> > +++ b/drivers/tty/serial/8250/8250_em.c
+> > @@ -19,10 +19,14 @@
+> >
+> >  #define UART_DLL_EM 9
+> >  #define UART_DLM_EM 10
+> > +#define UART_HCR0 11
+> > +
+> > +#define UART_HCR0_SW_RESET	BIT(7) /* SW Reset */
+> >
+> >  struct serial8250_em_hw_info {
+> >  	unsigned int type;
+> >  	upf_t flags;
+> > +	void (*serial_out)(struct uart_port *p, int off, int value);
+> >  };
+> >
+> >  struct serial8250_em_priv {
+> > @@ -46,6 +50,7 @@ static void serial8250_em_serial_out(struct uart_port
+> *p, int offset, int value)
+> >  		fallthrough;
+> >  	case UART_DLL_EM: /* DLL @ 0x24 (+9) */
+> >  	case UART_DLM_EM: /* DLM @ 0x28 (+9) */
+> > +	case UART_HCR0: /* HCR0 @ 0x2c */
+> >  		writel(value, p->membase + (offset << 2));
+> >  	}
+> >  }
+> > @@ -55,6 +60,7 @@ static unsigned int serial8250_em_serial_in(struct
+> uart_port *p, int offset)
+> >  	switch (offset) {
+> >  	case UART_RX: /* RX @ 0x00 */
+> >  		return readb(p->membase);
+> > +	case UART_LCR: /* LCR @ 0x10 (+1) */
+> >  	case UART_MCR: /* MCR @ 0x14 (+1) */
+> >  	case UART_LSR: /* LSR @ 0x18 (+1) */
+> >  	case UART_MSR: /* MSR @ 0x1c (+1) */ @@ -64,11 +70,68 @@ static
+> > unsigned int serial8250_em_serial_in(struct uart_port *p, int offset)
+> >  	case UART_IIR: /* IIR @ 0x08 */
+> >  	case UART_DLL_EM: /* DLL @ 0x24 (+9) */
+> >  	case UART_DLM_EM: /* DLM @ 0x28 (+9) */
+> > +	case UART_HCR0: /* HCR0 @ 0x2c */
+> >  		return readl(p->membase + (offset << 2));
+> >  	}
+> >  	return 0;
+> >  }
+> >
+> > +static void serial8250_rzv2m_reg_update(struct uart_port *p, int off,
+> > +int value) {
+> > +	unsigned int ier, fcr, lcr, mcr, hcr0;
+> > +
+> > +	ier =3D serial8250_em_serial_in(p, UART_IER);
+> > +	lcr =3D serial8250_em_serial_in(p, UART_LCR);
+> > +	mcr =3D serial8250_em_serial_in(p, UART_MCR);
+> > +	hcr0 =3D serial8250_em_serial_in(p, UART_HCR0);
+> > +	/*
+> > +	 * The value of UART_IIR and UART_FCR are 2, but corresponding
+> > +	 * RZ/V2M address offset are different(0x08 and 0x0c). So we need to
+> > +	 * use readl() here.
+> > +	 */
+> > +	fcr =3D readl(p->membase + ((UART_FCR + 1) << 2));
+>=20
+> I don't get the meaning of that comment. It doesn't seem to match what yo=
+ur
+> code does as the code seemingly has nothing to do with IIR (and none of y=
+ou
+> changelogs refer to IIR either)?
+
+The generic macro UART_IIR and UART_FCR in linux/serial_reg.h has a value o=
+f 2.
+
+The RZ/V2M register offset don't match with standard ones, we are doing rem=
+apping
+inside case statements in serial8250_em_serial_in() and serial8250_em_seria=
+l_out().
+
+Currently IIR is already present in serial8250_em_serial_in(), so no issue.
+
+But when I tried to add UART_FCR in case, it gives the compilation error.
+You cannot have same case values inside switch.
+
+>=20
+> Is the only reason for this that serial8250_em_serial_in() currently lack=
+s
+> case UART_FCR: ? Why cannot that just be added there?
+
+Yes, It gives build error.=20
+
+Cheers,
+Biju
+
+>=20
+> --
+>  i.
+>=20
+> > +	serial8250_em_serial_out(p, UART_FCR, fcr | UART_FCR_CLEAR_RCVR |
+> > +				 UART_FCR_CLEAR_XMIT);
+> > +	serial8250_em_serial_out(p, UART_HCR0, hcr0 | UART_HCR0_SW_RESET);
+> > +	serial8250_em_serial_out(p, UART_HCR0, hcr0 & ~UART_HCR0_SW_RESET);
+> > +
+> > +	switch (off) {
+> > +	case UART_FCR:
+> > +		fcr =3D value;
+> > +		break;
+> > +	case UART_LCR:
+> > +		lcr =3D value;
+> > +		break;
+> > +	case UART_MCR:
+> > +		mcr =3D value;
+> > +		break;
+> > +	}
+> > +
+> > +	serial8250_em_serial_out(p, UART_IER, ier);
+> > +	serial8250_em_serial_out(p, UART_FCR, fcr);
+> > +	serial8250_em_serial_out(p, UART_MCR, mcr);
+> > +	serial8250_em_serial_out(p, UART_LCR, lcr);
+> > +	serial8250_em_serial_out(p, UART_HCR0, hcr0); }
+> > +
+> > +static void serial8250_em_rzv2m_serial_out(struct uart_port *p, int
+> > +offset, int value) {
+> > +	switch (offset) {
+> > +	case UART_TX:
+> > +	case UART_SCR:
+> > +	case UART_IER:
+> > +	case UART_DLL_EM:
+> > +	case UART_DLM_EM:
+> > +		serial8250_em_serial_out(p, offset, value);
+> > +		break;
+> > +	case UART_FCR:
+> > +	case UART_LCR:
+> > +	case UART_MCR:
+> > +		serial8250_rzv2m_reg_update(p, offset, value);
+> > +	}
+> > +}
+> > +
+> >  static int serial8250_em_serial_dl_read(struct uart_8250_port *up)  {
+> >  	return serial_in(up, UART_DLL_EM) | serial_in(up, UART_DLM_EM) << 8;
+> > @@ -120,7 +183,7 @@ static int serial8250_em_probe(struct
+> > platform_device *pdev)
+> >
+> >  	up.port.iotype =3D UPIO_MEM32;
+> >  	up.port.serial_in =3D serial8250_em_serial_in;
+> > -	up.port.serial_out =3D serial8250_em_serial_out;
+> > +	up.port.serial_out =3D info->serial_out;
+> >  	up.dl_read =3D serial8250_em_serial_dl_read;
+> >  	up.dl_write =3D serial8250_em_serial_dl_write;
+> >
+> > @@ -144,11 +207,13 @@ static int serial8250_em_remove(struct
+> > platform_device *pdev)  static const struct serial8250_em_hw_info
+> emma_mobile_uart_hw_info =3D {
+> >  	.type =3D PORT_UNKNOWN,
+> >  	.flags =3D UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP,
+> > +	.serial_out =3D serial8250_em_serial_out,
+> >  };
+> >
+> >  static const struct serial8250_em_hw_info rzv2m_uart_hw_info =3D {
+> >  	.type =3D PORT_16750,
+> >  	.flags =3D UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP |
+> > UPF_FIXED_TYPE,
+> > +	.serial_out =3D serial8250_em_rzv2m_serial_out,
+> >  };
+> >
+> >  static const struct of_device_id serial8250_em_dt_ids[] =3D {
+> >
