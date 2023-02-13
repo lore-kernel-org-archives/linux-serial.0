@@ -2,280 +2,520 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF88C636CC
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 16:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C3BC636D4
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 16:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229982AbjBMQG1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Feb 2023 11:06:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        id S230053AbjBMQ0Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Feb 2023 11:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbjBMQG0 (ORCPT
+        with ESMTP id S229965AbjBMQ0X (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Feb 2023 11:06:26 -0500
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2112.outbound.protection.outlook.com [40.107.255.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E571C58B;
-        Mon, 13 Feb 2023 08:06:24 -0800 (PST)
+        Mon, 13 Feb 2023 11:26:23 -0500
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2076.outbound.protection.outlook.com [40.107.104.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E1A1DBB5;
+        Mon, 13 Feb 2023 08:25:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K9f29l207lGLa+qc47XbJ4vBtkbYEuLu+Vmt+FecwnuHFvCV0iGf2VyPlUxu+AG34N0uyGax68V86h+2+tTEdkGsbAphrolvL1svG+USY2QKfvHTwFEJr92b+AHHdLX7KWDYD7ENhXAAHHsXjlVj2pZsXY+I3EprhN8RyW+/8ukwg8cjsJtwquPdW0bEcggqmK5btRjJX8MV442JWWI3HTl2vZCmhQFq/zPhKRdeyLUp8kABlipHVTl6JvlCL0BO45Q9faDflp93ickBIb77plbRrNT6OUz9xi8v72XaIZrkVogEABWS1dE5zSKy9e9UXsP1NWu8tE+OJ49DoRuiWQ==
+ b=DJnXhj8BSxSRS4u6J7RZnFbe4Ib/FzI0DFcxUwAhI4dwfjdJiBfDApEML2G4rYmMEhnNAPs8INQo4GWPiOruW7zt/4Ty1GZcb4N0wpBoidIzmwtMkfq0AdRHs8/FlUQuE0zkeTPZjnlMLzbWUgm2O24P/Q9cUEUJPS76rcVLK0gmjc2G6/2ZvoThuENa6s38X3OVzAFFz8jaPyWDaCZEwAhnBIA7Etnh5btM2mW22hvj0rVj9NxyVWbngQrIO9iesLKktntjozY3ZTOfCgTsTpJBzg+2gcg8/Uqk4nAT9bfcaBoTfLIUynVKNxF4z4+yb/K7MPzBfEgOMaWKLyjxnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZEsRsLqlwTedIcu5u4NsejPn5EW8Or71OR5U3GAnfEo=;
- b=aYz/GLV6RkY2loW+khyLzf1m5y9HpUL2qnG0Yap+yxqNFnI1ax1zh4ueWEIX7OZoy0yNjRQNCk2DxdYYxJMj0JgXlyo3OGK9hjD0vzKR8TitXzPxqRXc1ST0QFOKVb+auktH3TFoySC0FKqQGIq+7melRkGH+QTy6qVUx4EOb3soZtuVXVcGOzF27oalczlWHdRuQyLUrPK+EYDmardp9+UQDykKackWcUm56vlc/EXzeGtZqIWnvZstTBmA7kE5nBes6/XUryguvcyhxc1Gu9sOQCM9InpxsyLz322ON9uDICm5VbhrZv4zghAy7lgawmddwzKcVi+/JKHoAS6BFQ==
+ bh=tH+viuJg5E1udMCRZsgfOeXdA+WcmAvOoIwex8tpkWQ=;
+ b=oGLmQwhG9FQ5GpYzQuhx/jzKWHOJzX770HkHRoBXRLagN/M509NPY9ai8RUZwKduifNnHtuL3q62e7HS+YpAGm+k82P3p6tKx/sD0IaWc6vJhVihXjVhDwJo/CrQrvRB2BcKYqnawmmm6s/SXc6OUD/R3vYS6bC7M281d4B7IwH5GyFFp2TG8KYKV4k68YTkgA3wFRWBshgH2yr6RuUNhZGynywVaI4LsVnJ5GbuzbpVoi3KGJOo4bvOfc7eIECiklcb2gGvWPDy+yTYKYVAPDG0NJRy/9eq7pFHK8kC3M7r0jbced9s5VZpUHjCXbAC1ArOEHwgGVB1afKcVHhZbQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZEsRsLqlwTedIcu5u4NsejPn5EW8Or71OR5U3GAnfEo=;
- b=Lllt6k8XPNxf+O6leYnjxQv/Ftggd16PHqS3JhK8LTIh2NVasZnOYL6ArKEumQzq3CopBUIz4udyVjkCCo7ZgxQTHUO4IRGjXQICPf+Btop3QWOLx8N75B8iXCbrbAWqQsdyMoaX4dI3u1E3AtfLHXy/JBF7y2aZ1E3cXR8ONQ0=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYWPR01MB12037.jpnprd01.prod.outlook.com (2603:1096:400:3fd::12) with
+ bh=tH+viuJg5E1udMCRZsgfOeXdA+WcmAvOoIwex8tpkWQ=;
+ b=fRBGgD/ZaQDqE9j5knm0Bqf4UI3ex8xQqTQDP4UYExeUqp3GGv8L0PVdgJhrblSRiJiKQQ+/Z+vN0oLeIsNx05bzsy8M84M9vUDwYBM+k/3GdMNGoyBzwx13Wm2io+i/cF36CiWz3j0uSnMcIh6Td0VSOo2B66AOB5HqqqKzs9o=
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by DBAPR04MB7431.eurprd04.prod.outlook.com (2603:10a6:10:1a1::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
- 2023 16:06:20 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::343d:7339:78e5:a46e]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::343d:7339:78e5:a46e%7]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
- 16:06:20 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        =?iso-8859-1?Q?Niklas_S=F6derlund?= <niklas.soderlund@ragnatech.se>,
+ 2023 16:25:44 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189%9]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
+ 16:25:44 +0000
+From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
- serial8250_em_hw_info
-Thread-Topic: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
- serial8250_em_hw_info
-Thread-Index: AQHZPY8kj9QN2R7bt0udUTepz/GAba7Mkw8AgAAAZ9CAAAeJgIAAAGyAgAAAnACAAAB4EIAABLMAgAAbYICAAAWmAIAAAMYwgAAIzICAAAK3kIAAP6DA
-Date:   Mon, 13 Feb 2023 16:06:20 +0000
-Message-ID: <OS0PR01MB5922C215BB4780846E23246A86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20230210203439.174913-1-biju.das.jz@bp.renesas.com>
- <20230210203439.174913-4-biju.das.jz@bp.renesas.com>
- <56b431df-be7f-474c-8cf5-30c2eaa2745a@linux.intel.com>
- <OS0PR01MB5922A860B77A9BC0C9E5E3AC86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <cc7f4d69-7e68-0d0a-4b89-c4e16dff716b@kernel.org>
- <56c8fdab-a037-ea00-d83e-f75c92566d92@kernel.org>
- <f10bcddd-2905-3f63-dd0a-8424798932dc@kernel.org>
- <OS0PR01MB592210E15CD943F1987316F086DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <283b2e79-e992-dc35-2a79-feccc93103fb@kernel.org>
- <OS0PR01MB5922139BA73BBBE2556161DA86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <4cfed9ad-bf89-7b1-40cd-7def4c64f1@linux.intel.com>
- <OS0PR01MB59227AE1C2A89B75DFBF8F8286DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <c2e6e9c4-9342-45df-401e-8dffa881e8@linux.intel.com>
- <OS0PR01MB59228E1C6038C8609BBABF5286DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB59228E1C6038C8609BBABF5286DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Accept-Language: en-GB, en-US
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Topic: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Index: AQHZP8fSwC80CTkixkyeQycS/pGl8w==
+Date:   Mon, 13 Feb 2023 16:25:44 +0000
+Message-ID: <AM9PR04MB8603E350AC2E06CB788909C0E7DD9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+References: <20230124174714.2775680-1-neeraj.sanjaykale@nxp.com>
+ <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
+ <bd10dd58-35ff-e0e2-5ac4-97df1f6a30a8@linux.intel.com>
+In-Reply-To: <bd10dd58-35ff-e0e2-5ac4-97df1f6a30a8@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+ header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TYWPR01MB12037:EE_
-x-ms-office365-filtering-correlation-id: 894c2831-a9fe-4706-7bd6-08db0ddc3f20
+x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|DBAPR04MB7431:EE_
+x-ms-office365-filtering-correlation-id: d7e5fc8e-8808-49d8-c06d-08db0ddef4ce
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Csp3HNBYGXdC1rVqDMBrmEkgt65czumaX2U8GrwWHKjEURmwAftLMvu27NbrbtyZXRJUJxuBQHB74vHToJ5NEBsOuAHwV5NhTQrijU4y25zMlbsBTUsT3PF1BYVkTTA6whBNh4VTDlL33oOplWvrpXXfMVyPnKdE91sH2xnmn8+h5n2Jxm3qNIzM3Ggz089kn9LbjI9k6BFFeS7EWiLgOmbC/TBFDLAnngz414TJwq+7sVnDpxFWU7heKL0XtDwIBIMevdgN13yB4wLSe2cDWg48bREhx0t/H4ZNtJwU6xIulQeZGEuBqtx9CHYUTjXmVRNTq23Ah2/JmgXvOK3xIl7O2sktHf5cPd7Ea9ou3Z38LLU6tNAntd5SuilKlyrsjwHJfavHP7Rg/MY6MekwX1CTJQhX/M+/a2NcbzMwpRY4KG3lR/BuPLi8rL6acElWRPPvdMvEdRNNkfY9AoWRpG/D1+dPLdsOSFNNDP2mbr5hoi3QYH6MGLEiD20T/O6lygIj7lyGuFOtG5eLNK1kiWqNo7p+Q508O8dsPtl/PiB+idjEYGnx/Cq5hUku+EtTyUDiTo9A3uPEjSufsIJzf4phcWiTyOYtFPmENi/IfKvmN6yOsBTAWOv/NaeR4LGhk3I82qSZmxHnu1y8G0VLq4yv979VjUVy6gL/+j/NHqzF/5K8gd8t8zbehX02xoCvhRsS2vrnwvdC9pHzklIsnA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(346002)(376002)(366004)(136003)(451199018)(38070700005)(7696005)(41300700001)(71200400001)(55016003)(86362001)(54906003)(110136005)(83380400001)(316002)(33656002)(66446008)(64756008)(66476007)(66946007)(76116006)(66574015)(8676002)(66556008)(4326008)(478600001)(5660300002)(52536014)(8936002)(26005)(186003)(9686003)(2906002)(6506007)(53546011)(38100700002)(122000001)(2940100002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: UklabDWW2rggjoa+dJb9d2chbw6O9J44Gro3mS0NU5aJKiOusaseQN++cbaSiiuoilQPTBkf0Fm9AnjPV+a2hztd6iaXnLMDT5Q7oq+K9QdhDsV2r4W8HE+Pmz/0JsGrUr+hjIE0NGel0LMfLQhikGjdE0aU6nj/c8TH1weGZa2PzsebLUUm0Mo+0BoT6XnvQ9iALhf0UbgdX40Kt/mUc5t1IITn82/dklHX8i7VIV8heMCxnxJHmcavVQwIC7yqNFFGemPncGWkN1M3aeaYmdfvY2BV+EgIjH4AMyUnQyDbKdoPmtLAAdEPwpg1qJ3XqekgH3DNN/PtKcTOp92QRdMk/IqDH5awx6EWHjb1f3CjlKs7bKdjIv77OjiggP44LEl9hMSI/+gRg6/n+1TAZ1B2UiEdGFyKU8b6ss3CjENPickL09o2dQnGh74oFAzsQzatiyJL2XYCrC2RmZCKmpmfJtdvxVvtTLJVTZwGlrleE7NqVI/poYIcID4dRekF6drHEHLWLlcDFhIhwtqLojqZYh1lRRY2FN4+z4XZfVYMeTb+wHErwxHnfKNi/sKk+6BfMUJ3N1t6tyE2M/URbvGvMYum7QaUDiVYh6ustm78KwLtTMpwNbSG1JuJt9wQZelbWAnJ2QBn1xLcVxeGhujwUnKefYX02IEF0yvGJiTtdTMwc1dG9t8+ym/QMx6+BvuCTMPG0+kMyMjNIRtGGA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(451199018)(66899018)(33656002)(66946007)(8676002)(4326008)(76116006)(71200400001)(54906003)(316002)(86362001)(26005)(83380400001)(9686003)(6506007)(186003)(53546011)(55236004)(38070700005)(55016003)(38100700002)(122000001)(66574015)(41300700001)(7416002)(6916009)(7696005)(478600001)(66556008)(30864003)(2906002)(66476007)(64756008)(66446008)(8936002)(52536014)(5660300002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?7QCoIQoYpJDl15LCEoBJUlYjM8NeRoR0HPW8pWMx6qtV5ZViFeHrIFO0yP?=
- =?iso-8859-1?Q?nTIskd4Ol84sWoVTXsUW+R2l7aPxIcsDn51TgHZ9Rc9VOpgXl0DWk6Uf3s?=
- =?iso-8859-1?Q?8HVB2DkD73WN3mtbMFyQOaEsLfWu+gAHO8PjtTFUC0sG0dh9jImcmKupE3?=
- =?iso-8859-1?Q?8wNAqB55YHGJiNcu5PXilWizdsyHlxsv3/ZwchR+afj+9rMD6Jxr7mtBZL?=
- =?iso-8859-1?Q?ngqrpCYKXihPPmA9iJxjbKkI6ox+A0gd35tmyZGcTQI2NsBMqPWmGfIHxk?=
- =?iso-8859-1?Q?fetFN+TjXaxGGtNnf2XMwxLSlPkGmv9lmM1BwjvgYTlIc72RcUbP0OHNNa?=
- =?iso-8859-1?Q?IVxyzemek8A9OntkuLGabkK0uqykPHkhgwQ1xGvk/fBxGqQpfy0aVi688J?=
- =?iso-8859-1?Q?OFtXStoaGckSrWp4h7AVM9U5cGJ+tcVjzr6gziMsJQP8UGBFuamXN3yOC4?=
- =?iso-8859-1?Q?EhhFDAk17H0AL/Nf6pmI9Js/QGwOVEBgw2oVcjruD/BT0D/b+yf+lWy0Y5?=
- =?iso-8859-1?Q?k/3axGsXxn+UF/Wr7LPwPesUnvDssz2c54jlb3QUs/X3msh0qMbgMi5XoB?=
- =?iso-8859-1?Q?s+VYSbE6TGTNSG/iGohEGc3oQACXx9PyKWlm4sEYJnK/SaWfbN/X9vXnPr?=
- =?iso-8859-1?Q?KnrQEjLt77Sb049aCgwEi4Ud+3r7MqtcdqMH9gDKTBrHi9n3w5L2Th/7u1?=
- =?iso-8859-1?Q?RKzwT2s+jE6pD+uXSAgyaaRn8uvpucZT7vuc+c6dh0/22FRTCgMgadC7Gf?=
- =?iso-8859-1?Q?qj7PCpCtJLf1Fn0mJFSAlRvXggSONgvNt9cVbiDmlgkw4AtRsK7pKTCsDq?=
- =?iso-8859-1?Q?W9zF4FybIuF13+S4N/rbwG+phbXuBL5veXjeb66GYLfZgQzXFZ/ktqB1Ia?=
- =?iso-8859-1?Q?9KtrvGCbEVqAm2E+rzCM7JB6Bvak6c9bCLdi6O+uiOfxVqkskG+JjjPXbv?=
- =?iso-8859-1?Q?ilBtODBb7gMyMcme3EqPUr4frFvE+3ERjKMxhnLy4n0sXJh+aP//XQBII6?=
- =?iso-8859-1?Q?WcTcYcAQEisa/hx921braBZuomAVvO/lxliRKEqhP7LJYP5mNgX7qwbnKw?=
- =?iso-8859-1?Q?nQilsFWO2l08qA3vAT8feXgeM6fjxe3LMGkuyP+sCBjhXTrt2ax9rnG32p?=
- =?iso-8859-1?Q?et02qf0qQXuFKDCtJDdrqinb75LVCZuFyDUEsAWQb/OmspW6GPKOQrWTX6?=
- =?iso-8859-1?Q?0fdZpu32yUlbWWp22aq4kqb3Nr68InzFEL3N3zdnS7dYq+maVqrZUGF0RZ?=
- =?iso-8859-1?Q?V+bX/41V3eB5cT5hRsmkX3Z8ewV4Z2wtk+L57nvNlPmwiIftSrre5n4vJV?=
- =?iso-8859-1?Q?bJm3vcGoYy0mWMpzG1UWdhGMCbe6ADR88wfIgABA5FDJR6kEpEeb6ZYHT+?=
- =?iso-8859-1?Q?ldavRecsQAQz059fHl6furjuMCahJUAeW3pmn9J91a6GLX6C2+ao4Crlg+?=
- =?iso-8859-1?Q?pt1Cdw0x+mxHdAsG7E4U/0BLAz1XYK4AvoQquDyGGBg+mxWoUV1jk6owTr?=
- =?iso-8859-1?Q?mKQVL4fCpFwjgh1Hemqy39Ap472vChZdSjY7O9fJdtUKCM14Zltv2emj/N?=
- =?iso-8859-1?Q?/6RnALfQ9gNewfQ/J1YAZFXrPgUxecCwDtpXOIvdtxIn5wlwEtxQZ/Czch?=
- =?iso-8859-1?Q?dINzotxqNJdBQ3g0pi7OJvWfA+h6Wc+6FDQetf0AHVgt2hhRvSdiKS9A?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?TbOjkZpX+NT2SbDdTGaotWNRess6ZPdZ1TXL6PHWFXO6mGgS5HQd6KHRPL?=
+ =?iso-8859-1?Q?vVNN0RP7OjZWR329m/hphHADjhw7BZCMD4qYXaaD6IX9jLIP0QqfHZDDJ/?=
+ =?iso-8859-1?Q?uezorERLNu5uZWKjIB6AMPM2DqnIeCoJlR51MgVD5gC1URkbuMRoB7qRLb?=
+ =?iso-8859-1?Q?YDm3MV7W9V25yL92vp75opXVTBUX4GTqWgDt0z0LTS7Rl1E0MzVTOSX2eJ?=
+ =?iso-8859-1?Q?2IgG08V1CXLPvg24tGy2WNCnklrDPdnZtl1mnOP4IHfi9eLucxcm/fhf0q?=
+ =?iso-8859-1?Q?U6rdrt+3ErRBIVz9wLF8ccWuOlm3FC7ulwI3lGY1UyigpJ9IPBqIoD5KsC?=
+ =?iso-8859-1?Q?NJaMcH5RFzUvxhsLKTUreHHHxQq+K0jKyQ16WK+EGAU2cKt1pRONYEv/SY?=
+ =?iso-8859-1?Q?N1QnNGGtzhmO7+5YO77FHtQSa6sBj5hKZ0yfCXF4lxflCTNk9RhVARNagu?=
+ =?iso-8859-1?Q?+yX5FacueW14dHhz9T3ZBEiZkqAFJFhTGvgEyr4s1CtmLyfkPKKtlqxuYA?=
+ =?iso-8859-1?Q?Epno7OoLaVZOU4r9OYuRWnHdClQUn5ZreAdAOfQifMTHisSABuIdlIgoSF?=
+ =?iso-8859-1?Q?bcb74hg0dhu+Ytr4IdYXzKER730FVHMA0QxE9DlySjtssk8dRnY/qrfwu9?=
+ =?iso-8859-1?Q?MwRx1jhXVSrfT001P+KeRiEphNTSyg9xotG6DMP2CJgdgH1TwnnRmpfPo3?=
+ =?iso-8859-1?Q?uDUeMdxEG5lKBhN6l3EZfEFftnQ+jI8FdIl9CRquUmYhrE/ThaAbTSphJj?=
+ =?iso-8859-1?Q?UoRfEDpet1MHHpeN9MU9NWBhDvzSZs5Fb2vA2ntW9NNbRWsSxbBLdr7qnO?=
+ =?iso-8859-1?Q?KtwdRae0bbSPWXS7DbahfQVgyk9PcMYztkoQTdwE0XaAv4452gvhaabO4+?=
+ =?iso-8859-1?Q?17ZmvYGUyEZv6lreLUIhrpj82EcLJ2P9OYUW5XNywOh7T8CtMu33hgNxF3?=
+ =?iso-8859-1?Q?IJvTW+/WJwjrpPRr5oK/mIVdoGFvB+aji0l+I7V24ga2eJN4v1n4BhlJ5M?=
+ =?iso-8859-1?Q?jCduhg3YmxHx+LFSmbpIqMeU1Iae2Myp0MSPDuuCvGsvmK1dQKlmFe3zYI?=
+ =?iso-8859-1?Q?j+nh538w0/ReQKpaC4lNHqtk4tupn9FjR1YIRGmhTgw1w1Mp5rOHBGOi+A?=
+ =?iso-8859-1?Q?ftZiRwKaMVLDtiXrqmEhgXwIR0c9PNRj9OquLYeg/ERlSL8UxCy5KK6Ol6?=
+ =?iso-8859-1?Q?0MYRlSAj9noz4JxJ22lzAaFKKYttSxc60Vqf4jSS/97o426Dy2UzN8OgmW?=
+ =?iso-8859-1?Q?qfsLV3WR3b31UcqPlHLr6k2biR3mPea1KU8WpLtB0H07kZHljfkOjj68Mu?=
+ =?iso-8859-1?Q?5sxEQuEjgCSeMfNNTL/TDXhYknN1rTCn4xLUeXCsANd/bPEaNGftqYWBCC?=
+ =?iso-8859-1?Q?iFM8IYS2X91v63fbu5Qv5rrUtypSPnUl5pxmiypH3UuMrTXx/PIYw4hs+M?=
+ =?iso-8859-1?Q?2fs3wKGDXCA5rONB6yr2MyiCMHxwHToyPb9RCuhsOlceHSuuW2wIomNjAm?=
+ =?iso-8859-1?Q?ZOMpHZCVv5+Z6Kv4DA0RzKAxlYx8nVxAWnZLjp1GZuNHh0CErfLUjDXRix?=
+ =?iso-8859-1?Q?jw+iXFIe/y4Vgvg/H2KUHio4HXOdd6GvhUpU7wH3cWBKFrMpDJkEboLOdg?=
+ =?iso-8859-1?Q?T1oowAyE1HFNFeR7VuoyYC+sJx1m1UgL2rZGDCE336FGGrpkZUfg1ZLw?=
  =?iso-8859-1?Q?=3D=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 894c2831-a9fe-4706-7bd6-08db0ddc3f20
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 16:06:20.5804
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7e5fc8e-8808-49d8-c06d-08db0ddef4ce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 16:25:44.3835
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: h8DIuo0RBUyLo5blFGIhuLD0K+e55quGILZknr4dv7IhsSWDnoVwoZ/l7B72Upmgb1X3xZ66xQa8iM8nep2Rr/I0ZCGImHzb414FfHWq0Do=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB12037
+X-MS-Exchange-CrossTenant-userprincipalname: BEFu8Bch9SyvQIC3mhYR5xHAXVVA6LIdi0e8s2Uc/ZPjHnQ3+OfvJhD2j0u4+/DBZmM3Y64127azsI2cqSOYJ2c3CR8amhonnO2XSQ99D5I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7431
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi All,
+Hi Ilpo,
 
-> Subject: RE: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
-> serial8250_em_hw_info
+Thank you for your review comments and sorry for the delay in replying to s=
+ome of your queries.
+
+> From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+> Sent: Wednesday, January 25, 2023 4:53 PM
+> To: Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> pabeni@redhat.com; robh+dt@kernel.org;
+> krzysztof.kozlowski+dt@linaro.org; marcel@holtmann.org;
+> johan.hedberg@gmail.com; luiz.dentz@gmail.com; Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; Netdev
+> <netdev@vger.kernel.org>; devicetree@vger.kernel.org; LKML <linux-
+> kernel@vger.kernel.org>; linux-bluetooth@vger.kernel.org; linux-serial
+> <linux-serial@vger.kernel.org>; Amitkumar Karwar
+> <amitkumar.karwar@nxp.com>; Rohit Fule <rohit.fule@nxp.com>; Sherry
+> Sun <sherry.sun@nxp.com>
+> Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for
+> NXP Bluetooth chipsets
 >=20
-> Hi Ilpo J=E4rvinen,
->=20
-> Thanks for feedback.
->=20
-> > -----Original Message-----
-> > From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> > Sent: Monday, February 13, 2023 12:05 PM
-> > To: Biju Das <biju.das.jz@bp.renesas.com>
-> > Cc: Jiri Slaby <jirislaby@kernel.org>; Geert Uytterhoeven
-> > <geert+renesas@glider.be>; Magnus Damm <magnus.damm@gmail.com>; Niklas
-> > S=F6derlund <niklas.soderlund@ragnatech.se>; Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org>; linux-serial
-> > <linux-serial@vger.kernel.org>; Fabrizio Castro
-> > <fabrizio.castro.jz@renesas.com>; linux-renesas- soc@vger.kernel.org
-> > Subject: RE: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to
-> > struct serial8250_em_hw_info
+> > This adds a driver based on serdev driver for the NXP BT serial
+> > protocol based on running H:4, which can enable the built-in
+> > Bluetooth device inside a generic NXP BT chip.
 > >
-> > On Mon, 13 Feb 2023, Biju Das wrote:
+> > This driver has Power Save feature that will put the chip into
+> > sleep state whenever there is no activity for 2000ms, and will
+> > be woken up when any activity is to be initiated.
 > >
-> > > Hi Ilpo,
-> > >
-> > > Thanks for the feedback.
-> > >
-> > > > Subject: RE: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to
-> > > > struct serial8250_em_hw_info
-> > > >
-> > > > On Mon, 13 Feb 2023, Biju Das wrote:
-> > > >
-> > > > > Hi Jiri Slaby,
-> > > > >
-> > > > > Thanks for the feedback.
-> > > > >
-> > > > > > Subject: Re: [PATCH v3 3/3] serial: 8250_em: Add serial_out()
-> > > > > > to struct serial8250_em_hw_info
-> > > > > >
-> > > > > > On 13. 02. 23, 10:31, Biju Das wrote:
-> > > > > > > So looks like similar to other macros, UART_FCR_EM (0x3) is
-> > > > > > > sensible
-> > > > one.
-> > > > > > >
-> > > > > > > UART_FCR_RO_OFFSET (9)
-> > > > > > > UART_FCR_RO_EM (UART_FCR_EM + UART_FCR_RO_OFFSET)
-> > > > > > >
-> > > > > > >
-> > > > > > > static unsigned int serial8250_em_serial_in(struct uart_port
-> > > > > > > *p, int
-> > > > > > > offset) case UART_FCR_RO_EM:
-> > > > > > > 	return readl(p->membase + (offset - UART_FCR_RO_OFFSET <<
-> > > > > > > 2));
-> > > > > >
-> > > > > >
-> > > > > > Please send a complete patch as a reply. I am completely lost n=
-ow.
-> > > > >
-> > > > > Please find the complete patc.
-> > > > >
-> > > > >
-> > > > > From e597ae60eb170c1f1b650e1e533bf4e12c09f822 Mon Sep 17
-> > > > > 00:00:00
-> > > > > 2001
-> > > > > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > Date: Tue, 7 Feb 2023 15:07:13 +0000
-> > > > > Subject: [PATCH] serial: 8250_em: Add serial_out() to struct
-> > > > > serial8250_em_hw_info
-> > > > >
-> > > > > As per RZ/V2M hardware manual(Rev.1.30 Jun, 2022), UART IP has a
-> > > > > restriction as mentioned below.
-> > > > >
-> > > > > 40.6.1 Point for Caution when Changing the Register Settings:
-> > > > >
-> > > > > When changing the settings of the following registers, a PRESETn
-> > > > > master reset or FIFO reset + SW reset (FCR[2],FCR[1], HCR0[7])
-> > > > > must be input to re-initialize them.
-> > > > >
-> > > > > Target Registers: FCR, LCR, MCR, DLL, DLM, HCR0.
-> > > > >
-> > > > > This patch adds serial_out() to struct serial8250_em_hw_info to
-> > > > > handle this difference between emma mobile and rz/v2m.
-> > > > >
-> > > > > DLL/DLM register can be updated only by setting LCR[7]. So the
-> > > > > updation of LCR[7] will perform reset for DLL/DLM register change=
-s.
-> > > > >
-> > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > ---
-> > > > >  drivers/tty/serial/8250/8250_em.c | 70
-> > > > > ++++++++++++++++++++++++++++++-
-> > > > >  1 file changed, 69 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/tty/serial/8250/8250_em.c
-> > > > > b/drivers/tty/serial/8250/8250_em.c
-> > > > > index 69cd3b611501..c1c64f48ee7e 100644
-> > > > > --- a/drivers/tty/serial/8250/8250_em.c
-> > > > > +++ b/drivers/tty/serial/8250/8250_em.c
-> > > > > @@ -17,12 +17,23 @@
-> > > > >
-> > > > >  #include "8250.h"
-> > > > >
-> > > > > +#define UART_FCR_EM 3
-> > > > >  #define UART_DLL_EM 9
-> > > > >  #define UART_DLM_EM 10
-> > > > > +#define UART_HCR0_EM 11
-> > > > > +
-> > > > > +#define UART_FCR_R_EM	(UART_FCR_EM + UART_HCR0_EM)
-> > > >
-> > > > It's easy to lose track of all this, IMHO this would be simple:
-> > > >
-> > > > /*
-> > > >  * A high value for UART_FCR_EM avoids overlapping with existing
-> > > > UART_*
-> > > >  * register defines. UART_FCR_EM_HW is the real HW register offset.
-> > > >  */
-> > > > #define UART_FCR_EM 12
-> > >
-> > > I will change it to #define UART_FCR_EM 14
-> > >
-> > > And will add the below unused HW status registers in the driver.
-> > >
-> > > #define UART_HCR2_EM 12 (@30)
-> > > #define UART_HCR3_EM 13 (@34)
-> > >
-> > > Is it ok?
+> > This driver enables the power save feature by default by sending
+> > the vendor specific commands to the chip during setup.
 > >
-> > It's okay, that number is pseudo one anyway so the actual number
-> > doesn't matter. One could just as well pick some large number such as
-> > 0x10003 or so if the collision with real regs is a concern.
+> > During setup, the driver is capable of reading the bootloader
+> > signature unique to every chip, and downloading corresponding
+> > FW file defined in a user-space config file. The firmware file
+> > name can be defined in DTS file as well, in which case the
+> > user-space config file will be ignored.
+> >
+> > Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> > ---
+> >  MAINTAINERS                |    7 +
+> >  drivers/bluetooth/Kconfig  |   11 +
+> >  drivers/bluetooth/Makefile |    1 +
+> >  drivers/bluetooth/btnxp.c  | 1337
+> ++++++++++++++++++++++++++++++++++++
+> >  drivers/bluetooth/btnxp.h  |  230 +++++++
+> >  5 files changed, 1586 insertions(+)
+> >  create mode 100644 drivers/bluetooth/btnxp.c
+> >  create mode 100644 drivers/bluetooth/btnxp.h
+> >
+> > +static int ps_init_work(struct hci_dev *hdev)
+> > +{
+> > +     struct ps_data *psdata =3D kzalloc(sizeof(*psdata), GFP_KERNEL);
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +
+> > +     if (!psdata) {
+> > +             BT_ERR("Can't allocate control structure for Power Save f=
+eature");
+> > +             return -ENOMEM;
+> > +     }
+> > +     nxpdev->psdata =3D psdata;
+> > +
+> > +     memset(psdata, 0, sizeof(*psdata));
 >=20
-> OK will use 0x10003, as pseudo offset.
+> Why memset to zero kzalloc'ed mem?
+I have removed all memset calls after kzalloc.
+>=20
 
-I would like to use same Hardware restriction for both RZ/V2M and EMMA-Mobi=
-le
-as both the SoC's have same register sets and it works ok on both these pla=
-tforms,
-after this restriction is applied.
 
-I guess it is ok for everyone.
 
-Cheers,
-Biju
+> > +static int send_ps_cmd(struct hci_dev *hdev, void *data)
+> > +{
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     struct ps_data *psdata =3D nxpdev->psdata;
+> > +     u8 pcmd;
+> > +     struct sk_buff *skb;
+> > +     u8 *status;
+> > +
+> > +     if (psdata->ps_mode =3D=3D  PS_MODE_ENABLE)
+> > +             pcmd =3D BT_PS_ENABLE;
+> > +     else
+> > +             pcmd =3D BT_PS_DISABLE;
+> > +
+> > +     psdata->driver_sent_cmd =3D true; /* set flag to prevent re-sendi=
+ng
+> command in nxp_enqueue */
+> > +     skb =3D __hci_cmd_sync(hdev, HCI_NXP_AUTO_SLEEP_MODE, 1, &pcmd,
+> HCI_CMD_TIMEOUT);
+> > +     psdata->driver_sent_cmd =3D false;
+>=20
+> A helper for these 3 lines?
+Added a new function where ever setting psdata->driver_sent_cmd and __hci_c=
+md_sync() is needed.
+
+
+
+>=20
+> Do you need to free the skb?
+Yes. Freed skb's where ever it needs to be freed in v2 and v3 patches.
+
+
+
+> > +     for (i =3D 0; i < map_table_size; i++) {
+>=20
+> Isn't this just ARRAY_SIZE(chip_id_name_table)? use it directly here,
+> no need for the extra variable?
+>=20
+> > +             if (!strcmp(chip_id_name_table[i].chip_name, name_str))
+> > +                     return chip_id_name_table[i].chip_id;
+> > +     }
+> > +
+> > +     return 0;  /* invalid name_str */
+>=20
+> Put such comment preferrably to function's comment if you want to note
+> things like this or create a properly named define for it.
+I have slightly changed the way FW Download behaves, and removed this funct=
+ion.
+
+
+
+> strncpy(fw_mod_params[param_index].fw_name,
+> > +                                                     value, MAX_FW_FIL=
+E_NAME_LEN);
+> > +                                     } else if (!strcmp(label, OPER_SP=
+EED_TAG)) {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +                                             &fw_mod_params[param_inde=
+x].oper_speed);
+> > +                                     } else if (!strcmp(label, FW_DL_P=
+RI_BAUDRATE_TAG))
+> {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +
+> &fw_mod_params[param_index].fw_dnld_pri_baudrate);
+> > +                                     } else if (!strcmp(label, FW_DL_S=
+EC_BAUDRATE_TAG))
+> {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +
+> &fw_mod_params[param_index].fw_dnld_sec_baudrate);
+> > +                                     } else if (!strcmp(label, FW_INIT=
+_BAUDRATE)) {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +
+> &fw_mod_params[param_index].fw_init_baudrate);
+> > +                                     } else {
+> > +                                             BT_ERR("Unknown tag: %s",=
+ label);
+> > +                                             ret =3D -1;
+> > +                                             goto err;
+> > +                                     }
+>=20
+> Your indent is way too deep here, refactor the line processing into
+> another function to make it readable?
+>=20
+> Wouldn't something like sscanf() make it a bit simpler?
+
+Created a new function to handle updating this data and used sscanf().
+
+
+
+> > +             } else {
+> > +                     *dptr =3D sptr[i];
+> > +                     dptr++;
+>=20
+> What prevents dptr becoming larger than the size allocated for line?
+Used array index method instead of dptr pointer to fill the line. Added che=
+ck for index.
+
+> > +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
+> > +{
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     static u8 nxp_cmd5_header[HDR_LEN] =3D {
+>=20
+> It would be good to prefix HDR_LEN with something to make it more specifi=
+c
+> to this use case.
+We need this HDR_LEN macro while sending cmd7 as well. Hence kept this unch=
+anged.
+
+>=20
+> > +                                                     0x05, 0x00, 0x00,=
+ 0x00,
+> > +                                                     0x00, 0x00, 0x00,=
+ 0x00,
+> > +                                                     0x2c, 0x00, 0x00,=
+ 0x00,
+> > +                                                     0x77, 0xdb, 0xfd,=
+ 0xe0};
+> > +     static u8 uart_config[60] =3D {0};
+>=20
+> Is this some structure actually? You seem to be filling it always with
+> the same stuff in same order?
+>=20
+> You probably need to handle byte-order properly too.
+Handled cmd5 and cmd7 in a proper way using structures and handled byte-ord=
+ering.
+
+> > +static u32 nxp_get_data_len(const u8 *buf)
+> > +{
+> > +     return (buf[8] | (buf[9] << 8));
+>=20
+> Custom byte-order func? Use std ones instead.
+Resolved in v2 patch.
+
+> > +     if (nxpdev->fw_dnld_sec_baudrate !=3D nxpdev->current_baudrate) {
+> > +             if (!timeout_changed) {
+> > +                     nxp_send_ack(NXP_ACK_V1, hdev);
+> > +                     timeout_changed =3D nxp_fw_change_timeout(hdev, r=
+eq->len);
+>=20
+> You never test if there was enough data? If there isn't req will be NULL
+> which you don't check before dereferencing req->len.
+Added check for req before dereferencing it.
+
+
+> > +             if (req->len & 0x01) {
+> > +                     /* The CRC did not match at the other end.
+> > +                      * That's why the request to re-send.
+> > +                      * Simply send the same bytes again.
+> > +                      */
+> > +                     requested_len =3D nxpdev->fw_sent_bytes;
+> > +                     BT_ERR("CRC error. Resend %d bytes of FW.", reque=
+sted_len);
+> > +             } else {
+> > +                     /* Increment offset by number of previous success=
+fully sent
+> bytes */
+> > +                     nxpdev->fw_dnld_offset +=3D nxpdev->fw_sent_bytes=
+;
+> > +                     requested_len =3D req->len;
+> > +             }
+> > +
+> > +             /* The FW bin file is made up of many blocks of
+> > +              * 16 byte header and payload data chunks. If the
+> > +              * FW has requested a header, read the payload length
+> > +              * info from the header, and then send the header.
+> > +              * In the next iteration, the FW should request the
+> > +              * payload data chunk, which should be equal to the
+> > +              * payload length read from header. If there is a
+> > +              * mismatch, clearly the driver and FW are out of sync,
+> > +              * and we need to re-send the previous header again.
+> > +              */
+> > +             if (requested_len =3D=3D expected_len) {
+> > +                     if (requested_len =3D=3D HDR_LEN)
+> > +                             expected_len =3D nxp_get_data_len(nxpdev-=
+>fw->data +
+> > +                                                                     n=
+xpdev->fw_dnld_offset);
+> > +                     else
+> > +                             expected_len =3D HDR_LEN;
+>=20
+> How can you ever end up into this else branch? Why assign expected_len
+> here?
+There are 2 scenarios where requested_len =3D=3D expected_len.
+One, where requested_len is 16, which means a header was requested.
+Another, where requested_len is not 16, which means payload was requested.
+
+So if header was requested, we calculate the payload length which should be=
+ equal to requested_len in next iteration.
+Similarly, if payload was requested, then in the next iteration the FW shou=
+ld request for a 16 bit header.
+The expected_len is expected to toggle between 2 values: 16 and (e.g.) 2048=
+.
+
+>=20
+> > +             } else {
+> > +                     if (requested_len =3D=3D HDR_LEN) {
+>=20
+> Never true.
+Ideally we should not end up in this else part, but there are various custo=
+mers and module vendors who use NXP chipsets within their products, which a=
+re already out in the market. Whenever the driver sends the cmd5 and cmd7 p=
+ackets, we sometimes observe this scenario where the FW requests 16 bit hea=
+der in 2 consecutive iterations, and we need to be sure that we re-send the=
+ 16 bit header, and not the 16 bit payload.=20
+This happens when the chip updates it's baudrate while receiving the 1st he=
+ader, and discards it due to CRC mismatch, and requests the header again.
+
+>
+> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0/* FW downl=
+oad out of sync. Send previous chunk again> */
+> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 nxpdev->fw_dnl=
+d_offset -=3D nxpdev->fw_sent_bytes;
+> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0expected_le=
+n =3D HDR_LEN;> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+> > +=A0 =A0 =A0 =A0 =A0 =A0 }
+> > +
+
+> > +static int nxp_recv_fw_req_v3(struct hci_dev *hdev, struct sk_buff *sk=
+b)
+> > +{
+> > +     struct V3_DATA_REQ *req =3D skb_pull_data(skb, sizeof(struct
+> V3_DATA_REQ));
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     static bool timeout_changed;
+> > +     static bool baudrate_changed;
+> > +
+> > +     if (!req || !nxpdev || !strlen(nxpdev->fw_name) || !nxpdev->fw->d=
+ata)
+> > +             return 0;
+>=20
+> Who is expected to free the skb? These functions or one of the callers?
+> (Which one? I lost track of the callchain and error passing too).
+Added kfree_skb() in the called functions.
+
+
+> > +                     strncpy(nxpdev->fw_name, fw_path,
+> MAX_FW_FILE_NAME_LEN);
+> > +                     strncpy(nxpdev->fw_name + strlen(fw_path), fw_nam=
+e_dt,
+> > +                                     MAX_FW_FILE_NAME_LEN);
+>=20
+> How can this second one be correct if you use +strlen(fw_path) for the
+> pointer. Why not use snprintf()?
+Replaced strncpy with snprintfs()
+
+
+
+> > +static int nxp_enqueue(struct hci_dev *hdev, struct sk_buff *skb)
+> > +{
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     struct ps_data *psdata =3D nxpdev->psdata;
+> > +     struct hci_command_hdr *hdr;
+> > +     u8 *param;
+> > +
+> > +     /* if commands are received from user space (e.g. hcitool), updat=
+e
+> > +      * driver flags accordingly and ask driver to re-send the command
+> > +      */
+> > +     if (bt_cb(skb)->pkt_type =3D=3D HCI_COMMAND_PKT && !psdata-
+> >driver_sent_cmd) {
+>=20
+> Should you need to check psdata for NULL before dereferencing it?
+Added checks for psdata before dereferencing it.
+
+
+> > +/* Bluetooth vendor command : Sleep mode */
+> > +#define HCI_NXP_AUTO_SLEEP_MODE      0xFC23
+>=20
+> Try to change all hex letters to lowercase.
+Changed all hex letters to lowercase.
+
+> > +struct V1_DATA_REQ {
+> > +     u16 len;
+> > +     u16 len_comp;
+> > +} __packed;
+> > +
+> > +struct V3_DATA_REQ {
+> > +     u16 len;
+> > +     u32 offset;
+> > +     u16 error;
+> > +     u8 crc;
+> > +} __packed;
+> > +
+> > +struct V3_START_IND {
+> > +     u16 chip_id;
+> > +     u8 loader_ver;
+> > +     u8 crc;
+> > +} __packed;
+>=20
+> Struct names should be lowercased. Multibyte fields need to specify
+> byte-order?
+Resolved.
+
+> > +
+> > +#define SWAPL(x) ((((x) >> 24) & 0xff) \
+> > +                              | (((x) >> 8) & 0xff00) \
+> > +                              | (((x) << 8) & 0xff0000L) \
+> > +                              | (((x) << 24) & 0xff000000L))
+>=20
+> Perhaps something existing under include/ could do swap for you?
+Added call to a standard swab32() function.
+
+> --
+>  i.
+
+Please review the V3 patch and let me know if you have any suggestions or c=
+omments.
+
+Thank you,
+Neeraj
