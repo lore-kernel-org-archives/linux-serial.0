@@ -2,140 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A661C636D4
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 17:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4714CC636D4
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 17:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbjBMRcU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Feb 2023 12:32:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S229852AbjBMRgw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Feb 2023 12:36:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbjBMRcT (ORCPT
+        with ESMTP id S229680AbjBMRgv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Feb 2023 12:32:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526C6A276;
-        Mon, 13 Feb 2023 09:32:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 13 Feb 2023 12:36:51 -0500
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A2B5FFB;
+        Mon, 13 Feb 2023 09:36:50 -0800 (PST)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E68C5B8163F;
-        Mon, 13 Feb 2023 17:32:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACE3C4339B;
-        Mon, 13 Feb 2023 17:32:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1676309535;
-        bh=i+t2JBZ+52dMxItNuyDw9F/YTqCD0RC13zGq4NymM6U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J7gU2mVBZ7q/gdiyWhdLiNJ/AWYg5UmxnMexcZLtthRyUI9saaYRZT7zP863SV2hO
-         KRHa2dJinfpVmBAsYPPyxKdLVezfkPVqkwMg+SMcOa5OFcrMUMZkN/mvSuh+Q7HhUd
-         7ddUdP/JXVnUxA60q0YA58Fa881eHcs/5SDJG68c=
-Date:   Mon, 13 Feb 2023 16:15:56 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        jirislaby@kernel.org, alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
-        rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v3 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Message-ID: <Y+pULHm2Qys738Zg@kroah.com>
-References: <20230213145432.1192911-1-neeraj.sanjaykale@nxp.com>
- <20230213145432.1192911-4-neeraj.sanjaykale@nxp.com>
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id DDE8861CC457B;
+        Mon, 13 Feb 2023 18:36:47 +0100 (CET)
+Message-ID: <dc78660f-c4cf-37a3-ad5a-91d24624d7c6@molgen.mpg.de>
+Date:   Mon, 13 Feb 2023 18:36:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Cc:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+References: <20230124174714.2775680-1-neeraj.sanjaykale@nxp.com>
+ <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
+ <bd10dd58-35ff-e0e2-5ac4-97df1f6a30a8@linux.intel.com>
+ <AM9PR04MB8603E350AC2E06CB788909C0E7DD9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+ <ad1fc5d4-6d44-4982-71f9-6721aa8914d2@linux.intel.com>
+ <AM9PR04MB8603C653BE4266E3343B1F12E7DD9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <AM9PR04MB8603C653BE4266E3343B1F12E7DD9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230213145432.1192911-4-neeraj.sanjaykale@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 13, 2023 at 08:24:32PM +0530, Neeraj Sanjay Kale wrote:
-> This adds a driver based on serdev driver for the NXP BT serial
-> protocol based on running H:4, which can enable the built-in
-> Bluetooth device inside a generic NXP BT chip.
+Dear Neeraj,
+
+
+Am 13.02.23 um 18:25 schrieb Neeraj sanjay kale:
+
+>>> Thank you for your review comments and sorry for the delay in
+>>> replying to some of your queries.
+>> 
+>> I made some additional comments against v2 and I meant those ones
+>> were not addressed, the ones I made for v1 you've addressed I
+>> think.
+
+> I checked with my colleagues Amitkumar and Rohit (in CC) and we can't
+> seem to find your comments on V2 patch in our inbox. It might have
+> probably been blocked by firewall or due to some other issue we have
+> not received it.
 > 
-> This driver has Power Save feature that will put the chip into
-> sleep state whenever there is no activity for 2000ms, and will
-> be woken up when any activity is to be initiated over UART.
-> 
-> This driver enables the power save feature by default by sending
-> the vendor specific commands to the chip during setup.
-> 
-> During setup, the driver checks if a FW is already running on the
-> chip based on the CTS line, and downloads device specific FW file
-> into the chip over UART.
-> 
-> The driver contains certain device specific default parameters
-> related to FW filename, baudrate and timeouts which can be
-> overwritten by an optional user space config file. These parameters
-> may vary from one module vendor to another.
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-> ---
-> v2: Removed conf file support and added static data for each chip
-> based on compatibility devices mentioned in DT bindings. Handled
-> potential memory leaks and null pointer dereference issues,
-> simplified FW download feature, handled byte-order and few cosmetic
-> changes. (Ilpo Järvinen, Alok Tiwari, Hillf Danton)
-> v3: Added conf file support necessary to support different vendor
-> modules, moved .h file contents to .c, cosmetic changes. (Luiz
-> Augusto von Dentz, Rob Herring, Leon Romanovsky)
-> ---
->  drivers/bluetooth/Kconfig     |   11 +
->  drivers/bluetooth/Makefile    |    1 +
->  drivers/bluetooth/btnxpuart.c | 1370 +++++++++++++++++++++++++++++++++
->  3 files changed, 1382 insertions(+)
->  create mode 100644 drivers/bluetooth/btnxpuart.c
-> 
-> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
-> index 5a1a7bec3c42..773b40d34b7b 100644
-> --- a/drivers/bluetooth/Kconfig
-> +++ b/drivers/bluetooth/Kconfig
-> @@ -465,4 +465,15 @@ config BT_VIRTIO
->  	  Say Y here to compile support for HCI over Virtio into the
->  	  kernel or say M to compile as a module.
->  
-> +config BT_NXPUART
-> +	tristate "NXP protocol support"
-> +	depends on SERIAL_DEV_BUS
-> +	help
-> +	  NXP is serial driver required for NXP Bluetooth
-> +	  devices with UART interface.
-> +
-> +	  Say Y here to compile support for NXP Bluetooth UART device into
-> +	  the kernel, or say M here to compile as a module.
+> Maybe you could please re-send that email and I can quickly take a
+> look at it and resolve them.
 
-What is the module name?
+lore.kernel.org allows you to access the messages. I found Ilpoâ€™s reply [1].
 
-> +#define MAX_TAG_STR_LEN				20
-> +#define BT_FW_CONF_FILE				"nxp/bt_mod_para.conf"
 
-You can not load "configuration files" as firmware, as that is not what
-firmware is for.
+Kind regards,
 
-Firmware is to be sent straight to the device, the kernel is not
-supposed to do any parsing like you are doing:
+Paul
 
-> +#define USER_CONFIG_TAG				"user_config"
-> +#define FW_NAME_TAG					"fw_name"
-> +#define OPER_SPEED_TAG				"oper_speed"
-> +#define FW_DL_PRI_BAUDRATE_TAG		"fw_dl_pri_speed"
-> +#define FW_DL_SEC_BAUDRATE_TAG		"fw_dl_sec_speed"
-> +#define FW_INIT_BAUDRATE			"fw_init_speed"
-> +#define PS_INTERVAL_MS				"ps_interval_ms"
 
-With these values.
-
-Please use the normal kernel interfaces for configuring your device.
-that is NOT the firmware interface, sorry.
-
-thanks,
-
-greg k-h
+[1]: 
+https://lore.kernel.org/linux-bluetooth/1dde194e-2e44-663d-b128-f8ef7edd03f@linux.intel.com/
