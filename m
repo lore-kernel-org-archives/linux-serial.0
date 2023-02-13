@@ -2,128 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE73C636D4
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 08:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D332C636CC
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 09:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbjBMIyp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Feb 2023 03:54:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S229975AbjBMJKx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Feb 2023 04:10:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBMIyo (ORCPT
+        with ESMTP id S230027AbjBMJKv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Feb 2023 03:54:44 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03AF8A73;
-        Mon, 13 Feb 2023 00:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676278483; x=1707814483;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=3Qrvb86xqpAxI2HTmIA1ize0Wpi8KHhQvVKxmBu4qVo=;
-  b=io6afZ4/oY7AgSNp7JbUJUYxfvvhZvvntKd8iawL9mUDgLksE5RaLVuY
-   JpJYTKrs6LPEromjF7vyVIM1QjGqJ8oxCABYOJaJkARe7P0gGEp4ojaSF
-   s6UsFyoBM15Ety1Vz7sbaTspuoVO8cUq/7OrkIfiPuEH+TzKHKWAtsedx
-   p0cgunexwNjYza3OQWGCjNndAzeGp+MgVUNdVPse5TCcyllUVxKlFW9WN
-   Vul00mw0M0AuO/Iyj4IFTplzvmYY1rnJ2DXx+TrYHUpmuy2sElePKcaUn
-   WPx+BGcWsyHfuV9BUuga8X4X8xbFADY2PU+mVVVf4pNgPNKYXEAopfYOC
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="332152145"
-X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="332152145"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:54:43 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="618579861"
-X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="618579861"
-Received: from hdevries-mobl.ger.corp.intel.com ([10.249.36.140])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:54:39 -0800
-Date:   Mon, 13 Feb 2023 10:54:36 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     ChiaWei Wang <chiawei_wang@aspeedtech.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-Subject: RE: [PATCH 3/4] serial: 8250: Add Aspeed UART driver
-In-Reply-To: <KL1PR0601MB378160E42842A0A55947BF7191DD9@KL1PR0601MB3781.apcprd06.prod.outlook.com>
-Message-ID: <bc8a6d9c-48ec-e394-78d8-c53bc267af1c@linux.intel.com>
-References: <20230210072643.2772-1-chiawei_wang@aspeedtech.com> <20230210072643.2772-4-chiawei_wang@aspeedtech.com> <2d389fc9-0d5-42a1-b6d7-695c70dcf0fe@linux.intel.com> <KL1PR0601MB378160E42842A0A55947BF7191DD9@KL1PR0601MB3781.apcprd06.prod.outlook.com>
+        Mon, 13 Feb 2023 04:10:51 -0500
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3EE13D43;
+        Mon, 13 Feb 2023 01:10:50 -0800 (PST)
+Received: by mail-ed1-f41.google.com with SMTP id u21so11910266edv.3;
+        Mon, 13 Feb 2023 01:10:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sTKo4FoqFLyfAtCI8jNZy8wGYlrX6dvwhoLTBJbPRdM=;
+        b=Xr06SvlAnFYxVAwZ7metj29fpiiJnAoRR5dAdg0/Nh+2YlVnGVeSLwcxBNgNjZwvJh
+         JE5zvTtybCiq95TuA61TI05r0HPI2pvnN48z2orDnTBCkZ1Ig7twGnwKx+gc/GO6iXZ0
+         6iuWyGeSxcrlTHGudOxK+QNDKJj0PJw4Si3yir4NO2IIxP2LdQfVLrN7ca1ZVfjGF4ex
+         nFjkSEPq3kKxAfXOIrQiZkfIlwUgdRHuy9TH1h6ymyh+6R6pm12yGR6lRkvgXElVzwCX
+         JATiYiCQXw5+peE+0BvpH17u97rUI88Z/F17IzKWqya1QACQlzlSjxK+g8k+dZBej1uk
+         Pddw==
+X-Gm-Message-State: AO0yUKUDO8+ofzb3TjzpdVh48qxNeGi4oDgRRArTAr6z4KYJEkdQfSRg
+        ry0GNtdtrOQY8KGd7Q/SUTNc/jnqw8M=
+X-Google-Smtp-Source: AK7set/7ZlKC4obklQdJYm8oeTdNvzjHuiSkMpN+ZBuFohrBLQUTgfiylqTh94BbkyAlS4BWvaHN7g==
+X-Received: by 2002:a50:d752:0:b0:4ac:cdcb:ab68 with SMTP id i18-20020a50d752000000b004accdcbab68mr1071214edj.16.1676279448785;
+        Mon, 13 Feb 2023 01:10:48 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id f8-20020a50d548000000b004ab33d52d03sm5331365edj.22.2023.02.13.01.10.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Feb 2023 01:10:48 -0800 (PST)
+Message-ID: <cc7f4d69-7e68-0d0a-4b89-c4e16dff716b@kernel.org>
+Date:   Mon, 13 Feb 2023 10:10:47 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-257282810-1676278189=:1712"
-Content-ID: <7f777bc7-635e-5cdb-3621-16f888c6153c@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
+ serial8250_em_hw_info
+Content-Language: en-US
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+References: <20230210203439.174913-1-biju.das.jz@bp.renesas.com>
+ <20230210203439.174913-4-biju.das.jz@bp.renesas.com>
+ <56b431df-be7f-474c-8cf5-30c2eaa2745a@linux.intel.com>
+ <OS0PR01MB5922A860B77A9BC0C9E5E3AC86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <OS0PR01MB5922A860B77A9BC0C9E5E3AC86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-257282810-1676278189=:1712
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <655a3651-c08d-25b1-4a44-7f6d39894cb8@linux.intel.com>
-
-On Mon, 13 Feb 2023, ChiaWei Wang wrote:
-
-> > From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > Sent: Friday, February 10, 2023 9:52 PM
-> > 
-> > On Fri, 10 Feb 2023, Chia-Wei Wang wrote:
-> > 
-> > > Add the driver for Aspeed UART/VUART devices, which are 16550A
-> > > compatible. It is an wrapper to cover the generic 16550A operation
-> > > while exetending DMA feature for the devices.
-> > >
-> > > Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-> > > ---
-> > >  drivers/tty/serial/8250/8250_aspeed.c | 502
-> > ++++++++++++++++++++++++++
-> > >  drivers/tty/serial/8250/Kconfig       |   8 +
-> > >  drivers/tty/serial/8250/Makefile      |   1 +
-> > 
-> > Hi,
-> > 
-> > Before I look any further into this, could you please explain why this is made to
-> > be entirely separate from what we have in
-> >   drivers/tty/serial/8250/8250_aspeed_vuart.c
-> > ?
-> > 
-> > I quickly went through some functions and they've significant parts in common
-> > with no variations at all in many functions and you're defines are 1:1 too
-> > (except for the DMA buf sizes). It would seem much better to add the missing
-> > functionality into 8250_aspeed_vuart.c rather than creating something from
-> > scratch with large overlap with existing code.
-> > 
-> > If you intend to keep it as a separate one, you should have a rather good
-> > justification for it.
+On 13. 02. 23, 9:53, Biju Das wrote:
+>>> +static void serial8250_rzv2m_reg_update(struct uart_port *p, int off,
+>>> +int value) {
+>>> +	unsigned int ier, fcr, lcr, mcr, hcr0;
+>>> +
+>>> +	ier = serial8250_em_serial_in(p, UART_IER);
+>>> +	lcr = serial8250_em_serial_in(p, UART_LCR);
+>>> +	mcr = serial8250_em_serial_in(p, UART_MCR);
+>>> +	hcr0 = serial8250_em_serial_in(p, UART_HCR0);
+>>> +	/*
+>>> +	 * The value of UART_IIR and UART_FCR are 2, but corresponding
+>>> +	 * RZ/V2M address offset are different(0x08 and 0x0c). So we need to
+>>> +	 * use readl() here.
+>>> +	 */
+>>> +	fcr = readl(p->membase + ((UART_FCR + 1) << 2));
+>>
+>> I don't get the meaning of that comment. It doesn't seem to match what your
+>> code does as the code seemingly has nothing to do with IIR (and none of you
+>> changelogs refer to IIR either)?
 > 
-> Yes, the main difference is the UART DMA support.
-> However, due to the UDMA design is not quite fit to the DMAEngine, the implementation is kind of hacking.
-> We thought leaving the original VUART driver unimpacted would be better.
-> The UDMA covers both UART and VUART DMA support, and so do the new 8250_aspeed.c.
+> The generic macro UART_IIR and UART_FCR in linux/serial_reg.h has a value of 2.
 
-To me it seems rather weak reasoning.
-
-If you want to go to this path, then you need to anyway share the common 
-code between those two drivers rather than duplicating it. It's likely 
-more work for you than just putting it all into the existing driver and
-having just a mostly separated setup() for 2600 case.
-
-The DMA functions should probably also depend on SERIAL_8250_DMA anyway 
-and the driver should fallback to non-DMA if SERIAL_8250_DMA is not set 
-which is yet another reason to use the existing code.
+Sure, IIR is normally WO and FCR RO and share the same register. I would 
+simply define UART_FCR_RZ (or alike) for 0x12.
 
 -- 
- i.
---8323329-257282810-1676278189=:1712--
+js
+suse labs
+
