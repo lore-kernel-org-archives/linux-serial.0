@@ -2,269 +2,138 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6E4C636D4
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 11:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BD2C636D4
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Feb 2023 11:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229570AbjBMLbd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Feb 2023 06:31:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        id S230198AbjBMLcy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Feb 2023 06:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbjBMLb0 (ORCPT
+        with ESMTP id S230258AbjBMLcx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Feb 2023 06:31:26 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E1283DE;
-        Mon, 13 Feb 2023 03:31:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676287876; x=1707823876;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=VWN5OOiAB9xaWXHFkGwORZO6cxCmH60Q5zH+sqzc2yI=;
-  b=e0zAJAHCM9fWNxdAnB2OGiLolplBJ2lJuK8CQRwPE1O6Y+sjiUvwJbkB
-   4K/+idlrEqxZVk1h5KsYd7fhlJfy9yr26Kf8K6Lv5maRGmYHwmFYlbe/D
-   U2pOmTIm+LL5GgWPno92cIKkBx4VKMvyecHDYJ44/6hGn65iEIijWesfj
-   XlWADAhzTH+6JIBN3uqFdejQMGBWPdIh46PzHCT3tTGHnou7DyzsQlO67
-   wnR1ZVSmWyuoYxpykqfzDh7N4i3oZBpejWKogTuy050ki+Kg7m69E8mXe
-   QhAdCu2FhC5u5BCk4l2k6sEb1kjrXZMU+P4rVs9KLaSI/bAOCBGl9/WJt
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="311231528"
-X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="311231528"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 03:31:15 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="670789125"
-X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="670789125"
-Received: from hdevries-mobl.ger.corp.intel.com ([10.249.36.140])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 03:31:13 -0800
-Date:   Mon, 13 Feb 2023 13:31:10 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        =?ISO-8859-15?Q?Niklas_S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
- serial8250_em_hw_info
-In-Reply-To: <OS0PR01MB5922139BA73BBBE2556161DA86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Message-ID: <4cfed9ad-bf89-7b1-40cd-7def4c64f1@linux.intel.com>
-References: <20230210203439.174913-1-biju.das.jz@bp.renesas.com> <20230210203439.174913-4-biju.das.jz@bp.renesas.com> <56b431df-be7f-474c-8cf5-30c2eaa2745a@linux.intel.com> <OS0PR01MB5922A860B77A9BC0C9E5E3AC86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <cc7f4d69-7e68-0d0a-4b89-c4e16dff716b@kernel.org> <56c8fdab-a037-ea00-d83e-f75c92566d92@kernel.org> <f10bcddd-2905-3f63-dd0a-8424798932dc@kernel.org> <OS0PR01MB592210E15CD943F1987316F086DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <283b2e79-e992-dc35-2a79-feccc93103fb@kernel.org> <OS0PR01MB5922139BA73BBBE2556161DA86DD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        Mon, 13 Feb 2023 06:32:53 -0500
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2077.outbound.protection.outlook.com [40.107.104.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EB92134;
+        Mon, 13 Feb 2023 03:32:49 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fk2Gjhgl/5FWtllXLaieKITfupfqX7DUt/DaW1DgUFY9qHkIPcrIKxblhJTdJ/JGhneNqvKFMsWTjbGLR5UEPWCNOb5RU8PG1tVUioDsl48Ucmiw2Y5Qz0aKoO4JrksKjRxeAC2wQ1PpPfJH0YCu8EirUuXwBDPZWngSN94M2ql7oRGX+Bgc/qspaqsMO7kOQImYlWRWs3EOYocOXXDmF5DSHek9Omx7QIQlvZ1GmPTEaZfKWzcMo72B0f307dyClIFEEOHPAs5v6iHLSQCzZvkbKpFPYaJZaYoAWppRmQMrg09LPzW+n/WqxrPXGE+cL+EwCzlYb0ajxZOM4V13Cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uBtZlxfl85Exc/+dotQEMmZFG/sTffU6y00HbgLYcXQ=;
+ b=ZXwEc8pPpd0PsTTV2Dw9VLqycfLqo6sC7NzXxnB2y9eRf45JfdFEsyDrv9V8Lhz9x45/jKE4YoEXy5nJa2+oedF0tfLxH61rwKuM71DIwBzaXqPdur2W1U7+JPqV9Zyr40PS8zBdAH8dSwJhMWE0Xz6hb8t4KO3iO1RCcK0Ea6NZ69SXPgusMMuKCtzB8t8geu+U5AKkE6jI3z0JCz9EfEbfX5DWfKgVGwqOY6NfX8wBDAWMcJ2uSXmInQ6jR6ATczkR/hIza3I+9hjy58P+KAcAbXbdaTNegnq7yhDTSHD+0LDi/3YfMgUfYm7XBkPgZaGsaXYE6oFnnG4HlNNyOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uBtZlxfl85Exc/+dotQEMmZFG/sTffU6y00HbgLYcXQ=;
+ b=bN8+0U36aMDCUEc3dDFn/WmWHseFWab1woe/pXOy22xe/62JmUVnwDjPhyRvUnnp9GarhidigKBdKq85uchLTTYy/TdnNeM2fzXioydIhPko0uXiIUK+qEp3r13wR49/qEBZ3NUHbiPQHb9Eg1dFoGHjLVK0HIHG8OLF3YYwlvglZ2JIouGQVEbZsANgAiZPL8jroQmg1uAC3jEApUyOPNC+b44okQ9ulOXSVcCZCnQdk6v3zhiWTPTBI/nd9/BEf+u0WKga7rmkk511ViKOZ7oGPfvjLglyGnlb7jTIxRlTaMur5YPOe0AkL7znGUY2Z2JgwsfdOsGBzGc2M3XHLA==
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
+ by PAXPR10MB7951.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:23e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Mon, 13 Feb
+ 2023 11:32:47 +0000
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::6515:6f15:71b9:713c]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::6515:6f15:71b9:713c%3]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
+ 11:32:47 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     "m.brock@vanmierlo.com" <m.brock@vanmierlo.com>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v5 1/1] tty: n_gsm: add keep alive support
+Thread-Topic: [PATCH v5 1/1] tty: n_gsm: add keep alive support
+Thread-Index: AQHZP5vElDjPA3ZU/UiymkvRgtEhSK7MvpJg
+Date:   Mon, 13 Feb 2023 11:32:47 +0000
+Message-ID: <DB9PR10MB5881C08001D7FA76D6E2C06CE0DD9@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+References: <20230213094327.3428-1-daniel.starke@siemens.com>
+ <aec7575cd784ae4fe9e9f2c1e08107a9@vanmierlo.com>
+In-Reply-To: <aec7575cd784ae4fe9e9f2c1e08107a9@vanmierlo.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-02-13T11:32:46Z;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Privileged;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=37e56d3e-88bb-47e9-8286-bf0db241eccb;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0
+document_confidentiality: Restricted
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB9PR10MB5881:EE_|PAXPR10MB7951:EE_
+x-ms-office365-filtering-correlation-id: c0a7d136-60c2-4ccc-d68f-08db0db60823
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kAEkyETy/7FkC1jcoqfoRkqWZu74EGdPTRBq0/E70lYVKF6274QFHCbhzocS90O2g9Bi9eeN3Zj9aClkTtdyT9qi5eCrlYURjrsXwwNy8ZdbSnaN1x0usR2pollFl232EaJgiGqtXE3W0arInAWj0jT8Fv1qMaWbXJa5vs8U0UMuUeS/emk8OxV0mBIwSK+cihtb+BfymkqduuSPi0mphv+kD3sK+X7+f1w/ePWwFUY8AWsKXR7pae744Kc/9xUk+09AMWJrzS2buiorxZpNgbsZ4ypQUccqI0H+c9aRvY+IhI7ZAywLYoFvdZy4RGIhruI/xAI8yutuydKlZ9VmjPaFEHGFwznf9KqhWYpzrbOliARvFWVxdavcvpk4yp8HzDsjoiG5iAvp0CTYe4zOz1uQeBYkVF6fat2HADk2H2wd2cA8p4Up+3OhI7yHEqeqlArmVP1JIsb3zIGjjHG987pfSXyZcA1rEDCcmCOHhaZZVNgsN76sFbnOAJCdLcV7WYkd6BjhHSNtdmLDDBnoCBiWz9F/rhTFa0LIoN3Z3vrhTtLuSU7os5G7UHMa1P2UpJ1V1eisI2xzPQzZ9cuajLt82niv69bPRmVdG9ZQVaEg6c2HDBeNBVGjHrMrtdK4c1WtmfnCZ2bIIEg8TzL3JT09wpAE63qotgdpQgfKkngsNCjbEWJ1ishLzsnGKEfBtZsmnaGhCNygcizkY7k/kA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(39860400002)(346002)(136003)(396003)(451199018)(66476007)(66446008)(64756008)(66946007)(66556008)(6916009)(4326008)(76116006)(41300700001)(8676002)(316002)(52536014)(8936002)(54906003)(7696005)(4744005)(55016003)(71200400001)(33656002)(2906002)(5660300002)(186003)(26005)(478600001)(6506007)(82960400001)(9686003)(38070700005)(122000001)(38100700002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?xQBuJhQTCfBqnRi2Hb/FExv8OxvsEVREgnbnL2hoqYKXaSExMW5ZXudfqp70?=
+ =?us-ascii?Q?vLCQWOzEZFjAyOAeKp3bqFKQ+D/ooVakBoTVNv30pVfbBtBY7s+lW14pgE0J?=
+ =?us-ascii?Q?ITywAaZ1j+WPSJOhcnQkQFOi5M4csbI2SLb0lzSzC4wkACnPHHL6b2vKXLHq?=
+ =?us-ascii?Q?kwcqnKTofttOgs7IR2/E46YBHX0vmF8qSrXnCsw2ChIZ/esatSwyQqYq4jmo?=
+ =?us-ascii?Q?E9G6UqjlRGzHcrkxD/r1GIzxaxvMJZNWpFgpBlySRkGieXJuYmv10SYjcTZY?=
+ =?us-ascii?Q?x/rokYNYZokWYlwfklzQCDmXVbAWbdeWfM1mzi3rjqfXtp71eXOAoZ8sy5eP?=
+ =?us-ascii?Q?S7jxoRz9q7l0nLjiP1uRAxDkZIGkwd8c3KKbtlmdLG3SUV6uPuIhc0FrUUM2?=
+ =?us-ascii?Q?JqxGg3txsasgbAl1TQFJlD7Rn0dc0Muar0MVLOodMpuqe2feBjWdKzdAoGnZ?=
+ =?us-ascii?Q?n/laM/8iB8V6TZ72bTOi9Ukb0mijTy5C+w37nZM+T7u71Zb9ye1EqMvHTF42?=
+ =?us-ascii?Q?9Uwz6Mrngq6QkyUPlA91RffDIomDxX2V1VKqHAeoJuCGo/Fyg9evmfjvw1p/?=
+ =?us-ascii?Q?ygyzihIOgRRROvCNTz7+4O5zW76KDNG8V8q6FDC5xT77MeWhmWK2sIihki6j?=
+ =?us-ascii?Q?NObXLFkW6k+InYKunxsr9aCXFA2aW0wwjLrWnMJeJGHBAjFAhmQTRlR5+kXT?=
+ =?us-ascii?Q?DwNa7V3pYolQnD5YcJz1spuFsB+26Wys6nouGZqH+Hf50AYAWpKQ8zyolsMS?=
+ =?us-ascii?Q?bCI1q9/5a38+FXMJZnpFMFM/wxMzJ0eg0bQ7wsMCJSFOQfwgAapl4ozwRvMp?=
+ =?us-ascii?Q?tybZpGJb46HEAx1HYJq4oOMtcZ1mk/1hKJA40O7iBqJpnmXcJQKdEOk8kzSP?=
+ =?us-ascii?Q?w/xwgTCWzyj7GX4OQXDY+3bbyrsr0VGOGbNLXv7Ue+rO5YXLPscGzlza7Ehl?=
+ =?us-ascii?Q?Es2BCfkBOUU+6oC5zbDOHK4GcDe+6jVUWVEynULV/M/pK4srucOU/Ewte5gJ?=
+ =?us-ascii?Q?L+g3oS1QkCHAyHu/DBKXWgrRrvrv6/Gg0RYOe4zpDoVP52TuddbZVJMDV1RC?=
+ =?us-ascii?Q?L28fjlISQ7XOaMnw1pgLUI4id+h8DJtuMnsw1Zoz+xDedGjShr5il4xcpR/C?=
+ =?us-ascii?Q?pDwpKHgmZ9OjY6Wmm6vaA0B4UgQ4qBma6lxfHvzOOcctp1shiza2jXWsBfic?=
+ =?us-ascii?Q?CZibnN2TPvqx+bcTWVbrBamH+3dRnIlQNso7uSP2wRL70DhQGq1OLqZ/SEKb?=
+ =?us-ascii?Q?vkU5RtaPbzMYWvpYMwhIX7LBrQiCDtgZ6Nh1bCmzZpwkRzaFvhfaj22f20cL?=
+ =?us-ascii?Q?qdcmemSRQNeU7jn+uMpDnDAQaemWnUKk6/57HudwcoxcksZ3Hu1Dzv2GZ3+U?=
+ =?us-ascii?Q?XZ0bgZaAELGzoJTvJvs9AcnQfiYj4GSn9adRgNwPEJEMsIfmuXt91mTjicZF?=
+ =?us-ascii?Q?GhDcGBApzOatlJyIEjan8xq5qn9sQKrzCtE5n9jGl5wlcLW9iq+QBkoEakbG?=
+ =?us-ascii?Q?X7lVgVaPQ1lTOiPt64VhNiJEQfaRGxonzwYSk0f2mG/jq+yqmmJZjGU5/Tu9?=
+ =?us-ascii?Q?nCpl5U502Q7xLL/+SbGEXDB2yq8fYFaI2WVmhW64Nnq8C3ODT7T4NjxaALk4?=
+ =?us-ascii?Q?EA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0a7d136-60c2-4ccc-d68f-08db0db60823
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 11:32:47.4676
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4hWr/LbHNjbjBH7yjl7zIH45NW6cery0t0Qh3uS4xClqjZ7/IaOycFzQxGsrxbo7dBXWsYiETbqXNxi0xGSN1lvaZ9QGqEv4STESyNXeN30=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR10MB7951
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 13 Feb 2023, Biju Das wrote:
+> > From: Daniel Starke <daniel.starke@siemens.com>
+> > +	u32 keep_alive;		/* Control channel keep-alive in ms */
+> [...]
+> > +		if (dlci && !dlci->dead)
+> > +			mod_timer(&gsm->ka_timer, jiffies + gsm->keep_alive * HZ / 100);
+>=20
+> keep-alive is in ms? or in 10ms?
 
-> Hi Jiri Slaby,
-> 
-> Thanks for the feedback.
-> 
-> > Subject: Re: [PATCH v3 3/3] serial: 8250_em: Add serial_out() to struct
-> > serial8250_em_hw_info
-> > 
-> > On 13. 02. 23, 10:31, Biju Das wrote:
-> > > So looks like similar to other macros, UART_FCR_EM (0x3) is sensible one.
-> > >
-> > > UART_FCR_RO_OFFSET (9)
-> > > UART_FCR_RO_EM (UART_FCR_EM + UART_FCR_RO_OFFSET)
-> > >
-> > >
-> > > static unsigned int serial8250_em_serial_in(struct uart_port *p, int
-> > > offset) case UART_FCR_RO_EM:
-> > > 	return readl(p->membase + (offset - UART_FCR_RO_OFFSET << 2));
-> > 
-> > 
-> > Please send a complete patch as a reply. I am completely lost now.
-> 
-> Please find the complete patc.
-> 
-> 
-> From e597ae60eb170c1f1b650e1e533bf4e12c09f822 Mon Sep 17 00:00:00 2001
-> From: Biju Das <biju.das.jz@bp.renesas.com>
-> Date: Tue, 7 Feb 2023 15:07:13 +0000
-> Subject: [PATCH] serial: 8250_em: Add serial_out() to struct
->  serial8250_em_hw_info
-> 
-> As per RZ/V2M hardware manual(Rev.1.30 Jun, 2022), UART IP has a
-> restriction as mentioned below.
-> 
-> 40.6.1 Point for Caution when Changing the Register Settings:
-> 
-> When changing the settings of the following registers, a PRESETn master
-> reset or FIFO reset + SW reset (FCR[2],FCR[1], HCR0[7]) must be input to
-> re-initialize them.
-> 
-> Target Registers: FCR, LCR, MCR, DLL, DLM, HCR0.
-> 
-> This patch adds serial_out() to struct serial8250_em_hw_info to
-> handle this difference between emma mobile and rz/v2m.
-> 
-> DLL/DLM register can be updated only by setting LCR[7]. So the
-> updation of LCR[7] will perform reset for DLL/DLM register changes.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  drivers/tty/serial/8250/8250_em.c | 70 ++++++++++++++++++++++++++++++-
->  1 file changed, 69 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-> index 69cd3b611501..c1c64f48ee7e 100644
-> --- a/drivers/tty/serial/8250/8250_em.c
-> +++ b/drivers/tty/serial/8250/8250_em.c
-> @@ -17,12 +17,23 @@
->  
->  #include "8250.h"
->  
-> +#define UART_FCR_EM 3
->  #define UART_DLL_EM 9
->  #define UART_DLM_EM 10
-> +#define UART_HCR0_EM 11
-> +
-> +#define UART_FCR_R_EM	(UART_FCR_EM + UART_HCR0_EM)
+Good found. The comment is wrong. It is in 10ms as also written in the
+comment for "keep_alive" within gsmmux.h to be in line with t1 and t2.
+I will correct this for v6 of the patch.
 
-It's easy to lose track of all this, IMHO this would be simple:
-
-/*
- * A high value for UART_FCR_EM avoids overlapping with existing UART_* 
- * register defines. UART_FCR_EM_HW is the real HW register offset.
- */
-#define UART_FCR_EM 12
-#define UART_FCR_EM_HW 3
-
-Then use UART_FCR_EM consistently within the function you add for RZ so 
-you'd need provide both _in/_out with UART_FCR_EM. (You'll have both 
-UART_FCR and UART_FCR_EM cases in _out but that seems fine, IMHO).
-
-To me that would look the cleanest workaround to the overlapping defines.
-
--- 
- i.
-
-
-> +#define UART_HCR0_EM_SW_RESET	BIT(7) /* SW Reset */
->  
->  struct serial8250_em_hw_info {
->  	unsigned int type;
->  	upf_t flags;
-> +	void (*serial_out)(struct uart_port *p, int off, int value);
->  };
->  
->  struct serial8250_em_priv {
-> @@ -46,6 +57,7 @@ static void serial8250_em_serial_out(struct uart_port *p, int offset, int value)
->  		fallthrough;
->  	case UART_DLL_EM: /* DLL @ 0x24 (+9) */
->  	case UART_DLM_EM: /* DLM @ 0x28 (+9) */
-> +	case UART_HCR0_EM: /* HCR0 @ 0x2c */
->  		writel(value, p->membase + (offset << 2));
->  	}
->  }
-> @@ -55,20 +67,74 @@ static unsigned int serial8250_em_serial_in(struct uart_port *p, int offset)
->  	switch (offset) {
->  	case UART_RX: /* RX @ 0x00 */
->  		return readb(p->membase);
-> +	case UART_LCR: /* LCR @ 0x10 (+1) */
->  	case UART_MCR: /* MCR @ 0x14 (+1) */
->  	case UART_LSR: /* LSR @ 0x18 (+1) */
->  	case UART_MSR: /* MSR @ 0x1c (+1) */
->  	case UART_SCR: /* SCR @ 0x20 (+1) */
->  		return readl(p->membase + ((offset + 1) << 2));
-> +	case UART_FCR_R_EM:
-> +		return readl(p->membase + (UART_FCR_EM << 2));
->  	case UART_IER: /* IER @ 0x04 */
->  	case UART_IIR: /* IIR @ 0x08 */
->  	case UART_DLL_EM: /* DLL @ 0x24 (+9) */
->  	case UART_DLM_EM: /* DLM @ 0x28 (+9) */
-> +	case UART_HCR0_EM: /* HCR0 @ 0x2c */
->  		return readl(p->membase + (offset << 2));
->  	}
->  	return 0;
->  }
->  
-> +static void serial8250_rzv2m_reg_update(struct uart_port *p, int off, int value)
-> +{
-> +	unsigned int ier, fcr, lcr, mcr, hcr0;
-> +
-> +	ier = serial8250_em_serial_in(p, UART_IER);
-> +	fcr = serial8250_em_serial_in(p, UART_FCR_R_EM);
-> +	lcr = serial8250_em_serial_in(p, UART_LCR);
-> +	mcr = serial8250_em_serial_in(p, UART_MCR);
-> +	hcr0 = serial8250_em_serial_in(p, UART_HCR0_EM);
-> +
-> +	serial8250_em_serial_out(p, UART_FCR, fcr | UART_FCR_CLEAR_RCVR |
-> +				 UART_FCR_CLEAR_XMIT);
-> +	serial8250_em_serial_out(p, UART_HCR0_EM, hcr0 | UART_HCR0_EM_SW_RESET);
-> +	serial8250_em_serial_out(p, UART_HCR0_EM, hcr0 & ~UART_HCR0_EM_SW_RESET);
-> +
-> +	switch (off) {
-> +	case UART_FCR:
-> +		fcr = value;
-> +		break;
-> +	case UART_LCR:
-> +		lcr = value;
-> +		break;
-> +	case UART_MCR:
-> +		mcr = value;
-> +	}
-> +
-> +	serial8250_em_serial_out(p, UART_IER, ier);
-> +	serial8250_em_serial_out(p, UART_FCR, fcr);
-> +	serial8250_em_serial_out(p, UART_MCR, mcr);
-> +	serial8250_em_serial_out(p, UART_LCR, lcr);
-> +	serial8250_em_serial_out(p, UART_HCR0_EM, hcr0);
-> +}
-> +
-> +static void serial8250_em_rzv2m_serial_out(struct uart_port *p, int offset, int value)
-> +{
-> +	switch (offset) {
-> +	case UART_TX:
-> +	case UART_SCR:
-> +	case UART_IER:
-> +	case UART_DLL_EM:
-> +	case UART_DLM_EM:
-> +		serial8250_em_serial_out(p, offset, value);
-> +		break;
-> +	case UART_FCR:
-> +	case UART_LCR:
-> +	case UART_MCR:
-> +		serial8250_rzv2m_reg_update(p, offset, value);
-> +	}
-> +}
-> +
->  static int serial8250_em_serial_dl_read(struct uart_8250_port *up)
->  {
->  	return serial_in(up, UART_DLL_EM) | serial_in(up, UART_DLM_EM) << 8;
-> @@ -120,7 +186,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
->  
->  	up.port.iotype = UPIO_MEM32;
->  	up.port.serial_in = serial8250_em_serial_in;
-> -	up.port.serial_out = serial8250_em_serial_out;
-> +	up.port.serial_out = info->serial_out;
->  	up.dl_read = serial8250_em_serial_dl_read;
->  	up.dl_write = serial8250_em_serial_dl_write;
->  
-> @@ -144,11 +210,13 @@ static int serial8250_em_remove(struct platform_device *pdev)
->  static const struct serial8250_em_hw_info emma_mobile_uart_hw_info = {
->  	.type = PORT_UNKNOWN,
->  	.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP,
-> +	.serial_out = serial8250_em_serial_out,
->  };
->  
->  static const struct serial8250_em_hw_info rzv2m_uart_hw_info = {
->  	.type = PORT_16750,
->  	.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP | UPF_FIXED_TYPE,
-> +	.serial_out = serial8250_em_rzv2m_serial_out,
->  };
->  
->  static const struct of_device_id serial8250_em_dt_ids[] = {
-> 
+Best regards,
+Daniel Starke
