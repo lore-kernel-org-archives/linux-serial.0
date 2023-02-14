@@ -2,377 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A05BC05027
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Feb 2023 12:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416BAC61DA4
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Feb 2023 16:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbjBNM1z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Feb 2023 07:27:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        id S229886AbjBNQMx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Feb 2023 11:12:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbjBNM1y (ORCPT
+        with ESMTP id S231701AbjBNQMw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Feb 2023 07:27:54 -0500
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790F346B6
-        for <linux-serial@vger.kernel.org>; Tue, 14 Feb 2023 04:27:50 -0800 (PST)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202302141227476d4c22b99f70f792da
-        for <linux-serial@vger.kernel.org>;
-        Tue, 14 Feb 2023 13:27:47 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=WyvIloy6hDaD3Su7Y9NAYR3qXdw1PuJe14Bxbv5KI3k=;
- b=W8zn4bxJcjVzzXOw3fzs9tBQx5qCTzIe1Uhaw0tD8WDV3vndgonZfaM+RSXu3hFClm3rMu
- /F+zFnucv2+bgHN4ir7Xv5ZE3J9frDlWZj1GspWG1siO8+PCxyoz5Kms2Z/6MmbKUB1FXYqS
- zCH7dmLcEtLEFvyzuuwEOxUbmgPE4=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, m.brock@vanmierlo.com,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v6 1/1] tty: n_gsm: add keep alive support
-Date:   Tue, 14 Feb 2023 13:27:37 +0100
-Message-Id: <20230214122737.1976-1-daniel.starke@siemens.com>
-MIME-Version: 1.0
+        Tue, 14 Feb 2023 11:12:52 -0500
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605252C643;
+        Tue, 14 Feb 2023 08:12:37 -0800 (PST)
+Received: by mail-il1-f175.google.com with SMTP id h5so595545ilq.6;
+        Tue, 14 Feb 2023 08:12:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=t8LghQUZ4VYOI6+8MHgB96YfD7xfMJYsYr1SqpZhU7o=;
+        b=Y/D6RPNFoPQBrg7DUhCk+5QStUEqEiZyRmnk7OvS/19e5PpacrqMfoto+ZmG+yqG4P
+         ZeOXuA7BoiihAp8s+U7laPjjO0DkdTmg+KQeQcANvHd5Fa8UfhRBeeuBzLkt99htDwiv
+         R4m6NJ6AG+vXkQT2dV98sNrKbiIheKfboAa6+aRZFopHjWjy686RHld8oS7KLd0B+sRw
+         L5L72tud2uUW9aQIY9R9Mzufn+KpTWq2GtOXTsN2RHRjQdwGn7VfeYDCKRERBhbZhvjb
+         IAQMskJNts7DqMfqlXCUPuJh67ct6LpH180Y/sCVXMjwFn+GrTLWN5Rf9TMIh2GM/HgZ
+         F2GQ==
+X-Gm-Message-State: AO0yUKVQo38b47ES9C+yGiRQ9zsw7qzcWooDyEX1VJZKUpidGRf4ODbV
+        gkHYh6rLenkGjkNHH9mLPA==
+X-Google-Smtp-Source: AK7set9P06VBvJOV/3HQy92KwaaH93I7FfQX7zsyhx026ziuRyyeCZabJOgdFFLebGu0c07o5vc65g==
+X-Received: by 2002:a05:6e02:20ef:b0:315:3252:655f with SMTP id q15-20020a056e0220ef00b003153252655fmr3373501ilv.21.1676391156308;
+        Tue, 14 Feb 2023 08:12:36 -0800 (PST)
+Received: from robh_at_kernel.org (c-73-14-99-67.hsd1.co.comcast.net. [73.14.99.67])
+        by smtp.gmail.com with ESMTPSA id r13-20020a92d44d000000b0031550a3dc7esm1306185ilm.32.2023.02.14.08.12.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 08:12:35 -0800 (PST)
+Received: (nullmailer pid 76705 invoked by uid 1000);
+        Tue, 14 Feb 2023 16:12:34 -0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+MIME-Version: 1.0
+From:   Rob Herring <robh@kernel.org>
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Cc:     ilpo.jarvinen@linux.intel.com, johan.hedberg@gmail.com,
+        amitkumar.karwar@nxp.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        luiz.dentz@gmail.com, hdanton@sina.com, alok.a.tiwari@oracle.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        edumazet@google.com, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, sherry.sun@nxp.com,
+        pabeni@redhat.com, leon@kernel.org, davem@davemloft.net,
+        marcel@holtmann.org, rohit.fule@nxp.com
+In-Reply-To: <20230213145432.1192911-3-neeraj.sanjaykale@nxp.com>
+References: <20230213145432.1192911-1-neeraj.sanjaykale@nxp.com>
+ <20230213145432.1192911-3-neeraj.sanjaykale@nxp.com>
+Message-Id: <167638943735.3594.3469258159164603021.robh@kernel.org>
+Subject: Re: [PATCH v3 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth
+ support
+Date:   Tue, 14 Feb 2023 10:12:34 -0600
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapters 5.4.6.3.4 and 5.1.8.1.3 describe the test
-command which can be used to test the mux connection between both sides.
+On Mon, 13 Feb 2023 20:24:31 +0530, Neeraj Sanjay Kale wrote:
+> Add binding document for NXP bluetooth chipsets attached
+> over UART.
+> 
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> ---
+> v2: Resolved dt_binding_check errors. (Rob Herring)
+> v2: Modified description, added specific compatibility devices, corrected indentations. (Krzysztof Kozlowski)
+> v3: Modified description, renamed file (Krzysztof Kozlowski)
+> ---
+>  .../bindings/net/bluetooth/nxp,w8xxx-bt.yaml  | 44 +++++++++++++++++++
+>  MAINTAINERS                                   |  7 +++
+>  2 files changed, 51 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/bluetooth/nxp,w8xxx-bt.yaml
+> 
 
-Currently, no algorithm is implemented to make use of this command. This
-requires that each multiplexed upper layer protocol supervises the
-underlying muxer connection to handle possible connection losses.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Introduce ioctl commands and functions to optionally enable keep alive
-handling via the test command as described in chapter 5.4.6.3.4. A single
-incrementing octet "ka_num" is being used for unique identification of each
-single keep alive packet. Retries will use the same "ka_num" value as the
-original packet. Retry count and interval are taken from the general
-parameters N2 and T2.
+yamllint warnings/errors:
 
-Add usage description and basic example for the new ioctl to the n_gsm
-documentation.
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/net/bluetooth/nxp,w8xxx-bt.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/net/bluetooth/nxp,w8xxx-bt.yaml#
 
-Note that support for the test command is mandatory and already present in
-the muxer implementation since the very first version.
-Also note that the previous ioctl structure gsm_config cannot be extended
-due to missing checks against zero of the field "unused".
+doc reference errors (make refcheckdocs):
+MAINTAINERS: Documentation/devicetree/bindings/net/bluetooth/nxp-bluetooth.yaml
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- Documentation/driver-api/tty/n_gsm.rst |  19 +++++
- drivers/tty/n_gsm.c                    | 106 ++++++++++++++++++++++++-
- include/uapi/linux/gsmmux.h            |  10 +++
- 3 files changed, 133 insertions(+), 2 deletions(-)
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230213145432.1192911-3-neeraj.sanjaykale@nxp.com
 
-v5 -> v6:
-Fixed comment on the "keep_alive" field in gsm_mux as remarked in the
-review.
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-Link: https://lore.kernel.org/all/DB9PR10MB5881C08001D7FA76D6E2C06CE0DD9@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM/
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-diff --git a/Documentation/driver-api/tty/n_gsm.rst b/Documentation/driver-api/tty/n_gsm.rst
-index 35d7381515b0..9447b8a3b8e2 100644
---- a/Documentation/driver-api/tty/n_gsm.rst
-+++ b/Documentation/driver-api/tty/n_gsm.rst
-@@ -25,6 +25,8 @@ Config Initiator
- #. Switch the serial line to using the n_gsm line discipline by using
-    ``TIOCSETD`` ioctl.
- 
-+#. Configure the mux using ``GSMIOC_GETCONF_EXT``/``GSMIOC_SETCONF_EXT`` ioctl if needed.
-+
- #. Configure the mux using ``GSMIOC_GETCONF``/``GSMIOC_SETCONF`` ioctl.
- 
- #. Obtain base gsmtty number for the used serial port.
-@@ -42,6 +44,7 @@ Config Initiator
- 
-       int ldisc = N_GSM0710;
-       struct gsm_config c;
-+      struct gsm_config_ext ce;
-       struct termios configuration;
-       uint32_t first;
- 
-@@ -62,6 +65,12 @@ Config Initiator
-       /* use n_gsm line discipline */
-       ioctl(fd, TIOCSETD, &ldisc);
- 
-+      /* get n_gsm extended configuration */
-+      ioctl(fd, GSMIOC_GETCONF_EXT, &ce);
-+      /* use keep-alive once every 5s for modem connection supervision */
-+      ce.keep_alive = 500;
-+      /* set the new extended configuration */
-+      ioctl(fd, GSMIOC_SETCONF_EXT, &ce);
-       /* get n_gsm configuration */
-       ioctl(fd, GSMIOC_GETCONF, &c);
-       /* we are initiator and need encoding 0 (basic) */
-@@ -106,6 +115,9 @@ Config Requester
- #. Switch the serial line to using the *n_gsm* line discipline by using
-    ``TIOCSETD`` ioctl.
- 
-+#. Configure the mux using ``GSMIOC_GETCONF_EXT``/``GSMIOC_SETCONF_EXT``
-+   ioctl if needed.
-+
- #. Configure the mux using ``GSMIOC_GETCONF``/``GSMIOC_SETCONF`` ioctl.
- 
- #. Obtain base gsmtty number for the used serial port::
-@@ -119,6 +131,7 @@ Config Requester
- 
- 	int ldisc = N_GSM0710;
- 	struct gsm_config c;
-+	struct gsm_config_ext ce;
- 	struct termios configuration;
- 	uint32_t first;
- 
-@@ -132,6 +145,12 @@ Config Requester
- 	/* use n_gsm line discipline */
- 	ioctl(fd, TIOCSETD, &ldisc);
- 
-+	/* get n_gsm extended configuration */
-+	ioctl(fd, GSMIOC_GETCONF_EXT, &ce);
-+	/* use keep-alive once every 5s for peer connection supervision */
-+	ce.keep_alive = 500;
-+	/* set the new extended configuration */
-+	ioctl(fd, GSMIOC_SETCONF_EXT, &ce);
- 	/* get n_gsm configuration */
- 	ioctl(fd, GSMIOC_GETCONF, &c);
- 	/* we are requester and need encoding 0 (basic) */
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 58ea30fd6576..7aa05ebed8e1 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -318,6 +318,11 @@ struct gsm_mux {
- 	struct gsm_control *pending_cmd;/* Our current pending command */
- 	spinlock_t control_lock;	/* Protects the pending command */
- 
-+	/* Keep-alive */
-+	struct timer_list ka_timer;	/* Keep-alive response timer */
-+	u8 ka_num;			/* Keep-alive match pattern */
-+	signed int ka_retries;		/* Keep-alive retry counter, -1 if not yet initialized */
-+
- 	/* Configuration */
- 	int adaption;		/* 1 or 2 supported */
- 	u8 ftype;		/* UI or UIH */
-@@ -325,6 +330,7 @@ struct gsm_mux {
- 	unsigned int t3;	/* Power wake-up timer in seconds. */
- 	int n2;			/* Retry count */
- 	u8 k;			/* Window size */
-+	u32 keep_alive;		/* Control channel keep-alive in 10ms */
- 
- 	/* Statistics (not currently exposed) */
- 	unsigned long bad_fcs;
-@@ -1903,11 +1909,13 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
- 						const u8 *data, int clen)
- {
- 	struct gsm_control *ctrl;
-+	struct gsm_dlci *dlci;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&gsm->control_lock, flags);
- 
- 	ctrl = gsm->pending_cmd;
-+	dlci = gsm->dlci[0];
- 	command |= 1;
- 	/* Does the reply match our command */
- 	if (ctrl != NULL && (command == ctrl->cmd || command == CMD_NSC)) {
-@@ -1922,6 +1930,53 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
- 	/* Or did we receive the PN response to our PN command */
- 	} else if (command == CMD_PN) {
- 		gsm_control_negotiation(gsm, 0, data, clen);
-+	/* Or did we receive the TEST response to our TEST command */
-+	} else if (command == CMD_TEST && clen == 1 && *data == gsm->ka_num) {
-+		gsm->ka_retries = -1; /* trigger new keep-alive message */
-+		if (dlci && !dlci->dead)
-+			mod_timer(&gsm->ka_timer, jiffies + gsm->keep_alive * HZ / 100);
-+	}
-+	spin_unlock_irqrestore(&gsm->control_lock, flags);
-+}
-+
-+/**
-+ * gsm_control_keep_alive	-	check timeout or start keep-alive
-+ * @t: timer contained in our gsm object
-+ *
-+ * Called off the keep-alive timer expiry signaling that our link
-+ * partner is not responding anymore. Link will be closed.
-+ * This is also called to startup our timer.
-+ */
-+
-+static void gsm_control_keep_alive(struct timer_list *t)
-+{
-+	struct gsm_mux *gsm = from_timer(gsm, t, ka_timer);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&gsm->control_lock, flags);
-+	if (gsm->ka_num && gsm->ka_retries == 0) {
-+		/* Keep-alive expired -> close the link */
-+		if (debug & DBG_ERRORS)
-+			pr_debug("%s keep-alive timed out\n", __func__);
-+		spin_unlock_irqrestore(&gsm->control_lock, flags);
-+		if (gsm->dlci[0])
-+			gsm_dlci_begin_close(gsm->dlci[0]);
-+		return;
-+	} else if (gsm->keep_alive && gsm->dlci[0] && !gsm->dlci[0]->dead) {
-+		if (gsm->ka_retries > 0) {
-+			/* T2 expired for keep-alive -> resend */
-+			gsm->ka_retries--;
-+		} else {
-+			/* Start keep-alive timer */
-+			gsm->ka_num++;
-+			if (!gsm->ka_num)
-+				gsm->ka_num++;
-+			gsm->ka_retries = (signed int)gsm->n2;
-+		}
-+		gsm_control_command(gsm, CMD_TEST, &gsm->ka_num,
-+				    sizeof(gsm->ka_num));
-+		mod_timer(&gsm->ka_timer,
-+			  jiffies + gsm->t2 * HZ / 100);
- 	}
- 	spin_unlock_irqrestore(&gsm->control_lock, flags);
- }
-@@ -2067,8 +2122,10 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 		/* Ensure that gsmtty_open() can return. */
- 		tty_port_set_initialized(&dlci->port, false);
- 		wake_up_interruptible(&dlci->port.open_wait);
--	} else
-+	} else {
-+		del_timer(&dlci->gsm->ka_timer);
- 		dlci->gsm->dead = true;
-+	}
- 	/* A DLCI 0 close is a MUX termination so we need to kick that
- 	   back to userspace somehow */
- 	gsm_dlci_data_kick(dlci);
-@@ -2084,6 +2141,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 
- static void gsm_dlci_open(struct gsm_dlci *dlci)
- {
-+	struct gsm_mux *gsm = dlci->gsm;
-+
- 	/* Note that SABM UA .. SABM UA first UA lost can mean that we go
- 	   open -> open */
- 	del_timer(&dlci->t1);
-@@ -2093,8 +2152,15 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 	if (debug & DBG_ERRORS)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Send current modem state */
--	if (dlci->addr)
-+	if (dlci->addr) {
- 		gsm_modem_update(dlci, 0);
-+	} else {
-+		/* Start keep-alive control */
-+		gsm->ka_num = 0;
-+		gsm->ka_retries = -1;
-+		mod_timer(&gsm->ka_timer,
-+			  jiffies + gsm->keep_alive * HZ / 100);
-+	}
- 	gsm_dlci_data_kick(dlci);
- 	wake_up(&dlci->gsm->event);
- }
-@@ -2847,6 +2913,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	/* Finish outstanding timers, making sure they are done */
- 	del_timer_sync(&gsm->kick_timer);
- 	del_timer_sync(&gsm->t2_timer);
-+	del_timer_sync(&gsm->ka_timer);
- 
- 	/* Finish writing to ldisc */
- 	flush_work(&gsm->tx_work);
-@@ -2994,6 +3061,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
- 	INIT_LIST_HEAD(&gsm->tx_data_list);
- 	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
-+	timer_setup(&gsm->ka_timer, gsm_control_keep_alive, 0);
- 	INIT_WORK(&gsm->tx_work, gsmld_write_task);
- 	init_waitqueue_head(&gsm->event);
- 	spin_lock_init(&gsm->control_lock);
-@@ -3010,6 +3078,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
- 	gsm->mru = 64;	/* Default to encoding 1 so these should be 64 */
- 	gsm->mtu = 64;
- 	gsm->dead = true;	/* Avoid early tty opens */
-+	gsm->keep_alive = 0;	/* Disabled */
- 
- 	/* Store the instance to the mux array or abort if no space is
- 	 * available.
-@@ -3145,6 +3214,29 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- 	return 0;
- }
- 
-+static void gsm_copy_config_ext_values(struct gsm_mux *gsm,
-+				       struct gsm_config_ext *ce)
-+{
-+	memset(ce, 0, sizeof(*ce));
-+	ce->keep_alive = gsm->keep_alive;
-+}
-+
-+static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
-+{
-+	unsigned int i;
-+
-+	/*
-+	 * Check that userspace doesn't put stuff in here to prevent breakages
-+	 * in the future.
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(ce->reserved); i++)
-+		if (ce->reserved[i])
-+			return -EINVAL;
-+
-+	gsm->keep_alive = ce->keep_alive;
-+	return 0;
-+}
-+
- /**
-  *	gsmld_output		-	write to link
-  *	@gsm: our mux
-@@ -3463,6 +3555,7 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
- 		       unsigned long arg)
- {
- 	struct gsm_config c;
-+	struct gsm_config_ext ce;
- 	struct gsm_mux *gsm = tty->disc_data;
- 	unsigned int base;
- 
-@@ -3479,6 +3572,15 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	case GSMIOC_GETFIRST:
- 		base = mux_num_to_base(gsm);
- 		return put_user(base + 1, (__u32 __user *)arg);
-+	case GSMIOC_GETCONF_EXT:
-+		gsm_copy_config_ext_values(gsm, &ce);
-+		if (copy_to_user((void __user *)arg, &ce, sizeof(ce)))
-+			return -EFAULT;
-+		return 0;
-+	case GSMIOC_SETCONF_EXT:
-+		if (copy_from_user(&ce, (void __user *)arg, sizeof(ce)))
-+			return -EFAULT;
-+		return gsm_config_ext(gsm, &ce);
- 	default:
- 		return n_tty_ioctl_helper(tty, cmd, arg);
- 	}
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index 785d6b253f6d..a703780aa095 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -39,4 +39,14 @@ struct gsm_netconfig {
- /* get the base tty number for a configured gsmmux tty */
- #define GSMIOC_GETFIRST		_IOR('G', 4, __u32)
- 
-+struct gsm_config_ext {
-+	__u32 keep_alive;	/* Control channel keep-alive in 1/100th of a
-+				 * second (0 to disable)
-+				 */
-+	__u32 reserved[7];	/* For future use, must be initialized to zero */
-+};
-+
-+#define GSMIOC_GETCONF_EXT	_IOR('G', 5, struct gsm_config_ext)
-+#define GSMIOC_SETCONF_EXT	_IOW('G', 6, struct gsm_config_ext)
-+
- #endif
--- 
-2.34.1
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
