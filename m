@@ -2,145 +2,377 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E962C64ED6
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Feb 2023 11:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A05BC05027
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Feb 2023 12:27:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231680AbjBNLKW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Feb 2023 06:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45142 "EHLO
+        id S231948AbjBNM1z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Feb 2023 07:27:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbjBNLJr (ORCPT
+        with ESMTP id S229489AbjBNM1y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Feb 2023 06:09:47 -0500
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2134.outbound.protection.outlook.com [40.107.215.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1C928D31;
-        Tue, 14 Feb 2023 03:08:46 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MMe6GNqKAopFXDK5gH3qXbmvEyVxCJDgH0+TTCkfhfGiP3luEjh2TlJ96nYNAYE7IlyJP31OzFIYbfTYfWph04B5kdkpUFjnka7K8kSg9Mj56Sjthi1qZ6WBDUtti5vQ4jNkO0n8psIm3RQwH4lOEWxAOT4mB0+M+5itp9DuoqBAxhsqOtbzMZNwh/cD1vE5TUetB9Vbbd2NsJrbtEsWaXSp9t+dXeQ4pxE2xbc7/HSYA0+GYEg0D8FxFsYrm6Un575qHKNsyL1kHkYGQ1PWOJPUNvgS9/6mPbDC77mZErM8gfLFV2JnpsmsRYCfxrYBuTIWQHkPJsKLHpW5ncv/jg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PPWB7ztMjhc9gG6E3GAWYaWadp2g0tTUN1XGIPSjUaY=;
- b=LLxsTmqSKta4RfMZaY/kSOe5t3FxH4UgTBV0QJKssXnov+3y8bNFIZ6RX0k2Cws7kuyE9ytlSY5zO+Gvr9OQYqgtg9hQ94ymXoKNzxsR2lPPyBhOhvsJF3YWUjuXw/AA3FWH9zBmGmCrR+YoHC946vSjEMNVnuFld8hJM6+aqieLhlj19ABj/rz0G9afELhtDimHBnXRZdMzMKI4TKIyXh8GVm6KVa4/j1oLKxGudmsSfLVXV32EQ+UyCoGO/FUG5eBAQj3bQ3L7cRvUhIC/8GQE/1b7cYJ0zKvBqf9jp5qdEDBKlm6eQTWctRo23LP5Hp5B4MLWGHwriDW43JlQ4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PPWB7ztMjhc9gG6E3GAWYaWadp2g0tTUN1XGIPSjUaY=;
- b=IQQfEJaoGy7qzfDygNNiR/sjhHpLua7Yr2zHuEko1bF0DwqM86ToYAEn7kuYwO9sNnwj00YrSMm2Kd9BhEtg5Y/M+e03HwlDCBw+sVQ5BJssiBf0Jnmljafp8Pa6u580O7gXIAtorJIho2fBsUhvpPoHFf6eJ3ubV/LkFN6BMJ4=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYCPR01MB11716.jpnprd01.prod.outlook.com (2603:1096:400:37c::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Tue, 14 Feb
- 2023 11:07:59 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::343d:7339:78e5:a46e]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::343d:7339:78e5:a46e%7]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
- 11:07:59 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: RE: [PATCH v3 1/3] serial: 8250_em: Use dev_err_probe()
-Thread-Topic: [PATCH v3 1/3] serial: 8250_em: Use dev_err_probe()
-Thread-Index: AQHZPY8h1ZUKl9Ywh02HhZtwCaSfrK7MbESAgAHhTxA=
-Date:   Tue, 14 Feb 2023 11:07:59 +0000
-Message-ID: <OS0PR01MB592216B6003901EC1179BFF386A29@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20230210203439.174913-1-biju.das.jz@bp.renesas.com>
- <20230210203439.174913-2-biju.das.jz@bp.renesas.com>
- <81328241-670f-8a7a-256c-03919f1a3f67@kernel.org>
-In-Reply-To: <81328241-670f-8a7a-256c-03919f1a3f67@kernel.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TYCPR01MB11716:EE_
-x-ms-office365-filtering-correlation-id: 2112ea68-97e7-4b70-79c4-08db0e7bbbc1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 12L9mBjjSx7mdVMhGeoz987EIu46MCEWRjcowYXQcUIWuQn4U+emlJDRCqsZSbC/v+jbPYiq0IfBsm0dhiTntXRfG/bLNumMBD2J6AeVN1GQe6q/K77/WR7k8Zob3hOE+9jyj9DvOt1pYuuXjN8b9cK491PbxihVFzFiyVi0nh52HaHRyv6+os08ElzegxOYdg01bM5R6XModiiRQrVDrBmji+fDgMFfvaXShzlv3lVI4Qkjm1U3BBjC3PyNzu1p3YqmGFikbvwFl3EfawltUXEl87I1nNSY3PggFZrOiRuw+Cz2ADDsqjRlWPdvVnJIMiLxKYwIMJwFqWY5Onhl0ZxXamckfYoNbR63QUVRwqtrOHNELhCUO8EAViqiT6Z12BuUjtGdqpW3B9kUe65P97qstxtvvm2KYbX+jniNgbXVl13ZHBRcQVgYfFg1gwdvPHV5m407b3FvPZdajM0zQHbo+AqZ1JyVYxgGIwindzXqtk4QFSMEcIXOboSdBnmm4Gg4oZ7dE3+B7ySG1tpxpwCI1i5mPYIVvsp0YejDyW792Ydt7raYu3fCkjCB8vr0o3pw2nGTr7dzUhrote/jvWrciI4QrV3c3jvkwIW2gvClOcaS4kBtwEThB0f85iJsN4ix0rOeF0aGwCYXg35jpnG9ukh5K7j3lh/1/SLtoGBjIhrBvwXbgeDb5edpfygu8CA+lxmu+OybfZf3gTIjmQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(366004)(39860400002)(376002)(396003)(451199018)(478600001)(71200400001)(7696005)(186003)(26005)(6506007)(86362001)(9686003)(38100700002)(83380400001)(55016003)(33656002)(122000001)(4326008)(316002)(38070700005)(110136005)(66446008)(76116006)(5660300002)(4744005)(41300700001)(66556008)(54906003)(8936002)(66946007)(8676002)(64756008)(66476007)(2906002)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RXVPOGdFT0F4VHZoNCt2R2lDSGZrVTh3YVZrWHlVN0NRRCtLZU12Tkd4N09O?=
- =?utf-8?B?ZnZIVXpJZ09vK3JJTnU3TUErT245Ny9SZTQ4TFVodGVTblNTQ3NiUHEwYmRT?=
- =?utf-8?B?MGNVZnBtNlowZU1rV0NkQjkzcEpIeGY4NGNjd0NwMTJRZTNkWVpqSVlRL3Ir?=
- =?utf-8?B?b1NqOEwwNkVyZmxTZmk4OGcwajliUDZRUnpWQ0krZThmeUp2MWtHUzFBVGxw?=
- =?utf-8?B?RFhpQkdPU3FtUEc4bzlPMnlBVTdrRXZCdW82SzZTakI3TnZGZ3lEZVNwT3c0?=
- =?utf-8?B?Z1p3bXJmMmg1MWRwSzNoaExpVmdDVzBjMWhtU0hJQ0V0NWZVNHZpeWhYZkh2?=
- =?utf-8?B?ZlNRODdNdEp0WjExVCtDVmlBcW1JQ29abTZVNVJRNGhwUEo3TlBNeENtS3Fo?=
- =?utf-8?B?S1doUzYxWXFCVDNjM3I0N1NadEJDYi9WYmRscEM5T1NlVjVzM1lkT1FGaTJs?=
- =?utf-8?B?T09GdDFtUDNQZGdyQTk0Mmg2TGkzbG9wZzBORklPTFh0clNMMVRzR2tIN2dz?=
- =?utf-8?B?U0wyU3lUeDRzSDFaOXRwd2trVFI3MVdrL0JMV0luclI4cmlKbUFEeTVxdG9Q?=
- =?utf-8?B?L3pVQ3Z1VVlVR3lTRkVDZ0IvQXkwcW1GYlAzWjVteHZOcFNHbGMrK1F1MFhF?=
- =?utf-8?B?blc5VXNzYXdSRSszZVYwZFN4UzI1dW01emFqOVFVeVpYd0V5Z0tzbkZ3R0pm?=
- =?utf-8?B?cGRYYzk0UGxDbkFkWGZIR0Q5YjlsMHFNT282U2ZwT0tuM25SdldEcHk1aVFh?=
- =?utf-8?B?MVlPM25GQkc5V1hqeU02c0Z5WlRTeTNudzF0aXpqcGRGOE5ZaUFicEkveXRq?=
- =?utf-8?B?V1NDY3hpQUhWT1dSemxVT005VnUxcFlvVk1pTlQvemNGV0NqZloyRXBzSXd3?=
- =?utf-8?B?THNENUpGUnJlNGdZVVRZVTlmd280NENuYXY5NWdSdVRZU3NOS2dUMGVwVUpl?=
- =?utf-8?B?YnROZzVMTWgwSk84V3NtK0pxRWRvdlgrUWlhaE9oUUovRWkxem81MUxqSlI3?=
- =?utf-8?B?TzBlQlZiSjdlR043aHJTa1Q4UFNEb05Lc3lweTlvVHdIQjNHdzEwV251dmk5?=
- =?utf-8?B?VjBzenpaM3JscnNlWWYwZXhrRjR1Z1JxYkZ2NHEzOG4vWjZIL1JIRTlqNGpD?=
- =?utf-8?B?NnNkWTZrNXlhUXRORDNqSktrbXhkVVE1OEgwV2FNVXFKTVFCUGR1Qi96MFNK?=
- =?utf-8?B?azg1eXBXTlFDMDJFOHpyZk9SMEM0cFVYWCt5ak50L0QzeHhacUEyemhZd1lD?=
- =?utf-8?B?VVhPZWhMYVRLRWFBNnYxUXpUTXlRRVREeW5Ba3BtLytpNDJWV3dTemMwVTA4?=
- =?utf-8?B?TmJBVzJqMFJDQzNJMjZTRG9SSkZUQ1ZXWUlkTnIwcWJ4T00yRlR4KzZWQi8r?=
- =?utf-8?B?Zmhmem5JRmNSZnVaenJlZGt6OTlXWUVwWkRXckJLdmlwTnRON3RUbVExMGxr?=
- =?utf-8?B?ZGlxQzRWSjc2akt2b3ozTFVuZlFBMHk4KzdHc01iQW9xTGFhVnAxWGlxdWYr?=
- =?utf-8?B?UUIyVlhWeXkwME5OSXpEN0ZZNG9VTHMrWnVOWGpYd1J1SUFFS24wcUo5YnFp?=
- =?utf-8?B?VEhJVERjSGQxOXFPc2pGU0RNbGlCYjRraEJERGlwMEc1Y0RNNEtxdG5CVmI4?=
- =?utf-8?B?dzZQT3dxc1A5SXdGS0VMWTVBZng3VVhLU1hTZEJHQ0t6ejZ2cHF3Z3QxOXFz?=
- =?utf-8?B?U3NaTTFTTVJ3NTVlZzBsY1VRZ0FWcWFUNjVkbnVLdTR4K0VDdThUZTI5MERo?=
- =?utf-8?B?V0o1RGVvd1RzMDgwYm5vSGxMbm5DTGMyS1cwYlQxb1QzZ3VSTUxqVStUTFcr?=
- =?utf-8?B?Y2pvR1FDSUZ2cnhuME1VSWFZdFNUZzZSZG5oekRXczY2aklpNXNGRVpXdERZ?=
- =?utf-8?B?UG94Qkx3T2dZV1Q2NmpjTWlMdVMrOFpKemgrOGZzSkdRclp5cTcvMEpudzQy?=
- =?utf-8?B?bjg4N3BvajNrTC96NWl2dmVqOTNxQlpMSjl4SnJqUVZSQjlyVjlSYVllcEFM?=
- =?utf-8?B?UTladTNaS1BrSW5xeEpoMUh3a0RJSy9lODBZUzJvcmlzUERhR1VYOU1hVHF2?=
- =?utf-8?B?a3VYa29yZVlQRUk1c0s4czQ4bXlnbElXdHVaMGZXeUQ0VWVvWVZ3dUFKc1NL?=
- =?utf-8?B?VTNBVmYvRGdaMWRWN0ZLZEhjOFpjWDRGYWdwVHR4TlJJdDZOU284M1hzYUJt?=
- =?utf-8?B?Q0E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 14 Feb 2023 07:27:54 -0500
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790F346B6
+        for <linux-serial@vger.kernel.org>; Tue, 14 Feb 2023 04:27:50 -0800 (PST)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202302141227476d4c22b99f70f792da
+        for <linux-serial@vger.kernel.org>;
+        Tue, 14 Feb 2023 13:27:47 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=WyvIloy6hDaD3Su7Y9NAYR3qXdw1PuJe14Bxbv5KI3k=;
+ b=W8zn4bxJcjVzzXOw3fzs9tBQx5qCTzIe1Uhaw0tD8WDV3vndgonZfaM+RSXu3hFClm3rMu
+ /F+zFnucv2+bgHN4ir7Xv5ZE3J9frDlWZj1GspWG1siO8+PCxyoz5Kms2Z/6MmbKUB1FXYqS
+ zCH7dmLcEtLEFvyzuuwEOxUbmgPE4=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, m.brock@vanmierlo.com,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v6 1/1] tty: n_gsm: add keep alive support
+Date:   Tue, 14 Feb 2023 13:27:37 +0100
+Message-Id: <20230214122737.1976-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2112ea68-97e7-4b70-79c4-08db0e7bbbc1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Feb 2023 11:07:59.6373
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SmWPDB0x5OzLSSD5Eu2MPFtGBK2ATpPiMJFtBFhB6Iulju6pc0CWxecBfYqJ0lPpK9iCf6ivwPgYTyYdC4CgruNozhz1h7Bs60Jh75qYz+c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB11716
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkgSmlyaSBTbGFieSwNCg0KVGhhbmtzIGZvciB0aGUgZmVlZGJhY2suDQoNCg0KPiBTdWJqZWN0
-OiBSZTogW1BBVENIIHYzIDEvM10gc2VyaWFsOiA4MjUwX2VtOiBVc2UgZGV2X2Vycl9wcm9iZSgp
-DQo+IA0KPiBPbiAxMC4gMDIuIDIzLCAyMTozNCwgQmlqdSBEYXMgd3JvdGU6DQo+ID4gVGhpcyBw
-YXRjaCBzaW1wbGlmaWVzIHByb2JlKCkgZnVuY3Rpb24gYnkgdXNpbmcgZGV2X2Vycl9wcm9iZSgp
-DQo+ID4gaW5zdGVhZCBvZiBkZXZfZXJyIGluIHByb2JlKCkuDQo+ID4NCj4gPiBXaGlsZSBhdCBp
-dCwgcmVtb3ZlIHRoZSB1bnVzZWQgaGVhZGVyIGZpbGUgc2xhYi5oIGFuZCBhZGRlZCBhIGxvY2Fs
-DQo+ID4gdmFyaWFibGUgJ2RldicgdG8gcmVwbGFjZSAnJnBkZXYtPmRldicgaW4gcHJvYmUoKS4N
-Cj4gPg0KPiA+IEFsc28gcmVwbGFjZSBkZXZtX2Nsa19nZXQtPmRldm1fY2xrX2dldF9lbmFibGVk
-IGFuZCB1cGRhdGVkIHRoZSBjbGsNCj4gPiBoYW5kbGluZyBpbiBwcm9iZSgpIGFuZCByZW1vdmUo
-KS4NCj4gDQo+IFNvcnJ5LCB0aGlzICJXaGlsZSBhdCBpdCIgYW5kICJBbHNvIiBpcyBub3QgYWxs
-b3dlZCBpbiBhIHNpbmdsZSBwYXRjaC4NCj4gWW91IGRvIHRocmVlIGNvbXBsZXRlbHkgZGlzdGlu
-Y3QgdGhpbmdzIGluIGEgc2luZ2xlIHBhdGNoLiBQbGVhc2Ugc2VwYXJhdGUNCj4gKGxpa2UgcHJp
-bnRzKyZkZXYsIHNsYWIuaCwgYW5kIGNsayBjaGFuZ2VzKS4NCg0KT0ssIHdpbGwgc3BsaXQgaW50
-byAzIHBhdGNoZXMgYXMgbWVudGlvbmVkIGFib3ZlLg0KDQo+IA0KPiBBbmQgcHJldHR5IHBsZWFz
-ZSwgZG9uJ3Qgc2VuZCAzICghKSB2ZXJzaW9ucyBhIGRheS4gV2FpdCBhIHdlZWsgb3Igc28gZm9y
-DQo+IHJldmlld3Mgb2YgYSBzaW5nbGUgdmVyc2lvbi4gTm8gbmVlZCB0byBoYXN0ZS4NCg0KT0ss
-IG5leHQgdGltZSB3aWxsIHRha2UgY2FyZS4NCg0KQ2hlZXJzLA0KQmlqdQ0K
+From: Daniel Starke <daniel.starke@siemens.com>
+
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapters 5.4.6.3.4 and 5.1.8.1.3 describe the test
+command which can be used to test the mux connection between both sides.
+
+Currently, no algorithm is implemented to make use of this command. This
+requires that each multiplexed upper layer protocol supervises the
+underlying muxer connection to handle possible connection losses.
+
+Introduce ioctl commands and functions to optionally enable keep alive
+handling via the test command as described in chapter 5.4.6.3.4. A single
+incrementing octet "ka_num" is being used for unique identification of each
+single keep alive packet. Retries will use the same "ka_num" value as the
+original packet. Retry count and interval are taken from the general
+parameters N2 and T2.
+
+Add usage description and basic example for the new ioctl to the n_gsm
+documentation.
+
+Note that support for the test command is mandatory and already present in
+the muxer implementation since the very first version.
+Also note that the previous ioctl structure gsm_config cannot be extended
+due to missing checks against zero of the field "unused".
+
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ Documentation/driver-api/tty/n_gsm.rst |  19 +++++
+ drivers/tty/n_gsm.c                    | 106 ++++++++++++++++++++++++-
+ include/uapi/linux/gsmmux.h            |  10 +++
+ 3 files changed, 133 insertions(+), 2 deletions(-)
+
+v5 -> v6:
+Fixed comment on the "keep_alive" field in gsm_mux as remarked in the
+review.
+
+Link: https://lore.kernel.org/all/DB9PR10MB5881C08001D7FA76D6E2C06CE0DD9@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM/
+
+diff --git a/Documentation/driver-api/tty/n_gsm.rst b/Documentation/driver-api/tty/n_gsm.rst
+index 35d7381515b0..9447b8a3b8e2 100644
+--- a/Documentation/driver-api/tty/n_gsm.rst
++++ b/Documentation/driver-api/tty/n_gsm.rst
+@@ -25,6 +25,8 @@ Config Initiator
+ #. Switch the serial line to using the n_gsm line discipline by using
+    ``TIOCSETD`` ioctl.
+ 
++#. Configure the mux using ``GSMIOC_GETCONF_EXT``/``GSMIOC_SETCONF_EXT`` ioctl if needed.
++
+ #. Configure the mux using ``GSMIOC_GETCONF``/``GSMIOC_SETCONF`` ioctl.
+ 
+ #. Obtain base gsmtty number for the used serial port.
+@@ -42,6 +44,7 @@ Config Initiator
+ 
+       int ldisc = N_GSM0710;
+       struct gsm_config c;
++      struct gsm_config_ext ce;
+       struct termios configuration;
+       uint32_t first;
+ 
+@@ -62,6 +65,12 @@ Config Initiator
+       /* use n_gsm line discipline */
+       ioctl(fd, TIOCSETD, &ldisc);
+ 
++      /* get n_gsm extended configuration */
++      ioctl(fd, GSMIOC_GETCONF_EXT, &ce);
++      /* use keep-alive once every 5s for modem connection supervision */
++      ce.keep_alive = 500;
++      /* set the new extended configuration */
++      ioctl(fd, GSMIOC_SETCONF_EXT, &ce);
+       /* get n_gsm configuration */
+       ioctl(fd, GSMIOC_GETCONF, &c);
+       /* we are initiator and need encoding 0 (basic) */
+@@ -106,6 +115,9 @@ Config Requester
+ #. Switch the serial line to using the *n_gsm* line discipline by using
+    ``TIOCSETD`` ioctl.
+ 
++#. Configure the mux using ``GSMIOC_GETCONF_EXT``/``GSMIOC_SETCONF_EXT``
++   ioctl if needed.
++
+ #. Configure the mux using ``GSMIOC_GETCONF``/``GSMIOC_SETCONF`` ioctl.
+ 
+ #. Obtain base gsmtty number for the used serial port::
+@@ -119,6 +131,7 @@ Config Requester
+ 
+ 	int ldisc = N_GSM0710;
+ 	struct gsm_config c;
++	struct gsm_config_ext ce;
+ 	struct termios configuration;
+ 	uint32_t first;
+ 
+@@ -132,6 +145,12 @@ Config Requester
+ 	/* use n_gsm line discipline */
+ 	ioctl(fd, TIOCSETD, &ldisc);
+ 
++	/* get n_gsm extended configuration */
++	ioctl(fd, GSMIOC_GETCONF_EXT, &ce);
++	/* use keep-alive once every 5s for peer connection supervision */
++	ce.keep_alive = 500;
++	/* set the new extended configuration */
++	ioctl(fd, GSMIOC_SETCONF_EXT, &ce);
+ 	/* get n_gsm configuration */
+ 	ioctl(fd, GSMIOC_GETCONF, &c);
+ 	/* we are requester and need encoding 0 (basic) */
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 58ea30fd6576..7aa05ebed8e1 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -318,6 +318,11 @@ struct gsm_mux {
+ 	struct gsm_control *pending_cmd;/* Our current pending command */
+ 	spinlock_t control_lock;	/* Protects the pending command */
+ 
++	/* Keep-alive */
++	struct timer_list ka_timer;	/* Keep-alive response timer */
++	u8 ka_num;			/* Keep-alive match pattern */
++	signed int ka_retries;		/* Keep-alive retry counter, -1 if not yet initialized */
++
+ 	/* Configuration */
+ 	int adaption;		/* 1 or 2 supported */
+ 	u8 ftype;		/* UI or UIH */
+@@ -325,6 +330,7 @@ struct gsm_mux {
+ 	unsigned int t3;	/* Power wake-up timer in seconds. */
+ 	int n2;			/* Retry count */
+ 	u8 k;			/* Window size */
++	u32 keep_alive;		/* Control channel keep-alive in 10ms */
+ 
+ 	/* Statistics (not currently exposed) */
+ 	unsigned long bad_fcs;
+@@ -1903,11 +1909,13 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
+ 						const u8 *data, int clen)
+ {
+ 	struct gsm_control *ctrl;
++	struct gsm_dlci *dlci;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 
+ 	ctrl = gsm->pending_cmd;
++	dlci = gsm->dlci[0];
+ 	command |= 1;
+ 	/* Does the reply match our command */
+ 	if (ctrl != NULL && (command == ctrl->cmd || command == CMD_NSC)) {
+@@ -1922,6 +1930,53 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
+ 	/* Or did we receive the PN response to our PN command */
+ 	} else if (command == CMD_PN) {
+ 		gsm_control_negotiation(gsm, 0, data, clen);
++	/* Or did we receive the TEST response to our TEST command */
++	} else if (command == CMD_TEST && clen == 1 && *data == gsm->ka_num) {
++		gsm->ka_retries = -1; /* trigger new keep-alive message */
++		if (dlci && !dlci->dead)
++			mod_timer(&gsm->ka_timer, jiffies + gsm->keep_alive * HZ / 100);
++	}
++	spin_unlock_irqrestore(&gsm->control_lock, flags);
++}
++
++/**
++ * gsm_control_keep_alive	-	check timeout or start keep-alive
++ * @t: timer contained in our gsm object
++ *
++ * Called off the keep-alive timer expiry signaling that our link
++ * partner is not responding anymore. Link will be closed.
++ * This is also called to startup our timer.
++ */
++
++static void gsm_control_keep_alive(struct timer_list *t)
++{
++	struct gsm_mux *gsm = from_timer(gsm, t, ka_timer);
++	unsigned long flags;
++
++	spin_lock_irqsave(&gsm->control_lock, flags);
++	if (gsm->ka_num && gsm->ka_retries == 0) {
++		/* Keep-alive expired -> close the link */
++		if (debug & DBG_ERRORS)
++			pr_debug("%s keep-alive timed out\n", __func__);
++		spin_unlock_irqrestore(&gsm->control_lock, flags);
++		if (gsm->dlci[0])
++			gsm_dlci_begin_close(gsm->dlci[0]);
++		return;
++	} else if (gsm->keep_alive && gsm->dlci[0] && !gsm->dlci[0]->dead) {
++		if (gsm->ka_retries > 0) {
++			/* T2 expired for keep-alive -> resend */
++			gsm->ka_retries--;
++		} else {
++			/* Start keep-alive timer */
++			gsm->ka_num++;
++			if (!gsm->ka_num)
++				gsm->ka_num++;
++			gsm->ka_retries = (signed int)gsm->n2;
++		}
++		gsm_control_command(gsm, CMD_TEST, &gsm->ka_num,
++				    sizeof(gsm->ka_num));
++		mod_timer(&gsm->ka_timer,
++			  jiffies + gsm->t2 * HZ / 100);
+ 	}
+ 	spin_unlock_irqrestore(&gsm->control_lock, flags);
+ }
+@@ -2067,8 +2122,10 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
+ 		/* Ensure that gsmtty_open() can return. */
+ 		tty_port_set_initialized(&dlci->port, false);
+ 		wake_up_interruptible(&dlci->port.open_wait);
+-	} else
++	} else {
++		del_timer(&dlci->gsm->ka_timer);
+ 		dlci->gsm->dead = true;
++	}
+ 	/* A DLCI 0 close is a MUX termination so we need to kick that
+ 	   back to userspace somehow */
+ 	gsm_dlci_data_kick(dlci);
+@@ -2084,6 +2141,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
+ 
+ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ {
++	struct gsm_mux *gsm = dlci->gsm;
++
+ 	/* Note that SABM UA .. SABM UA first UA lost can mean that we go
+ 	   open -> open */
+ 	del_timer(&dlci->t1);
+@@ -2093,8 +2152,15 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 	if (debug & DBG_ERRORS)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	/* Send current modem state */
+-	if (dlci->addr)
++	if (dlci->addr) {
+ 		gsm_modem_update(dlci, 0);
++	} else {
++		/* Start keep-alive control */
++		gsm->ka_num = 0;
++		gsm->ka_retries = -1;
++		mod_timer(&gsm->ka_timer,
++			  jiffies + gsm->keep_alive * HZ / 100);
++	}
+ 	gsm_dlci_data_kick(dlci);
+ 	wake_up(&dlci->gsm->event);
+ }
+@@ -2847,6 +2913,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ 	/* Finish outstanding timers, making sure they are done */
+ 	del_timer_sync(&gsm->kick_timer);
+ 	del_timer_sync(&gsm->t2_timer);
++	del_timer_sync(&gsm->ka_timer);
+ 
+ 	/* Finish writing to ldisc */
+ 	flush_work(&gsm->tx_work);
+@@ -2994,6 +3061,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
+ 	INIT_LIST_HEAD(&gsm->tx_data_list);
+ 	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
+ 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
++	timer_setup(&gsm->ka_timer, gsm_control_keep_alive, 0);
+ 	INIT_WORK(&gsm->tx_work, gsmld_write_task);
+ 	init_waitqueue_head(&gsm->event);
+ 	spin_lock_init(&gsm->control_lock);
+@@ -3010,6 +3078,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
+ 	gsm->mru = 64;	/* Default to encoding 1 so these should be 64 */
+ 	gsm->mtu = 64;
+ 	gsm->dead = true;	/* Avoid early tty opens */
++	gsm->keep_alive = 0;	/* Disabled */
+ 
+ 	/* Store the instance to the mux array or abort if no space is
+ 	 * available.
+@@ -3145,6 +3214,29 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 	return 0;
+ }
+ 
++static void gsm_copy_config_ext_values(struct gsm_mux *gsm,
++				       struct gsm_config_ext *ce)
++{
++	memset(ce, 0, sizeof(*ce));
++	ce->keep_alive = gsm->keep_alive;
++}
++
++static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
++{
++	unsigned int i;
++
++	/*
++	 * Check that userspace doesn't put stuff in here to prevent breakages
++	 * in the future.
++	 */
++	for (i = 0; i < ARRAY_SIZE(ce->reserved); i++)
++		if (ce->reserved[i])
++			return -EINVAL;
++
++	gsm->keep_alive = ce->keep_alive;
++	return 0;
++}
++
+ /**
+  *	gsmld_output		-	write to link
+  *	@gsm: our mux
+@@ -3463,6 +3555,7 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 		       unsigned long arg)
+ {
+ 	struct gsm_config c;
++	struct gsm_config_ext ce;
+ 	struct gsm_mux *gsm = tty->disc_data;
+ 	unsigned int base;
+ 
+@@ -3479,6 +3572,15 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 	case GSMIOC_GETFIRST:
+ 		base = mux_num_to_base(gsm);
+ 		return put_user(base + 1, (__u32 __user *)arg);
++	case GSMIOC_GETCONF_EXT:
++		gsm_copy_config_ext_values(gsm, &ce);
++		if (copy_to_user((void __user *)arg, &ce, sizeof(ce)))
++			return -EFAULT;
++		return 0;
++	case GSMIOC_SETCONF_EXT:
++		if (copy_from_user(&ce, (void __user *)arg, sizeof(ce)))
++			return -EFAULT;
++		return gsm_config_ext(gsm, &ce);
+ 	default:
+ 		return n_tty_ioctl_helper(tty, cmd, arg);
+ 	}
+diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+index 785d6b253f6d..a703780aa095 100644
+--- a/include/uapi/linux/gsmmux.h
++++ b/include/uapi/linux/gsmmux.h
+@@ -39,4 +39,14 @@ struct gsm_netconfig {
+ /* get the base tty number for a configured gsmmux tty */
+ #define GSMIOC_GETFIRST		_IOR('G', 4, __u32)
+ 
++struct gsm_config_ext {
++	__u32 keep_alive;	/* Control channel keep-alive in 1/100th of a
++				 * second (0 to disable)
++				 */
++	__u32 reserved[7];	/* For future use, must be initialized to zero */
++};
++
++#define GSMIOC_GETCONF_EXT	_IOR('G', 5, struct gsm_config_ext)
++#define GSMIOC_SETCONF_EXT	_IOW('G', 6, struct gsm_config_ext)
++
+ #endif
+-- 
+2.34.1
+
