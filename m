@@ -2,314 +2,692 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4252C636CC
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Feb 2023 10:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57156C61DA4
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Feb 2023 11:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbjBPKww (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Feb 2023 05:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
+        id S229723AbjBPLwE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Feb 2023 06:52:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbjBPKwv (ORCPT
+        with ESMTP id S229678AbjBPLwE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Feb 2023 05:52:51 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2055.outbound.protection.outlook.com [40.107.20.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D591540D6;
-        Thu, 16 Feb 2023 02:52:46 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=goaA5g8ikNhagpFwnXaR63Cskok0DI1olj7LekN7Z6aGvsPWY1aNELZnVOmkJE2DI/uZXth+W6wbCY9wCagaaWQBPTlMj03OoK4ffUG9l/AaNLI6TfXpNS7O/SEd6jdHwuEUyFhppy/Y3r6k8eWzyiQgjXHjq/6P/jjjtgcA9kRFE8Mn49o4h/ehu1yM8OSlLjPvIqhcVycIQwgzb32Yi9ExNDKMW1Kb28PRV3natPO6VyJTh7YKOPLRFkPy9sZxBurldh8Y40efwzwWNwUSAZ/1RAzEuk6BRXePTI9krTJsTs22EIsOrWQv/3gP5pWqf6PUS+9ndsa+nDIIc2o6iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mZWA+RsltlhTXJSIrFZQollFxWNpqTvQ9/2PXZFGDtk=;
- b=nzeAL9/IhCpBR5PzxcbyOxbVtURThKC9zkd+LNIJNaeTez4ysGloFLhO6yt6bNfMbIduRv1r66qrQf2wkltHpMn6zY02XWLuw+u+NkVFbR/frazwuMhyAXP0boqHB4urowyyY6d7Bnnev6eeK42SXWoTYW15ruvUBALx1j3MdOIyJJRZWBjjiG0138NCoOlTIYWZYx8LVCpJO2Ttv1N4s0AEMuUvX2THPY1gflOUeKU1pTmzx8ltHcVM8T41XhlnsUX5Lj6zQ0HYIN5lKXyPC3U+QO4YpWWDxo7NVM4Rmp5F84K0Dwk7jCldI1XnVHT6J0/8ggars2WmDw6IAUle1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mZWA+RsltlhTXJSIrFZQollFxWNpqTvQ9/2PXZFGDtk=;
- b=jVJcWDNQnYYbFbxnxi6eS+DCl8Al6/ZogkIVYWQonOIPlBLu66UUxi++97gPqt/DLLY+bW1v5mJ7aKBWJDaeNR7QYLkfwrB0+YqfQ+ZKe9zKoNI8/LqaZifGGvj/J+PaBMlZJOuHpzGmTFyCJKBBOgSzzWva4spgz6Zg91dk8QE=
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS8PR04MB8497.eurprd04.prod.outlook.com (2603:10a6:20b:340::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.13; Thu, 16 Feb
- 2023 10:52:44 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::7f24:bc0a:acd4:b13f]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::7f24:bc0a:acd4:b13f%5]) with mapi id 15.20.6111.012; Thu, 16 Feb 2023
- 10:52:44 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>, Jun Li <jun.li@nxp.com>,
-        Bough Chen <haibo.chen@nxp.com>
-Subject: RE: [PATCH v3 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Thread-Topic: [PATCH v3 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Thread-Index: AQHZP7s/ySKQaziowUyEbynt/tlKPa7RLkkg
-Date:   Thu, 16 Feb 2023 10:52:44 +0000
-Message-ID: <AS8PR04MB840444A34ABDDD164DEED2B492A09@AS8PR04MB8404.eurprd04.prod.outlook.com>
-References: <20230213145432.1192911-1-neeraj.sanjaykale@nxp.com>
- <20230213145432.1192911-4-neeraj.sanjaykale@nxp.com>
-In-Reply-To: <20230213145432.1192911-4-neeraj.sanjaykale@nxp.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR04MB8404:EE_|AS8PR04MB8497:EE_
-x-ms-office365-filtering-correlation-id: 60afe8e5-c92b-471e-50b4-08db100beefe
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WW4gs0vIKVusDieX1AxAG82CNyXyeMyhTKvwyVi8xsO/EzbRTqbpstlayBEq86pbrTY3hJlOJ15UO5Z1WYRjJBXV3jz1ukonmldIZa0t9mEcBCbW0vT3r2nhcUqiKPEHeJDrmUHvqBxSkL+FYHZKwumKWo/1jWjVAvTGU2MWCVAo2R8RKIZ3ciuh87CMEofXSZMxpKfplNhJKteyhoORicH9AUSgMso7x9dkBeSv6DAHqBncU7g0leyzEfjffmww07fDVZxYc3MvqJYa6bvumUfTbfhhE8mGIj2Wpu/rhLOO83txBuqIVBY4AjPxgdRegIk739tZF8VXlcB/fJ98QkpvexDmBzf4iIohAoCZRNz0KzRlP0+QQ628/vEVKTimACYXXhX3FpIH3If9okNhg4vO5VW2N8OpE3TNg2k0vAQDYqrN4dJrmPDjpLZ7u2LqcGW8FBcMEyfG00+Hpr1Nddl74ZDtU6c4E3ZqmBjo3Rh4o7NTu+PPPftzU5ouP2AlQqNaoD4NstF3oV/+UqWRXrwsYD8KcqJ7zmibuJn4o++DImft97pkQ5EWBropT9HqQo/ICFJi5fonq8jwxCaGx2npwcfzu7+Ft2k2GWeaqw0Wyzj44aJEKD4rPE7gySet/rPd/BPcjMJeGNEqhpeenJXAnXPHc9p/yxX1LMMD+jr5UUrfBv+3tkoYCI+gT5Gf+Rlby0MioHta9DBS27sh3ZMCu1Rnbu5ZbHWBa6PQcMI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(396003)(366004)(346002)(376002)(451199018)(9686003)(76116006)(44832011)(2906002)(110136005)(54906003)(7416002)(52536014)(5660300002)(8936002)(33656002)(66556008)(66946007)(66476007)(316002)(7696005)(71200400001)(55016003)(4326008)(64756008)(41300700001)(66446008)(478600001)(8676002)(86362001)(38070700005)(186003)(26005)(6506007)(53546011)(921005)(38100700002)(83380400001)(122000001)(66574015);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ek41YUVvM3c4SGUveCtJMFBLMUN1VUxtNmczVitUbXRCandjR2U3aTdlbDdE?=
- =?utf-8?B?YU1ZYmRRUC85NmNGVlZZS1RWN3JheHRiL3FwV2JxVGNGZy9rOHFDVzY0aG9j?=
- =?utf-8?B?bHFBaXY2QmNmbjVtSDZwSkVpdnVwVXliWmVSYStCUGx2VUZOczMwcm5WSVVB?=
- =?utf-8?B?M0llK1NBS0xobU9CQWFwZTY4cW9CaEJZaXFCRGZRd3AwS2dVTCtZdHQ1a2FH?=
- =?utf-8?B?SFp3TDdwcm1NamRsUG5BU2g0UU1nRENpY3lmOWFqSWdITEpuWmE3Q2o5eWJ5?=
- =?utf-8?B?Z09pMG4zNC9COHpMODl6NWI0YzJnblgxOHA4a0xKNmtMWHV2YXdwR2pqSSs0?=
- =?utf-8?B?UE53VHptZkZvWkp1V0RZMm8yK21KY2k2dnFneVgxNVpSUlgyVUdENG5BMXQr?=
- =?utf-8?B?TmNnNENSWW9XZXJraDhyN0U5VmVXb1hHK2dpcEpYcGVLMFBxKzZsSTFaWE85?=
- =?utf-8?B?emc0TWhMUzlsMCtVeHFsOEZSMDBwNU5FQ1dXazRkRHEyRnZvdFFBblJkQTA2?=
- =?utf-8?B?cklxcWZDWlFMQzNEUXRrd3hZbmtZYndpbDhmVlpYckt1R0xWV0dKdVFZczhJ?=
- =?utf-8?B?M1JTcDVoTkxjMVFGZjNFRHM1YWhlZDhKUkVZdVRERW1ZR0VqbVdqYmJFeU1s?=
- =?utf-8?B?TUsyRHNOM1Q4N0J0YlI4a1ZwRjAyRjdhSDQ3bzM2OGhHTGJsVEcwemJOeUNv?=
- =?utf-8?B?YUZuaW5NbWlCcDAyYU4ybGUzSks2azJtZGUxQ0xYSHI1NU16THFiZTRJeEV5?=
- =?utf-8?B?UDNMbGh4ai9kMStUYkhTbnpmSG82Yi82VDRIUFNCc0szZXBlUHhqeTVIbFJO?=
- =?utf-8?B?VVB0enNnS2xCVHlzN3hLY2JqL1lFZHREdy9WOEkyQnVIZVJWVlhvTnZocC8x?=
- =?utf-8?B?WDB0ckI1RFNVdnFyUnN2dnhFSlQzaEpiaTh1cGo2azVnVFNxQndwcC9rck9y?=
- =?utf-8?B?QU9WV2JFcWVXcVlrQUFUcEx6OWZDK3FpQWwrSzUrOEF3NWIzMFFWMno1MWVI?=
- =?utf-8?B?THVSN1pxSUtYZ0cvc3VoYVN0MmNjSndpL1o1NzJqUnMzYTBnVmhlOHNHZzJG?=
- =?utf-8?B?MUwzenBkMnBvbDZQQlFIWkFKT0lSK0RNOFRwU3hrR2I2U3IxZzkvN1RaZXBz?=
- =?utf-8?B?L29NZ3NianRBVEpSQ3doN2t6Y2h5cnlxQUQzbGg5K1c5aUg1ZXBDWjdXeHhx?=
- =?utf-8?B?OWVhNGVtMWhwcWVYckNyVWxML1djS21Nb0ZFbWFOS0hTdHRWZkROTmZyVEhX?=
- =?utf-8?B?Nis1bk5KUEMyeUgyWTV2eTNiZmlqbEROdWxQeHk4c1ZydW50TGRPNzc0N25C?=
- =?utf-8?B?Rk9oMnFNVVp1eVd0cUxtZTYyQjgrVERkc0NqbHlwV1RMY0xwRWpIRlErMTVD?=
- =?utf-8?B?bDNxNncvaVA5d3paTEhCT05aREZTUnFpcGQxbHZhNkowTVo0YjQyc2tqL2w0?=
- =?utf-8?B?RHRDWUwxNTF4alJCb3czcXU5SkNuTVNwWHZkU0E2M2pEODRXdnh5OFZzUkc4?=
- =?utf-8?B?eTl0N2lJNDU3aEV4QnRmMGhyVkdGNitHdExHWldTVjZUQjFkWlFCaGJSbXB1?=
- =?utf-8?B?TXU3SDhTejBoK0x6RXRlek5pVnI5QnFKbHNVSGJyTHplNEVuV2tQVXM3V0wv?=
- =?utf-8?B?TFgzT0JsWVIrMnVKWStZZ3d6MkxmKzhuN1lMVUtOT1UvaURIREVYTGxIZFFa?=
- =?utf-8?B?VUd1cFUzNEdQK0twamtxM3VzOUpPNHV4NUdzM2xvR1BFUHYzWWxJYmhwbTd0?=
- =?utf-8?B?TDN3cFg4SzAzeWpJNjArUWFhRFFOb3FMbXE0WXcxb3hZWnlRSHowU29peGxk?=
- =?utf-8?B?MHIrYVBRTXF5eGxRZ2ZoN0NpMDM0dHRFOWZRU0pCQXdDc3hvemhxdlNpRHBQ?=
- =?utf-8?B?VC83djRnVE9ZM1hlc2VNSjEyazVVVHNqYnNZM3lyQzd5SWt6RzFkcmZaSEFG?=
- =?utf-8?B?eW44cXNMU1l2TGs1NFFxbkNvbm5ta1F3d3NXWTNnTVlvTGpPcjVzK0lFSG5x?=
- =?utf-8?B?K0hlalE5MlhFeGpFMHR4bWFodXJ2QVZFc1RxOVJhYWJFNGYyZWJlUFpxaitw?=
- =?utf-8?B?cmZGaDh1dCtweThMTU9HV2NXQ1V1dnRSc3V2VkhhSG4wdW05dVhlMGVNbml5?=
- =?utf-8?Q?eXUhyfaaGimLiI2ucEO0RDtbi?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Thu, 16 Feb 2023 06:52:04 -0500
+X-Greylist: delayed 497 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Feb 2023 03:52:01 PST
+Received: from mail.someserver.de (mail.someserver.de [116.202.193.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02AC0C3
+        for <linux-serial@vger.kernel.org>; Thu, 16 Feb 2023 03:52:00 -0800 (PST)
+Received: from [192.168.1.42] (unknown [213.55.243.226])
+        by mail.someserver.de (Postfix) with ESMTPSA id 711C7A21ED;
+        Thu, 16 Feb 2023 12:43:41 +0100 (CET)
+Message-ID: <4d1847d6-4350-7212-577e-1ee8d58bee2b@christina-quast.de>
+Date:   Thu, 16 Feb 2023 12:43:41 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60afe8e5-c92b-471e-50b4-08db100beefe
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2023 10:52:44.3073
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rQ5cRfL7fHZ423eN/hbZBj9xyTMPca9Wc8TudBNoY1/IVgOZaZFYusues9vrZKiXJIS0MmZxlEfS5U96AzDrjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8497
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v2] hid-ft260: Add serial driver
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Christina Quast <contact@christina-quast.de>
+Cc:     linux-serial <linux-serial@vger.kernel.org>, johan@kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        daniel.beer@igorinstitute.com
+References: <20221231125911.107410-1-contact@christina-quast.de>
+ <6e277a9d-2d7b-91b5-11c7-f6b818b8a661@linux.intel.com>
+From:   Christina Quast <chrysh@christina-quast.de>
+In-Reply-To: <6e277a9d-2d7b-91b5-11c7-f6b818b8a661@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTmVlcmFqIHNhbmpheSBr
-YWxlIDxuZWVyYWouc2FuamF5a2FsZUBueHAuY29tPg0KPiBTZW50OiAyMDIz5bm0MuaciDEz5pel
-IDIyOjU1DQo+IFRvOiBkYXZlbUBkYXZlbWxvZnQubmV0OyBlZHVtYXpldEBnb29nbGUuY29tOyBr
-dWJhQGtlcm5lbC5vcmc7DQo+IHBhYmVuaUByZWRoYXQuY29tOyByb2JoK2R0QGtlcm5lbC5vcmc7
-DQo+IGtyenlzenRvZi5rb3psb3dza2krZHRAbGluYXJvLm9yZzsgbWFyY2VsQGhvbHRtYW5uLm9y
-ZzsNCj4gam9oYW4uaGVkYmVyZ0BnbWFpbC5jb207IGx1aXouZGVudHpAZ21haWwuY29tOw0KPiBn
-cmVna2hAbGludXhmb3VuZGF0aW9uLm9yZzsgamlyaXNsYWJ5QGtlcm5lbC5vcmc7IGFsb2suYS50
-aXdhcmlAb3JhY2xlLmNvbTsNCj4gaGRhbnRvbkBzaW5hLmNvbTsgaWxwby5qYXJ2aW5lbkBsaW51
-eC5pbnRlbC5jb207IGxlb25Aa2VybmVsLm9yZw0KPiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9y
-ZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJu
-ZWwub3JnOyBsaW51eC1ibHVldG9vdGhAdmdlci5rZXJuZWwub3JnOyBsaW51eC0NCj4gc2VyaWFs
-QHZnZXIua2VybmVsLm9yZzsgQW1pdGt1bWFyIEthcndhciA8YW1pdGt1bWFyLmthcndhckBueHAu
-Y29tPjsNCj4gUm9oaXQgRnVsZSA8cm9oaXQuZnVsZUBueHAuY29tPjsgU2hlcnJ5IFN1biA8c2hl
-cnJ5LnN1bkBueHAuY29tPjsgTmVlcmFqDQo+IHNhbmpheSBrYWxlIDxuZWVyYWouc2FuamF5a2Fs
-ZUBueHAuY29tPg0KPiBTdWJqZWN0OiBbUEFUQ0ggdjMgMy8zXSBCbHVldG9vdGg6IE5YUDogQWRk
-IHByb3RvY29sIHN1cHBvcnQgZm9yIE5YUA0KPiBCbHVldG9vdGggY2hpcHNldHMNCj4gDQo+IFRo
-aXMgYWRkcyBhIGRyaXZlciBiYXNlZCBvbiBzZXJkZXYgZHJpdmVyIGZvciB0aGUgTlhQIEJUIHNl
-cmlhbCBwcm90b2NvbA0KPiBiYXNlZCBvbiBydW5uaW5nIEg6NCwgd2hpY2ggY2FuIGVuYWJsZSB0
-aGUgYnVpbHQtaW4gQmx1ZXRvb3RoIGRldmljZSBpbnNpZGUgYQ0KPiBnZW5lcmljIE5YUCBCVCBj
-aGlwLg0KPiANCj4gVGhpcyBkcml2ZXIgaGFzIFBvd2VyIFNhdmUgZmVhdHVyZSB0aGF0IHdpbGwg
-cHV0IHRoZSBjaGlwIGludG8gc2xlZXAgc3RhdGUNCj4gd2hlbmV2ZXIgdGhlcmUgaXMgbm8gYWN0
-aXZpdHkgZm9yIDIwMDBtcywgYW5kIHdpbGwgYmUgd29rZW4gdXAgd2hlbiBhbnkNCj4gYWN0aXZp
-dHkgaXMgdG8gYmUgaW5pdGlhdGVkIG92ZXIgVUFSVC4NCj4gDQo+IFRoaXMgZHJpdmVyIGVuYWJs
-ZXMgdGhlIHBvd2VyIHNhdmUgZmVhdHVyZSBieSBkZWZhdWx0IGJ5IHNlbmRpbmcgdGhlIHZlbmRv
-cg0KPiBzcGVjaWZpYyBjb21tYW5kcyB0byB0aGUgY2hpcCBkdXJpbmcgc2V0dXAuDQo+IA0KPiBE
-dXJpbmcgc2V0dXAsIHRoZSBkcml2ZXIgY2hlY2tzIGlmIGEgRlcgaXMgYWxyZWFkeSBydW5uaW5n
-IG9uIHRoZSBjaGlwIGJhc2VkDQo+IG9uIHRoZSBDVFMgbGluZSwgYW5kIGRvd25sb2FkcyBkZXZp
-Y2Ugc3BlY2lmaWMgRlcgZmlsZSBpbnRvIHRoZSBjaGlwIG92ZXINCj4gVUFSVC4NCj4gDQo+IFRo
-ZSBkcml2ZXIgY29udGFpbnMgY2VydGFpbiBkZXZpY2Ugc3BlY2lmaWMgZGVmYXVsdCBwYXJhbWV0
-ZXJzIHJlbGF0ZWQgdG8gRlcNCj4gZmlsZW5hbWUsIGJhdWRyYXRlIGFuZCB0aW1lb3V0cyB3aGlj
-aCBjYW4gYmUgb3ZlcndyaXR0ZW4gYnkgYW4gb3B0aW9uYWwNCj4gdXNlciBzcGFjZSBjb25maWcg
-ZmlsZS4gVGhlc2UgcGFyYW1ldGVycyBtYXkgdmFyeSBmcm9tIG9uZSBtb2R1bGUgdmVuZG9yDQo+
-IHRvIGFub3RoZXIuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBOZWVyYWogU2FuamF5IEthbGUgPG5l
-ZXJhai5zYW5qYXlrYWxlQG54cC5jb20+DQo+IC0tLQ0KPiB2MjogUmVtb3ZlZCBjb25mIGZpbGUg
-c3VwcG9ydCBhbmQgYWRkZWQgc3RhdGljIGRhdGEgZm9yIGVhY2ggY2hpcCBiYXNlZCBvbg0KPiBj
-b21wYXRpYmlsaXR5IGRldmljZXMgbWVudGlvbmVkIGluIERUIGJpbmRpbmdzLiBIYW5kbGVkIHBv
-dGVudGlhbCBtZW1vcnkNCj4gbGVha3MgYW5kIG51bGwgcG9pbnRlciBkZXJlZmVyZW5jZSBpc3N1
-ZXMsIHNpbXBsaWZpZWQgRlcgZG93bmxvYWQgZmVhdHVyZSwNCj4gaGFuZGxlZCBieXRlLW9yZGVy
-IGFuZCBmZXcgY29zbWV0aWMgY2hhbmdlcy4gKElscG8gSsOkcnZpbmVuLCBBbG9rIFRpd2FyaSwN
-Cj4gSGlsbGYgRGFudG9uKQ0KPiB2MzogQWRkZWQgY29uZiBmaWxlIHN1cHBvcnQgbmVjZXNzYXJ5
-IHRvIHN1cHBvcnQgZGlmZmVyZW50IHZlbmRvciBtb2R1bGVzLA0KPiBtb3ZlZCAuaCBmaWxlIGNv
-bnRlbnRzIHRvIC5jLCBjb3NtZXRpYyBjaGFuZ2VzLiAoTHVpeiBBdWd1c3RvIHZvbiBEZW50eiwg
-Um9iDQo+IEhlcnJpbmcsIExlb24gUm9tYW5vdnNreSkNCj4gLS0tDQo+ICBkcml2ZXJzL2JsdWV0
-b290aC9LY29uZmlnICAgICB8ICAgMTEgKw0KPiAgZHJpdmVycy9ibHVldG9vdGgvTWFrZWZpbGUg
-ICAgfCAgICAxICsNCj4gIGRyaXZlcnMvYmx1ZXRvb3RoL2J0bnhwdWFydC5jIHwgMTM3MA0KPiAr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gIDMgZmlsZXMgY2hhbmdlZCwgMTM4
-MiBpbnNlcnRpb25zKCspDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9ibHVldG9vdGgv
-YnRueHB1YXJ0LmMNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2JsdWV0b290aC9LY29uZmln
-IGIvZHJpdmVycy9ibHVldG9vdGgvS2NvbmZpZyBpbmRleA0KPiA1YTFhN2JlYzNjNDIuLjc3M2I0
-MGQzNGI3YiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9ibHVldG9vdGgvS2NvbmZpZw0KPiArKysg
-Yi9kcml2ZXJzL2JsdWV0b290aC9LY29uZmlnDQo+IEBAIC00NjUsNCArNDY1LDE1IEBAIGNvbmZp
-ZyBCVF9WSVJUSU8NCj4gIAkgIFNheSBZIGhlcmUgdG8gY29tcGlsZSBzdXBwb3J0IGZvciBIQ0kg
-b3ZlciBWaXJ0aW8gaW50byB0aGUNCj4gIAkgIGtlcm5lbCBvciBzYXkgTSB0byBjb21waWxlIGFz
-IGEgbW9kdWxlLg0KPiANCj4gK2NvbmZpZyBCVF9OWFBVQVJUDQo+ICsJdHJpc3RhdGUgIk5YUCBw
-cm90b2NvbCBzdXBwb3J0Ig0KPiArCWRlcGVuZHMgb24gU0VSSUFMX0RFVl9CVVMNCj4gKwloZWxw
-DQo+ICsJICBOWFAgaXMgc2VyaWFsIGRyaXZlciByZXF1aXJlZCBmb3IgTlhQIEJsdWV0b290aA0K
-PiArCSAgZGV2aWNlcyB3aXRoIFVBUlQgaW50ZXJmYWNlLg0KPiArDQo+ICsJICBTYXkgWSBoZXJl
-IHRvIGNvbXBpbGUgc3VwcG9ydCBmb3IgTlhQIEJsdWV0b290aCBVQVJUIGRldmljZSBpbnRvDQo+
-ICsJICB0aGUga2VybmVsLCBvciBzYXkgTSBoZXJlIHRvIGNvbXBpbGUgYXMgYSBtb2R1bGUuDQo+
-ICsNCj4gKw0KPiAgZW5kbWVudQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ibHVldG9vdGgvTWFr
-ZWZpbGUgYi9kcml2ZXJzL2JsdWV0b290aC9NYWtlZmlsZSBpbmRleA0KPiBlMGIyNjFmMjRmYzku
-LjdhNTk2N2U5YWM0OCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9ibHVldG9vdGgvTWFrZWZpbGUN
-Cj4gKysrIGIvZHJpdmVycy9ibHVldG9vdGgvTWFrZWZpbGUNCj4gQEAgLTI5LDYgKzI5LDcgQEAg
-b2JqLSQoQ09ORklHX0JUX1FDQSkJCSs9IGJ0cWNhLm8NCj4gIG9iai0kKENPTkZJR19CVF9NVEsp
-CQkrPSBidG10ay5vDQo+IA0KPiAgb2JqLSQoQ09ORklHX0JUX1ZJUlRJTykJCSs9IHZpcnRpb19i
-dC5vDQo+ICtvYmotJChDT05GSUdfQlRfTlhQVUFSVCkJKz0gYnRueHB1YXJ0Lm8NCj4gDQo+ICBv
-YmotJChDT05GSUdfQlRfSENJVUFSVF9OT0tJQSkJKz0gaGNpX25va2lhLm8NCj4gDQo+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2JsdWV0b290aC9idG54cHVhcnQuYyBiL2RyaXZlcnMvYmx1ZXRvb3Ro
-L2J0bnhwdWFydC5jDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0IGluZGV4IDAwMDAwMDAwMDAwMC4u
-ZDc3NDU2NGQ0N2NlDQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJpdmVycy9ibHVldG9vdGgv
-YnRueHB1YXJ0LmMNCj4gQEAgLTAsMCArMSwxMzcwIEBADQo+ICsvLyBTUERYLUxpY2Vuc2UtSWRl
-bnRpZmllcjogR1BMLTIuMC1vci1sYXRlcg0KPiArLyoNCj4gKyAqICBOWFAgQmx1ZXRvb3RoIGRy
-aXZlcg0KPiArICogIENvcHlyaWdodCAyMDE4LTIwMjMgTlhQDQo+ICsgKi8NCj4gKw0KPiArI2lu
-Y2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5oPg0KPiAr
-DQo+ICsjaW5jbHVkZSA8bGludXgvc2VyZGV2Lmg+DQo+ICsjaW5jbHVkZSA8bGludXgvb2YuaD4N
-Cj4gKyNpbmNsdWRlIDxsaW51eC9za2J1ZmYuaD4NCj4gKyNpbmNsdWRlIDxhc20vdW5hbGlnbmVk
-Lmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZmlybXdhcmUuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9z
-dHJpbmcuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9jcmM4Lmg+DQo+ICsNCj4gKyNpbmNsdWRlIDxu
-ZXQvYmx1ZXRvb3RoL2JsdWV0b290aC5oPg0KPiArI2luY2x1ZGUgPG5ldC9ibHVldG9vdGgvaGNp
-X2NvcmUuaD4NCj4gKw0KPiArI2luY2x1ZGUgImg0X3JlY3YuaCINCj4gKw0KPiArI2RlZmluZSBC
-VE5YUFVBUlRfVFhfU1RBVEVfQUNUSVZFCTENCj4gKyNkZWZpbmUgQlROWFBVQVJUX0ZXX0RPV05M
-T0FESU5HCTINCj4gKw0KPiArI2RlZmluZSBNQVhfVEFHX1NUUl9MRU4JCQkJMjANCj4gKyNkZWZp
-bmUgQlRfRldfQ09ORl9GSUxFDQo+IAkibnhwL2J0X21vZF9wYXJhLmNvbmYiDQo+ICsjZGVmaW5l
-IFVTRVJfQ09ORklHX1RBRwkJCQkidXNlcl9jb25maWciDQo+ICsjZGVmaW5lIEZXX05BTUVfVEFH
-CQkJCQkiZndfbmFtZSINCj4gKyNkZWZpbmUgT1BFUl9TUEVFRF9UQUcJCQkJIm9wZXJfc3BlZWQi
-DQo+ICsjZGVmaW5lIEZXX0RMX1BSSV9CQVVEUkFURV9UQUcJCSJmd19kbF9wcmlfc3BlZWQiDQo+
-ICsjZGVmaW5lIEZXX0RMX1NFQ19CQVVEUkFURV9UQUcJCSJmd19kbF9zZWNfc3BlZWQiDQo+ICsj
-ZGVmaW5lIEZXX0lOSVRfQkFVRFJBVEUJCQkiZndfaW5pdF9zcGVlZCINCj4gKyNkZWZpbmUgUFNf
-SU5URVJWQUxfTVMJCQkJInBzX2ludGVydmFsX21zIg0KPiArDQo+ICsjZGVmaW5lIEZJUk1XQVJF
-X1c4OTg3CSJueHAvc2Rpb3VhcnQ4OTg3X2NvbWJvX3YwLmJpbiINCg0KV2h5IGhlcmUgdXNlIGNv
-bWJvIGZpcm13YXJlPw0KDQo+ICsjZGVmaW5lIEZJUk1XQVJFX1c4OTk3CSJueHAvdWFydHVhcnQ4
-OTk3X2J0X3Y0LmJpbiINCj4gKyNkZWZpbmUgRklSTVdBUkVfVzkwOTgJIm54cC91YXJ0dWFydDkw
-OThfYnRfdjEuYmluIg0KPiArI2RlZmluZSBGSVJNV0FSRV9JVzQxNgkibnhwL3NkaW91YXJ0aXc0
-MTZfY29tYm9fdjAuYmluIg0KPiArI2RlZmluZSBGSVJNV0FSRV9JVzYxMgkibnhwL3NkdWFydF9u
-dzYxeF92MS5iaW4uc2UiDQoNClNhbWUgZm9yIElXNDE2IGFuZCBJVzYxMiwgcGxlYXNlIHVzZSBC
-VC1vbmx5IGZpcm13YXJlLg0KDQo+ICsNCj4gKyNkZWZpbmUgTUFYX0ZXX0ZJTEVfTkFNRV9MRU4g
-ICAgNTANCj4gKw0KPiArLyogRGVmYXVsdCBwcyB0aW1lb3V0IHBlcmlvZCBpbiBtaWxsaS1zZWNv
-bmQgKi8NCj4gKyNkZWZpbmUgUFNfREVGQVVMVF9USU1FT1VUX1BFUklPRCAgICAgMjAwMA0KPiAr
-DQoNCi4uLi4uLg0KDQo+ICtzdGF0aWMgdm9pZCBwc19pbml0X3RpbWVyKHN0cnVjdCBoY2lfZGV2
-ICpoZGV2KSB7DQo+ICsJc3RydWN0IGJ0bnhwdWFydF9kZXYgKm54cGRldiA9IGhjaV9nZXRfZHJ2
-ZGF0YShoZGV2KTsNCj4gKwlzdHJ1Y3QgcHNfZGF0YSAqcHNkYXRhID0gbnhwZGV2LT5wc2RhdGE7
-DQo+ICsNCj4gKwlwc2RhdGEtPnRpbWVyX29uID0gMDsNCj4gKwl0aW1lcl9zZXR1cCgmcHNkYXRh
-LT5wc190aW1lciwgcHNfdGltZW91dF9mdW5jLCAwKTsgfQ0KPiArDQo+ICtzdGF0aWMgaW50IHBz
-X3dha2V1cChzdHJ1Y3QgYnRueHB1YXJ0X2RldiAqbnhwZGV2KSB7DQoNClRoZSByZXR1cm4gdmFs
-dWUgb2YgcHNfd2FrZXVwKCkgZG9lcyBub3Qgc2VlbSB0byBiZSB1c2VkLCB3aHkgbm90IHNldCBp
-dHMgcmV0dXJuIHZhbHVlIHRvIHZvaWQ/DQoNCj4gKwlzdHJ1Y3QgcHNfZGF0YSAqcHNkYXRhID0g
-bnhwZGV2LT5wc2RhdGE7DQo+ICsNCj4gKwlpZiAocHNkYXRhLT5wc19zdGF0ZSA9PSBQU19TVEFU
-RV9BV0FLRSkNCj4gKwkJcmV0dXJuIDA7DQo+ICsJcHNkYXRhLT5wc19jbWQgPSBQU19DTURfRVhJ
-VF9QUzsNCj4gKwlzY2hlZHVsZV93b3JrKCZwc2RhdGEtPndvcmspOw0KPiArDQo+ICsJcmV0dXJu
-IDE7DQo+ICt9DQo+ICsNCg0KLi4uLi4uDQoNCj4gKw0KPiArLyogRm9sbG93aW5nIGRlZmF1bHQg
-dmFsdWVzIGFyZSBhcyBwZXIgTXVyYXRhIE0uMiBtb2R1bGVzDQo+ICsgKiBGb3IgbW9kdWxlcyBm
-cm9tIGRpZmZlcmVudCB2ZW5kb3IsIGlmIGFueSBvZiB0aGUgZGV2aWNlDQo+ICsgKiBwYXJhbWV0
-ZXJzIGFyZSBkaWZmZXJlbnQsIHRoZXkgY2FuIGJlIG92ZXItd3JpdHRlbiBieQ0KPiArICogY29u
-ZmlnIGZpbGUgL2xpYi9maXJtd2FyZS9ueHAvYnRfbW9kX3BhcmEuY29uZg0KPiArICovDQo+ICtz
-dGF0aWMgc3RydWN0IGJ0bnhwdWFydF9kYXRhIHc4OTg3X2RhdGEgPSB7DQo+ICsJLmZ3X2RubGRf
-cHJpX2JhdWRyYXRlID0gMTE1MjAwLA0KPiArCS5md19kbmxkX3NlY19iYXVkcmF0ZSA9IDMwMDAw
-MDAsDQo+ICsJLmZ3X2luaXRfYmF1ZHJhdGUgPSAxMTUyMDAsDQo+ICsJLm9wZXJfc3BlZWQJCT0g
-MzAwMDAwMCwNCg0KRG8gd2UgcmVhbGx5IG5lZWQgc28gbXVjaCBkaWZmZXJlbnQgc3BlZWQgc2V0
-dGluZ3MgaGVyZT8NClN1Y2ggYXMgZm9yIGZ3X2RubGRfcHJpX2JhdWRyYXRlLCBpZiBhbGwgY2hp
-cHMgZGVmYXVsdCBzcGVlZCBpcyAxMTUyMDAsIGhvdyBhYm91dCBzZXQgaXQgZGlyZWN0bHkgaW4g
-dGhlIGNvZGU/IFNhbWUgZm9yIG9wZXJfc3BlZWQuIFRoZXNlIHR3byBzcGVlZCBzaG91bGQgYmUg
-c2FtZSBmb3IgYWxsIG54cCBCVCBjaGlwcyBJIHRoaW5rLCByaWdodD8NCg0KPiArCS5wc19pbnRl
-cnZhbF9tcyA9IFBTX0RFRkFVTFRfVElNRU9VVF9QRVJJT0QsDQoNClRoaXMgdmFsdWUgaXMgYWxz
-byBzYW1lIGZvciBhbGwgY2hpcHMsIHNvIHlvdSBkb24ndCBuZWVkIHRoZSBzdHJ1Y3QgdmFyaWFi
-bGUgaGVyZS4gSnVzdCB1c2UgdGhlIHZhbHVlIGluIHRoZSBjb2RlIGRpcmVjdGx5Lg0KDQo+ICsJ
-LmZ3X25hbWUgPSBGSVJNV0FSRV9XODk4NywNCj4gK307DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3Qg
-YnRueHB1YXJ0X2RhdGEgdzg5OTdfZGF0YSA9IHsNCj4gKwkuZndfZG5sZF9wcmlfYmF1ZHJhdGUg
-PSAxMTUyMDAsDQo+ICsJLmZ3X2RubGRfc2VjX2JhdWRyYXRlID0gMTE1MjAwLA0KPiArCS5md19p
-bml0X2JhdWRyYXRlID0gMTE1MjAwLA0KPiArCS5vcGVyX3NwZWVkCQk9IDMwMDAwMDAsDQo+ICsJ
-LnBzX2ludGVydmFsX21zID0gUFNfREVGQVVMVF9USU1FT1VUX1BFUklPRCwNCj4gKwkuZndfbmFt
-ZSA9IEZJUk1XQVJFX1c4OTk3LA0KPiArfTsNCj4gKw0KPiArc3RhdGljIHN0cnVjdCBidG54cHVh
-cnRfZGF0YSB3OTA5OF9kYXRhID0gew0KPiArCS5md19kbmxkX3ByaV9iYXVkcmF0ZSA9IDExNTIw
-MCwNCj4gKwkuZndfZG5sZF9zZWNfYmF1ZHJhdGUgPSAzMDAwMDAwLA0KPiArCS5md19pbml0X2Jh
-dWRyYXRlID0gMTE1MjAwLA0KPiArCS5vcGVyX3NwZWVkCQk9IDMwMDAwMDAsDQo+ICsJLnBzX2lu
-dGVydmFsX21zID0gUFNfREVGQVVMVF9USU1FT1VUX1BFUklPRCwNCj4gKwkuZndfbmFtZSA9IEZJ
-Uk1XQVJFX1c5MDk4LA0KPiArfTsNCj4gKw0KPiArc3RhdGljIHN0cnVjdCBidG54cHVhcnRfZGF0
-YSBpdzQxNl9kYXRhID0gew0KPiArCS5md19kbmxkX3ByaV9iYXVkcmF0ZSA9IDExNTIwMCwNCj4g
-KwkuZndfZG5sZF9zZWNfYmF1ZHJhdGUgPSAzMDAwMDAwLA0KPiArCS5md19pbml0X2JhdWRyYXRl
-ID0gMTE1MjAwLA0KPiArCS5vcGVyX3NwZWVkCQk9IDMwMDAwMDAsDQo+ICsJLnBzX2ludGVydmFs
-X21zID0gUFNfREVGQVVMVF9USU1FT1VUX1BFUklPRCwNCj4gKwkuZndfbmFtZSA9IEZJUk1XQVJF
-X0lXNDE2LA0KPiArfTsNCj4gKw0KPiArc3RhdGljIHN0cnVjdCBidG54cHVhcnRfZGF0YSBpdzYx
-Ml9kYXRhID0gew0KPiArCS5md19kbmxkX3ByaV9iYXVkcmF0ZSA9IDExNTIwMCwNCj4gKwkuZndf
-ZG5sZF9zZWNfYmF1ZHJhdGUgPSAzMDAwMDAwLA0KPiArCS5md19pbml0X2JhdWRyYXRlID0gMTE1
-MjAwLA0KPiArCS5vcGVyX3NwZWVkCQk9IDMwMDAwMDAsDQo+ICsJLnBzX2ludGVydmFsX21zID0g
-UFNfREVGQVVMVF9USU1FT1VUX1BFUklPRCwNCj4gKwkuZndfbmFtZSA9IEZJUk1XQVJFX0lXNjEy
-LA0KPiArfTsNCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgbnhwdWFy
-dF9vZl9tYXRjaF90YWJsZVtdID0gew0KPiArCXsgLmNvbXBhdGlibGUgPSAibnhwLDg4dzg5ODct
-YnQiLCAuZGF0YSA9ICZ3ODk4N19kYXRhIH0sDQo+ICsJeyAuY29tcGF0aWJsZSA9ICJueHAsODh3
-ODk5Ny1idCIsIC5kYXRhID0gJnc4OTk3X2RhdGEgfSwNCj4gKwl7IC5jb21wYXRpYmxlID0gIm54
-cCw4OHc5MDk4LWJ0IiwgLmRhdGEgPSAmdzkwOThfZGF0YSB9LA0KPiArCXsgLmNvbXBhdGlibGUg
-PSAibnhwLGl3NDE2LWJ0IiwgLmRhdGEgPSAmaXc0MTZfZGF0YSB9LA0KPiArCXsgLmNvbXBhdGli
-bGUgPSAibnhwLGl3NjEyLWJ0IiwgLmRhdGEgPSAmaXc2MTJfZGF0YSB9LA0KPiArCXsgfQ0KDQpB
-cyBJIGNvbW1lbnRlZCBpbiB0aGUgcGF0Y2ggMiwgaXQgd2lsbCBiZSBiZXR0ZXIgdG8gdXNlIGEg
-Y29tbW9uIGNvbXBhdGlibGUgZm9yIGFsbCB0aGUgY2hpcHMgdGhhdCBzdXBwb3J0IFYzIGJvb3Rs
-b2FkZXIsIHdoaWNoIGNhbiBzZXQgdGhlIGRpZmZlcmVudCBwYXJhbWV0ZXJzIGFjY29yZGluZyB0
-byB0aGUgZGlmZmVyZW50IENoaXAgSUQgZnJvbSBib290bG9hZGVyLiBPdGhlcndpc2UgdGhlIHRh
-YmxlIHdpbGwgZ2V0IGxvbmdlciBhbmQgbG9uZ2VyIHdoZW4gbmV3IEJUIGNoaXBzIGFkZGVkIGxh
-dGVyLg0KRm9yIHRoZSBsZWdhY3kgY2hpcHMsIGlmIHRoZSBib290bG9hZGVyIGRvbid0IHN1cHBv
-cnQgY2hpcCBJRCwgbWF5YmUgeW91IGNhbiBjb250aW51ZSB0byB1c2UgdGhlIGRpZmZlcmVudCBk
-dHMgY29tcGF0aWJsZSB0byBkaXN0aW5ndWlzaCB0aGVtLg0KDQpCZXN0IFJlZ2FyZHMNClNoZXJy
-eQ0KDQoNCj4gK307DQo+ICtNT0RVTEVfREVWSUNFX1RBQkxFKG9mLCBueHB1YXJ0X29mX21hdGNo
-X3RhYmxlKTsNCj4gKw0KPiArc3RhdGljIHN0cnVjdCBzZXJkZXZfZGV2aWNlX2RyaXZlciBueHBf
-c2VyZGV2X2RyaXZlciA9IHsNCj4gKwkucHJvYmUgPSBueHBfc2VyZGV2X3Byb2JlLA0KPiArCS5y
-ZW1vdmUgPSBueHBfc2VyZGV2X3JlbW92ZSwNCj4gKwkuZHJpdmVyID0gew0KPiArCQkubmFtZSA9
-ICJidG54cHVhcnQiLA0KPiArCQkub2ZfbWF0Y2hfdGFibGUgPSBvZl9tYXRjaF9wdHIobnhwdWFy
-dF9vZl9tYXRjaF90YWJsZSksDQo+ICsJfSwNCj4gK307DQo+ICsNCj4gK21vZHVsZV9zZXJkZXZf
-ZGV2aWNlX2RyaXZlcihueHBfc2VyZGV2X2RyaXZlcik7DQo+ICsNCj4gK01PRFVMRV9BVVRIT1Io
-Ik5lZXJhaiBTYW5qYXkgS2FsZSA8bmVlcmFqLnNhbmpheWthbGVAbnhwLmNvbT4iKTsNCj4gK01P
-RFVMRV9ERVNDUklQVElPTigiTlhQIEJsdWV0b290aCBTZXJpYWwgZHJpdmVyIHYxLjAgIik7DQo+
-ICtNT0RVTEVfTElDRU5TRSgiR1BMIik7DQo+IC0tDQo+IDIuMzQuMQ0KDQo=
+Hi Ilpo!
+
+Is there anything else that needs fixing?
+
+Best regards,
+
+Christina
+
+On 12/31/22 14:23, Ilpo Järvinen wrote:
+> On Sat, 31 Dec 2022, Christina Quast wrote:
+>
+>> This commit adds a serial interface /dev/FTx which implements the tty
+>> serial driver ops, so that it is possible to set the baudrate, send
+>> and receive data, etc.
+>>
+>> Signed-off-by: Christina Quast <contact@christina-quast.de>
+>> Signed-off-by: Daniel Beer <daniel.beer@igorinstitute.com>
+>> ---
+>> V1 -> V2: Adressed review comments, added power saving mode quirk
+>>
+>>   drivers/hid/hid-ft260.c | 719 +++++++++++++++++++++++++++++++++++++---
+>>   1 file changed, 670 insertions(+), 49 deletions(-)
+>>
+>> diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
+>> index 333341e80b0e..138d7b4835c6 100644
+>> --- a/drivers/hid/hid-ft260.c
+>> +++ b/drivers/hid/hid-ft260.c
+>> @@ -13,6 +13,16 @@
+>>   #include <linux/i2c.h>
+>>   #include <linux/module.h>
+>>   #include <linux/usb.h>
+>> +#include <linux/serial.h>
+>> +#include <linux/serial_core.h>
+>> +#include <linux/kfifo.h>
+>> +#include <linux/tty_flip.h>
+>> +#include <linux/minmax.h>
+>> +#include <asm-generic/unaligned.h>
+>> +
+>> +#define UART_COUNT_MAX		4	/* Number of UARTs this driver can handle */
+>> +#define FIFO_SIZE	256
+>> +#define TTY_WAKEUP_WATERMARK	(FIFO_SIZE / 2)
+>>   
+>>   #ifdef DEBUG
+>>   static int ft260_debug = 1;
+>> @@ -30,6 +40,7 @@ MODULE_PARM_DESC(debug, "Toggle FT260 debugging messages");
+>>   
+>>   #define FT260_REPORT_MAX_LENGTH (64)
+>>   #define FT260_I2C_DATA_REPORT_ID(len) (FT260_I2C_REPORT_MIN + (len - 1) / 4)
+>> +#define FT260_UART_DATA_REPORT_ID(len) (FT260_UART_REPORT_MIN + (len - 1) / 4)
+>>   
+>>   #define FT260_WAKEUP_NEEDED_AFTER_MS (4800) /* 5s minus 200ms margin */
+>>   
+>> @@ -81,7 +92,8 @@ enum {
+>>   	FT260_UART_INTERRUPT_STATUS	= 0xB1,
+>>   	FT260_UART_STATUS		= 0xE0,
+>>   	FT260_UART_RI_DCD_STATUS	= 0xE1,
+>> -	FT260_UART_REPORT		= 0xF0,
+>> +	FT260_UART_REPORT_MIN		= 0xF0,
+>> +	FT260_UART_REPORT_MAX		= 0xFE,
+>>   };
+>>   
+>>   /* Feature Out */
+>> @@ -132,6 +144,13 @@ enum {
+>>   	FT260_FLAG_START_STOP_REPEATED	= 0x07,
+>>   };
+>>   
+>> +/* Return values for ft260_get_interface_type func */
+>> +enum {
+>> +	FT260_IFACE_NONE,
+>> +	FT260_IFACE_I2C,
+>> +	FT260_IFACE_UART
+>> +};
+>> +
+>>   #define FT260_SET_REQUEST_VALUE(report_id) ((FT260_FEATURE << 8) | report_id)
+>>   
+>>   /* Feature In reports */
+>> @@ -220,12 +239,59 @@ struct ft260_i2c_read_request_report {
+>>   	__le16 length;		/* data payload length */
+>>   } __packed;
+>>   
+>> -struct ft260_i2c_input_report {
+>> -	u8 report;		/* FT260_I2C_REPORT */
+>> +struct ft260_input_report {
+>> +	u8 report;		/* FT260_I2C_REPORT or FT260_UART_REPORT */
+>>   	u8 length;		/* data payload length */
+>>   	u8 data[2];		/* data payload */
+>>   } __packed;
+>>   
+>> +/* UART reports */
+>> +struct ft260_uart_write_request_report {
+>> +	u8 report;		/* FT260_UART_REPORT */
+>> +	u8 length;		/* data payload length */
+>> +	u8 data[];		/* data payload */
+>> +} __packed;
+>> +
+>> +struct ft260_configure_uart_request {
+>> +	u8 report;		/* FT260_SYSTEM_SETTINGS */
+>> +	u8 request;		/* FT260_SET_UART_CONFIG */
+>> +	u8 flow_ctrl;		/* 0: OFF, 1: RTS_CTS, 2: DTR_DSR */
+>> +				/* 3: XON_XOFF, 4: No flow ctrl */
+>> +	/* The baudrate field is unaligned: */
+>> +	__le32 baudrate;	/* little endian, 9600 = 0x2580, 19200 = 0x4B00 */
+>> +	u8 data_bit;		/* 7 or 8 */
+>> +	u8 parity;		/* 0: no parity, 1: odd, 2: even, 3: high, 4: low */
+>> +	u8 stop_bit;		/* 0: one stop bit, 2: 2 stop bits */
+>> +	u8 breaking;		/* 0: no break */
+>> +} __packed;
+>> +
+>> +/* UART interface configuration */
+>> +enum {
+>> +	FT260_CFG_FLOW_CTRL_OFF		= 0x00,
+>> +	FT260_CFG_FLOW_CTRL_RTS_CTS	= 0x01,
+>> +	FT260_CFG_FLOW_CTRL_DTR_DSR	= 0x02,
+>> +	FT260_CFG_FLOW_CTRL_XON_XOFF	= 0x03,
+>> +	FT260_CFG_FLOW_CTRL_NONE	= 0x04,
+>> +
+>> +	FT260_CFG_DATA_BITS_7		= 0x07,
+>> +	FT260_CFG_DATA_BITS_8		= 0x08,
+>> +
+>> +	FT260_CFG_PAR_NO		= 0x00,
+>> +	FT260_CFG_PAR_ODD		= 0x01,
+>> +	FT260_CFG_PAR_EVEN		= 0x02,
+>> +	FT260_CFG_PAR_HIGH		= 0x03,
+>> +	FT260_CFG_PAR_LOW		= 0x04,
+>> +
+>> +	FT260_CFG_STOP_ONE_BIT		= 0x00,
+>> +	FT260_CFG_STOP_TWO_BIT		= 0x02,
+>> +
+>> +	FT260_CFG_BREAKING_NO		= 0x00,
+>> +	FT260_CFG_BEAKING_YES		= 0x01,
+>> +
+>> +	FT260_CFG_BAUD_MIN		= 1200,
+>> +	FT260_CFG_BAUD_MAX		= 12000000,
+>> +};
+>> +
+>>   static const struct hid_device_id ft260_devices[] = {
+>>   	{ HID_USB_DEVICE(USB_VENDOR_ID_FUTURE_TECHNOLOGY,
+>>   			 USB_DEVICE_ID_FT260) },
+>> @@ -236,6 +302,18 @@ MODULE_DEVICE_TABLE(hid, ft260_devices);
+>>   struct ft260_device {
+>>   	struct i2c_adapter adap;
+>>   	struct hid_device *hdev;
+>> +
+>> +	int ft260_is_serial;
+>> +	struct tty_port port;
+>> +	unsigned int index;
+>> +	struct kfifo xmit_fifo;
+>> +	/* write_lock: lock to serialize access to xmit fifo */
+>> +	spinlock_t write_lock;
+>> +	struct uart_icount icount;
+>> +
+>> +	struct timer_list wakeup_timer;
+>> +	struct work_struct wakeup_work;
+>> +
+>>   	struct completion wait;
+>>   	struct mutex lock;
+>>   	u8 write_buf[FT260_REPORT_MAX_LENGTH];
+>> @@ -782,7 +860,7 @@ static int ft260_get_system_config(struct hid_device *hdev,
+>>   	return 0;
+>>   }
+>>   
+>> -static int ft260_is_interface_enabled(struct hid_device *hdev)
+>> +static int ft260_get_interface_type(struct hid_device *hdev, struct ft260_device *dev)
+>>   {
+>>   	struct ft260_get_system_status_report cfg;
+>>   	struct usb_interface *usbif = to_usb_interface(hdev->dev.parent);
+>> @@ -802,18 +880,22 @@ static int ft260_is_interface_enabled(struct hid_device *hdev)
+>>   	switch (cfg.chip_mode) {
+>>   	case FT260_MODE_ALL:
+>>   	case FT260_MODE_BOTH:
+>> -		if (interface == 1)
+>> -			hid_info(hdev, "uart interface is not supported\n");
+>> -		else
+>> -			ret = 1;
+>> +		if (interface == 1) {
+>> +			ret = FT260_IFACE_UART;
+>> +			dev->ft260_is_serial = 1;
+>> +		} else {
+>> +			ret = FT260_IFACE_I2C;
+>> +		}
+>>   		break;
+>>   	case FT260_MODE_UART:
+>> -		hid_info(hdev, "uart interface is not supported\n");
+>> +		ret = FT260_IFACE_UART;
+>> +		dev->ft260_is_serial = 1;
+>>   		break;
+>>   	case FT260_MODE_I2C:
+>> -		ret = 1;
+>> +		ret = FT260_IFACE_I2C;
+>>   		break;
+>>   	}
+>> +
+>>   	return ret;
+>>   }
+>>   
+>> @@ -957,51 +1039,401 @@ static const struct attribute_group ft260_attr_group = {
+>>   	}
+>>   };
+>>   
+>> -static int ft260_probe(struct hid_device *hdev, const struct hid_device_id *id)
+>> +/***
+>> + * START Serial dev part
+>> + */
+>> +static struct ft260_device *ft260_uart_table[UART_COUNT_MAX];
+>> +static DEFINE_SPINLOCK(ft260_uart_table_lock);
+>> +
+>> +static int ft260_uart_add_port(struct ft260_device *port)
+>>   {
+>> -	struct ft260_device *dev;
+>> -	struct ft260_get_chip_version_report version;
+>> -	int ret;
+>> +	int index, ret = -EBUSY;
+>>   
+>> -	if (!hid_is_usb(hdev))
+>> -		return -EINVAL;
+>> -
+>> -	dev = devm_kzalloc(&hdev->dev, sizeof(*dev), GFP_KERNEL);
+>> -	if (!dev)
+>> +	spin_lock_init(&port->write_lock);
+>> +	if (kfifo_alloc(&port->xmit_fifo, FIFO_SIZE, GFP_KERNEL))
+>>   		return -ENOMEM;
+>>   
+>> -	ret = hid_parse(hdev);
+>> -	if (ret) {
+>> -		hid_err(hdev, "failed to parse HID\n");
+>> -		return ret;
+>> +	spin_lock(&ft260_uart_table_lock);
+>> +	for (index = 0; index < UART_COUNT_MAX; index++) {
+>> +		if (!ft260_uart_table[index]) {
+>> +			port->index = index;
+>> +			ft260_uart_table[index] = port;
+>> +			ret = 0;
+>> +			break;
+>> +		}
+>>   	}
+>> +	spin_unlock(&ft260_uart_table_lock);
+>>   
+>> -	ret = hid_hw_start(hdev, 0);
+>> -	if (ret) {
+>> -		hid_err(hdev, "failed to start HID HW\n");
+>> -		return ret;
+>> +	return ret;
+>> +}
+>> +
+>> +static void ft260_uart_port_put(struct ft260_device *port)
+>> +{
+>> +	tty_port_put(&port->port);
+>> +}
+>> +
+>> +static void ft260_uart_port_remove(struct ft260_device *port)
+>> +{
+>> +	spin_lock(&ft260_uart_table_lock);
+>> +	ft260_uart_table[port->index] = NULL;
+>> +	spin_unlock(&ft260_uart_table_lock);
+>> +
+>> +	mutex_lock(&port->port.mutex);
+>> +	/* tty_hangup is async so is this safe as is ?? */
+>> +	tty_port_tty_hangup(&port->port, false);
+>> +	mutex_unlock(&port->port.mutex);
+>> +
+>> +	ft260_uart_port_put(port);
+>> +}
+>> +
+>> +static struct ft260_device *ft260_uart_port_get(unsigned int index)
+>> +{
+>> +	struct ft260_device *port;
+>> +
+>> +	if (index >= UART_COUNT_MAX)
+>> +		return NULL;
+>> +
+>> +	spin_lock(&ft260_uart_table_lock);
+>> +	port = ft260_uart_table[index];
+>> +	if (port)
+>> +		tty_port_get(&port->port);
+>> +	spin_unlock(&ft260_uart_table_lock);
+>> +
+>> +	return port;
+>> +}
+>> +
+>> +static int ft260_uart_open(struct tty_struct *tty, struct file *filp)
+>> +{
+>> +	int ret;
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	ret = tty_port_open(&port->port, tty, filp);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void ft260_uart_close(struct tty_struct *tty, struct file *filp)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	tty_port_close(&port->port, tty, filp);
+>> +}
+>> +
+>> +static void ft260_uart_hangup(struct tty_struct *tty)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	tty_port_hangup(&port->port);
+>> +}
+>> +
+>> +static int ft260_uart_transmit_chars(struct ft260_device *port)
+>> +{
+>> +	struct hid_device *hdev = port->hdev;
+>> +	struct kfifo *xmit = &port->xmit_fifo;
+>> +	struct tty_struct *tty;
+>> +	struct ft260_uart_write_request_report *rep;
+>> +	int len, data_len, ret = 0;
+>> +
+>> +	tty = tty_port_tty_get(&port->port);
+>> +
+>> +	data_len = kfifo_len(xmit);
+>> +	if (!tty || !data_len) {
+>> +		ret = -EINVAL;
+>> +		goto tty_out;
+>>   	}
+>>   
+>> -	ret = hid_hw_open(hdev);
+>> -	if (ret) {
+>> -		hid_err(hdev, "failed to open HID HW\n");
+>> -		goto err_hid_stop;
+>> +	rep = (struct ft260_uart_write_request_report *)port->write_buf;
+>> +
+>> +	do {
+>> +		len = min(data_len, FT260_WR_DATA_MAX);
+>> +
+>> +		rep->report = FT260_UART_DATA_REPORT_ID(len);
+>> +		rep->length = len;
+>> +
+>> +		len = kfifo_out_locked(xmit, rep->data, len, &port->write_lock);
+>> +
+>> +		ret = ft260_hid_output_report(hdev, (u8 *)rep, len + sizeof(*rep));
+>> +		if (ret < 0) {
+>> +			hid_err(hdev, "Failed to start transfer, ret %d\n", ret);
+>> +			goto tty_out;
+>> +		}
+>> +
+>> +		data_len -= len;
+>> +		port->icount.tx += len;
+>> +	} while (data_len > 0);
+>> +
+>> +	len = kfifo_len(xmit);
+>> +	if ((FIFO_SIZE - len) > TTY_WAKEUP_WATERMARK)
+>> +		tty_wakeup(tty);
+>> +
+>> +	ret = 0;
+>> +
+>> +tty_out:
+>> +	tty_kref_put(tty);
+>> +	return ret;
+>> +}
+>> +
+>> +static int ft260_uart_receive_chars(struct ft260_device *port,
+>> +				    u8 *data, u8 length)
+>> +{
+>> +	struct hid_device *hdev = port->hdev;
+>> +	int ret = 0;
+>> +
+>> +	if (length > FT260_RD_DATA_MAX) {
+>> +		hid_err(hdev, "Received too much data (%d)\n", length);
+>> +		return -EBADR;
+>>   	}
+>>   
+>> -	ret = ft260_hid_feature_report_get(hdev, FT260_CHIP_VERSION,
+>> -					   (u8 *)&version, sizeof(version));
+>> +	ret = tty_insert_flip_string(&port->port, data, length);
+>> +	if (ret != length)
+>> +		hid_err(hdev, "%d char not inserted to flip buffer\n", length - ret);
+>> +	port->icount.rx += ret;
+>> +
+>> +	if (ret)
+>> +		tty_flip_buffer_push(&port->port);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int ft260_uart_write(struct tty_struct *tty, const unsigned char *buf,
+>> +			    int count)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +	struct hid_device *hdev = port->hdev;
+>> +	int ret;
+>> +
+>> +	ret = kfifo_in_locked(&port->xmit_fifo, buf, count, &port->write_lock);
+>> +	if (ft260_uart_transmit_chars(port) != kfifo_len(&port->xmit_fifo))
+>> +		hid_err(hdev, "Failed sending all kfifo data bytes\n");
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static unsigned int ft260_uart_write_room(struct tty_struct *tty)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	return FIFO_SIZE - kfifo_len(&port->xmit_fifo);
+>> +}
+>> +
+>> +static unsigned int ft260_uart_chars_in_buffer(struct tty_struct *tty)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	return kfifo_len(&port->xmit_fifo);
+>> +}
+>> +
+>> +static int ft260_uart_change_speed(struct ft260_device *port,
+>> +				   struct ktermios *termios,
+>> +				    struct ktermios *old)
+>> +{
+>> +	struct hid_device *hdev = port->hdev;
+>> +	unsigned int baud;
+>> +	struct ft260_configure_uart_request req;
+>> +	int ret;
+>> +
+>> +	memset(&req, 0, sizeof(req));
+>> +
+>> +	req.report = FT260_SYSTEM_SETTINGS;
+>> +	req.request = FT260_SET_UART_CONFIG;
+>> +
+>> +	switch (termios->c_cflag & CSIZE) {
+>> +	case CS7:
+>> +		req.data_bit = FT260_CFG_DATA_BITS_7;
+>> +		break;
+>> +	case CS5:
+>> +	case CS6:
+>> +		hid_err(hdev, "Invalid data bit size, setting to default (8 bit)\n");
+>> +		req.data_bit = FT260_CFG_DATA_BITS_8;
+>> +		termios->c_cflag &= ~CSIZE;
+>> +		termios->c_cflag |= CS8;
+>> +		break;
+>> +	default:
+>> +	case CS8:
+>> +		req.data_bit = FT260_CFG_DATA_BITS_8;
+>> +		break;
+>> +	}
+>> +
+>> +	req.stop_bit = (termios->c_cflag & CSTOPB) ?
+>> +		FT260_CFG_STOP_TWO_BIT : FT260_CFG_STOP_ONE_BIT;
+>> +
+>> +	if (termios->c_cflag & PARENB) {
+>> +		req.parity = (termios->c_cflag & PARODD) ?
+>> +			FT260_CFG_PAR_ODD : FT260_CFG_PAR_EVEN;
+>> +	} else {
+>> +		req.parity = FT260_CFG_PAR_NO;
+>> +	}
+>> +
+>> +	baud = tty_termios_baud_rate(termios);
+>> +	if (baud == 0 || baud < FT260_CFG_BAUD_MIN || baud > FT260_CFG_BAUD_MAX) {
+>> +		struct tty_struct *tty = tty_port_tty_get(&port->port);
+>> +		hid_err(hdev, "Invalid baud rate %d\n", baud);
+>> +		baud = 9600;
+>> +		tty_encode_baud_rate(tty, baud, baud);
+>> +		tty_kref_put(tty);
+>> +	}
+>> +	put_unaligned_le32(cpu_to_le32(baud), &req.baudrate);
+>> +
+>> +	if (termios->c_cflag & CRTSCTS)
+>> +		req.flow_ctrl = FT260_CFG_FLOW_CTRL_RTS_CTS;
+>> +	else
+>> +		req.flow_ctrl = FT260_CFG_FLOW_CTRL_OFF;
+>> +
+>> +	ft260_dbg("Configured termios: flow control: %d, baudrate: %d, ",
+>> +		  req.flow_ctrl, baud);
+>> +	ft260_dbg("data_bit: %d, parity: %d, stop_bit: %d, breaking: %d\n",
+>> +		  req.data_bit, req.parity,
+>> +		  req.stop_bit, req.breaking);
+>> +
+>> +	req.flow_ctrl = FT260_CFG_FLOW_CTRL_NONE;
+>> +	req.breaking = FT260_CFG_BREAKING_NO;
+>> +
+>> +	ret = ft260_hid_feature_report_set(hdev, (u8 *)&req, sizeof(req));
+>>   	if (ret < 0) {
+>> -		hid_err(hdev, "failed to retrieve chip version\n");
+>> -		goto err_hid_close;
+>> +		hid_err(hdev, "ft260_hid_feature_report_set failed: %d\n", ret);
+>>   	}
+>>   
+>> -	hid_info(hdev, "chip code: %02x%02x %02x%02x\n",
+>> -		 version.chip_code[0], version.chip_code[1],
+>> -		 version.chip_code[2], version.chip_code[3]);
+>> +	return ret;
+>> +}
+>>   
+>> -	ret = ft260_is_interface_enabled(hdev);
+>> -	if (ret <= 0)
+>> -		goto err_hid_close;
+>> +static void ft260_uart_set_termios(struct tty_struct *tty,
+>> +				   const struct ktermios *old_termios)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	ft260_uart_change_speed(port, &tty->termios, NULL);
+>> +}
+>> +
+>> +static int ft260_uart_install(struct tty_driver *driver, struct tty_struct *tty)
+>> +{
+>> +	int idx = tty->index;
+>> +	struct ft260_device *port = ft260_uart_port_get(idx);
+>> +	int ret = tty_standard_install(driver, tty);
+>> +
+>> +	if (ret == 0)
+>> +		/* This is the ref ft260_uart_port get provided */
+>> +		tty->driver_data = port;
+>> +	else
+>> +		ft260_uart_port_put(port);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void ft260_uart_cleanup(struct tty_struct *tty)
+>> +{
+>> +	struct ft260_device *port = tty->driver_data;
+>> +
+>> +	tty->driver_data = NULL;	/* Bug trap */
+>> +	ft260_uart_port_put(port);
+>> +}
+>> +
+>> +static int ft260_uart_proc_show(struct seq_file *m, void *v)
+>> +{
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static const struct tty_operations ft260_uart_ops = {
+>> +	.open			= ft260_uart_open,
+>> +	.close			= ft260_uart_close,
+>> +	.write			= ft260_uart_write,
+>> +	.write_room		= ft260_uart_write_room,
+>> +	.chars_in_buffer	= ft260_uart_chars_in_buffer,
+>> +	.set_termios		= ft260_uart_set_termios,
+>> +	.hangup			= ft260_uart_hangup,
+>> +	.install		= ft260_uart_install,
+>> +	.cleanup		= ft260_uart_cleanup,
+>> +	.proc_show		= ft260_uart_proc_show,
+>> +};
+>> +
+>> +static void uart_dtr_rts(struct tty_port *tport, int onoff)
+>> +{
+>> +}
+>> +
+>> +static int uart_carrier_raised(struct tty_port *tport)
+>> +{
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +/* The FT260 has a "power saving mode" that causes the device to switch
+>> + * to a 30 kHz oscillator if there's no activity for 5 seconds.
+>> + * Unfortunately this mode can only be disabled by reprogramming
+>> + * internal fuses, which requires an additional programming voltage.
+>> + *
+>> + * One effect of this mode is to cause data loss on a fast UART that
+>> + * transmits after being idle for longer than 5 seconds. We work around
+>> + * this by sending a dummy report at least once per 4 seconds if the
+>> + * UART is in use.
+>> + */
+>> +static void ft260_uart_start_wakeup(struct timer_list *t)
+>> +{
+>> +	struct ft260_device *dev =
+>> +	       container_of(t, struct ft260_device, wakeup_timer);
+>> +
+>> +	schedule_work(&dev->wakeup_work);
+>> +	mod_timer(&dev->wakeup_timer, jiffies +
+>> +	       msecs_to_jiffies(FT260_WAKEUP_NEEDED_AFTER_MS));
+>> +}
+>> +
+>> +static void ft260_uart_do_wakeup(struct work_struct *work)
+>> +{
+>> +	struct ft260_device *dev =
+>> +	       container_of(work, struct ft260_device, wakeup_work);
+>> +	struct ft260_get_chip_version_report version;
+>> +	int ret;
+>> +
+>> +	ret = ft260_hid_feature_report_get(dev->hdev, FT260_CHIP_VERSION,
+>> +					  (u8 *)&version, sizeof(version));
+>> +	if (ret < 0)
+>> +	       hid_err(dev->hdev,
+>> +		       "%s: failed to start transfer, ret %d\n",
+>> +		       __func__, ret);
+>> +}
+>> +
+>> +static void ft260_uart_shutdown(struct tty_port *tport)
+>> +{
+>> +	struct ft260_device *port =
+>> +		container_of(tport, struct ft260_device, port);
+>> +
+>> +	del_timer_sync(&port->wakeup_timer);
+>> +}
+>> +
+>> +static int ft260_uart_activate(struct tty_port *tport, struct tty_struct *tty)
+>> +{
+>> +	struct ft260_device *port =
+>> +		container_of(tport, struct ft260_device, port);
+>> +
+>> +	/*
+>> +	 * Set the TTY IO error marker - we will only clear this
+>> +	 * once we have successfully opened the port.
+>> +	 */
+>> +	set_bit(TTY_IO_ERROR, &tty->flags);
+>> +	kfifo_reset(&port->xmit_fifo);
+>> +	ft260_uart_change_speed(port, &tty->termios, NULL);
+>> +	clear_bit(TTY_IO_ERROR, &tty->flags);
+>> +
+>> +	mod_timer(&port->wakeup_timer, jiffies +
+>> +		  msecs_to_jiffies(FT260_WAKEUP_NEEDED_AFTER_MS));
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void ft260_uart_port_destroy(struct tty_port *tport)
+>> +{
+>> +}
+>> +
+>> +static const struct tty_port_operations ft260_uart_port_ops = {
+>> +	.dtr_rts = uart_dtr_rts,
+>> +	.carrier_raised = uart_carrier_raised,
+>> +	.shutdown = ft260_uart_shutdown,
+>> +	.activate = ft260_uart_activate,
+>> +	.destruct = ft260_uart_port_destroy,
+>> +};
+>> +
+>> +static struct tty_driver *ft260_tty_driver;
+>> +
+>> +static int ft260_i2c_probe(struct hid_device *hdev, struct ft260_device *dev)
+>> +{
+>> +	int ret;
+>>   
+>>   	hid_info(hdev, "USB HID v%x.%02x Device [%s] on %s\n",
+>>   		hdev->version >> 8, hdev->version & 0xff, hdev->name,
+>> @@ -1028,7 +1460,7 @@ static int ft260_probe(struct hid_device *hdev, const struct hid_device_id *id)
+>>   	ret = i2c_add_adapter(&dev->adap);
+>>   	if (ret) {
+>>   		hid_err(hdev, "failed to add i2c adapter\n");
+>> -		goto err_hid_close;
+>> +		return ret;
+>>   	}
+>>   
+>>   	ret = sysfs_create_group(&hdev->dev.kobj, &ft260_attr_group);
+>> @@ -1037,10 +1469,130 @@ static int ft260_probe(struct hid_device *hdev, const struct hid_device_id *id)
+>>   		goto err_i2c_free;
+>>   	}
+>>   
+>> -	return 0;
+>> -
+>>   err_i2c_free:
+>>   	i2c_del_adapter(&dev->adap);
+>> +	return ret;
+>> +}
+> So here you removed return 0 and i2c_del_adapter() will always be called,
+> is that correct?
+>
