@@ -2,77 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76691C05027
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 09:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDED0C05027
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 11:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbjBQJSz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 04:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
+        id S229975AbjBQLnH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 06:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjBQJSz (ORCPT
+        with ESMTP id S229574AbjBQLnE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Feb 2023 04:18:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6942D78;
-        Fri, 17 Feb 2023 01:18:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A81DB61746;
-        Fri, 17 Feb 2023 09:18:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B81C433D2;
-        Fri, 17 Feb 2023 09:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1676625533;
-        bh=qE6h234e+xE/uBcGyAf4wfBiTVaCXy/6Q3WdTEI7wEM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GAlkFpgu6zPxpGJrNaro5DnW3P50NvThqxpSztJWZP1EIKRGArp2BTCADIezvawRl
-         cPHfGE6kzG2f0qk/J/9Apy4dfoNnL/5vn9yHMe5qwmJ3Jq7PYAcmJ57WOLIBGPQ5I1
-         16+lEDCCYQTgkC4I+bXNaxrxelPQYUO1amw4dfAg=
-Date:   Fri, 17 Feb 2023 10:18:50 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        l.sanfilippo@kunbus.com, andy.shevchenko@gmail.com,
-        peter_hong@fintek.com.tw, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
-Subject: Re: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
-Message-ID: <Y+9GelDBcbtDQwHl@kroah.com>
-References: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
+        Fri, 17 Feb 2023 06:43:04 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02E1F2A99A;
+        Fri, 17 Feb 2023 03:43:02 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.97,304,1669042800"; 
+   d="scan'208";a="153224442"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 17 Feb 2023 20:43:02 +0900
+Received: from localhost.localdomain (unknown [10.226.92.177])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id CA17F4002630;
+        Fri, 17 Feb 2023 20:42:57 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Eric Tremblay <etremblay@distech-controls.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v4 0/6] Update Renesas {EMMA mobile, RZ/V2M} UART Port type
+Date:   Fri, 17 Feb 2023 11:42:49 +0000
+Message-Id: <20230217114255.226517-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 04:49:53PM +0800, Ji-Ze Hong (Peter Hong) wrote:
-> In 8250_fintek.c probe_setup_port(), we'll detect the IRQ trigger mode by
-> irq_get_irq_data() and pass it to fintek_8250_set_irq_mode(). If detected
-> Edge mode, we'll set the UART with Edge/High mode, otherwise Level/Low.
-> 
-> But in some motherboard, The APIC maybe setting to Level/High. In this case
-> the driver will setting wrong configuration into UART. So we add a option
-> to kernel parameter to control the driver as following:
-> 
-> 	fintek_uart_irq_mode_override= [SERIAL]
-> 		{default, bios}
-> 		If the parameter is "default", the driver will using
-> 		former IRQ override methed(By IRQ trigger type).
-> 		otherwise, we'll don't change the UART IRQ setting.
-> 
-> Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+The Renesas {EMMA mobile, RZ/V2M} UART compatible with the general-purpose
+16750 UART chip. This patch updates Renesas {EMMA mobile, RZ/V2M} UART type
+from 16550a->16750 and also enables 64-bytes fifo.
 
-Also note, your From: line does not match this line, so I couldn't take
-this patch anyway :(
+This patch series also simplifies 8250_em_probe() and also updates the
+register handling for the below restriction mentioned in the hardware
+manual.
 
-And why are you sending patches through a random gmail account and not
-your fintek.com.tw address?  Please use that one, so that we can easily
-verify that this is coming from the proper address and no one is
-impersonating you.
+40.6.1 Point for Caution when Changing the Register Settings:
 
-thanks,
+When changing the settings of the following registers, a PRESETn master
+reset or FIFO reset + SW reset (FCR[2],FCR[1], HCR0[7]) must be input to
+re-initialize them.
 
-greg k-h
+Target Registers: FCR, LCR, MCR, DLL, DLM, HCR0.
+
+v3->v4:
+ * Split patch#1 to 3 patches and removed Rb tags.
+ * Replaced dev_err->dev_err_probe() in probe()
+ * Added a local variable 'dev' to replace '&pdev->dev' in probe().
+ * Patch#2 removes unused header file slab.h.
+ * Patch#3 simplifies clk handling in probe()/remove()
+ * Removed sclk from struct serial8250_em_priv instead used local
+   variable in probe()
+ * Replaced devm_clk_get->devm_clk_get_enabled() and removed
+   clk_prepare_enable/clk_disable_unprepare from probe()/remove().
+ * Both {RZ/V2M, EMMA mobile} SoC is Register-compatible
+   with the general-purpose 16750 UART chip. So started using
+   generic compatible and removed struct serial8250_em_hw_info.
+ * Introduced pseudo offset for UART_FCR(UART_FCR_EM) and used
+   UART_FCR_EM in serial8250_em_serial{_in/_out} function to read/write
+   FCR register.
+ * Updated register update restriction to EMMA mobile SoC as well.
+ * Replaced readl->serial8250_em_serial_in() for reading fcr register
+   in serial8250_em_reg_update().
+ * Added serial8250_em_serial_out_helper() to simplify the
+   code and used for register writes in serial8250_em_reg_update().
+v2->v3:
+ * Dropped sclk from priv.
+ * Dropped unneeded clk_disable_unprepare from remove().
+ * Retained Rb tags from Geert,Andy and Ilpo as the changes are trivial.
+ * Replaced of_device_get_match_data->device_get_match_data
+ * Dropped struct serial8250_em_hw_info *info from priv and started
+   using a local variable info in probe().
+ * Retained Rb tag from Ilpo as changes are trivial.
+ * Replaced readl/writel()->serial8250_em_serial_in/out() in serial8250_rzv2m_
+   reg_update() to avoid duplication of offset trickery.
+ * Added support for HCR0 read/write in serial8250_em_{serial_in, serial_out}
+ * Added UART_LCR macro support in serial8250_em_serial_in() to read LCR
+ * Reordered serial8250_em_{serial_in, serial_out} above serial8250_rzv2m_
+   reg_update().
+ * Replaced priv->info->serial_out to info->serial_out.
+v1->v2:
+ * Dropped patch#1 from previous series
+ * Replaced devm_clk_get->devm_clk_get_enabled() and updated clk
+   handling in probe().
+ * Added Rb tag from Geert.
+ * Added patch for updating Renesas RZ/V2M UART type from 16550a->16750
+   and also enables 64-bytes fifo.
+ * Used .data for taking h/w differences between EMMA mobile and RZ/V2M UART.
+ * Added serial_out() to struct serial8250_em_hw_info for the write register
+   differences between EMMA mobile and RZ/V2M UART.
+
+Biju Das (6):
+  serial: 8250_em: Use dev_err_probe()
+  serial: 8250_em: Drop slab.h
+  serial: 8250_em: Use devm_clk_get_enabled()
+  serial: 8250_em: Update port type as PORT_16750
+  serial: 8250_em: Use pseudo offset for UART_FCR
+  serial: 8250_em: Add serial8250_em_{reg_update(),out_helper()}
+
+ drivers/tty/serial/8250/8250_em.c | 110 +++++++++++++++++++++++-------
+ 1 file changed, 85 insertions(+), 25 deletions(-)
+
+-- 
+2.25.1
+
