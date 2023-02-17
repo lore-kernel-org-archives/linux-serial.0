@@ -2,156 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EDEC636CC
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 01:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A69E7C636D4
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 08:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbjBQBN5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Feb 2023 20:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        id S229816AbjBQIuc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 03:50:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBQBN4 (ORCPT
+        with ESMTP id S229536AbjBQIub (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Feb 2023 20:13:56 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA8E4AFC1
-        for <linux-serial@vger.kernel.org>; Thu, 16 Feb 2023 17:13:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676596436; x=1708132436;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QVnxhaOqTr1evMl4NdztllqOyUQ/iTa44jO8E5PgncQ=;
-  b=QpVrq0JuY16+AB6pDTaV8kAObb5PzW6T4Scsthr9YCao/PMIJVJqcmW5
-   ZIYLN1ad+/4JTSYbXjbDFV2p7cBAMSmUfSgChEye0AHfdmQ7b/lHD1Gna
-   jeIvztssK3oje4pSbeMTx5i19x4VMdL+cyJZz76m6J5JRQFlr2aN+kJnT
-   bbNY0hlKrQKGgTCM251b1yV22HOGEUzN/PrUZAI5cSzJRhbAhGeLHh9RO
-   DT+io6DQXZEedlDdYOCho/0sCffG9WUNHP3BvnzC6YB+qTuOTypqgaw2i
-   WcFYNTGUXi8ZCJD3WZi+1Tg/j7/vGXOAP60eRFjrH44L/Tthp982eFXSP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="359327284"
-X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="359327284"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 17:13:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="915908158"
-X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="915908158"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 16 Feb 2023 17:13:54 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pSpJy-000B0U-06;
-        Fri, 17 Feb 2023 01:13:54 +0000
-Date:   Fri, 17 Feb 2023 09:13:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 72206cc730b5c9208e9a99ace1c619f542035312
-Message-ID: <63eed4a6.WUhGE5AvUDZ9xyys%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Fri, 17 Feb 2023 03:50:31 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC6E60A75;
+        Fri, 17 Feb 2023 00:50:04 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id mj16so644950pjb.3;
+        Fri, 17 Feb 2023 00:50:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+4jnTqGI73DRMgZJI4c2qvwAhYDDTU4nAsJXbLQC4qg=;
+        b=qHVJRzxX3+FniAKFwLtFv+ZcIyyQ71cT18uqlvaHn4HZVcPHBmTVhPvDXLTkPbU8eg
+         oUIjB2EQG9GdmIsSlX9IdqUTvikfZGR4RBLWsxz43Wh3RaGPgaZzwZ92/CIdh7CA9NL8
+         7dugJTmSLjgku9NauA+GaHlAzRNCPdTFnY2iDW/XIy2mxoP5y3KdeLR/qV4NB1typUSp
+         0+j3AiBmzt0yEpSHg/PGIcUot+Khc4tuI5oUVr1nlwusMOZouFgmkyqqTaJ5q+ISRkJ3
+         0jbzw5RrC7BpNYAO5wcKoJddQYdFv002kCyg68wMig+kge2o+l9SQQvZbNlU5IxX3Yf5
+         9ZZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+4jnTqGI73DRMgZJI4c2qvwAhYDDTU4nAsJXbLQC4qg=;
+        b=GJCCbamPbH3bIm2sTR3R31+AEm9DDbtosoduSEqqKKiRIsjhsp6jStMFXSlIqLObmI
+         QLbyi/0FT8RcY0+cVfDngolw1IOpNbqGSlm3XSuEbvaK/gXkBQhL0RNAt7ZLi6qyZ1g9
+         jv/6rID3KntumBOE4tzsuwi7ufaZw/xcyLpcJYsfK7jqV9u7TiT92mHpoGnNfRI1Rh4l
+         Fex6aWEYsVynrDFQVs5JIPTACgPJnUaCOHuK3bcWII0Dg8+ExJFPGJI6Kz+MrrYKu64m
+         dczVGyxhWGZF7B0xatT5Gzzi9LHn150syjFEeDz0Z7cG6WMZLzkt9isrbGovxkoqILsk
+         W5AA==
+X-Gm-Message-State: AO0yUKXF4YT3murhph/B/AjvjCP/9woDFyMuHFmTqC2mqzRQbSdn7/Km
+        74ILCpmucByp6ZSIL4q1hO0LgYlHwPo=
+X-Google-Smtp-Source: AK7set9ImvZAnZ/1M19kdSG0/nduNYs90YCLLq6YazqHc1qgadexAA0SrQwvbfDncyMZ672bgEHoPA==
+X-Received: by 2002:a17:902:dac6:b0:19c:13d2:44c1 with SMTP id q6-20020a170902dac600b0019c13d244c1mr2058697plx.15.1676623797404;
+        Fri, 17 Feb 2023 00:49:57 -0800 (PST)
+Received: from localhost (59-120-186-245.hinet-ip.hinet.net. [59.120.186.245])
+        by smtp.gmail.com with ESMTPSA id v13-20020a63464d000000b004fb4489969bsm2362949pgk.49.2023.02.17.00.49.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 17 Feb 2023 00:49:57 -0800 (PST)
+From:   "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+X-Google-Original-From: "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     ilpo.jarvinen@linux.intel.com, l.sanfilippo@kunbus.com,
+        andy.shevchenko@gmail.com, peter_hong@fintek.com.tw,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
+Subject: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
+Date:   Fri, 17 Feb 2023 16:49:53 +0800
+Message-Id: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 72206cc730b5c9208e9a99ace1c619f542035312  tty: n_gsm: add keep alive support
+In 8250_fintek.c probe_setup_port(), we'll detect the IRQ trigger mode by
+irq_get_irq_data() and pass it to fintek_8250_set_irq_mode(). If detected
+Edge mode, we'll set the UART with Edge/High mode, otherwise Level/Low.
 
-elapsed time: 720m
+But in some motherboard, The APIC maybe setting to Level/High. In this case
+the driver will setting wrong configuration into UART. So we add a option
+to kernel parameter to control the driver as following:
 
-configs tested: 79
-configs skipped: 3
+	fintek_uart_irq_mode_override= [SERIAL]
+		{default, bios}
+		If the parameter is "default", the driver will using
+		former IRQ override methed(By IRQ trigger type).
+		otherwise, we'll don't change the UART IRQ setting.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-gcc tested configs:
-alpha                            allyesconfig
-alpha                               defconfig
-arc                              allyesconfig
-arc                                 defconfig
-arc                  randconfig-r043-20230212
-arc                  randconfig-r043-20230213
-arm                              allmodconfig
-arm                              allyesconfig
-arm                                 defconfig
-arm                  randconfig-r046-20230212
-arm64                            allyesconfig
-arm64                               defconfig
-csky                                defconfig
-i386                             allyesconfig
-i386                              debian-10.3
-i386                                defconfig
-i386                 randconfig-a011-20230213
-i386                 randconfig-a012-20230213
-i386                 randconfig-a013-20230213
-i386                 randconfig-a014-20230213
-i386                 randconfig-a015-20230213
-i386                 randconfig-a016-20230213
-ia64                             allmodconfig
-ia64                                defconfig
-loongarch                        allmodconfig
-loongarch                         allnoconfig
-loongarch                           defconfig
-m68k                             allmodconfig
-m68k                                defconfig
-mips                             allmodconfig
-mips                             allyesconfig
-nios2                               defconfig
-parisc                              defconfig
-parisc64                            defconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-riscv                            allmodconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                randconfig-r042-20230213
-riscv                          rv32_defconfig
-s390                             allmodconfig
-s390                             allyesconfig
-s390                                defconfig
-s390                 randconfig-r044-20230213
-sh                               allmodconfig
-sparc                               defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                            allnoconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                                  kexec
-x86_64               randconfig-a011-20230213
-x86_64               randconfig-a012-20230213
-x86_64               randconfig-a013-20230213
-x86_64               randconfig-a014-20230213
-x86_64               randconfig-a015-20230213
-x86_64               randconfig-a016-20230213
-x86_64                               rhel-8.3
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index dba5950b8d0e..c5fea0a7c79b 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -92,6 +92,9 @@
+ #define F81866_UART_CLK_18_432MHZ BIT(0)
+ #define F81866_UART_CLK_24MHZ BIT(1)
 
-clang tested configs:
-arm                  randconfig-r046-20230213
-hexagon              randconfig-r041-20230212
-hexagon              randconfig-r041-20230213
-hexagon              randconfig-r045-20230212
-hexagon              randconfig-r045-20230213
-i386                 randconfig-a001-20230213
-i386                 randconfig-a002-20230213
-i386                 randconfig-a003-20230213
-i386                 randconfig-a004-20230213
-i386                 randconfig-a005-20230213
-i386                 randconfig-a006-20230213
-riscv                randconfig-r042-20230212
-s390                 randconfig-r044-20230212
-x86_64               randconfig-a001-20230213
-x86_64               randconfig-a002-20230213
-x86_64               randconfig-a003-20230213
-x86_64               randconfig-a004-20230213
-x86_64               randconfig-a005-20230213
-x86_64               randconfig-a006-20230213
++#define FINTEK_IRQ_MODE_BY_DETECT	0
++#define FINTEK_IRQ_MODE_BY_BIOS		1
++
+ struct fintek_8250 {
+ 	u16 pid;
+ 	u16 base_port;
+@@ -99,6 +102,24 @@ struct fintek_8250 {
+ 	u8 key;
+ };
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
++static int not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
++
++static int __init parse_uart_irq_mode_override(char *arg)
++{
++	if (!arg)
++		return -EINVAL;
++
++	if (strcmp(arg, "bios") == 0)
++		not_override_irq_mode = FINTEK_IRQ_MODE_BY_BIOS;
++	else if (strcmp(arg, "default") == 0)
++		not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
++	else
++		return -EINVAL;
++
++	return 0;
++}
++early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
++
+ static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
+ {
+ 	outb(reg, pdata->base_port + ADDR_PORT);
+@@ -248,6 +269,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+
+ static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
+ {
++	if (not_override_irq_mode == FINTEK_IRQ_MODE_BY_BIOS) {
++		pr_info("Fintek UART(%04x) irq mode is using BIOS default",
++				pdata->pid);
++		return;
++	}
++
+ 	sio_write_reg(pdata, LDN, pdata->index);
+
+ 	switch (pdata->pid) {
+--
+2.17.1
