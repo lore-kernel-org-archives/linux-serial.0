@@ -2,132 +2,165 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4627FC05027
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 12:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA078C636D4
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 12:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbjBQMeE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 07:34:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
+        id S229686AbjBQMnK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 07:43:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbjBQMeD (ORCPT
+        with ESMTP id S229648AbjBQMnK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Feb 2023 07:34:03 -0500
+        Fri, 17 Feb 2023 07:43:10 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EF44BE8E;
-        Fri, 17 Feb 2023 04:34:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E79B59EC;
+        Fri, 17 Feb 2023 04:42:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676637241; x=1708173241;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QDyuOP+tZvIeH79l24+NLcv2/d9Vib5IAkK6RXeGeNg=;
-  b=cwRdtDt02HxcMr/oy6wNvpz9/9ZVR6RzxI9FekIbaZchlNpGIORQT+na
-   D2OwcGsC+ES15+VwGFoY9ygbkkXwpYPGaoupYu/F5O7rgIS+z/PKi2hTT
-   Iuov2cdVM9sbNV002A8eVVJ07SVDP6NLACdDEzb4ekK+5GYNG9nYG729u
-   rAj9PjAaZFup5fj38xSvR3X2FjnvHtfsMQBlN9tyeHk0Wjz0rdEuBHAPH
-   cdhzuJolZtWpESUFiYWKmsuzhLzCqOvR1fccHbvLpYZxBA5XwOweCYAQf
-   BQLfHFBFAQqlanORTIYfS/Gz61c1npkyXU71U59ggI5/QBb2SDZar6FyS
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="312342589"
+  t=1676637770; x=1708173770;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=l2vRBt0LE3jMfCGdTt+L02hLEWf+XcV6umxNrLelz6U=;
+  b=ScssAXL3/wtfK5TAitZv8OycfiH7xMyuwWIRS9Jy8DTlT3NCowxqhwp4
+   ZFGk2kEJvzA/YiA8hsfhTry28slyKopEaaxDoXKtJxuAwQyFeN31iGxiP
+   aUB8YZUElNHyxF8Z9Lkt12Xl4bZqn+zAG36gDmBephTWD9az83exK9Bor
+   RT7k+T9SLeOZeIdp5o/P7BhqKJ73xjbMOyjsYel8rEKf/lNRf2YqsdFRr
+   9PuUTV/LL8Fnw9E8CJsQlouBB/zDDGmZkXnREOML9u84azIsfl+AR2Lz8
+   8S6oDyWZNPWRr/Wdg7ELuJSiGq6KbyZH/fqa7rg2gH7pkw0EZ4+L+eTx5
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="312344074"
 X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="312342589"
+   d="scan'208";a="312344074"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 04:33:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="844563676"
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 04:42:50 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="844565368"
 X-IronPort-AV: E=Sophos;i="5.97,304,1669104000"; 
-   d="scan'208";a="844563676"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 17 Feb 2023 04:33:12 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pSzvL-000BS5-1X;
-        Fri, 17 Feb 2023 12:33:11 +0000
-Date:   Fri, 17 Feb 2023 20:32:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, ilpo.jarvinen@linux.intel.com,
-        l.sanfilippo@kunbus.com, andy.shevchenko@gmail.com,
-        peter_hong@fintek.com.tw, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
-Subject: Re: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
-Message-ID: <202302172031.t1Y23hRe-lkp@intel.com>
-References: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
+   d="scan'208";a="844565368"
+Received: from aleste1x-mobl2.ger.corp.intel.com ([10.252.41.242])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 04:42:47 -0800
+Date:   Fri, 17 Feb 2023 14:42:45 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?ISO-8859-15?Q?Niklas_S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v4 5/6] serial: 8250_em: Use pseudo offset for UART_FCR
+In-Reply-To: <OS0PR01MB5922B4904BB49D53968AE42D86A19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Message-ID: <b75da8c8-6f91-c227-6fdb-6b4fdbe6d3c@linux.intel.com>
+References: <20230217114255.226517-1-biju.das.jz@bp.renesas.com> <20230217114255.226517-6-biju.das.jz@bp.renesas.com> <a893f031-b08a-638a-70e0-3e6e37e9954c@linux.intel.com> <OS0PR01MB5922EA33B354EB2B31680AB686A19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <1e8b1e7-5f3e-61be-dd65-8d5da7ca14d2@linux.intel.com> <OS0PR01MB5922B4904BB49D53968AE42D86A19@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
+Content-Type: multipart/mixed; BOUNDARY="8323329-789694557-1676637431=:3134"
+Content-ID: <4ffeb06-5c59-cfcb-ea91-f2596c5da947@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Ji-Ze,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Thank you for the patch! Yet something to improve:
+--8323329-789694557-1676637431=:3134
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <6b1683da-7f85-3741-f44d-6fa2b82007@linux.intel.com>
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.2-rc8]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+On Fri, 17 Feb 2023, Biju Das wrote:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ji-Ze-Hong-Peter-Hong/serial-8250_fintek-Add-using-BIOS-IRQ-default-setting/20230217-165155
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20230217084953.2580-1-hpeter%2Blinux_kernel%40gmail.com
-patch subject: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20230217/202302172031.t1Y23hRe-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fd786fba8247c675fb90d00d076235cbd85842e6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ji-Ze-Hong-Peter-Hong/serial-8250_fintek-Add-using-BIOS-IRQ-default-setting/20230217-165155
-        git checkout fd786fba8247c675fb90d00d076235cbd85842e6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/tty/
+> HI Ilpo,
+> 
+> > Subject: RE: [PATCH v4 5/6] serial: 8250_em: Use pseudo offset for UART_FCR
+> > 
+> > On Fri, 17 Feb 2023, Biju Das wrote:
+> > 
+> > > Hi Ilpo,
+> > >
+> > > Thanks for the feedback.
+> > >
+> > > > Subject: Re: [PATCH v4 5/6] serial: 8250_em: Use pseudo offset for
+> > > > UART_FCR
+> > > >
+> > > > On Fri, 17 Feb 2023, Biju Das wrote:
+> > > >
+> > > > > UART_FCR shares the same offset with UART_IIR. We cannot use
+> > > > > UART_FCR in serial8250_em_serial_in() as it overlaps with UART_IIR.
+> > > > >
+> > > > > This patch introduces a macro UART_FCR_EM with a high value to
+> > > > > avoid overlapping with existing UART_* register defines.
+> > > > >
+> > > > > This will help us to use UART_FCR_EM consistently in
+> > > > > serial8250_em_ serial{_in/_out} function to read/write FCR register.
+> > > > >
+> > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > > Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > > > > ---
+> > > > > v4:
+> > > > >  * New patch. Used UART_FCR_EM for read/write of FCR register.
+> > > > > ---
+> > > > >  drivers/tty/serial/8250/8250_em.c | 13 ++++++++++++-
+> > > > >  1 file changed, 12 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/tty/serial/8250/8250_em.c
+> > > > > b/drivers/tty/serial/8250/8250_em.c
+> > > > > index 499d7a8847ec..4165fd3bb17a 100644
+> > > > > --- a/drivers/tty/serial/8250/8250_em.c
+> > > > > +++ b/drivers/tty/serial/8250/8250_em.c
+> > > > > @@ -19,6 +19,13 @@
+> > > > >  #define UART_DLL_EM 9
+> > > > >  #define UART_DLM_EM 10
+> > > > >
+> > > > > +/*
+> > > > > + * A high value for UART_FCR_EM avoids overlapping with existing
+> > > > > +UART_*
+> > > > > + * register defines. UART_FCR_EM_HW is the real HW register offset.
+> > > > > + */
+> > > > > +#define UART_FCR_EM 0x10003
+> > > > > +#define UART_FCR_EM_HW 3
+> > > > > +
+> > > > >  struct serial8250_em_priv {
+> > > > >  	int line;
+> > > > >  };
+> > > > > @@ -29,12 +36,14 @@ static void serial8250_em_serial_out(struct
+> > > > > uart_port
+> > > > *p, int offset, int value)
+> > > > >  	case UART_TX: /* TX @ 0x00 */
+> > > > >  		writeb(value, p->membase);
+> > > > >  		break;
+> > > > > -	case UART_FCR: /* FCR @ 0x0c (+1) */
+> > > >
+> > > > 8250_port wants this to remain in place, I think. Otherwise it's
+> > > > attempts to set UART_FCR will end up into wrong destination.
+> > >
+> > > Oops, next patch has this change.
+> > >
+> > > +	case UART_FCR:
+> > > +		serial8250_em_reg_update(p, UART_FCR_EM, value);
+> > >
+> > > I just need to keep UART_FCR for this patch and remove it from
+> > > "serial8250_em_serial_out_helper" on the next patch
+> > 
+> > IMHO, the extra layer + _helper seems pretty unnecessary. I don't see any
+> > useful thing it achieves over just having to serial_out functions.
+> 
+> Without helper, it will become cyclic right??
+> 
+> serial8250_em_serial_out() needs to call serial8250_em_reg_update()
+> 
+> serial8250_em_reg_update() will call serial8250_em_serial_out() for writes??
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302172031.t1Y23hRe-lkp@intel.com/
+With your most recent code, yes it seems to happen. But why did you remove 
+the separate serial_out for RZ. There wasn't any cyclicness when it 
+called serial8250_em_serial_out().
 
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/8250/8250_fintek.c:121:13: error: expected declaration specifiers or '...' before string constant
-     121 | early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/tty/serial/8250/8250_fintek.c:121:46: error: expected declaration specifiers or '...' before 'parse_uart_irq_mode_override'
-     121 | early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
-         |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/8250/8250_fintek.c:107:19: warning: 'parse_uart_irq_mode_override' defined but not used [-Wunused-function]
-     107 | static int __init parse_uart_irq_mode_override(char *arg)
-         |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +121 drivers/tty/serial/8250/8250_fintek.c
-
-   106	
-   107	static int __init parse_uart_irq_mode_override(char *arg)
-   108	{
-   109		if (!arg)
-   110			return -EINVAL;
-   111	
-   112		if (strcmp(arg, "bios") == 0)
-   113			not_override_irq_mode = FINTEK_IRQ_MODE_BY_BIOS;
-   114		else if (strcmp(arg, "default") == 0)
-   115			not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
-   116		else
-   117			return -EINVAL;
-   118	
-   119		return 0;
-   120	}
- > 121	early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
-   122	
+I'm a bit lost now, are you saying that this change is needed for all 
+devices 8250_em supports (which is different from what you initially 
+presented in the early versions of this patchset)?
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+ i.
+--8323329-789694557-1676637431=:3134--
