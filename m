@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0FDC636D4
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 09:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76691C05027
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 09:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbjBQJRr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 04:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
+        id S229605AbjBQJSz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 04:18:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjBQJRr (ORCPT
+        with ESMTP id S229508AbjBQJSz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Feb 2023 04:17:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07F05E59C;
-        Fri, 17 Feb 2023 01:17:45 -0800 (PST)
+        Fri, 17 Feb 2023 04:18:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6942D78;
+        Fri, 17 Feb 2023 01:18:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C05B615B5;
-        Fri, 17 Feb 2023 09:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F29C433EF;
-        Fri, 17 Feb 2023 09:17:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A81DB61746;
+        Fri, 17 Feb 2023 09:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B81C433D2;
+        Fri, 17 Feb 2023 09:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1676625464;
-        bh=bZNPZdaHcY8OMbBMrEDaxJlVQ7RjxEFNxQHJdZsl+hY=;
+        s=korg; t=1676625533;
+        bh=qE6h234e+xE/uBcGyAf4wfBiTVaCXy/6Q3WdTEI7wEM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=s3Pfe9QJjnlbDDhlwctILyxo30xaao8fpR1rb4paFCv+BXaogyLBMUhox5a+/FZoe
-         y4OEqq7Oz69+qBvXTZf4d5kaZEDfa0faLbZTKL2XI7yh4pPvYiQdOqh0sB/5pwVkdB
-         RNVfGqNe7rePBzqeCaKHszZjIttUp1uYsWwR6s1Q=
-Date:   Fri, 17 Feb 2023 10:17:42 +0100
+        b=GAlkFpgu6zPxpGJrNaro5DnW3P50NvThqxpSztJWZP1EIKRGArp2BTCADIezvawRl
+         cPHfGE6kzG2f0qk/J/9Apy4dfoNnL/5vn9yHMe5qwmJ3Jq7PYAcmJ57WOLIBGPQ5I1
+         16+lEDCCYQTgkC4I+bXNaxrxelPQYUO1amw4dfAg=
+Date:   Fri, 17 Feb 2023 10:18:50 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
 Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
@@ -38,7 +38,7 @@ Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
         linux-kernel@vger.kernel.org,
         "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 Subject: Re: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
-Message-ID: <Y+9GNsYQz3Z6KioX@kroah.com>
+Message-ID: <Y+9GelDBcbtDQwHl@kroah.com>
 References: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -64,64 +64,14 @@ On Fri, Feb 17, 2023 at 04:49:53PM +0800, Ji-Ze Hong (Peter Hong) wrote:
 > 		otherwise, we'll don't change the UART IRQ setting.
 > 
 > Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_fintek.c | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-> index dba5950b8d0e..c5fea0a7c79b 100644
-> --- a/drivers/tty/serial/8250/8250_fintek.c
-> +++ b/drivers/tty/serial/8250/8250_fintek.c
-> @@ -92,6 +92,9 @@
->  #define F81866_UART_CLK_18_432MHZ BIT(0)
->  #define F81866_UART_CLK_24MHZ BIT(1)
-> 
-> +#define FINTEK_IRQ_MODE_BY_DETECT	0
-> +#define FINTEK_IRQ_MODE_BY_BIOS		1
-> +
->  struct fintek_8250 {
->  	u16 pid;
->  	u16 base_port;
-> @@ -99,6 +102,24 @@ struct fintek_8250 {
->  	u8 key;
->  };
-> 
-> +static int not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
-> +
-> +static int __init parse_uart_irq_mode_override(char *arg)
-> +{
-> +	if (!arg)
-> +		return -EINVAL;
-> +
-> +	if (strcmp(arg, "bios") == 0)
-> +		not_override_irq_mode = FINTEK_IRQ_MODE_BY_BIOS;
-> +	else if (strcmp(arg, "default") == 0)
-> +		not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
-> +	else
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
 
-Sorry, but no, this will not work with multiple devices.  Please fix the
-bios to handle this all properly, do not require users to manually fix
-up problems for you (i.e. fix it once, not in thousands of individual
-systems.)
+Also note, your From: line does not match this line, so I couldn't take
+this patch anyway :(
 
-> +
->  static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
->  {
->  	outb(reg, pdata->base_port + ADDR_PORT);
-> @@ -248,6 +269,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
-> 
->  static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
->  {
-> +	if (not_override_irq_mode == FINTEK_IRQ_MODE_BY_BIOS) {
-> +		pr_info("Fintek UART(%04x) irq mode is using BIOS default",
-> +				pdata->pid);
-
-Note, this is a driver, always use dev_*() calls, never pr_*() calls.
+And why are you sending patches through a random gmail account and not
+your fintek.com.tw address?  Please use that one, so that we can easily
+verify that this is coming from the proper address and no one is
+impersonating you.
 
 thanks,
 
