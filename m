@@ -2,26 +2,26 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBC0C64ED6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B46C64EC4
 	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 11:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbjBQLnU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 06:43:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
+        id S230248AbjBQLnT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 06:43:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbjBQLnR (ORCPT
+        with ESMTP id S229760AbjBQLnR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 17 Feb 2023 06:43:17 -0500
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA1FB241F6;
-        Fri, 17 Feb 2023 03:43:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1BF25BDBF;
+        Fri, 17 Feb 2023 03:43:12 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.97,304,1669042800"; 
-   d="scan'208";a="153224476"
+   d="scan'208";a="153224465"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 17 Feb 2023 20:43:15 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 17 Feb 2023 20:43:12 +0900
 Received: from localhost.localdomain (unknown [10.226.92.177])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id AD3084002630;
-        Fri, 17 Feb 2023 20:43:12 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 6BDD34002630;
+        Fri, 17 Feb 2023 20:43:09 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
@@ -31,9 +31,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
         Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v4 4/6] serial: 8250_em: Update port type as PORT_16750
-Date:   Fri, 17 Feb 2023 11:42:53 +0000
-Message-Id: <20230217114255.226517-5-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v4 3/6] serial: 8250_em: Use devm_clk_get_enabled()
+Date:   Fri, 17 Feb 2023 11:42:52 +0000
+Message-Id: <20230217114255.226517-4-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230217114255.226517-1-biju.das.jz@bp.renesas.com>
 References: <20230217114255.226517-1-biju.das.jz@bp.renesas.com>
@@ -43,43 +43,83 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The UART IP found on {RZ/V2M, EMMA mobile} SoC is Register-compatible
-with the general-purpose 16750 UART chip. This patch updates port type
-from 16550A->16750 and also enables 64-bytes fifo support.
+This patch simplifies clk handling in probe()/remove() by replacing
+devm_clk_get()->devm_clk_get_enabled().
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
-v3->v4:
- * Both {RZ/V2M, EMMA mobile} SoC is Register-compatible
-   with the general-purpose 16750 UART chip. So started using
-   generic compatible and removed struct serial8250_em_hw_info.
- * Removed Rb tag from Ilpo as it is new change.
-v2->v3:
- * Replaced of_device_get_match_data()->device_get_match_data().
- * Replaced of_device.h->property.h
- * Dropped struct serial8250_em_hw_info *info from priv and started
-   using a local variable info in probe().
- * Retained Rb tag from Ilpo as changes are trivial.
-v2:
- * New patch
+v4:
+ * New patch. Split from patch#1.
+ * Removed sclk from struct serial8250_em_priv instead used local
+   variable in probe().
+ * Replaced devm_clk_get->devm_clk_get_enabled() and removed
+   clk_prepare_enable/clk_disable_unprepare from probe()/remove().
 ---
- drivers/tty/serial/8250/8250_em.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_em.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index 9781bf73ed0c..499d7a8847ec 100644
+index 7bbf206ff476..9781bf73ed0c 100644
 --- a/drivers/tty/serial/8250/8250_em.c
 +++ b/drivers/tty/serial/8250/8250_em.c
-@@ -102,8 +102,8 @@ static int serial8250_em_probe(struct platform_device *pdev)
+@@ -20,7 +20,6 @@
+ #define UART_DLM_EM 10
+ 
+ struct serial8250_em_priv {
+-	struct clk *sclk;
+ 	int line;
+ };
+ 
+@@ -81,6 +80,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct uart_8250_port up;
+ 	struct resource *regs;
++	struct clk *sclk;
+ 	int irq, ret;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+@@ -95,9 +95,9 @@ static int serial8250_em_probe(struct platform_device *pdev)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	priv->sclk = devm_clk_get(dev, "sclk");
+-	if (IS_ERR(priv->sclk))
+-		return dev_err_probe(dev, PTR_ERR(priv->sclk), "unable to get clock\n");
++	sclk = devm_clk_get_enabled(dev, "sclk");
++	if (IS_ERR(sclk))
++		return dev_err_probe(dev, PTR_ERR(sclk), "unable to get clock\n");
+ 
  	memset(&up, 0, sizeof(up));
  	up.port.mapbase = regs->start;
- 	up.port.irq = irq;
--	up.port.type = PORT_UNKNOWN;
--	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP;
-+	up.port.type = PORT_16750;
-+	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP | UPF_FIXED_TYPE;
+@@ -107,8 +107,7 @@ static int serial8250_em_probe(struct platform_device *pdev)
  	up.port.dev = dev;
  	up.port.private_data = priv;
+ 
+-	clk_prepare_enable(priv->sclk);
+-	up.port.uartclk = clk_get_rate(priv->sclk);
++	up.port.uartclk = clk_get_rate(sclk);
+ 
+ 	up.port.iotype = UPIO_MEM32;
+ 	up.port.serial_in = serial8250_em_serial_in;
+@@ -117,10 +116,8 @@ static int serial8250_em_probe(struct platform_device *pdev)
+ 	up.dl_write = serial8250_em_serial_dl_write;
+ 
+ 	ret = serial8250_register_8250_port(&up);
+-	if (ret < 0) {
+-		clk_disable_unprepare(priv->sclk);
++	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "unable to register 8250 port\n");
+-	}
+ 
+ 	priv->line = ret;
+ 	platform_set_drvdata(pdev, priv);
+@@ -132,7 +129,6 @@ static int serial8250_em_remove(struct platform_device *pdev)
+ 	struct serial8250_em_priv *priv = platform_get_drvdata(pdev);
+ 
+ 	serial8250_unregister_port(priv->line);
+-	clk_disable_unprepare(priv->sclk);
+ 	return 0;
+ }
  
 -- 
 2.25.1
