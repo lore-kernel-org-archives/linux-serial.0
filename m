@@ -2,26 +2,26 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF272C636D4
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 11:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBC0C64ED6
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 11:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbjBQLnL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 06:43:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
+        id S229760AbjBQLnU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 06:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbjBQLnK (ORCPT
+        with ESMTP id S230250AbjBQLnR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Feb 2023 06:43:10 -0500
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 871CC604D8;
-        Fri, 17 Feb 2023 03:43:09 -0800 (PST)
+        Fri, 17 Feb 2023 06:43:17 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA1FB241F6;
+        Fri, 17 Feb 2023 03:43:15 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.97,304,1669042800"; 
-   d="scan'208";a="149953573"
+   d="scan'208";a="153224476"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 17 Feb 2023 20:43:08 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 17 Feb 2023 20:43:15 +0900
 Received: from localhost.localdomain (unknown [10.226.92.177])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 2A7CC4002645;
-        Fri, 17 Feb 2023 20:43:05 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id AD3084002630;
+        Fri, 17 Feb 2023 20:43:12 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
@@ -31,9 +31,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
         Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v4 2/6] serial: 8250_em: Drop slab.h
-Date:   Fri, 17 Feb 2023 11:42:51 +0000
-Message-Id: <20230217114255.226517-3-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v4 4/6] serial: 8250_em: Update port type as PORT_16750
+Date:   Fri, 17 Feb 2023 11:42:53 +0000
+Message-Id: <20230217114255.226517-5-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230217114255.226517-1-biju.das.jz@bp.renesas.com>
 References: <20230217114255.226517-1-biju.das.jz@bp.renesas.com>
@@ -43,28 +43,43 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch removes the unused header file slab.h.
+The UART IP found on {RZ/V2M, EMMA mobile} SoC is Register-compatible
+with the general-purpose 16750 UART chip. This patch updates port type
+from 16550A->16750 and also enables 64-bytes fifo support.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
-v4:
- * Split from patch#1
- * Removed the unused header file slab.h.
+v3->v4:
+ * Both {RZ/V2M, EMMA mobile} SoC is Register-compatible
+   with the general-purpose 16750 UART chip. So started using
+   generic compatible and removed struct serial8250_em_hw_info.
+ * Removed Rb tag from Ilpo as it is new change.
+v2->v3:
+ * Replaced of_device_get_match_data()->device_get_match_data().
+ * Replaced of_device.h->property.h
+ * Dropped struct serial8250_em_hw_info *info from priv and started
+   using a local variable info in probe().
+ * Retained Rb tag from Ilpo as changes are trivial.
+v2:
+ * New patch
 ---
- drivers/tty/serial/8250/8250_em.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/8250/8250_em.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
-index 785153d8502d..7bbf206ff476 100644
+index 9781bf73ed0c..499d7a8847ec 100644
 --- a/drivers/tty/serial/8250/8250_em.c
 +++ b/drivers/tty/serial/8250/8250_em.c
-@@ -13,7 +13,6 @@
- #include <linux/serial_reg.h>
- #include <linux/platform_device.h>
- #include <linux/clk.h>
--#include <linux/slab.h>
- 
- #include "8250.h"
+@@ -102,8 +102,8 @@ static int serial8250_em_probe(struct platform_device *pdev)
+ 	memset(&up, 0, sizeof(up));
+ 	up.port.mapbase = regs->start;
+ 	up.port.irq = irq;
+-	up.port.type = PORT_UNKNOWN;
+-	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP;
++	up.port.type = PORT_16750;
++	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP | UPF_FIXED_TYPE;
+ 	up.port.dev = dev;
+ 	up.port.private_data = priv;
  
 -- 
 2.25.1
