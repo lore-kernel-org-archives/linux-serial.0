@@ -2,137 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A69E7C636D4
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 08:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0FDC636D4
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 09:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbjBQIuc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 03:50:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52778 "EHLO
+        id S229555AbjBQJRr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Feb 2023 04:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbjBQIub (ORCPT
+        with ESMTP id S229508AbjBQJRr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Feb 2023 03:50:31 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC6E60A75;
-        Fri, 17 Feb 2023 00:50:04 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id mj16so644950pjb.3;
-        Fri, 17 Feb 2023 00:50:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+4jnTqGI73DRMgZJI4c2qvwAhYDDTU4nAsJXbLQC4qg=;
-        b=qHVJRzxX3+FniAKFwLtFv+ZcIyyQ71cT18uqlvaHn4HZVcPHBmTVhPvDXLTkPbU8eg
-         oUIjB2EQG9GdmIsSlX9IdqUTvikfZGR4RBLWsxz43Wh3RaGPgaZzwZ92/CIdh7CA9NL8
-         7dugJTmSLjgku9NauA+GaHlAzRNCPdTFnY2iDW/XIy2mxoP5y3KdeLR/qV4NB1typUSp
-         0+j3AiBmzt0yEpSHg/PGIcUot+Khc4tuI5oUVr1nlwusMOZouFgmkyqqTaJ5q+ISRkJ3
-         0jbzw5RrC7BpNYAO5wcKoJddQYdFv002kCyg68wMig+kge2o+l9SQQvZbNlU5IxX3Yf5
-         9ZZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+4jnTqGI73DRMgZJI4c2qvwAhYDDTU4nAsJXbLQC4qg=;
-        b=GJCCbamPbH3bIm2sTR3R31+AEm9DDbtosoduSEqqKKiRIsjhsp6jStMFXSlIqLObmI
-         QLbyi/0FT8RcY0+cVfDngolw1IOpNbqGSlm3XSuEbvaK/gXkBQhL0RNAt7ZLi6qyZ1g9
-         jv/6rID3KntumBOE4tzsuwi7ufaZw/xcyLpcJYsfK7jqV9u7TiT92mHpoGnNfRI1Rh4l
-         Fex6aWEYsVynrDFQVs5JIPTACgPJnUaCOHuK3bcWII0Dg8+ExJFPGJI6Kz+MrrYKu64m
-         dczVGyxhWGZF7B0xatT5Gzzi9LHn150syjFEeDz0Z7cG6WMZLzkt9isrbGovxkoqILsk
-         W5AA==
-X-Gm-Message-State: AO0yUKXF4YT3murhph/B/AjvjCP/9woDFyMuHFmTqC2mqzRQbSdn7/Km
-        74ILCpmucByp6ZSIL4q1hO0LgYlHwPo=
-X-Google-Smtp-Source: AK7set9ImvZAnZ/1M19kdSG0/nduNYs90YCLLq6YazqHc1qgadexAA0SrQwvbfDncyMZ672bgEHoPA==
-X-Received: by 2002:a17:902:dac6:b0:19c:13d2:44c1 with SMTP id q6-20020a170902dac600b0019c13d244c1mr2058697plx.15.1676623797404;
-        Fri, 17 Feb 2023 00:49:57 -0800 (PST)
-Received: from localhost (59-120-186-245.hinet-ip.hinet.net. [59.120.186.245])
-        by smtp.gmail.com with ESMTPSA id v13-20020a63464d000000b004fb4489969bsm2362949pgk.49.2023.02.17.00.49.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 17 Feb 2023 00:49:57 -0800 (PST)
-From:   "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-X-Google-Original-From: "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     ilpo.jarvinen@linux.intel.com, l.sanfilippo@kunbus.com,
-        andy.shevchenko@gmail.com, peter_hong@fintek.com.tw,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fri, 17 Feb 2023 04:17:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07F05E59C;
+        Fri, 17 Feb 2023 01:17:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C05B615B5;
+        Fri, 17 Feb 2023 09:17:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F29C433EF;
+        Fri, 17 Feb 2023 09:17:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1676625464;
+        bh=bZNPZdaHcY8OMbBMrEDaxJlVQ7RjxEFNxQHJdZsl+hY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s3Pfe9QJjnlbDDhlwctILyxo30xaao8fpR1rb4paFCv+BXaogyLBMUhox5a+/FZoe
+         y4OEqq7Oz69+qBvXTZf4d5kaZEDfa0faLbZTKL2XI7yh4pPvYiQdOqh0sB/5pwVkdB
+         RNVfGqNe7rePBzqeCaKHszZjIttUp1uYsWwR6s1Q=
+Date:   Fri, 17 Feb 2023 10:17:42 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        l.sanfilippo@kunbus.com, andy.shevchenko@gmail.com,
+        peter_hong@fintek.com.tw, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
-Subject: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
-Date:   Fri, 17 Feb 2023 16:49:53 +0800
-Message-Id: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Subject: Re: [PATCH] serial: 8250_fintek: Add using BIOS IRQ default setting
+Message-ID: <Y+9GNsYQz3Z6KioX@kroah.com>
+References: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230217084953.2580-1-hpeter+linux_kernel@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In 8250_fintek.c probe_setup_port(), we'll detect the IRQ trigger mode by
-irq_get_irq_data() and pass it to fintek_8250_set_irq_mode(). If detected
-Edge mode, we'll set the UART with Edge/High mode, otherwise Level/Low.
+On Fri, Feb 17, 2023 at 04:49:53PM +0800, Ji-Ze Hong (Peter Hong) wrote:
+> In 8250_fintek.c probe_setup_port(), we'll detect the IRQ trigger mode by
+> irq_get_irq_data() and pass it to fintek_8250_set_irq_mode(). If detected
+> Edge mode, we'll set the UART with Edge/High mode, otherwise Level/Low.
+> 
+> But in some motherboard, The APIC maybe setting to Level/High. In this case
+> the driver will setting wrong configuration into UART. So we add a option
+> to kernel parameter to control the driver as following:
+> 
+> 	fintek_uart_irq_mode_override= [SERIAL]
+> 		{default, bios}
+> 		If the parameter is "default", the driver will using
+> 		former IRQ override methed(By IRQ trigger type).
+> 		otherwise, we'll don't change the UART IRQ setting.
+> 
+> Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_fintek.c | 27 +++++++++++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> index dba5950b8d0e..c5fea0a7c79b 100644
+> --- a/drivers/tty/serial/8250/8250_fintek.c
+> +++ b/drivers/tty/serial/8250/8250_fintek.c
+> @@ -92,6 +92,9 @@
+>  #define F81866_UART_CLK_18_432MHZ BIT(0)
+>  #define F81866_UART_CLK_24MHZ BIT(1)
+> 
+> +#define FINTEK_IRQ_MODE_BY_DETECT	0
+> +#define FINTEK_IRQ_MODE_BY_BIOS		1
+> +
+>  struct fintek_8250 {
+>  	u16 pid;
+>  	u16 base_port;
+> @@ -99,6 +102,24 @@ struct fintek_8250 {
+>  	u8 key;
+>  };
+> 
+> +static int not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
+> +
+> +static int __init parse_uart_irq_mode_override(char *arg)
+> +{
+> +	if (!arg)
+> +		return -EINVAL;
+> +
+> +	if (strcmp(arg, "bios") == 0)
+> +		not_override_irq_mode = FINTEK_IRQ_MODE_BY_BIOS;
+> +	else if (strcmp(arg, "default") == 0)
+> +		not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
+> +	else
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
 
-But in some motherboard, The APIC maybe setting to Level/High. In this case
-the driver will setting wrong configuration into UART. So we add a option
-to kernel parameter to control the driver as following:
+Sorry, but no, this will not work with multiple devices.  Please fix the
+bios to handle this all properly, do not require users to manually fix
+up problems for you (i.e. fix it once, not in thousands of individual
+systems.)
 
-	fintek_uart_irq_mode_override= [SERIAL]
-		{default, bios}
-		If the parameter is "default", the driver will using
-		former IRQ override methed(By IRQ trigger type).
-		otherwise, we'll don't change the UART IRQ setting.
+> +
+>  static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
+>  {
+>  	outb(reg, pdata->base_port + ADDR_PORT);
+> @@ -248,6 +269,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+> 
+>  static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
+>  {
+> +	if (not_override_irq_mode == FINTEK_IRQ_MODE_BY_BIOS) {
+> +		pr_info("Fintek UART(%04x) irq mode is using BIOS default",
+> +				pdata->pid);
 
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
----
- drivers/tty/serial/8250/8250_fintek.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+Note, this is a driver, always use dev_*() calls, never pr_*() calls.
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index dba5950b8d0e..c5fea0a7c79b 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -92,6 +92,9 @@
- #define F81866_UART_CLK_18_432MHZ BIT(0)
- #define F81866_UART_CLK_24MHZ BIT(1)
+thanks,
 
-+#define FINTEK_IRQ_MODE_BY_DETECT	0
-+#define FINTEK_IRQ_MODE_BY_BIOS		1
-+
- struct fintek_8250 {
- 	u16 pid;
- 	u16 base_port;
-@@ -99,6 +102,24 @@ struct fintek_8250 {
- 	u8 key;
- };
-
-+static int not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
-+
-+static int __init parse_uart_irq_mode_override(char *arg)
-+{
-+	if (!arg)
-+		return -EINVAL;
-+
-+	if (strcmp(arg, "bios") == 0)
-+		not_override_irq_mode = FINTEK_IRQ_MODE_BY_BIOS;
-+	else if (strcmp(arg, "default") == 0)
-+		not_override_irq_mode = FINTEK_IRQ_MODE_BY_DETECT;
-+	else
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+early_param("fintek_uart_irq_mode_override", parse_uart_irq_mode_override);
-+
- static u8 sio_read_reg(struct fintek_8250 *pdata, u8 reg)
- {
- 	outb(reg, pdata->base_port + ADDR_PORT);
-@@ -248,6 +269,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
-
- static void fintek_8250_set_irq_mode(struct fintek_8250 *pdata, bool is_level)
- {
-+	if (not_override_irq_mode == FINTEK_IRQ_MODE_BY_BIOS) {
-+		pr_info("Fintek UART(%04x) irq mode is using BIOS default",
-+				pdata->pid);
-+		return;
-+	}
-+
- 	sio_write_reg(pdata, LDN, pdata->index);
-
- 	switch (pdata->pid) {
---
-2.17.1
+greg k-h
