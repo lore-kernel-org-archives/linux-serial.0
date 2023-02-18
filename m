@@ -2,78 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C5DC61DA4
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Feb 2023 19:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F84C61DA4
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Feb 2023 22:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjBRT4y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Feb 2023 14:56:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
+        id S229572AbjBRWkQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Feb 2023 17:40:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbjBRT4x (ORCPT
+        with ESMTP id S229436AbjBRWkP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Feb 2023 14:56:53 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52E912F28;
-        Sat, 18 Feb 2023 11:56:52 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id v4so1105775wrw.13;
-        Sat, 18 Feb 2023 11:56:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=pQjuBZrFRe+74KRwh27+bKz/8Tg+GaGpJcQvuBfoHbI=;
-        b=BCdKo6Oj/bi7MNxf+s2RU605Lmn+aQ+ahaAsMzFREv/9yPTnHiaeaUovQ4ZSDyeDfR
-         9cOb51mHK0gY+bfrmdcCA2apNhB9eYN9l71FuHAMTN5krnhngvVyhFpAfIRN/nVv4SP+
-         5qG4GpvdioF/1jic1ayEKJXdnAANHh1kAhw7FQ7xyNXNP78/sVQTevgpjE4lj1rDWP41
-         k9KA7HVBXu4v01CEwMjtI5OVRyr3EIAo9QmZT5dSTN2OIWRpLXR1MaYgXlTwv2TvItp+
-         bdH7QQRFf4taIde3F9ACS+nIKcsSWDNbmzfPO+8k2q4X0AowHYkY/sO7GN6uZVx+aE0C
-         YzHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pQjuBZrFRe+74KRwh27+bKz/8Tg+GaGpJcQvuBfoHbI=;
-        b=IaR/LhZ0uf3P4CIar8aCVPGl7x3NVBzxbTibNIZvVX8BG8bHdfMlGMLhW9Clvs5rt9
-         yfwwHGTpKdIo/dXWdlMOIW5KJ6PDy14qY2fszKofGAxnY+3Cc3CSUku3w2U209N0AYPa
-         K+E8KhiLvsoiEKL3RqFkBASvLlH5cxr5wii7hQR/tOBo83yMxy0uaZlXq5EjYl9M8zfR
-         zHMsOfCqV5HhFGJWf4B/fsrhNlxVrE8xhylLXv43Jze0e0TU2bgl1ak0c4TiBbBx/dVz
-         LpD501G56WccnmHrvi8E2VbCYHplMfYunO37D7g3iW6OaXm2qffbUvSK32WrhHtLpvdH
-         LLTA==
-X-Gm-Message-State: AO0yUKXl30SxOYl6DGCX7vkx99TnvNqcjmoU0OK5WEm90xh5oJIbEai2
-        jZkvoe41iZ7pfoKuV8Mk5sHQ1VKgQ1Qog8exbMeiD0/Pkxk=
-X-Google-Smtp-Source: AK7set/l/hR/n23DPN26/fKiCoXrFJYtYMoT+Md0gNV6ygNQomH5ZpQWeGEur3+P79bZfYVjk6ST01a/qMosLLDJsXU=
-X-Received: by 2002:a5d:6dcc:0:b0:2c6:e7b6:dc30 with SMTP id
- d12-20020a5d6dcc000000b002c6e7b6dc30mr109892wrz.9.1676750210966; Sat, 18 Feb
- 2023 11:56:50 -0800 (PST)
+        Sat, 18 Feb 2023 17:40:15 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7FD15576;
+        Sat, 18 Feb 2023 14:40:14 -0800 (PST)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id E3A0685754;
+        Sat, 18 Feb 2023 23:40:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1676760012;
+        bh=w44yS3t8CrsWkl32S0qz3S+DPitSF+ixPZhyPD5jjGc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E9Ytg+TMWnlN8cJYWgxx2zh4VxdglTn67PPIngVIkTJ1xt2C0fHjz+EfCMaGl9hNk
+         Np2bJxCdHiQd7GsKfQ3f+g57CkQZ20LKig4v+NZyB3s5Wd2n2SEuRX3Ac6iTqmWT5H
+         +4vmeU1Q7WbCbpPCypNt5aAMJk2OZt5HSSqaxIn+Qe2Eg2w939fyJYwa0PAGiOcZ8w
+         0eXMsiZhG1KiQV8m1FOv/VRiQiOubvhCNyhNyT1FW5+mHIvcEiB+fnKFevYe3YUvV1
+         mKVrO+LlMGC0EC4Sk1mhdIvj4221OBBY9ksqAfvrJBMLoxK7QF2Lqvg1ZwU6x36RXA
+         hos8EqtuqKToQ==
+From:   Marek Vasut <marex@denx.de>
+To:     devicetree@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Fabio Estevam <festevam@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: serial: imx: Document optional DMA properties
+Date:   Sat, 18 Feb 2023 23:39:58 +0100
+Message-Id: <20230218223959.116358-1-marex@denx.de>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-From:   Ramon Fried <rfried.dev@gmail.com>
-Date:   Sat, 18 Feb 2023 21:56:39 +0200
-Message-ID: <CAGi-RULY-9eS7JUA7bW_tJ0JjA_hJTjvOyGyj7_7aVtRk2BaFg@mail.gmail.com>
-Subject: amba pl011 non amba/sbsa driver
-To:     linux@armlinux.org.uk, Greg KH <gregkh@linuxfoundation.org>,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Baruch Siach <baruch@tkos.co.il>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi.
-Our upcoming SOC is using pl011 ip, but we have a different NOC than
-AMBA and we don't want to use the SBSA, as it provides limited
-functionality in the UART.
+The UART IP can be connected to DMA engine, document the properties in DT bindings.
+Update example to match Linux arch/arm/boot/dts/imx51.dtsi .
 
-My question is should we develop a new driver or add more
-functionality to the current driver.
-The pl011 driver is a bit messy, and the functionality we actually
-need is actually supported in the current driver, but I can't
-differentiate my HW using AMBA id.
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+---
+ .../devicetree/bindings/serial/fsl-imx-uart.yaml     | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-If a change will be more suitable in the driver, my plan is to add
-support for an oe_device_id table  along with an amba_device_id table
-for generic amba pl011 drivers.
-Does this make sense ?
+diff --git a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+index 4cbe76e1715b7..c22aab8c55f83 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/fsl-imx-uart.yaml
+@@ -49,6 +49,16 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  dmas:
++    items:
++      - description: DMA controller phandle and request line for RX
++      - description: DMA controller phandle and request line for TX
++
++  dma-names:
++    items:
++      - const: rx
++      - const: tx
++
+   interrupts:
+     maxItems: 1
+ 
+@@ -100,6 +110,8 @@ examples:
+         compatible = "fsl,imx51-uart", "fsl,imx21-uart";
+         reg = <0x73fbc000 0x4000>;
+         interrupts = <31>;
++        dmas = <&sdma 18 4 1>, <&sdma 19 4 2>;
++        dma-names = "rx", "tx";
+         uart-has-rtscts;
+         fsl,dte-mode;
+     };
+-- 
+2.39.1
 
-Thanks,
-Ramon.
