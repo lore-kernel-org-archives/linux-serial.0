@@ -2,151 +2,78 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39574C05027
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Feb 2023 20:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C5DC61DA4
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Feb 2023 19:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbjBQUah (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Feb 2023 15:30:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
+        id S229572AbjBRT4y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Feb 2023 14:56:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbjBQUag (ORCPT
+        with ESMTP id S229514AbjBRT4x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Feb 2023 15:30:36 -0500
-X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Feb 2023 12:30:35 PST
-Received: from smtp.smtpout.orange.fr (smtp-12.smtpout.orange.fr [80.12.242.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CA0142BE5
-        for <linux-serial@vger.kernel.org>; Fri, 17 Feb 2023 12:30:34 -0800 (PST)
-Received: from pop-os.home ([86.243.2.178])
-        by smtp.orange.fr with ESMTPA
-        id T7G2pKIElTHu0T7G2pfheb; Fri, 17 Feb 2023 21:23:03 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 17 Feb 2023 21:23:03 +0100
-X-ME-IP: 86.243.2.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250: Reorder fields in 'struct plat_serial8250_port'
-Date:   Fri, 17 Feb 2023 21:22:57 +0100
-Message-Id: <f3cb1efe1454e0615840fd331ee335bc441589a9.1676665358.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Sat, 18 Feb 2023 14:56:53 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52E912F28;
+        Sat, 18 Feb 2023 11:56:52 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id v4so1105775wrw.13;
+        Sat, 18 Feb 2023 11:56:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=pQjuBZrFRe+74KRwh27+bKz/8Tg+GaGpJcQvuBfoHbI=;
+        b=BCdKo6Oj/bi7MNxf+s2RU605Lmn+aQ+ahaAsMzFREv/9yPTnHiaeaUovQ4ZSDyeDfR
+         9cOb51mHK0gY+bfrmdcCA2apNhB9eYN9l71FuHAMTN5krnhngvVyhFpAfIRN/nVv4SP+
+         5qG4GpvdioF/1jic1ayEKJXdnAANHh1kAhw7FQ7xyNXNP78/sVQTevgpjE4lj1rDWP41
+         k9KA7HVBXu4v01CEwMjtI5OVRyr3EIAo9QmZT5dSTN2OIWRpLXR1MaYgXlTwv2TvItp+
+         bdH7QQRFf4taIde3F9ACS+nIKcsSWDNbmzfPO+8k2q4X0AowHYkY/sO7GN6uZVx+aE0C
+         YzHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pQjuBZrFRe+74KRwh27+bKz/8Tg+GaGpJcQvuBfoHbI=;
+        b=IaR/LhZ0uf3P4CIar8aCVPGl7x3NVBzxbTibNIZvVX8BG8bHdfMlGMLhW9Clvs5rt9
+         yfwwHGTpKdIo/dXWdlMOIW5KJ6PDy14qY2fszKofGAxnY+3Cc3CSUku3w2U209N0AYPa
+         K+E8KhiLvsoiEKL3RqFkBASvLlH5cxr5wii7hQR/tOBo83yMxy0uaZlXq5EjYl9M8zfR
+         zHMsOfCqV5HhFGJWf4B/fsrhNlxVrE8xhylLXv43Jze0e0TU2bgl1ak0c4TiBbBx/dVz
+         LpD501G56WccnmHrvi8E2VbCYHplMfYunO37D7g3iW6OaXm2qffbUvSK32WrhHtLpvdH
+         LLTA==
+X-Gm-Message-State: AO0yUKXl30SxOYl6DGCX7vkx99TnvNqcjmoU0OK5WEm90xh5oJIbEai2
+        jZkvoe41iZ7pfoKuV8Mk5sHQ1VKgQ1Qog8exbMeiD0/Pkxk=
+X-Google-Smtp-Source: AK7set/l/hR/n23DPN26/fKiCoXrFJYtYMoT+Md0gNV6ygNQomH5ZpQWeGEur3+P79bZfYVjk6ST01a/qMosLLDJsXU=
+X-Received: by 2002:a5d:6dcc:0:b0:2c6:e7b6:dc30 with SMTP id
+ d12-20020a5d6dcc000000b002c6e7b6dc30mr109892wrz.9.1676750210966; Sat, 18 Feb
+ 2023 11:56:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Ramon Fried <rfried.dev@gmail.com>
+Date:   Sat, 18 Feb 2023 21:56:39 +0200
+Message-ID: <CAGi-RULY-9eS7JUA7bW_tJ0JjA_hJTjvOyGyj7_7aVtRk2BaFg@mail.gmail.com>
+Subject: amba pl011 non amba/sbsa driver
+To:     linux@armlinux.org.uk, Greg KH <gregkh@linuxfoundation.org>,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Baruch Siach <baruch@tkos.co.il>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Group some variables based on their sizes to reduce hole and avoid padding.
-On x86_64, this shrinks the size of 'struct plat_serial8250_port'
-from 144 to 128 bytes.
+Hi.
+Our upcoming SOC is using pl011 ip, but we have a different NOC than
+AMBA and we don't want to use the SBSA, as it provides limited
+functionality in the UART.
 
-It saves a few bytes of memory.
+My question is should we develop a new driver or add more
+functionality to the current driver.
+The pl011 driver is a bit messy, and the functionality we actually
+need is actually supported in the current driver, but I can't
+differentiate my HW using AMBA id.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-Using pahole
+If a change will be more suitable in the driver, my plan is to add
+support for an oe_device_id table  along with an amba_device_id table
+for generic amba pl011 drivers.
+Does this make sense ?
 
-Before:
-======
-struct plat_serial8250_port {
-	long unsigned int          iobase;               /*     0     8 */
-	void *                     membase;              /*     8     8 */
-	resource_size_t            mapbase;              /*    16     8 */
-	unsigned int               irq;                  /*    24     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	long unsigned int          irqflags;             /*    32     8 */
-	unsigned int               uartclk;              /*    40     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	void *                     private_data;         /*    48     8 */
-	unsigned char              regshift;             /*    56     1 */
-	unsigned char              iotype;               /*    57     1 */
-	unsigned char              hub6;                 /*    58     1 */
-	unsigned char              has_sysrq;            /*    59     1 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	/* --- cacheline 1 boundary (64 bytes) --- */
-	upf_t                      flags;                /*    64     8 */
-	unsigned int               type;                 /*    72     4 */
-
-	/* XXX 4 bytes hole, try to pack */
-
-	unsigned int               (*serial_in)(struct uart_port *, int); /*    80     8 */
-	void                       (*serial_out)(struct uart_port *, int, int); /*    88     8 */
-	void                       (*set_termios)(struct uart_port *, struct ktermios *, const struct ktermios  *); /*    96     8 */
-	void                       (*set_ldisc)(struct uart_port *, struct ktermios *); /*   104     8 */
-	unsigned int               (*get_mctrl)(struct uart_port *); /*   112     8 */
-	int                        (*handle_irq)(struct uart_port *); /*   120     8 */
-	/* --- cacheline 2 boundary (128 bytes) --- */
-	void                       (*pm)(struct uart_port *, unsigned int, unsigned int); /*   128     8 */
-	void                       (*handle_break)(struct uart_port *); /*   136     8 */
-
-	/* size: 144, cachelines: 3, members: 21 */
-	/* sum members: 128, holes: 4, sum holes: 16 */
-	/* last cacheline: 16 bytes */
-};
-
-After:
-=====
-struct plat_serial8250_port {
-	long unsigned int          iobase;               /*     0     8 */
-	void *                     membase;              /*     8     8 */
-	resource_size_t            mapbase;              /*    16     8 */
-	unsigned int               uartclk;              /*    24     4 */
-	unsigned int               irq;                  /*    28     4 */
-	long unsigned int          irqflags;             /*    32     8 */
-	void *                     private_data;         /*    40     8 */
-	unsigned char              regshift;             /*    48     1 */
-	unsigned char              iotype;               /*    49     1 */
-	unsigned char              hub6;                 /*    50     1 */
-	unsigned char              has_sysrq;            /*    51     1 */
-	unsigned int               type;                 /*    52     4 */
-	upf_t                      flags;                /*    56     8 */
-	/* --- cacheline 1 boundary (64 bytes) --- */
-	unsigned int               (*serial_in)(struct uart_port *, int); /*    64     8 */
-	void                       (*serial_out)(struct uart_port *, int, int); /*    72     8 */
-	void                       (*set_termios)(struct uart_port *, struct ktermios *, const struct ktermios  *); /*    80     8 */
-	void                       (*set_ldisc)(struct uart_port *, struct ktermios *); /*    88     8 */
-	unsigned int               (*get_mctrl)(struct uart_port *); /*    96     8 */
-	int                        (*handle_irq)(struct uart_port *); /*   104     8 */
-	void                       (*pm)(struct uart_port *, unsigned int, unsigned int); /*   112     8 */
-	void                       (*handle_break)(struct uart_port *); /*   120     8 */
-
-	/* size: 128, cachelines: 2, members: 21 */
-};
----
- include/linux/serial_8250.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 19376bee9667..741ed4807a9c 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -18,16 +18,16 @@ struct plat_serial8250_port {
- 	unsigned long	iobase;		/* io base address */
- 	void __iomem	*membase;	/* ioremap cookie or NULL */
- 	resource_size_t	mapbase;	/* resource base */
-+	unsigned int	uartclk;	/* UART clock rate */
- 	unsigned int	irq;		/* interrupt number */
- 	unsigned long	irqflags;	/* request_irq flags */
--	unsigned int	uartclk;	/* UART clock rate */
- 	void            *private_data;
- 	unsigned char	regshift;	/* register shift */
- 	unsigned char	iotype;		/* UPIO_* */
- 	unsigned char	hub6;
- 	unsigned char	has_sysrq;	/* supports magic SysRq */
--	upf_t		flags;		/* UPF_* flags */
- 	unsigned int	type;		/* If UPF_FIXED_TYPE */
-+	upf_t		flags;		/* UPF_* flags */
- 	unsigned int	(*serial_in)(struct uart_port *, int);
- 	void		(*serial_out)(struct uart_port *, int, int);
- 	void		(*set_termios)(struct uart_port *,
--- 
-2.34.1
-
+Thanks,
+Ramon.
