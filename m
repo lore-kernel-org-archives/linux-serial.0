@@ -2,111 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BED50C05027
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Feb 2023 16:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAB9C636D6
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Feb 2023 01:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbjBTQee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Feb 2023 11:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
+        id S231892AbjBUBD6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Feb 2023 20:03:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbjBTQed (ORCPT
+        with ESMTP id S229560AbjBUBD6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Feb 2023 11:34:33 -0500
-Received: from todd.t-8ch.de (todd.t-8ch.de [IPv6:2a01:4f8:c010:41de::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB11119699;
-        Mon, 20 Feb 2023 08:34:31 -0800 (PST)
-Date:   Mon, 20 Feb 2023 16:34:26 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
-        s=mail; t=1676910869;
-        bh=+WjH0a/+KL5t0mQ5h5SREVXFQYNQuDN/Ef8igbKTOVw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dFR/TqBQw6wyJ+GIMaTVb0EhdEVpSIzuiv9GoBTHb4y7HuxlSQcM6F+PyQMF4D3Wp
-         J6G7Oid+eVljk5aUosOWtAw71gOBG5XHdZOYN1Std9BHN0bjMLTsoDB7sYxyqe1Dj1
-         KKNe8wNcYZRxrKyruAcWfhVVI04flryDGOfHOrCs=
-From:   Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     George Kennedy <george.kennedy@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Storm Dragon <stormdragon2976@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        sfr@canb.auug.org.au, akpm@linux-foundation.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] vc_screen: don't clobber return value in vcs_read
-Message-ID: <2094ecec-f63c-4e8a-ba97-da77c5266da1@t-8ch.de>
-References: <Y/KtG9vK0oz0nQrN@hotmail.com>
- <20230220064612.1783-1-linux@weissschuh.net>
- <dcaaf7d5-b2d5-dbb9-f3fe-2232ee525cc8@kernel.org>
+        Mon, 20 Feb 2023 20:03:58 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A2E1D93B;
+        Mon, 20 Feb 2023 17:03:57 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id u6so1069221ilk.12;
+        Mon, 20 Feb 2023 17:03:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MSoAw1HAKXRXOgJTEME+O4818u/LTQvYW/6HrMBUD+I=;
+        b=XDEwTO+JGDej4hjSXoHQjZu2iP121FogSD2B1wPt2x9fOxRn/vSYiSHmYMVS+2MowE
+         cEbXM4taPto8BKWrFvMRQNUcYu6Q+bYVmLmfULueZh5FyFgzGaqIiYSOd4iCM4YMemF4
+         SqiNUyqzWJibIPUJb/Zbzkeiwk1PJb1rapYP6wzySxHuGgw0QzNWRZOTnuQSPsYr5OCT
+         DqEG51/HSvnzbzUpDOBXi8+TCVoREEO8Ah5ymxv//tvLCsK2zWow7jSsVOwWzm9dKLTD
+         Bbrf4CT/8G0GqFAzeJnZhCSPppbrZzkouuI70Ll4rMk885QgPW57p23vv5b4Rjq75UQX
+         rNCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MSoAw1HAKXRXOgJTEME+O4818u/LTQvYW/6HrMBUD+I=;
+        b=rHl4q9/vX380jrzL827y/edvazNPhGdLGONHlslgvBuHN0Bw+3uUBF3DgDPcHkNp3i
+         g8sLsKMwxU4eqB4cuKTHCN7tv1s7zWDxnclbws25VzxI/kRMSxpAv1i4GGA8VTpwk9S2
+         xQ5ck+3HggShl4YCJU68jmVSZfW6VXYiVs1D0FesnLCFyt61kCtaIddPV2Z2oHP6SHvO
+         6U2BLGSqdOu32EYKlJ913T4FXl00CGaPdCEEFAOnY+IKSGbrQUC02sOhDg+0GYqFx2Gd
+         wixnZMYV4dI+/JGgdlNdOuu5PsPMtJvcyBms9/LLbHtphGft4gg8Qrmk0vFjKMd4zOPn
+         2rpQ==
+X-Gm-Message-State: AO0yUKVZg0Z/4+wFk/Ro8xscjuYFD3LSYtP5UkwydjQY1D3IkfVbs7Ym
+        /Lo1XM6qnZCS32arOJt90Xo=
+X-Google-Smtp-Source: AK7set90a5jKbMQYwuP9wfiD3DNFkSxKJrZLqm5Ryud3NLvTwIBcg7MnYliVSvZV7aOBoSvVYJfnGQ==
+X-Received: by 2002:a92:7b12:0:b0:315:8f82:4d4 with SMTP id w18-20020a927b12000000b003158f8204d4mr2431967ilc.0.1676941436453;
+        Mon, 20 Feb 2023 17:03:56 -0800 (PST)
+Received: from localhost.localdomain (bras-base-toroon4321w-grc-52-76-71-25-91.dsl.bell.ca. [76.71.25.91])
+        by smtp.gmail.com with ESMTPSA id n13-20020a02cc0d000000b003bf35a3cc3bsm870882jap.85.2023.02.20.17.03.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Feb 2023 17:03:56 -0800 (PST)
+From:   Mohammad Mahfooz <mohammadmahfoozpersonal@gmail.com>
+To:     jirislaby@kernel.org
+Cc:     alexander.vorwerk@stud.uni-goettingen.de,
+        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
+        johan@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, mohammadmahfoozpersonal@gmail.com
+Subject: [PATCH] serial: jsm: Change n to unsigned int
+Date:   Mon, 20 Feb 2023 20:03:39 -0500
+Message-Id: <20230221010339.3032-1-mohammadmahfoozpersonal@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <70ea8ee5-3f92-fe1c-c59d-74040bd1e610@kernel.org>
+References: <70ea8ee5-3f92-fe1c-c59d-74040bd1e610@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <dcaaf7d5-b2d5-dbb9-f3fe-2232ee525cc8@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-+Cc people who were involved in the original thread.
+Change n to an unsigned int and remove casts from min()s.
 
-On Mon, Feb 20, 2023 at 12:48:59PM +0100, Jiri Slaby wrote:
-> On 20. 02. 23, 7:46, linux@weissschuh.net wrote:
-> > From: Thomas Weißschuh <linux@weissschuh.net>
-> > 
-> > Commit 226fae124b2d
-> > ("vc_screen: move load of struct vc_data pointer in vcs_read() to avoid UAF")
-> > moved the call to vcs_vc() into the loop.
-> > While doing this it also moved the unconditional assignment of
-> > "ret = -ENXIO".
-> > This unconditional assignment was valid outside the loop but within it
-> > it clobbers the actual value of ret.
-> > 
-> > To avoid this only assign "ret = -ENXIO" when actually needed.
-> 
-> Not sure -- I cannot find it -- but hasn't George fixed this yet?
+Signed-off-by: Mohammad Mahfooz <mohammadmahfoozpersonal@gmail.com>
+---
+ drivers/tty/serial/jsm/jsm_neo.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Indeed there was a proposed fix at
-https://lore.kernel.org/lkml/1675704844-17228-1-git-send-email-george.kennedy@oracle.com/
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index 4cce1e423b06..394121870436 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -277,7 +277,7 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
+ 	int qleft = 0;
+ 	u8 linestatus = 0;
+ 	u8 error_mask = 0;
+-	int n = 0;
++	u32 n = 0;
+ 	int total = 0;
+ 	u16 head;
+ 	u16 tail;
+@@ -342,15 +342,15 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
+ 			break;
+ 
+ 		/* Make sure we don't go over the end of our queue */
+-		n = min(((u32) total), (RQUEUESIZE - (u32) head));
++		n = min(total, RQUEUESIZE - head);
+ 
+ 		/*
+ 		 * Cut down n even further if needed, this is to fix
+ 		 * a problem with memcpy_fromio() with the Neo on the
+ 		 * IBM pSeries platform.
+-		 * 15 bytes max appears to be the magic number.
++		 * 12 bytes max appears to be the magic number.
+ 		 */
+-		n = min_t(u32, n, 12);
++		n = min(n, 12U);
+ 
+ 		/*
+ 		 * Since we are grabbing the linestatus register, which
+-- 
+2.34.1
 
-Linus had some suggestions so it was not applied as is.
-
-I'm not sure what the current state is.
-George, do you have something in the pipeline?
-
-I also tested the patch proposed by Linus as attachment and that works.
-(The small inline patch snippet doesn't)
-
-> > Reported-by: Storm Dragon <stormdragon2976@gmail.com>
-> > Link: https://lore.kernel.org/lkml/Y%2FKS6vdql2pIsCiI@hotmail.com/
-> > Fixes: 226fae124b2d ("vc_screen: move load of struct vc_data pointer in vcs_read() to avoid UAF")
-> > Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-> > 
-> > ---
-> > 
-> > @Storm Could you validate this patch?
-> > ---
-> >   drivers/tty/vt/vc_screen.c | 5 +++--
-> >   1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-> > index f566eb1839dc..2ef519a40a87 100644
-> > --- a/drivers/tty/vt/vc_screen.c
-> > +++ b/drivers/tty/vt/vc_screen.c
-> > @@ -403,10 +403,11 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
-> >   		unsigned int this_round, skip = 0;
-> >   		int size;
-> > -		ret = -ENXIO;
-> >   		vc = vcs_vc(inode, &viewed);
-> > -		if (!vc)
-> > +		if (!vc) {
-> > +			ret = -ENXIO;
-> >   			goto unlock_out;
-> > +		}
-> >   		/* Check whether we are above size each round,
-> >   		 * as copy_to_user at the end of this loop
-> > 
-> > base-commit: c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-> 
-> -- 
-> js
-> suse labs
-> 
