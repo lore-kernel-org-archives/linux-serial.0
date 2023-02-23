@@ -2,95 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03260C6379F
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Feb 2023 09:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95965C636D7
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Feb 2023 04:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbjBVJ7D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Feb 2023 04:59:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
+        id S233268AbjBWEY7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Feb 2023 23:24:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjBVJ7C (ORCPT
+        with ESMTP id S233178AbjBWEYa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Feb 2023 04:59:02 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5D713DF4
-        for <linux-serial@vger.kernel.org>; Wed, 22 Feb 2023 01:58:37 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id cf8so7704426ybb.11
-        for <linux-serial@vger.kernel.org>; Wed, 22 Feb 2023 01:58:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f0bM7PsmE0wf0+asUiEYKD7QDlHNZHf9CvubfF1/sRs=;
-        b=OQUMilmYM4f9BHwyWGIF9no/TYDPrVshmbeFNhazNpGTND4ALChT/6g8StUN/imNLN
-         b2Kq7mcun8v15bEvnSE6Jn0XRSoQoO4IYFYg2gG8TOvt6vBgZLyEOCCWF+UHOIe+AA3m
-         mp+MoTbXPjRc5aIvnDyirfaM6UxRC+RNmaRo6rjZb5tljWE8YMAhSoE4QDJ3wyX6YkQQ
-         q0COW52QwFd11jIR00fprY0l7NsGxznQvRapc9uTeOSN8uZkduY4BYtXfidOZlr0LoPt
-         D3Sj1m25p2AA7LNKYWsnHbmpNly/RZIYd+5JeWe5bsqKZMJOlSWD8lldvPgx19nQugqJ
-         O7gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=f0bM7PsmE0wf0+asUiEYKD7QDlHNZHf9CvubfF1/sRs=;
-        b=HLvhe5zj9TA0GmXVdrCoCZL7O4mgbxJ/nOzDn3kIeFsFy4U8+1SJoTkzfmMMSEadB+
-         DBNhtHMNu4iazZiwVRdAdkfV+1fQRWAKG5r/YwEqwOHWr27PVXEo08AOgw+q9CvK0l56
-         NWMd9crg8eFJ4uh1s5JvH5RlWQ4BUVj2Jof/eVprZtdfQpBFyYI6DvkFUujKtOFs1vl3
-         ji7d1fBvRRuwuR58om9ZVgIlbLxFWAjc69KguIAQjKf018y+uM8J3GBto8rLOL6JzVDh
-         QDREYDzbtWPEpqxkgMwp2zUuPWcGVghugqdLKA/sjb8ZC9gSCjsGxfvMk5XuZcwWanZV
-         6C1Q==
-X-Gm-Message-State: AO0yUKUoRJITnzJRkBXPppJu1sTCVH8AaInMIFg5bvmnXvIwgZ+xN02I
-        FGUgh65yRVk8uWzNKqMTNKEoJIUSx61UGxqCMjNiFA==
-X-Google-Smtp-Source: AK7set8vuBlOWMUYuYN+7GHWG9+nSHIdD2Y0EYhXoFQmb1bQZHobbsI7ZupueVYF73il0ZfrErH/ZZ/NAh8nxua5/Z8=
-X-Received: by 2002:a25:8a84:0:b0:92c:2340:4dd9 with SMTP id
- h4-20020a258a84000000b0092c23404dd9mr124057ybl.309.1677059916205; Wed, 22 Feb
- 2023 01:58:36 -0800 (PST)
+        Wed, 22 Feb 2023 23:24:30 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC64497E4
+        for <linux-serial@vger.kernel.org>; Wed, 22 Feb 2023 20:23:07 -0800 (PST)
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 24DEB85AD6;
+        Thu, 23 Feb 2023 05:23:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1677126185;
+        bh=dN/XVzBDhXcjXM25KgY+bixsmEMi13ZvR4n3mQFnt00=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CbkUXw0RWgzSrBGnlhu9GjoZ/EXvbhO62DxN/v0izHkWqNx2BDwqViOYKDc664u4y
+         yO3uWeYfGf6n2+daOOTixXeTqw9y4+CrH7UrpSgpWNp9oEfMvqggbO4SA6ZqLnUT8J
+         joveJAYpdXHR26CyGI6LxHLXw796qQjqFfICbsLhjSJYyCRyJN+6IP4iyH3cNzEIWd
+         YlU1Zb49ErVgUXwtCzl1lkms9YzurFnHA3iZVm6DzFkeRQaI52gl7iPCkXPzOaFl2Q
+         ZjIrpJ884i4lsO6UhoVtnw9K95woEkI0X7c1JTyHid2W67r3+I7dvmHgp3HagQEEED
+         8WGlKQyO5UbSQ==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-serial@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean Philippe Romain <jean-philippe.romain@foss.st.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH 1/2] serial: stm32: Remove unused struct stm32_port txdone element
+Date:   Thu, 23 Feb 2023 05:22:51 +0100
+Message-Id: <20230223042252.95480-1-marex@denx.de>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-References: <20230125143503.1015424-1-bero@baylibre.com> <20230125143503.1015424-10-bero@baylibre.com>
- <8c348b39-67f3-9210-1929-8b2f093be24c@baylibre.com> <Y/XenZUmT7Nh2qGP@kroah.com>
-In-Reply-To: <Y/XenZUmT7Nh2qGP@kroah.com>
-From:   Alexandre Mergnat <amergnat@baylibre.com>
-Date:   Wed, 22 Feb 2023 10:58:25 +0100
-Message-ID: <CAFGrd9qp-p5+8_LNo7G_+sMbRUtCXKOtRSPMxspxTS7H7iBw5g@mail.gmail.com>
-Subject: Re: [PATCH v9 9/9] arm64: dts: mediatek: Initial mt8365-evk support
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     =?UTF-8?Q?Bernhard_Rosenkr=C3=A4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, tglx@linutronix.de,
-        maz@kernel.org, lee@kernel.org, linus.walleij@linaro.org,
-        matthias.bgg@gmail.com, daniel.lezcano@linaro.org,
-        chunfeng.yun@mediatek.com, angelogioacchino.delregno@collabora.com,
-        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
-        sean.wang@mediatek.com, zhiyong.tao@mediatek.com,
-        khilman@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
-Thanks for the update, I appreciate it.
+The txdone element is only ever assigned, once, and never used. Drop it.
 
-Alex
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Erwan Le Ray <erwan.leray@foss.st.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jean Philippe Romain <jean-philippe.romain@foss.st.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Valentin Caron <valentin.caron@foss.st.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+---
+ drivers/tty/serial/stm32-usart.c | 1 -
+ drivers/tty/serial/stm32-usart.h | 1 -
+ 2 files changed, 2 deletions(-)
 
-Le mer. 22 f=C3=A9vr. 2023 =C3=A0 10:21, Greg KH <gregkh@linuxfoundation.or=
-g> a =C3=A9crit :
->
-> On Wed, Feb 22, 2023 at 09:17:39AM +0100, Alexandre Mergnat wrote:
-> > Hi Matthias,
-> >
-> > This is a gentle ping to know if you can take this patch please.
-> > Sorry for the double mail, I screwed up the first send.
->
-> It's the middle of the merge window, we can't take _ANYTHING_ now.
-> Please wait until after 6.3-rc1 is out.
->
-> thanks,
->
-> greg k-h
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 767ff9fdb2e58..bf51e2152dd5a 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -743,7 +743,6 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
+ 		stm32_usart_tx_interrupt_disable(port);
+ 		if (!stm32_port->hw_flow_control &&
+ 		    port->rs485.flags & SER_RS485_ENABLED) {
+-			stm32_port->txdone = true;
+ 			stm32_usart_tc_interrupt_enable(port);
+ 		}
+ 	}
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index 0ec41a732c888..903285b5aea75 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -203,7 +203,6 @@ struct stm32_port {
+ 	bool hw_flow_control;
+ 	bool swap;		 /* swap RX & TX pins */
+ 	bool fifoen;
+-	bool txdone;
+ 	int rxftcfg;		/* RX FIFO threshold CFG      */
+ 	int txftcfg;		/* TX FIFO threshold CFG      */
+ 	bool wakeup_src;
+-- 
+2.39.1
+
