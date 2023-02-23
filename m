@@ -2,185 +2,417 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35256C636D6
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Feb 2023 10:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAFCC61DA4
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Feb 2023 10:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233220AbjBWKky (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Feb 2023 05:40:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
+        id S233768AbjBWKsS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Feb 2023 05:48:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233248AbjBWKku (ORCPT
+        with ESMTP id S233253AbjBWKsR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Feb 2023 05:40:50 -0500
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2044.outbound.protection.outlook.com [40.107.247.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567D4269E;
-        Thu, 23 Feb 2023 02:40:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UWouw/Xj4k6SQ9f5ncD3V1X9IiUmjSSU+wubZa+IFABQt2ZxCPtC7gjL4+jN2sg9cGecjEBkcrtaFN5M+/UNM6N3vXLiPfUycSQPT20hTOPpFpG3JVBNcUh6cZjUUcGsg2GQAlZkDbHd9fZmExiw0ayv0+rLuFbaQ/pwTOrPxHd2oRATmON3lNzXjnKuFslio77pPdqZ8RXkcK0fWkxKSH0qGjosluXuiRm/uV9bn0sB+CTGdq6TekkXCTCoo+kf61uWAf/q9SgasKkubAn+1cWANCOa773Ifs3991awJu5MFRoY4sMMN5yFU9oHffzt+Gr1aglGe/r46rAW+OIaMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OSwIeIS+Gx3HVz2c0h5Q6TOY6T4PFiGtFdsiGogpHLg=;
- b=aDxP/16i0Z4qgQO4kTH3DnqJ/3noLPle214rRlgrsTtk0/Yo3S3EIImD7+Mu2UefG8QkUgyYXZc0vOXd5s3AhWpZV4sBlfRXDDA5BQMu8QVhzfdHsdaDVFq4J+EioN4Wd7LvJetbYkSgHuJ4RHu1EPN1JslfOpArcDdQkvuh3YFEtJ1OlhMxAHpeYNiCugZ+SAMVvfEUd/dOj7eL7P+WxN1vPq4qvFyUEbOCpgkIpkfEZCv+VtfZWWfJjMtFyESpZnrJyhSyQfmT6GuRN5dbFYWY3RdRfkYQrgsrZp5rjh9znmvK6ekK6manLJkjikOH7cmzs2iyR0IFay+sZraXkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OSwIeIS+Gx3HVz2c0h5Q6TOY6T4PFiGtFdsiGogpHLg=;
- b=AYqOHUD7q+fNtloVkbadAYSRa3+VdR5TRtpZqaY/m31/qm5XGwaWa3JNf2Wkw+tYrUOyg8lwqaMO8CDxgK+OWyQFhEkMYZBbCYITnZRegv5jSCIHSALKsoyLCNLbEqjeP2OD/f41bkyvzCJZmIz4QMjHnNHJKq4OMcPMCTL1/qs=
-Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
- by AM0PR04MB6945.eurprd04.prod.outlook.com (2603:10a6:208:17f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.19; Thu, 23 Feb
- 2023 10:40:46 +0000
-Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
- ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
- ([fe80::f8fe:ab7c:ef5d:9189%9]) with mapi id 15.20.6134.021; Thu, 23 Feb 2023
- 10:40:46 +0000
-From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Subject: Re: [PATCH v4 3/3] Bluetooth: NXP: Add protocol support for NXP
+        Thu, 23 Feb 2023 05:48:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E34C15572;
+        Thu, 23 Feb 2023 02:48:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC94616B5;
+        Thu, 23 Feb 2023 10:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DD21C433D2;
+        Thu, 23 Feb 2023 10:48:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1677149294;
+        bh=JwmNI2Lo8sTrNWeiDTCxCHRZGl3QFUVJuHx58Vb1VyE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Zz41rr1nqWB7VqrFwnMoaIzUun01+96F4nM2dXHVAyS1pN2Q87hoY7TSlqLlrPd5n
+         bGlekWuRVAcfqNlYYdSiKONnjL03aiUn54Dj6sfbLsbfxyCdn5FrWKnaejYhxjRArk
+         DXBlRslwfYkMWtbzhIvOwenPGWb1UbOzATFiOMgY=
+Date:   Thu, 23 Feb 2023 11:48:11 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        jirislaby@kernel.org, alok.a.tiwari@oracle.com, hdanton@sina.com,
+        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com
+Subject: Re: [PATCH v5] Bluetooth: NXP: Add protocol support for NXP
  Bluetooth chipsets
-Thread-Topic: [PATCH v4 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Thread-Index: AQHZR3NJNMeQaxHX80659kDSqon6Tg==
-Date:   Thu, 23 Feb 2023 10:40:45 +0000
-Message-ID: <AM9PR04MB8603910A3247C4649648C21DE7AB9@AM9PR04MB8603.eurprd04.prod.outlook.com>
-References: <20230221162541.3039992-1-neeraj.sanjaykale@nxp.com>
- <20230221162541.3039992-4-neeraj.sanjaykale@nxp.com>
- <Y/T1uMqUeW67tgzX@kroah.com>
-In-Reply-To: <Y/T1uMqUeW67tgzX@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|AM0PR04MB6945:EE_
-x-ms-office365-filtering-correlation-id: 37651d70-2489-48c6-5461-08db158a6bb2
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Slqch8tv9y5uETXeBNdrOVvVo1lv4MKAOrtU9aRpaEvBlBGRk5+YtRG8TxUVcc5b8g8z18YydwoIkH+4oBTmqMml3BR0DkqD2tVUgMhL1uuJPMFr1WuglA+VP75PiRr/7Y8wDpMNDSPGT/BXkmsaq83UVu0HHB+BFpZNEcIkloqLwdWPpao7OwGzArI1tWOF4UQpsLBic+AetzeV8EJ2muSYEVMBEOqmfJl4YCl0A9BuzArbE44wLT/+Y1d4yDtnAE3ha6nXInyVtst9EYwUQ8jVuTa2DU3gmBC4LIWeQAq4eu2waXVkdszCNXixEKd5+VZvmtdDmOXx03r0yxr+zstbKB58AkSs6IHdjhFDm4eCFFwkPOz60Jk2NpY4iAuIZeswR7SUZ7eVSqNvJPDjSOcld1jgRb8goXzL3BBLurbD21uSJWr1nF9KUIveKQCVKimgaM98e7Xglzo5r+BdrtnYHQxdpOmWUw1MNzTgyZKjm1XDWNNSFtndlAFnN7wCGZPQQApkJ15M2K4yt88dZYAERrT99T7Gi2feG+BN9lwtKY+XNihgEyXuh0C6wZxOeNC/xhwpXCMBIwzLyoM0Jv6qWsYnD8z3/lcpPhFCzQUJJjEm9hlGVGCSLOPETsJfHQqtHFsMfwlSDtdKCBPvTQGs2aSs/CBT1sCRctB7f39wfZtYkW4fibTiIvkwUCRDaGd3FEyjMOm+HPMGFmDjRw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(396003)(136003)(39860400002)(376002)(451199018)(64756008)(76116006)(52536014)(55016003)(66446008)(41300700001)(7696005)(9686003)(186003)(66556008)(8676002)(26005)(66476007)(6916009)(8936002)(33656002)(86362001)(66946007)(4326008)(83380400001)(7416002)(6506007)(5660300002)(122000001)(316002)(54906003)(38100700002)(71200400001)(478600001)(2906002)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?mdPVU4w7H+tsByCbpI1CxU75aPOJ56AlOt+GhHfoTee3zHRpb7zr+vgwXhdf?=
- =?us-ascii?Q?LrAoSrZYkFe4g+dWBOvq0a8bq1XdGLscUC/twIEgFjlxN3hdrHciJ26KCb6a?=
- =?us-ascii?Q?LKIas3BZer1topeNQErExFg+v0jdxrDLfblLfFO3xzn0pQ46ZdlniR6ZkP8S?=
- =?us-ascii?Q?6gTtEtVmQvK4odJkEbT5i1A40x7ZKyDVWRyv6gtxNNL0OqbbH/a6N/t0R8EK?=
- =?us-ascii?Q?5GVn+ArKjdLq1WYUVUCJNezmmXe5k04mwZsNcVp9xsJlPQAW24cAhiGYqofE?=
- =?us-ascii?Q?pVqjIxcvwv0ZFR69wiL+2mUZ8XRTjS3WM4NyPKOKaf1I0XRJKJi2A2qmZcu/?=
- =?us-ascii?Q?TkPXEU+WQ2iEzSuPHhEKfj79xmZDmER5LezRc885ANp2UxrlghESZhkI2Cbx?=
- =?us-ascii?Q?DQM8lWhyDY5lwKSk25kQLtmZZ4n9VfxwxL8bOgQc88xFXbpYNUN4KYn3uAxS?=
- =?us-ascii?Q?n2GPsSAKCGikJKC3Ck7j8G4wkeY4IFjFD30qQoSci/ir030BeH+YX6D1TErY?=
- =?us-ascii?Q?13rt/sb7kKRdNHdFsPQDZcTrek9CyhUc6WPBsIlpMxoGnEi1DBnUnGn9Ncx9?=
- =?us-ascii?Q?o4xOCGbNmH95pt4E/ijOqjvS143IDPhQz0RNTkDjQuy3D3ROKNDSFrJ120XX?=
- =?us-ascii?Q?bA6f/hCAvJUhpvWnVHi0ACYajarkmDuaWgEMwHRTMluXfF5RFUsUbUYyi/yK?=
- =?us-ascii?Q?5eYOZCzNcD4kCehsD3EnJareivdGVVnn3XLU94mrf+rSl6/f2MW0ysiOUJmy?=
- =?us-ascii?Q?AoK70rkw84s0JOtcYUbColKtEHPG/u/1ed4WmBqyY4OTIQFZdXSkUm0S4SnA?=
- =?us-ascii?Q?h6lQAU2mmqMq4Sbh9ljO6K9wK678Fxrfmc3z0gcLiBOHYGJo9AS/GJAtdV+w?=
- =?us-ascii?Q?iYkOv7jAusA8qffFw1sBrMO6t+ne9mGYXkZ1hG8wKJ7O5kxlBBOCukU/tns+?=
- =?us-ascii?Q?vs+l6JxaedquoeDE3oCxqHDsYtIrLRzDBAGTfM/sBWyjPElJpIH3aqMUYg7A?=
- =?us-ascii?Q?ZzMN+LxHTi+Af1AcOzxc0C5N3XCy/VQ6IVJ12t4f14E7oOo2Gc4ZuQMoOa+4?=
- =?us-ascii?Q?Pag8ZhHue10AgP6VUPV83uUjp327L0AbrbK+zzLryrYX4coTMtTmMeowADJA?=
- =?us-ascii?Q?FUvD4w6SH0hs0iCn0xUh1X4rFp2p8buEgyQzQgCXq+1fRg+eWF4ZCExLwfWf?=
- =?us-ascii?Q?pF78whPb07AbrzaxM0kxXIfzl5OJwYEUQLNFTjbVo6+kDZsfBl379dtQ/0Gj?=
- =?us-ascii?Q?ltfXN2GCirUCSfrtADwSE5sX+pNkQM/K69megTT7FN2cqhg3Mf741tEZszQB?=
- =?us-ascii?Q?+9N7wUGr+kyFEdpXJKRS7QEKlC77AHGlB+XY+YcyQ/Sbyc9ZnAz0D0s2Jt+g?=
- =?us-ascii?Q?H1ihS13uxN6SyV0UnBftsuVt9m9neEwO7cH0/4gjppA2w76Dkg4sbb9YjGSp?=
- =?us-ascii?Q?OEIxi2lSbyYlWmmEQwE53wkjdPnAOa4ddw8J97HIW6Gk0arw92rIBx0EsGee?=
- =?us-ascii?Q?3qdIQoWGAa835ZQNZ053oIl0jW57O1M+j2viTk+k7XJ+XY5aIiuvR96ViJcX?=
- =?us-ascii?Q?HTGfo9Tkge+SUdu00B3Yv0VNMOwizsfiYZI6wCGnpAuhPEa+XQKf6QuOHJBc?=
- =?us-ascii?Q?Eg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <Y/dEa6UJ2pXWsyOV@kroah.com>
+References: <20230223103614.4137309-1-neeraj.sanjaykale@nxp.com>
+ <20230223103614.4137309-4-neeraj.sanjaykale@nxp.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37651d70-2489-48c6-5461-08db158a6bb2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2023 10:40:45.9263
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2AWy27pIhYhbT6rGjP4JvcG/AKpaB7kthGOzkERJr9T1v01y0yD3ZLnCGuCcGYTwCV5P1ayxcOzcoBQNbKDlcoC6cTEohMOwaXD2lQxi2OY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6945
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230223103614.4137309-4-neeraj.sanjaykale@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+On Thu, Feb 23, 2023 at 04:06:14PM +0530, Neeraj Sanjay Kale wrote:
+> This adds a driver based on serdev driver for the NXP BT serial protocol
+> based on running H:4, which can enable the built-in Bluetooth device
+> inside an NXP BT chip.
+> 
+> This driver has Power Save feature that will put the chip into sleep state
+> whenever there is no activity for 2000ms, and will be woken up when any
+> activity is to be initiated over UART.
+> 
+> This driver enables the power save feature by default by sending the vendor
+> specific commands to the chip during setup.
+> 
+> During setup, the driver checks if a FW is already running on the chip
+> based on the CTS line, and downloads device specific FW file into the
+> chip over UART.
+> 
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> ---
+> v2: Removed conf file support and added static data for each chip based on
+> compatibility devices mentioned in DT bindings. Handled potential memory
+> leaks and null pointer dereference issues, simplified FW download feature,
+> handled byte-order and few cosmetic changes. (Ilpo Järvinen, Alok Tiwari,
+> Hillf Danton)
+> v3: Added conf file support necessary to support different vendor modules,
+> moved .h file contents to .c, cosmetic changes. (Luiz Augusto von Dentz,
+> Rob Herring, Leon Romanovsky)
+> v4: Removed conf file support, optimized driver data, add logic to select
+> FW name based on chip signature (Greg KH, Ilpo Jarvinen, Sherry Sun)
+> v5: Replaced bt_dev_info() with bt_dev_dbg(), handled user-space cmd
+> parsing in nxp_enqueue() in a better way. (Greg KH, Luiz Augusto
+> von Dentz)
+> ---
+>  MAINTAINERS                   |    1 +
+>  drivers/bluetooth/Kconfig     |   11 +
+>  drivers/bluetooth/Makefile    |    1 +
+>  drivers/bluetooth/btnxpuart.c | 1312 +++++++++++++++++++++++++++++++++
+>  4 files changed, 1325 insertions(+)
+>  create mode 100644 drivers/bluetooth/btnxpuart.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 030ec6fe89df..fdb9b0788c89 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -22840,6 +22840,7 @@ M:	Amitkumar Karwar <amitkumar.karwar@nxp.com>
+>  M:	Neeraj Kale <neeraj.sanjaykale@nxp.com>
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
+> +F:	drivers/bluetooth/btnxpuart.c
+>  
+>  THE REST
+>  M:	Linus Torvalds <torvalds@linux-foundation.org>
+> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+> index 5a1a7bec3c42..359a4833e31f 100644
+> --- a/drivers/bluetooth/Kconfig
+> +++ b/drivers/bluetooth/Kconfig
+> @@ -465,4 +465,15 @@ config BT_VIRTIO
+>  	  Say Y here to compile support for HCI over Virtio into the
+>  	  kernel or say M to compile as a module.
+>  
+> +config BT_NXPUART
+> +	tristate "NXP protocol support"
+> +	depends on SERIAL_DEV_BUS
+> +	help
+> +	  NXP is serial driver required for NXP Bluetooth
+> +	  devices with UART interface.
+> +
+> +	  Say Y here to compile support for NXP Bluetooth UART device into
+> +	  the kernel, or say M here to compile as a module (btnxpuart).
+> +
+> +
+>  endmenu
+> diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
+> index e0b261f24fc9..7a5967e9ac48 100644
+> --- a/drivers/bluetooth/Makefile
+> +++ b/drivers/bluetooth/Makefile
+> @@ -29,6 +29,7 @@ obj-$(CONFIG_BT_QCA)		+= btqca.o
+>  obj-$(CONFIG_BT_MTK)		+= btmtk.o
+>  
+>  obj-$(CONFIG_BT_VIRTIO)		+= virtio_bt.o
+> +obj-$(CONFIG_BT_NXPUART)	+= btnxpuart.o
+>  
+>  obj-$(CONFIG_BT_HCIUART_NOKIA)	+= hci_nokia.o
+>  
+> diff --git a/drivers/bluetooth/btnxpuart.c b/drivers/bluetooth/btnxpuart.c
+> new file mode 100644
+> index 000000000000..55f6bf7c5d87
+> --- /dev/null
+> +++ b/drivers/bluetooth/btnxpuart.c
+> @@ -0,0 +1,1312 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + *  NXP Bluetooth driver
+> + *  Copyright 2018-2023 NXP
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +
+> +#include <linux/serdev.h>
+> +#include <linux/of.h>
+> +#include <linux/skbuff.h>
+> +#include <asm/unaligned.h>
+> +#include <linux/firmware.h>
+> +#include <linux/string.h>
+> +#include <linux/crc8.h>
+> +
+> +#include <net/bluetooth/bluetooth.h>
+> +#include <net/bluetooth/hci_core.h>
+> +
+> +#include "h4_recv.h"
+> +
+> +#define MANUFACTURER_NXP		37
+> +
+> +#define BTNXPUART_TX_STATE_ACTIVE	1
+> +#define BTNXPUART_FW_DOWNLOADING	2
+> +
+> +#define FIRMWARE_W8987	"nxp/uartuart8987_bt.bin"
+> +#define FIRMWARE_W8997	"nxp/uartuart8997_bt_v4.bin"
+> +#define FIRMWARE_W9098	"nxp/uartuart9098_bt_v1.bin"
+> +#define FIRMWARE_IW416	"nxp/uartiw416_bt_v0.bin"
+> +#define FIRMWARE_IW612	"nxp/uartspi_n61x_v1.bin.se"
+> +
+> +#define CHIP_ID_W9098		0x5c03
+> +#define CHIP_ID_IW416		0x7201
+> +#define CHIP_ID_IW612		0x7601
+> +
+> +#define HCI_NXP_PRI_BAUDRATE	115200
+> +#define HCI_NXP_SEC_BAUDRATE	3000000
+> +
+> +#define MAX_FW_FILE_NAME_LEN    50
+> +
+> +/* Default ps timeout period in milli-second */
+> +#define PS_DEFAULT_TIMEOUT_PERIOD     2000
+> +
+> +/* wakeup methods */
+> +#define WAKEUP_METHOD_DTR       0
+> +#define WAKEUP_METHOD_BREAK     1
+> +#define WAKEUP_METHOD_EXT_BREAK 2
+> +#define WAKEUP_METHOD_RTS       3
+> +#define WAKEUP_METHOD_INVALID   0xff
+> +
+> +/* power save mode status */
+> +#define PS_MODE_DISABLE         0
+> +#define PS_MODE_ENABLE          1
+> +
+> +/* Power Save Commands to ps_work_func  */
+> +#define PS_CMD_EXIT_PS          1
+> +#define PS_CMD_ENTER_PS         2
+> +
+> +/* power save state */
+> +#define PS_STATE_AWAKE          0
+> +#define PS_STATE_SLEEP          1
+> +
+> +/* Bluetooth vendor command : Sleep mode */
+> +#define HCI_NXP_AUTO_SLEEP_MODE	0xfc23
+> +/* Bluetooth vendor command : Wakeup method */
+> +#define HCI_NXP_WAKEUP_METHOD	0xfc53
+> +/* Bluetooth vendor command : Set operational baudrate */
+> +#define HCI_NXP_SET_OPER_SPEED	0xfc09
+> +/* Bluetooth vendor command: Independent Reset */
+> +#define HCI_NXP_IND_RESET	0xfcfc
+> +
+> +/* Bluetooth Power State : Vendor cmd params */
+> +#define BT_PS_ENABLE			0x02
+> +#define BT_PS_DISABLE			0x03
+> +
+> +/* Bluetooth Host Wakeup Methods */
+> +#define BT_HOST_WAKEUP_METHOD_NONE      0x00
+> +#define BT_HOST_WAKEUP_METHOD_DTR       0x01
+> +#define BT_HOST_WAKEUP_METHOD_BREAK     0x02
+> +#define BT_HOST_WAKEUP_METHOD_GPIO      0x03
+> +
+> +/* Bluetooth Chip Wakeup Methods */
+> +#define BT_CTRL_WAKEUP_METHOD_DSR       0x00
+> +#define BT_CTRL_WAKEUP_METHOD_BREAK     0x01
+> +#define BT_CTRL_WAKEUP_METHOD_GPIO      0x02
+> +#define BT_CTRL_WAKEUP_METHOD_EXT_BREAK 0x04
+> +#define BT_CTRL_WAKEUP_METHOD_RTS       0x05
+> +
+> +#define MAX_USER_PARAMS			10
+> +
+> +struct ps_data {
+> +	u8    ps_mode;
+> +	u8    cur_psmode;
+> +	u8    ps_state;
+> +	u8    ps_cmd;
+> +	u8    h2c_wakeupmode;
+> +	u8    cur_h2c_wakeupmode;
+> +	u8    c2h_wakeupmode;
+> +	u8    c2h_wakeup_gpio;
+> +	bool  driver_sent_cmd;
+> +	bool  timer_on;
+> +	u32   interval;
+> +	struct hci_dev *hdev;
+> +	struct work_struct work;
+> +	struct timer_list ps_timer;
+> +};
+> +
+> +struct btnxpuart_data {
+> +	bool fw_dnld_use_high_baudrate;
+> +	const u8 *fw_name;
+> +};
+> +
+> +struct btnxpuart_dev {
+> +	struct hci_dev *hdev;
+> +	struct serdev_device *serdev;
+> +
+> +	struct work_struct tx_work;
+> +	unsigned long tx_state;
+> +	struct sk_buff_head txq;
+> +	struct sk_buff *rx_skb;
+> +
+> +	const struct firmware *fw;
+> +	u8 fw_name[MAX_FW_FILE_NAME_LEN];
+> +	u32 fw_dnld_v1_offset;
+> +	u32 fw_v1_sent_bytes;
+> +	u32 fw_v3_offset_correction;
+> +	u32 fw_v1_expected_len;
+> +	wait_queue_head_t suspend_wait_q;
+> +
+> +	u32 new_baudrate;
+> +	u32 current_baudrate;
+> +	bool timeout_changed;
+> +	bool baudrate_changed;
+> +
+> +	struct ps_data *psdata;
+> +	struct btnxpuart_data *nxp_data;
+> +};
+> +
+> +#define NXP_V1_FW_REQ_PKT	0xa5
+> +#define NXP_V1_CHIP_VER_PKT	0xaa
+> +#define NXP_V3_FW_REQ_PKT	0xa7
+> +#define NXP_V3_CHIP_VER_PKT	0xab
+> +
+> +#define NXP_ACK_V1		0x5a
+> +#define NXP_NAK_V1		0xbf
+> +#define NXP_ACK_V3		0x7a
+> +#define NXP_NAK_V3		0x7b
+> +#define NXP_CRC_ERROR_V3	0x7c
+> +
+> +#define HDR_LEN			16
+> +
+> +#define NXP_RECV_FW_REQ_V1 \
+> +	.type = NXP_V1_FW_REQ_PKT, \
+> +	.hlen = 4, \
+> +	.loff = 0, \
+> +	.lsize = 0, \
+> +	.maxlen = 4
+> +
+> +#define NXP_RECV_CHIP_VER_V3 \
+> +	.type = NXP_V3_CHIP_VER_PKT, \
+> +	.hlen = 4, \
+> +	.loff = 0, \
+> +	.lsize = 0, \
+> +	.maxlen = 4
+> +
+> +#define NXP_RECV_FW_REQ_V3 \
+> +	.type = NXP_V3_FW_REQ_PKT, \
+> +	.hlen = 9, \
+> +	.loff = 0, \
+> +	.lsize = 0, \
+> +	.maxlen = 9
+> +
+> +struct v1_data_req {
+> +	__le16 len;
+> +	__le16 len_comp;
+> +} __packed;
+> +
+> +struct v3_data_req {
+> +	__le16 len;
+> +	__le32 offset;
+> +	__le16 error;
+> +	u8 crc;
+> +} __packed;
+> +
+> +struct v3_start_ind {
+> +	__le16 chip_id;
+> +	u8 loader_ver;
+> +	u8 crc;
+> +} __packed;
+> +
+> +/* UART register addresses of BT chip */
+> +#define CLKDIVADDR	0x7f00008f
+> +#define UARTDIVADDR	0x7f000090
+> +#define UARTMCRADDR	0x7f000091
+> +#define UARTREINITADDR	0x7f000092
+> +#define UARTICRADDR	0x7f000093
+> +#define UARTFCRADDR	0x7f000094
+> +
+> +#define MCR		0x00000022
+> +#define INIT		0x00000001
+> +#define ICR		0x000000c7
+> +#define FCR		0x000000c7
+> +
+> +#define POLYNOMIAL8	0x07
+> +#define POLYNOMIAL32	0x04c11db7L
+> +
+> +struct uart_reg {
+> +	__le32 address;
+> +	__le32 value;
+> +} __packed;
+> +
+> +struct uart_config {
+> +	struct uart_reg clkdiv;
+> +	struct uart_reg uartdiv;
+> +	struct uart_reg mcr;
+> +	struct uart_reg re_init;
+> +	struct uart_reg icr;
+> +	struct uart_reg fcr;
+> +	__le32 crc;
+> +} __packed;
+> +
+> +struct nxp_bootloader_cmd {
+> +	__le32 header;
+> +	__le32 arg;
+> +	__le32 payload_len;
+> +	__le32 crc;
+> +} __packed;
+> +
+> +static u8 crc8_table[CRC8_TABLE_SIZE];
 
-Thank you for reviewing this patch.
+Shouldn't this be initialized when the module is loaded and not at some
+random time later on?
 
-> > +             bt_dev_info(hdev, "Set UART break: %s, status=3D%d",
-> > +                         ps_state =3D=3D PS_STATE_AWAKE ? "off" : "on"=
-,
-> > + status);
->=20
-> You have a lot of "noise" in this driver, remove all "info" messages, as =
-if a
-> driver is working properly, it is quiet.
->=20
-Replaced all bt_dev_info() and bt_dev_err() with bt_dev_dbg() for all insta=
-nces where user action is not possible.
+> +static unsigned long crc32_table[256];
 
->=20
-> > +     } else if (req_len =3D=3D sizeof(uart_config)) {
-> > +             uart_config.clkdiv.address =3D __cpu_to_le32(CLKDIVADDR);
-> > +             uart_config.clkdiv.value =3D __cpu_to_le32(0x00c00000);
-> > +             uart_config.uartdiv.address =3D __cpu_to_le32(UARTDIVADDR=
-);
-> > +             uart_config.uartdiv.value =3D __cpu_to_le32(1);
-> > +             uart_config.mcr.address =3D __cpu_to_le32(UARTMCRADDR);
-> > +             uart_config.mcr.value =3D __cpu_to_le32(MCR);
-> > +             uart_config.re_init.address =3D __cpu_to_le32(UARTREINITA=
-DDR);
-> > +             uart_config.re_init.value =3D __cpu_to_le32(INIT);
-> > +             uart_config.icr.address =3D __cpu_to_le32(UARTICRADDR);
-> > +             uart_config.icr.value =3D __cpu_to_le32(ICR);
-> > +             uart_config.fcr.address =3D __cpu_to_le32(UARTFCRADDR);
-> > +             uart_config.fcr.value =3D __cpu_to_le32(FCR);
-> > +             uart_config.crc =3D swab32(nxp_fw_dnld_update_crc(0UL,
-> > +                                                             (char *)&=
-uart_config,
-> > +                                                             sizeof(ua=
-rt_config) - 4));
-> > +             serdev_device_write_buf(nxpdev->serdev, (u8 *)&uart_confi=
-g,
-> req_len);
-> > +             serdev_device_wait_until_sent(nxpdev->serdev, 0);
->=20
-> You are sending magic commands over the serial connection, are you sure
-> that is ok?
-Yes, we are sending this only when the BT chip's bootloader is requesting f=
-or payload for the CMD5 sent earlier during FW download.
+Why do you hand-create this, don't we have kernel functions for this?
 
-Thanks,
-Neeraj
+> +
+> +/* Default Power Save configuration */
+> +static int h2c_wakeupmode = WAKEUP_METHOD_BREAK;
+> +static int ps_mode = PS_MODE_ENABLE;
+
+This will not work.
+
+> +
+> +static int init_baudrate = 115200;
+
+and neither will this, as you need to support multiple devices in the
+system, your driver should never be only able to work with one device.
+Please make these device-specific things, not the same for the whole
+driver.
+
+> +static int ps_wakeup(struct btnxpuart_dev *nxpdev)
+> +{
+> +	struct ps_data *psdata = nxpdev->psdata;
+> +
+> +	if (psdata->ps_state == PS_STATE_AWAKE)
+> +		return 0;
+> +	psdata->ps_cmd = PS_CMD_EXIT_PS;
+> +	schedule_work(&psdata->work);
+> +
+> +	return 1;
+
+Why is this function returning anything (and what does 0 and 1 mean?)
+when you never actually check the return value of it?
+
+thanks,
+
+greg k-h
