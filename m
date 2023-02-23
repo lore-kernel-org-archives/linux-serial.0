@@ -2,111 +2,144 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEDEC61DA4
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Feb 2023 04:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC2CC636D6
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Feb 2023 09:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233279AbjBWEZH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Feb 2023 23:25:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S233659AbjBWJmU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Feb 2023 04:42:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233125AbjBWEYd (ORCPT
+        with ESMTP id S233374AbjBWJmU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Feb 2023 23:24:33 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1126303F8
-        for <linux-serial@vger.kernel.org>; Wed, 22 Feb 2023 20:23:09 -0800 (PST)
-Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id CD6B680ADF;
-        Thu, 23 Feb 2023 05:23:06 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1677126187;
-        bh=a3O2TGgOusMKS5UkGFPkp696mfXETUFA4hkni+79F8k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sxll1XHBq0EdMVrBhnjyddtAgXkmLif11P+b/AVTEeZvNg1tSQ4cVXmgZxlOkxRHC
-         LDBIReWdMR69/JYEXucG03RFqI1UX8ftKt5l89gR7MJuVQ5RHDLdppqir2CKW0Iocw
-         mVT2UA+ZXvOMQBdrod0WLu5dSFVzLJpoKO6GOpSiVYyWU2ojae9eYjnBYQp+C47x5A
-         oVuUCu4HE4erpaLIi/b0xX6R73I0IF8Xff2TdAUmvnb/S1jTaxtaCjwZEtg8f6n8p/
-         WLdOLBmVJ9qc3aySIfixsVA8ofaYZw6XyPYv3hL4xg9xHlGllthhMCvoLX85Nuhsw1
-         R74O/N2xic1jA==
-From:   Marek Vasut <marex@denx.de>
-To:     linux-serial@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean Philippe Romain <jean-philippe.romain@foss.st.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH 2/2] serial: stm32: Re-assert RTS/DE GPIO in RS485 mode only if more data are transmitted
-Date:   Thu, 23 Feb 2023 05:22:52 +0100
-Message-Id: <20230223042252.95480-2-marex@denx.de>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230223042252.95480-1-marex@denx.de>
-References: <20230223042252.95480-1-marex@denx.de>
+        Thu, 23 Feb 2023 04:42:20 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2078.outbound.protection.outlook.com [40.107.21.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21EF43925;
+        Thu, 23 Feb 2023 01:42:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N+Dnz84Gnzj7D7t4swqL298hutsOXHC2ltex2z/TOh/JOn6aX99OapBpLHuxvx1w0ZQqOcpX6r+lAv/BfZT+ABnkStnt4HoNczbBuY8I8P6rdR8N1wr7+ydzOWts7XDJT5+hwLF/5FMbgHSCq2FQvRNH/CZ75Pz7UzluWu3xBlK8GAlHnjUHAKN806d2WZwsxrjlfAhAZjex4CTzWp9SryAkdnXDhepV8gX6hFmTUHWRIf+PrH2aLGpVil7XYeHS4X8jkrbQmiEvQJvy/FHg8f9FWcWpDyOQGH6znvKn/Ynl6tKKS5qs/2GpD8J/59tAZNWhymX538snUUdIoGaEYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VPt/Pz5/4hJ+xBG1HaScEJ0pc/8Wg9pdpikmyYbPvL8=;
+ b=m48P+5F9ChPlFmRt6hp5n+xBUHOCxrfltnlTbLS1lv+hw0lfqKJjeLe/yzEyQxsV9wnZge4tF+b8Yjh/lONZ0VrE0yDRKayUanHZClQSEhzZAmjsGFoVHZormyxNreC1MqHQvsacEOBmHKLhUxGoGZ/WpGGzaWFDFR3laH7NwAt4ck4l8UPyBmrLYADy2I1i3R+zmsx5zDeE+RzEWyiJwd6vuBU4sCjnzUpT9oGGtGHRBJd+Js94X5w4UVL/4+YQISWkseeRp20FBuJXnXrkm+M89CNXgFPoSehKLwqKWc3n5b3P1wO8wUUU+aqgVEfba0ZGWq7XPORgW8k3dKAqsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VPt/Pz5/4hJ+xBG1HaScEJ0pc/8Wg9pdpikmyYbPvL8=;
+ b=cLg0P54U6b/8oujdTrpGrxcNBtdynTxO9ht2+fHx8L9APh0QMCQYj0n0oMioyiXtHLrUSvX/tfcoMjU4hCIpOFw39v4tSxP+scSqLGJfWO49oXZjzed/AqIe+ASEOYdf8Skj8IFP+JALANCRuc24ZMvVcgfx4TqxnUyKvOjmzhY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DB9PR04MB8329.eurprd04.prod.outlook.com (2603:10a6:10:24c::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.19; Thu, 23 Feb
+ 2023 09:42:16 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3079:f55a:740e:c103]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3079:f55a:740e:c103%6]) with mapi id 15.20.6134.019; Thu, 23 Feb 2023
+ 09:42:16 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] tty: serial: fsl_lpuart: skip waiting for transmission complete when UARTCTRL_SBK is asserted
+Date:   Thu, 23 Feb 2023 17:39:41 +0800
+Message-Id: <20230223093941.31790-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0019.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::12) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|DB9PR04MB8329:EE_
+X-MS-Office365-Filtering-Correlation-Id: a8935851-87c8-4c50-ab99-08db15823f61
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ApF792noZiVFjLInTk4hKXxnw/ypyeT/aRqzPLIQFmIU54JJbvjmD1iGr7MLoJ/iHJmsWqi8fTMAR/jL8LWAdJbKZqPxuNuMP3JSmFJKRAFFy/PwUX4MLlwnSckMnHwGzedvKkD0RcHQEyk4CM403adCFPUN/hEMflIfmEZY39JVvDUp817LY6BITcdbVgPZZMH8lGdL0HU9JIV8bSzOERS1mS5CpzzgKPr1Q3pVgJKDLC5zMAsUAfVjnSuO5EnWeVzSsyIYcaL46cFxlaKU+RkffVKYRMi1jVJ3WXWjxpD6zSYOim0iYUafepgt8gFTxvD0y8Pl5StFucaywkPnS2YbiHt7HC4q/hKQ/2l9Mk4u+QWorrhR/4US6qc8K+ZLQrczseZ2xGNZZ19z+RjJfQkmTb4FZxQK6TT85JdP2lWmw3lUd17AYJGzWbpz2QB9yPrr/9Rgof9jRGeKiw58v8WfO4uSkpVzfn/EoNUUlsCBt7EVng5LknsrT1mFpvTi8k7ZdRuKnHXTZUp8HyYSRQorQKRmgLGNeCzL8/hfWuYm1UtTEF2ale0YbBQzfv74VdBKobMeZYDono3dveSRHoDYsZ82gT3r24/NPDg0xhQr/T0UgFKsvg5XesdN/vOlVxeD3dYEdtIMDqqi1Y3bM9YG42TqpbPe2SUPkHUiwNPFelIK1LxFXQRAUjWPottzvfFZy89QGqgOAMuRYfK3Dw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(346002)(136003)(396003)(366004)(451199018)(36756003)(52116002)(41300700001)(6506007)(8676002)(6512007)(66476007)(66556008)(4326008)(186003)(8936002)(1076003)(86362001)(2616005)(44832011)(5660300002)(83380400001)(6486002)(6666004)(478600001)(316002)(26005)(66946007)(38100700002)(2906002)(38350700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4rEcjjXeIL/y/6iY80DvCZK/kQym5v9HGrkWeIyxQGcry1b4yommf8zc2swe?=
+ =?us-ascii?Q?Mc+VEM1qkjeJWUkmXxOTm9rewrqTe9dXTte1Tg26CGxlyQ63qDpjEcFoq+HZ?=
+ =?us-ascii?Q?VQ5q7whMN+Ct7FC9Ou9w5p5xQ+iYsVfE3TDuxclOxObrNhD49TfBynZj7liD?=
+ =?us-ascii?Q?Ci5ODGFTO6K9+y8s32BwHblGqzFg8dqRlncNeaENlDz3fl8NyDkh23Otzpvr?=
+ =?us-ascii?Q?DORU7BMAE1QepyBRihOlsILHFhtekEPVE7FZGhVroMEXSxvoS0q8kOPInLU/?=
+ =?us-ascii?Q?Zya79HWO3yWpN6YMjo++z9G5IODDsnM0dVYGL0MwJc62uAovnqQZ1uO1vdqY?=
+ =?us-ascii?Q?8I2108lUovPnGxmKuQodtSbkQOlQKQudX+83a0/l9AFJjBu0ATrgEwnYKLoT?=
+ =?us-ascii?Q?N8BvFMjOxKFRkBFTP9EMqoWIurpSQr5bg0eHs55Fw3lMnm5BwGClihUQDvll?=
+ =?us-ascii?Q?OhwUslz1Hne9Bn8FY4P29q0r3VQZlu4qHU9nFvySK3IQocbbBF8JTP4/SJUl?=
+ =?us-ascii?Q?dweVhDYIQ2pMzfzg9eF6om0lhzNC7H30iXvOEu/LGGwiLAj6wfq9lakk5aQ/?=
+ =?us-ascii?Q?MSwl+D3G47+Kha9ajfL4CVnbal/afMm2150Vv/muJAZA76QONPMXAyHmFy6a?=
+ =?us-ascii?Q?rNy0mrffnbsRTIgGYnnCsiE1M8TyKVNGdUXyPd8DGoUHjNjjtd3IJH4PKdR/?=
+ =?us-ascii?Q?AwUDF81+G4XnNi/Z0BUmfZVa/galR/9zhG3pWlVzaU6tbagOpjEcrkGH/Yel?=
+ =?us-ascii?Q?OUGqtkh0i64qmS/wYrWUWoSwymuakBTmQO1E+RVe5Z/fh8sdnmJlstY7uwgc?=
+ =?us-ascii?Q?0m6iBYu0Ux8AjkIS8kLeGLa9aFLHEBJtMsfF+Zw0PPaXuDZAAPAQDqFjP6TG?=
+ =?us-ascii?Q?IjncRU7lOCIPDBDtEZ7cgrp9npeuNCb9MoIWEb7KSLAxeOSnq4ojgNZt74vq?=
+ =?us-ascii?Q?yew2dBuJxw6K2MmTuPWtZyQCSq5SrqXAUT6xKq+qv+aTgYyLA3VIvySiDwPv?=
+ =?us-ascii?Q?C1kWOaWYRvEXn79fjxPCl1Z91jX5QJ7nM1aZj736Z7m8g0x4DfCfH1IgA0vv?=
+ =?us-ascii?Q?BcNApkD/1YGLhOzAZRKTXL0e2SpWtoc3IUxM2JSt2LAAiKDm3+zCT379LyN1?=
+ =?us-ascii?Q?q0HejiVa3hBMNMdV8GqpRebRyP3hWZSvT6mKCNlVEwrsXcrqw982AsiMoQOh?=
+ =?us-ascii?Q?gMMd9j7EehzygdiY9wu9Y/98uSwUHZO7bzUQeiowte+EwQea8JB/O8Dd93zj?=
+ =?us-ascii?Q?M03YBUjdHZNeqJ0KarDmh1fIdY0Av09NRIQvsdqnWdDFqMLvgl+O/bGrBeyq?=
+ =?us-ascii?Q?k8GQRx4T7YQd7nDCV0OR6gNmna/x67tVY+ruX5wjOqinWs5wDhl6a0jQODe9?=
+ =?us-ascii?Q?zUMNb0ZvWUzG8V97Bp7cGU6bwenY4O9UFJ+08vN4rdCuQSAE+4caVuZCzXeY?=
+ =?us-ascii?Q?6fWZOAW/7KqI0yV4YRXJqtxsd+QLocfS+ng83N8kVZii3KDg0YdgHgkVSLYg?=
+ =?us-ascii?Q?lPV8+fyuPXApMb2ovyJotbRwDM+xZhMkg49J95CGL1QC3rIBNVuqw49lSAxN?=
+ =?us-ascii?Q?21YXz0k7xYb2rZ3ajDTYVGwV2yDWaFLoqALJXbEQ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8935851-87c8-4c50-ab99-08db15823f61
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2023 09:42:15.9947
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GQ015d4oMKr5Vmivy93QT4puS+/dLyL+VG4SyS9jJWuei+efBIOqJ84YQ2ns5dxnBqgv1QY453BXf9op8apM4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8329
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The stm32_usart_transmit_chars() may be called with empty or stopped
-transmit queue, and no XON/OFF character pending. This can happen at
-the end of transmission, where this last call is used to either handle
-the XON/XOFF x_char, or disable TX interrupt if queue is empty or
-stopped.
+According to LPUART RM, Transmission Complete Flag becomes 0 if queuing
+a break character by writing 1 to CTRL[SBK], so here need to skip
+waiting for transmission complete when UARTCTRL_SBK is asserted,
+otherwise the kernel may stuck here.
+And actually set_termios() adds transmission completion waiting to avoid
+data loss or data breakage when changing the baud rate, but we don't
+need to worry about this when queuing break characters.
 
-If that occurs, do not assert the RS485 RTS/DE GPIO anymore, as the
-GPIO would remain asserted past the end of transmission and that would
-block the RS485 bus after the transmission.
-
-Only assert the RS485 RTS/DE GPIO if there is either pending XON/XOFF
-x_char, or at least one character in running transmit queue.
-
-Fixes: d7c76716169d ("serial: stm32: Use TC interrupt to deassert GPIO RTS in RS485 mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 ---
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Erwan Le Ray <erwan.leray@foss.st.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jean Philippe Romain <jean-philippe.romain@foss.st.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Valentin Caron <valentin.caron@foss.st.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
----
- drivers/tty/serial/stm32-usart.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index bf51e2152dd5a..1e38fc9b10c11 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -693,8 +693,9 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
- 	int ret;
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index e945f41b93d4..f9e164abf920 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2240,9 +2240,15 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	/* update the per-port timeout */
+ 	uart_update_timeout(port, termios->c_cflag, baud);
  
- 	if (!stm32_port->hw_flow_control &&
--	    port->rs485.flags & SER_RS485_ENABLED) {
--		stm32_port->txdone = false;
-+	    port->rs485.flags & SER_RS485_ENABLED &&
-+	    (port->x_char ||
-+	     !(uart_circ_empty(xmit) || uart_tx_stopped(port)))) {
- 		stm32_usart_tc_interrupt_disable(port);
- 		stm32_usart_rs485_rts_enable(port);
- 	}
+-	/* wait transmit engin complete */
+-	lpuart32_write(&sport->port, 0, UARTMODIR);
+-	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
++	/*
++	 * LPUART Transmission Complete Flag may never be set while queuing a break
++	 * character, so skip waiting for transmission complete when UARTCTRL_SBK is
++	 * asserted.
++	 */
++	if (!(old_ctrl & UARTCTRL_SBK)) {
++		lpuart32_write(&sport->port, 0, UARTMODIR);
++		lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
++	}
+ 
+ 	/* disable transmit and receive */
+ 	lpuart32_write(&sport->port, old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
 -- 
-2.39.1
+2.17.1
 
