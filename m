@@ -2,63 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1939BC7EE2F
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Feb 2023 21:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D74C64ED8
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Feb 2023 21:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbjBXVYh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Feb 2023 16:24:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
+        id S229481AbjBXVbX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Feb 2023 16:31:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbjBXVYf (ORCPT
+        with ESMTP id S229454AbjBXVbW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Feb 2023 16:24:35 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD221B2F7
-        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 13:24:25 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id o12so2477871edb.9
-        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 13:24:25 -0800 (PST)
+        Fri, 24 Feb 2023 16:31:22 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4043419F3F
+        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 13:31:18 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id da10so2677346edb.3
+        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 13:31:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=z7FL2J01+S1brZJhkSmrAVHSbND/ljBuG/iYSX39T/M=;
-        b=FqYqL229nQFsdT8zagqSYUMC8fLl9jL1yBbVwID9qj6Af/qat8UsxUyPUbVHQpJ7+T
-         SJ+IpE7G2Dxp0LqEdrRQIHMRFrAGpcpX6LdLMzlANx2xVHKvm/d88opMaHNpgQBBTE9D
-         EsQYuqWJVIcKvbzccwf/F+ujbtwgB68lPVm1M=
+        bh=JrE04gOVw81UKFZPld2Vl1EpoZ4FShZtZFABiCjDz1k=;
+        b=U7gWuY7WPaAKGddJZQsgblTmmGzM6IGrhyDKpf4MIoCPtxKblnkp7k+m745hxwm/ui
+         n52VtteVh03owR4gUOk5R8bZEWbffVclRpm8Y9uVx2kV5WrTXSUIuOGQh0Pt5tHKJcGx
+         SgIim4KSTaNjJUhJgo5a4ziG5tr0JjQiKfD1M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=z7FL2J01+S1brZJhkSmrAVHSbND/ljBuG/iYSX39T/M=;
-        b=Un4MjCRXn4j+w1dLaH4e0P0j0mwZ5OHQkuUtak9Hjx6424PWuLoVj48aGbbfFaF4xe
-         lMRJ/3L23avBMgB7FghdXMEDUfRlicLYfutnAiE1DiO33EL0ywEnrl9iqx625M5dJ9TA
-         f8SG79B6DkLtQnRML1X9zCpg4taHIfb6Z4sTnQL0bf2OoC59rZyaV29qbhY+aMPgm5bj
-         +spgNvbReNM/ATD+3Codrm7/ga8OEkI8XmmZRXB6hfmB7vaQuxwsCfyYGnwmGGRzje3/
-         fuqoWTHhxbUWwgW4EUXhfPlOCzCFCeAW2n7OlJ27UiSmaZSd+mL+OrYrDWewJM83r8kj
-         DcjQ==
-X-Gm-Message-State: AO0yUKWhwFQGrHElZctYHZNVsxsOKvbtFuAzuDIS6t1n77cYzxZCZFqO
-        bbChG2DJ891Yt6yZl30QMbZskzQKsJ2P2zkrK7NnmA==
-X-Google-Smtp-Source: AK7set/QfGBuBOPXSvmSUPt10Ku0DGDaixm9LHnWeTKk2+ySeAXtHgOMvuDA8BmufCkT/OFsUjYNbw==
-X-Received: by 2002:a17:907:8c88:b0:8ea:5f7d:9007 with SMTP id td8-20020a1709078c8800b008ea5f7d9007mr11216412ejc.48.1677273863700;
-        Fri, 24 Feb 2023 13:24:23 -0800 (PST)
+        bh=JrE04gOVw81UKFZPld2Vl1EpoZ4FShZtZFABiCjDz1k=;
+        b=7E6lbojhd3hbAqGlJqzoj5G7Esatn0tfkB463TqXutCZoz68+jop+zdmn/z3tJCKgt
+         jXOUVguaouCOOJrW6D+L6r84a0bT4KCgDL+aYeG24cy51rjv6sU3sON2oaiIeApFp3PO
+         9nHQ8fsWF1gzr7wnJb0hui1zVNbApdFkKELTv+jc9mk+lXAl61VaPvj5ZtBIC+MNqmkp
+         HKVAC2jzA42u3nakICbkd/QRW/nqOhi7bXlkueys3TnGv8ulryd02fUGB4tTgSZR/bZ9
+         6OdN11/7f8CxxlQLF6UO0LegavEhVr6Chhzci11qvBtZNchQxgsIWnL5OzSSbjqtqhU9
+         snUQ==
+X-Gm-Message-State: AO0yUKVoRKdFHB0ApLVLsux3i4V0CK04IjMIg23r3jSmc91K0Eo6rZ3Q
+        wK2AHdAAsuob46lTY+bJQJRHUngMXDW34aVp9HDYKw==
+X-Google-Smtp-Source: AK7set+Lel3unCwfYJ4rSDyCRlU3IuGR4F+pRyIcUH+LDH8VDTKPv3M5TcjQqDWPOrudRG9XSLtPjg==
+X-Received: by 2002:a17:906:10d8:b0:8b1:2dd3:cb45 with SMTP id v24-20020a17090610d800b008b12dd3cb45mr25001354ejv.42.1677274276396;
+        Fri, 24 Feb 2023 13:31:16 -0800 (PST)
 Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com. [209.85.208.47])
-        by smtp.gmail.com with ESMTPSA id c15-20020a170906340f00b008e7916f0bdesm12557ejb.138.2023.02.24.13.24.22
+        by smtp.gmail.com with ESMTPSA id d21-20020a1709061f5500b008e6bd130b14sm27142ejk.64.2023.02.24.13.31.15
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Feb 2023 13:24:23 -0800 (PST)
-Received: by mail-ed1-f47.google.com with SMTP id o12so2477521edb.9
-        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 13:24:22 -0800 (PST)
-X-Received: by 2002:a17:906:b55:b0:8f1:4cc5:f14c with SMTP id
- v21-20020a1709060b5500b008f14cc5f14cmr2756517ejg.0.1677273862668; Fri, 24 Feb
- 2023 13:24:22 -0800 (PST)
+        Fri, 24 Feb 2023 13:31:15 -0800 (PST)
+Received: by mail-ed1-f47.google.com with SMTP id da10so2677088edb.3
+        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 13:31:15 -0800 (PST)
+X-Received: by 2002:a17:907:73c6:b0:8f1:fd:50d0 with SMTP id
+ es6-20020a17090773c600b008f100fd50d0mr2763634ejc.0.1677274275171; Fri, 24 Feb
+ 2023 13:31:15 -0800 (PST)
 MIME-Version: 1.0
-References: <Y/iywbFbiUAA6ZD3@kroah.com>
-In-Reply-To: <Y/iywbFbiUAA6ZD3@kroah.com>
+References: <Y/iywbFbiUAA6ZD3@kroah.com> <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
+In-Reply-To: <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 24 Feb 2023 13:24:05 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
-Message-ID: <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
+Date:   Fri, 24 Feb 2023 13:30:58 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com>
+Message-ID: <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com>
 Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.3-rc1
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
@@ -73,27 +73,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 24, 2023 at 4:51 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Fri, Feb 24, 2023 at 1:24 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
->   - more 8250 device support added
+>         default SERIAL_8250
 
-Bah. I didn't notice this while merging, so it's in my tree now, but
-that SERIAL_8250_PCI1XXXX shouldn't default to on.
+Hmm. Looking around, it seems to be a pattern. I'm not convinced any
+of them are really valid, except probably the ones that aren't about
+specific drivers, but about base support (like the "SERIAL_8250_DMA"
+one).
 
-The Kconfig file has
+I also do get the feeling that the base "SERIAL_8250" feature might be
+better off as a _selected_ option, rather than a "ask if you want it".
+I think we've ended up with that SERIAL_8250 being a base option
+mainly for historical reasons (ie it was part of the original PC/AT
+base specs, and then later it has become a "base driver for a lot of
+random cards".
 
-    config SERIAL_8250_PCI1XXXX
-        tristate "Microchip 8250 based serial port"
-        depends on SERIAL_8250 && PCI
-        select SERIAL_8250_PCILIB
-        default SERIAL_8250
-        ...
+It's probably most legacy by now - it's a long time since I saw a
+serial port being used outside of management ports, and even those are
+often ethernet these days.
 
-and I don't think that "default" line should exist. It's not like this
-is some super-common board that everybody should enable.
+Maybe nobody cares.
 
-When I notice things in time, I tend to just fix this up in the merge
-itself, but this time I had already done a couple of other of your
-pulls before I noticed this thing.
-
-            Linus
+             Linus
