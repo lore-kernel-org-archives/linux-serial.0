@@ -2,93 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8429C61DA3
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Feb 2023 11:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96137C61DA3
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Feb 2023 12:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbjBXLUm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Feb 2023 06:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        id S229926AbjBXMGV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Feb 2023 07:06:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbjBXLUl (ORCPT
+        with ESMTP id S229906AbjBXMGT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Feb 2023 06:20:41 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0286B628DD
-        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 03:20:38 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id ee7so38376609edb.2
-        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 03:20:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=v3hEGyCucdzbqe3LrutT0J4NZq9m5aBL5wEqBphvaXQ=;
-        b=jbUpwEFLdpLKVZ953n8tg2+JdWrD2rrbXAVTkJRRzca1k45TyM00PvwsLpS0vJGFrc
-         RwMLvwKwI8TwqNYj21oQJA/ud3Unyv4HVPhUVAe50anXgbAQmTwr0li8Xf+i6ZZHJ1im
-         UCc0uoXxnARYlaoAX8eqvTYwDn1zSGFZ0u+N72c6LQ1VYgNk/JFUQCb3OJzvoyUEzoaD
-         cRxSDJWSpmiEb7qYa/k0szyVNZ3gEQ8vnk08SvSP65B4jXmH6bf4LXWGRZq+aBwve8de
-         ehfwXeVca7WeyRLbqMBhfzNx+pPeQzprzUc5xdj0xZTzxwdu5Xtitvmrwzt4Es8uGUnn
-         khOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=v3hEGyCucdzbqe3LrutT0J4NZq9m5aBL5wEqBphvaXQ=;
-        b=spRpoQdtZQDvk/8ewv+Iea9l+Eemx9IRU+cyEzB/1B+EDamqpYTF2JtEnTEs6/lXBe
-         N2VQSz5QDWf5c9tRyiAXYhuF5UBABcLrLpbKNmP6t72J/YneOPMOt6PMuizH5cG5e4PM
-         czxp2eCu7fMjm/U3I3MoTaecNM2HLQ9YHRSayBTznZ5+L/u6ZJRKOvZicniQET968dF/
-         VFf1tfQ3jj4nAUxt1FapWmmX2otsD9cC6ba4Z7M3XCglyop4l6tb54rMInAYbYt2Esmg
-         25BhdZByElh6BmvBwA3Y8S+kGZ0q/sQ7lBZ/aqhWTr706D5KD+o66X8BG3G6Loi4PQmt
-         hhOg==
-X-Gm-Message-State: AO0yUKXsahaVODi4bN3Tghy0b8oDWfVOyf2ixreRCLhxfnWI7kzgXlQr
-        dZYIlsoV6OBDuVylsnDXB5pKvw==
-X-Google-Smtp-Source: AK7set98CJO+wXTLM4UFAXnn0d/1LPj+v6ZqaACgh7v/kaIs6ZoV7T9E/BJ/U9Ahs/LjexIsQttccg==
-X-Received: by 2002:a17:906:1093:b0:8b1:75a0:e5c6 with SMTP id u19-20020a170906109300b008b175a0e5c6mr26507949eju.18.1677237636530;
-        Fri, 24 Feb 2023 03:20:36 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id kv7-20020a17090778c700b008e53874f8d8sm3436088ejc.180.2023.02.24.03.20.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Feb 2023 03:20:36 -0800 (PST)
-Message-ID: <1cda61a7-91cd-6f47-619b-e38a5131d182@linaro.org>
-Date:   Fri, 24 Feb 2023 12:20:33 +0100
+        Fri, 24 Feb 2023 07:06:19 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B856533B
+        for <linux-serial@vger.kernel.org>; Fri, 24 Feb 2023 04:06:18 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pVWq3-0000cP-GQ; Fri, 24 Feb 2023 13:06:11 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pVWq1-007Azd-Fh; Fri, 24 Feb 2023 13:06:10 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pVWq1-006EYq-Vw; Fri, 24 Feb 2023 13:06:10 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     kernel@pengutronix.de,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/9] serial: sc16is7xx: Convert to i2c's .probe_new()
+Date:   Fri, 24 Feb 2023 13:05:54 +0100
+Message-Id: <20230224120600.1681685-4-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230224120600.1681685-1-u.kleine-koenig@pengutronix.de>
+References: <20230224120600.1681685-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v5 2/3] dt-bindings: net: Bluetooth: Add NXP bluetooth
- support
-Content-Language: en-US
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
-        rohit.fule@nxp.com, sherry.sun@nxp.com
-References: <20230223103614.4137309-1-neeraj.sanjaykale@nxp.com>
- <20230223103614.4137309-3-neeraj.sanjaykale@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230223103614.4137309-3-neeraj.sanjaykale@nxp.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1343; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=SyAwunV7rOOAWji/gEzYK8mQViHExwViHtm1Rqv0acA=; b=owGbwMvMwMV48I9IxdpTbzgZT6slMST/WMHb1X2gbKvcdZ6VfKrZwUmzDjDdX5TFkF6Q9FNeY E5UhdaDTkZjFgZGLgZZMUWWuiItsQkSa/7blSzhhhnEygQyhYGLUwAmop/EwTAnxa/8CkvhjanN dor3v3iaKa1kyZx+S/lRp+4VrvP/O1xj763ze/SVLWv6TF+Fb4zL/q3oyFXLF9RdJKBS96/h2Ad TlofX1zRnzF1+okXL/4ZqSlFzXmqJ5q4YcSGjLwzC4utvPHdL3hP+ZoWbiPj55EOH1a9GGZc/eu Yzx7UoTMAv4rbR9LQJAd+ZFnSwtAVbbMo8HL7YYFdWBLdo+9Ugb/vw/2Ht2lpvwnKOuQavrrc7Z +lzzLDyh3insI/7sy3lcmf0+yWYL1Xe3mQpH8ckdjAvwyhrh2NTiGnu1c+x/EkPv/b9nG8vcvja 5Cjd95/kijnPKFlvb3j8ufPx92fKl7bIbTlaFyxXzSoDAA==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23/02/2023 11:36, Neeraj Sanjay Kale wrote:
-> Add binding document for NXP bluetooth chipsets attached over UART.
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-> ---
+.probe_new() doesn't get the i2c_device_id * parameter, so determine
+that explicitly in the probe function.
 
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/lkml/20221118224540.619276-572-uwe@kleine-koenig.org
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/sc16is7xx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 39f92eb1e698..8412b25eac86 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1665,9 +1665,9 @@ MODULE_ALIAS("spi:sc16is7xx");
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+-static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+-			       const struct i2c_device_id *id)
++static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
+ {
++	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
+ 	const struct sc16is7xx_devtype *devtype;
+ 	struct regmap *regmap;
+ 
+@@ -1708,7 +1708,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+ 		.name		= SC16IS7XX_NAME,
+ 		.of_match_table	= sc16is7xx_dt_ids,
+ 	},
+-	.probe		= sc16is7xx_i2c_probe,
++	.probe_new	= sc16is7xx_i2c_probe,
+ 	.remove		= sc16is7xx_i2c_remove,
+ 	.id_table	= sc16is7xx_i2c_id_table,
+ };
+-- 
+2.39.1
 
