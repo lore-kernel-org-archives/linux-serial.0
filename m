@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A54C6FA8E
-	for <linux-serial@archiver.kernel.org>; Sat, 25 Feb 2023 18:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD39C64EC7
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Feb 2023 18:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229492AbjBYSQI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 25 Feb 2023 13:16:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
+        id S229571AbjBYSjC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 25 Feb 2023 13:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjBYSQI (ORCPT
+        with ESMTP id S229558AbjBYSjB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 25 Feb 2023 13:16:08 -0500
+        Sat, 25 Feb 2023 13:39:01 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA90B17CC6;
-        Sat, 25 Feb 2023 10:16:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11B81164D;
+        Sat, 25 Feb 2023 10:39:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         Content-Type:In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:
         Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=fVrpl5WJWda12A8/sxhmUrbHI57a/9Ptg9NvLuEHny8=; b=k8tSxjfVJBHCZGrwzw67lx7x0J
-        MoKyuZU5XseVvJIj8R3Tcy1HEZwPXBpXuYsjGWe0lWxwRnKqaxdeK/I787Xl2vGjB5Tq/uTjngu1u
-        cXUqMT+pGXGXF9xs3XP9UYUyi7OuuU07DUhFUey8/EkXinI5FdtWjbUTNqhmEoAZ6PD1RsC1dBbhT
-        ixylnYlsBmkHFKROI6DclI+8jKKwPjfQxXPXUKQ+H0g1U/TWdsTSKyj1I4zEudulo8254eoyriE7y
-        W8En/L2dNuWItALW0uVafq0UeJgsHAanCwqbeeNcjNDYfmNtAQ+WsgVWziRc/+gcLs/IpN/Kb1rur
-        OHqimp0g==;
+        bh=qGtUm5ybyuFsA+IcFkr+qjHVXjXSLgVqu3UunV7ocXg=; b=Ol+rVQtD1xrF68NAIG8ZwvTGdT
+        YmF23B5MYP/gN3tO/TY48fXaDnW1lZ2S56j0nFq3IIRvsmo5KXh9vmZhk0LgRqmMHD8wyscIdjN31
+        uqwrGJWPnqIINRJ0T4XoeZM0AkYa8Rd8tJOLjFEXWmaYYaBS0g+LghMT1vjCWaWluysPX0Nc3yJps
+        R5IxdYAkE9QrYua+u17AiSkDFUK7+sCO+c0H+WwoiJXWw6qdbE/cvCpGJlEF6Di7bQ0mvTs0o1U2q
+        GnE6IFgA4JmSj58keIAc2oTBeVLDHvg2NEVlaFK0d0MS49gYs4f6ArL2Xo1OStk5E7xrQBz3U9eL1
+        I7FqmolA==;
 Received: from [2601:1c2:980:9ec0::df2f]
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pVz5X-0068af-Q7; Sat, 25 Feb 2023 18:16:03 +0000
-Message-ID: <c3ca14dc-14d0-959c-0f55-8f584457db33@infradead.org>
-Date:   Sat, 25 Feb 2023 10:16:03 -0800
+        id 1pVzRg-0069cP-At; Sat, 25 Feb 2023 18:38:57 +0000
+Message-ID: <9a16ee6f-5a49-167e-fc33-9ca147b3686a@infradead.org>
+Date:   Sat, 25 Feb 2023 10:38:55 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.2
@@ -44,7 +44,8 @@ References: <20230225173949.651311-1-trix@redhat.com>
  <0f8a8857-5e18-e49a-0361-197b4bc892ab@infradead.org>
  <026ee207-3b90-c7ae-a7fd-66a34cd3ee90@redhat.com>
  <6dd89251-f4d6-8051-8ecf-cdea7d23bc68@infradead.org>
-In-Reply-To: <6dd89251-f4d6-8051-8ecf-cdea7d23bc68@infradead.org>
+ <c3ca14dc-14d0-959c-0f55-8f584457db33@infradead.org>
+In-Reply-To: <c3ca14dc-14d0-959c-0f55-8f584457db33@infradead.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -53,67 +54,75 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 2/25/23 10:03, Randy Dunlap wrote:
+On 2/25/23 10:16, Randy Dunlap wrote:
 > 
 > 
-> On 2/25/23 09:51, Tom Rix wrote:
+> On 2/25/23 10:03, Randy Dunlap wrote:
 >>
->> On 2/25/23 9:46 AM, Randy Dunlap wrote:
->>> Hi--
+>>
+>> On 2/25/23 09:51, Tom Rix wrote:
 >>>
->>> On 2/25/23 09:39, Tom Rix wrote:
->>>> A rand config causes this link error
->>>> ld: drivers/tty/serial/earlycon.o: in function `parse_options':
->>>> drivers/tty/serial/earlycon.c:99: undefined reference to `uart_parse_earlycon'
+>>> On 2/25/23 9:46 AM, Randy Dunlap wrote:
+>>>> Hi--
 >>>>
->>>> The rand config has
->>>> CONFIG_SERIAL_CORE=m
->>>> CONFIG_SERIAL_EARLYCON=y
->>>> CONFIG_SERIAL_FSL_LPUART=m
->>>> CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
+>>>> On 2/25/23 09:39, Tom Rix wrote:
+>>>>> A rand config causes this link error
+>>>>> ld: drivers/tty/serial/earlycon.o: in function `parse_options':
+>>>>> drivers/tty/serial/earlycon.c:99: undefined reference to `uart_parse_earlycon'
+>>>>>
+>>>>> The rand config has
+>>>>> CONFIG_SERIAL_CORE=m
+>>>>> CONFIG_SERIAL_EARLYCON=y
+>>>>> CONFIG_SERIAL_FSL_LPUART=m
+>>>>> CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
+>>>>>
+>>>>> SERIAL_FSL_LPUART should have been selected instead of depends on-ed.
+>>>>>
+>>>>> Signed-off-by: Tom Rix <trix@redhat.com>
+>>>>> ---
+>>>>>   drivers/tty/serial/Kconfig | 2 +-
+>>>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>>>>> index 625358f44419..b24d74d389fc 100644
+>>>>> --- a/drivers/tty/serial/Kconfig
+>>>>> +++ b/drivers/tty/serial/Kconfig
+>>>>> @@ -1313,7 +1313,7 @@ config SERIAL_FSL_LPUART
+>>>>>     config SERIAL_FSL_LPUART_CONSOLE
+>>>>>       bool "Console on Freescale lpuart serial port"
+>>>>> -    depends on SERIAL_FSL_LPUART
+>>>>> +    select SERIAL_FSL_LPUART
+>>>> Most other _CONSOLE Kconfig have:
 >>>>
->>>> SERIAL_FSL_LPUART should have been selected instead of depends on-ed.
->>>>
->>>> Signed-off-by: Tom Rix <trix@redhat.com>
->>>> ---
->>>>   drivers/tty/serial/Kconfig | 2 +-
->>>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->>>> index 625358f44419..b24d74d389fc 100644
->>>> --- a/drivers/tty/serial/Kconfig
->>>> +++ b/drivers/tty/serial/Kconfig
->>>> @@ -1313,7 +1313,7 @@ config SERIAL_FSL_LPUART
->>>>     config SERIAL_FSL_LPUART_CONSOLE
->>>>       bool "Console on Freescale lpuart serial port"
->>>> -    depends on SERIAL_FSL_LPUART
->>>> +    select SERIAL_FSL_LPUART
->>> Most other _CONSOLE Kconfig have:
+>>>>     depends on SERIAL_FSL_LPUART=y
 >>>
->>>     depends on SERIAL_FSL_LPUART=y
+>>> commit 5779a072c248db7a40cfd0f5ea958097fd1d9a30 removed the =y. so it could be built as a module.
+>>>
 >>
->> commit 5779a072c248db7a40cfd0f5ea958097fd1d9a30 removed the =y. so it could be built as a module.
->>
+>> uh. But it's still a bool, not a tristate. How does that work?
 > 
-> uh. But it's still a bool, not a tristate. How does that work?
+> OK, I see. :)
+> 
+> Well, I don't see another decent solution ATM.
+> 
+> Tom, does your patch fix the build error?
+> 
+> What are the listed CONFIG settings after the patch?
 
-OK, I see. :)
+OK, after I apply the patch, all of the listed config symbols are
+changed to =y (builtin), so not built as a loadable module.
 
-Well, I don't see another decent solution ATM.
+Do you see something different?
 
-Tom, does your patch fix the build error?
 
-What are the listed CONFIG settings after the patch?
-
-Thanks.
-
->>> e.g.
+>>>> e.g.
+>>>>
+>>>> but I noticed a few others with a similar problem.
+>>>>
+>>>>>       select SERIAL_CORE_CONSOLE
+>>>>>       select SERIAL_EARLYCON
+>>>>>       help
 >>>
->>> but I noticed a few others with a similar problem.
->>>
->>>>       select SERIAL_CORE_CONSOLE
->>>>       select SERIAL_EARLYCON
->>>>       help
 >>
 > 
 
