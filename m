@@ -2,111 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAF4C6FA8E
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 17:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 968CAC64ED6
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 19:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbjBZRjt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Feb 2023 12:39:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
+        id S229764AbjBZT7K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Feb 2023 14:59:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjBZRjs (ORCPT
+        with ESMTP id S229688AbjBZT7J (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Feb 2023 12:39:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8950518B27
-        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 09:39:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677433140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=i/hpLCH1J1OZC0aaq8N5qErte4jZaIcaYpEnIIPJejU=;
-        b=JNI/n/srQ2iN9KA1fJ3zBBhAzLq019H9SMRw9xFI4s8O8VtKFKw53Ljajp6mKBLdOfq5W9
-        3H+FIuniHH5vhjyE1YBhIdbFlA9q0bR/o4zcX4X/Owfn9c302k09x8dl2adW5jbtduPUuw
-        e71Ml8o+F2sJ+VLf9H3TLe9RneWOgL4=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-65-am0DTIbBMJOc7VXv6KMN5A-1; Sun, 26 Feb 2023 12:38:59 -0500
-X-MC-Unique: am0DTIbBMJOc7VXv6KMN5A-1
-Received: by mail-qv1-f72.google.com with SMTP id u18-20020a0cec92000000b0056ea549d728so2244948qvo.10
-        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 09:38:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=i/hpLCH1J1OZC0aaq8N5qErte4jZaIcaYpEnIIPJejU=;
-        b=Nzey/bRxMIPiJowlX9wpZKaRpFvWbYu6zEV96CbqMBsYjTpoRh0n5aaDFRGkY7NMyJ
-         OP30MKHRqUenpvp5ZTrEKCnCTlv4l4X9CYWS7Mg4HGMWkBLx+4em1fSip/ZpzO+SYenD
-         dvpatrE+ekVDNToftSkUofCbi7vwHbAcQKHI4ZbH73COT5NentE8hay+uT/mBuD27fed
-         TNwWUSqFtbGMY5RqT3M6FIOKavjwJ6AZ6WS/9itlBOm8UE+FumKYTo82XTvwnDlsC3oo
-         jDGmWxbwVlQC5WUgyKNe7eiwDxW7gGguIH0zPTy99tKyibcYveipW/9ENgvrfCs5NhVc
-         vKYQ==
-X-Gm-Message-State: AO0yUKWBD0e9ft92XI6Yh7ZIWTSGcyZEuIF6w0hF+vI0CGF/KgYDBig3
-        4DH5NAofDgGEGFLN2llVfPdr+gJTGmMsIE8WMH8lSBqq9VMGQpKKAYMa16Fl1SvvCS5FlseW6PH
-        Cp/c7vgfDcKLYLb+Zxv/mHxW3
-X-Received: by 2002:a05:6214:400d:b0:56e:f1fd:f16c with SMTP id kd13-20020a056214400d00b0056ef1fdf16cmr10742456qvb.20.1677433138671;
-        Sun, 26 Feb 2023 09:38:58 -0800 (PST)
-X-Google-Smtp-Source: AK7set9hvhZVb90JP5bKYcnQSg83aAvp4BYFORSYNpZjoUDZCW3/tH8VrWxub3amijsmOE+4vS8s9g==
-X-Received: by 2002:a05:6214:400d:b0:56e:f1fd:f16c with SMTP id kd13-20020a056214400d00b0056ef1fdf16cmr10742440qvb.20.1677433138458;
-        Sun, 26 Feb 2023 09:38:58 -0800 (PST)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id r191-20020a37a8c8000000b00729a26e836esm3341343qke.84.2023.02.26.09.38.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Feb 2023 09:38:58 -0800 (PST)
-From:   Tom Rix <trix@redhat.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        sherry.sun@nxp.com, jindong.yue@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] Revert "tty: serial: fsl_lpuart: adjust SERIAL_FSL_LPUART_CONSOLE config dependency"
-Date:   Sun, 26 Feb 2023 12:38:46 -0500
-Message-Id: <20230226173846.236691-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sun, 26 Feb 2023 14:59:09 -0500
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0388216889
+        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 11:59:07 -0800 (PST)
+Received: from cwcc.thunk.org (pool-173-48-120-46.bstnma.fios.verizon.net [173.48.120.46])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 31QJwibP008362
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 26 Feb 2023 14:58:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1677441529; bh=sUDNujaHfUqZ8bjP9HuWhvva7+VEbIW3Zww8AIVTgtQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=U0g3nrxbwhModARiSgwYYoCAvHxED2XBpVYNdpkDDmekIh5GDte8nIxUPQ7pxRpvV
+         eOjL1IS5x0OGFkKHLEJ8+9Ulestd3B1qoSgNWhr4rPMebY/HSSrLL/daGMlV7Jce3d
+         Mjh1daVESQQKWgP2gXOaNChOupoLGbcbKV1EZXFt0oRkvktTfqq2e+OHqKYOVt5hH8
+         KHlmc1rZN7C8/yyK4WzAo1rLkfVuocqWNsUk1M8aMh4LZ+WhVfC8gA8QRRspQZUAKo
+         /S4gu9XivmDxj3ishPxE+7hpRRO7VoZCikWs1TprbQ/qN2JEDbjNTt2RfBUpjte+Ws
+         xLstb0dU2FXhQ==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id A014315C5823; Sun, 26 Feb 2023 14:58:44 -0500 (EST)
+Date:   Sun, 26 Feb 2023 14:58:44 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.3-rc1
+Message-ID: <Y/u59FFG+ID0OAbg@mit.edu>
+References: <Y/iywbFbiUAA6ZD3@kroah.com>
+ <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
+ <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com>
+ <Y/qcXOxTVHTNDQbY@mit.edu>
+ <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
+In-Reply-To: <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit 5779a072c248db7a40cfd0f5ea958097fd1d9a30.
+On Sat, Feb 25, 2023 at 06:14:11PM -0800, Linus Torvalds wrote:
+> On Sat, Feb 25, 2023 at 3:40 PM Theodore Ts'o <tytso@mit.edu> wrote:
+> >
+> > For what it's worth, in the VM world (e.g., qemu, AWS, GCP, Azure,
+> > Linode, etc.)  serial consoles are quite common way of debugging VM's,
+> > and as an emergency login path when the networking has been screwed up
+> > for some reason....
+> 
+> Everybody seems to be missing the point.
+> 
+> We don't make new drivers "default y" (or, in this case, "default SERIAL_8250".
+> 
+> It does not matter ONE WHIT if you have a serial device in your
+> machine. If your old driver was enabled and worked for you and you
+> used it daily, that is ENTIRELY IMMATERIAL to a new driver, even if
+> that new driver then happens to use some of the same infrastructure as
+> the old one did.
 
-This results in a link error of
+Oh, agreed, I wasn't responding to that part of your message.  New
+serial drivers should never be enabled by default.
 
-ld: drivers/tty/serial/earlycon.o: in function `parse_options':
-drivers/tty/serial/earlycon.c:99: undefined reference to `uart_parse_earlycon'
+I was responding to your musing about whether it still made sense to
+enable the COM1/2/3/4 serial ports by default on x86.  It's true that
+on desktops COM1/2/3/4 serial ports are rarely used, and some other
+boards might not even have them any more.  But for x86 VM's, they are
+used quite a lot.
 
-When the config is in this state
+Cheers,
 
-CONFIG_SERIAL_CORE=m
-CONFIG_SERIAL_CORE_CONSOLE=y
-CONFIG_SERIAL_EARLYCON=y
-CONFIG_SERIAL_FSL_LPUART=m
-CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
-
-Fixes: 5779a072c248 ("tty: serial: fsl_lpuart: adjust SERIAL_FSL_LPUART_CONSOLE config dependency")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 625358f44419..0072892ca7fc 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1313,7 +1313,7 @@ config SERIAL_FSL_LPUART
- 
- config SERIAL_FSL_LPUART_CONSOLE
- 	bool "Console on Freescale lpuart serial port"
--	depends on SERIAL_FSL_LPUART
-+	depends on SERIAL_FSL_LPUART=y
- 	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
- 	help
--- 
-2.27.0
-
+				- Ted
