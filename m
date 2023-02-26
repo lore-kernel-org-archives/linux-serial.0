@@ -2,98 +2,78 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A051C64EC7
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 02:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43487C7EE33
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 05:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbjBZCOd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 25 Feb 2023 21:14:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
+        id S229510AbjBZFkA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Feb 2023 00:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbjBZCOc (ORCPT
+        with ESMTP id S229608AbjBZFj7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 25 Feb 2023 21:14:32 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33196113FB
-        for <linux-serial@vger.kernel.org>; Sat, 25 Feb 2023 18:14:31 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id h16so12294081edz.10
-        for <linux-serial@vger.kernel.org>; Sat, 25 Feb 2023 18:14:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WrheFcgQEPwZjvgo8TDr9t7WDxew84jDqDyy77Jx6U4=;
-        b=LMXAOqzcMAN8M0lUbRtgYnlyXLIjveY033hYrk0yuyDTD16izAhROYfs6Dd2+iGxUl
-         ri8t0ubJGiCGQKZMyPWaunCEEmpXQIGOTdBHG27Y5AbKBnuts8q1DedSkg5+wLf53rIB
-         Ix7vxtPJdyIduJc/OL4K54Yie45HlYpHQ0HrE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WrheFcgQEPwZjvgo8TDr9t7WDxew84jDqDyy77Jx6U4=;
-        b=2JC9uKMehkfri/hcPQp8jjLCyCPjs5l1DCYq7Ps5Y/84EWm4UbZWUCJXGJb9E6K/yW
-         Xv/pa4uPDA2Z9767c+4OqomxE1HMRsHlMLhI1QfQmBcfJPnEt5CRPnXKJmypC8xjxnCe
-         Y+V/U/lpNPPqs04B+sfcw7xUpcZ2AHRMWXn2EKpKCl7yF+undM3sGS/qH1BIw58Gmlb/
-         avLzPD2oE8t4EbYQdw7frrMOKAQjyZiVUvvmsnJJZikYVf0+o1WHJjG6lXlRAT8DZSGZ
-         V6EzeSITn3JgrTNW3h2bdNVRKPezGGV7ZRgcWZntT/mIkJlWne3qL5ldVHNZ60ah0vYs
-         Iv7Q==
-X-Gm-Message-State: AO0yUKVHDr1dEh6gZy7AEacAPIDZkAvZxFGtI0fpj903JXcXXSPYAS6D
-        scdFaOQIpO8u2fQq9vHsI7HnZY7mQEyBbrADhHWHFQ==
-X-Google-Smtp-Source: AK7set9HaLeCEMOYf999O52fE0PahK6MfQ36BbPsUlB7+JZQNRW1ok5G3lWcdNPAmjwt/1oqFWpICg==
-X-Received: by 2002:a17:906:71c2:b0:88d:2a41:2a4b with SMTP id i2-20020a17090671c200b0088d2a412a4bmr27613216ejk.60.1677377669597;
-        Sat, 25 Feb 2023 18:14:29 -0800 (PST)
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
-        by smtp.gmail.com with ESMTPSA id up22-20020a170907cc9600b008ee84860964sm1438730ejc.35.2023.02.25.18.14.28
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Feb 2023 18:14:28 -0800 (PST)
-Received: by mail-ed1-f45.google.com with SMTP id s26so12263618edw.11
-        for <linux-serial@vger.kernel.org>; Sat, 25 Feb 2023 18:14:28 -0800 (PST)
-X-Received: by 2002:a17:906:b55:b0:8f1:4cc5:f14c with SMTP id
- v21-20020a1709060b5500b008f14cc5f14cmr4302368ejg.0.1677377668178; Sat, 25 Feb
- 2023 18:14:28 -0800 (PST)
+        Sun, 26 Feb 2023 00:39:59 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6B8136E9;
+        Sat, 25 Feb 2023 21:39:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=cSNByO9fFLUH/bsd79G915kzP5bO5cbyzpjf2Z+gFkk=; b=Wc+ujKzBtm+iV66xOvUoAUGW1r
+        emDMt3GkBYnW0zXqvn/HmExzeY6gQDdMGhpcFu4c8lxCp3UQHRmYnYPxdl+RiiEWrmwdVJtoDo8ic
+        2AJ2rMwrf3jXoLafx9hsLP7nJOHL5h2VmuUqb2XpeE8cJwkdWo/k3V+LmYLOkDow6LK+ly4VEI3/q
+        JMbwUBLaJhg3VGoL+4IAzrZukTKM3QBl2T00aO8Cu5bYdy2744qx2geTxx22LnV3UAjkaUVdk4buX
+        TApEbcGYagRdqgIdrXjnnjZAknRduFfiREeJpas6LHqLXhXECpCapPST1GWw0NdCcXTOg7A3zGYMc
+        Jps0jjIw==;
+Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pW9lO-006qYL-6D; Sun, 26 Feb 2023 05:39:58 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oskar Senft <osk@google.com>, linux-serial@vger.kernel.org
+Subject: [PATCH 8/8] serial: 8250: ASPEED_VUART: select REGMAP instead of depending on it
+Date:   Sat, 25 Feb 2023 21:39:53 -0800
+Message-Id: <20230226053953.4681-9-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230226053953.4681-1-rdunlap@infradead.org>
+References: <20230226053953.4681-1-rdunlap@infradead.org>
 MIME-Version: 1.0
-References: <Y/iywbFbiUAA6ZD3@kroah.com> <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
- <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com> <Y/qcXOxTVHTNDQbY@mit.edu>
-In-Reply-To: <Y/qcXOxTVHTNDQbY@mit.edu>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 25 Feb 2023 18:14:11 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
-Message-ID: <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
-Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.3-rc1
-To:     "Theodore Ts'o" <tytso@mit.edu>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
-        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Feb 25, 2023 at 3:40=E2=80=AFPM Theodore Ts'o <tytso@mit.edu> wrote=
-:
->
-> For what it's worth, in the VM world (e.g., qemu, AWS, GCP, Azure,
-> Linode, etc.)  serial consoles are quite common way of debugging VM's,
-> and as an emergency login path when the networking has been screwed up
-> for some reason....
+REGMAP is a hidden (not user visible) symbol. Users cannot set it
+directly thru "make *config", so drivers should select it instead of
+depending on it if they need it.
 
-Everybody seems to be missing the point.
+Consistently using "select" or "depends on" can also help reduce
+Kconfig circular dependency issues.
 
-We don't make new drivers "default y" (or, in this case, "default SERIAL_82=
-50".
+Therefore, change the use of "depends on REGMAP" to "select REGMAP".
 
-It does not matter ONE WHIT if you have a serial device in your
-machine. If your old driver was enabled and worked for you and you
-used it daily, that is ENTIRELY IMMATERIAL to a new driver, even if
-that new driver then happens to use some of the same infrastructure as
-the old one did.
+Fixes: 8d310c9107a2 ("drivers/tty/serial/8250: Make Aspeed VUART SIRQ polarity configurable")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Oskar Senft <osk@google.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/8250/Kconfig |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-             Linus
+diff -- a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -257,8 +257,9 @@ config SERIAL_8250_ASPEED_VUART
+ 	tristate "Aspeed Virtual UART"
+ 	depends on SERIAL_8250
+ 	depends on OF
+-	depends on REGMAP && MFD_SYSCON
++	depends on MFD_SYSCON
+ 	depends on ARCH_ASPEED || COMPILE_TEST
++	select REGMAP
+ 	help
+ 	  If you want to use the virtual UART (VUART) device on Aspeed
+ 	  BMC platforms, enable this option. This enables the 16550A-
