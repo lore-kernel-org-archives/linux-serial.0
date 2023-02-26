@@ -2,112 +2,114 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A72C64ED6
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 13:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E1CC64ED6
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 15:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229504AbjBZNpT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Feb 2023 08:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40016 "EHLO
+        id S229520AbjBZPIV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Feb 2023 10:08:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjBZNpS (ORCPT
+        with ESMTP id S229841AbjBZPH7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Feb 2023 08:45:18 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79827CDC9
-        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 05:45:17 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id b10so3847254ljr.0
-        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 05:45:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:message-id:in-reply-to:date:references
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JN7moP2awsjlsG1DRZ34+/W1vrYY2zM9tlCpMsaWKeA=;
-        b=brGfVlit8D6j28/QIfydBqY4yGkKBcfq666wdtlD0IhIGF0TRAkkJInXK6qGpG+X0I
-         ikapS+Kqu4Svh0W2swiiioqnSs7oiv20aXvC2ZbaxWXm9TtCdkAa/UUi3afx0O1lLCMi
-         Mdek/HWFhaVUkrmHGCLvsg6K12HddmvDqTv8d7W1tBTB+akukNCifApX3U0glED76Fcj
-         Bt04vkNVJ3kW/faEa2eXJ/QdePJ97btxzNxUuAkguTaHgpH2M9qzc0SQLM+uPnrc01jZ
-         YiAhrNeIwXgcyD+Hlv8LZT3aN/TSdR7yEGdDeGjUvrD6oR6jMidPfn+eQGCbjIwi9gLR
-         7N9Q==
+        Sun, 26 Feb 2023 10:07:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C76C21A10
+        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 06:57:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677423288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oP3oPuchm6C78y0w7FcABuS+2qv7jrRkSYqeHoyGogM=;
+        b=do4jRuD1AoS0JfwDf00YM51CgPeiVmX6ywgVPIaZeVTOqIKtPw3+Ki11T6NFs/X0LhN/Wi
+        DKYUY3zSfE/HwbWTLeEAedp2LAFcPxt/jWJlzT6WeQoOg9rLXP+SfudzEku/b6pQ+JNSrY
+        DcSTkF26b3uCGKxnlV7q1N0YWoWxuYw=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-549-PcWj90ZoNYKTEXdIa1Mk9w-1; Sun, 26 Feb 2023 09:54:47 -0500
+X-MC-Unique: PcWj90ZoNYKTEXdIa1Mk9w-1
+Received: by mail-qv1-f70.google.com with SMTP id l13-20020ad44d0d000000b004c74bbb0affso2061844qvl.21
+        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 06:54:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:message-id:in-reply-to:date:references
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JN7moP2awsjlsG1DRZ34+/W1vrYY2zM9tlCpMsaWKeA=;
-        b=hsCopkTwniI2dqcJJJzBQVEuWdeKY9SJCrXL64UD9VlODhm8nRGI2c3M74JcdxLtYR
-         q9gddmWOk3DkuERvImAb3oQ7qufiDHFYsgYMOT4L2u7G45b3eUTjKNdVaPxDNA3gtw61
-         LpPfJxbECPySH/3d4/CBBtkTm/IBgYTUmo9sDJrXn9KvfizuLzwgV5wU32vyzRR94sIU
-         VPFDUiEQQO1GvDPZGyOZaxLuAMnvov8ugy7llpiq0xCMbfE0kzarkvEAe7LY39i7WMp4
-         gxcbjua65gdEDGVt5m4P4EIPunIka9YTu3xelZftpUaGE89YpGUmsXso0Fz/2jKg0A+O
-         NkbA==
-X-Gm-Message-State: AO0yUKXsKrAMBnxUgMyLrAgDHsSOUXSYTN6XQ76/tPMSjAENTGJkuUm/
-        5ipHVO6ZX83QsXbzzDGVL8Q=
-X-Google-Smtp-Source: AK7set/t/0K5QEwIP/T3c/ZbbeXNoZLsXoMg7aLC7Q1QAzA596qEZUK+p7wXS95ZdD6UPNM9vPwUlA==
-X-Received: by 2002:a2e:700e:0:b0:283:4310:da75 with SMTP id l14-20020a2e700e000000b002834310da75mr7315085ljc.39.1677419115522;
-        Sun, 26 Feb 2023 05:45:15 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id v11-20020a2ea44b000000b002935632b3f8sm416208ljn.14.2023.02.26.05.45.14
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oP3oPuchm6C78y0w7FcABuS+2qv7jrRkSYqeHoyGogM=;
+        b=FLIwS8y9Y0mB8k46BFHNFU2omP2upA2L05FY5YxJAzH2q8ucp5iiPnrpNxK9+sHXf6
+         ioWZcJnC5ZooCddBd1CSORhpXwKBNldC2PLpCjZj5yGBZUclmhAb+b3n7ceJg+UmlgdC
+         KCxyQJRckhQJwuIsiIf1vQ1q1wz/ZBN/V1kDDWRCqL7ZefkTPXJZ2F1lao4ULd673kxl
+         4tDFbUCLzcKEdAKqfNydk2bF+0tkwzFhdK83W8WPXMhi58jT9gfK9pFxkVvDwe6UfCKS
+         qHuDDIPC0pZqVfHvFr4q5pRCpm1BSGN3PCrYLwqEx+Qdl8N9L8eUK9cBD2SSmaUDEjkq
+         YYNA==
+X-Gm-Message-State: AO0yUKVD0D/qB/+s5uPlgAAqLiNuUd4tkwLQuFYxlj8QK7nyLd511j/9
+        Q1ZwbvacsxiNqXrYXpFTMRFysm/3qDiIGuNgaM/QiyWuUPY0v/SmKqQsdVYAU/MmjxEToJ1M2E4
+        BKqlYbAb2ReiohDojbstfVgsrw3qbrg==
+X-Received: by 2002:ad4:5bae:0:b0:56e:957f:dd5f with SMTP id 14-20020ad45bae000000b0056e957fdd5fmr35934664qvq.50.1677423286584;
+        Sun, 26 Feb 2023 06:54:46 -0800 (PST)
+X-Google-Smtp-Source: AK7set/Dvnqu/AWuG3VmERieiYOLTpNGZ6BWRhVKDWe6qiHzJf2eI0ns0naoQAZr4A3CqW7FmHsMRA==
+X-Received: by 2002:ad4:5bae:0:b0:56e:957f:dd5f with SMTP id 14-20020ad45bae000000b0056e957fdd5fmr35934643qvq.50.1677423286344;
+        Sun, 26 Feb 2023 06:54:46 -0800 (PST)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id f64-20020a37d243000000b0073ba46a585asm3127203qkj.64.2023.02.26.06.54.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Feb 2023 05:45:14 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Gerz Burak LCPF-CH <Burak.Gerz@mt.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-imx@nxp.com" <linux-imx@nxp.com>,
-        Manuel Traut <manut@mecka.net>,
-        Traut Manuel LCPF-CH <Manuel.Traut@mt.com>
-Subject: Re: UART RX losing bytes
-References: <DB3PR0302MB8966B89FA30528D5C0643259E7AE9@DB3PR0302MB8966.eurprd03.prod.outlook.com>
-Date:   Sun, 26 Feb 2023 16:45:13 +0300
-In-Reply-To: <DB3PR0302MB8966B89FA30528D5C0643259E7AE9@DB3PR0302MB8966.eurprd03.prod.outlook.com>
-        (Gerz Burak's message of "Sun, 26 Feb 2023 10:47:35 +0000")
-Message-ID: <87h6v8levq.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sun, 26 Feb 2023 06:54:45 -0800 (PST)
+From:   Tom Rix <trix@redhat.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH v2] tty: serial: fsl_lpuart: select SERIAL_FSL_LPUART for SERIAL_FSL_LPUART_CONSOLE
+Date:   Sun, 26 Feb 2023 09:54:41 -0500
+Message-Id: <20230226145441.3150640-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+A rand config causes this link error
+ld: drivers/tty/serial/earlycon.o: in function `parse_options':
+drivers/tty/serial/earlycon.c:99: undefined reference to `uart_parse_earlycon'
 
-It reminds me about this:
+The rand config has
+CONFIG_SERIAL_CORE=m
+CONFIG_SERIAL_EARLYCON=y
+CONFIG_SERIAL_FSL_LPUART=m
+CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
 
-https://marc.info/?l=linux-serial&m=166479501704202&w=2
+SERIAL_FSL_LPUART should have been selected instead of depends on-ed.
 
-HTH,
--- Sergey
+After applying the configs are
+CONFIG_SERIAL_CORE=y
+CONFIG_SERIAL_EARLYCON=y
+CONFIG_SERIAL_FSL_LPUART=y
+CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
 
-Gerz Burak LCPF-CH <Burak.Gerz@mt.com> writes:
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+v2: Add how the configs changed to commit log
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Hello,
->
-> v6.1.14 on a Phytec phyBoard Segin i.MX 6ULL based board [0] is losing bytes on UART RX.
-> imx_v6_v7_defconfig was used.
->
-> Minimalistic test to reproduce the issue:
->
-> 1) Connect imx6ull UART with another machine
-> 2) imx6ull$ stty -F /dev/ttymxc0 115200 raw; cat /dev/ttymcx0
-> 3) othermachine$ stty -F /dev/USB0 115200 raw; 
->     echo "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$%-.,()/&" > /dev/ttyUSB0
->
-> Expected result:
-> imx6ull: 1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$%-.,()/&
->
-> Seen result (Many times, not always):
-> imx6ull: 1234567890abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUVWXYZ$%-.,()/&
-> or
-> imx6ull: 1234567890abcdefghijklmnopqrstuvBCDEFGHIJKLMNOPQRSTUVWXYZ$%-.,()/&
-> or
-> ...
->
-> Setting scaling_governor to performance seems to be a workaround for this problem - but:
-> We are normally using the PREMPT_RT patch [1], and with this workaround bytes will still be lost
->
-> Any hints how to track this down further?
->
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-nand.dts?h=v6.1.14 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tag/?h=v6.1.12-rt7
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 625358f44419..b24d74d389fc 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1313,7 +1313,7 @@ config SERIAL_FSL_LPUART
+ 
+ config SERIAL_FSL_LPUART_CONSOLE
+ 	bool "Console on Freescale lpuart serial port"
+-	depends on SERIAL_FSL_LPUART
++	select SERIAL_FSL_LPUART
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 	help
+-- 
+2.27.0
+
