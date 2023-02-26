@@ -2,133 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27387C7EE39
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 05:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FBAC64ED6
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 06:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbjBZFkC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Feb 2023 00:40:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
+        id S229482AbjBZGuI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Feb 2023 01:50:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbjBZFkA (ORCPT
+        with ESMTP id S229606AbjBZGuH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Feb 2023 00:40:00 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21925136F7;
-        Sat, 25 Feb 2023 21:39:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=EI1aXrE2jWnMQpvhJWCxJ0A1m6hExM8zG6kHodDd/Yk=; b=aj3A5Ot6MEhhd9SZR6hiyed6PQ
-        EdZuqG07G/Vk/F8skIZAfGRc6sNw4DC3faae0Cu3vMc4szUf4tDAjvfhrUYJgE2qrG+wA3gREi+N9
-        PxwHUdCcxP7gl8263NKtViUAcgY2zI6M/LMZBz9lNggC95W1ux6ZsuulZKWLDOGTRoKB45Cn6oWKQ
-        wmRpRz9HJa6rXmn93Yj2Kp+oVd2a57W+8ogtuK5beZyvX1IVvMsN0ws+h4BF3CcUdqyDY6oBTAOxv
-        yxF6SU+Dxy/zjph+VaxFK8u1DqBXUvUKhjqVRXd4V3udKqotaho/14nhEhUecI4IwtIGLrTY08V5M
-        lQmQqocw==;
-Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pW9lK-006qYL-N4; Sun, 26 Feb 2023 05:39:54 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Corey Minyard <minyard@acm.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Riku Voipio <riku.voipio@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-clk@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Lee Jones <lee@kernel.org>, linux-leds@vger.kernel.org,
-        Darren Hart <dvhart@infradead.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Michael Shych <michaelsh@nvidia.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        platform-driver-x86@vger.kernel.org,
-        Yegnesh S Iyer <yegnesh.s.iyer@intel.com>,
-        Bin Gao <bin.gao@intel.com>, Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, linux-pm@vger.kernel.org,
-        Oskar Senft <osk@google.com>, linux-serial@vger.kernel.org
-Subject: [PATCH 0/8] drivers: select REGMAP instead of depending on it
-Date:   Sat, 25 Feb 2023 21:39:45 -0800
-Message-Id: <20230226053953.4681-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.39.2
+        Sun, 26 Feb 2023 01:50:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CC9C66E;
+        Sat, 25 Feb 2023 22:50:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2810AB80B03;
+        Sun, 26 Feb 2023 06:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6800FC433D2;
+        Sun, 26 Feb 2023 06:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1677394203;
+        bh=vF+70qVhywRhbCbGBSckNNXQtvtxvXSYrI8qFIqDfME=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kYX1JmlVZqypNXaBRZ9k+aBqOQWjPtujHrLc+hdw6dN367POk0TvH9ajz/X+d4oto
+         oJOHK+tVYYgQqL35ScYEucrCV+pX5GHuHd1zgXRdnEcPhFyJH0ICm/3lMJRy3HYU5k
+         yktbU8bCTUh8xqAHTPN/BDXbGqWVQDWItXgUzjEs=
+Date:   Sun, 26 Feb 2023 07:50:01 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Theodore Ts'o <tytso@mit.edu>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.3-rc1
+Message-ID: <Y/sBGesMZSd188OQ@kroah.com>
+References: <Y/iywbFbiUAA6ZD3@kroah.com>
+ <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
+ <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com>
+ <Y/qcXOxTVHTNDQbY@mit.edu>
+ <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-REGMAP is a hidden (not user visible) symbol. Users cannot set it
-directly thru "make *config", so drivers should select it instead of
-depending on it if they need it.
+On Sat, Feb 25, 2023 at 06:14:11PM -0800, Linus Torvalds wrote:
+> On Sat, Feb 25, 2023 at 3:40 PM Theodore Ts'o <tytso@mit.edu> wrote:
+> >
+> > For what it's worth, in the VM world (e.g., qemu, AWS, GCP, Azure,
+> > Linode, etc.)  serial consoles are quite common way of debugging VM's,
+> > and as an emergency login path when the networking has been screwed up
+> > for some reason....
+> 
+> Everybody seems to be missing the point.
+> 
+> We don't make new drivers "default y" (or, in this case, "default SERIAL_8250".
+> 
+> It does not matter ONE WHIT if you have a serial device in your
+> machine. If your old driver was enabled and worked for you and you
+> used it daily, that is ENTIRELY IMMATERIAL to a new driver, even if
+> that new driver then happens to use some of the same infrastructure as
+> the old one did.
 
-Consistently using "select" or "depends on" can also help reduce
-Kconfig circular dependency issues.
+I agree, sorry for the delay, I'll fix this up before -final for this
+release.
 
-REGMAP is selected 94 times and is depended on 11 times in
-current linux-next. Eliminate the uses of "depends on" by
-converting them to "select".
+thanks,
 
- [PATCH 1/8] ipmi: ASPEED_BT_IPMI_BMC: select REGMAP_MMIO instead of depending on it
- [PATCH 2/8] clk: HI655X: select REGMAP instead of depending on it
- [PATCH 3/8] gpio: GPIO_REGMAP: select REGMAP instead of depending on it
- [PATCH 4/8] leds: TI_LMU_COMMON: select REGMAP instead of depending on it
- [PATCH 5/8] platform: mellanox: select REGMAP instead of depending on it
- [PATCH 6/8] platform: x86: MLX_PLATFORM: select REGMAP instead of depending on it
- [PATCH 7/8] thermal: intel: BXT_PMIC: select REGMAP instead of depending on it
- [PATCH 8/8] serial: 8250: ASPEED_VUART: select REGMAP instead of depending on it
-
-diffstat:
- drivers/char/ipmi/Kconfig         |    3 ++-
- drivers/clk/Kconfig               |    2 +-
- drivers/gpio/Kconfig              |    2 +-
- drivers/leds/Kconfig              |    2 +-
- drivers/platform/mellanox/Kconfig |    9 ++++-----
- drivers/platform/x86/Kconfig      |    3 ++-
- drivers/thermal/intel/Kconfig     |    3 ++-
- drivers/tty/serial/8250/Kconfig   |    3 ++-
- 8 files changed, 15 insertions(+), 12 deletions(-)
-
-Cc: Andrew Jeffery <andrew@aj.id.au>
-Cc: Corey Minyard <minyard@acm.org>
-Cc: openipmi-developer@lists.sourceforge.net
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Riku Voipio <riku.voipio@linaro.org>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: linux-clk@vger.kernel.org
-Cc: Michael Walle <michael@walle.cc>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: linux-gpio@vger.kernel.org
-Cc: Dan Murphy <dmurphy@ti.com>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Cc: Lee Jones <lee@kernel.org>
-Cc: linux-leds@vger.kernel.org
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Michael Shych <michaelsh@nvidia.com>
-Cc: Mark Gross <markgross@kernel.org>
-Cc: Vadim Pasternak <vadimp@nvidia.com>
-Cc: platform-driver-x86@vger.kernel.org
-Cc: Yegnesh S Iyer <yegnesh.s.iyer@intel.com>
-Cc: Bin Gao <bin.gao@intel.com>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Amit Kucheria <amitk@kernel.org>
-Cc: linux-pm@vger.kernel.org
-Cc: Oskar Senft <osk@google.com>
-Cc: linux-serial@vger.kernel.org
+greg k-h
