@@ -2,126 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF181C7EE2D
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 22:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793D4C7EE2D
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 22:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbjBZW3W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Feb 2023 17:29:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
+        id S229445AbjBZWpY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Feb 2023 17:45:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbjBZW3V (ORCPT
+        with ESMTP id S229379AbjBZWpY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Feb 2023 17:29:21 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181A386A4
-        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 14:28:43 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pWPU0-0000v4-Cx; Sun, 26 Feb 2023 23:27:04 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pWPTv-000UbL-A7; Sun, 26 Feb 2023 23:26:59 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pWPTu-000YPc-Ii; Sun, 26 Feb 2023 23:26:58 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     linux-i2c@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ajay Gupta <ajayg@nvidia.com>,
-        Peter Senna Tschudin <peter.senna@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Luca Ceresoli <luca.ceresoli@bootlin.com>,
-        linux-mtd@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Evgeniy Polyakov <zbr@ioremap.net>,
-        Crt Mori <cmo@melexis.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Shunqian Zheng <zhengsq@rock-chips.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Peter Rosin <peda@axentia.se>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 0/9] i2c: Switch .probe() to not take an id parameter
-Date:   Sun, 26 Feb 2023 23:26:45 +0100
-Message-Id: <20230226222654.1741900-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.1
+        Sun, 26 Feb 2023 17:45:24 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BD5CC0E;
+        Sun, 26 Feb 2023 14:45:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=qWnDKBNh35K+ganeqMEvc7orr2tqqQPr3nUxaAl0qYs=; b=edHC6/cA8EGZHvetsmv5VVqAhR
+        RKBBjjSeCp1k5i858eNYHM1xgAsVD37Y/HBvxByEDpbZZjbxzBOOgxLTK/xKmoUIKlGmtht7TNe49
+        N0Ch4UpHLSryJe8P57LbRA4Ch/TrwrouDcikCuzLydUBAWflO4YGYMXTij+Nn8a38B2Yt4rwxYGRW
+        aXcYPDxSvijS6l+6hY57n4eIKSuFbWfXsHgK8tGpGJLyelIajyrZXUzj9QyOSCtT2oD8jIdY6fiLb
+        qGo/XY/WmTnRigAbz1p6iQj0ZkNDCV3PLY1ZmFlNTgTAnPzS7FF7eQeqWbg4VbpDzEsKwdFBwv6JZ
+        L25wy4Sg==;
+Received: from [2601:1c2:980:9ec0::df2f]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pWPld-007wJD-AX; Sun, 26 Feb 2023 22:45:17 +0000
+Message-ID: <c32f8b2b-7137-c15e-9786-601b94a4ada4@infradead.org>
+Date:   Sun, 26 Feb 2023 14:45:15 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH] Revert "tty: serial: fsl_lpuart: adjust
+ SERIAL_FSL_LPUART_CONSOLE config dependency"
+Content-Language: en-US
+To:     Tom Rix <trix@redhat.com>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, sherry.sun@nxp.com, jindong.yue@nxp.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230226173846.236691-1-trix@redhat.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20230226173846.236691-1-trix@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1991; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=EenKKdT6RETFmVGwF2CrYShLqN5ZYnH65OR4Oth2DhU=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBj+9yIsuD2BffFtVmTLqMLW9+LGg9CrL1S9JEyp A8isju5DgGJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY/vciAAKCRDB/BR4rcrs CVArCACf5Exs+Q2fpw9bhFprBhf8Jn0zdE1HAJWqKw9geHnrqn2c77H0nb4l6za7xknleFOdFjl vT1oJ/Hil7ZZHfjj0Q02CEsZqvCUoh/T4UAse77L1aYyUPrZ0RZsOyTquharTxDIKLoriggp8O7 oibgm8zSD2bY1eFXyPkExlGm+6FBBRW8p3Smjl0DhgJHra46+W71KaqBmYkG1IBl5lrINIPfwRv 3ktxNmDCAgv/OMRMRji9mRAtfbTNBB8fvk22YGZXKc7/Ja9bBtoyWYo0UPM2LwcfDAfOnqJXu0d 8S7iE11b92EW7g3eeBkHU339ye95YJ2KDZ7wmHd7p+WkiVWd
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
-
-this is v2 of the series. I send it a bit earlier than I planned to do that
-initially because I failed to send v1 completely to the linux-i2c list.
-
-Changes since (implicit) v1:
- - Added Acks for patches #5, #6 and #8
- - Fixed kernel doc as pointed out by Luca Ceresoli (patch #7)
- - Send all patches to linux-i2c mailing list
- - Rebased to current Linus' tree.
-   This reduces the list of prerequisite patches to two.
-
-I updated
-
-	https://git.pengutronix.de/git/ukl/linux i2c-probe-new
-
-accordingly.
-
-Best regards
-Uwe
-
-Uwe Kleine-König (9):
-  misc: ad525x_dpot-i2c: Convert to i2c's .probe_new()
-  mtd: maps: pismo: Convert to i2c's .probe_new()
-  serial: sc16is7xx: Convert to i2c's .probe_new()
-  w1: ds2482: Convert to i2c's .probe_new()
-  media: i2c: ov5695: convert to i2c's .probe_new()
-  media: i2c: ov2685: convert to i2c's .probe_new()
-  i2c: Switch .probe() to not take an id parameter
-  i2c: mux: Convert all drivers to new .probe() callback
-  i2c: Convert drivers to new .probe() callback
-
- drivers/i2c/i2c-core-base.c         | 13 +++----------
- drivers/i2c/i2c-slave-eeprom.c      |  2 +-
- drivers/i2c/i2c-slave-testunit.c    |  2 +-
- drivers/i2c/i2c-smbus.c             |  2 +-
- drivers/i2c/muxes/i2c-mux-ltc4306.c |  2 +-
- drivers/i2c/muxes/i2c-mux-pca9541.c |  2 +-
- drivers/i2c/muxes/i2c-mux-pca954x.c |  2 +-
- drivers/media/i2c/ov2685.c          |  5 ++---
- drivers/media/i2c/ov5695.c          |  5 ++---
- drivers/misc/ad525x_dpot-i2c.c      |  6 +++---
- drivers/mtd/maps/pismo.c            |  5 ++---
- drivers/tty/serial/sc16is7xx.c      |  6 +++---
- drivers/w1/masters/ds2482.c         |  5 ++---
- include/linux/i2c.h                 | 18 +++++++++++-------
- 14 files changed, 34 insertions(+), 41 deletions(-)
 
 
-base-commit: f3a2439f20d918930cc4ae8f76fe1c1afd26958f
-prerequisite-patch-id: 256857b4eee79540b271b8d4899b9ba0aa3c4c27
-prerequisite-patch-id: bb49c9c71311ac1f1056c562f20f26aa356c95a6
+On 2/26/23 09:38, Tom Rix wrote:
+> This reverts commit 5779a072c248db7a40cfd0f5ea958097fd1d9a30.
+> 
+> This results in a link error of
+> 
+> ld: drivers/tty/serial/earlycon.o: in function `parse_options':
+> drivers/tty/serial/earlycon.c:99: undefined reference to `uart_parse_earlycon'
+> 
+> When the config is in this state
+> 
+> CONFIG_SERIAL_CORE=m
+> CONFIG_SERIAL_CORE_CONSOLE=y
+> CONFIG_SERIAL_EARLYCON=y
+> CONFIG_SERIAL_FSL_LPUART=m
+> CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
+> 
+> Fixes: 5779a072c248 ("tty: serial: fsl_lpuart: adjust SERIAL_FSL_LPUART_CONSOLE config dependency")
+> Signed-off-by: Tom Rix <trix@redhat.com>
+
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+
+Thanks.
+
+> ---
+>  drivers/tty/serial/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 625358f44419..0072892ca7fc 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1313,7 +1313,7 @@ config SERIAL_FSL_LPUART
+>  
+>  config SERIAL_FSL_LPUART_CONSOLE
+>  	bool "Console on Freescale lpuart serial port"
+> -	depends on SERIAL_FSL_LPUART
+> +	depends on SERIAL_FSL_LPUART=y
+>  	select SERIAL_CORE_CONSOLE
+>  	select SERIAL_EARLYCON
+>  	help
+
 -- 
-2.39.1
-
+~Randy
