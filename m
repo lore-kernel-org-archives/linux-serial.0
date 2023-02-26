@@ -2,90 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 968CAC64ED6
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 19:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB7BC7EE2D
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 22:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbjBZT7K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Feb 2023 14:59:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
+        id S229758AbjBZW1W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Feb 2023 17:27:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbjBZT7J (ORCPT
+        with ESMTP id S229739AbjBZW1U (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Feb 2023 14:59:09 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0388216889
-        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 11:59:07 -0800 (PST)
-Received: from cwcc.thunk.org (pool-173-48-120-46.bstnma.fios.verizon.net [173.48.120.46])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 31QJwibP008362
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 26 Feb 2023 14:58:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1677441529; bh=sUDNujaHfUqZ8bjP9HuWhvva7+VEbIW3Zww8AIVTgtQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=U0g3nrxbwhModARiSgwYYoCAvHxED2XBpVYNdpkDDmekIh5GDte8nIxUPQ7pxRpvV
-         eOjL1IS5x0OGFkKHLEJ8+9Ulestd3B1qoSgNWhr4rPMebY/HSSrLL/daGMlV7Jce3d
-         Mjh1daVESQQKWgP2gXOaNChOupoLGbcbKV1EZXFt0oRkvktTfqq2e+OHqKYOVt5hH8
-         KHlmc1rZN7C8/yyK4WzAo1rLkfVuocqWNsUk1M8aMh4LZ+WhVfC8gA8QRRspQZUAKo
-         /S4gu9XivmDxj3ishPxE+7hpRRO7VoZCikWs1TprbQ/qN2JEDbjNTt2RfBUpjte+Ws
-         xLstb0dU2FXhQ==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id A014315C5823; Sun, 26 Feb 2023 14:58:44 -0500 (EST)
-Date:   Sun, 26 Feb 2023 14:58:44 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
-        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.3-rc1
-Message-ID: <Y/u59FFG+ID0OAbg@mit.edu>
-References: <Y/iywbFbiUAA6ZD3@kroah.com>
- <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
- <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com>
- <Y/qcXOxTVHTNDQbY@mit.edu>
- <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
+        Sun, 26 Feb 2023 17:27:20 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9868718157
+        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 14:27:16 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pWPTx-0000v7-0N; Sun, 26 Feb 2023 23:27:01 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pWPTw-000UbY-AW; Sun, 26 Feb 2023 23:27:00 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pWPTv-000YPl-7I; Sun, 26 Feb 2023 23:26:59 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     linux-i2c@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/9] serial: sc16is7xx: Convert to i2c's .probe_new()
+Date:   Sun, 26 Feb 2023 23:26:48 +0100
+Message-Id: <20230226222654.1741900-4-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230226222654.1741900-1-u.kleine-koenig@pengutronix.de>
+References: <20230226222654.1741900-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1343; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=D79Vaqn/zOmfQLHCMMajfRylVVdeG/UEyphy/fGba08=; b=owGbwMvMwMV48I9IxdpTbzgZT6slMST/vjNFc4/+HfaadnbxdGX/E3FxhXydzV39Uf+1P/Idz emZeHlGJ6MxCwMjF4OsmCJLXZGW2ASJNf/tSpZwwwxiZQKZwsDFKQATSb3H/lfWh4NpGXNOfW4u R78Ui3ceL6fK2Q39y3rafK69l9jr6dp1eOa5h+78jy29tkVVaut9et3P/G3yQYeZ9xKKxS2i3G7 Ke6ybG5t0ajp3id27iZGfirfW+l67xyk9pXBapOqU/OTso953Qmp05y3KS9YRvx+fEefOun/dgx /JvqpXrKcvS+/8+TsocoHJP0mFGW7ia7bMt//cskc1M8Wjrunvooyr6TKvag12rKzgMNZ5v/pv2 v0ZLi9N1mQxNzx2Cs1Z81Wvd1ntvz2BL87X1hY+9y9XjXGfEvlfsXArA/v8DNHdKiY8n96EVv4J uNhwfk9Ud54Rz91i7ZdrFFbZdsXe35JTJnitf1vPw1UXAQ==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Feb 25, 2023 at 06:14:11PM -0800, Linus Torvalds wrote:
-> On Sat, Feb 25, 2023 at 3:40 PM Theodore Ts'o <tytso@mit.edu> wrote:
-> >
-> > For what it's worth, in the VM world (e.g., qemu, AWS, GCP, Azure,
-> > Linode, etc.)  serial consoles are quite common way of debugging VM's,
-> > and as an emergency login path when the networking has been screwed up
-> > for some reason....
-> 
-> Everybody seems to be missing the point.
-> 
-> We don't make new drivers "default y" (or, in this case, "default SERIAL_8250".
-> 
-> It does not matter ONE WHIT if you have a serial device in your
-> machine. If your old driver was enabled and worked for you and you
-> used it daily, that is ENTIRELY IMMATERIAL to a new driver, even if
-> that new driver then happens to use some of the same infrastructure as
-> the old one did.
+.probe_new() doesn't get the i2c_device_id * parameter, so determine
+that explicitly in the probe function.
 
-Oh, agreed, I wasn't responding to that part of your message.  New
-serial drivers should never be enabled by default.
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/lkml/20221118224540.619276-572-uwe@kleine-koenig.org
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/sc16is7xx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I was responding to your musing about whether it still made sense to
-enable the COM1/2/3/4 serial ports by default on x86.  It's true that
-on desktops COM1/2/3/4 serial ports are rarely used, and some other
-boards might not even have them any more.  But for x86 VM's, they are
-used quite a lot.
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 29c94be09159..abad091baeea 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1666,9 +1666,9 @@ MODULE_ALIAS("spi:sc16is7xx");
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+-static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+-			       const struct i2c_device_id *id)
++static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
+ {
++	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
+ 	const struct sc16is7xx_devtype *devtype;
+ 	struct regmap *regmap;
+ 
+@@ -1709,7 +1709,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+ 		.name		= SC16IS7XX_NAME,
+ 		.of_match_table	= sc16is7xx_dt_ids,
+ 	},
+-	.probe		= sc16is7xx_i2c_probe,
++	.probe_new	= sc16is7xx_i2c_probe,
+ 	.remove		= sc16is7xx_i2c_remove,
+ 	.id_table	= sc16is7xx_i2c_id_table,
+ };
+-- 
+2.39.1
 
-Cheers,
-
-				- Ted
