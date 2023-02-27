@@ -2,94 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 793D4C7EE2D
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Feb 2023 22:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 708F2C64ED8
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Feb 2023 07:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229445AbjBZWpY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Feb 2023 17:45:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
+        id S229602AbjB0HQi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Feb 2023 02:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjBZWpY (ORCPT
+        with ESMTP id S229451AbjB0HQh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Feb 2023 17:45:24 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BD5CC0E;
-        Sun, 26 Feb 2023 14:45:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=qWnDKBNh35K+ganeqMEvc7orr2tqqQPr3nUxaAl0qYs=; b=edHC6/cA8EGZHvetsmv5VVqAhR
-        RKBBjjSeCp1k5i858eNYHM1xgAsVD37Y/HBvxByEDpbZZjbxzBOOgxLTK/xKmoUIKlGmtht7TNe49
-        N0Ch4UpHLSryJe8P57LbRA4Ch/TrwrouDcikCuzLydUBAWflO4YGYMXTij+Nn8a38B2Yt4rwxYGRW
-        aXcYPDxSvijS6l+6hY57n4eIKSuFbWfXsHgK8tGpGJLyelIajyrZXUzj9QyOSCtT2oD8jIdY6fiLb
-        qGo/XY/WmTnRigAbz1p6iQj0ZkNDCV3PLY1ZmFlNTgTAnPzS7FF7eQeqWbg4VbpDzEsKwdFBwv6JZ
-        L25wy4Sg==;
-Received: from [2601:1c2:980:9ec0::df2f]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pWPld-007wJD-AX; Sun, 26 Feb 2023 22:45:17 +0000
-Message-ID: <c32f8b2b-7137-c15e-9786-601b94a4ada4@infradead.org>
-Date:   Sun, 26 Feb 2023 14:45:15 -0800
+        Mon, 27 Feb 2023 02:16:37 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6923A1C307
+        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 23:16:36 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id v16so2278918wrn.0
+        for <linux-serial@vger.kernel.org>; Sun, 26 Feb 2023 23:16:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yJr9uKOfN/wZLR1mjPtbvwdEWkA72spRbsMlk4YNxoc=;
+        b=YBlYK6qW9MwoEOWCrgLEV7YcFEF5tO/uQm7XRA0CFwj94VyDfmycfJaHrVOj4Oo7Oa
+         zVkBu1lbgJWBI1Iz+Ds6FCONMK38S6KnSmufyCPEcUiA3RVPC6lQGBy2g27BHNAdLR1j
+         1YLqTy8OBV658ALBVue/oVEfqZ+B5tB1sQHfZrzOgNVjbRbOfoOf8v+BLGuoquZsQ4tS
+         ipP1yjgysSb8JOP7HKQHCrx+R5J0BsjKdyJxCctKZ5jGVZ5IpR92h+up341gRS5SqH8S
+         K02n+N2/sHSIZQyaYzNNY+wEv+Lirc9QRCUy73kO6CqZ3Vm0ji1beHMIUXS00rlIUXdc
+         2+dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yJr9uKOfN/wZLR1mjPtbvwdEWkA72spRbsMlk4YNxoc=;
+        b=UKyhKRKdIroDLmf2+bcJwq3rgAQEJ7UIBeiE5r0c4SnwaT8qKpsfYXvyEbo5iqTOVT
+         1FqipmSc/oVzDeYxEX2io+qSPm9qSNaQDsNgrHd4dUcR4KkxZhVSnsD9nTM3Zv46XkPC
+         ev9tKv+sxRyRaON7/yHFZ1AwznhPEpbQZiyGH5wGSqZFj15YM69cUGUk5ZzkQ+bTy/LZ
+         2ocgwVvPxtkAUlCBDcDodQEcWi2q4aNc1bRAutzvbe8A+8UkVajM978Y2ZFLur0IK1J6
+         1UQEZrzs8HYouE5TfLQpHBXqEabVmGBZkhwAvTEPJTEXzr5YqscAd7qTuDKmWV2y3lv7
+         2ymQ==
+X-Gm-Message-State: AO0yUKVKojwVgoOafYDcLcGM2j4t8KjO19ze/oiG2t3NQDgdnrVHqMPL
+        HuGhhzeP0axGVFNjpuFBMUA=
+X-Google-Smtp-Source: AK7set8QOFzabs6Yyabd3YcaZf9jPc3ekN2vqrecFRH/2T4klLHidHjta2W5EiGmTeKXhiaoHO22+A==
+X-Received: by 2002:a5d:58d9:0:b0:2c5:5fb0:b215 with SMTP id o25-20020a5d58d9000000b002c55fb0b215mr19399072wrf.30.1677482194747;
+        Sun, 26 Feb 2023 23:16:34 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id f7-20020adffcc7000000b002c7163660a9sm6381416wrs.105.2023.02.26.23.16.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Feb 2023 23:16:34 -0800 (PST)
+Date:   Mon, 27 Feb 2023 10:16:30 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     johan@kernel.org
+Cc:     linux-serial@vger.kernel.org
+Subject: [bug report] serial: 8250: fix handle_irq locking
+Message-ID: <Y/xYzqp4ogmOF5t0@kili>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH] Revert "tty: serial: fsl_lpuart: adjust
- SERIAL_FSL_LPUART_CONSOLE config dependency"
-Content-Language: en-US
-To:     Tom Rix <trix@redhat.com>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, sherry.sun@nxp.com, jindong.yue@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230226173846.236691-1-trix@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20230226173846.236691-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello Johan Hovold,
 
+The patch 853a9ae29e97: "serial: 8250: fix handle_irq locking" from
+Jul 14, 2021, leads to the following Smatch static checker warning:
 
-On 2/26/23 09:38, Tom Rix wrote:
-> This reverts commit 5779a072c248db7a40cfd0f5ea958097fd1d9a30.
-> 
-> This results in a link error of
-> 
-> ld: drivers/tty/serial/earlycon.o: in function `parse_options':
-> drivers/tty/serial/earlycon.c:99: undefined reference to `uart_parse_earlycon'
-> 
-> When the config is in this state
-> 
-> CONFIG_SERIAL_CORE=m
-> CONFIG_SERIAL_CORE_CONSOLE=y
-> CONFIG_SERIAL_EARLYCON=y
-> CONFIG_SERIAL_FSL_LPUART=m
-> CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
-> 
-> Fixes: 5779a072c248 ("tty: serial: fsl_lpuart: adjust SERIAL_FSL_LPUART_CONSOLE config dependency")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+drivers/tty/serial/8250/8250_fsl.c:84 fsl8250_handle_irq() warn: inconsistent returns 'flags'.
+  Locked on  : 38,46
+  Unlocked on: 84
 
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+drivers/tty/serial/8250/8250_fsl.c
+    26  int fsl8250_handle_irq(struct uart_port *port)
+    27  {
+    28          unsigned long flags;
+    29          u16 lsr, orig_lsr;
+    30          unsigned int iir;
+    31          struct uart_8250_port *up = up_to_u8250p(port);
+    32  
+    33          spin_lock_irqsave(&up->port.lock, flags);
+                                                  ^^^^^
+    34  
+    35          iir = port->serial_in(port, UART_IIR);
+    36          if (iir & UART_IIR_NO_INT) {
+    37                  spin_unlock(&up->port.lock);
+    38                  return 0;
 
-Thanks.
+Needs to enable IRQs again.  Same below etc.
 
-> ---
->  drivers/tty/serial/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 625358f44419..0072892ca7fc 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1313,7 +1313,7 @@ config SERIAL_FSL_LPUART
->  
->  config SERIAL_FSL_LPUART_CONSOLE
->  	bool "Console on Freescale lpuart serial port"
-> -	depends on SERIAL_FSL_LPUART
-> +	depends on SERIAL_FSL_LPUART=y
->  	select SERIAL_CORE_CONSOLE
->  	select SERIAL_EARLYCON
->  	help
+    39          }
+    40  
+    41          /* This is the WAR; if last event was BRK, then read and return */
+    42          if (unlikely(up->lsr_saved_flags & UART_LSR_BI)) {
+    43                  up->lsr_saved_flags &= ~UART_LSR_BI;
+    44                  port->serial_in(port, UART_RX);
+    45                  spin_unlock(&up->port.lock);
+    46                  return 1;
+    47          }
+    48  
 
--- 
-~Randy
+regards,
+dan carpenter
