@@ -2,84 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE883C64ED6
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Feb 2023 09:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52282C7EE2D
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Feb 2023 09:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbjB0JC6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Feb 2023 04:02:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
+        id S229966AbjB0JMF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Feb 2023 04:12:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbjB0JCq (ORCPT
+        with ESMTP id S229881AbjB0JLw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Feb 2023 04:02:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E37CC12
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 00:53:11 -0800 (PST)
+        Mon, 27 Feb 2023 04:11:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28641B576;
+        Mon, 27 Feb 2023 01:03:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5643B80CAF
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 08:52:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB5DC433EF;
-        Mon, 27 Feb 2023 08:52:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D770B80CAA;
+        Mon, 27 Feb 2023 08:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA651C433D2;
+        Mon, 27 Feb 2023 08:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677487921;
-        bh=h4RYVawUO2zZmE0RYb8/Xj6vQkpmNefwPRcaPPcDZmM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KCfX1Y2xBZ4VIyC9Af00o1cfZQbaTZM5leUBLZ5Hky7znIMJzJWnZTmGuaGYtUebK
-         3dFkdrSlTw2gz933ZAflueUgIS6vcu3KHLnOH+yeuRWwZz3yeNCJTCGks6hTyKMFHM
-         haO0SmVrjNUT8vQIL+SWiYPlVlHhbqakihmvXOiLRlhysAQvBLnqMZYebcg07LngbX
-         korMzd3w/yGS8Kp278R/GaHnk8jDX26Mr+MGeOLpiiIvP4zcP14LwvhLBXV01yf1Cq
-         0FXt9NjWpdijL4CXdPkQ9C4GRv6r/OZ5dFqCItiYCFPblM8LQMcTSuOebjv3vnsweY
-         UJKMFU92DVBaw==
+        s=k20201202; t=1677487845;
+        bh=3sKuQJ5jig7mnQt+fJxNgFMbX5S1a3CrBBSTM63p7dw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nNH7A1K/eOE7QhHgTp7p1G4/MwW1haMZHD/4HxNMgfi+TqeO9gXqqjWf2vXTwtS6u
+         PX7Tp6sIsC7hrc7L/LdRABgNDbs3tJfijVNN8DPbBEEqmRz7kQXztFGvjrtDPzTota
+         e3+s2fEuSXConMg9b6bI4Iy/6wMq5bayM6HZoohUjybpW1e14zGXzKfT0gcr+HK0wV
+         VzYuyMFWQ/H9MmT0fwmi2DSRAMLYDIRrhCv3Zo0Gx0R9vp9+j7MvFKlXcVVG2qVsVk
+         kCGzOwR3WE/liGXFdlCL2yg2XHwyIn7mkr85/uExU4JN16lGB9z/TmAqRjFV56xd0G
+         Fpf3o1f7GYIKw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1pWZF7-0006Kl-Js; Mon, 27 Feb 2023 09:52:21 +0100
-Date:   Mon, 27 Feb 2023 09:52:21 +0100
+        id 1pWZDs-0006Jp-Ra; Mon, 27 Feb 2023 09:51:05 +0100
 From:   Johan Hovold <johan@kernel.org>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: [bug report] serial: 8250: fix handle_irq locking
-Message-ID: <Y/xvRQSmS67sv2cL@hovoldconsulting.com>
-References: <Y/xYzqp4ogmOF5t0@kili>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <error27@gmail.com>
+Subject: [PATCH] serial: 8250_fsl: fix handle_irq locking
+Date:   Mon, 27 Feb 2023 09:50:46 +0100
+Message-Id: <20230227085046.24282-1-johan@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y/xYzqp4ogmOF5t0@kili>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 10:16:30AM +0300, Dan Carpenter wrote:
-> Hello Johan Hovold,
-> 
-> The patch 853a9ae29e97: "serial: 8250: fix handle_irq locking" from
-> Jul 14, 2021, leads to the following Smatch static checker warning:
-> 
-> drivers/tty/serial/8250/8250_fsl.c:84 fsl8250_handle_irq() warn: inconsistent returns 'flags'.
->   Locked on  : 38,46
->   Unlocked on: 84
-> 
-> drivers/tty/serial/8250/8250_fsl.c
->     26  int fsl8250_handle_irq(struct uart_port *port)
->     27  {
->     28          unsigned long flags;
->     29          u16 lsr, orig_lsr;
->     30          unsigned int iir;
->     31          struct uart_8250_port *up = up_to_u8250p(port);
->     32  
->     33          spin_lock_irqsave(&up->port.lock, flags);
->                                                   ^^^^^
->     34  
->     35          iir = port->serial_in(port, UART_IIR);
->     36          if (iir & UART_IIR_NO_INT) {
->     37                  spin_unlock(&up->port.lock);
->     38                  return 0;
-> 
-> Needs to enable IRQs again.  Same below etc.
+The 8250 handle_irq callback is not just called from the interrupt
+handler but also from a timer callback when polling (e.g. for ports
+without an interrupt line). Consequently the callback must explicitly
+disable interrupts to avoid a potential deadlock with another interrupt
+in polled mode.
 
-Thanks, Dan. I just sent a fix here:
+Fix up the two paths in the freescale callback that failed to re-enable
+interrupts when polling.
 
-	https://lore.kernel.org/r/20230227085046.24282-1-johan@kernel.org
+Fixes: 853a9ae29e97 ("serial: 8250: fix handle_irq locking")
+Cc: stable@vger.kernel.org	# 5.13
+Reported-by: Dan Carpenter <error27@gmail.com>
+Link: https://lore.kernel.org/r/Y/xYzqp4ogmOF5t0@kili
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serial/8250/8250_fsl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Johan
+diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
+index 8aad15622a2e..8adfaa183f77 100644
+--- a/drivers/tty/serial/8250/8250_fsl.c
++++ b/drivers/tty/serial/8250/8250_fsl.c
+@@ -34,7 +34,7 @@ int fsl8250_handle_irq(struct uart_port *port)
+ 
+ 	iir = port->serial_in(port, UART_IIR);
+ 	if (iir & UART_IIR_NO_INT) {
+-		spin_unlock(&up->port.lock);
++		spin_unlock_irqrestore(&up->port.lock, flags);
+ 		return 0;
+ 	}
+ 
+@@ -42,7 +42,7 @@ int fsl8250_handle_irq(struct uart_port *port)
+ 	if (unlikely(up->lsr_saved_flags & UART_LSR_BI)) {
+ 		up->lsr_saved_flags &= ~UART_LSR_BI;
+ 		port->serial_in(port, UART_RX);
+-		spin_unlock(&up->port.lock);
++		spin_unlock_irqrestore(&up->port.lock, flags);
+ 		return 1;
+ 	}
+ 
+-- 
+2.39.2
+
