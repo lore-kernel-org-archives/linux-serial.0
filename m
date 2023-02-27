@@ -2,99 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6874AC64ED8
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Feb 2023 20:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24887C64ED6
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Feb 2023 22:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbjB0UWN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Feb 2023 15:22:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39720 "EHLO
+        id S230521AbjB0WiP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Feb 2023 17:38:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbjB0UWM (ORCPT
+        with ESMTP id S231126AbjB0Whj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Feb 2023 15:22:12 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CCF1C7F9;
-        Mon, 27 Feb 2023 12:22:12 -0800 (PST)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31RIioNo027473;
-        Mon, 27 Feb 2023 20:21:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2022-7-12;
- bh=VWpkQXpnWOnVO4rf4vkzWMatqHdeMgv7xqpeqXkJar0=;
- b=HPHbOUO6sZOhs5AWCG1MyJCSl3orA276vprxTxarKHTwKiXL/qoiJeM1rM+F42FHig9O
- 9CUDW5aAKbhDwvw5F+WuAg2M2fNOPV6A3B8ju1HvcWfM4kkWtCkUXSzXSlPJFw/9o+2s
- EIU3E5/egLj3z3AGm3edPPayCIYB/SqIeM+AqylTZJGGPWt90pxNK/rXiNXQjuytSt1L
- xRDhfstSzLqn+PMgy1R3vaYK0G5/FJVDzB55JJFnWcHjLwKHmWEGfvs3t3fKnZSfGPb8
- hPZIlpm+7qfpyvstpvgAE9+z0RHEIcEUl+fwIEqEt1cF2iRnfe4vxWND7L9tvK4OnQgV gA== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3nyb9acja1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Feb 2023 20:21:59 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 31RJBxdt032919;
-        Mon, 27 Feb 2023 20:21:58 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3ny8s5t3nm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 27 Feb 2023 20:21:58 +0000
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 31RKLvmQ021428;
-        Mon, 27 Feb 2023 20:21:57 GMT
-Received: from dhcp-10-152-13-169.usdhcp.oraclecorp.com.com (dhcp-10-152-13-169.usdhcp.oraclecorp.com [10.152.13.169])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3ny8s5t3md-1;
-        Mon, 27 Feb 2023 20:21:57 +0000
-From:   George Kennedy <george.kennedy@oracle.com>
-To:     jirislaby@kernel.org, gregkh@linuxfoundation.org,
-        torvalds@linux-foundation.org
-Cc:     george.kennedy@oracle.com, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux@weissschuh.net,
-        regressions@lists.linux.dev
-Subject: [PATCH v2] vc_screen: modify vcs_size() handling in vcs_read()
-Date:   Mon, 27 Feb 2023 15:21:41 -0500
-Message-Id: <1677529301-19530-1-git-send-email-george.kennedy@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
- definitions=2023-02-27_17,2023-02-27_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- phishscore=0 bulkscore=0 spamscore=0 suspectscore=0 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302270161
-X-Proofpoint-GUID: 563-FF90gCLmJuL1VO2vsbRln0f648sN
-X-Proofpoint-ORIG-GUID: 563-FF90gCLmJuL1VO2vsbRln0f648sN
+        Mon, 27 Feb 2023 17:37:39 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79C62A16B;
+        Mon, 27 Feb 2023 14:33:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677537226; x=1709073226;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=j9BBL22OrgQurYvsCPk5r9pfycy08TYIh2Hg/JVbOWI=;
+  b=UYnZO4N5Gy3fmMwhsLJApLRwotz6r8FsUztJPM2aKegOGyE/x9f35OyR
+   mkCkT9EYNcGBVkDz3Om0u5ld87aDi9jDVoXgHLAKm639fKiEFYPb3/35L
+   alNmqujfGdRKLKxIvdO1k7ATWofQ4+S0TJ8jmQN4r0pOPtscwDUse0XmH
+   VJ3+eXv2G6QHxQxw8O294jDsmWhyQDVOo2PNbntKOEOnUo+03sbN9AUnx
+   uVEOGVRbZls2rNJS3BN+LBOBceWJDLEDoV3XBI6UN3e9b03BT3ROiUsJ5
+   NkFbNQy9sWd2au1MTRXgj9srD0Ay12U3feE54KbrM/iYhekO35IhBuha6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="313658490"
+X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
+   d="scan'208";a="313658490"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2023 14:33:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10634"; a="742734203"
+X-IronPort-AV: E=Sophos;i="5.98,220,1673942400"; 
+   d="scan'208";a="742734203"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP; 27 Feb 2023 14:33:20 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pWm3a-00D1je-1i;
+        Tue, 28 Feb 2023 00:33:18 +0200
+Date:   Tue, 28 Feb 2023 00:33:18 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.3-rc1
+Message-ID: <Y/0vrqZjKcAnaZAH@smile.fi.intel.com>
+References: <Y/iywbFbiUAA6ZD3@kroah.com>
+ <CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com>
+ <CAHk-=wjyFhdR-M7H6JpH7zF0k_z5xj8+qERaHsh5+0c4uOmv+g@mail.gmail.com>
+ <Y/qcXOxTVHTNDQbY@mit.edu>
+ <CAHk-=wjPrei8BkaJ3wjGF_fTsehhQZVZppzqYrt76oc+oYXk8w@mail.gmail.com>
+ <Y/u59FFG+ID0OAbg@mit.edu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Y/u59FFG+ID0OAbg@mit.edu>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Restore the vcs_size() handling in vcs_read() to what
-it had been in previous version.
+On Sun, Feb 26, 2023 at 02:58:44PM -0500, Theodore Ts'o wrote:
+> On Sat, Feb 25, 2023 at 06:14:11PM -0800, Linus Torvalds wrote:
+> > On Sat, Feb 25, 2023 at 3:40 PM Theodore Ts'o <tytso@mit.edu> wrote:
+> > >
+> > > For what it's worth, in the VM world (e.g., qemu, AWS, GCP, Azure,
+> > > Linode, etc.)  serial consoles are quite common way of debugging VM's,
+> > > and as an emergency login path when the networking has been screwed up
+> > > for some reason....
+> > 
+> > Everybody seems to be missing the point.
+> > 
+> > We don't make new drivers "default y" (or, in this case, "default SERIAL_8250".
+> > 
+> > It does not matter ONE WHIT if you have a serial device in your
+> > machine. If your old driver was enabled and worked for you and you
+> > used it daily, that is ENTIRELY IMMATERIAL to a new driver, even if
+> > that new driver then happens to use some of the same infrastructure as
+> > the old one did.
+> 
+> Oh, agreed, I wasn't responding to that part of your message.  New
+> serial drivers should never be enabled by default.
 
-Fixes: 226fae124b2d ("vc_screen: move load of struct vc_data pointer in vcs_read() to avoid UAF")
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
----
-v2: added Fixes
++1 here. I don't know how I missed that during review.
 
- drivers/tty/vt/vc_screen.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Some of the "new" (not really, the split of the 8250_pci) drivers
+I made in the past inherited that so user won't see the change
+(sudden disappearance of the console w/o touching defconfig).
 
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index f566eb1839dc..c0a2273bb998 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -414,10 +414,8 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		 */
- 		size = vcs_size(vc, attr, uni_mode);
- 		if (size < 0) {
--			if (read)
--				break;
- 			ret = size;
--			goto unlock_out;
-+			break;
- 		}
- 		if (pos >= size)
- 			break;
 -- 
-2.31.1
+With Best Regards,
+Andy Shevchenko
+
 
