@@ -2,85 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEA5C7EE23
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Feb 2023 02:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724CEC64ED6
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Feb 2023 05:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230030AbjB1Cku (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Feb 2023 21:40:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        id S229612AbjB1Fim (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Feb 2023 00:38:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbjB1Ckt (ORCPT
+        with ESMTP id S229469AbjB1Fil (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Feb 2023 21:40:49 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B540128842
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 18:40:48 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id ck15so34337052edb.0
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 18:40:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1677552047;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S33amPXBgEdvAj5aotTxFER/po/FAxTdpekQddcRdP0=;
-        b=cB0BrIfjrop8bEcPOyvgb7LRJi+neqLR6Haz3iEUxPsoCCvokD73MOmauWFEXF/T+z
-         wIJTU387LfgT4pYFvWLALxtIYcQo1ljsvKL5/wSo+b20kizlEcanOud7TTMMBpL9wKu9
-         yVfIiIHIiCYTg1DYwUR5h4D2Wbsbn2ZtWZnHc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677552047;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=S33amPXBgEdvAj5aotTxFER/po/FAxTdpekQddcRdP0=;
-        b=GnoGklscs+dNjFB4xvPGvOmnssSBHCq59bPI965qpMK06SFRHOsf74zmdk6oSpXDPq
-         w0/GLu0kmxlY9MlfDQx4eX+B2ixN1IbEM5yMZ971Ra7x9TbiM5DXe1MjgnUhbqaNlOuq
-         5kHQK8wF53UVeoyJJb1IjRofYhRDyBPIYFK+TbXxF+UDZJ5j2MpI3YZwP72Mk45ejVyi
-         a3BT2tuBNm7sjbJwj18czyoLj0uBf7k8/zX+TIonLxMhHDd80Ldg78LIGK+LfmiKget5
-         linqSznx7XAh+Ntu8mHugDoSCswc0B3jnc66ahjxEjyh8yCOjAzLE74NmyyIqgzVEuHv
-         J1pg==
-X-Gm-Message-State: AO0yUKUqr1KPC75nOB+DVISMIgIf7h/l0rl0lwXT0UUmzcvJt9kC5G+b
-        mlGGXeeraEHC3TzKQM/RgcotPnETsTToyoB5bEQ=
-X-Google-Smtp-Source: AK7set+ZYH5ulgiG0as1q1oVyCFb1X4ntH63kCRJx+OszIPguSpHG0f89DLW2dEn3F2QiNAU9uMHfQ==
-X-Received: by 2002:aa7:c507:0:b0:4ae:eab6:9ff8 with SMTP id o7-20020aa7c507000000b004aeeab69ff8mr1749343edq.13.1677552046762;
-        Mon, 27 Feb 2023 18:40:46 -0800 (PST)
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com. [209.85.208.52])
-        by smtp.gmail.com with ESMTPSA id m20-20020a509314000000b004af5aa16fcasm3165361eda.66.2023.02.27.18.40.45
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Feb 2023 18:40:45 -0800 (PST)
-Received: by mail-ed1-f52.google.com with SMTP id o15so31593744edr.13
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 18:40:45 -0800 (PST)
-X-Received: by 2002:a17:906:79a:b0:8b8:aef3:f2a9 with SMTP id
- l26-20020a170906079a00b008b8aef3f2a9mr413714ejc.0.1677552045260; Mon, 27 Feb
- 2023 18:40:45 -0800 (PST)
+        Tue, 28 Feb 2023 00:38:41 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E47C2006F;
+        Mon, 27 Feb 2023 21:38:40 -0800 (PST)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pWsh7-0004NB-VD; Tue, 28 Feb 2023 06:38:34 +0100
+Message-ID: <4e9cdfbd-9e9e-449c-a4e4-fe22021c7187@leemhuis.info>
+Date:   Tue, 28 Feb 2023 06:38:33 +0100
 MIME-Version: 1.0
-References: <1677529301-19530-1-git-send-email-george.kennedy@oracle.com>
- <face2b1b-0f2e-4a79-a71b-79681fc56273@t-8ch.de> <CAHk-=whxC0ob3f--B-igBp34ujA5PZQMcTnDQ8Zh8HA7+ZbeWg@mail.gmail.com>
- <64981d94-d00c-4b31-9063-43ad0a384bde@t-8ch.de>
-In-Reply-To: <64981d94-d00c-4b31-9063-43ad0a384bde@t-8ch.de>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 27 Feb 2023 18:40:28 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wi3KimdZnsU5j7fPgPCpDj3QaZvmu5CXRsAE=NiOjmAXw@mail.gmail.com>
-Message-ID: <CAHk-=wi3KimdZnsU5j7fPgPCpDj3QaZvmu5CXRsAE=NiOjmAXw@mail.gmail.com>
-Subject: Re: [PATCH v2] vc_screen: modify vcs_size() handling in vcs_read()
-To:     =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Cc:     George Kennedy <george.kennedy@oracle.com>, jirislaby@kernel.org,
-        gregkh@linuxfoundation.org, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, regressions@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] vc_screen: don't clobber return value in vcs_read
+Content-Language: en-US, de-DE
+To:     George Kennedy <george.kennedy@oracle.com>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+Cc:     =?UTF-8?Q?Thomas_Wei=c3=9fschuh?= <linux@weissschuh.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Storm Dragon <stormdragon2976@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        sfr@canb.auug.org.au, akpm@linux-foundation.org,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <Y/KtG9vK0oz0nQrN@hotmail.com>
+ <20230220064612.1783-1-linux@weissschuh.net>
+ <dcaaf7d5-b2d5-dbb9-f3fe-2232ee525cc8@kernel.org>
+ <2094ecec-f63c-4e8a-ba97-da77c5266da1@t-8ch.de>
+ <2941c2b9-5fa5-e25c-dcd0-ab9c9c0f143e@oracle.com>
+ <Y/TMH8Hf6zBrC3yc@kroah.com>
+ <9e297f30-dc8c-ecac-f7a6-348ddbd4b928@leemhuis.info>
+ <c0d99436-28a0-d012-646d-251a9511e76f@oracle.com>
+From:   "Linux regression tracking (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+In-Reply-To: <c0d99436-28a0-d012-646d-251a9511e76f@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1677562720;e1ab0d66;
+X-HE-SMSGID: 1pWsh7-0004NB-VD
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 27, 2023 at 6:18=E2=80=AFPM Thomas Wei=C3=9Fschuh <linux@weisss=
-chuh.net> wrote:
->
-> Tested-By: Thomas Wei=C3=9Fschuh <linux@weissschuh.net>
->
-> (Or feel free to use my patch from above and fixup the goto/break line)
+On 27.02.23 20:59, George Kennedy wrote:
+> Hello Thomas,
+> 
+> On 2/27/2023 9:20 AM, Linux regression tracking (Thorsten Leemhuis) wrote:
+>> Hi, this is your Linux kernel regression tracker. Top-posting for once,
+>> to make this easily accessible to everyone.
+>>
+>> George, is there anything we can do to help you moving forward to
+>> finally get this regression fixed? It seems (or am I missing something?)
+>> everyone is waiting for you (see below) to act on the feedback Jiri
+>> provided here:
+>>
+>> https://lore.kernel.org/lkml/8dffe187-240d-746e-ed84-885ffd2785f6@kernel.org/
+>>
+>> Side note: would be good to add a "Link:" tag pointing to the start of
+>> this thread as well, but that's just a detail.
+> 
+> I just sent the requested patch up for review.
+> 
+> https://lore.kernel.org/lkml/1677527001-17459-1-git-send-email-george.kennedy@oracle.com/
 
-Done.
+Thx for handling this!
 
-              Linus
+And I see it very quickly made its way to mainline. :-D
+
+Ciao, Thorsten
+
+>> On 21.02.23 14:50, Greg Kroah-Hartman wrote:
+>>> On Tue, Feb 21, 2023 at 08:30:11AM -0500, George Kennedy wrote:
+>>>> On 2/20/2023 11:34 AM, Thomas Weißschuh wrote:
+>>>>> +Cc people who were involved in the original thread.
+>>>>>
+>>>>> On Mon, Feb 20, 2023 at 12:48:59PM +0100, Jiri Slaby wrote:
+>>>>>> On 20. 02. 23, 7:46, linux@weissschuh.net wrote:
+>>>>>>> From: Thomas Weißschuh <linux@weissschuh.net>
+>>>>>>>
+>>>>>>> Commit 226fae124b2d
+>>>>>>> ("vc_screen: move load of struct vc_data pointer in vcs_read() to
+>>>>>>> avoid UAF")
+>>>>>>> moved the call to vcs_vc() into the loop.
+>>>>>>> While doing this it also moved the unconditional assignment of
+>>>>>>> "ret = -ENXIO".
+>>>>>>> This unconditional assignment was valid outside the loop but
+>>>>>>> within it
+>>>>>>> it clobbers the actual value of ret.
+>>>>>>>
+>>>>>>> To avoid this only assign "ret = -ENXIO" when actually needed.
+>>>>>> Not sure -- I cannot find it -- but hasn't George fixed this yet?
+>>>>> Indeed there was a proposed fix at
+>>>>> https://lore.kernel.org/lkml/1675704844-17228-1-git-send-email-george.kennedy@oracle.com/
+>>>>>
+>>>>> Linus had some suggestions so it was not applied as is.
+>>>>>
+>>>>> I'm not sure what the current state is.
+>>>>> George, do you have something in the pipeline?
+>>>> Yes, that is in the pipeline:
+>>>> https://lore.kernel.org/lkml/1675774098-17722-1-git-send-email-george.kennedy@oracle.com/
+>>>>
+>>>> Linus suggested the fix, which was tested and submitted.
+>>>>
+>>>> Jiri commented on the patch, which I believe was directed at Linus
+>>>> as he
+>>>> suggested the fix.
+>>> And I was waiting for a new version from you based on those comments :(
+>>>
+>>> Can you fix that up and send?
+>>>
+>>> thanks,
+>>>
+>>> greg k-h
+>> #regzbot monitor:
+>> https://lore.kernel.org/lkml/1675774098-17722-1-git-send-email-george.kennedy@oracle.com/
+>> #regzbot poke
+> 
+> 
+> 
