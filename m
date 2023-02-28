@@ -2,77 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF5DC64ED6
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Feb 2023 06:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C2FC64ED6
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Feb 2023 06:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229485AbjB1G1x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Feb 2023 01:27:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
+        id S229889AbjB1GcU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Feb 2023 01:32:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbjB1G1v (ORCPT
+        with ESMTP id S229888AbjB1GcT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Feb 2023 01:27:51 -0500
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D511C5AB;
-        Mon, 27 Feb 2023 22:27:50 -0800 (PST)
-Received: by mail-wr1-f50.google.com with SMTP id h14so8547156wru.4;
-        Mon, 27 Feb 2023 22:27:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qIJwi+ZiA8VVwy9x+m58D44AgNYSEUd57yQq8/pj2Do=;
-        b=Jfu3tFg3PHdn60cqb+wh6raCiKx4DKQPOPw0xQERH1TbMuBSAegQeyq8LY8fD1CoR0
-         sHvPId8QuGUmfRl78HILA4xjzy2560bmZuL3zrpyIVO5XF1D/dgSFzYd1R1Jl7n//SRG
-         /LqzzShO0nSvb0rEjlSZm0CKxPKL/iIuBoK4E4JJPhN4+TagQiJLTgKgDp0r9q4GCRPH
-         /kfVxNBAyCpMDhsXJ0NdGtH8aPQxq/BWiUTPlgAwU5CB4yERFtBSJpC90JpqPPFsYaYZ
-         f/JNKodR+/qwpnmGTAE3DT/tWHWOGAdVPgge/XmIEBe7RbTFEIijb0Il3R29vnkkNaNe
-         YAlg==
-X-Gm-Message-State: AO0yUKVp/imAlntSWwok3lT9afU3EzM2UY4SFzWuJv1vTTY4XPR5oqi+
-        2ofYJTGfu/A1XwzUaMIfOfQ=
-X-Google-Smtp-Source: AK7set/LUYXspeR5E/tlrHvLQ8tqJErH+HXcXcigCbCGOAmCzYVwo2/rmrOY58Bo7AYjP1STyCS1Cw==
-X-Received: by 2002:a05:6000:1362:b0:2c7:a9ec:3 with SMTP id q2-20020a056000136200b002c7a9ec0003mr1160384wrz.65.1677565668557;
-        Mon, 27 Feb 2023 22:27:48 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id s8-20020a5d4ec8000000b002c704271b05sm8889896wrv.66.2023.02.27.22.27.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Feb 2023 22:27:48 -0800 (PST)
-Message-ID: <e7d9a975-69b8-0290-102e-ac3fce792952@kernel.org>
-Date:   Tue, 28 Feb 2023 07:27:46 +0100
+        Tue, 28 Feb 2023 01:32:19 -0500
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84F628D09
+        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 22:32:16 -0800 (PST)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20230228063214c31253521ce7a0998d
+        for <linux-serial@vger.kernel.org>;
+        Tue, 28 Feb 2023 07:32:14 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=BSVe7O2t8AoVIgNh+LgCt8w0mdAVj5U58ZYwaeF0sSM=;
+ b=QnNnaNTnzcsDKbjZj/qUHE8nt3ZOu4Idg1HVRljSi8KYXns0oKFs++JbAWvhPK+4DV+fvb
+ 1+M+3Nt3oq276FpxXD2dh131GO/HQq/Ydo6f+xaBZ/J7GO5oGdEtRuFZMVw8w/AZG6+aucIB
+ twYrCJSUOJExzy1ISWZepS2GVs0LU=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 2/3] tty: n_gsm: allow window size configuration
+Date:   Tue, 28 Feb 2023 07:29:56 +0100
+Message-Id: <20230228062957.3150-2-daniel.starke@siemens.com>
+In-Reply-To: <20230228062957.3150-1-daniel.starke@siemens.com>
+References: <20230228062957.3150-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] serial: 8250_fsl: fix handle_irq locking
-Content-Language: en-US
-To:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Dan Carpenter <error27@gmail.com>
-References: <20230227085046.24282-1-johan@kernel.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230227085046.24282-1-johan@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 27. 02. 23, 9:50, Johan Hovold wrote:
-> The 8250 handle_irq callback is not just called from the interrupt
-> handler but also from a timer callback when polling (e.g. for ports
-> without an interrupt line). Consequently the callback must explicitly
-> disable interrupts to avoid a potential deadlock with another interrupt
-> in polled mode.
-> 
-> Fix up the two paths in the freescale callback that failed to re-enable
-> interrupts when polling.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Huh.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 6 describes the error recovery mode option
+which is based on I frames. The k parameter defines the maximum number of
+I frames that a DLC can have unacknowledged as described in chapter 5.7.4.
+The current n_gsm implementation does not support the error recovery mode
+option. However, the k parameter is also part of the parameter negotiation
+message as described in chapter 5.4.6.3.1. Chapter 5.7.4 also notes that
+the allowed value range for k is 1-7. That means a 0 is counted as invalid
+here. This means that the user needs to configure a valid value here even
+if the function itself is not supported. Otherwise, parameter negotiation
+may fail.
 
-Acked-by: Jiri Slaby <jirislaby@kernel.org>
+Allow setting of k via ioctl in gsm_config(). Range checks are already
+included.
 
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 3ca33149c339..494657e8535d 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -3276,8 +3276,8 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 	int need_close = 0;
+ 	int need_restart = 0;
+ 
+-	/* Stuff we don't support yet - UI or I frame transport, windowing */
+-	if ((c->adaption != 1 && c->adaption != 2) || c->k)
++	/* Stuff we don't support yet - UI or I frame transport */
++	if (c->adaption != 1 && c->adaption != 2)
+ 		return -EOPNOTSUPP;
+ 	/* Check the MRU/MTU range looks sane */
+ 	if (c->mru < MIN_MTU || c->mtu < MIN_MTU)
 -- 
-js
-suse labs
+2.34.1
 
