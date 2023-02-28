@@ -2,160 +2,232 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA09C7EE31
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Feb 2023 06:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75494C64ED6
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Feb 2023 06:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbjB1GcV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Feb 2023 01:32:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S229530AbjB1G7V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Feb 2023 01:59:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbjB1GcT (ORCPT
+        with ESMTP id S229673AbjB1G7U (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Feb 2023 01:32:19 -0500
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5B82940D
-        for <linux-serial@vger.kernel.org>; Mon, 27 Feb 2023 22:32:17 -0800 (PST)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20230228063215924fc52ee2d536dff3
-        for <linux-serial@vger.kernel.org>;
-        Tue, 28 Feb 2023 07:32:15 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=tDSzegl8wRjGyTb80N1hE+w00MNy/G0rvVJNJbPavHY=;
- b=HPx/WSMAkv/9J2bd7VY6UZimwS3HJil+7kddYp4JQmIqP0z2ZuSHjQo8DzltM1u0xEjXOM
- G8/DibNx6MeiDLhfFFNXi3OyWL3gWOwJ0QI/9yp4ZxO4eGZYXvsCDJxQhuM1D+XMdU8QbCkf
- xDV77CQbnNXwqfgIlUOvhWL0Ed9EM=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 3/3] tty: n_gsm: add ioctl for DLC config via ldisc handle
-Date:   Tue, 28 Feb 2023 07:29:57 +0100
-Message-Id: <20230228062957.3150-3-daniel.starke@siemens.com>
-In-Reply-To: <20230228062957.3150-1-daniel.starke@siemens.com>
-References: <20230228062957.3150-1-daniel.starke@siemens.com>
+        Tue, 28 Feb 2023 01:59:20 -0500
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F521A64C;
+        Mon, 27 Feb 2023 22:58:51 -0800 (PST)
+Received: by mail-wr1-f52.google.com with SMTP id r18so8616548wrx.1;
+        Mon, 27 Feb 2023 22:58:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ayvPpqIegArr0R2l9x+qh7I7UJDUnZK9Guk3caLM4Dk=;
+        b=4ic3CmoSyVN9ZRPJrHtR9fzLVvM840/xDR5udbGfM2MwC3LG/bt8GVkHv2mjRf5qEt
+         it/aikIHUQ11Crwzc/gZyVn+ppSiTXxQ3Z56zNUuKAUGEUNUntxVrn07Hb3+phha8HcB
+         9bVWERHw6HaJ5mpJjirHJujMfgt31rLnLVQjhnHWMmSp7q/kX3jyQ7oc3TvFOWqI8JUn
+         DJXWXbuOOoU3klMRpWqr7s//Cc2zHzJt8S4JidixAQhwZ6T+BlgiaNdJgdOrYixrl8u8
+         Kcooew3cuIjBKoJGbFUn1Xq4N7ZlPGc3goFpW3y6T+4dVtowZwuU5gr7xfEuBYVvEKed
+         P3sA==
+X-Gm-Message-State: AO0yUKV8f9lT1dYXVCUkv1jcq3H4rUKzb9EvXkNosCjqoIV6axXTxHl/
+        OTyOgVruL42RWnoIL6YX6QUopXKYuS0=
+X-Google-Smtp-Source: AK7set/pkhWYzfYDqv+j9RR/uQGrxiBA3vL4Qx23vTgcgpWrAStnV/VuGmWDhj+EUtcQ7d5rWkMDkw==
+X-Received: by 2002:adf:e642:0:b0:2c5:5870:b589 with SMTP id b2-20020adfe642000000b002c55870b589mr1487555wrn.14.1677567529887;
+        Mon, 27 Feb 2023 22:58:49 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id n3-20020a5d4203000000b002c57384dfe0sm8749348wrq.113.2023.02.27.22.58.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Feb 2023 22:58:49 -0800 (PST)
+Message-ID: <7ad445d4-34b5-0973-1f4e-7413feabb206@kernel.org>
+Date:   Tue, 28 Feb 2023 07:58:48 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20230228062957.3150-1-daniel.starke@siemens.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 1/3] tty: n_gsm: add ioctl for DLC specific parameter
+ configuration
+In-Reply-To: <20230228062957.3150-1-daniel.starke@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 28. 02. 23, 7:29, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
+> 
+> Parameter negotiation has been introduced with
+> commit 92f1f0c3290d ("tty: n_gsm: add parameter negotiation support")
+> 
+> However, means to set individual parameters per DLCI are not yet
+> implemented. Furthermore, it is currently not possible to keep a DLCI half
+> open until the user application sets the right parameters for it. This is
+> required to allow a user application to set its specific parameters before
+> the underlying link is established. Otherwise, the link is opened and
+> re-established right afterwards if the user application sets incompatible
+> parameters. This may be an unexpected behavior for the peer.
+> 
+> Add parameter 'wait_config' to 'gsm_config' to support setups where the
+> DLCI specific user application sets its specific parameters after open()
+> and before the link gets fully established. Setting this to zero disables
+> the user application specific DLCI configuration option.
+> 
+> Add the ioctls 'GSMIOC_GETCONF_DLCI' and 'GSMIOC_SETCONF_DLCI' for the
+> ldisc and virtual ttys. This gets/sets the DLCI specific parameters and may
+> trigger a reconnect of the DLCI if incompatible values have been set. Only
+> the parameters for the DLCI associated with the virtual tty can be set or
+> retrieved if called on these.
+> 
+> Add remark within the documentation to introduce the new ioctls.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+...
+> @@ -2453,6 +2476,128 @@ static void gsm_kick_timer(struct timer_list *t)
+>   		pr_info("%s TX queue stalled\n", __func__);
+>   }
+>   
+> +/**
+> + * gsm_dlci_copy_config_values	-	copy DLCI configuration
+> + * @dlci: source DLCI
+> + * @dc: configuration structure to fill
+> + */
+> +static void gsm_dlci_copy_config_values(struct gsm_dlci *dlci, struct gsm_dlci_config *dc)
+> +{
+> +	memset(dc, 0, sizeof(*dc));
+> +	dc->channel = (u32)dlci->addr;
+> +	dc->adaption = (u32)dlci->adaption;
+> +	dc->mtu = (u32)dlci->mtu;
+> +	dc->priority = (u32)dlci->prio;
+> +	if (dlci->ftype == UIH)
+> +		dc->i = 1;
+> +	else
+> +		dc->i = 2;
+> +	dc->k = (u32)dlci->k;
 
-The application which initializes the n_gsm ldisc may like to set
-individual default parameters for each DLCI or take over of the application
-specific DLCI configuration completely. This is currently not possible.
-It is either possible to set common default parameters for all DLCIs or let
-the user application set its DLCI specific configuration parameters.
+Why all those casts?
 
-Add support of GSMIOC_GETCONF_DLCI and GSMIOC_SETCONF_DLCI for the n_gsm
-ldisc handle to support DLCI specific parameter configuration upfront.
+> +}
+> +
+> +/**
+> + * gsm_dlci_config	-	configure DLCI from configuration
+> + * @dlci: DLCI to configure
+> + * @dc: DLCI configuration
+> + * @open: open DLCI after configuration?
+> + */
+> +static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, int open)
+> +{
+> +	struct gsm_mux *gsm;
+> +	bool need_restart = false;
+> +	bool need_open = false;
+> +	unsigned int i;
+> +
+> +	/*
+> +	 * Check that userspace doesn't put stuff in here to prevent breakages
+> +	 * in the future.
+> +	 */
+> +	for (i = 0; i < ARRAY_SIZE(dc->reserved); i++)
+> +		if (dc->reserved[i])
+> +			return -EINVAL;
+> +
+> +	if (!dlci)
+> +		return -EINVAL;
+> +	gsm = dlci->gsm;
+> +
+> +	/* Stuff we don't support yet - I frame transport */
+> +	if (dc->adaption != 1 && dc->adaption != 2)
+> +		return -EOPNOTSUPP;
+> +	if (dc->mtu > MAX_MTU || dc->mtu < MIN_MTU || (unsigned int)dc->mtu > gsm->mru)
+> +		return -EINVAL;
+> +	if (dc->priority >= 64)
+> +		return -EINVAL;
+> +	if (dc->i == 0 || dc->i > 2)  /* UIH and UI only */
+> +		return -EINVAL;
+> +	if (dc->k > 7)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * See what is needed for reconfiguration
+> +	 */
+> +	/* Framing fields */
+> +	if ((int)dc->adaption != dlci->adaption)
+> +		need_restart = true;
+> +	if ((unsigned int)dc->mtu != dlci->mtu)
+> +		need_restart = true;
+> +	if ((u8)dc->i != dlci->ftype)
+> +		need_restart = true;
+> +	/* Requires care */
+> +	if ((u8)dc->priority != (u32)dlci->prio)
+> +		need_restart = true;
 
-Add a code example for this use case to the n_gsm documentation.
+And here.
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- Documentation/driver-api/tty/n_gsm.rst | 16 +++++++++++++++
- drivers/tty/n_gsm.c                    | 28 ++++++++++++++++++++++++++
- 2 files changed, 44 insertions(+)
+> +
+> +	if ((open && gsm->wait_config) || need_restart)
+> +		need_open = true;
+> +	if (dlci->state == DLCI_WAITING_CONFIG) {
+> +		need_restart = false;
+> +		need_open = true;
+> +	}
+> +
+> +	/*
+> +	 * Close down what is needed, restart and initiate the new
+> +	 * configuration.
+> +	 */
+> +	if (need_restart) {
+> +		gsm_dlci_begin_close(dlci);
+> +		wait_event_interruptible(gsm->event, dlci->state == DLCI_CLOSED);
+> +		if (signal_pending(current))
+> +			return -EINTR;
+> +	}
+> +	/*
+> +	 * Setup the new configuration values
+> +	 */
+> +	dlci->adaption = (int)dc->adaption;
+> +
+> +	if (dlci->mtu)
 
-diff --git a/Documentation/driver-api/tty/n_gsm.rst b/Documentation/driver-api/tty/n_gsm.rst
-index c2624546fb8f..120317ec990f 100644
---- a/Documentation/driver-api/tty/n_gsm.rst
-+++ b/Documentation/driver-api/tty/n_gsm.rst
-@@ -47,6 +47,7 @@ Config Initiator
-       int ldisc = N_GSM0710;
-       struct gsm_config c;
-       struct gsm_config_ext ce;
-+      struct gsm_dlci_config dc;
-       struct termios configuration;
-       uint32_t first;
- 
-@@ -83,6 +84,13 @@ Config Initiator
-       c.mtu = 127;
-       /* set the new configuration */
-       ioctl(fd, GSMIOC_SETCONF, &c);
-+      /* get DLC 1 configuration */
-+      dc.channel = 1;
-+      ioctl(fd, GSMIOC_GETCONF_DLCI, &dc);
-+      /* the first user channel gets a higher priority */
-+      dc.priority = 1;
-+      /* set the new DLC 1 specific configuration */
-+      ioctl(fd, GSMIOC_SETCONF_DLCI, &dc);
-       /* get first gsmtty device node */
-       ioctl(fd, GSMIOC_GETFIRST, &first);
-       printf("first muxed line: /dev/gsmtty%i\n", first);
-@@ -136,6 +144,7 @@ Config Requester
- 	int ldisc = N_GSM0710;
- 	struct gsm_config c;
- 	struct gsm_config_ext ce;
-+	struct gsm_dlci_config dc;
- 	struct termios configuration;
- 	uint32_t first;
- 
-@@ -165,6 +174,13 @@ Config Requester
- 	c.mtu = 127;
- 	/* set the new configuration */
- 	ioctl(fd, GSMIOC_SETCONF, &c);
-+	/* get DLC 1 configuration */
-+	dc.channel = 1;
-+	ioctl(fd, GSMIOC_GETCONF_DLCI, &dc);
-+	/* the first user channel gets a higher priority */
-+	dc.priority = 1;
-+	/* set the new DLC 1 specific configuration */
-+	ioctl(fd, GSMIOC_SETCONF_DLCI, &dc);
- 	/* get first gsmtty device node */
- 	ioctl(fd, GSMIOC_GETFIRST, &first);
- 	printf("first muxed line: /dev/gsmtty%i\n", first);
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 494657e8535d..86f106545958 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -3716,6 +3716,7 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
- {
- 	struct gsm_config c;
- 	struct gsm_config_ext ce;
-+	struct gsm_dlci_config dc;
- 	struct gsm_mux *gsm = tty->disc_data;
- 	struct gsm_dlci *dlci;
- 	unsigned int base;
-@@ -3742,6 +3743,33 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
- 		if (copy_from_user(&ce, (void __user *)arg, sizeof(ce)))
- 			return -EFAULT;
- 		return gsm_config_ext(gsm, &ce);
-+	case GSMIOC_GETCONF_DLCI:
-+		if (copy_from_user(&dc, (void __user *)arg, sizeof(dc)))
-+			return -EFAULT;
-+		if (dc.channel == 0 || dc.channel >= NUM_DLCI)
-+			return -EINVAL;
-+		dlci = gsm->dlci[dc.channel];
-+		if (!dlci) {
-+			dlci = gsm_dlci_alloc(gsm, dc.channel);
-+			if (!dlci)
-+				return -ENOMEM;
-+		}
-+		gsm_dlci_copy_config_values(dlci, &dc);
-+		if (copy_to_user((void __user *)arg, &dc, sizeof(dc)))
-+			return -EFAULT;
-+		return 0;
-+	case GSMIOC_SETCONF_DLCI:
-+		if (copy_from_user(&dc, (void __user *)arg, sizeof(dc)))
-+			return -EFAULT;
-+		if (dc.channel == 0 || dc.channel >= NUM_DLCI)
-+			return -EINVAL;
-+		dlci = gsm->dlci[dc.channel];
-+		if (!dlci) {
-+			dlci = gsm_dlci_alloc(gsm, dc.channel);
-+			if (!dlci)
-+				return -ENOMEM;
-+		}
-+		return gsm_dlci_config(dlci, &dc, 0);
- 	default:
- 		return n_tty_ioctl_helper(tty, cmd, arg);
- 	}
+dc->mtu?
+
+> +		dlci->mtu = (unsigned int)dc->mtu;
+> +	else
+> +		dlci->mtu = gsm->mtu;
+> +
+> +	if (dc->priority)
+> +		dlci->prio = (u8)dc->priority;
+> +	else
+> +		dlci->prio = roundup(dlci->addr + 1, 8) - 1;
+> +
+> +	if (dc->i == 1)
+> +		dlci->ftype = UIH;
+> +	else if (dc->i == 2)
+> +		dlci->ftype = UI;
+> +
+> +	if (dc->k)
+> +		dlci->k = (u8)dc->k;
+> +	else
+> +		dlci->k = gsm->k;
+> +
+> +	if (need_open) {
+> +		if (gsm->initiator)
+> +			gsm_dlci_begin_open(dlci);
+> +		else
+> +			gsm_dlci_set_opening(dlci);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   /*
+>    *	Allocate/Free DLCI channels
+>    */
+
 -- 
-2.34.1
+js
+suse labs
 
