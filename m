@@ -2,92 +2,133 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5132C64EC7
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Mar 2023 08:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6F3C64ED6
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Mar 2023 09:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbjCAIjw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Mar 2023 03:39:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
+        id S229659AbjCAJvq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Mar 2023 04:51:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjCAIjv (ORCPT
+        with ESMTP id S229511AbjCAJvp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Mar 2023 03:39:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1978688;
-        Wed,  1 Mar 2023 00:39:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0459E6124D;
-        Wed,  1 Mar 2023 08:39:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D27AC433D2;
-        Wed,  1 Mar 2023 08:39:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1677659988;
-        bh=7QrITpaZU3kn9dpEhLJ17MGGgkznJxYNhP7TuOD6FKI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m19V7SMtLBgZFm0gcfSjVcv3Mi07dJijAxRNzfulhvO06DKnsz7icLUb1oxkfAenc
-         18tlinGWWGekAjPZIA0C7JcioS8UJqeMrl4O3X5H79f3lzIe6IXmKk4X4PKY3KxSg/
-         0eylGSMqJhrsbuJFbXxIGyw1ffilMjpBWz9XHTzQ=
-Date:   Wed, 1 Mar 2023 09:39:45 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Lukasz Majczak <lma@semihalf.com>
+        Wed, 1 Mar 2023 04:51:45 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7154831E23
+        for <linux-serial@vger.kernel.org>; Wed,  1 Mar 2023 01:51:44 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id j19-20020a05600c191300b003eb3e1eb0caso6736572wmq.1
+        for <linux-serial@vger.kernel.org>; Wed, 01 Mar 2023 01:51:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google; t=1677664303;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oW952k94eHwop+SfxK3L89foJizL9YBwkHTpjecyhpQ=;
+        b=c4Rqu+eEkqy9Bl9PK9NHWqhQM2aSjUazWO5I8r6qS3LnGphqIrK93oqz9lyNQ27G7V
+         T1WseVDSNP0GRFUl2xdo8sYfnXn4/YC2jH5Eaw5ngZZCLU7NhBWrwIKuTaNDxnaxq0ad
+         PkfsGNHgISOPQOhVYr1FuWm6Ytymv6ZNNgZKCOQJ6bs/opsSvBHLR96p3MsriopmNoBT
+         ANNgEOjkeDgsnLmmygrdzJb4fAM8Y025YkwHOk+jtP6LHJxf5c+ggAMhwCkaH4mEjKDh
+         jjVhqLXLOUxPUGCyEZFG6+KeaRzU1p9q4ttIrS5+BwPQk64tPDzA7T96Qvs8JsVUGDpy
+         ACLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677664303;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oW952k94eHwop+SfxK3L89foJizL9YBwkHTpjecyhpQ=;
+        b=G/fQKKVAhP5IdaWsbxiWBXFjoYQYVTJU1a2vlX5Idjm+/uXEajLdqEv/QqKLpOUAfh
+         TonnHeaGzT/eS1LAN8DJdRZPGgRi3eAfR9znKDVfe4r5abYme4eSt5G2wUoo9mhSJbou
+         dHvHvrVZif4MM5dTemqLxXvzq4aIqi9O7sO6uc8tucXfm8ugn7J/U+qr35nohz3Y54Xd
+         wTDjIChAS1+0MriR0vcOGz+Q4dp7B56fhPek8/8BGhNZ3WWEKN1ilBt17VI6wi7gpNB1
+         Q5u0m3FvhS9kG2t73DocPrVvViIyQYIAIhe1NslGWnQScgTMZy71kQryqYgCRpqHDe4B
+         EXEA==
+X-Gm-Message-State: AO0yUKXF5aFW9YPifj5Hib7GUwAEsBTXs5EpkEuajwW2B3JEzQqRfdsu
+        y/RWP65o0dhJ2ixcWp5GmpRp7U+SguvIb2dfPVokIw==
+X-Google-Smtp-Source: AK7set9MhUdTEyc+dfnzsEI00l6Qw7dbEOemGYM/wpEvVNGSGKPx5Hg1YC+yfNIMhGPjox/6alGzPW2Lrcq4MTO2+iE=
+X-Received: by 2002:a05:600c:1f06:b0:3eb:3e75:5daf with SMTP id
+ bd6-20020a05600c1f0600b003eb3e755dafmr3811676wmb.2.1677664302839; Wed, 01 Mar
+ 2023 01:51:42 -0800 (PST)
+MIME-Version: 1.0
+References: <20230301075751.43839-1-lma@semihalf.com> <Y/8PUdEwskXuWZHA@kroah.com>
+In-Reply-To: <Y/8PUdEwskXuWZHA@kroah.com>
+From:   Lukasz Majczak <lma@semihalf.com>
+Date:   Wed, 1 Mar 2023 10:51:31 +0100
+Message-ID: <CAFJ_xbp+qD-_MGd3+SgBY=8zruZNy7k3CO3OMMmWhMGhA-tARQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: core: fix broken console after suspend
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Guenter Roeck <groeck@chromium.org>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         upstream@semihalf.com, stable@vger.kernel.org
-Subject: Re: [PATCH] serial: core: fix broken console after suspend
-Message-ID: <Y/8PUdEwskXuWZHA@kroah.com>
-References: <20230301075751.43839-1-lma@semihalf.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230301075751.43839-1-lma@semihalf.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 01, 2023 at 08:57:51AM +0100, Lukasz Majczak wrote:
-> Re-enable the console device after suspending, causes its cflags,
-> ispeed and ospeed to be set anew, basing on the values stored in
-> uport->cons. The issue is that these values are set only once,
-> when parsing console parameters after boot (see uart_set_options()),
-> next after configuring a port in uart_port_startup() these parameteres
-> (cflags, ispeed and ospeed) are copied to termios structure and
-> the orginal one (stored in uport->cons) are cleared, but there is no place
-> in code where those fields are checked against 0.
-> When kernel calls uart_resume_port() and setups console, it copies cflags,
-> ispeed and ospeed values from uart->cons,but those are alread cleared.
-> The efect is that console is broken.
-> This patch address this by preserving the cflags, ispeed and
-> ospeed fields in uart->cons during uart_port_startup().
-> 
-> Signed-off-by: Lukasz Majczak <lma@semihalf.com>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/tty/serial/serial_core.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 2bd32c8ece39..394a05c09d87 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
->  			tty->termios.c_cflag = uport->cons->cflag;
->  			tty->termios.c_ispeed = uport->cons->ispeed;
->  			tty->termios.c_ospeed = uport->cons->ospeed;
-> -			uport->cons->cflag = 0;
-> -			uport->cons->ispeed = 0;
-> -			uport->cons->ospeed = 0;
->  		}
->  		/*
->  		 * Initialise the hardware port settings.
-> -- 
-> 2.39.2.722.g9855ee24e9-goog
-> 
+=C5=9Br., 1 mar 2023 o 09:39 Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> napisa=C5=82(a):
+>
+> On Wed, Mar 01, 2023 at 08:57:51AM +0100, Lukasz Majczak wrote:
+> > Re-enable the console device after suspending, causes its cflags,
+> > ispeed and ospeed to be set anew, basing on the values stored in
+> > uport->cons. The issue is that these values are set only once,
+> > when parsing console parameters after boot (see uart_set_options()),
+> > next after configuring a port in uart_port_startup() these parameteres
+> > (cflags, ispeed and ospeed) are copied to termios structure and
+> > the orginal one (stored in uport->cons) are cleared, but there is no pl=
+ace
+> > in code where those fields are checked against 0.
+> > When kernel calls uart_resume_port() and setups console, it copies cfla=
+gs,
+> > ispeed and ospeed values from uart->cons,but those are alread cleared.
+> > The efect is that console is broken.
+> > This patch address this by preserving the cflags, ispeed and
+> > ospeed fields in uart->cons during uart_port_startup().
+> >
+> > Signed-off-by: Lukasz Majczak <lma@semihalf.com>
+> > Cc: stable@vger.kernel.org
+> > ---
+> >  drivers/tty/serial/serial_core.c | 3 ---
+> >  1 file changed, 3 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+> > index 2bd32c8ece39..394a05c09d87 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struct *tty=
+, struct uart_state *state,
+> >                       tty->termios.c_cflag =3D uport->cons->cflag;
+> >                       tty->termios.c_ispeed =3D uport->cons->ispeed;
+> >                       tty->termios.c_ospeed =3D uport->cons->ospeed;
+> > -                     uport->cons->cflag =3D 0;
+> > -                     uport->cons->ispeed =3D 0;
+> > -                     uport->cons->ospeed =3D 0;
+> >               }
+> >               /*
+> >                * Initialise the hardware port settings.
+> > --
+> > 2.39.2.722.g9855ee24e9-goog
+> >
+>
+> What commit id does this fix?
+>
+> thanks,
+>
+> greg k-h
+Hi Greg,
 
-What commit id does this fix?
+There are actually two commits that introduce problematic uport flags
+clearing in uart_startup (for the sake of simplicity I'd ignore the
+older history):
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
+h=3Dv6.2&id=3Dc7d7abff40c27f82fe78b1091ab3fad69b2546f9
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
+h=3Dv6.2&id=3D027b57170bf8bb6999a28e4a5f3d78bf1db0f90c
+It's 10 years between those 2 and to me it was hard to decide about
+picking a proper one for the `Fixes:` tag.
+How would you recommend to proceed wrt applying this patch on the
+stable releases?
 
-thanks,
-
-greg k-h
+Best regards,
+Lukasz
