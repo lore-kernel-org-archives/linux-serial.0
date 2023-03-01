@@ -2,80 +2,66 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73685C64ED6
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Mar 2023 10:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C69BC64ED6
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Mar 2023 11:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229453AbjCAKJ4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Mar 2023 05:09:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S229832AbjCALZQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Mar 2023 06:25:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbjCAKJg (ORCPT
+        with ESMTP id S229714AbjCALZQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Mar 2023 05:09:36 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FAA196B3;
-        Wed,  1 Mar 2023 02:09:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1677665372; x=1709201372;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=L21mfnwG2tG1rkVD0UVEhu+U7/OYan2vtpwho9OQe+k=;
-  b=bwbpNxDtBXrb9qxsNI91JHsQ1sCCqKKpymZAfToxGFJnjfhlLjIpcfzY
-   Acj5Fu/N1+Eb/allR1o/d9e/qympgc6rc1HCDJq9lO100AVZPKzYuxpvD
-   z4V9NEmwhUznM1/KBOnp+m8N8+pMOD8xXm/s+ECV+HBojn90q/oFuF4JS
-   cx0N+U7pO9S7atYrcB2JTEmMrts87PRsCr/hkfyIAixbyoghQ3cmkNeLD
-   fKuUwHM1l1JTr0dg/JKb74XzupyB/IR/NfihtIl2ZPWC21wq/QGS14vcx
-   FroZGSL1M7y2TGhlGbIYYlGNkXpkXhYDT5PBOGEbjCM/qf3LJF0EQ+d42
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.98,224,1673938800"; 
-   d="scan'208";a="202983394"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Mar 2023 03:09:20 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 1 Mar 2023 03:09:17 -0700
-Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Wed, 1 Mar 2023 03:09:14 -0700
-From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-To:     <gregkh@linuxfoundation.org>
-CC:     <jirislaby@kernel.org>, <andriy.shevchenko@linux.intel.com>,
-        <ilpo.jarvinen@linux.intel.com>, <deller@gmx.de>,
-        <geert+renesas@glider.be>, <phil.edworthy@renesas.com>,
-        <matthew.gerlach@linux.intel.com>, <linux-serial@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH tty-next] serial: 8250_pci1xxxx: Disable SERIAL_8250_PCI1XXXX config by default
-Date:   Wed, 1 Mar 2023 15:39:30 +0530
-Message-ID: <20230301100930.3519883-1-kumaravel.thiagarajan@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 1 Mar 2023 06:25:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE2D303F9;
+        Wed,  1 Mar 2023 03:25:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E01E9612AC;
+        Wed,  1 Mar 2023 11:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65E7C433EF;
+        Wed,  1 Mar 2023 11:25:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1677669914;
+        bh=cIMXIDnozHaqowec1O1TRtHHff4QSszc20HOrjHA07M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=x331yujoMN3cX5voi+Sm+TFyUoH14ZKkTnrTJqMx2FO+XZIUdU/kLoI/qIkNQbzKK
+         8DOuXijfIs8IER40p3uZNBVqs8xudq+pkuxMVgtz+r3PeLGzqedh9kTDBcNr3yUwkH
+         /iMSFeYLemKHIVZr6uUPivV3p5uXICZ2ERCzz4fA=
+Date:   Wed, 1 Mar 2023 12:25:06 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
+        ilpo.jarvinen@linux.intel.com, deller@gmx.de,
+        geert+renesas@glider.be, phil.edworthy@renesas.com,
+        matthew.gerlach@linux.intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH tty-next] serial: 8250_pci1xxxx: Disable
+ SERIAL_8250_PCI1XXXX config by default
+Message-ID: <Y/82Ehzj2+FgIRh3@kroah.com>
+References: <20230301100930.3519883-1-kumaravel.thiagarajan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230301100930.3519883-1-kumaravel.thiagarajan@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Disable SERIAL_8250_PCI1XXXX config by default
+On Wed, Mar 01, 2023 at 03:39:30PM +0530, Kumaravel Thiagarajan wrote:
+> Disable SERIAL_8250_PCI1XXXX config by default
 
-Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
----
- drivers/tty/serial/8250/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+Why?
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 978dc196c29b..cbf11147dc89 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -299,7 +299,6 @@ config SERIAL_8250_PCI1XXXX
- 	tristate "Microchip 8250 based serial port"
- 	depends on SERIAL_8250 && PCI
- 	select SERIAL_8250_PCILIB
--	default SERIAL_8250
- 	help
- 	 Select this option if you have a setup with Microchip PCIe
- 	 Switch with serial port enabled and wish to enable 8250
--- 
-2.25.1
+Please read the kernel documentation for how to write a good changelog
+text.
 
+> 
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+
+What commit id does this fix?
+
+thanks,
+
+greg k-h
