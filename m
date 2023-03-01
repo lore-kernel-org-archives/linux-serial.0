@@ -2,103 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C419BC64EC7
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Mar 2023 07:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5132C64EC7
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Mar 2023 08:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbjCAH7r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Mar 2023 02:59:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
+        id S229778AbjCAIjw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Mar 2023 03:39:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbjCAH7o (ORCPT
+        with ESMTP id S229749AbjCAIjv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Mar 2023 02:59:44 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358F722DDA
-        for <linux-serial@vger.kernel.org>; Tue, 28 Feb 2023 23:59:43 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id x6so7413469ljq.1
-        for <linux-serial@vger.kernel.org>; Tue, 28 Feb 2023 23:59:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google; t=1677657581;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=bA7nt4VKDa+62lfIEzrNwx8iY9x2ZjNkaV9QCRTZ5/M=;
-        b=Z0resYFKm/zwiRxf7dvMgqn8Sg8ExqwFPNjZ9+/6O/Co8Svyz5xRsqlReabbJIjyon
-         JFBBoYHAlIt9TH6xmTaLa0rhejyK9OkZvWVrsA8e5hgPhqYpRPsUtoLBqR/SNhgPqNA1
-         fgkV2Vf2twXfrqUY1apus6ubbHVCvlpcFrx8xlobdatRP4aop9gwpPlUbAmAfuI6n/Rw
-         MqMHCPUqiqcyScUV6KsRDvIH3ixZiQ8/IhclKeQ7fZTPATYf8U1PfLo9VSM1+oY/5CAm
-         VjJBgccnKjGTGNg9SvABERPeOJdIFrqZQ1G8/+vLaDBVMEKK+kCmpAsGzjuvfTuTfRdc
-         rpPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677657581;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bA7nt4VKDa+62lfIEzrNwx8iY9x2ZjNkaV9QCRTZ5/M=;
-        b=vAdhe0hMUjsAfwwh1rEevDyW4+oq4kAB+uHXVM9GimvVnvM9yn799SXt6PTQRneEOu
-         zqKqTczU9Ook9x8sHIc8sIUJAR309q3CIOn4tDvL/qE6V8TCD85vqCVfQjaxERTyMRPJ
-         413EJr7LjHRl8hAO6NSHMFobFWS9LmhkEHlCo+ZlFFQZaEknEbgP+4Rgfqygz5GqOVjn
-         QFXpV4K7YxvmWvSLu8wN11Gewrr46qLxIYos2VQhGyf/z4kVpx35hAc3TAaj1F70P0xm
-         FBN1Y+omQws5Cfzht9apUwn//nm+vfTUKlUbXgip1vRE+uEehxb0/fP3l1JYZbCwGeYS
-         glaw==
-X-Gm-Message-State: AO0yUKV5iCLEiyr3QqerY82+K2EKj3vMjDK/5VIIS701cp281Njfznvo
-        mUzrqabZ2AV0wj7N/wuZdklwxw==
-X-Google-Smtp-Source: AK7set/Rr8rGFuYqZf3NksYhKA4pQQPbk9F61v/Cqyf4oCoQ2ULFuK24NUohQIeVpam0A6KTMQJ7fQ==
-X-Received: by 2002:a2e:9cd9:0:b0:295:ad91:8811 with SMTP id g25-20020a2e9cd9000000b00295ad918811mr1738540ljj.36.1677657581421;
-        Tue, 28 Feb 2023 23:59:41 -0800 (PST)
-Received: from lmajczak1-l.roam.corp.google.com ([83.142.187.84])
-        by smtp.gmail.com with ESMTPSA id n9-20020a056512388900b004caf992bba9sm1631515lft.268.2023.02.28.23.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Feb 2023 23:59:41 -0800 (PST)
-From:   Lukasz Majczak <lma@semihalf.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Guenter Roeck <groeck@chromium.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, upstream@semihalf.com,
-        Lukasz Majczak <lma@semihalf.com>, stable@vger.kernel.org
-Subject: [PATCH] serial: core: fix broken console after suspend
-Date:   Wed,  1 Mar 2023 08:57:51 +0100
-Message-Id: <20230301075751.43839-1-lma@semihalf.com>
-X-Mailer: git-send-email 2.39.2.722.g9855ee24e9-goog
+        Wed, 1 Mar 2023 03:39:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1978688;
+        Wed,  1 Mar 2023 00:39:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0459E6124D;
+        Wed,  1 Mar 2023 08:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D27AC433D2;
+        Wed,  1 Mar 2023 08:39:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1677659988;
+        bh=7QrITpaZU3kn9dpEhLJ17MGGgkznJxYNhP7TuOD6FKI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=m19V7SMtLBgZFm0gcfSjVcv3Mi07dJijAxRNzfulhvO06DKnsz7icLUb1oxkfAenc
+         18tlinGWWGekAjPZIA0C7JcioS8UJqeMrl4O3X5H79f3lzIe6IXmKk4X4PKY3KxSg/
+         0eylGSMqJhrsbuJFbXxIGyw1ffilMjpBWz9XHTzQ=
+Date:   Wed, 1 Mar 2023 09:39:45 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lukasz Majczak <lma@semihalf.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com, stable@vger.kernel.org
+Subject: Re: [PATCH] serial: core: fix broken console after suspend
+Message-ID: <Y/8PUdEwskXuWZHA@kroah.com>
+References: <20230301075751.43839-1-lma@semihalf.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230301075751.43839-1-lma@semihalf.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Re-enable the console device after suspending, causes its cflags,
-ispeed and ospeed to be set anew, basing on the values stored in
-uport->cons. The issue is that these values are set only once,
-when parsing console parameters after boot (see uart_set_options()),
-next after configuring a port in uart_port_startup() these parameteres
-(cflags, ispeed and ospeed) are copied to termios structure and
-the orginal one (stored in uport->cons) are cleared, but there is no place
-in code where those fields are checked against 0.
-When kernel calls uart_resume_port() and setups console, it copies cflags,
-ispeed and ospeed values from uart->cons,but those are alread cleared.
-The efect is that console is broken.
-This patch address this by preserving the cflags, ispeed and
-ospeed fields in uart->cons during uart_port_startup().
+On Wed, Mar 01, 2023 at 08:57:51AM +0100, Lukasz Majczak wrote:
+> Re-enable the console device after suspending, causes its cflags,
+> ispeed and ospeed to be set anew, basing on the values stored in
+> uport->cons. The issue is that these values are set only once,
+> when parsing console parameters after boot (see uart_set_options()),
+> next after configuring a port in uart_port_startup() these parameteres
+> (cflags, ispeed and ospeed) are copied to termios structure and
+> the orginal one (stored in uport->cons) are cleared, but there is no place
+> in code where those fields are checked against 0.
+> When kernel calls uart_resume_port() and setups console, it copies cflags,
+> ispeed and ospeed values from uart->cons,but those are alread cleared.
+> The efect is that console is broken.
+> This patch address this by preserving the cflags, ispeed and
+> ospeed fields in uart->cons during uart_port_startup().
+> 
+> Signed-off-by: Lukasz Majczak <lma@semihalf.com>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/tty/serial/serial_core.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 2bd32c8ece39..394a05c09d87 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+>  			tty->termios.c_cflag = uport->cons->cflag;
+>  			tty->termios.c_ispeed = uport->cons->ispeed;
+>  			tty->termios.c_ospeed = uport->cons->ospeed;
+> -			uport->cons->cflag = 0;
+> -			uport->cons->ispeed = 0;
+> -			uport->cons->ospeed = 0;
+>  		}
+>  		/*
+>  		 * Initialise the hardware port settings.
+> -- 
+> 2.39.2.722.g9855ee24e9-goog
+> 
 
-Signed-off-by: Lukasz Majczak <lma@semihalf.com>
-Cc: stable@vger.kernel.org
----
- drivers/tty/serial/serial_core.c | 3 ---
- 1 file changed, 3 deletions(-)
+What commit id does this fix?
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2bd32c8ece39..394a05c09d87 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 			tty->termios.c_cflag = uport->cons->cflag;
- 			tty->termios.c_ispeed = uport->cons->ispeed;
- 			tty->termios.c_ospeed = uport->cons->ospeed;
--			uport->cons->cflag = 0;
--			uport->cons->ispeed = 0;
--			uport->cons->ospeed = 0;
- 		}
- 		/*
- 		 * Initialise the hardware port settings.
--- 
-2.39.2.722.g9855ee24e9-goog
+thanks,
 
+greg k-h
