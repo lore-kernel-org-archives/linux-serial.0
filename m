@@ -2,170 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A954BC678D4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 16:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB98C678D4
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 17:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbjCBQnp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Mar 2023 11:43:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
+        id S229749AbjCBRBp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Mar 2023 12:01:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbjCBQno (ORCPT
+        with ESMTP id S229555AbjCBRBo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Mar 2023 11:43:44 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60DFD33C
-        for <linux-serial@vger.kernel.org>; Thu,  2 Mar 2023 08:43:41 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id h11so5419352wrm.5
-        for <linux-serial@vger.kernel.org>; Thu, 02 Mar 2023 08:43:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google; t=1677775420;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cTZfZHAIhgJirPC83OpTOerMsHpSjvj4Zqm6PqES9bI=;
-        b=FLTFY/6ogRnvXZl26ubXndP14EhvGLTYCaDMe0E+v+D4uEwk1Rf1gm8Wy4t72NV9+G
-         S2u9Rd31ML2znI5/txqXW9xO8qEdvpSLfA4nUC5xX4FJ8Rn52hhXWVYAPXNHYm4RztqV
-         +eyaeMhr4GjL6r89L46CdH+M4AIl9tBtg5fByudIoWTMFpWLu2DH/FyyuQ8ntB/y+EZ5
-         AjwqXrF1xBPY0rvjE7U33tFVEoS2genDOGPbVYTo/j0DwP+aNLVolMZSeGVGfvBIFjeg
-         NoshzMBVoFFa/EWXz4d7VqG+xkFixPL0l9ODMScmp+7WYwuyWLGt8fnsecXh2/MuTKvI
-         552w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677775420;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cTZfZHAIhgJirPC83OpTOerMsHpSjvj4Zqm6PqES9bI=;
-        b=p4EcWkKoUvHQOWfwi+jDtIx9dZe7+uUYRdsXIN63e+/AtJDHrEYt8bikNUEHG8gEl7
-         cRy9CRLYdMMLf+nrF/vulZ195bVRldcG0DO/+LdxQ6pvI7Xx3mYYo1gX67JA67Ckz4N8
-         fRZ6P/IfHTh152dHu/h1hlOZF4u+y8hUjk94bYdv0U7jmHssiFa6QkOmvrcTi1S6InTG
-         k+YUn1mu6bD/cLBtSv82+0KLl6pmN2R/fCjhHtUmuc0VHtmDnq7gTCnxRs+PXm3jH36G
-         pzmukKRjraUKPP2tRQPUTgamgTO/YNnKlYSpk5Ns3Qlszf6g+mmfNz5xQbKLg8Wa2cTu
-         o7mw==
-X-Gm-Message-State: AO0yUKU7M5bPCfgVtS9LbeSkGXeOu3v3GYivNDJ9CaEVNnPYxxYgMfoA
-        aZD9hu7czjzcIvbyVtiwWD2Pto+BIRVD3E8k0Q+XhA==
-X-Google-Smtp-Source: AK7set+vXKnI+Vramuu8NtDo2jEQGC5AgWDJT3qnrylYvn5UhjJ2TtTG/B1cjhWFAaWc/NDHXS6Z7OUXdMf+VKgpBck=
-X-Received: by 2002:adf:dd8b:0:b0:2c5:5941:a04b with SMTP id
- x11-20020adfdd8b000000b002c55941a04bmr594881wrl.7.1677775420157; Thu, 02 Mar
- 2023 08:43:40 -0800 (PST)
+        Thu, 2 Mar 2023 12:01:44 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437D23E0B6;
+        Thu,  2 Mar 2023 09:01:43 -0800 (PST)
+Received: from [192.168.1.141] ([37.4.248.41]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MrQ2R-1qLyUj0P5T-00oVnT; Thu, 02 Mar 2023 18:01:34 +0100
+Message-ID: <2cc752fb-a25d-0789-0fad-54b99f08ced7@i2se.com>
+Date:   Thu, 2 Mar 2023 18:01:33 +0100
 MIME-Version: 1.0
-References: <20230301075751.43839-1-lma@semihalf.com> <Y/8PUdEwskXuWZHA@kroah.com>
- <CAFJ_xbp+qD-_MGd3+SgBY=8zruZNy7k3CO3OMMmWhMGhA-tARQ@mail.gmail.com>
- <Y/9Ddl7c2PKSEpsR@kroah.com> <CAFJ_xbr_petJ8=wKNLSnJ=97t+cERre07=hNYFeBVHp0nvPtWw@mail.gmail.com>
-In-Reply-To: <CAFJ_xbr_petJ8=wKNLSnJ=97t+cERre07=hNYFeBVHp0nvPtWw@mail.gmail.com>
-From:   Lukasz Majczak <lma@semihalf.com>
-Date:   Thu, 2 Mar 2023 17:43:28 +0100
-Message-ID: <CAFJ_xbrK9pGh_5muDKCCPz1gvaue7sKKELJfZ6TZHCU+gibtYg@mail.gmail.com>
-Subject: Re: [PATCH] serial: core: fix broken console after suspend
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        upstream@semihalf.com, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v1] serdev: Set fwnode for serdev devices
+To:     Saravana Kannan <saravanak@google.com>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, kernel-team@android.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230302023509.319903-1-saravanak@google.com>
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20230302023509.319903-1-saravanak@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:KB/Rl9hlpDPP5vdb88R/eeV24DEll67IfsYLs4evYPMk2umXiXb
+ OOFve/qn0SyoVeB8Di4b3IBlsdkF17kHBos2MdvXEw7/NL4gLupdYZk3AnmhVNmBSXgooEY
+ QSrVgeNBp/OBVSHciDAIvO4X85F9zyaQq15cQ95YObkUpbrbxb4iCFllgvtnahCBjxv8toc
+ pxzKUdr22u83Y+61aQ7fA==
+UI-OutboundReport: notjunk:1;M01:P0:kuWDmCFCFQk=;51KcqFKLGNARRajFz9oMUlKaM8Z
+ /ZYJjdPMNL2C3kVnu2g3GraetOn25n0PFt3iE+aBlC8dXSay9XETjxvaK5djeHX41Z45EegIs
+ yUuZcOkz6WFPdV0mSjPflE412fjCvbMnvhLyRlriasMgbLGPbbkv8NBtfK6vanXPPaR1DRLn6
+ 8PNSpi5aT843bGZYtWqCiFrWKFsGqLck3YhE6es4MUK3kpGweR+jeeXmIfKAJg4nEdQgyOUAs
+ 6qObMLWri4Rnk0tYBPLX1DxE820qsIJo4zervWEeg9cnyQr7NHabksAyF+1xivCQIlrHPMJf7
+ Hm5g4XKJ8/hVO4TFAmWhgd5plszXYTSN9qc3kUHTBnw7TsxecxzE4VaW/r+JJ4jrd6lP16Sh/
+ kbXj5uuUJTZa2JtQpM7vBjuMrXpDyNmYtBbIWp3CSnz8VUmk/sgGN3+flHIdnquYsafWFgSEn
+ S5BK7cD0/HKisW4OOuqK16CHS7TBrtURkOp4F80gY8pXJjvhS51x/8XNHhI/XpTiceJmeh8HA
+ y7BZt5zppDZFP6alo4hrJCxTrQcfP8ct/f7FysCvm1AxS1v9GhG3IDrSyxFkTx6aSAOfXexyt
+ +hqndt1hAR5AnV9VJN16XL8YwhlI92/W73XnXpd4ZjvlFr5nfHYOemW/tcF5GiM2hyjweuU2X
+ E/KN6KspHPnO0RuY6DZJP7/xZl373qf4X4c6nVCiQQ==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-=C5=9Br., 1 mar 2023 o 15:09 Lukasz Majczak <lma@semihalf.com> napisa=C5=82=
-(a):
->
-> =C5=9Br., 1 mar 2023 o 13:22 Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> napisa=C5=82(a):
-> >
-> > On Wed, Mar 01, 2023 at 10:51:31AM +0100, Lukasz Majczak wrote:
-> > > =C5=9Br., 1 mar 2023 o 09:39 Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> napisa=C5=82(a):
-> > > >
-> > > > On Wed, Mar 01, 2023 at 08:57:51AM +0100, Lukasz Majczak wrote:
-> > > > > Re-enable the console device after suspending, causes its cflags,
-> > > > > ispeed and ospeed to be set anew, basing on the values stored in
-> > > > > uport->cons. The issue is that these values are set only once,
-> > > > > when parsing console parameters after boot (see uart_set_options(=
-)),
-> > > > > next after configuring a port in uart_port_startup() these parame=
-teres
-> > > > > (cflags, ispeed and ospeed) are copied to termios structure and
-> > > > > the orginal one (stored in uport->cons) are cleared, but there is=
- no place
-> > > > > in code where those fields are checked against 0.
-> > > > > When kernel calls uart_resume_port() and setups console, it copie=
-s cflags,
-> > > > > ispeed and ospeed values from uart->cons,but those are alread cle=
-ared.
-> > > > > The efect is that console is broken.
-> > > > > This patch address this by preserving the cflags, ispeed and
-> > > > > ospeed fields in uart->cons during uart_port_startup().
-> > > > >
-> > > > > Signed-off-by: Lukasz Majczak <lma@semihalf.com>
-> > > > > Cc: stable@vger.kernel.org
-> > > > > ---
-> > > > >  drivers/tty/serial/serial_core.c | 3 ---
-> > > > >  1 file changed, 3 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/seria=
-l/serial_core.c
-> > > > > index 2bd32c8ece39..394a05c09d87 100644
-> > > > > --- a/drivers/tty/serial/serial_core.c
-> > > > > +++ b/drivers/tty/serial/serial_core.c
-> > > > > @@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struc=
-t *tty, struct uart_state *state,
-> > > > >                       tty->termios.c_cflag =3D uport->cons->cflag=
-;
-> > > > >                       tty->termios.c_ispeed =3D uport->cons->ispe=
-ed;
-> > > > >                       tty->termios.c_ospeed =3D uport->cons->ospe=
-ed;
-> > > > > -                     uport->cons->cflag =3D 0;
-> > > > > -                     uport->cons->ispeed =3D 0;
-> > > > > -                     uport->cons->ospeed =3D 0;
-> > > > >               }
-> > > > >               /*
-> > > > >                * Initialise the hardware port settings.
-> > > > > --
-> > > > > 2.39.2.722.g9855ee24e9-goog
-> > > > >
-> > > >
-> > > > What commit id does this fix?
-> > > >
-> > > > thanks,
-> > > >
-> > > > greg k-h
-> > > Hi Greg,
-> > >
-> > > There are actually two commits that introduce problematic uport flags
-> > > clearing in uart_startup (for the sake of simplicity I'd ignore the
-> > > older history):
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/co=
-mmit/?h=3Dv6.2&id=3Dc7d7abff40c27f82fe78b1091ab3fad69b2546f9
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/co=
-mmit/?h=3Dv6.2&id=3D027b57170bf8bb6999a28e4a5f3d78bf1db0f90c
-> > > It's 10 years between those 2 and to me it was hard to decide about
-> > > picking a proper one for the `Fixes:` tag.
-> > > How would you recommend to proceed wrt applying this patch on the
-> > > stable releases?
-> >
-> > Where do you think this needs to go to?  Pick something?
-> >
-> > And as you have obviously found this on a device running an older kerne=
-l
-> > version, what kernel tree(s) did you test it on?
-> >
-> > thanks,
-> >
-> > greg k-h
->
-> As this patch applies without conflict on 4.14, I would suggest 4.14+.
-> I have tested the patch on chromes-5.15 (cannonlake device).
->
-> Best regards,
-> Lukasz
+Hi Saravana,
 
-I have tested my patch also with 4.14 and 6.1 (again chromeos tree).
-On 4.14 it fixed the issue, but on 6.1 although the console survived
-the suspend/resume,
-it is printing different characters than requested - I will try to
-debug it further.
+Am 02.03.23 um 03:35 schrieb Saravana Kannan:
+> This allow fw_devlink to do dependency tracking for serdev devices.
+>
+> Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+> Link: https://lore.kernel.org/lkml/03b70a8a-0591-f28b-a567-9d2f736f17e5@gmail.com/
+> Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
 
-Best regards
-Lukasz
+since this fixes an issue on Raspberry Pi 4, shouldn't this be mentioned 
+in the commit message and providing a Fixes tag?
+
+Thanks
+Stefan
+
+> ---
+> Florian,
+>
+> Can you give it a shot and a tested-by please?
+>
+> -Saravana
+>
+>   drivers/tty/serdev/core.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index aa80de3a8194..678014253b7b 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -534,7 +534,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+>   		if (!serdev)
+>   			continue;
+>   
+> -		serdev->dev.of_node = node;
+> +		device_set_node(&serdev->dev, of_fwnode_handle(node));
+>   
+>   		err = serdev_device_add(serdev);
+>   		if (err) {
