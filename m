@@ -2,97 +2,170 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5299FC6FA8E
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 16:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A954BC678D4
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 16:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbjCBQG7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Mar 2023 11:06:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
+        id S229974AbjCBQnp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Mar 2023 11:43:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjCBQG6 (ORCPT
+        with ESMTP id S229849AbjCBQno (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Mar 2023 11:06:58 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AF3515DA;
-        Thu,  2 Mar 2023 08:06:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677773217; x=1709309217;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VPSx/AhyKKGPzUlJ3kgpsLe16fwtwFBjOK+GiXUPDwI=;
-  b=YX2G2H/gH222sjHD5lMmSQtcQFmh37vXu2fP9+TGgpAepngRjNh5YDza
-   zkcXoVMFaWE2Bi+QGpugUBK1q52M91RDs3xyzdUEmZfOxCyPK9mOIkIa7
-   1fgMABi4/Idl6O10SozZCxJMnw67V9Z9NzrNHCbuvHoX2TcZ/83r61hVu
-   ffG0Pxhp0Pl/iq7ksF8GOdx2qJwXoiYqR4bha4uQGmuixreIB2LasF8dE
-   pHqBexl+9d/BXpT0uvdD1shw1vndmj68lvjbd4ImVJ3Ejkwk+a6b9rxKC
-   UXDgIuGN2fNz/trJBRScOdLima2S1QEkYqzC+52zl5sRS5JmSXpx0Z3hC
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="323056341"
-X-IronPort-AV: E=Sophos;i="5.98,228,1673942400"; 
-   d="scan'208";a="323056341"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 08:06:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="784886444"
-X-IronPort-AV: E=Sophos;i="5.98,228,1673942400"; 
-   d="scan'208";a="784886444"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP; 02 Mar 2023 08:06:54 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1pXlSG-00EQ6E-0q;
-        Thu, 02 Mar 2023 18:06:52 +0200
-Date:   Thu, 2 Mar 2023 18:06:51 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <ZADJm+co4goPgr7u@smile.fi.intel.com>
-References: <20230116080002.47315-1-tony@atomide.com>
+        Thu, 2 Mar 2023 11:43:44 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60DFD33C
+        for <linux-serial@vger.kernel.org>; Thu,  2 Mar 2023 08:43:41 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id h11so5419352wrm.5
+        for <linux-serial@vger.kernel.org>; Thu, 02 Mar 2023 08:43:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google; t=1677775420;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cTZfZHAIhgJirPC83OpTOerMsHpSjvj4Zqm6PqES9bI=;
+        b=FLTFY/6ogRnvXZl26ubXndP14EhvGLTYCaDMe0E+v+D4uEwk1Rf1gm8Wy4t72NV9+G
+         S2u9Rd31ML2znI5/txqXW9xO8qEdvpSLfA4nUC5xX4FJ8Rn52hhXWVYAPXNHYm4RztqV
+         +eyaeMhr4GjL6r89L46CdH+M4AIl9tBtg5fByudIoWTMFpWLu2DH/FyyuQ8ntB/y+EZ5
+         AjwqXrF1xBPY0rvjE7U33tFVEoS2genDOGPbVYTo/j0DwP+aNLVolMZSeGVGfvBIFjeg
+         NoshzMBVoFFa/EWXz4d7VqG+xkFixPL0l9ODMScmp+7WYwuyWLGt8fnsecXh2/MuTKvI
+         552w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677775420;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cTZfZHAIhgJirPC83OpTOerMsHpSjvj4Zqm6PqES9bI=;
+        b=p4EcWkKoUvHQOWfwi+jDtIx9dZe7+uUYRdsXIN63e+/AtJDHrEYt8bikNUEHG8gEl7
+         cRy9CRLYdMMLf+nrF/vulZ195bVRldcG0DO/+LdxQ6pvI7Xx3mYYo1gX67JA67Ckz4N8
+         fRZ6P/IfHTh152dHu/h1hlOZF4u+y8hUjk94bYdv0U7jmHssiFa6QkOmvrcTi1S6InTG
+         k+YUn1mu6bD/cLBtSv82+0KLl6pmN2R/fCjhHtUmuc0VHtmDnq7gTCnxRs+PXm3jH36G
+         pzmukKRjraUKPP2tRQPUTgamgTO/YNnKlYSpk5Ns3Qlszf6g+mmfNz5xQbKLg8Wa2cTu
+         o7mw==
+X-Gm-Message-State: AO0yUKU7M5bPCfgVtS9LbeSkGXeOu3v3GYivNDJ9CaEVNnPYxxYgMfoA
+        aZD9hu7czjzcIvbyVtiwWD2Pto+BIRVD3E8k0Q+XhA==
+X-Google-Smtp-Source: AK7set+vXKnI+Vramuu8NtDo2jEQGC5AgWDJT3qnrylYvn5UhjJ2TtTG/B1cjhWFAaWc/NDHXS6Z7OUXdMf+VKgpBck=
+X-Received: by 2002:adf:dd8b:0:b0:2c5:5941:a04b with SMTP id
+ x11-20020adfdd8b000000b002c55941a04bmr594881wrl.7.1677775420157; Thu, 02 Mar
+ 2023 08:43:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230116080002.47315-1-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20230301075751.43839-1-lma@semihalf.com> <Y/8PUdEwskXuWZHA@kroah.com>
+ <CAFJ_xbp+qD-_MGd3+SgBY=8zruZNy7k3CO3OMMmWhMGhA-tARQ@mail.gmail.com>
+ <Y/9Ddl7c2PKSEpsR@kroah.com> <CAFJ_xbr_petJ8=wKNLSnJ=97t+cERre07=hNYFeBVHp0nvPtWw@mail.gmail.com>
+In-Reply-To: <CAFJ_xbr_petJ8=wKNLSnJ=97t+cERre07=hNYFeBVHp0nvPtWw@mail.gmail.com>
+From:   Lukasz Majczak <lma@semihalf.com>
+Date:   Thu, 2 Mar 2023 17:43:28 +0100
+Message-ID: <CAFJ_xbrK9pGh_5muDKCCPz1gvaue7sKKELJfZ6TZHCU+gibtYg@mail.gmail.com>
+Subject: Re: [PATCH] serial: core: fix broken console after suspend
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 16, 2023 at 09:59:58AM +0200, Tony Lindgren wrote:
-> We want to enable runtime PM for serial port device drivers in a generic
-> way. To do this, we want to have the serial core layer manage the
-> registered physical serial controller devices.
-> 
-> To do this, let's set up a struct device for the serial core controller
-> as suggested by Greg and Jiri. The serial core controller devices are
-> children of the physical serial port device. The serial core controller
-> device is needed to support multiple different kind of ports connected
-> to single physical serial port device.
-> 
-> Let's also set up a struct device for the serial core port. The serial
-> core port instances are children of the serial core controller device.
-> 
-> With the serial core port device we can now flush pending TX on the
-> runtime PM resume as suggested by Johan.
+=C5=9Br., 1 mar 2023 o 15:09 Lukasz Majczak <lma@semihalf.com> napisa=C5=82=
+(a):
+>
+> =C5=9Br., 1 mar 2023 o 13:22 Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> napisa=C5=82(a):
+> >
+> > On Wed, Mar 01, 2023 at 10:51:31AM +0100, Lukasz Majczak wrote:
+> > > =C5=9Br., 1 mar 2023 o 09:39 Greg Kroah-Hartman
+> > > <gregkh@linuxfoundation.org> napisa=C5=82(a):
+> > > >
+> > > > On Wed, Mar 01, 2023 at 08:57:51AM +0100, Lukasz Majczak wrote:
+> > > > > Re-enable the console device after suspending, causes its cflags,
+> > > > > ispeed and ospeed to be set anew, basing on the values stored in
+> > > > > uport->cons. The issue is that these values are set only once,
+> > > > > when parsing console parameters after boot (see uart_set_options(=
+)),
+> > > > > next after configuring a port in uart_port_startup() these parame=
+teres
+> > > > > (cflags, ispeed and ospeed) are copied to termios structure and
+> > > > > the orginal one (stored in uport->cons) are cleared, but there is=
+ no place
+> > > > > in code where those fields are checked against 0.
+> > > > > When kernel calls uart_resume_port() and setups console, it copie=
+s cflags,
+> > > > > ispeed and ospeed values from uart->cons,but those are alread cle=
+ared.
+> > > > > The efect is that console is broken.
+> > > > > This patch address this by preserving the cflags, ispeed and
+> > > > > ospeed fields in uart->cons during uart_port_startup().
+> > > > >
+> > > > > Signed-off-by: Lukasz Majczak <lma@semihalf.com>
+> > > > > Cc: stable@vger.kernel.org
+> > > > > ---
+> > > > >  drivers/tty/serial/serial_core.c | 3 ---
+> > > > >  1 file changed, 3 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/seria=
+l/serial_core.c
+> > > > > index 2bd32c8ece39..394a05c09d87 100644
+> > > > > --- a/drivers/tty/serial/serial_core.c
+> > > > > +++ b/drivers/tty/serial/serial_core.c
+> > > > > @@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struc=
+t *tty, struct uart_state *state,
+> > > > >                       tty->termios.c_cflag =3D uport->cons->cflag=
+;
+> > > > >                       tty->termios.c_ispeed =3D uport->cons->ispe=
+ed;
+> > > > >                       tty->termios.c_ospeed =3D uport->cons->ospe=
+ed;
+> > > > > -                     uport->cons->cflag =3D 0;
+> > > > > -                     uport->cons->ispeed =3D 0;
+> > > > > -                     uport->cons->ospeed =3D 0;
+> > > > >               }
+> > > > >               /*
+> > > > >                * Initialise the hardware port settings.
+> > > > > --
+> > > > > 2.39.2.722.g9855ee24e9-goog
+> > > > >
+> > > >
+> > > > What commit id does this fix?
+> > > >
+> > > > thanks,
+> > > >
+> > > > greg k-h
+> > > Hi Greg,
+> > >
+> > > There are actually two commits that introduce problematic uport flags
+> > > clearing in uart_startup (for the sake of simplicity I'd ignore the
+> > > older history):
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/co=
+mmit/?h=3Dv6.2&id=3Dc7d7abff40c27f82fe78b1091ab3fad69b2546f9
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/co=
+mmit/?h=3Dv6.2&id=3D027b57170bf8bb6999a28e4a5f3d78bf1db0f90c
+> > > It's 10 years between those 2 and to me it was hard to decide about
+> > > picking a proper one for the `Fixes:` tag.
+> > > How would you recommend to proceed wrt applying this patch on the
+> > > stable releases?
+> >
+> > Where do you think this needs to go to?  Pick something?
+> >
+> > And as you have obviously found this on a device running an older kerne=
+l
+> > version, what kernel tree(s) did you test it on?
+> >
+> > thanks,
+> >
+> > greg k-h
+>
+> As this patch applies without conflict on 4.14, I would suggest 4.14+.
+> I have tested the patch on chromes-5.15 (cannonlake device).
+>
+> Best regards,
+> Lukasz
 
-A side note. Perhaps it makes sense to also clean up documentation somehow
-related to this change. For example, I found that
-Documentation/firmware-guide/acpi/enumeration.rst has this:
+I have tested my patch also with 4.14 and 6.1 (again chromeos tree).
+On 4.14 it fixed the issue, but on 6.1 although the console survived
+the suspend/resume,
+it is printing different characters than requested - I will try to
+debug it further.
 
-  "Note that standard UARTs are not busses so there is no struct uart_device,
-   although some of them may be represented by struct serdev_device."
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards
+Lukasz
