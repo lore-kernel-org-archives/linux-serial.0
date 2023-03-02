@@ -2,95 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB98C678D4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 17:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84969C6FA8E
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 17:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbjCBRBp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Mar 2023 12:01:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
+        id S229833AbjCBRUv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Mar 2023 12:20:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbjCBRBo (ORCPT
+        with ESMTP id S229949AbjCBRUt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Mar 2023 12:01:44 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437D23E0B6;
-        Thu,  2 Mar 2023 09:01:43 -0800 (PST)
-Received: from [192.168.1.141] ([37.4.248.41]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MrQ2R-1qLyUj0P5T-00oVnT; Thu, 02 Mar 2023 18:01:34 +0100
-Message-ID: <2cc752fb-a25d-0789-0fad-54b99f08ced7@i2se.com>
-Date:   Thu, 2 Mar 2023 18:01:33 +0100
+        Thu, 2 Mar 2023 12:20:49 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F79521CF
+        for <linux-serial@vger.kernel.org>; Thu,  2 Mar 2023 09:20:39 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id q31-20020a17090a17a200b0023750b69614so3460360pja.5
+        for <linux-serial@vger.kernel.org>; Thu, 02 Mar 2023 09:20:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1677777639;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JZZeb/QJtCSWsDPCLiUjqJbjxkXpQiEZdAtSmYc8Bm0=;
+        b=F5D5X5uqvBtMhYF3w0Xr/uf2zrz8OvToHEahoAyBcnfo0v6iGALUHqsmaT6kmaE74a
+         5t1zBfvSarlwKA3mKghkbo/0BwZZyL6FtjGi1l9vR4+KpL0o2NqnwxPpEgijIByJ1hUV
+         1sAITfv8KOmNpILbtegMQR2c/ocOtQO8hwPZBY4w37lxL3khmtf9VONQCsnouuy7C/VI
+         VcF/rfl7oj6/yUFEaNtQKlJznD36okdLVsBzwK/8XOtpQGmQyzKyX5iODXjcZTP++2lk
+         S+i1n2mOEEvX9rd9ljYXrWwTgUPYKpXtrKun0GaJ+rZQLVtsb0UljgyI6uoO/rJ2XExM
+         UzBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677777639;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JZZeb/QJtCSWsDPCLiUjqJbjxkXpQiEZdAtSmYc8Bm0=;
+        b=sGS/iddTf0eOoG01uPX019F1gFIV+btIfCgrabv2uh2juBArNn1n/bYvGuRpYyBklh
+         IHO2+kwXXFqCJdj/EVQagtlIhAhYyRaob2NsloGlGiXrfY6oZv3eLBs0/uih5IZHFBtA
+         QhwnHDOKXawztVLDdpHhafDQ+9f6BB4rMEU2D3YiuOHa0kl32t3tBxJIf8j37sdpGtNA
+         /IpWAn+L0NqKnQ0f3ELuELE5TlEbIsKO6eGtqh7rEs5vWFB3JqQTSU7KZmZk5/qtpexO
+         PTBMo1ytgaKUjsEr4S77SVpNTlIUnXoEwekydCSlgzRk3q306v7r4QeaiZAIdfFyuBhK
+         Dkew==
+X-Gm-Message-State: AO0yUKWtiDEypqT8o0hNcGgXZjLvVdI8WqtLwnuklGAEq102wh+oDqbl
+        Hjcw+Zr/dwfDY1HhLk3hVYwEd4c895oQgWvB+2bdt6gTBq0iPqMl
+X-Google-Smtp-Source: AK7set97Rr+Ogo+c7nqW57rLngpeC8lkirhCru4aKSVzp4ByNq1tdKKif5KRaOOWIBExwe8NZy4u77pTF13CxW6w6HU=
+X-Received: by 2002:a17:902:efce:b0:19a:fdca:e405 with SMTP id
+ ja14-20020a170902efce00b0019afdcae405mr4183974plb.10.1677777638649; Thu, 02
+ Mar 2023 09:20:38 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
+References: <20230302023509.319903-1-saravanak@google.com> <2cc752fb-a25d-0789-0fad-54b99f08ced7@i2se.com>
+In-Reply-To: <2cc752fb-a25d-0789-0fad-54b99f08ced7@i2se.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Thu, 2 Mar 2023 09:20:02 -0800
+Message-ID: <CAGETcx_nCdm2WYLC7h1s8i9tnHc_LcHk2oZUQ0sUDr-PBsUWDg@mail.gmail.com>
 Subject: Re: [PATCH v1] serdev: Set fwnode for serdev devices
-To:     Saravana Kannan <saravanak@google.com>,
-        Rob Herring <robh@kernel.org>,
+To:     Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     Rob Herring <robh@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, kernel-team@android.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230302023509.319903-1-saravanak@google.com>
-Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <20230302023509.319903-1-saravanak@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:KB/Rl9hlpDPP5vdb88R/eeV24DEll67IfsYLs4evYPMk2umXiXb
- OOFve/qn0SyoVeB8Di4b3IBlsdkF17kHBos2MdvXEw7/NL4gLupdYZk3AnmhVNmBSXgooEY
- QSrVgeNBp/OBVSHciDAIvO4X85F9zyaQq15cQ95YObkUpbrbxb4iCFllgvtnahCBjxv8toc
- pxzKUdr22u83Y+61aQ7fA==
-UI-OutboundReport: notjunk:1;M01:P0:kuWDmCFCFQk=;51KcqFKLGNARRajFz9oMUlKaM8Z
- /ZYJjdPMNL2C3kVnu2g3GraetOn25n0PFt3iE+aBlC8dXSay9XETjxvaK5djeHX41Z45EegIs
- yUuZcOkz6WFPdV0mSjPflE412fjCvbMnvhLyRlriasMgbLGPbbkv8NBtfK6vanXPPaR1DRLn6
- 8PNSpi5aT843bGZYtWqCiFrWKFsGqLck3YhE6es4MUK3kpGweR+jeeXmIfKAJg4nEdQgyOUAs
- 6qObMLWri4Rnk0tYBPLX1DxE820qsIJo4zervWEeg9cnyQr7NHabksAyF+1xivCQIlrHPMJf7
- Hm5g4XKJ8/hVO4TFAmWhgd5plszXYTSN9qc3kUHTBnw7TsxecxzE4VaW/r+JJ4jrd6lP16Sh/
- kbXj5uuUJTZa2JtQpM7vBjuMrXpDyNmYtBbIWp3CSnz8VUmk/sgGN3+flHIdnquYsafWFgSEn
- S5BK7cD0/HKisW4OOuqK16CHS7TBrtURkOp4F80gY8pXJjvhS51x/8XNHhI/XpTiceJmeh8HA
- y7BZt5zppDZFP6alo4hrJCxTrQcfP8ct/f7FysCvm1AxS1v9GhG3IDrSyxFkTx6aSAOfXexyt
- +hqndt1hAR5AnV9VJN16XL8YwhlI92/W73XnXpd4ZjvlFr5nfHYOemW/tcF5GiM2hyjweuU2X
- E/KN6KspHPnO0RuY6DZJP7/xZl373qf4X4c6nVCiQQ==
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        kernel-team@android.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Saravana,
+On Thu, Mar 2, 2023 at 9:01=E2=80=AFAM Stefan Wahren <stefan.wahren@i2se.co=
+m> wrote:
+>
+> Hi Saravana,
+>
+> Am 02.03.23 um 03:35 schrieb Saravana Kannan:
+> > This allow fw_devlink to do dependency tracking for serdev devices.
+> >
+> > Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+> > Link: https://lore.kernel.org/lkml/03b70a8a-0591-f28b-a567-9d2f736f17e5=
+@gmail.com/
+> > Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> > Signed-off-by: Saravana Kannan <saravanak@google.com>
+>
+> since this fixes an issue on Raspberry Pi 4, shouldn't this be mentioned
+> in the commit message and providing a Fixes tag?
 
-Am 02.03.23 um 03:35 schrieb Saravana Kannan:
-> This allow fw_devlink to do dependency tracking for serdev devices.
->
-> Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-> Link: https://lore.kernel.org/lkml/03b70a8a-0591-f28b-a567-9d2f736f17e5@gmail.com/
-> Cc: Stefan Wahren <stefan.wahren@i2se.com>
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+So RPi 4 was never creating a device links between serdev devices and
+their consumers. The error message was just a new one I added and we
+are noticing and catching the fact that serdev wasn't setting fwnode
+for a device.
 
-since this fixes an issue on Raspberry Pi 4, shouldn't this be mentioned 
-in the commit message and providing a Fixes tag?
+I'm also not sure if I can say this commit "Fixes" an issue in serdev
+core because when serdev core was written, fw_devlink wasn't a thing.
+Once I add Fixes, people will start pulling this into stable
+branches/other trees where I don't think this should be pulled into
+older stable branches.
 
-Thanks
-Stefan
+-Saravana
 
-> ---
-> Florian,
 >
-> Can you give it a shot and a tested-by please?
+> Thanks
+> Stefan
 >
-> -Saravana
->
->   drivers/tty/serdev/core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index aa80de3a8194..678014253b7b 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -534,7 +534,7 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
->   		if (!serdev)
->   			continue;
->   
-> -		serdev->dev.of_node = node;
-> +		device_set_node(&serdev->dev, of_fwnode_handle(node));
->   
->   		err = serdev_device_add(serdev);
->   		if (err) {
+> > ---
+> > Florian,
+> >
+> > Can you give it a shot and a tested-by please?
+> >
+> > -Saravana
+> >
+> >   drivers/tty/serdev/core.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index aa80de3a8194..678014253b7b 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -534,7 +534,7 @@ static int of_serdev_register_devices(struct serdev=
+_controller *ctrl)
+> >               if (!serdev)
+> >                       continue;
+> >
+> > -             serdev->dev.of_node =3D node;
+> > +             device_set_node(&serdev->dev, of_fwnode_handle(node));
+> >
+> >               err =3D serdev_device_add(serdev);
+> >               if (err) {
