@@ -2,111 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DEAFC678D4
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 16:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5299FC6FA8E
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Mar 2023 16:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229447AbjCBQGo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Mar 2023 11:06:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36860 "EHLO
+        id S229547AbjCBQG7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Mar 2023 11:06:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjCBQGo (ORCPT
+        with ESMTP id S229482AbjCBQG6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Mar 2023 11:06:44 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265A1515DE
-        for <linux-serial@vger.kernel.org>; Thu,  2 Mar 2023 08:06:42 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pXlS5-0006yR-1r; Thu, 02 Mar 2023 17:06:41 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pXlS2-001Mwa-62; Thu, 02 Mar 2023 17:06:38 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pXlS1-001b5j-Ef; Thu, 02 Mar 2023 17:06:37 +0100
-Date:   Thu, 2 Mar 2023 17:06:37 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Thu, 2 Mar 2023 11:06:58 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AF3515DA;
+        Thu,  2 Mar 2023 08:06:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677773217; x=1709309217;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VPSx/AhyKKGPzUlJ3kgpsLe16fwtwFBjOK+GiXUPDwI=;
+  b=YX2G2H/gH222sjHD5lMmSQtcQFmh37vXu2fP9+TGgpAepngRjNh5YDza
+   zkcXoVMFaWE2Bi+QGpugUBK1q52M91RDs3xyzdUEmZfOxCyPK9mOIkIa7
+   1fgMABi4/Idl6O10SozZCxJMnw67V9Z9NzrNHCbuvHoX2TcZ/83r61hVu
+   ffG0Pxhp0Pl/iq7ksF8GOdx2qJwXoiYqR4bha4uQGmuixreIB2LasF8dE
+   pHqBexl+9d/BXpT0uvdD1shw1vndmj68lvjbd4ImVJ3Ejkwk+a6b9rxKC
+   UXDgIuGN2fNz/trJBRScOdLima2S1QEkYqzC+52zl5sRS5JmSXpx0Z3hC
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="323056341"
+X-IronPort-AV: E=Sophos;i="5.98,228,1673942400"; 
+   d="scan'208";a="323056341"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2023 08:06:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10637"; a="784886444"
+X-IronPort-AV: E=Sophos;i="5.98,228,1673942400"; 
+   d="scan'208";a="784886444"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP; 02 Mar 2023 08:06:54 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1pXlSG-00EQ6E-0q;
+        Thu, 02 Mar 2023 18:06:52 +0200
+Date:   Thu, 2 Mar 2023 18:06:51 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] serial: imx: Drop a few unneeded casts
-Message-ID: <20230302160637.etw3a4qk4jb7oktf@pengutronix.de>
-References: <20230302115417.1860210-1-u.kleine-koenig@pengutronix.de>
- <6e66bc69-52b7-bea5-1e2c-ad5ed819a6@linux.intel.com>
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <ZADJm+co4goPgr7u@smile.fi.intel.com>
+References: <20230116080002.47315-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nktxwwdpuecj56n7"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6e66bc69-52b7-bea5-1e2c-ad5ed819a6@linux.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20230116080002.47315-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Jan 16, 2023 at 09:59:58AM +0200, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
+> 
+> To do this, let's set up a struct device for the serial core controller
+> as suggested by Greg and Jiri. The serial core controller devices are
+> children of the physical serial port device. The serial core controller
+> device is needed to support multiple different kind of ports connected
+> to single physical serial port device.
+> 
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
+> 
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
 
---nktxwwdpuecj56n7
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A side note. Perhaps it makes sense to also clean up documentation somehow
+related to this change. For example, I found that
+Documentation/firmware-guide/acpi/enumeration.rst has this:
 
-Hello Ilpo,
+  "Note that standard UARTs are not busses so there is no struct uart_device,
+   although some of them may be represented by struct serdev_device."
 
-On Thu, Mar 02, 2023 at 05:35:17PM +0200, Ilpo J=E4rvinen wrote:
-> On Thu, 2 Mar 2023, Uwe Kleine-K=F6nig wrote:
->=20
-> > There is no point in casting a struct uart_port to a struct imx_port
-> > just to access the first member of the latter (a struct uart_port).
-> >=20
-> > This introduces code changes.
->=20
-> I don't know what this sentence is supposed to mean (did you forgot to=20
-> add a negation into it)?
->=20
-> The code changes :-) are okay though:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Yes, I intended to write:
 
-	This introduces no changes to the generated binary.
-
-> Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-
-Thanks.
-
-Greg isn't in patch collecting mood currently anyhow, so I will wait a
-bit before sending out a fixed patch.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---nktxwwdpuecj56n7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQAyYoACgkQwfwUeK3K
-7AnvJwgAh2eZyhCMHwWqQ0ysoqZitKh48s1+5xTGd/J1pgNYrOJe48OP8cZpu8yW
-D+VEKzJ8cd5D2ddEqkei/55X+KdblKxOuTkXED0Gabl7u00eG9BnxPf3mdeIPIj4
-wWQRHDQTQqZwUc1M71fi/Bi6QgbyADYexX5bbTofiZoDfgdS9JmZpZ3/weCsVtK+
-zmg5ddDL/eTJo16SKZfUWLtOu2YrpffxzfewftI+eVmQ98akpbB2Sw3xU1jB2oXw
-sRr12sJLFYg2MIdeMhsPE9wq9ai3z9BqO2jT2GMY81LKN9R1x7y3wpWZIFFZhk0e
-5cD2389zV8RWty+UzpDtWaRSKZJ2Wg==
-=kOdx
------END PGP SIGNATURE-----
-
---nktxwwdpuecj56n7--
