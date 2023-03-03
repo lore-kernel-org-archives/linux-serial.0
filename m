@@ -2,46 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D32CC7EE43
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97464C7EE32
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232773AbjCCVv3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Mar 2023 16:51:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
+        id S233026AbjCCVyb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Mar 2023 16:54:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232831AbjCCVtp (ORCPT
+        with ESMTP id S232881AbjCCVxu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Mar 2023 16:49:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3F36B5D8;
-        Fri,  3 Mar 2023 13:46:01 -0800 (PST)
+        Fri, 3 Mar 2023 16:53:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C9570425;
+        Fri,  3 Mar 2023 13:48:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 557CFB81A06;
-        Fri,  3 Mar 2023 21:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BA57C433A7;
-        Fri,  3 Mar 2023 21:45:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 406DF6194F;
+        Fri,  3 Mar 2023 21:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76AC7C433A1;
+        Fri,  3 Mar 2023 21:46:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677879958;
-        bh=Q+6+wmmmyD48r8kIuLpM/fK00F7Q73yRK4lzpYFxDqk=;
+        s=k20201202; t=1677880017;
+        bh=qY1rAG7JheThVW8xBvdHEHilnkXi1PIGV37rHVyJs2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ws7QlFvnOr2cxb2ojdSejBxmw6pfh1hvosfxtpcY76I44947p6PQ0TpW+FROAah2L
-         q1HK8It/1g0ejBUvnKCzy30ZoYGOwoI3TnF1cpA4DWY8h5Cho2EfI7QHSsXnDBzySA
-         EvNNsZjMiAcRYhAj6qPKXBjJPjtBZUjc/PdKFvsyNOnod7o1qRr4Ft+q4wVq7AMtHv
-         aPWGpgKGqpz9rgvYFQocQOFiprcOMhbFucNsmClm4ch/+VTW7l9jAHV1r03LiYIhaR
-         gQH1d0jgTAfCSjUhoBbiQcDMqSuQuOHZ03AD/mMlZnnTq8OK7NA5bhiOliz+HDOY+3
-         +vH12ZxocwxNg==
+        b=Sy9QcND8GTJoehumkHcPbXW+v97KQOw5rPn8aSX+zxRFOQp/nea5T06+m7df3Oiwq
+         lP44XLlkgF1IgHhe7X+fzXK0SqYlQe9Ua5JUGoscg0Nah7kE2/PM77IUhvzXYrjuw/
+         tQA6S328/27DSXGcVMIhbl+gEvbFXLw+T0GNWUMov4SbNrVwij+rIFy9yzBNYX0E35
+         cbBvqmXEKAF2eBFXVRVgzFVRfKgxeHGbVudkXMGq2hn77oaHOR98Bc3TbZOHT1kjNs
+         FyjDjSOs9w+9Pz4bWr1/gvdHP7PsPEv6mwdT55A3FLSTmlR2/gv85I1uTUMqeSE+UU
+         nLhWOn1luxLpQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Isaac True <isaac.true@canonical.com>,
-        Wen-chien Jesse Sung <jesse.sung@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 12/50] serial: sc16is7xx: setup GPIO controller later in probe
-Date:   Fri,  3 Mar 2023 16:44:53 -0500
-Message-Id: <20230303214531.1450154-12-sashal@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 39/50] tty: pcn_uart: fix memory leak with using debugfs_lookup()
+Date:   Fri,  3 Mar 2023 16:45:20 -0500
+Message-Id: <20230303214531.1450154-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230303214531.1450154-1-sashal@kernel.org>
 References: <20230303214531.1450154-1-sashal@kernel.org>
@@ -53,140 +51,36 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Isaac True <isaac.true@canonical.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit c8f71b49ee4d28930c4a6798d1969fa91dc4ef3e ]
+[ Upstream commit 04a189c720aa2b6091442113ce9b9bc93552dff8 ]
 
-The GPIO controller component of the sc16is7xx driver is setup too
-early, which can result in a race condition where another device tries
-to utilise the GPIO lines before the sc16is7xx device has finished
-initialising.
+When calling debugfs_lookup() the result must have dput() called on it,
+otherwise the memory will leak over time.  To make things simpler, just
+call debugfs_lookup_and_remove() instead which handles all of the logic
+at once.
 
-This issue manifests itself as an Oops when the GPIO lines are configured:
-
-    Unable to handle kernel read from unreadable memory at virtual address
-    ...
-    pc : sc16is7xx_gpio_direction_output+0x68/0x108 [sc16is7xx]
-    lr : sc16is7xx_gpio_direction_output+0x4c/0x108 [sc16is7xx]
-    ...
-    Call trace:
-    sc16is7xx_gpio_direction_output+0x68/0x108 [sc16is7xx]
-    gpiod_direction_output_raw_commit+0x64/0x318
-    gpiod_direction_output+0xb0/0x170
-    create_gpio_led+0xec/0x198
-    gpio_led_probe+0x16c/0x4f0
-    platform_drv_probe+0x5c/0xb0
-    really_probe+0xe8/0x448
-    driver_probe_device+0xe8/0x138
-    __device_attach_driver+0x94/0x118
-    bus_for_each_drv+0x8c/0xe0
-    __device_attach+0x100/0x1b8
-    device_initial_probe+0x28/0x38
-    bus_probe_device+0xa4/0xb0
-    deferred_probe_work_func+0x90/0xe0
-    process_one_work+0x1c4/0x480
-    worker_thread+0x54/0x430
-    kthread+0x138/0x150
-    ret_from_fork+0x10/0x1c
-
-This patch moves the setup of the GPIO controller functions to later in the
-probe function, ensuring the sc16is7xx device has already finished
-initialising by the time other devices try to make use of the GPIO lines.
-The error handling has also been reordered to reflect the new
-initialisation order.
-
-Co-developed-by: Wen-chien Jesse Sung <jesse.sung@canonical.com>
-Signed-off-by: Wen-chien Jesse Sung <jesse.sung@canonical.com>
-Signed-off-by: Isaac True <isaac.true@canonical.com>
-Link: https://lore.kernel.org/r/20221130105529.698385-1-isaac.true@canonical.com
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lore.kernel.org/r/20230202141221.2293012-1-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 51 +++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 25 deletions(-)
+ drivers/tty/serial/pch_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 0ab788058fa2a..b57cf8ddbf63b 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1245,25 +1245,6 @@ static int sc16is7xx_probe(struct device *dev,
- 	}
- 	sched_set_fifo(s->kworker_task);
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 49bc5a4b28327..e783a4225bf04 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -1821,7 +1821,7 @@ static void pch_uart_exit_port(struct eg20t_port *priv)
+ 	char name[32];
  
--#ifdef CONFIG_GPIOLIB
--	if (devtype->nr_gpio) {
--		/* Setup GPIO cotroller */
--		s->gpio.owner		 = THIS_MODULE;
--		s->gpio.parent		 = dev;
--		s->gpio.label		 = dev_name(dev);
--		s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
--		s->gpio.get		 = sc16is7xx_gpio_get;
--		s->gpio.direction_output = sc16is7xx_gpio_direction_output;
--		s->gpio.set		 = sc16is7xx_gpio_set;
--		s->gpio.base		 = -1;
--		s->gpio.ngpio		 = devtype->nr_gpio;
--		s->gpio.can_sleep	 = 1;
--		ret = gpiochip_add_data(&s->gpio, s);
--		if (ret)
--			goto out_thread;
--	}
--#endif
--
- 	/* reset device, purging any pending irq / data */
- 	regmap_write(s->regmap, SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
- 			SC16IS7XX_IOCONTROL_SRESET_BIT);
-@@ -1329,6 +1310,25 @@ static int sc16is7xx_probe(struct device *dev,
- 				s->p[u].irda_mode = true;
- 	}
- 
-+#ifdef CONFIG_GPIOLIB
-+	if (devtype->nr_gpio) {
-+		/* Setup GPIO cotroller */
-+		s->gpio.owner		 = THIS_MODULE;
-+		s->gpio.parent		 = dev;
-+		s->gpio.label		 = dev_name(dev);
-+		s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
-+		s->gpio.get		 = sc16is7xx_gpio_get;
-+		s->gpio.direction_output = sc16is7xx_gpio_direction_output;
-+		s->gpio.set		 = sc16is7xx_gpio_set;
-+		s->gpio.base		 = -1;
-+		s->gpio.ngpio		 = devtype->nr_gpio;
-+		s->gpio.can_sleep	 = 1;
-+		ret = gpiochip_add_data(&s->gpio, s);
-+		if (ret)
-+			goto out_thread;
-+	}
-+#endif
-+
- 	/*
- 	 * Setup interrupt. We first try to acquire the IRQ line as level IRQ.
- 	 * If that succeeds, we can allow sharing the interrupt as well.
-@@ -1348,18 +1348,19 @@ static int sc16is7xx_probe(struct device *dev,
- 	if (!ret)
- 		return 0;
- 
--out_ports:
--	for (i--; i >= 0; i--) {
--		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
--		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
--	}
--
- #ifdef CONFIG_GPIOLIB
- 	if (devtype->nr_gpio)
- 		gpiochip_remove(&s->gpio);
- 
- out_thread:
- #endif
-+
-+out_ports:
-+	for (i--; i >= 0; i--) {
-+		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
-+		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
-+	}
-+
- 	kthread_stop(s->kworker_task);
- 
- out_clk:
+ 	snprintf(name, sizeof(name), "uart%d_regs", priv->port.line);
+-	debugfs_remove(debugfs_lookup(name, NULL));
++	debugfs_lookup_and_remove(name, NULL);
+ 	uart_remove_one_port(&pch_uart_driver, &priv->port);
+ 	free_page((unsigned long)priv->rxbuf.buf);
+ }
 -- 
 2.39.2
 
