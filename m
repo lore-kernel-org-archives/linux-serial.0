@@ -2,97 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CB6C7EE2D
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 18:46:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE62C64EC4
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232034AbjCCSqg convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Mar 2023 13:46:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
+        id S231621AbjCCVRR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Mar 2023 16:17:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232108AbjCCSq3 (ORCPT
+        with ESMTP id S231659AbjCCVRQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Mar 2023 13:46:29 -0500
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DE6E39B;
-        Fri,  3 Mar 2023 10:46:06 -0800 (PST)
-Received: by mail-qt1-f173.google.com with SMTP id cf14so3906380qtb.10;
-        Fri, 03 Mar 2023 10:46:06 -0800 (PST)
+        Fri, 3 Mar 2023 16:17:16 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC5A6150E
+        for <linux-serial@vger.kernel.org>; Fri,  3 Mar 2023 13:17:07 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id i5so4133558pla.2
+        for <linux-serial@vger.kernel.org>; Fri, 03 Mar 2023 13:17:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1677878227;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OhuLhnLZCviHLHyGIe9EHKicgCaiC5kWp2NCXRvwT4I=;
+        b=nb/SD5Ls7IpbF/vQOkYudAu4gMlzu7iFxRTOsHX8uh5yXs77Dbfbd94UpWLyPcpKT5
+         vmmOy5tH7iPwZuDw+v1Ae9TrWhs+zjtyHuC7kVSDl5maoaon2ZGg1hK0gIuh/XTwvK/0
+         hYGn3id9j5kZFjEHqDII0oeLTTTmKfyCS+41r29/ApvkJc+nOSZxvoiikqd+6ia3LuRN
+         otBAoDslznqT82OwXo9zIt6E7xoJsvV2QqJU930y5lOLYR1XvPX+kGLL/YprGF/coZPs
+         weG5Y7kYSDvHG2VFRgh2FofaakQoo3tAhKsreGHDjv3UtQwsD3EP1OVhxk5SNUCaMIsi
+         FP/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677869146;
+        d=1e100.net; s=20210112; t=1677878227;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rWmPtqpsfnXhGWlFwwoAcJ6STy2NAdkcAIAhL++JN5U=;
-        b=spDHLcCwwSe1Wj1WmG2+4kZEXI3SqklkLiOINIC+alL218SYyuWsvG4Ra1zzuTDskk
-         2DPQA+5+IFLr4yThZyck+AVrCbRj/oQfPv/O5LDAAxNOwhTZC91Pv/fv+RTU9SmBNeN0
-         GNYSkmkRG32WL4Zv1fjl1jf9qi8kDGog3tvzIVWvHcq2aHf+39LIcNDB2McVzc8GTGcg
-         zSBaJdLfc4z8d9nBCMYkhQXQsLVqhXVWuDZB22T89JYhPJMRE/8ocK6rzH1i2lqGt/ma
-         CNySyQP36Jex1Q6t81pt3qOblkuPuTMurwckCjW93EewpLFDN7LrQdTSJpUA+41BG7Yp
-         /qow==
-X-Gm-Message-State: AO0yUKW7Kq+iqGbJrUV3mPNrr/lYXmfL+QwjEmevTZdwFuUNoEWI8Avw
-        o6fmRLKpwvnzr3NWLy/m6wQhp3uCuI+c1g==
-X-Google-Smtp-Source: AK7set+mNN4iAyuZpTx2s7L4+5n5PCoBZG/lfUo+nTBkjK9RAJtyn20c5jrYOre4M8GC5x6eXAynPQ==
-X-Received: by 2002:a05:622a:1992:b0:3bf:e408:6c91 with SMTP id u18-20020a05622a199200b003bfe4086c91mr5114286qtc.51.1677869145863;
-        Fri, 03 Mar 2023 10:45:45 -0800 (PST)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id az31-20020a05620a171f00b007426ec97253sm2165893qkb.111.2023.03.03.10.45.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Mar 2023 10:45:45 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id k23so2826596ybk.13;
-        Fri, 03 Mar 2023 10:45:45 -0800 (PST)
-X-Received: by 2002:a05:6902:208:b0:acd:7374:f154 with SMTP id
- j8-20020a056902020800b00acd7374f154mr1526090ybs.7.1677869144942; Fri, 03 Mar
- 2023 10:45:44 -0800 (PST)
+        bh=OhuLhnLZCviHLHyGIe9EHKicgCaiC5kWp2NCXRvwT4I=;
+        b=TgLDK1kHL8yRebxgaTpGCN2NHkLzfarQFF/+VTRxLzyuJKzrsAQJ6NSgSXfsQfSLBQ
+         gBiYo259w4xL+TuIk9kEMb/pudX9ZHxlEMVCaaOsjfNf0JdW2yCkh37p/W87UdvlADwP
+         WxW52mTn0ChHY04Xknqt/CDFkOLudWmZvXfrQULNNOnOiWBVetZbCdpXjj1Q4Vv+yN9F
+         ZwgPmHWWOe27WwyfDoA8IVano1lbDXz2EGSVGS9Bsk/Pouaygt44FqpkqsP89RWm+Jca
+         KfqDopQTZCtdlNlo0VJhggl/ZLqGmFBIMka3YKnabXwM3t1Gqut659DAelhhgPV0Opdm
+         jEKQ==
+X-Gm-Message-State: AO0yUKXMt44SrPTiwZmdkRa/DrXaGTS5y6HX0KOSlFFveyEQJMzIQFhh
+        I1KhVh8gVlhWcbzVWV1q2DGF7LZEEp6taWrrhv6yYBlcPiC10kopakw=
+X-Google-Smtp-Source: AK7set+32LcKQp112YY6MZ6fMJypwdkQArStXiZgdTOdsG7SWiCMXSTE0LjhEFcXm2TYDtRE+daKrHb6aq/srLIW1gI=
+X-Received: by 2002:a17:903:41c9:b0:19e:2a1b:2797 with SMTP id
+ u9-20020a17090341c900b0019e2a1b2797mr1324176ple.10.1677878226573; Fri, 03 Mar
+ 2023 13:17:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20230303182922.3903229-1-kumaravel.thiagarajan@microchip.com>
-In-Reply-To: <20230303182922.3903229-1-kumaravel.thiagarajan@microchip.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 3 Mar 2023 19:45:33 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXvwGzyDTUA=E5=pvGhR4xaBj75OkeU7jr651j6B7kBzA@mail.gmail.com>
-Message-ID: <CAMuHMdXvwGzyDTUA=E5=pvGhR4xaBj75OkeU7jr651j6B7kBzA@mail.gmail.com>
-Subject: Re: [PATCH v1 tty-next] serial: 8250_pci1xxxx: Disable
- SERIAL_8250_PCI1XXXX config by default
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        andriy.shevchenko@linux.intel.com, deller@gmx.de,
-        geert+renesas@glider.be, matthew.gerlach@linux.intel.com,
-        phil.edworthy@renesas.com, UNGLinuxDriver@microchip.com,
-        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20230302023509.319903-1-saravanak@google.com> <2cc752fb-a25d-0789-0fad-54b99f08ced7@i2se.com>
+ <CAGETcx_nCdm2WYLC7h1s8i9tnHc_LcHk2oZUQ0sUDr-PBsUWDg@mail.gmail.com>
+ <faad8810-7aa4-e122-f497-73553feb8bcd@gmail.com> <98f5abe2-3d25-661a-a2b8-a50e2d27f085@i2se.com>
+ <667f007f-1cb0-7e89-242a-c41823e82bee@gmail.com>
+In-Reply-To: <667f007f-1cb0-7e89-242a-c41823e82bee@gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Fri, 3 Mar 2023 13:16:30 -0800
+Message-ID: <CAGETcx9UdOWT+ZnoydcXXqcS-sQ_i0FosWGr4ZTfRmRjA_FVcA@mail.gmail.com>
+Subject: Re: [PATCH v1] serdev: Set fwnode for serdev devices
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, kernel-team@android.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 3, 2023 at 7:29 PM Kumaravel Thiagarajan
-<kumaravel.thiagarajan@microchip.com> wrote:
-> Commit 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart
-> support") made the SERIAL_8250_PCI1XXXX driver enabled when SERIAL_8250
-> is enabled, disable it as this driver need not be enabled by default
-
-does not need to be enabled
-
+On Fri, Mar 3, 2023 at 9:22=E2=80=AFAM Florian Fainelli <f.fainelli@gmail.c=
+om> wrote:
 >
-> Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Link: https://lore.kernel.org/lkml/CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com/
-> Fixes: 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart support")
+> On 3/3/23 03:57, Stefan Wahren wrote:
+> > Hi,
+> >
+> > Am 02.03.23 um 18:51 schrieb Florian Fainelli:
+> >>
+> >>
+> >> On 3/2/2023 9:20 AM, Saravana Kannan wrote:
+> >>> On Thu, Mar 2, 2023 at 9:01=E2=80=AFAM Stefan Wahren <stefan.wahren@i=
+2se.com>
+> >>> wrote:
+> >>>>
+> >>>> Hi Saravana,
+> >>>>
+> >>>> Am 02.03.23 um 03:35 schrieb Saravana Kannan:
+> >>>>> This allow fw_devlink to do dependency tracking for serdev devices.
+> >>>>>
+> >>>>> Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+> >>>>> Link:
+> >>>>> https://lore.kernel.org/lkml/03b70a8a-0591-f28b-a567-9d2f736f17e5@g=
+mail.com/
+> >>>>> Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> >>>>> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> >>>>
+> >>>> since this fixes an issue on Raspberry Pi 4, shouldn't this be
+> >>>> mentioned
+> >>>> in the commit message and providing a Fixes tag?
+> >>>
+> >>> So RPi 4 was never creating a device links between serdev devices and
+> >>> their consumers. The error message was just a new one I added and we
+> >>> are noticing and catching the fact that serdev wasn't setting fwnode
+> >>> for a device.
+> >>>
+> >>> I'm also not sure if I can say this commit "Fixes" an issue in serdev
+> >>> core because when serdev core was written, fw_devlink wasn't a thing.
+> >>> Once I add Fixes, people will start pulling this into stable
+> >>> branches/other trees where I don't think this should be pulled into
+> >>> older stable branches.
+> >>
+> >> That is kind of the point of Fixes: tag, is not it? It is appropriate
+> >> to list a commit that is not specific to serdev, but maybe a
+> >> particular point into the fw_devlink history. Given this did not
+> >> appear to have a functional impact, we could go without one.
+> >
+> > i was under the impression that this issue breaks at least Bluetooth on
+> > Raspberry Pi 4 because the driver is never probed. I cannot see the
+> > success output in Florian's trace. Something like this:
+> >
+> > [    7.124879] hci_uart_bcm serial0-0: supply vbat not found, using
+> > dummy regulator
+> > [    7.131743] hci_uart_bcm serial0-0: supply vddio not found, using
+> > dummy regulator
+> > ...
+> > [    7.517249] Bluetooth: hci0: BCM: chip id 107
+> > [    7.517499] Bluetooth: hci0: BCM: features 0x2f
+> > [    7.519757] Bluetooth: hci0: BCM4345C0
+> > [    7.519768] Bluetooth: hci0: BCM4345C0 (003.001.025) build 0000
+> > [    7.539495] Bluetooth: hci0: BCM4345C0 'brcm/BCM4345C0.hcd' Patch
+> > ...
+> > [    8.348831] Bluetooth: hci0: BCM43455 37.4MHz Raspberry Pi 3+
+> > [    8.348845] Bluetooth: hci0: BCM4345C0 (003.001.025) build 0342
+> >
+> > I just want to make sure that 6.2 doesn't have a regression.
 >
-> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-> ---
-> v0 -> v1:
-> - Add proper commit description
+> My configuration uses hci_uart as a module, and it would always load
+> fine, but I suppose I can make sure that even built-in this works
+> properly. Give me a day or two to test that.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Thanks Stefan and Florian! I'll wait to see the results.
 
-Gr{oetje,eeting}s,
+But based on my mental model of fw_devlink I don't expect BT to be
+broken without this patch. If a device doesn't have fwnode set, it's
+effectively invisible to fw_devlink. That could only affect consumers
+of the device and not the device itself.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-Saravana
