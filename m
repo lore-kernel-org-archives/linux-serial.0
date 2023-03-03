@@ -2,148 +2,191 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE62C64EC4
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E7DC7EE3A
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231621AbjCCVRR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Mar 2023 16:17:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        id S232117AbjCCVme (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Mar 2023 16:42:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231659AbjCCVRQ (ORCPT
+        with ESMTP id S232113AbjCCVmC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Mar 2023 16:17:16 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC5A6150E
-        for <linux-serial@vger.kernel.org>; Fri,  3 Mar 2023 13:17:07 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id i5so4133558pla.2
-        for <linux-serial@vger.kernel.org>; Fri, 03 Mar 2023 13:17:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1677878227;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OhuLhnLZCviHLHyGIe9EHKicgCaiC5kWp2NCXRvwT4I=;
-        b=nb/SD5Ls7IpbF/vQOkYudAu4gMlzu7iFxRTOsHX8uh5yXs77Dbfbd94UpWLyPcpKT5
-         vmmOy5tH7iPwZuDw+v1Ae9TrWhs+zjtyHuC7kVSDl5maoaon2ZGg1hK0gIuh/XTwvK/0
-         hYGn3id9j5kZFjEHqDII0oeLTTTmKfyCS+41r29/ApvkJc+nOSZxvoiikqd+6ia3LuRN
-         otBAoDslznqT82OwXo9zIt6E7xoJsvV2QqJU930y5lOLYR1XvPX+kGLL/YprGF/coZPs
-         weG5Y7kYSDvHG2VFRgh2FofaakQoo3tAhKsreGHDjv3UtQwsD3EP1OVhxk5SNUCaMIsi
-         FP/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1677878227;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OhuLhnLZCviHLHyGIe9EHKicgCaiC5kWp2NCXRvwT4I=;
-        b=TgLDK1kHL8yRebxgaTpGCN2NHkLzfarQFF/+VTRxLzyuJKzrsAQJ6NSgSXfsQfSLBQ
-         gBiYo259w4xL+TuIk9kEMb/pudX9ZHxlEMVCaaOsjfNf0JdW2yCkh37p/W87UdvlADwP
-         WxW52mTn0ChHY04Xknqt/CDFkOLudWmZvXfrQULNNOnOiWBVetZbCdpXjj1Q4Vv+yN9F
-         ZwgPmHWWOe27WwyfDoA8IVano1lbDXz2EGSVGS9Bsk/Pouaygt44FqpkqsP89RWm+Jca
-         KfqDopQTZCtdlNlo0VJhggl/ZLqGmFBIMka3YKnabXwM3t1Gqut659DAelhhgPV0Opdm
-         jEKQ==
-X-Gm-Message-State: AO0yUKXMt44SrPTiwZmdkRa/DrXaGTS5y6HX0KOSlFFveyEQJMzIQFhh
-        I1KhVh8gVlhWcbzVWV1q2DGF7LZEEp6taWrrhv6yYBlcPiC10kopakw=
-X-Google-Smtp-Source: AK7set+32LcKQp112YY6MZ6fMJypwdkQArStXiZgdTOdsG7SWiCMXSTE0LjhEFcXm2TYDtRE+daKrHb6aq/srLIW1gI=
-X-Received: by 2002:a17:903:41c9:b0:19e:2a1b:2797 with SMTP id
- u9-20020a17090341c900b0019e2a1b2797mr1324176ple.10.1677878226573; Fri, 03 Mar
- 2023 13:17:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20230302023509.319903-1-saravanak@google.com> <2cc752fb-a25d-0789-0fad-54b99f08ced7@i2se.com>
- <CAGETcx_nCdm2WYLC7h1s8i9tnHc_LcHk2oZUQ0sUDr-PBsUWDg@mail.gmail.com>
- <faad8810-7aa4-e122-f497-73553feb8bcd@gmail.com> <98f5abe2-3d25-661a-a2b8-a50e2d27f085@i2se.com>
- <667f007f-1cb0-7e89-242a-c41823e82bee@gmail.com>
-In-Reply-To: <667f007f-1cb0-7e89-242a-c41823e82bee@gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 3 Mar 2023 13:16:30 -0800
-Message-ID: <CAGETcx9UdOWT+ZnoydcXXqcS-sQ_i0FosWGr4ZTfRmRjA_FVcA@mail.gmail.com>
-Subject: Re: [PATCH v1] serdev: Set fwnode for serdev devices
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Rob Herring <robh@kernel.org>,
+        Fri, 3 Mar 2023 16:42:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEEE6422E;
+        Fri,  3 Mar 2023 13:41:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 891756190F;
+        Fri,  3 Mar 2023 21:41:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 810DFC433A1;
+        Fri,  3 Mar 2023 21:41:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677879695;
+        bh=jEgFtTwC+RxXNJocMrV1TdofnKDDTgqwc3M4HVPjXkg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XpGmfLQDUET9NFfSg6aoGbBGCQ5yfo0kp970mC2p6a27IVlGHfc9BU2GfaE4znmdA
+         8x/ahwNIgWPIVYw4uuC+Rw8Qtxe4Nr+D9aeBxzhbrQxSQUwJWazrSe5V0snxffGCi/
+         duu+9cAN4hKdJ1a7ZjQonbfcgnxdEiP89Uh/RjuhH7dgjBfKNIMf6RYrw2DekSSY8w
+         fsE6s2Oxs7KNBnU62jttNtxBX7iJwfg870pc9YkNBQYtDoKsCtxVNstJfIxhgvhAGi
+         7CVtpeAbq3PwbOgYu6TBXyyu+epCMyarAGvsN+P7TS975DweBfI1352RNpyQP0snJ8
+         BUfIwi9m/OjOA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Isaac True <isaac.true@canonical.com>,
+        Wen-chien Jesse Sung <jesse.sung@canonical.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kernel-team@android.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 17/64] serial: sc16is7xx: setup GPIO controller later in probe
+Date:   Fri,  3 Mar 2023 16:40:19 -0500
+Message-Id: <20230303214106.1446460-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230303214106.1446460-1-sashal@kernel.org>
+References: <20230303214106.1446460-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 3, 2023 at 9:22=E2=80=AFAM Florian Fainelli <f.fainelli@gmail.c=
-om> wrote:
->
-> On 3/3/23 03:57, Stefan Wahren wrote:
-> > Hi,
-> >
-> > Am 02.03.23 um 18:51 schrieb Florian Fainelli:
-> >>
-> >>
-> >> On 3/2/2023 9:20 AM, Saravana Kannan wrote:
-> >>> On Thu, Mar 2, 2023 at 9:01=E2=80=AFAM Stefan Wahren <stefan.wahren@i=
-2se.com>
-> >>> wrote:
-> >>>>
-> >>>> Hi Saravana,
-> >>>>
-> >>>> Am 02.03.23 um 03:35 schrieb Saravana Kannan:
-> >>>>> This allow fw_devlink to do dependency tracking for serdev devices.
-> >>>>>
-> >>>>> Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-> >>>>> Link:
-> >>>>> https://lore.kernel.org/lkml/03b70a8a-0591-f28b-a567-9d2f736f17e5@g=
-mail.com/
-> >>>>> Cc: Stefan Wahren <stefan.wahren@i2se.com>
-> >>>>> Signed-off-by: Saravana Kannan <saravanak@google.com>
-> >>>>
-> >>>> since this fixes an issue on Raspberry Pi 4, shouldn't this be
-> >>>> mentioned
-> >>>> in the commit message and providing a Fixes tag?
-> >>>
-> >>> So RPi 4 was never creating a device links between serdev devices and
-> >>> their consumers. The error message was just a new one I added and we
-> >>> are noticing and catching the fact that serdev wasn't setting fwnode
-> >>> for a device.
-> >>>
-> >>> I'm also not sure if I can say this commit "Fixes" an issue in serdev
-> >>> core because when serdev core was written, fw_devlink wasn't a thing.
-> >>> Once I add Fixes, people will start pulling this into stable
-> >>> branches/other trees where I don't think this should be pulled into
-> >>> older stable branches.
-> >>
-> >> That is kind of the point of Fixes: tag, is not it? It is appropriate
-> >> to list a commit that is not specific to serdev, but maybe a
-> >> particular point into the fw_devlink history. Given this did not
-> >> appear to have a functional impact, we could go without one.
-> >
-> > i was under the impression that this issue breaks at least Bluetooth on
-> > Raspberry Pi 4 because the driver is never probed. I cannot see the
-> > success output in Florian's trace. Something like this:
-> >
-> > [    7.124879] hci_uart_bcm serial0-0: supply vbat not found, using
-> > dummy regulator
-> > [    7.131743] hci_uart_bcm serial0-0: supply vddio not found, using
-> > dummy regulator
-> > ...
-> > [    7.517249] Bluetooth: hci0: BCM: chip id 107
-> > [    7.517499] Bluetooth: hci0: BCM: features 0x2f
-> > [    7.519757] Bluetooth: hci0: BCM4345C0
-> > [    7.519768] Bluetooth: hci0: BCM4345C0 (003.001.025) build 0000
-> > [    7.539495] Bluetooth: hci0: BCM4345C0 'brcm/BCM4345C0.hcd' Patch
-> > ...
-> > [    8.348831] Bluetooth: hci0: BCM43455 37.4MHz Raspberry Pi 3+
-> > [    8.348845] Bluetooth: hci0: BCM4345C0 (003.001.025) build 0342
-> >
-> > I just want to make sure that 6.2 doesn't have a regression.
->
-> My configuration uses hci_uart as a module, and it would always load
-> fine, but I suppose I can make sure that even built-in this works
-> properly. Give me a day or two to test that.
+From: Isaac True <isaac.true@canonical.com>
 
-Thanks Stefan and Florian! I'll wait to see the results.
+[ Upstream commit c8f71b49ee4d28930c4a6798d1969fa91dc4ef3e ]
 
-But based on my mental model of fw_devlink I don't expect BT to be
-broken without this patch. If a device doesn't have fwnode set, it's
-effectively invisible to fw_devlink. That could only affect consumers
-of the device and not the device itself.
+The GPIO controller component of the sc16is7xx driver is setup too
+early, which can result in a race condition where another device tries
+to utilise the GPIO lines before the sc16is7xx device has finished
+initialising.
 
--Saravana
+This issue manifests itself as an Oops when the GPIO lines are configured:
+
+    Unable to handle kernel read from unreadable memory at virtual address
+    ...
+    pc : sc16is7xx_gpio_direction_output+0x68/0x108 [sc16is7xx]
+    lr : sc16is7xx_gpio_direction_output+0x4c/0x108 [sc16is7xx]
+    ...
+    Call trace:
+    sc16is7xx_gpio_direction_output+0x68/0x108 [sc16is7xx]
+    gpiod_direction_output_raw_commit+0x64/0x318
+    gpiod_direction_output+0xb0/0x170
+    create_gpio_led+0xec/0x198
+    gpio_led_probe+0x16c/0x4f0
+    platform_drv_probe+0x5c/0xb0
+    really_probe+0xe8/0x448
+    driver_probe_device+0xe8/0x138
+    __device_attach_driver+0x94/0x118
+    bus_for_each_drv+0x8c/0xe0
+    __device_attach+0x100/0x1b8
+    device_initial_probe+0x28/0x38
+    bus_probe_device+0xa4/0xb0
+    deferred_probe_work_func+0x90/0xe0
+    process_one_work+0x1c4/0x480
+    worker_thread+0x54/0x430
+    kthread+0x138/0x150
+    ret_from_fork+0x10/0x1c
+
+This patch moves the setup of the GPIO controller functions to later in the
+probe function, ensuring the sc16is7xx device has already finished
+initialising by the time other devices try to make use of the GPIO lines.
+The error handling has also been reordered to reflect the new
+initialisation order.
+
+Co-developed-by: Wen-chien Jesse Sung <jesse.sung@canonical.com>
+Signed-off-by: Wen-chien Jesse Sung <jesse.sung@canonical.com>
+Signed-off-by: Isaac True <isaac.true@canonical.com>
+Link: https://lore.kernel.org/r/20221130105529.698385-1-isaac.true@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/sc16is7xx.c | 51 +++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 39f92eb1e6989..29c94be091596 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1423,25 +1423,6 @@ static int sc16is7xx_probe(struct device *dev,
+ 	}
+ 	sched_set_fifo(s->kworker_task);
+ 
+-#ifdef CONFIG_GPIOLIB
+-	if (devtype->nr_gpio) {
+-		/* Setup GPIO cotroller */
+-		s->gpio.owner		 = THIS_MODULE;
+-		s->gpio.parent		 = dev;
+-		s->gpio.label		 = dev_name(dev);
+-		s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
+-		s->gpio.get		 = sc16is7xx_gpio_get;
+-		s->gpio.direction_output = sc16is7xx_gpio_direction_output;
+-		s->gpio.set		 = sc16is7xx_gpio_set;
+-		s->gpio.base		 = -1;
+-		s->gpio.ngpio		 = devtype->nr_gpio;
+-		s->gpio.can_sleep	 = 1;
+-		ret = gpiochip_add_data(&s->gpio, s);
+-		if (ret)
+-			goto out_thread;
+-	}
+-#endif
+-
+ 	/* reset device, purging any pending irq / data */
+ 	regmap_write(s->regmap, SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
+ 			SC16IS7XX_IOCONTROL_SRESET_BIT);
+@@ -1518,6 +1499,25 @@ static int sc16is7xx_probe(struct device *dev,
+ 				s->p[u].irda_mode = true;
+ 	}
+ 
++#ifdef CONFIG_GPIOLIB
++	if (devtype->nr_gpio) {
++		/* Setup GPIO cotroller */
++		s->gpio.owner		 = THIS_MODULE;
++		s->gpio.parent		 = dev;
++		s->gpio.label		 = dev_name(dev);
++		s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
++		s->gpio.get		 = sc16is7xx_gpio_get;
++		s->gpio.direction_output = sc16is7xx_gpio_direction_output;
++		s->gpio.set		 = sc16is7xx_gpio_set;
++		s->gpio.base		 = -1;
++		s->gpio.ngpio		 = devtype->nr_gpio;
++		s->gpio.can_sleep	 = 1;
++		ret = gpiochip_add_data(&s->gpio, s);
++		if (ret)
++			goto out_thread;
++	}
++#endif
++
+ 	/*
+ 	 * Setup interrupt. We first try to acquire the IRQ line as level IRQ.
+ 	 * If that succeeds, we can allow sharing the interrupt as well.
+@@ -1537,18 +1537,19 @@ static int sc16is7xx_probe(struct device *dev,
+ 	if (!ret)
+ 		return 0;
+ 
+-out_ports:
+-	for (i--; i >= 0; i--) {
+-		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+-		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
+-	}
+-
+ #ifdef CONFIG_GPIOLIB
+ 	if (devtype->nr_gpio)
+ 		gpiochip_remove(&s->gpio);
+ 
+ out_thread:
+ #endif
++
++out_ports:
++	for (i--; i >= 0; i--) {
++		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
++		clear_bit(s->p[i].port.line, &sc16is7xx_lines);
++	}
++
+ 	kthread_stop(s->kworker_task);
+ 
+ out_clk:
+-- 
+2.39.2
+
