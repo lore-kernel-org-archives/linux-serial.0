@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0EAC7EE30
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDFADC7EE32
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 21:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232145AbjCCVmn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Mar 2023 16:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
+        id S232265AbjCCVpK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Mar 2023 16:45:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232125AbjCCVmJ (ORCPT
+        with ESMTP id S232306AbjCCVom (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Mar 2023 16:42:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21266637C9;
-        Fri,  3 Mar 2023 13:41:38 -0800 (PST)
+        Fri, 3 Mar 2023 16:44:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65756426C;
+        Fri,  3 Mar 2023 13:43:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39AB161910;
-        Fri,  3 Mar 2023 21:41:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EBAC433A0;
-        Fri,  3 Mar 2023 21:41:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A41EE61943;
+        Fri,  3 Mar 2023 21:43:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC920C4339B;
+        Fri,  3 Mar 2023 21:43:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677879694;
-        bh=++2MIM8/0ONyzcXtp7CAWK0DEF5HeCHRY3IEkNWQ9+A=;
+        s=k20201202; t=1677879817;
+        bh=ym3+Gg0aSijOjQS5EHK6YUaEmp1V3AItcjtX2kDux0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z4zjEyKVmW27vGte2F9WaKr48lNmoaw0rdi9eSormxmcjIlm2nfeHUFFyr7mNkokJ
-         pczqOaIy5YzGbsGDDqR2HdzqTqEN17Bok+yHn+bGLLBYS5jMvcsp6Y8j1oaDxgFmTd
-         dfJEEQ5D8CWqByEXKprisSiBgjIATQoejbRVxHpAyfUVwn9GKNAV6n+1RS17D19wga
-         iIfYVcQPxW0aYvCmz/LKmeQY5XJ9QB4ut72MSt5aA+hZHm9EcLeGk4gaDaxHZbyTnc
-         ZMVUE31H0H7AFeerQrL7n0M1jt31+brM2gXuhq8R2/z0JiB+2VAyMzycdpLXK/0g23
-         PUP1nT9DFiZqg==
+        b=iKF2ihWgK96KKzKSmYfjZT74vPWBAbpzCRxUDAX9sWfdVaWZqPGa0gREWnJzmwMoU
+         6ZaPUAfFh5NLwQmH4BOxRGdToepb+UVu585MZ8wShIc/6VYqcWCS8wxkNdB/iRO9b4
+         xkVCNEFF4pu4ksT1njewaZMwyQlpq/T8z2YZ9fmG02NJpVwxr6kUnkgYQh2ssgndu2
+         rYXTo2uA/suP3F/JV+2jgruHJ9KMbXkBGbwCu3c6NLgGOgzzzxiW8rB9U4SxlrlrVN
+         V7t4ViPFCgrLM6kV7NNd3xDvHoGf3DjgEPyUxFh7slwTqwLmfdfIyVAjhpgAZH88I3
+         1B3Jf96BRI2cw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sherry Sun <sherry.sun@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.2 16/64] tty: serial: fsl_lpuart: disable the CTS when send break signal
-Date:   Fri,  3 Mar 2023 16:40:18 -0500
-Message-Id: <20230303214106.1446460-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 13/60] tty: serial: fsl_lpuart: disable the CTS when send break signal
+Date:   Fri,  3 Mar 2023 16:42:27 -0500
+Message-Id: <20230303214315.1447666-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230303214106.1446460-1-sashal@kernel.org>
-References: <20230303214106.1446460-1-sashal@kernel.org>
+In-Reply-To: <20230303214315.1447666-1-sashal@kernel.org>
+References: <20230303214315.1447666-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -82,10 +82,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 22 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 5e69fb73f570f..fcb123296a0d1 100644
+index 888e01fbd9c5f..8af4f6bb66509 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1462,12 +1462,32 @@ static void lpuart_break_ctl(struct uart_port *port, int break_state)
+@@ -1468,12 +1468,32 @@ static void lpuart_break_ctl(struct uart_port *port, int break_state)
  
  static void lpuart32_break_ctl(struct uart_port *port, int break_state)
  {
