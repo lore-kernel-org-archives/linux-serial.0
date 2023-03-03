@@ -2,90 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF9FC64EC4
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 18:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CB6C7EE2D
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 18:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbjCCS3o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Mar 2023 13:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        id S232034AbjCCSqg convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 3 Mar 2023 13:46:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbjCCS3n (ORCPT
+        with ESMTP id S232108AbjCCSq3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Mar 2023 13:29:43 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF28A22DC5;
-        Fri,  3 Mar 2023 10:29:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1677868150; x=1709404150;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zaFuSR9Vid7T7sXsIbAu+q7+321+DujTuapJ6SxYRd0=;
-  b=2SYktlaJXjHJE5b+vZJr/MhI9L6dpzPFB06nxi0/xfJr+piC35WhU1Yf
-   oXkqVK3OP5cGVuCFvarzqynvT63ZY1t30H/TfXLftga+7Ou2rLgOHDg8I
-   1M3Bj8VN+IYTn1FW20ZX7Hi1eF9d0dr3z2P5YRGWvZ32eQZE5HU+FFeCn
-   6kdxY264KvGwlMNgulwKBG56KmYiNHpfKbubkCfFVdhtQ6vlTzfaoCuye
-   yUVmdC+ocJpgD7Qu1m1XXK/LrHFtcEg7zqUs6i4bAebasb0SxtJdt89wW
-   Yt/Xhk7lRtqElgS/kvg1xidF5ycP4TzeW4K1Si14M8P4RNDY0zfpU+PQk
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.98,231,1673938800"; 
-   d="scan'208";a="140175637"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Mar 2023 11:29:09 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 3 Mar 2023 11:29:09 -0700
-Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Fri, 3 Mar 2023 11:29:05 -0700
-From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-To:     <linux-serial@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <andriy.shevchenko@linux.intel.com>,
-        <deller@gmx.de>, <geert+renesas@glider.be>,
-        <matthew.gerlach@linux.intel.com>, <phil.edworthy@renesas.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH v1 tty-next] serial: 8250_pci1xxxx: Disable SERIAL_8250_PCI1XXXX config by default
-Date:   Fri, 3 Mar 2023 23:59:22 +0530
-Message-ID: <20230303182922.3903229-1-kumaravel.thiagarajan@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 3 Mar 2023 13:46:29 -0500
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DE6E39B;
+        Fri,  3 Mar 2023 10:46:06 -0800 (PST)
+Received: by mail-qt1-f173.google.com with SMTP id cf14so3906380qtb.10;
+        Fri, 03 Mar 2023 10:46:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1677869146;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rWmPtqpsfnXhGWlFwwoAcJ6STy2NAdkcAIAhL++JN5U=;
+        b=spDHLcCwwSe1Wj1WmG2+4kZEXI3SqklkLiOINIC+alL218SYyuWsvG4Ra1zzuTDskk
+         2DPQA+5+IFLr4yThZyck+AVrCbRj/oQfPv/O5LDAAxNOwhTZC91Pv/fv+RTU9SmBNeN0
+         GNYSkmkRG32WL4Zv1fjl1jf9qi8kDGog3tvzIVWvHcq2aHf+39LIcNDB2McVzc8GTGcg
+         zSBaJdLfc4z8d9nBCMYkhQXQsLVqhXVWuDZB22T89JYhPJMRE/8ocK6rzH1i2lqGt/ma
+         CNySyQP36Jex1Q6t81pt3qOblkuPuTMurwckCjW93EewpLFDN7LrQdTSJpUA+41BG7Yp
+         /qow==
+X-Gm-Message-State: AO0yUKW7Kq+iqGbJrUV3mPNrr/lYXmfL+QwjEmevTZdwFuUNoEWI8Avw
+        o6fmRLKpwvnzr3NWLy/m6wQhp3uCuI+c1g==
+X-Google-Smtp-Source: AK7set+mNN4iAyuZpTx2s7L4+5n5PCoBZG/lfUo+nTBkjK9RAJtyn20c5jrYOre4M8GC5x6eXAynPQ==
+X-Received: by 2002:a05:622a:1992:b0:3bf:e408:6c91 with SMTP id u18-20020a05622a199200b003bfe4086c91mr5114286qtc.51.1677869145863;
+        Fri, 03 Mar 2023 10:45:45 -0800 (PST)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id az31-20020a05620a171f00b007426ec97253sm2165893qkb.111.2023.03.03.10.45.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Mar 2023 10:45:45 -0800 (PST)
+Received: by mail-yb1-f179.google.com with SMTP id k23so2826596ybk.13;
+        Fri, 03 Mar 2023 10:45:45 -0800 (PST)
+X-Received: by 2002:a05:6902:208:b0:acd:7374:f154 with SMTP id
+ j8-20020a056902020800b00acd7374f154mr1526090ybs.7.1677869144942; Fri, 03 Mar
+ 2023 10:45:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20230303182922.3903229-1-kumaravel.thiagarajan@microchip.com>
+In-Reply-To: <20230303182922.3903229-1-kumaravel.thiagarajan@microchip.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 3 Mar 2023 19:45:33 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXvwGzyDTUA=E5=pvGhR4xaBj75OkeU7jr651j6B7kBzA@mail.gmail.com>
+Message-ID: <CAMuHMdXvwGzyDTUA=E5=pvGhR4xaBj75OkeU7jr651j6B7kBzA@mail.gmail.com>
+Subject: Re: [PATCH v1 tty-next] serial: 8250_pci1xxxx: Disable
+ SERIAL_8250_PCI1XXXX config by default
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        andriy.shevchenko@linux.intel.com, deller@gmx.de,
+        geert+renesas@glider.be, matthew.gerlach@linux.intel.com,
+        phil.edworthy@renesas.com, UNGLinuxDriver@microchip.com,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart
-support") made the SERIAL_8250_PCI1XXXX driver enabled when SERIAL_8250
-is enabled, disable it as this driver need not be enabled by default
+On Fri, Mar 3, 2023 at 7:29 PM Kumaravel Thiagarajan
+<kumaravel.thiagarajan@microchip.com> wrote:
+> Commit 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart
+> support") made the SERIAL_8250_PCI1XXXX driver enabled when SERIAL_8250
+> is enabled, disable it as this driver need not be enabled by default
 
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org> 
-Link: https://lore.kernel.org/lkml/CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com/
-Fixes: 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart support")
+does not need to be enabled
 
-Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
----
-v0 -> v1:
-- Add proper commit description
----
- drivers/tty/serial/8250/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+>
+> Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Link: https://lore.kernel.org/lkml/CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com/
+> Fixes: 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart support")
+>
+> Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+> ---
+> v0 -> v1:
+> - Add proper commit description
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 978dc196c29b..cbf11147dc89 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -299,7 +299,6 @@ config SERIAL_8250_PCI1XXXX
- 	tristate "Microchip 8250 based serial port"
- 	depends on SERIAL_8250 && PCI
- 	select SERIAL_8250_PCILIB
--	default SERIAL_8250
- 	help
- 	 Select this option if you have a setup with Microchip PCIe
- 	 Switch with serial port enabled and wish to enable 8250
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.25.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
