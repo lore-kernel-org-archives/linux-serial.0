@@ -2,129 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70ECC61DA3
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Mar 2023 23:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A6FC678DB
+	for <linux-serial@archiver.kernel.org>; Sun,  5 Mar 2023 14:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232066AbjCCXCc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Mar 2023 18:02:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
+        id S229484AbjCEOvO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 5 Mar 2023 09:51:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbjCCXCR (ORCPT
+        with ESMTP id S229478AbjCEOvN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Mar 2023 18:02:17 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670C6265B0
-        for <linux-serial@vger.kernel.org>; Fri,  3 Mar 2023 15:02:13 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pYDaM-0007X5-7q; Fri, 03 Mar 2023 23:09:06 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pYDaF-001eHQ-77; Fri, 03 Mar 2023 23:08:59 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pYDaE-001xZG-GT; Fri, 03 Mar 2023 23:08:58 +0100
-Date:   Fri, 3 Mar 2023 23:08:56 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     linux-i2c@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ajay Gupta <ajayg@nvidia.com>,
-        Peter Senna Tschudin <peter.senna@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Luca Ceresoli <luca.ceresoli@bootlin.com>,
-        linux-mtd@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Evgeniy Polyakov <zbr@ioremap.net>,
-        Crt Mori <cmo@melexis.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Shunqian Zheng <zhengsq@rock-chips.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Peter Rosin <peda@axentia.se>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v2 0/9] i2c: Switch .probe() to not take an id parameter
-Message-ID: <20230303220856.ebloz7kjw7sskxym@pengutronix.de>
-References: <20230226222654.1741900-1-u.kleine-koenig@pengutronix.de>
+        Sun, 5 Mar 2023 09:51:13 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A248CA09;
+        Sun,  5 Mar 2023 06:51:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1678027871; x=1709563871;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cD/EguBBYe4p/5f5/+uGBNDmark0HjAfGh2ODakVOW8=;
+  b=GXTGmd82BfrOmXNFIBYSb+FpCSYSD5XCUZ7cx1GLogTdj/C4Bm3bXJqq
+   IwIg4odg23bMmctkDLy2XAWCXPpkC3Qw5PGRMjoJFVYMrcCurlXnO3M1u
+   cJX20xaKso66Zx7GT9jOMYkw783OvJDE7sJ5ibbsM+KdJd+Bcwjm3R4GX
+   WCV3aYEY2j+x0Scskt/DEYMUZ2QKJ57M4gmWJMZpTfYWxSs9Y5QCvdv/u
+   GW9xy5+bFyQFL8z6U8vJ9Fuo4gIi/5grqH7AmLVcAdKG3MGMI1Ai9XNd5
+   3msxzjoVhBCWz2MVgKf8br63805JdBmHib+8gd4PH7hJnk1kSu4yzr7CQ
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.98,235,1673938800"; 
+   d="scan'208";a="140336628"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Mar 2023 07:51:09 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Sun, 5 Mar 2023 07:51:09 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Sun, 5 Mar 2023 07:51:05 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <linux-serial@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <andriy.shevchenko@linux.intel.com>,
+        <deller@gmx.de>, <geert+renesas@glider.be>,
+        <matthew.gerlach@linux.intel.com>, <phil.edworthy@renesas.com>,
+        <ilpo.jarvinen@linux.intel.com>, <UNGLinuxDriver@microchip.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH v2 tty-next] serial: 8250_pci1xxxx: Disable SERIAL_8250_PCI1XXXX config by default
+Date:   Sun, 5 Mar 2023 20:21:24 +0530
+Message-ID: <20230305145124.13444-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jphhkeygsgtmhvzu"
-Content-Disposition: inline
-In-Reply-To: <20230226222654.1741900-1-u.kleine-koenig@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Commit 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart
+support") made the SERIAL_8250_PCI1XXXX driver enabled when SERIAL_8250
+is enabled, disable it as this driver does not need to be enabled by
+default
 
---jphhkeygsgtmhvzu
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 32bb477fa7bf ("serial: 8250_pci1xxxx: Add driver for quad-uart support")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/lkml/CAHk-=whhFCeeuo6vTEmNSx6S-KKkugxgzN_W5Z6v-9yH9gc3Zw@mail.gmail.com/
+Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+v1 -> v2:
+- Update commit description as per review feedback
 
-Hello,
+v0 -> v1:
+- Add proper commit description
+---
+ drivers/tty/serial/8250/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-On Sun, Feb 26, 2023 at 11:26:45PM +0100, Uwe Kleine-K=F6nig wrote:
-> this is v2 of the series. I send it a bit earlier than I planned to do th=
-at
-> initially because I failed to send v1 completely to the linux-i2c list.
->=20
-> Changes since (implicit) v1:
->  - Added Acks for patches #5, #6 and #8
->  - Fixed kernel doc as pointed out by Luca Ceresoli (patch #7)
->  - Send all patches to linux-i2c mailing list
->  - Rebased to current Linus' tree.
->    This reduces the list of prerequisite patches to two.
->=20
-> I updated
->=20
-> 	https://git.pengutronix.de/git/ukl/linux i2c-probe-new
->=20
-> accordingly.
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 978dc196c29b..cbf11147dc89 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -299,7 +299,6 @@ config SERIAL_8250_PCI1XXXX
+ 	tristate "Microchip 8250 based serial port"
+ 	depends on SERIAL_8250 && PCI
+ 	select SERIAL_8250_PCILIB
+-	default SERIAL_8250
+ 	help
+ 	 Select this option if you have a setup with Microchip PCIe
+ 	 Switch with serial port enabled and wish to enable 8250
+-- 
+2.25.1
 
-Linus tree now contains all patches that are a prerequisite for this
-series. I rebased the above branch again on top of linus/master and now
-it contains only the change sets included in this series.
-
-Also no unexpected new usages of .probe() appeared in Linus's tree (nor
-in next). Also there are no changes to any of the files touched by this
-series in next.
-
-So this series is ready to be applied once Linus cuts -rc1.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---jphhkeygsgtmhvzu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQCb/UACgkQwfwUeK3K
-7AkuXgf/SMwWwnMqZjGgBPUDM9VgxnIlfQtagDo9nbprjQzoh3Ib5rPoV0hS3hvB
-47qsOgOL5iA240b8zcxn8IatQDJaPiDl7F06lLmWFEvMrhA233m84hU/U/O/0xbY
-0WuHom/ABjZwJ2JEl+qFUiE1Cm5r89LhYCw4UEXTG6Wn1dtuUb5Roq+uVAVjQxSS
-0aAP77IklhKDSPlpdnGXgiY1NrMiWmJWpFEyTLhNeqI7l9djO5tHLbezUcb2E4nU
-Xsz0eWpOmh85Eq8BhIFPY8CigES8ePIragUO4rxneI1ewhYWpvjEklysWIC0SO98
-Z9CJvnehDyeveIhwgTJsgtK21N7mxA==
-=QY8V
------END PGP SIGNATURE-----
-
---jphhkeygsgtmhvzu--
