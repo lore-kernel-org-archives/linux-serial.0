@@ -2,113 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E15CEC6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Mar 2023 15:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AA1C64EC4
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Mar 2023 15:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjCFPa4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Mar 2023 10:30:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S231417AbjCFPg2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Mar 2023 10:36:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbjCFPat (ORCPT
+        with ESMTP id S231431AbjCFPgF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Mar 2023 10:30:49 -0500
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F16132525;
-        Mon,  6 Mar 2023 07:30:26 -0800 (PST)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-176eae36feaso1032430fac.6;
-        Mon, 06 Mar 2023 07:30:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678116623;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=tXyraA7EBUjlMHKpI1NEMzO/jRBVc3H8mcteDRxdbrM=;
-        b=FKKZ4r4cCRi9Y/rvT7x32ysvrf6bxbbCC5YeMO3gbX8VzEmJgE6VIKAtju9BQDT2Sv
-         dIc+dO7ZezSX8SmKgZQqqlzlvjv0lI9/vkyxxXgzB/cy55R8VL5dFhHV2TuNf0Y8nROq
-         Kiiie9JSNRWQijpk7KYreVeoO/r4/zsikw6DOkCHff0JkdhebXEDLW6w51INUcKoRQKO
-         cKxp0LSophAzdjyinAP4uOaOIoxTzwy565JeJo47SuUthW95U8/9qhWmeCESRUiztyWC
-         S92SaaYXGtWGRMdS6z9m8fnxwjeUo+32CW/y3kR/oVwg5rDjTbNt47iej0LAmqBxF9bO
-         /ALg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678116623;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tXyraA7EBUjlMHKpI1NEMzO/jRBVc3H8mcteDRxdbrM=;
-        b=CWvfjh5p6bzbucAH5goHuPkFGwiLfLcbO027PFmEZSFkfZ47yM0UyRsQESTF0ncsgL
-         9btONo4H0LPO3HQQ858HCSo4OyRqEU+eHmhf/a1QZQP/SaJ7T2MbV9NDVE8prw1Wkn4z
-         MWQp1wldQIMt1NUwd71GZy8P6opXAZGVNnX6aYgEl6S47dvTSQziC5/zStL2JMJBKDF6
-         P81SpKWLIYwjx7SQPTYTQgC47qVmTA4GBrmEOwjylm+IwOzv23WZ4Jf7j6TDL3rBErsJ
-         4GMah9oczNBcth2Y8fYnHfUopGdc1xoPA/N5y5akS3sEZyt/evc0H3fqF7QPLyq6U1fK
-         YfcA==
-X-Gm-Message-State: AO0yUKWbGd8qCzP6ss90bo5qV+XVkq3iLFvcLMRJUMEJrgCpq0nbn1pM
-        /4yGVHoIu0WB4KMqHc3Flbg=
-X-Google-Smtp-Source: AK7set+Ws+hL2nePfJEaCTizVbAREjWqpt7NTr0ziC8UEzrqsGEM77rHplKx+EWuy6KbavlcRNn3AQ==
-X-Received: by 2002:a05:6870:3928:b0:176:3fc6:f199 with SMTP id b40-20020a056870392800b001763fc6f199mr7375716oap.37.1678116622758;
-        Mon, 06 Mar 2023 07:30:22 -0800 (PST)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id c22-20020a056870a59600b0017197629658sm4013147oam.56.2023.03.06.07.30.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Mar 2023 07:30:22 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <41828531-0115-2097-4c73-5cf431cb5686@roeck-us.net>
-Date:   Mon, 6 Mar 2023 07:30:19 -0800
+        Mon, 6 Mar 2023 10:36:05 -0500
+X-Greylist: delayed 1201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Mar 2023 07:35:15 PST
+Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F07F367CF;
+        Mon,  6 Mar 2023 07:35:15 -0800 (PST)
+Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
+        by mail11.truemail.it (Postfix) with ESMTPA id 093F921E2C;
+        Mon,  6 Mar 2023 15:56:33 +0100 (CET)
+Date:   Mon, 6 Mar 2023 15:56:28 +0100
+From:   Francesco Dolcini <francesco@dolcini.it>
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        alok.a.tiwari@oracle.com, hdanton@sina.com,
+        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com
+Subject: Re: [PATCH v6 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Message-ID: <ZAX/HHyy2yL76N0K@francesco-nb.int.toradex.com>
+References: <20230301154514.3292154-1-neeraj.sanjaykale@nxp.com>
+ <20230301154514.3292154-4-neeraj.sanjaykale@nxp.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH 2/4] hwmon: pmbus: Use devm_krealloc_array
-Content-Language: en-US
-To:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>, Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230306152723.3090195-1-james.clark@arm.com>
- <20230306152723.3090195-3-james.clark@arm.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20230306152723.3090195-3-james.clark@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230301154514.3292154-4-neeraj.sanjaykale@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/6/23 07:27, James Clark wrote:
-> Now that it exists, use it instead of doing the multiplication manually.
+On Wed, Mar 01, 2023 at 09:15:14PM +0530, Neeraj Sanjay Kale wrote:
+> This adds a driver based on serdev driver for the NXP BT serial protocol
+> based on running H:4, which can enable the built-in Bluetooth device
+> inside an NXP BT chip.
 > 
-> Signed-off-by: James Clark <james.clark@arm.com>
-
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-
-> ---
->   drivers/hwmon/pmbus/pmbus_core.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
+> This driver has Power Save feature that will put the chip into sleep state
+> whenever there is no activity for 2000ms, and will be woken up when any
+> activity is to be initiated over UART.
 > 
-> diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-> index 95e95783972a..e7bee25a3706 100644
-> --- a/drivers/hwmon/pmbus/pmbus_core.c
-> +++ b/drivers/hwmon/pmbus/pmbus_core.c
-> @@ -1190,9 +1190,9 @@ static int pmbus_add_attribute(struct pmbus_data *data, struct attribute *attr)
->   {
->   	if (data->num_attributes >= data->max_attributes - 1) {
->   		int new_max_attrs = data->max_attributes + PMBUS_ATTR_ALLOC_SIZE;
-> -		void *new_attrs = devm_krealloc(data->dev, data->group.attrs,
-> -						new_max_attrs * sizeof(void *),
-> -						GFP_KERNEL);
-> +		void *new_attrs = devm_krealloc_array(data->dev, data->group.attrs,
-> +						      new_max_attrs, sizeof(void *),
-> +						      GFP_KERNEL);
->   		if (!new_attrs)
->   			return -ENOMEM;
->   		data->group.attrs = new_attrs;
+> This driver enables the power save feature by default by sending the vendor
+> specific commands to the chip during setup.
+> 
+> During setup, the driver checks if a FW is already running on the chip
+> by waiting for the bootloader signature, and downloads device specific FW
+> file into the chip over UART if bootloader signature is received..
+> 
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+
+<snip>
+
+> +#define FIRMWARE_W8987	"nxp/uartuart8987_bt.bin"
+> +#define FIRMWARE_W8997	"nxp/uartuart8997_bt_v4.bin"
+> +#define FIRMWARE_W9098	"nxp/uartuart9098_bt_v1.bin"
+> +#define FIRMWARE_IW416	"nxp/uartiw416_bt_v0.bin"
+> +#define FIRMWARE_IW612	"nxp/uartspi_n61x_v1.bin.se"
+
+Where are this files coming from? Where can I download those?
+Is loading a combo firmware from the mwifiex driver supported? 
+
+> +#define HCI_NXP_PRI_BAUDRATE	115200
+> +#define HCI_NXP_SEC_BAUDRATE	3000000
+
+What if the UART device does not support 3000000 baudrate (think at
+limitation on the clock source/divider of the UART)? Shouldn't this be
+configurable?
+
+> +#define NXP_V1_FW_REQ_PKT	0xa5
+> +#define NXP_V1_CHIP_VER_PKT	0xaa
+> +#define NXP_V3_FW_REQ_PKT	0xa7
+> +#define NXP_V3_CHIP_VER_PKT	0xab
+> +
+> +#define NXP_ACK_V1		0x5a
+> +#define NXP_NAK_V1		0xbf
+> +#define NXP_ACK_V3		0x7a
+> +#define NXP_NAK_V3		0x7b
+> +#define NXP_CRC_ERROR_V3	0x7c
+
+I assume this was already discussed, but the *_V1 looks just like the
+existing Marvell protocol, is it really worth a new driver? I did not check all
+the details here, so maybe the answer is just yes.
+
+Francesco
 
