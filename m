@@ -2,63 +2,65 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B3FC678D5
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 16:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2501C678D5
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 16:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbjCGQrv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Mar 2023 11:47:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59926 "EHLO
+        id S231171AbjCGQsd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Mar 2023 11:48:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbjCGQqx (ORCPT
+        with ESMTP id S230335AbjCGQsE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Mar 2023 11:46:53 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4ACB90B50
-        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 08:43:59 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-536bbe5f888so254885847b3.8
-        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 08:43:59 -0800 (PST)
+        Tue, 7 Mar 2023 11:48:04 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB4D9CFD2
+        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 08:44:36 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-536b7ffdd34so255012047b3.6
+        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 08:44:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678207439;
+        d=linaro.org; s=google; t=1678207475;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6C5p9QZU598TAHAlwTKJLIwHjrkkcrwzk82daiPRKVA=;
-        b=lF2ABLa10Km1tgp1B02FgcV22tgi3hdEJd3tigXnkCm+lIrPP32eRE8zt1Q5nRfEvt
-         8nTgUs0z0PZzWpxTRWVYcBkNUKzqXCecCuV9RhWU1/tKt5rxEdZ6ARL/XcQKkC6TogUq
-         evnAfQaNIbw9PCxzpzRGZkUBJKvQahhV9eN9ucPUEw63Ljwu+GrGo5zn5k61G9sxBZbn
-         ksMuFoXSSlmlPY//ve0ML6w6kAjZ0aeD6yS5K7JNJ81v5jsaXNzz4MpORLzPK+DMXK4Q
-         PSkc3KMyExFjos7/iG5QryNNjyJJd+g08a9epQlkknN+4O8fx6bBY8qKfFpSreSe+Izo
-         Qi9w==
+        bh=fudFHVuFTBFg/trnMAjwYtHP559hB1IlUkkm8c37Y50=;
+        b=C1FtktTUZLRScveIKZ9szc5tqFc6zTVlhosAm5W76bIoTA3+jownCZemOQJtXqOj/i
+         OswV+evhE1bJddGQbzMng1HQJDkU2BUx6B9RB9Pe9n0f/n4QtjzYtDChr0Ayz2e7bRUU
+         kMYvci9lBkG6mamdFC3GBN0aEpock3bvfim3piuR76BI/d3rspNk8J3Z8ZaumNx/OMzA
+         UmV9535q5E0zVsf9yBGCMIGTSfIdpnxUU0qb6MG9EKVAD7TIPSkEsDGgQGFOerMUOlB4
+         jfqW9qFop3MurMcW8Upi8uSgzVR1WrvzZOgJtH517PHHvOzldcVVB2GjoDgA3OVlz4hs
+         OO6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678207439;
+        d=1e100.net; s=20210112; t=1678207475;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=6C5p9QZU598TAHAlwTKJLIwHjrkkcrwzk82daiPRKVA=;
-        b=c0pGx9qmQ4dGEArpqGkb34Rvz/oRm4q5jBdzVzaTf9BQLUPLECmDxTnk4dXZbj4Db4
-         vKjpvCx7YbDPzRaOh6aSpdV1WDVDVKCYomI5VyxWY4gSQiync2DRuKLxWTAvAALcPcTZ
-         eX9QrDNfS5sizk61Myd+PgsBkhRTgCSFyvhKyRooDb2y4ikfGVwn5sYL4PTqwslvhwx0
-         /cUDnXeUXORc9kpLiG/WrnbvKq5k1u+5Y+UVupexR9VDkuZbSwuDwnTnYkTaA4gLAWOU
-         67JFIYr7s4+kBV9ijBz9paa/URtmHUkVVTCwvGqifeTijHSe9y9MOF6bTG+43Iddd/lH
-         YcjQ==
-X-Gm-Message-State: AO0yUKUzbArHJxUwEFmjG1ek417VHJ5qM+8Rq2LiC8J7RwfrG79w0Q17
-        cMKc3pGgRjipDfK0yhjQ1itVmkIk1IqENnNMjxMOYg==
-X-Google-Smtp-Source: AK7set82pxw64ijxA1supSETlb7X6hjCvrTPUjlOU65pM8yLtKEOGgBzO5kUhk9SY1SMFL2SUZGw2wWx7jo+Qgg7bvQ=
+        bh=fudFHVuFTBFg/trnMAjwYtHP559hB1IlUkkm8c37Y50=;
+        b=0q+4gbSQ6TPhFW2ZmTdr0lfVV+W/83u6PH9q6tjtIdFGiKuVf5Fzc3N/pvAZjHM56f
+         GBW5bt2UcBc5jZ6UF3Eg1rWFV39nF7D02CmGmkjNH1ehk4soRm6Qu2Hzqc7mAAz9LNHh
+         0lTASIfJe8eRlDNE2zIJLbXyms7UgH+xxYuYKhuvafEC/PexEfgzLqDKP89j/7m2L75/
+         CzQSTSVec3iD11o7YtI0fpVYAAByWofZafP2RPB40ZjAWogcDIhyIB+I9Gf5zbuvM46d
+         wsDTg2iMMQzZMKuRQYGpChyXirHdtPcM6JCNoam8xrKMMXjvn4mEpcd6QhGlSJJBm7cw
+         aV/w==
+X-Gm-Message-State: AO0yUKVtyuDwh5VwFBXjz0gg32wcW+OOIsx6CcUdZrm9KcBSkq3uCXkS
+        xOCIQPNMfxRzx6uty6BVmgMsdrZCEEQTKFbKFTVgxA==
+X-Google-Smtp-Source: AK7set8Mlhd3BMu0el6kBe6TVY9uurv9wWYfzGKZYZ3v+8bg59K0iPFTbzTLcG3qzqvWFFLjae+E3TdWxy0lihl0lxw=
 X-Received: by 2002:a81:ae26:0:b0:52f:1c40:b1f9 with SMTP id
- m38-20020a81ae26000000b0052f1c40b1f9mr9642508ywh.7.1678207438737; Tue, 07 Mar
- 2023 08:43:58 -0800 (PST)
+ m38-20020a81ae26000000b0052f1c40b1f9mr9643617ywh.7.1678207475364; Tue, 07 Mar
+ 2023 08:44:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20230307155543.31021-1-srinivas.kandagatla@linaro.org>
- <20230307155543.31021-2-srinivas.kandagatla@linaro.org> <c7830eaa-f4b9-dac9-93b2-c3cc032ed4fb@linaro.org>
-In-Reply-To: <c7830eaa-f4b9-dac9-93b2-c3cc032ed4fb@linaro.org>
+References: <20230307164405.14218-1-johan+linaro@kernel.org>
+In-Reply-To: <20230307164405.14218-1-johan+linaro@kernel.org>
 From:   Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Date:   Tue, 7 Mar 2023 17:43:47 +0100
-Message-ID: <CACMJSevF=ur17LdYsYhN8nCcOg8k3mpz9poV_GGFUxo41DxXeQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] tty: serial: qcom-geni-serial: check for valid size
- before starting dma
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        agross@kernel.org, andersson@kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+Date:   Tue, 7 Mar 2023 17:44:24 +0100
+Message-ID: <CACMJSes3usJUvCsrMBR_9dDGCbo2y7JqA8-B5mP28H2Cjg-v6A@mail.gmail.com>
+Subject: Re: [PATCH 0/4] serial: qcom-geni: fix console shutdown hang
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
@@ -66,80 +68,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 7 Mar 2023 at 17:20, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+On Tue, 7 Mar 2023 at 17:43, Johan Hovold <johan+linaro@kernel.org> wrote:
+>
+> This series fixes some of the fallout after a recent series adding
+> support for DMA transfers to the Qualcomm geni serial driver.
+>
+> Most importantly it fixes a hang during reboot when using a serial
+> console and the getty is stopped during reboot.
+>
+> Doug just posted an equivalent fix here:
+>
+>         https://lore.kernel.org/lkml/20230307073155.1.Iaab0159b8d268060a0e131ebb27125af4750ef99@changeid
+>
+> but the commit message only mentions the regression with respect to
+> kgdb, which is not as widely used serial consoles generally, so I
+> figured I'd post my version for completeness.
+>
+> Either version of that fix should address the immediate regression, but
+> fixing the underlying problems which have been there since the driver
+> was first merged is going to be a bit more involved.
+>
+> The rest of the series fixes a few bugs in the new DMA support that I
+> found while investigating the console regression.
+>
+> Johan
 >
 >
+> Johan Hovold (4):
+>   serial: qcom-geni: fix console shutdown hang
+>   serial: qcom-geni: fix DMA mapping leak on shutdown
+>   serial: qcom-geni: fix mapping of empty DMA buffer
+>   serial: qcom-geni: drop bogus uart_write_wakeup()
 >
-> On 7.03.2023 16:55, Srinivas Kandagatla wrote:
-> > Check if there are valid length of bytes to transfer before starting dma.
-> >
-> > without this check we can see below kernel warning when we try to map a zero size buffers.
-> >
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 0 PID: 0 at drivers/iommu/dma-iommu.c:1046 iommu_dma_unmap_page+0xe0/0xfc
-> > Modules linked in:
-> > CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.3.0-rc1-dirty #347
-> > Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
-> > pstate: 804000c5 (Nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > pc : iommu_dma_unmap_page+0xe0/0xfc
-> > lr : iommu_dma_unmap_page+0x38/0xfc
-> > ...
-> > Call trace:
-> >  iommu_dma_unmap_page+0xe0/0xfc
-> >  dma_unmap_page_attrs+0x30/0x1ec
-> >  geni_se_tx_dma_unprep+0x58/0x80
-> >  qcom_geni_serial_isr+0x350/0x750
-> >  __handle_irq_event_percpu+0x58/0x148
-> >  handle_irq_event_percpu+0x18/0x4c
-> >  handle_irq_event+0x48/0x88
-> >  handle_fasteoi_irq+0xb0/0x130
-> >  generic_handle_domain_irq+0x2c/0x44
-> >  gic_handle_irq+0xd4/0x140
-> >  call_on_irq_stack+0x24/0x4c
-> >  do_interrupt_handler+0x80/0x84
-> >  el1_interrupt+0x38/0x6c
-> >  el1h_64_irq_handler+0x18/0x24
-> >  el1h_64_irq+0x64/0x68
-> >  cpuidle_enter_state+0x1e4/0x310
-> >  cpuidle_enter+0x3c/0x54
-> >  call_cpuidle+0x1c/0x40
-> >  do_idle+0x204/0x260
-> >  cpu_startup_entry+0x28/0x2c
-> >  kernel_init+0x0/0x12c
-> >  arch_post_acpi_subsys_init+0x0/0x8
-> >  start_kernel+0x3cc/0x74c
-> >  __primary_switched+0xbc/0xc4
-> >
-> > Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
-> > Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> S-o-b but no C-d-b? Weird..
+>  drivers/tty/serial/qcom_geni_serial.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+>
+> --
+> 2.39.2
 >
 
-It was supposed to be Reviewed-by actually.
+Hey Johan,
+
+Douglas and Srini beat you to these fixes but thanks!
 
 Bart
-
-> > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > ---
-> Anyway, the change is good!
->
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->
-> Konrad
-> >  drivers/tty/serial/qcom_geni_serial.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index 5972b5c317d3..bb63a00f4c07 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -637,6 +637,9 @@ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
-> >
-> >       xmit_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-> >
-> > +     if (!xmit_size)
-> > +             return;
-> > +
-> >       qcom_geni_serial_setup_tx(uport, xmit_size);
-> >
-> >       ret = geni_se_tx_dma_prep(&port->se, &xmit->buf[xmit->tail],
