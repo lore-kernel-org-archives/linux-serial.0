@@ -2,57 +2,57 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AC7C6FD1A
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 15:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7040DC678D4
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 15:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbjCGPjv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Mar 2023 10:39:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
+        id S231360AbjCGPrS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Mar 2023 10:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbjCGPjs (ORCPT
+        with ESMTP id S230392AbjCGPq4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Mar 2023 10:39:48 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BFE532B5
-        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 07:39:05 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id i28so17693103lfv.0
-        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 07:39:05 -0800 (PST)
+        Tue, 7 Mar 2023 10:46:56 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9740185344
+        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 07:46:20 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id by8so13602597ljb.7
+        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 07:46:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1678203533;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112; t=1678203976;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+PtH9Gk9ydTOUuCLXL03A9HQrmxm7UqvxGMXgnUBbiM=;
-        b=27Vczj2ZJ1z6GuzsJQ0NJe/PD7i199Kyn0O9BkcWuikdr2DYj191LBHT1bOjT4cGl2
-         KD2N3l6oWOawpT+BSHTcP9ze8xpGka/n6usAWItJkMb5LcEErGH9xGr1w7gcFKHc6Rqw
-         T/q9LRslqqYaRNIREhcszgmyc9nhv+PdLYLqdwwp1imMtQTRrG3ej9e5C/jfU9x1B6nb
-         VFMMHlQqprwzpJoIQ6kT1gvDxgC0Fku1ijX5C/L1L8xnzf7KjnOqIWPnt1ttVacIO4hH
-         mgnP+4rAMiMQ9gUIYoT+hSs+YA5RZ4ZlY9KQTWQJ+76PbBSSQe0uhJAptiIEu9H7Zx+2
-         7F0g==
+        bh=h9+99NXNhE+HCsau06muPJZBCwtg/6d76sJA1Z4GbtQ=;
+        b=nvbPrWp7Np6M7wB0syVH31b7CA9bO/qWCKBcvVlTQHeAFce9IrN3LI0V0fQxV1VNYO
+         RFJn4RWV+Zrj8cgw7LFvP3QVmCsybnCaSBPIyUKVBQFO6L0dxxsmk4c9cSm8I5qmgAf8
+         n2prckEJSYAahLfkDoQRqz4YZR5YpxGbjt8Qb3O6UDH4ycPLgoGhDOcLybZryv3B1eMf
+         Xi96t+GEVpyWzdvq2DviqGA4ADc4PAmwDHWET9b7nsYXjtYNox5dTMe2P9miuRSJy2X+
+         ne6B13T88kZ+w/yBX+TXZ9pnEsC53qh/TeaZeU3vpsIw47L5nVWXCj+iCpOpQ8KugXGn
+         yEpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678203533;
+        d=1e100.net; s=20210112; t=1678203976;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+PtH9Gk9ydTOUuCLXL03A9HQrmxm7UqvxGMXgnUBbiM=;
-        b=lhP5Csy6vCtdztPeuMM8OwX1yWsGv35u22gkjJumT5ShJ6OzbzqK5bdKrCay/3E4GG
-         RkeOqduq7Lo5hW6GfazxHSeJUAS+YyMjTOwuVtZsDjJNULxr3GdynEAeJ+2spOUuo2gn
-         TOTgCYeiZFXrt7lKWTbsQY/KtEHPAmEvU7SPDkz1VsuE1DYvU9Foe8s211QMep9UzrNY
-         rqNCwyX6pZ5AOTayZKs1a7T7I9GeT29s8RtVK4jiVKlYvdNCdn08xIfR4JKZaTvjnFu/
-         hcJtyXK41Ntr2/MKXyPjDw8+XgT/pHOjcWZscxjnNyUfjJVzlngAI+Iw2Ufu4p8YppED
-         ebCg==
-X-Gm-Message-State: AO0yUKXVltiYh9TkYq8dd96L+AwZ9eOTNfwn9jQgPXVVGuHK5keI3s+f
-        /PzhDrNR9pbQPCP3Om0y0JIeXGXLl13t7Nl7cc90eE5Jl4J/yVTD
-X-Google-Smtp-Source: AK7set/sxMp2nymcDtGOA+3rKK9UwGmZwcMpf7ztw0lEMN+8H5sNhHbCwoz5CimvcW51n/7crDGpnBESVibPIo32sWU=
-X-Received: by 2002:ac2:43a6:0:b0:4db:3ab2:896e with SMTP id
- t6-20020ac243a6000000b004db3ab2896emr4355849lfl.6.1678203532966; Tue, 07 Mar
- 2023 07:38:52 -0800 (PST)
+        bh=h9+99NXNhE+HCsau06muPJZBCwtg/6d76sJA1Z4GbtQ=;
+        b=qR2XPBjILMD2MlzSqKl/TvUp9uuhUpf+F+RhR6zieMGsleVg994Wg8319VYtgpM57S
+         6JJ6kT9uX+7IcnnNi7kZvfRWzGFV5E6I5IfSTpzQ/l8Uk/gRYa9uAxBcz7jSSp6rE8+Q
+         x5zVy8FG5vfKVHAguruSGvXMueiaGoDef2qJINqeRgPu9T4jVA6xEh0W7K+hO/LF71/D
+         ytZi791/R/TLZLzxJ/ejcNJlEYU0s9jShf7fMl2IFbGdFFjnB5RvxQFpUcpBpQjpAF6A
+         Efo9F4izsYL3XPQoXxZ8MjGszwa8NxFDRXzvRbxHrnPnwlL2YUr2bh02wCbMt3wxtfwz
+         cQdQ==
+X-Gm-Message-State: AO0yUKUhUjQI7JkY1mRvw0se8NsY9KeC42sPLmkqGaHZWEiiKaTFsY1a
+        m5Xz+jjtsQW0bwB9/xogjO+bbn+hqFlMggSQZv+X8A==
+X-Google-Smtp-Source: AK7set+EUPmmQ3KQEHGY3m5gS4LQmB5rlfTmCkgWLid5zxaXS4ZPk4vzmFfYMo7ea0TRMI75s5JFMj77XkpxSfOGbJ8=
+X-Received: by 2002:a05:651c:1246:b0:295:b77c:a3a2 with SMTP id
+ h6-20020a05651c124600b00295b77ca3a2mr4616438ljh.6.1678203976045; Tue, 07 Mar
+ 2023 07:46:16 -0800 (PST)
 MIME-Version: 1.0
 References: <20230307073155.1.Iaab0159b8d268060a0e131ebb27125af4750ef99@changeid>
 In-Reply-To: <20230307073155.1.Iaab0159b8d268060a0e131ebb27125af4750ef99@changeid>
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 7 Mar 2023 16:38:21 +0100
-Message-ID: <CAMRc=MdKmDQGj_tWJhFMtOW3bGJWu4gqjL40BbCbP-Or5epVZA@mail.gmail.com>
+Date:   Tue, 7 Mar 2023 16:46:03 +0100
+Message-ID: <CAMRc=McL7P7Zr5csLtLVBj0DzuJ_M6OZZKeVQvpPCx1ytMk+=g@mail.gmail.com>
 Subject: Re: [PATCH 1/3] tty: serial: qcom-geni-serial: Fix kdb/kgdb after
  port shutdown (again)
 To:     Douglas Anderson <dianders@chromium.org>
@@ -128,9 +128,6 @@ t *port)
 > 2.40.0.rc0.216.gc4246ad0f0-goog
 >
 
-Hey Douglas,
+And also:
 
-Thanks for this, I was about to post a similar fix, this was reported
-to me by two other people.
-
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Tested-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
