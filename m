@@ -2,291 +2,118 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A81C678D5
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 15:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54575C678D5
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 15:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbjCGPKo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Mar 2023 10:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55290 "EHLO
+        id S229868AbjCGPdI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Mar 2023 10:33:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbjCGPKP (ORCPT
+        with ESMTP id S231300AbjCGPdA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Mar 2023 10:10:15 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC19A84F46;
-        Tue,  7 Mar 2023 07:04:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678201470; x=1709737470;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dD7/vAAn4YW8k4L1ZL28fs42vlmmEZEdoamXsQ8zEOM=;
-  b=k/pRx9CfI1wgM9bHjlLPEvRIbqIX+6C33XVo8wOlZ2vr5XM7CFrLmJlc
-   /6IcSeLUzIfIbNSl9Cjg4a7rCe+OCz/O7xUCA0KfT9x4J+OZJCRlGaPHy
-   nnGds8Yz3QEsljOkcWSUd9Ojd9Vmmc47/bj3kNjULFu4eUEnsk6MlfysO
-   mYrvyFu7WGUM7Xf4BsR0Fu8jE4ryMTtk4BHmwrGukrCdz0kDZW1dNIjzQ
-   XY9sA5RnNTopua9WembRhgPplmcLwZ2BH276bBFGtPH8GY9JmURJW1Fz8
-   53SYJ9VtadG1IreBkMhdgoqA7GFzsVJZZkKnfaLtVvP55/c1w0Wg/rNUL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="319698799"
-X-IronPort-AV: E=Sophos;i="5.98,241,1673942400"; 
-   d="scan'208";a="319698799"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 07:03:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10642"; a="676590732"
-X-IronPort-AV: E=Sophos;i="5.98,241,1673942400"; 
-   d="scan'208";a="676590732"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 07 Mar 2023 07:03:09 -0800
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pZYqL-0001PX-0K;
-        Tue, 07 Mar 2023 15:03:09 +0000
-Date:   Tue, 07 Mar 2023 23:02:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-watchdog@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-rdma@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD SUCCESS WITH WARNING
- 709c6adf19dc558e44ab5c01659b09a16a2d3c82
-Message-ID: <64075221.UqJaC4j/w2D0ATu0%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 7 Mar 2023 10:33:00 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6047C3EE
+        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 07:32:48 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id ce8-20020a17090aff0800b0023a61cff2c6so1812860pjb.0
+        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 07:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1678203168;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=c3oD+VWh6vfXWKl1YinwYukVpyEX7O+ZCt88fiLI0g4=;
+        b=RKiWq7kI7n6XmLArIWP1AnEyouczbA5z2QjZxwSdk9/YWDVGfDjQfkhiJtdsvXIhHZ
+         31v5iScnAoLMLvPeOkkr7apGnVHUR3f/0qXKPKEJr1wFwS3r/nEQ0mv/BloFixdhp1XV
+         z+ULops+ColVZDGxpN+z2x9m6T0yFpAE42FHA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678203168;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=c3oD+VWh6vfXWKl1YinwYukVpyEX7O+ZCt88fiLI0g4=;
+        b=LFqqWycdvPQWwjwZNwM9z5dts0ksiFNCvAtQOk9Nn90Ru8V2RsDDSHCj3bWoHrBo1z
+         nn6EJNglCCqgIH69hejnf3D9/Mp4YTbKy6uIVPaMyb1nE9i9jiymudQWiEaSVmkmy5a2
+         mCpicD9Q60hNa7auIwxHYK1v3hdosArean3sGz+4j2e7dSieRj1ACrv1+G/vkJeWeJgQ
+         aF+98V+PL6C96HdSOcUHpoQqltRhQ52LLBpBeDhtb7Nt8BlPxRxr9P6IFP5o2Uv75xWp
+         XyZpHakODRhaIBEQXLT3NeKwJNzeakU7wndG7v5leSCB+OCMFShJ6atFOXU74aDu+a1R
+         9bYA==
+X-Gm-Message-State: AO0yUKV5dy0FvUN2MBYv3jefX5JAQL/fVlL9biXMef7TMxCMX2d/TtEi
+        J4dRluxrQ4PAPMANfdbo9zwS1A==
+X-Google-Smtp-Source: AK7set+HF+uHK6o7uusM0NKP4C1wBRuoJGtW9phRDx4xNRHTf+wnthartYKd0Z8578jfS7OlD/PVxQ==
+X-Received: by 2002:a17:902:e748:b0:19e:82d5:634c with SMTP id p8-20020a170902e74800b0019e82d5634cmr16558648plf.53.1678203167946;
+        Tue, 07 Mar 2023 07:32:47 -0800 (PST)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:9d:2:2023:7dda:98bb:96dd])
+        by smtp.gmail.com with ESMTPSA id jy16-20020a17090342d000b0019719f752c5sm8586843plb.59.2023.03.07.07.32.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 07:32:47 -0800 (PST)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <andersson@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] tty: serial: qcom-geni-serial: Fix kdb/kgdb after port shutdown (again)
+Date:   Tue,  7 Mar 2023 07:32:11 -0800
+Message-Id: <20230307073155.1.Iaab0159b8d268060a0e131ebb27125af4750ef99@changeid>
+X-Mailer: git-send-email 2.40.0.rc0.216.gc4246ad0f0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 709c6adf19dc558e44ab5c01659b09a16a2d3c82  Add linux-next specific files for 20230307
+Commit d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations
+in progress at shutdown") was basically a straight revert of the
+commit it claims to fix without any explanation of why the problems
+talked about in the original patch were no longer relevant. Indeed,
+commit d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations
+in progress at shutdown") re-introduces the same problem that commit
+e83766334f96 ("tty: serial: qcom_geni_serial: No need to stop tx/rx on
+UART shutdown") fixed.
 
-Warning reports:
+The problems are very easy to see by simply doing this on a
+sc7180-based Chromebook:
 
-https://lore.kernel.org/oe-kbuild-all/202302111601.jtY4lKrA-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202303071444.sIbZTDCy-lkp@intel.com
+1. Boot in developer mode with serial console enabled and kdb setup on
+   the serial console.
+2. via ssh: stop console-ttyMSM0; echo g > /proc/sysrq-trigger
 
-Warning: (recently discovered and may have been fixed)
+When you do the above you'll see the "kdb" prompt printed on the
+serial console but be unable to interact with it.
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn30/dcn30_optc.c:294:6: warning: no previous prototype for 'optc3_wait_drr_doublebuffer_pending_clear' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu11/vangogh_ppt.c:1600:5: warning: no previous prototype for function 'vangogh_set_apu_thermal_limit' [-Wmissing-prototypes]
-drivers/infiniband/ulp/srp/ib_srp.c:66: warning: "DEFINE_DYNAMIC_DEBUG_METADATA" redefined
-drivers/infiniband/ulp/srp/ib_srp.c:67: warning: "DYNAMIC_DEBUG_BRANCH" redefined
+Let's fix the problem again by noting that the console port is never
+configured in DMA mode and thus we don't need to stop things for the
+console.
 
-Unverified Warning (likely false positive, please contact us if interested):
+Fixes: d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations in progress at shutdown")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-drivers/tty/serial/8250/8250_dfl.c:63 dfl_uart_get_params() error: uninitialized symbol 'clk_freq'.
-drivers/tty/serial/8250/8250_dfl.c:69 dfl_uart_get_params() error: uninitialized symbol 'fifo_len'.
-drivers/tty/serial/8250/8250_dfl.c:90 dfl_uart_get_params() error: uninitialized symbol 'reg_layout'.
-drivers/usb/gadget/composite.c:2082:33: sparse: sparse: restricted __le16 degrades to integer
-drivers/watchdog/imx2_wdt.c:442:22: sparse: sparse: symbol 'imx_wdt' was not declared. Should it be static?
-drivers/watchdog/imx2_wdt.c:446:22: sparse: sparse: symbol 'imx_wdt_legacy' was not declared. Should it be static?
+ drivers/tty/serial/qcom_geni_serial.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- arc-randconfig-r011-20230305
-|   |-- drivers-infiniband-ulp-srp-ib_srp.c:warning:DEFINE_DYNAMIC_DEBUG_METADATA-redefined
-|   `-- drivers-infiniband-ulp-srp-ib_srp.c:warning:DYNAMIC_DEBUG_BRANCH-redefined
-|-- arm64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn30-dcn30_optc.c:warning:no-previous-prototype-for-optc3_wait_drr_doublebuffer_pending_clear
-|-- csky-randconfig-m031-20230305
-|   |-- drivers-tty-serial-8250_dfl.c-dfl_uart_get_params()-error:uninitialized-symbol-clk_freq-.
-|   |-- drivers-tty-serial-8250_dfl.c-dfl_uart_get_params()-error:uninitialized-symbol-fifo_len-.
-|   `-- drivers-tty-serial-8250_dfl.c-dfl_uart_get_params()-error:uninitialized-symbol-reg_layout-.
-|-- csky-randconfig-s031-20230305
-|   |-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|   |-- drivers-watchdog-imx2_wdt.c:sparse:sparse:symbol-imx_wdt-was-not-declared.-Should-it-be-static
-|   `-- drivers-watchdog-imx2_wdt.c:sparse:sparse:symbol-imx_wdt_legacy-was-not-declared.-Should-it-be-static
-|-- i386-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn30-dcn30_optc.c:warning:no-previous-prototype-for-optc3_wait_drr_doublebuffer_pending_clear
-|-- i386-randconfig-s001
-|   `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- i386-randconfig-s003
-|   `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- ia64-randconfig-s043-20230305
-|   `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- sparc-randconfig-s032-20230305
-|   |-- drivers-watchdog-imx2_wdt.c:sparse:sparse:symbol-imx_wdt-was-not-declared.-Should-it-be-static
-|   `-- drivers-watchdog-imx2_wdt.c:sparse:sparse:symbol-imx_wdt_legacy-was-not-declared.-Should-it-be-static
-|-- sparc-randconfig-s042-20230305
-|   `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- sparc64-randconfig-s041-20230305
-|   |-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|   |-- drivers-watchdog-imx2_wdt.c:sparse:sparse:symbol-imx_wdt-was-not-declared.-Should-it-be-static
-|   `-- drivers-watchdog-imx2_wdt.c:sparse:sparse:symbol-imx_wdt_legacy-was-not-declared.-Should-it-be-static
-|-- x86_64-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn30-dcn30_optc.c:warning:no-previous-prototype-for-optc3_wait_drr_doublebuffer_pending_clear
-`-- x86_64-randconfig-s021
-    `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
-clang_recent_errors
-`-- arm-randconfig-r025-20230305
-    `-- drivers-gpu-drm-amd-amdgpu-..-pm-swsmu-smu11-vangogh_ppt.c:warning:no-previous-prototype-for-function-vangogh_set_apu_thermal_limit
-
-elapsed time: 729m
-
-configs tested: 154
-configs skipped: 13
-
-tested configs:
-alpha                            alldefconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r034-20230306   gcc  
-arc                              allyesconfig   gcc  
-arc          buildonly-randconfig-r005-20230306   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r004-20230306   gcc  
-arc                  randconfig-r011-20230305   gcc  
-arc                  randconfig-r014-20230305   gcc  
-arc                  randconfig-r035-20230305   gcc  
-arc                  randconfig-r043-20230305   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                         bcm2835_defconfig   clang
-arm                          collie_defconfig   clang
-arm                                 defconfig   gcc  
-arm                      footbridge_defconfig   gcc  
-arm                  randconfig-r006-20230305   gcc  
-arm                  randconfig-r025-20230305   clang
-arm                  randconfig-r046-20230305   clang
-arm                         socfpga_defconfig   clang
-arm64                            allyesconfig   gcc  
-arm64        buildonly-randconfig-r002-20230305   clang
-arm64        buildonly-randconfig-r006-20230305   clang
-arm64                               defconfig   gcc  
-arm64                randconfig-r001-20230306   gcc  
-arm64                randconfig-r004-20230305   clang
-arm64                randconfig-r012-20230306   clang
-arm64                randconfig-r015-20230305   gcc  
-csky                                defconfig   gcc  
-hexagon      buildonly-randconfig-r003-20230305   clang
-hexagon              randconfig-r041-20230305   clang
-hexagon              randconfig-r045-20230305   clang
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-a001-20230306   gcc  
-i386                 randconfig-a002-20230306   gcc  
-i386                 randconfig-a003-20230306   gcc  
-i386                 randconfig-a004-20230306   gcc  
-i386                 randconfig-a005-20230306   gcc  
-i386                 randconfig-a006-20230306   gcc  
-i386                 randconfig-a011-20230306   clang
-i386                 randconfig-a012-20230306   clang
-i386                 randconfig-a013-20230306   clang
-i386                 randconfig-a014-20230306   clang
-i386                 randconfig-a015-20230306   clang
-i386                 randconfig-a016-20230306   clang
-i386                          randconfig-c001   gcc  
-ia64                             allmodconfig   gcc  
-ia64                                defconfig   gcc  
-ia64                 randconfig-r005-20230305   gcc  
-ia64                 randconfig-r005-20230306   gcc  
-ia64                 randconfig-r013-20230305   gcc  
-ia64                 randconfig-r033-20230306   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch    buildonly-randconfig-r001-20230305   gcc  
-loongarch                           defconfig   gcc  
-m68k                             alldefconfig   gcc  
-m68k                             allmodconfig   gcc  
-m68k                         apollo_defconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                       m5208evb_defconfig   gcc  
-m68k                          sun3x_defconfig   gcc  
-microblaze   buildonly-randconfig-r004-20230305   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                            ar7_defconfig   gcc  
-mips                        bcm63xx_defconfig   clang
-mips                           ip22_defconfig   clang
-mips                          malta_defconfig   clang
-mips                        qi_lb60_defconfig   clang
-mips                 randconfig-r026-20230305   clang
-nios2                               defconfig   gcc  
-nios2                randconfig-r022-20230305   gcc  
-nios2                randconfig-r031-20230305   gcc  
-openrisc     buildonly-randconfig-r002-20230306   gcc  
-parisc                              defconfig   gcc  
-parisc               randconfig-r016-20230306   gcc  
-parisc               randconfig-r032-20230305   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                      arches_defconfig   gcc  
-powerpc                        icon_defconfig   clang
-powerpc                 mpc836x_rdk_defconfig   clang
-powerpc                     mpc83xx_defconfig   gcc  
-powerpc                 mpc8540_ads_defconfig   gcc  
-powerpc              randconfig-r014-20230306   clang
-powerpc              randconfig-r016-20230305   gcc  
-powerpc              randconfig-r024-20230305   gcc  
-powerpc              randconfig-r026-20230306   clang
-powerpc              randconfig-r035-20230306   gcc  
-powerpc                  storcenter_defconfig   gcc  
-powerpc                     stx_gp3_defconfig   gcc  
-powerpc                     tqm8555_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r003-20230305   clang
-riscv                randconfig-r042-20230305   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390         buildonly-randconfig-r005-20230305   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r003-20230306   gcc  
-s390                 randconfig-r031-20230306   gcc  
-s390                 randconfig-r032-20230306   gcc  
-s390                 randconfig-r044-20230305   gcc  
-sh                               allmodconfig   gcc  
-sh                        apsh4ad0a_defconfig   gcc  
-sh                        dreamcast_defconfig   gcc  
-sh                ecovec24-romimage_defconfig   gcc  
-sh                             espt_defconfig   gcc  
-sh                          polaris_defconfig   gcc  
-sh                   randconfig-r006-20230306   gcc  
-sh                   randconfig-r023-20230305   gcc  
-sh                           se7750_defconfig   gcc  
-sh                            titan_defconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r002-20230306   gcc  
-sparc                randconfig-r023-20230306   gcc  
-sparc                randconfig-r034-20230305   gcc  
-sparc                randconfig-r036-20230305   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-r003-20230306   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64               randconfig-a001-20230306   gcc  
-x86_64               randconfig-a002-20230306   gcc  
-x86_64               randconfig-a003-20230306   gcc  
-x86_64               randconfig-a004-20230306   gcc  
-x86_64               randconfig-a005-20230306   gcc  
-x86_64               randconfig-a006-20230306   gcc  
-x86_64               randconfig-a011-20230306   clang
-x86_64               randconfig-a012-20230306   clang
-x86_64               randconfig-a013-20230306   clang
-x86_64               randconfig-a014-20230306   clang
-x86_64               randconfig-a015-20230306   clang
-x86_64               randconfig-a016-20230306   clang
-x86_64               randconfig-r022-20230306   clang
-x86_64               randconfig-r025-20230306   clang
-x86_64                               rhel-8.3   gcc  
-xtensa       buildonly-randconfig-r004-20230306   gcc  
-xtensa               randconfig-r002-20230305   gcc  
-xtensa               randconfig-r011-20230306   gcc  
-xtensa               randconfig-r021-20230305   gcc  
-xtensa               randconfig-r024-20230306   gcc  
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index d69592e5e2ec..74a0e074c2de 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1070,8 +1070,10 @@ static int setup_fifos(struct qcom_geni_serial_port *port)
+ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+ {
+ 	disable_irq(uport->irq);
+-	qcom_geni_serial_stop_tx(uport);
+-	qcom_geni_serial_stop_rx(uport);
++	if (!uart_console(uport)) {
++		qcom_geni_serial_stop_tx(uport);
++		qcom_geni_serial_stop_rx(uport);
++	}
+ }
+ 
+ static int qcom_geni_serial_port_setup(struct uart_port *uport)
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.40.0.rc0.216.gc4246ad0f0-goog
+
