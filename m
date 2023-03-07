@@ -2,209 +2,182 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1216CC678D5
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 11:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F59C6FD1B
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 11:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbjCGL3W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Mar 2023 06:29:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
+        id S231361AbjCGLsm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Mar 2023 06:48:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbjCGL3V (ORCPT
+        with ESMTP id S231350AbjCGLsW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Mar 2023 06:29:21 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA2048E33;
-        Tue,  7 Mar 2023 03:29:09 -0800 (PST)
+        Tue, 7 Mar 2023 06:48:22 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C79A7B129;
+        Tue,  7 Mar 2023 03:47:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678188549; x=1709724549;
+  t=1678189646; x=1709725646;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=1mX4LRq0+12Aka49QpG0ZBKYtnX84ry57MkwdauthQg=;
-  b=l3RphQtLqF8h8rJRSC9xz8ujQ6zF16/syJz8YJSTFOAvQvKaxQfJ5Q1z
-   oKyfpZYR0nOC1MrpnUWQcRWs4YCZqjOl5QgpLIAT9n889xEzljR/c4Q7X
-   UnRfQs09yfyV98wH6fR+CDAb7GsgN0WGFmyfPgOOcqSuMIJdVtnazU7US
-   K9O0tHC1saoCBOz5RqXAwqzHN1XEpJirmXEddm3I+dbRe+GLUmU6TGxOn
-   aOlO5GWXt+ADCK8mp9iwIJGBa8LG73M975L9S5M7VET/74+viSa42obLx
-   SxC6UNbBgzweAqmS0b34sxedoR+j4oiwJstRbUYvhp5JVtjCWwcY8c0xs
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="334542577"
+  bh=ABa115dzYhbKqxSWjzfNIHa1e+/UpB5wXI8AqnFj1B8=;
+  b=ND3BhInNqYYDdwVTdXvVkZLjlzB7QOtSTX6sc5q5u8KLubZNnj4iM75f
+   UQDU/qKA+Qd7wFWVvr0Jv/DPPlZp5VmuopDndctr34otG95hhjvYP9mc3
+   xWByA5stMt19+Fuhax0v9ZxMA9YNigR7gLBG5LmGEsUCfx+yPqjjid6BX
+   H2n7Hf+Vl0pvNntWBCrqOf+Dhmv2pS5FjaoYcxroF80yl95HIp2aL8XMi
+   EDBaNdaHHe7XzqOO0tsflFlsvqsj7UKiOUmN28v/9nVFKO6u0LphbSSqT
+   o0ZrBq5jgfDzvV+Vd9sf/uSViXqTWw4ylnR0I2OGIIQU/0ul8hIcBf7ew
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="316229508"
 X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
-   d="scan'208";a="334542577"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 03:29:09 -0800
+   d="scan'208";a="316229508"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 03:43:44 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="678899577"
+X-IronPort-AV: E=McAfee;i="6500,9779,10641"; a="706777464"
 X-IronPort-AV: E=Sophos;i="5.98,240,1673942400"; 
-   d="scan'208";a="678899577"
+   d="scan'208";a="706777464"
 Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.32])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 03:29:02 -0800
-Date:   Tue, 7 Mar 2023 13:29:00 +0200 (EET)
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2023 03:43:37 -0800
+Date:   Tue, 7 Mar 2023 13:43:35 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, alok.a.tiwari@oracle.com,
-        hdanton@sina.com, leon@kernel.org, Netdev <netdev@vger.kernel.org>,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-bluetooth@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
+        "hdanton@sina.com" <hdanton@sina.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         linux-serial <linux-serial@vger.kernel.org>,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v7 3/3] Bluetooth: NXP: Add protocol support for NXP
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v6 3/3] Bluetooth: NXP: Add protocol support for NXP
  Bluetooth chipsets
-In-Reply-To: <20230306170525.3732605-4-neeraj.sanjaykale@nxp.com>
-Message-ID: <f7a1c4de-1865-533e-c0cb-944bfdc19052@linux.intel.com>
-References: <20230306170525.3732605-1-neeraj.sanjaykale@nxp.com> <20230306170525.3732605-4-neeraj.sanjaykale@nxp.com>
+In-Reply-To: <AM9PR04MB86037CDF6A032963405AF0CEE7B69@AM9PR04MB8603.eurprd04.prod.outlook.com>
+Message-ID: <48e776a1-7526-5b77-568b-322d4555a138@linux.intel.com>
+References: <20230301154514.3292154-1-neeraj.sanjaykale@nxp.com> <20230301154514.3292154-4-neeraj.sanjaykale@nxp.com> <73527cb7-6546-6c47-768c-5f4648b6d477@linux.intel.com> <AM9PR04MB86037CDF6A032963405AF0CEE7B69@AM9PR04MB8603.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-796130503-1678188547=:2203"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, 6 Mar 2023, Neeraj sanjay kale wrote:
 
---8323329-796130503-1678188547=:2203
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Mon, 6 Mar 2023, Neeraj Sanjay Kale wrote:
-
-> This adds a driver based on serdev driver for the NXP BT serial protocol
-> based on running H:4, which can enable the built-in Bluetooth device
-> inside an NXP BT chip.
+> Hi Ilpo,
 > 
-> This driver has Power Save feature that will put the chip into sleep state
-> whenever there is no activity for 2000ms, and will be woken up when any
-> activity is to be initiated over UART.
-> 
-> This driver enables the power save feature by default by sending the vendor
-> specific commands to the chip during setup.
-> 
-> During setup, the driver checks if a FW is already running on the chip
-> by waiting for the bootloader signature, and downloads device specific FW
-> file into the chip over UART if bootloader signature is received..
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-> ---
-> v2: Removed conf file support and added static data for each chip based
-> on compatibility devices mentioned in DT bindings. Handled potential
-> memory leaks and null pointer dereference issues, simplified FW download
-> feature, handled byte-order and few cosmetic changes. (Ilpo Järvinen,
-> Alok Tiwari, Hillf Danton)
-> v3: Added conf file support necessary to support different vendor modules,
-> moved .h file contents to .c, cosmetic changes. (Luiz Augusto von Dentz,
-> Rob Herring, Leon Romanovsky)
-> v4: Removed conf file support, optimized driver data, add logic to select
-> FW name based on chip signature (Greg KH, Ilpo Järvinen, Sherry Sun)
-> v5: Replaced bt_dev_info() with bt_dev_dbg(), handled user-space cmd
-> parsing in nxp_enqueue() in a better way. (Greg KH, Luiz Augusto von Dentz)
-> v6: Add support for fw-init-baudrate parameter from device tree,
-> modified logic to detect FW download is needed or FW is running. (Greg
-> KH, Sherry Sun)
-> v7: Renamed variables, improved FW download functions, include ps_data
-> into btnxpuart_dev. (Ilpo Järvinen)
-> ---
->  MAINTAINERS                   |    1 +
->  drivers/bluetooth/Kconfig     |   11 +
->  drivers/bluetooth/Makefile    |    1 +
->  drivers/bluetooth/btnxpuart.c | 1309 +++++++++++++++++++++++++++++++++
->  4 files changed, 1322 insertions(+)
->  create mode 100644 drivers/bluetooth/btnxpuart.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 030ec6fe89df..fdb9b0788c89 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -22840,6 +22840,7 @@ M:	Amitkumar Karwar <amitkumar.karwar@nxp.com>
->  M:	Neeraj Kale <neeraj.sanjaykale@nxp.com>
->  S:	Maintained
->  F:	Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
-> +F:	drivers/bluetooth/btnxpuart.c
->  
->  THE REST
->  M:	Linus Torvalds <torvalds@linux-foundation.org>
-> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
-> index 5a1a7bec3c42..359a4833e31f 100644
-> --- a/drivers/bluetooth/Kconfig
-> +++ b/drivers/bluetooth/Kconfig
-> @@ -465,4 +465,15 @@ config BT_VIRTIO
->  	  Say Y here to compile support for HCI over Virtio into the
->  	  kernel or say M to compile as a module.
->  
-> +config BT_NXPUART
-> +	tristate "NXP protocol support"
-> +	depends on SERIAL_DEV_BUS
+> Thank you for reviewing this patch. I have resolved most of your review comments in v7 patch, and I have some clarification inline below:
 
-select CRC32 since you're using it now.
+Further discussion below + I sent a few against v7.
 
-> +	help
-> +	  NXP is serial driver required for NXP Bluetooth
-> +	  devices with UART interface.
-> +
-> +	  Say Y here to compile support for NXP Bluetooth UART device into
-> +	  the kernel, or say M here to compile as a module (btnxpuart).
-> +
-> +
->  endmenu
+ 
+> > > +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
+> > > +{
+> > > +     struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> > > +     struct nxp_bootloader_cmd nxp_cmd5;
+> > > +     struct uart_config uart_config;
+> > > +
+> > > +     if (req_len == sizeof(nxp_cmd5)) {
+> > > +             nxp_cmd5.header = __cpu_to_le32(5);
+> > > +             nxp_cmd5.arg = 0;
+> > > +             nxp_cmd5.payload_len = __cpu_to_le32(sizeof(uart_config));
+> > > +             nxp_cmd5.crc = swab32(crc32_be(0UL, (char *)&nxp_cmd5,
+> > > +                                            sizeof(nxp_cmd5) - 4));
+> > 
+> > swab32(crc32_be(...)) seems and odd construct instead of __cpu_to_le32().
+> Earlier I had tried using __cpu_to_le32() but that did not work. The FW expects a swapped
+> CRC value for it's header and payload data.
 
+So the .crc member should be __be32 then?
 
-> +static void ps_control(struct hci_dev *hdev, u8 ps_state)
-> +{
-> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
-> +	struct ps_data *psdata = &nxpdev->psdata;
-> +	int status;
-> +
-> +	if (psdata->ps_state == ps_state ||
-> +	    !test_bit(BTNXPUART_SERDEV_OPEN, &nxpdev->tx_state))
-> +		return;
-> +
-> +	switch (psdata->cur_h2c_wakeupmode) {
-> +	case WAKEUP_METHOD_DTR:
-> +		if (ps_state == PS_STATE_AWAKE)
-> +			status = serdev_device_set_tiocm(nxpdev->serdev, TIOCM_DTR, 0);
-> +		else
-> +			status = serdev_device_set_tiocm(nxpdev->serdev, 0, TIOCM_DTR);
-> +		break;
-> +	case WAKEUP_METHOD_BREAK:
-> +	default:
-> +		if (ps_state == PS_STATE_AWAKE)
-> +			status = serdev_device_break_ctl(nxpdev->serdev, 0);
-> +		else
-> +			status = serdev_device_break_ctl(nxpdev->serdev, -1);
-> +		bt_dev_dbg(hdev, "Set UART break: %s, status=%d",
-> +			   str_on_off(ps_state == PS_STATE_SLEEP), status);
+> > > +     serdev_device_write_buf(nxpdev->serdev, (u8 *)&nxp_cmd7,
+> > > + req_len);
+> > 
+> > Is it safe to assume req_len is small enough to not leak stack content?
+> The chip requests chunk of FW data which is never more than 2048 bytes 
+> at a time. 
 
-Add the #include for str_on_off too.
+Eh, sizeof(*nxp_cmd7) is 16 bytes!?! Are you sure that req_len given to 
+serdev_device_write_buf() is not larger than 16 bytes?
 
+> > > +static bool nxp_check_boot_sign(struct btnxpuart_dev *nxpdev) {
+> > > +     int ret;
+> > > +
+> > > +     serdev_device_set_baudrate(nxpdev->serdev,
+> > HCI_NXP_PRI_BAUDRATE);
+> > > +     serdev_device_set_flow_control(nxpdev->serdev, 0);
+> > > +     set_bit(BTNXPUART_CHECK_BOOT_SIGNATURE, &nxpdev->tx_state);
+> > > +
+> > > +     ret = wait_event_interruptible_timeout(nxpdev-
+> > >check_boot_sign_wait_q,
+> > > +                                            !test_bit(BTNXPUART_CHECK_BOOT_SIGNATURE,
+> > > +                                                      &nxpdev->tx_state),
+> > > +                                            msecs_to_jiffies(1000));
+> > > +     if (ret == 0)
+> > > +             return false;
+> > > +     else
+> > > +             return true;
+> > 
+> > How does does this handle -ERESTARTSYS? But this runs in nxp_setup() so is
+> > that even relevant (I don't know).
+> This function is waits for 1 second and checks if it is receiving any bootloader signatures
+> over UART. If yes, it means FW download is needed. If no, it means FW is already present
+> on the chip, and we skip FW download.
 
-> +/* for legacy chipsets with V1 bootloader */
-> +static int nxp_recv_fw_req_v1(struct hci_dev *hdev, struct sk_buff *skb)
-> +{
-> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
-> +	struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
-> +	struct v1_data_req *req;
-> +	u32 requested_len;
-> +
-> +	if (test_bit(BTNXPUART_CHECK_BOOT_SIGNATURE, &nxpdev->tx_state)) {
-> +		clear_bit(BTNXPUART_CHECK_BOOT_SIGNATURE, &nxpdev->tx_state);
-> +		wake_up_interruptible(&nxpdev->check_boot_sign_wait_q);
-> +		goto ret;
-> +	}
-> +
-> +	if (!is_fw_downloading(nxpdev))
-> +		goto ret;
+Okay, it seems your changes had a side-effect of addressing this.
 
-That BTNXPUART_CHECK_BOOT_SIGNATURE check above is also the same in 3 
-callsites of is_fw_downloading() so too should be moved into a common 
-helper (there was 4th call into is_fw_downloading() so make another 
-help for these 3 users).
+> > > +static int nxp_enqueue(struct hci_dev *hdev, struct sk_buff *skb) {
+> > > +     struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> > > +     struct ps_data *psdata = nxpdev->psdata;
+> > > +     struct hci_command_hdr *hdr;
+> > > +     u8 param[MAX_USER_PARAMS];
+> > > +
+> > > +     if (!nxpdev || !psdata)
+> > > +             goto free_skb;
+> > > +
+> > > +     /* if vendor commands are received from user space (e.g. hcitool),
+> > update
+> > > +      * driver flags accordingly and ask driver to re-send the command to
+> > FW.
+> > > +      */
+> > > +     if (bt_cb(skb)->pkt_type == HCI_COMMAND_PKT &&
+> > > + !psdata->driver_sent_cmd) {
+> > 
+> > Should this !psdata->driver_sent_cmd do something else than end up into a
+> > place labelled send_skb. Maybe return early (or free skb + return)?
+> > There's a comment elsewhere stating: "set flag to prevent re-sending
+> > command in nxp_enqueue."
+> I'm sorry if the comment was misleading. This flag is set to prevent nxp_enqueue() from
+> Parsing the command parameters again, and calling hci_cmd_sync_queue() again.
+> The commands sent from user space, as well as the commands sent by __hci_cmd_sync(),
+> both endup in nxp_enqueue().
+> Hope this helps!
 
+Okay, makes sense now and the logic is also clearer now. However, the
+brace blocks you added into those cases in bxp_enqueue() you should try to 
+remove. I realize you do it to avoid name collisions because you reused 
+param in each but they introduced these ugly constructs:
+	case XX:
+		{
+			...
+			goto free_skb;
+		}
+		break;
 
 -- 
  i.
 
---8323329-796130503-1678188547=:2203--
