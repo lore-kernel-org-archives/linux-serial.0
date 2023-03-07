@@ -2,94 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90559C678DB
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 19:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E411C6FD1E
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 19:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233514AbjCGTBD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Mar 2023 14:01:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
+        id S231672AbjCGTue convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Mar 2023 14:50:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233491AbjCGTAm (ORCPT
+        with ESMTP id S231678AbjCGTuO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Mar 2023 14:00:42 -0500
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F383449F
-        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 10:47:25 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id p13so8936522ilp.11
-        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 10:47:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1678214840;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=O7BUelKDKk+33uckJ7LNeCbNjLijtX6ljbEKj2F7sL0=;
-        b=TlR/FyIjWLnMbONWCzB2Z6S+1hskQcmd4MbBShge2gPaXrJlel8FOlsCisvLJ16fFE
-         eoBirk5vtVILcDRxPAdzCQqOmjHWQbznyJSidb/BQ+aDLNdkhzl2TMTUscIuKEYpbzL9
-         6IIGGFmOGG24sXQsXJId+46gZQ62Npjp0eunE=
+        Tue, 7 Mar 2023 14:50:14 -0500
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E7FB9CA8
+        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 11:41:24 -0800 (PST)
+Received: by mail-pj1-f42.google.com with SMTP id y2so14304782pjg.3
+        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 11:41:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678214840;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=O7BUelKDKk+33uckJ7LNeCbNjLijtX6ljbEKj2F7sL0=;
-        b=cH/FjWHdUMsGK1gEW14jMwkOkVsSYEb/1bOY/ZabEs+jYZD9M7ZcqtTjPsR1k00nQ+
-         aUvj+UULZNtAf00uq1fWPHvs5g7ddD3NuO2aiA0swkKJlt9y3UGQ+raHS/uVS9JuxPIb
-         wgpijk4UOZX2MQEr4zB6qoOChwGdPBQvGjSFAFCOb/hBRRHZVETFRwz2Mf6Qr8fuWwPY
-         1sJnoG+PegJC1OeiM9NYhpIdMw/EYtW/GIp/+zzJt4fTQaHXJ8+DhgwHe10VdoHWe/gD
-         59UyOM1cA8+dcU9JB1BbU2z0lKdWwuX+4nOdKN8d9muVlwSyZ/NIatRr8JeWULb9+yat
-         eiTQ==
-X-Gm-Message-State: AO0yUKU2wYzGrBcJZhK8PSoQSfIY3fsfcds4EpPkaVKJY7vqC5D5tYZ7
-        l0wp7xj4+v6OY+TZRrtmDK0KY5xY7h36lSFhp94=
-X-Google-Smtp-Source: AK7set8QYvcvkoPkN3WrAVKvcClhAuTfFzpgCnek8NuSOKgbSgsW0vLBht1wyXLdkyjCwxWZ8IIu3A==
-X-Received: by 2002:a92:cd81:0:b0:317:6591:95fe with SMTP id r1-20020a92cd81000000b00317659195femr13298136ilb.28.1678214840687;
-        Tue, 07 Mar 2023 10:47:20 -0800 (PST)
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com. [209.85.166.53])
-        by smtp.gmail.com with ESMTPSA id o12-20020a92c04c000000b00314007fdbc2sm3887855ilf.62.2023.03.07.10.47.19
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 10:47:20 -0800 (PST)
-Received: by mail-io1-f53.google.com with SMTP id d12so5777334ioe.10
-        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 10:47:19 -0800 (PST)
-X-Received: by 2002:a02:aa0b:0:b0:3c4:e84b:2a40 with SMTP id
- r11-20020a02aa0b000000b003c4e84b2a40mr7756944jam.6.1678214839473; Tue, 07 Mar
- 2023 10:47:19 -0800 (PST)
+        d=1e100.net; s=20210112; t=1678218046;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:to:from:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=CWFDL0Togo3L/5bvFloyMlrVxNWJz2dZaxBpDesLPPY=;
+        b=O2aaVSwe2pE5WKkYEfCrVJRKLfMr/1wOrCm4O4i8pZVLSVwsbzyzggE7D59wnPxrw5
+         y0qH3qnoAUj5OHB3R9lijXaQyxvIkKmHDXCTGrbF24KC4kLMlrlUJcfajypuEEQZTSaZ
+         uA4JXxCr3lpuwheDmd3H151TPxlWTn+q7RGjYVttMmYUATdg2dx3WwXVdFF1EROV/SrP
+         wdWsWDNESAlBtiopceD6OxfvBTtLK0VWNQzJMcSD3nlnltjlc/wgu7lzt+KgFjqpuEZO
+         S2miVocYN+WOcoPUMDMS7qIDOYXmWSBGY/UKnFgXa5FV2pjNf52YMl2g6awxJk19gNdR
+         R/IA==
+X-Gm-Message-State: AO0yUKXBLN01mcdwlIR75NOL3IXQRsdOFH95JFwASUL8JF0sBA4VHSMk
+        94cBCOFgWMJhhIRKHZ0Wi35R5A==
+X-Google-Smtp-Source: AK7set9Pfl0SQYm8o4d/CzeLw+E0U3nXeg314CNzFcmKQNtPX+Scglz04h5m+eRyrouDFqS1XFo04A==
+X-Received: by 2002:a17:90b:4b49:b0:234:234c:72d9 with SMTP id mi9-20020a17090b4b4900b00234234c72d9mr16195349pjb.14.1678218046516;
+        Tue, 07 Mar 2023 11:40:46 -0800 (PST)
+Received: from localhost (63-228-113-140.tukw.qwest.net. [63.228.113.140])
+        by smtp.gmail.com with ESMTPSA id fy1-20020a17090b020100b0022bfcf5d297sm9742902pjb.9.2023.03.07.11.40.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Mar 2023 11:40:45 -0800 (PST)
+From:   Kevin Hilman <khilman@kernel.org>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Bernhard =?utf-8?Q?Rosenkr?= =?utf-8?Q?=C3=A4nzer?= 
+        <bero@baylibre.com>, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        tglx@linutronix.de, maz@kernel.org, lee@kernel.org,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        daniel.lezcano@linaro.org, chunfeng.yun@mediatek.com,
+        angelogioacchino.delregno@collabora.com, nfraprado@collabora.com,
+        allen-kh.cheng@mediatek.com, sean.wang@mediatek.com,
+        zhiyong.tao@mediatek.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v9 8/9] dt-bindings: serial: mediatek,uart: add MT8365
+In-Reply-To: <0dec66ce-424c-e682-3f73-594e5b1edb65@gmail.com>
+References: <20230125143503.1015424-1-bero@baylibre.com>
+ <20230125143503.1015424-9-bero@baylibre.com>
+ <0dec66ce-424c-e682-3f73-594e5b1edb65@gmail.com>
+Date:   Tue, 07 Mar 2023 11:40:45 -0800
+Message-ID: <7httywfiyq.fsf@baylibre.com>
 MIME-Version: 1.0
-References: <20230307164405.14218-1-johan+linaro@kernel.org> <20230307164405.14218-5-johan+linaro@kernel.org>
-In-Reply-To: <20230307164405.14218-5-johan+linaro@kernel.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 7 Mar 2023 10:47:07 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=VTDHFkSf4qnexNOBoXzV-sMPBRjSqMrB_nrsuCPpO=WQ@mail.gmail.com>
-Message-ID: <CAD=FV=VTDHFkSf4qnexNOBoXzV-sMPBRjSqMrB_nrsuCPpO=WQ@mail.gmail.com>
-Subject: Re: [PATCH 4/4] serial: qcom-geni: drop bogus uart_write_wakeup()
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Hi Matthias,
 
-On Tue, Mar 7, 2023 at 8:43=E2=80=AFAM Johan Hovold <johan+linaro@kernel.or=
-g> wrote:
->
-> Drop the bogus uart_write_wakeup() from when setting up a new DMA
-> transfer, which does not free up any more space in the ring buffer.
->
-> Any pending writers will be woken up when the transfer completes.
->
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 4 ----
->  1 file changed, 4 deletions(-)
+Matthias Brugger <matthias.bgg@gmail.com> writes:
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> On 25/01/2023 15:35, Bernhard Rosenkränzer wrote:
+>> Add binding description for mediatek,mt8365-uart
+>> 
+>> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
+>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+>
+> Greg will you take 5,6 and 8 from this series through your branch or are you Ok 
+> if I take them. They are all just adding a new compatible string to the 
+> following files:
+> Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
+> Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
+> and
+> Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+
+Might I gently suggest that you take these along with patch 9 through
+your tree?
+
+The driver portions were all been merged and the bindings and DT all
+reviewed since end of January.
+
+Thanks,
+
+Kevin
