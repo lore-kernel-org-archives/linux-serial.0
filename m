@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4E5C6FD1A
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 16:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6596EC678D5
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Mar 2023 16:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbjCGQTt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Mar 2023 11:19:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47244 "EHLO
+        id S230297AbjCGQVE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Mar 2023 11:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbjCGQTY (ORCPT
+        with ESMTP id S230352AbjCGQUd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Mar 2023 11:19:24 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654B78FBEF
-        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 08:19:07 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id bi9so17821295lfb.2
-        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 08:19:07 -0800 (PST)
+        Tue, 7 Mar 2023 11:20:33 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A8492276
+        for <linux-serial@vger.kernel.org>; Tue,  7 Mar 2023 08:20:28 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id y14so13747732ljq.4
+        for <linux-serial@vger.kernel.org>; Tue, 07 Mar 2023 08:20:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678205945;
+        d=linaro.org; s=google; t=1678206026;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=+H+ZN9OLeA0/ZCnSrIPhMAdnIB2BziPIyfYKYdHQ0+0=;
-        b=YCm6kNCGPK1W0qmWKKUU2mwfxxnSid1jyLNFUM+ogXtQkTgGkO8oBRfz4LM4kWQSoy
-         J/OqmX34CvnoIxp9xaUKCshlRRHCVz92C5GwqIi3dCAHIPYojukbiGIO9b8uKbBd6C+W
-         00JRgd3mlyPB8Vu7W9OMn2w6BDv/x3P2s3WhajiESWo2+AcnxNqhIwNfsMJQsK9xE5NU
-         dbwVhycL99YbC4qj6sDwBB6cl66DNKQo9I1P54rUuSet69rXFfCssKUccg4auxN+QAHg
-         oRQfsAIjL4xAlSEhISnGdSkYdTVrr/SCCZ9iO109i5U2Aubp+wQL3AB6318Bb8Mxn7AQ
-         hoYA==
+        bh=VQEsugkh0V2vIKcG4izkUsyGyZl7yhwYFD2CCB1ntKU=;
+        b=mA/4o0aegl4nboHdlLauTz1AgNIEmH9EWAckuq/MpX+To4fnV+W71vW9RrsqMuyO/1
+         Rr/C7qKdABhhjW/XVLwEM3i9trgVwIoj73R8ZW4wgZyfLXUlFIv7ngpe8lh8lvPIGjN2
+         eGXXVLF0erABbFX3KDBvh3vUiwgEAhB6+YBYEpze3+caqAfPNMVUtFdF7rTYC3s7fj0a
+         EWERZpmZOG3/G1Edd4ck9pjblWD3UxfYxupqpxe/stAaEJzaDTVWo/fyOmBKEaGb6eA5
+         fkkC7wYt63BtKOCIaXYdPYy/4xA7cc1dv6Lk48JFxbn2qlYOW54qnfS7dcsjVu4ewo4O
+         W3FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678205945;
+        d=1e100.net; s=20210112; t=1678206026;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+H+ZN9OLeA0/ZCnSrIPhMAdnIB2BziPIyfYKYdHQ0+0=;
-        b=2G0aKlWxMmzAiWmUumiBaMIubRVh/KTKPVnqfIlWaNl2J1EEhSDl8NHui31c6Na8EQ
-         w0CRasTuQ0TSeFzKoa0E4ysjWtot4p1Y2WGZlFrfJ+uaMNJI5wrIAMoOUcSctgdawLra
-         AzE6/Y9bVzrQLl1IJVNGuU+koohxd2J6HX8mW4cD9oNPI+tdsLFuH2IWH+x0wnEt55rB
-         ny0jPKXC6DLTU8OnjezCPWD8KPZW4S1+Kf1AODpGLNpwQmZxXO66LEzlzij3WrMAa5Mu
-         1O1QVWZsAlROLr3vI52RjRH7ICHkvSNcIJqQaO1H9JU6c2BWzVE9AfnscrtaaVagcbpj
-         IZ9Q==
-X-Gm-Message-State: AO0yUKVG43tVb1Iaohz8ajqjzY+Ki/d7UDSEGaarWUijjtlZbK2RNS3f
-        6QsbW1rFA0EeD2ln7d/S8ww/lX16e5eUwAhUGbY=
-X-Google-Smtp-Source: AK7set+ocIWUpDOgeFtUce9WvuyYOBDDQsDPp3s6GYZPyOW1EvXNtf3C/zBbm2kpKzTKWoB8rzEdLw==
-X-Received: by 2002:ac2:48aa:0:b0:4db:38a2:e989 with SMTP id u10-20020ac248aa000000b004db38a2e989mr4046350lfg.63.1678205945548;
-        Tue, 07 Mar 2023 08:19:05 -0800 (PST)
+        bh=VQEsugkh0V2vIKcG4izkUsyGyZl7yhwYFD2CCB1ntKU=;
+        b=CTX1nzH5DIqo2V4dhgVPexaap3SEkbTijIMLoXw44ZzRRoEIptFqvnGsF19+HNRt0R
+         PQ9L66VVLNzby94dltOh9hl9YwA5pNiWralKmIWDePqBIZjDmhr7pVAXMzjmUiPkEcDC
+         hlDqdaMViRtxxetJnPMTeO2AfDkphBf8jYmYUGlP6XOYGqXmqThbL4OHQG849vws23uy
+         upMrSnNJxIjjg7hCxAgoIvjz4GqmEnduF4vnjp3OhwT/wjlowK6HdLby87l+NEXyPCJa
+         pKR6aPevooZr/Wqq/1Ca4zoQd1taAaxqlrtXFWEdRY+m0yYSJDasvNGymM/bvvlgXKMD
+         YPIg==
+X-Gm-Message-State: AO0yUKUbfb3YNkwsv+T5K2xa1vjAR+m1cCWlC3VkdSAN/PwIMQOAbwe5
+        D7fQTySfV+fGcjDphlM9CJvJjA==
+X-Google-Smtp-Source: AK7set86ec1LsrI69Xbru8x7CA2NaSOBMOkEbirKvIm8EryBwd0yI/ZyV/snxmmAXbmrFT74e9d9EA==
+X-Received: by 2002:a2e:a4cc:0:b0:295:b4ed:fca8 with SMTP id p12-20020a2ea4cc000000b00295b4edfca8mr5081494ljm.24.1678206026708;
+        Tue, 07 Mar 2023 08:20:26 -0800 (PST)
 Received: from [192.168.1.101] (abyj16.neoplus.adsl.tpnet.pl. [83.9.29.16])
-        by smtp.gmail.com with ESMTPSA id x20-20020ac24894000000b004b6f00832cesm2064327lfc.166.2023.03.07.08.19.04
+        by smtp.gmail.com with ESMTPSA id j8-20020a2eb708000000b00295b0c0e0c1sm2227918ljo.118.2023.03.07.08.20.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Mar 2023 08:19:05 -0800 (PST)
-Message-ID: <aca0e83b-3ad9-6153-f51e-f522cbe979d6@linaro.org>
-Date:   Tue, 7 Mar 2023 17:19:03 +0100
+        Tue, 07 Mar 2023 08:20:26 -0800 (PST)
+Message-ID: <c7830eaa-f4b9-dac9-93b2-c3cc032ed4fb@linaro.org>
+Date:   Tue, 7 Mar 2023 17:20:25 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH 1/2] tty: serial: qcom-geni-serial: check correct dma
- address before unprep
+Subject: Re: [PATCH 2/2] tty: serial: qcom-geni-serial: check for valid size
+ before starting dma
 Content-Language: en-US
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         agross@kernel.org, andersson@kernel.org, gregkh@linuxfoundation.org
@@ -64,8 +64,9 @@ Cc:     jirislaby@kernel.org, bartosz.golaszewski@linaro.org,
         linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20230307155543.31021-1-srinivas.kandagatla@linaro.org>
+ <20230307155543.31021-2-srinivas.kandagatla@linaro.org>
 From:   Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20230307155543.31021-1-srinivas.kandagatla@linaro.org>
+In-Reply-To: <20230307155543.31021-2-srinivas.kandagatla@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -75,30 +76,70 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 On 7.03.2023 16:55, Srinivas Kandagatla wrote:
-> looks like there was a typo while checking validatity of tx_dma_addr, the
-> code was checking rx instead of tx.
-> This can potentially lead to memory leak, this patch fixes the typo.
+> Check if there are valid length of bytes to transfer before starting dma.
+> 
+> without this check we can see below kernel warning when we try to map a zero size buffers.
+> 
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 0 at drivers/iommu/dma-iommu.c:1046 iommu_dma_unmap_page+0xe0/0xfc
+> Modules linked in:
+> CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.3.0-rc1-dirty #347
+> Hardware name: Qualcomm Technologies, Inc. Robotics RB5 (DT)
+> pstate: 804000c5 (Nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> pc : iommu_dma_unmap_page+0xe0/0xfc
+> lr : iommu_dma_unmap_page+0x38/0xfc
+> ...
+> Call trace:
+>  iommu_dma_unmap_page+0xe0/0xfc
+>  dma_unmap_page_attrs+0x30/0x1ec
+>  geni_se_tx_dma_unprep+0x58/0x80
+>  qcom_geni_serial_isr+0x350/0x750
+>  __handle_irq_event_percpu+0x58/0x148
+>  handle_irq_event_percpu+0x18/0x4c
+>  handle_irq_event+0x48/0x88
+>  handle_fasteoi_irq+0xb0/0x130
+>  generic_handle_domain_irq+0x2c/0x44
+>  gic_handle_irq+0xd4/0x140
+>  call_on_irq_stack+0x24/0x4c
+>  do_interrupt_handler+0x80/0x84
+>  el1_interrupt+0x38/0x6c
+>  el1h_64_irq_handler+0x18/0x24
+>  el1h_64_irq+0x64/0x68
+>  cpuidle_enter_state+0x1e4/0x310
+>  cpuidle_enter+0x3c/0x54
+>  call_cpuidle+0x1c/0x40
+>  do_idle+0x204/0x260
+>  cpu_startup_entry+0x28/0x2c
+>  kernel_init+0x0/0x12c
+>  arch_post_acpi_subsys_init+0x0/0x8
+>  start_kernel+0x3cc/0x74c
+>  __primary_switched+0xbc/0xc4
 > 
 > Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
 > Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+S-o-b but no C-d-b? Weird..
+
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > ---
+Anyway, the change is good!
+
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
 Konrad
->  drivers/tty/serial/qcom_geni_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/tty/serial/qcom_geni_serial.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
 > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index d69592e5e2ec..5972b5c317d3 100644
+> index 5972b5c317d3..bb63a00f4c07 100644
 > --- a/drivers/tty/serial/qcom_geni_serial.c
 > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -596,7 +596,7 @@ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
->  	if (!qcom_geni_serial_main_active(uport))
->  		return;
+> @@ -637,6 +637,9 @@ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
 >  
-> -	if (port->rx_dma_addr) {
-> +	if (port->tx_dma_addr) {
->  		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
->  				      port->tx_remaining);
->  		port->tx_dma_addr = 0;
+>  	xmit_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+>  
+> +	if (!xmit_size)
+> +		return;
+> +
+>  	qcom_geni_serial_setup_tx(uport, xmit_size);
+>  
+>  	ret = geni_se_tx_dma_prep(&port->se, &xmit->buf[xmit->tail],
