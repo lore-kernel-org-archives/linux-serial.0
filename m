@@ -2,135 +2,162 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C9CCC64EC4
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 12:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86242C6FD20
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 14:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbjCHMXm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Mar 2023 07:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43968 "EHLO
+        id S231938AbjCHOHZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Mar 2023 09:07:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231360AbjCHMXb (ORCPT
+        with ESMTP id S231936AbjCHOHF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Mar 2023 07:23:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0738B1E5C5
-        for <linux-serial@vger.kernel.org>; Wed,  8 Mar 2023 04:23:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CC96B81C5E
-        for <linux-serial@vger.kernel.org>; Wed,  8 Mar 2023 12:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 004F1C4339C
-        for <linux-serial@vger.kernel.org>; Wed,  8 Mar 2023 12:22:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678278130;
-        bh=HmPu3h4fk3fQw4HZF9p80BQokGyi0uBa0Hahc9Ux9ks=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=NpoPKN2VWXqLeslMSRlSjw0wlDxZ0xV7EUTKz/C7rgz/YP5DYwiXI4y5kOdgcAuqP
-         nunXT9ptwRaua/YMsEeont2sU0jO2orxjzD+1tBOlTvIcNVPS2GUk7ACTxjPvCRO6Z
-         f8ekBnamcAiCxcn8Z3l6PavcHD5wrXewu2cKZCxWbHsFtPn3okf5G9RsuJrIN9b/St
-         7BncNTbwPnz6eO7K1JVIRerfPVU7ujlEgyDEtwAZU0C2/1jlrhIkzSvDcCY4Yz8buc
-         /D1gfauw+qPMGWhc9GCeNID/6foDJ6qa5tFwrmM13gyz8LOJRy+e7gaMyD2HZ91ilv
-         BMAp/Cv+NF7Rg==
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailauth.nyi.internal (Postfix) with ESMTP id D209127C0054;
-        Wed,  8 Mar 2023 07:22:08 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Wed, 08 Mar 2023 07:22:08 -0500
-X-ME-Sender: <xms:8H0IZPQQhg5sE5IubkIoNsqfW9_o9MnqyrcYSBlDoM3DkHTi5ao1uA>
-    <xme:8H0IZAyMNiOfZ_gO6FeZA3YlgHkbgZPt_Qz5Dl4y3zdBUlf1KrUSKSE7QbPvcOego
-    mlyJxdsCizFlZLrRTQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdduvddgvdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlhdrohhrgheqnecuggftrf
-    grthhtvghrnhepleevgfduieehfeeltdettdfhfffgkedugeeklefftdeivdfgveeiteet
-    keehffevnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhh
-    phgvrhhsohhnrghlihhthidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnug
-    eppehkvghrnhgvlhdrohhrghesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:8H0IZE3BfHoxjXZDLIYryZwAar6XOtBMs0_W9tG2Dl28Iv3sXtY6vw>
-    <xmx:8H0IZPDnqHooTToQRI6M-HWMvtuxAImtmp5CSqP9mVtmdiX8v-tx7A>
-    <xmx:8H0IZIgl0Cc6Z_vKWxfp0BcRs9F5AguQz4ht5of_Q2NGV6JnMaCjIg>
-    <xmx:8H0IZAf_ycc0UKuESDyQ1HUUPXC8pXWrUX5zM40L5AvI0X4RbVFfIw>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 5850DB60086; Wed,  8 Mar 2023 07:22:08 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-206-g57c8fdedf8-fm-20230227.001-g57c8fded
-Mime-Version: 1.0
-Message-Id: <c85f0735-6c85-4a6e-ad07-66493783c58e@app.fastmail.com>
-In-Reply-To: <2e79ebb0ef62e550231c3daf46c62cd60d78acbc.camel@linux.ibm.com>
-References: <202301051008.a8468257-yujie.liu@intel.com>
- <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
- <2e79ebb0ef62e550231c3daf46c62cd60d78acbc.camel@linux.ibm.com>
-Date:   Wed, 08 Mar 2023 13:21:48 +0100
-From:   "Arnd Bergmann" <arnd@kernel.org>
-To:     "Niklas Schnelle" <schnelle@linux.ibm.com>,
-        "kernel test robot" <yujie.liu@intel.com>
-Cc:     oe-lkp@lists.linux.dev, "kernel test robot" <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        "Heiko Carstens" <hca@linux.ibm.com>
+        Wed, 8 Mar 2023 09:07:05 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B481B2E5;
+        Wed,  8 Mar 2023 06:05:17 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 328DJEc2027895;
+        Wed, 8 Mar 2023 14:04:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=zBXIcnb+DEc0lzd5ge6FUHpadrkeZ99ddpqiHCj3T1I=;
+ b=jeTXmgcNtRqFX51cPfkyv9lWYxW1WhNiiFkdsmZLU9GIt7VGP9mP0TZHbVzyXrSAhXbu
+ KQUQMR+Wuze8XMiFceWdW3NKe2S5P2h4KZ/RU/+uKFT1d2XuLjFStK9f27g2gYzbDwfv
+ oFWQ7jKlSbOxCr2WxZTmhrI387846DDMURJiYOuROWYFpbqQwgP4mQO/9Ccwhh64klmv
+ OzGsKQlfkc1ALylRfyybCHNBQzbjlzkBo2zyg1yicc+5kEIwYUxdRZcdi4xD85/GXXEU
+ nWVGnhASYO1tRhTu1fxOY0hz3d6fBljbjClrFxSewq7EahrRTF6dxLQjZt2GH4JVZ+SL VQ== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p6k0bvm7v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Mar 2023 14:04:00 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 328134ef015019;
+        Wed, 8 Mar 2023 14:03:58 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+        by ppma03fra.de.ibm.com (PPS) with ESMTPS id 3p6gbw8n10-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Mar 2023 14:03:58 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+        by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 328E3u6762587284
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Mar 2023 14:03:56 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EB39920043;
+        Wed,  8 Mar 2023 14:03:55 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6C1EE20040;
+        Wed,  8 Mar 2023 14:03:55 +0000 (GMT)
+Received: from [9.179.30.6] (unknown [9.179.30.6])
+        by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Wed,  8 Mar 2023 14:03:55 +0000 (GMT)
+Message-ID: <772a05f5f3c1b35864b80bf78429b843bdf14ee9.camel@linux.ibm.com>
 Subject: Re: [niks:has_ioport_v3] [tty] aa0652d7f1:
  BUG:kernel_NULL_pointer_dereference,address
-Content-Type: text/plain
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@kernel.org>,
+        kernel test robot <yujie.liu@intel.com>
+Cc:     oe-lkp@lists.linux.dev, kernel test robot <lkp@intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>
+Date:   Wed, 08 Mar 2023 15:03:55 +0100
+In-Reply-To: <c85f0735-6c85-4a6e-ad07-66493783c58e@app.fastmail.com>
+References: <202301051008.a8468257-yujie.liu@intel.com>
+         <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
+         <2e79ebb0ef62e550231c3daf46c62cd60d78acbc.camel@linux.ibm.com>
+         <c85f0735-6c85-4a6e-ad07-66493783c58e@app.fastmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: A7twQW98j1zIbStxavky8neuXRkHbDHw
+X-Proofpoint-GUID: A7twQW98j1zIbStxavky8neuXRkHbDHw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-08_08,2023-03-08_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ impostorscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
+ suspectscore=0 clxscore=1015 bulkscore=0 spamscore=0 phishscore=0
+ adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2303080120
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 8, 2023, at 12:24, Niklas Schnelle wrote:
-> On Thu, 2023-01-05 at 09:03 +0100, Arnd Bergmann wrote:
->
-> Yes that makes sense, it's clearly not correct to put the default case
-> inside CONFIG_SERIAL_8250_RT288X. What do you think about going with
-> something like:
->
-> @@ -519,9 +534,14 @@ static void set_io_from_upio(struct uart_port *p)
->  #endif
->
->         default:
-> +#ifdef CONFIG_HAS_IOPORT
->                 p->serial_in = io_serial_in;
->                 p->serial_out = io_serial_out;
->                 break;
-> +#else
-> +               WARN(1, "Unsupported UART type \"io\"\n");
-> +               return;
-> +#endif
->         }
+On Wed, 2023-03-08 at 13:21 +0100, Arnd Bergmann wrote:
+> On Wed, Mar 8, 2023, at 12:24, Niklas Schnelle wrote:
+> > On Thu, 2023-01-05 at 09:03 +0100, Arnd Bergmann wrote:
+> >=20
+> > Yes that makes sense, it's clearly not correct to put the default case
+> > inside CONFIG_SERIAL_8250_RT288X. What do you think about going with
+> > something like:
+> >=20
+> > @@ -519,9 +534,14 @@ static void set_io_from_upio(struct uart_port *p)
+> >  #endif
+> >=20
+> >         default:
+> > +#ifdef CONFIG_HAS_IOPORT
+> >                 p->serial_in =3D io_serial_in;
+> >                 p->serial_out =3D io_serial_out;
+> >                 break;
+> > +#else
+> > +               WARN(1, "Unsupported UART type \"io\"\n");
+> > +               return;
+> > +#endif
+> >         }
+>=20
+> I think we have to ensure that ->serial_in() always points
+> to some function that doesn't immediately panic, though that
+> could be an empty dummy like
+>=20
+>        default:
+>                p->serial_in =3D IS_ENABLED(CONFIG_HAS_IOPORT) ?
+>                       io_serial_in : no_serial_in;
+>                p->serial_out =3D IS_ENABLED(CONFIG_HAS_IOPORT) ?
+>                       io_serial_out : no_serial_out;
 
-I think we have to ensure that ->serial_in() always points
-to some function that doesn't immediately panic, though that
-could be an empty dummy like
+Sadly the IS_ENABLED() plus ternary still gives me an undeclared
+identifier error for io_serial_in(). So I think we need the more ugly
+#ifdef. With that I hope it would then not crash even if one might be
+left without any console at all.
 
-       default:
-               p->serial_in = IS_ENABLED(CONFIG_HAS_IOPORT) ?
-                      io_serial_in : no_serial_in;
-               p->serial_out = IS_ENABLED(CONFIG_HAS_IOPORT) ?
-                      io_serial_out : no_serial_out;
+>=20
+> Ideally we'd make mem_serial_in() the default function
+> and only use io_serial_in() when UPIO_PORT is selected,
+> but that still causes a NULL pointer dereference when
+> a platform initializes a 8250 like
+>=20
+> static struct plat_serial8250_port serial_platform_data[] =3D {
+>         {
+>                 .iobase         =3D 0x3f8, /* NULL pointer */
+>                 .irq            =3D IRQ_ISA_UART,
+>                 .uartclk        =3D 1843200,
+>         /* default   .iotype         =3D UPIO_PORT, */
+>         },
+>=20
+> so I think an empty function plus a warning is best here.
 
-Ideally we'd make mem_serial_in() the default function
-and only use io_serial_in() when UPIO_PORT is selected,
-but that still causes a NULL pointer dereference when
-a platform initializes a 8250 like
+So in the above case .iotype is implicitly set to 0 which is UPIO_PORT
+so I think one could argue it is selected, no? Not sure how picking
+UPIO_MEM as default would look like then. One thing we could do though
+is make the switch/case more regular like so:
 
-static struct plat_serial8250_port serial_platform_data[] = {
-        {
-                .iobase         = 0x3f8, /* NULL pointer */
-                .irq            = IRQ_ISA_UART,
-                .uartclk        = 1843200,
-        /* default   .iotype         = UPIO_PORT, */
-        },
+...
+#ifdef CONFIG_HAS_IOPORT
+	case UPIO_PORT:
+		p->serial_in =3D io_serial_in;
+		p->serial_out =3D io_serial_out;
+		break;
+#endif
 
-so I think an empty function plus a warning is best here.
+	default:
+		WARN(1, "Unsupported UART type %x\n", p->iotype);
+		p->serial_in =3D no_serial_in;
+		p->serial_out =3D no_serial_out;
+	}
+...
 
-> I've pushed a version with the above change rebased on v6.3-rc1 to my
-> git.kernel.org repository and will do some more testing before I can
-> hopefully send this out for review and make some progress on this.
-> Meanwhile the original problem is now the only thing preventing clean
-> Werror builds on clang for s390 as far as I understand.
-
-Thanks a lot! Let's hope we can manage to get this merged at last.
-
-    Arnd
+That way we would have to always define no_serial_in() /
+no_serial_out() but would also gracefully handle when p->iotype is set
+to some other value and it looks relatively clean.
