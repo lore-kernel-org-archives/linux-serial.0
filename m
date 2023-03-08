@@ -2,162 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86242C6FD20
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 14:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5250EC678D5
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 14:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbjCHOHZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Mar 2023 09:07:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
+        id S231644AbjCHO23 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Mar 2023 09:28:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbjCHOHF (ORCPT
+        with ESMTP id S231899AbjCHO2N (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Mar 2023 09:07:05 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B481B2E5;
-        Wed,  8 Mar 2023 06:05:17 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 328DJEc2027895;
-        Wed, 8 Mar 2023 14:04:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=zBXIcnb+DEc0lzd5ge6FUHpadrkeZ99ddpqiHCj3T1I=;
- b=jeTXmgcNtRqFX51cPfkyv9lWYxW1WhNiiFkdsmZLU9GIt7VGP9mP0TZHbVzyXrSAhXbu
- KQUQMR+Wuze8XMiFceWdW3NKe2S5P2h4KZ/RU/+uKFT1d2XuLjFStK9f27g2gYzbDwfv
- oFWQ7jKlSbOxCr2WxZTmhrI387846DDMURJiYOuROWYFpbqQwgP4mQO/9Ccwhh64klmv
- OzGsKQlfkc1ALylRfyybCHNBQzbjlzkBo2zyg1yicc+5kEIwYUxdRZcdi4xD85/GXXEU
- nWVGnhASYO1tRhTu1fxOY0hz3d6fBljbjClrFxSewq7EahrRTF6dxLQjZt2GH4JVZ+SL VQ== 
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p6k0bvm7v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Mar 2023 14:04:00 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 328134ef015019;
-        Wed, 8 Mar 2023 14:03:58 GMT
-Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
-        by ppma03fra.de.ibm.com (PPS) with ESMTPS id 3p6gbw8n10-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Mar 2023 14:03:58 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-        by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 328E3u6762587284
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Mar 2023 14:03:56 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB39920043;
-        Wed,  8 Mar 2023 14:03:55 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C1EE20040;
-        Wed,  8 Mar 2023 14:03:55 +0000 (GMT)
-Received: from [9.179.30.6] (unknown [9.179.30.6])
-        by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Wed,  8 Mar 2023 14:03:55 +0000 (GMT)
-Message-ID: <772a05f5f3c1b35864b80bf78429b843bdf14ee9.camel@linux.ibm.com>
-Subject: Re: [niks:has_ioport_v3] [tty] aa0652d7f1:
- BUG:kernel_NULL_pointer_dereference,address
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        kernel test robot <yujie.liu@intel.com>
-Cc:     oe-lkp@lists.linux.dev, kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>
-Date:   Wed, 08 Mar 2023 15:03:55 +0100
-In-Reply-To: <c85f0735-6c85-4a6e-ad07-66493783c58e@app.fastmail.com>
-References: <202301051008.a8468257-yujie.liu@intel.com>
-         <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
-         <2e79ebb0ef62e550231c3daf46c62cd60d78acbc.camel@linux.ibm.com>
-         <c85f0735-6c85-4a6e-ad07-66493783c58e@app.fastmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        Wed, 8 Mar 2023 09:28:13 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1137AC9C23
+        for <linux-serial@vger.kernel.org>; Wed,  8 Mar 2023 06:27:45 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id bx12so15535754wrb.11
+        for <linux-serial@vger.kernel.org>; Wed, 08 Mar 2023 06:27:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1678285637;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AaTfZTNRhFyM48e1bpAcZAo8m7slW8NTGkFf2XgdI8U=;
+        b=bgKuuaowwIHuzWnG1NB96c5vbEtK9q7l8MOI0c1kzAL9Et9S2WG/LzlvUrNGB+ow9f
+         xVHLZu/ztI4Ox4clHAmnMW4OqXaqQq5vF8wLjq6s/0yNpowQkZNJh30jABbQhBmz3dNX
+         nf/LR74aeA7/rGTTX0X0gYJM6c8vO0BymmTewqq64N0oDpmvYHrhVvzLH1wYGraWnETY
+         uG/RTe8b/G9NVYv7LzS3NaHKNHzSC3poA5A7asGr7F2ym/fwuRvgqFnQiwQ6ncSnShV1
+         5K8+j0lXcazfLLd/dgQp/9eqllBny/Qvrtro11hUb8Dv6arZGjrFq10K3gQ8ypQ5ePWm
+         j9IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678285637;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AaTfZTNRhFyM48e1bpAcZAo8m7slW8NTGkFf2XgdI8U=;
+        b=t9LpXrRtBsSXNN/GVixMVpGaXIYb6kgovUB8BrLn9Nv8Aj6409nZR+bsid01sugvLs
+         lVkJDQ1EV/jF9lPJnARYmbEazoJnL2mHffklJ8FbWjHav+ncnOYmTSJ9WjT4/n/6OxfF
+         X9YBkRVXAOFL+GBcIFivlX9pgL6I/16v/TdGetCrBakknhTr4isHZNQrEmpaJY90HNis
+         SDKnsdZjN7gw1vGq2kBUn9jfI0Rx7sTRKhnburZeG7VyQXRNPV+g8jBuFLKu7GgOS5S6
+         47qHitbzp6kMjCTuTJ+bGchIfSAwy0cLecjsFAd53uxCrRE5HCANgXIC51TokdqcwEG3
+         o+6w==
+X-Gm-Message-State: AO0yUKXeNUueSOYHUHs6jC6rad96TSdvNJOoseVIjF4oBS1RAjceOUqN
+        7LcmKAqGXpac2xVSna9MHmPdKw==
+X-Google-Smtp-Source: AK7set8bRTPcS9jKfQq8XHiz38+rHTpYtFofbjafhttmqipDm1uWNN+CE78jatnscVKtY0Lb8wqWCw==
+X-Received: by 2002:a5d:61cd:0:b0:2cc:5ee8:feee with SMTP id q13-20020a5d61cd000000b002cc5ee8feeemr12293443wrv.33.1678285637601;
+        Wed, 08 Mar 2023 06:27:17 -0800 (PST)
+Received: from [192.168.1.195] ([5.133.47.210])
+        by smtp.googlemail.com with ESMTPSA id r1-20020a056000014100b002c5534db60bsm15739529wrx.71.2023.03.08.06.27.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Mar 2023 06:27:16 -0800 (PST)
+Message-ID: <577a12a8-62c0-c3d0-0cf6-641c502734dd@linaro.org>
+Date:   Wed, 8 Mar 2023 14:27:15 +0000
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: A7twQW98j1zIbStxavky8neuXRkHbDHw
-X-Proofpoint-GUID: A7twQW98j1zIbStxavky8neuXRkHbDHw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-08_08,2023-03-08_03,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- impostorscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
- suspectscore=0 clxscore=1015 bulkscore=0 spamscore=0 phishscore=0
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2212070000 definitions=main-2303080120
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH 0/4] serial: qcom-geni: fix console shutdown hang
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230307164405.14218-1-johan+linaro@kernel.org>
+ <CACMJSes3usJUvCsrMBR_9dDGCbo2y7JqA8-B5mP28H2Cjg-v6A@mail.gmail.com>
+ <CACMJSesztZbB53QPaiLg+GKghJ-8MbiS60t8CbN_m8Wcph3-9g@mail.gmail.com>
+ <ZAduTSTirQbqZlIg@hovoldconsulting.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <ZAduTSTirQbqZlIg@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 2023-03-08 at 13:21 +0100, Arnd Bergmann wrote:
-> On Wed, Mar 8, 2023, at 12:24, Niklas Schnelle wrote:
-> > On Thu, 2023-01-05 at 09:03 +0100, Arnd Bergmann wrote:
-> >=20
-> > Yes that makes sense, it's clearly not correct to put the default case
-> > inside CONFIG_SERIAL_8250_RT288X. What do you think about going with
-> > something like:
-> >=20
-> > @@ -519,9 +534,14 @@ static void set_io_from_upio(struct uart_port *p)
-> >  #endif
-> >=20
-> >         default:
-> > +#ifdef CONFIG_HAS_IOPORT
-> >                 p->serial_in =3D io_serial_in;
-> >                 p->serial_out =3D io_serial_out;
-> >                 break;
-> > +#else
-> > +               WARN(1, "Unsupported UART type \"io\"\n");
-> > +               return;
-> > +#endif
-> >         }
->=20
-> I think we have to ensure that ->serial_in() always points
-> to some function that doesn't immediately panic, though that
-> could be an empty dummy like
->=20
->        default:
->                p->serial_in =3D IS_ENABLED(CONFIG_HAS_IOPORT) ?
->                       io_serial_in : no_serial_in;
->                p->serial_out =3D IS_ENABLED(CONFIG_HAS_IOPORT) ?
->                       io_serial_out : no_serial_out;
 
-Sadly the IS_ENABLED() plus ternary still gives me an undeclared
-identifier error for io_serial_in(). So I think we need the more ugly
-#ifdef. With that I hope it would then not crash even if one might be
-left without any console at all.
 
->=20
-> Ideally we'd make mem_serial_in() the default function
-> and only use io_serial_in() when UPIO_PORT is selected,
-> but that still causes a NULL pointer dereference when
-> a platform initializes a 8250 like
->=20
-> static struct plat_serial8250_port serial_platform_data[] =3D {
->         {
->                 .iobase         =3D 0x3f8, /* NULL pointer */
->                 .irq            =3D IRQ_ISA_UART,
->                 .uartclk        =3D 1843200,
->         /* default   .iotype         =3D UPIO_PORT, */
->         },
->=20
-> so I think an empty function plus a warning is best here.
+On 07/03/2023 17:03, Johan Hovold wrote:
+> On Tue, Mar 07, 2023 at 05:47:27PM +0100, Bartosz Golaszewski wrote:
+>> On Tue, 7 Mar 2023 at 17:44, Bartosz Golaszewski
+>> <bartosz.golaszewski@linaro.org> wrote:
+>>>
+>>> On Tue, 7 Mar 2023 at 17:43, Johan Hovold <johan+linaro@kernel.org> wrote:
+>>>>
+>>>> This series fixes some of the fallout after a recent series adding
+>>>> support for DMA transfers to the Qualcomm geni serial driver.
+>>>>
+>>>> Most importantly it fixes a hang during reboot when using a serial
+>>>> console and the getty is stopped during reboot.
+>>>>
+>>>> Doug just posted an equivalent fix here:
+>>>>
+>>>>          https://lore.kernel.org/lkml/20230307073155.1.Iaab0159b8d268060a0e131ebb27125af4750ef99@changeid
+>>>>
+>>>> but the commit message only mentions the regression with respect to
+>>>> kgdb, which is not as widely used serial consoles generally, so I
+>>>> figured I'd post my version for completeness.
+>>>>
+>>>> Either version of that fix should address the immediate regression, but
+>>>> fixing the underlying problems which have been there since the driver
+>>>> was first merged is going to be a bit more involved.
+>>>>
+>>>> The rest of the series fixes a few bugs in the new DMA support that I
+>>>> found while investigating the console regression.
+>>>>
+>>>> Johan
+>>>>
+>>>>
+>>>> Johan Hovold (4):
+>>>>    serial: qcom-geni: fix console shutdown hang
+>>>>    serial: qcom-geni: fix DMA mapping leak on shutdown
+>>>>    serial: qcom-geni: fix mapping of empty DMA buffer
+>>>>    serial: qcom-geni: drop bogus uart_write_wakeup()
+>>>>
+>>>>   drivers/tty/serial/qcom_geni_serial.c | 11 +++++++----
+>>>>   1 file changed, 7 insertions(+), 4 deletions(-)
+>>>>
+>>>> --
+>>>> 2.39.2
+>>>>
+>>>
+>>> Hey Johan,
+>>>
+>>> Douglas and Srini beat you to these fixes but thanks!
+> 
+>> Nevermind, I read your other message now. And also patch 3/4 looks right.
+> 
+> Heh, this hang has been in linux-next for over a month and I've
+> actively tried to not spend time on investigating it in the hope that
+> someone else would be beat me to it before I moved to 6.3-rc. :)
+> 
+> Obviously I may be a bit biased, but I prefer this series over the
+> alternate fixes as the commit messages are a bit more complete and my
+> version of the empty DMA buffer fix is a bit cleaner.
 
-So in the above case .iotype is implicitly set to 0 which is UPIO_PORT
-so I think one could argue it is selected, no? Not sure how picking
-UPIO_MEM as default would look like then. One thing we could do though
-is make the switch/case more regular like so:
+I don't mind, as long as the bugs are fixed.
 
-...
-#ifdef CONFIG_HAS_IOPORT
-	case UPIO_PORT:
-		p->serial_in =3D io_serial_in;
-		p->serial_out =3D io_serial_out;
-		break;
-#endif
 
-	default:
-		WARN(1, "Unsupported UART type %x\n", p->iotype);
-		p->serial_in =3D no_serial_in;
-		p->serial_out =3D no_serial_out;
-	}
-...
-
-That way we would have to always define no_serial_in() /
-no_serial_out() but would also gracefully handle when p->iotype is set
-to some other value and it looks relatively clean.
+--srini
+> 
+> Johan
