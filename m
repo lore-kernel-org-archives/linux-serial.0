@@ -2,165 +2,203 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17A1C64EC4
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 11:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52605C74A44
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 11:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229482AbjCHLZw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Mar 2023 06:25:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46102 "EHLO
+        id S230383AbjCHL7P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Mar 2023 06:59:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjCHLZu (ORCPT
+        with ESMTP id S229606AbjCHL7M (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Mar 2023 06:25:50 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529577B4B4;
-        Wed,  8 Mar 2023 03:25:28 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 328BC6X7017137;
-        Wed, 8 Mar 2023 11:24:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=tvru8B3sS/iOpKm1/IurwLaLFrvKe6AbFP3B7G4NMZ4=;
- b=a2m8dNv6x3wOoZtX2RBTLpH+U2RXZp1hfGZvSutp9E3aR7wwGxpHdGFjPXtnYaqECCm4
- NVmfRmMGjPFStmfZ6Pj+bLDpP4xGWGDJXwkHemj+8mX+QBgkya1ZFdC8Ga9coXcEKTls
- FL/4TlD/wG3UAoueYLcUyk/iTwRrADXyVPODTCWhO7r5Asckbjgn5xkDhrH4Xk/CUC2v
- uZk3T9yajMDERQxGcZ5lFdJu/e+nNk7bZqtcMTJdJEDONmGzfWQEvjhK/u/68i2WL1gf
- WNsXboPK9bJ7GuOcWwLv61TPwwpGGXbOMuqM5yJjiJQnXI0rRahIg9xRaRZKCjqPxqDp KA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3p6s9a098s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Mar 2023 11:24:50 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32817HHF015599;
-        Wed, 8 Mar 2023 11:24:48 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-        by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3p6gdq8fsd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Mar 2023 11:24:47 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 328BOjLX38732230
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 Mar 2023 11:24:45 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 890B42004B;
-        Wed,  8 Mar 2023 11:24:45 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F272420040;
-        Wed,  8 Mar 2023 11:24:44 +0000 (GMT)
-Received: from [9.179.30.6] (unknown [9.179.30.6])
-        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Wed,  8 Mar 2023 11:24:44 +0000 (GMT)
-Message-ID: <2e79ebb0ef62e550231c3daf46c62cd60d78acbc.camel@linux.ibm.com>
-Subject: Re: [niks:has_ioport_v3] [tty] aa0652d7f1:
- BUG:kernel_NULL_pointer_dereference,address
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        kernel test robot <yujie.liu@intel.com>
-Cc:     oe-lkp@lists.linux.dev, kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>
-Date:   Wed, 08 Mar 2023 12:24:44 +0100
-In-Reply-To: <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
-References: <202301051008.a8468257-yujie.liu@intel.com>
-         <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: MkxQ5m4kcrMdgLGgKHCURS8o37G7R8Kb
-X-Proofpoint-GUID: MkxQ5m4kcrMdgLGgKHCURS8o37G7R8Kb
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 8 Mar 2023 06:59:12 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2086.outbound.protection.outlook.com [40.107.93.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA00898E0;
+        Wed,  8 Mar 2023 03:59:09 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZjroJ+U8R46Nm+hpTz0pxaD92awejLGCq0QgKY737uPPS42J+Nl19Lrx8gzRE55LmDzJUtYd3Sq3MP1jNBauLlz9wuEPyt5seNE1TQyJ3tJ2OKo34eiWT03o+EvITyzvr2I3SGuUdFNaP21nNDw8ROcvGaLQsc1jak80I7JXKbaVsbXQE5s07RnfqDvmCW5t9QylAFaXc9QgK2vbdpq0BKdPTS/edb5q6b9NZSvuTM5hZj9P5H6bW9Epsb6UAhSRFRayD/BmglrU3HnyJU+Qha6+EQXGJWBEnD2fMTvI0OUzVVmtVvCK5FUUNaytL0LPjfCsaLRJniJlXVdy+v+bfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oPHYvm6jtFE3qhzm8ftdKUYDwK4MkL+b6afEoj24EKM=;
+ b=QH94dikXzZUffU2B1ZBFD0EMWxeghOsMLyPdaZAIojhSGdHRE9hqVk08a3ifGuDFUbHNaCAOJYkt/wCLX6XptlkRAPhG1KidHfXwtedUHzlnMkLP+rA+hLhkK9w0BQgafDHGJu6esrbeUad6fbKrDMux/iHW2R+nqiAdsHAyEyGlm+WIPJsAKiupB7W6gTW63o38cO4/VrmOxGNDMGB7E0ps/SBVXAWXv9oNoirCpcSnStad9aYhsl8AS2T7nTv4eJAsZ7LN5M0oFiNKzxVa1H8f2QneNNZeeM0pulbw0Sb5oinMKNQf2/KzUdTzQajraJg2P9YAW1GVXzSDnU2OvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oPHYvm6jtFE3qhzm8ftdKUYDwK4MkL+b6afEoj24EKM=;
+ b=qGFdRTzEhbPlu5Bnr10FEKvckV9agTSYU0yAua2oVzIuSyW8NN8686HN1lavsMNjzDTycXBKOyvGiKX0WV1C2C8vhWrex6x5J/eL3UKHGb4fYqrtqgttyhUK4tvrDR0PCHc14coOBgzY5+M6Cup9LEl6Ixcz+ALW5tvKeexZu4E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB4758.namprd12.prod.outlook.com (2603:10b6:a03:a5::28)
+ by MN0PR12MB6221.namprd12.prod.outlook.com (2603:10b6:208:3c3::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.17; Wed, 8 Mar
+ 2023 11:59:07 +0000
+Received: from BYAPR12MB4758.namprd12.prod.outlook.com
+ ([fe80::4d07:7f52:c833:9603]) by BYAPR12MB4758.namprd12.prod.outlook.com
+ ([fe80::4d07:7f52:c833:9603%5]) with mapi id 15.20.6178.017; Wed, 8 Mar 2023
+ 11:59:06 +0000
+Message-ID: <a5bb0516-9a21-5d46-d557-f02893ac8bf4@amd.com>
+Date:   Wed, 8 Mar 2023 12:58:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 3/4] iio: adc: Use devm_krealloc_array
+Content-Language: en-US
+To:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20230306152723.3090195-1-james.clark@arm.com>
+ <20230306152723.3090195-4-james.clark@arm.com>
+From:   Michal Simek <michal.simek@amd.com>
+In-Reply-To: <20230306152723.3090195-4-james.clark@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1P195CA0043.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:802:5a::32) To BYAPR12MB4758.namprd12.prod.outlook.com
+ (2603:10b6:a03:a5::28)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-08_06,2023-03-08_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 phishscore=0 clxscore=1011 impostorscore=0 mlxlogscore=999
- priorityscore=1501 suspectscore=0 mlxscore=0 spamscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2303080097
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB4758:EE_|MN0PR12MB6221:EE_
+X-MS-Office365-Filtering-Correlation-Id: 01d08e9a-2a26-446f-94d7-08db1fcc84d6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DHphTyGSM0vxbfKHAxYsmuOxyw9+JdenO+ZZA48qrVOAx/MD8iPLR9eODVr+GafLE5fXc8Tj8kLSRM/aVdPnAZChAbyADutVlJAzaDsStVfWHrvl+VTpERX2iFvt0fEfctMidq7ShDi7oJn6Yacwf1ocefciRjipkQ/YJ3QTReuCSQqImkFzba1mrTgvqq+HW9wRF/CWdh+M1sSI2HsfbN3aSS7kKhEFw1A3milppzKCV3ht5ocEW8vHO9sRrO+nTN0S0AbQG3shk7K6qu3aMT8QgyH+Bmcb466YKAq/G4rCeYmmM0Rq6vUENGUoJ19F/1Ess6OW1UtUFZSdclLX+2Zc1fT67zYsAdnZuWKKzgwKC8gUSXqBtqkvS9fYKV6zEwuJ6CNemJhKzMOgQP1iKo+kBpQ2mlPZydPAvRSB0qrdv6JEIVvAQKbOzIMWmU/6dBTDJAZ/ueXt12SJ6F4OphXz3I5avtmna3Vwu/0+WSdKBo77D2wK48vaELvZxz2VkNpLY+uYIuqDIQCQuBAG89RWZ4MtSn1uHJIksDfR8ODXXqwjw7egn5zN9GK0Fx30eeZMjlOcJfA7RSTuBIzPV3S7bOoGfI3jIIOEEXP1MMaEciQmvvPqQvLPiw6vpBAVR74xOuAr5k9+sLrybGjutXx2ykwpw8ntqyJw9QOg8Fcm2amTvIKn0M7ObR3EK7wBpci0bRpOUego7Upw6IcXiArJkcpayRXsqTC8jfhYMHQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4758.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(376002)(136003)(366004)(396003)(451199018)(38100700002)(478600001)(316002)(31696002)(83380400001)(5660300002)(54906003)(7416002)(2906002)(36756003)(41300700001)(8676002)(6512007)(53546011)(6506007)(8936002)(4326008)(26005)(186003)(66476007)(6666004)(44832011)(31686004)(66556008)(66946007)(6486002)(2616005)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U0Y4bXdIR1JEVEU5NEZSdGpkUkh1TmJnT0JsbWh0OUdhOHVoeWJnSVdQS1hK?=
+ =?utf-8?B?RVBEQjZzK2k5M1NYSktxLzNNY3V5WUpNVUd3NW1aZ0ZKcGplNVRlekIxbE94?=
+ =?utf-8?B?c253ZnRYYzFtM2lEQjA0R1ZFZjMzRkxVKytTNURCZkJDSkw4SkpyRUNrR2dO?=
+ =?utf-8?B?SVJQaWUzZWN2U3h3ZVNac0NmdTNwckZyWkQ5RVFxYkJrYVZ5UE51L0pVQ2xj?=
+ =?utf-8?B?RFFidW1xaW9hbFNicG14b05HcnZlRm5kL3BGZ1ZKdExRZ1o4em5sc093NjI1?=
+ =?utf-8?B?alBOYnBWbXpVbEZwL2VlbXlGRnNlcDRmUGhRZVZKNURqSkl0YUNlVlBtUWxS?=
+ =?utf-8?B?cjNQRnQ0REQ1SU01R0pzcXhDVjYvbDVnTEh0Skh3TjdFSnBESk9raU9iejky?=
+ =?utf-8?B?Zk5YVlVLTEZLcDNNai8ybVA5UjRTQ1l0WnlFd3d6SFg0VXJ1eHFkOCt2OG5H?=
+ =?utf-8?B?MDhVY3QxRDB3aHRlZVpLMFIzb0VIdk10RjRiY0k2RmFidll6THVSM1YyQnFE?=
+ =?utf-8?B?RTIzOTdPTnJMT1VJTmJQVmJXNyt6N1ZxRkM4RmtZMGZ5TmlqQ29KS084S0lG?=
+ =?utf-8?B?eTcxS1dFQlJ1OHhycU1uVDhnOTNGZ0JGdW9JVmd0dEdSSklHWHdvQW5OSGxW?=
+ =?utf-8?B?Y3FwWGJMcFhvR2VQT2o0Zk95N3lxbXltOG53NjV4THBhU3JYTTFEbkozbHFB?=
+ =?utf-8?B?aCszWE5QWHdZenN6MWNMblRSMHowcXBlZ3F2VDNjTTFGRXNLSDVhWGd3SjVF?=
+ =?utf-8?B?b3VrajZPditTY2g2QTFHcG5QYnRnOEYyMUgzQ0FDVGRFK0s2VFM0ZVRHRFVL?=
+ =?utf-8?B?Slc4ZkVVMjdmVkE1R25HMkdBU1pVTjVrMzhnMDQ5SnpGYmE4ZjdUdkFGVkxr?=
+ =?utf-8?B?Ui9HUHJkZDRKSVdIUGZRZ1VLVjNWVDVUS0JqKy9qUVR5RUNJQWVTZjdBcDhr?=
+ =?utf-8?B?YXNwd3J6WkFodmU0OFc2anZlYW1iWVQrNCtQemMyWWgyVVlRV1h6ZlJUeFU1?=
+ =?utf-8?B?MEpNaDlOSEkyZFVZb09mQjZ1ZlNyYmNJU0cxVC85NzhHTFdKa01WcE4rS2Fi?=
+ =?utf-8?B?NDhmWUJmWmtJbmIxOW8vUlR4TEJ2YisrT0hmdGlxSjgxZ0t4RDRIYVhkT1Jm?=
+ =?utf-8?B?cXBxRkViTVlsemtpN1ZzODBldml2dnFtUlNSRGhRZ2JwN1J3b3NXZmdjUzlN?=
+ =?utf-8?B?ekx4Ym9NZUdyK3VncHFaZ1hPYjMwMENqZGxDRXZFNEpwYWZmbHNCeFlMTmhj?=
+ =?utf-8?B?cERBcCtXbDl0YVFtOHUyYXlIZnFJTkFBVFFwa1ZXRW9aVzhUSWRpTlFxU2tK?=
+ =?utf-8?B?MUppL0NSOE43bDF2eWxlVHVsYVFadkV5dW4zOFpidDNpOHYwS2lqQjJoYWU1?=
+ =?utf-8?B?R3JMT2tnNTV2aUhzY2FtRjhBb3VWV1VRZXg1cGs1bHJrSnNuek1BZTdIRkNQ?=
+ =?utf-8?B?NnZhMEtkQWQ0Z2dPeldJWDFDY1oyNUV1aEh3cFVoRllhUW5JT3pka1FYV2Fp?=
+ =?utf-8?B?aHl6QVN3cTRZTjZQWUJLZXduTHRsM0gzbHYxNXZaRHpQWDFJeEtIUit0MVk3?=
+ =?utf-8?B?Y2tra3VxM0dobVhSQVErVEVNMGFJelJWNTNMYVdJM3Z2c2ZGbGp4bThLUDl3?=
+ =?utf-8?B?cis2MmNCVkk4V3FEOThGdUk2OEpzV0Vicy9XcURMZXdzWTZSbmdZUW8xaktM?=
+ =?utf-8?B?aC9tRktoRkVuRGdOWW0wQUE4cjNpV3M2d1FraHloZ1NxMjNtOStHa0svL0M0?=
+ =?utf-8?B?di9aMlBUQmF5SWlkK2EvYW5ldFdJcEdDNWlwNy9hZDdLTEd2T1FJSFJ6VkR2?=
+ =?utf-8?B?VCtERXhIbVRSUW93dFF2NUJWV21lVDNJcEJxRjhZL2E3OXBUZ1VJVWhTdVZa?=
+ =?utf-8?B?Tll1UUxwZXZYaHZqRlJmbWZaQXNxdU5EL1l5dXNWUkdlMlVSTXJsZlc1ajBP?=
+ =?utf-8?B?dWJlVWpLVEJhYWxCWkFpZkZMVjkrSTg0dkd2bFIrZVpnYkJBeGs0TzF6Vks3?=
+ =?utf-8?B?cnJuTjkvdUxJbmx5dG4rVE9peHBqSHNsVm80UklBY1JMZE9EeFVFSUtqbnc0?=
+ =?utf-8?B?RUpXbEJiNFVQdkEyK3hLWVBiaVJXZmVnaXJMcjRqMzkxK0lZU0Vma1VCSVJw?=
+ =?utf-8?Q?AkfjUVPb42TK9zM4/Qu02yNCp?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01d08e9a-2a26-446f-94d7-08db1fcc84d6
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4758.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2023 11:59:06.7220
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V2lz9kkwDIlmUua0SocllbgHfq4WmS/M1IAYI/h4UEfloKwEKhO7gntcq/Sw1k5L
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6221
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 2023-01-05 at 09:03 +0100, Arnd Bergmann wrote:
-> On Thu, Jan 5, 2023, at 06:54, kernel test robot wrote:
-> > Greeting,
-> >=20
-> > FYI, we noticed BUG:kernel_NULL_pointer_dereference,address due to=20
-> > commit (built with clang-14):
-> >=20
-> > commit: aa0652d7f1b311e55232a8153522fdaaba0f197a ("tty: serial: handle=
-=20
-> > HAS_IOPORT dependencies")
-> > https://git.kernel.org/cgit/linux/kernel/git/niks/linux.git=20
-> > has_ioport_v3
-> >=20
-> > in testcase: boot
-> >=20
-> > on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 4G
-> >=20
-> > caused below changes (please refer to attached dmesg/kmsg for entire=20
-> > log/backtrace):
-> >=20
-> >=20
-> > [    2.166733][    T0] calling  univ8250_console_init+0x0/0x30 @ 0
-> > [    2.167555][    T0] BUG: kernel NULL pointer dereference, address:=20
-> > 00000000
->=20
-> I think it's this bit:
->=20
-> @@ -508,12 +523,13 @@ static void set_io_from_upio(struct uart_port *p)
->                 up->dl_read =3D au_serial_dl_read;
->                 up->dl_write =3D au_serial_dl_write;
->                 break;
-> -#endif
+
+
+On 3/6/23 16:27, James Clark wrote:
+> 
+> Now that it exists, use it instead of doing the multiplication and
+> checking for overflow manually.
+> 
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>   drivers/iio/adc/xilinx-ams.c       |  9 +++------
+>   drivers/iio/adc/xilinx-xadc-core.c | 17 +++++++----------
+>   2 files changed, 10 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+> index 34cf336b3490..f0b71a1220e0 100644
+> --- a/drivers/iio/adc/xilinx-ams.c
+> +++ b/drivers/iio/adc/xilinx-ams.c
+> @@ -1263,7 +1263,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+>          struct device *dev = indio_dev->dev.parent;
+>          struct fwnode_handle *child = NULL;
+>          struct fwnode_handle *fwnode = dev_fwnode(dev);
+> -       size_t ams_size, dev_size;
+> +       size_t ams_size;
+>          int ret, ch_cnt = 0, i, rising_off, falling_off;
+>          unsigned int num_channels = 0;
+> 
+> @@ -1320,11 +1320,8 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+>                  }
+>          }
+> 
+> -       dev_size = array_size(sizeof(*dev_channels), num_channels);
+> -       if (dev_size == SIZE_MAX)
+> -               return -ENOMEM;
 > -
-> +#ifdef CONFIG_HAS_IOPORT
->         default:
->                 p->serial_in =3D io_serial_in;
->                 p->serial_out =3D io_serial_out;
->                 break;
-> +#endif
-> +#endif
->         }
->         /* Remember loaded iotype */
->         up->cur_iotype =3D p->iotype;
->=20
->=20
-> which puts the 'default' case inside of '#ifdef
-> CONFIG_SERIAL_8250_RT288X'. x86 does not use the
-> RT288x variant but relies on the default, so any
-> call to io_serial_{in,out} will cause a NULL
-> pointer dereference.
->=20
->        Arnd
+> -       dev_channels = devm_krealloc(dev, ams_channels, dev_size, GFP_KERNEL);
+> +       dev_channels = devm_krealloc_array(dev, ams_channels, num_channels,
+> +                                          sizeof(*dev_channels), GFP_KERNEL);
+>          if (!dev_channels)
+>                  return -ENOMEM;
+> 
+> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+> index 292f2892d223..287df3bb951e 100644
+> --- a/drivers/iio/adc/xilinx-xadc-core.c
+> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> @@ -613,20 +613,17 @@ static int xadc_update_scan_mode(struct iio_dev *indio_dev,
+>          const unsigned long *mask)
+>   {
+>          struct xadc *xadc = iio_priv(indio_dev);
+> -       size_t new_size, n;
+> +       size_t n;
+>          void *data;
+> 
+>          n = bitmap_weight(mask, indio_dev->masklength);
+> 
+> -       if (check_mul_overflow(n, sizeof(*xadc->data), &new_size))
+> -               return -ENOMEM;
+> -
+> -       data = devm_krealloc(indio_dev->dev.parent, xadc->data,
+> -                            new_size, GFP_KERNEL);
+> +       data = devm_krealloc_array(indio_dev->dev.parent, xadc->data,
+> +                                  n, sizeof(*xadc->data), GFP_KERNEL);
+>          if (!data)
+>                  return -ENOMEM;
+> 
+> -       memset(data, 0, new_size);
+> +       memset(data, 0, n*sizeof(*xadc->data));
 
-Yes that makes sense, it's clearly not correct to put the default case
-inside CONFIG_SERIAL_8250_RT288X. What do you think about going with
-something like:
+this is not correct coding style.
 
-@@ -519,9 +534,14 @@ static void set_io_from_upio(struct uart_port *p)
- #endif
-
-        default:
-+#ifdef CONFIG_HAS_IOPORT
-                p->serial_in =3D io_serial_in;
-                p->serial_out =3D io_serial_out;
-                break;
-+#else
-+               WARN(1, "Unsupported UART type \"io\"\n");
-+               return;
-+#endif
-        }
-
-I've pushed a version with the above change rebased on v6.3-rc1 to my
-git.kernel.org repository and will do some more testing before I can
-hopefully send this out for review and make some progress on this.
-Meanwhile the original problem is now the only thing preventing clean
-Werror builds on clang for s390 as far as I understand.
-
-Thanks,
-Niklas
+M
