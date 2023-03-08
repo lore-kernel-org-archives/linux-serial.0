@@ -2,64 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 605F6C6FD20
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 14:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE050C678D5
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 17:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbjCHOaS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Mar 2023 09:30:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32892 "EHLO
+        id S229542AbjCHRZU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Mar 2023 12:25:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231728AbjCHOaG (ORCPT
+        with ESMTP id S229468AbjCHRZT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Mar 2023 09:30:06 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35B784831
-        for <linux-serial@vger.kernel.org>; Wed,  8 Mar 2023 06:29:25 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id l7-20020a05600c4f0700b003e79fa98ce1so1273207wmq.2
-        for <linux-serial@vger.kernel.org>; Wed, 08 Mar 2023 06:29:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678285763;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VJ89bgjwAq+pShFJM6RxMYNop2d8WVlgJ36rQMMJ4eM=;
-        b=YdonUz4xOW0eFNZKwHudpDzlHIbOr45eQE0qUxNDxYp3f2t08zob05lymsOaXglaQ5
-         7Mi8D/FA6hX7eu4klOL1vAErXGkEUhpEipjyOfRSFZcof2DJpaxRey5Fkz+scgd3RI1y
-         hBepafmLgER0CegeNdhGr+F1MEQ18NYfhVBTCpIzviy6IEmTtzswrNGjdsgdUBp2FJXQ
-         NtJFuoAp1BOu0CQz5/LSarMyI6YWKvhPJn8q3UvQEX1wxNIYtJi4ikTAO0l2Pqfly2Gh
-         YmAFwtbXR5ox5w/YW3Gwc6BmkTLHIu5YYDbStjAzW2D7o8PhaTT1oIykQDCcGs/VH4o1
-         pVlQ==
+        Wed, 8 Mar 2023 12:25:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713061DBBD
+        for <linux-serial@vger.kernel.org>; Wed,  8 Mar 2023 09:24:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1678296275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LPQJ89LugumAZFsgY4YTmoOcQfUcQJ8Obmpk4rX3dbQ=;
+        b=T+NaaWQ7vOYCruNoU7HNgaHoKgg0mnFDlp9VP0qpAFHwdaJLgEhWDmh3ExxI+H9w1Okx5d
+        stpmwHx254Hjh9RxT4ZIuxOSwhQFVnjFVzDafzaPq9FZi0uMxtkmS6mHfhRhYKB4rA2NwB
+        O51tTVc5M4N6BrpjF7jMYS06ILsy+zg=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-68-fMdgYnM_P5eeQQm3coSg6Q-1; Wed, 08 Mar 2023 12:24:34 -0500
+X-MC-Unique: fMdgYnM_P5eeQQm3coSg6Q-1
+Received: by mail-qt1-f197.google.com with SMTP id w16-20020ac843d0000000b003bfe50a4105so9494107qtn.10
+        for <linux-serial@vger.kernel.org>; Wed, 08 Mar 2023 09:24:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678285763;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VJ89bgjwAq+pShFJM6RxMYNop2d8WVlgJ36rQMMJ4eM=;
-        b=bbUw0tXqGsn3uga5RZ/kE2LTnQgp8x/ry5MrRuq8RAIt6L2vCuW0XnYJ2ilPM0EwoA
-         rGRNecSHaAYt1J04vpTyieTeubpqvTJcboxoG5nCYHqxqsy1i46t3HXp9oIaPDKGCbvk
-         ziYrs7Jda2RLAvl7IdCXOhI00a47qxXIsb1riftiQHIlMVPeXS8qyQRXpTTK5QBNSorZ
-         CqhGtm5kCuNXQID9lQcqQuxJP20sw9FoAMdjKLK2YiqVUjKWKeeK6O2f532/SwDWRpP3
-         oDQWLuxAY/MP07s4BEYPcA9pZuPFRpMSY392izyQUWY9up2Du8QyBJ2FgEGYyeVnqGXo
-         OECQ==
-X-Gm-Message-State: AO0yUKWTn5wyYI1bLfnODgBm62ty17VSX9/hmz1G4gROA2R2s9yGGnjZ
-        Czw3RxxihUsnnJHZ9p5YgQLWJw==
-X-Google-Smtp-Source: AK7set+HAv5fmjg10kPMR7nSiF8/ZvozyEcaeqRI+z3ppiDYu2deL0rbHyTQZTm/HTLfpWTrq1mZ2A==
-X-Received: by 2002:a05:600c:3b11:b0:3e5:4fb9:ea60 with SMTP id m17-20020a05600c3b1100b003e54fb9ea60mr13743367wms.9.1678285763151;
-        Wed, 08 Mar 2023 06:29:23 -0800 (PST)
-Received: from [192.168.1.195] ([5.133.47.210])
-        by smtp.googlemail.com with ESMTPSA id e15-20020a5d594f000000b002c56046a3b5sm15411660wri.53.2023.03.08.06.29.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Mar 2023 06:29:22 -0800 (PST)
-Message-ID: <6d5fa55a-c9cc-c1a3-3f60-33a99c8b91bc@linaro.org>
-Date:   Wed, 8 Mar 2023 14:29:21 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH 0/4] serial: qcom-geni: fix console shutdown hang
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Bjorn Andersson <andersson@kernel.org>,
+        d=1e100.net; s=20210112; t=1678296274;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LPQJ89LugumAZFsgY4YTmoOcQfUcQJ8Obmpk4rX3dbQ=;
+        b=myuEtpJNsa0K0l7JSCb5UcmAFdq0QKNmrugEWhUwjWQYHM/8lkm/+t2MTv6BXQWkgJ
+         LNVjTKci3cMstUB4Lg1b++m2Kl3r6zfWVS0Fk45b4yVKR8Se+8QvpcxESolOp4snd4X/
+         7wonrd+EyCUCu47NrNnID5OOLrTKXZqdMcFib+SfoRQi3RtfW5P3DHZUMlVUS8l4VEdA
+         GzfDcKw+WkMbwKmw0k3lGR6LWCN2huSCOFNNEDzh2o+uEHF+LgfU1GuMmPARliUt4ezd
+         IJGgw6ydJRGYT0CbMfwY24waTf3ukUSh4xVXxyZzgKnwQpsAIM+pxusR4QfNA4suDWg8
+         UIIw==
+X-Gm-Message-State: AO0yUKUTfrRB82wF3pb0Kj+kPh9vTa5TB2D2i2+B/Es6/U75X5gtJc/X
+        r2+qPuqIorBdJXckWsoBkr+nFYP2S8b7x7fsu9tkzDlZOHM96cbxeYe7vdX0oxMzgu1MTenuzwA
+        FkqmKxTu6vrAUdtd3QRH986ey
+X-Received: by 2002:a05:622a:1a1c:b0:3b8:6788:bf25 with SMTP id f28-20020a05622a1a1c00b003b86788bf25mr31680507qtb.23.1678296274310;
+        Wed, 08 Mar 2023 09:24:34 -0800 (PST)
+X-Google-Smtp-Source: AK7set/O2FzdqotFaGnCpsXoZJ+sIqm3xrIxOl15eWdAqcdkdwA+CLA5ctetlB0UcvXYkd3YXuF88g==
+X-Received: by 2002:a05:622a:1a1c:b0:3b8:6788:bf25 with SMTP id f28-20020a05622a1a1c00b003b86788bf25mr31680478qtb.23.1678296274062;
+        Wed, 08 Mar 2023 09:24:34 -0800 (PST)
+Received: from halaney-x13s ([2600:1700:1ff0:d0e0::21])
+        by smtp.gmail.com with ESMTPSA id o26-20020ac8429a000000b003b8484fdfccsm12094243qtl.42.2023.03.08.09.24.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Mar 2023 09:24:33 -0800 (PST)
+Date:   Wed, 8 Mar 2023 11:24:31 -0600
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Andersson <andersson@kernel.org>,
         Andy Gross <agross@kernel.org>,
         Konrad Dybcio <konrad.dybcio@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -68,18 +68,20 @@ Cc:     Bjorn Andersson <andersson@kernel.org>,
         Daniel Thompson <daniel.thompson@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/4] serial: qcom-geni: fix console shutdown hang
+Message-ID: <20230308172431.pcjyhc2dq6geuk76@halaney-x13s>
 References: <20230307164405.14218-1-johan+linaro@kernel.org>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+MIME-Version: 1.0
 In-Reply-To: <20230307164405.14218-1-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 07/03/2023 16:44, Johan Hovold wrote:
+On Tue, Mar 07, 2023 at 05:44:01PM +0100, Johan Hovold wrote:
 > This series fixes some of the fallout after a recent series adding
 > support for DMA transfers to the Qualcomm geni serial driver.
 > 
@@ -105,21 +107,21 @@ On 07/03/2023 16:44, Johan Hovold wrote:
 > 
 > 
 > Johan Hovold (4):
->    serial: qcom-geni: fix console shutdown hang
->    serial: qcom-geni: fix DMA mapping leak on shutdown
->    serial: qcom-geni: fix mapping of empty DMA buffer
->    serial: qcom-geni: drop bogus uart_write_wakeup()
+>   serial: qcom-geni: fix console shutdown hang
+>   serial: qcom-geni: fix DMA mapping leak on shutdown
+>   serial: qcom-geni: fix mapping of empty DMA buffer
+>   serial: qcom-geni: drop bogus uart_write_wakeup()
+> 
+>  drivers/tty/serial/qcom_geni_serial.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> -- 
+> 2.39.2
 > 
 
+Realized this has been affecting me (with me blaming it on something
+else prior) off and on. Thanks for the fix!
 
-Tested this series on RB5
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Tested-by: Andrew Halaney <ahalaney@redhat.com> # sa8540p-ride
 
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-
-
-
---srini
->   drivers/tty/serial/qcom_geni_serial.c | 11 +++++++----
->   1 file changed, 7 insertions(+), 4 deletions(-)
-> 
