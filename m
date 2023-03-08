@@ -2,115 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B60C64EC4
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 07:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31C0C64EC4
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 11:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjCHHv2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Mar 2023 02:51:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
+        id S229603AbjCHLZu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Mar 2023 06:25:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjCHHv1 (ORCPT
+        with ESMTP id S229462AbjCHLZt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Mar 2023 02:51:27 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27B5984FD;
-        Tue,  7 Mar 2023 23:51:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EA377CE1E87;
-        Wed,  8 Mar 2023 07:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EACBC4339B;
-        Wed,  8 Mar 2023 07:51:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678261873;
-        bh=eDUO7aWiJI6PcUc6kJ44VSrhyl3mjhoGXUohXuPNExA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tq3SX0oMDUYD7p+E0wpqhUjxSxcpKbK7SjqJP1wc/pObkFVJ2KHptlK/BKDWZ00gn
-         xTeGU7xPeJcEgmjF6J/jM+fbnOcx0OjXaP25beeSpYUUhbn204Jy7e4rlKfJUJXnAk
-         3zbmw043ihfxC20+FBXECrF+DRWbUGgWMhgjzYh1VrRWQk/yTU62xPqEvoVFtpdkdd
-         4dB4LbJA6iTKTSI3kQuT5iMCNFbMZIrajidnSspcHbSpQSTZEiPx5BTvpDBCgTWGi5
-         qkh1qHh9grDDZwXnNfQZjiWPIuy88i/iDOTXSX0bXPrNmnwU7IwE5ktxC9ll54iISt
-         cySXgmHkkAFGw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1pZoab-0007bT-Vx; Wed, 08 Mar 2023 08:51:58 +0100
-Date:   Wed, 8 Mar 2023 08:51:57 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Wed, 8 Mar 2023 06:25:49 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB85E7B48F;
+        Wed,  8 Mar 2023 03:25:27 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9397A219E2;
+        Wed,  8 Mar 2023 11:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1678274698; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=xId0hTIp/XCmCWrv3B55O+AcJP0XyWX+WeJ89KiTr4E=;
+        b=me0qNlkQDZKBr9dcB+hnidcYo2leL7eEGi/Rzpmvz5ix9KuJ4b9t3lZhwr9toiaAsa6dQi
+        nQtU8ze6ax+pJ5tlLCDPVXvBvV1otLLQCdAqWmdAIjS4dg0jkdDLJi5DMd4XuJdyKOvZvN
+        2GZ4SUTFD7TElj0nw/x0aq/CRzsj32g=
+Received: from alley.suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
+        by relay2.suse.de (Postfix) with ESMTP id 64A532C141;
+        Wed,  8 Mar 2023 11:24:57 +0000 (UTC)
+From:   Petr Mladek <pmladek@suse.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] serial: qcom-geni: fix mapping of empty DMA buffer
-Message-ID: <ZAg+neaKU51D59QJ@hovoldconsulting.com>
-References: <20230307164405.14218-1-johan+linaro@kernel.org>
- <20230307164405.14218-4-johan+linaro@kernel.org>
- <CAD=FV=VR5oCThAuc29Bum-VHQUcH_H+s4nr55YpJk1aYaqZKTQ@mail.gmail.com>
+        Rajnesh Kanwal <rkanwal@rivosinc.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Petr Mladek <pmladek@suse.com>
+Subject: [PATCH] Documentation/serial-console: Document the behavior when the last console= parameter is not used
+Date:   Wed,  8 Mar 2023 12:24:33 +0100
+Message-Id: <20230308112433.24292-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=VR5oCThAuc29Bum-VHQUcH_H+s4nr55YpJk1aYaqZKTQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 07, 2023 at 10:41:46AM -0800, Doug Anderson wrote:
-> Hi,
-> 
-> On Tue, Mar 7, 2023 at 8:43 AM Johan Hovold <johan+linaro@kernel.org> wrote:
-> >
-> > Make sure that there is data in the ring buffer before trying to set up
-> > a zero-length DMA transfer.
-> >
-> > This specifically fixes the following warning when unmapping the empty
-> > buffer on the sc8280xp-crd:
-> >
-> >    WARNING: CPU: 0 PID: 138 at drivers/iommu/dma-iommu.c:1046 iommu_dma_unmap_page+0xbc/0xd8
-> >    ...
-> >    Call trace:
-> >     iommu_dma_unmap_page+0xbc/0xd8
-> >     dma_unmap_page_attrs+0x30/0x1c8
-> >     geni_se_tx_dma_unprep+0x28/0x38
-> >     qcom_geni_serial_isr+0x358/0x75c
-> >
-> > Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
-> > Cc: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> > ---
-> >  drivers/tty/serial/qcom_geni_serial.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index 2aa3872e6283..9871225b2f9b 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -631,6 +631,9 @@ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
-> >         if (port->tx_dma_addr)
-> >                 return;
-> >
-> > +       if (uart_circ_empty(xmit))
-> > +               return;
-> 
-> I guess you could remove the uart_circ_empty() test in
-> qcom_geni_serial_handle_tx_dma() now?
+The console= kernel command-line parameter defines where the kernel
+messages appear. It can be used multiple times to make the kernel log
+visible on more devices.
 
-I considered that, but decided to leave it in as it makes the flow in
-qcom_geni_serial_handle_tx_dma() a bit more obvious (and that function
-already handles the related uart_write_wakeup() which the check could
-potentially be combined with).
+The ordering of the console= parameters is important. In particular,
+the last one defines which device can be accessed also via /dev/console.
 
-> In any case, with or without that:
-> 
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+The behavior is more complicated when the last console= parameter is
+ignored by kernel. It might be surprising because it was not intentional.
+The kernel just works this way historically.
 
-Thanks for reviewing.
+There were few attempts to change the behavior. Unfortunately, it can't
+be done because it would break existing users. Document the historical
+behavior at least.
 
-Johan
+Link: https://lore.kernel.org/r/20170606143149.GB7604@pathway.suse.cz
+Link: https://lore.kernel.org/r/20230213113912.1237943-1-rkanwal@rivosinc.com
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+---
+ Documentation/admin-guide/serial-console.rst | 36 ++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/admin-guide/serial-console.rst b/Documentation/admin-guide/serial-console.rst
+index 58b32832e50a..8c8b94e54e26 100644
+--- a/Documentation/admin-guide/serial-console.rst
++++ b/Documentation/admin-guide/serial-console.rst
+@@ -33,8 +33,11 @@ The format of this option is::
+ 			9600n8. The maximum baudrate is 115200.
+ 
+ You can specify multiple console= options on the kernel command line.
+-Output will appear on all of them. The last device will be used when
+-you open ``/dev/console``. So, for example::
++
++The behavior is well defined when each device type is mentioned only once.
++In this case, the output will appear on all requested consoles. And
++the last device will be used when you open ``/dev/console``.
++So, for example::
+ 
+ 	console=ttyS1,9600 console=tty0
+ 
+@@ -42,7 +45,34 @@ defines that opening ``/dev/console`` will get you the current foreground
+ virtual console, and kernel messages will appear on both the VGA
+ console and the 2nd serial port (ttyS1 or COM2) at 9600 baud.
+ 
+-Note that you can only define one console per device type (serial, video).
++The behavior is more complicated when the same device type is defined more
++times. In this case, there are the following two rules:
++
++1. The output will appear only on the first device of each defined type.
++
++2. ``/dev/console`` will be associated with the first registered device.
++   Where the registration order depends on how kernel initializes various
++   subsystems.
++
++   This rule is used also when the last console= parameter is not used
++   for other reasons. For example, because of a typo or because
++   the hardware is not available.
++
++The result might be surprising. For example, the following two command
++lines have the same result:
++
++	console=ttyS1,9600 console=tty0 console=tty1
++	console=tty0 console=ttyS1,9600 console=tty1
++
++The kernel messages are printed only on ``tty0`` and ``ttyS1``. And
++``/dev/console`` gets associated with ``tty0``. It is because kernel
++tries to register graphical consoles before serial ones. It does it
++because of the default behavior when no console device is specified,
++see below.
++
++Note that the last ``console=tty1`` parameter still makes a difference.
++The kernel command line is used also by systemd. It would use the last
++defined ``tty1`` as the login console.
+ 
+ If no console device is specified, the first device found capable of
+ acting as a system console will be used. At this time, the system
+-- 
+2.35.3
+
