@@ -2,139 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C32DCC74A44
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 15:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F465C64EC4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 15:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbjCIPH2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 10:07:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
+        id S230058AbjCIPVh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 10:21:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231566AbjCIPHB (ORCPT
+        with ESMTP id S229751AbjCIPVg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 10:07:01 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DB3EACE3B;
-        Thu,  9 Mar 2023 07:04:55 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A049BAD7;
-        Thu,  9 Mar 2023 07:05:38 -0800 (PST)
-Received: from [10.57.48.23] (unknown [10.57.48.23])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 157B93F5A1;
-        Thu,  9 Mar 2023 07:04:51 -0800 (PST)
-Message-ID: <3a41a7ad-37c1-7104-79b2-b9be53790a6c@arm.com>
-Date:   Thu, 9 Mar 2023 15:04:50 +0000
+        Thu, 9 Mar 2023 10:21:36 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D318213C;
+        Thu,  9 Mar 2023 07:21:34 -0800 (PST)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BB598660304C;
+        Thu,  9 Mar 2023 15:21:32 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1678375293;
+        bh=9nQJQnCKbrb4KyGEURRImR/OMn2QuOxR8XFtRl35qr8=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=eCxYuAvDoUj6hHpZC5PYkYWMWUiG7uhp9zBZFfhSggOZvJ2PI3d/ct+eiTMkLCG7I
+         rO989CP+wpq9ukZjjY6x7wRayNpanPHLt/3Ew6A0uRhmbr65Vane5p0BlKVGi0z4bK
+         Y/hN8zryvtqjjIEplsuf+Jvd1oO6Jer9IJzh4OmM8ctWLHvqK8gHxB4JtFyjTk+uWg
+         CaWIUMivoOqf0or3Uk8V1p6Pk0Xk58W8mA3dkiB1RYe0czYTYlNLWnBF/ecTzDigpu
+         076PhgAa9jRPoOrZq7isygKz62/clJFhaTqazvkNlbUIcLa+VzFwpY3ST2365Gqr2j
+         Lg6CSOT1bZtpg==
+Message-ID: <42e0c0fe-3ee5-91df-302a-20193ec64bd3@collabora.com>
+Date:   Thu, 9 Mar 2023 16:21:29 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-From:   James Clark <james.clark@arm.com>
-Subject: Re: [PATCH 3/4] iio: adc: Use devm_krealloc_array
-To:     Michal Simek <michal.simek@amd.com>, linux-kernel@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20230306152723.3090195-1-james.clark@arm.com>
- <20230306152723.3090195-4-james.clark@arm.com>
- <a5bb0516-9a21-5d46-d557-f02893ac8bf4@amd.com>
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v10 3/3] arm64: dts: mediatek: Initial mt8365-evk support
 Content-Language: en-US
-In-Reply-To: <a5bb0516-9a21-5d46-d557-f02893ac8bf4@amd.com>
-Content-Type: text/plain; charset=UTF-8
+To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        maz@kernel.org, tglx@linutronix.de
+References: <20230309143459.401783-1-bero@baylibre.com>
+ <20230309143459.401783-4-bero@baylibre.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230309143459.401783-4-bero@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 08/03/2023 11:58, Michal Simek wrote:
+Il 09/03/23 15:34, Bernhard Rosenkränzer ha scritto:
+> From: Fabien Parent <fparent@baylibre.com>
 > 
+> This adds minimal support for the Mediatek 8365 SOC and the EVK reference
+> board, allowing the board to boot to initramfs with serial port I/O.
 > 
-> On 3/6/23 16:27, James Clark wrote:
->>
->> Now that it exists, use it instead of doing the multiplication and
->> checking for overflow manually.
->>
->> Signed-off-by: James Clark <james.clark@arm.com>
->> ---
->>   drivers/iio/adc/xilinx-ams.c       |  9 +++------
->>   drivers/iio/adc/xilinx-xadc-core.c | 17 +++++++----------
->>   2 files changed, 10 insertions(+), 16 deletions(-)
->>
->> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
->> index 34cf336b3490..f0b71a1220e0 100644
->> --- a/drivers/iio/adc/xilinx-ams.c
->> +++ b/drivers/iio/adc/xilinx-ams.c
->> @@ -1263,7 +1263,7 @@ static int ams_parse_firmware(struct iio_dev
->> *indio_dev)
->>          struct device *dev = indio_dev->dev.parent;
->>          struct fwnode_handle *child = NULL;
->>          struct fwnode_handle *fwnode = dev_fwnode(dev);
->> -       size_t ams_size, dev_size;
->> +       size_t ams_size;
->>          int ret, ch_cnt = 0, i, rising_off, falling_off;
->>          unsigned int num_channels = 0;
->>
->> @@ -1320,11 +1320,8 @@ static int ams_parse_firmware(struct iio_dev
->> *indio_dev)
->>                  }
->>          }
->>
->> -       dev_size = array_size(sizeof(*dev_channels), num_channels);
->> -       if (dev_size == SIZE_MAX)
->> -               return -ENOMEM;
->> -
->> -       dev_channels = devm_krealloc(dev, ams_channels, dev_size,
->> GFP_KERNEL);
->> +       dev_channels = devm_krealloc_array(dev, ams_channels,
->> num_channels,
->> +                                          sizeof(*dev_channels),
->> GFP_KERNEL);
->>          if (!dev_channels)
->>                  return -ENOMEM;
->>
->> diff --git a/drivers/iio/adc/xilinx-xadc-core.c
->> b/drivers/iio/adc/xilinx-xadc-core.c
->> index 292f2892d223..287df3bb951e 100644
->> --- a/drivers/iio/adc/xilinx-xadc-core.c
->> +++ b/drivers/iio/adc/xilinx-xadc-core.c
->> @@ -613,20 +613,17 @@ static int xadc_update_scan_mode(struct iio_dev
->> *indio_dev,
->>          const unsigned long *mask)
->>   {
->>          struct xadc *xadc = iio_priv(indio_dev);
->> -       size_t new_size, n;
->> +       size_t n;
->>          void *data;
->>
->>          n = bitmap_weight(mask, indio_dev->masklength);
->>
->> -       if (check_mul_overflow(n, sizeof(*xadc->data), &new_size))
->> -               return -ENOMEM;
->> -
->> -       data = devm_krealloc(indio_dev->dev.parent, xadc->data,
->> -                            new_size, GFP_KERNEL);
->> +       data = devm_krealloc_array(indio_dev->dev.parent, xadc->data,
->> +                                  n, sizeof(*xadc->data), GFP_KERNEL);
->>          if (!data)
->>                  return -ENOMEM;
->>
->> -       memset(data, 0, new_size);
->> +       memset(data, 0, n*sizeof(*xadc->data));
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> [bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
+> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
+> [aouledameur@baylibre.com: Fix systimer properties]
+> Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
+> Tested-by: Kevin Hilman <khilman@baylibre.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+>   arch/arm64/boot/dts/mediatek/mt8365-evk.dts | 168 +++++++++
+>   arch/arm64/boot/dts/mediatek/mt8365.dtsi    | 377 ++++++++++++++++++++
+>   3 files changed, 546 insertions(+)
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
 > 
-> this is not correct coding style.
 
-Oops, fixed in v2, thanks.
+..snip..
 
-> 
-> M
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
+> new file mode 100644
+> index 0000000000000..5d6763ebcf869
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
+> @@ -0,0 +1,377 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * (C) 2018 MediaTek Inc.
+> + * Copyright (C) 2022 BayLibre SAS
+> + * Fabien Parent <fparent@baylibre.com>
+> + * Bernhard Rosenkränzer <bero@baylibre.com>
+> + */
+
+..snip..
+
+> +
+> +	systimer: timer@10017000 {
+> +		compatible = "mediatek,mt8365-systimer", "mediatek,mt6795-timer";
+
+You mean "mediatek,67 -> 6 <- 5-timer", right? :-P
+
+Cheers,
+Angelo
+
+> +		reg = <0 0x10017000 0 0x100>;
+> +		interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&system_clk>;
+> +		clock-names = "clk13m";
+> +	};
+> +};
+
