@@ -2,662 +2,296 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC2EC6FD1F
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 14:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FBD7C6FD1F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 15:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbjCIOfT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 09:35:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
+        id S232255AbjCIPCx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 10:02:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbjCIOfP (ORCPT
+        with ESMTP id S232139AbjCIPC1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 09:35:15 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07C6E7CB2
-        for <linux-serial@vger.kernel.org>; Thu,  9 Mar 2023 06:35:11 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id x3so7749997edb.10
-        for <linux-serial@vger.kernel.org>; Thu, 09 Mar 2023 06:35:11 -0800 (PST)
+        Thu, 9 Mar 2023 10:02:27 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAD8EFF61
+        for <linux-serial@vger.kernel.org>; Thu,  9 Mar 2023 06:58:56 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id h31so1209776pgl.6
+        for <linux-serial@vger.kernel.org>; Thu, 09 Mar 2023 06:58:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112; t=1678372510;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3veNr6QWQGLni1Lhr5d3vEQOMdWTECPvtYq1u5Z90HI=;
-        b=uKrTjKVXr5kUTMafP5GX+G5H7zA9LRVWa1vJlGY50vg8smv8RycKvvXR6LeZm37nEg
-         jITFgdlFDqUzb1Hnj+lL+gx8XunMNaSx6Z0ejWZ5YtPglSljXJVTEddDUR8I3uTWXIAW
-         jF7lAmEVEy7wuxZGCEp5+UTbCgxveoUJuYaaVqj+3TBlSMC6Bz8SLAcpMAB5IUCOYh/Q
-         UlINv2fh8q8HTpYLc4N4C5Ot23ZMJiD07ACwvRIOHQc0gUUXuDTClI6uzYPkPxcF9MNB
-         vrsJKCC8eQ9tUMnbpzwkAGwHGkUWjkOrLWvoovYOoOUGSlf3mT4VBVVSnCu6qqmduJIM
-         UdHg==
+        d=linaro.org; s=google; t=1678373935;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=saB/v6gZCwf7MkAV+X9hNtARD1bAir61j4EAXbQD6Fo=;
+        b=faDp15KLTT2HWFT/LmYYy/vaedNWebhFaSCnEFjpanEO99KBFPbaI7k9YHXrd9TtIR
+         38FSGlmfcGNrqO2M83aWeoZ/xXvYWsuhGE+YqjA1kOxvwF3nvTYTn4ZVRQY6UwXHZfop
+         h284RN19Mi7Px3uSd4bxKzDSzdJimx1lxYdTeDF+hnKMtZMo3cZVGhXU3Hj+iOuOQrjG
+         I+BtQ2C+mb5VuqCts2pmsvqn51c8uyV/VpmHlYapM/fHHr4S9YKc8hLM5peZuZzgrqYw
+         dMAUfa4gB02ZY27IUT/346xod8JF3dO4AQ/+GwKKMqK/Qt0OWtZUIYcR108iJugxeqcq
+         WFIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678372510;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112; t=1678373935;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=3veNr6QWQGLni1Lhr5d3vEQOMdWTECPvtYq1u5Z90HI=;
-        b=eHYLuhkYHc+H0V024KJUEwSgN8nvisF8A4MEuYTUPUCPnEUs7wKpUl5ksv5o9cPYXp
-         VI81jvQr+E1og2WSmoeLaqkDwQ+9P+B5DJ3b2tkq7kkYy5x4wtTbbveOOd+knhAM3rSj
-         GNQR01b6eElQm1ZFOwXFWu5CNKgBbr4RtDHiu9FgTk27mKTX6tqTJ/KWBVj4DhIOtfO2
-         EY0yXY2g2sWCiFY+XpiDkDFLbV363qN4UkvRm0P7bnrx+MpS+oyNem2DzTVAEl6iWWr0
-         f5t/VeyGdlWpeZgd36ZmtdBws4Pbwtg2lkhcptVPrAOrfrvdTcvsbEHqRht+PumP2F0a
-         LSOA==
-X-Gm-Message-State: AO0yUKU27Oso1qH2WVqPaj/Q21JOweTMUhdwmUtDRfo5+udSwNQu3nSz
-        whbTCkJrKYMJScPTbTaEJVrKGw==
-X-Google-Smtp-Source: AK7set+ynrH82jLlnB9KtwNkoM+6pBhDpm5xZExd3UBm2ErYBt5QjkePER/xCOqr/OMu6+1HYJNh9Q==
-X-Received: by 2002:a17:906:718d:b0:8b1:81eb:158f with SMTP id h13-20020a170906718d00b008b181eb158fmr21899010ejk.62.1678372510413;
-        Thu, 09 Mar 2023 06:35:10 -0800 (PST)
-Received: from ryzen9.fritz.box ([81.221.122.240])
-        by smtp.gmail.com with ESMTPSA id w4-20020a170906184400b008cb7473e488sm9046239eje.12.2023.03.09.06.35.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 06:35:09 -0800 (PST)
-From:   =?UTF-8?q?Bernhard=20Rosenkr=C3=A4nzer?= <bero@baylibre.com>
-To:     linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, maz@kernel.org, tglx@linutronix.de
-Subject: [PATCH v10 3/3] arm64: dts: mediatek: Initial mt8365-evk support
-Date:   Thu,  9 Mar 2023 15:34:59 +0100
-Message-Id: <20230309143459.401783-4-bero@baylibre.com>
-X-Mailer: git-send-email 2.40.0.rc2
-In-Reply-To: <20230309143459.401783-1-bero@baylibre.com>
-References: <20230309143459.401783-1-bero@baylibre.com>
+        bh=saB/v6gZCwf7MkAV+X9hNtARD1bAir61j4EAXbQD6Fo=;
+        b=dHClBGAlNjHzrsFnRw2dxwsMkJmMnyTi56dsgdJlBv+zW6l/ofdED2ropaN2dCLy2R
+         h3hRXwAFgqG+IjuYboTZG7tkJgzLbAzu5naf+rlLo+vHx9rp9S0D6GM7lYpda1aoRqXN
+         lO98FX7vxBujO6xrtHLHU1oH0RuXilUWSlsP5pNRbZ2ULg0UudPkgLOHZjIeNH21l2+O
+         za6Ri4wuluNKfJo8T5/jb+A+YcsQtuZkrYQGB+wVxuCiREULio8neVEwTxCxbgVZi41u
+         420WThUuHoKPOJg1vAL7pYnDTETHknlt+CngN4CbMuETPe5IKpeTWmE1HdLGp02SMfc/
+         plVQ==
+X-Gm-Message-State: AO0yUKXyLLQXt8nwQu6IJFohnQiU46s84vmTLLEgY3TnDmalALk+NDMI
+        /lzH9tr8tygYk5HL+qkzWmiJ7eGy6NK8vxYns8GPTw==
+X-Google-Smtp-Source: AK7set/RraLPA2D1bIU1JMVsTQ9VSyR7QHluSEtoNjQ0NdnShHp1o/hystaOhadZCKbTSIj+BQkh79eMjJWsS/WgA/A=
+X-Received: by 2002:a63:b21b:0:b0:503:a8:2792 with SMTP id x27-20020a63b21b000000b0050300a82792mr7826958pge.5.1678373935497;
+ Thu, 09 Mar 2023 06:58:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20230309082035.14880-1-ilpo.jarvinen@linux.intel.com> <20230309082035.14880-9-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20230309082035.14880-9-ilpo.jarvinen@linux.intel.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 9 Mar 2023 15:58:18 +0100
+Message-ID: <CAPDyKFo5fC-yG_f8-w+B6bL0zvG4zMUdg38T6c8zeaA+HJ=joQ@mail.gmail.com>
+Subject: Re: [PATCH 8/8] tty: Convert hw_stopped in tty_struct to bool
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Fabien Parent <fparent@baylibre.com>
+On Thu, 9 Mar 2023 at 09:22, Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> hw_stopped in tty_struct is used like bool, convert the variable type
+> to bool.
+>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
-This adds minimal support for the Mediatek 8365 SOC and the EVK reference
-board, allowing the board to boot to initramfs with serial port I/O.
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # For MMC
 
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-[bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
-Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-[aouledameur@baylibre.com: Fix systimer properties]
-Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
-Tested-by: Kevin Hilman <khilman@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/Makefile       |   1 +
- arch/arm64/boot/dts/mediatek/mt8365-evk.dts | 168 +++++++++
- arch/arm64/boot/dts/mediatek/mt8365.dtsi    | 377 ++++++++++++++++++++
- 3 files changed, 546 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
+Kind regards
+Uffe
 
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index d5cd7b3e09cf5..c99c3372a4b5e 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -52,4 +52,5 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-cherry-tomato-r2.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-cherry-tomato-r3.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-demo.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8195-evb.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8365-evk.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8516-pumpkin.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt8365-evk.dts b/arch/arm64/boot/dts/mediatek/mt8365-evk.dts
-new file mode 100644
-index 0000000000000..4683704ea2355
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8365-evk.dts
-@@ -0,0 +1,168 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2021-2022 BayLibre, SAS.
-+ * Authors:
-+ * Fabien Parent <fparent@baylibre.com>
-+ * Bernhard Rosenkränzer <bero@baylibre.com>
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/pinctrl/mt8365-pinfunc.h>
-+#include "mt8365.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8365 Open Platform EVK";
-+	compatible = "mediatek,mt8365-evk", "mediatek,mt8365";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:921600n8";
-+	};
-+
-+	firmware {
-+		optee {
-+			compatible = "linaro,optee-tz";
-+			method = "smc";
-+		};
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&gpio_keys>;
-+
-+		key-volume-up {
-+			gpios = <&pio 24 GPIO_ACTIVE_LOW>;
-+			label = "volume_up";
-+			linux,code = <KEY_VOLUMEUP>;
-+			wakeup-source;
-+			debounce-interval = <15>;
-+		};
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0xc0000000>;
-+	};
-+
-+	usb_otg_vbus: regulator-0 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "otg_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&pio 16 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
-+	reserved-memory {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		/* 128 KiB reserved for ARM Trusted Firmware (BL31) */
-+		bl31_secmon_reserved: secmon@43000000 {
-+			no-map;
-+			reg = <0 0x43000000 0 0x20000>;
-+		};
-+
-+		/* 12 MiB reserved for OP-TEE (BL32)
-+		 * +-----------------------+ 0x43e0_0000
-+		 * |      SHMEM 2MiB       |
-+		 * +-----------------------+ 0x43c0_0000
-+		 * |        | TA_RAM  8MiB |
-+		 * + TZDRAM +--------------+ 0x4340_0000
-+		 * |        | TEE_RAM 2MiB |
-+		 * +-----------------------+ 0x4320_0000
-+		 */
-+		optee_reserved: optee@43200000 {
-+			no-map;
-+			reg = <0 0x43200000 0 0x00c00000>;
-+		};
-+	};
-+};
-+
-+&pio {
-+	gpio_keys: gpio-keys-pins {
-+		pins {
-+			pinmux = <MT8365_PIN_24_KPCOL0__FUNC_KPCOL0>;
-+			bias-pull-up;
-+			input-enable;
-+		};
-+	};
-+
-+	uart0_pins: uart0-pins {
-+		pins {
-+			pinmux = <MT8365_PIN_35_URXD0__FUNC_URXD0>,
-+				 <MT8365_PIN_36_UTXD0__FUNC_UTXD0>;
-+		};
-+	};
-+
-+	uart1_pins: uart1-pins {
-+		pins {
-+			pinmux = <MT8365_PIN_37_URXD1__FUNC_URXD1>,
-+				 <MT8365_PIN_38_UTXD1__FUNC_UTXD1>;
-+		};
-+	};
-+
-+	uart2_pins: uart2-pins {
-+		pins {
-+			pinmux = <MT8365_PIN_39_URXD2__FUNC_URXD2>,
-+				 <MT8365_PIN_40_UTXD2__FUNC_UTXD2>;
-+		};
-+	};
-+
-+	usb_pins: usb-pins {
-+		id-pins {
-+			pinmux = <MT8365_PIN_17_GPIO17__FUNC_GPIO17>;
-+			input-enable;
-+			bias-pull-up;
-+		};
-+
-+		usb0-vbus-pins {
-+			pinmux = <MT8365_PIN_16_GPIO16__FUNC_USB_DRVVBUS>;
-+			output-high;
-+		};
-+
-+		usb1-vbus-pins {
-+			pinmux = <MT8365_PIN_18_GPIO18__FUNC_GPIO18>;
-+			output-high;
-+		};
-+	};
-+
-+	pwm_pins: pwm-pins {
-+		pins {
-+			pinmux = <MT8365_PIN_19_DISP_PWM__FUNC_PWM_A>,
-+				 <MT8365_PIN_116_I2S_BCK__FUNC_PWM_C>;
-+		};
-+	};
-+};
-+
-+&pwm {
-+	pinctrl-0 = <&pwm_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart0 {
-+	pinctrl-0 = <&uart0_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	pinctrl-0 = <&uart1_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart2 {
-+	pinctrl-0 = <&uart2_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-new file mode 100644
-index 0000000000000..5d6763ebcf869
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-@@ -0,0 +1,377 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * (C) 2018 MediaTek Inc.
-+ * Copyright (C) 2022 BayLibre SAS
-+ * Fabien Parent <fparent@baylibre.com>
-+ * Bernhard Rosenkränzer <bero@baylibre.com>
-+ */
-+#include <dt-bindings/clock/mediatek,mt8365-clk.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/phy/phy.h>
-+
-+/ {
-+	compatible = "mediatek,mt8365";
-+	interrupt-parent = <&sysirq>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x0>;
-+			#cooling-cells = <2>;
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x1>;
-+			#cooling-cells = <2>;
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x2>;
-+			#cooling-cells = <2>;
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x3>;
-+			#cooling-cells = <2>;
-+			enable-method = "psci";
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>;
-+			next-level-cache = <&l2>;
-+		};
-+
-+		l2: l2-cache {
-+			compatible = "cache";
-+			cache-level = <2>;
-+			cache-size = <0x80000>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>;
-+			cache-unified;
-+		};
-+	};
-+
-+	clk26m: oscillator {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "clk26m";
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-1.0";
-+		method = "smc";
-+	};
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
-+
-+		gic: interrupt-controller@c000000 {
-+			compatible = "arm,gic-v3";
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x0c000000 0 0x10000>, /* GICD */
-+			      <0 0x0c080000 0 0x80000>, /* GICR */
-+			      <0 0x0c400000 0 0x2000>,  /* GICC */
-+			      <0 0x0c410000 0 0x1000>,  /* GICH */
-+			      <0 0x0c420000 0 0x2000>;  /* GICV */
-+
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
-+		topckgen: syscon@10000000 {
-+			compatible = "mediatek,mt8365-topckgen", "syscon";
-+			reg = <0 0x10000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		infracfg: syscon@10001000 {
-+			compatible = "mediatek,mt8365-infracfg", "syscon";
-+			reg = <0 0x10001000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		pericfg: syscon@10003000 {
-+			compatible = "mediatek,mt8365-pericfg", "syscon";
-+			reg = <0 0x10003000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		syscfg_pctl: syscfg-pctl@10005000 {
-+			compatible = "mediatek,mt8365-syscfg", "syscon";
-+			reg = <0 0x10005000 0 0x1000>;
-+		};
-+
-+		pio: pinctrl@1000b000 {
-+			compatible = "mediatek,mt8365-pinctrl";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			mediatek,pctl-regmap = <&syscfg_pctl>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
-+		apmixedsys: syscon@1000c000 {
-+			compatible = "mediatek,mt8365-apmixedsys", "syscon";
-+			reg = <0 0x1000c000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		keypad: keypad@10010000 {
-+			compatible = "mediatek,mt6779-keypad";
-+			reg = <0 0x10010000 0 0x1000>;
-+			wakeup-source;
-+			interrupts = <GIC_SPI 124 IRQ_TYPE_EDGE_FALLING>;
-+			clocks = <&clk26m>;
-+			clock-names = "kpd";
-+			status = "disabled";
-+		};
-+
-+		mcucfg: syscon@10200000 {
-+			compatible = "mediatek,mt8365-mcucfg", "syscon";
-+			reg = <0 0x10200000 0 0x2000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		sysirq: interrupt-controller@10200a80 {
-+			compatible = "mediatek,mt8365-sysirq", "mediatek,mt6577-sysirq";
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			reg = <0 0x10200a80 0 0x20>;
-+		};
-+
-+		infracfg_nao: infracfg@1020e000 {
-+			compatible = "mediatek,mt8365-infracfg", "syscon";
-+			reg = <0 0x1020e000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		rng: rng@1020f000 {
-+			compatible = "mediatek,mt8365-rng", "mediatek,mt7623-rng";
-+			reg = <0 0x1020f000 0 0x100>;
-+			clocks = <&infracfg CLK_IFR_TRNG>;
-+			clock-names = "rng";
-+		};
-+
-+		apdma: dma-controller@11000280 {
-+			compatible = "mediatek,mt8365-uart-dma", "mediatek,mt6577-uart-dma";
-+			reg = <0 0x11000280 0 0x80>,
-+			      <0 0x11000300 0 0x80>,
-+			      <0 0x11000380 0 0x80>,
-+			      <0 0x11000400 0 0x80>,
-+			      <0 0x11000580 0 0x80>,
-+			      <0 0x11000600 0 0x80>;
-+			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_LOW>,
-+				     <GIC_SPI 46 IRQ_TYPE_LEVEL_LOW>,
-+				     <GIC_SPI 47 IRQ_TYPE_LEVEL_LOW>,
-+				     <GIC_SPI 48 IRQ_TYPE_LEVEL_LOW>,
-+				     <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
-+				     <GIC_SPI 52 IRQ_TYPE_LEVEL_LOW>;
-+			dma-requests = <6>;
-+			clocks = <&infracfg CLK_IFR_AP_DMA>;
-+			clock-names = "apdma";
-+			#dma-cells = <1>;
-+		};
-+
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt8365-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x1000>;
-+			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_IFR_UART0>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 0>, <&apdma 1>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt8365-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x1000>;
-+			interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_IFR_UART1>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 2>, <&apdma 3>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt8365-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x1000>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_IFR_UART2>;
-+			clock-names = "baud", "bus";
-+			dmas = <&apdma 4>, <&apdma 5>;
-+			dma-names = "tx", "rx";
-+			status = "disabled";
-+		};
-+
-+		pwm: pwm@11006000 {
-+			compatible = "mediatek,mt8365-pwm";
-+			reg = <0 0x11006000 0 0x1000>;
-+			#pwm-cells = <2>;
-+			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&infracfg CLK_IFR_PWM_HCLK>,
-+				 <&infracfg CLK_IFR_PWM>,
-+				 <&infracfg CLK_IFR_PWM1>,
-+				 <&infracfg CLK_IFR_PWM2>,
-+				 <&infracfg CLK_IFR_PWM3>;
-+			clock-names = "top", "main", "pwm1", "pwm2", "pwm3";
-+		};
-+
-+		spi: spi@1100a000 {
-+			compatible = "mediatek,mt8365-spi", "mediatek,mt7622-spi";
-+			reg = <0 0x1100a000 0 0x100>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			interrupts = <GIC_SPI 62 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&topckgen CLK_TOP_UNIVPLL2_D4>,
-+				 <&topckgen CLK_TOP_SPI_SEL>,
-+				 <&infracfg CLK_IFR_SPI0>;
-+			clock-names = "parent-clk", "sel-clk", "spi-clk";
-+			status = "disabled";
-+		};
-+
-+		ssusb: usb@11201000 {
-+			compatible = "mediatek,mt8365-mtu3", "mediatek,mtu3";
-+			reg = <0 0x11201000 0 0x2e00>, <0 0x11203e00 0 0x0100>;
-+			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_LOW>;
-+			phys = <&u2port0 PHY_TYPE_USB2>,
-+			       <&u2port1 PHY_TYPE_USB2>;
-+			clocks = <&topckgen CLK_TOP_SSUSB_TOP_CK_EN>,
-+				 <&infracfg CLK_IFR_SSUSB_REF>,
-+				 <&infracfg CLK_IFR_SSUSB_SYS>,
-+				 <&infracfg CLK_IFR_ICUSB>;
-+			clock-names = "sys_ck", "ref_ck", "mcu_ck", "dma_ck";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			ranges;
-+			status = "disabled";
-+
-+			usb_host: usb@11200000 {
-+				compatible = "mediatek,mt8365-xhci", "mediatek,mtk-xhci";
-+				reg = <0 0x11200000 0 0x1000>;
-+				reg-names = "mac";
-+				interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_LOW>;
-+				clocks = <&topckgen CLK_TOP_SSUSB_TOP_CK_EN>,
-+					 <&infracfg CLK_IFR_SSUSB_REF>,
-+					 <&infracfg CLK_IFR_SSUSB_SYS>,
-+					 <&infracfg CLK_IFR_ICUSB>,
-+					 <&infracfg CLK_IFR_SSUSB_XHCI>;
-+				clock-names = "sys_ck", "ref_ck", "mcu_ck",
-+					      "dma_ck", "xhci_ck";
-+				status = "disabled";
-+			};
-+		};
-+
-+		u3phy: t-phy@11cc0000 {
-+			compatible = "mediatek,mt8365-tphy", "mediatek,generic-tphy-v2";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0 0 0x11cc0000 0x9000>;
-+
-+			u2port0: usb-phy@0 {
-+				reg = <0x0 0x400>;
-+				clocks = <&topckgen CLK_TOP_SSUSB_PHY_CK_EN>,
-+					 <&topckgen CLK_TOP_USB20_48M_EN>;
-+				clock-names = "ref", "da_ref";
-+				#phy-cells = <1>;
-+			};
-+
-+			u2port1: usb-phy@1000 {
-+				reg = <0x1000 0x400>;
-+				clocks = <&topckgen CLK_TOP_SSUSB_PHY_CK_EN>,
-+					 <&topckgen CLK_TOP_USB20_48M_EN>;
-+				clock-names = "ref", "da_ref";
-+				#phy-cells = <1>;
-+			};
-+		};
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
-+	};
-+
-+	system_clk: dummy13m {
-+		compatible = "fixed-clock";
-+		clock-frequency = <13000000>;
-+		#clock-cells = <0>;
-+	};
-+
-+	systimer: timer@10017000 {
-+		compatible = "mediatek,mt8365-systimer", "mediatek,mt6795-timer";
-+		reg = <0 0x10017000 0 0x100>;
-+		interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&system_clk>;
-+		clock-names = "clk13m";
-+	};
-+};
--- 
-2.40.0.rc2
-
+> ---
+>  drivers/char/pcmcia/synclink_cs.c |  6 +++---
+>  drivers/mmc/core/sdio_uart.c      | 10 +++++-----
+>  drivers/tty/amiserial.c           |  6 +++---
+>  drivers/tty/mxser.c               |  6 +++---
+>  drivers/tty/synclink_gt.c         |  6 +++---
+>  include/linux/tty.h               |  2 +-
+>  6 files changed, 18 insertions(+), 18 deletions(-)
+>
+> diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/sync=
+link_cs.c
+> index 6ddfeb2fe98f..97c5bfb9d58a 100644
+> --- a/drivers/char/pcmcia/synclink_cs.c
+> +++ b/drivers/char/pcmcia/synclink_cs.c
+> @@ -1060,7 +1060,7 @@ static void cts_change(MGSLPC_INFO *info, struct tt=
+y_struct *tty)
+>                         if (info->serial_signals & SerialSignal_CTS) {
+>                                 if (debug_level >=3D DEBUG_LEVEL_ISR)
+>                                         printk("CTS tx start...");
+> -                               tty->hw_stopped =3D 0;
+> +                               tty->hw_stopped =3D false;
+>                                 tx_start(info, tty);
+>                                 info->pending_bh |=3D BH_TRANSMIT;
+>                                 return;
+> @@ -1069,7 +1069,7 @@ static void cts_change(MGSLPC_INFO *info, struct tt=
+y_struct *tty)
+>                         if (!(info->serial_signals & SerialSignal_CTS)) {
+>                                 if (debug_level >=3D DEBUG_LEVEL_ISR)
+>                                         printk("CTS tx stop...");
+> -                               tty->hw_stopped =3D 1;
+> +                               tty->hw_stopped =3D true;
+>                                 tx_stop(info);
+>                         }
+>                 }
+> @@ -2312,7 +2312,7 @@ static void mgslpc_set_termios(struct tty_struct *t=
+ty,
+>
+>         /* Handle turning off CRTSCTS */
+>         if (old_termios->c_cflag & CRTSCTS && !C_CRTSCTS(tty)) {
+> -               tty->hw_stopped =3D 0;
+> +               tty->hw_stopped =3D false;
+>                 tx_release(tty);
+>         }
+>  }
+> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
+> index 50536fe59f1a..aa659758563f 100644
+> --- a/drivers/mmc/core/sdio_uart.c
+> +++ b/drivers/mmc/core/sdio_uart.c
+> @@ -478,13 +478,13 @@ static void sdio_uart_check_modem_status(struct sdi=
+o_uart_port *port)
+>                         int cts =3D (status & UART_MSR_CTS);
+>                         if (tty->hw_stopped) {
+>                                 if (cts) {
+> -                                       tty->hw_stopped =3D 0;
+> +                                       tty->hw_stopped =3D false;
+>                                         sdio_uart_start_tx(port);
+>                                         tty_wakeup(tty);
+>                                 }
+>                         } else {
+>                                 if (!cts) {
+> -                                       tty->hw_stopped =3D 1;
+> +                                       tty->hw_stopped =3D true;
+>                                         sdio_uart_stop_tx(port);
+>                                 }
+>                         }
+> @@ -633,7 +633,7 @@ static int sdio_uart_activate(struct tty_port *tport,=
+ struct tty_struct *tty)
+>
+>         if (C_CRTSCTS(tty))
+>                 if (!(sdio_uart_get_mctrl(port) & TIOCM_CTS))
+> -                       tty->hw_stopped =3D 1;
+> +                       tty->hw_stopped =3D true;
+>
+>         clear_bit(TTY_IO_ERROR, &tty->flags);
+>
+> @@ -882,14 +882,14 @@ static void sdio_uart_set_termios(struct tty_struct=
+ *tty,
+>
+>         /* Handle turning off CRTSCTS */
+>         if ((old_termios->c_cflag & CRTSCTS) && !(cflag & CRTSCTS)) {
+> -               tty->hw_stopped =3D 0;
+> +               tty->hw_stopped =3D false;
+>                 sdio_uart_start_tx(port);
+>         }
+>
+>         /* Handle turning on CRTSCTS */
+>         if (!(old_termios->c_cflag & CRTSCTS) && (cflag & CRTSCTS)) {
+>                 if (!(sdio_uart_get_mctrl(port) & TIOCM_CTS)) {
+> -                       tty->hw_stopped =3D 1;
+> +                       tty->hw_stopped =3D true;
+>                         sdio_uart_stop_tx(port);
+>                 }
+>         }
+> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+> index d7515d61659e..c06ad0a0744b 100644
+> --- a/drivers/tty/amiserial.c
+> +++ b/drivers/tty/amiserial.c
+> @@ -347,7 +347,7 @@ static void check_modem_status(struct serial_state *i=
+nfo)
+>  #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
+>                                 printk("CTS tx start...");
+>  #endif
+> -                               port->tty->hw_stopped =3D 0;
+> +                               port->tty->hw_stopped =3D false;
+>                                 info->IER |=3D UART_IER_THRI;
+>                                 amiga_custom.intena =3D IF_SETCLR | IF_TB=
+E;
+>                                 mb();
+> @@ -362,7 +362,7 @@ static void check_modem_status(struct serial_state *i=
+nfo)
+>  #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
+>                                 printk("CTS tx stop...");
+>  #endif
+> -                               port->tty->hw_stopped =3D 1;
+> +                               port->tty->hw_stopped =3D true;
+>                                 info->IER &=3D ~UART_IER_THRI;
+>                                 /* disable Tx interrupt and remove any pe=
+nding interrupts */
+>                                 amiga_custom.intena =3D IF_TBE;
+> @@ -1197,7 +1197,7 @@ static void rs_set_termios(struct tty_struct *tty, =
+const struct ktermios *old_te
+>
+>         /* Handle turning off CRTSCTS */
+>         if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
+> -               tty->hw_stopped =3D 0;
+> +               tty->hw_stopped =3D false;
+>                 rs_start(tty);
+>         }
+>
+> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> index ef3116e87975..10855e66fda1 100644
+> --- a/drivers/tty/mxser.c
+> +++ b/drivers/tty/mxser.c
+> @@ -553,7 +553,7 @@ static void mxser_handle_cts(struct tty_struct *tty, =
+struct mxser_port *info,
+>
+>         if (tty->hw_stopped) {
+>                 if (cts) {
+> -                       tty->hw_stopped =3D 0;
+> +                       tty->hw_stopped =3D false;
+>
+>                         if (!mxser_16550A_or_MUST(info))
+>                                 __mxser_start_tx(info);
+> @@ -563,7 +563,7 @@ static void mxser_handle_cts(struct tty_struct *tty, =
+struct mxser_port *info,
+>         } else if (cts)
+>                 return;
+>
+> -       tty->hw_stopped =3D 1;
+> +       tty->hw_stopped =3D true;
+>         if (!mxser_16550A_or_MUST(info))
+>                 __mxser_stop_tx(info);
+>  }
+> @@ -1361,7 +1361,7 @@ static void mxser_set_termios(struct tty_struct *tt=
+y,
+>         spin_unlock_irqrestore(&info->slock, flags);
+>
+>         if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
+> -               tty->hw_stopped =3D 0;
+> +               tty->hw_stopped =3D false;
+>                 mxser_start(tty);
+>         }
+>
+> diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
+> index 33f258d6fef9..543b3224dce9 100644
+> --- a/drivers/tty/synclink_gt.c
+> +++ b/drivers/tty/synclink_gt.c
+> @@ -730,7 +730,7 @@ static void set_termios(struct tty_struct *tty,
+>
+>         /* Handle turning off CRTSCTS */
+>         if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
+> -               tty->hw_stopped =3D 0;
+> +               tty->hw_stopped =3D false;
+>                 tx_release(tty);
+>         }
+>  }
+> @@ -1953,13 +1953,13 @@ static void cts_change(struct slgt_info *info, un=
+signed short status)
+>                 if (info->port.tty) {
+>                         if (info->port.tty->hw_stopped) {
+>                                 if (info->signals & SerialSignal_CTS) {
+> -                                       info->port.tty->hw_stopped =3D 0;
+> +                                       info->port.tty->hw_stopped =3D fa=
+lse;
+>                                         info->pending_bh |=3D BH_TRANSMIT=
+;
+>                                         return;
+>                                 }
+>                         } else {
+>                                 if (!(info->signals & SerialSignal_CTS))
+> -                                       info->port.tty->hw_stopped =3D 1;
+> +                                       info->port.tty->hw_stopped =3D tr=
+ue;
+>                         }
+>                 }
+>         }
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 093935e97f42..60871a9d3212 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -227,7 +227,7 @@ struct tty_struct {
+>                 unsigned long unused[0];
+>         } __aligned(sizeof(unsigned long)) ctrl;
+>
+> -       int hw_stopped;
+> +       bool hw_stopped;
+>         unsigned int receive_room;
+>         int flow_change;
+>
+> --
+> 2.30.2
+>
