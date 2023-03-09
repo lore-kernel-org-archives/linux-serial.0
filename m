@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50003C64EC4
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 08:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9FBC61DA4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 08:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbjCIIM6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 03:12:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S229696AbjCIIW4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 03:22:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbjCIIMD (ORCPT
+        with ESMTP id S229806AbjCIIW1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 03:12:03 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1D1E2C41;
-        Thu,  9 Mar 2023 00:10:33 -0800 (PST)
+        Thu, 9 Mar 2023 03:22:27 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96DFADF721;
+        Thu,  9 Mar 2023 00:20:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678349433; x=1709885433;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3/j3SVPlwDa6zr9LT83ubh5mFhbeuQYyePjcNkzEfHw=;
-  b=k4vnbS34jIEGP1sGB/OdlTrtI6oT+SnydqgwiGnxIpX1UdHZUsoDBDNi
-   dvrBk8PflChcSPSCoxEGC0088TO5cLQaUuOOOzp38V54wvpYgm6vtD36I
-   g5w4VyAVJ9VrjTX1wLVCGYuegHLA2pcjJnVrO66r5DNt2UxlEQDTd/gaj
-   IyFjtO8LgB++W1iGG9xtkaYWMXVEGLrHpEC9o1AL9f6Bnnj06KbySg0Px
-   J14EudmakgFPH4zZ2PopQlr/oDSOG+b6PdIglgoTw1xjBS9ZPR/hursmf
-   MJxvG9lc3K4FsLuznSNSlXTHhDtCc2gNnyhGduOvJVL1XQTDtWQbszBna
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="333853636"
+  t=1678350047; x=1709886047;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tHtq6ZIyJtPvDKcfRGVQgt5pQ1iWkR5DQjr+pW50ZoA=;
+  b=g8EYJDX4CKrUCOUO24cRK4zHFBKQTCKrlpA3RKXxEFOcGQpym3T5tewh
+   k4rHfnzjHqUEL8NgSgNUI7/eeelev92Jy39gmWJkb0sEkGAvyCfMRuCrQ
+   YT1Nu6SaBD4+xkzYeEAF93EwxkZfW3zVC12FH47v8FKQvKxCotZ1QbbA9
+   JPPdSZEEHjn9EqhH+5od8voxQAFpsdgNcKZToeKFp3dmNooqBgfLkjzyp
+   rhFbtvXX6bR/8sZBR8AmZtM9TS+ZvstNCHY764OdR2WBm6XnPWyEsdzUk
+   AV3ITZr+bxu64tlXFTI/PV1I7yA5mxw4WMTYjaZuLJ4YFlPjeNbB8Vaup
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="364025715"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="333853636"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:53 -0800
+   d="scan'208";a="364025715"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:20:47 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="746228025"
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="787473820"
 X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
-   d="scan'208";a="746228025"
+   d="scan'208";a="787473820"
 Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.35])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:52 -0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:20:45 -0800
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 8/8] serial: Remove uart_wait_until_sent() forward declaration
-Date:   Thu,  9 Mar 2023 10:09:23 +0200
-Message-Id: <20230309080923.11778-9-ilpo.jarvinen@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/8] tty: Cleanups
+Date:   Thu,  9 Mar 2023 10:20:27 +0200
+Message-Id: <20230309082035.14880-1-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230309080923.11778-1-ilpo.jarvinen@linux.intel.com>
-References: <20230309080923.11778-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,25 +56,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Remove unnecessary forward declaration of uart_wait_until_sent().
+Small cleanups to tty.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/serial_core.c | 1 -
- 1 file changed, 1 deletion(-)
+Ilpo Järvinen (8):
+  n_tty: Convert no_space_left to space_left boolean
+  tty_ioctl: Use BIT() for internal flags
+  Bluetooth: hci_ldisc: Fix tty_set_termios() return value assumptions
+  n_tty: Sort includes alphabetically
+  n_tty: Use DIV_ROUND_UP() in room calculation
+  n_tty: Cleanup includes
+  n_tty: Reindent if condition
+  tty: Convert hw_stopped in tty_struct to bool
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index c494cb39394b..db7f6c0c39bf 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -49,7 +49,6 @@ static struct lock_class_key port_lock_key;
-  */
- #define RS485_MAX_RTS_DELAY	100 /* msecs */
- 
--static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
- static void uart_change_pm(struct uart_state *state,
- 			   enum uart_pm_state pm_state);
- 
+ drivers/bluetooth/hci_ldisc.c     |  8 +++---
+ drivers/char/pcmcia/synclink_cs.c |  6 ++---
+ drivers/mmc/core/sdio_uart.c      | 10 +++----
+ drivers/tty/amiserial.c           |  6 ++---
+ drivers/tty/mxser.c               |  6 ++---
+ drivers/tty/n_tty.c               | 43 +++++++++++++++----------------
+ drivers/tty/synclink_gt.c         |  6 ++---
+ drivers/tty/tty_ioctl.c           |  9 ++++---
+ include/linux/tty.h               |  2 +-
+ 9 files changed, 48 insertions(+), 48 deletions(-)
+
 -- 
 2.30.2
 
