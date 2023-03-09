@@ -2,98 +2,128 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3142C61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 19:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8319C64EC4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 21:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbjCITHI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 14:07:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
+        id S230426AbjCIVMX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 16:12:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbjCITHH (ORCPT
+        with ESMTP id S229620AbjCIVMW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 14:07:07 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D964FC7DF;
-        Thu,  9 Mar 2023 11:07:06 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id me6-20020a17090b17c600b0023816b0c7ceso7250562pjb.2;
-        Thu, 09 Mar 2023 11:07:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678388826;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QiW/GimxYzzA2iRUpbB1MwJUXLVF9QiXeP5cxfSDJK8=;
-        b=K0xQ9cXLmFBrHgdRsA3zWI3dYp64rCflQID+kL2O12eiZd+Lt8jFRl3IPmeVCHRPxE
-         9CfE5uizTrfFgHQ6GILBZi4WVYFG8hkQ8m60V7ENAzQcYmy/IWYRcMZchpsj2pvKXIzS
-         NrGW4iPoZZX14HeOtftC4pQS5bi+QFDFF5FKbaHk+18/2RD1DbWFnM13erovORIa1j6y
-         ljfW6mgLJMTR+WSe2Xh1DvRBDo8wsWWQkushitvPRQ45bt2Hr/oduPcJQCSXAGqvo7BN
-         q5/YkSnvWioyNyy6SzKuaE9Ydf7uXLfS7Fk0nh0+o+7A5mZIJbBBn45Sh+gQPvgO01ZN
-         CrIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678388826;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QiW/GimxYzzA2iRUpbB1MwJUXLVF9QiXeP5cxfSDJK8=;
-        b=BEAqlkw2aE8fWWJcWvAb2fhvLruKnY/1HAwy3tRQFfag0yDhN6FaqdWsGzv7gW5Hpn
-         cPdnHsWunSdZluu02BzVRAQu3byMvZpLvCz/oSNSosZAuFLeQ+DuMhbLIHojCbxT/fyW
-         Qsa/x6pSEuxcYgL+Op2Jk06kZE5m9U3VnYb/QXyGNdKvtW2nXkjMF52WevKjZUcNCU4O
-         l3KZTJb7bw+fw/cwYiYgUanuLaoXGfG3Ld6wK0jQ3blJKIwDY4PmoRiJY+U1ZhThew/A
-         Lh3NFT849JhGJ5DEZcLMuqGsHNLLwXZdpGdUkAvKxy++OLyMZ1y+BJOvGIposcf5oX0b
-         34Sg==
-X-Gm-Message-State: AO0yUKWwMcTkFeUdH45oCMg19koNC3S5Qfo9NnVAD1A4k5bgh8+EnBsN
-        jbzt6rp7XmNc7RY5r9Bt0ng=
-X-Google-Smtp-Source: AK7set8W8EnDGqg1UGWtg6B3U9/8p7YDa6ID6pL62JuZEQSZTP6IP4CJ+RGtD/yGgpdg05hxMVVJFQ==
-X-Received: by 2002:a17:903:2303:b0:198:b945:4108 with SMTP id d3-20020a170903230300b00198b9454108mr31521115plh.0.1678388825774;
-        Thu, 09 Mar 2023 11:07:05 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id kp14-20020a170903280e00b00196251ca124sm20708plb.75.2023.03.09.11.07.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Mar 2023 11:07:05 -0800 (PST)
-Message-ID: <e75a1c0f-886e-fd89-0876-dc883f75c809@gmail.com>
-Date:   Thu, 9 Mar 2023 11:07:03 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] serial: 8250_bcm7271: Fix arbitration handling
-Content-Language: en-US
-To:     Doug Berger <opendmb@gmail.com>,
+        Thu, 9 Mar 2023 16:12:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B831BAFA;
+        Thu,  9 Mar 2023 13:12:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 664D2B81F49;
+        Thu,  9 Mar 2023 21:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78835C433EF;
+        Thu,  9 Mar 2023 21:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678396338;
+        bh=emwxev2joapuzWTO2f23F5wjNsgEZTMzeCLrmUxz/FA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ob7Um5kAO7CzU59lJLPrYGoOplTDNcR1lqQU6UxANZX9ZLaHjs1EfDbjrwnu09o/c
+         Wm5lYIveSHn1KFBMxBeyi8AZQGIk13uJLqbG7V7Eof+vJj2mHctYJXq4AK9H8X5SvN
+         ZqoaVo4tAn9TST3j1CBWn6jgp4gnysyEbQY7xOTWMLAJk5t/xn9LatMfFQHxFzcZHn
+         YjFTc/G2ZjTevT1WhTPnrYsBoERCVMcvJSj3Wc/zioP6B6aSSvW+OHj1G2xaFEP6/9
+         NCpIynDWFmsi+fyf4NIHY99HQ8alW5INj0MiIWZunHeVRzOTYrt6itTVnSMi10vzGA
+         FYGj3lkobq3ew==
+Date:   Thu, 9 Mar 2023 22:12:14 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     linux-i2c@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Al Cooper <alcooperx@gmail.com>
-Cc:     Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230309190224.687380-1-opendmb@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230309190224.687380-1-opendmb@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-kernel@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ajay Gupta <ajayg@nvidia.com>,
+        Peter Senna Tschudin <peter.senna@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Luca Ceresoli <luca.ceresoli@bootlin.com>,
+        linux-mtd@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, Evgeniy Polyakov <zbr@ioremap.net>,
+        Crt Mori <cmo@melexis.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Shunqian Zheng <zhengsq@rock-chips.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Peter Rosin <peda@axentia.se>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2 0/9] i2c: Switch .probe() to not take an id parameter
+Message-ID: <ZApLrpD9Op59FgnB@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        linux-i2c@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ajay Gupta <ajayg@nvidia.com>,
+        Peter Senna Tschudin <peter.senna@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Luca Ceresoli <luca.ceresoli@bootlin.com>,
+        linux-mtd@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, Evgeniy Polyakov <zbr@ioremap.net>,
+        Crt Mori <cmo@melexis.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Shunqian Zheng <zhengsq@rock-chips.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Peter Rosin <peda@axentia.se>, Guenter Roeck <linux@roeck-us.net>,
+        Lee Jones <lee.jones@linaro.org>
+References: <20230226222654.1741900-1-u.kleine-koenig@pengutronix.de>
+ <20230303220856.ebloz7kjw7sskxym@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="11BnIObYxkIk2nlY"
+Content-Disposition: inline
+In-Reply-To: <20230303220856.ebloz7kjw7sskxym@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/9/23 11:02, Doug Berger wrote:
-> The arbitration of the UART DMA is mishandled for a few
-> exceptional cases when probing and releasing the driver.
-> 
-> It is possible that the DMA register spaces are not defined in
-> device tree for an instance of the driver, so attempts to access
-> the registers in brcmuart_arbitration() would use NULL pointers.
-> 
-> It is also possible for the probe function to return an error
-> while still holding the UART DMA. This would prevent the UART
-> DMA from being claimed by an instance that could use it.
-> 
-> These errors are addressed by only releasing the UART DMA if it
-> is held by this instance (i.e. priv->dma_enabled == 1) and
-> directing early error paths in probe to this common release_dma
-> handling.
-> 
-> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+--11BnIObYxkIk2nlY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+
+> So this series is ready to be applied once Linus cuts -rc1.
+
+I applied it to for-current now and plan to have it in -rc2. Thank you!
+
+
+--11BnIObYxkIk2nlY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQKS64ACgkQFA3kzBSg
+KbZPuw/5AdHfkTRDnxz7iP/injeW9ZuXdUyU2WNYPhKG7gjBIddIl62rm7/IEca7
+p3URnVMb58tnKqvQ8waKpNu/SdPTrtQ/Xp35h3lBN9z2hvybGDjHztUar08DijrQ
+EU2K76NS83pZ2vQ0S4NRk3JQdGJVXmYs04hz3XBe9Fk61l+XgOaXjDfVMRYQdAHs
+KvjbHB+fCKrRY4pTYO/+3rah9NGj7Igm6bxWs8bwqqSHL7O95xan/NyDFSj6ast7
+5otOpDeFE90FeYuvJVhaDThUTf65ko6szMFT7tHRIYo2VPitA28I/Vq2/wei9e1K
+d8hwgwd5X73mVLAWK6zYsLN2hyjna6/O/6+AaUSjYzHoKlOHCqjMhfllzCTmqrBc
+tbxj4kw5uhH315V+S1wjdpQ/cCYqQQU1c1Lugrkgm/pAdFiyz9PxDap9ovxO5whY
+cElHujAXXDjCHU/wVB8rGCjJMlwpr1/mWOrmt7AcWCLUsK7CvuQjqgvDkZ7XuoRJ
+4PylU8+/MH+06JGUusE/bdCc1tR/lm1ZPWu0OVWTTdgvuWQ6fqT9xveERYleRl/M
+SEUbzagdMe1OqVzEFNoymReVc4Ds8n3IvyltPkR4w4rwSAdWLtoRCXmlf/L6WrBj
+SK0w5ZBTZKGdORg7eil1rxWED6YrQaAFOM9GnyCKapCPtM0zp+w=
+=wGSr
+-----END PGP SIGNATURE-----
+
+--11BnIObYxkIk2nlY--
