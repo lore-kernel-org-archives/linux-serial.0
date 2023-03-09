@@ -2,115 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F465C64EC4
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 15:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75378C74A44
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 16:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbjCIPVh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 10:21:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
+        id S230129AbjCIQcQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 11:32:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjCIPVg (ORCPT
+        with ESMTP id S230153AbjCIQbt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 10:21:36 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D318213C;
-        Thu,  9 Mar 2023 07:21:34 -0800 (PST)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 9 Mar 2023 11:31:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EF9E20FC;
+        Thu,  9 Mar 2023 08:23:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id BB598660304C;
-        Thu,  9 Mar 2023 15:21:32 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1678375293;
-        bh=9nQJQnCKbrb4KyGEURRImR/OMn2QuOxR8XFtRl35qr8=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=eCxYuAvDoUj6hHpZC5PYkYWMWUiG7uhp9zBZFfhSggOZvJ2PI3d/ct+eiTMkLCG7I
-         rO989CP+wpq9ukZjjY6x7wRayNpanPHLt/3Ew6A0uRhmbr65Vane5p0BlKVGi0z4bK
-         Y/hN8zryvtqjjIEplsuf+Jvd1oO6Jer9IJzh4OmM8ctWLHvqK8gHxB4JtFyjTk+uWg
-         CaWIUMivoOqf0or3Uk8V1p6Pk0Xk58W8mA3dkiB1RYe0czYTYlNLWnBF/ecTzDigpu
-         076PhgAa9jRPoOrZq7isygKz62/clJFhaTqazvkNlbUIcLa+VzFwpY3ST2365Gqr2j
-         Lg6CSOT1bZtpg==
-Message-ID: <42e0c0fe-3ee5-91df-302a-20193ec64bd3@collabora.com>
-Date:   Thu, 9 Mar 2023 16:21:29 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9563661C31;
+        Thu,  9 Mar 2023 16:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B060C433EF;
+        Thu,  9 Mar 2023 16:17:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1678378664;
+        bh=q9RjBZs+ERaxIV0omkTJ1hSNgg0RjEI7/KoY1XKuSyU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jVhVYbvVqbdH2W69+wx8yTauEYWo0avO97NQe507F8tsK4F2Hte8WTtGIKAVkVf23
+         dis1Kce8ox34FbnT/tTE/5/8ozmdX88XWnaNdteMxf4stuKuUWqaYHxQfm6E3eWspg
+         anntKbMr0SzOEEfAU8A2wj3O+z2O90FDKm1SELV8=
+Date:   Thu, 9 Mar 2023 17:17:41 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Nick Alcock <nick.alcock@oracle.com>
+Cc:     mcgrof@kernel.org, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-unisoc@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 21/24] kbuild, serial: remove MODULE_LICENSE in
+ non-modules
+Message-ID: <ZAoGpW+TnpRPMRdR@kroah.com>
+References: <20230217141059.392471-1-nick.alcock@oracle.com>
+ <20230217141059.392471-22-nick.alcock@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v10 3/3] arm64: dts: mediatek: Initial mt8365-evk support
-Content-Language: en-US
-To:     =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        matthias.bgg@gmail.com, gregkh@linuxfoundation.org,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        maz@kernel.org, tglx@linutronix.de
-References: <20230309143459.401783-1-bero@baylibre.com>
- <20230309143459.401783-4-bero@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230309143459.401783-4-bero@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230217141059.392471-22-nick.alcock@oracle.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Il 09/03/23 15:34, Bernhard Rosenkränzer ha scritto:
-> From: Fabien Parent <fparent@baylibre.com>
+On Fri, Feb 17, 2023 at 02:10:56PM +0000, Nick Alcock wrote:
+> Since commit 8b41fc4454e ("kbuild: create modules.builtin without
+> Makefile.modbuiltin or tristate.conf"), MODULE_LICENSE declarations
+> are used to identify modules. As a consequence, uses of the macro
+> in non-modules will cause modprobe to misidentify their containing
+> object file as a module when it is not (false positives), and modprobe
+> might succeed rather than failing with a suitable error message.
 > 
-> This adds minimal support for the Mediatek 8365 SOC and the EVK reference
-> board, allowing the board to boot to initramfs with serial port I/O.
+> So remove it in the files in this commit, none of which can be built as
+> modules.
 > 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> [bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
-> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> [aouledameur@baylibre.com: Fix systimer properties]
-> Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
-> Tested-by: Kevin Hilman <khilman@baylibre.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Signed-off-by: Nick Alcock <nick.alcock@oracle.com>
+> Suggested-by: Luis Chamberlain <mcgrof@kernel.org>
+> Cc: Luis Chamberlain <mcgrof@kernel.org>
+> Cc: linux-modules@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
+> Cc: Manivannan Sadhasivam <mani@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-unisoc@lists.infradead.org
+> Cc: linux-serial@vger.kernel.org
 > ---
->   arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->   arch/arm64/boot/dts/mediatek/mt8365-evk.dts | 168 +++++++++
->   arch/arm64/boot/dts/mediatek/mt8365.dtsi    | 377 ++++++++++++++++++++
->   3 files changed, 546 insertions(+)
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
+>  drivers/tty/serial/rda-uart.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
+> diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
+> index be5c842b5ba9..c3b29d124759 100644
+> --- a/drivers/tty/serial/rda-uart.c
+> +++ b/drivers/tty/serial/rda-uart.c
+> @@ -825,4 +825,3 @@ module_exit(rda_uart_exit);
+>  
+>  MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>");
+>  MODULE_DESCRIPTION("RDA8810PL serial device driver");
+> -MODULE_LICENSE("GPL");
 
-..snip..
+No, this should be fine, either force remove all MODULE_* macros from
+built-in code, or none.
 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> new file mode 100644
-> index 0000000000000..5d6763ebcf869
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-> @@ -0,0 +1,377 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * (C) 2018 MediaTek Inc.
-> + * Copyright (C) 2022 BayLibre SAS
-> + * Fabien Parent <fparent@baylibre.com>
-> + * Bernhard Rosenkränzer <bero@baylibre.com>
-> + */
+thanks,
 
-..snip..
-
-> +
-> +	systimer: timer@10017000 {
-> +		compatible = "mediatek,mt8365-systimer", "mediatek,mt6795-timer";
-
-You mean "mediatek,67 -> 6 <- 5-timer", right? :-P
-
-Cheers,
-Angelo
-
-> +		reg = <0 0x10017000 0 0x100>;
-> +		interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
-> +		clocks = <&system_clk>;
-> +		clock-names = "clk13m";
-> +	};
-> +};
-
+greg k-h
