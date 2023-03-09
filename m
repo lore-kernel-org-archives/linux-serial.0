@@ -2,89 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68219C61DA4
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 13:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF10C64EC4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 14:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbjCINpt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 08:45:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S231263AbjCIOCy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 09:02:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbjCINpp (ORCPT
+        with ESMTP id S231608AbjCIOBT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 08:45:45 -0500
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14951DE1F8;
-        Thu,  9 Mar 2023 05:45:39 -0800 (PST)
-Received: by mail-ed1-f48.google.com with SMTP id da10so7222645edb.3;
-        Thu, 09 Mar 2023 05:45:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678369537;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sTwP3RLCRbcGBgHOojwsL1bMygr8dn+g2IYURs1uRg8=;
-        b=YsMgtqg2uPZVLqoF8PkzyqyNIwox0kFCybQIjbyhAbzWqlJbzx1BPoMd41ZqTVUjDl
-         gEYjTyMjZ5mvMtSaGdNnDFthpFZlppoZOduDiF7Jt4340eO6Tsw04SogPj8YqQMUdqDZ
-         leLVLodqZYPdpmTf1l29d4ICfLL6Jfry0c0Ux+vj8TPN55IChI+qADCTtzA8VnNXgRXR
-         6LF88n4v3iDPJd9egOAOpBIXzkwIPCx8dmO0otSVUKcBqLCatDxMfO9CZBLNFU5G3xpF
-         /mQ54AuqHct0sKWmCFe4hTk8uc5zdK2LTvK5o9grihjVpX+olbdzdhnMNb/I8NmqAYOP
-         KFOQ==
-X-Gm-Message-State: AO0yUKWTeksSKpNQdAVCWWyMio0g7aQMWKMQH/4o3s14AlLlJObMClPE
-        jScuofDRWQ1auHCemnKxrrfQq5IoqmY=
-X-Google-Smtp-Source: AK7set9hzV3X7Oq7gLEItu8pyiE0OVjA6C+K2GiL7RfDT248ZqK6tEdNxtcMNSplwIgl3FscKRAM3w==
-X-Received: by 2002:a17:907:8a06:b0:889:ed81:dff7 with SMTP id sc6-20020a1709078a0600b00889ed81dff7mr27540244ejc.9.1678369537478;
-        Thu, 09 Mar 2023 05:45:37 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
-        by smtp.gmail.com with ESMTPSA id a25-20020a50c319000000b004af62273b66sm9593859edb.18.2023.03.09.05.45.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Mar 2023 05:45:37 -0800 (PST)
-Message-ID: <b7e72552-d4ec-46f2-4f45-d8baec914ff1@kernel.org>
-Date:   Thu, 9 Mar 2023 14:45:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH 7/8] n_tty: Reindent if condition
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org,
+        Thu, 9 Mar 2023 09:01:19 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DC2DFB61;
+        Thu,  9 Mar 2023 06:00:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678370404; x=1709906404;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=q6QptM2lZW/mxcCZq+pcmryzCogJvA7ubRMFrbpXJxU=;
+  b=cv7WB/aOA0fe++1MMGqoxRo0dVCMf3lyex8FdKnxqMDhwPfG7Nq1MTSY
+   1Q9+wr7kdHA541eolwzVPHGumulQGkEQBDkToWwTktOs5YJlune7VIsIu
+   uvjU4BTYE+upXBN2hjwCXd8Z3BGbToFQ6WjZyOWlot4KFHLHJPQsPkI/p
+   y6G471heb9C3r7O/ihYHGWvXK6h6g+ietlHzqWVUIIcitGeP+4Sk62sdc
+   /LM5OY0JHM5dNqw+abNjwJQV5eMe7gokoGKQjGJpufvVcXN6LuX0ot7lK
+   LJknz0uUE4UC2LM8K1n3XYfMJSw/k2RNZIMmpUJtPoERm6QcyYfld/ZgQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="337975544"
+X-IronPort-AV: E=Sophos;i="5.98,246,1673942400"; 
+   d="scan'208";a="337975544"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 06:00:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="677376938"
+X-IronPort-AV: E=Sophos;i="5.98,246,1673942400"; 
+   d="scan'208";a="677376938"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.35])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 06:00:01 -0800
+Date:   Thu, 9 Mar 2023 15:59:55 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-References: <20230309082035.14880-1-ilpo.jarvinen@linux.intel.com>
- <20230309082035.14880-8-ilpo.jarvinen@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230309082035.14880-8-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 7/8] n_tty: Reindent if condition
+In-Reply-To: <b7e72552-d4ec-46f2-4f45-d8baec914ff1@kernel.org>
+Message-ID: <ec97f7c5-b9fb-aefb-2249-9bfadc7eee7d@linux.intel.com>
+References: <20230309082035.14880-1-ilpo.jarvinen@linux.intel.com> <20230309082035.14880-8-ilpo.jarvinen@linux.intel.com> <b7e72552-d4ec-46f2-4f45-d8baec914ff1@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1754519233-1678370403=:21633"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 09. 03. 23, 9:20, Ilpo Järvinen wrote:
-> Align if condition to make it easier to read.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->   drivers/tty/n_tty.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index 0481e57077f1..1c9e5d2ea7de 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -1176,7 +1176,7 @@ static void n_tty_receive_overrun(struct tty_struct *tty)
->   
->   	ldata->num_overrun++;
->   	if (time_after(jiffies, ldata->overrun_time + HZ) ||
-> -			time_after(ldata->overrun_time, jiffies)) {
-> +	    time_after(ldata->overrun_time, jiffies)) {
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Staring at this, what the second time_after() does in the first place?
+--8323329-1754519233-1678370403=:21633
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
->   		tty_warn(tty, "%d input overrun(s)\n", ldata->num_overrun);
->   		ldata->overrun_time = jiffies;
->   		ldata->num_overrun = 0;
+On Thu, 9 Mar 2023, Jiri Slaby wrote:
+
+> On 09. 03. 23, 9:20, Ilpo Järvinen wrote:
+> > Align if condition to make it easier to read.
+> > 
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > ---
+> >   drivers/tty/n_tty.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> > index 0481e57077f1..1c9e5d2ea7de 100644
+> > --- a/drivers/tty/n_tty.c
+> > +++ b/drivers/tty/n_tty.c
+> > @@ -1176,7 +1176,7 @@ static void n_tty_receive_overrun(struct tty_struct
+> > *tty)
+> >     	ldata->num_overrun++;
+> >   	if (time_after(jiffies, ldata->overrun_time + HZ) ||
+> > -			time_after(ldata->overrun_time, jiffies)) {
+> > +	    time_after(ldata->overrun_time, jiffies)) {
+> 
+> Staring at this, what the second time_after() does in the first place?
+> 
+> >   		tty_warn(tty, "%d input overrun(s)\n", ldata->num_overrun);
+> >   		ldata->overrun_time = jiffies;
+> >   		ldata->num_overrun = 0;
+
+That's a very good question ... I first thought it was checking whether 
+the jiffies is between two times but obviously that was wrong intuition 
+now when taking a closer look.
+
+But then, looking more into it, this whole thing looks an opencoded 
+*_ratelimited print. So perhaps overrun_time could be removed 
+completely... ? I can see it kinda changes priority of which messages 
+would get filtered out but I don't know if that's a problem or not.
 
 -- 
-js
-suse labs
+ i.
 
+--8323329-1754519233-1678370403=:21633--
