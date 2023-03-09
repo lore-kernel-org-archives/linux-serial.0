@@ -2,96 +2,70 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75378C74A44
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 16:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE77C64EC4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 16:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbjCIQcQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 11:32:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        id S230128AbjCIQcg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 11:32:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbjCIQbt (ORCPT
+        with ESMTP id S230123AbjCIQcQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 11:31:49 -0500
+        Thu, 9 Mar 2023 11:32:16 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EF9E20FC;
-        Thu,  9 Mar 2023 08:23:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4337103BFC;
+        Thu,  9 Mar 2023 08:24:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9563661C31;
-        Thu,  9 Mar 2023 16:17:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B060C433EF;
-        Thu,  9 Mar 2023 16:17:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC61D61AD7;
+        Thu,  9 Mar 2023 16:23:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9BA9C4339C;
+        Thu,  9 Mar 2023 16:23:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1678378664;
-        bh=q9RjBZs+ERaxIV0omkTJ1hSNgg0RjEI7/KoY1XKuSyU=;
+        s=korg; t=1678379005;
+        bh=UmpnIPxcSpr2K6ja2UtmiZg3o4Ly0Tq5xmySsAkoy40=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jVhVYbvVqbdH2W69+wx8yTauEYWo0avO97NQe507F8tsK4F2Hte8WTtGIKAVkVf23
-         dis1Kce8ox34FbnT/tTE/5/8ozmdX88XWnaNdteMxf4stuKuUWqaYHxQfm6E3eWspg
-         anntKbMr0SzOEEfAU8A2wj3O+z2O90FDKm1SELV8=
-Date:   Thu, 9 Mar 2023 17:17:41 +0100
+        b=gc02k8IiO3BDEndLHrwML6nTy2LdyqYhuzgk5EMbriplCDYPqPtyNdyyNg3zkXcRy
+         7KBx7MK4x4nAuLo6Xo6W7cfAUFfHcVweoTGo2CLQoYRMb6sHxtSuOl4tMQjA3zXBUR
+         /KmG/ncy9TqvDqCyM9OwMlkC0FRISdjwl8+4j1/w=
+Date:   Thu, 9 Mar 2023 17:23:22 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Nick Alcock <nick.alcock@oracle.com>
-Cc:     mcgrof@kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-unisoc@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 21/24] kbuild, serial: remove MODULE_LICENSE in
- non-modules
-Message-ID: <ZAoGpW+TnpRPMRdR@kroah.com>
-References: <20230217141059.392471-1-nick.alcock@oracle.com>
- <20230217141059.392471-22-nick.alcock@oracle.com>
+        Rajnesh Kanwal <rkanwal@rivosinc.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Documentation/serial-console: Document the behavior when
+ the last console= parameter is not used
+Message-ID: <ZAoH+vb6LIqdCpDI@kroah.com>
+References: <20230308112433.24292-1-pmladek@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230217141059.392471-22-nick.alcock@oracle.com>
+In-Reply-To: <20230308112433.24292-1-pmladek@suse.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 02:10:56PM +0000, Nick Alcock wrote:
-> Since commit 8b41fc4454e ("kbuild: create modules.builtin without
-> Makefile.modbuiltin or tristate.conf"), MODULE_LICENSE declarations
-> are used to identify modules. As a consequence, uses of the macro
-> in non-modules will cause modprobe to misidentify their containing
-> object file as a module when it is not (false positives), and modprobe
-> might succeed rather than failing with a suitable error message.
+On Wed, Mar 08, 2023 at 12:24:33PM +0100, Petr Mladek wrote:
+> The console= kernel command-line parameter defines where the kernel
+> messages appear. It can be used multiple times to make the kernel log
+> visible on more devices.
 > 
-> So remove it in the files in this commit, none of which can be built as
-> modules.
+> The ordering of the console= parameters is important. In particular,
+> the last one defines which device can be accessed also via /dev/console.
 > 
-> Signed-off-by: Nick Alcock <nick.alcock@oracle.com>
-> Suggested-by: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: linux-modules@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
-> Cc: Manivannan Sadhasivam <mani@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-unisoc@lists.infradead.org
-> Cc: linux-serial@vger.kernel.org
-> ---
->  drivers/tty/serial/rda-uart.c | 1 -
->  1 file changed, 1 deletion(-)
+> The behavior is more complicated when the last console= parameter is
+> ignored by kernel. It might be surprising because it was not intentional.
+> The kernel just works this way historically.
 > 
-> diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
-> index be5c842b5ba9..c3b29d124759 100644
-> --- a/drivers/tty/serial/rda-uart.c
-> +++ b/drivers/tty/serial/rda-uart.c
-> @@ -825,4 +825,3 @@ module_exit(rda_uart_exit);
->  
->  MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>");
->  MODULE_DESCRIPTION("RDA8810PL serial device driver");
-> -MODULE_LICENSE("GPL");
+> There were few attempts to change the behavior. Unfortunately, it can't
+> be done because it would break existing users. Document the historical
+> behavior at least.
 
-No, this should be fine, either force remove all MODULE_* macros from
-built-in code, or none.
-
-thanks,
+Thanks for documenting this, now queued up!
 
 greg k-h
