@@ -2,72 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DA5C742A7
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Mar 2023 19:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AA7C61DA4
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 08:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjCHTLS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Mar 2023 14:11:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
+        id S229922AbjCIIJe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 03:09:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230155AbjCHTK6 (ORCPT
+        with ESMTP id S229875AbjCIIJc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Mar 2023 14:10:58 -0500
-Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2D793E8;
-        Wed,  8 Mar 2023 11:10:54 -0800 (PST)
-Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        by mail11.truemail.it (Postfix) with ESMTPA id A6A03207B0;
-        Wed,  8 Mar 2023 20:10:49 +0100 (CET)
-Date:   Wed, 8 Mar 2023 20:10:45 +0100
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
-        rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v7 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Message-ID: <ZAjdtRQEEycCw+52@francesco-nb.int.toradex.com>
-References: <20230306170525.3732605-1-neeraj.sanjaykale@nxp.com>
- <20230306170525.3732605-4-neeraj.sanjaykale@nxp.com>
+        Thu, 9 Mar 2023 03:09:32 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F9C7043F;
+        Thu,  9 Mar 2023 00:09:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678349371; x=1709885371;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=v6jpZgdYFEZXNyqMZn4MjEfwAT0ttFdoAXLFP/3hFsE=;
+  b=efSKpPhxyKWKpFCG5nsyLbMgDamG35GkLY55v56tKDDBVF3k4TTG3ApC
+   jx3Za8KYgaMjLJAKoR2B7bkyUXLbh1sJwEm7rsY8xW0FjWQlBh9nVNrx0
+   4g0pdm8jfUgdfkjt87AyznoaBphONqPCqX15JSKY8M17EQaml3uE+X3W7
+   GKCJpGHwHHqtbC1BKA1VAjWEEq4uKw55njcNiS9iN9+iLOCVEsrOvezFJ
+   P8RUK7yVI4kPLu+xoYVQvb1HnOzbv7SKr9peNXkjtdfEuyK2kcooW/+lf
+   fnWjak1L6Y6Xn53I8rVdSGmDNZBaPRyBCnwGbNUdQQUM0GkyEgKn4Faqp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="333853535"
+X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
+   d="scan'208";a="333853535"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10643"; a="746227942"
+X-IronPort-AV: E=Sophos;i="5.98,245,1673942400"; 
+   d="scan'208";a="746227942"
+Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.35])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 00:09:30 -0800
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/8] serial: Core cleanups
+Date:   Thu,  9 Mar 2023 10:09:15 +0200
+Message-Id: <20230309080923.11778-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230306170525.3732605-4-neeraj.sanjaykale@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 10:35:25PM +0530, Neeraj Sanjay Kale wrote:
-> This adds a driver based on serdev driver for the NXP BT serial protocol
-> based on running H:4, which can enable the built-in Bluetooth device
-> inside an NXP BT chip.
-> 
-> This driver has Power Save feature that will put the chip into sleep state
-> whenever there is no activity for 2000ms, and will be woken up when any
-> activity is to be initiated over UART.
-> 
-> This driver enables the power save feature by default by sending the vendor
-> specific commands to the chip during setup.
-> 
-> During setup, the driver checks if a FW is already running on the chip
-> by waiting for the bootloader signature, and downloads device specific FW
-> file into the chip over UART if bootloader signature is received..
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Serial core cleanups.
 
-Hello Neeraj Sanjay Kale,
-please do not forget to have a look at the questions [0] I send on v6.
+Ilpo Järvinen (8):
+  serial: Use ARRAY_SIZE() with iso7816 reserved array
+  serial: Use B0 instead of implicit zero assumption
+  serial: Remove extern from func prototypes in headers
+  serial: Move uart_change_speed() earlier
+  serial: Rename uart_change_speed() to uart_change_line_settings()
+  serial: Make hw_stopped bool
+  serial: Rename hw_stopped to old_hw_stopped & improve logic
+  serial: Remove uart_wait_until_sent() forward declaration
 
-Thanks,
-Francesco
+ drivers/tty/serial/serial_core.c | 113 +++++++++++++++----------------
+ include/linux/serial_8250.h      |  41 +++++------
+ include/linux/serial_core.h      |  15 ++--
+ 3 files changed, 80 insertions(+), 89 deletions(-)
 
-[0] https://lore.kernel.org/all/ZAX%2FHHyy2yL76N0K@francesco-nb.int.toradex.com/
+-- 
+2.30.2
 
