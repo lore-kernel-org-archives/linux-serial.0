@@ -2,296 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FBD7C6FD1F
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 15:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C6BC742A7
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 15:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbjCIPCx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 10:02:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
+        id S231539AbjCIPGY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 10:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232139AbjCIPC1 (ORCPT
+        with ESMTP id S231611AbjCIPGE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 10:02:27 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAD8EFF61
-        for <linux-serial@vger.kernel.org>; Thu,  9 Mar 2023 06:58:56 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id h31so1209776pgl.6
-        for <linux-serial@vger.kernel.org>; Thu, 09 Mar 2023 06:58:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678373935;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=saB/v6gZCwf7MkAV+X9hNtARD1bAir61j4EAXbQD6Fo=;
-        b=faDp15KLTT2HWFT/LmYYy/vaedNWebhFaSCnEFjpanEO99KBFPbaI7k9YHXrd9TtIR
-         38FSGlmfcGNrqO2M83aWeoZ/xXvYWsuhGE+YqjA1kOxvwF3nvTYTn4ZVRQY6UwXHZfop
-         h284RN19Mi7Px3uSd4bxKzDSzdJimx1lxYdTeDF+hnKMtZMo3cZVGhXU3Hj+iOuOQrjG
-         I+BtQ2C+mb5VuqCts2pmsvqn51c8uyV/VpmHlYapM/fHHr4S9YKc8hLM5peZuZzgrqYw
-         dMAUfa4gB02ZY27IUT/346xod8JF3dO4AQ/+GwKKMqK/Qt0OWtZUIYcR108iJugxeqcq
-         WFIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678373935;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=saB/v6gZCwf7MkAV+X9hNtARD1bAir61j4EAXbQD6Fo=;
-        b=dHClBGAlNjHzrsFnRw2dxwsMkJmMnyTi56dsgdJlBv+zW6l/ofdED2ropaN2dCLy2R
-         h3hRXwAFgqG+IjuYboTZG7tkJgzLbAzu5naf+rlLo+vHx9rp9S0D6GM7lYpda1aoRqXN
-         lO98FX7vxBujO6xrtHLHU1oH0RuXilUWSlsP5pNRbZ2ULg0UudPkgLOHZjIeNH21l2+O
-         za6Ri4wuluNKfJo8T5/jb+A+YcsQtuZkrYQGB+wVxuCiREULio8neVEwTxCxbgVZi41u
-         420WThUuHoKPOJg1vAL7pYnDTETHknlt+CngN4CbMuETPe5IKpeTWmE1HdLGp02SMfc/
-         plVQ==
-X-Gm-Message-State: AO0yUKXyLLQXt8nwQu6IJFohnQiU46s84vmTLLEgY3TnDmalALk+NDMI
-        /lzH9tr8tygYk5HL+qkzWmiJ7eGy6NK8vxYns8GPTw==
-X-Google-Smtp-Source: AK7set/RraLPA2D1bIU1JMVsTQ9VSyR7QHluSEtoNjQ0NdnShHp1o/hystaOhadZCKbTSIj+BQkh79eMjJWsS/WgA/A=
-X-Received: by 2002:a63:b21b:0:b0:503:a8:2792 with SMTP id x27-20020a63b21b000000b0050300a82792mr7826958pge.5.1678373935497;
- Thu, 09 Mar 2023 06:58:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20230309082035.14880-1-ilpo.jarvinen@linux.intel.com> <20230309082035.14880-9-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20230309082035.14880-9-ilpo.jarvinen@linux.intel.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 9 Mar 2023 15:58:18 +0100
-Message-ID: <CAPDyKFo5fC-yG_f8-w+B6bL0zvG4zMUdg38T6c8zeaA+HJ=joQ@mail.gmail.com>
-Subject: Re: [PATCH 8/8] tty: Convert hw_stopped in tty_struct to bool
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org,
+        Thu, 9 Mar 2023 10:06:04 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36CEDEBFBB;
+        Thu,  9 Mar 2023 07:03:43 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 10629AD7;
+        Thu,  9 Mar 2023 07:04:26 -0800 (PST)
+Received: from e127643.arm.com (unknown [10.57.48.23])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7D12F3F5A1;
+        Thu,  9 Mar 2023 07:03:39 -0800 (PST)
+From:   James Clark <james.clark@arm.com>
+To:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
+        michal.simek@amd.com
+Cc:     James Clark <james.clark@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v2 0/4] devres: Provide krealloc_array
+Date:   Thu,  9 Mar 2023 15:03:29 +0000
+Message-Id: <20230309150334.216760-1-james.clark@arm.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 9 Mar 2023 at 09:22, Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> hw_stopped in tty_struct is used like bool, convert the variable type
-> to bool.
->
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+Changes since v1:
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # For MMC
+ * Style fix
 
-Kind regards
-Uffe
+-----------------------
 
-> ---
->  drivers/char/pcmcia/synclink_cs.c |  6 +++---
->  drivers/mmc/core/sdio_uart.c      | 10 +++++-----
->  drivers/tty/amiserial.c           |  6 +++---
->  drivers/tty/mxser.c               |  6 +++---
->  drivers/tty/synclink_gt.c         |  6 +++---
->  include/linux/tty.h               |  2 +-
->  6 files changed, 18 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/sync=
-link_cs.c
-> index 6ddfeb2fe98f..97c5bfb9d58a 100644
-> --- a/drivers/char/pcmcia/synclink_cs.c
-> +++ b/drivers/char/pcmcia/synclink_cs.c
-> @@ -1060,7 +1060,7 @@ static void cts_change(MGSLPC_INFO *info, struct tt=
-y_struct *tty)
->                         if (info->serial_signals & SerialSignal_CTS) {
->                                 if (debug_level >=3D DEBUG_LEVEL_ISR)
->                                         printk("CTS tx start...");
-> -                               tty->hw_stopped =3D 0;
-> +                               tty->hw_stopped =3D false;
->                                 tx_start(info, tty);
->                                 info->pending_bh |=3D BH_TRANSMIT;
->                                 return;
-> @@ -1069,7 +1069,7 @@ static void cts_change(MGSLPC_INFO *info, struct tt=
-y_struct *tty)
->                         if (!(info->serial_signals & SerialSignal_CTS)) {
->                                 if (debug_level >=3D DEBUG_LEVEL_ISR)
->                                         printk("CTS tx stop...");
-> -                               tty->hw_stopped =3D 1;
-> +                               tty->hw_stopped =3D true;
->                                 tx_stop(info);
->                         }
->                 }
-> @@ -2312,7 +2312,7 @@ static void mgslpc_set_termios(struct tty_struct *t=
-ty,
->
->         /* Handle turning off CRTSCTS */
->         if (old_termios->c_cflag & CRTSCTS && !C_CRTSCTS(tty)) {
-> -               tty->hw_stopped =3D 0;
-> +               tty->hw_stopped =3D false;
->                 tx_release(tty);
->         }
->  }
-> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
-> index 50536fe59f1a..aa659758563f 100644
-> --- a/drivers/mmc/core/sdio_uart.c
-> +++ b/drivers/mmc/core/sdio_uart.c
-> @@ -478,13 +478,13 @@ static void sdio_uart_check_modem_status(struct sdi=
-o_uart_port *port)
->                         int cts =3D (status & UART_MSR_CTS);
->                         if (tty->hw_stopped) {
->                                 if (cts) {
-> -                                       tty->hw_stopped =3D 0;
-> +                                       tty->hw_stopped =3D false;
->                                         sdio_uart_start_tx(port);
->                                         tty_wakeup(tty);
->                                 }
->                         } else {
->                                 if (!cts) {
-> -                                       tty->hw_stopped =3D 1;
-> +                                       tty->hw_stopped =3D true;
->                                         sdio_uart_stop_tx(port);
->                                 }
->                         }
-> @@ -633,7 +633,7 @@ static int sdio_uart_activate(struct tty_port *tport,=
- struct tty_struct *tty)
->
->         if (C_CRTSCTS(tty))
->                 if (!(sdio_uart_get_mctrl(port) & TIOCM_CTS))
-> -                       tty->hw_stopped =3D 1;
-> +                       tty->hw_stopped =3D true;
->
->         clear_bit(TTY_IO_ERROR, &tty->flags);
->
-> @@ -882,14 +882,14 @@ static void sdio_uart_set_termios(struct tty_struct=
- *tty,
->
->         /* Handle turning off CRTSCTS */
->         if ((old_termios->c_cflag & CRTSCTS) && !(cflag & CRTSCTS)) {
-> -               tty->hw_stopped =3D 0;
-> +               tty->hw_stopped =3D false;
->                 sdio_uart_start_tx(port);
->         }
->
->         /* Handle turning on CRTSCTS */
->         if (!(old_termios->c_cflag & CRTSCTS) && (cflag & CRTSCTS)) {
->                 if (!(sdio_uart_get_mctrl(port) & TIOCM_CTS)) {
-> -                       tty->hw_stopped =3D 1;
-> +                       tty->hw_stopped =3D true;
->                         sdio_uart_stop_tx(port);
->                 }
->         }
-> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
-> index d7515d61659e..c06ad0a0744b 100644
-> --- a/drivers/tty/amiserial.c
-> +++ b/drivers/tty/amiserial.c
-> @@ -347,7 +347,7 @@ static void check_modem_status(struct serial_state *i=
-nfo)
->  #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
->                                 printk("CTS tx start...");
->  #endif
-> -                               port->tty->hw_stopped =3D 0;
-> +                               port->tty->hw_stopped =3D false;
->                                 info->IER |=3D UART_IER_THRI;
->                                 amiga_custom.intena =3D IF_SETCLR | IF_TB=
-E;
->                                 mb();
-> @@ -362,7 +362,7 @@ static void check_modem_status(struct serial_state *i=
-nfo)
->  #if (defined(SERIAL_DEBUG_INTR) || defined(SERIAL_DEBUG_FLOW))
->                                 printk("CTS tx stop...");
->  #endif
-> -                               port->tty->hw_stopped =3D 1;
-> +                               port->tty->hw_stopped =3D true;
->                                 info->IER &=3D ~UART_IER_THRI;
->                                 /* disable Tx interrupt and remove any pe=
-nding interrupts */
->                                 amiga_custom.intena =3D IF_TBE;
-> @@ -1197,7 +1197,7 @@ static void rs_set_termios(struct tty_struct *tty, =
-const struct ktermios *old_te
->
->         /* Handle turning off CRTSCTS */
->         if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
-> -               tty->hw_stopped =3D 0;
-> +               tty->hw_stopped =3D false;
->                 rs_start(tty);
->         }
->
-> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-> index ef3116e87975..10855e66fda1 100644
-> --- a/drivers/tty/mxser.c
-> +++ b/drivers/tty/mxser.c
-> @@ -553,7 +553,7 @@ static void mxser_handle_cts(struct tty_struct *tty, =
-struct mxser_port *info,
->
->         if (tty->hw_stopped) {
->                 if (cts) {
-> -                       tty->hw_stopped =3D 0;
-> +                       tty->hw_stopped =3D false;
->
->                         if (!mxser_16550A_or_MUST(info))
->                                 __mxser_start_tx(info);
-> @@ -563,7 +563,7 @@ static void mxser_handle_cts(struct tty_struct *tty, =
-struct mxser_port *info,
->         } else if (cts)
->                 return;
->
-> -       tty->hw_stopped =3D 1;
-> +       tty->hw_stopped =3D true;
->         if (!mxser_16550A_or_MUST(info))
->                 __mxser_stop_tx(info);
->  }
-> @@ -1361,7 +1361,7 @@ static void mxser_set_termios(struct tty_struct *tt=
-y,
->         spin_unlock_irqrestore(&info->slock, flags);
->
->         if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
-> -               tty->hw_stopped =3D 0;
-> +               tty->hw_stopped =3D false;
->                 mxser_start(tty);
->         }
->
-> diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-> index 33f258d6fef9..543b3224dce9 100644
-> --- a/drivers/tty/synclink_gt.c
-> +++ b/drivers/tty/synclink_gt.c
-> @@ -730,7 +730,7 @@ static void set_termios(struct tty_struct *tty,
->
->         /* Handle turning off CRTSCTS */
->         if ((old_termios->c_cflag & CRTSCTS) && !C_CRTSCTS(tty)) {
-> -               tty->hw_stopped =3D 0;
-> +               tty->hw_stopped =3D false;
->                 tx_release(tty);
->         }
->  }
-> @@ -1953,13 +1953,13 @@ static void cts_change(struct slgt_info *info, un=
-signed short status)
->                 if (info->port.tty) {
->                         if (info->port.tty->hw_stopped) {
->                                 if (info->signals & SerialSignal_CTS) {
-> -                                       info->port.tty->hw_stopped =3D 0;
-> +                                       info->port.tty->hw_stopped =3D fa=
-lse;
->                                         info->pending_bh |=3D BH_TRANSMIT=
-;
->                                         return;
->                                 }
->                         } else {
->                                 if (!(info->signals & SerialSignal_CTS))
-> -                                       info->port.tty->hw_stopped =3D 1;
-> +                                       info->port.tty->hw_stopped =3D tr=
-ue;
->                         }
->                 }
->         }
-> diff --git a/include/linux/tty.h b/include/linux/tty.h
-> index 093935e97f42..60871a9d3212 100644
-> --- a/include/linux/tty.h
-> +++ b/include/linux/tty.h
-> @@ -227,7 +227,7 @@ struct tty_struct {
->                 unsigned long unused[0];
->         } __aligned(sizeof(unsigned long)) ctrl;
->
-> -       int hw_stopped;
-> +       bool hw_stopped;
->         unsigned int receive_room;
->         int flow_change;
->
-> --
-> 2.30.2
->
+Hi,
+
+I had a use for a devm realloc_array in a separate change, so I've
+added one and updated all the obvious existing uses of it that I could
+find. This is basically a copy paste of the one in slab.h
+
+Applies to v6.3-rc1
+
+Thanks
+James
+
+
+James Clark (4):
+  devres: Provide krealloc_array
+  hwmon: pmbus: Use devm_krealloc_array
+  iio: adc: Use devm_krealloc_array
+  serial: qcom_geni: Use devm_krealloc_array
+
+ .../driver-api/driver-model/devres.rst          |  1 +
+ drivers/hwmon/pmbus/pmbus_core.c                |  6 +++---
+ drivers/iio/adc/xilinx-ams.c                    |  9 +++------
+ drivers/iio/adc/xilinx-xadc-core.c              | 17 +++++++----------
+ drivers/tty/serial/qcom_geni_serial.c           |  6 +++---
+ include/linux/device.h                          | 10 ++++++++++
+ 6 files changed, 27 insertions(+), 22 deletions(-)
+
+-- 
+2.34.1
+
