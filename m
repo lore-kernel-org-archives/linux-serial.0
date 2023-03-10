@@ -2,140 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF741C6FD19
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Mar 2023 21:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60983C61DA4
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 00:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbjCIVuI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Mar 2023 16:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
+        id S229809AbjCJAzy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Mar 2023 19:55:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbjCIVuH (ORCPT
+        with ESMTP id S229798AbjCJAzx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Mar 2023 16:50:07 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999D0E9817
-        for <linux-serial@vger.kernel.org>; Thu,  9 Mar 2023 13:50:04 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id a25so12997904edb.0
-        for <linux-serial@vger.kernel.org>; Thu, 09 Mar 2023 13:50:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112; t=1678398603;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=KK2kVS/pDWxq/x5pUQs4W8hA5sU/CpHNUPW7RfmKdu0=;
-        b=Wbg1jSF872bITS/MV4oiOvXaEN6BjZnu2OMHT+QhKMUR+1d9M4iS55uzTP4Z0+LwZd
-         a18IH5Z/RxxE9sYRJ/XYdhWNNtiAwOP+OjjfeXsFAq/RsyuN+k3xFa/neoOzGGYsSwxc
-         1YM+bbd1fAkHbDvTHRhEhTyxvd5cRqDcFJ0EZUK+9+px0dwMKlFXzlA6FYjgrnBP4nF+
-         AEysNe5rnnOmTeSsAt1OXl50AoMYR6tlvKKoOt+aPEQoEJxOr2aDPp9MiNd1BL86+PPw
-         nTs6/RAyvgGuRCYrNmDPmah6/ySoAqfZ1cpBd9fXAk6qMFjNM5EpxPfQ3yUyGtup2iXj
-         2CZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678398603;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KK2kVS/pDWxq/x5pUQs4W8hA5sU/CpHNUPW7RfmKdu0=;
-        b=rBtb6tHjjXC/JWZPVQ46n2dzS6fKSPvX+Q2fxDlNCFIuGglxUegVcGo1qII7LxoY80
-         t+O1GXWaVnNnKnyukPn3VHNw4/bIam1e6/zUia1nA9Qqx+kwcBU5HarQ6nwEqLFxesSo
-         VghHukVSa611VjmmOFth9FpHEOiGrWbDOawpLa/msJBSruOW0LEwkToY0ie1cYqhiY3D
-         dr4V8KwQvCSBf8BDTj1CpIyZ+28U5FrYDZuzr28P9KmeE/3dy6lV7fdKaejvgZqdZl1Q
-         aZfm/zOOlpocQ/Bfn3cIdY8sp9WoIlNNZEL8IWXfVOJYIVwHCq1ID0u7ZmEBK9zejAuK
-         +Ygg==
-X-Gm-Message-State: AO0yUKWC6CGQPPV9dBzotK5Kbn4fu9LvoUjCAg+wwUrpm/o8RrIBvZS5
-        jU+ppxhNs6VqMIAJT+3xfwI+OA==
-X-Google-Smtp-Source: AK7set+5QCYisQjzh6bsce1zFynUkiZ/RTqVYScw9ZFdEDXjWr+TVTj/rn3OhSNxi4BNNZDQlfhwpQ==
-X-Received: by 2002:a50:ee18:0:b0:4a0:e31a:434 with SMTP id g24-20020a50ee18000000b004a0e31a0434mr20831551eds.27.1678398603119;
-        Thu, 09 Mar 2023 13:50:03 -0800 (PST)
-Received: from ryzen9.fritz.box ([81.221.122.240])
-        by smtp.gmail.com with ESMTPSA id r20-20020a50c014000000b004bc2d1c0fadsm218206edb.32.2023.03.09.13.50.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Mar 2023 13:50:02 -0800 (PST)
-From:   =?UTF-8?q?Bernhard=20Rosenkr=C3=A4nzer?= <bero@baylibre.com>
-To:     linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, maz@kernel.org, tglx@linutronix.de
-Subject: [PATCH v11 0/3] Add minimal MT8365 and MT8365-EVK support
-Date:   Thu,  9 Mar 2023 22:50:01 +0100
-Message-Id: <20230309215001.881646-1-bero@baylibre.com>
-X-Mailer: git-send-email 2.40.0.rc2
+        Thu, 9 Mar 2023 19:55:53 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4229F9ECD;
+        Thu,  9 Mar 2023 16:55:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678409749; x=1709945749;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XJDOWmOut4ZXXjw7sNXN4UkiEOpV03u/nwp04SW+1Bc=;
+  b=VxENGKlszkbr0YK1BzAuAU7svG3kAu3XrjViF0qcC/qiCDt7ooBqP+DI
+   c/7CKNzZPVMx6sLJXXK2dYK+WshyhMai2ai1wAhXrAB66/G3a6uNVwgl9
+   AlPL8CCWCOCcJ+WGhKhSLybT5fQSlXkCMjX47sunMKjhZ1XiNorNiieMP
+   K6gIBNnQM9AtxpqLIWGm1Ft9n4zv8J5KLjMU231H5yTUKUKjs4JQqZqmL
+   bdEXXWZyV1/7h2Xh4urEO8jxYDQN1vfSWKz/rTw7sflSDuaZnioBWnffl
+   fs264ZUEEakglvsRJ5r76ofByfYaBibltOo3idX50lGQVbGZla++LIvpF
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="324963929"
+X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
+   d="scan'208";a="324963929"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 16:55:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="741766393"
+X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
+   d="scan'208";a="741766393"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Mar 2023 16:55:44 -0800
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1paR2t-0003KN-2t;
+        Fri, 10 Mar 2023 00:55:43 +0000
+Date:   Fri, 10 Mar 2023 08:55:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tony Lindgren <tony@atomide.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <202303100833.lk1UVhcR-lkp@intel.com>
+References: <20230309085713.57700-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230309085713.57700-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-v11:
-  - Fix typo in systimer (Thanks Angelo)
+Hi Tony,
 
-v10:
-  - Fix systimer properties (Thanks Amjad)
-  - Drop components of the patchset that have already been merged
+I love your patch! Perhaps something to improve:
 
-v9:
-  - Fix a regression in v8 that broke the USB port
-  - Remove superfluous include in mt8365.dtsi
-  - Fix some naming issues pointed out by dtbs_check
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus rafael-pm/linux-next usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.3-rc1 next-20230309]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-v8:
-  - Add binding descriptions for mediatek,mt8365-systimer and
-    mediatek,mt8365-uart
-  - Specify ranges with parameters for u3phy
+url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-core-Start-managing-serial-controllers-to-enable-runtime-PM/20230309-170149
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20230309085713.57700-1-tony%40atomide.com
+patch subject: [PATCH v6 1/1] serial: core: Start managing serial controllers to enable runtime PM
+config: i386-allnoconfig (https://download.01.org/0day-ci/archive/20230310/202303100833.lk1UVhcR-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/08f76f28e32bcd3c093e4af349b0e1b60328395e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Tony-Lindgren/serial-core-Start-managing-serial-controllers-to-enable-runtime-PM/20230309-170149
+        git checkout 08f76f28e32bcd3c093e4af349b0e1b60328395e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/tty/serial/
 
-Tested-by: Kevin Hilman <khilman@baylibre.com>
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303100833.lk1UVhcR-lkp@intel.com/
 
-v7:
-  - Update GIC information in mt8365.dtsi (thanks to Marc Zyngier for
-    pointing out the problem)
-  - Adjust the timer to match the updated GIC information
+All warnings (new ones prefixed by >>):
 
-v6:
-  - Add systimer in mt8365.dtsi
-  - Add I/D caches and L2 cache details in mt8365.dtsi
-  - Move bl31_secmon_reserved from mt8365.dtsi to mt8365-evk.dts
-  - Fix inconsistent indentation in mt8365-pinctrl example
-  - Further mt8365.dtsi cleanups
-  - Submit to additional maintainers spotted by get_maintainer.pl
-
-v5:
-  - Reorder top-level entries in mediatek,mt8365-pinctrl.yaml to match
-    example-schema
-  - Use consistent quotes
-
-v4:
-  - Remove pins-are-numbered references that have been holding things up
-    now that the patches removing it from dt-bindings have landed in linux-next
-
-v3:
-  - Remove a number of components that are not yet supported (they will
-    come back alongside the corresponding drivers)
-  - Address issues found by dt_binding_check (mostly fixing pinctrl
-    bindings)
-  - Address issues pointed out in comments
-  - Reorder patches
-
-v2:
-  - Add missing dt-bindings documentation
-  - Small cleanups addressing issues in v1 pointed out by Krzysztof Kozlowski
+>> drivers/tty/serial/serial_ctrl.c:17:34: warning: unused variable 'serial_ctrl_pm' [-Wunused-const-variable]
+   static DEFINE_RUNTIME_DEV_PM_OPS(serial_ctrl_pm, NULL, NULL, NULL);
+                                    ^
+   1 warning generated.
 
 
-Bernhard Rosenkränzer (2):
-  dt-bindings: irq: mtk, sysirq: add support for mt8365
-  dt-bindings: serial: mediatek,uart: add MT8365
+vim +/serial_ctrl_pm +17 drivers/tty/serial/serial_ctrl.c
 
-Fabien Parent (1):
-  arm64: dts: mediatek: Initial mt8365-evk support
-
- .../interrupt-controller/mediatek,sysirq.txt  |   1 +
- .../bindings/serial/mediatek,uart.yaml        |   1 +
- arch/arm64/boot/dts/mediatek/Makefile         |   1 +
- arch/arm64/boot/dts/mediatek/mt8365-evk.dts   | 168 ++++++++
- arch/arm64/boot/dts/mediatek/mt8365.dtsi      | 377 ++++++++++++++++++
- 5 files changed, 548 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8365-evk.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8365.dtsi
+    16	
+  > 17	static DEFINE_RUNTIME_DEV_PM_OPS(serial_ctrl_pm, NULL, NULL, NULL);
+    18	
 
 -- 
-2.40.0.rc2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
