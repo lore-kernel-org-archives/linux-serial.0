@@ -2,117 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6266EC64EC4
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 13:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A80C76186
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 14:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbjCJN7G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Mar 2023 08:59:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
+        id S233195AbjCJOuL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Mar 2023 09:50:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbjCJN7B (ORCPT
+        with ESMTP id S233266AbjCJOta (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Mar 2023 08:59:01 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220C612F0D
-        for <linux-serial@vger.kernel.org>; Fri, 10 Mar 2023 05:58:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678456740; x=1709992740;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ejMjDPitSMcEsiQWdJrl4sOj8BMQkyZJaRAsbmw/mnM=;
-  b=PF2j226qXcZ22YtS6mwbIp5X1v26v9K6rruXORu5AjxglLsZTwUN/ffv
-   uNgkx4AfoJhtpqnms6nomcPuJRrmoFKu7m9anSFOxkc+2nfr9QNBor+9Y
-   M/K8lL8xETHrEKZiZcI2cU/rTvoJa7Bg7NpWK7/umApTnGo1EanoWPUKf
-   xC2SrZ6hfCGD0kv/xkMUhnbqy0XzbH2q0afe3ERY0GSzF/LvQ8paAYT3P
-   M0NUxy7TtVoW58YBDFrWDfWQBvIYWBZXps3Qhq1pkOVy3xlf43y7EEJ7+
-   rQFuFK4MYoBmPN+d2TDy5S70qRVkWn1dtSL3ARzt4ZSS7e/7BZYhi/WxR
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10645"; a="336749393"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="336749393"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 05:58:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10645"; a="741985108"
-X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
-   d="scan'208";a="741985108"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Mar 2023 05:58:20 -0800
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1padGF-0003tZ-2W;
-        Fri, 10 Mar 2023 13:58:19 +0000
-Date:   Fri, 10 Mar 2023 21:57:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 18365ebf23f3e713e5dd8e295c9a639295250f3c
-Message-ID: <640b3748.wos4IPpAOmSb0ikd%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 10 Mar 2023 09:49:30 -0500
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984BF1220B3;
+        Fri, 10 Mar 2023 06:47:48 -0800 (PST)
+Received: by mail-ot1-f52.google.com with SMTP id o4-20020a9d6d04000000b00694127788f4so3036933otp.6;
+        Fri, 10 Mar 2023 06:47:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678459668;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BnkBIbnz4vOeZORUW8cnuffMpZ7B9RlqYee18NB6XoY=;
+        b=kSegSH2ge9meEexopNwscw/mDo77fJCwsRmMJScGL1VeeDdaHcWV5eYwZepHe6smNv
+         bkCR8kKrCbJraxKBt0ZtXv8s0FEKXyYFoay/i0n1H1Ayhld0vj1gr8WLFtPKb7xzc590
+         Z8G1oJ0xx3o446DGEooOeon8cxnmnE+HHkr7K4nZ9J2gBFoHT1Kx7CXlv3rBwpH3klSa
+         eyyvCRora78tts8LJbdOH+Fxb1tSiN/gy62v4m2RyujmFrJ9o0+sa4eViIL8bHS7eGxH
+         GxJRse477MkTPQXBsXaEHG3N2VCUGxPToXrNRZoI/UNEj59cTpHRNLn0Bh+NOActnd0a
+         ZDHQ==
+X-Gm-Message-State: AO0yUKWkKPxfaxm62rfYJwqbTLZ1cJw8dMM2unOu9psWtkp1W6eCSRO2
+        uYeoYHmoBsndfGR6CJ6beA==
+X-Google-Smtp-Source: AK7set/5K9xkOxRXHTghD5+c/dagxGmwvMLb3ksbgoSl8gw3zLJtj8L8jtL7TmDHtKFFm8q9QTWPPg==
+X-Received: by 2002:a05:6830:1f42:b0:68d:41b2:5b75 with SMTP id u2-20020a0568301f4200b0068d41b25b75mr11972670oth.11.1678459668155;
+        Fri, 10 Mar 2023 06:47:48 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q19-20020a05683022d300b0068bd20cf07dsm115038otc.48.2023.03.10.06.47.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Mar 2023 06:47:47 -0800 (PST)
+Received: (nullmailer pid 1545656 invoked by uid 1000);
+        Fri, 10 Mar 2023 14:47:27 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        sparclinux@vger.kernel.org
+Subject: [PATCH] serial: Use of_property_present() for testing DT property presence
+Date:   Fri, 10 Mar 2023 08:47:26 -0600
+Message-Id: <20230310144727.1545630-1-robh@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: 18365ebf23f3e713e5dd8e295c9a639295250f3c  tty: vt: protect KD_FONT_OP_GET_TALL from unbound access
+It is preferred to use typed property access functions (i.e.
+of_property_read_<type> functions) rather than low-level
+of_get_property/of_find_property functions for reading properties. As
+part of this, convert of_get_property/of_find_property calls to the
+recently added of_property_present() helper when we just want to test
+for presence of a property and nothing more.
 
-elapsed time: 1254m
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ drivers/tty/serial/imx.c      | 3 +--
+ drivers/tty/serial/sh-sci.c   | 2 +-
+ drivers/tty/serial/sunzilog.c | 4 ++--
+ 3 files changed, 4 insertions(+), 5 deletions(-)
 
-configs tested: 42
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                                defconfig   gcc  
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-ia64                             allmodconfig   gcc  
-ia64                                defconfig   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-m68k                             allmodconfig   gcc  
-m68k                                defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                               defconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-sh                               allmodconfig   gcc  
-sparc                               defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64                               rhel-8.3   gcc  
-
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 523f296d5747..5712a4f29607 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2269,8 +2269,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	if (of_get_property(np, "fsl,dte-mode", NULL))
+ 		sport->dte_mode = 1;
+ 
+-	if (of_get_property(np, "rts-gpios", NULL))
+-		sport->have_rtsgpio = 1;
++	sport->have_rtsgpio = of_property_present(np, "rts-gpios");
+ 
+ 	if (of_get_property(np, "fsl,inverted-tx", NULL))
+ 		sport->inverted_tx = 1;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7bd080720929..a3e12e985e0d 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1573,7 +1573,7 @@ static void sci_request_dma(struct uart_port *port)
+ 	 * Don't request a dma channel if no channel was specified
+ 	 * in the device tree.
+ 	 */
+-	if (!of_find_property(port->dev->of_node, "dmas", NULL))
++	if (!of_property_present(port->dev->of_node, "dmas"))
+ 		return;
+ 
+ 	chan = sci_request_dma_chan(port, DMA_MEM_TO_DEV);
+diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
+index ccb809216e94..0fbeb3dbd843 100644
+--- a/drivers/tty/serial/sunzilog.c
++++ b/drivers/tty/serial/sunzilog.c
+@@ -1403,7 +1403,7 @@ static int zs_probe(struct platform_device *op)
+ 	int keyboard_mouse = 0;
+ 	int err;
+ 
+-	if (of_find_property(op->dev.of_node, "keyboard", NULL))
++	if (of_property_present(op->dev.of_node, "keyboard"))
+ 		keyboard_mouse = 1;
+ 
+ 	/* uarts must come before keyboards/mice */
+@@ -1553,7 +1553,7 @@ static int __init sunzilog_init(void)
+ 
+ 	for_each_node_by_name(dp, "zs") {
+ 		num_sunzilog++;
+-		if (of_find_property(dp, "keyboard", NULL))
++		if (of_property_present(dp, "keyboard"))
+ 			num_keybms++;
+ 	}
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.39.2
+
