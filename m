@@ -2,136 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E2B7C6FA99
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 15:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE79C6FA99
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 15:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234383AbjCJPcH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Mar 2023 10:32:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
+        id S230419AbjCJPmf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Mar 2023 10:42:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234365AbjCJPbo (ORCPT
+        with ESMTP id S234367AbjCJPmR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Mar 2023 10:31:44 -0500
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A397114DA38;
-        Fri, 10 Mar 2023 07:19:46 -0800 (PST)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-53852143afcso103831717b3.3;
-        Fri, 10 Mar 2023 07:19:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678461569;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vK9rI6mTHq76BhXmDPa7BjkMjKI93uQSgJiPM86yG6U=;
-        b=6VqlLQXC7BmbB/VX5PZZ50Xl6IFIafmjbUQJd8+3mv5RmeaIsOANDlfbD3uXH3RB7h
-         hspipZwHp4fMYQqfSbkeNB7lyC6kteMZrh1qC1G0MofdlJG17ZWZ+0dHDdtLPigwGXz9
-         TvW4s4oKKhx5NX8ABgiL2WJg615gF4YPeabF+iRPhWT1wxRkq5wRsrAiDpn/CtUH1XCV
-         Z+NWIwYtR3HNeIJyaWEhh/Y+Nk/tYVQzS2gsP5jgL4nrT/N7200ZzC4bUVI+ZKttXo/z
-         bs50BYFTGCUtBKXd7MltpnVk7EHljZU37D+Jnt6+ibiq9B20C/MpdQiN7dnL+B5JuvbN
-         mZVw==
-X-Gm-Message-State: AO0yUKUJZTtzygRntLFepC9V+AXW/xJh4zUJZd/drsc8D/t5NUIRz5Lx
-        CHWematmYPH9eFcyP5mNsE+MUanZTg==
-X-Google-Smtp-Source: AK7set+EbOmyZ/AksMSYYEuG7lFqQ6jiaAPpDlPQ5Tum+fcZZiV0qWudibu3pk/iibkSVwuFhfXHxg==
-X-Received: by 2002:a9d:2e9:0:b0:684:dbfd:f239 with SMTP id 96-20020a9d02e9000000b00684dbfdf239mr1088619otl.9.1678459718677;
-        Fri, 10 Mar 2023 06:48:38 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t18-20020a9d7292000000b0068bc476d777sm132335otj.13.2023.03.10.06.48.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Mar 2023 06:48:38 -0800 (PST)
-Received: (nullmailer pid 1545743 invoked by uid 1000);
-        Fri, 10 Mar 2023 14:47:27 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 10 Mar 2023 10:42:17 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B92134AF6
+        for <linux-serial@vger.kernel.org>; Fri, 10 Mar 2023 07:29:09 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1paefg-0005bY-F9; Fri, 10 Mar 2023 16:28:40 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1paefe-003CqW-NB; Fri, 10 Mar 2023 16:28:38 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1paefd-003pLw-JQ; Fri, 10 Mar 2023 16:28:37 +0100
+Date:   Fri, 10 Mar 2023 16:28:36 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Timur Tabi <timur@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] serial: Use of_property_read_bool() for boolean properties
-Date:   Fri, 10 Mar 2023 08:47:27 -0600
-Message-Id: <20230310144727.1545699-1-robh@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: Use of_property_present() for testing DT
+ property presence
+Message-ID: <20230310152836.f4n5cu6kexa3gl7z@pengutronix.de>
+References: <20230310144727.1545630-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ati6fbauj5jqixyf"
+Content-Disposition: inline
+In-Reply-To: <20230310144727.1545630-1-robh@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It is preferred to use typed property access functions (i.e.
-of_property_read_<type> functions) rather than low-level
-of_get_property/of_find_property functions for reading properties.
-Convert reading boolean properties to to of_property_read_bool().
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- drivers/tty/serial/imx.c       | 14 +++++---------
- drivers/tty/serial/mxs-auart.c |  4 ++--
- drivers/tty/serial/ucc_uart.c  |  2 +-
- 3 files changed, 8 insertions(+), 12 deletions(-)
+--ati6fbauj5jqixyf
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 5712a4f29607..be168792b635 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2262,20 +2262,16 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	}
- 	sport->port.line = ret;
- 
--	if (of_get_property(np, "uart-has-rtscts", NULL) ||
--	    of_get_property(np, "fsl,uart-has-rtscts", NULL) /* deprecated */)
--		sport->have_rtscts = 1;
-+	sport->have_rtscts = of_property_read_bool(np, "uart-has-rtscts") ||
-+		of_property_read_bool(np, "fsl,uart-has-rtscts"); /* deprecated */
- 
--	if (of_get_property(np, "fsl,dte-mode", NULL))
--		sport->dte_mode = 1;
-+	sport->dte_mode = of_property_read_bool(np, "fsl,dte-mode");
- 
- 	sport->have_rtsgpio = of_property_present(np, "rts-gpios");
- 
--	if (of_get_property(np, "fsl,inverted-tx", NULL))
--		sport->inverted_tx = 1;
-+	sport->inverted_tx = of_property_read_bool(np, "fsl,inverted-tx");
- 
--	if (of_get_property(np, "fsl,inverted-rx", NULL))
--		sport->inverted_rx = 1;
-+	sport->inverted_rx = of_property_read_bool(np, "fsl,inverted-rx");
- 
- 	if (!of_property_read_u32_array(np, "fsl,dma-info", dma_buf_conf, 2)) {
- 		sport->rx_period_length = dma_buf_conf[0];
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index ef6e7bb6105c..a368f4293967 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1587,8 +1587,8 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 	}
- 	s->port.line = ret;
- 
--	if (of_get_property(np, "uart-has-rtscts", NULL) ||
--	    of_get_property(np, "fsl,uart-has-rtscts", NULL) /* deprecated */)
-+	if (of_property_read_bool(np, "uart-has-rtscts") ||
-+	    of_property_read_bool(np, "fsl,uart-has-rtscts") /* deprecated */)
- 		set_bit(MXS_AUART_RTSCTS, &s->flags);
- 
- 	if (s->port.line >= ARRAY_SIZE(auart_port)) {
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 32c7a5b43f8e..676840847962 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1179,7 +1179,7 @@ static int soft_uart_init(struct platform_device *ofdev)
- 	struct qe_firmware_info *qe_fw_info;
- 	int ret;
- 
--	if (of_find_property(np, "soft-uart", NULL)) {
-+	if (of_property_read_bool(np, "soft-uart")) {
- 		dev_dbg(&ofdev->dev, "using Soft-UART mode\n");
- 		soft_uart = 1;
- 	} else {
--- 
-2.39.2
+On Fri, Mar 10, 2023 at 08:47:26AM -0600, Rob Herring wrote:
+> It is preferred to use typed property access functions (i.e.
+> of_property_read_<type> functions) rather than low-level
+> of_get_property/of_find_property functions for reading properties. As
+> part of this, convert of_get_property/of_find_property calls to the
+> recently added of_property_present() helper when we just want to test
+> for presence of a property and nothing more.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
+Looks reasonable,
+
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--ati6fbauj5jqixyf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmQLTKEACgkQwfwUeK3K
+7Al9PAf/Rh6USL2v/0+eSNRzqW+0QUGeBmGE62ZU3YAxtKlM3Rr3Na7iJ4qbmefa
+OUsmybvFtpi5m6ht0GWOx3GQ9FSEa24Q2BEslg6l7EmCf0kw94UlQMMp8xE3UAZN
+T+OUMyFs6ZIPd+VtGQ+KaMHeuJe9AejLDtWmtv6VX2r9ywmHKY6mYNxDl+shVaJP
+741gIg4CDAtSyR3hjkwh4WbL7Q8wdJlvxEmppeNByPf7gHXymWYcc5i5GqcqnNxh
+Vtvc/Ni9LJDtXRRhvO0iP8b5Z43mhgNuyEuk3P4IdoR3nOCEf90Bj3eAgdiDvKhg
+HxA6yUvDO7Obl/X5Hm3mtZdmoF9h9Q==
+=xrfu
+-----END PGP SIGNATURE-----
+
+--ati6fbauj5jqixyf--
