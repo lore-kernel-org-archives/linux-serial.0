@@ -2,98 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD00C6FA99
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 13:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40759C6FD1F
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Mar 2023 13:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbjCJNAx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Mar 2023 08:00:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
+        id S230240AbjCJNqX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Mar 2023 08:46:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbjCJNAw (ORCPT
+        with ESMTP id S229895AbjCJNqW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Mar 2023 08:00:52 -0500
-Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D50CB676;
-        Fri, 10 Mar 2023 05:00:47 -0800 (PST)
-Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        by mail11.truemail.it (Postfix) with ESMTPA id 294B820BBD;
-        Fri, 10 Mar 2023 14:00:41 +0100 (CET)
-Date:   Fri, 10 Mar 2023 14:00:37 +0100
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
-Cc:     Francesco Dolcini <francesco@dolcini.it>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Subject: Re: [EXT] Re: [PATCH v6 3/3] Bluetooth: NXP: Add protocol support
- for NXP Bluetooth chipsets
-Message-ID: <ZAsp9fm779DR0Vuz@francesco-nb.int.toradex.com>
-References: <20230301154514.3292154-1-neeraj.sanjaykale@nxp.com>
- <20230301154514.3292154-4-neeraj.sanjaykale@nxp.com>
- <ZAX/HHyy2yL76N0K@francesco-nb.int.toradex.com>
- <AM9PR04MB860372E06283EA79BD341998E7BA9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+        Fri, 10 Mar 2023 08:46:22 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F3010BA5A;
+        Fri, 10 Mar 2023 05:46:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678455981; x=1709991981;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bRieUvM7mwqpEqyRNij92CPtcQ20rS/UHWcE93X/HzI=;
+  b=bzFR3Sfgl8v+ER/8roMsxPE5WaXZnbPvZGC9MKzTCaIJj5nq34EKZ6RO
+   F6VnhIwNOnJg9RfFExYaI3oqi6QmKaWxPFPOgNxoAL6NopbH/vq/ZKvUA
+   zJxVp9mVtEtH2MSi7ugvGYqZQKmyXnFd1NKLQYh17S7Nr01DOGqlCVzOS
+   m+RyegZoNMcJ2B91pegaKZnCjXIY/sn3qbehisYNJMB2Roc1gnYi+GL5x
+   ypldTtZeQf29g6YteTnJfSVzt+qIYyTONpGkyRMMstTIxzeigIcJhfUYx
+   SAQosFlHB3VctHAV/tTh2LvzKcgnD8iK0Z8CWTSBfhPdUMoTgEbHdNjHp
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="335426020"
+X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
+   d="scan'208";a="335426020"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 05:46:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="741981046"
+X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
+   d="scan'208";a="741981046"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Mar 2023 05:46:16 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1pad4Y-000tiL-1B;
+        Fri, 10 Mar 2023 15:46:14 +0200
+Date:   Fri, 10 Mar 2023 15:46:14 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        oe-kbuild-all@lists.linux.dev,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <ZAs0pvTByHWbb+9N@smile.fi.intel.com>
+References: <20230309085713.57700-1-tony@atomide.com>
+ <202303100516.22vtkWv4-lkp@intel.com>
+ <20230310065238.GJ7501@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM9PR04MB860372E06283EA79BD341998E7BA9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+In-Reply-To: <20230310065238.GJ7501@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 10, 2023 at 12:09:09PM +0000, Neeraj sanjay kale wrote:
-> > > +#define FIRMWARE_W8987       "nxp/uartuart8987_bt.bin"
-> > > +#define FIRMWARE_W8997       "nxp/uartuart8997_bt_v4.bin"
-> > > +#define FIRMWARE_W9098       "nxp/uartuart9098_bt_v1.bin"
-> > > +#define FIRMWARE_IW416       "nxp/uartiw416_bt_v0.bin"
-> > > +#define FIRMWARE_IW612       "nxp/uartspi_n61x_v1.bin.se"
-> > 
-> > Where are this files coming from? Where can I download those?
-> > Is loading a combo firmware from the mwifiex driver supported?
-> We are working on submitting these files to linux-firmware. They will
-> be available under nxp/ directory once merged.
+On Fri, Mar 10, 2023 at 08:52:38AM +0200, Tony Lindgren wrote:
+> * kernel test robot <lkp@intel.com> [230309 21:31]:
+> > >> drivers/tty/serial/serial_ctrl.c:17:34: warning: 'serial_ctrl_pm' defined but not used [-Wunused-const-variable=]
+> >       17 | static DEFINE_RUNTIME_DEV_PM_OPS(serial_ctrl_pm, NULL, NULL, NULL);
+> >          |                                  ^~~~~~~~~~~~~~
+> 
+> Thanks I'll tag it with __maybe_unused.
 
-What about the combo firmware that would be downloaded by mwifiex
-driver? How is this supposed to interact with it?
+It requires to use pm_ptr() macro, it was designed exactly to *not* spread
+__maybe_unused.
 
-> > > +#define HCI_NXP_PRI_BAUDRATE 115200
-> > > +#define HCI_NXP_SEC_BAUDRATE 3000000
-> > What if the UART device does not support 3000000 baudrate (think at
-> > limitation on the clock source/divider of the UART)? Shouldn't this be
-> > configurable?
-> We have noted this requirement and decided to design and implement on
-> this in upcoming patches along with other new features.  We have a
-> number of customers out there who have been using these chips as well
-> as the legacy Marvell chips, which need FW download at 3000000
-> baudrate, and so far there were no issues reported.  Using a lower
-> standard baudrate affects the time it takes to download the FW, which
-> we are trying to keep strictly under 5 seconds.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-ok, just for you to know our hardware, using NXP SoC, will not work with
-this baudrate (no way to have it given the clock tree we have).
-
-> Hope this helps!
-Yes, thanks!
-
-Francesco
 
