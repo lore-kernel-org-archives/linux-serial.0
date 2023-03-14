@@ -2,114 +2,161 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79472C6FD1C
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 15:41:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0998EC6FD1F
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 15:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231299AbjCNPlH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Mar 2023 11:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
+        id S230466AbjCNPn4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Mar 2023 11:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbjCNPkq (ORCPT
+        with ESMTP id S230469AbjCNPnt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Mar 2023 11:40:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13D8B0497;
-        Tue, 14 Mar 2023 08:40:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678808411; x=1710344411;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UzlMpAtk/JrMVON44CzIZ5oumEcd7fiM8bADp/UkciU=;
-  b=G7htEcSkcf0up18llbo+yt7WnKc3pJAsiWoJourZz2JhjYYoFBwjpCuR
-   vM0N6q0iwHTufL1/fkqC6YY+JzAvEe1csWo9qSmzA3QQli6g6Z1WELaH5
-   wvnNEfgCBH9vRVzoZXZWOeVMvBfqToPj/gTtb1weqc4NULTXFXat12HjT
-   Nrad7c0wOXZi0el4YhNcYQ2twI/oTAEokDS0MqbM8uPrN49kVOZR57exo
-   jMDVzHRIeYLMdvoSrL46Rp+KN/rZFxvHR/cqznCk6mEy/CAljdPsnuNnv
-   INwwSauLmFqavz4OexSe9ZYb2qWGPO9e6smsgWaOFW76SfWrL/wGKI1h/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="423735657"
-X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="423735657"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 08:38:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="679151163"
-X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
-   d="scan'208";a="679151163"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002.jf.intel.com with ESMTP; 14 Mar 2023 08:38:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1pc6jT-003IHX-1s;
-        Tue, 14 Mar 2023 17:38:35 +0200
-Date:   Tue, 14 Mar 2023 17:38:35 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v7 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <ZBCU+8MpTCWAfJLG@smile.fi.intel.com>
-References: <20230314073603.42279-1-tony@atomide.com>
- <ZBB1h12WHIGo4NX8@smile.fi.intel.com>
- <20230314133810.GM7501@atomide.com>
+        Tue, 14 Mar 2023 11:43:49 -0400
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on0609.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe02::609])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E113A874;
+        Tue, 14 Mar 2023 08:43:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SMSK+c3+eSG/BRoLqc0IeQ9do2u2jZCQtzNGFMO21Yg89Kzr9tSiRzaXoEgZKY9faeJwHETDEIUMya/i4un6lEJFcoaTw2iGbHx3LbLPnVpWVBZzC6Yw2bED+eFhDZh77Jrc1HkRvxiBZffcHrS08WweMHHEmUzGPaUIruBLREYKpDl15r418QGf14rHXAxY0EDefGEbVS2Fu0G61oYaMRQEhRfs8RmqVRd0/SUPVqxp+MysBcQSNdhhreHKRZxdWEBkA3sPfJ8f9e3ioCKNWCCzzW1Ib4EyjfNrGqgMNXlOX2ZOXMqDr9tnmdgGtrT6+UleNyYlVpTHSEk7Y+EgjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hZWaWmYnxAS+LfQEoBPmxmVZhnSDdYkAs+tWm/nZPuU=;
+ b=Zyzbc7eFCyXBf2Z20pbR0X8AYIPAQr9ElbiJ/vGVI6LNYA4w+bjPawuMAN7WKkmKqGLPKVwLJdcZVYhB6EEf2967QvrTwRFASQmeXewaMSduQ/BN2D+nkv+TnD/mTDPNxZLL+xLt1qEgajZwlr15C7S9Dvy12kGOrPD/IUdguzjfI/f8jqopq/bmPr69KJouLXq4yeuqzosB8HhAGDwHdWlTckP7Kq9F2OKMVYn8VMdVZ3/dK2UBBg1WzPEoGCt3JcB6ghS/dJe5nfwnw/Bh8anbXnzhUM2JnMBV/O/xuRnHWnCdbAYhDhFHi1onPq+7aPzU/eEoGFJU/dIXfAzZwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hZWaWmYnxAS+LfQEoBPmxmVZhnSDdYkAs+tWm/nZPuU=;
+ b=SUEXAFFe+OLh/CZYNlCpCNeChnQHHop547mSPu+UFaFmwUiWh43PB1l8SQhzGv6lFxKjv6gci38USAdBUzNsszjE0DqcWLqZV8H2P2SYN0qbvUFCtzS+DSRelyGA1PT2c35fohB0I8Ccx+nPdjzzS/Hg2DseWma/hDnvCSlC7xQ=
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by PA4PR04MB7744.eurprd04.prod.outlook.com (2603:10a6:102:c9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Tue, 14 Mar
+ 2023 15:42:14 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::45d2:ce51:a1c4:8762]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::45d2:ce51:a1c4:8762%5]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
+ 15:42:14 +0000
+From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
+        "hdanton@sina.com" <hdanton@sina.com>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "simon.horman@corigine.com" <simon.horman@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: RE: [EXT] Re: [PATCH v10 2/3] dt-bindings: net: bluetooth: Add NXP
+ bluetooth support
+Thread-Topic: [EXT] Re: [PATCH v10 2/3] dt-bindings: net: bluetooth: Add NXP
+ bluetooth support
+Thread-Index: AQHZVbnd3icqlYegt0G4gt8kSub4oa76LqOAgAA8qfA=
+Date:   Tue, 14 Mar 2023 15:42:14 +0000
+Message-ID: <AM9PR04MB8603FDE2A6D54C31F5841925E7BE9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+References: <20230313144028.3156825-1-neeraj.sanjaykale@nxp.com>
+ <20230313144028.3156825-3-neeraj.sanjaykale@nxp.com>
+ <e1b0452c-4068-deba-4773-14006fd32c2a@molgen.mpg.de>
+In-Reply-To: <e1b0452c-4068-deba-4773-14006fd32c2a@molgen.mpg.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|PA4PR04MB7744:EE_
+x-ms-office365-filtering-correlation-id: 390ce12e-4706-4456-95f6-08db24a2aef2
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uR5P6LWFlhxJvxAQ4aXYWT0J3ou4E/m5LvGRfPjVZEy3YELknN/ScwpRAicJRuRuuRY5Alr1nnge0Hvhh7XXALhrnApEgmj3CLSfnIEtXLHOJOL5AwmP93wfRg8VPulqJzbpSGICM1t+9f1AHPkl5ILS7Usa8b3kvEnbCAWCeUF/WVdrbO3gJZPpzzU1Xm6zhtli2dldZ1JX5wGgJVd3RCImoUwlWzK7f2cS8nIUaJXmjf5eG49zEkQU094BoQz8jVKp5MR8w+dKrB0iBAZH/4dcHyKGeNd1ORKSeJoDDCYDCJkKnNNslwEiwkt/5wBeaPd1xbjrA4IKn0kvw78e1bNQ/jJimMxi08zHgX6Dy7/F6dH/QqcUxZdPi6nawBZYhdxjgU3c/Y5fAGzDwLyyeTXIbYB1djt0Gd6kSPwzuc/R4dNX+N0oGCjMqo082wx5NEoWRVwl57V05n4SSDFJAzBfe8YL5bkChpf5BkiPDbgyLNiP3/NG5JTrfOftMMTNVJS7h+CHt6BkrLrJlN1SC39vOM9p9KGsdarRw/89Fr7brxvb9qQ3AFr33NL8RJcn9h4F9P0xaExaO/1XxL2nphDAlNYVA95lFasCSaxEZoBUhWe45k6qyoMv8cCZkc/AfWMcRmTtm98ISVyr7MIWDRTm9TEvUewbY822Y/GxWfbPlDpOD6emufd1Nq3vbswpsSCOzF+UAIo/Ehc9KTQQXg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(136003)(39860400002)(396003)(346002)(451199018)(6916009)(9686003)(4326008)(8936002)(5660300002)(52536014)(186003)(26005)(41300700001)(7416002)(6506007)(86362001)(33656002)(316002)(4744005)(2906002)(55236004)(83380400001)(66476007)(66556008)(64756008)(8676002)(66446008)(66946007)(7696005)(55016003)(71200400001)(54906003)(478600001)(38100700002)(38070700005)(76116006)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RbQijTenooHj2ksaIHQh5N1i0DLvBqMmCkZ2HQwymirlMmbv9fXKITzMra1S?=
+ =?us-ascii?Q?FEMjyTktAAFuUMdIH0OBRE+c0Rv7ELa5qW8FTeHqUDycqkRGSv/H9LDx7KwU?=
+ =?us-ascii?Q?sSe2rsyUKeQJCrCSAZ63pFfrdjcZBm9U0x50LHivEopMHOAI+9f+t0uIwCJ/?=
+ =?us-ascii?Q?zTpgpzlQT3cx+mNU9+NaayZvIHXr7x+48v8iaccycjc4p2eIs43Gn4RO1q8C?=
+ =?us-ascii?Q?luxrZ5FFLPR2x90ArzzW3hxT+ZruGzWVwpcdluKnDyhpgf5VvbhmnrBg9gcc?=
+ =?us-ascii?Q?rZX8gbzWoBK8cwyCbe45t0ebolajXV8pST6ZSNAju2TYlQJd4P0u09An00/S?=
+ =?us-ascii?Q?fjSNp27H/FWY+dAdRq4veS3FAe69foHIjQwQ3su0P7ovkx8PjL2jc/y9q+Z8?=
+ =?us-ascii?Q?b62NDryeBSLt/KJh+o4YwVIwlwYY+l2LkiWsKG5B3wrJe8J4mG/0kJs7TtS9?=
+ =?us-ascii?Q?ARmqkXZpiHGUgSwQSJ9FqIH54V6KDEnzwbyfmrH6K6rKGX5XvRx5ufYFtOOz?=
+ =?us-ascii?Q?zVGKTu9wHcft3/U/gQnZMtsU8jx+xBAQAhrBIVIprPrOnz6/7FVhVxGh7IHd?=
+ =?us-ascii?Q?+Q+8tQAgUOafv/fAZhHby3QVudE5NrHHhtJtq+ljqogXFKjd5YyPWx1Gvu1S?=
+ =?us-ascii?Q?0r+wGLWMj5aIBp1RWK5vyZOorM5N5IG7QJmwl6CIePuaZzhUxMANVxM2Y6jO?=
+ =?us-ascii?Q?6Zb1xdAUNOgQ4rG9pbhEMj8HG7ERQfYNRozFvhfp52eTv+PMwKUcFws5WQ4M?=
+ =?us-ascii?Q?apyzYuv5HzLUUDAb26R9yN25Ie603rE2DVbmGw0MQPSBuZIPO3MzDK4a5AIq?=
+ =?us-ascii?Q?0NT9IFIJIVZ7mJTyo/dF83HlMf/OcLQyhbQU9+Brqcb8OIRLOulEsEjSPLPy?=
+ =?us-ascii?Q?nwbH3gnnZB6G6lQmHaxUpeLeqT+WBq8t4LhlpAV2uEjRBC+fS3fIoPrxusV0?=
+ =?us-ascii?Q?GaUkhmcLQuCMqLSky/8i7gmingq4GJ/GzJHYbpQMKvlrI2taZC7Wg5KVB2KF?=
+ =?us-ascii?Q?okjt0FReWt4tQsAdFUZrQkQse6SgbFCJIePxhbVKbJwIlevQSsPzuSwojMeT?=
+ =?us-ascii?Q?Njiwujir9Q2hsJu5I4CArh5ZFesHGarkNkAw+IulhiXZxZGNIycUiXVo1huu?=
+ =?us-ascii?Q?SbrNcL7KginPOr53sVtEmcZ4eoTwueL2TFdZZc12Ieq41P9xMUIiSt3cxMTM?=
+ =?us-ascii?Q?/cvpSamZZtYdqks2VKcduGiH/r+OVliCs1LGrDW5fjNry1oiHXXb+PTylXEP?=
+ =?us-ascii?Q?roq/dEtttfDaJGVv8/Betjt4g0OF9lcrZo4BDsi3COTF4cYmwJ8SnxuO592f?=
+ =?us-ascii?Q?GYgUDlIst5loYPrIwAXLnN7eUHhHUKzXNTOJNYdtQXjRS8ffbZUA3Kyn0rLR?=
+ =?us-ascii?Q?wVIP6YkWkaT8zYWU6atuT0UusezVJHpa4nyePPU9YfBdarRIGJK07t7aO1gC?=
+ =?us-ascii?Q?IZUqoYfK4t/MW2NjNpsXK+wbCEebp5LclS6q9kIEdQYFqC/e+M205qGEtkFS?=
+ =?us-ascii?Q?Gh61aM5MZpXUsZLTaK7pTqx/hMJxClOCGpLXqPf+XqMuF5PoAxXQLvMtcdZG?=
+ =?us-ascii?Q?xACwCtriiN0ppwD8EnvCslRhdhlLn83c6oi5uVRF4c5bE4RS5GY7BZmagmJb?=
+ =?us-ascii?Q?iw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230314133810.GM7501@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 390ce12e-4706-4456-95f6-08db24a2aef2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2023 15:42:14.1336
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: y82rdXESXZQEZtAc1/dOgmgS6nF4U4CSgTXYxQISCB+AnkDuWOwNShvJYp++wUIDLqFm/yTEoWN0tXSvKG98/TL1JotkNROesE8J6Rpe+Xo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7744
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 03:38:10PM +0200, Tony Lindgren wrote:
-> * Andy Shevchenko <andriy.shevchenko@intel.com> [230314 13:25]:
-> > On Tue, Mar 14, 2023 at 09:35:59AM +0200, Tony Lindgren wrote:
+Hi Paul,
 
-...
+Thank you for reviewing.
 
-> > > +	/* Increment the runtime PM usage count for the active check below */
-> > > +	err = pm_runtime_get(port_dev);
-> > 
-> > The question here is why don't we need to actually turn on the device immediately
-> > (sync) if it's not already powered?
+> > +
+> > +description:
+> > +  This binding describes UART-attached NXP bluetooth chips.
+> > +  These chips are dual-radio chips supporting WiFi and Bluetooth.
+> > +  The bluetooth works on standard H4 protocol over 4-wire UART.
+> > +  The RTS and CTS lines are used during FW download.
+> > +  To enable power save mode, the host asserts break signal
+> > +  over UART-TX line to put the chip into power save state.
+> > +  De-asserting break wakes-up the BT chip.
+>=20
+> The verb is spelled with a space: wakes up the BT chip.
+>=20
+> You seem to break the line whenever a sentence ends. Is that intentional?
+>=20
 
-> Doing it would require the use of pm_runtime_irq_safe() at least currently.
+Yes. But now I have resolved it in v11 patch.
 
-> > > +	if (err < 0) {
-> > > +		pm_runtime_put_noidle(port_dev);
-> > > +		return;
-> > > +	}
-> > 
-> > > +	/*
-> > > +	 * Start TX if enabled, and kick runtime PM. Otherwise we must
-> > > +	 * wait for a retry. See also serial_port.c for runtime PM
-> > > +	 * autosuspend timeout.
-> > > +	 */
-> > 
-> > I.o.w. does the start_tx() require device to be powered on at this point?
-> 
-> Yes. And if the device is not enabled, serial_port.c runtime_resume()
-> calls this function again after the hardware is enabled.
-
-Ah, that makes sense.
-
-> > > +	if (pm_runtime_active(port_dev))
-> > >  		port->ops->start_tx(port);
-> > > +	pm_runtime_mark_last_busy(port_dev);
-> > > +	pm_runtime_put_autosuspend(port_dev);
-> 
-> For your other comments, I'll take a look thanks.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Neeraj
