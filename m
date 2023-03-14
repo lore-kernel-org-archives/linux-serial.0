@@ -2,187 +2,283 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC99C6FD1C
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 16:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73851C05027
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 16:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbjCNQeh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Mar 2023 12:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
+        id S230001AbjCNQzz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Mar 2023 12:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbjCNQeg (ORCPT
+        with ESMTP id S230033AbjCNQzx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Mar 2023 12:34:36 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2070f.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e83::70f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C879A2C2E;
-        Tue, 14 Mar 2023 09:34:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ecMFa5c0kAupOxFbOSB8EMTscxS/Wvs0Iv+BVVT0JwXLR9jxTLjLLHQWaKmsVjIiaqvYd8EacSD83UMIcQVu2bsL9WFE/ftr7Pr3eBZdL7p1B0Glmjd/SkfwSRuHlcCBnLk+ZYPwVKCsYpTbxeYCbSHvBzLp5M1ujzWKnjmHtXJrrH3xWlDGQYxaguHhqzIGkt80vs08wXh0GBeseS6BCYu0NdwG1BroRxoCwZrLjJ59hdRTWvTGhV6KA6aIH+K6idROKH1AvbQ66qQDN7iq4qS+T7xLSwK/MKOqwzTK3FvOIb7sqKBeYrAGXitLUmJgPlmmpONQUohRp0WTXWsOgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mrKn5aGROGOID2IiNHgBMWDyOJatysnoEKt2I96HMNs=;
- b=Zm0CWN3Inl7FdfdPRA7kTxTRn+J1jhV0bEow0Bvx9MfJmGG15gggHj/mWGN1SwTYlAMaFuuv+O2dRm9qi4/idLl/Y26UwjSY1nWBLiW5znYybsc6G/wyd1nZ11ak8/dSNvXIhwn579WjQXoYxvn4P0OCL36jdEbF7R8TfCkzD33m33WhTblMRDS0CmhWjsJf44wSxdq/J4xOVowV/qfO6Fjon0Zp4QeUfOE4x8eb8QOzt10DEnPeWksuaMFOO4OC8EZNJzioymsa9DiEOJyzcEhq4oqLP5p1fohWtn72uM+mHUDQgvc2poOns34h8ASeDNGarJzSf8QDepAeCqW4wQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mrKn5aGROGOID2IiNHgBMWDyOJatysnoEKt2I96HMNs=;
- b=AAC1Q+IDbvYNGyJw/XAxlb7VFQB0Y7z/2ccDLcArlD2poTrog8mz3GijSWcOkpzS1NxU1yoVVi4c0xkLo3fNOPO0BpUni1l8IRF0fJCAuMcYJl9MHBFoQRhQsB7zGwlCGT9DqFAr3PelkVXFs0VnlxhWHKzznieVQMKWD2bKcfc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3957.namprd13.prod.outlook.com (2603:10b6:208:263::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Tue, 14 Mar
- 2023 16:34:08 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.026; Tue, 14 Mar 2023
- 16:34:08 +0000
-Date:   Tue, 14 Mar 2023 17:33:59 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Subject: Re: [PATCH v10 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-Message-ID: <ZBCh98lGvhlMKQQp@corigine.com>
-References: <20230313144028.3156825-1-neeraj.sanjaykale@nxp.com>
- <20230313144028.3156825-4-neeraj.sanjaykale@nxp.com>
- <ZBBUYDhrnn/udT+Z@corigine.com>
- <AM9PR04MB8603E3F3900DB13502CFCB8DE7BE9@AM9PR04MB8603.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM9PR04MB8603E3F3900DB13502CFCB8DE7BE9@AM9PR04MB8603.eurprd04.prod.outlook.com>
-X-ClientProxiedBy: AM3PR04CA0140.eurprd04.prod.outlook.com (2603:10a6:207::24)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+        Tue, 14 Mar 2023 12:55:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE36AFB80
+        for <linux-serial@vger.kernel.org>; Tue, 14 Mar 2023 09:55:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678812951; x=1710348951;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=LxP2OxbBW86+0dVDEEjV1eP9ebv9tFGdzvDx/AY4qQE=;
+  b=mXrxv0ECLcM/fc9qIIeWY5sthZU9vAxnnDz+sGKZ/f7pXVly1zKeNAVC
+   1PQQ89Oj99LhrlbhxVnPgDmXohqCMvrsYVfDwlrklEfIOEh/eRAYzIxmO
+   ZpxD6ASqg1CbNqh2u6tUY1oh0zdMFiQMwtS3RTP6AkwuBCLvo1sYp2CNy
+   HIIBJadO+Cbh74ov9/X/lt7wpMsXuAAD5W0bOxxe2QRRzRqn8kXWZx6IH
+   7OyLYY46mdcj1BWYvP6lYTAemYMM4pZUFtfgwxbq8rCobtZS/KHK0S0/b
+   bNrcYV9FWlDryVq3rrHvZ9benaIBPqBVF5LFGYZjrlLWcgFiUCLB/xuuS
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="339849694"
+X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
+   d="scan'208";a="339849694"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 09:55:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10649"; a="656420339"
+X-IronPort-AV: E=Sophos;i="5.98,260,1673942400"; 
+   d="scan'208";a="656420339"
+Received: from npeltier-mobl1.ger.corp.intel.com ([10.252.33.129])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 09:55:49 -0700
+Date:   Tue, 14 Mar 2023 18:55:40 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Subject: Re: [Regression] "serial: 8250: use THRE & __stop_tx also with DMA"
+ breaks DMA rx
+In-Reply-To: <9e1e207f-a74f-cedb-6811-993d6b0a26cf@redhat.com>
+Message-ID: <f729bfb4-cde1-9859-f1ff-58716772dfc4@linux.intel.com>
+References: <7f18e19d-4072-0609-afd0-244b06103b9c@redhat.com> <dd9ebf9-e2e9-2b6-eec5-6ab152f92032@linux.intel.com> <316ab583-d217-a332-d161-8225b0cee227@redhat.com> <1d7c80cf-cf79-ef1-58ba-e3b99294bb6@linux.intel.com>
+ <9e1e207f-a74f-cedb-6811-993d6b0a26cf@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3957:EE_
-X-MS-Office365-Filtering-Correlation-Id: aff92754-da93-4fb2-1809-08db24a9eede
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8My7SARv5O1sHSoxU6wIy/JJx9vfyhQr1FFdbeEGlnrpR9HT7ifRTZKMMtSV74xRM2wSbSnoVFvPpaloIbPVh69hxNop9dyt92cedBjqTDKd4lZfeGjhxnC+DDo9enaKqae8c9PzlHX4driRiT41pJQarOUGpmxvUugqtb/omAIRWiS0nqzccHVsFTgHPHTRRZUkZnqP98K2pWFzD5sM+ZUbC0UWTonIMN3H6kAXq5cXWZt1WNwKRNWHCkmSw0r9XqC80wToKZP5LYcMvhVy+Qle58ocTcBj5H3eX64AmSSvZFFcRMmHPmYfSMp/wxhxf8C6d83BM5dCDm0GHXJcU3CiOSvA7ghwwUAnGFHPxW2djLl4kdKjYFYrwHbqo/yTvZE8uJQdeGls8JnwiBJqv0F+JAbeJh8iEvrnea/DCNDKBEJDA5VEFT7+M5Y8nODoeUOjvKWFwXIhs+5pFnAyc6LtEwaR2jGZL+UcEiAE5R2387xc28qZkOimZRoXlkk52fSsWusIQHpPTii0l9nK66mee6VcKde+XjWZq6s0nQ+e72TS7XNvykkiG+1gvrmj5+VBnEJ/QhbiFgaIG2k6FKs8JKjQiA/YLJIhi9wqy+tOAEXMOKz/RCQYySdaf5pCiYUj12phnFomugFrIJJeNw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(366004)(376002)(136003)(39840400004)(451199018)(86362001)(36756003)(38100700002)(8936002)(41300700001)(2906002)(44832011)(7416002)(5660300002)(4326008)(6916009)(6512007)(2616005)(186003)(6506007)(83380400001)(54906003)(316002)(66946007)(66556008)(66476007)(6666004)(6486002)(478600001)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hZOmY02ePl13XyutcQGyciJcajIULofEGKW7bS+ZvGkE3I7r2v+rLkQxKf28?=
- =?us-ascii?Q?ADUcQhytOp6RfBXTtHBhoBs8PLRZeZ0ZXYoJo0uPcZKqzWGhzpwU5u+ako7R?=
- =?us-ascii?Q?lNyvLnGvRGzMMLlgGNYbmtT4bILjSwUUBY9biVjlFs6pAFjvn+IFZ944eGN8?=
- =?us-ascii?Q?AFPfsWNz4nue7r22askICyGgMXfS/1wyWyVm4HXHy8b/E6YXvUzYjq0zwtu1?=
- =?us-ascii?Q?+HnHdsMi2TsOdkFJJN41DVm5dbzZ2ZnyC2zyvedtBDC5VZwPx3r/9razRaB+?=
- =?us-ascii?Q?vFw8eO6ThldrzF+uXkV8OxZ20BnZ2VfF+AmGXDBIWqSU4JEsLk4M5nbG268g?=
- =?us-ascii?Q?lTbHNgu+2UZoTXgdRThPII5JCVdTv8CUIBHZ4xVKnjKe9cBhuMzAfWIiT/VO?=
- =?us-ascii?Q?/Y1CnZpxfniKr2xzm1MO6yDiBsma+hdHiuIvTkzOdfH7dTB3lGUC/PUBP1yQ?=
- =?us-ascii?Q?JPUoxSR5XUfqBOTw55jeMj/X1BnlY7viE7rtTDTIe2slN6ibFIzHNP9gNOLq?=
- =?us-ascii?Q?5AQldmcMm4DAVDBo0jay/E36ERS2zUhMZQIWetAx9fa2RO/kQDyBO8+m8WJg?=
- =?us-ascii?Q?sMVvnUBPuf95XsyAsP46Fipj10OvzM9K/IX3/2/Y6gkjb2eZyYrmLS78B3+h?=
- =?us-ascii?Q?1QSwU6cmXRxe6xkcmom5F1CSWighgeyyL/5OG3ZtrWkHOPJFwxrRlqOafmXD?=
- =?us-ascii?Q?jmeuC6XGGAeyHbH+EDJG724V4qqRQwARNZQFTmdOZcOzZ5mXTSq4ypoNnM43?=
- =?us-ascii?Q?l/SyOsB9p2Em2sBc45xihyqBbnGcG2O2CWHQxsFMmPsjLaKCi88+Ksi7HnRU?=
- =?us-ascii?Q?IOJw+OkSO5pEsTLtUJCjBsjldwk/DNrnxGYi62aOCJh4yT1yIOQb2THesp3z?=
- =?us-ascii?Q?Sd6NJZTRmvmxwV6u1D82/3saKO7lW422XHvi4XfmkqIwcKUhewXIjpUb0dzc?=
- =?us-ascii?Q?fCDk1Tq+F29rdT78lYYmPVDbFBnlG2GBLl0sEt4LjiXI99rVfX1nCjoV4AvL?=
- =?us-ascii?Q?+ncXy3LlDrjNGIVA4Yc4QwXO/PF3PPZZvSVUro5gERCB5qPCxUD+2TgJL/I4?=
- =?us-ascii?Q?RHpTA9O8zFMlJwTz8aviZzgTqKu/XRL6q0+Od54PkVA+v+0m+hliSMbgP4hY?=
- =?us-ascii?Q?nMlmf8KAwCwxyIH5Faq57NqXE/Fs80UGIPGp2rUBhSFJR/tmSKHS5WJzekSd?=
- =?us-ascii?Q?HIcmrLA+VVW46afW+q1XjNL8zcNEVi+VkL56Sq0ecEkrKmZpPCxj0QY1eOWA?=
- =?us-ascii?Q?B6LoAqzfUbxgtuZltUTsXQOrnluiBSrSbbxl+l2tl5QXU5x5sH2bOAF9XVpG?=
- =?us-ascii?Q?ANP0vJqqSg4JbQdSKSgrjdZ2WgmMxnAfENshCVp4gyGBZq0UnhQ7BpeQPrJs?=
- =?us-ascii?Q?i/9u901cyrUZJolqg/AjOruDJUQZmNIJ6DB85aDUaSU7RlV/NXgH++aTV1FT?=
- =?us-ascii?Q?E+9UdpdNmDCei+Z1hEhoeGaP2mZ+eM7ERtbEgLkqJw1sO+29DyC6CyXi8u+T?=
- =?us-ascii?Q?/ke736Mjjbm/lLQvOfZXP48DC5/ZMbJod6ce6FZQcQ0Hdv9ubcq91aWWqwq6?=
- =?us-ascii?Q?oLx1c9CPniFTPnle2RsKHxUxMh4NCrlINWkwZiVUmrskPytdJHdA7CgrqLtG?=
- =?us-ascii?Q?n4uGL4g3sXp5RqgmRM0y4B1eSRY8iZBKFX6Ro1zW3cUy7gH8WWl0mN4vyu35?=
- =?us-ascii?Q?KqBLsQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aff92754-da93-4fb2-1809-08db24a9eede
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2023 16:34:08.0068
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3wzO6CVuOwaD6JKO/qIok7SmO0WTieZ899ZH5fL1nSdhiV/8DV0X6gU9z/cS/7DMtv3SurUJWZ+uwQEu40J55DMHUR4OBCaziugHjgPsJHc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3957
+Content-Type: multipart/mixed; boundary="8323329-1826783580-1678812950=:80991"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 03:40:34PM +0000, Neeraj sanjay kale wrote:
-> Hi Simon
-> 
-> Thank you for reviewing the patch. I have a comment below:
-> 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1826783580-1678812950=:80991
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Tue, 14 Mar 2023, Hans de Goede wrote:
+> On 3/14/23 12:48, Ilpo Järvinen wrote:
+> > On Tue, 14 Mar 2023, Hans de Goede wrote:
+> >> On 3/14/23 11:55, Ilpo Järvinen wrote:
+> >>> On Tue, 14 Mar 2023, Hans de Goede wrote:
+> >>>
+> >>>> I have spend the last couple of days debugging a problem with Bluetooth
+> >>>> adapters (HCIs) connected over an UART connection on Intel Bay Trail
+> >>>> and Cherry Trail devices.
+> >>>>
+> >>>> After much debugging I found out that sometimes the first byte of
+> >>>> a received packet (data[0]) would be overwritten with a 0 byte.
+> >>>>
+> >>>> E.g. this packet received during init of a BCM4324B3 (1) Bluetooth HCI:
+> >>>>
+> >>>> 04 0e 0a 01 79 fc 00 54 fe ff ff 00 00
+> >>>>
+> >>>> would sometimes turn into:
+> >>>>
+> >>>> 00 0e 0a 01 79 fc 00 54 fe ff ff 00 00
+> >>>>
+> >>>> Further investigation revealed that this goes away if I stop
+> >>>> the dw_dmac module from loading, leading to:
+> >>>> "dw-apb-uart 80860F0A:00: failed to request DMA"
+> >>>> and the UART working without DMA support.
+> >>>>
+> >>>> Testing various kernels showed that this problem was introduced
+> >>>> in v5.19, v5.18 - v5.18.19 are fine. An a git bisect points to:
+> >>>>
+> >>>> e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with DMA")
+> >>>>
+> >>>> And reverting that on top of v6.3-rc2 indeed solves the problem.
+> >>>
+> >>> You did something else too than just that because you cannot cleanly 
+> >>> revert just e8ffbb71f783. Please indicate what happened to:
+> >>>   f8d6e9d3ca5c ("serial: 8250: Fix __stop_tx() & DMA Tx restart races")
+> >>>
+> >>> I guess you reverted that too and forgot to mention about it but I just 
+> >>> want to be sure we're on the same page?
+> >>
+> >> I manually fixed up the revert, effectively
+> >> dropping the drivers/tty/serial/8250/8250_port.c part of f8d6e9d3ca5c
+> >> I did not revert f8d6e9d3ca5c in its entirety.
+> >>
+> >> I've attached my manual fixed up revert as a patch here.
+> >>
+> >>>> So it seems that that commit somehow interferes with DMA based
+> >>>> data receiving, causing the first byte of a received data transfer
+> >>>> to get replaced by 0.
+> >>>
+> >>> Okay, and you're sure the problem/corruption occurs on the receiving side? 
+> >>
+> >> What I am sure is that the first byte of a packet has been replaced by 0
+> >> by the time drivers/tty/tty_buffer.c: receive_buf() gets called.
+> >>
+> >> I did not dive into the serial-port code side of this problem since
+> >> I'm unfamiliar with that.
+> >>
+> >>> Maybe the the extra interrupt that the tx side change will trigger somehow 
+> >>> causes the confusion on the rx side. So that would be an extra call into 
+> >>> handle_rx_dma() that could either do an extra flush or start DMA Rx that 
+> >>> would not occur w/o that tx side change.
+> >>
+> >> That sounds like a likely candidate for causing this yes, as said
+> >> I'm unfamiliar with the serial-port code, but I did already suspect
+> >> that the change was causing some extra interrupt which somehow
+> >> interfered with the rx side.
+> >>
+> >>>> The issue has been seen on and the revert has been tested on
+> >>>> the following HW:
+> >>>>
+> >>>> Asus T100TA
+> >>>> SoC: Bay Trail UART: 80860F0A WIFI: brcmfmac43241b4-sdio BT: BCM4324B3
+> >>>>
+> >>>> Lenovo Yoga Tablet 2 1051L
+> >>>> SoC: Bay Trail UART: 80860F0A WIFI: brcmfmac43241b4-sdio BT: BCM4324B3
+> >>>>
+> >>>> Lenovo Yoga Book X91F
+> >>>> Soc: Cherry Trail UART: 8086228A WIFI: brcmfmac4356-pcie BT: BCM4356A2
+> >>>>
+> >>>> I have more hw which I believe is affected but these are the models
+> >>>> where I have done detailed testing.
+> >>>>
+> >>>> I would be happy to test any patches, or run a kernel with some extra
+> >>>> debugging added, just let me know what you need to help fixing this.
+> >>>
+> >>> How easy this is to trigger in general? (Mainly trying to gauge how 
+> >>> easy it will be to find the read and/or the irq that related to the 
+> >>> corrupted payload).
+> >>
+> >> For the git bisect I did 10 consecutive "rmmod hci_uart; modprobe hci_uart"
+> >> calls, re-initializing and re-uploading the BT firmware 10 times and
+> >> then looked for "Frame reassembly failed" errors (+ more error caused
+> >> by this error) from the drivers/bluetooth/hci_bcm.c code.
+> >>
+> >> This would usually trigger at least twice with the 10 rmmod + modprobe
+> >> calls and typically more often then twice.
+> >>
+> >> With the revert (and with 5.18.y) I never see a single error even
+> >> with more rmmod + modprobe calls. Note it is not just the driver's
+> >> probe() which fails, sometimes there are also later errors, this
+> >> is just a somewhat convenient way to reproduce.
+> >>
+> >> So this is somewhat easy to trigger, not trivial to trigger,
+> >> but it also does not take waiting many hours before hitting it
+> >> once.
 > > 
-> > > +send_skb:
-> > > +     /* Prepend skb with frame type */
-> > > +     memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
-> > > +     skb_queue_tail(&nxpdev->txq, skb);
-> > > +
-> > > +     btnxpuart_tx_wakeup(nxpdev);
-> > > +ret:
-> > > +     return 0;
-> > > +
-> > > +free_skb:
-> > > +     kfree_skb(skb);
-> > > +     goto ret;
+> > Okay, maybe the patch below will manage to filter the interesting part of 
+> > it (not tested beyond compiling). It should capture a few irq events after 
+> > the THRI is set when DMA Tx completes.
 > > 
-> > nit: I think it would be nicer to simply return 0 here.
-> >      And remove the ret label entirely.
-> > 
-> > > +}
-> > 
-> We need to return from this function without clearing the skbs, unless "goto free_skb" is called.
-> If I remove the ret label and return after kfree_skb() it causes a kernel crash.
-> Keeping this change as it is.
+> > What I'd expect is to have iir value variation between the working and not 
+> > working case. Especially, if it's UART_IIR_THRI that shows up that might 
+> > be usable as a condition to return from handle_rx_dma() without touching
+> > DMA Rx.
 > 
-> Please let me know if you have any further review comments on the v11 patch.
-
-I'll look over v11.
-
-But for the record, I meant something like this:
-
-send_skb:
-     /* Prepend skb with frame type */
-     memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
-     skb_queue_tail(&nxpdev->txq, skb);
-
-     btnxpuart_tx_wakeup(nxpdev);
-     return 0;
-
-free_skb:
-     kfree_skb(skb);
-     return 0;
-}
-
-> We need to return from this function without clearing the skbs, unless "goto free_skb" is called.
-> If I remove the ret label and return after kfree_skb() it causes a kernel crash.
-> Keeping this change as it is.
+> Here are 2 dmesg snippets both are with a 6.3-rc2 kernel *without*
+> the revert and with your dmesg patch.
 > 
-> Please let me know if you have any further review comments on the v11 patch.
+> This is (part of) the HCI init without issues:
+> 
+> [  733.682492] hci_uart_bcm serial0-0: supply vbat not found, using dummy regulator
+> [  733.682628] hci_uart_bcm serial0-0: supply vddio not found, using dummy regulator
+> [  733.927142] 8250irq: iir=c2 lsr+saved=20 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  733.928311] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  733.932892] 8250irq: iir=c2 lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  733.933818] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  733.970404] 8250irq: iir=c2 lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  733.975558] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  734.080290] 8250irq: iir=cc lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  734.081300] 8250irq: iir=cc lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  734.081492] Bluetooth: hci0: BCM: chip id 101
+> 
+> Here is another *successful* log with slightly different timing.
+> 
+> [  737.660532] hci_uart_bcm serial0-0: supply vbat not found, using dummy regulator
+> [  737.660681] hci_uart_bcm serial0-0: supply vddio not found, using dummy regulator
+> [  737.905238] 8250irq: iir=c2 lsr+saved=20 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  737.906429] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  737.907782] 8250irq: iir=c2 lsr+saved=20 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  737.908978] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  737.935929] 8250irq: iir=c2 lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  737.940976] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  738.048476] 8250irq: iir=cc lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  738.049530] 8250irq: iir=c2 lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  738.049678] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  738.050142] Bluetooth: hci0: BCM: chip id 101
+> 
+> And here is the same part of the init sequence with an error:
+> 
+> [  771.247538] hci_uart_bcm serial0-0: supply vbat not found, using dummy regulator
+> [  771.247656] hci_uart_bcm serial0-0: supply vddio not found, using dummy regulator
+> [  771.493259] 8250irq: iir=c2 lsr+saved=20 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  771.494378] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  771.495637] 8250irq: iir=c2 lsr+saved=20 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  771.496833] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  771.523597] 8250irq: iir=c2 lsr+saved=60 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  771.528708] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/0/0 skiprx=0 cnt=-4
+> [  771.632340] 8250irq: iir=c2 lsr+saved=61 ier=0f dma_t/rx/err=0/0/0 skiprx=0 cnt=-5
+> [  771.632462] 8250irq: iir=cc lsr+saved=60 ier=0d dma_t/rx/err=0/1/0 skiprx=0 cnt=-4
+> [  771.632568] Bluetooth: hci0: Frame reassembly failed (-84)
+> 
+> Here is a full dmesg from several rmmod + modprobes, for the errors look for
+> "Frame reassembly failed".
+> 
+> Note this is from a different boot, I had to add log_buf_len=50M to be able
+> to grab a full dmesg:
+> 
+> https://fedorapeople.org/~jwrdegoede/dmesg-8250-dma-issue
+
+Thanks. I'll try to come up with another debug patch tomorrow to further 
+inspect the payload that will be read after that point.
+
+In the meantime you could try if the following patch is enough 
+to solve the issue.
+
+
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH] serial: 8250: Prevent starting up DMA Rx on THRI interrupt
+
+Hans de Goede reported Bluetooth adapters (HCIs) connected over an UART
+connection failed due corrupted Rx payload. The problem was narrowed
+down to DMA Rx starting on UART_IIR_THRI interrupt. The problem occurs 
+despite LSR having DR bit set, which is precondition for attempting to 
+start DMA Rx.
+
+This problem became apparent after e8ffbb71f783 ("serial: 8250: use
+THRE & __stop_tx also with DMA") changed Tx stopping to get triggered
+using THRI interrupt.
+
+Don't setup DMA Rx on UART_IIR_THRI but leave it to a subsequent
+interrupt which has Rx related IIR value.
+
+Reported-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+---
+ drivers/tty/serial/8250/8250_port.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index fa43df05342b..a3ef2f42a06b 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1903,6 +1903,8 @@ EXPORT_SYMBOL_GPL(serial8250_modem_status);
+ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
+ {
+ 	switch (iir & 0x3f) {
++	case UART_IIR_THRI:
++		return false;
+ 	case UART_IIR_RDI:
+ 		if (!up->dma->rx_running)
+ 			break;
+
+-- 
+tg: (571079f5ba93..) fix/dma-rx-startup (depends on: tty-next)
+--8323329-1826783580-1678812950=:80991--
