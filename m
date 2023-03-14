@@ -2,261 +2,456 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E7BC6FD1D
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 11:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05385C77B71
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 12:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbjCNLst (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Mar 2023 07:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
+        id S231830AbjCNMPK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Mar 2023 08:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbjCNLsm (ORCPT
+        with ESMTP id S231888AbjCNMOo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Mar 2023 07:48:42 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640DE171E
-        for <linux-serial@vger.kernel.org>; Tue, 14 Mar 2023 04:48:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678794515; x=1710330515;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=R4HHNoxG0BC5DFVbqZLYfqihSJBvEE4eybiKHWTy9gw=;
-  b=POUHw3TsxZvjtdDkLC6ybfnkrqkY9a+qDsIKR7DpZDUGuo0+xrijCXvB
-   +YAc2AJBX40Yw594+YGqXxxTEuIwsH+HWF0PhPxwf2xD3P7VbnufcsWJe
-   etyo6+frevEfmw5N9QySH/UvYZW2ynCDWdDDgxzVDuZX9neN9DQ/PB++3
-   otkCwCTzVugPBMbXjoRLNlUUR/d4TO0QCPGcR/v4UwgSrkniLGhn22nYh
-   Pv//XZJfWdtJCaR/OCGBtXyKfE0LWhCQBfZOGf1/qEO6r0/yOwXFAuliS
-   msFsRkIWtiZeGmt+1sG6jUhewKu/CKHh0O/6t71Q8wMGF9nn1vhTIo7tt
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="317047401"
-X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
-   d="scan'208";a="317047401"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 04:48:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10648"; a="822341581"
-X-IronPort-AV: E=Sophos;i="5.98,259,1673942400"; 
-   d="scan'208";a="822341581"
-Received: from npeltier-mobl1.ger.corp.intel.com ([10.252.33.129])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2023 04:48:33 -0700
-Date:   Tue, 14 Mar 2023 13:48:31 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Subject: Re: [Regression] "serial: 8250: use THRE & __stop_tx also with DMA"
- breaks DMA rx
-In-Reply-To: <316ab583-d217-a332-d161-8225b0cee227@redhat.com>
-Message-ID: <1d7c80cf-cf79-ef1-58ba-e3b99294bb6@linux.intel.com>
-References: <7f18e19d-4072-0609-afd0-244b06103b9c@redhat.com> <dd9ebf9-e2e9-2b6-eec5-6ab152f92032@linux.intel.com> <316ab583-d217-a332-d161-8225b0cee227@redhat.com>
+        Tue, 14 Mar 2023 08:14:44 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAAC1630E;
+        Tue, 14 Mar 2023 05:13:27 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32EBSdWx011544;
+        Tue, 14 Mar 2023 12:12:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=32D+gvqp89T6dw+5waj1ptnVLbeeeI3h94jFsQ79bio=;
+ b=bLg7/sRQag8ZUztM+tRi59PJz6ofFLDorkyvT2RRJSfUPIAB8yTMLQfUFEptDZ6QkHCw
+ vLx1Om2PjVaQgmYZ/MQHQm29IF/MHF8AsDR+w8BlKyiREy9V25n4OhysX+xd7ISRW91D
+ PKteISHon2Sw26a351DXyFGNtEfsNB76NDcOzljpQStNIO/kFq4dNXg0NCwrdjUPDGEM
+ xUvv91JdpP7SeqCU98reGp9N+DcXvjW+t3Cjx5bhuw2AVCckcSDgpPlHgW0lk8KXYzS2
+ 1pZgR/3J+SGgAdyrdO0ZRC4YSGbX8GJ4GPOl4xbJPk8eZQfjNu2v/CfrUHJKYmEXX5vY rw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pap9ecb32-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Mar 2023 12:12:57 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32EBVAHW024081;
+        Tue, 14 Mar 2023 12:12:57 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pap9ecb1y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Mar 2023 12:12:56 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32E9juej015922;
+        Tue, 14 Mar 2023 12:12:54 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+        by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3p8h96ksct-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Mar 2023 12:12:54 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+        by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32ECCqlt28967510
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Mar 2023 12:12:52 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3CC7A2007B;
+        Tue, 14 Mar 2023 12:12:52 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C0EF12007A;
+        Tue, 14 Mar 2023 12:12:51 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Tue, 14 Mar 2023 12:12:51 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v3 33/38] tty: serial: handle HAS_IOPORT dependencies
+Date:   Tue, 14 Mar 2023 13:12:11 +0100
+Message-Id: <20230314121216.413434-34-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230314121216.413434-1-schnelle@linux.ibm.com>
+References: <20230314121216.413434-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1460968984-1678794514=:2593"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: csLOyPkqwrNRYHaIZj909ru4kB_zrX4c
+X-Proofpoint-ORIG-GUID: OTJLbmdmZImn1Pv3sv6xyjU43G46ezTO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-14_04,2023-03-14_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 bulkscore=0 suspectscore=0 mlxscore=0 adultscore=0
+ mlxlogscore=999 impostorscore=0 phishscore=0 malwarescore=0
+ priorityscore=1501 clxscore=1011 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2303140103
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+not being declared. We thus need to add HAS_IOPORT as dependency for
+those drivers using them unconditionally. For 8250 based drivers some
+support MMIO only use so fence only the parts requiring I/O ports.
 
---8323329-1460968984-1678794514=:2593
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 14 Mar 2023, Hans de Goede wrote:
-> On 3/14/23 11:55, Ilpo Järvinen wrote:
-> > On Tue, 14 Mar 2023, Hans de Goede wrote:
-> > 
-> >> I have spend the last couple of days debugging a problem with Bluetooth
-> >> adapters (HCIs) connected over an UART connection on Intel Bay Trail
-> >> and Cherry Trail devices.
-> >>
-> >> After much debugging I found out that sometimes the first byte of
-> >> a received packet (data[0]) would be overwritten with a 0 byte.
-> >>
-> >> E.g. this packet received during init of a BCM4324B3 (1) Bluetooth HCI:
-> >>
-> >> 04 0e 0a 01 79 fc 00 54 fe ff ff 00 00
-> >>
-> >> would sometimes turn into:
-> >>
-> >> 00 0e 0a 01 79 fc 00 54 fe ff ff 00 00
-> >>
-> >> Further investigation revealed that this goes away if I stop
-> >> the dw_dmac module from loading, leading to:
-> >> "dw-apb-uart 80860F0A:00: failed to request DMA"
-> >> and the UART working without DMA support.
-> >>
-> >> Testing various kernels showed that this problem was introduced
-> >> in v5.19, v5.18 - v5.18.19 are fine. An a git bisect points to:
-> >>
-> >> e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with DMA")
-> >>
-> >> And reverting that on top of v6.3-rc2 indeed solves the problem.
-> > 
-> > You did something else too than just that because you cannot cleanly 
-> > revert just e8ffbb71f783. Please indicate what happened to:
-> >   f8d6e9d3ca5c ("serial: 8250: Fix __stop_tx() & DMA Tx restart races")
-> > 
-> > I guess you reverted that too and forgot to mention about it but I just 
-> > want to be sure we're on the same page?
-> 
-> I manually fixed up the revert, effectively
-> dropping the drivers/tty/serial/8250/8250_port.c part of f8d6e9d3ca5c
-> I did not revert f8d6e9d3ca5c in its entirety.
-> 
-> I've attached my manual fixed up revert as a patch here.
-> 
-> >> So it seems that that commit somehow interferes with DMA based
-> >> data receiving, causing the first byte of a received data transfer
-> >> to get replaced by 0.
-> > 
-> > Okay, and you're sure the problem/corruption occurs on the receiving side? 
-> 
-> What I am sure is that the first byte of a packet has been replaced by 0
-> by the time drivers/tty/tty_buffer.c: receive_buf() gets called.
-> 
-> I did not dive into the serial-port code side of this problem since
-> I'm unfamiliar with that.
-> 
-> > Maybe the the extra interrupt that the tx side change will trigger somehow 
-> > causes the confusion on the rx side. So that would be an extra call into 
-> > handle_rx_dma() that could either do an extra flush or start DMA Rx that 
-> > would not occur w/o that tx side change.
-> 
-> That sounds like a likely candidate for causing this yes, as said
-> I'm unfamiliar with the serial-port code, but I did already suspect
-> that the change was causing some extra interrupt which somehow
-> interfered with the rx side.
-> 
-> >> The issue has been seen on and the revert has been tested on
-> >> the following HW:
-> >>
-> >> Asus T100TA
-> >> SoC: Bay Trail UART: 80860F0A WIFI: brcmfmac43241b4-sdio BT: BCM4324B3
-> >>
-> >> Lenovo Yoga Tablet 2 1051L
-> >> SoC: Bay Trail UART: 80860F0A WIFI: brcmfmac43241b4-sdio BT: BCM4324B3
-> >>
-> >> Lenovo Yoga Book X91F
-> >> Soc: Cherry Trail UART: 8086228A WIFI: brcmfmac4356-pcie BT: BCM4356A2
-> >>
-> >> I have more hw which I believe is affected but these are the models
-> >> where I have done detailed testing.
-> >>
-> >> I would be happy to test any patches, or run a kernel with some extra
-> >> debugging added, just let me know what you need to help fixing this.
-> > 
-> > How easy this is to trigger in general? (Mainly trying to gauge how 
-> > easy it will be to find the read and/or the irq that related to the 
-> > corrupted payload).
-> 
-> For the git bisect I did 10 consecutive "rmmod hci_uart; modprobe hci_uart"
-> calls, re-initializing and re-uploading the BT firmware 10 times and
-> then looked for "Frame reassembly failed" errors (+ more error caused
-> by this error) from the drivers/bluetooth/hci_bcm.c code.
-> 
-> This would usually trigger at least twice with the 10 rmmod + modprobe
-> calls and typically more often then twice.
-> 
-> With the revert (and with 5.18.y) I never see a single error even
-> with more rmmod + modprobe calls. Note it is not just the driver's
-> probe() which fails, sometimes there are also later errors, this
-> is just a somewhat convenient way to reproduce.
-> 
-> So this is somewhat easy to trigger, not trivial to trigger,
-> but it also does not take waiting many hours before hitting it
-> once.
-
-Okay, maybe the patch below will manage to filter the interesting part of 
-it (not tested beyond compiling). It should capture a few irq events after 
-the THRI is set when DMA Tx completes.
-
-What I'd expect is to have iir value variation between the working and not 
-working case. Especially, if it's UART_IIR_THRI that shows up that might 
-be usable as a condition to return from handle_rx_dma() without touching
-DMA Rx.
-
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH] DEBUG: DMA Rx problem
-
-A DEBUG PATCH, not intended for upstream inclusing.
-
+Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- drivers/tty/serial/8250/8250_dma.c  |  4 +++-
- drivers/tty/serial/8250/8250_port.c | 13 +++++++++++++
- include/linux/serial_8250.h         |  1 +
- 3 files changed, 17 insertions(+), 1 deletion(-)
+ drivers/tty/Kconfig                  |  2 +-
+ drivers/tty/serial/8250/8250_early.c |  4 +++
+ drivers/tty/serial/8250/8250_pci.c   | 14 +++++++++
+ drivers/tty/serial/8250/8250_port.c  | 44 +++++++++++++++++++++++-----
+ drivers/tty/serial/8250/Kconfig      |  5 ++--
+ drivers/tty/serial/Kconfig           |  2 +-
+ 6 files changed, 59 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 7fa66501792d..20d54abdded2 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -32,8 +32,10 @@ static void __dma_tx_complete(void *param)
- 		uart_write_wakeup(&p->port);
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index d35fc068da74..20ab18998420 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -222,7 +222,7 @@ config MOXA_INTELLIO
  
- 	ret = serial8250_tx_dma(p);
--	if (ret || !dma->tx_running)
-+	if (ret || !dma->tx_running) {
-+		p->irq_debug = -5;
- 		serial8250_set_THRI(p);
-+	}
- 
- 	spin_unlock_irqrestore(&p->port.lock, flags);
+ config MOXA_SMARTIO
+ 	tristate "Moxa SmartIO support v. 2.0"
+-	depends on SERIAL_NONSTANDARD && PCI
++	depends on SERIAL_NONSTANDARD && PCI && HAS_IOPORT
+ 	help
+ 	  Say Y here if you have a Moxa SmartIO multiport serial card and/or
+ 	  want to help develop a new version of this driver.
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 0ebde0ab8167..4192b1ae2736 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -48,8 +48,10 @@ static unsigned int serial8250_early_in(struct uart_port *port, int offset)
+ 		return readl(port->membase + offset);
+ 	case UPIO_MEM32BE:
+ 		return ioread32be(port->membase + offset);
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_PORT:
+ 		return inb(port->iobase + offset);
++#endif
+ 	case UPIO_AU:
+ 		return port->serial_in(port, reg_offset);
+ 	default:
+@@ -75,9 +77,11 @@ static void serial8250_early_out(struct uart_port *port, int offset, int value)
+ 	case UPIO_MEM32BE:
+ 		iowrite32be(value, port->membase + offset);
+ 		break;
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_PORT:
+ 		outb(value, port->iobase + offset);
+ 		break;
++#endif
+ 	case UPIO_AU:
+ 		port->serial_out(port, reg_offset, value);
+ 		break;
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index c55be6fda0ca..70bd84a05da7 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -847,6 +847,7 @@ static int pci_netmos_init(struct pci_dev *dev)
+ 	return num_serial;
  }
+ 
++#ifdef CONFIG_HAS_IOPORT
+ /*
+  * These chips are available with optionally one parallel port and up to
+  * two serial ports. Unfortunately they all have the same product id.
+@@ -973,6 +974,7 @@ static void pci_ite887x_exit(struct pci_dev *dev)
+ 	ioport &= 0xffff;
+ 	release_region(ioport, ITE_887x_IOSIZE);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ /*
+  * Oxford Semiconductor Inc.
+@@ -1255,6 +1257,7 @@ static int pci_asix_setup(struct serial_private *priv,
+ #define QOPR_CLOCK_X8		0x0003
+ #define QOPR_CLOCK_RATE_MASK	0x0003
+ 
++#ifdef CONFIG_HAS_IOPORT
+ /* Quatech devices have their own extra interface features */
+ static struct pci_device_id quatech_cards[] = {
+ 	{ PCI_DEVICE_DATA(QUATECH, QSC100,   1) },
+@@ -1474,6 +1477,7 @@ static int pci_quatech_setup(struct serial_private *priv,
+ 		pci_warn(priv->dev, "software control of RS422 features not currently supported.\n");
+ 	return pci_default_setup(priv, board, port, idx);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ static int pci_default_setup(struct serial_private *priv,
+ 		  const struct pciserial_board *board,
+@@ -1753,6 +1757,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static void kt_handle_break(struct uart_port *p)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+@@ -1796,6 +1801,7 @@ static int kt_serial_setup(struct serial_private *priv,
+ 	port->port.handle_break = kt_handle_break;
+ 	return skip_tx_en_setup(priv, board, port, idx);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ static int pci_eg20t_init(struct pci_dev *dev)
+ {
+@@ -1840,6 +1846,7 @@ pci_wch_ch38x_setup(struct serial_private *priv,
+ #define CH384_XINT_ENABLE_REG   0xEB
+ #define CH384_XINT_ENABLE_BIT   0x02
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static int pci_wch_ch38x_init(struct pci_dev *dev)
+ {
+ 	int max_port;
+@@ -1867,6 +1874,7 @@ static void pci_wch_ch38x_exit(struct pci_dev *dev)
+ 	iobase = pci_resource_start(dev, 0);
+ 	outb(0x0, iobase + CH384_XINT_ENABLE_REG);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ 
+ static int
+@@ -2070,6 +2078,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= ce4100_serial_setup,
+ 	},
++#ifdef CONFIG_HAS_IOPORT
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_INTEL,
+ 		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
+@@ -2089,6 +2098,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ite887x_exit,
+ 	},
++#endif
+ 	/*
+ 	 * National Instruments
+ 	 */
+@@ -2210,6 +2220,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.exit		= pci_ni8430_exit,
+ 	},
+ 	/* Quatech */
++#ifdef CONFIG_HAS_IOPORT
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_QUATECH,
+ 		.device		= PCI_ANY_ID,
+@@ -2218,6 +2229,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.init		= pci_quatech_init,
+ 		.setup		= pci_quatech_setup,
+ 	},
++#endif
+ 	/*
+ 	 * Panacom
+ 	 */
+@@ -2588,6 +2600,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
++#ifdef CONFIG_HAS_IOPORT
+ 	/* WCH CH384 8S card (16850 clone) */
+ 	{
+ 		.vendor         = PCIE_VENDOR_ID_WCH,
+@@ -2598,6 +2611,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.exit		= pci_wch_ch38x_exit,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
++#endif
+ 	/*
+ 	 * ASIX devices with FIFO bug
+ 	 */
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index fa43df05342b..193c08b1888a 100644
+index fa43df05342b..f57441e31c41 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1923,6 +1923,9 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	bool skip_rx = false;
- 	unsigned long flags;
-+	long irq_debug;
-+	unsigned int tx_running = 0, rx_running = 0, tx_err = 0;
-+	unsigned int ier;
- 	u16 status;
+@@ -400,6 +400,7 @@ static void au_serial_dl_write(struct uart_8250_port *up, int value)
  
- 	if (iir & UART_IIR_NO_INT)
-@@ -1931,6 +1934,12 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 	spin_lock_irqsave(&port->lock, flags);
+ #endif
  
- 	status = serial_lsr_in(up);
-+	if (up->dma) {
-+		rx_running = up->dma->rx_running;
-+		tx_running = up->dma->tx_running;
-+		tx_err = up->dma->tx_err;
-+	}
-+	ier = up->ier;
- 
- 	/*
- 	 * If port is stopped and there are no error conditions in the
-@@ -1957,7 +1966,11 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 			__stop_tx(up);
- 	}
- 
-+	irq_debug = up->irq_debug++;
- 	uart_unlock_and_check_sysrq_irqrestore(port, flags);
-+	if (irq_debug < 0)
-+		pr_err("8250irq: iir=%02x lsr+saved=%02x ier=%02x dma_t/rx/err=%u/%u/%u skiprx=%d cnt=%ld\n",
-+		       iir, status, ier, tx_running, rx_running, tx_err, skip_rx, irq_debug);
- 
- 	return 1;
++#ifdef CONFIG_HAS_IOPORT
+ static unsigned int hub6_serial_in(struct uart_port *p, int offset)
+ {
+ 	offset = offset << p->regshift;
+@@ -413,6 +414,7 @@ static void hub6_serial_out(struct uart_port *p, int offset, int value)
+ 	outb(p->hub6 - 1 + offset, p->iobase);
+ 	outb(value, p->iobase + 1);
  }
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 741ed4807a9c..8d9d7de6728d 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -107,6 +107,7 @@ struct uart_8250_port {
- 	unsigned char		mcr;
- 	unsigned char		cur_iotype;	/* Running I/O type */
- 	unsigned int		rpm_tx_active;
-+	long			irq_debug;
- 	unsigned char		canary;		/* non-zero during system sleep
- 						 *   if no_console_suspend
- 						 */
-
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ static unsigned int mem_serial_in(struct uart_port *p, int offset)
+ {
+@@ -462,6 +464,7 @@ static unsigned int mem32be_serial_in(struct uart_port *p, int offset)
+ 	return ioread32be(p->membase + offset);
+ }
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static unsigned int io_serial_in(struct uart_port *p, int offset)
+ {
+ 	offset = offset << p->regshift;
+@@ -473,6 +476,24 @@ static void io_serial_out(struct uart_port *p, int offset, int value)
+ 	offset = offset << p->regshift;
+ 	outb(value, p->iobase + offset);
+ }
++#endif
++static unsigned int no_serial_in(struct uart_port *p, int offset)
++{
++	return (unsigned int)-1;
++}
++
++static void no_serial_out(struct uart_port *p, int offset, int value)
++{
++}
++
++#ifdef CONFIG_HAS_IOPORT
++static inline bool is_upf_fourport(struct uart_port *port)
++{
++	return port->flags & UPF_FOURPORT;
++}
++#else
++#define is_upf_fourport(x)	false
++#endif
+ 
+ static int serial8250_default_handle_irq(struct uart_port *port);
+ 
+@@ -484,10 +505,12 @@ static void set_io_from_upio(struct uart_port *p)
+ 	up->dl_write = default_serial_dl_write;
+ 
+ 	switch (p->iotype) {
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_HUB6:
+ 		p->serial_in = hub6_serial_in;
+ 		p->serial_out = hub6_serial_out;
+ 		break;
++#endif
+ 
+ 	case UPIO_MEM:
+ 		p->serial_in = mem_serial_in;
+@@ -518,10 +541,17 @@ static void set_io_from_upio(struct uart_port *p)
+ 		break;
+ #endif
+ 
+-	default:
++#ifdef CONFIG_HAS_IOPORT
++	case UPIO_PORT:
+ 		p->serial_in = io_serial_in;
+ 		p->serial_out = io_serial_out;
+ 		break;
++#endif
++
++	default:
++		WARN(1, "Unsupported UART type %x\n", p->iotype);
++		p->serial_in = no_serial_in;
++		p->serial_out = no_serial_out;
+ 	}
+ 	/* Remember loaded iotype */
+ 	up->cur_iotype = p->iotype;
+@@ -1378,7 +1408,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	unsigned long irqs;
+ 	int irq;
+ 
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		ICP = (port->iobase & 0xfe0) | 0x1f;
+ 		save_ICP = inb_p(ICP);
+ 		outb_p(0x80, ICP);
+@@ -1397,7 +1427,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	irqs = probe_irq_on();
+ 	serial8250_out_MCR(up, 0);
+ 	udelay(10);
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
+ 	} else {
+ 		serial8250_out_MCR(up,
+@@ -1415,7 +1445,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	serial8250_out_MCR(up, save_mcr);
+ 	serial_out(up, UART_IER, save_ier);
+ 
+-	if (port->flags & UPF_FOURPORT)
++	if (is_upf_fourport(port))
+ 		outb_p(save_ICP, ICP);
+ 
+ 	if (uart_console(port))
+@@ -2365,7 +2395,7 @@ int serial8250_do_startup(struct uart_port *port)
+ 	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	if (up->port.flags & UPF_FOURPORT) {
++	if (is_upf_fourport(&up->port)) {
+ 		if (!up->port.irq)
+ 			up->port.mctrl |= TIOCM_OUT1;
+ 	} else
+@@ -2447,7 +2477,7 @@ int serial8250_do_startup(struct uart_port *port)
+ 	 */
+ 	up->ier = UART_IER_RLSI | UART_IER_RDI;
+ 
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		unsigned int icp;
+ 		/*
+ 		 * Enable interrupts on the AST Fourport board
+@@ -2490,7 +2520,7 @@ void serial8250_do_shutdown(struct uart_port *port)
+ 		serial8250_release_dma(up);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		/* reset interrupts on the AST Fourport board */
+ 		inb((port->iobase & 0xfe0) | 0x1f);
+ 		port->mctrl |= TIOCM_OUT1;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 978dc196c29b..c80a45e8bd03 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -6,7 +6,6 @@
+ 
+ config SERIAL_8250
+ 	tristate "8250/16550 and compatible serial support"
+-	depends on !S390
+ 	select SERIAL_CORE
+ 	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+@@ -72,7 +71,7 @@ config SERIAL_8250_16550A_VARIANTS
+ 
+ config SERIAL_8250_FINTEK
+ 	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
+-	depends on SERIAL_8250
++	depends on SERIAL_8250 && HAS_IOPORT
+ 	help
+ 	  Selecting this option will add support for the RS485 capabilities
+ 	  of the Fintek F81216A LPC to 4 UART.
+@@ -160,7 +159,7 @@ config SERIAL_8250_HP300
+ 
+ config SERIAL_8250_CS
+ 	tristate "8250/16550 PCMCIA device support"
+-	depends on PCMCIA && SERIAL_8250
++	depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
+ 	help
+ 	  Say Y here to enable support for 16-bit PCMCIA serial devices,
+ 	  including serial port cards, modems, and the modem functions of
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 625358f44419..c3d69074b6d6 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -878,7 +878,7 @@ config SERIAL_TXX9_STDSERIAL
+ 
+ config SERIAL_JSM
+ 	tristate "Digi International NEO and Classic PCI Support"
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	select SERIAL_CORE
+ 	help
+ 	  This is a driver for Digi International's Neo and Classic series
 -- 
-tg: (571079f5ba93..) debug/dma-rx-problem (depends on: tty-next)
---8323329-1460968984-1678794514=:2593--
+2.37.2
+
