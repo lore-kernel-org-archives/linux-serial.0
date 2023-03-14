@@ -2,162 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A89C74A44
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 19:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D337C7619A
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Mar 2023 23:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbjCNTa6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Mar 2023 15:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
+        id S231234AbjCNXKZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Mar 2023 19:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbjCNTa2 (ORCPT
+        with ESMTP id S231144AbjCNXKY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Mar 2023 15:30:28 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF17B29E1B;
-        Tue, 14 Mar 2023 12:30:09 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id h9so17144394ljq.2;
-        Tue, 14 Mar 2023 12:30:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678822207;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Dqgms4mBVohNM7iW30qEDQ+lDG4KIARpTXgSHSORq30=;
-        b=F3bvLAaOVnkJ4xkEZeYyInmloRQNEHJEFV/EjiGaMY54T1YvbiYXjUCin9X7zg00z7
-         Qzq1RUZF6PZb0RqEIJN6q+2jGgRuZyle2FVmH3gRugOUlf56BSUBDE69GWEgm5capqEp
-         0moRLYqoLZ/aV2Iz4vJGXyPYXA94iXPBsqu6gdRduNibfPB+QSE12YFmIzkIWXM2T1IF
-         PAMcGk2EB6XPRVS+hIo3/LQuouSPqgx37meIYtMbly2DZoZsJwUgcTgcm1sghOgDBgHZ
-         E+1Cap+9AYlQuXNsdJtWncpPSYPCeVUqYHuOzb+n7kr1BfJg5hFfFc81ZYwe+wIp8QvW
-         uuag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678822207;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Dqgms4mBVohNM7iW30qEDQ+lDG4KIARpTXgSHSORq30=;
-        b=M9Jba3PzpEN5rmiu+F9Tyu7wvdyJ0f1lU3Sqttsie535zBoUXWv0Jtxs3GbmxHr6lL
-         nOzfgxyq0V9QaDC5kjii0PHAmhQeI5QumVjTYn8cvjlp1IJtGZAsQ9uhMd+vchplecv9
-         XtSlGYmvT9K3qOJ78MnBuaeiXH8Ni6PETs0jQbsx2Z6UD+c4LR2uLI3LmRaEv2R91o1B
-         u+cDQ7MTEZ2B75i9b12YHGTDgBrQU7eKR4+KYUJM9voOd1YrkC2bzs7un0SdKD+BcNlS
-         PLPflQE2NYYs++p1UldGgAc67hqhrWN7I+vhwtiwwCMytS6rimKk9wX34jc97Zi3+dZo
-         QirQ==
-X-Gm-Message-State: AO0yUKV843dpBJu8kZ3atGo4IvJzv6ttgUtZhWmRpFplQVSjnQjPnZ0k
-        lYPr1BiRwNkIsL3GwrxrfKCmB8irM3zO79xyxUY=
-X-Google-Smtp-Source: AK7set+SM7jX1PJsr5O6/4TOBKUpUU46b1xy5TdJHkG86pFItAWyRncMY0cFbgoZ/JH8OMB04G/rLYtXA9opsMA4DS8=
-X-Received: by 2002:a2e:b81a:0:b0:295:a96a:2ea1 with SMTP id
- u26-20020a2eb81a000000b00295a96a2ea1mr93979ljo.0.1678822207382; Tue, 14 Mar
- 2023 12:30:07 -0700 (PDT)
+        Tue, 14 Mar 2023 19:10:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD39A2A6C2;
+        Tue, 14 Mar 2023 16:10:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70514B81C1E;
+        Tue, 14 Mar 2023 23:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 154D7C433A1;
+        Tue, 14 Mar 2023 23:10:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678835421;
+        bh=Y1jhSl5t1yRVm3V2cFgzlR2isIydaRbBCbb6BWOJaAo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iOM6W9t6T47DsH4QzF3dwMVb8wxdToWbGDk+1cIhSwCHTUZFut+TnglodwUcg4Aaj
+         y+28DddIDd0YQpFTfo9GlfNHkVmlp33gyQrS4pev5V+7n2ZQxjhtXRLEfwqU8G8Hz/
+         0HSDERZNBUvLRWhblWEGH8Xqr3QNW0OQigd2BhnoEfNQjBaBHStxhz9OtAaYZmHnbp
+         +BoNIQNmp0zfls7xjfnzGUHIyEr3DNno2fCOJ5tss6CXUECG6+CpgLTnwCDQy9tEBX
+         9Ivx1txiDyzmcrjZvjzm5nqEa9PKAhgw8at5uACM3Eg48R2HQlJ/Bepj0OYuWJulwb
+         rvQrUB42CXZaw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F36B8E524FE;
+        Tue, 14 Mar 2023 23:10:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20230313144028.3156825-1-neeraj.sanjaykale@nxp.com>
- <20230313144028.3156825-4-neeraj.sanjaykale@nxp.com> <ZBBUYDhrnn/udT+Z@corigine.com>
- <AM9PR04MB8603E3F3900DB13502CFCB8DE7BE9@AM9PR04MB8603.eurprd04.prod.outlook.com>
- <ZBCh98lGvhlMKQQp@corigine.com>
-In-Reply-To: <ZBCh98lGvhlMKQQp@corigine.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 14 Mar 2023 12:29:55 -0700
-Message-ID: <CABBYNZ+Zx8r-yJD9qq6B0oiDKTjzrvRa2Je0=C1hBjKvMyjmgA@mail.gmail.com>
-Subject: Re: [PATCH v10 3/3] Bluetooth: NXP: Add protocol support for NXP
- Bluetooth chipsets
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 3/8] Bluetooth: hci_ldisc: Fix tty_set_termios() return value
+ assumptions
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <167883542099.4543.9923542324087254222.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Mar 2023 23:10:20 +0000
+References: <20230309082035.14880-4-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20230309082035.14880-4-ilpo.jarvinen@linux.intel.com>
+To:     =?utf-8?q?Ilpo_J=C3=A4rvinen_=3Cilpo=2Ejarvinen=40linux=2Eintel=2Ecom=3E?=@ci.codeaurora.org
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, marcel@holtmann.org, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Hello:
 
-On Tue, Mar 14, 2023 at 9:34=E2=80=AFAM Simon Horman <simon.horman@corigine=
-.com> wrote:
->
-> On Tue, Mar 14, 2023 at 03:40:34PM +0000, Neeraj sanjay kale wrote:
-> > Hi Simon
-> >
-> > Thank you for reviewing the patch. I have a comment below:
-> >
-> > >
-> > > > +send_skb:
-> > > > +     /* Prepend skb with frame type */
-> > > > +     memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
-> > > > +     skb_queue_tail(&nxpdev->txq, skb);
-> > > > +
-> > > > +     btnxpuart_tx_wakeup(nxpdev);
-> > > > +ret:
-> > > > +     return 0;
-> > > > +
-> > > > +free_skb:
-> > > > +     kfree_skb(skb);
-> > > > +     goto ret;
-> > >
-> > > nit: I think it would be nicer to simply return 0 here.
-> > >      And remove the ret label entirely.
-> > >
-> > > > +}
-> > >
-> > We need to return from this function without clearing the skbs, unless =
-"goto free_skb" is called.
-> > If I remove the ret label and return after kfree_skb() it causes a kern=
-el crash.
-> > Keeping this change as it is.
-> >
-> > Please let me know if you have any further review comments on the v11 p=
-atch.
->
-> I'll look over v11.
->
-> But for the record, I meant something like this:
->
-> send_skb:
->      /* Prepend skb with frame type */
->      memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
->      skb_queue_tail(&nxpdev->txq, skb);
->
->      btnxpuart_tx_wakeup(nxpdev);
->      return 0;
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
-+1, perhaps it wouldn't be a bad idea to have the code above in a
-separate function e.g. btnxpuart_queue_skb since this code might be
-common.
+On Thu,  9 Mar 2023 10:20:30 +0200 you wrote:
+> tty_set_termios() never returns anything else than 0. Make the debug
+> prints to look directly into the new termios instead to check CRTSCTS
+> state.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/bluetooth/hci_ldisc.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
-> free_skb:
->      kfree_skb(skb);
->      return 0;
-> }
->
-> > We need to return from this function without clearing the skbs, unless =
-"goto free_skb" is called.
-> > If I remove the ret label and return after kfree_skb() it causes a kern=
-el crash.
-> > Keeping this change as it is.
-> >
-> > Please let me know if you have any further review comments on the v11 p=
-atch.
+Here is the summary with links:
+  - [3/8] Bluetooth: hci_ldisc: Fix tty_set_termios() return value assumptions
+    https://git.kernel.org/bluetooth/bluetooth-next/c/dd41882582a9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-
---=20
-Luiz Augusto von Dentz
