@@ -2,134 +2,105 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559A7C6FD1D
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 11:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2842FC7618A
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 11:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231912AbjCOLee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Mar 2023 07:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
+        id S231536AbjCOLsQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Mar 2023 07:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231890AbjCOLeR (ORCPT
+        with ESMTP id S230377AbjCOLsP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Mar 2023 07:34:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD4D6E684;
-        Wed, 15 Mar 2023 04:33:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 15 Mar 2023 07:48:15 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17B81C5AC;
+        Wed, 15 Mar 2023 04:48:13 -0700 (PDT)
+Received: from localhost (unknown [188.24.156.231])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F18DB818E7;
-        Wed, 15 Mar 2023 11:33:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC011C4339C;
-        Wed, 15 Mar 2023 11:33:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1678880001;
-        bh=d2exycdafMMG6CpW9HcLV7XdG3T6Bjc4TAN7D2+UIa8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aLue0dZ7BiNyq5XXc3gZg6GoNaJw36uXl4m1cJAaKAuvT3ZrbqZFgpHvXfJj1xEwN
-         DrBsI6juRK/RKlvfdglLZaG7Y7Ewo4s0jlaS4nFsXfoEOyvGWHy0Pl0hQNrLrTGr6h
-         chBa8MI53RBfK+RW4jJWiQunhjOIeVcGdA5yhJUA=
-Date:   Wed, 15 Mar 2023 12:33:18 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] tty: serdev: serdev-ttyport: set correct tty->dev for
- serdev framework
-Message-ID: <ZBGs/sWZGnIbqHbd@kroah.com>
-References: <20230315072143.7815-1-sherry.sun@nxp.com>
- <ZBF2Pyd4VSZq3HoA@kroah.com>
- <AS8PR04MB840408DC92F4001AB440353292BF9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9185666003AC;
+        Wed, 15 Mar 2023 11:48:11 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1678880891;
+        bh=QMdRoHZDA4Dzb4ZItQ6gCETIH96B+vuVwaf66nkbnMQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bj2xu6gGH92QEICLrGXFl386kUFglMAxEePZm/i3SmcJEKbpiM06LNDvC992CaPby
+         NM5t+sCRjcezTbr2NabWD08SWWwBmtibVsTapQxEK5mmB3qBMqm6A3ZR3zGvTqK2X/
+         kq1tpf4ei/myrqWjdSjmx33y1vbA3Buej4dDpK5R58c44aTHtliZQbl8QPa5lGIgMm
+         1Wde+f/mne8pQmnJ8dV2Z1/44cIZWLAcw0wV8eDw5pqm2mchbH57paOvrdGTazIPO3
+         Haypn6anq0fRgT56oE4lMtcT9wJBSs1PwqkREBZoFgiIm6TTJ8E18JZQyaJqgJ6+sB
+         vwoxdhZxRe/tA==
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+Subject: [PATCH 00/11] Enable I2S support for RK3588/RK3588S SoCs
+Date:   Wed, 15 Mar 2023 13:47:55 +0200
+Message-Id: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <AS8PR04MB840408DC92F4001AB440353292BF9@AS8PR04MB8404.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 09:49:53AM +0000, Sherry Sun wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: 2023年3月15日 15:40
-> > To: Sherry Sun <sherry.sun@nxp.com>
-> > Cc: jirislaby@kernel.org; robh@kernel.org; linux-serial@vger.kernel.org;
-> > linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>
-> > Subject: Re: [PATCH] tty: serdev: serdev-ttyport: set correct tty->dev for
-> > serdev framework
-> > 
-> > On Wed, Mar 15, 2023 at 03:21:43PM +0800, Sherry Sun wrote:
-> > > ttyport_open() calls tty_init_dev() to initialize a tty device, but
-> > > tty_get_device() cannot get the correct tty->dev for serdev tty in
-> > > alloc_tty_struct(), because serdev framework does not set tty_class,
-> > > so class_find_device_by_devt(tty_class, devt) may always return NULL.
-> > >
-> > > For serdev framework, we need to assign the correct ctrl->dev to
-> > > tty->dev.
-> > >
-> > > Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
-> > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > > ---
-> > >  drivers/tty/serdev/serdev-ttyport.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/tty/serdev/serdev-ttyport.c
-> > > b/drivers/tty/serdev/serdev-ttyport.c
-> > > index d367803e2044..bba37ab90215 100644
-> > > --- a/drivers/tty/serdev/serdev-ttyport.c
-> > > +++ b/drivers/tty/serdev/serdev-ttyport.c
-> > > @@ -112,6 +112,7 @@ static int ttyport_open(struct serdev_controller
-> > *ctrl)
-> > >  	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
-> > >  	if (IS_ERR(tty))
-> > >  		return PTR_ERR(tty);
-> > > +	tty->dev = &ctrl->dev;
-> > 
-> > What in-kernel driver needs this change?  How has it not been a problem so
-> > far?
-> > 
-> 
-> Hi Greg, I searched the users of tty->dev under serial floder, found the following drivers need it.
-> drivers/tty/serial/stm32-usart.c:780:                   pm_wakeup_event(tport->tty->dev, 0);
-> drivers/tty/serial/fsl_lpuart.c:3018:           tty_dev = tty->dev;
-> drivers/tty/serial/st-asc.c:266:                pm_wakeup_event(tport->tty->dev, 0);
-> 
-> Actually this issue was found when I tested the nxp Bluetooth driver which use serdev framework along with fsl_lpuart.c driver, when system is suspending, the following NULL pointer kernel panic is observed.
-> This is because lpuart driver will check the device_may_wakeup(tty->dev) to determine if wakeup register bits need to be enabled or not before suspend, it works well the the ldisc tty, but since serdev tty doesn't set correct tty->dev, so here cause the NULL pointer panic.
-> 
-> root@imx8ulpevk:~# echo mem > /sys/power/state
-> [   42.657779] PM: suspend entry (deep)
-> [   42.664333] Filesystems sync: 0.002 seconds
-> [   42.717624] Freezing user space processes ... (elapsed 0.001 seconds) done.
-> [   42.727063] OOM killer disabled.
-> [   42.730383] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-> [   42.753652] fec 29950000.ethernet eth0: Link is Down
-> [   42.780681] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000dc
-> [   42.789603] Mem abort info:
-> [   42.792430]   ESR = 0x0000000096000004
-> [   42.796242]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [   42.801661]   SET = 0, FnV = 0
-> ......
-> 
-> > And why are you saving off a reference counted pointer without
-> > incrementing the reference to the pointer?
-> 
-> Sorry, forgive me I am not clearly understand the requirement here, do you mean we need to add the following changes?
->     get_device(&ctrl->dev);
->     tty->dev = &ctrl->dev;
->     put_device((&ctrl->dev);
+There are five I2S/PCM/TDM controllers and two I2S/PCM controllers embedded 
+in the RK3588 and RK3588S SoCs. Furthermore, RK3588 provides four additional
+I2S/PCM/TDM controllers.
 
-Ick, no, only do put_device() when you are finished with the pointer and
-are not going to access it anymore.
+This patch series adds the required device tree nodes to support all the above.
 
-> And per my understanding, the reference count needs to be increased and decreased from the user side, here we only do a initialization for the tty->dev.
+Additionally, it enables analog audio support for the Rock 5B SBC, which has
+been used to test both audio playback and recording.
 
-Then something is not set up properly here, sorry.
+Note that some of the DT bindings fixes in this series are not particularly
+related to I2S, but are required for a proper dtbs_check validation.
 
-greg k-h
+Cristian Ciocaltea (11):
+  dt-bindings: firmware: arm,scmi: Document assigned-clocks and
+    assigned-clock-rates
+  dt-bindings: serial: snps-dw-apb-uart: Relax dma-names order
+    constraint
+  ASoC: dt-bindings: everest,es8316: Document audio graph port
+  ASoC: dt-bindings: rockchip: Document audio graph port
+  ASoC: dt-bindings: rockchip: i2s-tdm: Document audio graph port
+  ASoC: dt-bindings: rockchip: i2s-tdm: Document power-domains
+  ASoC: dt-bindings: rockchip: Add compatible for RK3588
+  ASoC: rockchip: i2s: Add compatible for RK3588
+  arm64: dts: rockchip: rk3588s: Add I2S nodes
+  arm64: dts: rockchip: rk3588: Add I2S nodes
+  arm64: dts: rockchip: rk3588-rock-5b: Add analog audio
+
+ .../bindings/firmware/arm,scmi.yaml           |   3 +
+ .../bindings/serial/snps-dw-apb-uart.yaml     |  10 +-
+ .../bindings/sound/everest,es8316.yaml        |   4 +
+ .../bindings/sound/rockchip,i2s-tdm.yaml      |   7 +
+ .../bindings/sound/rockchip-i2s.yaml          |   5 +
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      |  62 ++++++++
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi      |  68 ++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi     | 148 ++++++++++++++++++
+ sound/soc/rockchip/rockchip_i2s.c             |   1 +
+ 9 files changed, 305 insertions(+), 3 deletions(-)
+
+-- 
+2.39.1
+
