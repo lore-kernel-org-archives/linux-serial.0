@@ -2,448 +2,140 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F169C61DA4
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 10:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B9ADC61DA4
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 10:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231523AbjCOK4e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Mar 2023 06:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
+        id S231564AbjCOK5n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Mar 2023 06:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbjCOK4Z (ORCPT
+        with ESMTP id S231503AbjCOK50 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Mar 2023 06:56:25 -0400
-X-Greylist: delayed 72 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Mar 2023 03:56:23 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD57D3C797
-        for <linux-serial@vger.kernel.org>; Wed, 15 Mar 2023 03:56:23 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202303151055079af5e646ed48b8024b
-        for <linux-serial@vger.kernel.org>;
-        Wed, 15 Mar 2023 11:55:07 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=ZbVL3/moeGwSQA11hDTPtVbF3jWsDP4S28417aJ9KLc=;
- b=mKu+y+tplOeq+yydpRX5HuTN6sq3FFIQ8Z1XO+qhBr6zcsBieijVW6MrF8nTMnUVDNrWED
- ASeSChyFTXowQ98pjjw7ct4wR+Y73wES1vPP5Vyb1BGXrndP7/vReNfdXclS2GkDd+zBzMgU
- UIDkVGZTXbSJ2QXflDa56CwOSX5wU=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 1/3] tty: n_gsm: add ioctl for DLC specific parameter configuration
-Date:   Wed, 15 Mar 2023 11:53:52 +0100
-Message-Id: <20230315105354.6234-1-daniel.starke@siemens.com>
+        Wed, 15 Mar 2023 06:57:26 -0400
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2085.outbound.protection.outlook.com [40.107.241.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A537FD51;
+        Wed, 15 Mar 2023 03:57:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I2Y/SL6g+r0UWrMdAnthIV/hqqpT3XaYRZq3iXNic8kg+Ljd3eLTfUFTfqO1LNl7arjtFlAWlIzDcHfv7LN5EmHcwr6urD310+JUUpIdXSScI5kUW0ARL3M6c0HwbDF3+XmkmAUQXQdEoii/jJjiQhtohBRDXpwmzf8HMMmmWssrscE1bDeJ4VNmDRawYotzhVlMxCCaQ6b7l1m9bk+PgWHWqjHRFBz42SboeWYfzLx4vmnSIKgoycxSccCy0lF8KiHaoMuHXfXloRwGGmW4KVsEgo0lTdepfjklErXcOZql/GM+XuO9FHyKRDOhoisV37tDWUbRsXxeLaCILsXp/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xP8wSlLZUZNLfoCz/QYATrIvPkwpSUidNR5fT3E5Sto=;
+ b=IJx6iOFYQyfY/djZ06ohcmWHS5FktDDO1rqGs/I+RBm1jBsMIjVNaDINmIdcjxRlrIOaiR+JBL4gXTgzeKQi65NvMH6dxUeyfN3XAFTa47N73ozNvc+JOh/GHzOa3D0PrE58aDUFhzB6bo8lwqILALefcKu4D29hEuzyBwguE30t019DeFruVhTIYTzFZRW1o683S2dJIiS71QJLWbb4DIunQ1pcGrkgKSgZ+DFaNqGECNTkUQgozsB4e21K1xog0gnqZBdCS9Xttioe62XhJsirdCKKTghDB0sqa7hmZ1j0csuRUjVemJjXql8J8BF19k5p2/48SVsD+zxMH0gBzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xP8wSlLZUZNLfoCz/QYATrIvPkwpSUidNR5fT3E5Sto=;
+ b=ZagLTd/xgh0nO4F1PtmC4ckZjlauTC6/+bFquStCAak792rL7jALZpHyABMe4QPNXgBpOWEbwwKcydEa63v8DwVLMeRFZ23Q4zLhEkuBqQOB6TkcPUbZ5M1Xop4F9jhJh4WBhM8L8M3gfZWXYxqAzM9rIAiOqc0YeFcexw9RFJw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by AS1PR04MB9263.eurprd04.prod.outlook.com (2603:10a6:20b:4c5::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.26; Wed, 15 Mar
+ 2023 10:57:08 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3079:f55a:740e:c103]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3079:f55a:740e:c103%9]) with mapi id 15.20.6178.029; Wed, 15 Mar 2023
+ 10:57:08 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] tty: serdev: serdev-ttyport: add devt for ctrl->dev
+Date:   Wed, 15 Mar 2023 18:54:00 +0800
+Message-Id: <20230315105400.23426-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0030.apcprd02.prod.outlook.com
+ (2603:1096:3:18::18) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|AS1PR04MB9263:EE_
+X-MS-Office365-Filtering-Correlation-Id: b9cf8f53-2066-435e-0238-08db2544055d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AbHb5YG7ndKGvNsfWomtMcOEmp3Bul+Mw359qoG+J2Fh6QM5qzDts9yBslEWu4nm4EFeHyktqdKxN8On7JVP7J7A1AfOiSyR4w+pXsjpBr98VH7cYT3m6ch2EeWQ9qxyvMKAIllpbcHP/3Ii9w+xLE3CXaQ429L9E9j9vmUSiEXaOC/pcz9idQtVQRV4qqXqEpDD2QshQyBj1IO1WSWKHFeQOx0GSZ44M6JVet4PUs5KF75e+nCfOTYq4dOsTlrWJb7r1Lyk7wHI8gnamN2TOD+YU5WPcf7Ug3ovyFDLMgrLOzVRHv8qxF0QGIJxYtm05Aw7DPYLU+a/A8z0Fq4PE3u7Zde4AXNC5x7TrtyqE5Y82YouQjSsEB/Goez4AY/EtqkWOuk6wrPJkHC+WuGAsc5knSbH+w/CZodNrJ5O+ILJW/sEMSDjMrPzomFvikcHYu8Wpl1gGqY7vHC0hVA3zkickIAebKJpz154dAf1v5JrgiKMh3F3KeG+6BhtMjFf6k7DpNULqSauuQdJcQVy1m9OnzkBfFf8DOEwoMmhDONLSheVp5OIHj0STqGoNZA298KrzGZmidEHP8WOhptYNjDUrxEX3L3Dn8FGOJ/qCIIMbWTvHDljCElM6+/IbNo5aifE5+PMZVDfry3HFIcs0Sa4JEwFXQzg5GnEUwyQDJtRKKQi2+bvjCxDJo+4IdlA3oSfeX9HhIIG2E2XD5EEkg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(376002)(39860400002)(396003)(366004)(451199018)(2906002)(83380400001)(5660300002)(6486002)(6512007)(52116002)(36756003)(1076003)(26005)(6506007)(44832011)(6666004)(2616005)(316002)(186003)(86362001)(41300700001)(8936002)(66556008)(66946007)(38350700002)(38100700002)(478600001)(4326008)(8676002)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hUL88jz6qWz9urCKea+Envxim2EOdWsD9G6lzud9zL0BYTc42sicBjnKjxUv?=
+ =?us-ascii?Q?Cm7PRweEEZWoWliId34+AIAKY8tVjNS0QVFzQXVSFOERdhBVO3NmyVS2jNt6?=
+ =?us-ascii?Q?ceGkDaX9+eWwXIbxGQPJe80eIljNfW/Yfjgo1OS9Lv6ZjpBiI1lzhU31UlZb?=
+ =?us-ascii?Q?fTisZT7aHEVSbSa8G+FCR9dMCrq12Ws3OhPu8KeuruhD22sH/64QkAkkRisy?=
+ =?us-ascii?Q?fHVriMdB2nf1zGatYFEWgrGGAkHU+v5JOXk8W6syzIXOLzN2Zszq475Rm0XK?=
+ =?us-ascii?Q?4YVRGpvfC6ZpNyq8mCBG6ENknvpXdeVy0CGwFirq86TH9EAdedNQDTKterZF?=
+ =?us-ascii?Q?8BBP8iMyi2qBCdQq9F9vmuYsCQJ2uLs74Ihc8M3MCv1h47rthrynPH3fxE0b?=
+ =?us-ascii?Q?twxtbP7RgHs3a9sufNLagT79cU0ouCqqasaq25y9U16Fpgcsq6012Xc5Xm62?=
+ =?us-ascii?Q?d9ysKmJkDvwlmm6VFEBXWRXPlT6q+sgWCMdMbYrUguFVyTRqvPnm2/ho2+n4?=
+ =?us-ascii?Q?Sgq5+udAkfd8rDMPDTfB9ADttfBwtWreETS5tICfIXZ9Vux/ujqy4dRy2xCY?=
+ =?us-ascii?Q?Q2OknH9+VPVwdD0vNYP3fQxXgxocWbLL4W9Ra6wDzCuz03jx8mQQ47y/GAKR?=
+ =?us-ascii?Q?VQ26a0PB1SmEeqI9D+aUU8lMrmBcWBgkUvKLdKdKo7/NzXfUENPnA2Mn+RXk?=
+ =?us-ascii?Q?CfINHRNmdmlLXr5DpZVUl6VVNIW2SycX9KtSJfucjf5IeAU18FRg5hAx6KWN?=
+ =?us-ascii?Q?L9M5ChAwtf7FXmNK6oz7NvUP2clsZX+X5FtmNGMrrMlHdy41l7zNDxeG0UPM?=
+ =?us-ascii?Q?/GcwSzdnjqxxJzXW18B1S6Lo+y/wrAOzuAlEPo6ZKhteKF5OCIWXPu8Lseoa?=
+ =?us-ascii?Q?J0CIGjivBnA3veltRTFEgnNmF3w/hlatV4jPVU+dvh0XG6Y1gUJQkN8J4btw?=
+ =?us-ascii?Q?ZcX9mdZFlhhHKhXginVr3mpBilVVTDtoQlXIz/rGcu4nKCQCUzaXOivKUdJA?=
+ =?us-ascii?Q?/YuLwbRkKceHstS/GQ3+sL47wWEhRn9R7ozXyz+NYp+0wmhxkPfgEKPxBgcO?=
+ =?us-ascii?Q?OzrOHWraWQQ93RgPlANpTAD8gSOrPACi5SE3FBChzP2c5iqW8YQgJlG1CmSp?=
+ =?us-ascii?Q?aBaKzgNR2M917EFsa2IZZl1Kzm4PS9atT4N6D3e+VP0OwCXLnxU4Ew1g1MZW?=
+ =?us-ascii?Q?fxN5j7GVNXoUdMm+t0Itxj8+sUcOLstSk/fxErUbGXdqY2R64qe4BeuKAyrM?=
+ =?us-ascii?Q?zmOYn6eVgdNc+oobSU+6hMSDu/3BPz0lX9+9sVpxN3qFD8NYC3vQKJK68V/F?=
+ =?us-ascii?Q?z6CeM8Svha6f5TiywpJzsk6E+vnxdwQYf5qevraq3eRe62VE9scrLt/JSRwd?=
+ =?us-ascii?Q?ZWmnmUJ12eKZBBa3KT9nY2T9LcWnqy1GvhO1IFkGu571IYP9BbO1aGAqO4BO?=
+ =?us-ascii?Q?SaJgTkwH79R22mn0j1Btc3RwOmCqobPes1DKZukt5p37z/YSFsPmtzPexgv6?=
+ =?us-ascii?Q?hRhv3xR3v9c34BOrd1r4wg6rhZDhs/xTBHQQZb43LMVyQt6uzNmLSmXWss2O?=
+ =?us-ascii?Q?trKyNygduP0u8iCj3H+7Xayk/eLz4odthQVSFxSf?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9cf8f53-2066-435e-0238-08db2544055d
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2023 10:57:08.4323
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v1jWeLxnwscOEmeIrpiTxhLBC4Jm6fLzFW3Lyt5T3wzVknsCPGj5Rd15E64ZZKr1XCfDF4Pqpym6I+LTG047gg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9263
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+For serdev framework, the serdev_controller device is the tty device,
+which is also the child device of the uart_port device. If we don't set
+devt property for ctrl->dev, device_find_child(uport->dev, ...) may
+always return NULL in uart_suspend_port() function, which prevents us
+from properly handling uart port suspend, so fix it here.
 
-Parameter negotiation has been introduced with
-commit 92f1f0c3290d ("tty: n_gsm: add parameter negotiation support")
-
-However, means to set individual parameters per DLCI are not yet
-implemented. Furthermore, it is currently not possible to keep a DLCI half
-open until the user application sets the right parameters for it. This is
-required to allow a user application to set its specific parameters before
-the underlying link is established. Otherwise, the link is opened and
-re-established right afterwards if the user application sets incompatible
-parameters. This may be an unexpected behavior for the peer.
-
-Add parameter 'wait_config' to 'gsm_config' to support setups where the
-DLCI specific user application sets its specific parameters after open()
-and before the link gets fully established. Setting this to zero disables
-the user application specific DLCI configuration option.
-
-Add the ioctls 'GSMIOC_GETCONF_DLCI' and 'GSMIOC_SETCONF_DLCI' for the
-ldisc and virtual ttys. This gets/sets the DLCI specific parameters and may
-trigger a reconnect of the DLCI if incompatible values have been set. Only
-the parameters for the DLCI associated with the virtual tty can be set or
-retrieved if called on these.
-
-Add remark within the documentation to introduce the new ioctls.
-
-Link: https://lore.kernel.org/oe-kbuild-all/202302281856.S9Lz4gHB-lkp@intel.com/
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 ---
- Documentation/driver-api/tty/n_gsm.rst |   4 +
- drivers/tty/n_gsm.c                    | 192 ++++++++++++++++++++++++-
- include/uapi/linux/gsmmux.h            |  17 ++-
- 3 files changed, 207 insertions(+), 6 deletions(-)
+ drivers/tty/serdev/serdev-ttyport.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-v1 -> v2:
-Removed variable `dlci` in gsmld_ioctl() as reported by the kernel test
-robot. This is added again in patch 3/3.
-Removed casts in parameter range checks in gsm_dlci_config() according to
-the review remarks. Explicit casts in gsm_dlci_copy_config_values() remain
-as mentioned in the link below.
-Changed check of dlci->mtu to dc->mtu in gsm_dlci_config() according to the
-review remarks.
-
-Link: https://lore.kernel.org/all/DB9PR10MB58815DECFF54F6D69E738ED8E0AC9@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM/
-
-diff --git a/Documentation/driver-api/tty/n_gsm.rst b/Documentation/driver-api/tty/n_gsm.rst
-index 9447b8a3b8e2..c2624546fb8f 100644
---- a/Documentation/driver-api/tty/n_gsm.rst
-+++ b/Documentation/driver-api/tty/n_gsm.rst
-@@ -29,6 +29,8 @@ Config Initiator
- 
- #. Configure the mux using ``GSMIOC_GETCONF``/``GSMIOC_SETCONF`` ioctl.
- 
-+#. Configure DLCs using ``GSMIOC_GETCONF_DLCI``/``GSMIOC_SETCONF_DLCI`` ioctl for non-defaults.
-+
- #. Obtain base gsmtty number for the used serial port.
- 
-    Major parts of the initialization program
-@@ -120,6 +122,8 @@ Config Requester
- 
- #. Configure the mux using ``GSMIOC_GETCONF``/``GSMIOC_SETCONF`` ioctl.
- 
-+#. Configure DLCs using ``GSMIOC_GETCONF_DLCI``/``GSMIOC_SETCONF_DLCI`` ioctl for non-defaults.
-+
- #. Obtain base gsmtty number for the used serial port::
- 
-         #include <stdio.h>
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 7aa05ebed8e1..9d0e7701ffd4 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -128,6 +128,7 @@ struct gsm_msg {
- 
- enum gsm_dlci_state {
- 	DLCI_CLOSED,
-+	DLCI_WAITING_CONFIG,	/* Waiting for DLCI configuration from user */
- 	DLCI_CONFIGURE,		/* Sending PN (for adaption > 1) */
- 	DLCI_OPENING,		/* Sending SABM not seen UA */
- 	DLCI_OPEN,		/* SABM/UA complete */
-@@ -330,6 +331,7 @@ struct gsm_mux {
- 	unsigned int t3;	/* Power wake-up timer in seconds. */
- 	int n2;			/* Retry count */
- 	u8 k;			/* Window size */
-+	bool wait_config;	/* Wait for configuration by ioctl before DLCI open */
- 	u32 keep_alive;		/* Control channel keep-alive in 10ms */
- 
- 	/* Statistics (not currently exposed) */
-@@ -451,6 +453,7 @@ static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
- static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
- 								u8 ctrl);
- static int gsm_send_packet(struct gsm_mux *gsm, struct gsm_msg *msg);
-+static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr);
- static void gsmld_write_trigger(struct gsm_mux *gsm);
- static void gsmld_write_task(struct work_struct *work);
- 
-@@ -2280,6 +2283,7 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
- 
- 	switch (dlci->state) {
- 	case DLCI_CLOSED:
-+	case DLCI_WAITING_CONFIG:
- 	case DLCI_CLOSING:
- 		dlci->retries = gsm->n2;
- 		if (!need_pn) {
-@@ -2311,6 +2315,7 @@ static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index bba37ab90215..c58af8141380 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -268,6 +268,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
  {
- 	switch (dlci->state) {
- 	case DLCI_CLOSED:
-+	case DLCI_WAITING_CONFIG:
- 	case DLCI_CLOSING:
- 		dlci->state = DLCI_OPENING;
- 		break;
-@@ -2319,6 +2324,24 @@ static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
- 	}
- }
+ 	struct serdev_controller *ctrl;
+ 	struct serport *serport;
++	dev_t devt = MKDEV(drv->major, drv->minor_start) + idx;
+ 	int ret;
  
-+/**
-+ * gsm_dlci_set_wait_config	-	wait for channel configuration
-+ * @dlci: DLCI to configure
-+ *
-+ * Wait for a DLCI configuration from the application.
-+ */
-+static void gsm_dlci_set_wait_config(struct gsm_dlci *dlci)
-+{
-+	switch (dlci->state) {
-+	case DLCI_CLOSED:
-+	case DLCI_CLOSING:
-+		dlci->state = DLCI_WAITING_CONFIG;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- /**
-  *	gsm_dlci_begin_close	-	start channel open procedure
-  *	@dlci: DLCI to open
-@@ -2453,6 +2476,128 @@ static void gsm_kick_timer(struct timer_list *t)
- 		pr_info("%s TX queue stalled\n", __func__);
- }
+ 	if (!port || !drv || !parent)
+@@ -282,6 +283,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 	serport->tty_idx = idx;
+ 	serport->tty_drv = drv;
  
-+/**
-+ * gsm_dlci_copy_config_values	-	copy DLCI configuration
-+ * @dlci: source DLCI
-+ * @dc: configuration structure to fill
-+ */
-+static void gsm_dlci_copy_config_values(struct gsm_dlci *dlci, struct gsm_dlci_config *dc)
-+{
-+	memset(dc, 0, sizeof(*dc));
-+	dc->channel = (u32)dlci->addr;
-+	dc->adaption = (u32)dlci->adaption;
-+	dc->mtu = (u32)dlci->mtu;
-+	dc->priority = (u32)dlci->prio;
-+	if (dlci->ftype == UIH)
-+		dc->i = 1;
-+	else
-+		dc->i = 2;
-+	dc->k = (u32)dlci->k;
-+}
-+
-+/**
-+ * gsm_dlci_config	-	configure DLCI from configuration
-+ * @dlci: DLCI to configure
-+ * @dc: DLCI configuration
-+ * @open: open DLCI after configuration?
-+ */
-+static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, int open)
-+{
-+	struct gsm_mux *gsm;
-+	bool need_restart = false;
-+	bool need_open = false;
-+	unsigned int i;
-+
-+	/*
-+	 * Check that userspace doesn't put stuff in here to prevent breakages
-+	 * in the future.
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(dc->reserved); i++)
-+		if (dc->reserved[i])
-+			return -EINVAL;
-+
-+	if (!dlci)
-+		return -EINVAL;
-+	gsm = dlci->gsm;
-+
-+	/* Stuff we don't support yet - I frame transport */
-+	if (dc->adaption != 1 && dc->adaption != 2)
-+		return -EOPNOTSUPP;
-+	if (dc->mtu > MAX_MTU || dc->mtu < MIN_MTU || dc->mtu > gsm->mru)
-+		return -EINVAL;
-+	if (dc->priority >= 64)
-+		return -EINVAL;
-+	if (dc->i == 0 || dc->i > 2)  /* UIH and UI only */
-+		return -EINVAL;
-+	if (dc->k > 7)
-+		return -EINVAL;
-+
-+	/*
-+	 * See what is needed for reconfiguration
-+	 */
-+	/* Framing fields */
-+	if (dc->adaption != dlci->adaption)
-+		need_restart = true;
-+	if (dc->mtu != dlci->mtu)
-+		need_restart = true;
-+	if (dc->i != dlci->ftype)
-+		need_restart = true;
-+	/* Requires care */
-+	if (dc->priority != dlci->prio)
-+		need_restart = true;
-+
-+	if ((open && gsm->wait_config) || need_restart)
-+		need_open = true;
-+	if (dlci->state == DLCI_WAITING_CONFIG) {
-+		need_restart = false;
-+		need_open = true;
-+	}
-+
-+	/*
-+	 * Close down what is needed, restart and initiate the new
-+	 * configuration.
-+	 */
-+	if (need_restart) {
-+		gsm_dlci_begin_close(dlci);
-+		wait_event_interruptible(gsm->event, dlci->state == DLCI_CLOSED);
-+		if (signal_pending(current))
-+			return -EINTR;
-+	}
-+	/*
-+	 * Setup the new configuration values
-+	 */
-+	dlci->adaption = (int)dc->adaption;
-+
-+	if (dc->mtu)
-+		dlci->mtu = (unsigned int)dc->mtu;
-+	else
-+		dlci->mtu = gsm->mtu;
-+
-+	if (dc->priority)
-+		dlci->prio = (u8)dc->priority;
-+	else
-+		dlci->prio = roundup(dlci->addr + 1, 8) - 1;
-+
-+	if (dc->i == 1)
-+		dlci->ftype = UIH;
-+	else if (dc->i == 2)
-+		dlci->ftype = UI;
-+
-+	if (dc->k)
-+		dlci->k = (u8)dc->k;
-+	else
-+		dlci->k = gsm->k;
-+
-+	if (need_open) {
-+		if (gsm->initiator)
-+			gsm_dlci_begin_open(dlci);
-+		else
-+			gsm_dlci_set_opening(dlci);
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  *	Allocate/Free DLCI channels
-  */
-@@ -3078,6 +3223,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
- 	gsm->mru = 64;	/* Default to encoding 1 so these should be 64 */
- 	gsm->mtu = 64;
- 	gsm->dead = true;	/* Avoid early tty opens */
-+	gsm->wait_config = false; /* Disabled */
- 	gsm->keep_alive = 0;	/* Disabled */
++	ctrl->dev.devt = devt;
+ 	ctrl->ops = &ctrl_ops;
  
- 	/* Store the instance to the mux array or abort if no space is
-@@ -3218,6 +3364,7 @@ static void gsm_copy_config_ext_values(struct gsm_mux *gsm,
- 				       struct gsm_config_ext *ce)
- {
- 	memset(ce, 0, sizeof(*ce));
-+	ce->wait_config = gsm->wait_config ? 1 : 0;
- 	ce->keep_alive = gsm->keep_alive;
- }
- 
-@@ -3233,7 +3380,12 @@ static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
- 		if (ce->reserved[i])
- 			return -EINVAL;
- 
-+	/*
-+	 * Setup the new configuration values
-+	 */
-+	gsm->wait_config = ce->wait_config ? true : false;
- 	gsm->keep_alive = ce->keep_alive;
-+
- 	return 0;
- }
- 
-@@ -3436,6 +3588,14 @@ static int gsmld_open(struct tty_struct *tty)
- 	gsm->encoding = GSM_ADV_OPT;
- 	gsmld_attach_gsm(tty, gsm);
- 
-+	/* The mux will not be activated yet, we wait for correct
-+	 * configuration first.
-+	 */
-+	if (gsm->encoding == GSM_BASIC_OPT)
-+		gsm->receive = gsm0_receive;
-+	else
-+		gsm->receive = gsm1_receive;
-+
- 	return 0;
- }
- 
-@@ -4008,7 +4168,6 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
- {
- 	struct gsm_dlci *dlci = tty->driver_data;
- 	struct tty_port *port = &dlci->port;
--	struct gsm_mux *gsm = dlci->gsm;
- 
- 	port->count++;
- 	tty_port_tty_set(port, tty);
-@@ -4018,10 +4177,15 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
- 	   a DM straight back. This is ok as that will have caused a hangup */
- 	tty_port_set_initialized(port, true);
- 	/* Start sending off SABM messages */
--	if (gsm->initiator)
--		gsm_dlci_begin_open(dlci);
--	else
--		gsm_dlci_set_opening(dlci);
-+	if (!dlci->gsm->wait_config) {
-+		/* Start sending off SABM messages */
-+		if (dlci->gsm->initiator)
-+			gsm_dlci_begin_open(dlci);
-+		else
-+			gsm_dlci_set_opening(dlci);
-+	} else {
-+		gsm_dlci_set_wait_config(dlci);
-+	}
- 	/* And wait for virtual carrier */
- 	return tty_port_block_til_ready(port, tty, filp);
- }
-@@ -4142,6 +4306,7 @@ static int gsmtty_ioctl(struct tty_struct *tty,
- {
- 	struct gsm_dlci *dlci = tty->driver_data;
- 	struct gsm_netconfig nc;
-+	struct gsm_dlci_config dc;
- 	int index;
- 
- 	if (dlci->state == DLCI_CLOSED)
-@@ -4165,6 +4330,23 @@ static int gsmtty_ioctl(struct tty_struct *tty,
- 		gsm_destroy_network(dlci);
- 		mutex_unlock(&dlci->mutex);
- 		return 0;
-+	case GSMIOC_GETCONF_DLCI:
-+		if (copy_from_user(&dc, (void __user *)arg, sizeof(dc)))
-+			return -EFAULT;
-+		if (dc.channel != dlci->addr)
-+			return -EPERM;
-+		gsm_dlci_copy_config_values(dlci, &dc);
-+		if (copy_to_user((void __user *)arg, &dc, sizeof(dc)))
-+			return -EFAULT;
-+		return 0;
-+	case GSMIOC_SETCONF_DLCI:
-+		if (copy_from_user(&dc, (void __user *)arg, sizeof(dc)))
-+			return -EFAULT;
-+		if (dc.channel >= NUM_DLCI)
-+			return -EINVAL;
-+		if (dc.channel != 0 && dc.channel != dlci->addr)
-+			return -EPERM;
-+		return gsm_dlci_config(dlci, &dc, 1);
- 	case TIOCMIWAIT:
- 		return gsm_wait_modem_change(dlci, (u32)arg);
- 	default:
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index a703780aa095..eb67884e5f38 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -43,10 +43,25 @@ struct gsm_config_ext {
- 	__u32 keep_alive;	/* Control channel keep-alive in 1/100th of a
- 				 * second (0 to disable)
- 				 */
--	__u32 reserved[7];	/* For future use, must be initialized to zero */
-+	__u32 wait_config;	/* Wait for DLCI config before opening virtual link? */
-+	__u32 reserved[6];	/* For future use, must be initialized to zero */
- };
- 
- #define GSMIOC_GETCONF_EXT	_IOR('G', 5, struct gsm_config_ext)
- #define GSMIOC_SETCONF_EXT	_IOW('G', 6, struct gsm_config_ext)
- 
-+/* Set channel accordingly before calling GSMIOC_GETCONF_DLCI. */
-+struct gsm_dlci_config {
-+	__u32 channel;		/* DLCI (0 for the associated DLCI) */
-+	__u32 adaption;		/* Convergence layer type */
-+	__u32 mtu;		/* Maximum transfer unit */
-+	__u32 priority;		/* Priority (0 for default value) */
-+	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
-+	__u32 k;		/* Window size (0 for default value) */
-+	__u32 reserved[8];	/* For future use, must be initialized to zero */
-+};
-+
-+#define GSMIOC_GETCONF_DLCI	_IOWR('G', 7, struct gsm_dlci_config)
-+#define GSMIOC_SETCONF_DLCI	_IOW('G', 8, struct gsm_dlci_config)
-+
- #endif
+ 	port->client_ops = &client_ops;
 -- 
-2.34.1
+2.17.1
 
