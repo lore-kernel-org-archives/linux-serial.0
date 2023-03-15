@@ -2,185 +2,951 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1183C6FD1D
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 13:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4255C6FD1D
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 13:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbjCONhw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Mar 2023 09:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47508 "EHLO
+        id S232854AbjCON6M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Mar 2023 09:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232332AbjCONhu (ORCPT
+        with ESMTP id S232250AbjCON6L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Mar 2023 09:37:50 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on20615.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1a::615])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4051EBF1;
-        Wed, 15 Mar 2023 06:37:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FXOi14M19H+JK7Va9SMQEw2/H9gwAnWBk9wDpKNfwClTv+cGog1ixgVfAnV1wSuwKeEv/Mja4biZgM+/GikKS9kovYx/BQtc3kts37Qmlf45JrwlIOnXG5BpCmyXyiLAT6JCn3DrdNXZvOwgW06tD0pw8oyZyzLOoRt/EmEMuBcNWDQobjq0J9/rngK0dgPEDm37sphdYpd5HtT140H/lOPSfX1G3BPg8Byb/8Le434yJh5YxKAovKZ7NKIuLcBsjkGjLAbD3eEdrEa97DftuVpoz7b/91BOjGxBAb3k7IaiEbN3aN0ndcEYc6sY/Q3pfG7wfmydfmRaEe5byOaY6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DedZRVJ7oajOkKn+sg2W6ez4QIO48/KbCtCea5HbhFU=;
- b=k1973vXNuBUG54hkKnmgad3Yj7rvsczS8fSu4j8F68iPQ12Jv6u3wtW6U1LElAyhniwwqzVnRfdG/ee1qz5GJsFI7By3vnsT3JwP0/2SJHzldoDZ0JyFlsp+NpxhKbore3FBrbBjDI5/h37PKINkwMj9apgw+pIwLy1vBkHMnmpVT3ZW7qtXfnxOsyVDdvQbsZUX0Uh+0rGEmGrtC9wDARVfXyQpAH1rnqVsSkMMoa7GygjiuI/vD8PUWGwIWfpnBBWU0aMEXbUKj7m82d24aNWf99Re3J8BoVLnqf+U/k0D7hcQZPaICaci3s7mloLGoc10VXY0hpt05GuJ/9zrwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DedZRVJ7oajOkKn+sg2W6ez4QIO48/KbCtCea5HbhFU=;
- b=UyzwYUtxNQf1EyBKtMs3PTY35miQjq5rk2Q3r8McZLrw3JtaHciGO1aYoDabVWnQbuKs0hcupi/zsynySGIgoFmy9AimXQCd4/g2oEX5TgZ1zgvKUGJnL8ow3OSBWxILK3lNvqUoNR57CPud56hBj7QJYkBDRjOqulWAw/b3Yro=
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by PAXPR04MB8752.eurprd04.prod.outlook.com (2603:10a6:102:20e::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29; Wed, 15 Mar
- 2023 13:37:44 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::3079:f55a:740e:c103]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::3079:f55a:740e:c103%9]) with mapi id 15.20.6178.029; Wed, 15 Mar 2023
- 13:37:44 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH] tty: serdev: serdev-ttyport: add devt for ctrl->dev
-Thread-Topic: [PATCH] tty: serdev: serdev-ttyport: add devt for ctrl->dev
-Thread-Index: AQHZVyzjNbgw/TJEikSSFujd8MFQaK77rx4AgAAkpxA=
-Date:   Wed, 15 Mar 2023 13:37:44 +0000
-Message-ID: <AS8PR04MB84040E622C467609935FF2E192BF9@AS8PR04MB8404.eurprd04.prod.outlook.com>
-References: <20230315105400.23426-1-sherry.sun@nxp.com>
- <ZBGnniL7x5ENju6H@kroah.com>
-In-Reply-To: <ZBGnniL7x5ENju6H@kroah.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR04MB8404:EE_|PAXPR04MB8752:EE_
-x-ms-office365-filtering-correlation-id: 08e13327-aad1-4b44-a5d7-08db255a74ed
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6AJHOJ5S67ndJ1rPI0wyDswv8mFXfSYoC/K0vaae19WucnMWRNRPgDKNdiCPx0ZIoq+R3SNaNi4p0T/vA2SskX+gWUdiZwpdGd6nQeVLIacqyFXuuzsbn5v9qYamoZjgXNslsJ9EvOqXJNxdZo0fSppzmlYyavMAApCT3Wy618SJ91KG9TELRRtXXY6rTJSSp60vZDPgZXzx7GghuWVbo4CJa9XNqHSFD4XCkPy8JMjxzmHxYrOp/GRGLlwLUBdDJndUgGyaXb6TPNfpz3sVJNZ/SFNf5TQoBZqxiMguNEGizp7MzBlZv22XEwbgIymN2K9HEAop5NC25YaCOlwFdQIwYUeEiSLpD+qpZUTW/faAXP7H7YIeRq20bR3ZQv5ydpkzjjoxZKZy3NRJGCDEoNHsLX68IrU5V7zfD9I4VPEBrzN3jj0LYBJm/bkyh/IhsGSks35u17D7V5gQJIxZz+vLivzbWU5xx7Roki6GeKVkoOrw9hiIv9WGyZjsBds44D9czO8ZCWoUE4uGja+u92Xb85n5i2gzXyjZEVyCbm7N+0CXs0H0xQykhW3TrA16ytru1iQ0ylw1oJ26h8LbFQNw7g0by0lfZbCp8HEdU9/Um40UFptWWZtTYJIlTM/p/ixmUJFRgqd8dF91vlzsXJagfgBpXeufocr/yrIgmgQuIFtqNSsyV7bumjjOPOfW9UJ/7Zaa/p0nihnwnK5eSw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(376002)(396003)(366004)(346002)(451199018)(38070700005)(86362001)(33656002)(38100700002)(122000001)(2906002)(52536014)(41300700001)(5660300002)(8936002)(55016003)(4326008)(26005)(186003)(53546011)(6506007)(9686003)(83380400001)(316002)(54906003)(66446008)(76116006)(8676002)(66476007)(66946007)(6916009)(44832011)(478600001)(7696005)(71200400001)(66556008)(64756008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?Vk9uNjJFSjFxcWs3ejNlNm11WkpxOWRHUjRYUFRmSUNUdi9TeFdWVXhwc29N?=
- =?gb2312?B?cTJjSU5YZTBPNkRyc0NxQ25RQjJNY1ZUQTd3eHBhTVhMTVdkUlNpSVREaWR1?=
- =?gb2312?B?OWYrbEtCL2tOQ0RPWG9SODJwTFJqZFRCcDc3aENOMlFKUzhuMmlZbmQ2RXQx?=
- =?gb2312?B?ZnZLZEJjSm5FbElhald0U2ZYKysrQzZWZVdCOUJOMWJsYjFJZiszcGZlR1B2?=
- =?gb2312?B?UXZobHFDUW9xS0ZocG9NYTkvcnhIYWIxYzhDSUg1ZkVtaUd6MVVSZTREMUw4?=
- =?gb2312?B?V3hMNUcwVUxlQ1ViOWtFOGdLVVcwdWcyNU41b3F5dDdTakFYbWE3dFZqTEE2?=
- =?gb2312?B?Qlpidk03Si9zTjAyRUNSZEdlejNBQTUvNWExZHlkUUUvMG55am1hZEhrU0NZ?=
- =?gb2312?B?b0NXQmtMZER5Y0xmRjkyUWk5Wk1GZi8vZmhyazY2NzI0RFJwaHlxRE1JN1Uy?=
- =?gb2312?B?bXBubTE5T3E1TWI1UXJic3k0dSt0NTliZzZKUVlId0RkYWRRUm0yalJUcGIx?=
- =?gb2312?B?MzB1UG15NVFlbnNENGZURG8wWU9maDk3NysyUUlaYUI1ZGpoZkUvcDVvTHZP?=
- =?gb2312?B?LzFHNzBIN0grMnlTOGhSbktNVW5QbU5SZWVXN1JqZG5KbXh3U1pvTGMwNUI4?=
- =?gb2312?B?Y1gvUTJLWUlBeUJUNVB2NG4yQ0xBcWNha2dLek1nNnlZUmNmOGVPYVVSSEo3?=
- =?gb2312?B?VGd4WnRCTmZ1V3I4R2dlblRBVnlBYXg0eE1NMm96MTlWVG5OTVk3aHdkYmdt?=
- =?gb2312?B?dHVjbEJ3TEF1WXpnRytLbHFlZ3phTUFucUhhSklPR0hyNUwvejFtYmd6aURU?=
- =?gb2312?B?d3JzQi9GM0FqVzhvSHFGejVJQU9hK1RIQVp3UGZzUFdKbWxFMmYyV3hyank3?=
- =?gb2312?B?UjkwRFF3TGU2MFpuanJrMVA3OHRwRXY1cG1GVjc5alRmWUV4TVl2b2dzQnZu?=
- =?gb2312?B?bnVWcjc4OUgxTlRQb2l2M2JZTXRzOGhITjcrci9jWWZWRDZqb3RtaDEwanlp?=
- =?gb2312?B?eDFISnQwaFVQWjRYZ3lBaHh2UnNpdmh0U25pdVhEdVlUa3NnclZ3NlR4N2VH?=
- =?gb2312?B?eUUxWDBLVUFXT2xhUXptNCtzVzBzY1BiTHA5cTR4eE9ueEptZkpYY3FtT0Vj?=
- =?gb2312?B?ZUJ4QWR3Y2wxOGpHRFRFbzB4RG1URmpPY2UwNzJpL01sRUFPdjhCbWpkSi9B?=
- =?gb2312?B?VzZjMEd5NW0xdGV5cE5DQVJhYWxzeG9jZTd4VzlHcjl1OGprdURjWFFYRjF1?=
- =?gb2312?B?Wjd3Q2FMVHZpWEsrQ1hXU3JLMGVuaTlSWlVkd3E2bEVVUkNON2NWcG13UGVl?=
- =?gb2312?B?V2d1WjluT0xRV21BWVplQ0ZJaU5jTk9aOE52bnVGell3NU9wWmZHbkhxVmp4?=
- =?gb2312?B?SUsyc3BSOVhKeHBjUllqYVQ4REdQTVZqWklhUGxtajliQlFpQUs2VG9ScVhB?=
- =?gb2312?B?dzc2Nldvdkh6eGQzK0QrclJLTjVUeDJuVy9IQk04VlY4MmdzNmk2OFpMZlZp?=
- =?gb2312?B?Vjg1bWNtaXA1c3J5blVUdUFqcWYxUytEWVU0ekFSbFArYjJEZWdQbVQ0QXpP?=
- =?gb2312?B?Z1pWVmo4cjRHRWpmcWdJMjU3U2ROZEN6UHBMV3BseFRwVzBSRkkwUlV2bFhk?=
- =?gb2312?B?Mjg4eDVxRVFkV0h6QmpZalN6Wm10K2MxU2pDZU9PRVNoV2oyaFltRFdzc2Jo?=
- =?gb2312?B?dFBuOGtpempvUGtIOGIwaTg0eDBlcEpqZ2Y1MHQ5dFZuY2VUTWJTK21DeDRY?=
- =?gb2312?B?WVMzN1Z0eWhqQmlWTFdXQ2hGU0hhT3M0QzBxZGpCaklTUThoNUxuNGwvdjNF?=
- =?gb2312?B?S2NBMmlPYmFIUlh1QW1nd1VFdnhmYlV2UDJuTU9PckZmb3dnbTJlU0w2TFZR?=
- =?gb2312?B?M3pyVDBUd3lUeXpHTk9vL1lrUlk4cGNiTmZMWUp1UVFPL0lkTHF3d04yR1F3?=
- =?gb2312?B?aUsrbFBmTUlnWWtLWmxXWW5yNWJSRFVleTZJK29hUklZV2QwNFJsU0JwanNr?=
- =?gb2312?B?Q1YrM2tkL21sbDdrM2kyQWtJQkE5VXNjRWFLSGQ0QThJN2JJSmwwV24xUjNv?=
- =?gb2312?B?WVZtelRoUVFNRVJzdkd6ditXazFGcWZIb3BJUWtqbWJselN4emxoZ3F6aTk5?=
- =?gb2312?Q?XMh4=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Wed, 15 Mar 2023 09:58:11 -0400
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62DF93F3;
+        Wed, 15 Mar 2023 06:58:00 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aedf0.dynamic.kabel-deutschland.de [95.90.237.240])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 70CE361CC457B;
+        Wed, 15 Mar 2023 14:57:57 +0100 (CET)
+Message-ID: <838f77fd-fc25-da16-b0fb-14624e0bc33e@molgen.mpg.de>
+Date:   Wed, 15 Mar 2023 14:57:56 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08e13327-aad1-4b44-a5d7-08db255a74ed
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Mar 2023 13:37:44.1604
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +IgYLy7c2FfrRzWVit7BK4Ow/lEB4eXfSAPR06Sqk02R6qvdlXcVyMYEYpWQU0FuIzPyvjGWarcq22Y+tCwSFQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8752
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v12 4/4] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        alok.a.tiwari@oracle.com, hdanton@sina.com,
+        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
+        simon.horman@corigine.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
+        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
+References: <20230315120327.958413-1-neeraj.sanjaykale@nxp.com>
+ <20230315120327.958413-5-neeraj.sanjaykale@nxp.com>
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20230315120327.958413-5-neeraj.sanjaykale@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogR3JlZyBLSCA8Z3JlZ2to
-QGxpbnV4Zm91bmRhdGlvbi5vcmc+DQo+IFNlbnQ6IDIwMjPE6jPUwjE1yNUgMTk6MTANCj4gVG86
-IFNoZXJyeSBTdW4gPHNoZXJyeS5zdW5AbnhwLmNvbT4NCj4gQ2M6IGppcmlzbGFieUBrZXJuZWwu
-b3JnOyByb2JoQGtlcm5lbC5vcmc7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5j
-b20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHR0eTogc2VyZGV2OiBzZXJkZXYtdHR5cG9ydDog
-YWRkIGRldnQgZm9yIGN0cmwtPmRldg0KPiANCj4gT24gV2VkLCBNYXIgMTUsIDIwMjMgYXQgMDY6
-NTQ6MDBQTSArMDgwMCwgU2hlcnJ5IFN1biB3cm90ZToNCj4gPiBGb3Igc2VyZGV2IGZyYW1ld29y
-aywgdGhlIHNlcmRldl9jb250cm9sbGVyIGRldmljZSBpcyB0aGUgdHR5IGRldmljZSwNCj4gPiB3
-aGljaCBpcyBhbHNvIHRoZSBjaGlsZCBkZXZpY2Ugb2YgdGhlIHVhcnRfcG9ydCBkZXZpY2UuIElm
-IHdlIGRvbid0DQo+ID4gc2V0IGRldnQgcHJvcGVydHkgZm9yIGN0cmwtPmRldiwgZGV2aWNlX2Zp
-bmRfY2hpbGQodXBvcnQtPmRldiwgLi4uKQ0KPiA+IG1heSBhbHdheXMgcmV0dXJuIE5VTEwgaW4g
-dWFydF9zdXNwZW5kX3BvcnQoKSBmdW5jdGlvbiwgd2hpY2ggcHJldmVudHMNCj4gPiB1cyBmcm9t
-IHByb3Blcmx5IGhhbmRsaW5nIHVhcnQgcG9ydCBzdXNwZW5kLCBzbyBmaXggaXQgaGVyZS4NCj4g
-Pg0KPiA+IEZpeGVzOiBiZWQzNWM2ZGZhNmEgKCJzZXJkZXY6IGFkZCBhIHR0eSBwb3J0IGNvbnRy
-b2xsZXIgZHJpdmVyIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBTaGVycnkgU3VuIDxzaGVycnkuc3Vu
-QG54cC5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvdHR5L3NlcmRldi9zZXJkZXYtdHR5cG9y
-dC5jIHwgMiArKw0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspDQo+ID4NCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyZGV2L3NlcmRldi10dHlwb3J0LmMNCj4gPiBi
-L2RyaXZlcnMvdHR5L3NlcmRldi9zZXJkZXYtdHR5cG9ydC5jDQo+ID4gaW5kZXggYmJhMzdhYjkw
-MjE1Li5jNThhZjgxNDEzODAgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy90dHkvc2VyZGV2L3Nl
-cmRldi10dHlwb3J0LmMNCj4gPiArKysgYi9kcml2ZXJzL3R0eS9zZXJkZXYvc2VyZGV2LXR0eXBv
-cnQuYw0KPiA+IEBAIC0yNjgsNiArMjY4LDcgQEAgc3RydWN0IGRldmljZSAqc2VyZGV2X3R0eV9w
-b3J0X3JlZ2lzdGVyKHN0cnVjdA0KPiA+IHR0eV9wb3J0ICpwb3J0LCAgew0KPiA+ICAJc3RydWN0
-IHNlcmRldl9jb250cm9sbGVyICpjdHJsOw0KPiA+ICAJc3RydWN0IHNlcnBvcnQgKnNlcnBvcnQ7
-DQo+ID4gKwlkZXZfdCBkZXZ0ID0gTUtERVYoZHJ2LT5tYWpvciwgZHJ2LT5taW5vcl9zdGFydCkg
-KyBpZHg7DQo+ID4gIAlpbnQgcmV0Ow0KPiA+DQo+ID4gIAlpZiAoIXBvcnQgfHwgIWRydiB8fCAh
-cGFyZW50KQ0KPiA+IEBAIC0yODIsNiArMjgzLDcgQEAgc3RydWN0IGRldmljZSAqc2VyZGV2X3R0
-eV9wb3J0X3JlZ2lzdGVyKHN0cnVjdA0KPiB0dHlfcG9ydCAqcG9ydCwNCj4gPiAgCXNlcnBvcnQt
-PnR0eV9pZHggPSBpZHg7DQo+ID4gIAlzZXJwb3J0LT50dHlfZHJ2ID0gZHJ2Ow0KPiA+DQo+ID4g
-KwljdHJsLT5kZXYuZGV2dCA9IGRldnQ7DQo+IA0KPiBUaGlzIGZlZWxzIHdyb25nIGFzIHlvdSBj
-YW4ndCBqdXN0IGNyZWF0ZSBhIG1hZ2ljIGRldl90IG91dCBvZiBubyB3aGVyZSBhbmQNCj4gZXhw
-ZWN0IGl0IHRvIGJlIGhhbmRsZWQgcHJvcGVybHkuICBXaGVyZSBub3cgaXMgdGhpcyBkZXZfdCBl
-eHBvc2VkPw0KPiANCkhpIEdyZWcsDQpOb3cgZGV2X3QgaXMgdGhlIGtleSBwb2ludCB0byBnZXQg
-dGhlIHR0eS0+ZGV2IGluIHVhcnRfc3VzcGVuZF9wb3J0KCkvdWFydF9yZXN1bWVfcG9ydCgpIGFu
-ZCBhbGxvY190dHlfc3RydWN0KCksIGl0IGlzIHNldCBpbiB0dHlfcmVnaXN0ZXJfZGV2aWNlX2F0
-dHIoKSBidXQgbm90IGluIHNlcmRldl90dHlfcG9ydF9yZWdpc3RlcigpLg0KDQpUbyBiZSBmcmFu
-aywgSSBhbSBhbHNvIG5vdCBzdXJlIGlmIHRoaXMgaXMgdGhlIHJpZ2h0IHdheSB0byBmaXggdGhl
-IGlzc3VlLCBtYXliZSB3ZSBjYW4gaGF2ZSBtb3JlIGRpc2N1c3Npb24gaGVyZSByZWdhcmRpbmcg
-aG93IHRvIGdldCB0aGUgY29ycmVjdCB0dHlfZGV2IGluIHVhcnRfc3VzcGVuZF9wb3J0KCkuDQpB
-dCBsZWFzdCB3aXRoIHRoZSBjb2RlIGxvZ2ljIGluIHNlcmRldiBmcmFtZXdvcmsgd2UgYXJlIHVz
-aW5nIG5vdywgd2Ugd2lsbCBhbHdheXMgZ2V0IE5VTEwgdHR5X2RldiBmcm9tIGRldmljZV9maW5k
-X2NoaWxkKCkuIEkgYmVsaWV2ZSB0aGlzIGlzIG5vdCB3aGF0IHdlIHdhbnQgaGVyZS4NCg0Kc3Rh
-dGljIGludCBzZXJpYWxfbWF0Y2hfcG9ydChzdHJ1Y3QgZGV2aWNlICpkZXYsIHZvaWQgKmRhdGEp
-DQp7DQogICAgc3RydWN0IHVhcnRfbWF0Y2ggKm1hdGNoID0gZGF0YTsNCiAgICBzdHJ1Y3QgdHR5
-X2RyaXZlciAqdHR5X2RydiA9IG1hdGNoLT5kcml2ZXItPnR0eV9kcml2ZXI7DQogICAgZGV2X3Qg
-ZGV2dCA9IE1LREVWKHR0eV9kcnYtPm1ham9yLCB0dHlfZHJ2LT5taW5vcl9zdGFydCkgKw0KICAg
-ICAgICBtYXRjaC0+cG9ydC0+bGluZTsNCg0KICAgIHJldHVybiBkZXYtPmRldnQgPT0gZGV2dDsg
-LyogQWN0dWFsbHksIG9ubHkgb25lIHR0eSBwZXIgcG9ydCAqLw0KfQ0KaW50IHVhcnRfc3VzcGVu
-ZF9wb3J0KHN0cnVjdCB1YXJ0X2RyaXZlciAqZHJ2LCBzdHJ1Y3QgdWFydF9wb3J0ICp1cG9ydCkN
-CnsNCiAgICBzdHJ1Y3QgdWFydF9zdGF0ZSAqc3RhdGUgPSBkcnYtPnN0YXRlICsgdXBvcnQtPmxp
-bmU7DQogICAgc3RydWN0IHR0eV9wb3J0ICpwb3J0ID0gJnN0YXRlLT5wb3J0Ow0KICAgIHN0cnVj
-dCBkZXZpY2UgKnR0eV9kZXY7DQogICAgc3RydWN0IHVhcnRfbWF0Y2ggbWF0Y2ggPSB7dXBvcnQs
-IGRydn07DQoNCiAgICBtdXRleF9sb2NrKCZwb3J0LT5tdXRleCk7DQoNCiAgICB0dHlfZGV2ID0g
-ZGV2aWNlX2ZpbmRfY2hpbGQodXBvcnQtPmRldiwgJm1hdGNoLCBzZXJpYWxfbWF0Y2hfcG9ydCk7
-DQogICAgaWYgKHVwb3J0LT5saW5lID09IDIpDQogICAgaWYgKHR0eV9kZXYgJiYgZGV2aWNlX21h
-eV93YWtldXAodHR5X2RldikpIHsNCiAgICAgICAgZW5hYmxlX2lycV93YWtlKHVwb3J0LT5pcnEp
-Ow0KICAgICAgICBwdXRfZGV2aWNlKHR0eV9kZXYpOw0KICAgICAgICBtdXRleF91bmxvY2soJnBv
-cnQtPm11dGV4KTsNCiAgICAgICAgcmV0dXJuIDA7DQogICAgfQ0KICAgIHB1dF9kZXZpY2UodHR5
-X2Rldik7DQouLi4NCg0KQmVzdCBSZWdhcmRzDQpTaGVycnkNCg0KDQo+IFNvbWV0aGluZyBlbHNl
-IGZlZWxzIHdyb25nIGhlcmUsIHNvcnJ5LCBJIGRvIG5vdCB0aGluayB0aGlzIGlzIGNvcnJlY3Qu
-DQo+IA0KPiB0aGFua3MsDQo+IA0KPiBncmVnIGstaA0K
+Dear Neeraj,
+
+
+Thank you for your patch.
+
+
+Am 15.03.23 um 13:03 schrieb Neeraj Sanjay Kale:
+> This adds a driver based on serdev driver for the NXP BT serial protocol
+> based on running H:4, which can enable the built-in Bluetooth device
+> inside an NXP BT chip.
+> 
+> This driver has Power Save feature that will put the chip into sleep state
+> whenever there is no activity for 2000ms, and will be woken up when any
+
+Interesting. Are two seconds recommended in some specification?
+
+> activity is to be initiated over UART.
+> 
+> This driver enables the power save feature by default by sending the vendor
+> specific commands to the chip during setup.
+> 
+> During setup, the driver checks if a FW is already running on the chip
+> by waiting for the bootloader signature, and downloads device specific FW
+> file into the chip over UART if bootloader signature is received..
+> 
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+
+[…]
+
+> ---
+>   MAINTAINERS                   |    1 +
+>   drivers/bluetooth/Kconfig     |   12 +
+>   drivers/bluetooth/Makefile    |    1 +
+>   drivers/bluetooth/btnxpuart.c | 1289 +++++++++++++++++++++++++++++++++
+>   4 files changed, 1303 insertions(+)
+>   create mode 100644 drivers/bluetooth/btnxpuart.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 030ec6fe89df..fdb9b0788c89 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -22840,6 +22840,7 @@ M:	Amitkumar Karwar <amitkumar.karwar@nxp.com>
+>   M:	Neeraj Kale <neeraj.sanjaykale@nxp.com>
+>   S:	Maintained
+>   F:	Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
+> +F:	drivers/bluetooth/btnxpuart.c
+>   
+>   THE REST
+>   M:	Linus Torvalds <torvalds@linux-foundation.org>
+> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+> index 5a1a7bec3c42..0703bdd44140 100644
+> --- a/drivers/bluetooth/Kconfig
+> +++ b/drivers/bluetooth/Kconfig
+> @@ -465,4 +465,16 @@ config BT_VIRTIO
+>   	  Say Y here to compile support for HCI over Virtio into the
+>   	  kernel or say M to compile as a module.
+>   
+> +config BT_NXPUART
+> +	tristate "NXP protocol support"
+> +	depends on SERIAL_DEV_BUS
+> +	select CRC32
+> +	help
+> +	  NXP is serial driver required for NXP Bluetooth
+
+NXP UART is a serial driver …?
+
+> +	  devices with UART interface.
+> +
+> +	  Say Y here to compile support for NXP Bluetooth UART device into
+> +	  the kernel, or say M here to compile as a module (btnxpuart).
+> +
+> +
+>   endmenu
+> diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
+> index e0b261f24fc9..7a5967e9ac48 100644
+> --- a/drivers/bluetooth/Makefile
+> +++ b/drivers/bluetooth/Makefile
+> @@ -29,6 +29,7 @@ obj-$(CONFIG_BT_QCA)		+= btqca.o
+>   obj-$(CONFIG_BT_MTK)		+= btmtk.o
+>   
+>   obj-$(CONFIG_BT_VIRTIO)		+= virtio_bt.o
+> +obj-$(CONFIG_BT_NXPUART)	+= btnxpuart.o
+>   
+>   obj-$(CONFIG_BT_HCIUART_NOKIA)	+= hci_nokia.o
+>   
+> diff --git a/drivers/bluetooth/btnxpuart.c b/drivers/bluetooth/btnxpuart.c
+> new file mode 100644
+> index 000000000000..1483481f7cb0
+> --- /dev/null
+> +++ b/drivers/bluetooth/btnxpuart.c
+> @@ -0,0 +1,1289 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + *  NXP Bluetooth driver
+> + *  Copyright 2018-2023 NXP
+
+If it’s a new file, how can copyright be from before 2023?
+
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +
+> +#include <linux/serdev.h>
+> +#include <linux/of.h>
+> +#include <linux/skbuff.h>
+> +#include <asm/unaligned.h>
+> +#include <linux/firmware.h>
+> +#include <linux/string.h>
+> +#include <linux/crc8.h>
+> +#include <linux/crc32.h>
+> +#include <linux/string_helpers.h>
+> +
+> +#include <net/bluetooth/bluetooth.h>
+> +#include <net/bluetooth/hci_core.h>
+> +
+> +#include "h4_recv.h"
+> +
+> +#define MANUFACTURER_NXP		37
+> +
+> +#define BTNXPUART_TX_STATE_ACTIVE	1
+> +#define BTNXPUART_FW_DOWNLOADING	2
+> +#define BTNXPUART_CHECK_BOOT_SIGNATURE	3
+> +#define BTNXPUART_SERDEV_OPEN		4
+> +
+> +#define FIRMWARE_W8987	"nxp/uartuart8987_bt.bin"
+> +#define FIRMWARE_W8997	"nxp/uartuart8997_bt_v4.bin"
+> +#define FIRMWARE_W9098	"nxp/uartuart9098_bt_v1.bin"
+> +#define FIRMWARE_IW416	"nxp/uartiw416_bt_v0.bin"
+> +#define FIRMWARE_IW612	"nxp/uartspi_n61x_v1.bin.se"
+> +
+> +#define CHIP_ID_W9098		0x5c03
+> +#define CHIP_ID_IW416		0x7201
+> +#define CHIP_ID_IW612		0x7601
+> +
+> +#define HCI_NXP_PRI_BAUDRATE	115200
+> +#define HCI_NXP_SEC_BAUDRATE	3000000
+> +
+> +#define MAX_FW_FILE_NAME_LEN    50
+> +
+> +/* Default ps timeout period in milli-second */
+
+milliseconds
+
+> +#define PS_DEFAULT_TIMEOUT_PERIOD     2000
+
+Please append the unit to the macro name.
+
+> +
+> +/* wakeup methods */
+> +#define WAKEUP_METHOD_DTR       0
+> +#define WAKEUP_METHOD_BREAK     1
+> +#define WAKEUP_METHOD_EXT_BREAK 2
+> +#define WAKEUP_METHOD_RTS       3
+> +#define WAKEUP_METHOD_INVALID   0xff
+> +
+> +/* power save mode status */
+> +#define PS_MODE_DISABLE         0
+> +#define PS_MODE_ENABLE          1
+> +
+> +/* Power Save Commands to ps_work_func  */
+> +#define PS_CMD_EXIT_PS          1
+> +#define PS_CMD_ENTER_PS         2
+> +
+> +/* power save state */
+> +#define PS_STATE_AWAKE          0
+> +#define PS_STATE_SLEEP          1
+> +
+> +/* Bluetooth vendor command : Sleep mode */
+> +#define HCI_NXP_AUTO_SLEEP_MODE	0xfc23
+> +/* Bluetooth vendor command : Wakeup method */
+> +#define HCI_NXP_WAKEUP_METHOD	0xfc53
+> +/* Bluetooth vendor command : Set operational baudrate */
+> +#define HCI_NXP_SET_OPER_SPEED	0xfc09
+> +/* Bluetooth vendor command: Independent Reset */
+> +#define HCI_NXP_IND_RESET	0xfcfc
+> +
+> +/* Bluetooth Power State : Vendor cmd params */
+> +#define BT_PS_ENABLE			0x02
+> +#define BT_PS_DISABLE			0x03
+> +
+> +/* Bluetooth Host Wakeup Methods */
+> +#define BT_HOST_WAKEUP_METHOD_NONE      0x00
+> +#define BT_HOST_WAKEUP_METHOD_DTR       0x01
+> +#define BT_HOST_WAKEUP_METHOD_BREAK     0x02
+> +#define BT_HOST_WAKEUP_METHOD_GPIO      0x03
+> +
+> +/* Bluetooth Chip Wakeup Methods */
+> +#define BT_CTRL_WAKEUP_METHOD_DSR       0x00
+> +#define BT_CTRL_WAKEUP_METHOD_BREAK     0x01
+> +#define BT_CTRL_WAKEUP_METHOD_GPIO      0x02
+> +#define BT_CTRL_WAKEUP_METHOD_EXT_BREAK 0x04
+> +#define BT_CTRL_WAKEUP_METHOD_RTS       0x05
+> +
+> +struct ps_data {
+> +	u8    target_ps_mode;	/* ps mode to be set */
+> +	u8    cur_psmode;	/* current ps_mode */
+> +	u8    ps_state;		/* controller's power save state */
+> +	u8    ps_cmd;
+> +	u8    h2c_wakeupmode;
+> +	u8    cur_h2c_wakeupmode;
+> +	u8    c2h_wakeupmode;
+> +	u8    c2h_wakeup_gpio;
+> +	u8    h2c_wakeup_gpio;
+> +	bool  driver_sent_cmd;
+> +	u16   h2c_ps_interval;
+> +	u16   c2h_ps_interval;
+> +	struct hci_dev *hdev;
+> +	struct work_struct work;
+> +	struct timer_list ps_timer;
+> +};
+> +
+> +struct wakeup_cmd_payload {
+> +	u8 c2h_wakeupmode;
+> +	u8 c2h_wakeup_gpio;
+> +	u8 h2c_wakeupmode;
+> +	u8 h2c_wakeup_gpio;
+> +} __packed;
+> +
+> +struct psmode_cmd_payload {
+> +	u8 ps_cmd;
+> +	__le16 c2h_ps_interval;
+> +} __packed;
+> +
+> +struct btnxpuart_data {
+> +	bool fw_dnld_use_high_baudrate;
+
+It’d write `download` instead of dnld.
+
+> +	const u8 *fw_name;
+
+Why not char?
+
+> +};
+> +
+> +struct btnxpuart_dev {
+> +	struct hci_dev *hdev;
+> +	struct serdev_device *serdev;
+> +
+> +	struct work_struct tx_work;
+> +	unsigned long tx_state;
+> +	struct sk_buff_head txq;
+> +	struct sk_buff *rx_skb;
+> +
+> +	const struct firmware *fw;
+> +	u8 fw_name[MAX_FW_FILE_NAME_LEN];
+> +	u32 fw_dnld_v1_offset;
+> +	u32 fw_v1_sent_bytes;
+> +	u32 fw_v3_offset_correction;
+> +	u32 fw_v1_expected_len;
+> +	wait_queue_head_t fw_dnld_done_wait_q;
+> +	wait_queue_head_t check_boot_sign_wait_q;
+> +
+> +	u32 new_baudrate;
+> +	u32 current_baudrate;
+> +	u32 fw_init_baudrate;
+> +	bool timeout_changed;
+> +	bool baudrate_changed;
+> +
+> +	struct ps_data psdata;
+> +	struct btnxpuart_data *nxp_data;
+> +};
+> +
+> +#define NXP_V1_FW_REQ_PKT	0xa5
+> +#define NXP_V1_CHIP_VER_PKT	0xaa
+> +#define NXP_V3_FW_REQ_PKT	0xa7
+> +#define NXP_V3_CHIP_VER_PKT	0xab
+> +
+> +#define NXP_ACK_V1		0x5a
+> +#define NXP_NAK_V1		0xbf
+> +#define NXP_ACK_V3		0x7a
+> +#define NXP_NAK_V3		0x7b
+> +#define NXP_CRC_ERROR_V3	0x7c
+> +
+> +#define HDR_LEN			16
+> +
+> +#define NXP_RECV_FW_REQ_V1 \
+> +	.type = NXP_V1_FW_REQ_PKT, \
+> +	.hlen = 4, \
+> +	.loff = 0, \
+> +	.lsize = 0, \
+> +	.maxlen = 4
+> +
+> +#define NXP_RECV_CHIP_VER_V3 \
+> +	.type = NXP_V3_CHIP_VER_PKT, \
+> +	.hlen = 4, \
+> +	.loff = 0, \
+> +	.lsize = 0, \
+> +	.maxlen = 4
+> +
+> +#define NXP_RECV_FW_REQ_V3 \
+> +	.type = NXP_V3_FW_REQ_PKT, \
+> +	.hlen = 9, \
+> +	.loff = 0, \
+> +	.lsize = 0, \
+> +	.maxlen = 9
+> +
+> +struct v1_data_req {
+> +	__le16 len;
+> +	__le16 len_comp;
+> +} __packed;
+> +
+> +struct v3_data_req {
+> +	__le16 len;
+> +	__le32 offset;
+> +	__le16 error;
+> +	u8 crc;
+> +} __packed;
+> +
+> +struct v3_start_ind {
+> +	__le16 chip_id;
+> +	u8 loader_ver;
+> +	u8 crc;
+> +} __packed;
+> +
+> +/* UART register addresses of BT chip */
+> +#define CLKDIVADDR	0x7f00008f
+> +#define UARTDIVADDR	0x7f000090
+> +#define UARTMCRADDR	0x7f000091
+> +#define UARTREINITADDR	0x7f000092
+> +#define UARTICRADDR	0x7f000093
+> +#define UARTFCRADDR	0x7f000094
+> +
+> +#define MCR		0x00000022
+> +#define INIT		0x00000001
+> +#define ICR		0x000000c7
+> +#define FCR		0x000000c7
+> +
+> +#define POLYNOMIAL8	0x07
+> +
+> +struct uart_reg {
+> +	__le32 address;
+> +	__le32 value;
+> +} __packed;
+> +
+> +struct uart_config {
+> +	struct uart_reg clkdiv;
+> +	struct uart_reg uartdiv;
+> +	struct uart_reg mcr;
+> +	struct uart_reg re_init;
+> +	struct uart_reg icr;
+> +	struct uart_reg fcr;
+> +	__be32 crc;
+> +} __packed;
+> +
+> +struct nxp_bootloader_cmd {
+> +	__le32 header;
+> +	__le32 arg;
+> +	__le32 payload_len;
+> +	__be32 crc;
+> +} __packed;
+> +
+> +static u8 crc8_table[CRC8_TABLE_SIZE];
+> +
+> +/* Default configurations */
+> +#define DEFAULT_H2C_WAKEUP_MODE	WAKEUP_METHOD_BREAK
+> +#define DEFAULT_PS_MODE		PS_MODE_ENABLE
+> +#define FW_INIT_BAUDRATE	HCI_NXP_PRI_BAUDRATE
+> +
+> +static struct sk_buff *nxp_drv_send_cmd(struct hci_dev *hdev, u16 opcode,
+> +					u32 plen,
+> +					void *param)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +	struct sk_buff *skb;
+> +
+> +	/* set flag to prevent nxp_enqueue from parsing values from this command and
+> +	 * calling hci_cmd_sync_queue() again.
+> +	 */
+> +	psdata->driver_sent_cmd = true;
+> +	skb = __hci_cmd_sync(hdev, opcode, plen, param, HCI_CMD_TIMEOUT);
+> +	psdata->driver_sent_cmd = false;
+> +
+> +	return skb;
+> +}
+> +
+> +static void btnxpuart_tx_wakeup(struct btnxpuart_dev *nxpdev)
+> +{
+> +	if (schedule_work(&nxpdev->tx_work))
+> +		set_bit(BTNXPUART_TX_STATE_ACTIVE, &nxpdev->tx_state);
+> +}
+> +
+> +/* NXP Power Save Feature */
+> +static void ps_start_timer(struct btnxpuart_dev *nxpdev)
+> +{
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +
+> +	if (!psdata)
+> +		return;
+> +
+> +	if (psdata->cur_psmode == PS_MODE_ENABLE)
+> +		mod_timer(&psdata->ps_timer, jiffies + msecs_to_jiffies(psdata->h2c_ps_interval));
+> +}
+> +
+> +static void ps_cancel_timer(struct btnxpuart_dev *nxpdev)
+> +{
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +
+> +	flush_work(&psdata->work);
+> +	del_timer_sync(&psdata->ps_timer);
+> +}
+> +
+> +static void ps_control(struct hci_dev *hdev, u8 ps_state)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +	int status;
+> +
+> +	if (psdata->ps_state == ps_state ||
+> +	    !test_bit(BTNXPUART_SERDEV_OPEN, &nxpdev->tx_state))
+> +		return;
+> +
+> +	switch (psdata->cur_h2c_wakeupmode) {
+> +	case WAKEUP_METHOD_DTR:
+> +		if (ps_state == PS_STATE_AWAKE)
+> +			status = serdev_device_set_tiocm(nxpdev->serdev, TIOCM_DTR, 0);
+> +		else
+> +			status = serdev_device_set_tiocm(nxpdev->serdev, 0, TIOCM_DTR);
+> +		break;
+> +	case WAKEUP_METHOD_BREAK:
+> +	default:
+> +		if (ps_state == PS_STATE_AWAKE)
+> +			status = serdev_device_break_ctl(nxpdev->serdev, 0);
+> +		else
+> +			status = serdev_device_break_ctl(nxpdev->serdev, -1);
+> +		bt_dev_dbg(hdev, "Set UART break: %s, status=%d",
+> +			   str_on_off(ps_state == PS_STATE_SLEEP), status);
+> +		break;
+> +	}
+> +	if (!status)
+> +		psdata->ps_state = ps_state;
+> +	if (ps_state == PS_STATE_AWAKE)
+> +		btnxpuart_tx_wakeup(nxpdev);
+> +}
+> +
+> +static void ps_work_func(struct work_struct *work)
+> +{
+> +	struct ps_data *data = container_of(work, struct ps_data, work);
+> +
+> +	if (data->ps_cmd == PS_CMD_ENTER_PS && data->cur_psmode == PS_MODE_ENABLE)
+> +		ps_control(data->hdev, PS_STATE_SLEEP);
+> +	else if (data->ps_cmd == PS_CMD_EXIT_PS)
+> +		ps_control(data->hdev, PS_STATE_AWAKE);
+> +}
+> +
+> +static void ps_timeout_func(struct timer_list *t)
+> +{
+> +	struct ps_data *data = from_timer(data, t, ps_timer);
+> +	struct hci_dev *hdev = data->hdev;
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +
+> +	if (test_bit(BTNXPUART_TX_STATE_ACTIVE, &nxpdev->tx_state)) {
+> +		ps_start_timer(nxpdev);
+> +	} else {
+> +		data->ps_cmd = PS_CMD_ENTER_PS;
+> +		schedule_work(&data->work);
+> +	}
+> +}
+> +
+> +static int ps_init_work(struct hci_dev *hdev)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +
+> +	psdata->h2c_ps_interval = PS_DEFAULT_TIMEOUT_PERIOD;
+> +	psdata->ps_state = PS_STATE_AWAKE;
+> +	psdata->target_ps_mode = DEFAULT_PS_MODE;
+> +	psdata->hdev = hdev;
+> +	psdata->c2h_wakeupmode = BT_HOST_WAKEUP_METHOD_NONE;
+> +	psdata->c2h_wakeup_gpio = 0xff;
+> +
+> +	switch (DEFAULT_H2C_WAKEUP_MODE) {
+> +	case WAKEUP_METHOD_DTR:
+> +		psdata->h2c_wakeupmode = WAKEUP_METHOD_DTR;
+> +		break;
+> +	case WAKEUP_METHOD_BREAK:
+> +	default:
+> +		psdata->h2c_wakeupmode = WAKEUP_METHOD_BREAK;
+> +		break;
+> +	}
+> +	psdata->cur_psmode = PS_MODE_DISABLE;
+> +	psdata->cur_h2c_wakeupmode = WAKEUP_METHOD_INVALID;
+> +	INIT_WORK(&psdata->work, ps_work_func);
+> +
+> +	return 0;
+> +}
+> +
+> +static void ps_init_timer(struct hci_dev *hdev)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +
+> +	timer_setup(&psdata->ps_timer, ps_timeout_func, 0);
+> +}
+> +
+> +static void ps_wakeup(struct btnxpuart_dev *nxpdev)
+> +{
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +
+> +	if (psdata->ps_state != PS_STATE_AWAKE) {
+> +		psdata->ps_cmd = PS_CMD_EXIT_PS;
+> +		schedule_work(&psdata->work);
+> +	}
+> +}
+> +
+> +static int send_ps_cmd(struct hci_dev *hdev, void *data)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +	struct psmode_cmd_payload pcmd;
+> +	struct sk_buff *skb;
+> +	u8 *status;
+> +
+> +	if (psdata->target_ps_mode == PS_MODE_ENABLE)
+> +		pcmd.ps_cmd = BT_PS_ENABLE;
+> +	else
+> +		pcmd.ps_cmd = BT_PS_DISABLE;
+> +	pcmd.c2h_ps_interval = __cpu_to_le16(psdata->c2h_ps_interval);
+> +
+> +	skb = nxp_drv_send_cmd(hdev, HCI_NXP_AUTO_SLEEP_MODE, sizeof(pcmd), &pcmd);
+> +	if (IS_ERR(skb)) {
+> +		bt_dev_err(hdev, "Setting Power Save mode failed (%ld)", PTR_ERR(skb));
+> +		return PTR_ERR(skb);
+> +	}
+> +
+> +	status = skb_pull_data(skb, 1);
+> +	if (status) {
+> +		if (!*status)
+> +			psdata->cur_psmode = psdata->target_ps_mode;
+> +		else
+> +			psdata->target_ps_mode = psdata->cur_psmode;
+> +		if (psdata->cur_psmode == PS_MODE_ENABLE)
+> +			ps_start_timer(nxpdev);
+> +		else
+> +			ps_wakeup(nxpdev);
+> +		bt_dev_dbg(hdev, "Power Save mode response: status=%d, ps_mode=%d",
+> +			   *status, psdata->cur_psmode);
+> +	}
+> +	kfree_skb(skb);
+> +
+> +	return 0;
+> +}
+> +
+> +static int send_wakeup_method_cmd(struct hci_dev *hdev, void *data)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +	struct wakeup_cmd_payload pcmd;
+> +	struct sk_buff *skb;
+> +	u8 *status;
+> +
+> +	pcmd.c2h_wakeupmode = psdata->c2h_wakeupmode;
+> +	pcmd.c2h_wakeup_gpio = psdata->c2h_wakeup_gpio;
+> +	switch (psdata->h2c_wakeupmode) {
+> +	case WAKEUP_METHOD_DTR:
+> +		pcmd.h2c_wakeupmode = BT_CTRL_WAKEUP_METHOD_DSR;
+> +		break;
+> +	case WAKEUP_METHOD_BREAK:
+> +	default:
+> +		pcmd.h2c_wakeupmode = BT_CTRL_WAKEUP_METHOD_BREAK;
+> +		break;
+> +	}
+> +	pcmd.h2c_wakeup_gpio = 0xff;
+> +
+> +	skb = nxp_drv_send_cmd(hdev, HCI_NXP_WAKEUP_METHOD, sizeof(pcmd), &pcmd);
+> +	if (IS_ERR(skb)) {
+> +		bt_dev_err(hdev, "Setting wake-up method failed (%ld)", PTR_ERR(skb));
+> +		return PTR_ERR(skb);
+> +	}
+> +
+> +	status = skb_pull_data(skb, 1);
+> +	if (status) {
+> +		if (*status == 0)
+> +			psdata->cur_h2c_wakeupmode = psdata->h2c_wakeupmode;
+> +		else
+> +			psdata->h2c_wakeupmode = psdata->cur_h2c_wakeupmode;
+> +		bt_dev_dbg(hdev, "Set Wakeup Method response: status=%d, h2c_wakeupmode=%d",
+> +			   *status, psdata->cur_h2c_wakeupmode);
+> +	}
+> +	kfree_skb(skb);
+> +
+> +	return 0;
+> +}
+> +
+> +static void ps_init(struct hci_dev *hdev)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct ps_data *psdata = &nxpdev->psdata;
+> +
+> +	serdev_device_set_tiocm(nxpdev->serdev, 0, TIOCM_RTS);
+> +	usleep_range(5000, 10000);
+> +	serdev_device_set_tiocm(nxpdev->serdev, TIOCM_RTS, 0);
+> +	usleep_range(5000, 10000);
+> +
+> +	switch (psdata->h2c_wakeupmode) {
+> +	case WAKEUP_METHOD_DTR:
+> +		serdev_device_set_tiocm(nxpdev->serdev, 0, TIOCM_DTR);
+> +		serdev_device_set_tiocm(nxpdev->serdev, TIOCM_DTR, 0);
+> +		break;
+> +	case WAKEUP_METHOD_BREAK:
+> +	default:
+> +		serdev_device_break_ctl(nxpdev->serdev, -1);
+> +		usleep_range(5000, 10000);
+> +		serdev_device_break_ctl(nxpdev->serdev, 0);
+> +		usleep_range(5000, 10000);
+> +		break;
+> +	}
+> +	if (psdata->cur_h2c_wakeupmode != psdata->h2c_wakeupmode)
+> +		hci_cmd_sync_queue(hdev, send_wakeup_method_cmd, NULL, NULL);
+> +	if (psdata->cur_psmode != psdata->target_ps_mode)
+> +		hci_cmd_sync_queue(hdev, send_ps_cmd, NULL, NULL);
+> +}
+> +
+> +/* NXP Firmware Download Feature */
+> +static int nxp_download_firmware(struct hci_dev *hdev)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	int err = 0;
+> +
+> +	nxpdev->fw_dnld_v1_offset = 0;
+> +	nxpdev->fw_v1_sent_bytes = 0;
+> +	nxpdev->fw_v1_expected_len = HDR_LEN;
+> +	nxpdev->fw_v3_offset_correction = 0;
+> +	nxpdev->baudrate_changed = false;
+> +	nxpdev->timeout_changed = false;
+> +
+> +	serdev_device_set_baudrate(nxpdev->serdev, HCI_NXP_PRI_BAUDRATE);
+> +	serdev_device_set_flow_control(nxpdev->serdev, 0);
+> +	nxpdev->current_baudrate = HCI_NXP_PRI_BAUDRATE;
+> +
+> +	/* Wait till FW is downloaded and CTS becomes low */
+> +	err = wait_event_interruptible_timeout(nxpdev->fw_dnld_done_wait_q,
+> +					       !test_bit(BTNXPUART_FW_DOWNLOADING,
+> +							 &nxpdev->tx_state),
+> +					       msecs_to_jiffies(60000));
+> +	if (err == 0) {
+> +		bt_dev_err(hdev, "FW Download Timeout.");
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	serdev_device_set_flow_control(nxpdev->serdev, 1);
+> +	err = serdev_device_wait_for_cts(nxpdev->serdev, 1, 60000);
+> +	if (err < 0) {
+> +		bt_dev_err(hdev, "CTS is still high. FW Download failed.");
+> +		return err;
+> +	}
+> +	release_firmware(nxpdev->fw);
+> +	memset(nxpdev->fw_name, 0, sizeof(nxpdev->fw_name));
+> +
+> +	/* Allow the downloaded FW to initialize */
+> +	usleep_range(800 * USEC_PER_MSEC, 1 * USEC_PER_SEC);
+> +
+> +	return 0;
+> +}
+> +
+> +static void nxp_send_ack(u8 ack, struct hci_dev *hdev)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	u8 ack_nak[2];
+> +	int len = 1;
+> +
+> +	ack_nak[0] = ack;
+> +	if (ack == NXP_ACK_V3) {
+> +		ack_nak[1] = crc8(crc8_table, ack_nak, 1, 0xff);
+> +		len = 2;
+> +	}
+> +	serdev_device_write_buf(nxpdev->serdev, ack_nak, len);
+> +}
+> +
+> +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct nxp_bootloader_cmd nxp_cmd5;
+> +	struct uart_config uart_config;
+> +
+> +	if (req_len == sizeof(nxp_cmd5)) {
+> +		nxp_cmd5.header = __cpu_to_le32(5);
+> +		nxp_cmd5.arg = 0;
+> +		nxp_cmd5.payload_len = __cpu_to_le32(sizeof(uart_config));
+> +		/* FW expects swapped CRC bytes */
+> +		nxp_cmd5.crc = __cpu_to_be32(crc32_be(0UL, (char *)&nxp_cmd5,
+> +						      sizeof(nxp_cmd5) - 4));
+> +
+> +		serdev_device_write_buf(nxpdev->serdev, (u8 *)&nxp_cmd5, sizeof(nxp_cmd5));
+> +		nxpdev->fw_v3_offset_correction += req_len;
+> +	} else if (req_len == sizeof(uart_config)) {
+> +		uart_config.clkdiv.address = __cpu_to_le32(CLKDIVADDR);
+> +		uart_config.clkdiv.value = __cpu_to_le32(0x00c00000);
+> +		uart_config.uartdiv.address = __cpu_to_le32(UARTDIVADDR);
+> +		uart_config.uartdiv.value = __cpu_to_le32(1);
+> +		uart_config.mcr.address = __cpu_to_le32(UARTMCRADDR);
+> +		uart_config.mcr.value = __cpu_to_le32(MCR);
+> +		uart_config.re_init.address = __cpu_to_le32(UARTREINITADDR);
+> +		uart_config.re_init.value = __cpu_to_le32(INIT);
+> +		uart_config.icr.address = __cpu_to_le32(UARTICRADDR);
+> +		uart_config.icr.value = __cpu_to_le32(ICR);
+> +		uart_config.fcr.address = __cpu_to_le32(UARTFCRADDR);
+> +		uart_config.fcr.value = __cpu_to_le32(FCR);
+> +		/* FW expects swapped CRC bytes */
+> +		uart_config.crc = __cpu_to_be32(crc32_be(0UL, (char *)&uart_config,
+> +							 sizeof(uart_config) - 4));
+> +
+> +		serdev_device_write_buf(nxpdev->serdev, (u8 *)&uart_config, sizeof(uart_config));
+> +		serdev_device_wait_until_sent(nxpdev->serdev, 0);
+> +		nxpdev->fw_v3_offset_correction += req_len;
+> +		return true;
+> +	}
+> +	return false;
+> +}
+> +
+> +static bool nxp_fw_change_timeout(struct hci_dev *hdev, u16 req_len)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct nxp_bootloader_cmd nxp_cmd7;
+> +
+> +	if (req_len != sizeof(nxp_cmd7))
+> +		return false;
+> +
+> +	nxp_cmd7.header = __cpu_to_le32(7);
+> +	nxp_cmd7.arg = __cpu_to_le32(0x70);
+> +	nxp_cmd7.payload_len = 0;
+> +	/* FW expects swapped CRC bytes */
+> +	nxp_cmd7.crc = __cpu_to_be32(crc32_be(0UL, (char *)&nxp_cmd7,
+> +					      sizeof(nxp_cmd7) - 4));
+> +	serdev_device_write_buf(nxpdev->serdev, (u8 *)&nxp_cmd7, sizeof(nxp_cmd7));
+> +	serdev_device_wait_until_sent(nxpdev->serdev, 0);
+> +	nxpdev->fw_v3_offset_correction += req_len;
+> +	return true;
+> +}
+> +
+> +static u32 nxp_get_data_len(const u8 *buf)
+> +{
+> +	struct nxp_bootloader_cmd *hdr = (struct nxp_bootloader_cmd *)buf;
+> +
+> +	return __le32_to_cpu(hdr->payload_len);
+> +}
+> +
+> +static bool is_fw_downloading(struct btnxpuart_dev *nxpdev)
+> +{
+> +	return test_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+> +}
+> +
+> +static bool process_boot_signature(struct btnxpuart_dev *nxpdev)
+> +{
+> +	if (test_bit(BTNXPUART_CHECK_BOOT_SIGNATURE, &nxpdev->tx_state)) {
+> +		clear_bit(BTNXPUART_CHECK_BOOT_SIGNATURE, &nxpdev->tx_state);
+> +		wake_up_interruptible(&nxpdev->check_boot_sign_wait_q);
+> +		return false;
+> +	}
+> +	return is_fw_downloading(nxpdev);
+> +}
+> +
+> +static int nxp_request_firmware(struct hci_dev *hdev, const u8 *fw_name)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	int err = 0;
+> +
+> +	if (!strlen(nxpdev->fw_name)) {
+> +		snprintf(nxpdev->fw_name, MAX_FW_FILE_NAME_LEN, "%s", fw_name);
+> +
+> +		bt_dev_dbg(hdev, "Request Firmware: %s", nxpdev->fw_name);
+> +		err = request_firmware(&nxpdev->fw, nxpdev->fw_name, &hdev->dev);
+> +		if (err < 0) {
+> +			bt_dev_err(hdev, "Firmware file %s not found", nxpdev->fw_name);
+> +			clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+> +		}
+> +	}
+> +	return err;
+> +}
+> +
+> +/* for legacy chipsets with V1 bootloader */
+> +static int nxp_recv_fw_req_v1(struct hci_dev *hdev, struct sk_buff *skb)
+> +{
+> +	struct btnxpuart_dev *nxpdev = hci_get_drvdata(hdev);
+> +	struct btnxpuart_data *nxp_data = nxpdev->nxp_data;
+> +	struct v1_data_req *req;
+> +	u32 requested_len;
+> +
+> +	if (!process_boot_signature(nxpdev))
+> +		goto free_skb;
+> +
+> +	req = (struct v1_data_req *)skb_pull_data(skb, sizeof(struct v1_data_req));
+> +	if (!req)
+> +		goto free_skb;
+> +
+> +	if ((req->len ^ req->len_comp) != 0xffff) {
+> +		bt_dev_dbg(hdev, "ERR: Send NAK");
+> +		nxp_send_ack(NXP_NAK_V1, hdev);
+> +		goto free_skb;
+> +	}
+> +	nxp_send_ack(NXP_ACK_V1, hdev);
+> +
+> +	if (nxp_data->fw_dnld_use_high_baudrate) {
+> +		if (!nxpdev->timeout_changed) {
+> +			nxpdev->timeout_changed = nxp_fw_change_timeout(hdev, req->len);
+> +			goto free_skb;
+> +		}
+> +		if (!nxpdev->baudrate_changed) {
+> +			nxpdev->baudrate_changed = nxp_fw_change_baudrate(hdev, req->len);
+> +			if (nxpdev->baudrate_changed) {
+> +				serdev_device_set_baudrate(nxpdev->serdev,
+> +							   HCI_NXP_SEC_BAUDRATE);
+> +				serdev_device_set_flow_control(nxpdev->serdev, 1);
+> +				nxpdev->current_baudrate = HCI_NXP_SEC_BAUDRATE;
+> +			}
+> +			goto free_skb;
+> +		}
+> +	}
+> +
+> +	if (nxp_request_firmware(hdev, nxp_data->fw_name))
+> +		goto free_skb;
+> +
+> +	requested_len = req->len;
+> +	if (requested_len == 0) {
+> +		bt_dev_dbg(hdev, "FW Downloaded Successfully: %zu bytes", nxpdev->fw->size);
+> +		clear_bit(BTNXPUART_FW_DOWNLOADING, &nxpdev->tx_state);
+> +		wake_up_interruptible(&nxpdev->fw_dnld_done_wait_q);
+> +		goto free_skb;
+> +	}
+> +	if (requested_len & 0x01) {
+> +		/* The CRC did not match at the other end.
+> +		 * Simply send the same bytes again.
+> +		 */
+> +		requested_len = nxpdev->fw_v1_sent_bytes;
+> +		bt_dev_dbg(hdev, "CRC error. Resend %d bytes of FW.", requested_len);
+> +	} else {
+> +		nxpdev->fw_dnld_v1_offset += nxpdev->fw_v1_sent_bytes;
+> +
+> +		/* The FW bin file is made up of many blocks of
+> +		 * 16 byte header and payload data chunks. If the
+> +		 * FW has requested a header, read the payload length
+> +		 * info from the header, before sending the header.
+> +		 * In the next iteration, the FW should request the
+> +		 * payload data chunk, which should be equal to the
+> +		 * payload length read from header. If there is a
+> +		 * mismatch, clearly the driver and FW are out of sync,
+> +		 * and we need to re-send the previous header again.
+> +		 */
+> +		if (requested_len == nxpdev->fw_v1_expected_len) {
+> +			if (requested_len == HDR_LEN)
+> +				nxpdev->fw_v1_expected_len = nxp_get_data_len(nxpdev->fw->data +
+> +									nxpdev->fw_dnld_v1_offset);
+> +			else
+> +				nxpdev->fw_v1_expected_len = HDR_LEN;
+> +		} else if (requested_len == HDR_LEN) {
+> +			/* FW download out of sync. Send previous chunk again */
+> +			nxpdev->fw_dnld_v1_offset -= nxpdev->fw_v1_sent_bytes;
+> +			nxpdev->fw_v1_expected_len = HDR_LEN;
+> +		}
+> +	}
+> +
+> +	if (nxpdev->fw_dnld_v1_offset + requested_len <= nxpdev->fw->size)
+> +		serdev_device_write_buf(nxpdev->serdev,
+> +					nxpdev->fw->data + nxpdev->fw_dnld_v1_offset,
+> +					requested_len);
+> +	nxpdev->fw_v1_sent_bytes = requested_len;
+> +
+> +free_skb:
+> +	kfree_skb(skb);
+> +	return 0;
+> +}
+> +
+> +static u8 *nxp_get_fw_name_from_chipid(struct hci_dev *hdev, u16 chipid)
+
+Any reason to limit the length of `chipid` instead of using `unsigned int`?
+
+> +{
+> +	u8 *fw_name = NULL;
+
+Ditto.
+
+> +
+> +	switch (chipid) {
+> +	case CHIP_ID_W9098:
+> +		fw_name = FIRMWARE_W9098;
+> +		break;
+> +	case CHIP_ID_IW416:
+> +		fw_name = FIRMWARE_IW416;
+> +		break;
+> +	case CHIP_ID_IW612:
+> +		fw_name = FIRMWARE_IW612;
+> +		break;
+> +	default:
+> +		bt_dev_err(hdev, "Unknown chip signature %04x", chipid);
+> +		break;
+> +	}
+> +	return fw_name;
+> +}
+
+[…]
+
+
+Kind regards,
+
+Paul
