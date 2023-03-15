@@ -2,86 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A269C6FD1D
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 11:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559A7C6FD1D
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 11:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232107AbjCOLNx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Mar 2023 07:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
+        id S231912AbjCOLee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Mar 2023 07:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbjCOLNe (ORCPT
+        with ESMTP id S231890AbjCOLeR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Mar 2023 07:13:34 -0400
+        Wed, 15 Mar 2023 07:34:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5548B5CC0E;
-        Wed, 15 Mar 2023 04:11:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD4D6E684;
+        Wed, 15 Mar 2023 04:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA38BB81DE9;
-        Wed, 15 Mar 2023 11:10:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 598D3C433D2;
-        Wed, 15 Mar 2023 11:10:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F18DB818E7;
+        Wed, 15 Mar 2023 11:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC011C4339C;
+        Wed, 15 Mar 2023 11:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1678878624;
-        bh=71rF8rOVFv9FB+075jhoVdT0KO1/uKHB6uIBEc5iIFQ=;
+        s=korg; t=1678880001;
+        bh=d2exycdafMMG6CpW9HcLV7XdG3T6Bjc4TAN7D2+UIa8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OdAjXbokuyajMcwx5+8Z52gXImqwePUI3TcarDof+2Jy/HhbJTxifewAOuJBigRLg
-         l/5KxcPJcGZdLysI3nVKEwLXvxhE4Oi+UePG2sNF0GSuk3kD/dMSlw2pp11dH9Pd+U
-         58rFKKE62zEZevO/SsNZxBWaSw4uEZwFPMCevGsE=
-Date:   Wed, 15 Mar 2023 12:10:22 +0100
+        b=aLue0dZ7BiNyq5XXc3gZg6GoNaJw36uXl4m1cJAaKAuvT3ZrbqZFgpHvXfJj1xEwN
+         DrBsI6juRK/RKlvfdglLZaG7Y7Ewo4s0jlaS4nFsXfoEOyvGWHy0Pl0hQNrLrTGr6h
+         chBa8MI53RBfK+RW4jJWiQunhjOIeVcGdA5yhJUA=
+Date:   Wed, 15 Mar 2023 12:33:18 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     jirislaby@kernel.org, robh@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH] tty: serdev: serdev-ttyport: add devt for ctrl->dev
-Message-ID: <ZBGnniL7x5ENju6H@kroah.com>
-References: <20230315105400.23426-1-sherry.sun@nxp.com>
+Cc:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] tty: serdev: serdev-ttyport: set correct tty->dev for
+ serdev framework
+Message-ID: <ZBGs/sWZGnIbqHbd@kroah.com>
+References: <20230315072143.7815-1-sherry.sun@nxp.com>
+ <ZBF2Pyd4VSZq3HoA@kroah.com>
+ <AS8PR04MB840408DC92F4001AB440353292BF9@AS8PR04MB8404.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230315105400.23426-1-sherry.sun@nxp.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AS8PR04MB840408DC92F4001AB440353292BF9@AS8PR04MB8404.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 06:54:00PM +0800, Sherry Sun wrote:
-> For serdev framework, the serdev_controller device is the tty device,
-> which is also the child device of the uart_port device. If we don't set
-> devt property for ctrl->dev, device_find_child(uport->dev, ...) may
-> always return NULL in uart_suspend_port() function, which prevents us
-> from properly handling uart port suspend, so fix it here.
+On Wed, Mar 15, 2023 at 09:49:53AM +0000, Sherry Sun wrote:
 > 
-> Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serdev/serdev-ttyport.c | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> index bba37ab90215..c58af8141380 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -268,6 +268,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
->  {
->  	struct serdev_controller *ctrl;
->  	struct serport *serport;
-> +	dev_t devt = MKDEV(drv->major, drv->minor_start) + idx;
->  	int ret;
->  
->  	if (!port || !drv || !parent)
-> @@ -282,6 +283,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
->  	serport->tty_idx = idx;
->  	serport->tty_drv = drv;
->  
-> +	ctrl->dev.devt = devt;
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: 2023年3月15日 15:40
+> > To: Sherry Sun <sherry.sun@nxp.com>
+> > Cc: jirislaby@kernel.org; robh@kernel.org; linux-serial@vger.kernel.org;
+> > linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>
+> > Subject: Re: [PATCH] tty: serdev: serdev-ttyport: set correct tty->dev for
+> > serdev framework
+> > 
+> > On Wed, Mar 15, 2023 at 03:21:43PM +0800, Sherry Sun wrote:
+> > > ttyport_open() calls tty_init_dev() to initialize a tty device, but
+> > > tty_get_device() cannot get the correct tty->dev for serdev tty in
+> > > alloc_tty_struct(), because serdev framework does not set tty_class,
+> > > so class_find_device_by_devt(tty_class, devt) may always return NULL.
+> > >
+> > > For serdev framework, we need to assign the correct ctrl->dev to
+> > > tty->dev.
+> > >
+> > > Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+> > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> > > ---
+> > >  drivers/tty/serdev/serdev-ttyport.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/tty/serdev/serdev-ttyport.c
+> > > b/drivers/tty/serdev/serdev-ttyport.c
+> > > index d367803e2044..bba37ab90215 100644
+> > > --- a/drivers/tty/serdev/serdev-ttyport.c
+> > > +++ b/drivers/tty/serdev/serdev-ttyport.c
+> > > @@ -112,6 +112,7 @@ static int ttyport_open(struct serdev_controller
+> > *ctrl)
+> > >  	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
+> > >  	if (IS_ERR(tty))
+> > >  		return PTR_ERR(tty);
+> > > +	tty->dev = &ctrl->dev;
+> > 
+> > What in-kernel driver needs this change?  How has it not been a problem so
+> > far?
+> > 
+> 
+> Hi Greg, I searched the users of tty->dev under serial floder, found the following drivers need it.
+> drivers/tty/serial/stm32-usart.c:780:                   pm_wakeup_event(tport->tty->dev, 0);
+> drivers/tty/serial/fsl_lpuart.c:3018:           tty_dev = tty->dev;
+> drivers/tty/serial/st-asc.c:266:                pm_wakeup_event(tport->tty->dev, 0);
+> 
+> Actually this issue was found when I tested the nxp Bluetooth driver which use serdev framework along with fsl_lpuart.c driver, when system is suspending, the following NULL pointer kernel panic is observed.
+> This is because lpuart driver will check the device_may_wakeup(tty->dev) to determine if wakeup register bits need to be enabled or not before suspend, it works well the the ldisc tty, but since serdev tty doesn't set correct tty->dev, so here cause the NULL pointer panic.
+> 
+> root@imx8ulpevk:~# echo mem > /sys/power/state
+> [   42.657779] PM: suspend entry (deep)
+> [   42.664333] Filesystems sync: 0.002 seconds
+> [   42.717624] Freezing user space processes ... (elapsed 0.001 seconds) done.
+> [   42.727063] OOM killer disabled.
+> [   42.730383] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+> [   42.753652] fec 29950000.ethernet eth0: Link is Down
+> [   42.780681] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000dc
+> [   42.789603] Mem abort info:
+> [   42.792430]   ESR = 0x0000000096000004
+> [   42.796242]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [   42.801661]   SET = 0, FnV = 0
+> ......
+> 
+> > And why are you saving off a reference counted pointer without
+> > incrementing the reference to the pointer?
+> 
+> Sorry, forgive me I am not clearly understand the requirement here, do you mean we need to add the following changes?
+>     get_device(&ctrl->dev);
+>     tty->dev = &ctrl->dev;
+>     put_device((&ctrl->dev);
 
-This feels wrong as you can't just create a magic dev_t out of no where
-and expect it to be handled properly.  Where now is this dev_t exposed?
+Ick, no, only do put_device() when you are finished with the pointer and
+are not going to access it anymore.
 
-Something else feels wrong here, sorry, I do not think this is correct.
+> And per my understanding, the reference count needs to be increased and decreased from the user side, here we only do a initialization for the tty->dev.
 
-thanks,
+Then something is not set up properly here, sorry.
 
 greg k-h
