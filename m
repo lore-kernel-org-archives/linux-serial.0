@@ -2,53 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E575DC76195
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 07:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB91BC7618B
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 07:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbjCOHaa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Mar 2023 03:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39530 "EHLO
+        id S231715AbjCOHan (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Mar 2023 03:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbjCOH36 (ORCPT
+        with ESMTP id S231788AbjCOHaB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Mar 2023 03:29:58 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025776C185;
-        Wed, 15 Mar 2023 00:29:09 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id i5so19121160pla.2;
-        Wed, 15 Mar 2023 00:29:09 -0700 (PDT)
+        Wed, 15 Mar 2023 03:30:01 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0BA6C19D;
+        Wed, 15 Mar 2023 00:29:14 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id v21so8986333ple.9;
+        Wed, 15 Mar 2023 00:29:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678865348;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HHBG+GBH2Y36NH+y5oqClFdickE+NYlXm3x/SDfpRmU=;
-        b=LP9VfDZ8o0b2f8nkY9qkxCfALKqP0kGRvUwiitl1P2PB35MO7NZ/2sXc+5DLUBbo4l
-         W8NYwsakx1Bxnj509vaV3p84a/uVZb/Np6Z3xFh2O0q4Wu62W6GPQegTQDvCXFd6PNyv
-         xJS2PoKxuQ+9P0Quh97yG0V/PpnK9Z3thOZkuw/3Xi0Assq9D9/JG+FW2ojPRQOZVA8i
-         q+K65c6IGYLIBeKKsy6IjOQ9HF0gYd8GnUKpa1kXIECOGMxRlLSwvhgLZ8xEmPyRXwXf
-         N3FJBQ0a1rbYmkNNmM2ch/1LVyJRDB5RTMOFbtx8ZJ+NL71ETSNgf7UAvbznB6HF7b0x
-         lEUA==
+        d=gmail.com; s=20210112; t=1678865353;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=skDrdHHxY4/PRNsG0BtA3PR+oADTeYv6w75S5aIGD+k=;
+        b=ncX2cNjBBArloPVBvUzdqBSEYyE6q/RBxhKEBvLcOGoyzywiNysSunaU/OKu8S+zVG
+         WJHnZNjf/npJfFzyniqVTE0/a1I5oVzxyTbHfzPBbihQrPqpmj6BkzoEmfQnFp1DIb4L
+         ECR6fWzulpN+k1wQRBcvsx9Zh9RlS7q0vzi7jE3P5rOStskcjh/b1hSpeMRJUu/aQFi6
+         Kn+2HGlQglBJzN9Znoi0SI208RUeNBkZ3zTo/e2DH93ow7HirepCuW01sebh/NXx1cVq
+         miTThLyV969evfDME579tdtogEZhgMpAgSD6wyWhfREWjf9YSgCw2GQ+aDk8ndRcST3D
+         lTrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678865348;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HHBG+GBH2Y36NH+y5oqClFdickE+NYlXm3x/SDfpRmU=;
-        b=C0z3/CqmU8GF7oLxNl8RuAAbGBoRgjWT2sJiyEBx+2NtO48TCkCxBF3zXSrDa3qF4+
-         WpmYVREej8xf4cSShfME+W/hfYNjinw04Z7nA6ZfRmZaJFaR2J+i6tfMqipVDDb6C5tT
-         Lvymio9xUer39/9wkef4DcHrJkL3us6FEIB5FXlcFff3VhDHR6dbN9Jnce7bCzJC0kbB
-         J1Ytyhee59BtmYRAzw4gjin5cSlUt0p49sJfX9TjZ1m3DzZmjVqc1LTn0318Qxw8bYFb
-         SJ123MXEsO5i4fYNXqckualL8PgEcG6zx2mIwI3ZdB+D+EsQ21XFmha1Genm5FYMR1ZO
-         nPxw==
-X-Gm-Message-State: AO0yUKVRDOZKPunn62jVFDpvwKSrZcs9IvvpmMKM4d0QLx7lCcnQuSZ1
-        g26n0duUcslEQHkIqroO98w=
-X-Google-Smtp-Source: AK7set+IQmNam8y5NMeNhZKMBu+L44gcs3L+F1T9/MGbySKvfES+ivyf76SIptpiuqvswlomnfhVSw==
-X-Received: by 2002:a17:902:e74d:b0:19e:6bc5:8769 with SMTP id p13-20020a170902e74d00b0019e6bc58769mr1819994plf.69.1678865348685;
-        Wed, 15 Mar 2023 00:29:08 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678865353;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=skDrdHHxY4/PRNsG0BtA3PR+oADTeYv6w75S5aIGD+k=;
+        b=agyfEPVS8wvmjES0I5jjGsUSIv+JPrOKd5xQ9qvKQ5zaL8yLYb0plr3jVlqzfsHJfQ
+         42BBLbobwH+UOF3z3rHPlP8cPPl7/UOyn3sPZlJ9gVLiWLeq8Xe22zJcsPv28iYOIkA7
+         IenaGJXnhIYeyLW0M7QwQ+AMXiHlyHvOJy9rPFJlx5sPVCFMYBp08wexV4HhQMVu9cM1
+         9fNGZlSRz/bJs0rUr4duAGa2fLuIcHlPOjcT1nVY7UvJeuV64TaI79glE9Q2GUD1o4wB
+         OK3QZt4In4rNoGmmfm6CWYayh/VKHl4eoGKsM1nZPtDYCn8No+z/VwnS8zPS6pEYtDuI
+         8YEw==
+X-Gm-Message-State: AO0yUKXib2l+8Tp+RSIDXiawp6kioxK+3Uzvv5VeQYxZ+anO/NiSrmmb
+        nDSeBRbrfx9lDf5rOt5BiVg=
+X-Google-Smtp-Source: AK7set9hHttrvRDC5H+g6AdgKuIgXIrQQYDTQpVx8MLNrRRywrLCA11rZ7KFHpOen4NeVzub6jLetw==
+X-Received: by 2002:a17:903:2846:b0:19c:e05a:ea6 with SMTP id kq6-20020a170903284600b0019ce05a0ea6mr1270462plb.56.1678865353712;
+        Wed, 15 Mar 2023 00:29:13 -0700 (PDT)
 Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id kz11-20020a170902f9cb00b001a0667822c8sm2740003plb.94.2023.03.15.00.29.06
+        by smtp.gmail.com with ESMTPSA id kz11-20020a170902f9cb00b001a0667822c8sm2740003plb.94.2023.03.15.00.29.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Mar 2023 00:29:08 -0700 (PDT)
+        Wed, 15 Mar 2023 00:29:13 -0700 (PDT)
 From:   Jacky Huang <ychuang570808@gmail.com>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
@@ -57,12 +58,13 @@ To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-Subject: [PATCH 00/15] Introduce Nuvoton ma35d1 SoC
-Date:   Wed, 15 Mar 2023 07:28:47 +0000
-Message-Id: <20230315072902.9298-1-ychuang570808@gmail.com>
+Subject: [PATCH 02/15] arm64: defconfig: Add Nuvoton MA35 family support
+Date:   Wed, 15 Mar 2023 07:28:49 +0000
+Message-Id: <20230315072902.9298-3-ychuang570808@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230315072902.9298-1-ychuang570808@gmail.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -70,84 +72,26 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Jacky Huang <ychuang3@nuvoton.com>
 
-This patchset adds initial support for the Nuvoton ma35d1 SoC, including
-initial device tree, clock driver, reset driver, and serial driver.
+Enable basic drivers for ma35d1 booting up support: architecture,
+device tree, clock, reset, and uart.
 
-This patchset cover letter is based from the initial support for Nuvoton
-ma35d1 to keep tracking the version history.
+Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+---
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-This patchset had been applied to Linux kernel 6.3-rc2 and tested on the
-Nuvoton ma35d1 SOM evaluation board.
-
-(ma35d1 information: https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
-MA35D1 porting on linux-5.10.y can be found at: https://github.com/OpenNuvoton/MPU-Family
-
-Jacky Huang (15):
-  arm64: Kconfig.platforms: Add config for Nuvoton MA35 platform
-  arm64: defconfig: Add Nuvoton MA35 family support
-  mfd: Add the header file of Nuvoton ma35d1 system manager
-  dt-bindings: clock: nuvoton: add binding for ma35d1 clock controller
-  dt-bindings: reset: nuvoton: add binding for ma35d1 IP reset control
-  dt-bindings: mfd: syscon: Add nuvoton,ma35d1-sys compatible
-  dt-bindings: arm: Add initial bindings for Nuvoton platform
-  dt-bindings: clock: Document ma35d1 clock controller bindings
-  dt-bindings: reset: Document ma35d1 reset controller bindings
-  dt-bindings: serial: Document ma35d1 uart controller bindings
-  arm64: dts: nuvoton: Add initial ma35d1 device tree
-  clk: nuvoton: Add clock driver for ma35d1 clock controller
-  reset: Add Nuvoton ma35d1 reset driver support
-  tty: serial: Add Nuvoton ma35d1 serial driver support
-  MAINTAINERS: Add entry for NUVOTON MA35
-
- .../devicetree/bindings/arm/nuvoton.yaml      |  30 +
- .../bindings/clock/nuvoton,ma35d1-clk.yaml    |  83 ++
- .../devicetree/bindings/mfd/syscon.yaml       |   1 +
- .../bindings/reset/nuvoton,ma35d1-reset.yaml  |  50 +
- .../serial/nuvoton,ma35d1-serial.yaml         |  52 +
- MAINTAINERS                                   |  12 +
- arch/arm64/Kconfig.platforms                  |   9 +
- arch/arm64/boot/dts/nuvoton/Makefile          |   2 +
- .../boot/dts/nuvoton/ma35d1-iot-512m.dts      |  24 +
- .../boot/dts/nuvoton/ma35d1-som-256m.dts      |  23 +
- arch/arm64/boot/dts/nuvoton/ma35d1.dtsi       | 272 +++++
- arch/arm64/configs/defconfig                  |   1 +
- drivers/clk/Makefile                          |   1 +
- drivers/clk/nuvoton/Makefile                  |   4 +
- drivers/clk/nuvoton/clk-ma35d1-divider.c      | 144 +++
- drivers/clk/nuvoton/clk-ma35d1-pll.c          | 534 ++++++++++
- drivers/clk/nuvoton/clk-ma35d1.c              | 970 ++++++++++++++++++
- drivers/clk/nuvoton/clk-ma35d1.h              | 198 ++++
- drivers/reset/Kconfig                         |   6 +
- drivers/reset/Makefile                        |   1 +
- drivers/reset/reset-ma35d1.c                  | 152 +++
- drivers/tty/serial/Kconfig                    |  18 +
- drivers/tty/serial/Makefile                   |   1 +
- drivers/tty/serial/ma35d1_serial.c            | 842 +++++++++++++++
- drivers/tty/serial/ma35d1_serial.h            |  93 ++
- .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 253 +++++
- .../dt-bindings/reset/nuvoton,ma35d1-reset.h  | 108 ++
- include/linux/mfd/ma35d1-sys.h                |  95 ++
- include/uapi/linux/serial_core.h              |   3 +
- 29 files changed, 3982 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/nuvoton.yaml
- create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
- create mode 100644 Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
- create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
- create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
- create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
- create mode 100644 drivers/clk/nuvoton/Makefile
- create mode 100644 drivers/clk/nuvoton/clk-ma35d1-divider.c
- create mode 100644 drivers/clk/nuvoton/clk-ma35d1-pll.c
- create mode 100644 drivers/clk/nuvoton/clk-ma35d1.c
- create mode 100644 drivers/clk/nuvoton/clk-ma35d1.h
- create mode 100644 drivers/reset/reset-ma35d1.c
- create mode 100644 drivers/tty/serial/ma35d1_serial.c
- create mode 100644 drivers/tty/serial/ma35d1_serial.h
- create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
- create mode 100644 include/dt-bindings/reset/nuvoton,ma35d1-reset.h
- create mode 100644 include/linux/mfd/ma35d1-sys.h
-
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 7790ee42c68a..c96189acb02c 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -53,6 +53,7 @@ CONFIG_ARCH_LAYERSCAPE=y
+ CONFIG_ARCH_MXC=y
+ CONFIG_ARCH_S32=y
+ CONFIG_ARCH_NPCM=y
++CONFIG_ARCH_NUVOTON=y
+ CONFIG_ARCH_QCOM=y
+ CONFIG_ARCH_RENESAS=y
+ CONFIG_ARCH_ROCKCHIP=y
 -- 
 2.34.1
 
