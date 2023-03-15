@@ -2,82 +2,216 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2BCC6FD1D
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 07:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91EE2C6FD1D
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Mar 2023 09:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231869AbjCOHkr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Mar 2023 03:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
+        id S229720AbjCOJkx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Mar 2023 05:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232079AbjCOHkV (ORCPT
+        with ESMTP id S232077AbjCOJkt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Mar 2023 03:40:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2201E5D764;
-        Wed, 15 Mar 2023 00:39:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90D08B81CCE;
-        Wed, 15 Mar 2023 07:39:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D956FC433EF;
-        Wed, 15 Mar 2023 07:39:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1678865986;
-        bh=dzJZVX7qXok/wVkIoDDwcPhllpR8Nts/9I1KfQjODTQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CsCCP1Bs3BR1yeSflXsHMQWLyZtp1zOzoFigrQiGKq8OWEmQIiJX1n9g1qanRbqo4
-         0ehihlw+8vPNigx9yglrYQDHBdg1iYrKXlngXVjv5u5B3K5/sGaDWHDFpvffopb3o1
-         +c01Bu/uK2o32GlvmYDr/tIOq8bYUkt9nRhq56Ok=
-Date:   Wed, 15 Mar 2023 08:39:43 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     jirislaby@kernel.org, robh@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH] tty: serdev: serdev-ttyport: set correct tty->dev for
- serdev framework
-Message-ID: <ZBF2Pyd4VSZq3HoA@kroah.com>
-References: <20230315072143.7815-1-sherry.sun@nxp.com>
+        Wed, 15 Mar 2023 05:40:49 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744FE25E19;
+        Wed, 15 Mar 2023 02:40:47 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id v21so9268170ple.9;
+        Wed, 15 Mar 2023 02:40:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678873247;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CUmZOl7yFbAslfZae1XifMRIfdwLVM4dYa2IRmn1anc=;
+        b=F1xmis1TeCnQy/jxjjr8pdN5VL5T8m8W/j1TYsgoQ+jkFM9vqKXmSowU+KFd0Srn1B
+         9oCyfjILS55Kmop2iSme3/7cN9GgCpMJT9VisAF/ghxQqGtIrZcHLhOeObCSSF0YbXab
+         9cGhp2pRdC1QOJ3Tv/nB3+cFyEHKX4pZuDjioh4dsCiV9wvngdGIvRnfvGkqL4oM89tx
+         Lw63JE3cTiq7/WRTWrUdoDzmAr7GmQfIpmpKEqi/y2kOCyLNG/oCIS9ebIqdT3HoS53g
+         U8PUWLz8c27reaCmujybHnPI2BiIRD9fjZZBQ7JrV8fMREjev78R5qdBgGHJB/lBrwTD
+         laMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1678873247;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CUmZOl7yFbAslfZae1XifMRIfdwLVM4dYa2IRmn1anc=;
+        b=HvAFl5W3g17kryxCvEcSyppxVNJ7fkTllP/gS9Vb4ourkbmmTACHqQNyX7kN6v9Z55
+         1PYrrS2bp+zslZdzu5PW4j3tvStwhXlQHwIU3vqlZ6MfwRyox488L4IgggU21MkVvs1G
+         d+lYqz95SnGvn+NzQuG1mkNgN9chq2N5KtzfZnapBYDW/o5Hg4BW7sUuo4oV5txCGCZu
+         KUiC3l5ZmrjdcEo/uLdy3uBoDgzzZoqZi7uqE+FwwWMPX05N6h6/nq6OFnxwy4i9904I
+         uYSXNScDPKHmis5/cgztQX4DHUoCmKGbRF4dTx656NNJfwRMT23SrsrVFChY3vYKrSBo
+         Y7xQ==
+X-Gm-Message-State: AO0yUKXzgG84NHm5a7eEOszjMmmsYh1o1raxy+cjOthqHF/Q2GjsQAJ5
+        TXkBtiu0+rsmtNv2UW1BUpY=
+X-Google-Smtp-Source: AK7set9gI7Qlayqr5HrVS1HMVK6osS0lsw8VedIc68RBUGWXjUVRi3fZHeq7GFZY8PJw17lUqDVD+Q==
+X-Received: by 2002:a17:903:22c5:b0:19e:8452:1944 with SMTP id y5-20020a17090322c500b0019e84521944mr2480130plg.5.1678873246757;
+        Wed, 15 Mar 2023 02:40:46 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id y9-20020a1709029b8900b001a076b5a193sm1195806plp.145.2023.03.15.02.40.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Mar 2023 02:40:46 -0700 (PDT)
+Message-ID: <20fc81c9-5517-ce1e-639a-3b425cf27759@gmail.com>
+Date:   Wed, 15 Mar 2023 17:40:43 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315072143.7815-1-sherry.sun@nxp.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 14/15] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, jirislaby@kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-15-ychuang570808@gmail.com> <ZBF1z5Bx9jnrpxox@kroah.com>
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <ZBF1z5Bx9jnrpxox@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 03:21:43PM +0800, Sherry Sun wrote:
-> ttyport_open() calls tty_init_dev() to initialize a tty device, but
-> tty_get_device() cannot get the correct tty->dev for serdev tty in
-> alloc_tty_struct(), because serdev framework does not set tty_class, so
-> class_find_device_by_devt(tty_class, devt) may always return NULL.
-> 
-> For serdev framework, we need to assign the correct ctrl->dev to
-> tty->dev.
-> 
-> Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serdev/serdev-ttyport.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> index d367803e2044..bba37ab90215 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -112,6 +112,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
->  	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
->  	if (IS_ERR(tty))
->  		return PTR_ERR(tty);
-> +	tty->dev = &ctrl->dev;
+Dear Greg,
 
-What in-kernel driver needs this change?  How has it not been a problem
-so far?
+Thank you for your review.
 
-And why are you saving off a reference counted pointer without
-incrementing the reference to the pointer?
 
-thanks,
+On 2023/3/15 下午 03:37, Greg KH wrote:
+> On Wed, Mar 15, 2023 at 07:29:01AM +0000, Jacky Huang wrote:
+>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>
+>> This adds UART and console driver for Nuvoton ma35d1 Soc.
+>>
+>> MA35D1 SoC provides up to 17 UART controllers, each with one uart port.
+>> The ma35d1 uart controller is not compatible with 8250.
+> A new UART being designed that is not an 8250 compatible?  Why????
+>
+> Anyway, some minor comments:
 
-greg k-h
+This UART controller was designed for over 15 years ago and was used on 
+many Nuvoton chips.
+The register interface is not compatible with 8250, so the 8250 driver 
+cannot be applied, but
+the functions are compatible.
+
+>>   drivers/tty/serial/ma35d1_serial.c | 842 +++++++++++++++++++++++++++++
+>>   drivers/tty/serial/ma35d1_serial.h |  93 ++++
+> Why do you have a .h file for only a single .c file?  Please just put
+> them both together into one .c file.
+
+OK, we will put the .h into .c in the next version.
+
+>>   include/uapi/linux/serial_core.h   |   3 +
+> Why do you need this #define?  Are you using it in userspace now?  If
+> not, why have it?
+
+Actually, we do not use it from userspace. I will remove it in the next 
+version.
+
+
+>> +static void
+>> +receive_chars(struct uart_ma35d1_port *up)
+> Please just put all one one line.
+>
+
+OK, I will fix it.
+
+>> +{
+>> +	u8 ch;
+>> +	u32 fsr;
+>> +	u32 isr;
+>> +	u32 dcnt;
+>> +	char flag;
+>> +
+>> +	isr = serial_in(up, UART_REG_ISR);
+>> +	fsr = serial_in(up, UART_REG_FSR);
+>> +
+>> +	while (!(fsr & RX_EMPTY)) {
+> You have no way out if the hardware is stuck?  That feels wrong.
+
+Thanks for pointing this out. I will add a timeout check to this 
+infinite loop.
+
+>> +static int ma35d1serial_ioctl(struct uart_port *port, u32 cmd, unsigned long arg)
+>> +{
+>> +	switch (cmd) {
+>> +	default:
+>> +		return -ENOIOCTLCMD;
+>> +	}
+>> +	return 0;
+>> +}
+> You do not need to handle any ioctls?
+
+Yes, we do not handle ioctls.
+I will remove both ma35d1serial_ioctl() and "ioctl  = 
+ma35d1serial_ioctl," in the next version.
+
+
+>> +static void ma35d1serial_console_putchar(struct uart_port *port,
+>> +					 unsigned char ch)
+>> +{
+>> +	struct uart_ma35d1_port *up = (struct uart_ma35d1_port *)port;
+>> +
+>> +	do {
+>> +	} while ((serial_in(up, UART_REG_FSR) & TX_FULL));
+> Again, no way out if this gets stuck in a loop?
+
+OK, we will fix it in the next version.
+
+>> +/**
+>> + *  Suspend one serial port.
+>> + */
+>> +void ma35d1serial_suspend_port(int line)
+>> +{
+>> +	uart_suspend_port(&ma35d1serial_reg, &ma35d1serial_ports[line].port);
+>> +}
+>> +EXPORT_SYMBOL(ma35d1serial_suspend_port);
+> Why is this exported?  Who uses it?
+>
+> And why not EXPORT_SYMBOL_GPL()?
+>
+>> +
+>> +/**
+>> + *  Resume one serial port.
+>> + */
+>> +void ma35d1serial_resume_port(int line)
+>> +{
+>> +	struct uart_ma35d1_port *up = &ma35d1serial_ports[line];
+>> +
+>> +	uart_resume_port(&ma35d1serial_reg, &up->port);
+>> +}
+>> +EXPORT_SYMBOL(ma35d1serial_resume_port);
+> Same here, who calls this and why?
+
+The ma35d1serial_suspend_port() and ma35d1serial_resume_port() were used in
+previous ARM9 projects for userspace proprietary suspend/resume control.
+
+As it's obsoleted in ma35s1, I will remove these two functions in the 
+next version.
+
+>> --- a/include/uapi/linux/serial_core.h
+>> +++ b/include/uapi/linux/serial_core.h
+>> @@ -279,4 +279,7 @@
+>>   /* Sunplus UART */
+>>   #define PORT_SUNPLUS	123
+>>   
+>> +/* Nuvoton MA35D1 UART */
+>> +#define PORT_MA35D1	124
+> Again, why is this define needed?
+
+As replied above, we will remove the serial_core.h modification from 
+this patch.
+
+
+> thanks,
+>
+> greg k-h
+
+Best Regards,
+
+Jacky Huang
+
