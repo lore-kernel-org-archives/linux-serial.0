@@ -2,76 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0544DC6FD19
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 10:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6586CC6FD1F
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 11:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229546AbjCPKK6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 06:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
+        id S229801AbjCPL7W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 07:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjCPKK5 (ORCPT
+        with ESMTP id S230283AbjCPL7V (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 06:10:57 -0400
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 03:10:55 PDT
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ef0:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8D6B420C;
-        Thu, 16 Mar 2023 03:10:55 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL Global TLS RSA4096 SHA256 2022 CA1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id D2BBD28022ECD;
-        Thu, 16 Mar 2023 10:51:26 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id C829253DFE; Thu, 16 Mar 2023 10:51:26 +0100 (CET)
-Date:   Thu, 16 Mar 2023 10:51:26 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Francesco Dolcini <francesco@dolcini.it>
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>, Bin Liu <b-liu@ti.com>,
-        linux-serial@vger.kernel.org, Zeng Chao <chao.zeng@siemens.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 16 Mar 2023 07:59:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85323BD4F5;
+        Thu, 16 Mar 2023 04:59:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8183061FEE;
+        Thu, 16 Mar 2023 11:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C72BC433D2;
+        Thu, 16 Mar 2023 11:59:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1678967952;
+        bh=JTnjYbj66aN40aUIHsnXpnQOvlOwhzGAN41UkEtNOfs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d5x4qxlnXN/FxScIYVQLl3wY7G+sY6nohkE9R9DKJKUci9iLi5ng3MakWJHStU+OO
+         Rd3z/9l/qUvHUFRQRt1/DEmkpF4TpXq6eU7DuS6bxc3JxWEU/VvyZ/LhiVyZ4QrPmQ
+         yME36sVYK8hNymm5mq5MWaoFzj6DbTXaKYpJY+bo=
+Date:   Thu, 16 Mar 2023 12:59:10 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <andersson@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        ilpo.jarvinen@linux.intel.com, tony@atomide.com,
-        andriy.shevchenko@linux.intel.com,
-        matthias.schiffer@ew.tq-group.com, linux-kernel@vger.kernel.org,
-        Max Krummenacher <max.krummenacher@toradex.com>
-Subject: Re: Wrong RS485 RTS polarity in 8250 OMAP UART Driver vs DT binding?
-Message-ID: <20230316095126.GA4235@wunner.de>
-References: <ZBItlBhzo+YETcJO@francesco-nb.int.toradex.com>
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] serial: uart_poll_init() should power on the UART
+Message-ID: <ZBMEjp16fBNE33o4@kroah.com>
+References: <20230307073155.1.Iaab0159b8d268060a0e131ebb27125af4750ef99@changeid>
+ <20230307073155.2.I106c39498d8094c6f5e7ada42c7db17aa5c64e48@changeid>
+ <CAD=FV=XFEYPbC64TFLVUmky=1Y-b_iyqiwrALvjKTM_NWr34Dg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZBItlBhzo+YETcJO@francesco-nb.int.toradex.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAD=FV=XFEYPbC64TFLVUmky=1Y-b_iyqiwrALvjKTM_NWr34Dg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 09:41:56PM +0100, Francesco Dolcini wrote:
-> We have working hardware, using another UART that expect
-> rs485-rts-active-low, and the exact same HW, when using OMAP uart,
-> requires rs485-rts-active-high (the HW is modular, so we are really just
-> changing the uart, keeping the same RS485 transceiver / connections).
+On Mon, Mar 13, 2023 at 01:53:02PM -0700, Doug Anderson wrote:
+> Hi,
 > 
-> What's going on there? Is the semantic of the 8250_omap driver just the
-> opposite as it should be?
+> On Tue, Mar 7, 2023 at 7:32 AM Douglas Anderson <dianders@chromium.org> wrote:
+> >
+> > On Qualcomm devices which use the "geni" serial driver, kdb/kgdb won't
+> > be very happy if you use it but the resources of the port haven't been
+> > powered on. Today kdb/kgdb rely on someone else powering the port
+> > on. This could be the normal kernel console or an agetty running.
+> > Let's fix this to explicitly power things on when setting up a polling
+> > driver.
+> >
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> >
+> >  drivers/tty/serial/serial_core.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> 
+> Just in case it's not obvious, even though we ended up going with
+> Johan's series [1] instead of patch #1 of my series, patch #2 and #3
+> of my series are still relevant. I can repost the series without patch
+> #1 if it's helpful.
+> 
+> [1] https://lore.kernel.org/r/20230307164405.14218-1-johan+linaro@kernel.org
 
-Yes, sadly, for historic reasons.
+Ye,s it's not obvious at all.  Please resubmit.
 
-See these threads:
+thanks,
 
-https://lore.kernel.org/linux-serial/20220329085050.311408-1-matthias.schiffer@ew.tq-group.com/
-
-https://lore.kernel.org/linux-serial/2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de/
-
-
-> Am I doing something wrong in the device tree?
-
-No, but regrettably you need a separate device tree depending on which SoC
-you're using.
-
-Thanks,
-
-Lukas
+greg k-h
