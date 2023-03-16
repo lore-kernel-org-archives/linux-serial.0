@@ -2,60 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D42E2C6FD19
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 07:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE31C6FD19
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 07:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbjCPHpc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 03:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        id S230004AbjCPHvY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 03:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbjCPHpb (ORCPT
+        with ESMTP id S229621AbjCPHvW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 03:45:31 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F04A6157
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:45:28 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id o12so3924578edb.9
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:45:28 -0700 (PDT)
+        Thu, 16 Mar 2023 03:51:22 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CE312CD1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:51:17 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id eg48so3907556edb.13
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:51:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678952727;
+        d=linaro.org; s=google; t=1678953075;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=p1EmzL55KL6Yhe0603WbJLtdC1HVfZvXj/gYh1h/D6Y=;
-        b=QJOYyOA7Wh578Tz/Pg82TzuNAP6xwrb9OO//FpEhD+FzpZJKoazy1APhPwr1+6MAjt
-         PlbLIuyJ4kI1DJlewY9ZzLr1R0K25LHsW/qYArzaYC5vs9iKph8HOGm3o9FEhcFKIkqO
-         F/urhDjSGz2CKHIvaABKoRWy8kPv8QEMAKN7PIC0b070XhWxKjUsoQfrsYN2Nr234SXR
-         xOpUs7GFc/kLMhypg0JMXdhdQ3Yy+wY8okFqCN1pKZmTWmB4KugB1/wa5vp5Y31yjTe2
-         JO0jRpTCkH5jVZ+XUZfc5uAgW83SHO7ASt2Pb7Hl72LhslionPPBA/vQbBtd3f9dhMVk
-         ving==
+        bh=jwNs+y4b7W9cSxLh5xgNZaGX62BKSLC/hX9j+Q1b4kU=;
+        b=QywuFrGEDRv3VZ6XEolZQmkIp6IkL+v0iagUDB2mbc8Yqkjay+5cg0r9+YWHj0JIEf
+         JWB18ZDuXr0QSQqX41eNbzNeFv9bZyD8SQnbR8+J8NSHNABj3bFYgu2mk/iQp741COuS
+         Pt/xYnxP0TwnZpCcrQGxQpJFOpfD1WplmgUdtizPiUlftlnn8fjrZ7WBeIvx/WqgbJ3B
+         OZX7P12LIOOGsmKjQDpt/YyuTURVveQkEidq+uHTC6f/cOXVOQfWpYrwGNT4fJjr6Ji4
+         Z95V6uIIIE6asNb9J7vpGzOU6AyiPwyatqpFy2EvSaSL2ZUfSpyQnh9YUg7EBumxA8yY
+         IJyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678952727;
+        d=1e100.net; s=20210112; t=1678953075;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=p1EmzL55KL6Yhe0603WbJLtdC1HVfZvXj/gYh1h/D6Y=;
-        b=ELMcFAR+dEZXnHzlALC6Fvr+RzDJnmoatTP+Y+CnIIYatO2eGsF4kJSfI3YsyrOzwK
-         NEQM+ztbnIv5ksDErecTtXQZElyomBbCtLebQwMSACB7etlv10VoiB1YrdUCS++8r4AF
-         TRsicgYD9rTwXa5FrBIZMHBIREoBkQwOee7mitZODAGKCRwuV7DVgrmvZCJ74L/WEGaK
-         tyPeFA+nu8Lx4k5OJRJwGDuBZOG91HCcNeFxd+ky+JNxH9X9U5XoMcbU2qrk87e9wlsj
-         kcFIv8wYotj8pR/IQJV2ZoFKEniOlKsCqMK/SP4S4eQy34IPWCac0nFvyYohcHgkCv01
-         4B2A==
-X-Gm-Message-State: AO0yUKXMwndEol0SQhjoXrnLVEstaF3ZV5RorPQfpQ012Z1oFarWfW3G
-        GgtDjmdADB5LAV9Mjsq/uTsLYw==
-X-Google-Smtp-Source: AK7set8zToKb1XwApB4toxT+Fgo60TEyK5X2FWxld0F7bRzo5lBrJ3MSnT97HkfIIapsSz494s7UjQ==
-X-Received: by 2002:a17:906:e093:b0:8b1:7e88:c20f with SMTP id gh19-20020a170906e09300b008b17e88c20fmr10670576ejb.15.1678952727053;
-        Thu, 16 Mar 2023 00:45:27 -0700 (PDT)
+        bh=jwNs+y4b7W9cSxLh5xgNZaGX62BKSLC/hX9j+Q1b4kU=;
+        b=lJFhqyy9gjyMUSWbzsnDw1My78N0+tpE/crixFA3XXFPEHKvbAgeCk5wYP5EpmxkdB
+         9Qyy5rWdc4airA+B6ZEgXs/9/bJ7uODxmoSjmmBGS7dxVIVHYVVppWN0Cw5mS+JVCCst
+         /okPzqMM62R7LL0vHfzX3GYQJsR7hOZr4AORk3psdkNKl5D96MtP+QNsEbxMzo3jMUer
+         m1qCl1iLS2AU98n19cn+Lt+HtRMuOxCn0T+khQOfsqG1lG7ZjMZX2eyIC78yIWMx+vRu
+         VamdH5aCYlB3DXstsuz/CbFTGdJMnwWi3qInKTTnk6Vy809BSV2OG1fhFqJC5Bc61IsJ
+         7Hyw==
+X-Gm-Message-State: AO0yUKX5kvFsKqikMqF8fKcMZFX0M9h4mi1qpHgQ+gufUigF/NDSFYS7
+        28/64DXwoW3laLZqp5Ibl066kZIQM8EqzaaSx5c=
+X-Google-Smtp-Source: AK7set+PJC6hY5dJwdCmdbgJw/oOolEboNlFTBYJRN22RgczatHslhrlEzZcqy603FbcwYk5kqVcOA==
+X-Received: by 2002:a17:906:940f:b0:8b2:37b5:cc4 with SMTP id q15-20020a170906940f00b008b237b50cc4mr9646884ejx.7.1678953075506;
+        Thu, 16 Mar 2023 00:51:15 -0700 (PDT)
 Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id oq12-20020a170906cc8c00b0092fdb0b2e5dsm913436ejb.93.2023.03.16.00.45.26
+        by smtp.gmail.com with ESMTPSA id h25-20020a17090619d900b008b9b4ab6ad1sm3501654ejd.102.2023.03.16.00.51.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 00:45:26 -0700 (PDT)
-Message-ID: <fb4f60a7-011e-3745-cc40-631247735f2b@linaro.org>
-Date:   Thu, 16 Mar 2023 08:45:25 +0100
+        Thu, 16 Mar 2023 00:51:15 -0700 (PDT)
+Message-ID: <764f9105-e888-4776-bd49-efec72bd409d@linaro.org>
+Date:   Thu, 16 Mar 2023 08:51:14 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH 11/15] arm64: dts: nuvoton: Add initial ma35d1 device tree
+Subject: Re: [PATCH 12/15] clk: nuvoton: Add clock driver for ma35d1 clock
+ controller
 Content-Language: en-US
 To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
@@ -65,9 +66,9 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
 References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-12-ychuang570808@gmail.com>
+ <20230315072902.9298-13-ychuang570808@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230315072902.9298-12-ychuang570808@gmail.com>
+In-Reply-To: <20230315072902.9298-13-ychuang570808@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -77,264 +78,208 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On 15/03/2023 08:28, Jacky Huang wrote:
 > From: Jacky Huang <ychuang3@nuvoton.com>
 > 
-> Add initial device tree support for Nuvoton ma35d1 SoC, including
-> cpu, clock, reset, and serial controllers.
-> Add reference boards som-256m and iot-512m.
+> The clock controller generates clocks for the whole chip, including
+> system clocks and all peripheral clocks. This driver support ma35d1
+> clock gating, divider, and individual PLL configuration.
+> 
+> There are 6 PLLs in ma35d1 SoC:
+>   - CA-PLL for the two Cortex-A35 CPU clock
+>   - SYS-PLL for system bus, which comes from the companion MCU
+>     and cannot be programmed by clock controller.
+>   - DDR-PLL for DDR
+>   - EPLL for GMAC and GFX, Display, and VDEC IPs.
+>   - VPLL for video output pixel clock
+>   - APLL for SDHC, I2S audio, and other IPs.
+> CA-PLL has only one operation mode.
+> DDR-PLL, EPLL, VPLL, and APLL are advanced PLLs which have 3
+> operation modes: integer mode, fraction mode, and spread specturm mode.
 > 
 > Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 > ---
->  arch/arm64/boot/dts/nuvoton/Makefile          |   2 +
->  .../boot/dts/nuvoton/ma35d1-iot-512m.dts      |  24 ++
->  .../boot/dts/nuvoton/ma35d1-som-256m.dts      |  23 ++
->  arch/arm64/boot/dts/nuvoton/ma35d1.dtsi       | 272 ++++++++++++++++++
->  4 files changed, 321 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
->  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
->  create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+>  drivers/clk/Makefile                     |   1 +
+>  drivers/clk/nuvoton/Makefile             |   4 +
+>  drivers/clk/nuvoton/clk-ma35d1-divider.c | 144 ++++
+>  drivers/clk/nuvoton/clk-ma35d1-pll.c     | 534 +++++++++++++
+>  drivers/clk/nuvoton/clk-ma35d1.c         | 970 +++++++++++++++++++++++
+>  drivers/clk/nuvoton/clk-ma35d1.h         | 198 +++++
+>  6 files changed, 1851 insertions(+)
+>  create mode 100644 drivers/clk/nuvoton/Makefile
+>  create mode 100644 drivers/clk/nuvoton/clk-ma35d1-divider.c
+>  create mode 100644 drivers/clk/nuvoton/clk-ma35d1-pll.c
+>  create mode 100644 drivers/clk/nuvoton/clk-ma35d1.c
+>  create mode 100644 drivers/clk/nuvoton/clk-ma35d1.h
 > 
-> diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
-> index a99dab90472a..c11ab4eac9c7 100644
-> --- a/arch/arm64/boot/dts/nuvoton/Makefile
-> +++ b/arch/arm64/boot/dts/nuvoton/Makefile
-> @@ -1,2 +1,4 @@
->  # SPDX-License-Identifier: GPL-2.0
->  dtb-$(CONFIG_ARCH_NPCM) += nuvoton-npcm845-evb.dtb
-> +dtb-$(CONFIG_ARCH_NUVOTON) += ma35d1-iot-512m.dtb
-> +dtb-$(CONFIG_ARCH_NUVOTON) += ma35d1-som-256m.dtb
-> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
+> diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
+> index e3ca0d058a25..2e7916d269e1 100644
+> --- a/drivers/clk/Makefile
+> +++ b/drivers/clk/Makefile
+> @@ -103,6 +103,7 @@ endif
+>  obj-y					+= mstar/
+>  obj-y					+= mvebu/
+>  obj-$(CONFIG_ARCH_MXS)			+= mxs/
+> +obj-$(CONFIG_ARCH_NUVOTON)		+= nuvoton/
+
+Missing compile test.
+
+(...)
+
+> +
+> +MODULE_AUTHOR("Chi-Fang Li<cfli0@nuvoton.com>");
+> +MODULE_DESCRIPTION("NUVOTON MA35D1 Clock Driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/clk/nuvoton/clk-ma35d1.h b/drivers/clk/nuvoton/clk-ma35d1.h
 > new file mode 100644
-> index 000000000000..dffcaef1e6d8
+> index 000000000000..faae5a17e425
 > --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
-> @@ -0,0 +1,24 @@
-> +// SPDX-License-Identifier: GPL-2.0
+> +++ b/drivers/clk/nuvoton/clk-ma35d1.h
+> @@ -0,0 +1,198 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
 > +/*
 > + * Copyright (C) 2023 Nuvoton Technology Corp.
-> + * Author: Shan-Chun Hung <schung@nuvoton.com>
-> + *         Jacky huang <ychuang3@nuvoton.com>
+> + * Author: Chi-Fang Li <cfli0@nuvoton.com>
 > + */
 > +
-> +/dts-v1/;
-> +#include "ma35d1.dtsi"
+> +#ifndef __DRV_CLK_NUVOTON_MA35D1_H
+> +#define __DRV_CLK_NUVOTON_MA35D1_H
 > +
-> +/ {
-> +	model = "Nuvoton MA35D1-IoT";
-> +	compatible = "nuvoton,ma35d1-iot", "nuvoton,ma35d1";
+> +#include <linux/clk.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/regmap.h>
+> +#include <linux/mfd/syscon.h>
+> +#include <linux/mfd/ma35d1-sys.h>
 > +
-> +	chosen {
-> +		stdout-path = "serial0:115200n8";
-> +	};
-> +
-> +	mem: memory@80000000 {
-> +		device_type = "memory";
-> +		reg = <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
-> +	};
+> +enum ma35d1_pll_type {
+> +	MA35D1_CAPLL,
+> +	MA35D1_DDRPLL,
+> +	MA35D1_APLL,
+> +	MA35D1_EPLL,
+> +	MA35D1_VPLL,
 > +};
 > +
-> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
-> new file mode 100644
-> index 000000000000..3e6c3d5469ac
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
-> @@ -0,0 +1,23 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2023 Nuvoton Technology Corp.
-> + * Author: Shan-Chun Hung <schung@nuvoton.com>
-> + *         Jacky huang <ychuang3@nuvoton.com>
-> + */
-> +
-> +/dts-v1/;
-> +#include "ma35d1.dtsi"
-> +
-> +/ {
-> +	model = "Nuvoton MA35D1-SOM";
-> +	compatible = "nuvoton,ma35d1-som", "nuvoton,ma35d1";
-> +
-> +	chosen {
-> +		stdout-path = "serial0:115200n8";
-> +	};
-> +
-> +	mem: memory@80000000 {
-> +		device_type = "memory";
-> +		reg = <0x00000000 0x80000000 0 0x10000000>; /* 256M DRAM */
-> +	};
+> +enum ma35d1_pll_mode {
+> +	VSIPLL_INTEGER_MODE,
+> +	VSIPLL_FRACTIONAL_MODE,
+> +	VSIPLL_SS_MODE,
 > +};
-> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
-> new file mode 100644
-> index 000000000000..8c855f6b330a
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
-> @@ -0,0 +1,272 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2023 Nuvoton Technology Corp.
-> + * Author: Shan-Chun Hung <schung@nuvoton.com>
-> + *         Jacky huang <ychuang3@nuvoton.com>
-> + */
 > +
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/input/input.h>
-> +#include <dt-bindings/gpio/gpio.h>
-> +#include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
-> +#include <dt-bindings/reset/nuvoton,ma35d1-reset.h>
+> +/* VSI-PLL CTL0~2 */
+> +#define VSIPLL_CTL0			0x0
+> +#define VSIPLL_CTL1			0x4
+> +#define VSIPLL_CTL2			0x8
 > +
-> +/ {
-> +	compatible = "nuvoton,ma35d1";
-> +	interrupt-parent = <&gic>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
+> +/* VSI-PLL Specification limits */
+> +#define VSIPLL_FREF_MAX_FREQ		200000000UL
+> +#define VSIPLL_FREF_MIN_FREQ		1000000UL
+> +#define VSIPLL_FREFDIVM_MAX_FREQ	40000000UL
+> +#define VSIPLL_FREFDIVM_MIN_FREQ0	1000000UL
+> +#define VSIPLL_FREFDIVM_MIN_FREQ1	10000000UL
+> +#define VSIPLL_FCLK_MAX_FREQ		2400000000UL
+> +#define VSIPLL_FCLK_MIN_FREQ		600000000UL
+> +#define VSIPLL_FCLKO_MAX_FREQ		2400000000UL
+> +#define VSIPLL_FCLKO_MIN_FREQ		85700000UL
+> +#define VSIPLL_SPREAD_RANGE		194
+> +#define VSIPLL_MODULATION_FREQ		50000
 > +
-> +	aliases {
-> +		serial0 = &uart0;
-> +		serial1 = &uart1;
-> +		serial2 = &uart2;
-> +		serial3 = &uart3;
-> +		serial4 = &uart4;
-> +		serial5 = &uart5;
-> +		serial6 = &uart6;
-> +		serial7 = &uart7;
-> +		serial8 = &uart8;
-> +		serial9 = &uart9;
-> +		serial10 = &uart10;
-> +		serial11 = &uart11;
-> +		serial12 = &uart12;
-> +		serial13 = &uart13;
-> +		serial14 = &uart14;
-> +		serial15 = &uart15;
-> +		serial16 = &uart16;
-
-Aliases of interfaces coming out of SoC are properties of boards, not
-SoC DTSI.
-
-> +	};
+> +/* Clock Control Registers Offset */
+> +#define REG_CLK_PWRCTL			(0x00)
+> +#define REG_CLK_SYSCLK0			(0x04)
+> +#define REG_CLK_SYSCLK1			(0x08)
+> +#define REG_CLK_APBCLK0			(0x0C)
+> +#define REG_CLK_APBCLK1			(0x10)
+> +#define REG_CLK_APBCLK2			(0x14)
+> +#define REG_CLK_CLKSEL0			(0x18)
+> +#define REG_CLK_CLKSEL1			(0x1C)
+> +#define REG_CLK_CLKSEL2			(0x20)
+> +#define REG_CLK_CLKSEL3			(0x24)
+> +#define REG_CLK_CLKSEL4			(0x28)
+> +#define REG_CLK_CLKDIV0			(0x2C)
+> +#define REG_CLK_CLKDIV1			(0x30)
+> +#define REG_CLK_CLKDIV2			(0x34)
+> +#define REG_CLK_CLKDIV3			(0x38)
+> +#define REG_CLK_CLKDIV4			(0x3C)
+> +#define REG_CLK_CLKOCTL			(0x40)
+> +#define REG_CLK_STATUS			(0x50)
+> +#define REG_CLK_PLL0CTL0		(0x60)
+> +#define REG_CLK_PLL2CTL0		(0x80)
+> +#define REG_CLK_PLL2CTL1		(0x84)
+> +#define REG_CLK_PLL2CTL2		(0x88)
+> +#define REG_CLK_PLL3CTL0		(0x90)
+> +#define REG_CLK_PLL3CTL1		(0x94)
+> +#define REG_CLK_PLL3CTL2		(0x98)
+> +#define REG_CLK_PLL4CTL0		(0xA0)
+> +#define REG_CLK_PLL4CTL1		(0xA4)
+> +#define REG_CLK_PLL4CTL2		(0xA8)
+> +#define REG_CLK_PLL5CTL0		(0xB0)
+> +#define REG_CLK_PLL5CTL1		(0xB4)
+> +#define REG_CLK_PLL5CTL2		(0xB8)
+> +#define REG_CLK_CLKDCTL			(0xC0)
+> +#define REG_CLK_CLKDSTS			(0xC4)
+> +#define REG_CLK_CDUPB			(0xC8)
+> +#define REG_CLK_CDLOWB			(0xCC)
+> +#define REG_CLK_CKFLTRCTL		(0xD0)
+> +#define REG_CLK_TESTCLK			(0xF0)
+> +#define REG_CLK_PLLCTL			(0x40)
 > +
-> +	chosen {
-> +		stdout-path = "serial0:115200n8";
-> +	};
+> +/* Constant Definitions for Clock Controller */
+> +#define SMICPLLCTL0_FBDIV_POS		(0)
+> +#define SMICPLLCTL0_FBDIV_MSK		(0xfful << SMICPLLCTL0_FBDIV_POS)
+> +#define SMICPLLCTL0_INDIV_POS		(8)
+> +#define SMICPLLCTL0_INDIV_MSK		(0xful << SMICPLLCTL0_INDIV_POS)
+> +#define SMICPLLCTL0_OUTDIV_POS		(12)
+> +#define SMICPLLCTL0_OUTDIV_MSK		(0x3ul << SMICPLLCTL0_OUTDIV_POS)
+> +#define SMICPLLCTL0_PD_POS		(16)
+> +#define SMICPLLCTL0_PD_MSK		(0x1ul << SMICPLLCTL0_PD_POS)
+> +#define SMICPLLCTL0_BP_POS		(17)
+> +#define SMICPLLCTL0_BP_MSK		(0x1ul << SMICPLLCTL0_BP_POS)
+> +#define VSIPLLCTL0_FBDIV_POS		(0)
+> +#define VSIPLLCTL0_FBDIV_MSK		(0x7fful << VSIPLLCTL0_FBDIV_POS)
+> +#define VSIPLLCTL0_INDIV_POS		(12)
+> +#define VSIPLLCTL0_INDIV_MSK		(0x3ful << VSIPLLCTL0_INDIV_POS)
+> +#define VSIPLLCTL0_MODE_POS		(18)
+> +#define VSIPLLCTL0_MODE_MSK		(0x3ul << VSIPLLCTL0_MODE_POS)
+> +#define VSIPLLCTL0_SSRATE_POS		(20)
+> +#define VSIPLLCTL0_SSRATE_MSK		(0x7fful << VSIPLLCTL0_SSRATE_POS)
+> +#define VSIPLLCTL1_PD_POS		(0)
+> +#define VSIPLLCTL1_PD_MSK		(0x1ul << VSIPLLCTL1_PD_POS)
+> +#define VSIPLLCTL1_BP_POS		(1)
+> +#define VSIPLLCTL1_BP_MSK		(0x1ul << VSIPLLCTL1_BP_POS)
+> +#define VSIPLLCTL1_OUTDIV_POS		(4)
+> +#define VSIPLLCTL1_OUTDIV_MSK		(0x7ul << VSIPLLCTL1_OUTDIV_POS)
+> +#define VSIPLLCTL1_FRAC_POS		(8)
+> +#define VSIPLLCTL1_FRAC_MSK		(0xfffffful << VSIPLLCTL1_FRAC_POS)
+> +#define VSIPLLCTL2_SLOPE_POS		(0)
+> +#define VSIPLLCTL2_SLOPE_MSK		(0xfffffful << VSIPLLCTL2_SLOPE_POS)
 > +
-> +	cpus {
-> +		#address-cells = <2>;
-> +		#size-cells = <0>;
-
-
-Blank line.
-
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a35";
-> +			reg = <0x0 0x0>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_0>;
-> +		};
-
-Between every node as well.
-
-> +		cpu1: cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a35";
-> +			reg = <0x0 0x1>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_0>;
-> +		};
-> +		L2_0: l2-cache0 {
-> +			compatible = "cache";
-> +			cache-level = <2>;
-> +		};
-> +	};
+> +struct clk_hw *ma35d1_reg_clk_pll(enum ma35d1_pll_type type, u8 u8mode,
+> +				 const char *name, const char *parent,
+> +				 unsigned long targetFreq,
+> +				 void __iomem *base,
+> +				 struct regmap *regmap);
 > +
-> +	psci {
-> +		compatible = "arm,psci-0.2";
-> +		method = "smc";
-> +	};
+> +struct clk_hw *ma35d1_reg_adc_clkdiv(struct device *dev,
+> +				    const char *name,
+> +				    const char *parent_name,
+> +				    unsigned long flags,
+> +				    void __iomem *reg, u8 shift,
+> +				    u8 width, u32 mask_bit);
 > +
-> +	clk_hxt: clock_hxt {
+> +extern spinlock_t ma35d1_lock;
 
-No underscores in node names.
+Why this is here?
 
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <24000000>;
-> +		clock-output-names = "clk_hxt";
-
-This looks like a property of boards, not SoC. Are you sure the clock
-physically is in every SoC? If so, why it is not part of clock
-controller? (before you start explaining what is this, have in mind that
-I am pretty sure I know what is this, so rather answer the questions)
-
-> +	};
 > +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
-> +			      IRQ_TYPE_LEVEL_LOW)>, /* Physical Secure */
-> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) |
-> +			      IRQ_TYPE_LEVEL_LOW)>, /* Physical Non-Secure */
-> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) |
-> +			      IRQ_TYPE_LEVEL_LOW)>, /* Virtual */
-> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
-> +			      IRQ_TYPE_LEVEL_LOW)>; /* Hypervisor */
-> +		clock-frequency = <12000000>;
-> +		interrupt-parent = <&gic>;
-> +	};
+> +static inline struct clk_hw *ma35d1_clk_fixed(const char *name, int rate)
+> +{
+> +	return clk_hw_register_fixed_rate(NULL, name, NULL, 0, rate);
+> +}
 > +
-> +	sys: system-management@40460000 {
-> +		compatible = "nuvoton,ma35d1-sys", "syscon", "simple-mfd";
-> +		reg = <0x0 0x40460000 0x0 0x200>;
-> +
-> +		reset: reset-controller {
-> +			compatible = "nuvoton,ma35d1-reset";
-> +			regmap = <&sys>;
-> +			#reset-cells = <1>;
-> +		};
-> +	};
-> +
-> +	clk: clock-controller@40460200 {
-> +		compatible = "nuvoton,ma35d1-clk", "syscon";
-> +		reg = <0x00000000 0x40460200 0x0 0x100>;
-> +		#clock-cells = <1>;
-> +		clocks = <&clk_hxt>;
-> +		clock-names = "clk_hxt";
-> +		assigned-clocks = <&clk CAPLL>,
-> +				  <&clk DDRPLL>,
-> +				  <&clk APLL>,
-> +				  <&clk EPLL>,
-> +				  <&clk VPLL>;
-> +		assigned-clock-rates = <800000000>,
-> +				       <266000000>,
-> +				       <180000000>,
-> +				       <500000000>,
-> +				       <102000000>;
-> +		nuvoton,pll-mode = <0>, <1>, <0>, <0>, <0>;
-> +		nuvoton,sys = <&sys>;
-> +	};
-> +
-> +	gic: interrupt-controller@50801000 {
-> +		compatible = "arm,gic-400";
-> +		#interrupt-cells = <3>;
-> +		interrupt-parent = <&gic>;
-> +		interrupt-controller;
-> +		reg =   <0x0 0x50801000 0 0x1000>, /* GICD */
-> +			<0x0 0x50802000 0 0x2000>, /* GICC */
-> +			<0x0 0x50804000 0 0x2000>, /* GICH */
-> +			<0x0 0x50806000 0 0x2000>; /* GICV */
 
-reg is second property.
+Why all these are here?
 
-> +		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
-> +			      IRQ_TYPE_LEVEL_HIGH)>;
-> +	};
 > +
-> +	uart0:serial@40700000 {
-> +		compatible = "nuvoton,ma35d1-uart";
-> +		reg = <0x0 0x40700000 0x0 0x100>;
-> +		interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
-> +		clocks = <&clk UART0_GATE>;
-> +		status = "okay";
-
-Why? Drop the line... or convert it to disabled. Otherwise, why every
-SoC has serial0 enabled? Is it used internally?
-
+> +#endif /* __DRV_CLK_NUVOTON_MA35D1_H */
 
 Best regards,
 Krzysztof
