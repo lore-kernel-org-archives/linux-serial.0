@@ -2,51 +2,51 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91231C6FD1F
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 20:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0825FC7618E
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 20:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbjCPUVZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 16:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S229780AbjCPUV2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 16:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229897AbjCPUVX (ORCPT
+        with ESMTP id S230266AbjCPUVY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 16:21:23 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64351A8C57
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 13:21:21 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id fy10-20020a17090b020a00b0023b4bcf0727so2828087pjb.0
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 13:21:21 -0700 (PDT)
+        Thu, 16 Mar 2023 16:21:24 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A516733A7
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 13:21:23 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id j3-20020a17090adc8300b0023d09aea4a6so6659376pjv.5
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 13:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1678998081;
+        d=chromium.org; s=google; t=1678998083;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=g57LqyNVPd4QtvwDpadq5p0zhAPNVIWZbBGClF8fQN4=;
-        b=TibbCxbyBEZEYx/uzkmczi2osDWuyysnFNb7UXs3hCFZQtiCLHPDBLo+h0TaUIqtSS
-         LXN+A7+bVvfxR3164Co4ZTPPvbcvJHJD6RwZamz7cg69L8SZXrOluqktWQwOCjLyhsL1
-         VmUKIBoqTGOaQ3RiLfTTD6lsheEfjtiptn5bo=
+        bh=R7uYBq/r2MM26gN/T+YojigH2qsAcwEwpy934F/qkEQ=;
+        b=BJIzhXdI1s5gzEG0m+7jSYgDrDB2Cv3jwayVk4kqbzV9tbFk9R3GGCEwVuyfc6mlrD
+         KpM3I806ejLxxNf4tfemT2g38pET3WVqkOcawWyOrA/AXqin5PDGFZ6+htFTWvwHtO6Y
+         KS6NTWUEKJ8Gpx1hurGHVnAHy/QsDGjxzy9CM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678998081;
+        d=1e100.net; s=20210112; t=1678998083;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=g57LqyNVPd4QtvwDpadq5p0zhAPNVIWZbBGClF8fQN4=;
-        b=wbNSHUAcL/SzwIyLB2f27mUphvvE+Dzyu9Hm2KejMs8pH9OIoSUGJssRtjrYBzhoGs
-         ppvn5t83+r/y5eTogLcWxNiLyw9LsiSAj+99AAXScewwNdV0fKF4CLuruzsyhZdKHsN8
-         kvRoeieTikGBWag/Pc+Q+rsDNxNgo7Ktf4DtkURx4NrQqDLG960QdWdMHjvE/X4ccbDk
-         SezuIZp3MgyG8gXoLFJkZHifRLNRPb/6BQZor+6Gb1cqlqX3xtOLtoX+NkDq3Ulp0kTX
-         lKPdWpURY+Jv59trs8IbtKViqN+tEkGR182ndB2JDKOEaCx1DlsWeTQKZNLl5cn+k8xB
-         jgFQ==
-X-Gm-Message-State: AO0yUKVpsCUs3z3fpGZGso6555GQu20ElNrk/cIf03lT8lytHV3vPpvm
-        uXBuoyFV3lJE1W/1NFJDQUbXmg==
-X-Google-Smtp-Source: AK7set9yCaDngXDzLHihTbNxF3zv4vAS5iqalhbZOQqV0PyRM1ANGSN9XbnsR7tHimYz7WJ9Kc71Dw==
-X-Received: by 2002:a17:90a:1903:b0:233:76bd:9faa with SMTP id 3-20020a17090a190300b0023376bd9faamr5352705pjg.47.1678998080936;
-        Thu, 16 Mar 2023 13:21:20 -0700 (PDT)
+        bh=R7uYBq/r2MM26gN/T+YojigH2qsAcwEwpy934F/qkEQ=;
+        b=tvchb7uu18kAJ0pgzT6YvHVMhm4RVGBahMHHqcOKg7LJP4wqDh3GE/aM3lWuPaC7MW
+         MrlKfnUq7JWHnmvjdikbS+T5Su6vK5d7MTj6ML13ZxZdxzxNfeqBGLLTYZwnR2Vbu5Vr
+         agbiUNqti7VRZ5v1/TE7uPQZ41mqdnOF/Gx3JiB3d3EnPw9AyziOyuZ8hZDxGK57/BTH
+         lg5zKioulEvAzhefR1y4QHbPTgkmfgmHRJW9V/xtsfyATCsjqT6wFXkaINsGimTdli/R
+         lmrtAwueWdyKvkhYK0yW5qlEj1/7mc8wl1A3OXpXfc2kgYCA56O4J/tYmIN5ypNV35JX
+         9/ew==
+X-Gm-Message-State: AO0yUKWRIGjXd6ewPhN6Gm7aohE1Ms+RlsvgEKvUt4ngY+8XKpM1ITdx
+        Ydq5vsWnYhd0/ofBWl2WBdgL0Q==
+X-Google-Smtp-Source: AK7set8U+8u0pAReOkw3SQcSNQaY6unkcGqSXoWSlafTmIws3G0+lrdPTp5NRIJ1P1F3tRAnfoo8wQ==
+X-Received: by 2002:a17:90b:3850:b0:234:118d:b1b1 with SMTP id nl16-20020a17090b385000b00234118db1b1mr4760801pjb.48.1678998082769;
+        Thu, 16 Mar 2023 13:21:22 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:9d:2:4db6:6f23:6ad2:998d])
-        by smtp.gmail.com with ESMTPSA id b4-20020a17090a5a0400b0023acdac248dsm24114pjd.15.2023.03.16.13.21.19
+        by smtp.gmail.com with ESMTPSA id b4-20020a17090a5a0400b0023acdac248dsm24114pjd.15.2023.03.16.13.21.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Mar 2023 13:21:20 -0700 (PDT)
+        Thu, 16 Mar 2023 13:21:22 -0700 (PDT)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     Bjorn Andersson <andersson@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -57,10 +57,10 @@ Cc:     linux-arm-msm@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
         Konrad Dybcio <konrad.dybcio@linaro.org>,
         linux-serial@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH 1/2] serial: uart_poll_init() should power on the UART
-Date:   Thu, 16 Mar 2023 13:20:56 -0700
-Message-Id: <20230316132027.RESEND.1.I106c39498d8094c6f5e7ada42c7db17aa5c64e48@changeid>
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH 2/2] tty: serial: qcom-geni-serial: Add a poll_init() function
+Date:   Thu, 16 Mar 2023 13:20:57 -0700
+Message-Id: <20230316132027.RESEND.2.Ie678853bb101091afe78cc8c22344bf3ff3aed74@changeid>
 X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
 In-Reply-To: <20230316202057.4070382-1-dianders@chromium.org>
 References: <20230316202057.4070382-1-dianders@chromium.org>
@@ -70,50 +70,46 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Qualcomm devices which use the "geni" serial driver, kdb/kgdb won't
-be very happy if you use it but the resources of the port haven't been
-powered on. Today kdb/kgdb rely on someone else powering the port
-on. This could be the normal kernel console or an agetty running.
-Let's fix this to explicitly power things on when setting up a polling
-driver.
+On sc7180 Chromebooks, I did the following:
+* Didn't enable earlycon in the kernel command line.
+* Didn't enable serial console in the kernel command line.
+* Didn't enable an agetty or any other client of "/dev/ttyMSM0".
+* Added "kgdboc=ttyMSM0" to the kernel command line.
+
+After I did that, I tried to enter kdb with this command over an ssh
+session:
+  echo g > /proc/sysrq-trigger
+
+When I did that the system just hung.
+
+Although I thought I'd tested this scenario before, I couldn't go back
+and find a time when it was working. Previous testing must have relied
+on either the UART acting as the kernel console or an agetty running.
+
+It turns out to be pretty easy to fix: we can just use
+qcom_geni_serial_port_setup() as the .poll_init() function. This,
+together with the patch ("serial: uart_poll_init() should power on the
+UART"), allows the debugger to work even if there are no other users
+of the serial port.
 
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
 
- drivers/tty/serial/serial_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/qcom_geni_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2bd32c8ece39..b14b5ed6fff4 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2593,6 +2593,7 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- {
- 	struct uart_driver *drv = driver->driver_state;
- 	struct uart_state *state = drv->state + line;
-+	enum uart_pm_state pm_state;
- 	struct tty_port *tport;
- 	struct uart_port *port;
- 	int baud = 9600;
-@@ -2610,6 +2611,9 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- 		goto out;
- 	}
- 
-+	pm_state = state->pm_state;
-+	uart_change_pm(state, UART_PM_STATE_ON);
-+
- 	if (port->ops->poll_init) {
- 		/*
- 		 * We don't set initialized as we only initialized the hw,
-@@ -2626,6 +2630,8 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
- 		console_list_unlock();
- 	}
- out:
-+	if (ret)
-+		uart_change_pm(state, pm_state);
- 	mutex_unlock(&tport->mutex);
- 	return ret;
- }
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index d69592e5e2ec..7fdb3e12846d 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1532,6 +1532,7 @@ static const struct uart_ops qcom_geni_console_pops = {
+ #ifdef CONFIG_CONSOLE_POLL
+ 	.poll_get_char	= qcom_geni_serial_get_char,
+ 	.poll_put_char	= qcom_geni_serial_poll_put_char,
++	.poll_init = qcom_geni_serial_port_setup,
+ #endif
+ 	.pm = qcom_geni_serial_pm,
+ };
 -- 
 2.40.0.rc1.284.g88254d51c5-goog
 
