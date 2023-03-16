@@ -2,118 +2,133 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA18C74A5B
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 13:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCF0C7618D
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 14:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbjCPNft (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 09:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
+        id S230464AbjCPOGb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 10:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjCPNfs (ORCPT
+        with ESMTP id S230457AbjCPOGa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 09:35:48 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825C37DD2A;
-        Thu, 16 Mar 2023 06:35:46 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id rj10so1657296pjb.4;
-        Thu, 16 Mar 2023 06:35:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678973746;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cWReiIxPiu3lWTgfQW7DAo5O3p+FWpN4lR44L3foEj4=;
-        b=BcChq6vFcL2Qf5V4rA/m0CDQ/E+Aq2iFuKunm2PUs1QSWAUHyrQLRSZMTvMUtHeJAX
-         3qVgWK5yN/ZmvIitKfy2uVDRIYugps+52YRjFFQOEEy7qakaOPbSxLDrelp+jcWXbyRv
-         SFrjY9F0Fmh3siiAYKPZyrBzxgyGOosRFci9JpNXaCozsudiT7zaq96XrF/SD5NlQQUJ
-         Zh7/llMYYgMazeO7Tm3bQjBUP7qR3rIhXmoYW2cbsQnVSZlwi2t/WuZ8+6HZWDjOppcV
-         5diLUKeRaW44vqFWYQutxJux3kCLlmmE2Lr7M1PTdlwu82cIvIhkl7SIur6g27/yNSw0
-         Svag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678973746;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cWReiIxPiu3lWTgfQW7DAo5O3p+FWpN4lR44L3foEj4=;
-        b=AmnwccVS4ifhl+jj+b9yRvMEj5Sj9l0+wLpGk2DYK1jezDtROdpsYQE5pHqVbnhTh9
-         RndjsIOyogKH1R0tUGH345cdaHWt7dzX25j9P6AwkwccXJ+sI5x4ZDkm/J0wu83M60jR
-         NiyTjju8HMxyyBlIV5yYg7seTN3oXfwFHADhI7kpYopDtY8nn0VUrSqbR1TcU6NLMitw
-         FlLG0Eivpi9wKX2Ot7M+wi0RaFkDBgPACTBM4xS8OSAheKcBfusMC1UKbUIkfMmI0AQm
-         e6qZyS7E0dtiNX0D+XbegfP2fA9gyn8L+qpg95MnlBnIZUjolubyUbbSHtQS+tmcFUZ4
-         RILg==
-X-Gm-Message-State: AO0yUKW3Ld+il2yA6ftxRYS844yuBtTm9Jo9g6FFox0vTZX7/uIDE6zH
-        /EZeYkhZyPeVBqWNJxN4Z50=
-X-Google-Smtp-Source: AK7set+xfxWsEPAmUNEyfEISpAvlFkDeCty32g2j/9Anp0cZ+TPdCkceJlYcmQHzO1B+ulpUgcyj0Q==
-X-Received: by 2002:a17:90b:3e82:b0:233:f393:f6cd with SMTP id rj2-20020a17090b3e8200b00233f393f6cdmr3860657pjb.5.1678973745917;
-        Thu, 16 Mar 2023 06:35:45 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id l4-20020a17090a660400b00230b572e90csm3223063pjj.35.2023.03.16.06.35.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 06:35:45 -0700 (PDT)
-Message-ID: <fd60a5af-8831-3d58-41b0-b220130c9e05@gmail.com>
-Date:   Thu, 16 Mar 2023 21:35:41 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 04/15] dt-bindings: clock: nuvoton: add binding for ma35d1
- clock controller
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
+        Thu, 16 Mar 2023 10:06:30 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D311EFEB;
+        Thu, 16 Mar 2023 07:06:25 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 967935C0183;
+        Thu, 16 Mar 2023 10:06:24 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 16 Mar 2023 10:06:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1678975584; x=1679061984; bh=KH
+        KZXwWX3HDPPdF2HBzm7dMQaqdnN/EoTUEQ7VDQcFo=; b=o9a3qPtgOBbIWi+vbn
+        mo3i5NEzcbNrQp3P552ieGB/ntbcoSbfu0FT8eTwiIUGugS+9GSShBYfFuMMB7sw
+        X6z7T/VZ/kT5kp1s5+PBEwWj+8lPuUt2JfWwsh+JcC5Box5HhY7Jd6xNF4aPyG67
+        kaJzu6eiWUZHpeMwgHLBF1LGJ0QGopK8ZPKQ9aJQTxqxlJfxOz5JmxIbYxHSOGYk
+        XMqbRizyWCi02jsq1O5BxmMuJyEBPo3ZMs3+L69aaYk8KRfhCwkd1UaCdU+synrZ
+        No6qVib4NhfZssyTQqxXsA5Ch4zpHtuGGYbDS7OKvSf1wejI3HaEywVSF8xA1K+R
+        jlkg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1678975584; x=1679061984; bh=KHKZXwWX3HDPP
+        dF2HBzm7dMQaqdnN/EoTUEQ7VDQcFo=; b=JFNrqyfmLFvUp0Vspwv+deQQb1ff/
+        DAvRhtGC0g9osljc1xYuJhDJyZHLM8ppDLKjBaogZmmsJpEPokgiRbQqr/GqFJJj
+        0Cm3VKKpIPs59lShsh/vcLxWBc26yiITGCLWhfQlOq6XnxBAUvWInz7tTS5x/Z1H
+        PFgx0ux/3D0l2HgcGEJEQrHl98/kPROmhgeWfjG28FM6kB0lZqM338bVFJJOSCDv
+        amd8LUvYlkSN/MG4FhXMtopPRq0EaD/NqjmIOvVuF+FsgeuOOVoPW2XD5e6QJ0gt
+        w6JPeOqBCmykaEhJ5xFCzm+yKNs0lh/geW5KlXFTr5egFxmRctNZGsQ6Q==
+X-ME-Sender: <xms:XyITZIZNoSZJehJSZ1GdYdIykqe2aunRPJpy2sb516YpD1uJXqzX7Q>
+    <xme:XyITZDaC0lF8Hm6r21ackxpi53q6cMCPefNmpBE4I-7xKAzvVWwL1OopiKXgSQNbh
+    2kqqQEnAdXL20a-VBM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeftddgiedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepieekieffueduhfelhfduleeggfeftdeutdejvefhueegudefheeiieejffek
+    vedtnecuffhomhgrihhnpehnuhhvohhtohhnrdgtohhmpdhgihhthhhusgdrtghomhenuc
+    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnuges
+    rghrnhgusgdruggv
+X-ME-Proxy: <xmx:XyITZC9NxsxHHcDGt0cJHEkG_xk18xIbBdVnuvrxyQestch8POJifg>
+    <xmx:XyITZCqD_odw1vsluuASxL1BJs9pSkGcFX-6e02o_xsA6ZOH_mRP6g>
+    <xmx:XyITZDpZMSQ2TWPZVEihDjbBCsEFWV6iCalM-e9uwtr0lhFMXsX3vw>
+    <xmx:YCITZBhsAo0xOkJkGtOlwmnNgL-9pWNrHACGvf9ZudyQkm-29zuo8Q>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 7D28EB60086; Thu, 16 Mar 2023 10:06:23 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-221-gec32977366-fm-20230306.001-gec329773
+Mime-Version: 1.0
+Message-Id: <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
+In-Reply-To: <20230315072902.9298-1-ychuang570808@gmail.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+Date:   Thu, 16 Mar 2023 15:05:59 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jacky Huang" <ychuang570808@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
+        "Michael Turquette" <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-5-ychuang570808@gmail.com>
- <a64bbd77-cd5c-8149-51e6-262122fe954e@linaro.org>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <a64bbd77-cd5c-8149-51e6-262122fe954e@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        schung@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
+Subject: Re: [PATCH 00/15] Introduce Nuvoton ma35d1 SoC
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-Dear Krzysztof,
-
-
-
-On 2023/3/16 下午 03:31, Krzysztof Kozlowski wrote:
-> On 15/03/2023 08:28, Jacky Huang wrote:
->> From: Jacky Huang <ychuang3@nuvoton.com>
->>
->> Add the dt-bindings header for Nuvoton ma35d1, that gets shared
->> between the clock controller and clock references in the dts.
-> I don't see the device binding. They come together.
-
-I should move 
-Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-into this patch, right?
-
+On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
+> From: Jacky Huang <ychuang3@nuvoton.com>
 >
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>   .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 253 ++++++++++++++++++
->>   1 file changed, 253 insertions(+)
->>   create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
->>
->> diff --git a/include/dt-bindings/clock/nuvoton,ma35d1-clk.h b/include/dt-bindings/clock/nuvoton,ma35d1-clk.h
->> new file mode 100644
->> index 000000000000..6c569fdd6e06
->> --- /dev/null
->> +++ b/include/dt-bindings/clock/nuvoton,ma35d1-clk.h
->> @@ -0,0 +1,253 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
-> Dual license.
-
-OK, I will fix it.
-
-
-> Best regards,
-> Krzysztof
+> This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+> initial device tree, clock driver, reset driver, and serial driver.
 >
+> This patchset cover letter is based from the initial support for Nuvoton
+> ma35d1 to keep tracking the version history.
+>
+> This patchset had been applied to Linux kernel 6.3-rc2 and tested on the
+> Nuvoton ma35d1 SOM evaluation board.
+>
+> (ma35d1 information: 
+> https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+> MA35D1 porting on linux-5.10.y can be found at: 
+> https://github.com/OpenNuvoton/MPU-Family
 
+Hi Jacky,
+
+Thanks a lot for your submission. I saw this presented at
+EmbeddedWorld yesterday and asked about mainline Linux
+support, but did not expect to see the patches this soon ;-)
+
+The easiest process for getting the series merged is to
+have me add it the entire series to the SoC tree after the
+individual drivers have been reviewed by the respective
+subsystem maintainers that are already on Cc here. When
+the review is complete, you can add soc@kernel.org to Cc,
+so they show up in patchwork, or alternatively send a pull
+request for a git tree to that address. Until then, you
+can add my own email address to Cc so I can follow the
+reviews.
+
+After the initial merge, the normal method for additional
+device drivers is to have them sent for inclusion to the
+subsystem maintainers. The soc tree and soc@kernel.org address
+is then only used for changes in arch/arm64, i.e. updates
+to the dts files, Kconfig, defconfig and MAINTAINERS, 
+as well as the drivers/soc and drivers/firmware directories,
+if you have anything in there.
+
+If you have any additional questions about the process,
+feel free to also ask me.
+
+     Arnd
