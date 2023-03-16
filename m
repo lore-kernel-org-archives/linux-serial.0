@@ -2,103 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0150FC6FD19
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 14:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B761C6FD1F
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 14:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbjCPOKQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 10:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57402 "EHLO
+        id S230525AbjCPOSS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 10:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbjCPOKO (ORCPT
+        with ESMTP id S230305AbjCPOSP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 10:10:14 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8883B0C7
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 07:09:56 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id eh3so8118845edb.11
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 07:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678975794;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qSYTF1gzbLXc9mIXUhT70b2BxBvwCOTXpLGkfOxxmec=;
-        b=cM9RxICbPcmQVtqktPjzYGl3wLcA0d85RKIFxu5WIB1G56o138Z0qHPLPAVC1XHruZ
-         iXb3ZTIONF92viWgBDIOHftD0wR9nFVXzvH38ZH8fSHonstccxExM8A9d4KtRATZ4jds
-         JL3LUxYNtIWgjRRKDSagN2kSnv3uHsfks3szO+w/etoxhOjRNQMt9/NB7V8xIxnnvmA1
-         P6uX2gdN0x9faCQpQ3uPXOQyU7uJT4mr8RKgaUbD3gC1vMaOdesfNIu33lrF7xfCHIXb
-         I1KYXTQq1fLjJFSrgpLjJODCSTlmeFEk++eFjWKU2fONeUKe+Bc251xEcTyfPm+ym8xq
-         aPcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678975794;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qSYTF1gzbLXc9mIXUhT70b2BxBvwCOTXpLGkfOxxmec=;
-        b=z0ddteoS6FbeEHdwURSyQsx8hSDCzkWd+OYIOsb4cY/9dL1d6PB7WGqkC7QGcC4AG2
-         x2kFef1et9ddexh0PjXrsm/84vXacyOWOA+EQm7xCD7NzB7h+TGqFANRWTc1QrC9AKhO
-         XXztZJfDN5AuV/MiPCHI7L1CaF2rTuVUcOxmzyI7jd1MkJ6AHWI9SX/UhAafaRLQHds4
-         t/6ris09xtZQ7E+0lIMNs0ZwWduDlgXK1jcffcXTo0kN/XF63lrX/j+uPlCipfHGWQ5i
-         5xN3xz/8mFRirw8q51r26fNxXhrD4UiaE+ZrW/QriLKjxB/WOF5m6QHW+FF9qbyIAYVB
-         WNPA==
-X-Gm-Message-State: AO0yUKW5vhQqu4q8P+yBuUmI4SuPB0MHw5Y/ShzaWTZ3bb4doZbZFV1V
-        lD4rO9v0mBiDslXrw4a59sz+6g==
-X-Google-Smtp-Source: AK7set/lq61jyQAMsfgKe5eGKonfgJx8sh6sYalKy1N1OZp2WLwyjzWvUd/2MxH1VCw2f7GRuoFwHA==
-X-Received: by 2002:a17:907:8d1b:b0:889:1eb1:7517 with SMTP id tc27-20020a1709078d1b00b008891eb17517mr11048600ejc.30.1678975794656;
-        Thu, 16 Mar 2023 07:09:54 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id si16-20020a170906ced000b008e1509dde19sm3866687ejb.205.2023.03.16.07.09.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 07:09:54 -0700 (PDT)
-Message-ID: <ac27570c-73ab-ff58-d8f8-c6c5d0fa751b@linaro.org>
-Date:   Thu, 16 Mar 2023 15:09:52 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 04/15] dt-bindings: clock: nuvoton: add binding for ma35d1
- clock controller
-Content-Language: en-US
-To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
+        Thu, 16 Mar 2023 10:18:15 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9992D5A55;
+        Thu, 16 Mar 2023 07:17:52 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 642455C00E0;
+        Thu, 16 Mar 2023 10:17:28 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 16 Mar 2023 10:17:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1678976248; x=1679062648; bh=8w
+        xnkIWEzkhjMo7BKbmq74RrBygIPUH/mVfy06Uygmo=; b=ts/SLG4ImxnmdL6+o/
+        aKc3AdM6jEjIA5ZhM59htl39G1imJQQghYOvbZrz2T8kQVj6gr82Mdnbcds9RqlS
+        psYQZL/3vPO+sMCegy8Ndih0oAIlrUymHFgXRNffDL5ovZKD3S+hny8Gcm9L6+YZ
+        1hCXwCaDv5QAQ7IKUeLbgGkDyxBNQ3H5Dlf7zH1szI6FUWQplqdUghXGWfLq7z7y
+        dHtyXE2SRUUrUd1Iy7F3DMfEwiqGnAMfg0srcvQSpWLpDEiMX5KHxBZkZu8B5RVR
+        XhKyuHhXKMqMZVdyRTbrafRbKwHiELSpRroiZPWxgVn2XHwHw1i0tZsC12uJYZf6
+        P+5A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1678976248; x=1679062648; bh=8wxnkIWEzkhjM
+        o7BKbmq74RrBygIPUH/mVfy06Uygmo=; b=eRmiEccPVtifJQgiiRpZTBTlBZBYG
+        Sc9KGn5McagRonfU37jhoEZTz3KF7eeMxOC6hfIKBE22XNDrXGJXC+4uVmjLzcpL
+        kylgp5kx2nLfLgrensOamXbLB7CrNcfT3IHNZY1e97g4OijJz+eKGk8rNf4ibL8V
+        k0cUtu2W0B6qSI7xnFisHOAiYHJRjNOSp9QTuma1663ZjCGBzazKetCXOZ0s5/W+
+        1L2y622d9qKEoO7PbqAWRnfiJ83wXx2AmUloRIFWfHyx9PuqlOfdsUyJW6fUof4u
+        qTzCqvYpAIu14Lqtrm90cd84Py8RFWTNMBujSbn6j2TsAPb8ODaMhJf8w==
+X-ME-Sender: <xms:9yQTZBmnLOlQtmUeVCuAlzMqV92BCcKX2NP3kSvIAB7CPV8j4ly8eQ>
+    <xme:9yQTZM23JWdW9M9E1aIw-8dlzA06Reobk12iHlcCnLIlojDY9VTj4AzkHpyB5Xv6-
+    9Hn_oR4FZLkYlvTZn4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeftddgieefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:9yQTZHrIjfzdnzH0sW1_ufHPE0MdYtyYO0HdheyLDdvyOYfU9R-l-Q>
+    <xmx:9yQTZBlk18uvWK5GXyU0JKM6WKzwliYG3JVR5EhbxcAwdplN9_JRDw>
+    <xmx:9yQTZP3Y838o8HUWNN_qIjfOqaxZZI4EEMf8OpY8N58z3L52ZEqakw>
+    <xmx:-CQTZNOlrTA0zXCTBjIOmabhR6Sql852XrOaWN3joGJWqpQ2FIn4dQ>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 7D1A8B60089; Thu, 16 Mar 2023 10:17:27 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-221-gec32977366-fm-20230306.001-gec329773
+Mime-Version: 1.0
+Message-Id: <2063c6d1-85ed-43d9-b572-a762b6ce18c1@app.fastmail.com>
+In-Reply-To: <20230315072902.9298-12-ychuang570808@gmail.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-12-ychuang570808@gmail.com>
+Date:   Thu, 16 Mar 2023 15:17:07 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jacky Huang" <ychuang570808@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
+        "Michael Turquette" <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-5-ychuang570808@gmail.com>
- <a64bbd77-cd5c-8149-51e6-262122fe954e@linaro.org>
- <fd60a5af-8831-3d58-41b0-b220130c9e05@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <fd60a5af-8831-3d58-41b0-b220130c9e05@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        schung@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
+Subject: Re: [PATCH 11/15] arm64: dts: nuvoton: Add initial ma35d1 device tree
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16/03/2023 14:35, Jacky Huang wrote:
-> 
-> Dear Krzysztof,
-> 
-> 
-> 
-> On 2023/3/16 下午 03:31, Krzysztof Kozlowski wrote:
->> On 15/03/2023 08:28, Jacky Huang wrote:
->>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>
->>> Add the dt-bindings header for Nuvoton ma35d1, that gets shared
->>> between the clock controller and clock references in the dts.
->> I don't see the device binding. They come together.
-> 
-> I should move 
-> Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-> into this patch, right?
+On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
+> +	mem: memory@80000000 {
+> +		device_type = "memory";
+> +		reg = <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
+> +	};
+> +};
 
-Yes.
+In most machines, the memory size is detected by the boot loader
+and filled in the dtb in memory before starting the kernel, so
+you should not need two separate files here for the two common
+memory configurations.
 
+Since the machine is called 'som', I would assume that this is a
+module that is integrated on another board, so more commonly one
+would have a dtsi file for the som in addition to the one for the
+soc, and have all the components of the module listed in this
+file, while the dts file that includes the som.dtsi lists the
+devices on the carrier board and enables the on-chip devices
+that are connected to the outside.
 
-
-Best regards,
-Krzysztof
-
+       Arnd
