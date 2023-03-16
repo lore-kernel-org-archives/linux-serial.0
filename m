@@ -2,63 +2,62 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F77FC7618A
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 07:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 688BBC6FD19
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 07:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbjCPHjP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 03:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55882 "EHLO
+        id S230101AbjCPHkj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 03:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbjCPHjN (ORCPT
+        with ESMTP id S229562AbjCPHki (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 03:39:13 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CBDD538
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:39:03 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id fd5so3915713edb.7
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:39:03 -0700 (PDT)
+        Thu, 16 Mar 2023 03:40:38 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDAE8C97A
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:40:32 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id cy23so3844047edb.12
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 00:40:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1678952342;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        d=linaro.org; s=google; t=1678952430;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=L80D9NzBtpET8zgBI2TIGG8S31tA19Skk/lPpa1cvUU=;
-        b=u//MdYRS0r42kik8XCyqsuBQFuINbDrXTIOJEKYnG3tqfPtBuC+KZc3T9jvFF7sXoW
-         Bfbk+Cxi1ob15CQlMLw72r+YU4UWTpV8OuXwnFUJcFE0ecrEIBtjo7SkREW9IZl40GdX
-         0SiHSaTaKGRxmspn7C7k8LApCCDVGhBWlfwZ06xuYTHRGyQLubIeKSjymrDZ001ZOZnO
-         tpivkVMAeSKpUBEzRzI20Z8i7hBHLFmZtJXqlkVX7CVsBZ63Kbnm69DQAXEVJhQQRHA/
-         3Au4GBk8DYzC6VQeLUh7FWA83riRgzb4WYD4zFjyNUoAuC05pJw8rjfOUs4DevZqg/Lh
-         dbeg==
+        bh=fVjHSwxCcgK0nlIxtPzn0yGiuSzfP6fPLQyW4o2TIgc=;
+        b=lZiB7LDRuktbamKmx3zqPK/7I17B5efX2zWYp9MdqdHgJ65b7/Et6KxeZoPBXSviDC
+         C9I8xrBWnap4sZo/no1Uhw7801qi10JC+M3pm+abBkCklPjZDdSBLLQRk0kqIAjOdFbO
+         Fjf/3BLkN/NVGYXwXarN4ArFP6Qwv1J3HIJTye1IBFsxpzdEWY05bX60uX7rqsnLZthe
+         pTIESvXGqKrSsTAiMpxy6AvAzroKRIuz7lGModJnn3QGXjUoZYAQ8TSz+1HkeD2hT/Y+
+         61Ow10PA/VIS6Q+rEWrgrZvvtDf3gvmi/JYShmAKZoc4e+5K9j08Rrkm7KyUrTi0LMJB
+         HeFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678952342;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        d=1e100.net; s=20210112; t=1678952430;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L80D9NzBtpET8zgBI2TIGG8S31tA19Skk/lPpa1cvUU=;
-        b=uTUxsTRmK6j4VTD/sL21GIHla4b4mrz51Dbs7f95FzFS/dBVzGWDHzVb9u2bga3BZc
-         VliZiT7Dsuk0pqZqfgcWHd7LjEAQ5lYL1AIILtBJaeWahkeSfUAbMtv+lHm5M1IqvChm
-         TKC4ZyEUz+3h/n1B8H8KAXcL48ZzliKMfkCZauQmX16GWbK4hgLuDaFo9sRdrsPXVDEA
-         f4Kt6CF/5AMcULAMuWpidsreQT3RCdvE0ivmBtl1lfhnj4OgHJvxzM/mooy4dO3ebXy6
-         uz9d6Q3tni2P6+ldPtOLKTK7sTU6sP52jE1ZPnRC/1prQoCrQ/q0fIMGLYpWUSVn02Cb
-         ZAww==
-X-Gm-Message-State: AO0yUKVIM7DhDDwcv/AbyZRfhlAU9UmWnHDKey+la5em7OnBetsblR6j
-        GnHTO5uUw19KgtUZZ7QjgnvU/Q==
-X-Google-Smtp-Source: AK7set+X7bdwNzSqtxKylbf4V544my6LOLVFYGokzYyuR1B0XP1meCH+xiaR2+xKI0kHvIiNDxq3MA==
-X-Received: by 2002:a05:6402:651:b0:4ef:9bf0:7177 with SMTP id u17-20020a056402065100b004ef9bf07177mr5564351edx.9.1678952342340;
-        Thu, 16 Mar 2023 00:39:02 -0700 (PDT)
+        bh=fVjHSwxCcgK0nlIxtPzn0yGiuSzfP6fPLQyW4o2TIgc=;
+        b=ppxSFE7n6Oj5LBnYhhBf5g/LBzd6HD6lrm3v9K51AjbEas60wDjpceqI/xS+EGH5Jc
+         zEKW880zoI28cX1w/iXqtVTpHeKFldpIXk1oxKvHvStcGYffXw6iDb6EEb86FidL5aUa
+         J5MUGL2cXcitMq1mVTPrtY3M3brONPc4r4xYCYYaETPig6fA+bx9bi1WzwOlpRNw8HJO
+         fkVNr/6K4Rp56w5I0QCrPqS53FnjnzCDY8mvmDxv+QmhGmLRDUs18s5F86r2lQjZo0yL
+         OwHgZ47SsijCfk7vj5VfR2l2yEpOWkCVwxEr9YcJlQIakIv6akTXfCYksnTmSbbR5e60
+         mQ4g==
+X-Gm-Message-State: AO0yUKXaqWn3w+mDI981iP8AENOZAeel3gbHvIG/HwbmvgHFOFqqwsem
+        p0aBCk3ZD0UymMiFFM+EpOl0vmFMbZWX+b8zaug=
+X-Google-Smtp-Source: AK7set/zaOdeDV+1veyboUDW+rU/G9F7W2HSrcB9dD46e6NttghzsH6r07UgLUXfK/oluu2fn4xh1A==
+X-Received: by 2002:a17:906:eea:b0:8da:69ae:6ff0 with SMTP id x10-20020a1709060eea00b008da69ae6ff0mr9971709eji.22.1678952430184;
+        Thu, 16 Mar 2023 00:40:30 -0700 (PDT)
 Received: from ?IPV6:2a02:810d:15c0:828:9827:5f65:8269:a95f? ([2a02:810d:15c0:828:9827:5f65:8269:a95f])
-        by smtp.gmail.com with ESMTPSA id a1-20020a509b41000000b004fb00831851sm3424666edj.66.2023.03.16.00.39.01
+        by smtp.gmail.com with ESMTPSA id m18-20020a17090679d200b008e204a57e70sm3450710ejo.214.2023.03.16.00.40.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 00:39:02 -0700 (PDT)
-Message-ID: <b9f93711-7302-4ed6-3f71-7bb792507136@linaro.org>
-Date:   Thu, 16 Mar 2023 08:39:00 +0100
+        Thu, 16 Mar 2023 00:40:29 -0700 (PDT)
+Message-ID: <b4aa61fc-abd8-3287-83a3-beee2a06e628@linaro.org>
+Date:   Thu, 16 Mar 2023 08:40:28 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH 09/15] dt-bindings: reset: Document ma35d1 reset
+Subject: Re: [PATCH 10/15] dt-bindings: serial: Document ma35d1 uart
  controller bindings
 Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
         mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
@@ -67,90 +66,91 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
 References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-10-ychuang570808@gmail.com>
- <cee0497e-c441-3937-07ec-0b6c4621f4e4@linaro.org>
-In-Reply-To: <cee0497e-c441-3937-07ec-0b6c4621f4e4@linaro.org>
+ <20230315072902.9298-11-ychuang570808@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230315072902.9298-11-ychuang570808@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16/03/2023 08:37, Krzysztof Kozlowski wrote:
-> On 15/03/2023 08:28, Jacky Huang wrote:
->> From: Jacky Huang <ychuang3@nuvoton.com>
->>
->> Add documentation to describe nuvoton ma35d1 reset driver bindings.
+On 15/03/2023 08:28, Jacky Huang wrote:
+> From: Jacky Huang <ychuang3@nuvoton.com>
 > 
-> Subject: drop second/last, redundant "bindings". The "dt-bindings"
-> prefix is already stating that these are bindings.
-> 
->>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>  .../bindings/reset/nuvoton,ma35d1-reset.yaml  | 50 +++++++++++++++++++
->>  1 file changed, 50 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
->> new file mode 100644
->> index 000000000000..f66c566c6dce
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
->> @@ -0,0 +1,50 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/reset/nuvoton,ma35d1-reset.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Nuvoton MA35D1 Reset Controller
->> +
->> +maintainers:
->> +  - Chi-Fang Li <cfli0@nuvoton.com>
->> +  - Jacky Huang <ychuang3@nuvoton.com>
->> +
->> +description:
->> +  The system reset controller can be used to reset various peripheral
->> +  controllers in MA35D1 SoC.
->> +
->> +properties:
->> +  compatible:
->> +    const: nuvoton,ma35d1-reset
->> +
->> +  regmap:
->> +    $ref: /schemas/types.yaml#/definitions/phandle
->> +    description: Phandle to the register map node.
-> 
-> You need to be specific what is this. As you can easily check, there is
-> no such property in any devices. I don't understand why do you need it
-> in the first place.
-> 
->> +
->> +  '#reset-cells':
->> +    const: 1
->> +
->> +required:
->> +  - compatible
->> +  - regmap
->> +  - '#reset-cells'
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  # system reset controller node:
->> +  - |
->> +    #include <dt-bindings/reset/nuvoton,ma35d1-reset.h>
->> +
->> +    sys: system-management@40460000 {
->> +        compatible = "nuvoton,ma35d1-sys", "syscon", "simple-mfd";
-> 
-> And your patchset is not bisectable.... Test for bisectability before
-> sending.
+> Add documentation to describe nuvoton ma35d1 uart driver bindings.
 
-Ah, no, it's correct. I see the compatible in previous patch. You need
-to clearly describe the dependencies and merging strategy/requirements
-in cover letter.
+Subject: drop second/last, redundant "bindings". The "dt-bindings"
+prefix is already stating that these are bindings.
+
+> 
+> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> ---
+>  .../serial/nuvoton,ma35d1-serial.yaml         | 52 +++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml b/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+> new file mode 100644
+> index 000000000000..9daa2efd4734
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/nuvoton,ma35d1-serial.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Nuvoton MA35D1 Universal Asynchronous Receiver/Transmitter (UART)
+> +
+> +maintainers:
+> +  - Min-Jen Chen <mjchen@nuvoton.com>
+> +  - Jacky Huang <ychuang3@nuvoton.com>
+> +
+> +allOf:
+> +  - $ref: "serial.yaml"
+
+Drop quotes. Use some recent bindings as your starting point, so we do
+not have to give comments for things which were already fixed.
+
+> +
+> +properties:
+> +  compatible:
+> +    const: nuvoton,ma35d1-uart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
+> +
+> +    aliases {
+> +        serial0 = &uart0;
+> +    };
+
+Drop aliases.
+
+> +
+> +    uart0:serial@40700000 {
+
+Drop label
 
 Best regards,
 Krzysztof
