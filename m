@@ -2,160 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B533C76195
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 17:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D249C7618A
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 20:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbjCPRzZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 13:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
+        id S230187AbjCPUVW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 16:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbjCPRzR (ORCPT
+        with ESMTP id S229841AbjCPUVV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 13:55:17 -0400
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03344CDF7;
-        Thu, 16 Mar 2023 10:54:59 -0700 (PDT)
-Received: by mail-qt1-f170.google.com with SMTP id fy17so119666qtb.2;
-        Thu, 16 Mar 2023 10:54:58 -0700 (PDT)
+        Thu, 16 Mar 2023 16:21:21 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B126C6F4B1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 13:21:19 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id e15-20020a17090ac20f00b0023d1b009f52so6680655pjt.2
+        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 13:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1678998079;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=q3i1too33EMahveRbuxNasAN0FfHWaolQncNRUeKk3s=;
+        b=R9oM9aXd2Sn6h4bV0qBQKGi1qHrcdBjSrcHuV+y6QBP/Jn6Z911RI6cVBP4wJ1wcul
+         rKxVuPuEEl3ZQBPkJUSgcVFGOOI5sgLW3w8gFyX3MGy9Ic7dOJmAAFMogXNEFs+xSDWW
+         4zBkSHGamxKFL+TaLmsN3X1dZON4TpUUMMhtE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1678989297;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XEqXJNTIv0ppIS+gmuWapWAt4V7zUutlS0jW2Y5bsWU=;
-        b=e/v2SS5ydH3N3r9T/CDQFv67+nMujWt4I2Ov+ZQMvjAtO6ce2lLOE6zmH08j4q+PmP
-         xbZsy34zxBBc4vbltctMsW4wrpWclGSykchWUoUjQCfmWC093sJc7xSBHeQLqw7govSD
-         deyoHXpFyCYGulc/UstkPOXptcH3Xovo4uS1aRl5IAE0qa8xd9ikyhoOu+teFZp7VSHf
-         Cihe2IArL63WjWletbvP8L+hqSMDwYA+lPDaZ8C22ndJ14IK554iFkRyuhr4qrV89D/F
-         DkCEydyzLqE+M10XdbnCWlGbhY0b03HfFZZG2GwM+kk6QvZSlMHr0Jn0stgmz9KhKxCM
-         pADw==
-X-Gm-Message-State: AO0yUKWQLaqIp1/VF3Ng4n4MyJVwbEI/vLyGsJiR1mP4YcGUFhMU3s80
-        9H3P8MBl68y3HXMLLN6RibIvJDQ3OumXyg==
-X-Google-Smtp-Source: AK7set+xoAy4XXLwn3W5jSjNSXmG1340rKwFWY0WlqOBYst1KllSnjZ/YK/j070m3rsDJ3lRySjBpw==
-X-Received: by 2002:a05:622a:10b:b0:3d8:a785:ec01 with SMTP id u11-20020a05622a010b00b003d8a785ec01mr3505501qtw.48.1678989297694;
-        Thu, 16 Mar 2023 10:54:57 -0700 (PDT)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id f33-20020a05622a1a2100b003bfb5fd72a7sm6389630qtb.86.2023.03.16.10.54.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 10:54:57 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id r1so2911181ybu.5;
-        Thu, 16 Mar 2023 10:54:57 -0700 (PDT)
-X-Received: by 2002:a5b:68c:0:b0:b30:d9c:b393 with SMTP id j12-20020a5b068c000000b00b300d9cb393mr14551387ybq.12.1678989296781;
- Thu, 16 Mar 2023 10:54:56 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1678998079;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=q3i1too33EMahveRbuxNasAN0FfHWaolQncNRUeKk3s=;
+        b=LUZv/M+nXiHGik9nZhite2mkKgTW4tW1cM7TYzpc64MQosH1gxkW1IGkhHjpKve1o4
+         FTA+ZhF8VFnAAPBjyk1SB4B3dhgEfIRsb1nkqTJkIb9Eb9e7JfRq4mogRyeK0nvbToTU
+         As0q6ZTay+xuAucKfC4IC2CV0EGzE7jMd47WVvVwMYNl1Zci5hZQccP4PiEuO3Li/imZ
+         eA5L7lrdVecH4qWy0BSxrCMGyDF0AI/ibU1TbpsougUQ1S2UCsZLwkSbeUtR1s1vi5ex
+         dLmIop1IewNpUCa7+6NdT8X9g7tnQH8Xr99OMV3eRyBau+OZLwKS3TnyaOsdCLDpyYQM
+         2GjA==
+X-Gm-Message-State: AO0yUKUNKUm44g6xmqLccfQijXe7vOHu36v+UJ+gnBn9gh6L7udCEUFq
+        T0NMa7RKzTo39RmxMGgxdt4VwQ==
+X-Google-Smtp-Source: AK7set9yssgAFQezxJ/RfIneXy6O9/6hx6IWvENqFQh8FK49jmaaVVUPU6K/d3qqZDHF4VNoOI1Xyg==
+X-Received: by 2002:a17:90b:350f:b0:23f:35c8:895 with SMTP id ls15-20020a17090b350f00b0023f35c80895mr2925707pjb.32.1678998079225;
+        Thu, 16 Mar 2023 13:21:19 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:9d:2:4db6:6f23:6ad2:998d])
+        by smtp.gmail.com with ESMTPSA id b4-20020a17090a5a0400b0023acdac248dsm24114pjd.15.2023.03.16.13.21.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Mar 2023 13:21:18 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <andersson@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-arm-msm@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-serial@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH 0/2] tty: serial: Fix kgdb on qcom-geni-serial when no other UART users
+Date:   Thu, 16 Mar 2023 13:20:55 -0700
+Message-Id: <20230316202057.4070382-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
 MIME-Version: 1.0
-References: <20230316160118.133182-1-biju.das.jz@bp.renesas.com>
- <CAMuHMdVX=sM-1y+-3PQDsjf8K3nLoS4WfSYfv6UAP=92T_oHaQ@mail.gmail.com> <OS0PR01MB5922EA7DC64F0D2C36B490A986BC9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922EA7DC64F0D2C36B490A986BC9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Mar 2023 18:54:45 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXgwkJ2O7y98HW6n8SOgbuEx1uFrt1Jc-X2CzpC3y1P0Q@mail.gmail.com>
-Message-ID: <CAMuHMdXgwkJ2O7y98HW6n8SOgbuEx1uFrt1Jc-X2CzpC3y1P0Q@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Biju,
+Today to get kgdb to work on qcom-geni-serial devices you need
+_something_ to init/power on the UART. This could either the kernel
+console output or an "agetty" running on the port. If nothing else
+powers the port then you'll end up getting a silent hang when you try
+to enter kgdb.
 
-On Thu, Mar 16, 2023 at 5:34 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
+Let's fix this. The first patch here is for the tty layer to make sure
+that we power on the port when we init it for polling. This would be
+important for any drivers similar to qcom-geni-serial that actually
+need to be powered on. The second patch here hooks up the poll_init()
+function for qcom-geni-serial, leveraging an existing function in the
+driver that does everything we need.
 
-> > On Thu, Mar 16, 2023 at 5:01 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > The RZ SCI/ RZ/A1 SCIF has only 4 interrupts. The fourth interrupt is
-> > > transmit end interrupt, so shuffle the interrupts to fix the transmit
-> > > end interrupt handler for these IPs.
-> > >
-> > > Fixes: 392fb8df528b ("serial: sh-sci: Use platform_get_irq_optional()
-> > > for optional interrupts")
-> >
-> > I don't think that's the right bad commit.
->
-> OK. I will use below commit as fixes one,
-> that is the commit which added RZ/A1 SCIF with 4 interrupts.
->
-> commit 8b0bbd956228ae87 ("serial: sh-sci: Add support for R7S9210")
+Originally these two patches were bundled together as pathes 2 and 3
+of a 3-patch series.  We no longer need the first patch from the
+orginal series since we landed a similar patch from Johan [1]
+instead. The second two patches are still useful, though, so I've
+reposted them alone and added this cover letter.
 
-That one added support for RZ/A2, and is also not the bad
-commit?
+[1] https://lore.kernel.org/r/20230307164405.14218-1-johan+linaro@kernel.org
 
-> > > --- a/drivers/tty/serial/sh-sci.c
-> > > +++ b/drivers/tty/serial/sh-sci.c
-> > > @@ -31,6 +31,7 @@
-> > >  #include <linux/ioport.h>
-> > >  #include <linux/ktime.h>
-> > >  #include <linux/major.h>
-> > > +#include <linux/minmax.h>
-> > >  #include <linux/module.h>
-> > >  #include <linux/mm.h>
-> > >  #include <linux/of.h>
-> > > @@ -2841,6 +2842,7 @@ static int sci_init_single(struct platform_device
-> > *dev,
-> > >         struct uart_port *port = &sci_port->port;
-> > >         const struct resource *res;
-> > >         unsigned int i;
-> > > +       int irq_cnt;
-> > >         int ret;
-> > >
-> > >         sci_port->cfg   = p;
-> > > @@ -2864,6 +2866,14 @@ static int sci_init_single(struct platform_device
-> > *dev,
-> > >                         sci_port->irqs[i] = platform_get_irq(dev, i);
-> > >         }
-> > >
-> > > +       /*
-> > > +        * RZ SCI/ RZ/A1 SCIF has only 4 interrupts. The fourth interrupt
-> > > +        * is transmit end interrupt, so shuffle the interrupts.
-> > > +        */
-> > > +       irq_cnt = platform_irq_count(dev);
-> > > +       if (irq_cnt == 4)
-> > > +               swap(sci_port->irqs[SCIx_BRI_IRQ],
-> > > + sci_port->irqs[SCIx_TEI_IRQ]);
-> > > +
-> >
-> > I think it's simpler to just check if SCIx_TEI_IRQ is missing:
-> >
-> >     if (sci_port->irqs[SCIx_TEI_IRQ] < 0)
-> >             swap(sci_port->irqs[SCIx_BRI_IRQ], sci_port-
-> > >irqs[SCIx_TEI_IRQ]);
->
-> OK.
->
-> >
-> > We already rely on "make dtbs_check" to catch invalid combinations (anything
-> > different from 1/4/6 interrupts).
-> >
-> > And please move that code below, together with the other checks for non-
-> > existing interrupts.
->
-> OK, Will add below code in probe
->
-> +       irq_cnt = platform_irq_count(dev);
-> +       if (irq_cnt != 1 && irq_cnt != 4 && irq_cnt != 6)
-> +               return -EINVAL;
-> +
 
-IMHO none of these checks are needed. "make dtbs_check" takes
-care of that.
+Douglas Anderson (2):
+  serial: uart_poll_init() should power on the UART
+  tty: serial: qcom-geni-serial: Add a poll_init() function
 
-Gr{oetje,eeting}s,
-
-                        Geert
+ drivers/tty/serial/qcom_geni_serial.c | 1 +
+ drivers/tty/serial/serial_core.c      | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.40.0.rc1.284.g88254d51c5-goog
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
