@@ -2,54 +2,76 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0B9C6FD19
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 08:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0544DC6FD19
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Mar 2023 10:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbjCPIkx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 04:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
+        id S229546AbjCPKK6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Mar 2023 06:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbjCPIkw (ORCPT
+        with ESMTP id S229542AbjCPKK5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 04:40:52 -0400
-Received: from mail.paretdee.com (mail.paretdee.com [141.95.17.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D954D1C7EC
-        for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 01:40:39 -0700 (PDT)
-Received: by mail.paretdee.com (Postfix, from userid 1002)
-        id 9DABCA28A7; Thu, 16 Mar 2023 08:40:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=paretdee.com; s=mail;
-        t=1678956037; bh=FLMIyM7qOCOVEMp1o/ltkgnLeuU0ZBlT9xWiZMBZ7Ag=;
-        h=Date:From:To:Subject:From;
-        b=EMch/d3HJqNB9+KBQ8HteUaOkFftsdP5KDKEOU95wzDWHkutr9jDGc2YJGbE3c94v
-         IIpHG5iLVURON316qwdRMm448FKhpKnEYheAqnBSlBKevUJkUPDCjoePz+esdV2apu
-         1y/jMTKND6DcN3mIUKzBUmQoM+rD4+pfS78PrND9NEpWj80zcUwzQX5SOIXRNxyY1d
-         XEumKjZbJM2xBfWCMvJb34p2TNBnsCFLIPiLzFBnVykHeeC+rMIaGbiBHG7jt8Hdf7
-         yFmWGFvvXKW/EDUBLrbAMytAh5OXJe7j7xHS9DNpWWD+36XGGZY+P6/aHT22gbF8V+
-         OLDfdzRPaNU1Q==
-Received: by mail.paretdee.com for <linux-serial@vger.kernel.org>; Thu, 16 Mar 2023 08:40:33 GMT
-Message-ID: <20230316074500-0.1.5h.clkl.0.5jh3jn1nni@paretdee.com>
-Date:   Thu, 16 Mar 2023 08:40:33 GMT
-From:   "Zbynek Spacek" <zbynek.spacek@paretdee.com>
-To:     <linux-serial@vger.kernel.org>
-Subject: Rubber Molded
-X-Mailer: mail.paretdee.com
+        Thu, 16 Mar 2023 06:10:57 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Mar 2023 03:10:55 PDT
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ef0:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8D6B420C;
+        Thu, 16 Mar 2023 03:10:55 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL Global TLS RSA4096 SHA256 2022 CA1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id D2BBD28022ECD;
+        Thu, 16 Mar 2023 10:51:26 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id C829253DFE; Thu, 16 Mar 2023 10:51:26 +0100 (CET)
+Date:   Thu, 16 Mar 2023 10:51:26 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Francesco Dolcini <francesco@dolcini.it>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>, Bin Liu <b-liu@ti.com>,
+        linux-serial@vger.kernel.org, Zeng Chao <chao.zeng@siemens.com>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        ilpo.jarvinen@linux.intel.com, tony@atomide.com,
+        andriy.shevchenko@linux.intel.com,
+        matthias.schiffer@ew.tq-group.com, linux-kernel@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>
+Subject: Re: Wrong RS485 RTS polarity in 8250 OMAP UART Driver vs DT binding?
+Message-ID: <20230316095126.GA4235@wunner.de>
+References: <ZBItlBhzo+YETcJO@francesco-nb.int.toradex.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBItlBhzo+YETcJO@francesco-nb.int.toradex.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Good morning,
+On Wed, Mar 15, 2023 at 09:41:56PM +0100, Francesco Dolcini wrote:
+> We have working hardware, using another UART that expect
+> rs485-rts-active-low, and the exact same HW, when using OMAP uart,
+> requires rs485-rts-active-high (the HW is modular, so we are really just
+> changing the uart, keeping the same RS485 transceiver / connections).
+> 
+> What's going on there? Is the semantic of the 8250_omap driver just the
+> opposite as it should be?
 
-we can offer unbeatable conditions for the supply of various silicone com=
-pounds and rubbers, liquid silicone rubber (LSR).
+Yes, sadly, for historic reasons.
 
-In our assortment you will also find cross-linking agents, stabilizers, d=
-yes and individual silicone mixtures that we will develop for your needs.
+See these threads:
 
-Do you want to know what we can offer you?
+https://lore.kernel.org/linux-serial/20220329085050.311408-1-matthias.schiffer@ew.tq-group.com/
+
+https://lore.kernel.org/linux-serial/2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de/
 
 
-Best regards
-Zbynek Spacek
+> Am I doing something wrong in the device tree?
+
+No, but regrettably you need a separate device tree depending on which SoC
+you're using.
+
+Thanks,
+
+Lukas
