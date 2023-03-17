@@ -2,105 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31194C7618A
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 16:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C487EC6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 16:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230161AbjCQQHd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 12:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
+        id S229703AbjCQQ0u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 12:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbjCQQHb (ORCPT
+        with ESMTP id S229533AbjCQQ0t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 12:07:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04CE5FEAD;
-        Fri, 17 Mar 2023 09:07:00 -0700 (PDT)
+        Fri, 17 Mar 2023 12:26:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF38BDCA40;
+        Fri, 17 Mar 2023 09:26:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DB4060B4C;
-        Fri, 17 Mar 2023 16:06:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E45C2C433EF;
-        Fri, 17 Mar 2023 16:06:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50AF6B824F7;
+        Fri, 17 Mar 2023 16:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA4C1C433EF;
+        Fri, 17 Mar 2023 16:26:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679069218;
-        bh=GQyuC04nRX0/YwpWDohVOo/8uCxSJLmSdiiEHUINlPE=;
+        s=k20201202; t=1679070405;
+        bh=n+6H66wvmHVetszVipZwJ8WpSZp/LWO/rZfwt6G25D4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H92J+MHlglW5aSd9xaKUQ4Icp54RNpOt0DwWHXXAaUIDgufJ49Sn4tWoMAVoEFYjb
-         2U0Uy4VZKS45Cozm+iDSkn+GiwVMW+v6N5vHLhdsWAA8Nef/dHuJ9w0T6p3Owy6A62
-         2+GvgFjAstAodEpbwpdtBe47D1Fj13NnGe67+uvg2lrj6cBXAafD4eRmwDr2LRkyNt
-         5rLpB1+ZLyhw19d6TyF2tYm/aKZ4LshdGRHh6rLsXbrIk5RHWQltPKSyo5rwvY4GDc
-         /vNDmJcYVAWoejFbjfmAEhVkldY8r4F7iguH9YONKuALjeCe2915zQ52VRwH03Vva4
-         57LvAoaIJUMmg==
-Date:   Fri, 17 Mar 2023 16:06:54 +0000
+        b=W3T+CEbN1PPJHBZvsg+M2JGn9hwQhMaV7u4JlGn8ATJPIGNSNoH2gcKCAaevsenJ/
+         nHLPy+/URBOzBEGc+2dlvuPHhmQ29c09ByDVS3EYpviQ26uQf7w1vXa17H1Sqstevk
+         LUs5tG53uG3ShI645HN2CTjS07Z5HrX0JYJP8dnmSDFzlx7wgYrXef4Hv2X+eVisXR
+         NcegmW6Fp8RYKTHOlo3Fal06gCIN3rgHzBAU1lCHnQhuY5uvGjfBgckpxLlEUN0ezX
+         qUyzdo0oPIqsBP/x3tnehYRd3eZy1TVFdFj62BbdJIzyFMxSfg7die6JFlMRLnpqFh
+         c/UFTVCrDo1ig==
+Date:   Fri, 17 Mar 2023 16:26:37 +0000
 From:   Conor Dooley <conor@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: correct number of
- DMAs
-Message-ID: <1951460e-7914-4a65-a23a-42aced334c54@spud>
-References: <20230317155712.99654-1-krzysztof.kozlowski@linaro.org>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
+Message-ID: <13cb8dbd-994c-4b38-b715-44a3bf3d278d@spud>
+References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+ <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
+ <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+ <80796828-7b38-184a-2e8e-3cfe9158b67f@linaro.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="k4HvmPJXNEIU/lER"
+        protocol="application/pgp-signature"; boundary="caemCzIw84yTLOE0"
 Content-Disposition: inline
-In-Reply-To: <20230317155712.99654-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <80796828-7b38-184a-2e8e-3cfe9158b67f@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---k4HvmPJXNEIU/lER
+--caemCzIw84yTLOE0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 17, 2023 at 04:57:12PM +0100, Krzysztof Kozlowski wrote:
-> The "minItems" alone does not impose any upper limit of DMAs, so switch
-> it to "maxItems" which also implies same value for minItems.
+On Fri, Mar 17, 2023 at 04:54:47PM +0100, Krzysztof Kozlowski wrote:
+> On 17/03/2023 11:21, Cristian Ciocaltea wrote:
+> > On 3/17/23 10:31, Krzysztof Kozlowski wrote:
+> >> On 15/03/2023 12:47, Cristian Ciocaltea wrote:
+> >>> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
+> >>> dma-names properties") documented dma-names property to handle Allwin=
+er
+> >>> D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which=
+ is
+> >>> the reverse of what a different board expects:
+> >>>
+> >>>    rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expe=
+cted
+> >>>
+> >>> A quick and incomplete check shows the inconsistency is present in ma=
+ny
+> >>> other DT files:
+> >>
+> >> Why not fixing the DTS? The properties should have fixed order.
+> >=20
+> > I was initially concerned about the risk of a potential ABI breakage,=
+=20
+> > but I think that's not really a problem since dma-names is not directly=
+=20
+> > accessed in the driver and DT Kernel API doesn't rely on a particular o=
+rder.
+> >=20
+> > If there are no objections, I would switch the order in the binding to=
+=20
+> > tx->rx, since that's what most of the DTS use, and fix the remaining on=
+es.
 >=20
-> Fixes: 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma & dm=
-a-names properties")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Since we added the order recently, I rather assume it is the correct or
+> preferred one.
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+IIRC I checked around the other serial bindings & there was not a
+consistent order that all serial bindings used, so I picked the order that
+was used across the various allwinner boards that do use dma-names.
 
-> ---
->  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.ya=
-ml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 2becdfab4f15..8212a9f483b5 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -68,7 +68,7 @@ properties:
->        - const: apb_pclk
-> =20
->    dmas:
-> -    minItems: 2
-> +    maxItems: 2
-> =20
->    dma-names:
->      items:
-> --=20
-> 2.34.1
->=20
+Before changing dts files, it's probably a good idea to make sure that
+the dma-names are not used somewhere outside of Linux.
 
---k4HvmPJXNEIU/lER
+Cheers,
+Conor.
+
+--caemCzIw84yTLOE0
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZBSQCAAKCRB4tDGHoIJi
-0p/RAQDWDF9VkerPM37Ily4FJwQxYIx+aamAYkVBfYmPrS9WIgEArgkXlevuj5fV
-5p15EtZ7FF0EVa2KsFg2M4Jstir0XAk=
-=pdlh
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZBSUvAAKCRB4tDGHoIJi
+0jtIAQC5YztceqmIGvPluC63a+GsGjGCM2eYgc2qAXbbyfbI0gD8DjessEmSarDl
++RuYj2SLZeX7nSQSHyucSUpd/ty+qAw=
+=iCfE
 -----END PGP SIGNATURE-----
 
---k4HvmPJXNEIU/lER--
+--caemCzIw84yTLOE0--
