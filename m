@@ -2,93 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4C8C7618A
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 15:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C03C7618A
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 16:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231285AbjCQP5d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 11:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
+        id S230300AbjCQQDk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 12:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230358AbjCQP5b (ORCPT
+        with ESMTP id S231410AbjCQQDg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 11:57:31 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843FFE2539
-        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 08:57:15 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id h8so22198925ede.8
-        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 08:57:15 -0700 (PDT)
+        Fri, 17 Mar 2023 12:03:36 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07E667810
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 09:03:15 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id x3so22235832edb.10
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 09:03:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679068634;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uy2ES2r2yaQEcdoZfhDVthoS5kcRZ5J4S2pvE5uM7rI=;
-        b=zNbMt5WWt7D75H1iFIKYBO0yJgcmitPlnPTpXPjM7phEqmeLtWC2xq8ZELhPbKT79H
-         fsgMDkqfaIVnzqVA0MXGv1IWFABiPzZDxrGlIHI3erRVnCvUEAj7VPmFV26SLelSUo3w
-         NbeR4PwSP7tz3iF9gizt2A2IIZnemreSH+acwprMWrVwV9pmK5g8SB8YLlYcal1euHh1
-         s3gAJ9jejgmv9MTLAjFbH7duQrMLiEpGx4LIUEioZfwPRmrVcD5j23UBXV+157jruGQR
-         13HbKn0mMW/uTugbHSOdoqW6AWjaUoyOE4LJRBfI1zG8AgI2ybvIoB4TG/FWIVmr4OhJ
-         Nw+g==
+        d=linaro.org; s=google; t=1679068994;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=f91aUWF3bfVcup+/r6HBb6TIwUZDRmvhzawedVd1n+4=;
+        b=QZFmgKgKizW06OL/OcBs8EB3SNBeaHL+iQVhSlMP+M6wH32n6Oc1hIX4Rcs1e3YP8K
+         0SOnb32xdYx1Je9wEdBtNAzsipXzauyGCLZg46AjgQ21+PG4k/vTmEVfFtNCZjTkVezx
+         0sV54cR0qABx2ipD4z61+PykyDGDT5e8Sv7o6dM8X52OeuOdryvnLNGDjOJuv/jZvuAK
+         vS1mzHf9lRJ0gFSKJiyiOgJCfpFIPpOFDgBGjTKS38fq2czOsRDKzrOukdVd5k2DYcgq
+         vBgGNQapQDIUqw8iW6f7Hqg0pD6zGDRGsEN7VmB+iYxyZMF9yhxuqMyk6aazRCS/LB5y
+         qubw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679068634;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uy2ES2r2yaQEcdoZfhDVthoS5kcRZ5J4S2pvE5uM7rI=;
-        b=EzBLOWDbpPhDYiwhGDHkIoWP8WQULPFBfR9Am9Wm+xW8UzUu2NjVSgm1i5GfMFLrDz
-         SwWUOAaOzO38IzlyTyWbMKIFkRtiheeYUikDl2Cs1ibv/ErZIFLvjT7JeiYcuqzBwg+0
-         aaFG5Qv0AC1UsKCQr5PXUPKTFAgz0ZuWvRCMJzKaoOUqq4Mh03cWP4Qz0+Fja27d7lZm
-         lulIf1/fAUGlDYJ2pJq3f9zpffBoLHtOSTx/CEdvHOZVbXy7c8JATIYcil+sdzIF6bXy
-         zisWhMDmgScUHEYUYpVoAndzQqHsFbS8GKKWJxFSN0eLhv4ocNcRWJqV4iogE02930+k
-         AEIQ==
-X-Gm-Message-State: AO0yUKUdnZaaxc72CUmkU7iOGJiRFAqwmhaoznsSSFuoNctp+cAUC6yO
-        QDH1NgzkkphSHCNm29Lykx8l4w==
-X-Google-Smtp-Source: AK7set8d+ZBui09OfExOiwhJupDe51E5rlM1UNGoW1HDC8JPz8szDwdnpl8u7sd50Kds9vwa8djpCA==
-X-Received: by 2002:a17:906:612:b0:8b1:3483:e3d5 with SMTP id s18-20020a170906061200b008b13483e3d5mr13758017ejb.48.1679068634078;
-        Fri, 17 Mar 2023 08:57:14 -0700 (PDT)
-Received: from krzk-bin.. ([2a02:810d:15c0:828:d013:3eeb:7658:cec])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170906a09500b009226f644a07sm1105318ejy.139.2023.03.17.08.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 08:57:13 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: serial: snps-dw-apb-uart: correct number of DMAs
-Date:   Fri, 17 Mar 2023 16:57:12 +0100
-Message-Id: <20230317155712.99654-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        d=1e100.net; s=20210112; t=1679068994;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=f91aUWF3bfVcup+/r6HBb6TIwUZDRmvhzawedVd1n+4=;
+        b=pb9th3E/44z+e1ei9JwKOlvNOQKe/Yl3Uclr/lLdMD8nY/rrzWkQCIlM5iWH2tDMPb
+         pW83rNBqOqBolxBmp/Ug1pUssFjSo8cI04zU30rxLe6GVRvrjggfzN2DNFiPLWWWJUDa
+         aNhY+ibTbaZXPyFNgcUDjw8O+Cm1Ak9GetWjQujqBxTpJMiWdFR4dwqloms2wHtUTd57
+         7gHhuSRvpIg5pXSfBtk1XtjKkiDr7iB/akS+u89jVLapFCKPe1VcCHJqMxRJWt6j2blC
+         t2omxUoV4P42Gh94VfS+MlJTXWnJqQqVkUWssrMxrsSTOrs0Pc6uFLbQqq+bwm4Zf6wj
+         Yr5w==
+X-Gm-Message-State: AO0yUKVdSOXZ6+pBmvRjdtR/dzMCc6bYRCr4/QOu4TWYFl7+ATofg82d
+        oOV1m2ebuovEifqcme93sQzE0g==
+X-Google-Smtp-Source: AK7set8y+JmSoAblxtlJHgL+/D77eZGhCYSsjE/9HekTLHS+R8PVlnHgsSGC0Nv0xoO1Q5SQPK/4Dg==
+X-Received: by 2002:a17:907:212e:b0:92f:efdc:610e with SMTP id qo14-20020a170907212e00b0092fefdc610emr7722289ejb.66.1679068994051;
+        Fri, 17 Mar 2023 09:03:14 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:d013:3eeb:7658:cec? ([2a02:810d:15c0:828:d013:3eeb:7658:cec])
+        by smtp.gmail.com with ESMTPSA id g1-20020a170906348100b0090953b9da51sm1121500ejb.194.2023.03.17.09.03.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 09:03:13 -0700 (PDT)
+Message-ID: <85d9b8c3-6ddf-9b4c-76a2-8e9761eacc96@linaro.org>
+Date:   Fri, 17 Mar 2023 17:03:12 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 08/15] dt-bindings: clock: Document ma35d1 clock
+ controller bindings
+Content-Language: en-US
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-9-ychuang570808@gmail.com>
+ <0ad8521d-90b9-29c7-62e6-2d65aa2a7a27@linaro.org>
+ <00423efa-d4ca-5d76-d0b2-11853a49c5e9@gmail.com>
+ <b9753d54-6605-e3cb-2943-795b4d58cd83@linaro.org>
+ <77b713f8-93bd-d0fa-d344-c8a4ec365c50@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <77b713f8-93bd-d0fa-d344-c8a4ec365c50@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The "minItems" alone does not impose any upper limit of DMAs, so switch
-it to "maxItems" which also implies same value for minItems.
+On 17/03/2023 10:52, Jacky Huang wrote:
+> Dear Krzysztof,
+> 
+> Thanks for your advice.
+> 
+> On 2023/3/17 下午 05:13, Krzysztof Kozlowski wrote:
+>> On 17/03/2023 04:47, Jacky Huang wrote:
+>>>>> +
+>>>>> +  nuvoton,pll-mode:
+>>>>> +    description:
+>>>>> +      A list of PLL operation mode corresponding to CAPLL, DDRPLL, APLL,
+>>>>> +      EPLL, and VPLL in sequential. The operation mode value 0 is for
+>>>>> +      integer mode, 1 is for fractional mode, and 2 is for spread
+>>>>> +      spectrum mode.
+>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>>>>> +    maxItems: 5
+>>>>> +    items:
+>>>>> +      minimum: 0
+>>>>> +      maximum: 2
+>>>> Why exactly this is suitable for DT?
+>>> I will use strings instead.
+>> I have doubts why PLL mode is a property of DT. Is this a board-specific
+>> property?
+> 
+> CA-PLL has mode 0 only.
+> DDRPLL, APLL, EPLL, and VPLL have the same PLL design that supports
+> integer mode, fractional mode, and spread spctrum mode. The PLL mode
+> is controlled by clock controller register. I think it's not board-specific.
 
-Fixes: 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma & dma-names properties")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+You described the feature but that does not answer why this is suitable
+in DT. If this is not board-specific, then it is implied by compatible,
+right? Or it does not have to be in DT at all.
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 2becdfab4f15..8212a9f483b5 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -68,7 +68,7 @@ properties:
-       - const: apb_pclk
- 
-   dmas:
--    minItems: 2
-+    maxItems: 2
- 
-   dma-names:
-     items:
--- 
-2.34.1
+
+Best regards,
+Krzysztof
 
