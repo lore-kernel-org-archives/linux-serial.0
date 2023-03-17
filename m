@@ -2,46 +2,48 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FA8C6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 09:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 520A7C6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 10:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbjCQJ7f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 05:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S230102AbjCQKV6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 06:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbjCQJ7e (ORCPT
+        with ESMTP id S229707AbjCQKV5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 05:59:34 -0400
+        Fri, 17 Mar 2023 06:21:57 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7ECA5E3;
-        Fri, 17 Mar 2023 02:59:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B8CDBE2;
+        Fri, 17 Mar 2023 03:21:47 -0700 (PDT)
 Received: from [192.168.1.90] (unknown [188.24.156.231])
         (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
         (Authenticated sender: cristicc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6A95F660309E;
-        Fri, 17 Mar 2023 09:59:30 +0000 (GMT)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 41CFA66030AA;
+        Fri, 17 Mar 2023 10:21:44 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1679047171;
-        bh=e/KIg4k8GoTPg3uxt66ysJDkUFF6y215cPiS3F7Sts0=;
+        s=mail; t=1679048505;
+        bh=Dm30hfUK/ZdXDVg1rCbXsR0BnwH4IRiPfIqA2q405Ls=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=YVYud1TuEBVXmXkXbL84ROVSh+8LrsQTp9qsY/suO+Mi2ohhnI2YrqfBzGSWxqZ3R
-         NzAnEKiPbXJHeHOq1MSFLtlj37ZTtCQWzFsaKy3tZTgFLDy+mPxjENInrPX7gJHkc8
-         TDovH0xsLRqc19bzi9A1g5LafgzL1/Ya0GWhG/g/dUw9I+ZUufmc3VA1HsPyZLgoRm
-         CC4jb2MnVPSKJUA8MAfStC248ug82iwQGT+huw6WSr6kzA+7MagnRGk/AixlrGAZS5
-         uo4fNU+QOW9if3no+vYTaNJixrIzEKtRiDk6xg5MKbXEX2Sl79TKml8dmtwAXQ8nqe
-         0MzrDkENAOKDQ==
-Message-ID: <d5881d9f-90cc-f7a2-72a3-0701348a03fe@collabora.com>
-Date:   Fri, 17 Mar 2023 11:59:27 +0200
+        b=bzQBHJvu17Oeth8lZ8Cb+nujPSlPj2BwvCf4/6emcigFdBmI9bCTs8qtiWzTIq9tb
+         Ff/Drf9RarmfQ5751LBrwjCkRpywYybDTwWmNLaVbDURC9T2FVLIif8LBQ67tmu3dx
+         ngL2z79aAh2AK9RRG9p8uhI0jDpDPHx9iLWrhSGQ2C20WwljgXDM68svaFZej+nlFE
+         dD1JpzcuMCGrxsH4i8UZsi+H7wl109GAhv0KNlWoa3uHQp2AZ9Gxn6hRUwk2Tke86g
+         Try3mpmzEEAsyktX6rpRPT9EOvDOTruIBOTtWce/s02dAynoQ7WydXYhzgDAns5GvA
+         HaqmPo236G4gg==
+Message-ID: <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+Date:   Fri, 17 Mar 2023 12:21:41 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.2
-Subject: Re: [PATCH 01/11] dt-bindings: firmware: arm,scmi: Document
- assigned-clocks and assigned-clock-rates
-To:     Sudeep Holla <sudeep.holla@arm.com>, Rob Herring <robh@kernel.org>
-Cc:     Stephen Boyd <sboyd@kernel.org>,
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -54,50 +56,45 @@ Cc:     Stephen Boyd <sboyd@kernel.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Daniel Drake <drake@endlessm.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
         linux-riscv@lists.infradead.org, kernel@collabora.com
 References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-2-cristian.ciocaltea@collabora.com>
- <20230316203417.GA3833267-robh@kernel.org>
- <20230316222619.r4jzk3lzdxzamr2s@bogus>
-Content-Language: en-US
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+ <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
 From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-In-Reply-To: <20230316222619.r4jzk3lzdxzamr2s@bogus>
+In-Reply-To: <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/17/23 00:26, Sudeep Holla wrote:
-> On Thu, Mar 16, 2023 at 03:34:17PM -0500, Rob Herring wrote:
->> +Stephen
+On 3/17/23 10:31, Krzysztof Kozlowski wrote:
+> On 15/03/2023 12:47, Cristian Ciocaltea wrote:
+>> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
+>> dma-names properties") documented dma-names property to handle Allwiner
+>> D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
+>> the reverse of what a different board expects:
 >>
->> On Wed, Mar 15, 2023 at 01:47:56PM +0200, Cristian Ciocaltea wrote:
->>> Since commit df4fdd0db475 ("dt-bindings: firmware: arm,scmi: Restrict
->>> protocol child node properties") the following dtbs_check warning is
->>> shown:
->>>
->>>    rk3588-rock-5b.dtb: scmi: protocol@14: Unevaluated properties are not allowed ('assigned-clock-rates', 'assigned-clocks' were unexpected)
+>>    rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
 >>
->> I think that's a somewhat questionable use of assigned-clock-rates. It
->> should be located with the consumer rather than the provider IMO. The
->> consumers of those 2 clocks are the CPU nodes.
->>
+>> A quick and incomplete check shows the inconsistency is present in many
+>> other DT files:
 > 
-> Agreed. We definitely don't use those in the scmi clk provider driver.
-> So NACK for the generic SCMI binding change.
+> Why not fixing the DTS? The properties should have fixed order.
 
-According to [1], "configuration of common clocks, which affect multiple 
-consumer devices can be similarly specified in the clock provider node".
+I was initially concerned about the risk of a potential ABI breakage, 
+but I think that's not really a problem since dma-names is not directly 
+accessed in the driver and DT Kernel API doesn't rely on a particular order.
 
-That would avoid duplicating assigned-clock-rates in the CPU nodes.
+If there are no objections, I would switch the order in the binding to 
+tx->rx, since that's what most of the DTS use, and fix the remaining ones.
 
-[1] 
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/clock/clock.yaml
+> Best regards,
+> Krzysztof
 
 Thanks,
 Cristian
