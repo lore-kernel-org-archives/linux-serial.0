@@ -2,172 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C540AC6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 04:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BED63C74A5B
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 06:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230109AbjCQES5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 00:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
+        id S229690AbjCQGaf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 02:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbjCQES4 (ORCPT
+        with ESMTP id S229455AbjCQGae (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 00:18:56 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACF5211F8;
-        Thu, 16 Mar 2023 21:18:54 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso3794411pjb.3;
-        Thu, 16 Mar 2023 21:18:54 -0700 (PDT)
+        Fri, 17 Mar 2023 02:30:34 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7596773C;
+        Thu, 16 Mar 2023 23:30:33 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id ix20so4327860plb.3;
+        Thu, 16 Mar 2023 23:30:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679026733;
+        d=gmail.com; s=20210112; t=1679034632;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=EuTIcRDUqWKvYEoDWAPSBeY46ySNFISjMqGTJQVosW0=;
-        b=GqGR26qwOEcUnwjsoHD7fbzqMkk70ZqdbXR5j68ArnJJxzR7vMjddICH9XA6H+ooLX
-         XNy7w5QHTV3fyY2C+ONqiKZFoqduXKmq0E6pHF/pZRbOWRKc/AIHHgAq7mC22hTh9k49
-         R5xqRxgJTwojQmGmpR13ff06A0EW9v7k0zWbZ95ngcIwXAqK/HgjF1UHh0cvcSAM5M1R
-         GuEHBX4PClIv0TjbUydlaymR1lmipXU+vsYEkuI7kj0xw11QIMWnQCHQwq/3MMDYhdaC
-         ZTVEmrx+L3pewXstyEFlSdIyu8MBGm4UKmErP+GXiuapCcM9bBGk1aMNOd0nXf+IzWdb
-         Nraw==
+        bh=QowYjOwpVeC+cmhtPU+4JUq/a+8cTteF1DVyYYSO1iY=;
+        b=l2WwTVnblFcR+NDGUILKqhkLSo/PPXRbUyCP3ps08M59W/rMYB33ormF3RBDGAs7WE
+         L3o95/WlF2oe9GVEtLGtmbXPobglas+d2YGJti8Kpg9N7n6B9sv74E/g33k2OQy3lFQP
+         9xfRxOZDwAibCIvDT7nKYUEXxxcUGpewRLGEfDY4mfW8rmjrrJMiS0MskiFU00C8Pc7j
+         TS0CQJ9hPdqVKoOb6OS5ZNtbo5X3skRjpif5GRgJU6MX+il0+OE6HtY+bR+RLb5o0t/8
+         Ee6MhertRAcox4n7aJxVGqrPsMKLiP8CGT5AqNeiyYiS4rrrOAjiC9oV+fvX6mpWfXym
+         rToQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679026733;
+        d=1e100.net; s=20210112; t=1679034632;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EuTIcRDUqWKvYEoDWAPSBeY46ySNFISjMqGTJQVosW0=;
-        b=tDE/yKu6t9KaU9Y5q3MuSSiLZ/rBefg+QG4xM9/PATLdZxUnTKH6hm27YPq+FmQQc5
-         IXJeGMUlhHXH9/W2izRBCmc2dSS44qGljvdtGRM2vL9uOoM696K5CEagwdXTQA+nII1x
-         5M5+4SQsWStagWQ4GZZ8070759tFOeIGjjMr5+DvKfcN2Bmuj4sNEZDEoR5tEmQjdasv
-         iPfCKKnkTbr/BHoFwVzQ+Vy+R70PrebWmA0sb5ojsYPzono6e1O5LKK1SaG/4IhTdqRE
-         GH0rwMuUCHLQWCnhIIHVsCRBSvelgHI1SHW5AS/drRTL1MkTBAUGbXOGOauNvTL0aPmS
-         vPTQ==
-X-Gm-Message-State: AO0yUKWz0C9AncZpTEhct1mslxzCCTWKotRjYmenvvvrF3yl1aeHRgpJ
-        9fUFciXg3m9iBMfTJY6DnSs=
-X-Google-Smtp-Source: AK7set/7n1Pek6SBN7TsVI5TShPwZwnI1bt88gulr9/lrV/k9FfuxOq/GEaUwI5ZI197Ab12IpcYaQ==
-X-Received: by 2002:a17:90b:17cd:b0:23d:5485:b80e with SMTP id me13-20020a17090b17cd00b0023d5485b80emr6932629pjb.6.1679026733623;
-        Thu, 16 Mar 2023 21:18:53 -0700 (PDT)
+        bh=QowYjOwpVeC+cmhtPU+4JUq/a+8cTteF1DVyYYSO1iY=;
+        b=zN/X6w5t+SChee6wmbkf5+tPo953gVeHru/YzwGIUmTy9U0fVmsJdlOPUXrVM8Yif/
+         cXoJJ00aMDB37av4XQURs7KChfgIt6R47gdrGuxNavEAUpy+iiIE1Hc7WawvumMNxbZe
+         hg1UkyJisf+HxZyrgD/17Oi71f2R3X4hJgzyzyWtPkLkeZxBv/cqp4pk0LwTOO3ekgid
+         ZuBX1OEsm12+Y9UqQnqPlQNneymSNdLiA1gyYeME+7onerKoSJPVi5AOSAjPhb6MMG8x
+         Cy+NIwYpkii/lBNAaV2fhr1p2A+7xqyst1g9sa7F7qua/Xj45alrl+Tlk3XMeBco1Dr9
+         STQg==
+X-Gm-Message-State: AO0yUKXwXPI6/aBnNYFDjknb9BXKjeXPGmYghkCPbt1oSomsyqyAZx5H
+        +k09YqU/LNlyi3CZjYp8yms=
+X-Google-Smtp-Source: AK7set/jCr8RT3wJrihBeThKo6LPb99Ma+fIdEQqKEHJqXbq96VBfVdC2af3+6srNdH8FfiZFXd4QA==
+X-Received: by 2002:a17:903:2283:b0:19e:7c33:3722 with SMTP id b3-20020a170903228300b0019e7c333722mr7617579plh.40.1679034632455;
+        Thu, 16 Mar 2023 23:30:32 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id d16-20020a63f250000000b004ff6b744248sm452538pgk.48.2023.03.16.21.18.50
+        by smtp.gmail.com with ESMTPSA id j12-20020a17090276cc00b0019abb539cddsm753773plt.10.2023.03.16.23.30.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 21:18:53 -0700 (PDT)
-Message-ID: <be253a29-2187-69a7-9909-49fdd073b010@gmail.com>
-Date:   Fri, 17 Mar 2023 12:18:49 +0800
+        Thu, 16 Mar 2023 23:30:32 -0700 (PDT)
+Message-ID: <1a1277ac-4ae5-eaab-01c3-0242c12be76b@gmail.com>
+Date:   Fri, 17 Mar 2023 14:30:28 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH 10/15] dt-bindings: serial: Document ma35d1 uart
- controller bindings
+Subject: Re: [PATCH 00/15] Introduce Nuvoton ma35d1 SoC
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
+To:     Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
 References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-11-ychuang570808@gmail.com>
- <b4aa61fc-abd8-3287-83a3-beee2a06e628@linaro.org>
+ <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <b4aa61fc-abd8-3287-83a3-beee2a06e628@linaro.org>
+In-Reply-To: <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Krzysztof,
 
 
-Thanks for your advice.
-
-
-On 2023/3/16 下午 03:40, Krzysztof Kozlowski wrote:
-> On 15/03/2023 08:28, Jacky Huang wrote:
+On 2023/3/16 下午 10:05, Arnd Bergmann wrote:
+> On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
 >> From: Jacky Huang <ychuang3@nuvoton.com>
 >>
->> Add documentation to describe nuvoton ma35d1 uart driver bindings.
-> Subject: drop second/last, redundant "bindings". The "dt-bindings"
-> prefix is already stating that these are bindings.
-
-I will fix it.
-
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>   .../serial/nuvoton,ma35d1-serial.yaml         | 52 +++++++++++++++++++
->>   1 file changed, 52 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+>> This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+>> initial device tree, clock driver, reset driver, and serial driver.
 >>
->> diff --git a/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml b/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
->> new file mode 100644
->> index 000000000000..9daa2efd4734
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
->> @@ -0,0 +1,52 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/serial/nuvoton,ma35d1-serial.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Nuvoton MA35D1 Universal Asynchronous Receiver/Transmitter (UART)
->> +
->> +maintainers:
->> +  - Min-Jen Chen <mjchen@nuvoton.com>
->> +  - Jacky Huang <ychuang3@nuvoton.com>
->> +
->> +allOf:
->> +  - $ref: "serial.yaml"
-> Drop quotes. Use some recent bindings as your starting point, so we do
-> not have to give comments for things which were already fixed.
-
-Got it, I will remove the quotes.
-
->> +
->> +properties:
->> +  compatible:
->> +    const: nuvoton,ma35d1-uart
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - clocks
->> +
->> +unevaluatedProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
->> +
->> +    aliases {
->> +        serial0 = &uart0;
->> +    };
-> Drop aliases.
-
-I will fix it.
-
->> +
->> +    uart0:serial@40700000 {
-> Drop label
-
-OK, I will remove the label.
-
+>> This patchset cover letter is based from the initial support for Nuvoton
+>> ma35d1 to keep tracking the version history.
+>>
+>> This patchset had been applied to Linux kernel 6.3-rc2 and tested on the
+>> Nuvoton ma35d1 SOM evaluation board.
+>>
+>> (ma35d1 information:
+>> https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+>> MA35D1 porting on linux-5.10.y can be found at:
+>> https://github.com/OpenNuvoton/MPU-Family
+> Hi Jacky,
 >
-> Best regards,
-> Krzysztof
+> Thanks a lot for your submission. I saw this presented at
+> EmbeddedWorld yesterday and asked about mainline Linux
+> support, but did not expect to see the patches this soon ;-)
 >
+> The easiest process for getting the series merged is to
+> have me add it the entire series to the SoC tree after the
+> individual drivers have been reviewed by the respective
+> subsystem maintainers that are already on Cc here. When
+> the review is complete, you can add soc@kernel.org to Cc,
+> so they show up in patchwork, or alternatively send a pull
+> request for a git tree to that address. Until then, you
+> can add my own email address to Cc so I can follow the
+> reviews.
+>
+> After the initial merge, the normal method for additional
+> device drivers is to have them sent for inclusion to the
+> subsystem maintainers. The soc tree and soc@kernel.org address
+> is then only used for changes in arch/arm64, i.e. updates
+> to the dts files, Kconfig, defconfig and MAINTAINERS,
+> as well as the drivers/soc and drivers/firmware directories,
+> if you have anything in there.
+>
+> If you have any additional questions about the process,
+> feel free to also ask me.
+>
+>       Arnd
+
+Hi Anrd,
+
+Thank you very much for your kind help. You explained it so well,
+I have understood the process. We got a lot of suggestions for this
+patchset, and there are a lot of issues to fix. When most of the
+problems get solved and acknowledged by the reviewers, I will
+add you and soc@kernel.org to Cc.
+
 
 Best regards,
 
