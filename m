@@ -2,116 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C03C7618A
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 16:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 296FEC7618A
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 16:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbjCQQDk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 12:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
+        id S231570AbjCQQH0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 12:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbjCQQDg (ORCPT
+        with ESMTP id S231621AbjCQQHX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 12:03:36 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07E667810
-        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 09:03:15 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id x3so22235832edb.10
-        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 09:03:15 -0700 (PDT)
+        Fri, 17 Mar 2023 12:07:23 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EE3C2D8B
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 09:06:50 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id o12so22303096edb.9
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 09:06:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679068994;
+        d=linaro.org; s=google; t=1679069207;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=f91aUWF3bfVcup+/r6HBb6TIwUZDRmvhzawedVd1n+4=;
-        b=QZFmgKgKizW06OL/OcBs8EB3SNBeaHL+iQVhSlMP+M6wH32n6Oc1hIX4Rcs1e3YP8K
-         0SOnb32xdYx1Je9wEdBtNAzsipXzauyGCLZg46AjgQ21+PG4k/vTmEVfFtNCZjTkVezx
-         0sV54cR0qABx2ipD4z61+PykyDGDT5e8Sv7o6dM8X52OeuOdryvnLNGDjOJuv/jZvuAK
-         vS1mzHf9lRJ0gFSKJiyiOgJCfpFIPpOFDgBGjTKS38fq2czOsRDKzrOukdVd5k2DYcgq
-         vBgGNQapQDIUqw8iW6f7Hqg0pD6zGDRGsEN7VmB+iYxyZMF9yhxuqMyk6aazRCS/LB5y
-         qubw==
+        bh=Sgtfxiu0i9YSBCZdlpmZ+23ZIgI7eVaV3XtK/FVd+sM=;
+        b=eJY1iVeZGOr+E2fTTWDxlkIa3GYuwF1sUF/A/9sluy0tf/50AK1Rxyc0/mPYrXQ1Eh
+         Mnz37ayxjUnSoeqTfR5DG3VuCPCIr9wnrhYxUuuLnzv/fRk1MufTWjwmjGcx5DvlbDq4
+         jcDWglpm+nfIX1BHdiOiDHZ3nTVw4lmByY6I2EJXrABG3pzPMBzm4Yy4vTTaUjqi92os
+         jmW03TcZQJhWuKtX7QIJ/ABI3GVhf9eT+JxhL1svUUJLNwQaoyzPXwJVEr0/fFQmvmsJ
+         y2aFTWH9mihmLb1Swoeq0JClf6J2VwIvkUIXFUGVvmbwjR2ac4dmey4DJ8lTCVpt/6Rc
+         y/cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679068994;
+        d=1e100.net; s=20210112; t=1679069207;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=f91aUWF3bfVcup+/r6HBb6TIwUZDRmvhzawedVd1n+4=;
-        b=pb9th3E/44z+e1ei9JwKOlvNOQKe/Yl3Uclr/lLdMD8nY/rrzWkQCIlM5iWH2tDMPb
-         pW83rNBqOqBolxBmp/Ug1pUssFjSo8cI04zU30rxLe6GVRvrjggfzN2DNFiPLWWWJUDa
-         aNhY+ibTbaZXPyFNgcUDjw8O+Cm1Ak9GetWjQujqBxTpJMiWdFR4dwqloms2wHtUTd57
-         7gHhuSRvpIg5pXSfBtk1XtjKkiDr7iB/akS+u89jVLapFCKPe1VcCHJqMxRJWt6j2blC
-         t2omxUoV4P42Gh94VfS+MlJTXWnJqQqVkUWssrMxrsSTOrs0Pc6uFLbQqq+bwm4Zf6wj
-         Yr5w==
-X-Gm-Message-State: AO0yUKVdSOXZ6+pBmvRjdtR/dzMCc6bYRCr4/QOu4TWYFl7+ATofg82d
-        oOV1m2ebuovEifqcme93sQzE0g==
-X-Google-Smtp-Source: AK7set8y+JmSoAblxtlJHgL+/D77eZGhCYSsjE/9HekTLHS+R8PVlnHgsSGC0Nv0xoO1Q5SQPK/4Dg==
-X-Received: by 2002:a17:907:212e:b0:92f:efdc:610e with SMTP id qo14-20020a170907212e00b0092fefdc610emr7722289ejb.66.1679068994051;
-        Fri, 17 Mar 2023 09:03:14 -0700 (PDT)
+        bh=Sgtfxiu0i9YSBCZdlpmZ+23ZIgI7eVaV3XtK/FVd+sM=;
+        b=Hb1QSZeZhKenVmt5/s/qA9g4/MjXRVwfj2hCkpXvdK833Elq9GE2R55TBVUmInRVC2
+         qaCxVLD9jvnq4tsHX5eMicfKKLBwbqcbq7lbh+ErF1dyf4Ep9iKXPfO6v3vXowL3jvwi
+         qhd7cOmmI0cS4+vSYIhWz8OvO2EZ/yhyR0uw4obRVyqktM0N9gs2fGqyQi54QvZxMm5H
+         4sYPsVCjubgelasxZtpTRi/JYbkw+yeuX9YP1JUd+nLjrZ+V2oCrrHiS4GFFU8Es9KxO
+         a8GpURfk74nc35ZMm3aQ5GrtucDev5qZxgqiSRHg03z4woNIUPyBaeL64mpJ4y1vBHf6
+         xnhg==
+X-Gm-Message-State: AO0yUKWLhhcNhEbJdQ3XPU2EKwhsHCAYyp/2rlH8ixyJ8QBbey4LSPQ7
+        TlQONSYjgBA2DTMWue/pa1xRxA==
+X-Google-Smtp-Source: AK7set9DXGRx38/0ZQ75JqG5RLB5OpQJI77okOMQ6ZiwDKUDz8YsADPoF+IAPbjepZh+Wr7qLkJgDw==
+X-Received: by 2002:a17:906:a450:b0:88d:9cf8:2dbb with SMTP id cb16-20020a170906a45000b0088d9cf82dbbmr15431897ejb.12.1679069207004;
+        Fri, 17 Mar 2023 09:06:47 -0700 (PDT)
 Received: from ?IPV6:2a02:810d:15c0:828:d013:3eeb:7658:cec? ([2a02:810d:15c0:828:d013:3eeb:7658:cec])
-        by smtp.gmail.com with ESMTPSA id g1-20020a170906348100b0090953b9da51sm1121500ejb.194.2023.03.17.09.03.13
+        by smtp.gmail.com with ESMTPSA id g1-20020a170906348100b0090953b9da51sm1124655ejb.194.2023.03.17.09.06.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Mar 2023 09:03:13 -0700 (PDT)
-Message-ID: <85d9b8c3-6ddf-9b4c-76a2-8e9761eacc96@linaro.org>
-Date:   Fri, 17 Mar 2023 17:03:12 +0100
+        Fri, 17 Mar 2023 09:06:46 -0700 (PDT)
+Message-ID: <a90fc6f6-df95-3a4f-da5b-ebdafbe7dd34@linaro.org>
+Date:   Fri, 17 Mar 2023 17:06:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH 08/15] dt-bindings: clock: Document ma35d1 clock
- controller bindings
+Subject: Re: [PATCH 00/15] Introduce Nuvoton ma35d1 SoC
 Content-Language: en-US
-To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Jacky Huang <ychuang570808@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
 References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-9-ychuang570808@gmail.com>
- <0ad8521d-90b9-29c7-62e6-2d65aa2a7a27@linaro.org>
- <00423efa-d4ca-5d76-d0b2-11853a49c5e9@gmail.com>
- <b9753d54-6605-e3cb-2943-795b4d58cd83@linaro.org>
- <77b713f8-93bd-d0fa-d344-c8a4ec365c50@gmail.com>
+ <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
+ <1a1277ac-4ae5-eaab-01c3-0242c12be76b@gmail.com>
+ <6ed7e89f-2d2c-4134-9c6f-a9d18e2fc8a8@app.fastmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <77b713f8-93bd-d0fa-d344-c8a4ec365c50@gmail.com>
+In-Reply-To: <6ed7e89f-2d2c-4134-9c6f-a9d18e2fc8a8@app.fastmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 17/03/2023 10:52, Jacky Huang wrote:
-> Dear Krzysztof,
-> 
-> Thanks for your advice.
-> 
-> On 2023/3/17 下午 05:13, Krzysztof Kozlowski wrote:
->> On 17/03/2023 04:47, Jacky Huang wrote:
->>>>> +
->>>>> +  nuvoton,pll-mode:
->>>>> +    description:
->>>>> +      A list of PLL operation mode corresponding to CAPLL, DDRPLL, APLL,
->>>>> +      EPLL, and VPLL in sequential. The operation mode value 0 is for
->>>>> +      integer mode, 1 is for fractional mode, and 2 is for spread
->>>>> +      spectrum mode.
->>>>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->>>>> +    maxItems: 5
->>>>> +    items:
->>>>> +      minimum: 0
->>>>> +      maximum: 2
->>>> Why exactly this is suitable for DT?
->>> I will use strings instead.
->> I have doubts why PLL mode is a property of DT. Is this a board-specific
->> property?
-> 
-> CA-PLL has mode 0 only.
-> DDRPLL, APLL, EPLL, and VPLL have the same PLL design that supports
-> integer mode, fractional mode, and spread spctrum mode. The PLL mode
-> is controlled by clock controller register. I think it's not board-specific.
+On 17/03/2023 14:21, Arnd Bergmann wrote:
+> I only now saw that you had already submitted this several times
+> at the beginning of last year, and this is technically 'v5'
+> of the series, and it would make sense to add 'v6' to the subject
+> next time and link back to the previous [1] and this[2] submission
+> on lore.kernel.org.
 
-You described the feature but that does not answer why this is suitable
-in DT. If this is not board-specific, then it is implied by compatible,
-right? Or it does not have to be in DT at all.
-
+... and address previous feedback. Or at least make it clear in
+changelog that you addressed it, so our review was not ignored.
 
 Best regards,
 Krzysztof
