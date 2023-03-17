@@ -2,108 +2,131 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2B7C6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 09:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D76A0C76195
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 09:14:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231185AbjCQJJE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 05:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
+        id S230479AbjCQJOJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 05:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbjCQJIk (ORCPT
+        with ESMTP id S231140AbjCQJOH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 05:08:40 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE833B852
-        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 02:07:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=7N+obhHRyum7hOTsORbeWdi9Y9AC
-        K7wXKzCB9yu4KsE=; b=j62SsgavC82OgLafoiAIckLBWKUo4lQbg6UPtiwN+0DE
-        4it5ORJxUFKiMRFxaWLTLqmYWt//X6nk3HHVVEPldIvW+zlBpbLhbmMdlikFqMD/
-        fgcfXwzndmB9TB8DzIPlx+O+wRrDdh9Ms5ISseeLJJ8ZOcUbhAhHLgyvRj3aiVE=
-Received: (qmail 4170448 invoked from network); 17 Mar 2023 10:07:29 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 17 Mar 2023 10:07:29 +0100
-X-UD-Smtp-Session: l3s3148p1@5Iok6BT3Po8ujnvb
-Date:   Fri, 17 Mar 2023 10:07:27 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
-Message-ID: <ZBQtzwCDDbIYM+yv@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
-References: <20230316160118.133182-1-biju.das.jz@bp.renesas.com>
- <CAMuHMdVX=sM-1y+-3PQDsjf8K3nLoS4WfSYfv6UAP=92T_oHaQ@mail.gmail.com>
- <OS0PR01MB5922EA7DC64F0D2C36B490A986BC9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <CAMuHMdXgwkJ2O7y98HW6n8SOgbuEx1uFrt1Jc-X2CzpC3y1P0Q@mail.gmail.com>
- <TYCPR01MB593334BB3847CCC45A1B6C7286BD9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
- <CAMuHMdUN=0aJ-7huv0XrhG3LMu8q_SEuqHU48ytTgGAYEjng5A@mail.gmail.com>
- <TYCPR01MB593390150CAC755AE540D7D586BD9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
- <TYCPR01MB5933865E5D673865B7C4A85586BD9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+        Fri, 17 Mar 2023 05:14:07 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF7099D55
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 02:13:39 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id h8so17707315ede.8
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 02:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679044417;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+cpBYnKN5+YMFMw4tpn2s+6a2wFSz7gO8ZG313XuCv4=;
+        b=FnqJnDfJTBi41p9JHh2V4t9548s1xSHZk6EhJKO2KgFARu+eOEDIROmxBeCN72zWEt
+         rXKKFkFnh7MaSbygTcYQnQw6DomruPVc97RonbsScgLiLBHhBhFTor3ygxEcHDPFT0zM
+         +SmoboRs+Es/JA9Gij/nX0aRL8Evwsbe6Nr6E7/xS3j8UKi2zFWJB8mP2lzoaXB7UyOM
+         ptLx8MyGxhtb15z9T4IxnHMN7ZjjnBuPS9vdjAwXjoJ7Ha4YFVudkyW4XEEtUNKzI7sf
+         H6yhIQ3F+2pB4qjLD+VNUGHSJ3hKVEOLwEvIPDHWG2H4U2t8GeR5Pg1FJgcxFH6lPUZI
+         /0UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679044417;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+cpBYnKN5+YMFMw4tpn2s+6a2wFSz7gO8ZG313XuCv4=;
+        b=xRgW0pRf0gU+nYsU9M6CoIARHR+QsTu1jSum4qSyA5XQRyrdvlxPbou2g5XDI1Plat
+         8W0wi0+lDBRxQqtQ2Z0XZ7eholda5sJb11WU2lpnx+CCVN9iNHxwWff005hENZbL5JJh
+         4mar2essxEIBJ7ofWNc+2XvRYRATg9NDw9ZnwYe8pLgcExYWS1MQ4Owa3RntF7Gkg7D2
+         vQt5+3zTxmJlWp8fKCKbR2azXd1RqDHA2d2sFcAaFhiOH74e/N0WR8T4HPs1bgvr8GMf
+         b+NclRG6NHt3AWiREGjUeJ4MeQK7boURQZVxYPUOS/HEqDyjM/XUPH36r5fqWyU7hEoU
+         VRvg==
+X-Gm-Message-State: AO0yUKUNb73UeJgpRYLRCNLbaIhc+zwRLliFSnHzsvDxfTKBhkBdQnRo
+        84v4OJk0F8m90g62XSKqa0ZRIA==
+X-Google-Smtp-Source: AK7set8AbOUSg9RLLGhVLscb7j5DdC0tsCnYce7R6YkcgOcQcZDKJYLl8/4X0z9PrsNAsTJb0yyzGw==
+X-Received: by 2002:a17:906:56:b0:91f:7455:cb1d with SMTP id 22-20020a170906005600b0091f7455cb1dmr13023353ejg.57.1679044416747;
+        Fri, 17 Mar 2023 02:13:36 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:848a:1971:93e0:b465? ([2a02:810d:15c0:828:848a:1971:93e0:b465])
+        by smtp.gmail.com with ESMTPSA id l20-20020a1709066b9400b0093114ce0837sm740814ejr.51.2023.03.17.02.13.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 02:13:36 -0700 (PDT)
+Message-ID: <b9753d54-6605-e3cb-2943-795b4d58cd83@linaro.org>
+Date:   Fri, 17 Mar 2023 10:13:35 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="P/5OshVCHii0RPDa"
-Content-Disposition: inline
-In-Reply-To: <TYCPR01MB5933865E5D673865B7C4A85586BD9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 08/15] dt-bindings: clock: Document ma35d1 clock
+ controller bindings
+Content-Language: en-US
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-9-ychuang570808@gmail.com>
+ <0ad8521d-90b9-29c7-62e6-2d65aa2a7a27@linaro.org>
+ <00423efa-d4ca-5d76-d0b2-11853a49c5e9@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <00423efa-d4ca-5d76-d0b2-11853a49c5e9@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 17/03/2023 04:47, Jacky Huang wrote:
+> 
+>>
+>>> +
+>>> +  nuvoton,pll-mode:
+>>> +    description:
+>>> +      A list of PLL operation mode corresponding to CAPLL, DDRPLL, APLL,
+>>> +      EPLL, and VPLL in sequential. The operation mode value 0 is for
+>>> +      integer mode, 1 is for fractional mode, and 2 is for spread
+>>> +      spectrum mode.
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>>> +    maxItems: 5
+>>> +    items:
+>>> +      minimum: 0
+>>> +      maximum: 2
+>> Why exactly this is suitable for DT?
+> 
+> I will use strings instead.
 
---P/5OshVCHii0RPDa
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I have doubts why PLL mode is a property of DT. Is this a board-specific
+property?
 
-Hi Biju,
+> 
+>>
+>>> +
+>>> +  nuvoton,sys:
+>>> +    description:
+>>> +      Phandle to the system management controller.
+>>> +    $ref: "/schemas/types.yaml#/definitions/phandle-array"
+>> Drop quotes.
+>>
+>> You need here constraints, look for existing examples.
+>>
+> 
+> I would like to modify this as:
+> 
+> 
+>    nuvoton,sys:
+>      description:
+>        Use to unlock and lock some clock controller registers. The lock
+>        control register is in system controller.
+>      $ref: /schemas/types.yaml#/definitions/phandle-array
+>      items:
+>        - items:
+>            - description: phandle to the system controller.
 
-> Wolfram, Can you please confirm transmit end interrupt handler worked for you
-> with the commit 4c84c1b3acca ("ARM: shmobile: r7s72100: add scif nodes to dtsi")
-
-That was nearly 10 years ago :) I can't recall if a specific interrupt
-worked. But SCIF worked. So, if it was needed for proper operation, then
-it probably worked. If it was not needed, no idea.
-
-This is all for a Fixes: tag, or? Is it that important?
-
-Happy hacking,
-
-   Wolfram
+In such case you do not have array. Just make it phandle and drop the items.
 
 
---P/5OshVCHii0RPDa
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+Best regards,
+Krzysztof
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQULc8ACgkQFA3kzBSg
-Kbbt/A//R2kPWS3dRk0CN6rhoyk2btm4CaiHvZoBLmQfDAoOI0zF+ePQEvQKzjGh
-HdHXWmxjkEarWcXkAo5tdAsWhpc7gdvIw90tM6J6uOh3hDg76aHE5Aq7z+nDqHg2
-cNC6Hgy1uCO+YS6m/Kp5542IUVLbdjgafQPCwd18p5hbkziw3yOU9Tfw5dE5hcoA
-E74tGgWPYSFwuA0rBFbbdzEIKUFF9oP4RPgG1T6LHwoKWgDopkZqjmXixPFr3T+E
-ii9BVY9X7BjQtsvAYF10odiJrH0+KoGysqYduvB5NT3O/FOtCs6T3WeVpIAdNLEx
-nop6cbsD5XZKDrT6fUsMg2Bs0VWEZ2qttgB36nmdSFs26kSCjMJh5t3OELcGWEcx
-RyM+ZNBcsmNrBhH/j2I1myWiDDpMwYNNlVxUaF0em2cXWuIVlpnYJTT0vwoJk2gQ
-VDuSReaqDkjHUJOlG4Uv8kRlujRe3h/QobrNe4eM+/QEID+dSwkH7FuO8sI0RYpC
-vVi/421AZuTOipakklVOkSRaUcVV+f1q+ZPnP4U1yZsWVOc9u0DgKuvDN5+5joyq
-7o81MPOy9zoJXUztSmwTVmpx0IMG0FGEZpGmWU9C0gw0N84PJnhjYazU4QVIqSmg
-F26P2s786p4HfWui+fhzdPdZUCmz72AQMBlQvLyLaBijRdsoCHQ=
-=xtAU
------END PGP SIGNATURE-----
-
---P/5OshVCHii0RPDa--
