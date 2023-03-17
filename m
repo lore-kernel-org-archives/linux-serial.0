@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE4FCC6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 03:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C540AC6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 04:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbjCQDrw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Mar 2023 23:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
+        id S230109AbjCQES5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 00:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbjCQDru (ORCPT
+        with ESMTP id S230098AbjCQES4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Mar 2023 23:47:50 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF706F60B;
-        Thu, 16 Mar 2023 20:47:45 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id f6-20020a17090ac28600b0023b9bf9eb63so3699167pjt.5;
-        Thu, 16 Mar 2023 20:47:45 -0700 (PDT)
+        Fri, 17 Mar 2023 00:18:56 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACF5211F8;
+        Thu, 16 Mar 2023 21:18:54 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso3794411pjb.3;
+        Thu, 16 Mar 2023 21:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679024864;
+        d=gmail.com; s=20210112; t=1679026733;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=LG/DIr+0K1JSvKnn3E0g/U/IiefLZ8MeJXvgz55e+Co=;
-        b=JHFY2mxbdZE3lOuV3TABXI8LL88x9fGsLHq4RckyUgR6FnaGBbl8qcEWmSSeVd6mlL
-         ZdHh4myNyvs38ncf4uA2QRqaDmwwXdtOq8LlFGG0e55StIstl9aPNBnxtFtA8G3ue8h7
-         xt8GBOv4u7UZore8ZQNDJpMDgpI300qsX6OqBG+BEwkRfeZQwvma87r9AQ+++3u5CCTI
-         b3ytFV5Bz6AjgBtfYaUw63tuKYmlhHcsyMpYEa23PRL/ytwdKLV2NJDr/KIOU06Swkab
-         qOKQb43qRmGgVBMjpHB4Ds6FatIMePTJNnsaRrojqra2U8buIH+E1tZutuyjfL+o7bHI
-         j2Uw==
+        bh=EuTIcRDUqWKvYEoDWAPSBeY46ySNFISjMqGTJQVosW0=;
+        b=GqGR26qwOEcUnwjsoHD7fbzqMkk70ZqdbXR5j68ArnJJxzR7vMjddICH9XA6H+ooLX
+         XNy7w5QHTV3fyY2C+ONqiKZFoqduXKmq0E6pHF/pZRbOWRKc/AIHHgAq7mC22hTh9k49
+         R5xqRxgJTwojQmGmpR13ff06A0EW9v7k0zWbZ95ngcIwXAqK/HgjF1UHh0cvcSAM5M1R
+         GuEHBX4PClIv0TjbUydlaymR1lmipXU+vsYEkuI7kj0xw11QIMWnQCHQwq/3MMDYhdaC
+         ZTVEmrx+L3pewXstyEFlSdIyu8MBGm4UKmErP+GXiuapCcM9bBGk1aMNOd0nXf+IzWdb
+         Nraw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679024864;
+        d=1e100.net; s=20210112; t=1679026733;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LG/DIr+0K1JSvKnn3E0g/U/IiefLZ8MeJXvgz55e+Co=;
-        b=O6UU4NWlwicVHEJmy3uPmr7vXw8jzkT++NA8Wa9WP2qYctP3lFWXH2j+79wVuyUrgR
-         hxrKM3yz0Gm3kx+hroPM6/nTSe8iqyLIjqF4NdhziQU/IrbaV9XKXZKLkSh6Bx5Ap+yj
-         dY8RgSxsHDSF+UFLyO5AhIA+5S2OQEdIlZWrr8whdEXSP+flxXzHe7AI2qSYKn4Vvkix
-         oIhPzWH2w19xOqJd0BeBjH+6wdZxkyLFF8mB1RCK6DRD1keWZ0qQ8f+hXHBTZ43vmH1e
-         zRGLfv9GM6gBa2N5X/OaagXYDGHN0J6l2vjTMs4/SLfv/n1rVtnfQSTOiknvEqKY7s4p
-         tg9A==
-X-Gm-Message-State: AO0yUKUv8+Q02ioE+Isw55pTNJ5UK6B+5W0gd0L5VFT0BQOGyiO2t2+4
-        yo1shDWp3CWghFbeJIotBLzidxl4B5gthQ==
-X-Google-Smtp-Source: AK7set9scFjLx3oPVd1sEXeKPMhCR0g28jWfgBdfuKIlw+b6CoX6JkvRT1QclDB3lwYhqB/LZnMJrg==
-X-Received: by 2002:a17:90b:1b4a:b0:23c:61f:2be4 with SMTP id nv10-20020a17090b1b4a00b0023c061f2be4mr6603439pjb.20.1679024864498;
-        Thu, 16 Mar 2023 20:47:44 -0700 (PDT)
+        bh=EuTIcRDUqWKvYEoDWAPSBeY46ySNFISjMqGTJQVosW0=;
+        b=tDE/yKu6t9KaU9Y5q3MuSSiLZ/rBefg+QG4xM9/PATLdZxUnTKH6hm27YPq+FmQQc5
+         IXJeGMUlhHXH9/W2izRBCmc2dSS44qGljvdtGRM2vL9uOoM696K5CEagwdXTQA+nII1x
+         5M5+4SQsWStagWQ4GZZ8070759tFOeIGjjMr5+DvKfcN2Bmuj4sNEZDEoR5tEmQjdasv
+         iPfCKKnkTbr/BHoFwVzQ+Vy+R70PrebWmA0sb5ojsYPzono6e1O5LKK1SaG/4IhTdqRE
+         GH0rwMuUCHLQWCnhIIHVsCRBSvelgHI1SHW5AS/drRTL1MkTBAUGbXOGOauNvTL0aPmS
+         vPTQ==
+X-Gm-Message-State: AO0yUKWz0C9AncZpTEhct1mslxzCCTWKotRjYmenvvvrF3yl1aeHRgpJ
+        9fUFciXg3m9iBMfTJY6DnSs=
+X-Google-Smtp-Source: AK7set/7n1Pek6SBN7TsVI5TShPwZwnI1bt88gulr9/lrV/k9FfuxOq/GEaUwI5ZI197Ab12IpcYaQ==
+X-Received: by 2002:a17:90b:17cd:b0:23d:5485:b80e with SMTP id me13-20020a17090b17cd00b0023d5485b80emr6932629pjb.6.1679026733623;
+        Thu, 16 Mar 2023 21:18:53 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id d3-20020a170902728300b0019c32968271sm456594pll.11.2023.03.16.20.47.42
+        by smtp.gmail.com with ESMTPSA id d16-20020a63f250000000b004ff6b744248sm452538pgk.48.2023.03.16.21.18.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 20:47:44 -0700 (PDT)
-Message-ID: <00423efa-d4ca-5d76-d0b2-11853a49c5e9@gmail.com>
-Date:   Fri, 17 Mar 2023 11:47:40 +0800
+        Thu, 16 Mar 2023 21:18:53 -0700 (PDT)
+Message-ID: <be253a29-2187-69a7-9909-49fdd073b010@gmail.com>
+Date:   Fri, 17 Mar 2023 12:18:49 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH 08/15] dt-bindings: clock: Document ma35d1 clock
+Subject: Re: [PATCH 10/15] dt-bindings: serial: Document ma35d1 uart
  controller bindings
 Content-Language: en-US
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
@@ -67,10 +67,10 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
 References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-9-ychuang570808@gmail.com>
- <0ad8521d-90b9-29c7-62e6-2d65aa2a7a27@linaro.org>
+ <20230315072902.9298-11-ychuang570808@gmail.com>
+ <b4aa61fc-abd8-3287-83a3-beee2a06e628@linaro.org>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <0ad8521d-90b9-29c7-62e6-2d65aa2a7a27@linaro.org>
+In-Reply-To: <b4aa61fc-abd8-3287-83a3-beee2a06e628@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -79,123 +79,90 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Dear Krzysztof,
 
+
 Thanks for your advice.
 
 
-On 2023/3/16 下午 03:35, Krzysztof Kozlowski wrote:
+On 2023/3/16 下午 03:40, Krzysztof Kozlowski wrote:
 > On 15/03/2023 08:28, Jacky Huang wrote:
 >> From: Jacky Huang <ychuang3@nuvoton.com>
 >>
->> Add documentation to describe nuvoton ma35d1 clock driver bindings.
+>> Add documentation to describe nuvoton ma35d1 uart driver bindings.
 > Subject: drop second/last, redundant "bindings". The "dt-bindings"
 > prefix is already stating that these are bindings.
 
-Got it, thanks.
+I will fix it.
 
 >> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 >> ---
->>   .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 83 +++++++++++++++++++
->>   1 file changed, 83 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+>>   .../serial/nuvoton,ma35d1-serial.yaml         | 52 +++++++++++++++++++
+>>   1 file changed, 52 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
 >>
->> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+>> diff --git a/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml b/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
 >> new file mode 100644
->> index 000000000000..5c2dea071b38
+>> index 000000000000..9daa2efd4734
 >> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->> @@ -0,0 +1,83 @@
+>> +++ b/Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+>> @@ -0,0 +1,52 @@
 >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 >> +%YAML 1.2
 >> +---
->> +$id: http://devicetree.org/schemas/clock/nuvoton,ma35d1-clk.yaml#
+>> +$id: http://devicetree.org/schemas/serial/nuvoton,ma35d1-serial.yaml#
 >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 >> +
->> +title: Nuvoton MA35D1 Clock Controller Module Binding
+>> +title: Nuvoton MA35D1 Universal Asynchronous Receiver/Transmitter (UART)
 >> +
 >> +maintainers:
->> +  - Chi-Fang Li <cfli0@nuvoton.com>
+>> +  - Min-Jen Chen <mjchen@nuvoton.com>
 >> +  - Jacky Huang <ychuang3@nuvoton.com>
 >> +
->> +description: |
->> +  The MA35D1 clock controller generates clocks for the whole chip,
->> +  including system clocks and all peripheral clocks.
->> +
->> +  See also:
->> +    include/dt-bindings/clock/ma35d1-clk.h
+>> +allOf:
+>> +  - $ref: "serial.yaml"
+> Drop quotes. Use some recent bindings as your starting point, so we do
+> not have to give comments for things which were already fixed.
+
+Got it, I will remove the quotes.
+
 >> +
 >> +properties:
 >> +  compatible:
->> +    items:
->> +      - const: nuvoton,ma35d1-clk
->> +      - const: syscon
+>> +    const: nuvoton,ma35d1-uart
 >> +
 >> +  reg:
 >> +    maxItems: 1
 >> +
->> +  "#clock-cells":
->> +    const: 1
+>> +  interrupts:
+>> +    maxItems: 1
 >> +
 >> +  clocks:
 >> +    maxItems: 1
 >> +
->> +  clock-names:
->> +    const: clk_hxt
-> Drop clock-names. You do not need it for one clock.
-
-I will remove it.
-
->
->
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - interrupts
+>> +  - clocks
 >> +
->> +  assigned-clocks:
->> +    maxItems: 5
+>> +unevaluatedProperties: false
 >> +
->> +  assigned-clock-rates:
->> +    maxItems: 5
-> Drop both properties, you do not need them in the binding.
-
-I will drop them.
-
->
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
 >> +
->> +  nuvoton,pll-mode:
->> +    description:
->> +      A list of PLL operation mode corresponding to CAPLL, DDRPLL, APLL,
->> +      EPLL, and VPLL in sequential. The operation mode value 0 is for
->> +      integer mode, 1 is for fractional mode, and 2 is for spread
->> +      spectrum mode.
->> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->> +    maxItems: 5
->> +    items:
->> +      minimum: 0
->> +      maximum: 2
-> Why exactly this is suitable for DT?
+>> +    aliases {
+>> +        serial0 = &uart0;
+>> +    };
+> Drop aliases.
 
-I will use strings instead.
+I will fix it.
 
->
 >> +
->> +  nuvoton,sys:
->> +    description:
->> +      Phandle to the system management controller.
->> +    $ref: "/schemas/types.yaml#/definitions/phandle-array"
-> Drop quotes.
->
-> You need here constraints, look for existing examples.
->
+>> +    uart0:serial@40700000 {
+> Drop label
 
-I would like to modify this as:
-
-
-   nuvoton,sys:
-     description:
-       Use to unlock and lock some clock controller registers. The lock
-       control register is in system controller.
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-     items:
-       - items:
-           - description: phandle to the system controller.
-
+OK, I will remove the label.
 
 >
 > Best regards,
@@ -205,3 +172,4 @@ I would like to modify this as:
 Best regards,
 
 Jacky Huang
+
