@@ -2,118 +2,229 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E573C6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 14:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C49AC6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 14:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjCQO2A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 10:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46844 "EHLO
+        id S229772AbjCQObR convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 10:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbjCQO17 (ORCPT
+        with ESMTP id S231133AbjCQObQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 10:27:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D84D366A8;
-        Fri, 17 Mar 2023 07:27:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03E89622D4;
-        Fri, 17 Mar 2023 14:27:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CE7EC433D2;
-        Fri, 17 Mar 2023 14:27:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679063277;
-        bh=Ja0gXd3YfBR6uYrUbXl92wXVqvLZJFGUpGHdiwj+ROI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mdwCqXGqNep4EKAupw8jzfhWRrjq79YWH/MMQgK3tQSZC3hiyuYvbCWPTxwxLwpHJ
-         FhfR3yNKFqj/NDBbszx/GvZ/J3/VMSeXoWCDwzES0AjdQiL1tvLD0BBMZ//FgxkrFf
-         rRZHPmusSP2wcH9FuRjE8NFAqd7RVcTHkYI4fFrxuBQTLwnCSup5sz3Pq3dyCuOkyy
-         Yi4E+sbyIKDivzUMuGYa8qkS9ILxgOwMjxYArHb//UyvvSyvqI8tHbgy89AH02HhIV
-         agzW+EDeGvYcmM54DsDVhSg7ETaaEAxyM6Q15ke0yOFXafWjNuoaAIC7GScvP7ngF8
-         BGyMe2skQ+W4w==
-Received: by mail-ua1-f54.google.com with SMTP id s23so3448973uae.5;
-        Fri, 17 Mar 2023 07:27:57 -0700 (PDT)
-X-Gm-Message-State: AO0yUKWfvo4CBuV82B9uDN/S02GEuAwBoay9st8BnJ+TS9FNh0pWfCJi
-        d0KeppyRzNw0E1L6a+yAscYPHCXCFR48c2E4Jg==
-X-Google-Smtp-Source: AK7set+opXfvV0KuRUWrTn9+KJEXDQa7roIGehinVec3htJJWc+YaBCYf2jrEie3nmO3df834BaxB7f6VqlHHcNfwWw=
-X-Received: by 2002:a1f:2cd7:0:b0:401:73f4:dfe with SMTP id
- s206-20020a1f2cd7000000b0040173f40dfemr8088vks.3.1679063276330; Fri, 17 Mar
- 2023 07:27:56 -0700 (PDT)
+        Fri, 17 Mar 2023 10:31:16 -0400
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400C683E5;
+        Fri, 17 Mar 2023 07:31:14 -0700 (PDT)
+Received: by mail-qv1-f49.google.com with SMTP id x8so3531784qvr.9;
+        Fri, 17 Mar 2023 07:31:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679063473;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=18LJijTgRpqM1Yg2wC6MYZWNjIKdYJXuFIFGyOzCuCQ=;
+        b=ejh78tJgm9A5EAGlRxT7Ju9/ElxjUADIGzo7Ms198X9UZn4ZiCyCC+l+mFj2EdHKXN
+         QX+fkyOUk91mM0EW5bGJ45dXG5GC/ZvohosXI38YPkCnQKorpQKF8oQkgUs4KsCarz1z
+         PN5KQz7/LI9Qccps4oIvXLU/gyXuhQ9o1CqMzY20umSITEyi7ZJlpqYKdkfZEd7f25In
+         F1q6avuEOA25NEeZqJ+kouL6p2IxgZb/vwqsUFIy6QdDpXmm8a/M+uaQ3b1WOA/yFL8F
+         jJl+uV/DvNzk0YWHuBJMTWhnbKn3U4RCka0reujp+FakLll2nTsbgamyqL7djjExGfVv
+         7qkA==
+X-Gm-Message-State: AO0yUKXblF7iHW03nYGGQPNA2fa0+z/OxuCVR5q6OYRJl8LK41JidyaT
+        ds0ERp7EQewWE4gsxl6tZoo3lwGMVxz5SHDg
+X-Google-Smtp-Source: AK7set8+PQmOd4fM/VXJEN0Rz2QdIa31bU44nMZ3uFVWx6OuiTRSfy47Zhbn31E2IkS1BeqipNhrHA==
+X-Received: by 2002:a05:6214:27eb:b0:5b1:1ee:c998 with SMTP id jt11-20020a05621427eb00b005b101eec998mr13302644qvb.22.1679063472915;
+        Fri, 17 Mar 2023 07:31:12 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id f20-20020a05620a409400b00742e61999a3sm1786348qko.64.2023.03.17.07.31.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 07:31:11 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-53d277c1834so97169187b3.10;
+        Fri, 17 Mar 2023 07:31:11 -0700 (PDT)
+X-Received: by 2002:a81:ae5e:0:b0:541:a17f:c779 with SMTP id
+ g30-20020a81ae5e000000b00541a17fc779mr4681092ywk.4.1679063471024; Fri, 17 Mar
+ 2023 07:31:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-2-cristian.ciocaltea@collabora.com>
- <20230316203417.GA3833267-robh@kernel.org> <20230316222619.r4jzk3lzdxzamr2s@bogus>
- <d5881d9f-90cc-f7a2-72a3-0701348a03fe@collabora.com>
-In-Reply-To: <d5881d9f-90cc-f7a2-72a3-0701348a03fe@collabora.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 17 Mar 2023 09:27:44 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqL_EogoKOQ1xwU75=rJSC4o7yV3Jej4vadtacX2Pt3-hw@mail.gmail.com>
-Message-ID: <CAL_JsqL_EogoKOQ1xwU75=rJSC4o7yV3Jej4vadtacX2Pt3-hw@mail.gmail.com>
-Subject: Re: [PATCH 01/11] dt-bindings: firmware: arm,scmi: Document
- assigned-clocks and assigned-clock-rates
-To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Drake <drake@endlessm.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org, kernel@collabora.com
+References: <20230316160118.133182-1-biju.das.jz@bp.renesas.com>
+ <CAMuHMdVX=sM-1y+-3PQDsjf8K3nLoS4WfSYfv6UAP=92T_oHaQ@mail.gmail.com>
+ <OS0PR01MB5922EA7DC64F0D2C36B490A986BC9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAMuHMdXgwkJ2O7y98HW6n8SOgbuEx1uFrt1Jc-X2CzpC3y1P0Q@mail.gmail.com>
+ <TYCPR01MB593334BB3847CCC45A1B6C7286BD9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+ <CAMuHMdUN=0aJ-7huv0XrhG3LMu8q_SEuqHU48ytTgGAYEjng5A@mail.gmail.com>
+ <TYCPR01MB593390150CAC755AE540D7D586BD9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+ <CAMuHMdVmz_JNmC7Fk03zpaZY+MiBAgvFUc1Tnr+w=wHjbgeSug@mail.gmail.com>
+ <OS0PR01MB59228F2CA5A579AEE793A67486BD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAMuHMdW5jpnFBsHPbTE9QEbEYUNW9S0Qz93gg3QusLe0aSSbGg@mail.gmail.com> <OS0PR01MB59220E5FA2CDC27108DB926C86BD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB59220E5FA2CDC27108DB926C86BD9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 17 Mar 2023 15:30:58 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWcizpvQQ2A4bMLDfCHFmy_0MHL2ao62Ujiv4J28deGSA@mail.gmail.com>
+Message-ID: <CAMuHMdWcizpvQQ2A4bMLDfCHFmy_0MHL2ao62Ujiv4J28deGSA@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 4:59=E2=80=AFAM Cristian Ciocaltea
-<cristian.ciocaltea@collabora.com> wrote:
->
-> On 3/17/23 00:26, Sudeep Holla wrote:
-> > On Thu, Mar 16, 2023 at 03:34:17PM -0500, Rob Herring wrote:
-> >> +Stephen
-> >>
-> >> On Wed, Mar 15, 2023 at 01:47:56PM +0200, Cristian Ciocaltea wrote:
-> >>> Since commit df4fdd0db475 ("dt-bindings: firmware: arm,scmi: Restrict
-> >>> protocol child node properties") the following dtbs_check warning is
-> >>> shown:
-> >>>
-> >>>    rk3588-rock-5b.dtb: scmi: protocol@14: Unevaluated properties are =
-not allowed ('assigned-clock-rates', 'assigned-clocks' were unexpected)
-> >>
-> >> I think that's a somewhat questionable use of assigned-clock-rates. It
-> >> should be located with the consumer rather than the provider IMO. The
-> >> consumers of those 2 clocks are the CPU nodes.
-> >>
+Hi Biju,
+
+On Fri, Mar 17, 2023 at 2:47 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
+> > On Fri, Mar 17, 2023 at 10:15 AM Biju Das <biju.das.jz@bp.renesas.com>
+> > wrote:
+> > > > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt
+> > > > handler On Fri, Mar 17, 2023 at 9:08 AM Biju Das
+> > <biju.das.jz@bp.renesas.com> wrote:
+> > > > > > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end
+> > > > > > interrupt handler On Fri, Mar 17, 2023 at 8:59 AM Biju Das
+> > > > <biju.das.jz@bp.renesas.com> wrote:
+> > > > > > > > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end
+> > > > > > > > interrupt handler On Thu, Mar 16, 2023 at 5:34 PM Biju Das
+> > > > > > <biju.das.jz@bp.renesas.com> wrote:
+> > > > > > > > > > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit
+> > > > > > > > > > end interrupt handler
+> > > > > > > >
+> > > > > > > > > > On Thu, Mar 16, 2023 at 5:01 PM Biju Das
+> > > > > > > > > > <biju.das.jz@bp.renesas.com>
+> > > > > > > > wrote:
+> > > > > > > > > > > The RZ SCI/ RZ/A1 SCIF has only 4 interrupts. The
+> > > > > > > > > > > fourth interrupt is transmit end interrupt, so shuffle
+> > > > > > > > > > > the interrupts to fix the transmit end interrupt
+> > > > > > > > > > > handler for these
+> > > > IPs.
+> > > > > > > > > > >
+> > > > > > > > > > > Fixes: 392fb8df528b ("serial: sh-sci: Use
+> > > > > > > > > > > platform_get_irq_optional() for optional interrupts")
+> > > > > > > > > >
+> > > > > > > > > > I don't think that's the right bad commit.
+> > > > > > > > >
+> > > > > > > > > OK. I will use below commit as fixes one, that is the
+> > > > > > > > > commit which added RZ/A1 SCIF with 4 interrupts.
+> > > > > > > > >
+> > > > > > > > > commit 8b0bbd956228ae87 ("serial: sh-sci: Add support for
+> > > > > > > > > R7S9210")
+> > > > > > > >
+> > > > > > > > That one added support for RZ/A2, and is also not the bad
+> > commit?
+> > > > > > >
+> > > > > > > OK will use below one,
+> > > > > > >
+> > > > > > > Fixes: 4c84c1b3acca ("ARM: shmobile: r7s72100: add scif nodes
+> > > > > > > to
+> > > > > > > dtsi")
+> > > > > >
+> > > > > > This really starts to look like a guessing game... Beep ;-)
+> > > > >
+> > > > > Already there is a generic compatible in driver, where we started
+> > > > > introducing RZ/A1 SoC With 4 interrupts. So addition of this SoC
+> > > > > has this
+> > > > issue. Am I missing anything here?
+> > > >
+> > > > The rabbit hole seems to be deeper than I thought...
+> > > >
+> > > > Looking at the code, the driver always assumed the fourth interrupt
+> > > > is BRI, which matches the RZ/A1 datasheet for SCIF.
+> > > > So the 4 IRQ case is really a subset of the 6 IRQ case, and
+> > > > Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> > > > is wrong.
+> > >
+> > > OK.
+> > >
+> > > >
+> > > > However, SCI(g) is the odd one (also on SH): it has TEI as the
+> > > > fourth IRQ, which I probably missed when doing the json-schema
+> > > > conversion in commit 384d00fae8e51f8f ("dt-bindings: serial: sh-sci:
+> > > > Convert to json-schema"), leading to the bug in scif.yaml.
+> > > >
+> > > > Note that the driver never looks at the interrupt names, but uses
+> > > > indices exclusively.
+> > > >
+> > > > So I guess SCI has been broken on SH since forever, too?
+> > >
+> > > I think so, by looking at the changes done in tx to make it work on
+> > RZ/G2UL.
+> > > On RZ/G2UL both rx and tx is broken.
+> > >
+> > > Not sure SCI is tested ever on SH platform??
+> > >
+> > > Can any SH platform person confirm this?
 > >
-> > Agreed. We definitely don't use those in the scmi clk provider driver.
-> > So NACK for the generic SCMI binding change.
+> > SCI is only supported on
+> >   - sh770x,
+> >   - sh7750 (excluding rts7751r2d)
+> >     I know it's not exposed on my landisk,
+> >   - sh7760, for the SIM-port, which I doubt anyone uses.
+> >
+> > FTR, I tried the "obvious" thing (remove the rts7751r2d-checks in
+> > arch/sh/kernel/cpu/sh4/setup-sh7750.c, and replace sci_br_interrupt as the
+> > interrupt handler by sci_tx_interrupt in sh-sci.c), but that didn't make
+> > ttySC0 work on qemu/rts7751r2d.
 >
-> According to [1], "configuration of common clocks, which affect multiple
-> consumer devices can be similarly specified in the clock provider node".
+> I am not seeing any SH platform SoCs in[1] and RZ/A2 does not have any SCI nodes
+> defined in dts,
 
-True, but in this case it's really a single consumer because it's all
-CPU nodes which are managed together.
+Most SH platforms have not been converted to DT yet:
 
-> That would avoid duplicating assigned-clock-rates in the CPU nodes.
+$ git grep -w PORT_SCI -- arch/sh
+arch/sh/kernel/cpu/sh3/setup-sh770x.c:  .type           = PORT_SCI,
+arch/sh/kernel/cpu/sh4/setup-sh7750.c:  .type           = PORT_SCI,
+arch/sh/kernel/cpu/sh4/setup-sh7760.c:  .type           = PORT_SCI,
 
-Wouldn't one node be sufficient?
+But I just realized the above are not affected, as they define either
+1 or 3 interrupts for the SCI port instead of.
 
-Thinking more about this, why aren't you using OPP tables to define
-CPU frequencies. Assigned-clocks looks like a temporary hack because
-you haven't done proper OPP tables.
+> So Shall I use the below fixes tag instead, as it is documented in dt bindings and is the first
+> SoC with broken irq handler??
+>
+> Fixes: f9a2adcc9e90 ("arm64: dts: renesas: r9a07g044: Add SCI[0-1] nodes")
 
-Rob
+That's a DTS change, while the bug is in the driver?
+
+The bug seems to be present in all versions since modern git of the
+sh-sci serial driver.
+More archaeology shows early versions used hardcoded lists of 3
+interrupts for SCI, avoiding the issue. The even older sh-sci character
+device driver registered only 3 interrupt handlers when built with
+SCI support only.
+
+So the issue only started to appear (if anyone noticed at all) with the
+(removed) DT-based H8/300 architecture, which described 4 interrupts
+in DT, which the sh-sci driver handles incorrectly.
+
+So if you insist on a Fixes line:
+Fixes: e1d0be616186906d ("sh-sci: Add h8300 SCI")
+
+> With below check in driver.
+>
+> +       /*
+> +        * The fourth interrupt on SCI port is transmit end interrupt, so
+> +        * shuffle the interrupts.
+> +        */
+> +       if (p->type == PORT_SCI)
+> +               swap(sci_port->irqs[SCIx_BRI_IRQ], sci_port->irqs[SCIx_TEI_IRQ]);
+
+Thanks, LGTM.
+
+Now back to the present time, I had enough archaeology ;-)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
