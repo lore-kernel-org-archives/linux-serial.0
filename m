@@ -2,108 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA633C6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 08:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D31C6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 08:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbjCQIRK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 04:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S231328AbjCQId1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 04:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbjCQIQ5 (ORCPT
+        with ESMTP id S231530AbjCQIdJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 04:16:57 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7D0D7C1C
-        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 01:16:23 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-304-MWU-jB63O1-wjO_6J_lLaw-1; Fri, 17 Mar 2023 08:09:17 +0000
-X-MC-Unique: MWU-jB63O1-wjO_6J_lLaw-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Fri, 17 Mar
- 2023 08:09:15 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.047; Fri, 17 Mar 2023 08:09:15 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     =?utf-8?B?J0lscG8gSsOkcnZpbmVuJw==?= 
-        <ilpo.jarvinen@linux.intel.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH 2/2] serial: 8250: Fix serial8250_tx_empty() race with DMA
- Tx
-Thread-Topic: [PATCH 2/2] serial: 8250: Fix serial8250_tx_empty() race with
- DMA Tx
-Thread-Index: AQHZWArCK8WwTTBjQ0K/guscWP8/fq7+nMjw
-Date:   Fri, 17 Mar 2023 08:09:14 +0000
-Message-ID: <55704d488ee644f5a710841f3912b25f@AcuMS.aculab.com>
-References: <20230316132452.76478-1-ilpo.jarvinen@linux.intel.com>
- <20230316132452.76478-3-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20230316132452.76478-3-ilpo.jarvinen@linux.intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 17 Mar 2023 04:33:09 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D981E291
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 01:31:54 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id eg48so17234824edb.13
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 01:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679041907;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=F22xKzaXQ16zz1R+nPdvOmBcImJHM2RC64dPlAyscLI=;
+        b=aWHmZxuyjKoQeJE36fh5yBR6stqa3XOEzB1SVT5U3CDiWrUEUqd2msGm72CQst+RK/
+         Vkvm0winBTSa9GH01ItcF++wZbeu9Ca1O3OtCD+slaX2sfyNvwLNaP1kIkpF3YZUMRQn
+         HfvmrKvHVhT+8utKUDchex+GgFH/jLaIYm4bbhg36sw75vbB0yaziDmmZIytqIRMJ/g7
+         is+q5vtZXQM8KHDf43TQvE+c6zwdlCIA18cenpVd/XaOf8fvgq8Nh1BPceGza5/jL5BR
+         uck6vWW5VahlzU7RL2fq2660WI4kK3wtWgp/dcDhr9zyW0GxJp9pXvMbmxOhPThJ0YhX
+         8BDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679041907;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=F22xKzaXQ16zz1R+nPdvOmBcImJHM2RC64dPlAyscLI=;
+        b=ldoKPA5wILVrXr0eaCHISJ03bqsBbMIGu4mMiPn6n2DczpHf7TzAWE/sVvgRxexfnr
+         ED2ljm0GnlClk9HOEx/12cGPrjF/br/39jnEQsAT3AIB73K2dv80nsu+mG35+054+PCc
+         vz8jyRMAI43AHhC42RsovKNS+wATAsMLAyyGaU19MHVvkDEW5c4niD04Jv3YxftlOC1p
+         /QAf5am9JrvoDs2e6bRNGLve184ix/1IrdBIHe1RoTWjhfZi27cT6VoTLnhL2VeyLr8L
+         wBtLaSUqce9zeb8GguPU27WGbKWelXI6EYnR4Mag/N1oOaLHAtsysmnz0pX1AXnvt62t
+         7UCw==
+X-Gm-Message-State: AO0yUKVooCYtBwdVCgykYBIlVrDK1FGnemk9eM7Ned5bpbzB1gei08yJ
+        P75ZIo+6OhoUVtXiILUMJF1Nrg==
+X-Google-Smtp-Source: AK7set9P1SuFct7TKYsl2uFH88M5Njs8psB88aLuEx8C2MfAzct4blZqPVjveqZ3ledMk3g6rAb+8Q==
+X-Received: by 2002:a17:907:6eab:b0:932:3942:f28f with SMTP id sh43-20020a1709076eab00b009323942f28fmr618319ejc.61.1679041907355;
+        Fri, 17 Mar 2023 01:31:47 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:848a:1971:93e0:b465? ([2a02:810d:15c0:828:848a:1971:93e0:b465])
+        by smtp.gmail.com with ESMTPSA id e18-20020a170906845200b009222eec8097sm692325ejy.75.2023.03.17.01.31.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 01:31:46 -0700 (PDT)
+Message-ID: <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
+Date:   Fri, 17 Mar 2023 09:31:45 +0100
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
 Content-Language: en-US
+To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogSWxwbyBKw6RydmluZW4NCj4gU2VudDogMTYgTWFyY2ggMjAyMyAxMzoyNQ0KPiANCj4g
-VGhlcmUncyBhIHBvdGVudGlhbCByYWNlIGJlZm9yZSBUSFJFL1RFTVQgZGVhc3NlcnRzIHdoZW4g
-RE1BIFR4IGlzDQo+IHN0YXJ0aW5nIHVwIChvciB0aGUgbmV4dCBiYXRjaCBvZiBjb250aW51b3Vz
-IFR4IGlzIGJlaW5nIHN1Ym1pdHRlZCkuDQo+IFRoaXMgY2FuIGxlYWQgdG8gbWlzZGV0ZWN0aW5n
-IFR4IGVtcHR5IGNvbmRpdGlvbi4NCj4gDQo+IEl0IGlzIGVudGlyZWx5IG5vcm1hbCBmb3IgVEhS
-RS9URU1UIHRvIGJlIHNldCBmb3Igc29tZSB0aW1lIGFmdGVyIHRoZQ0KPiBETUEgVHggaGFkIGJl
-ZW4gc2V0dXAgaW4gc2VyaWFsODI1MF90eF9kbWEoKS4gQXMgVHggc2lkZSBpcyBkZWZpbml0ZWx5
-DQo+IG5vdCBlbXB0eSBhdCB0aGF0IHBvaW50LCBpdCBzZWVtcyBpbmNvcnJlY3QgZm9yIHNlcmlh
-bDgyNTBfdHhfZW1wdHkoKQ0KPiBjbGFpbSBUeCBpcyBlbXB0eS4NCj4gDQo+IEZpeCB0aGUgcmFj
-ZSBieSBhbHNvIGNoZWNraW5nIGluIHNlcmlhbDgyNTBfdHhfZW1wdHkoKSB3aGV0aGVyIHRoZXJl
-J3MNCj4gRE1BIFR4IGFjdGl2ZS4NCj4gDQo+IE5vdGU6IFRoaXMgZml4IG9ubHkgYWRkcmVzc2Vz
-IGluLWtlcm5lbCByYWNlIG1haW5seSB0byBtYWtlIHVzaW5nDQo+IFRDU0FEUkFJTi9GTFVTSCBy
-b2J1c3QuIFVzZXJzcGFjZSBjYW4gc3RpbGwgY2F1c2Ugb3RoZXIgcmFjZXMgYnV0IHRoZXkNCj4g
-c2VlbSB1c2Vyc3BhY2UgY29uY3VycmVuY3kgY29udHJvbCBwcm9ibGVtcy4NCj4gDQo+IEZpeGVz
-OiA5ZWU0YjgzZTUxZjc0ICgic2VyaWFsOiA4MjUwOiBBZGQgc3VwcG9ydCBmb3IgZG1hZW5naW5l
-IikNCj4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCj4gU2lnbmVkLW9mZi1ieTogSWxwbyBK
-w6RydmluZW4gPGlscG8uamFydmluZW5AbGludXguaW50ZWwuY29tPg0KPiAtLS0NCj4gIGRyaXZl
-cnMvdHR5L3NlcmlhbC84MjUwLzgyNTAuaCAgICAgIHwgMTIgKysrKysrKysrKysrDQo+ICBkcml2
-ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX3BvcnQuYyB8ICA3ICsrKysrKy0NCj4gIDIgZmlsZXMg
-Y2hhbmdlZCwgMTggaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTAuaCBiL2RyaXZlcnMvdHR5L3NlcmlhbC84
-MjUwLzgyNTAuaA0KLi4uDQo+ICBzdGF0aWMgaW5saW5lIGludCBuczE2NTUwYV9nb3RvX2hpZ2hz
-cGVlZChzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnVwKQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90
-dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUw
-X3BvcnQuYw0KPiBpbmRleCBmYTQzZGYwNTM0MmIuLjQ5NTRjNGYxNWZiMiAxMDA2NDQNCj4gLS0t
-IGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMNCj4gKysrIGIvZHJpdmVycy90
-dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMNCj4gQEAgLTIwMDYsMTcgKzIwMDYsMjIgQEAgc3Rh
-dGljIHVuc2lnbmVkIGludCBzZXJpYWw4MjUwX3R4X2VtcHR5KHN0cnVjdCB1YXJ0X3BvcnQgKnBv
-cnQpDQo+ICB7DQo+ICAJc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCA9IHVwX3RvX3U4MjUwcChw
-b3J0KTsNCj4gIAl1bnNpZ25lZCBsb25nIGZsYWdzOw0KPiArCWJvb2wgZG1hX3R4X3J1bm5pbmc7
-DQo+ICAJdTE2IGxzcjsNCj4gDQo+ICAJc2VyaWFsODI1MF9ycG1fZ2V0KHVwKTsNCj4gDQo+ICAJ
-c3Bpbl9sb2NrX2lycXNhdmUoJnBvcnQtPmxvY2ssIGZsYWdzKTsNCj4gIAlsc3IgPSBzZXJpYWxf
-bHNyX2luKHVwKTsNCj4gKwlkbWFfdHhfcnVubmluZyA9IHNlcmlhbDgyNTBfdHhfZG1hX3J1bm5p
-bmcodXApOw0KPiAgCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnBvcnQtPmxvY2ssIGZsYWdzKTsN
-Cj4gDQo+ICAJc2VyaWFsODI1MF9ycG1fcHV0KHVwKTsNCj4gDQo+IC0JcmV0dXJuIHVhcnRfbHNy
-X3R4X2VtcHR5KGxzcikgPyBUSU9DU0VSX1RFTVQgOiAwOw0KPiArCWlmICh1YXJ0X2xzcl90eF9l
-bXB0eShsc3IpICYmICFkbWFfdHhfcnVubmluZykNCj4gKwkJcmV0dXJuIFRJT0NTRVJfVEVNVDsN
-Cj4gKw0KPiArCXJldHVybiAwOw0KPiAgfQ0KDQpTaW5jZSBjaGVja2luZyB3aGV0aGVyIGRtYSBp
-cyBhY3RpdmUgaXMgZmFzdCBidXQgcmVhZGluZw0KdGhlIGxzciBpcyBzbG93IGl0IGlzIHByb2Jh
-Ymx5IGJldHRlciB0byBnZW5lcmF0ZSB0aGUgcmV0dXJuDQp2YWx1ZSBpbnNpZGUgdGhlIGxvY2sg
-YW5kIHRlc3QgZm9yIGRtYSBmaXJzdC4NClNvbWV0aGluZyBsaWtlOg0KCXNwaW5fbG9jaygpDQoJ
-cmVzdWx0ID0gMDsNCglpZiAoIXNlcmlhbDgyNTBfdHhfZG1hX3J1bm5pbmcodXApICYmDQoJICAg
-IHVhcnRfbHNyX3R4X2VtcHR5KHNlcmlhbF9sc3JfaW4odXApKSkNCgkJcmVzdWx0ID0gVElPQ1NF
-Ul9URU1UOw0KCX0NCglzcGluX3VubG9jaygpDQoJLi4uDQoJcmV0dXJuIHJlc3VsdDsNCg0KCURh
-dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
-dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
-Mzg2IChXYWxlcykNCg==
+On 15/03/2023 12:47, Cristian Ciocaltea wrote:
+> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
+> dma-names properties") documented dma-names property to handle Allwiner
+> D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
+> the reverse of what a different board expects:
+> 
+>   rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
+> 
+> A quick and incomplete check shows the inconsistency is present in many
+> other DT files:
+
+Why not fixing the DTS? The properties should have fixed order.
+
+Best regards,
+Krzysztof
 
