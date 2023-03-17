@@ -2,77 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F64C76196
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 20:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3624C6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 20:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbjCQU6P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 16:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
+        id S229830AbjCQU6T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 16:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbjCQU6M (ORCPT
+        with ESMTP id S230344AbjCQU6O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 16:58:12 -0400
-Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FAB410A9;
-        Fri, 17 Mar 2023 13:58:03 -0700 (PDT)
-Received: by mail-io1-f51.google.com with SMTP id s4so2851561ioj.11;
-        Fri, 17 Mar 2023 13:58:03 -0700 (PDT)
+        Fri, 17 Mar 2023 16:58:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B2062B45
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 13:57:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679086641;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3ueSLYTbczhpfG9NghbRnTQhmVk9+C96iBsuLv5iJJc=;
+        b=UZ0NzoRyC9cFuIjibwQ7DAscLfmQ3KoLUPlxde60tzF7x+XYw9Y3ZW76cug3JmmSWaOkD1
+        dzDhCzS7pokOI9sXXbIGcKoIj2ka2Vt2iD9hcNOFkH7+5dTHTjEXXPwGBbGYXRucpHXRP1
+        bLK3cbMMZ7RUWht0S9ZwXh6U2GNJd7M=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-572-2uUOtXLgNcyi18l-wPCHLA-1; Fri, 17 Mar 2023 16:57:20 -0400
+X-MC-Unique: 2uUOtXLgNcyi18l-wPCHLA-1
+Received: by mail-qk1-f197.google.com with SMTP id z11-20020ae9e60b000000b00745cb04c72eso3257285qkf.13
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 13:57:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679086682;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ODtKQbFPksFs46vhcZADgTeYdUWvuTaUcZXqR29mSnE=;
-        b=61x4ZM4Ax6E7hd8xFO9fSwX2ycXKxJlQEYuw54KgkuRER/8stGfuZC8LNeX3k3ivfI
-         /lFI8G9CwwnfQUvR3wgu46yUMOMjaUbfcga9AYgADSzG+7QOCR8gvnwovTiBRrwT/047
-         4euzvKOLMR8D0qNrDzmzo267wXr33qmEEZ3H1M8jyYesVKME04d/yiYuQfVDFzyyDTZh
-         Xj6S/pRrWfhtcmVIZfeVRRMJoCHKmJirah5Tqzd564DitZfdGPYVviAm9Mq7enHQqWvR
-         nmIcLr8cIS2axb0sLVQeVPNlfzd/M009Z2yLP3g5lY0XkrBiz8qXoGE+7WgqeqUzkE8k
-         80IQ==
-X-Gm-Message-State: AO0yUKX/ghdSCmw+2aH8tP0tgU6B0vzXbCvsHy5Fxb37U5Hn6tnUq8ls
-        0lMuHsxnLCIdZJoG5DFwiw==
-X-Google-Smtp-Source: AK7set8N9zYRYrpZyLblDS4PEDFDQUupo0tfdX2hbjpkS+GnTDcVDX7P3ZHEX2vzinq+JYrFy5IMEQ==
-X-Received: by 2002:a5e:a708:0:b0:74c:8a51:ecf7 with SMTP id b8-20020a5ea708000000b0074c8a51ecf7mr3747iod.11.1679086682392;
-        Fri, 17 Mar 2023 13:58:02 -0700 (PDT)
-Received: from robh_at_kernel.org ([64.188.179.249])
-        by smtp.gmail.com with ESMTPSA id s127-20020a025185000000b0040626f5b56csm998256jaa.40.2023.03.17.13.58.00
+        d=1e100.net; s=20210112; t=1679086640;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3ueSLYTbczhpfG9NghbRnTQhmVk9+C96iBsuLv5iJJc=;
+        b=B9P3o0q+55gDGv1fr+p0B3/VuRwxu8zF4JTqlG940axdr/5U0H7MtEsgeXDbBMhzGy
+         FVPjyXRFO7tYW7iNqMQrQNy0/mozeUQfmLGUz2Iaq/hgtZbzPRMO+/wvLyAzNoyxMuyY
+         DO33VmZbDpB+mZzmUciBJERWLr0BnIpUUOh95UCcqpb3nCkh7xsEGjZ5TDKlW1VnEzYL
+         yA6cVy9N5FePR+D2njvmc4Q2YbRuX8SiZPNytHFeObEdXS2in7rE8+shuw//hSM7LHEx
+         Jdjtp5OUCKtaLDHWsucwaQJ7IDZavHhS3VVkMyZ2Il912hZk9z9NIH/wVjRUaDYx6TQM
+         rJ6A==
+X-Gm-Message-State: AO0yUKVaViXA8+ydY7GGComvkzlrWjza6HdDa6txH9W3ZfaBEM7UwUbA
+        0nUzjMEy4wXAPI2+8g38aHGekayWKg47Gc0Pa3bq2wPw2tFuC6gYyoN2PxM2rVnAzoY/nrBhpfa
+        Tx+ioMhvEa4Ei8wpH5ZDaVxwP
+X-Received: by 2002:a05:6214:e88:b0:5b4:2271:b42f with SMTP id hf8-20020a0562140e8800b005b42271b42fmr15359009qvb.47.1679086639846;
+        Fri, 17 Mar 2023 13:57:19 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+i8S89kFUh6Def3I4RhtkIaIaYkO0oKXURsOnZTacJ2FYR4+jckCSLZDHDDsPzEFtMvK2Vgw==
+X-Received: by 2002:a05:6214:e88:b0:5b4:2271:b42f with SMTP id hf8-20020a0562140e8800b005b42271b42fmr15358978qvb.47.1679086639567;
+        Fri, 17 Mar 2023 13:57:19 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id s20-20020a374514000000b00742bc037f29sm2295574qka.120.2023.03.17.13.57.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 13:58:01 -0700 (PDT)
-Received: (nullmailer pid 2790050 invoked by uid 1000);
-        Fri, 17 Mar 2023 20:58:00 -0000
-Date:   Fri, 17 Mar 2023 15:58:00 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-Cc:     krzysztof.kozlowski+dt@linaro.org, openbmc@lists.ozlabs.org,
-        robh+dt@kernel.org, andrew@aj.id.au, dmaengine@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, pmenzel@molgen.mpg.de,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        gregkh@linuxfoundation.org, joel@jms.id.au,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, linux-serial@vger.kernel.org,
-        vkoul@kernel.org
-Subject: Re: [PATCH v2 1/5] dt-bindings: serial: 8250: Add aspeed,ast2600-uart
-Message-ID: <167908667961.2789991.1539212131187994719.robh@kernel.org>
-References: <20230314021817.30446-1-chiawei_wang@aspeedtech.com>
- <20230314021817.30446-2-chiawei_wang@aspeedtech.com>
+        Fri, 17 Mar 2023 13:57:19 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] serial: imx: remove unused imx_uart_is_imx* functions
+Date:   Fri, 17 Mar 2023 16:57:10 -0400
+Message-Id: <20230317205710.1672232-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230314021817.30446-2-chiawei_wang@aspeedtech.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+clang with W=1 reports
+drivers/tty/serial/imx.c:292:19: error:
+  unused function 'imx_uart_is_imx21' [-Werror,-Wunused-function]
+static inline int imx_uart_is_imx21(struct imx_port *sport)
+                  ^
+drivers/tty/serial/imx.c:297:19: error:
+  unused function 'imx_uart_is_imx53' [-Werror,-Wunused-function]
+static inline int imx_uart_is_imx53(struct imx_port *sport)
+                  ^
+drivers/tty/serial/imx.c:302:19: error:
+  unused function 'imx_uart_is_imx6q' [-Werror,-Wunused-function]
+static inline int imx_uart_is_imx6q(struct imx_port *sport)
+                  ^
+These static functions are not used, so remove them.
 
-On Tue, 14 Mar 2023 10:18:13 +0800, Chia-Wei Wang wrote:
-> Add a compatible string for the NS16550A-compatible UARTs
-> of Aspeed AST2600 SoCs.
-> 
-> Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-> ---
->  Documentation/devicetree/bindings/serial/8250.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/tty/serial/imx.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-Acked-by: Rob Herring <robh@kernel.org>
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 84bc0e768726..dbb3af4c1a34 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -289,20 +289,6 @@ static inline int imx_uart_is_imx1(struct imx_port *sport)
+ 	return sport->devdata->devtype == IMX1_UART;
+ }
+ 
+-static inline int imx_uart_is_imx21(struct imx_port *sport)
+-{
+-	return sport->devdata->devtype == IMX21_UART;
+-}
+-
+-static inline int imx_uart_is_imx53(struct imx_port *sport)
+-{
+-	return sport->devdata->devtype == IMX53_UART;
+-}
+-
+-static inline int imx_uart_is_imx6q(struct imx_port *sport)
+-{
+-	return sport->devdata->devtype == IMX6Q_UART;
+-}
+ /*
+  * Save and restore functions for UCR1, UCR2 and UCR3 registers
+  */
+-- 
+2.27.0
 
