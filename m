@@ -2,99 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 520A7C6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 10:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 506C6C7618B
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 10:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbjCQKV6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 06:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
+        id S230169AbjCQKar (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 06:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjCQKV5 (ORCPT
+        with ESMTP id S229539AbjCQKaq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 06:21:57 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B8CDBE2;
-        Fri, 17 Mar 2023 03:21:47 -0700 (PDT)
-Received: from [192.168.1.90] (unknown [188.24.156.231])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: cristicc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 41CFA66030AA;
-        Fri, 17 Mar 2023 10:21:44 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1679048505;
-        bh=Dm30hfUK/ZdXDVg1rCbXsR0BnwH4IRiPfIqA2q405Ls=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bzQBHJvu17Oeth8lZ8Cb+nujPSlPj2BwvCf4/6emcigFdBmI9bCTs8qtiWzTIq9tb
-         Ff/Drf9RarmfQ5751LBrwjCkRpywYybDTwWmNLaVbDURC9T2FVLIif8LBQ67tmu3dx
-         ngL2z79aAh2AK9RRG9p8uhI0jDpDPHx9iLWrhSGQ2C20WwljgXDM68svaFZej+nlFE
-         dD1JpzcuMCGrxsH4i8UZsi+H7wl109GAhv0KNlWoa3uHQp2AZ9Gxn6hRUwk2Tke86g
-         Try3mpmzEEAsyktX6rpRPT9EOvDOTruIBOTtWce/s02dAynoQ7WydXYhzgDAns5GvA
-         HaqmPo236G4gg==
-Message-ID: <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
-Date:   Fri, 17 Mar 2023 12:21:41 +0200
+        Fri, 17 Mar 2023 06:30:46 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41C834328;
+        Fri, 17 Mar 2023 03:30:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679049044; x=1710585044;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JjbrSAPPpxCv7orXEzp/qzb0yoFhw8whzb7/+Tbqop0=;
+  b=PAK/KclMzMt861mECEaYy6xboNdVIOeA8zFWmbG6oYlEWrhVs8wl9jpR
+   A86yMHnk8+HWSPretodFqfaj64RadOTbBQRuL+nCESVMCmRtDbBW2vw5W
+   QWMeWtICZ4mm9t2ZTBMg7K6lq+NhM6PA/x+omCatFQnY0xQKG5XcG1lOA
+   dWnFhBsBmRWhJSl/c9ngowkzjUmdAKbHHQyIu8avsZ6A5xO/arusqYvuf
+   i6UB2JulGY0C3zuMK6buxqpJ1JaEgbI59fn3QNKEwBPeTs4eDTRZuOJDT
+   GPY2WvO/+DXiM202/JuvmGt3vDP7+8RxHtmsJNyRx/rf6fnNpBRXRUiGR
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="336930940"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="336930940"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 03:30:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="926098291"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="926098291"
+Received: from bstach-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.221.222])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 03:30:42 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hans de Goede <hdegoede@redhat.com>, stable@vger.kernel.org
+Subject: [PATCH 1/1] serial: 8250: Prevent starting up DMA Rx on THRI interrupt
+Date:   Fri, 17 Mar 2023 12:30:34 +0200
+Message-Id: <20230317103034.12881-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
- dma-names order constraint
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Drake <drake@endlessm.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org, kernel@collabora.com
-References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
- <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
-From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-In-Reply-To: <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/17/23 10:31, Krzysztof Kozlowski wrote:
-> On 15/03/2023 12:47, Cristian Ciocaltea wrote:
->> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
->> dma-names properties") documented dma-names property to handle Allwiner
->> D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
->> the reverse of what a different board expects:
->>
->>    rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
->>
->> A quick and incomplete check shows the inconsistency is present in many
->> other DT files:
-> 
-> Why not fixing the DTS? The properties should have fixed order.
+Hans de Goede reported Bluetooth adapters (HCIs) connected over an UART
+connection failed due corrupted Rx payload. The problem was narrowed
+down to DMA Rx starting on UART_IIR_THRI interrupt. The problem occurs
+despite LSR having DR bit set, which is precondition for attempting to
+start DMA Rx in the first place.
 
-I was initially concerned about the risk of a potential ABI breakage, 
-but I think that's not really a problem since dma-names is not directly 
-accessed in the driver and DT Kernel API doesn't rely on a particular order.
+From a debug patch:
+[x.807834] 8250irq: iir=cc lsr+saved=60 received=0/15 ier=0f dma_t/rx/err=0/0/0
+[x.808676] 8250irq: iir=c2 lsr+saved=61 received=0/0 ier=0f dma_t/rx/err=0/0/0
+[x.808776] 8250irq: iir=cc lsr+saved=60 received=1/12 ier=0d dma_t/rx/err=0/1/0
+[x.808870] Bluetooth: hci0: Frame reassembly failed (-84)
 
-If there are no objections, I would switch the order in the binding to 
-tx->rx, since that's what most of the DTS use, and fix the remaining ones.
+In the debug snippet, received field indicates 1 byte was transferred
+over DMA and 12 bytes after that with the non-DMA Rx. The sole byte DMA
+handled was corrupted (gets zeroed) which leads to the HCI failure.
 
-> Best regards,
-> Krzysztof
+This problem became apparent after commit e8ffbb71f783 ("serial: 8250:
+use THRE & __stop_tx also with DMA") changed Tx stop behavior. Tx stop
+is now triggered from a THRI interrupt.
 
-Thanks,
-Cristian
+Despite that this problem looks like a HW bug, this fix is not adding
+UART_BUG_xx flag to the driver beucase it seems useful in general to
+avoid starting DMA when there are only a few bytes to transfer.
+Skipping DMA for small transfers avoids the extra overhead DMA incurs.
+
+Thus, don't setup DMA Rx on UART_IIR_THRI but leave it to a subsequent
+interrupt which has Rx a related IIR value.
+
+By returning false from handle_rx_dma(), the DMA vs non-DMA decision is
+postponed until either UART_IIR_RDI (FIFO threshold worth of bytes
+awaiting) or UART_IIR_TIMEOUT (inter-character timeout) triggers at a
+later time which allows better to discern whether the number of bytes
+warrants starting DMA or not.
+
+Reported-by: Hans de Goede <hdegoede@redhat.com>
+Tested-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with DMA")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index fa43df05342b..3ba9c8b93ae6 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1903,6 +1903,17 @@ EXPORT_SYMBOL_GPL(serial8250_modem_status);
+ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
+ {
+ 	switch (iir & 0x3f) {
++	case UART_IIR_THRI:
++		/*
++		 * Postpone DMA or not decision to IIR_RDI or IIR_RX_TIMEOUT
++		 * because it's impossible to do an informed decision about
++		 * that with IIR_THRI.
++		 *
++		 * This also fixes one known DMA Rx corruption issue where
++		 * DR is asserted but DMA Rx only gets a corrupted zero byte
++		 * (too early DR?).
++		 */
++		return false;
+ 	case UART_IIR_RDI:
+ 		if (!up->dma->rx_running)
+ 			break;
+-- 
+2.30.2
+
