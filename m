@@ -2,94 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D86C7618E
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 15:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFA6C7618A
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 15:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbjCQPEN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 11:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
+        id S231252AbjCQPyz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 11:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbjCQPEM (ORCPT
+        with ESMTP id S229848AbjCQPyy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 11:04:12 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 455EDE7EF7;
-        Fri, 17 Mar 2023 08:04:09 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.98,268,1673881200"; 
-   d="scan'208";a="152963901"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 18 Mar 2023 00:04:09 +0900
-Received: from localhost.localdomain (unknown [10.226.92.188])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8B1AB438C8C2;
-        Sat, 18 Mar 2023 00:04:06 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Stephen Boyd <swboyd@chromium.org>,
-        linux-serial@vger.kernel.org,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2] tty: serial: sh-sci: Fix transmit end interrupt handler
-Date:   Fri, 17 Mar 2023 15:04:03 +0000
-Message-Id: <20230317150403.154094-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 17 Mar 2023 11:54:54 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE81C8894
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 08:54:51 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id o12so22152265edb.9
+        for <linux-serial@vger.kernel.org>; Fri, 17 Mar 2023 08:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679068490;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=a6MfDM7+OPKEruVq5Qw+tL9foQplTG2gH4LeyrZ6K0I=;
+        b=J3OI5NGj9npu+foP+NF4EKylYoqNwBGWTTFoaBFl/rtJptvgmBqbgaaNwy0O7xtBZV
+         OoRN0BmTI0Vf421lNAAHbcxY37muIyEDCYlutZBnnT5RsycZvFq/PuFUBlELpOocRsuJ
+         K0xbCzcc3REibeoG9AcCeLCc+b1sQocdX11eHVM8JkPs4x/rdJcow6Ii+OL2asqAn6zf
+         rFPh/33gn2hrfP6UFSb8aYJBRoSxMyXd5IrQNX/xxa37k91f2ZMBbsDpnJJM7Oepr39r
+         v3SYngKEeCsRngXiYqXXSOEwTxlT71jNY/ehg8AgbVg5CxUKjNiBr60b6cJpnHThX7pf
+         CoKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679068490;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=a6MfDM7+OPKEruVq5Qw+tL9foQplTG2gH4LeyrZ6K0I=;
+        b=D1/Mtq6mtIXnNbWetNf83/gl7QT+XIr70zpK3idAFu8iq1o8QPo6ZfX9+kZrgLQ3xZ
+         Bs3n8CcCpq8pS6NjEdK2ZsAtWHat+aicil7w+BDJShCcH7ryVEnZ5cxbw8gePXMHzHvn
+         ovY1w9aIp+RdVlNII+PHX1GEw+yZ4RpOoGxf4+V4pZ4I/dtj390j/JXdXqSEhvqw+zzo
+         pLxPuYAWoZVCttgG6/Uoslc9DCiB4UP3RZW7IASkCGOJzmqF7NuYXeUZ8BuMfamZ95s/
+         JAZVzSV3nVV5SOuHSkYmesYp3G05N34zZi/Zkc6AzsOpzrFe9NgOop00A0fTSpWNfPJJ
+         kX5A==
+X-Gm-Message-State: AO0yUKWwi4V3MfsTPXcfBV3pOVgZDSpGNfEAhyMO3kwt8lxHvC6yryzD
+        oX3khqDGSRd/ptmwUbmA9jqMZg==
+X-Google-Smtp-Source: AK7set+MZ5pmlFpN+w8RxZMV5gSssYKuD9NQ8ZrDbPdbH6ontcivRAhcm8upFtI00t/Upa7xjOUp1Q==
+X-Received: by 2002:a17:907:cf88:b0:92f:7c42:8631 with SMTP id ux8-20020a170907cf8800b0092f7c428631mr10502230ejc.16.1679068489976;
+        Fri, 17 Mar 2023 08:54:49 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:d013:3eeb:7658:cec? ([2a02:810d:15c0:828:d013:3eeb:7658:cec])
+        by smtp.gmail.com with ESMTPSA id kx1-20020a170907774100b0091fdd2ee44bsm1112929ejc.197.2023.03.17.08.54.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 08:54:49 -0700 (PDT)
+Message-ID: <80796828-7b38-184a-2e8e-3cfe9158b67f@linaro.org>
+Date:   Fri, 17 Mar 2023 16:54:47 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
+Content-Language: en-US
+To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+ <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
+ <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The fourth interrupt on SCI port is transmit end interrupt compared to
-the break interrupt on other port types. So, shuffle the interrupts to fix
-the transmit end interrupt handler.
+On 17/03/2023 11:21, Cristian Ciocaltea wrote:
+> On 3/17/23 10:31, Krzysztof Kozlowski wrote:
+>> On 15/03/2023 12:47, Cristian Ciocaltea wrote:
+>>> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
+>>> dma-names properties") documented dma-names property to handle Allwiner
+>>> D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
+>>> the reverse of what a different board expects:
+>>>
+>>>    rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
+>>>
+>>> A quick and incomplete check shows the inconsistency is present in many
+>>> other DT files:
+>>
+>> Why not fixing the DTS? The properties should have fixed order.
+> 
+> I was initially concerned about the risk of a potential ABI breakage, 
+> but I think that's not really a problem since dma-names is not directly 
+> accessed in the driver and DT Kernel API doesn't rely on a particular order.
+> 
+> If there are no objections, I would switch the order in the binding to 
+> tx->rx, since that's what most of the DTS use, and fix the remaining ones.
 
-Fixes: e1d0be616186 ("sh-sci: Add h8300 SCI")
-Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-v1->v2:
- * Replaced the wrong fixes tag
- * Added a simpler check in sci_init_single() and removed irq_cnt logic
-   as make dtbs_check already catches the invalid combination.
+Since we added the order recently, I rather assume it is the correct or
+preferred one.
 
-Tested the SCI0 interface on RZ/G2UL by connecting to PMOD USBUART.
- 39:          0     GICv3 437 Level     1004d000.serial:rx err
- 40:         12     GICv3 438 Edge      1004d000.serial:rx full
- 41:         70     GICv3 439 Edge      1004d000.serial:tx empty
- 42:         18     GICv3 440 Level     1004d000.serial:tx end
----
- drivers/tty/serial/sh-sci.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 7bd080720929..c07663fe80bf 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -31,6 +31,7 @@
- #include <linux/ioport.h>
- #include <linux/ktime.h>
- #include <linux/major.h>
-+#include <linux/minmax.h>
- #include <linux/module.h>
- #include <linux/mm.h>
- #include <linux/of.h>
-@@ -2864,6 +2865,13 @@ static int sci_init_single(struct platform_device *dev,
- 			sci_port->irqs[i] = platform_get_irq(dev, i);
- 	}
- 
-+	/*
-+	 * The fourth interrupt on SCI port is transmit end interrupt, so
-+	 * shuffle the interrupts.
-+	 */
-+	if (p->type == PORT_SCI)
-+		swap(sci_port->irqs[SCIx_BRI_IRQ], sci_port->irqs[SCIx_TEI_IRQ]);
-+
- 	/* The SCI generates several interrupts. They can be muxed together or
- 	 * connected to different interrupt lines. In the muxed case only one
- 	 * interrupt resource is specified as there is only one interrupt ID.
--- 
-2.25.1
+Best regards,
+Krzysztof
 
