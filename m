@@ -2,139 +2,159 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BED63C74A5B
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 06:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C46AC6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 06:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbjCQGaf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 02:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
+        id S229806AbjCQGdA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 02:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjCQGae (ORCPT
+        with ESMTP id S229455AbjCQGdA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 02:30:34 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7596773C;
-        Thu, 16 Mar 2023 23:30:33 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id ix20so4327860plb.3;
-        Thu, 16 Mar 2023 23:30:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679034632;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QowYjOwpVeC+cmhtPU+4JUq/a+8cTteF1DVyYYSO1iY=;
-        b=l2WwTVnblFcR+NDGUILKqhkLSo/PPXRbUyCP3ps08M59W/rMYB33ormF3RBDGAs7WE
-         L3o95/WlF2oe9GVEtLGtmbXPobglas+d2YGJti8Kpg9N7n6B9sv74E/g33k2OQy3lFQP
-         9xfRxOZDwAibCIvDT7nKYUEXxxcUGpewRLGEfDY4mfW8rmjrrJMiS0MskiFU00C8Pc7j
-         TS0CQJ9hPdqVKoOb6OS5ZNtbo5X3skRjpif5GRgJU6MX+il0+OE6HtY+bR+RLb5o0t/8
-         Ee6MhertRAcox4n7aJxVGqrPsMKLiP8CGT5AqNeiyYiS4rrrOAjiC9oV+fvX6mpWfXym
-         rToQ==
+        Fri, 17 Mar 2023 02:33:00 -0400
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA6728D1D;
+        Thu, 16 Mar 2023 23:32:58 -0700 (PDT)
+Received: by mail-wm1-f47.google.com with SMTP id az3-20020a05600c600300b003ed2920d585so4472411wmb.2;
+        Thu, 16 Mar 2023 23:32:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679034632;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20210112; t=1679034777;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QowYjOwpVeC+cmhtPU+4JUq/a+8cTteF1DVyYYSO1iY=;
-        b=zN/X6w5t+SChee6wmbkf5+tPo953gVeHru/YzwGIUmTy9U0fVmsJdlOPUXrVM8Yif/
-         cXoJJ00aMDB37av4XQURs7KChfgIt6R47gdrGuxNavEAUpy+iiIE1Hc7WawvumMNxbZe
-         hg1UkyJisf+HxZyrgD/17Oi71f2R3X4hJgzyzyWtPkLkeZxBv/cqp4pk0LwTOO3ekgid
-         ZuBX1OEsm12+Y9UqQnqPlQNneymSNdLiA1gyYeME+7onerKoSJPVi5AOSAjPhb6MMG8x
-         Cy+NIwYpkii/lBNAaV2fhr1p2A+7xqyst1g9sa7F7qua/Xj45alrl+Tlk3XMeBco1Dr9
-         STQg==
-X-Gm-Message-State: AO0yUKXwXPI6/aBnNYFDjknb9BXKjeXPGmYghkCPbt1oSomsyqyAZx5H
-        +k09YqU/LNlyi3CZjYp8yms=
-X-Google-Smtp-Source: AK7set/jCr8RT3wJrihBeThKo6LPb99Ma+fIdEQqKEHJqXbq96VBfVdC2af3+6srNdH8FfiZFXd4QA==
-X-Received: by 2002:a17:903:2283:b0:19e:7c33:3722 with SMTP id b3-20020a170903228300b0019e7c333722mr7617579plh.40.1679034632455;
-        Thu, 16 Mar 2023 23:30:32 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id j12-20020a17090276cc00b0019abb539cddsm753773plt.10.2023.03.16.23.30.29
+        bh=o8QYF+ZxY6zKiENpvWSu3rcbxJoaEBwd9eRUaok3CRo=;
+        b=qkOaLMEu6nJKCHWmpLnXGtszAhoDwc0XMbCcJkoMvaN+VAnbGWivzCo3YcyRuoqFnx
+         otYckFtB/OGz//q1MeRPNdLNbZyCczA/Ce6EmwAFbFjImxjZyyV2+FMY98vapS66jOPE
+         g0YETuXEqxGEalZwL6rOqSkPCpi747LnAfeeiyjXR/n9g5EJHWKWNow5PsEqIoPqi1yT
+         0Jpc8C13sgyaVPu+v3RL2IUbq7JGxah5nTxfB1MiachS1Cg5bRuL8xVLbCk3gVIlJuqd
+         KY+qJ+tRyLFtnQjNqMWzFGXXYOX+g/4gC9ORZZovu/5dWS3ZWOhEjgXBN3LyGCtHvTjW
+         QnIQ==
+X-Gm-Message-State: AO0yUKWL2FZiE61o02daso79NLLENsGXXZc/CdLHj1Ie+k6m4hpq1zBi
+        7Flw/wsEbTQUcZmuR43qTchddMlkoOA=
+X-Google-Smtp-Source: AK7set/rrD/4P5dr3MBAQuUKOwvhkZ+QY7VK7VqAsoBq8ujWpApvZSg1ZQx8loekeE/PtRGJDGHcvA==
+X-Received: by 2002:a05:600c:19c9:b0:3ed:31fa:f563 with SMTP id u9-20020a05600c19c900b003ed31faf563mr7851826wmq.20.1679034777125;
+        Thu, 16 Mar 2023 23:32:57 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:49? ([2a0b:e7c0:0:107::aaaa:49])
+        by smtp.gmail.com with ESMTPSA id f26-20020a7bc8da000000b003ed2d7f9135sm1002599wml.45.2023.03.16.23.32.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Mar 2023 23:30:32 -0700 (PDT)
-Message-ID: <1a1277ac-4ae5-eaab-01c3-0242c12be76b@gmail.com>
-Date:   Fri, 17 Mar 2023 14:30:28 +0800
+        Thu, 16 Mar 2023 23:32:56 -0700 (PDT)
+Message-ID: <35358148-3d46-40e5-aa1e-84e7fb6dbb6f@kernel.org>
+Date:   Fri, 17 Mar 2023 07:32:54 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.8.0
-Subject: Re: [PATCH 00/15] Introduce Nuvoton ma35d1 SoC
 Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
+To:     juanfengpy@gmail.com, gregkh@linuxfoundation.org
+Cc:     ilpo.jarvinen@linux.intel.com, benbjiang@tencent.com,
+        robinlai@tencent.com, linux-serial@vger.kernel.org,
+        Hui Li <caelli@tencent.com>, stable@vger.kernel.org
+References: <YrmdEJrM3z6Dbvgn@kroah.com>
+ <1679020915-8349-1-git-send-email-caelli@tencent.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v7] tty: fix hang on tty device with no_room set
+In-Reply-To: <1679020915-8349-1-git-send-email-caelli@tencent.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 17. 03. 23, 3:41, juanfengpy@gmail.com wrote:
+> From: Hui Li <caelli@tencent.com>
+> 
+> We have met a hang on pty device, the reader was blocking
+> at epoll on master side, the writer was sleeping at wait_woken
+> inside n_tty_write on slave side, and the write buffer on
+> tty_port was full, we found that the reader and writer would
+> never be woken again and blocked forever.
+> 
+> The problem was caused by a race between reader and kworker:
+> n_tty_read(reader):  n_tty_receive_buf_common(kworker):
+> copy_from_read_buf()|
+>                      |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
+>                      |room <= 0
+> n_tty_kick_worker() |
+>                      |ldata->no_room = true
+> 
+> After writing to slave device, writer wakes up kworker to flush
+> data on tty_port to reader, and the kworker finds that reader
+> has no room to store data so room <= 0 is met. At this moment,
+> reader consumes all the data on reader buffer and calls
+> n_tty_kick_worker to check ldata->no_room which is false and
+> reader quits reading. Then kworker sets ldata->no_room=true
+> and quits too.
+...
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+...
+> @@ -1729,6 +1729,27 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
+>   	} else
+>   		n_tty_check_throttle(tty);
+>   
+> +	if (unlikely(ldata->no_room)) {
+> +		/*
+> +		 * Barrier here is to ensure to read the latest read_tail in
+> +		 * chars_in_buffer() and to make sure that read_tail is not loaded
+> +		 * before ldata->no_room is set,
 
 
-On 2023/3/16 下午 10:05, Arnd Bergmann wrote:
-> On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
->> From: Jacky Huang <ychuang3@nuvoton.com>
->>
->> This patchset adds initial support for the Nuvoton ma35d1 SoC, including
->> initial device tree, clock driver, reset driver, and serial driver.
->>
->> This patchset cover letter is based from the initial support for Nuvoton
->> ma35d1 to keep tracking the version history.
->>
->> This patchset had been applied to Linux kernel 6.3-rc2 and tested on the
->> Nuvoton ma35d1 SOM evaluation board.
->>
->> (ma35d1 information:
->> https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
->> MA35D1 porting on linux-5.10.y can be found at:
->> https://github.com/OpenNuvoton/MPU-Family
-> Hi Jacky,
->
-> Thanks a lot for your submission. I saw this presented at
-> EmbeddedWorld yesterday and asked about mainline Linux
-> support, but did not expect to see the patches this soon ;-)
->
-> The easiest process for getting the series merged is to
-> have me add it the entire series to the SoC tree after the
-> individual drivers have been reviewed by the respective
-> subsystem maintainers that are already on Cc here. When
-> the review is complete, you can add soc@kernel.org to Cc,
-> so they show up in patchwork, or alternatively send a pull
-> request for a git tree to that address. Until then, you
-> can add my own email address to Cc so I can follow the
-> reviews.
->
-> After the initial merge, the normal method for additional
-> device drivers is to have them sent for inclusion to the
-> subsystem maintainers. The soc tree and soc@kernel.org address
-> is then only used for changes in arch/arm64, i.e. updates
-> to the dts files, Kconfig, defconfig and MAINTAINERS,
-> as well as the drivers/soc and drivers/firmware directories,
-> if you have anything in there.
->
-> If you have any additional questions about the process,
-> feel free to also ask me.
->
->       Arnd
+I am not sure I would keep the following part of the comment in the code:
 
-Hi Anrd,
+ > otherwise, following race may occur:
+> +		 * n_tty_receive_buf_common()
+> +		 *				n_tty_read()
+> +		 *   if (!chars_in_buffer(tty))->false
+> +		 *				  copy_from_read_buf()
+> +		 *				    read_tail=commit_head
+> +		 *				  n_tty_kick_worker()
+> +		 *				    if (ldata->no_room)->false
+> +		 *   ldata->no_room = 1
+> +		 * Then both kworker and reader will fail to kick n_tty_kick_worker(),
+> +		 * smp_mb is paired with smp_mb() in n_tty_read().
 
-Thank you very much for your kind help. You explained it so well,
-I have understood the process. We got a lot of suggestions for this
-patchset, and there are a lot of issues to fix. When most of the
-problems get solved and acknowledged by the reviewers, I will
-add you and soc@kernel.org to Cc.
+I would only let it ^^^ documented in the commit log as you did.
 
+> +		 */
+> +		smp_mb();
+> +		if (!chars_in_buffer(tty))
+> +			n_tty_kick_worker(tty);
+> +	}
+> +
+>   	up_read(&tty->termios_rwsem);
+>   
+>   	return rcvd;
+> @@ -2282,8 +2303,25 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+>   		if (time)
+>   			timeout = time;
+>   	}
+> -	if (old_tail != ldata->read_tail)
+> +	if (old_tail != ldata->read_tail) {
+> +		/*
+> +		 * Make sure no_room is not read in n_tty_kick_worker()
+> +		 * before setting ldata->read_tail in copy_from_read_buf(),
 
-Best regards,
+The same here (it's only repeated). I think the above two lines are 
+enough for the comment. We have git blame after all.
 
-Jacky Huang
+> +		 * otherwise, following race may occur:
+> +		 * n_tty_read()
+> +		 *			n_tty_receive_buf_common()
+> +		 *   n_tty_kick_worker()
+> +		 *     if(ldata->no_room)->false
+> +		 *			  ldata->no_room = 1
+> +		 *			  if (!chars_in_buffer(tty))->false
+> +		 *   copy_from_read_buf()
+> +		 *     read_tail=commit_head
+> +		 * Both reader and kworker will fail to kick tty_buffer_restart_work(),
+> +		 * smp_mb is paired with smp_mb() in n_tty_receive_buf_common().
+> +		 */
+> +		smp_mb();
+>   		n_tty_kick_worker(tty);
+> +	}
+>   	up_read(&tty->termios_rwsem);
+>   
+>   	remove_wait_queue(&tty->read_wait, &wait);
+
+-- 
+js
 
