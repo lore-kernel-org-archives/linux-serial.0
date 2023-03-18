@@ -2,150 +2,177 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C152C7618A
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 14:05:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B677FC61DA4
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 14:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbjCROF2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Mar 2023 10:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
+        id S229639AbjCRObZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Mar 2023 10:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbjCROF1 (ORCPT
+        with ESMTP id S229502AbjCRObZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Mar 2023 10:05:27 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C4D1EBC0;
-        Sat, 18 Mar 2023 07:05:23 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id C16325C01D9;
-        Sat, 18 Mar 2023 10:05:20 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Sat, 18 Mar 2023 10:05:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-transfer-encoding:content-type:content-type:date
-        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
-        1679148320; x=1679234720; bh=ne/ZkURyOBnvQZJfA/dZ5P1GHL8xeaXDuo7
-        2X96mUAI=; b=PWikUWM3nRrwrVKDkhGUG4yZLKM+qv3w0qRH8+aP7kRH0GCOXso
-        x5/MwfoaRCPs+GSEE64L3II+XIY5u0api+BlU23UP7NEdV6YwrBxtpCVsmC7PwL8
-        KIIPmUVDa2cSrq9xVNaQ0TFFMQthZJKbzSTTlhDnqH7FUDHRqjGv/TWO1+C3sTmK
-        FqP6rOAiLT/xXWXU5ouibhWu0MPxHCYxjL9dZD1sILy9v11+udYxqTTSE5VBAV1a
-        12CmZpql/aowC44Ikmdu0an3RYUFJT0OqcSE3h0WiKBBbJGOlYKnGNdYkGksQA2I
-        HngjLuZ5SNSx9NzlPmqV7UG6JZyQuJCsQpg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:content-type:date:date:feedback-id:feedback-id
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1679148320; x=1679234720; bh=ne/ZkURyOBnvQZJfA/dZ5P1GHL8xeaXDuo7
-        2X96mUAI=; b=n2roBARfoflGRnl+aYU+hQ9zC7+YjssGLD9gcVAxfhISvUNwI9P
-        0R9Smd4ErRI5sWHRgsQQgg4Zm9leBCSlOI6bnCAKJQtT1mzT0wn8aOgx5JJj/nSS
-        cMPq5Xm4hDIxWL/XYk/kx8nxSO18g3WRLDKGjC6ntxJp0s1aL6YzZKOdikFLOHI6
-        ADKeoHSpJo/IAlDsXfiQxzVxt9o0faH+FqlWJq7D6A9p4FOdKzX1+O8msnJNk9Ho
-        +c9xndLcxLIrcI8AeercVpKUrL819JfskKtE+2UYbfu8wM98BtYaH84Vg8iBwPqQ
-        UetYHJM07UueJI/UV1w1HhlOHW2SfGyM0Kg==
-X-ME-Sender: <xms:H8UVZKO5hsePPBXygggc8Se1Mc17WDUEan853sWl8vGRPZWY1LuYbA>
-    <xme:H8UVZI-YX8PoBNdK14Hb22aPkgbDV3OLFKKXnLRridBDQIB2JP2XD5aLC-Jap7Jlx
-    MGPCEIdOgpOX72RHEE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdefgedgheekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeegfeejhedvledvffeijeeijeeivddvhfeliedvleevheejleetgedukedt
-    gfejveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:H8UVZBTH-K8trWBZHXlwQI6WJ_h5tYCXamdoN-EXBElRubJRjCZcRQ>
-    <xmx:H8UVZKsnHJMHCk7mQgtMJfnf3oyTFZfAOnXSTJf_Oqq9G5jzuz6JLQ>
-    <xmx:H8UVZCdKiAaM_7T-eIkluqlpzhN5E81HI07nO5mU73A9Wpm3R7zvpA>
-    <xmx:IMUVZI22ozlqtFOxaEyopgNB_2_sLPE_g6q-hUAUMIdAb3vD5FLm4Q>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 6A542B60086; Sat, 18 Mar 2023 10:05:19 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-221-gec32977366-fm-20230306.001-gec329773
-Mime-Version: 1.0
-Message-Id: <12298b67-3012-4902-9dcc-61c3c9907a47@app.fastmail.com>
-In-Reply-To: <7cc8258c-3a77-5387-aaa4-658761fbb0ae@gmail.com>
-References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <20230315072902.9298-12-ychuang570808@gmail.com>
- <2063c6d1-85ed-43d9-b572-a762b6ce18c1@app.fastmail.com>
- <7cc8258c-3a77-5387-aaa4-658761fbb0ae@gmail.com>
-Date:   Sat, 18 Mar 2023 15:04:58 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Jacky Huang" <ychuang570808@gmail.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
-        "Michael Turquette" <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        schung@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
-Subject: Re: [PATCH 11/15] arm64: dts: nuvoton: Add initial ma35d1 device tree
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Sat, 18 Mar 2023 10:31:25 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F24EF944
+        for <linux-serial@vger.kernel.org>; Sat, 18 Mar 2023 07:31:21 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pdXa6-0000Li-1H; Sat, 18 Mar 2023 15:30:50 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pdXa3-0051TQ-TX; Sat, 18 Mar 2023 15:30:47 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1pdXa3-005thE-2m; Sat, 18 Mar 2023 15:30:47 +0100
+Date:   Sat, 18 Mar 2023 15:30:41 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Tom Rix <trix@redhat.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, nathan@kernel.org,
+        ndesaulniers@google.com, llvm@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: imx: remove unused imx_uart_is_imx* functions
+Message-ID: <20230318143041.n6rymackf6p776rq@pengutronix.de>
+References: <20230317205710.1672232-1-trix@redhat.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nda7clsxlnhkzioz"
+Content-Disposition: inline
+In-Reply-To: <20230317205710.1672232-1-trix@redhat.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Mar 18, 2023, at 14:17, Jacky Huang wrote:
-> On 2023/3/16 =E4=B8=8B=E5=8D=88 10:17, Arnd Bergmann wrote:
->> On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
->>> +	mem: memory@80000000 {
->>> +		device_type =3D "memory";
->>> +		reg =3D <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
->>> +	};
->>> +};
->> In most machines, the memory size is detected by the boot loader
->> and filled in the dtb in memory before starting the kernel, so
->> you should not need two separate files here for the two common
->> memory configurations.
->
->
-> On ma35d1, memory size is determined early before uboot.
->
-> BL1 (MaskROM boot code) -> BL2 (arm-trust-firmware) -> BL32 (op-tee) &=20
-> BL33 (uboot).
-> The DDR was initialized in BL2 stage with a selected DDR setting, which
-> is hard coded, including DDR size.
->
-> We searched the arm64 dts and found that almost all vendors claimed
-> memory size in board level dtsi/dts. This seems to be common.
->
-> So, can we have it unchanged?
 
-I see the memory size encoded in about one out of three .dts files,
-which is more than I expected. It's clearly not harmful to have it
-listed in the dts, it just shouldn't be necessary.
+--nda7clsxlnhkzioz
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-If it helps you with your current u-boot, then leave it in, but
-consider adding detection logic into u-boot so it can override
-the value in the dtb file at boot time.
+On Fri, Mar 17, 2023 at 04:57:10PM -0400, Tom Rix wrote:
+> clang with W=3D1 reports
+> drivers/tty/serial/imx.c:292:19: error:
+>   unused function 'imx_uart_is_imx21' [-Werror,-Wunused-function]
+> static inline int imx_uart_is_imx21(struct imx_port *sport)
+>                   ^
+> drivers/tty/serial/imx.c:297:19: error:
+>   unused function 'imx_uart_is_imx53' [-Werror,-Wunused-function]
+> static inline int imx_uart_is_imx53(struct imx_port *sport)
+>                   ^
+> drivers/tty/serial/imx.c:302:19: error:
+>   unused function 'imx_uart_is_imx6q' [-Werror,-Wunused-function]
+> static inline int imx_uart_is_imx6q(struct imx_port *sport)
+>                   ^
+> These static functions are not used, so remove them.
+>=20
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
->> Since the machine is called 'som', I would assume that this is a
->> module that is integrated on another board, so more commonly one
->> would have a dtsi file for the som in addition to the one for the
->> soc, and have all the components of the module listed in this
->> file, while the dts file that includes the som.dtsi lists the
->> devices on the carrier board and enables the on-chip devices
->> that are connected to the outside.
->>
->
-> You are right, ma35d1 som have a base board, and a cpu board on it.
->
-> It is a good suggestion that we should have a dtsi for som base board.
->
-> Consider that we are in the initial submit, and such a dtsi will be an=
- empty
-> file at this stage. So, I would like to do it when peripheral drivers
-> upstream started. Is it ok?
+Funny, is_imx6q_uart() was introduced in
+a496e6284c482555db8078190bb689594d129fa9 and never used. Since that
+commit is_imx21_uart() also unused. And the imx53 variant was also never
+used.
 
-It's not a big deal either way. I if you want to keep it only with
-one dts file and one dtsi file, that's fine, but maybe rename the dts
-file based on the name of the carrier rather than the SoM in this
-case.
+Looking at that a bit more, the following cleanup is also possible (only
+compile tested):
 
-     Arnd
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8308a23c55a7..a38ee0ed2210 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -178,8 +178,6 @@
+ enum imx_uart_type {
+ 	IMX1_UART,
+ 	IMX21_UART,
+-	IMX53_UART,
+-	IMX6Q_UART,
+ };
+=20
+ /* device type dependent stuff */
+@@ -241,30 +239,21 @@ struct imx_port_ucrs {
+ 	unsigned int	ucr3;
+ };
+=20
+-static struct imx_uart_data imx_uart_devdata[] =3D {
+-	[IMX1_UART] =3D {
+-		.uts_reg =3D IMX1_UTS,
+-		.devtype =3D IMX1_UART,
+-	},
+-	[IMX21_UART] =3D {
+-		.uts_reg =3D IMX21_UTS,
+-		.devtype =3D IMX21_UART,
+-	},
+-	[IMX53_UART] =3D {
+-		.uts_reg =3D IMX21_UTS,
+-		.devtype =3D IMX53_UART,
+-	},
+-	[IMX6Q_UART] =3D {
+-		.uts_reg =3D IMX21_UTS,
+-		.devtype =3D IMX6Q_UART,
+-	},
++static const struct imx_uart_data imx_uart_imx1_devdata =3D {
++	.uts_reg =3D IMX1_UTS,
++	.devtype =3D IMX1_UART,
++};
++
++static const struct imx_uart_data imx_uart_imx21_devdata =3D {
++	.uts_reg =3D IMX21_UTS,
++	.devtype =3D IMX21_UART,
+ };
+=20
+ static const struct of_device_id imx_uart_dt_ids[] =3D {
+-	{ .compatible =3D "fsl,imx6q-uart", .data =3D &imx_uart_devdata[IMX6Q_UAR=
+T], },
+-	{ .compatible =3D "fsl,imx53-uart", .data =3D &imx_uart_devdata[IMX53_UAR=
+T], },
+-	{ .compatible =3D "fsl,imx1-uart", .data =3D &imx_uart_devdata[IMX1_UART]=
+, },
+-	{ .compatible =3D "fsl,imx21-uart", .data =3D &imx_uart_devdata[IMX21_UAR=
+T], },
++	{ .compatible =3D "fsl,imx6q-uart", .data =3D &imx_uart_imx21_devdata, },
++	{ .compatible =3D "fsl,imx53-uart", .data =3D &imx_uart_imx21_devdata, },
++	{ .compatible =3D "fsl,imx1-uart", .data =3D &imx_uart_imx1_devdata, },
++	{ .compatible =3D "fsl,imx21-uart", .data =3D &imx_uart_imx21_devdata, },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, imx_uart_dt_ids);
+
+If you feel like squashing that into your commit or put it into a
+separate commit with a nice commit log (after convincing yourself that
+the change is fine), feel free to do so.
+
+If you don't:
+
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--nda7clsxlnhkzioz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmQVywUACgkQj4D7WH0S
+/k7Ivgf8CqZoIR6dodHsIoOkq2Ry2yHVlphhFQqAPbMfm2XigGZChWQAtPdXHfjN
+cY/cjTOL8tG4PfggMmMKlc+NKawrhNamIRAyEEZEgI12iiLWsQBPcvPFZeXEq/0H
+cGOl1fHMoxGDznajEdiGJpFEsBTTS9L2MH23F04btZpR4rZZR9aX9yOsktBhXy1Z
+eaQOn7IaAY1fKeoaactX5N6ii4vJIOsiRVvNfyXePeOfg//FpDJdsFMmYS5qzjR7
+TE0mAe8xU7l/JgA0AtiYwGDzN6mpGh46g47CKMHjPf8PnWXWPegGWgL00TkL7t64
+1R3S34r1I6TZ+eIsCwM3EKY7JNiQCg==
+=mOyR
+-----END PGP SIGNATURE-----
+
+--nda7clsxlnhkzioz--
