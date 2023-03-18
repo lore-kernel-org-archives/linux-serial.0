@@ -2,132 +2,141 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67382C61DA4
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 11:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE11C61DA4
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 13:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbjCRLr0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Mar 2023 07:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56718 "EHLO
+        id S229562AbjCRNRp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Mar 2023 09:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjCRLrZ (ORCPT
+        with ESMTP id S229541AbjCRNRp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Mar 2023 07:47:25 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1743E609
-        for <linux-serial@vger.kernel.org>; Sat, 18 Mar 2023 04:47:22 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-59-2y__38tnPk6ZP3ZtTrDFnQ-1; Sat, 18 Mar 2023 11:47:19 +0000
-X-MC-Unique: 2y__38tnPk6ZP3ZtTrDFnQ-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Sat, 18 Mar
- 2023 11:47:15 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.047; Sat, 18 Mar 2023 11:47:15 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     =?utf-8?B?J0lscG8gSsOkcnZpbmVuJw==?= 
-        <ilpo.jarvinen@linux.intel.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH v2 2/2] serial: 8250: Fix serial8250_tx_empty() race with
- DMA Tx
-Thread-Topic: [PATCH v2 2/2] serial: 8250: Fix serial8250_tx_empty() race with
- DMA Tx
-Thread-Index: AQHZWMRTccAjepUKg0S0Al/dSgkBsq8AalpA
-Date:   Sat, 18 Mar 2023 11:47:15 +0000
-Message-ID: <52fae6e3e7254a96beefd2774f7d6254@AcuMS.aculab.com>
-References: <20230317113318.31327-1-ilpo.jarvinen@linux.intel.com>
- <20230317113318.31327-3-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20230317113318.31327-3-ilpo.jarvinen@linux.intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Sat, 18 Mar 2023 09:17:45 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FA43A856;
+        Sat, 18 Mar 2023 06:17:44 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id bc12so7376428plb.0;
+        Sat, 18 Mar 2023 06:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679145463;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=f+COqB4c+m/g6jmv7auDfhMOskvwOSpXxEk7kJ344Qs=;
+        b=ptqIX8JS1BjvbCWXL88KHqmofUWW0MuFFaMWbrsHj8tBEoTuj/O9Ki65CXHqBv3uIv
+         bf/TQyC4745awZJXlbK9rgt+oXk3KhnVr5OQaEDNsnhnYbeA94iOFmuE/1jGAnwavVuO
+         g7E3Ra49aFBpBsvQUIke+Yl7JtdysIdGE6e2AIeEJvgbLObE0ziJ0qFnNEtjeAOjBTeC
+         FYNo8WgkMiA8OSZvs3VMavV7ghEHuh+jG9ohWUoscHDIInVTqWxoIXLSi0YOBcDIJA+A
+         yPG9+BpJ8vVtv4VFSj64v4kbxUQrW5EPQaC4jAF2QQVNXH3ryDxGLo2O+3rhIp/fhzpj
+         6MTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679145463;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=f+COqB4c+m/g6jmv7auDfhMOskvwOSpXxEk7kJ344Qs=;
+        b=VsRgLlo8OkQs9jucisZXscta0vbYI/gYcSoYVHDIBWqwo9V+fQJdHBQ92a+kWxrWJQ
+         J8c+UK6y5KWfYaozqHXy4Ii8hDPhPcblKM9HMuaXONkiUNsCqQZheSB0SyxpLGdV8Atm
+         FY9jjfLx9FkdI2BsQmxxO9bntKhJHEgc2qP7N4rHftdaAOqBXuxcYwJ7UORCGRQcjBve
+         Fs3hDJGN/KDU7TQvQi7EkqtdJo91wu+RzbPyUSYNJvXKUgHxuKlOM/HfmuHai4RgZIVi
+         Fu8Nm0nxuWqTZjsgrByjIcEoBxElhm5WLCyc9aM4SLnxq7TYwsJ0om0hX5QLmXqON5zZ
+         1FmQ==
+X-Gm-Message-State: AO0yUKXaeJVLpYGwHGtTuUcGuQepGf4bIW7rB4SGbPAePOlmzYoHjIHz
+        B3PxH1zBAhDaKixdyWXghQU=
+X-Google-Smtp-Source: AK7set+B+p8x/wM/YFN9CWjDxTme8ZHWkbPrzeueh4qZtgOfVZKGg9ufoHqwDnq09mTi4nXnskNWxw==
+X-Received: by 2002:a17:902:e54e:b0:1a0:42c0:b2a5 with SMTP id n14-20020a170902e54e00b001a042c0b2a5mr12315471plf.24.1679145463445;
+        Sat, 18 Mar 2023 06:17:43 -0700 (PDT)
+Received: from [192.168.1.101] (1-160-164-133.dynamic-ip.hinet.net. [1.160.164.133])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170902dad000b00199193e5ea1sm3286293plx.61.2023.03.18.06.17.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Mar 2023 06:17:43 -0700 (PDT)
+Message-ID: <7cc8258c-3a77-5387-aaa4-658761fbb0ae@gmail.com>
+Date:   Sat, 18 Mar 2023 21:17:40 +0800
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 11/15] arm64: dts: nuvoton: Add initial ma35d1 device tree
+To:     Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-12-ychuang570808@gmail.com>
+ <2063c6d1-85ed-43d9-b572-a762b6ce18c1@app.fastmail.com>
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <2063c6d1-85ed-43d9-b572-a762b6ce18c1@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RnJvbTogSWxwbyBKw6RydmluZW4NCj4gU2VudDogMTcgTWFyY2ggMjAyMyAxMTozMw0KPiBUbzog
-bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsgR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hA
-bGludXhmb3VuZGF0aW9uLm9yZz47IEppcmkgU2xhYnkNCj4gDQo+IFRoZXJlJ3MgYSBwb3RlbnRp
-YWwgcmFjZSBiZWZvcmUgVEhSRS9URU1UIGRlYXNzZXJ0cyB3aGVuIERNQSBUeCBpcw0KPiBzdGFy
-dGluZyB1cCAob3IgdGhlIG5leHQgYmF0Y2ggb2YgY29udGludW91cyBUeCBpcyBiZWluZyBzdWJt
-aXR0ZWQpLg0KPiBUaGlzIGNhbiBsZWFkIHRvIG1pc2RldGVjdGluZyBUeCBlbXB0eSBjb25kaXRp
-b24uDQo+IA0KPiBJdCBpcyBlbnRpcmVseSBub3JtYWwgZm9yIFRIUkUvVEVNVCB0byBiZSBzZXQg
-Zm9yIHNvbWUgdGltZSBhZnRlciB0aGUNCj4gRE1BIFR4IGhhZCBiZWVuIHNldHVwIGluIHNlcmlh
-bDgyNTBfdHhfZG1hKCkuIEFzIFR4IHNpZGUgaXMgZGVmaW5pdGVseQ0KPiBub3QgZW1wdHkgYXQg
-dGhhdCBwb2ludCwgaXQgc2VlbXMgaW5jb3JyZWN0IGZvciBzZXJpYWw4MjUwX3R4X2VtcHR5KCkN
-Cj4gY2xhaW0gVHggaXMgZW1wdHkuDQo+IA0KPiBGaXggdGhlIHJhY2UgYnkgYWxzbyBjaGVja2lu
-ZyBpbiBzZXJpYWw4MjUwX3R4X2VtcHR5KCkgd2hldGhlciB0aGVyZSdzDQo+IERNQSBUeCBhY3Rp
-dmUuDQo+IA0KPiBOb3RlOiBUaGlzIGZpeCBvbmx5IGFkZHJlc3NlcyBpbi1rZXJuZWwgcmFjZSBt
-YWlubHkgdG8gbWFrZSB1c2luZw0KPiBUQ1NBRFJBSU4vRkxVU0ggcm9idXN0LiBVc2Vyc3BhY2Ug
-Y2FuIHN0aWxsIGNhdXNlIG90aGVyIHJhY2VzIGJ1dCB0aGV5DQo+IHNlZW0gdXNlcnNwYWNlIGNv
-bmN1cnJlbmN5IGNvbnRyb2wgcHJvYmxlbXMuDQoNCkxvb2tzIGJldHRlciwgYnV0IEknbSBub3Qg
-c3VyZSBpdCBhY3R1YWxseSB3b3Jrcy4NCg0KSWYgaW50ZXJydXB0cyBhcmUgYmVpbmcgdXNlZCB0
-byBjb3B5IGRhdGEgdG8gdGhlIHR4IGZpZm8gdGhlbg0KKGRlcGVuZGluZyBvbiBpbnRlcnJ1cHQg
-bGF0ZW5jeSBhbmQgZXhhY3RseSB3aGVuIHRoZSBpbnRlcnJ1cHQNCmlzIHJlcXVlc3RlZCkgdGhl
-IGNvZGUgbWlnaHQgcmVwb3J0ICd0eCBlbXB0eScgd2hlbiB0aGUgSVNSDQppcyBhYm91dCB0byBj
-b3B5IGluIG1vcmUgZGF0YS4NCg0KTm93IHRoZSBkcmFpbi9mbHVzaCBjb2RlIG1pZ2h0IGFscmVh
-ZHkgaGF2ZSBjaGVja2VkIHRoZXJlIGlzDQpubyBtb3JlIGRhdGEgcXVldWVkIGluIHRoZSBkcml2
-ZXIgYmVmb3JlIGNhbGxpbmcgdGhpcywNCmJ1dCBtb3JlIGdlbmVyYWxseSBzaG91bGRuJ3QgaXQg
-YmUgY2hlY2tpbmc6DQoJbm9fZGF0YV9xdWV1ZWRfaW5fZHJpdmVyICYmIGhhcmR3YXJlX2ZpZm9f
-ZW1wdHkuDQoNCkFueSAnbm9fZGF0YV9xdWV1ZWRfaW5fZHJpdmVyJyBjaGVjayB3b3VsZCBwcm9i
-YWJseSBpbmNsdWRlDQpkYXRhIHRoYXQgZG1hIGlzIGNvcHlpbmcgLSBzbyB0aGUgZXhwbGljaXQg
-ZG1hIGNoZWNrIG1pZ2h0DQpub3QgYmUgbmVlZGVkLg0KDQoJRGF2aWQNCg0KPiANCj4gRml4ZXM6
-IDllZTRiODNlNTFmNzQgKCJzZXJpYWw6IDgyNTA6IEFkZCBzdXBwb3J0IGZvciBkbWFlbmdpbmUi
-KQ0KPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KPiBTaWduZWQtb2ZmLWJ5OiBJbHBvIErD
-pHJ2aW5lbiA8aWxwby5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVy
-cy90dHkvc2VyaWFsLzgyNTAvODI1MC5oICAgICAgfCAxMiArKysrKysrKysrKysNCj4gIGRyaXZl
-cnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jIHwgIDcgKysrKy0tLQ0KPiAgMiBmaWxlcyBj
-aGFuZ2VkLCAxNiBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTAuaCBiL2RyaXZlcnMvdHR5L3NlcmlhbC84
-MjUwLzgyNTAuaA0KPiBpbmRleCAyODcxNTNkMzI1MzYuLjFlOGZlNDRhNzA5OSAxMDA2NDQNCj4g
-LS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MC5oDQo+ICsrKyBiL2RyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTAuaA0KPiBAQCAtMzY1LDYgKzM2NSwxMyBAQCBzdGF0aWMgaW5saW5l
-IHZvaWQgc2VyaWFsODI1MF9kb19wcmVwYXJlX3J4X2RtYShzdHJ1Y3QgdWFydF84MjUwX3BvcnQg
-KnApDQo+ICAJaWYgKGRtYS0+cHJlcGFyZV9yeF9kbWEpDQo+ICAJCWRtYS0+cHJlcGFyZV9yeF9k
-bWEocCk7DQo+ICB9DQo+ICsNCj4gK3N0YXRpYyBpbmxpbmUgYm9vbCBzZXJpYWw4MjUwX3R4X2Rt
-YV9ydW5uaW5nKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqcCkNCj4gK3sNCj4gKwlzdHJ1Y3QgdWFy
-dF84MjUwX2RtYSAqZG1hID0gcC0+ZG1hOw0KPiArDQo+ICsJcmV0dXJuIGRtYSAmJiBkbWEtPnR4
-X3J1bm5pbmc7DQo+ICt9DQo+ICAjZWxzZQ0KPiAgc3RhdGljIGlubGluZSBpbnQgc2VyaWFsODI1
-MF90eF9kbWEoc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwKQ0KPiAgew0KPiBAQCAtMzgwLDYgKzM4
-NywxMSBAQCBzdGF0aWMgaW5saW5lIGludCBzZXJpYWw4MjUwX3JlcXVlc3RfZG1hKHN0cnVjdCB1
-YXJ0XzgyNTBfcG9ydCAqcCkNCj4gIAlyZXR1cm4gLTE7DQo+ICB9DQo+ICBzdGF0aWMgaW5saW5l
-IHZvaWQgc2VyaWFsODI1MF9yZWxlYXNlX2RtYShzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApIHsg
-fQ0KPiArDQo+ICtzdGF0aWMgaW5saW5lIGJvb2wgc2VyaWFsODI1MF90eF9kbWFfcnVubmluZyhz
-dHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApDQo+ICt7DQo+ICsJcmV0dXJuIGZhbHNlOw0KPiArfQ0K
-PiAgI2VuZGlmDQo+IA0KPiAgc3RhdGljIGlubGluZSBpbnQgbnMxNjU1MGFfZ290b19oaWdoc3Bl
-ZWQoc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCkNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9w
-b3J0LmMNCj4gaW5kZXggZmE0M2RmMDUzNDJiLi4xMDdiY2RmYjExOWMgMTAwNjQ0DQo+IC0tLSBh
-L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jDQo+ICsrKyBiL2RyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jDQo+IEBAIC0yMDA1LDE4ICsyMDA1LDE5IEBAIHN0YXRp
-YyBpbnQgc2VyaWFsODI1MF90eF90aHJlc2hvbGRfaGFuZGxlX2lycShzdHJ1Y3QgdWFydF9wb3J0
-ICpwb3J0KQ0KPiAgc3RhdGljIHVuc2lnbmVkIGludCBzZXJpYWw4MjUwX3R4X2VtcHR5KHN0cnVj
-dCB1YXJ0X3BvcnQgKnBvcnQpDQo+ICB7DQo+ICAJc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCA9
-IHVwX3RvX3U4MjUwcChwb3J0KTsNCj4gKwl1bnNpZ25lZCBpbnQgcmVzdWx0ID0gMDsNCj4gIAl1
-bnNpZ25lZCBsb25nIGZsYWdzOw0KPiAtCXUxNiBsc3I7DQo+IA0KPiAgCXNlcmlhbDgyNTBfcnBt
-X2dldCh1cCk7DQo+IA0KPiAgCXNwaW5fbG9ja19pcnFzYXZlKCZwb3J0LT5sb2NrLCBmbGFncyk7
-DQo+IC0JbHNyID0gc2VyaWFsX2xzcl9pbih1cCk7DQo+ICsJaWYgKCFzZXJpYWw4MjUwX3R4X2Rt
-YV9ydW5uaW5nKHVwKSAmJiB1YXJ0X2xzcl90eF9lbXB0eShzZXJpYWxfbHNyX2luKHVwKSkpDQo+
-ICsJCXJlc3VsdCA9IFRJT0NTRVJfVEVNVDsNCj4gIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZw
-b3J0LT5sb2NrLCBmbGFncyk7DQo+IA0KPiAgCXNlcmlhbDgyNTBfcnBtX3B1dCh1cCk7DQo+IA0K
-PiAtCXJldHVybiB1YXJ0X2xzcl90eF9lbXB0eShsc3IpID8gVElPQ1NFUl9URU1UIDogMDsNCj4g
-KwlyZXR1cm4gcmVzdWx0Ow0KPiAgfQ0KPiANCj4gIHVuc2lnbmVkIGludCBzZXJpYWw4MjUwX2Rv
-X2dldF9tY3RybChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiAtLQ0KPiAyLjMwLjINCg0KLQ0K
-UmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1p
-bHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVz
-KQ0K
+Dear Arnd,
+
+
+Thanks for your suggestion.
+
+
+On 2023/3/16 下午 10:17, Arnd Bergmann wrote:
+> On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
+>> +	mem: memory@80000000 {
+>> +		device_type = "memory";
+>> +		reg = <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
+>> +	};
+>> +};
+> In most machines, the memory size is detected by the boot loader
+> and filled in the dtb in memory before starting the kernel, so
+> you should not need two separate files here for the two common
+> memory configurations.
+
+
+On ma35d1, memory size is determined early before uboot.
+
+BL1 (MaskROM boot code) -> BL2 (arm-trust-firmware) -> BL32 (op-tee) & 
+BL33 (uboot).
+
+The DDR was initialized in BL2 stage with a selected DDR setting, which
+
+is hard coded, including DDR size.
+
+We searched the arm64 dts and found that almost all vendors claimed
+
+memory size in board level dtsi/dts. This seems to be common.
+
+So, can we have it unchanged?
+
+
+> Since the machine is called 'som', I would assume that this is a
+> module that is integrated on another board, so more commonly one
+> would have a dtsi file for the som in addition to the one for the
+> soc, and have all the components of the module listed in this
+> file, while the dts file that includes the som.dtsi lists the
+> devices on the carrier board and enables the on-chip devices
+> that are connected to the outside.
+>
+>         Arnd
+
+
+You are right, ma35d1 som have a base board, and a cpu board on it.
+
+It is a good suggestion that we should have a dtsi for som base board.
+
+Consider that we are in the initial submit, and such a dtsi will be an empty
+
+file at this stage. So, I would like to do it when peripheral drivers
+
+upstream started. Is it ok?
+
+
+Best  regards,
+
+Jacky Huang
+
 
