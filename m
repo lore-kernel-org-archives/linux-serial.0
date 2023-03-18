@@ -2,104 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34401C76195
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 13:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C152C7618A
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 14:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbjCRNc1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Mar 2023 09:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
+        id S229734AbjCROF2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Mar 2023 10:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbjCRNc0 (ORCPT
+        with ESMTP id S229570AbjCROF1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Mar 2023 09:32:26 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70883305C9;
-        Sat, 18 Mar 2023 06:32:25 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso7962750pjb.3;
-        Sat, 18 Mar 2023 06:32:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679146345;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8fE4fkK4CVvPV2ORVzxsWLs3YTL4Kj2gXtPF2Q+CSy8=;
-        b=DZroDm5W2oC5U48qFw3XK3nEpzf5+YaeX2vZwKhAeqvVH2iJ2+aKGcxpgGvbP+EJbl
-         fyOUq2FwopdoFR0LX7N+VGWYXPxqUtLGzmisjD5MehNZz77Ak0mT72VAztsECgdjd9Bo
-         qZNgI+wQJbb6NFdxD37IwDwrod38wNUHscDncoCaC0oLIXB0KECGx5MFPBRidOldICQW
-         7aR10kAB9WxS4cFMiOZCpDdkVnLvobgykPgwWfm2w4uHewnWxvMff/Ylx/8ZCou5C33h
-         +fWJsu8F8cssoxgBdRl4jLBPtkZeB57f7zodGu5s4xU5fIoBy73x/dhT68OrsHOzIt5L
-         ZK3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679146345;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8fE4fkK4CVvPV2ORVzxsWLs3YTL4Kj2gXtPF2Q+CSy8=;
-        b=WU2TLHXMHOhCJhCGnfRfu6l8q8EgUKg+O1by8cO6cPmgaDWn4mxJJ5UbAG9N2ULyPZ
-         0hOLU3SA/2Wh2cXV3wu5tOG6IdEKOLw6M2OY23hphG3GZSofRZAPkvBs+aFfSFhLBrno
-         bnV/64yW4kULCEPGTzmKwmDtJZ2QamaYbb60qRf2vtpNVoKK7PuQflWAYEb8S5ALlR8O
-         kWrDQhvjT70N4URSCJNQ7IWHls8uNVy9FGTMdGbf+n3q2qD+pTEIG04+J79OFQcrgY4z
-         LFBHu7/kG4cyfuuKfG1VjJxbDH5hvqfs+2rHpSCz8ghP4MqXWn/4kRrsh8nk9VzPyWYv
-         ZnfQ==
-X-Gm-Message-State: AO0yUKXuBtY/URAMpnb/zWPvxpWZ0H7u6e5uIBfmx0Lpu5/wY7iNzHBA
-        rjIGaG2px6UInUHic7U68Ns=
-X-Google-Smtp-Source: AK7set9D/+jbrcpZKCdza1ZHngFovGsWsbMZ6mL0qbwuisVAz9e88VJCOyzVzDFz4NH8d+zyKAk7jw==
-X-Received: by 2002:a05:6a20:4a04:b0:d5:1f74:7e65 with SMTP id fr4-20020a056a204a0400b000d51f747e65mr10098873pzb.43.1679146344744;
-        Sat, 18 Mar 2023 06:32:24 -0700 (PDT)
-Received: from [192.168.1.101] (1-160-164-133.dynamic-ip.hinet.net. [1.160.164.133])
-        by smtp.gmail.com with ESMTPSA id d8-20020aa78e48000000b005a9bf65b591sm3254828pfr.135.2023.03.18.06.32.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Mar 2023 06:32:24 -0700 (PDT)
-Message-ID: <35870fce-210b-d3ab-df7a-e4e49ce49391@gmail.com>
-Date:   Sat, 18 Mar 2023 21:32:21 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 11/15] arm64: dts: nuvoton: Add initial ma35d1 device tree
-Content-Language: en-US
-To:     Lee Jones <lee@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, schung@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
+        Sat, 18 Mar 2023 10:05:27 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C4D1EBC0;
+        Sat, 18 Mar 2023 07:05:23 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id C16325C01D9;
+        Sat, 18 Mar 2023 10:05:20 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Sat, 18 Mar 2023 10:05:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-transfer-encoding:content-type:content-type:date
+        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
+        1679148320; x=1679234720; bh=ne/ZkURyOBnvQZJfA/dZ5P1GHL8xeaXDuo7
+        2X96mUAI=; b=PWikUWM3nRrwrVKDkhGUG4yZLKM+qv3w0qRH8+aP7kRH0GCOXso
+        x5/MwfoaRCPs+GSEE64L3II+XIY5u0api+BlU23UP7NEdV6YwrBxtpCVsmC7PwL8
+        KIIPmUVDa2cSrq9xVNaQ0TFFMQthZJKbzSTTlhDnqH7FUDHRqjGv/TWO1+C3sTmK
+        FqP6rOAiLT/xXWXU5ouibhWu0MPxHCYxjL9dZD1sILy9v11+udYxqTTSE5VBAV1a
+        12CmZpql/aowC44Ikmdu0an3RYUFJT0OqcSE3h0WiKBBbJGOlYKnGNdYkGksQA2I
+        HngjLuZ5SNSx9NzlPmqV7UG6JZyQuJCsQpg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:content-type:date:date:feedback-id:feedback-id
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1679148320; x=1679234720; bh=ne/ZkURyOBnvQZJfA/dZ5P1GHL8xeaXDuo7
+        2X96mUAI=; b=n2roBARfoflGRnl+aYU+hQ9zC7+YjssGLD9gcVAxfhISvUNwI9P
+        0R9Smd4ErRI5sWHRgsQQgg4Zm9leBCSlOI6bnCAKJQtT1mzT0wn8aOgx5JJj/nSS
+        cMPq5Xm4hDIxWL/XYk/kx8nxSO18g3WRLDKGjC6ntxJp0s1aL6YzZKOdikFLOHI6
+        ADKeoHSpJo/IAlDsXfiQxzVxt9o0faH+FqlWJq7D6A9p4FOdKzX1+O8msnJNk9Ho
+        +c9xndLcxLIrcI8AeercVpKUrL819JfskKtE+2UYbfu8wM98BtYaH84Vg8iBwPqQ
+        UetYHJM07UueJI/UV1w1HhlOHW2SfGyM0Kg==
+X-ME-Sender: <xms:H8UVZKO5hsePPBXygggc8Se1Mc17WDUEan853sWl8vGRPZWY1LuYbA>
+    <xme:H8UVZI-YX8PoBNdK14Hb22aPkgbDV3OLFKKXnLRridBDQIB2JP2XD5aLC-Jap7Jlx
+    MGPCEIdOgpOX72RHEE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdefgedgheekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpeegfeejhedvledvffeijeeijeeivddvhfeliedvleevheejleetgedukedt
+    gfejveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grrhhnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:H8UVZBTH-K8trWBZHXlwQI6WJ_h5tYCXamdoN-EXBElRubJRjCZcRQ>
+    <xmx:H8UVZKsnHJMHCk7mQgtMJfnf3oyTFZfAOnXSTJf_Oqq9G5jzuz6JLQ>
+    <xmx:H8UVZCdKiAaM_7T-eIkluqlpzhN5E81HI07nO5mU73A9Wpm3R7zvpA>
+    <xmx:IMUVZI22ozlqtFOxaEyopgNB_2_sLPE_g6q-hUAUMIdAb3vD5FLm4Q>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 6A542B60086; Sat, 18 Mar 2023 10:05:19 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-221-gec32977366-fm-20230306.001-gec329773
+Mime-Version: 1.0
+Message-Id: <12298b67-3012-4902-9dcc-61c3c9907a47@app.fastmail.com>
+In-Reply-To: <7cc8258c-3a77-5387-aaa4-658761fbb0ae@gmail.com>
 References: <20230315072902.9298-1-ychuang570808@gmail.com>
  <20230315072902.9298-12-ychuang570808@gmail.com>
  <2063c6d1-85ed-43d9-b572-a762b6ce18c1@app.fastmail.com>
- <20230316164428.GY9667@google.com>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <20230316164428.GY9667@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ <7cc8258c-3a77-5387-aaa4-658761fbb0ae@gmail.com>
+Date:   Sat, 18 Mar 2023 15:04:58 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jacky Huang" <ychuang570808@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
+        "Michael Turquette" <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
+Subject: Re: [PATCH 11/15] arm64: dts: nuvoton: Add initial ma35d1 device tree
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Lee,
-
-
-Thanks for your attentions.
-
-
-On 2023/3/17 上午 12:44, Lee Jones wrote:
-> On Thu, 16 Mar 2023, Arnd Bergmann wrote:
->
+On Sat, Mar 18, 2023, at 14:17, Jacky Huang wrote:
+> On 2023/3/16 =E4=B8=8B=E5=8D=88 10:17, Arnd Bergmann wrote:
 >> On Wed, Mar 15, 2023, at 08:28, Jacky Huang wrote:
 >>> +	mem: memory@80000000 {
->>> +		device_type = "memory";
->>> +		reg = <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
+>>> +		device_type =3D "memory";
+>>> +		reg =3D <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
 >>> +	};
 >>> +};
 >> In most machines, the memory size is detected by the boot loader
 >> and filled in the dtb in memory before starting the kernel, so
 >> you should not need two separate files here for the two common
 >> memory configurations.
->>
+>
+>
+> On ma35d1, memory size is determined early before uboot.
+>
+> BL1 (MaskROM boot code) -> BL2 (arm-trust-firmware) -> BL32 (op-tee) &=20
+> BL33 (uboot).
+> The DDR was initialized in BL2 stage with a selected DDR setting, which
+> is hard coded, including DDR size.
+>
+> We searched the arm64 dts and found that almost all vendors claimed
+> memory size in board level dtsi/dts. This seems to be common.
+>
+> So, can we have it unchanged?
+
+I see the memory size encoded in about one out of three .dts files,
+which is more than I expected. It's clearly not harmful to have it
+listed in the dts, it just shouldn't be necessary.
+
+If it helps you with your current u-boot, then leave it in, but
+consider adding detection logic into u-boot so it can override
+the value in the dtb file at boot time.
+
 >> Since the machine is called 'som', I would assume that this is a
 >> module that is integrated on another board, so more commonly one
 >> would have a dtsi file for the som in addition to the one for the
@@ -107,18 +132,20 @@ On 2023/3/17 上午 12:44, Lee Jones wrote:
 >> file, while the dts file that includes the som.dtsi lists the
 >> devices on the carrier board and enables the on-chip devices
 >> that are connected to the outside.
-> It's using syscon and simple-mfd by the looks of it.
+>>
 >
-> --
-> Lee Jones [李琼斯]
+> You are right, ma35d1 som have a base board, and a cpu board on it.
+>
+> It is a good suggestion that we should have a dtsi for som base board.
+>
+> Consider that we are in the initial submit, and such a dtsi will be an=
+ empty
+> file at this stage. So, I would like to do it when peripheral drivers
+> upstream started. Is it ok?
 
+It's not a big deal either way. I if you want to keep it only with
+one dts file and one dtsi file, that's fine, but maybe rename the dts
+file based on the name of the carrier rather than the SoM in this
+case.
 
-We just copy from what other chips's dts have done.
-
-This seems be defined in Documentation\devicetree\bindings\numa.txt.
-
-
-Best regards,
-
-Jacky Huang
-
+     Arnd
