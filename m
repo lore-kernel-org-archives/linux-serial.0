@@ -2,94 +2,141 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7DDC6FD1D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Mar 2023 23:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD8CC76195
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 01:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbjCQXvK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Mar 2023 19:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
+        id S229585AbjCRB0Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Mar 2023 21:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbjCQXvJ (ORCPT
+        with ESMTP id S229478AbjCRB0O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Mar 2023 19:51:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3EE3B23E;
-        Fri, 17 Mar 2023 16:50:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5502BB82741;
-        Fri, 17 Mar 2023 23:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EB6A8C433D2;
-        Fri, 17 Mar 2023 23:50:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679097056;
-        bh=WR+tqewczy5kh9G0x5J34eXgDDCY5t9xJhykv7aIXN4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ptxVKc0dN/q8hYKuRw3Ps+YJg5t6XwIU6VqruWwjxVhouF71Kc/eeYZ21fCk8Dsk7
-         QcVbB6EJPmY0asHTvd7uiPP7LNnHL50Ag34RpRpO0jV3SKCVxtCN7HoFtRTwzNObxd
-         D649t4FFcAFzy1rPMsEHsjInuNuBuf2isyWfxs30brJZcIoHGv3nJBPXZkg60jmFQf
-         7viIGijL/yij7Imw0csg5gJwKflshfD7mIXP3Wa78rWtm/S5g9pZKB06Amn2n+C8Aw
-         E/SyzdqzRPBoWLjrL66URd29BM+cw9u4HYO1fap6iO7rWNdV7BO2tVR1R2PMlVRgMc
-         9S3vqVi6mlfOQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C744EE66CBF;
-        Fri, 17 Mar 2023 23:50:55 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 17 Mar 2023 21:26:14 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B34B20A3C;
+        Fri, 17 Mar 2023 18:26:13 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id f6-20020a17090ac28600b0023b9bf9eb63so7061739pjt.5;
+        Fri, 17 Mar 2023 18:26:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679102772;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qPU3dsVpVXpnQ6fYXwfAdiVoA8/4WvfbER59Vv93nMc=;
+        b=XXqJUJLzKSZO4I+bSKHHfwciwNr0gFbLZ2yNfgsaSose/ovOC6Zh18BK0AAlMvbgZs
+         fyUe7WPKnoRPuXTb5yJCAhD0PVF1xUvvifSnxmss6c2yTsbe8MkT15QFaYKbkz/ttpVJ
+         xvO3DapiHqNgDMvyukpWwf56YfWhmsD4DI5mSGpRAh0gW8vL4wgLEpojkEdeurURrkRn
+         PAyj/lLSwxwhEJ64GykpM2NUn4KBal32POllzHauO9y+ehTVyL8DSvbU0p85MNpwap+F
+         /hroRHb76fRVg1kztsb4oDkN1y8hEPSbv9wQAlAhj9d8G/dL/rGGUO4e8JCzt8xMy5f7
+         qSww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679102772;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qPU3dsVpVXpnQ6fYXwfAdiVoA8/4WvfbER59Vv93nMc=;
+        b=FXHGN8osQqVHPzO9c84fr4VbIDIn62Ksm7IXCcroo/N4nnNSZxTf9/tEqdk3WB8sxK
+         Y7AVRSYMqU/KV0tUKgm87BBAU6CWj1IW0eqyGpJOrlcYu6RjG6MTs+HyUfqzylV0DzWY
+         hBVQ5E+32zX6YVE2vmn174zUAW/UrIeG1AZM1kQdTKPucYvPAmWji/L0b8ENbznviDM5
+         Tf/f707ZTfdNKN+VKRZN5YB+qyzQuDU6YPM5CWCVeFlCx2eHGHj8s4AzxNyCXKO9SG/T
+         DwUJ0H7yPR+DgAx/WL70DYOZ6gKEE7/ZXTpjxU0wBOEE0PtKAniSqRigROr4VdSkPcR0
+         hHpw==
+X-Gm-Message-State: AO0yUKVq1qKDQiXdfNj2NYScuuKhsoHohY+5GfBtAEKbpPB09Tmv2Sob
+        UiHwF19pTvUuiXD4+9559Dk=
+X-Google-Smtp-Source: AK7set/zxHLgUsEZKK+n3u3mTs3dv35d/dLMIlU9IrmAq/vNO0Ya1d13/8EV7V+egmMBj57zQKlP4w==
+X-Received: by 2002:a17:902:fb85:b0:19c:da68:337a with SMTP id lg5-20020a170902fb8500b0019cda68337amr8339980plb.31.1679102772221;
+        Fri, 17 Mar 2023 18:26:12 -0700 (PDT)
+Received: from [192.168.1.101] (1-160-164-133.dynamic-ip.hinet.net. [1.160.164.133])
+        by smtp.gmail.com with ESMTPSA id ay6-20020a1709028b8600b0019a997bca5csm2124296plb.121.2023.03.17.18.26.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Mar 2023 18:26:11 -0700 (PDT)
+Message-ID: <739bb051-a816-d64e-f7fa-a2b9283794e8@gmail.com>
+Date:   Sat, 18 Mar 2023 09:26:08 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 07/15] dt-bindings: arm: Add initial bindings for Nuvoton
+ platform
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-8-ychuang570808@gmail.com>
+ <f8b323b4-fd07-f5fd-70cf-31450e9ef204@linaro.org>
+ <235fcb71-9e96-4f28-bb8c-6843d4d85cea@app.fastmail.com>
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <235fcb71-9e96-4f28-bb8c-6843d4d85cea@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v13 0/4] Add support for NXP bluetooth chipsets
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <167909705581.28336.12052092434994272835.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Mar 2023 23:50:55 +0000
-References: <20230316172214.3899786-1-neeraj.sanjaykale@nxp.com>
-In-Reply-To: <20230316172214.3899786-1-neeraj.sanjaykale@nxp.com>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
-        simon.horman@corigine.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello:
+Dear Arnd and  Krzysztof,
 
-This series was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
-On Thu, 16 Mar 2023 22:52:10 +0530 you wrote:
-> This patch adds a driver for NXP bluetooth chipsets.
-> 
-> The driver is based on H4 protocol, and uses serdev APIs. It supports host
-> to chip power save feature, which is signalled by the host by asserting
-> break over UART TX lines, to put the chip into sleep state.
-> 
-> To support this feature, break_ctl has also been added to serdev-tty along
-> with a new serdev API serdev_device_break_ctl().
-> 
-> [...]
+Please allow me to answer the question of Krzysztof in this mail.
 
-Here is the summary with links:
-  - [v13,1/4] serdev: Replace all instances of ENOTSUPP with EOPNOTSUPP
-    https://git.kernel.org/bluetooth/bluetooth-next/c/d227f286d259
-  - [v13,2/4] serdev: Add method to assert break signal over tty UART port
-    https://git.kernel.org/bluetooth/bluetooth-next/c/5ea260df53c2
-  - [v13,3/4] dt-bindings: net: bluetooth: Add NXP bluetooth support
-    https://git.kernel.org/bluetooth/bluetooth-next/c/02986ce4a4fe
-  - [v13,4/4] Bluetooth: NXP: Add protocol support for NXP Bluetooth chipsets
-    https://git.kernel.org/bluetooth/bluetooth-next/c/3e662aa4453a
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+On 2023/3/16 下午 10:32, Arnd Bergmann wrote:
+> On Thu, Mar 16, 2023, at 08:33, Krzysztof Kozlowski wrote:
+>> On 15/03/2023 08:28, Jacky Huang wrote:
+>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>
+>>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
+>>> Add initial bindings for ma35d1 series development boards.
+>>>
+>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>> ---
+>>>   .../devicetree/bindings/arm/nuvoton.yaml      | 30 +++++++++++++++++++
+>> And what is npcm for? Why it was made an directory?
+>>
+>> All these should be just one Nuvoton.
+
+
+Thank you for your suggestion, then in the next version I will submit to 
+rename directory npcm to nuvoton.
+
+And rename this file nuvoton.yaml to nuvoton,ma35d1.yaml, and put in the 
+nuvoton directory.
+
+
+> npcm is an unrelated product line, so I think it would be best
+> to rename the npcm directory to nuvoton and move the new
+> file in there, though I'm not sure about the name or what the
+> other chips are called.
+>
+> My impression is that this one is more closely related to
+> the older Arm9 nuc900/w90x900/n9 chips that we dropped from
+> the kernel a while ago, while the npcm family has a different
+> origin.
+>
+>      Arnd
+
+npcm focuses on the BMC field, and ma35 is the successor SoC of 
+nuc970/nuc980,
+
+which is mostly used in industrial control, consumer, network 
+applications and other fields.
+
+The two teams are located in different countries and regions, and there 
+is little
+
+communication and resource sharing with each other.
+
+
+Best regards,
+
+Jacky Huang
 
 
