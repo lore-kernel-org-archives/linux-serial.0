@@ -2,189 +2,140 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B00EFC74A5B
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 14:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BE7C7618B
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 17:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbjCROw2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Mar 2023 10:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
+        id S229978AbjCRRTg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Mar 2023 13:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbjCROw2 (ORCPT
+        with ESMTP id S229502AbjCRRTe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Mar 2023 10:52:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65C230193
-        for <linux-serial@vger.kernel.org>; Sat, 18 Mar 2023 07:51:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679151094;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ric6rrq7vGEm9xb0r4Sa8eTDN4DF7YKXYHcMI7FI7XE=;
-        b=OO8kmj5J7MzkhevLqNTe0LgYaTh9ceUzKbnXNuY/Lc4s3SdQvtUuaC/LctdebTASz22dw6
-        dVF6sNgxpKHRhHsotyWe7+TBaRDWgS2XAYcCKgp/xt9X/RX4drOW0dNtAqYoYNLxUxb1Ks
-        0QIAy82O1ybz6MPX79h5sNcbkCRtPFo=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-670-9_Y9KaDmO6icY7WHxCvopg-1; Sat, 18 Mar 2023 10:51:33 -0400
-X-MC-Unique: 9_Y9KaDmO6icY7WHxCvopg-1
-Received: by mail-qv1-f69.google.com with SMTP id r4-20020ad44044000000b005ad0ce58902so4218864qvp.5
-        for <linux-serial@vger.kernel.org>; Sat, 18 Mar 2023 07:51:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679151092;
-        h=content-language:content-transfer-encoding:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ric6rrq7vGEm9xb0r4Sa8eTDN4DF7YKXYHcMI7FI7XE=;
-        b=n5nsjEkqpfUB/80L+ZAZMcSNr7Tdco7BhZn2Bem1hBpZ7OyQLfq3gWnLjXbsOczCst
-         7eNAaxYE8j+gDrQahxwT6lS8jhPr3rL3EOAUCDO6IXRwjsZ+0XFnXEqOEbYctMOoPoZC
-         CmZo9er1RLQXmVStWnf7BVo9SWCW8UK/O1eoPAzUH5Eqxgf+gmxckADca57IbSRwsqKy
-         e5YkrkEG8Gg40cprVi0uBJFnD8V1j4dNxkcjyt54X0D3wUoDnzklWc/WL4CU9Rs48q/J
-         hqo01oHQLTxEtfyRwC3DUZdgnYUzZvbOiVisffPiORIwkggUSmhKe5dG4nI2WdEWmM9c
-         CicA==
-X-Gm-Message-State: AO0yUKW6ivKF6cG41kwXjdgNkXx3jHBgz57OqqPpJYR5d1KTc28T00QC
-        VkHS+2YAAZKfjHBS46AUPvN6md3MHJs9EZyeWU5jmNpnhuglma8o9EhfikpwfmGUYMEsvjyQwBo
-        F6adSNLmdcCxV7MFicuF3BVuD
-X-Received: by 2002:ac8:7dc6:0:b0:3bf:e05a:f2f2 with SMTP id c6-20020ac87dc6000000b003bfe05af2f2mr17551028qte.31.1679151092487;
-        Sat, 18 Mar 2023 07:51:32 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9ZDp5u9lmhVI2qPCcpmBGFzfulEDfgCvtscb10T98V7E/KIdzQazhy7kKih42X2QbSVFfU5g==
-X-Received: by 2002:ac8:7dc6:0:b0:3bf:e05a:f2f2 with SMTP id c6-20020ac87dc6000000b003bfe05af2f2mr17551007qte.31.1679151092223;
-        Sat, 18 Mar 2023 07:51:32 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id n185-20020a3740c2000000b007402fdda195sm3729155qka.123.2023.03.18.07.51.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Mar 2023 07:51:31 -0700 (PDT)
-Subject: Re: [PATCH] serial: imx: remove unused imx_uart_is_imx* functions
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, nathan@kernel.org,
-        ndesaulniers@google.com, llvm@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230317205710.1672232-1-trix@redhat.com>
- <20230318143041.n6rymackf6p776rq@pengutronix.de>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <b5c61356-02e8-76f1-3e2c-9388aa18462c@redhat.com>
-Date:   Sat, 18 Mar 2023 07:51:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Sat, 18 Mar 2023 13:19:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B567FE39E;
+        Sat, 18 Mar 2023 10:19:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70136B806A1;
+        Sat, 18 Mar 2023 17:19:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74683C433D2;
+        Sat, 18 Mar 2023 17:19:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679159970;
+        bh=TlLbFe2AtUWFg73uowAriW9X3Ln7J8/MMonCpaLQ7qw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nufTb8rQPNuar3fPQ0dMH5Hyw3V10Gjszee7hb7wLvSi4HMEM4AKOrAlbY723QHtT
+         dgs2tVBu5NTzPy8C1UQFSgTnHumqLc2Td2TDVIRjk7+uMUh2qU4B4rs3Kilbl0/RjV
+         hgeHeQkQpNycHhjGgtPfOgetWn1e98Y4QviFiJEE/BkAsKdz4RCincWl0TyacvNuel
+         0olbewnw3DCuIRvLdZadXBxLqiLt9Wl1FoFEOMcc5hswgCrg3vEXd1y3uJD6m6Mf8x
+         JjoIO2oH1yoafj9jNqSWbCi5ridX/xu3BkB9hUKVnHLog8B/4pEHwjeTgdL7+RsWO5
+         mmm321tY7dzEQ==
+Date:   Sat, 18 Mar 2023 17:34:21 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, linux@roeck-us.net,
+        michal.simek@amd.com, Jonathan Corbet <corbet@lwn.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] serial: qcom_geni: Use devm_krealloc_array
+Message-ID: <20230318173402.20a4f60d@jic23-huawei>
+In-Reply-To: <74d8b579-6ea8-d6f3-170f-ea13534b4565@arm.com>
+References: <20230309150334.216760-1-james.clark@arm.com>
+        <20230309150334.216760-5-james.clark@arm.com>
+        <20230311191800.74ec2b84@jic23-huawei>
+        <74d8b579-6ea8-d6f3-170f-ea13534b4565@arm.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20230318143041.n6rymackf6p776rq@pengutronix.de>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Fri, 17 Mar 2023 11:34:49 +0000
+James Clark <james.clark@arm.com> wrote:
 
-On 3/18/23 7:30 AM, Uwe Kleine-König wrote:
-> On Fri, Mar 17, 2023 at 04:57:10PM -0400, Tom Rix wrote:
->> clang with W=1 reports
->> drivers/tty/serial/imx.c:292:19: error:
->>    unused function 'imx_uart_is_imx21' [-Werror,-Wunused-function]
->> static inline int imx_uart_is_imx21(struct imx_port *sport)
->>                    ^
->> drivers/tty/serial/imx.c:297:19: error:
->>    unused function 'imx_uart_is_imx53' [-Werror,-Wunused-function]
->> static inline int imx_uart_is_imx53(struct imx_port *sport)
->>                    ^
->> drivers/tty/serial/imx.c:302:19: error:
->>    unused function 'imx_uart_is_imx6q' [-Werror,-Wunused-function]
->> static inline int imx_uart_is_imx6q(struct imx_port *sport)
->>                    ^
->> These static functions are not used, so remove them.
->>
->> Signed-off-by: Tom Rix <trix@redhat.com>
-> Funny, is_imx6q_uart() was introduced in
-> a496e6284c482555db8078190bb689594d129fa9 and never used. Since that
-> commit is_imx21_uart() also unused. And the imx53 variant was also never
-> used.
->
-> Looking at that a bit more, the following cleanup is also possible (only
-> compile tested):
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 8308a23c55a7..a38ee0ed2210 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -178,8 +178,6 @@
->   enum imx_uart_type {
->   	IMX1_UART,
->   	IMX21_UART,
-> -	IMX53_UART,
-> -	IMX6Q_UART,
->   };
->   
->   /* device type dependent stuff */
-> @@ -241,30 +239,21 @@ struct imx_port_ucrs {
->   	unsigned int	ucr3;
->   };
->   
-> -static struct imx_uart_data imx_uart_devdata[] = {
-> -	[IMX1_UART] = {
-> -		.uts_reg = IMX1_UTS,
-> -		.devtype = IMX1_UART,
-> -	},
-> -	[IMX21_UART] = {
-> -		.uts_reg = IMX21_UTS,
-> -		.devtype = IMX21_UART,
-> -	},
-> -	[IMX53_UART] = {
-> -		.uts_reg = IMX21_UTS,
-> -		.devtype = IMX53_UART,
-> -	},
-> -	[IMX6Q_UART] = {
-> -		.uts_reg = IMX21_UTS,
-> -		.devtype = IMX6Q_UART,
-> -	},
-> +static const struct imx_uart_data imx_uart_imx1_devdata = {
-> +	.uts_reg = IMX1_UTS,
-> +	.devtype = IMX1_UART,
-> +};
-> +
-> +static const struct imx_uart_data imx_uart_imx21_devdata = {
-> +	.uts_reg = IMX21_UTS,
-> +	.devtype = IMX21_UART,
->   };
->   
->   static const struct of_device_id imx_uart_dt_ids[] = {
-> -	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_devdata[IMX6Q_UART], },
-> -	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_devdata[IMX53_UART], },
-> -	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_devdata[IMX1_UART], },
-> -	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_devdata[IMX21_UART], },
-> +	{ .compatible = "fsl,imx6q-uart", .data = &imx_uart_imx21_devdata, },
-> +	{ .compatible = "fsl,imx53-uart", .data = &imx_uart_imx21_devdata, },
-> +	{ .compatible = "fsl,imx1-uart", .data = &imx_uart_imx1_devdata, },
-> +	{ .compatible = "fsl,imx21-uart", .data = &imx_uart_imx21_devdata, },
->   	{ /* sentinel */ }
->   };
->   MODULE_DEVICE_TABLE(of, imx_uart_dt_ids);
->
-> If you feel like squashing that into your commit or put it into a
-> separate commit with a nice commit log (after convincing yourself that
-> the change is fine), feel free to do so.
->
-> If you don't:
+> On 11/03/2023 19:18, Jonathan Cameron wrote:
+> > On Thu,  9 Mar 2023 15:03:33 +0000
+> > James Clark <james.clark@arm.com> wrote:
+> >   
+> >> Now that it exists, use it instead of doing the multiplication manually.
+> >>
+> >> Signed-off-by: James Clark <james.clark@arm.com>  
+> > 
+> > Hmm. I've stared at the users of this for a bit, and it's not actually obvious
+> > that it's being used as an array of u32.  The only typed user of this is as
+> > the 2nd parameter of  
+> > tty_insert_flip_string() which is an unsigned char *
+> > 
+> > I wonder if that sizeof(u32) isn't a 'correct' description of where the 4 is coming
+> > from even if it has the right value?  Perhaps the fifo depth is just a multiple of 4?
+> > 
+> > Jonathan
+> >   
+> 
+> The commit that added it (b8caf69a6946) seems to hint that something
+> reads from it in words. And I see this:
+> 
+>   /* We always configure 4 bytes per FIFO word */
+>   #define BYTES_PER_FIFO_WORD		4U
+> 
+> Perhaps sizeof(u32) isn't as accurate of a description as using
+> BYTES_PER_FIFO_WORD but I'd be reluctant to make a change because I
+> don't really understand the implications.
 
-My interest is not in imx specifically, but rather cleaning up all the 
-unused functions.
+Agreed with your analysis.  + fully understand why you don't want to change
+it. 
 
-I _think_ I can get the list of around 70 down to around 10 but it will 
-take a while.
+I'd be tempted to take the view that whilst it's allocated in 4 byte chunks
+because it's accessed elsewhere as a set of 1 byte entries, krealloc_array
+isn't appropriate and so just leave it with devm_krealloc()
 
-Tom
-
-
->
-> Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
->
-> Best regards
-> Uwe
->
+Risk is that a steady stream of patches will turn up 'fixing' this as
+it will be easy for people to find with a script.  Maybe better to just add
+a comment (either with or without your patch).
+> 
+> There is also this in handle_rx_console():
+> 
+>   unsigned char buf[sizeof(u32)];
+> 
+> James
+> 
+> > 
+> >   
+> >> ---
+> >>  drivers/tty/serial/qcom_geni_serial.c | 6 +++---
+> >>  1 file changed, 3 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> >> index d69592e5e2ec..23fc33d182ac 100644
+> >> --- a/drivers/tty/serial/qcom_geni_serial.c
+> >> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> >> @@ -1056,9 +1056,9 @@ static int setup_fifos(struct qcom_geni_serial_port *port)
+> >>  		(port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
+> >>  
+> >>  	if (port->rx_buf && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
+> >> -		port->rx_buf = devm_krealloc(uport->dev, port->rx_buf,
+> >> -					     port->rx_fifo_depth * sizeof(u32),
+> >> -					     GFP_KERNEL);
+> >> +		port->rx_buf = devm_krealloc_array(uport->dev, port->rx_buf,
+> >> +						   port->rx_fifo_depth, sizeof(u32),
+> >> +						   GFP_KERNEL);
+> >>  		if (!port->rx_buf)
+> >>  			return -ENOMEM;
+> >>  	}  
+> >   
 
