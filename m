@@ -2,127 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7051CC61DA4
-	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 09:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67382C61DA4
+	for <linux-serial@archiver.kernel.org>; Sat, 18 Mar 2023 11:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbjCRJId (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 18 Mar 2023 05:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45434 "EHLO
+        id S229618AbjCRLr0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 18 Mar 2023 07:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbjCRJIb (ORCPT
+        with ESMTP id S229478AbjCRLrZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 18 Mar 2023 05:08:31 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6A124BC8;
-        Sat, 18 Mar 2023 02:08:15 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id B36285C016C;
-        Sat, 18 Mar 2023 05:08:12 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Sat, 18 Mar 2023 05:08:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-transfer-encoding:content-type:content-type:date
-        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
-        1679130492; x=1679216892; bh=sqGrH9AvBNgztCnhiLWyU9ykzV8JgafnPoz
-        z27BeCm8=; b=r6PoI9GbafoXODI5wpFQtvhqCYIbdZWhsk0Z7ElJJTUKsBQpYn2
-        Ode+YilJeVD+54bk7RO9iqKKs4BCOTDBLtiFlzwsXuUjZJ4lw238xQwiczmAdJzN
-        zG4URauxC33obSxz/QufokFjViTwcpkAE0f3p1MWhipXrmHBvaMIbwysY1HEkQJP
-        gt8UVK2vJabDrD08skXIAitomdPGfiGZfVmk6YG64AabzxdQtMNARqvvM8/7Vuc6
-        LFDFQE1kS0jfbsnDOePr5upmmY+LOTfdB1D+ChYqO4m0bMJGE8gAc20lbo4vWlm7
-        9HBfGHqkL4lSHKNU4riX9/SMIgLDK5qpErA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:content-type:date:date:feedback-id:feedback-id
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1679130492; x=1679216892; bh=sqGrH9AvBNgztCnhiLWyU9ykzV8JgafnPoz
-        z27BeCm8=; b=ALgAwfVlw0rg1LJolgBO63qcgsx6OFhNW/qpu/yH0WuxTh/zFVW
-        hz4XsUN+BPsmsevMcQx5/Y+j3moRBXQZvh+OGY/ZFHZxu5gwa52fQOGDhhne+JBC
-        yopVZXTAmeI5KWGh/YQRlvy6gjNjt6Rj7UEgDglpG5O1iJma72Ee6MYleu9WzBKO
-        mxcyOz/H9uLYeBpkYFWgESy7SY+utKfcs6CLSEl9pOGSLV/zYaDzHVfqfcQSzpud
-        saM/JcZ5vZd1wSioPrhBMKW7X4tkpWS+R1fuVLB084DJW5pQWd9qINeGWWiKdqNP
-        0rVUg5z3fjfASWX6Q4s5543bd2fT6LWPEMw==
-X-ME-Sender: <xms:e38VZGShd-0DmUZZL2czFGIVU6cNCQLHXas-jamhZDGtEiohZ-5uqA>
-    <xme:e38VZLyrFV_amNuf4kGeRmBPFpSwQh6aY-3_6YXpn7SZDlJ31iNJ8tMWIwwi2ls3V
-    avtWbBks-vzGnMqtm8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeffedgudeftdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedf
-    tehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrf
-    grthhtvghrnhepgfekueelgeeigefhudduledtkeefffejueelheelfedutedttdfgveeu
-    feefieegnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:e38VZD1fNUWFvFSbebieEMt9jjii7BSrdlXHfW39Vr3AZW5BOrhwDA>
-    <xmx:e38VZCDHaWJBBexLNNZjXswKto_iKoYKFybnUKa1px71KrBs64Wnhg>
-    <xmx:e38VZPhMtH33aj5xLjWV7vpbamm_R99NGv3irS1neUGf_wFPC8YIGg>
-    <xmx:fH8VZKTgzOFS_XrKE3c73tP9vZTgE_Qyl0wb2H3NlciLVfmYh87-nA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id CD0BEB60086; Sat, 18 Mar 2023 05:08:11 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-221-gec32977366-fm-20230306.001-gec329773
-Mime-Version: 1.0
-Message-Id: <adf72f73-23c9-4260-b649-755af4068a02@app.fastmail.com>
-In-Reply-To: <f21df56b-43b8-a48e-ab8f-e0cf2b163976@gmail.com>
-References: <20230315072902.9298-1-ychuang570808@gmail.com>
- <f2699aa1-4d8a-48c0-b332-484db0b04252@app.fastmail.com>
- <1a1277ac-4ae5-eaab-01c3-0242c12be76b@gmail.com>
- <6ed7e89f-2d2c-4134-9c6f-a9d18e2fc8a8@app.fastmail.com>
- <a90fc6f6-df95-3a4f-da5b-ebdafbe7dd34@linaro.org>
- <f21df56b-43b8-a48e-ab8f-e0cf2b163976@gmail.com>
-Date:   Sat, 18 Mar 2023 10:07:50 +0100
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Jacky Huang" <ychuang570808@gmail.com>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
-        "Michael Turquette" <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        Sat, 18 Mar 2023 07:47:25 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1743E609
+        for <linux-serial@vger.kernel.org>; Sat, 18 Mar 2023 04:47:22 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-59-2y__38tnPk6ZP3ZtTrDFnQ-1; Sat, 18 Mar 2023 11:47:19 +0000
+X-MC-Unique: 2y__38tnPk6ZP3ZtTrDFnQ-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.47; Sat, 18 Mar
+ 2023 11:47:15 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.047; Sat, 18 Mar 2023 11:47:15 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     =?utf-8?B?J0lscG8gSsOkcnZpbmVuJw==?= 
+        <ilpo.jarvinen@linux.intel.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        schung@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
-Subject: Re: [PATCH 00/15] Introduce Nuvoton ma35d1 SoC
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Jiri Slaby <jirislaby@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH v2 2/2] serial: 8250: Fix serial8250_tx_empty() race with
+ DMA Tx
+Thread-Topic: [PATCH v2 2/2] serial: 8250: Fix serial8250_tx_empty() race with
+ DMA Tx
+Thread-Index: AQHZWMRTccAjepUKg0S0Al/dSgkBsq8AalpA
+Date:   Sat, 18 Mar 2023 11:47:15 +0000
+Message-ID: <52fae6e3e7254a96beefd2774f7d6254@AcuMS.aculab.com>
+References: <20230317113318.31327-1-ilpo.jarvinen@linux.intel.com>
+ <20230317113318.31327-3-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20230317113318.31327-3-ilpo.jarvinen@linux.intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Mar 18, 2023, at 04:07, Jacky Huang wrote:
-> On 2023/3/18 =E4=B8=8A=E5=8D=88 12:06, Krzysztof Kozlowski wrote:
->> On 17/03/2023 14:21, Arnd Bergmann wrote:
->>> I only now saw that you had already submitted this several times
->>> at the beginning of last year, and this is technically 'v5'
->>> of the series, and it would make sense to add 'v6' to the subject
->>> next time and link back to the previous [1] and this[2] submission
->>> on lore.kernel.org.
->> ... and address previous feedback. Or at least make it clear in
->> changelog that you addressed it, so our review was not ignored.
->>
->
-> Of course, I will add back the changelog.
->
-> And, I have a question. If subsequent modifications made to a patch,=20
-> should the
->
-> "Reviewed-by" still be valid? Can we keep it?
+RnJvbTogSWxwbyBKw6RydmluZW4NCj4gU2VudDogMTcgTWFyY2ggMjAyMyAxMTozMw0KPiBUbzog
+bGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsgR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hA
+bGludXhmb3VuZGF0aW9uLm9yZz47IEppcmkgU2xhYnkNCj4gDQo+IFRoZXJlJ3MgYSBwb3RlbnRp
+YWwgcmFjZSBiZWZvcmUgVEhSRS9URU1UIGRlYXNzZXJ0cyB3aGVuIERNQSBUeCBpcw0KPiBzdGFy
+dGluZyB1cCAob3IgdGhlIG5leHQgYmF0Y2ggb2YgY29udGludW91cyBUeCBpcyBiZWluZyBzdWJt
+aXR0ZWQpLg0KPiBUaGlzIGNhbiBsZWFkIHRvIG1pc2RldGVjdGluZyBUeCBlbXB0eSBjb25kaXRp
+b24uDQo+IA0KPiBJdCBpcyBlbnRpcmVseSBub3JtYWwgZm9yIFRIUkUvVEVNVCB0byBiZSBzZXQg
+Zm9yIHNvbWUgdGltZSBhZnRlciB0aGUNCj4gRE1BIFR4IGhhZCBiZWVuIHNldHVwIGluIHNlcmlh
+bDgyNTBfdHhfZG1hKCkuIEFzIFR4IHNpZGUgaXMgZGVmaW5pdGVseQ0KPiBub3QgZW1wdHkgYXQg
+dGhhdCBwb2ludCwgaXQgc2VlbXMgaW5jb3JyZWN0IGZvciBzZXJpYWw4MjUwX3R4X2VtcHR5KCkN
+Cj4gY2xhaW0gVHggaXMgZW1wdHkuDQo+IA0KPiBGaXggdGhlIHJhY2UgYnkgYWxzbyBjaGVja2lu
+ZyBpbiBzZXJpYWw4MjUwX3R4X2VtcHR5KCkgd2hldGhlciB0aGVyZSdzDQo+IERNQSBUeCBhY3Rp
+dmUuDQo+IA0KPiBOb3RlOiBUaGlzIGZpeCBvbmx5IGFkZHJlc3NlcyBpbi1rZXJuZWwgcmFjZSBt
+YWlubHkgdG8gbWFrZSB1c2luZw0KPiBUQ1NBRFJBSU4vRkxVU0ggcm9idXN0LiBVc2Vyc3BhY2Ug
+Y2FuIHN0aWxsIGNhdXNlIG90aGVyIHJhY2VzIGJ1dCB0aGV5DQo+IHNlZW0gdXNlcnNwYWNlIGNv
+bmN1cnJlbmN5IGNvbnRyb2wgcHJvYmxlbXMuDQoNCkxvb2tzIGJldHRlciwgYnV0IEknbSBub3Qg
+c3VyZSBpdCBhY3R1YWxseSB3b3Jrcy4NCg0KSWYgaW50ZXJydXB0cyBhcmUgYmVpbmcgdXNlZCB0
+byBjb3B5IGRhdGEgdG8gdGhlIHR4IGZpZm8gdGhlbg0KKGRlcGVuZGluZyBvbiBpbnRlcnJ1cHQg
+bGF0ZW5jeSBhbmQgZXhhY3RseSB3aGVuIHRoZSBpbnRlcnJ1cHQNCmlzIHJlcXVlc3RlZCkgdGhl
+IGNvZGUgbWlnaHQgcmVwb3J0ICd0eCBlbXB0eScgd2hlbiB0aGUgSVNSDQppcyBhYm91dCB0byBj
+b3B5IGluIG1vcmUgZGF0YS4NCg0KTm93IHRoZSBkcmFpbi9mbHVzaCBjb2RlIG1pZ2h0IGFscmVh
+ZHkgaGF2ZSBjaGVja2VkIHRoZXJlIGlzDQpubyBtb3JlIGRhdGEgcXVldWVkIGluIHRoZSBkcml2
+ZXIgYmVmb3JlIGNhbGxpbmcgdGhpcywNCmJ1dCBtb3JlIGdlbmVyYWxseSBzaG91bGRuJ3QgaXQg
+YmUgY2hlY2tpbmc6DQoJbm9fZGF0YV9xdWV1ZWRfaW5fZHJpdmVyICYmIGhhcmR3YXJlX2ZpZm9f
+ZW1wdHkuDQoNCkFueSAnbm9fZGF0YV9xdWV1ZWRfaW5fZHJpdmVyJyBjaGVjayB3b3VsZCBwcm9i
+YWJseSBpbmNsdWRlDQpkYXRhIHRoYXQgZG1hIGlzIGNvcHlpbmcgLSBzbyB0aGUgZXhwbGljaXQg
+ZG1hIGNoZWNrIG1pZ2h0DQpub3QgYmUgbmVlZGVkLg0KDQoJRGF2aWQNCg0KPiANCj4gRml4ZXM6
+IDllZTRiODNlNTFmNzQgKCJzZXJpYWw6IDgyNTA6IEFkZCBzdXBwb3J0IGZvciBkbWFlbmdpbmUi
+KQ0KPiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KPiBTaWduZWQtb2ZmLWJ5OiBJbHBvIErD
+pHJ2aW5lbiA8aWxwby5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVy
+cy90dHkvc2VyaWFsLzgyNTAvODI1MC5oICAgICAgfCAxMiArKysrKysrKysrKysNCj4gIGRyaXZl
+cnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jIHwgIDcgKysrKy0tLQ0KPiAgMiBmaWxlcyBj
+aGFuZ2VkLCAxNiBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTAuaCBiL2RyaXZlcnMvdHR5L3NlcmlhbC84
+MjUwLzgyNTAuaA0KPiBpbmRleCAyODcxNTNkMzI1MzYuLjFlOGZlNDRhNzA5OSAxMDA2NDQNCj4g
+LS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MC5oDQo+ICsrKyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC84MjUwLzgyNTAuaA0KPiBAQCAtMzY1LDYgKzM2NSwxMyBAQCBzdGF0aWMgaW5saW5l
+IHZvaWQgc2VyaWFsODI1MF9kb19wcmVwYXJlX3J4X2RtYShzdHJ1Y3QgdWFydF84MjUwX3BvcnQg
+KnApDQo+ICAJaWYgKGRtYS0+cHJlcGFyZV9yeF9kbWEpDQo+ICAJCWRtYS0+cHJlcGFyZV9yeF9k
+bWEocCk7DQo+ICB9DQo+ICsNCj4gK3N0YXRpYyBpbmxpbmUgYm9vbCBzZXJpYWw4MjUwX3R4X2Rt
+YV9ydW5uaW5nKHN0cnVjdCB1YXJ0XzgyNTBfcG9ydCAqcCkNCj4gK3sNCj4gKwlzdHJ1Y3QgdWFy
+dF84MjUwX2RtYSAqZG1hID0gcC0+ZG1hOw0KPiArDQo+ICsJcmV0dXJuIGRtYSAmJiBkbWEtPnR4
+X3J1bm5pbmc7DQo+ICt9DQo+ICAjZWxzZQ0KPiAgc3RhdGljIGlubGluZSBpbnQgc2VyaWFsODI1
+MF90eF9kbWEoc3RydWN0IHVhcnRfODI1MF9wb3J0ICpwKQ0KPiAgew0KPiBAQCAtMzgwLDYgKzM4
+NywxMSBAQCBzdGF0aWMgaW5saW5lIGludCBzZXJpYWw4MjUwX3JlcXVlc3RfZG1hKHN0cnVjdCB1
+YXJ0XzgyNTBfcG9ydCAqcCkNCj4gIAlyZXR1cm4gLTE7DQo+ICB9DQo+ICBzdGF0aWMgaW5saW5l
+IHZvaWQgc2VyaWFsODI1MF9yZWxlYXNlX2RtYShzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApIHsg
+fQ0KPiArDQo+ICtzdGF0aWMgaW5saW5lIGJvb2wgc2VyaWFsODI1MF90eF9kbWFfcnVubmluZyhz
+dHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApDQo+ICt7DQo+ICsJcmV0dXJuIGZhbHNlOw0KPiArfQ0K
+PiAgI2VuZGlmDQo+IA0KPiAgc3RhdGljIGlubGluZSBpbnQgbnMxNjU1MGFfZ290b19oaWdoc3Bl
+ZWQoc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCkNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5
+L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9w
+b3J0LmMNCj4gaW5kZXggZmE0M2RmMDUzNDJiLi4xMDdiY2RmYjExOWMgMTAwNjQ0DQo+IC0tLSBh
+L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jDQo+ICsrKyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5jDQo+IEBAIC0yMDA1LDE4ICsyMDA1LDE5IEBAIHN0YXRp
+YyBpbnQgc2VyaWFsODI1MF90eF90aHJlc2hvbGRfaGFuZGxlX2lycShzdHJ1Y3QgdWFydF9wb3J0
+ICpwb3J0KQ0KPiAgc3RhdGljIHVuc2lnbmVkIGludCBzZXJpYWw4MjUwX3R4X2VtcHR5KHN0cnVj
+dCB1YXJ0X3BvcnQgKnBvcnQpDQo+ICB7DQo+ICAJc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCA9
+IHVwX3RvX3U4MjUwcChwb3J0KTsNCj4gKwl1bnNpZ25lZCBpbnQgcmVzdWx0ID0gMDsNCj4gIAl1
+bnNpZ25lZCBsb25nIGZsYWdzOw0KPiAtCXUxNiBsc3I7DQo+IA0KPiAgCXNlcmlhbDgyNTBfcnBt
+X2dldCh1cCk7DQo+IA0KPiAgCXNwaW5fbG9ja19pcnFzYXZlKCZwb3J0LT5sb2NrLCBmbGFncyk7
+DQo+IC0JbHNyID0gc2VyaWFsX2xzcl9pbih1cCk7DQo+ICsJaWYgKCFzZXJpYWw4MjUwX3R4X2Rt
+YV9ydW5uaW5nKHVwKSAmJiB1YXJ0X2xzcl90eF9lbXB0eShzZXJpYWxfbHNyX2luKHVwKSkpDQo+
+ICsJCXJlc3VsdCA9IFRJT0NTRVJfVEVNVDsNCj4gIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZw
+b3J0LT5sb2NrLCBmbGFncyk7DQo+IA0KPiAgCXNlcmlhbDgyNTBfcnBtX3B1dCh1cCk7DQo+IA0K
+PiAtCXJldHVybiB1YXJ0X2xzcl90eF9lbXB0eShsc3IpID8gVElPQ1NFUl9URU1UIDogMDsNCj4g
+KwlyZXR1cm4gcmVzdWx0Ow0KPiAgfQ0KPiANCj4gIHVuc2lnbmVkIGludCBzZXJpYWw4MjUwX2Rv
+X2dldF9tY3RybChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiAtLQ0KPiAyLjMwLjINCg0KLQ0K
+UmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1p
+bHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVz
+KQ0K
 
-In general yes, but it's a bit of a grey area and you have
-to apply common sense. Examples where I would drop the
-Reviewed-by tag are
-
-- if you changed something based on feedback from a reviewer and
-  they provided a Reviewed-by tag based on that changed, but then
-  another person asked you change the same thing differently, or
-  back to the original version
-
-- if you combine a patch with another one that was not also
-  reviewed by the same person.
-
-      Arnd
