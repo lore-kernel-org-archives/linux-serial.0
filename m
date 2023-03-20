@@ -2,43 +2,40 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA7CC6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADF9C7618E
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 18:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbjCTQgQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 12:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
+        id S229892AbjCTSkr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 14:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231786AbjCTQfc (ORCPT
+        with ESMTP id S231640AbjCTSkO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 12:35:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749F112046;
-        Mon, 20 Mar 2023 09:29:07 -0700 (PDT)
+        Mon, 20 Mar 2023 14:40:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E2434C07;
+        Mon, 20 Mar 2023 11:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6A147CE1307;
-        Mon, 20 Mar 2023 16:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758DDC433A0;
-        Mon, 20 Mar 2023 16:28:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C00561796;
+        Mon, 20 Mar 2023 18:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47034C4339E;
+        Mon, 20 Mar 2023 18:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679329744;
-        bh=kjNE+xZqCrD8iMoVdwZ7yuZZfBEJymUt10XwIxYh2IY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Vv4sNgoQPQYZIt80kDvbscTGV8EyAOBLnvQJNKOVjOIWof8MSUsP1pcxCF0mz9ilD
-         QdNVhF/zy/ob6sZsf7Np9llMREtIsDd3VQEp4F26Of52jZ44R5ryPsOTBtdIMQ1AE3
-         8dugyBf2AOcS1qqBnqPzyb8hdBKvxChJ65hR7ns4FF8TnD9anxfVvrRrE8LbXM1ve5
-         QeLODxSRqLl/EnwXRwUB96JZfcfb4trlUcc8RSaE5/6lvDa6NAaYzoT08VoT55/Onn
-         37iXDFAs1+YyXU9uqijre8jtsuOUDS2/Zhf52EXBvYN8x3ECX6pphoxUdsqZ4YacrU
-         +51lo3tKKklTA==
-Date:   Mon, 20 Mar 2023 16:28:56 +0000
+        s=k20201202; t=1679337111;
+        bh=1k2HdZd7GXcK9Rf8Iw4VOgSYsoDP5B0+bCp15WVe8Ss=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Tm7liQ/nAFkV3CyP8a5RNECtveLtuaotxTZ21TXsgIzjk1jw7OqCcVuv5NSZClLep
+         A+YM+EoDWvAq/odu/8f8PeyGDE0GTZ7mII3jhBhwbOwFwfve8X9bPGiPxOZYoicIRJ
+         20oCl/tDXbBYel8S0o+06wWKtlPcbSkhLyu5fEfx2owYwn11EaGWcMfhLn5S7E4/+M
+         eqQBsPmIEofHdZei6aya7XgzWnYrNqKzbu9V9UWiKA/U6KKAnVB4hg8gyW270SN6hT
+         105QGLl+bxcHLDrriY5dCPHD1av/R5D9e7OdcgqJJYlemAvgytJV6awT6gwaLTENb6
+         zrw/M/zLSUxFA==
 From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+To:     Sudeep Holla <sudeep.holla@arm.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
@@ -51,63 +48,72 @@ Cc:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Daniel Drake <drake@endlessm.com>,
         Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
         linux-riscv@lists.infradead.org, kernel@collabora.com
-Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
- dma-names order constraint
-Message-ID: <3f544569-553c-40c5-9d9a-31dfc48d06a4@sirena.org.uk>
+In-Reply-To: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
 References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
- <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
- <167904851367.26.16449705310108549543@mailman-core.alsa-project.org>
- <20230320155812.GA1755078-robh@kernel.org>
+Subject: Re: (subset) [PATCH 00/11] Enable I2S support for RK3588/RK3588S
+ SoCs
+Message-Id: <167933710700.198283.8153226214101331490.b4-ty@kernel.org>
+Date:   Mon, 20 Mar 2023 18:31:47 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="SSpxkFyPmL3iEqN+"
-Content-Disposition: inline
-In-Reply-To: <20230320155812.GA1755078-robh@kernel.org>
-X-Cookie: Keep away from fire or flame.
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.13-dev-bd1bf
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, 15 Mar 2023 13:47:55 +0200, Cristian Ciocaltea wrote:
+> There are five I2S/PCM/TDM controllers and two I2S/PCM controllers embedded
+> in the RK3588 and RK3588S SoCs. Furthermore, RK3588 provides four additional
+> I2S/PCM/TDM controllers.
+> 
+> This patch series adds the required device tree nodes to support all the above.
+> 
+> Additionally, it enables analog audio support for the Rock 5B SBC, which has
+> been used to test both audio playback and recording.
+> 
+> [...]
 
---SSpxkFyPmL3iEqN+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied to
 
-On Mon, Mar 20, 2023 at 10:58:12AM -0500, Rob Herring wrote:
-> On Fri, Mar 17, 2023 at 12:21:41PM +0200, Cristian Ciocaltea via Alsa-dev=
-el wrote:
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-> >  dma-names order constraint
-> > Message-ID: <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
-> > User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
-> >  Thunderbird/102.7.2
+Thanks!
 
-> There is something strange going on with your mails as there are 2=20
-> copies in the archives with the 2nd one getting the header twice. It's=20
-> coming from the alsa-devel list.
+[03/11] ASoC: dt-bindings: everest,es8316: Document audio graph port
+        commit: 2f43ef99ac623b6d9154c26d4f6785df18b4d8e4
+[04/11] ASoC: dt-bindings: rockchip: Document audio graph port
+        commit: bf4062b7420d01b4fafd7211fd2dc68b916591bd
+[05/11] ASoC: dt-bindings: rockchip: i2s-tdm: Document audio graph port
+        commit: bfbae373c55e3b1c15a6ba656211dbbe7c390aa1
+[06/11] ASoC: dt-bindings: rockchip: i2s-tdm: Document power-domains
+        commit: 9971f3358338950d9d3345184fb2c0cfc6fc8552
+[07/11] ASoC: dt-bindings: rockchip: Add compatible for RK3588
+        commit: b0fe6a91fa9d5599ba3cace2748906e086c5a56e
+[08/11] ASoC: rockchip: i2s: Add compatible for RK3588
+        commit: 0e6c37610934e9b91f6f5f2599de5e2f1ab59e72
 
-This is probably caused by alsa-devel, it'll be mailman rewriting bits
-of the message.  There's stuff coming up with other people's mails too.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
---SSpxkFyPmL3iEqN+
-Content-Type: application/pgp-signature; name="signature.asc"
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
------BEGIN PGP SIGNATURE-----
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmQYiccACgkQJNaLcl1U
-h9AWWgf+NrPa0MYP5i63yT+84rj5CMEVq9erNCfVLLi4aX7Rk2t3p7OHm6nPT5iH
-nEuh1CIOa+avBw3wouVQt6nokWi+mq6QbmYustWX7hPq0Gz2FRTJyXl78DNWj8Ys
-fZ4osjdXbr7f0Sa5lZVvImuVpGh7z03Fg9XbLkMXt7FDacubv1DY6RwJdphesoG7
-C99xjwHv55veTyp/QbwCuyctpKWo1Dn4HvkL8XU//892rRaHt6enBBju6DWo8GTF
-tr89XuM3flXYbOGumon2KSlsbzAXV7QKwnK9RCPsLaXuvO36PRBMippV/VmwnJCh
-dYBmTNrePnumx6r2BbCzk0Gx8LMfdw==
-=+3s7
------END PGP SIGNATURE-----
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
---SSpxkFyPmL3iEqN+--
+Thanks,
+Mark
+
