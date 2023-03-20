@@ -2,203 +2,358 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07326C7618A
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 09:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27204C7618A
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 09:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbjCTJA0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 05:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
+        id S231256AbjCTJnY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 05:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbjCTJAZ (ORCPT
+        with ESMTP id S231263AbjCTJnL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 05:00:25 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1888974A;
-        Mon, 20 Mar 2023 02:00:22 -0700 (PDT)
+        Mon, 20 Mar 2023 05:43:11 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FED81449E;
+        Mon, 20 Mar 2023 02:42:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679302822; x=1710838822;
+  t=1679305376; x=1710841376;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=Ds82R3aLyID+1VGsHfWdZtKBC3BhEztxpsHjVaC2+mo=;
-  b=m3VUY8T8FE7Ck8tmhBFNc9EF2gGfM1x0LSNbvgN6OHjQDxQcUpSREzKD
-   LxjxzfXOIQl+ZKQuXNN3Sm4O1UD349NY5rn0SkuDiXPRSvYY0a9i9zJaR
-   qlNp3BoaMaCdiHz8BKiQttHBfQzJh4h+NDk/6b86t5NM5gJZcPPTF1ZeH
-   yUaxvurr0GUHpDN2Lhw3FrWvFyDU7PlHnezMCRR8ibj57xsdtZ37/aB0j
-   ulq1HDhsv0KF777LTJHxPac+jtC5G6VXpw3E2hwPDH0l5793z/aBd36dv
-   LHMEjx7kanu35s0xJZXTJ5Ks+w3bXsOmgk9ixCJGp8ZNmtsMYv0P2CUrg
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="338635707"
+   references:mime-version;
+  bh=RbtSMMS+dHu2r2jUrf9VmNBe6O1aIOF19pAoLDXXhRk=;
+  b=P5fLVB4A6K2yysp0R8HE/ydpyGEnS9uVasrwxtI9pVURDpCYGbmefByg
+   WpQFinmoBywKK2ciK737+l75YCseSXmdQMyyk03ZZFBPa9tCxOzzOL+D4
+   Bb5WoZ8p9mXDPU8laMlikmhKyHbr86l8ub/jLeK9mFFR6Qyxan2d9jI+d
+   nkVNX6CgLHbrfsEye8bCx+VUvAgZtRAgn01hjfkAgQA31+xNeDIpPrVYe
+   k3CihzOTZmUOnen+I+UUSGqE0RFyplK0yyTRj7+2fKhyP3JgvRNUCbYUV
+   ZQUZnK4M/84pSivJduhFU9IMGJ27kvovp+F1rEpFhmpNtK7UWIJFF7c9P
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="336120094"
 X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="338635707"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 02:00:22 -0700
+   d="scan'208";a="336120094"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 02:42:55 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="674279824"
+X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="713517706"
 X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="674279824"
+   d="scan'208";a="713517706"
 Received: from mbouhaou-mobl1.ger.corp.intel.com ([10.252.61.151])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 02:00:20 -0700
-Date:   Mon, 20 Mar 2023 11:00:11 +0200 (EET)
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 02:42:50 -0700
+Date:   Mon, 20 Mar 2023 11:42:48 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+To:     Chia-Wei Wang <chiawei_wang@aspeedtech.com>
+cc:     vkoul@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au, andrew@aj.id.au,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH v2 2/2] serial: 8250: Fix serial8250_tx_empty() race with
- DMA Tx
-In-Reply-To: <52fae6e3e7254a96beefd2774f7d6254@AcuMS.aculab.com>
-Message-ID: <396842cd-4ed5-cd46-6d13-c258c3fb836f@linux.intel.com>
-References: <20230317113318.31327-1-ilpo.jarvinen@linux.intel.com> <20230317113318.31327-3-ilpo.jarvinen@linux.intel.com> <52fae6e3e7254a96beefd2774f7d6254@AcuMS.aculab.com>
+        Jiri Slaby <jirislaby@kernel.org>, pmenzel@molgen.mpg.de,
+        hdanton@sina.com, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v3 4/5] serial: 8250: Add AST2600 UART driver
+In-Reply-To: <20230320081133.23655-5-chiawei_wang@aspeedtech.com>
+Message-ID: <10864478-99cb-e2cd-8e7b-95c6dca677e8@linux.intel.com>
+References: <20230320081133.23655-1-chiawei_wang@aspeedtech.com> <20230320081133.23655-5-chiawei_wang@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1060030904-1679300990=:2177"
-Content-ID: <276915e2-fe2f-7337-97b5-4e58ad22bf7@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, 20 Mar 2023, Chia-Wei Wang wrote:
 
---8323329-1060030904-1679300990=:2177
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <e5ed4fa8-e9d2-1886-f1cc-3e9f17d5eb3e@linux.intel.com>
-
-On Sat, 18 Mar 2023, David Laight wrote:
-
-> From: Ilpo Järvinen
-> > Sent: 17 March 2023 11:33
-> > To: linux-serial@vger.kernel.org; Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby
-> > 
-> > There's a potential race before THRE/TEMT deasserts when DMA Tx is
-> > starting up (or the next batch of continuous Tx is being submitted).
-> > This can lead to misdetecting Tx empty condition.
-> > 
-> > It is entirely normal for THRE/TEMT to be set for some time after the
-> > DMA Tx had been setup in serial8250_tx_dma(). As Tx side is definitely
-> > not empty at that point, it seems incorrect for serial8250_tx_empty()
-> > claim Tx is empty.
-> > 
-> > Fix the race by also checking in serial8250_tx_empty() whether there's
-> > DMA Tx active.
-> > 
-> > Note: This fix only addresses in-kernel race mainly to make using
-> > TCSADRAIN/FLUSH robust. Userspace can still cause other races but they
-> > seem userspace concurrency control problems.
+> Add new UART driver with DMA support for Aspeed AST2600 SoCs.
+> The drivers mainly prepare the dma instance based on the 8250_dma
+> implementation to leverage the AST2600 UART DMA (UDMA) engine.
 > 
-> Looks better, but I'm not sure it actually works.
+> Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
+> ---
+>  drivers/tty/serial/8250/8250_aspeed.c | 224 ++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig       |   8 +
+>  drivers/tty/serial/8250/Makefile      |   1 +
+>  3 files changed, 233 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_aspeed.c
 > 
-> If interrupts are being used to copy data to the tx fifo then
-> (depending on interrupt latency and exactly when the interrupt
-> is requested) the code might report 'tx empty' when the ISR
-> is about to copy in more data.
->
-> Now the drain/flush code might already have checked there is
-> no more data queued in the driver before calling this,
+> diff --git a/drivers/tty/serial/8250/8250_aspeed.c b/drivers/tty/serial/8250/8250_aspeed.c
+> new file mode 100644
+> index 000000000000..04d0bf6fba28
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_aspeed.c
+> @@ -0,0 +1,224 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) ASPEED Technology Inc.
+> + */
+> +#include <linux/device.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/serial_8250.h>
+> +#include <linux/serial_reg.h>
+> +#include <linux/of.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/clk.h>
+> +#include <linux/reset.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/circ_buf.h>
+> +#include <linux/tty_flip.h>
+> +#include <linux/pm_runtime.h>
+> +
+> +#include "8250.h"
+> +
+> +#define DEVICE_NAME "aspeed-uart"
+> +
+> +struct ast8250_data {
+> +	int line;
+> +	int irq;
+> +	u8 __iomem *regs;
+> +	struct reset_control *rst;
+> +	struct clk *clk;
+> +#ifdef CONFIG_SERIAL_8250_DMA
+> +	struct uart_8250_dma dma;
+> +#endif
+> +};
+> +
+> +#ifdef CONFIG_SERIAL_8250_DMA
+> +static int ast8250_rx_dma(struct uart_8250_port *p);
+> +
+> +static void ast8250_rx_dma_complete(void *param)
+> +{
+> +	struct uart_8250_port *p = param;
+> +	struct uart_8250_dma *dma = p->dma;
+> +	struct tty_port *tty_port = &p->port.state->port;
+> +	struct dma_tx_state	state;
+> +	int	count;
+> +
+> +	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> +
+> +	count = dma->rx_size - state.residue;
+> +
+> +	tty_insert_flip_string(tty_port, dma->rx_buf, count);
+> +	p->port.icount.rx += count;
+> +
+> +	tty_flip_buffer_push(tty_port);
+> +
+> +	ast8250_rx_dma(p);
+> +}
+> +
+> +static int ast8250_rx_dma(struct uart_8250_port *p)
+> +{
+> +	struct uart_8250_dma *dma = p->dma;
+> +	struct dma_async_tx_descriptor *tx;
+> +
+> +	tx = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+> +					 dma->rx_size, DMA_DEV_TO_MEM,
+> +					 DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+> +	if (!tx)
+> +		return -EBUSY;
 
-Thanks for taking a look, it's really appreciated.
+How does the DMA Rx "loop" restart when this is taken?
 
-Yes, set_termios() checks for tty_chars_in_buffer() which calls into 
-serial_core's ->chars_in_buffer(). This does check 
-uart_circ_chars_pending() so it's not possible to have such chars in the 
-circular buffer in the drain/flush case.
+> +	tx->callback = ast8250_rx_dma_complete;
+> +	tx->callback_param = p;
+> +
+> +	dma->rx_cookie = dmaengine_submit(tx);
+> +
+> +	dma_async_issue_pending(dma->rxchan);
+> +
+> +	return 0;
+> +}
+> +#endif
 
-> but more generally shouldn't it be checking:
-> 	no_data_queued_in_driver && hardware_fifo_empty.
-> 
-> Any 'no_data_queued_in_driver' check would probably include
-> data that dma is copying - so the explicit dma check might
-> not be needed.
+These 2 functions look very similar to what 8250_dma offers for you. The 
+only difference I could see is that always start DMA Rx thing which could 
+be handled by adding some capability flag into uart_8250_dma for those 
+UARTs that can launch DMA Rx while Rx queue is empty.
 
-What for you'd want this change? Refactor the code? uart_get_lsr_info() 
-already does check for uart_circ_chars_pending() so what you'd want more?
+So, just use the standard 8250_dma functions and make the small 
+capabilities flag tweak there. 
 
-I suppose uart_get_lsr_info() should hold port's lock across the checks 
-though, having that wishful comment about a racing interrupt messing 
-things up doesn't really help that much :-).
+By using the stock functions you also avoid 8250_dma Rx and your DMA Rx 
+racing like they currently would (8250_port assigns the functions from 
+8250_dma when you don't specify the rx handler and the default 8250 irq 
+handler will call into those standard 8250 DMA functions).
 
-Also, now that I looked into uart_get_lsr_info() I guess 
-uart_chars_in_buffer() should also consider x_char like 
-uart_get_lsr_info() does.
+
+I'm curious about this HW and how it behaves under these two scenarios:
+- When Rx is empty, does UART/DMA just sit there waiting forever?
+- When a stream of incoming Rx characters suddenly ends, how does UART/DMA
+  react? ...On 8250 UARTs I'm familiar with this triggers UART_IIR_TIMEOUT
+  which you don't seem to handle.
+
+When you provide answer to those two questions, I can try to help you 
+further on how to integrate into the standard 8250 DMA code.
+
+> +static int ast8250_handle_irq(struct uart_port *port)
+> +{
+> +	return serial8250_handle_irq(port, serial_port_in(port, UART_IIR));
+> +}
+> +
+> +static int ast8250_startup(struct uart_port *port)
+> +{
+> +#ifdef CONFIG_SERIAL_8250_DMA
+
+This ifdef'fery is entirely unnecessary.
+
+> +	int rc;
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+
+Reverse xmas tree order.
+
+> +
+> +	rc = serial8250_do_startup(port);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/*
+> +	 * The default RX DMA is launched upon rising DR bit.
+> +	 *
+> +	 * However, this can result in byte lost if UART FIFO has
+> +	 * been overruned before the DMA engine gets prepared and
+> +	 * read the data out. This is especially common when UART
+> +	 * DMA is used for file transfer. Thus we initiate RX DMA
+> +	 * as early as possible.
+> +	 */
+> +	if (up->dma)
+> +		return ast8250_rx_dma(up);
+
+Once you start using the general 8250 dma code and add the DMA Rx always
+capabilities flag, this can go into serial8250_do_startup(). Since 
+serial8250_rx_dma() always exists independent of CONFIG_SERIAL_8250_DMA, 
+no include guards are necessary.
+
+...After which you probably don't need this whole function anymore.
+
+> +
+> +	return 0;
+> +#else
+> +	return serial8250_do_startup(port);
+> +#endif
+> +}
+> +
+> +static void ast8250_shutdown(struct uart_port *port)
+> +{
+> +	return serial8250_do_shutdown(port);
+> +}
+> +
+> +static int ast8250_probe(struct platform_device *pdev)
+> +{
+> +	int rc;
+
+Put this as last.
+
+> +	struct uart_8250_port uart = {};
+> +	struct uart_port *port = &uart.port;
+> +	struct device *dev = &pdev->dev;
+> +	struct ast8250_data *data;
+> +	struct resource *res;
+> +
+> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->irq = platform_get_irq(pdev, 0);
+> +	if (data->irq < 0)
+> +		return data->irq;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (res == NULL) {
+> +		dev_err(dev, "failed to get register base\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	data->regs = devm_ioremap(dev, res->start, resource_size(res));
+> +	if (IS_ERR(data->regs)) {
+> +		dev_err(dev, "failed to map registers\n");
+> +		return PTR_ERR(data->regs);
+> +	}
+> +
+> +	data->clk = devm_clk_get(dev, NULL);
+> +	if (IS_ERR(data->clk)) {
+> +		dev_err(dev, "failed to get clocks\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	rc = clk_prepare_enable(data->clk);
+> +	if (rc) {
+> +		dev_err(dev, "failed to enable clock\n");
+> +		return rc;
+> +	}
+> +
+> +	data->rst = devm_reset_control_get_optional_exclusive(dev, NULL);
+> +	if (!IS_ERR(data->rst))
+> +		reset_control_deassert(data->rst);
+> +
+> +	spin_lock_init(&port->lock);
+> +	port->dev = dev;
+> +	port->type = PORT_16550A;
+> +	port->irq = data->irq;
+> +	port->line = of_alias_get_id(dev->of_node, "serial");
+> +	port->handle_irq = ast8250_handle_irq;
+> +	port->mapbase = res->start;
+> +	port->mapsize = resource_size(res);
+> +	port->membase = data->regs;
+> +	port->uartclk = clk_get_rate(data->clk);
+> +	port->regshift = 2;
+> +	port->iotype = UPIO_MEM32;
+> +	port->flags = UPF_FIXED_TYPE | UPF_FIXED_PORT | UPF_SHARE_IRQ;
+> +	port->startup = ast8250_startup;
+> +	port->shutdown = ast8250_shutdown;
+> +	port->private_data = data;
+
+> +#ifdef CONFIG_SERIAL_8250_DMA
+> +	data->dma.rxconf.src_maxburst = UART_XMIT_SIZE;
+> +	data->dma.txconf.dst_maxburst = UART_XMIT_SIZE;
+> +	uart.dma = &data->dma;
+> +#endif
+
+Add a setup function for this and make an empty function with the same 
+name when CONFIG_SERIAL_8250_DMA is not there.
+
+> +
+> +	data->line = serial8250_register_8250_port(&uart);
+> +	if (data->line < 0) {
+> +		dev_err(dev, "failed to register 8250 port\n");
+> +		return data->line;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, data);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ast8250_remove(struct platform_device *pdev)
+> +{
+> +	struct ast8250_data *data = platform_get_drvdata(pdev);
+> +
+> +	serial8250_unregister_port(data->line);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ast8250_of_match[] = {
+> +	{ .compatible = "aspeed,ast2600-uart" },
+> +	{ },
+> +};
+> +
+> +static struct platform_driver ast8250_platform_driver = {
+> +	.driver = {
+> +		.name = DEVICE_NAME,
+> +		.of_match_table = ast8250_of_match,
+> +	},
+> +	.probe = ast8250_probe,
+> +	.remove = ast8250_remove,
+> +};
+> +
+> +module_platform_driver(ast8250_platform_driver);
+> +
+> +MODULE_AUTHOR("Chia-Wei Wang <chiawei_wang@aspeedtech.com>");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("Aspeed 8250 UART Driver with DMA support");
 
 
 -- 
  i.
 
-> > Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > ---
-> >  drivers/tty/serial/8250/8250.h      | 12 ++++++++++++
-> >  drivers/tty/serial/8250/8250_port.c |  7 ++++---
-> >  2 files changed, 16 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> > index 287153d32536..1e8fe44a7099 100644
-> > --- a/drivers/tty/serial/8250/8250.h
-> > +++ b/drivers/tty/serial/8250/8250.h
-> > @@ -365,6 +365,13 @@ static inline void serial8250_do_prepare_rx_dma(struct uart_8250_port *p)
-> >  	if (dma->prepare_rx_dma)
-> >  		dma->prepare_rx_dma(p);
-> >  }
-> > +
-> > +static inline bool serial8250_tx_dma_running(struct uart_8250_port *p)
-> > +{
-> > +	struct uart_8250_dma *dma = p->dma;
-> > +
-> > +	return dma && dma->tx_running;
-> > +}
-> >  #else
-> >  static inline int serial8250_tx_dma(struct uart_8250_port *p)
-> >  {
-> > @@ -380,6 +387,11 @@ static inline int serial8250_request_dma(struct uart_8250_port *p)
-> >  	return -1;
-> >  }
-> >  static inline void serial8250_release_dma(struct uart_8250_port *p) { }
-> > +
-> > +static inline bool serial8250_tx_dma_running(struct uart_8250_port *p)
-> > +{
-> > +	return false;
-> > +}
-> >  #endif
-> > 
-> >  static inline int ns16550a_goto_highspeed(struct uart_8250_port *up)
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > index fa43df05342b..107bcdfb119c 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -2005,18 +2005,19 @@ static int serial8250_tx_threshold_handle_irq(struct uart_port *port)
-> >  static unsigned int serial8250_tx_empty(struct uart_port *port)
-> >  {
-> >  	struct uart_8250_port *up = up_to_u8250p(port);
-> > +	unsigned int result = 0;
-> >  	unsigned long flags;
-> > -	u16 lsr;
-> > 
-> >  	serial8250_rpm_get(up);
-> > 
-> >  	spin_lock_irqsave(&port->lock, flags);
-> > -	lsr = serial_lsr_in(up);
-> > +	if (!serial8250_tx_dma_running(up) && uart_lsr_tx_empty(serial_lsr_in(up)))
-> > +		result = TIOCSER_TEMT;
-> >  	spin_unlock_irqrestore(&port->lock, flags);
-> > 
-> >  	serial8250_rpm_put(up);
-> > 
-> > -	return uart_lsr_tx_empty(lsr) ? TIOCSER_TEMT : 0;
-> > +	return result;
-> >  }
-> > 
-> >  unsigned int serial8250_do_get_mctrl(struct uart_port *port)
-> > --
-> > 2.30.2
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
---8323329-1060030904-1679300990=:2177--
