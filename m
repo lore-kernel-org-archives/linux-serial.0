@@ -2,91 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C5AC6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F89C7618A
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjCTQPF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 12:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
+        id S230200AbjCTQRt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 12:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229744AbjCTQOX (ORCPT
+        with ESMTP id S229952AbjCTQR1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 12:14:23 -0400
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B68410AB;
-        Mon, 20 Mar 2023 09:04:18 -0700 (PDT)
-Received: by mail-oi1-f172.google.com with SMTP id r27so2293177oij.9;
-        Mon, 20 Mar 2023 09:04:18 -0700 (PDT)
+        Mon, 20 Mar 2023 12:17:27 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086D930191;
+        Mon, 20 Mar 2023 09:07:15 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-17ac5ee3f9cso13438324fac.12;
+        Mon, 20 Mar 2023 09:07:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679328214;
+        d=1e100.net; s=20210112; t=1679328101;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aykrVk11PH84fM2GSSqZSCXIg7R/09zXllx+hc7KgiE=;
-        b=cbfyuEuEdqX6NwGJt5L1DIRIdmO9KLrtYRl8tHxWgBVgNkT3nvwGH+WnICQCbYel92
-         0bjYuNZtP8vJ9GdwK5TB2QBnGklVX9KVofuUgwiB22AmjLXReWlJTTOSJfLchD+v+k6h
-         SesHv7MWhz5rPAHvmkXc/vUSEtB5DG3MEyRKlyH5zW5NV+Na/WRyDWEU4lkSB9VaAP9q
-         7LgAP5grcSWiGn4bYWnCCoyWZfFNiXhjybzW+awQOFqwxYWcDYax7W+2MgvDr20L2+Xt
-         /JkW0QwPfEHd6FdceWp0OlEGItdQEtlQ4una1hjntMsWREPeV3cZpRdBhxpvudb0bPCW
-         Ebhw==
-X-Gm-Message-State: AO0yUKUG5a4sEv28ffNADiSBPV3FH765RhnXE+ObR7LrkFn+fhc2h2Cn
-        8HvNGfYbl13kVdxp4iG3zw==
-X-Google-Smtp-Source: AK7set9ZC/44ndn2AZ6WEHBP02JZbPv8blbEpBCxNo4pJk573f1aK48pBSdsvLxsUX2DiFnh9mSSkw==
-X-Received: by 2002:a05:6808:6286:b0:386:c6ca:2b1e with SMTP id du6-20020a056808628600b00386c6ca2b1emr181632oib.7.1679328213843;
-        Mon, 20 Mar 2023 09:03:33 -0700 (PDT)
+        bh=Ycdbh/3im0d0MXCRS+MVRgOfUwsMwW5wd9W+JCKfV/o=;
+        b=E+Pr8u9gmHBQZTNZQpUc9GvmZnrdszR9iS+GmECWvFOGiFG58/sXvKMBj66J9oYgrF
+         Ax3wqSdk2q7Gv/Ewv0qKdreErNrtDXfMenESWsR5yB1b+hmUtAtq7ypozTdq0kMv5mHb
+         SoTrRSsxM7BigWl6S73GK8jB/+JZATNbTt0hyjitN9HaLeaV/UjKXIsru+WJMcYfI6Qt
+         bfMEn87SzBcSPYrQXaTDGP4oZf+vJDHOE8zOnYHAlKgzFElKGkvJpsXWNc6SKg6g5Ptd
+         hYmAl/3pF6eXUa4UKxtjHhAJyVX+oSRvnTbUjWfkX8LZ0Kc2wVFhmvvnoJyoeqoCAn+I
+         tLxA==
+X-Gm-Message-State: AO0yUKVo/HF1Hy8w2GoV2jXcKIPAMujWIDZp7gTt9aC7TphY0Hcoqqxx
+        L2qQfsN2L8uc33Qa1987vw==
+X-Google-Smtp-Source: AK7set+BBHYnuq6OwVL9kjgfa2qix8lcrHAvO1bkzPcA8ohY9QPJdfChG4+hLAEfhyzub/UAI84YdA==
+X-Received: by 2002:a05:6870:330a:b0:177:b026:3cda with SMTP id x10-20020a056870330a00b00177b0263cdamr5812793oae.37.1679328099533;
+        Mon, 20 Mar 2023 09:01:39 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p204-20020acaf1d5000000b003845f4991c7sm3895828oih.11.2023.03.20.09.03.32
+        by smtp.gmail.com with ESMTPSA id tb7-20020a05687186c700b0017630fe87e5sm3404469oab.33.2023.03.20.09.01.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 09:03:33 -0700 (PDT)
-Received: (nullmailer pid 1771818 invoked by uid 1000);
-        Mon, 20 Mar 2023 16:03:32 -0000
-Date:   Mon, 20 Mar 2023 11:03:32 -0500
+        Mon, 20 Mar 2023 09:01:39 -0700 (PDT)
+Received: (nullmailer pid 1764454 invoked by uid 1000);
+        Mon, 20 Mar 2023 16:01:37 -0000
+Date:   Mon, 20 Mar 2023 11:01:37 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Cristian Marussi <cristian.marussi@arm.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-rockchip@lists.infradead.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, kernel@collabora.com,
-        linux-serial@vger.kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Takashi Iwai <tiwai@suse.com>,
-        Daniel Drake <drake@endlessm.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        linux-riscv@lists.infradead.org,
+Cc:     Conor Dooley <conor@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 07/11] ASoC: dt-bindings: rockchip: Add compatible for
- RK3588
-Message-ID: <167932821168.1771757.7958131150512632634.robh@kernel.org>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
+Message-ID: <20230320160137.GB1755078-robh@kernel.org>
 References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-8-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+ <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
+ <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+ <80796828-7b38-184a-2e8e-3cfe9158b67f@linaro.org>
+ <13cb8dbd-994c-4b38-b715-44a3bf3d278d@spud>
+ <e81f02f2-e692-e4ef-1510-fdc285dd5964@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230315114806.3819515-8-cristian.ciocaltea@collabora.com>
+In-Reply-To: <e81f02f2-e692-e4ef-1510-fdc285dd5964@collabora.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-On Wed, 15 Mar 2023 13:48:02 +0200, Cristian Ciocaltea wrote:
-> Add new compatible string for the Rockchip I2S/PCM controller found on
-> RK3588 and RK3588S SoCs.
+On Fri, Mar 17, 2023 at 07:43:53PM +0200, Cristian Ciocaltea wrote:
+> On 3/17/23 18:26, Conor Dooley wrote:
+> > On Fri, Mar 17, 2023 at 04:54:47PM +0100, Krzysztof Kozlowski wrote:
+> > > On 17/03/2023 11:21, Cristian Ciocaltea wrote:
+> > > > On 3/17/23 10:31, Krzysztof Kozlowski wrote:
+> > > > > On 15/03/2023 12:47, Cristian Ciocaltea wrote:
+> > > > > > Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
+> > > > > > dma-names properties") documented dma-names property to handle Allwiner
+> > > > > > D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
+> > > > > > the reverse of what a different board expects:
+> > > > > > 
+> > > > > >     rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
+> > > > > > 
+> > > > > > A quick and incomplete check shows the inconsistency is present in many
+> > > > > > other DT files:
+> > > > > 
+> > > > > Why not fixing the DTS? The properties should have fixed order.
+> > > > 
+> > > > I was initially concerned about the risk of a potential ABI breakage,
+> > > > but I think that's not really a problem since dma-names is not directly
+> > > > accessed in the driver and DT Kernel API doesn't rely on a particular order.
+> > > > 
+> > > > If there are no objections, I would switch the order in the binding to
+> > > > tx->rx, since that's what most of the DTS use, and fix the remaining ones.
+> > > 
+> > > Since we added the order recently, I rather assume it is the correct or
+> > > preferred one.
+> > 
+> > IIRC I checked around the other serial bindings & there was not a
+> > consistent order that all serial bindings used, so I picked the order that
+> > was used across the various allwinner boards that do use dma-names.
 > 
-> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-> ---
->  Documentation/devicetree/bindings/sound/rockchip-i2s.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Thanks for clarifying this, Conor! Would it be fine to switch to tx->rx
+> order as it requires less changes to fix the inconsistencies?
 > 
+> > Before changing dts files, it's probably a good idea to make sure that
+> > the dma-names are not used somewhere outside of Linux.
+> 
+> Right, that means we cannot exclude the ABI breakage concern. Not sure how
+> easy would be to actually verify this. Hence I wonder if there is really no
+> chance to allow the flexible order in the binding..
 
-Acked-by: Rob Herring <robh@kernel.org>
+If it changes and someone complains, then yes we'll allow flexible 
+order.
 
+Rob
