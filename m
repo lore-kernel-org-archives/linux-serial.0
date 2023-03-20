@@ -2,91 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1D6C7618A
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7611AC7618D
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbjCTQOJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 12:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
+        id S231529AbjCTQOa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 12:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbjCTQNe (ORCPT
+        with ESMTP id S229517AbjCTQOF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 12:13:34 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B231ACF3;
-        Mon, 20 Mar 2023 09:03:52 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id be16so9099223oib.0;
-        Mon, 20 Mar 2023 09:03:52 -0700 (PDT)
+        Mon, 20 Mar 2023 12:14:05 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31454360AD;
+        Mon, 20 Mar 2023 09:04:05 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-17aa62d0a4aso13523451fac.4;
+        Mon, 20 Mar 2023 09:04:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679328180;
+        d=1e100.net; s=20210112; t=1679328196;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XNC+OXlKdlbVkyP5FbmhjfPQE78DDQdoT/lxRDWBrmE=;
-        b=d6imcFf3NIeAfJ8GkP1GDWaxco3yU6WgEUrOEkZueaCq5isRmGtTdqLo40BbCpajhD
-         fww3Rx+cLcJ/Z9n5rVBcl3v5s8wWy4P3VvGexwJ3Jko4ZgLQUC2EmFI+waakY9Nljj6V
-         eXAo6cSwaxbkIIAV816l0MgDGnuiySFU8t6uv9lm8fcfB5ovYk2EDv1uuA2ICup1veCF
-         Ij+DnbJGGYmUWhK0NATY3MSBxiUhvB1I+8qeerLGYOqSZylLcnf5F9iZf/JJeRo6R+t6
-         R7dLck7r15diymF1/cuQIl0zW+WcZLOMMuigAwxmi0130lCLxa06Eo5nmREX/EmBTs+n
-         Tc/g==
-X-Gm-Message-State: AO0yUKVPGDd498S9RjlbUPF9N7GJ8/gMumuAqRzxp6A/962rSFQZMYuE
-        6mBkr/AsWvPGUszcs2GImA==
-X-Google-Smtp-Source: AK7set8Py2GSqg1krKh8kyywDWaz6ivjsTyoY4utp1Q09KYKg3F84NdU3xUAPh4qNBy0G//Ug9VI1w==
-X-Received: by 2002:aca:f04:0:b0:387:115d:1e26 with SMTP id 4-20020aca0f04000000b00387115d1e26mr209867oip.3.1679328180069;
-        Mon, 20 Mar 2023 09:03:00 -0700 (PDT)
+        bh=Fk4bf5o+T0icO2it+WiVyLr9KB3ljMdbR5QHyH11JsI=;
+        b=Dot9Qok4zqhVzPcW1uuriQ5/HVbDt8bg+Fmg5pcKOpYwIsKki/nPPGVn3qweSGSQAI
+         NpB+wTasQ5xTVHd//IvwrUZbjSdf8X8BKY37mCxe0JXPElPFAluQ2q3u1Vd443WkoFWM
+         PkugYpTnNGx2Ye0TG+UVcRgjfF3VXPRavGhEtu0HngVJhYEQd/oCPtdreRUlXUU519cN
+         jJ/sjh+Yg/+sH+varqzpLo77lm44HEDk5P/pwyu/xB37zsWInCENeLgX3Yd46kQsyvro
+         sQvmyYJvrGy3/OaFki5G/lNO1MFplrgJXmM3nIGuDO0VEpb9XoWoeEIBnZIxE8SRjN9g
+         Mw0Q==
+X-Gm-Message-State: AO0yUKWnkEs1zoswLmU9f8/jFJonYEuJ5v7ggmW38uRlDyQ6bE2dLEhU
+        9xJEmh/+jYQgqPIhB5qBGQ==
+X-Google-Smtp-Source: AK7set+K3nWOBlUoUowZ7HA8nsud+xt7EyVHYJaSSzw2tyQ5SdbaGQ0LXy0ftmchOcmPlwGf6U+e7g==
+X-Received: by 2002:a05:6870:4789:b0:177:baf4:5b10 with SMTP id c9-20020a056870478900b00177baf45b10mr5713445oaq.31.1679328196643;
+        Mon, 20 Mar 2023 09:03:16 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bk38-20020a0568081a2600b0037832f60518sm3821272oib.14.2023.03.20.09.02.59
+        by smtp.gmail.com with ESMTPSA id zd47-20020a05687127af00b0016dbf59175bsm3363841oab.47.2023.03.20.09.03.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 09:02:59 -0700 (PDT)
-Received: (nullmailer pid 1770233 invoked by uid 1000);
-        Mon, 20 Mar 2023 16:02:58 -0000
-Date:   Mon, 20 Mar 2023 11:02:58 -0500
+        Mon, 20 Mar 2023 09:03:16 -0700 (PDT)
+Received: (nullmailer pid 1771200 invoked by uid 1000);
+        Mon, 20 Mar 2023 16:03:15 -0000
+Date:   Mon, 20 Mar 2023 11:03:15 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+Cc:     kernel@collabora.com, Rob Herring <robh+dt@kernel.org>,
         Heiko Stuebner <heiko@sntech.de>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-riscv@lists.infradead.org, alsa-devel@alsa-project.org,
-        linux-rockchip@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
         Daniel Drake <drake@endlessm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org,
         Palmer Dabbelt <palmer@dabbelt.com>,
+        Mark Brown <broonie@kernel.org>,
         Sudeep Holla <sudeep.holla@arm.com>,
+        devicetree@vger.kernel.org,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-serial@vger.kernel.org,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, kernel@collabora.com,
-        Mark Brown <broonie@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 05/11] ASoC: dt-bindings: rockchip: i2s-tdm: Document
- audio graph port
-Message-ID: <167932817831.1770182.9717265674737412940.robh@kernel.org>
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Albert Ou <aou@eecs.berkeley.edu>
+Subject: Re: [PATCH 06/11] ASoC: dt-bindings: rockchip: i2s-tdm: Document
+ power-domains
+Message-ID: <167932819469.1771105.12720875880996381388.robh@kernel.org>
 References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-6-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-7-cristian.ciocaltea@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230315114806.3819515-6-cristian.ciocaltea@collabora.com>
+In-Reply-To: <20230315114806.3819515-7-cristian.ciocaltea@collabora.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On Wed, 15 Mar 2023 13:48:00 +0200, Cristian Ciocaltea wrote:
-> Document the 'port' property to allow the Rockchip I2S TDM controller to
-> be used in conjunction with the audio-graph-card.
-> 
-> The property will be used to provide an endpoint for binding to the
-> other side of the audio link.
+On Wed, 15 Mar 2023 13:48:01 +0200, Cristian Ciocaltea wrote:
+> The binding document is missing the power-domains property. Add it.
 > 
 > Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
 > ---
->  Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
