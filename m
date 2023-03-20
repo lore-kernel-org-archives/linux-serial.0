@@ -2,135 +2,164 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD29AC761A6
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 19:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC38EC761A6
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 19:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbjCTTUS convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 15:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S229888AbjCTTbm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 15:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231560AbjCTTTm (ORCPT
+        with ESMTP id S229846AbjCTTbL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 15:19:42 -0400
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06F84EF9;
-        Mon, 20 Mar 2023 12:11:57 -0700 (PDT)
-Received: by mail-qt1-f170.google.com with SMTP id t19so354498qta.12;
-        Mon, 20 Mar 2023 12:11:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679339516;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=32XMWaYeoPpvuSP4SJ2y+jdAZEcgNNcwFIl8GOW4Yfc=;
-        b=o3qIN2/LnO4ED23wjTMEUrjH699iEJ//+/jSREdD7Cuv9fQeXnRaexFGeDm8cF/PqI
-         cxI+ZhpZCnAtcscmFCVRyCUbCzAStPyR69Dvfop4uwN9DezgV84bKLB2G8R0DEJXDt7a
-         lhKKahXjSGkhaIQJF/thSal0clOE1u226furEQijuGKvoyxfw64sekiglP2JLlYTqk0l
-         kNWiNjNot4P8VOWPylzlPMRRbsvW2FUbr31O3R927O0XOdkabv1zt3hsdgbVTllFv4QX
-         dPwOrujKrDnLHmpnnErMnuPjnlpx8v/zY4oE67flQdM+jZx4Dcnivz95C7BiUTdE3tHI
-         vp1g==
-X-Gm-Message-State: AO0yUKUWSl6xVYsQbh1il4e4NC/bc4StrS0WzXhIW9VWiEcuWACJIdAa
-        8t7X1m9vRQbQqMwBV6qysiQHB4PRQTTD5g==
-X-Google-Smtp-Source: AK7set/lzaN1t3KTUVZkEumSDbdmOHX5pEo8NAJQP1oIh0/XbnlYc0mKuLl4/fvcWAm42fACvEG+lQ==
-X-Received: by 2002:a05:622a:54e:b0:3bf:d9f3:debe with SMTP id m14-20020a05622a054e00b003bfd9f3debemr289534qtx.59.1679339516454;
-        Mon, 20 Mar 2023 12:11:56 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id c7-20020ac86e87000000b003e1ff058350sm2007985qtv.63.2023.03.20.12.11.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 12:11:55 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id e71so14500150ybc.0;
-        Mon, 20 Mar 2023 12:11:55 -0700 (PDT)
-X-Received: by 2002:a25:5b84:0:b0:b67:d295:d614 with SMTP id
- p126-20020a255b84000000b00b67d295d614mr201995ybb.12.1679339514703; Mon, 20
- Mar 2023 12:11:54 -0700 (PDT)
+        Mon, 20 Mar 2023 15:31:11 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D263A98;
+        Mon, 20 Mar 2023 12:24:04 -0700 (PDT)
+Received: from [192.168.1.90] (unknown [188.24.156.231])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1A3C46603089;
+        Mon, 20 Mar 2023 19:24:01 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1679340242;
+        bh=73rNgAiRZKESdwk9lBa5SvOXwN+9LmWd+1/M3nw9rTA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Q68WvDc4qZ40xlJFOUXVHGFdF2dqRvTm9Qr0Sw44sFAIBBGDvaduV3YUuCgXjXG+y
+         fNXQOpHryBnV6DMykWkqjVS0j/c03DvLi8DqJ/R2/vd0DIgyxnXH+qKfcCYEDQNEj6
+         Cu8auu4popy5l6bph7TyLvQpZQOy7QkX80zL4cXTVnppwoHkUuTcgBY0FHVBgz2Ibo
+         6tOz1CYXe6g/Ji1cM6lFmDhhNKIEzZi9acDV4sFXkDqxwnDKs9Dnu/c29CAD+5rIRA
+         8gx5wyINXYeDj4dp1DU/ZNzAvS0SIeTSd00ljhwcqoPhl2rZRHvHzIcKPB6fmr+pEN
+         AkJ6mrS8BiRaQ==
+Message-ID: <73fab0de-38f5-b9c3-9696-3f0dfc0a6b93@collabora.com>
+Date:   Mon, 20 Mar 2023 21:23:58 +0200
 MIME-Version: 1.0
-References: <20230320105339.236279-1-biju.das.jz@bp.renesas.com> <20230320105339.236279-3-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20230320105339.236279-3-biju.das.jz@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 20 Mar 2023 20:11:43 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW2gxDzYbP_0Z90o8mHdUm_BV6e+gMHpELJx_g=ezAbdw@mail.gmail.com>
-Message-ID: <CAMuHMdW2gxDzYbP_0Z90o8mHdUm_BV6e+gMHpELJx_g=ezAbdw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/5] tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        linux-serial@vger.kernel.org,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
+To:     Rob Herring <robh@kernel.org>
+Cc:     Conor Dooley <conor@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+ <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
+ <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+ <80796828-7b38-184a-2e8e-3cfe9158b67f@linaro.org>
+ <13cb8dbd-994c-4b38-b715-44a3bf3d278d@spud>
+ <e81f02f2-e692-e4ef-1510-fdc285dd5964@collabora.com>
+ <20230320160137.GB1755078-robh@kernel.org>
+Content-Language: en-US
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+In-Reply-To: <20230320160137.GB1755078-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Biju,
+On 3/20/23 18:01, Rob Herring wrote:
+> On Fri, Mar 17, 2023 at 07:43:53PM +0200, Cristian Ciocaltea wrote:
+>> On 3/17/23 18:26, Conor Dooley wrote:
+>>> On Fri, Mar 17, 2023 at 04:54:47PM +0100, Krzysztof Kozlowski wrote:
+>>>> On 17/03/2023 11:21, Cristian Ciocaltea wrote:
+>>>>> On 3/17/23 10:31, Krzysztof Kozlowski wrote:
+>>>>>> On 15/03/2023 12:47, Cristian Ciocaltea wrote:
+>>>>>>> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
+>>>>>>> dma-names properties") documented dma-names property to handle Allwiner
+>>>>>>> D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
+>>>>>>> the reverse of what a different board expects:
+>>>>>>>
+>>>>>>>      rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
+>>>>>>>
+>>>>>>> A quick and incomplete check shows the inconsistency is present in many
+>>>>>>> other DT files:
+>>>>>>
+>>>>>> Why not fixing the DTS? The properties should have fixed order.
+>>>>>
+>>>>> I was initially concerned about the risk of a potential ABI breakage,
+>>>>> but I think that's not really a problem since dma-names is not directly
+>>>>> accessed in the driver and DT Kernel API doesn't rely on a particular order.
+>>>>>
+>>>>> If there are no objections, I would switch the order in the binding to
+>>>>> tx->rx, since that's what most of the DTS use, and fix the remaining ones.
+>>>>
+>>>> Since we added the order recently, I rather assume it is the correct or
+>>>> preferred one.
+>>>
+>>> IIRC I checked around the other serial bindings & there was not a
+>>> consistent order that all serial bindings used, so I picked the order that
+>>> was used across the various allwinner boards that do use dma-names.
+>>
+>> Thanks for clarifying this, Conor! Would it be fine to switch to tx->rx
+>> order as it requires less changes to fix the inconsistencies?
+>>
+>>> Before changing dts files, it's probably a good idea to make sure that
+>>> the dma-names are not used somewhere outside of Linux.
+>>
+>> Right, that means we cannot exclude the ABI breakage concern. Not sure how
+>> easy would be to actually verify this. Hence I wonder if there is really no
+>> chance to allow the flexible order in the binding..
+> 
+> If it changes and someone complains, then yes we'll allow flexible
+> order.
 
-On Mon, Mar 20, 2023 at 11:53 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> SCI IP on RZ/G2L alike SoCs do not need regshift compared to other SCI
-> IPs on the SH platform. Currently, it does regshift and configuring Rx
-> wrongly. Drop adding regshift for RZ/G2L alike SoCs.
->
-> Fixes: f9a2adcc9e90 ("arm64: dts: renesas: r9a07g044: Add SCI[0-1] nodes")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v3:
->  * New patch.
+I looked a bit further and it seems the allwiner boards are not really 
+affected as all of them are using the same DMA channel for both rx and 
+tx. So we should be fine by switching to tx->rx order.
 
-Thanks for your patch!
+$ git grep -A10 snps,dw-apb-uart | grep 'sun.*dmas' | sort -u
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -158,6 +158,7 @@ struct sci_port {
->
->         bool has_rtscts;
->         bool autorts;
-> +       bool is_rz_sci;
->  };
->
->  #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
-> @@ -2937,7 +2938,7 @@ static int sci_init_single(struct platform_device *dev,
->         port->flags             = UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
->         port->fifosize          = sci_port->params->fifosize;
->
-> -       if (port->type == PORT_SCI) {
-> +       if (port->type == PORT_SCI && !sci_port->is_rz_sci) {
+arch/arm/boot/dts/sun6i-a31.dtsi-	dmas = <&dma 10>, <&dma 10>;
+arch/arm/boot/dts/sun6i-a31.dtsi-	dmas = <&dma 22>, <&dma 22>;
+arch/arm/boot/dts/sun6i-a31.dtsi-	dmas = <&dma 6>, <&dma 6>;
+arch/arm/boot/dts/sun6i-a31.dtsi-	dmas = <&dma 7>, <&dma 7>;
+arch/arm/boot/dts/sun6i-a31.dtsi-	dmas = <&dma 8>, <&dma 8>;
+arch/arm/boot/dts/sun6i-a31.dtsi-	dmas = <&dma 9>, <&dma 9>;
+arch/arm/boot/dts/sun8i-a23-a33.dtsi-	dmas = <&dma 10>, <&dma 10>;
+arch/arm/boot/dts/sun8i-a23-a33.dtsi-	dmas = <&dma 6>, <&dma 6>;
+arch/arm/boot/dts/sun8i-a23-a33.dtsi-	dmas = <&dma 7>, <&dma 7>;
+arch/arm/boot/dts/sun8i-a23-a33.dtsi-	dmas = <&dma 8>, <&dma 8>;
+arch/arm/boot/dts/sun8i-a23-a33.dtsi-	dmas = <&dma 9>, <&dma 9>;
+arch/arm/boot/dts/sun8i-v3s.dtsi-	dmas = <&dma 6>, <&dma 6>;
+arch/arm/boot/dts/sun8i-v3s.dtsi-	dmas = <&dma 7>, <&dma 7>;
+arch/arm/boot/dts/sun8i-v3s.dtsi-	dmas = <&dma 8>, <&dma 8>;
+arch/arm/boot/dts/sunxi-h3-h5.dtsi-	dmas = <&dma 6>, <&dma 6>;
+arch/arm/boot/dts/sunxi-h3-h5.dtsi-	dmas = <&dma 7>, <&dma 7>;
+arch/arm/boot/dts/sunxi-h3-h5.dtsi-	dmas = <&dma 8>, <&dma 8>;
+arch/arm/boot/dts/sunxi-h3-h5.dtsi-	dmas = <&dma 9>, <&dma 9>;
+arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi- dmas = <&dma 14>, 
+<&dma 14>;
+arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi- dmas = <&dma 15>, 
+<&dma 15>;
+arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi- dmas = <&dma 16>, 
+<&dma 16>;
+arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi- dmas = <&dma 17>, 
+<&dma 17>;
+arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi- dmas = <&dma 18>, 
+<&dma 18>;
+arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi- dmas = <&dma 19>, 
+<&dma 19>;
 
-Perhaps check for !dev->dev.of_node instead? Values of 1 or 2 for
-regshift are only needed for sh770x/sh7750/sh7760, which don't use
-DT yet.  When they are converted to DT, we can extend the driver to
-support the more-or-less standard "reg-shift" DT property.
-
->                 if (sci_port->reg_size >= 0x20)
->                         port->regshift = 2;
->                 else
-> @@ -3353,6 +3354,11 @@ static int sci_probe(struct platform_device *dev)
->         sp = &sci_ports[dev_id];
->         platform_set_drvdata(dev, sp);
->
-> +       if (of_device_is_compatible(dev->dev.of_node, "renesas,r9a07g043-sci") ||
-> +           of_device_is_compatible(dev->dev.of_node, "renesas,r9a07g044-sci") ||
-> +           of_device_is_compatible(dev->dev.of_node, "renesas,r9a07g054-sci"))
-
-Please, no of_device_is_compatible() checks in a driver that uses
-proper DT matching.
-
-> +               sp->is_rz_sci = 1;
-> +
->         ret = sci_probe_single(dev, dev_id, p, sp);
->         if (ret)
->                 return ret;
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Cristian
