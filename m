@@ -2,166 +2,651 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2ABC77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 11:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD868C7618A
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 11:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbjCTLLY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 07:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54806 "EHLO
+        id S231218AbjCTLRL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 07:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbjCTLLB (ORCPT
+        with ESMTP id S229648AbjCTLQs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 07:11:01 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE8B28859;
-        Mon, 20 Mar 2023 04:07:12 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32K97Gml001628;
-        Mon, 20 Mar 2023 11:06:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : references : date : in-reply-to : message-id : content-type :
- mime-version; s=corp-2022-7-12;
- bh=r8/bozNFzpCmQqSJANyqu1fhalBv9FTa0bk/880Aufo=;
- b=xN8q+XTs3OXFAOM0zaaQeTN0ftQsD7O3Y0Sg0IkGXIQEja3p6DDHwUtzHB94pjo/z8KP
- dSMiUnUwpONXtQI2w7ZK6D+deIQSPYSKvg5aTKS6tMsQYbzavknFZAzO/3x8+bNwBkzp
- F8+1IdbHY/tDBidaqG03WjyXYvOWar3i/WjesheK41wc6lybFZYRlRF8BYP5wbHaCth8
- osG+Ef/WhWPDgqjRAwPq1y3NEO0IB1Ej/by2WKYFKU2j74MXbu1r54wVjwpd/M12XkdY
- UyES98V0IjkkC2BDpMfDtdJubbjVA33J/1LR3cNQ47JpzFgVBjKTm0ezQ86DgYok1Bcm yw== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pd56au1f1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 20 Mar 2023 11:06:52 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32KAb7uA001353;
-        Mon, 20 Mar 2023 11:06:52 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2048.outbound.protection.outlook.com [104.47.66.48])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3pd3r43mkx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 20 Mar 2023 11:06:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZdTM7LDe2r3+uqnXoBrGoHLFZJ8a5vJABv2MUh/HJg6TkEV+0Ck0Jz+LbGGz259Eof2/bvpJbRH9RRiBDsAy9tWJ41REPz0wXmwrOETAFk03CeKe4DnWXmhM5XtzUHz6+6luiZEqF+say4SJ++e8t4v4qlVY0MHUUzVFkUVK5h4G60/IPZGdkDVfFU8ayjvYUpyj3fRjWG/vzNQwkqzxrJGH0m/gbEceKiqrtJeurUsJvmiGjhLWSxwQhdRbtSRxmULN3Q9Rt3mGgOUWTDBfy82BozBpl0x4Cm23ZqzA3V1+qU3sOLQmJYzNSYxpT5Xf0ZkioijI0KHhi9uEYyVrOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=r8/bozNFzpCmQqSJANyqu1fhalBv9FTa0bk/880Aufo=;
- b=X+xppEqEr4w5ag4xpfI6vHxSCqL5ikWv7Y11h6IKspIvCn3mAMRSWRDjV2lq4JwDMjJq4xeIh61pkzSNvza5p3KqBi/0j5hpKgeJ4WvlRJq6JONT4Gq6CwUIj3JsoP15hpXI2n68Ng1o8woE2XUHRG92BPhR44nWhB+3Tte3dqfGhlY/v3C8dnDfrX06OIabKR5F4A9UfzG6ZqI+DbzDKV76CiFxqc4bkYWpRORqUmrVO7M3bkN4qlocVguqvGPr3HezbDBGvpDJdT03h55zzgJGzfdNCvlGmbKrfsMcStycZOv+Zo07aBojLwaIVSTtY9lYWXAqCxy0eHk3xTh1jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r8/bozNFzpCmQqSJANyqu1fhalBv9FTa0bk/880Aufo=;
- b=m+wI54LtyUcGOPmnariC3eoYpFvVQR3kCGqtZ+3g5h+L+hXR1RcZYS9+cHqf9riWPPknUhjrdIysXGb2H8LqDR6K6x1kOPWOLn37/QJ+IfSw5r5dvlHgz03Y9x9l6SmCLjt8bmsOp8jcZaQhxO4/ZlzflD7eHSRj2HjrIY7/CAw=
-Received: from DS0PR10MB6798.namprd10.prod.outlook.com (2603:10b6:8:13c::20)
- by SA2PR10MB4697.namprd10.prod.outlook.com (2603:10b6:806:112::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
- 2023 11:06:50 +0000
-Received: from DS0PR10MB6798.namprd10.prod.outlook.com
- ([fe80::d0f7:e4fd:bd4:b760]) by DS0PR10MB6798.namprd10.prod.outlook.com
- ([fe80::d0f7:e4fd:bd4:b760%3]) with mapi id 15.20.6178.037; Mon, 20 Mar 2023
- 11:06:46 +0000
-From:   Nick Alcock <nick.alcock@oracle.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Nick Alcock <nick.alcock@oracle.com>, mcgrof@kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org,
-        linux-trace-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/20] MODULE_LICENSE removals, fifth tranche
-References: <20230228130215.289081-1-nick.alcock@oracle.com>
-        <CAMuHMdUo3BkELZzhr0yVF7eU53_h757m1QWN8fQeLWKe5fCZDA@mail.gmail.com>
-Emacs:  it's all fun and games, until somebody tries to edit a file.
-Date:   Mon, 20 Mar 2023 11:06:45 +0000
-In-Reply-To: <CAMuHMdUo3BkELZzhr0yVF7eU53_h757m1QWN8fQeLWKe5fCZDA@mail.gmail.com>
-        (Geert Uytterhoeven's message of "Tue, 28 Feb 2023 14:47:48 +0100")
-Message-ID: <87bkknu1fe.fsf@esperi.org.uk>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1.91 (gnu/linux)
-Content-Type: text/plain
-X-ClientProxiedBy: LO2P123CA0027.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600::15)
- To DS0PR10MB6798.namprd10.prod.outlook.com (2603:10b6:8:13c::20)
+        Mon, 20 Mar 2023 07:16:48 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CF16E97;
+        Mon, 20 Mar 2023 04:15:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679310919; x=1710846919;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Amz4/Av8RIHbzuWj5LX0wvdbWha7TGpA6N4V/XgAueM=;
+  b=KnhdyhlCecZlPN9GZAKgnXHKLdJCJhJsOd4WpjEVp40Z94XvRxmpwK+6
+   LjgENiOPXMbfLxp5sleJ8L2irqMKolQtNAdDyLCjDCdj7iVSLvKYVRLAf
+   cqgcnprg4H/QA0o7GUysqQqcToDmtq8QzxOGe5jhQJ4TSjaAebMKCQQ9g
+   DHLxE1XpM6MdnrF/djW41BE/AHgtRIsWT42+Cg73jvdE7ovxjPP6xRJUU
+   mpBzcg3+1MMQ7vppn6dXnE069MXnrog6QKzoAB3OFDnO2yJ+rQGXGUan9
+   L5Szh0pcjoRr1LaEPB+u0x6QGndYfZaRpesEkqZHhiJxPYwS+5JE04F28
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="401206731"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="401206731"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 04:14:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="1010431497"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="1010431497"
+Received: from mbouhaou-mobl1.ger.corp.intel.com ([10.252.61.151])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 04:14:24 -0700
+Date:   Mon, 20 Mar 2023 13:14:22 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Chia-Wei Wang <chiawei_wang@aspeedtech.com>
+cc:     vkoul@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au, andrew@aj.id.au,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, pmenzel@molgen.mpg.de,
+        hdanton@sina.com, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v3 3/5] dmaengine: aspeed: Add AST2600 UART DMA driver
+In-Reply-To: <20230320081133.23655-4-chiawei_wang@aspeedtech.com>
+Message-ID: <493b758-2ddf-b44a-48a8-69e8de5d85b@linux.intel.com>
+References: <20230320081133.23655-1-chiawei_wang@aspeedtech.com> <20230320081133.23655-4-chiawei_wang@aspeedtech.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR10MB6798:EE_|SA2PR10MB4697:EE_
-X-MS-Office365-Filtering-Correlation-Id: 831f2cf0-bd42-4162-03be-08db293331c8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0SKG6CwLNPW97WlGFuh5cwYyRvkX1ky6IolyR6E6AzyDBaolePNAhIJ4Oxn/ot7pMk+t/ZFWzX46rBeRiI9CN1n2BAfQN+Q0lvGO0hBwEXEe6emoE9wciX48qZ+k9gIjIT9ST7mujzduwOUiPxqhFZpX982S5+9OiDgewd5AmnRd9NmiHMVoDABdJC4Bv2tjtdwHq8XdE9iNM6Zjl8WA/xvdoqedgM0cLX6fQmYH3KHcF27OZ42vxDdbSw2zcHmrTIDVr1tpCsKRcqRdZkydj+RDj1/WRq0wpOCsl9q8G621A9nCgekYFVQsOTfnn5UZvdJFVLE9i2CErE933Lgj6EGoWz3BXST7o40jt8hBHMqSacIO2fqUeG67KZ/mSMEI+BCck/csDrfhgRykGaHWBnUyozGhM0DU9LJtii1LtRmrMBxfiaofBWEL/BLEZJYmbYCAvwzdv7GYqtJDC7SGOXELThZbZ/Wg4AazFowdV+7igCnxRbHLtZIkG19Z76gZYFBg9DvPQexx2j9Pi4tWzctar6UnwIoMj+z+hYj3X/LMCn+2l8kC1+su9pzX9ghupeHTdeAt0Esyq0k5JzYgV49IY9j0+y/otyuU4NsZWbz3xSip2t6ltdgIX6uiTvkfXyzqeD4oZd2wS+r3Bhht1g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR10MB6798.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(376002)(396003)(346002)(39860400002)(366004)(451199018)(186003)(6486002)(4326008)(478600001)(316002)(6916009)(66946007)(66556008)(66476007)(9686003)(6506007)(6512007)(8676002)(53546011)(41300700001)(8936002)(44832011)(7416002)(4744005)(5660300002)(38100700002)(2906002)(86362001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TkdOhhGEdMgPsTqA0lnJPdL6bEWQJEoIc+Ulftnv2OSO+W7NBVFGKBt0Aqo7?=
- =?us-ascii?Q?8DetqW2ExWgyQAGm12b7dyZ4Cgl1HppEpCBRbRTJtpq98/Mo94r29cHVwosS?=
- =?us-ascii?Q?2vXgqaorApA+1cDn4Z2Bm/3JrGBXN0ZTQ7ZS/M7nlPzdB5Z2bdAJSiDCJMkq?=
- =?us-ascii?Q?EQyaeHxljZKTaEythCp6zSZnLGrR1qfgCfEeqpR/Hx1/YrHkQ5ajpVvL4oYd?=
- =?us-ascii?Q?1FyMQ7ZAgDiOP4jxpW02AGVcCaKCwj+MUS9h+3Y5ApsQZoVSYUjRZA5HiiX5?=
- =?us-ascii?Q?GTyI2vwPM/pGaLGGX8cnBxyu0GmNd6PFjjsje8oK8oK9Fp6IUGAoov9phMqb?=
- =?us-ascii?Q?6NbbFbdgzauer+siG+8P3qhNl2QRBZk+HGhhqNNUZz7leYvGRt5841qehhQx?=
- =?us-ascii?Q?XqUwQVTSwW00Eoy1Iwcr2P8NT9m4/23DerhspAglSnuyGtOULeUqTDilTztu?=
- =?us-ascii?Q?7MD76j5rEProtV6QdFYjjO0ZCjVyYgEtldF9FRhVFf1/6lxizjS4qVFz+6pc?=
- =?us-ascii?Q?PnaNfDsjH9pbZWzEnllDQYgA4LzP8gZ6z0nnfLoQ68gaLI+MzhkCxtDz3Du6?=
- =?us-ascii?Q?1mt24BgqGoa1bgyaNoF0a+2anZqnh3CQmx5UgpHe+lq1SVxWb96KcL77VFrz?=
- =?us-ascii?Q?FPeHS4xx8lZMRpqhJ+zLj04I2sJYGv16nOuGvwf26XUpT10QtBgAkXhF+Ly2?=
- =?us-ascii?Q?/eXTAjisDbikeTQHbmi7cy99nJ3dTQi5TjWhk/AhHAuh0wKrl84WoPoEjDNW?=
- =?us-ascii?Q?ycYsxNNNBKTD3mPI6wSRdRZ/P3Ul5v+mq7ooT8GMC9dJ9AyYAluATgUpZVnq?=
- =?us-ascii?Q?cv90AcboCnUQghJxithDnGUrXfIV1a1+9t8gN9LK3kxwz6ruKXT0RRm7/Nbq?=
- =?us-ascii?Q?dbvYbwLLRPPD6xcqtdhymMC6Cap9Pz4Y+FQaVPipeIAGtmf64Qal6RQQMMBG?=
- =?us-ascii?Q?GiT2XGGSPbxkynIfdsE6CbMCOw8ECiYXS7yyUpJ+z8dngKYd620j6QIfoWK2?=
- =?us-ascii?Q?Ppexfm61YSnCqgLsHt6tIP4RbJ5deeoL8nBtT/tQFruLhM0QMmWPWKdX9sB6?=
- =?us-ascii?Q?TGhma+EcZigz+oqrkiWefeIl59hMRogX6H8JDqtlF2iJzNOpCWTH3zQufumX?=
- =?us-ascii?Q?qoRBun2yF1vu7vZGwpGp4Cg1bIdHV7ZVQ500/82B5WxjDzygv6krUn02L85n?=
- =?us-ascii?Q?c1EuOVGXj/4NZGsWoTI/slSoa1wRhJwBiy7HwVJn9L/9DLLUUNM1W4mkDzgk?=
- =?us-ascii?Q?kdoxdAaK7bKJCyWuEfWD78Gnq5YKpMvyF9V8E+NBSNt7Jcu5E5ukCi1TOHbS?=
- =?us-ascii?Q?qOAvjm6D2rBFgPuGDXFYntCsxXm7XYr8EP4wHDgGGiIMPlauFLaKRlF7+Iad?=
- =?us-ascii?Q?dya1y/JKohRuTX7dDX1HFdNb8nYwW4+2WY5C2C7X+FKVvCiCL2O4PveqrUMd?=
- =?us-ascii?Q?kWIGK9W4bUZDnOInysJO54qdncFbLzU0Ox5IRpbnxlER/AXGQCb9xtd0foGV?=
- =?us-ascii?Q?WO3qPuDcYlx5PxwJieqc9wWIMZr4OR6kn4qOjdEV0TPdsz5bq2XUatGYlCSF?=
- =?us-ascii?Q?1UmTbkLTRA4/La8tpRh7HQWMKhLgSacerzdQnah2TWu7AN6b2eAnKigj8njr?=
- =?us-ascii?Q?wA=3D=3D?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: FUOBvg12UBvNculayVu/OGXkMezSGEA2SFWV3Iqp+bJ6Iahkrl+AfHWh/SfDDtXHu7l+bp+BqFvcdLBtEGwqpSB9CP+bnmMi/2OkThmOUde1JGd7ctE2YMOSeLF5JSjZNx0mEGdr94jfwsJ+FVWmSP/ixq4wWgRxMcbkqc3hFfVoyYotudYJ7u96jl/pN448RSYXSHIVJjaPQv5clHDoLInNQgrtHMWMM1V6+ACKkUVT7ImxoUnHvFYDDVGGviu1yD3a1tdLZf78b7Wr1uDCZPvzS6gbsx0NBD8R3NGwg/d46RZrYa/j5rEo5naEL1vBc6hW85yQTJtjmjo9CCZYhtFLAvI7eWsm1299XZ9nsN7l8C6W5+sPxdvUg2euZFHAvXoBoEcxyCJVrtNs5A3+jIE5UnCxx5OXZpcFctjK6zWOqBtdWI9ZUqjoJfkOvnlqdrgflKerQUIQH698SC1GKJR00ju/MAvzFkJt2Dut8sHvaHaa2cH/CdHQp+YBwl4gKAkyEfcdAL1ThSO7dYzdf87Exb15yDukevp4fTm8Y9XS9OyKyv9X8aiFwHrnQ36D/uTTNLFeArO7vyvuc6XBHPVQzs4pOpPtcfWKu/GAfK7VFPelLxL/HmPAdaDAO3Ut/6k9FsqEC1KUFWi4D3SEuZQuAlSfxPRKkdtMJg5JMcNo3P0cNJ6usmda8L0UuMCEPO6sjZQ0Rky/K7AOOqHGXA6o9S0uAuXKPWhU3Kc+MS0edULmKtcyIeoMvTOScyo77jTdwxHSpK+/F1yFeYZywhXY3gdXdmKdIik91dLCuXuheYLyGQ6eA3zmnF5ZwBNJsvYDaTa128oxzVqOHSLKiI0mLxmQ9bB55fpOFeDTEPhgYzVJdyeoUC7yVU69oIiGkJTwGHbMMFB21fsK7Rk2mw==
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 831f2cf0-bd42-4162-03be-08db293331c8
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR10MB6798.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 11:06:45.9882
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TGM51PqgarzpmwIIEhKA6LBb3zWgtfnuWUB4dUmTRda4LjrrcFppgz/MSRbvWdwnLYvmn2jTaykm+h0xQ9kX7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4697
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-20_07,2023-03-20_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 mlxscore=0
- mlxlogscore=999 malwarescore=0 suspectscore=0 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303150002
- definitions=main-2303200094
-X-Proofpoint-ORIG-GUID: d9hqLDi4hb1gdRQwg7NVZuHJOMIolfpd
-X-Proofpoint-GUID: d9hqLDi4hb1gdRQwg7NVZuHJOMIolfpd
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 28 Feb 2023, Geert Uytterhoeven outgrape:
+On Mon, 20 Mar 2023, Chia-Wei Wang wrote:
 
-> On Tue, Feb 28, 2023 at 2:05 PM Nick Alcock <nick.alcock@oracle.com> wrote:
->> This series, based on current modules-next, is part of a treewide cleanup
->> suggested by Luis Chamberlain, to remove the LICENSE_MODULE usage from
->> files/objects that are not tristate.  Due to recent changes to kbuild, these
->> uses are now problematic.  See the commit logs for more details.
->
-> Does this mean you expect us to queue them for v6.3?
-> Thanks!
+> Aspeed AST2600 UART DMA (UDMA) includes 28 channels for the
+> DMA transmission and recevie of each UART devices.
+> 
+> Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
+> ---
+> diff --git a/drivers/dma/ast2600-udma.c b/drivers/dma/ast2600-udma.c
+> new file mode 100644
+> index 000000000000..39117b26996d
+> --- /dev/null
+> +++ b/drivers/dma/ast2600-udma.c
+> @@ -0,0 +1,534 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) ASPEED Technology Inc.
+> + */
+> +#include <linux/delay.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/dmaengine.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_dma.h>
+> +#include <linux/dma-direct.h>
+> +#include "dmaengine.h"
+> +
+> +#define DEVICE_NAME	"aspeed-udma"
+> +
+> +/* register offset */
+> +#define UDMA_TX_EN		0x000
+> +#define UDMA_RX_EN		0x004
+> +#define UDMA_TMOUT		0x00c
+> +#define UDMA_TX_PTR_RST		0x020
+> +#define UDMA_RX_PTR_RST		0x024
+> +#define UDMA_TX_INT_EN		0x030
+> +#define UDMA_TX_INT_STS		0x034
+> +#define UDMA_RX_INT_EN		0x038
+> +#define UDMA_RX_INT_STS		0x03c
+> +
+> +#define UDMA_CH_OFFS(x)		((x) * 0x10)
+> +#define UDMA_CH_RPTR(x)		(0x040 + UDMA_CH_OFFS(x))
+> +#define UDMA_CH_WPTR(x)		(0x044 + UDMA_CH_OFFS(x))
+> +#define UDMA_CH_ADDR(x)		(0x048 + UDMA_CH_OFFS(x))
+> +#define UDMA_CH_CTRL(x)		(0x04c + UDMA_CH_OFFS(x))
+> +#define   UDMA_CH_CTRL_BUFSZ	GENMASK(1, 0)
+> +
+> +#define UDMA_MAX_BUFSZ	(0x10000)
 
-I believe Luis is planning to pull them in around -rc3, hence my
-freshening the series up now, getting everyone's tags in, etc.
+Unnecessary parenthesis.
+
+> +#define UDMA_MAX_TXSZ	(UDMA_MAX_BUFSZ - 1)
+> +
+> +enum ast2600_udma_bufsz {
+> +	UDMA_BUFSZ_1KB,
+> +	UDMA_BUFSZ_4KB,
+> +	UDMA_BUFSZ_16KB,
+> +	UDMA_BUFSZ_64KB,
+> +};
+> +
+> +struct ast2600_udma_desc {
+> +	struct dma_async_tx_descriptor tx;
+> +	dma_addr_t addr;
+> +	unsigned int size;
+> +};
+> +
+> +struct ast2600_udma_chan {
+> +	struct dma_chan chan;
+> +	struct ast2600_udma_desc ud;
+> +	struct ast2600_udma *udma;
+> +	uint32_t residue;
+> +
+> +	/* 4B-aligned local buffer for workaround */
+> +	uint8_t *buf;
+> +	dma_addr_t buf_addr;
+> +
+> +	bool is_tx;
+> +};
+> +
+> +struct ast2600_udma {
+> +	struct dma_device ddev;
+> +	uint8_t __iomem *regs;
+> +	int irq;
+> +	struct ast2600_udma_chan *ucs;
+> +	uint32_t n_ucs;
+> +	spinlock_t lock;
+> +};
+> +
+> +static struct ast2600_udma_chan *to_ast2600_udma_chan(struct dma_chan *chan)
+> +{
+> +	return container_of(chan, struct ast2600_udma_chan, chan);
+> +}
+> +
+> +static int ast2600_udma_alloc_chan_resources(struct dma_chan *chan)
+> +{
+> +	dma_cookie_init(chan);
+> +
+> +	return 0;
+> +}
+> +
+> +static dma_cookie_t ast2600_udma_tx_submit(struct dma_async_tx_descriptor *tx)
+> +{
+> +	return dma_cookie_assign(tx);
+> +}
+> +
+> +/* consider only 8250_dma using dmaengine_prep_slave_single() */
+> +static struct dma_async_tx_descriptor *ast2600_udma_prep_slave_sg(struct dma_chan *chan,
+> +								  struct scatterlist *sgl,
+> +								  unsigned int sg_len,
+> +								  enum dma_transfer_direction dir,
+> +								  unsigned long tx_flags,
+> +								  void *context)
+> +{
+> +	struct device *dev = chan->device->dev;
+> +	struct ast2600_udma_chan *uc = to_ast2600_udma_chan(chan);
+> +	struct ast2600_udma_desc *ud = &uc->ud;
+> +	phys_addr_t pa;
+> +	void *va;
+> +
+> +	if (!is_slave_direction(dir)) {
+> +		dev_err(dev, "direction is not slave mode\n");
+> +		return NULL;
+> +	}
+> +
+> +	if (sg_len != 1) {
+
+> 1
+
+> +		dev_err(dev, "scatter list length is not 1\n");
+> +		return NULL;
+> +	}
+> +
+> +	if (uc->is_tx && dir != DMA_MEM_TO_DEV) {
+> +		dev_err(dev, "invalid direction to TX channel\n");
+> +		return NULL;
+> +	}
+> +
+> +	ud->addr = sg_dma_address(sgl);
+> +	ud->size = sg_dma_len(sgl);
+> +
+> +	if (uc->is_tx) {
+> +		if (ud->size > UDMA_MAX_TXSZ) {
+> +			dev_err(dev, "invalid TX DMA SIZE");
+> +			return NULL;
+> +		}
+> +
+> +		/*
+> +		 * UDMA is limited to 4B-aligned DMA addresses.
+> +		 * Thus copy data to local 4B-aligned buffer if
+> +		 * the source does not fit.
+> +		 */
+> +		if (ud->addr & 0x3) {
+
+!IS_ALIGNED()
+
+Remember to add include for it.
+
+> +			pa = dma_to_phys(chan->device->dev, ud->addr);
+> +			if (pa != (phys_addr_t)-1) {
+> +				va = phys_to_virt(pa);
+> +				memcpy(uc->buf, va, ud->size);
+> +				ud->addr = uc->buf_addr;
+> +			}
+> +		}
+> +	} else {
+> +		/*
+> +		 * UDMA RX buffer size is limited to 1/4/16/64 KB
+> +		 * We use the lower bits to encode the buffer size
+> +		 */
+> +		switch (ud->size) {
+> +		case 0x400:
+
+SZ_1K, etc in linux/sizes.h.
+
+> +			ud->size |= FIELD_PREP(UDMA_CH_CTRL_BUFSZ, UDMA_BUFSZ_1KB);
+> +			break;
+> +		case 0x1000:
+> +			ud->size |= FIELD_PREP(UDMA_CH_CTRL_BUFSZ, UDMA_BUFSZ_4KB);
+> +			break;
+> +		case 0x4000:
+> +			ud->size |= FIELD_PREP(UDMA_CH_CTRL_BUFSZ, UDMA_BUFSZ_16KB);
+> +			break;
+> +		case 0x10000:
+> +			ud->size |= FIELD_PREP(UDMA_CH_CTRL_BUFSZ, UDMA_BUFSZ_64KB);
+> +			break;
+> +		default:
+> +			dev_err(dev, "invalid RX DMA size\n");
+> +			return NULL;
+> +		}
+> +	}
+> +
+> +	dma_async_tx_descriptor_init(&ud->tx, &uc->chan);
+> +	ud->tx.tx_submit = ast2600_udma_tx_submit;
+> +
+> +	return &ud->tx;
+> +}
+> +
+> +static void ast2600_udma_issue_pending(struct dma_chan *chan)
+> +{
+> +	unsigned long flags;
+> +	uint32_t r_pr, r_is, r_ie, r_en, reg;
+> +	uint32_t ch_id = chan->chan_id;
+> +	uint32_t ch_bit = ch_id / 2;
+> +	dma_addr_t rx_addr;
+> +	uint32_t rx_size;
+> +	struct ast2600_udma_chan *uc = to_ast2600_udma_chan(chan);
+> +	struct ast2600_udma_desc *ud = &uc->ud;
+> +	struct ast2600_udma *udma = uc->udma;
+> +
+> +	if (uc->is_tx) {
+> +		r_pr = UDMA_TX_PTR_RST;
+> +		r_is = UDMA_TX_INT_STS;
+> +		r_ie = UDMA_TX_INT_EN;
+> +		r_en = UDMA_TX_EN;
+> +	} else {
+> +		r_pr = UDMA_RX_PTR_RST;
+> +		r_is = UDMA_RX_INT_STS;
+> +		r_ie = UDMA_RX_INT_EN;
+> +		r_en = UDMA_RX_EN;
+> +	}
+> +
+> +	spin_lock_irqsave(&udma->lock, flags);
+> +
+> +	/* reset channel HW read/write pointer */
+> +	writel(BIT(ch_bit), udma->regs + r_pr);
+> +	writel(0, udma->regs + r_pr);
+> +
+> +	/* clear interrupt status */
+> +	writel(BIT(ch_bit), udma->regs + r_is);
+> +
+> +	/* set transfer address & size */
+> +	if (uc->is_tx) {
+> +		writel(ud->addr, udma->regs + UDMA_CH_ADDR(ch_id));
+> +		writel(ud->size, udma->regs + UDMA_CH_WPTR(ch_id));
+> +		writel(UDMA_BUFSZ_64KB, udma->regs + UDMA_CH_CTRL(ch_id));
+> +	} else {
+> +		/*
+> +		 * UDMA is limited to 4B-aligned addresses.
+> +		 * Thus use local 4B-aligned buffer to get
+> +		 * RX data and copy to the real destination
+> +		 * after then.
+> +		 */
+> +		rx_addr = (ud->addr & 0x3) ? uc->buf_addr : ud->addr;
+
+!IS_ALIGNED()
+
+> +		rx_size = FIELD_GET(UDMA_CH_CTRL_BUFSZ, ud->size);
+> +		writel(rx_addr, udma->regs + UDMA_CH_ADDR(ch_id));
+> +		writel(rx_size, udma->regs + UDMA_CH_CTRL(ch_id));
+> +	}
+> +
+> +	/* enable interrupt */
+> +	reg = readl(udma->regs + r_ie) | BIT(ch_bit);
+
+Usually, in this kind of constructs, the logic is put on its own line 
+between readl and writel.
+
+> +	writel(reg, udma->regs + r_ie);
+> +
+> +	/* start DMA */
+> +	reg = readl(udma->regs + r_en) | BIT(ch_bit);
+> +	writel(reg, udma->regs + r_en);
+> +
+> +	spin_unlock_irqrestore(&udma->lock, flags);
+> +}
+> +
+> +static enum dma_status ast2600_udma_tx_status(struct dma_chan *chan,
+> +		dma_cookie_t cookie, struct dma_tx_state *txstate)
+> +{
+> +	struct ast2600_udma_chan *uc = to_ast2600_udma_chan(chan);
+> +	enum dma_status sts = dma_cookie_status(chan, cookie, txstate);
+> +
+> +	dma_set_residue(txstate, uc->residue);
+> +
+> +	return sts;
+> +}
+> +
+> +static int ast2600_udma_pause(struct dma_chan *chan)
+> +{
+> +	unsigned long flags;
+> +	uint32_t r_en, r_ie, reg;
+> +	uint32_t ch_id = chan->chan_id;
+> +	uint32_t ch_bit = ch_id / 2;
+> +	struct ast2600_udma_chan *uc = to_ast2600_udma_chan(chan);
+> +	struct ast2600_udma *udma = uc->udma;
+> +
+> +	if (uc->is_tx) {
+> +		r_en = UDMA_TX_EN;
+> +		r_ie = UDMA_TX_INT_EN;
+> +	} else {
+> +		r_en = UDMA_RX_EN;
+> +		r_ie = UDMA_RX_INT_EN;
+> +	}
+> +
+> +	spin_lock_irqsave(&udma->lock, flags);
+> +
+> +	reg = readl(udma->regs + r_en) & ~BIT(ch_bit);
+> +	writel(reg, udma->regs + r_en);
+> +
+> +	reg = readl(udma->regs + r_ie) & ~BIT(ch_bit);
+> +	writel(reg, udma->regs + r_ie);
+> +
+> +	spin_unlock_irqrestore(&udma->lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ast2600_udma_resume(struct dma_chan *chan)
+> +{
+> +	unsigned long flags;
+> +	uint32_t r_en, r_ie, reg;
+> +	uint32_t ch_id = chan->chan_id;
+> +	uint32_t ch_bit = ch_id / 2;
+> +	struct ast2600_udma_chan *uc = to_ast2600_udma_chan(chan);
+> +	struct ast2600_udma *udma = uc->udma;
+> +
+> +	if (uc->is_tx) {
+> +		r_en = UDMA_TX_EN;
+> +		r_ie = UDMA_TX_INT_EN;
+> +	} else {
+> +		r_en = UDMA_RX_EN;
+> +		r_ie = UDMA_RX_INT_EN;
+> +	}
+> +
+> +	spin_lock_irqsave(&udma->lock, flags);
+> +
+> +	reg = readl(udma->regs + r_en) | BIT(ch_bit);
+> +	writel(reg, udma->regs + r_en);
+> +
+> +	reg = readl(udma->regs + r_ie) | BIT(ch_bit);
+> +	writel(reg, udma->regs + r_ie);
+> +
+> +	spin_unlock_irqrestore(&udma->lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ast2600_udma_terminate(struct dma_chan *chan)
+> +{
+> +	unsigned long flags;
+> +	uint32_t r_pr, r_is, r_ie, r_en, reg;
+> +	uint32_t ch_id = chan->chan_id;
+> +	uint32_t ch_bit = ch_id / 2;
+> +	struct ast2600_udma_chan *uc = to_ast2600_udma_chan(chan);
+> +	struct ast2600_udma *udma = uc->udma;
+> +
+> +	if (uc->is_tx) {
+> +		r_pr = UDMA_TX_PTR_RST;
+> +		r_is = UDMA_TX_INT_STS;
+> +		r_ie = UDMA_TX_INT_EN;
+> +		r_en = UDMA_TX_EN;
+> +	} else {
+> +		r_pr = UDMA_RX_PTR_RST;
+> +		r_is = UDMA_RX_INT_STS;
+> +		r_ie = UDMA_RX_INT_EN;
+> +		r_en = UDMA_RX_EN;
+> +	}
+> +
+> +	spin_lock_irqsave(&udma->lock, flags);
+> +
+> +	/* disable DMA */
+> +	reg = readl(udma->regs + r_en) & ~BIT(ch_bit);
+> +	writel(reg, udma->regs + r_en);
+> +
+> +	/* disable interrupt */
+> +	reg = readl(udma->regs + r_ie) & ~BIT(ch_bit);
+> +	writel(reg, udma->regs + r_ie);
+> +
+> +	/* clear interrupt status */
+> +	writel(BIT(ch_bit), udma->regs + r_is);
+> +
+> +	/* reset channel HW read/write pointer */
+> +	writel(BIT(ch_bit), udma->regs + r_pr);
+> +	writel(0, udma->regs + r_pr);
+> +
+> +	spin_unlock_irqrestore(&udma->lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t ast2600_udma_isr(int irq, void *arg)
+> +{
+> +	struct ast2600_udma *udma = arg;
+> +	struct ast2600_udma_chan *uc;
+> +	struct ast2600_udma_desc *ud;
+> +	struct dma_async_tx_descriptor *tx;
+> +	uint32_t sts, rptr, wptr;
+> +	uint32_t ch_id, ch_bit;
+> +	phys_addr_t pa;
+> +	void *va;
+> +
+> +	/* handle TX interrupt */
+> +	sts = readl(udma->regs + UDMA_TX_INT_STS);
+> +	for_each_set_bit(ch_bit, (unsigned long *)&sts, (udma->n_ucs / 2)) {
+
+Why not make sts unsigned long to avoid the cast?
+
+Unnecessary parenthesis.
+
+> +		ch_id = ch_bit << 1;
+> +		rptr = readl(udma->regs + UDMA_CH_RPTR(ch_id));
+> +		wptr = readl(udma->regs + UDMA_CH_WPTR(ch_id));
+> +
+> +		uc = &udma->ucs[ch_id];
+> +		uc->residue = wptr - rptr;
+> +
+> +		ast2600_udma_terminate(&uc->chan);
+> +
+> +		tx = &uc->ud.tx;
+> +		dma_cookie_complete(tx);
+> +		dma_descriptor_unmap(tx);
+> +		dmaengine_desc_get_callback_invoke(tx, NULL);
+> +	}
+> +
+> +	/* handle RX interrupt */
+> +	sts = readl(udma->regs + UDMA_RX_INT_STS);
+> +	for_each_set_bit(ch_bit, (unsigned long *)&sts, udma->n_ucs / 2) {
+> +		ch_id = (ch_bit << 1) + 1;
+> +		wptr = readl(udma->regs + UDMA_CH_WPTR(ch_id));
+> +
+> +		uc = &udma->ucs[ch_id];
+> +		ud = &uc->ud;
+> +		tx = &ud->tx;
+> +
+> +		uc->residue = (ud->size & ~UDMA_CH_CTRL_BUFSZ) - wptr;
+> +
+> +		/* handle non-4B-aligned case */
+> +		if (ud->addr & 0x3) {
+
+!IS_ALIGNED()
+
+> +			pa = dma_to_phys(uc->chan.device->dev, ud->addr);
+> +			if (pa != (phys_addr_t)-1) {
+> +				va = phys_to_virt(pa);
+> +				memcpy(va, uc->buf, wptr);
+> +			}
+> +		}
+> +
+> +		ast2600_udma_terminate(&uc->chan);
+> +
+> +		dma_cookie_complete(tx);
+> +		dma_descriptor_unmap(tx);
+> +		dmaengine_desc_get_callback_invoke(tx, NULL);
+> +	}
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int ast2600_udma_probe(struct platform_device *pdev)
+> +{
+> +	int i, rc;
+> +	struct resource *res;
+> +	struct ast2600_udma *udma;
+> +	struct device *dev = &pdev->dev;
+> +
+> +	udma = devm_kzalloc(dev, sizeof(*udma), GFP_KERNEL);
+> +	if (!udma)
+> +		return -ENOMEM;
+> +
+> +	dma_cap_set(DMA_SLAVE, udma->ddev.cap_mask);
+> +	udma->ddev.device_alloc_chan_resources = ast2600_udma_alloc_chan_resources;
+> +	udma->ddev.device_prep_slave_sg = ast2600_udma_prep_slave_sg;
+> +	udma->ddev.device_issue_pending = ast2600_udma_issue_pending;
+> +	udma->ddev.device_tx_status = ast2600_udma_tx_status;
+> +	udma->ddev.device_pause = ast2600_udma_pause;
+> +	udma->ddev.device_resume = ast2600_udma_resume;
+> +	udma->ddev.device_terminate_all = ast2600_udma_terminate;
+> +	udma->ddev.src_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
+> +	udma->ddev.dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
+> +	udma->ddev.directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
+> +	udma->ddev.residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
+> +	udma->ddev.dev = dev;
+> +	INIT_LIST_HEAD(&udma->ddev.channels);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (IS_ERR(res)) {
+> +		dev_err(dev, "cannot get IO resource\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	udma->regs = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(udma->regs)) {
+> +		dev_err(dev, "cannot map IO registers\n");
+> +		return PTR_ERR(udma->regs);
+> +	}
+> +
+> +	/* timeout value: 0x200 * (PCLK * 14400) */
+> +	writel(0x200, udma->regs + UDMA_TMOUT);
+> +
+> +	/* disable all for safety */
+> +	writel(0x0, udma->regs + UDMA_TX_EN);
+> +	writel(0x0, udma->regs + UDMA_RX_EN);
+> +
+> +	udma->irq = platform_get_irq(pdev, 0);
+> +	if (udma->irq < 0)
+> +		return udma->irq;
+> +
+> +	rc = devm_request_irq(&pdev->dev, udma->irq, ast2600_udma_isr,
+> +			      IRQF_SHARED, DEVICE_NAME, udma);
+> +	if (rc) {
+> +		dev_err(dev, "cannot request IRQ\n");
+> +		return rc;
+> +	}
+> +
+> +	rc = of_property_read_u32(dev->of_node, "dma-channels", &udma->n_ucs);
+> +	if (rc) {
+> +		dev_err(dev, "cannot find number of channels\n");
+> +		return rc;
+> +	}
+> +
+> +	udma->ucs = devm_kzalloc(dev,
+> +				 sizeof(struct ast2600_udma_chan) * udma->n_ucs, GFP_KERNEL);
+> +	if (!udma->ucs)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < udma->n_ucs; ++i) {
+> +		udma->ucs[i].is_tx = !(i % 2);
+
+& 1 would make more sense I think.
+
+> +		udma->ucs[i].chan.device = &udma->ddev;
+> +		udma->ucs[i].buf = dmam_alloc_coherent(dev, UDMA_MAX_BUFSZ,
+> +						       &udma->ucs[i].buf_addr, GFP_KERNEL);
+> +		if (!udma->ucs[i].buf)
+> +			return -ENOMEM;
+> +
+> +		udma->ucs[i].udma = udma;
+> +		list_add_tail(&udma->ucs[i].chan.device_node, &udma->ddev.channels);
+> +	}
+> +
+> +	rc = dma_async_device_register(&udma->ddev);
+> +	if (rc)
+> +		return rc;
+> +
+> +	rc = of_dma_controller_register(dev->of_node, of_dma_xlate_by_chan_id, &udma->ddev);
+> +	if (rc)
+> +		return rc;
+> +
+> +	spin_lock_init(&udma->lock);
+> +
+> +	platform_set_drvdata(pdev, udma);
+> +
+> +	dev_info(dev, "module loaded\n");
+
+Don't print anything when there's no error.
+
+> +	return 0;
+> +}
+> +
+> +static int ast2600_udma_remove(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct ast2600_udma *udma = platform_get_drvdata(pdev);
+> +
+> +	of_dma_controller_free(dev->of_node);
+> +	dma_async_device_unregister(&udma->ddev);
+> +
+> +	dev_info(dev, "module removed\n");
+
+Ditto.
+
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ast2600_udma_match[] = {
+> +	{ .compatible = "aspeed,ast2600-udma" },
+> +	{ },
+> +};
+> +
+> +static struct platform_driver ast2600_udma_driver = {
+> +	.probe = ast2600_udma_probe,
+> +	.remove = ast2600_udma_remove,
+> +	.driver = {
+> +			.name = DEVICE_NAME,
+> +			.of_match_table = ast2600_udma_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(ast2600_udma_driver);
+> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Chia-Wei Wang <chiawei_wang@aspeedtech.com");
+> 
 
 -- 
-NULL && (void)
+ i.
+
