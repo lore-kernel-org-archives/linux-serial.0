@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A76B2C7618D
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 15:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0CCC77B62
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 15:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbjCTPB5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 11:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        id S232140AbjCTPMR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 11:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbjCTPB1 (ORCPT
+        with ESMTP id S232220AbjCTPLo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 11:01:27 -0400
+        Mon, 20 Mar 2023 11:11:44 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C55D2C642;
-        Mon, 20 Mar 2023 07:58:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5FCE25E32;
+        Mon, 20 Mar 2023 08:06:41 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47E521063;
-        Mon, 20 Mar 2023 07:58:18 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71DAF1042;
+        Mon, 20 Mar 2023 07:58:10 -0700 (PDT)
 Received: from e127643.arm.com (unknown [10.57.18.95])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2FEC73F71E;
-        Mon, 20 Mar 2023 07:57:31 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5A17C3F71E;
+        Mon, 20 Mar 2023 07:57:23 -0700 (PDT)
 From:   James Clark <james.clark@arm.com>
 To:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
         michal.simek@amd.com, Jonathan.Cameron@huawei.com
@@ -39,9 +39,9 @@ Cc:     James Clark <james.clark@arm.com>,
         linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v3 4/4] serial: qcom_geni: Comment use of devm_krealloc rather than devm_krealloc_array
-Date:   Mon, 20 Mar 2023 14:57:09 +0000
-Message-Id: <20230320145710.1120469-5-james.clark@arm.com>
+Subject: [PATCH v3 2/4] hwmon: pmbus: Use devm_krealloc_array
+Date:   Mon, 20 Mar 2023 14:57:07 +0000
+Message-Id: <20230320145710.1120469-3-james.clark@arm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230320145710.1120469-1-james.clark@arm.com>
 References: <20230320145710.1120469-1-james.clark@arm.com>
@@ -51,31 +51,32 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Now that devm_krealloc_array is available, add a comment justifying not
-changing this occurrence to avoid any future auto fixups.
+Now that it exists, use it instead of doing the multiplication manually.
 
-Link: https://lore.kernel.org/all/20230318173402.20a4f60d@jic23-huawei/
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/hwmon/pmbus/pmbus_core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 28fbc927a546..8ae1fb7c2636 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1055,6 +1055,11 @@ static int setup_fifos(struct qcom_geni_serial_port *port)
- 		(port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
- 
- 	if (port->rx_buf && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
-+		/*
-+		 * Use krealloc rather than krealloc_array because rx_buf is
-+		 * accessed as 1 byte entries as well as 4 byte entries so it's
-+		 * not necessarily an array.
-+		 */
- 		port->rx_buf = devm_krealloc(uport->dev, port->rx_buf,
- 					     port->rx_fifo_depth * sizeof(u32),
- 					     GFP_KERNEL);
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 95e95783972a..e7bee25a3706 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -1190,9 +1190,9 @@ static int pmbus_add_attribute(struct pmbus_data *data, struct attribute *attr)
+ {
+ 	if (data->num_attributes >= data->max_attributes - 1) {
+ 		int new_max_attrs = data->max_attributes + PMBUS_ATTR_ALLOC_SIZE;
+-		void *new_attrs = devm_krealloc(data->dev, data->group.attrs,
+-						new_max_attrs * sizeof(void *),
+-						GFP_KERNEL);
++		void *new_attrs = devm_krealloc_array(data->dev, data->group.attrs,
++						      new_max_attrs, sizeof(void *),
++						      GFP_KERNEL);
+ 		if (!new_attrs)
+ 			return -ENOMEM;
+ 		data->group.attrs = new_attrs;
 -- 
 2.34.1
 
