@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B0CC77B6F
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 15:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D17C761AF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 15:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbjCTPMR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 11:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
+        id S232410AbjCTPQ4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 11:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232146AbjCTPLp (ORCPT
+        with ESMTP id S232228AbjCTPQh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 11:11:45 -0400
+        Mon, 20 Mar 2023 11:16:37 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6A21311F0;
-        Mon, 20 Mar 2023 08:06:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3FE0D30B2D;
+        Mon, 20 Mar 2023 08:11:39 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 888FDFEC;
-        Mon, 20 Mar 2023 07:58:06 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B4A0106F;
+        Mon, 20 Mar 2023 07:58:14 -0700 (PDT)
 Received: from e127643.arm.com (unknown [10.57.18.95])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7AF033F71E;
-        Mon, 20 Mar 2023 07:57:19 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4D7023F71E;
+        Mon, 20 Mar 2023 07:57:27 -0700 (PDT)
 From:   James Clark <james.clark@arm.com>
 To:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
         michal.simek@amd.com, Jonathan.Cameron@huawei.com
@@ -39,9 +39,9 @@ Cc:     James Clark <james.clark@arm.com>,
         linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v3 1/4] devres: Provide krealloc_array
-Date:   Mon, 20 Mar 2023 14:57:06 +0000
-Message-Id: <20230320145710.1120469-2-james.clark@arm.com>
+Subject: [PATCH v3 3/4] iio: adc: Use devm_krealloc_array
+Date:   Mon, 20 Mar 2023 14:57:08 +0000
+Message-Id: <20230320145710.1120469-4-james.clark@arm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230320145710.1120469-1-james.clark@arm.com>
 References: <20230320145710.1120469-1-james.clark@arm.com>
@@ -51,50 +51,85 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There is no krealloc_array equivalent in devres. Users would have to
-do their own multiplication overflow check so provide one.
+Now that it exists, use it instead of doing the multiplication and
+checking for overflow manually.
 
 Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: James Clark <james.clark@arm.com>
 ---
- Documentation/driver-api/driver-model/devres.rst |  1 +
- include/linux/device.h                           | 11 +++++++++++
- 2 files changed, 12 insertions(+)
+ drivers/iio/adc/xilinx-ams.c       |  9 +++------
+ drivers/iio/adc/xilinx-xadc-core.c | 17 +++++++----------
+ 2 files changed, 10 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index 4249eb4239e0..8be086b3f829 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -364,6 +364,7 @@ MEM
-   devm_kmalloc_array()
-   devm_kmemdup()
-   devm_krealloc()
-+  devm_krealloc_array()
-   devm_kstrdup()
-   devm_kstrdup_const()
-   devm_kvasprintf()
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 1508e637bb26..4dce92e99d08 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -223,6 +223,17 @@ static inline void *devm_kcalloc(struct device *dev,
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index 34cf336b3490..f0b71a1220e0 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -1263,7 +1263,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+ 	struct device *dev = indio_dev->dev.parent;
+ 	struct fwnode_handle *child = NULL;
+ 	struct fwnode_handle *fwnode = dev_fwnode(dev);
+-	size_t ams_size, dev_size;
++	size_t ams_size;
+ 	int ret, ch_cnt = 0, i, rising_off, falling_off;
+ 	unsigned int num_channels = 0;
+ 
+@@ -1320,11 +1320,8 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+ 		}
+ 	}
+ 
+-	dev_size = array_size(sizeof(*dev_channels), num_channels);
+-	if (dev_size == SIZE_MAX)
+-		return -ENOMEM;
+-
+-	dev_channels = devm_krealloc(dev, ams_channels, dev_size, GFP_KERNEL);
++	dev_channels = devm_krealloc_array(dev, ams_channels, num_channels,
++					   sizeof(*dev_channels), GFP_KERNEL);
+ 	if (!dev_channels)
+ 		return -ENOMEM;
+ 
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index 292f2892d223..dba73300f894 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -613,20 +613,17 @@ static int xadc_update_scan_mode(struct iio_dev *indio_dev,
+ 	const unsigned long *mask)
  {
- 	return devm_kmalloc_array(dev, n, size, flags | __GFP_ZERO);
- }
-+static inline __realloc_size(3, 4) void * __must_check
-+devm_krealloc_array(struct device *dev, void *p, size_t new_n, size_t new_size, gfp_t flags)
-+{
-+	size_t bytes;
-+
-+	if (unlikely(check_mul_overflow(new_n, new_size, &bytes)))
-+		return NULL;
-+
-+	return devm_krealloc(dev, p, bytes, flags);
-+}
-+
- void devm_kfree(struct device *dev, const void *p);
- char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp) __malloc;
- const char *devm_kstrdup_const(struct device *dev, const char *s, gfp_t gfp);
+ 	struct xadc *xadc = iio_priv(indio_dev);
+-	size_t new_size, n;
++	size_t n;
+ 	void *data;
+ 
+ 	n = bitmap_weight(mask, indio_dev->masklength);
+ 
+-	if (check_mul_overflow(n, sizeof(*xadc->data), &new_size))
+-		return -ENOMEM;
+-
+-	data = devm_krealloc(indio_dev->dev.parent, xadc->data,
+-			     new_size, GFP_KERNEL);
++	data = devm_krealloc_array(indio_dev->dev.parent, xadc->data,
++				   n, sizeof(*xadc->data), GFP_KERNEL);
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	memset(data, 0, new_size);
++	memset(data, 0, n * sizeof(*xadc->data));
+ 	xadc->data = data;
+ 
+ 	return 0;
+@@ -1281,9 +1278,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq)
+ 	}
+ 
+ 	indio_dev->num_channels = num_channels;
+-	indio_dev->channels = devm_krealloc(dev, channels,
+-					    sizeof(*channels) * num_channels,
+-					    GFP_KERNEL);
++	indio_dev->channels = devm_krealloc_array(dev, channels,
++						  num_channels, sizeof(*channels),
++						  GFP_KERNEL);
+ 	/* If we can't resize the channels array, just use the original */
+ 	if (!indio_dev->channels)
+ 		indio_dev->channels = channels;
 -- 
 2.34.1
 
