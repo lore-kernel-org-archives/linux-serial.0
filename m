@@ -2,96 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C03BC7619A
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA7CC6FD1D
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbjCTQSZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 12:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46942 "EHLO
+        id S231848AbjCTQgQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 12:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232133AbjCTQSA (ORCPT
+        with ESMTP id S231786AbjCTQfc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 12:18:00 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5347819F1E;
-        Mon, 20 Mar 2023 09:07:55 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-17ac5ee3f9cso13442197fac.12;
-        Mon, 20 Mar 2023 09:07:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679328167;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GXPLPHoO6OcEzh0FRvvTkMYHJJivlJafTToDO4kOl40=;
-        b=jyUQ+8KxMKko/mmIJD5/4QNYqSPU+mTXZsocZv7KMZ9UHjNhDDAXTqsV6We5qw67m/
-         rEJBL0uh5z6/6N4DOvA3Q7JVyBwfTFtGXPOWmZ9XLcQmNXBBYzfeAan4MyyaGhpGD24Z
-         ayS/QPxkP07QCNTgGQH9faG6V72U7qbqba2pMAkBinfx9rqSA5y5yk1iGPbgT39ToQlh
-         EK6YGLtBpCF7J/jwH4OYxIF5HqSiZO0N9KNzClzb0qLBk4Nuye+fxCr9PMOTw7t5sTU9
-         w/TozNMFHSf+ZZxZoBwVbzOW4XHgNTeXdB9OWWCdjL0doKiKg2dWb/TjwVoQ298xzeW0
-         1vsw==
-X-Gm-Message-State: AO0yUKWO9k2s0XYIeuYw9DB+ZwOvIbo5HkKiZf7dGh2+zEhn1TZxAzUW
-        CIjQIHaZeeQpuI7A9l9fTw==
-X-Google-Smtp-Source: AK7set8XvRgwjmJDOYipg3BA4ranqSKnJyKo74CpeOtIhfaO2wH4agFUVkOR5yGuCLkfnjT0NXGXHA==
-X-Received: by 2002:a05:6870:a549:b0:17a:b214:f004 with SMTP id p9-20020a056870a54900b0017ab214f004mr5277277oal.6.1679328167586;
-        Mon, 20 Mar 2023 09:02:47 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id tk6-20020a05687189c600b0017703cd8ff6sm3389673oab.7.2023.03.20.09.02.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 09:02:47 -0700 (PDT)
-Received: (nullmailer pid 1768734 invoked by uid 1000);
-        Mon, 20 Mar 2023 16:02:45 -0000
-Date:   Mon, 20 Mar 2023 11:02:45 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mon, 20 Mar 2023 12:35:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749F112046;
+        Mon, 20 Mar 2023 09:29:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6A147CE1307;
+        Mon, 20 Mar 2023 16:29:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758DDC433A0;
+        Mon, 20 Mar 2023 16:28:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679329744;
+        bh=kjNE+xZqCrD8iMoVdwZ7yuZZfBEJymUt10XwIxYh2IY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vv4sNgoQPQYZIt80kDvbscTGV8EyAOBLnvQJNKOVjOIWof8MSUsP1pcxCF0mz9ilD
+         QdNVhF/zy/ob6sZsf7Np9llMREtIsDd3VQEp4F26Of52jZ44R5ryPsOTBtdIMQ1AE3
+         8dugyBf2AOcS1qqBnqPzyb8hdBKvxChJ65hR7ns4FF8TnD9anxfVvrRrE8LbXM1ve5
+         QeLODxSRqLl/EnwXRwUB96JZfcfb4trlUcc8RSaE5/6lvDa6NAaYzoT08VoT55/Onn
+         37iXDFAs1+YyXU9uqijre8jtsuOUDS2/Zhf52EXBvYN8x3ECX6pphoxUdsqZ4YacrU
+         +51lo3tKKklTA==
+Date:   Mon, 20 Mar 2023 16:28:56 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        Daniel Drake <drake@endlessm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Takashi Iwai <tiwai@suse.com>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-riscv@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Liam Girdwood <lgirdwood@gmail.com>, kernel@collabora.com,
-        Albert Ou <aou@eecs.berkeley.edu>
-Subject: Re: [PATCH 04/11] ASoC: dt-bindings: rockchip: Document audio graph
- port
-Message-ID: <167932816525.1768684.13404674229392132860.robh@kernel.org>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Drake <drake@endlessm.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
+ dma-names order constraint
+Message-ID: <3f544569-553c-40c5-9d9a-31dfc48d06a4@sirena.org.uk>
 References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-5-cristian.ciocaltea@collabora.com>
+ <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
+ <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
+ <167904851367.26.16449705310108549543@mailman-core.alsa-project.org>
+ <20230320155812.GA1755078-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SSpxkFyPmL3iEqN+"
 Content-Disposition: inline
-In-Reply-To: <20230315114806.3819515-5-cristian.ciocaltea@collabora.com>
+In-Reply-To: <20230320155812.GA1755078-robh@kernel.org>
+X-Cookie: Keep away from fire or flame.
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On Wed, 15 Mar 2023 13:47:59 +0200, Cristian Ciocaltea wrote:
-> The Rockchip I2S controller is currently used in conjunction with
-> audio-graph-card to provide an endpoint for binding with the other side
-> of the audio link.
-> 
-> This is achieved via the 'port' property, which is not allowed:
-> 
->   rk3399-rockpro64.dtb: i2s@ff890000: Unevaluated properties are not allowed ('port' was unexpected)
-> 
-> Fix the issue by documenting the missing property.
-> 
-> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-> ---
->  Documentation/devicetree/bindings/sound/rockchip-i2s.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+--SSpxkFyPmL3iEqN+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Rob Herring <robh@kernel.org>
+On Mon, Mar 20, 2023 at 10:58:12AM -0500, Rob Herring wrote:
+> On Fri, Mar 17, 2023 at 12:21:41PM +0200, Cristian Ciocaltea via Alsa-dev=
+el wrote:
 
+> >  dma-names order constraint
+> > Message-ID: <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
+> > User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+> >  Thunderbird/102.7.2
+
+> There is something strange going on with your mails as there are 2=20
+> copies in the archives with the 2nd one getting the header twice. It's=20
+> coming from the alsa-devel list.
+
+This is probably caused by alsa-devel, it'll be mailman rewriting bits
+of the message.  There's stuff coming up with other people's mails too.
+
+--SSpxkFyPmL3iEqN+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmQYiccACgkQJNaLcl1U
+h9AWWgf+NrPa0MYP5i63yT+84rj5CMEVq9erNCfVLLi4aX7Rk2t3p7OHm6nPT5iH
+nEuh1CIOa+avBw3wouVQt6nokWi+mq6QbmYustWX7hPq0Gz2FRTJyXl78DNWj8Ys
+fZ4osjdXbr7f0Sa5lZVvImuVpGh7z03Fg9XbLkMXt7FDacubv1DY6RwJdphesoG7
+C99xjwHv55veTyp/QbwCuyctpKWo1Dn4HvkL8XU//892rRaHt6enBBju6DWo8GTF
+tr89XuM3flXYbOGumon2KSlsbzAXV7QKwnK9RCPsLaXuvO36PRBMippV/VmwnJCh
+dYBmTNrePnumx6r2BbCzk0Gx8LMfdw==
+=+3s7
+-----END PGP SIGNATURE-----
+
+--SSpxkFyPmL3iEqN+--
