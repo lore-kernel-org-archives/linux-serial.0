@@ -2,118 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADF9C7618E
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 18:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD29AC761A6
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 19:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbjCTSkr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 14:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        id S229639AbjCTTUS convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 15:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231640AbjCTSkO (ORCPT
+        with ESMTP id S231560AbjCTTTm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 14:40:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E2434C07;
-        Mon, 20 Mar 2023 11:32:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C00561796;
-        Mon, 20 Mar 2023 18:31:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47034C4339E;
-        Mon, 20 Mar 2023 18:31:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679337111;
-        bh=1k2HdZd7GXcK9Rf8Iw4VOgSYsoDP5B0+bCp15WVe8Ss=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Tm7liQ/nAFkV3CyP8a5RNECtveLtuaotxTZ21TXsgIzjk1jw7OqCcVuv5NSZClLep
-         A+YM+EoDWvAq/odu/8f8PeyGDE0GTZ7mII3jhBhwbOwFwfve8X9bPGiPxOZYoicIRJ
-         20oCl/tDXbBYel8S0o+06wWKtlPcbSkhLyu5fEfx2owYwn11EaGWcMfhLn5S7E4/+M
-         eqQBsPmIEofHdZei6aya7XgzWnYrNqKzbu9V9UWiKA/U6KKAnVB4hg8gyW270SN6hT
-         105QGLl+bxcHLDrriY5dCPHD1av/R5D9e7OdcgqJJYlemAvgytJV6awT6gwaLTENb6
-         zrw/M/zLSUxFA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Drake <drake@endlessm.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org, kernel@collabora.com
-In-Reply-To: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
-References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
-Subject: Re: (subset) [PATCH 00/11] Enable I2S support for RK3588/RK3588S
- SoCs
-Message-Id: <167933710700.198283.8153226214101331490.b4-ty@kernel.org>
-Date:   Mon, 20 Mar 2023 18:31:47 +0000
+        Mon, 20 Mar 2023 15:19:42 -0400
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06F84EF9;
+        Mon, 20 Mar 2023 12:11:57 -0700 (PDT)
+Received: by mail-qt1-f170.google.com with SMTP id t19so354498qta.12;
+        Mon, 20 Mar 2023 12:11:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679339516;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=32XMWaYeoPpvuSP4SJ2y+jdAZEcgNNcwFIl8GOW4Yfc=;
+        b=o3qIN2/LnO4ED23wjTMEUrjH699iEJ//+/jSREdD7Cuv9fQeXnRaexFGeDm8cF/PqI
+         cxI+ZhpZCnAtcscmFCVRyCUbCzAStPyR69Dvfop4uwN9DezgV84bKLB2G8R0DEJXDt7a
+         lhKKahXjSGkhaIQJF/thSal0clOE1u226furEQijuGKvoyxfw64sekiglP2JLlYTqk0l
+         kNWiNjNot4P8VOWPylzlPMRRbsvW2FUbr31O3R927O0XOdkabv1zt3hsdgbVTllFv4QX
+         dPwOrujKrDnLHmpnnErMnuPjnlpx8v/zY4oE67flQdM+jZx4Dcnivz95C7BiUTdE3tHI
+         vp1g==
+X-Gm-Message-State: AO0yUKUWSl6xVYsQbh1il4e4NC/bc4StrS0WzXhIW9VWiEcuWACJIdAa
+        8t7X1m9vRQbQqMwBV6qysiQHB4PRQTTD5g==
+X-Google-Smtp-Source: AK7set/lzaN1t3KTUVZkEumSDbdmOHX5pEo8NAJQP1oIh0/XbnlYc0mKuLl4/fvcWAm42fACvEG+lQ==
+X-Received: by 2002:a05:622a:54e:b0:3bf:d9f3:debe with SMTP id m14-20020a05622a054e00b003bfd9f3debemr289534qtx.59.1679339516454;
+        Mon, 20 Mar 2023 12:11:56 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id c7-20020ac86e87000000b003e1ff058350sm2007985qtv.63.2023.03.20.12.11.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Mar 2023 12:11:55 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id e71so14500150ybc.0;
+        Mon, 20 Mar 2023 12:11:55 -0700 (PDT)
+X-Received: by 2002:a25:5b84:0:b0:b67:d295:d614 with SMTP id
+ p126-20020a255b84000000b00b67d295d614mr201995ybb.12.1679339514703; Mon, 20
+ Mar 2023 12:11:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.13-dev-bd1bf
+References: <20230320105339.236279-1-biju.das.jz@bp.renesas.com> <20230320105339.236279-3-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20230320105339.236279-3-biju.das.jz@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 20 Mar 2023 20:11:43 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdW2gxDzYbP_0Z90o8mHdUm_BV6e+gMHpELJx_g=ezAbdw@mail.gmail.com>
+Message-ID: <CAMuHMdW2gxDzYbP_0Z90o8mHdUm_BV6e+gMHpELJx_g=ezAbdw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/5] tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        linux-serial@vger.kernel.org,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 15 Mar 2023 13:47:55 +0200, Cristian Ciocaltea wrote:
-> There are five I2S/PCM/TDM controllers and two I2S/PCM controllers embedded
-> in the RK3588 and RK3588S SoCs. Furthermore, RK3588 provides four additional
-> I2S/PCM/TDM controllers.
-> 
-> This patch series adds the required device tree nodes to support all the above.
-> 
-> Additionally, it enables analog audio support for the Rock 5B SBC, which has
-> been used to test both audio playback and recording.
-> 
-> [...]
+Hi Biju,
 
-Applied to
+On Mon, Mar 20, 2023 at 11:53 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> SCI IP on RZ/G2L alike SoCs do not need regshift compared to other SCI
+> IPs on the SH platform. Currently, it does regshift and configuring Rx
+> wrongly. Drop adding regshift for RZ/G2L alike SoCs.
+>
+> Fixes: f9a2adcc9e90 ("arm64: dts: renesas: r9a07g044: Add SCI[0-1] nodes")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> v3:
+>  * New patch.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Thanks for your patch!
 
-Thanks!
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -158,6 +158,7 @@ struct sci_port {
+>
+>         bool has_rtscts;
+>         bool autorts;
+> +       bool is_rz_sci;
+>  };
+>
+>  #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
+> @@ -2937,7 +2938,7 @@ static int sci_init_single(struct platform_device *dev,
+>         port->flags             = UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
+>         port->fifosize          = sci_port->params->fifosize;
+>
+> -       if (port->type == PORT_SCI) {
+> +       if (port->type == PORT_SCI && !sci_port->is_rz_sci) {
 
-[03/11] ASoC: dt-bindings: everest,es8316: Document audio graph port
-        commit: 2f43ef99ac623b6d9154c26d4f6785df18b4d8e4
-[04/11] ASoC: dt-bindings: rockchip: Document audio graph port
-        commit: bf4062b7420d01b4fafd7211fd2dc68b916591bd
-[05/11] ASoC: dt-bindings: rockchip: i2s-tdm: Document audio graph port
-        commit: bfbae373c55e3b1c15a6ba656211dbbe7c390aa1
-[06/11] ASoC: dt-bindings: rockchip: i2s-tdm: Document power-domains
-        commit: 9971f3358338950d9d3345184fb2c0cfc6fc8552
-[07/11] ASoC: dt-bindings: rockchip: Add compatible for RK3588
-        commit: b0fe6a91fa9d5599ba3cace2748906e086c5a56e
-[08/11] ASoC: rockchip: i2s: Add compatible for RK3588
-        commit: 0e6c37610934e9b91f6f5f2599de5e2f1ab59e72
+Perhaps check for !dev->dev.of_node instead? Values of 1 or 2 for
+regshift are only needed for sh770x/sh7750/sh7760, which don't use
+DT yet.  When they are converted to DT, we can extend the driver to
+support the more-or-less standard "reg-shift" DT property.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+>                 if (sci_port->reg_size >= 0x20)
+>                         port->regshift = 2;
+>                 else
+> @@ -3353,6 +3354,11 @@ static int sci_probe(struct platform_device *dev)
+>         sp = &sci_ports[dev_id];
+>         platform_set_drvdata(dev, sp);
+>
+> +       if (of_device_is_compatible(dev->dev.of_node, "renesas,r9a07g043-sci") ||
+> +           of_device_is_compatible(dev->dev.of_node, "renesas,r9a07g044-sci") ||
+> +           of_device_is_compatible(dev->dev.of_node, "renesas,r9a07g054-sci"))
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+Please, no of_device_is_compatible() checks in a driver that uses
+proper DT matching.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+> +               sp->is_rz_sci = 1;
+> +
+>         ret = sci_probe_single(dev, dev_id, p, sp);
+>         if (ret)
+>                 return ret;
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+Gr{oetje,eeting}s,
 
-Thanks,
-Mark
+                        Geert
 
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
