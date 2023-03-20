@@ -2,90 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE3AC7618A
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 13:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C39C7619A
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 15:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231247AbjCTNu4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 09:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
+        id S232077AbjCTPBh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 11:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbjCTNuv (ORCPT
+        with ESMTP id S231479AbjCTPBP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 09:50:51 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D525C11EA3;
-        Mon, 20 Mar 2023 06:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679320234; x=1710856234;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QQ+SjdksOJWAuWK44Z6HdI5GTwVX3g7th7BVrPolWhM=;
-  b=J49FKtQixpaPPAlOQaI07OW82KHrMqIbK9NiDdCo92Vli3z8yinrKJ7H
-   DLUOwmWldY7iIMV/Kh69orrqXll6ZlGczopjQo3HPUw2ngtlWdnaLkHQR
-   kv3oVVGs/dgvlhFKpe1eBc5Wps1srkV0RzaXkcl+7LvSXPlOesQR9Q4B4
-   vz64IqeHRDumlfJE/92wfnQoqJ3s8enP+DgfrKp2sVy//jBdb9lmijUBM
-   bhLwftNSlDKG4R0ohm11ICxFTnXvPUzNgFAz7PvLef7h6znk0UzwcMdh2
-   j9fOYOy3mXz1tU0eznf5PT0J8iYuSZHnpf+USa0iJTwnEHUKNgr1qyEEh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="336171337"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="336171337"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 06:50:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="674391801"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="674391801"
-Received: from mbouhaou-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.61.151])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 06:50:20 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 2/2] serial: cpm_uart: Use uart_circ_empty()
-Date:   Mon, 20 Mar 2023 15:50:09 +0200
-Message-Id: <20230320135009.47170-2-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230320135009.47170-1-ilpo.jarvinen@linux.intel.com>
-References: <20230320135009.47170-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 20 Mar 2023 11:01:15 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 067B9144A3;
+        Mon, 20 Mar 2023 07:57:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A1E7FAD7;
+        Mon, 20 Mar 2023 07:58:02 -0700 (PDT)
+Received: from e127643.arm.com (unknown [10.57.18.95])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 87D3B3F71E;
+        Mon, 20 Mar 2023 07:57:15 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
+        michal.simek@amd.com, Jonathan.Cameron@huawei.com
+Cc:     James Clark <james.clark@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v3 0/4] devres: Provide krealloc_array
+Date:   Mon, 20 Mar 2023 14:57:05 +0000
+Message-Id: <20230320145710.1120469-1-james.clark@arm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use uart_circ_empty() instead of open coding it.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index 5565f302cb21..349e7da643f0 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -678,15 +678,14 @@ static int cpm_uart_tx_pump(struct uart_port *port)
- 	/* Pick next descriptor and fill from buffer */
- 	bdp = pinfo->tx_cur;
+Changes since v2:
  
--	while (!(in_be16(&bdp->cbd_sc) & BD_SC_READY) &&
--	       xmit->tail != xmit->head) {
-+	while (!(in_be16(&bdp->cbd_sc) & BD_SC_READY) && !uart_circ_empty(xmit)) {
- 		count = 0;
- 		p = cpm2cpu_addr(in_be32(&bdp->cbd_bufaddr), pinfo);
- 		while (count < pinfo->tx_fifosize) {
- 			*p++ = xmit->buf[xmit->tail];
- 			uart_xmit_advance(port, 1);
- 			count++;
--			if (xmit->head == xmit->tail)
-+			if (uart_circ_empty(xmit))
- 				break;
- 		}
- 		out_be16(&bdp->cbd_datlen, count);
+ * Remove change in qcom_geni_serial.c in the last commmit and replace
+   it with a comment instead
+ * Whitespace fix
+
+Changes since v1:
+
+ * Style fix
+
+-----------------------
+
+Hi,
+
+I had a use for a devm realloc_array in a separate change, so I've
+added one and updated all the obvious existing uses of it that I could
+find. This is basically a copy paste of the one in slab.h
+
+Applies to v6.3-rc3
+
+Thanks
+James
+
+James Clark (4):
+  devres: Provide krealloc_array
+  hwmon: pmbus: Use devm_krealloc_array
+  iio: adc: Use devm_krealloc_array
+  serial: qcom_geni: Comment use of devm_krealloc rather than
+    devm_krealloc_array
+
+ .../driver-api/driver-model/devres.rst          |  1 +
+ drivers/hwmon/pmbus/pmbus_core.c                |  6 +++---
+ drivers/iio/adc/xilinx-ams.c                    |  9 +++------
+ drivers/iio/adc/xilinx-xadc-core.c              | 17 +++++++----------
+ drivers/tty/serial/qcom_geni_serial.c           |  5 +++++
+ include/linux/device.h                          | 11 +++++++++++
+ 6 files changed, 30 insertions(+), 19 deletions(-)
+
 -- 
-2.30.2
+2.34.1
 
