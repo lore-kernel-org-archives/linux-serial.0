@@ -2,134 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9838FC7618A
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F9EC7618D
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 16:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232555AbjCTQJD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 12:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39116 "EHLO
+        id S231759AbjCTQNf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 12:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbjCTQIi (ORCPT
+        with ESMTP id S229844AbjCTQNN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 12:08:38 -0400
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081AE2A6D2;
-        Mon, 20 Mar 2023 08:58:15 -0700 (PDT)
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-17671fb717cso13478990fac.8;
-        Mon, 20 Mar 2023 08:58:15 -0700 (PDT)
+        Mon, 20 Mar 2023 12:13:13 -0400
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AACD5591;
+        Mon, 20 Mar 2023 09:03:28 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id t10-20020a9d774a000000b00698d7d8d512so6979323otl.10;
+        Mon, 20 Mar 2023 09:03:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679327893;
+        d=1e100.net; s=20210112; t=1679328152;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B8X5XJu7ZSmlXWJv7df3tWmayRZwNJIjgct+jX9CNF4=;
-        b=XmZbEeMO0+JAm7P63ROWJ94IEAKKy0pcKRs3K0iaGFboKKx2VRo/D76MJjO8W4Nhe2
-         x8pWdb6OR1fPrzO3IvlkAO7ezJpek+VK3A0fJFLTeNBSqxuLNqzvH2hJ1IlkftyzT0dg
-         DP+e3VO/HDTR2XmQESHJwqmLttgpsNgrzqVmx1BYc05a90ONh5r8zpJjHZRrbPmIdVaV
-         l/S/nPxvmNz7jhNawQkB8dYsEHJLEoF2SXj6xU/o13EggGYkJJ5CJhddihc6JfikZ/BF
-         SKYGA/2QUF2jK2rR8R3aQGwuT+TCBlEK5sxNH3SUIrfmOexqiM67hLl+f8W2gQtsP1li
-         fXLA==
-X-Gm-Message-State: AO0yUKWmOObJkexlmWYmJO21nRLaRRJqW1kDfnjYUixboMC3PVDvvJ3y
-        R98GRyaCeLJrBASuWalqWA==
-X-Google-Smtp-Source: AK7set+FJqchAKh3aLkpaCyRS9ncCPb0CGLyZPm8rjBj3cImE2bhXeW/GwwFgbDKATBHmsueXL7IhQ==
-X-Received: by 2002:a05:6870:7085:b0:17a:d1e6:5a09 with SMTP id v5-20020a056870708500b0017ad1e65a09mr5356989oae.59.1679327893498;
-        Mon, 20 Mar 2023 08:58:13 -0700 (PDT)
+        bh=8ONYF9Dhx9WuItYv8TAksl5NcQGpYz4D/9DErzT0sW8=;
+        b=ihrPqVWnEUQ2inX7U53n0cWk8weK9GBHltk4f8vOAPqMhJjTS75ZdxI7jScUjFAWt/
+         pQRH+jv2dT3iAsVVxlLhi6t4DA+QLGojChn5tc7H5w9H81vzxzUXIqNCkyiUxRFprxot
+         ta/6hwrsKAZTO+p6waCTpmRC6Akvn9GfwPVNajJ8p6F+vVJJQqym/Jz4Mij80GobuxJ2
+         NzFO0ytBva1lryyEkQZuJY8+H5dW+D+E51lvLLh1hHpQIk1js9JNijpQgBGR2oSYP+hq
+         c9g9VyBWIGk9OUjTU+muxP0NEiR8cpqpb8RwmzS6f2dMxdDA5wfvPdh1lcMzRdXyNeIM
+         9TKQ==
+X-Gm-Message-State: AO0yUKU9A/z8uB93sfSEATdDk7rn6rnGj01je/N1J4dY5ou3ICFtS5qM
+        tVVTluVmc39Ykeqp7jprJw==
+X-Google-Smtp-Source: AK7set8NH1bWAW41KIn+lr6vHiP/x1CpF/1YMJ08oLnvsEuB8hZrMa5U2xgwSIKI0WC3TSJ4A51DjA==
+X-Received: by 2002:a9d:7595:0:b0:69e:80e7:905f with SMTP id s21-20020a9d7595000000b0069e80e7905fmr243497otk.13.1679328152031;
+        Mon, 20 Mar 2023 09:02:32 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id vk10-20020a0568710e4a00b00172426ebe58sm3388588oab.27.2023.03.20.08.58.12
+        by smtp.gmail.com with ESMTPSA id c7-20020a9d6847000000b0069f71b0d060sm117205oto.36.2023.03.20.09.02.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 08:58:13 -0700 (PDT)
-Received: (nullmailer pid 1758791 invoked by uid 1000);
-        Mon, 20 Mar 2023 15:58:12 -0000
-Date:   Mon, 20 Mar 2023 10:58:12 -0500
+        Mon, 20 Mar 2023 09:02:31 -0700 (PDT)
+Received: (nullmailer pid 1767227 invoked by uid 1000);
+        Mon, 20 Mar 2023 16:02:30 -0000
+Date:   Mon, 20 Mar 2023 11:02:30 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+Cc:     linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        Rob Herring <robh+dt@kernel.org>, kernel@collabora.com,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
         Liam Girdwood <lgirdwood@gmail.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
         Mark Brown <broonie@kernel.org>,
         Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         Heiko Stuebner <heiko@sntech.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Drake <drake@endlessm.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org, kernel@collabora.com
-Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
- dma-names order constraint
-Message-ID: <20230320155812.GA1755078-robh@kernel.org>
+        Daniel Drake <drake@endlessm.com>
+Subject: Re: [PATCH 03/11] ASoC: dt-bindings: everest,es8316: Document audio
+ graph port
+Message-ID: <167932814988.1767188.7685028838394723224.robh@kernel.org>
 References: <20230315114806.3819515-1-cristian.ciocaltea@collabora.com>
- <20230315114806.3819515-3-cristian.ciocaltea@collabora.com>
- <3679f2d0-55f0-1710-abc2-b268b6fc6969@linaro.org>
- <167904851367.26.16449705310108549543@mailman-core.alsa-project.org>
+ <20230315114806.3819515-4-cristian.ciocaltea@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <167904851367.26.16449705310108549543@mailman-core.alsa-project.org>
+In-Reply-To: <20230315114806.3819515-4-cristian.ciocaltea@collabora.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 12:21:41PM +0200, Cristian Ciocaltea via Alsa-devel wrote:
-> Date: Fri, 17 Mar 2023 12:21:41 +0200
-> From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-> To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Sudeep Holla
->  <sudeep.holla@arm.com>, Cristian Marussi <cristian.marussi@arm.com>, Rob
->  Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
->  <krzysztof.kozlowski+dt@linaro.org>, Greg Kroah-Hartman
->  <gregkh@linuxfoundation.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark
->  Brown <broonie@kernel.org>, Nicolas Frattaroli
->  <frattaroli.nicolas@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Jaroslav
->  Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Paul Walmsley
->  <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou
->  <aou@eecs.berkeley.edu>, Daniel Drake <drake@endlessm.com>, Katsuhiro
->  Suzuki <katsuhiro@katsuster.net>
-> CC: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
->  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
->  alsa-devel@alsa-project.org, linux-rockchip@lists.infradead.org,
->  linux-riscv@lists.infradead.org, kernel@collabora.com
-> Subject: Re: [PATCH 02/11] dt-bindings: serial: snps-dw-apb-uart: Relax
->  dma-names order constraint
-> Message-ID: <8ae57fe3-56aa-7e50-3eaa-a12a40657baf@collabora.com>
-> User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
->  Thunderbird/102.7.2
 
-There is something strange going on with your mails as there are 2 
-copies in the archives with the 2nd one getting the header twice. It's 
-coming from the alsa-devel list.
+On Wed, 15 Mar 2023 13:47:58 +0200, Cristian Ciocaltea wrote:
+> The ES8316 codec is currently used in conjunction with audio-graph-card
+> to provide an endpoint for binding with the other side of the audio
+> link.
+> 
+> This is achieved via the 'port' property, which is not allowed:
+> 
+>   rk3399-rockpro64.dtb: codec@11: Unevaluated properties are not allowed ('port' was unexpected)
+> 
+> Fix the issue by documenting the missing property.
+> 
+> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+> ---
+>  Documentation/devicetree/bindings/sound/everest,es8316.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-> 
-> On 3/17/23 10:31, Krzysztof Kozlowski wrote:
-> > On 15/03/2023 12:47, Cristian Ciocaltea wrote:
-> > > Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
-> > > dma-names properties") documented dma-names property to handle Allwiner
-> > > D1 dtbs_check warnings, but relies on a strict rx->tx ordering, which is
-> > > the reverse of what a different board expects:
-> > > 
-> > >    rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
-> > > 
-> > > A quick and incomplete check shows the inconsistency is present in many
-> > > other DT files:
-> > 
-> > Why not fixing the DTS? The properties should have fixed order.
-> 
-> I was initially concerned about the risk of a potential ABI breakage, but I
-> think that's not really a problem since dma-names is not directly accessed
-> in the driver and DT Kernel API doesn't rely on a particular order.
-> 
-> If there are no objections, I would switch the order in the binding to
-> tx->rx, since that's what most of the DTS use, and fix the remaining ones.
-> 
-> > Best regards,
-> > Krzysztof
-> 
-> Thanks,
-> Cristian
+Acked-by: Rob Herring <robh@kernel.org>
+
