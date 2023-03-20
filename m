@@ -2,72 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9ADC6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 13:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D016EC76195
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 13:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbjCTNd2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 09:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S231295AbjCTNut (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 09:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbjCTNdW (ORCPT
+        with ESMTP id S231261AbjCTNut (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 09:33:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECC922029;
-        Mon, 20 Mar 2023 06:33:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BB1AB80E8A;
-        Mon, 20 Mar 2023 13:33:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D53FBC433D2;
-        Mon, 20 Mar 2023 13:33:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1679319193;
-        bh=PHgxmKVBuw8bEVTejodtImXPSO6GlN9rWZrf4VYdvsA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z0oCFxGlOJ5wWKNTguHbv+Y7pTYDNjDH7+uIZ5dRezPXYzoY2R52wuQTtrfUvdCJL
-         pAZftfWBkjbdUlH8KUhQMsyKrYg/pYkGR42vWWbQsK5TVbodraSJjx87RUnogqta3e
-         +lsk9+04rM1zhDijeomUSRCxfA3Bjhv5F7E/sHNo=
-Date:   Mon, 20 Mar 2023 14:33:10 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_em: Fix UART port type
-Message-ID: <ZBhglhuXBlSPVRVx@kroah.com>
-References: <20230320122225.414976-1-biju.das.jz@bp.renesas.com>
+        Mon, 20 Mar 2023 09:50:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904B36A4C;
+        Mon, 20 Mar 2023 06:50:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679320232; x=1710856232;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=n6T2JVYJbSsy1HsnBbxLghmE7GwndGUVZ+b4A2IrnVM=;
+  b=XR1i4Mno3aPTrqtzIDKJDTzTawIZw3hmP+gkWsy5DmIWxLOHM8G2dLXQ
+   sxaYjnWKLw5cUvJVgAuiBQwrYl61+yQMqkzBm9cBTASZJ+dkiy85DYhFR
+   OHT0zrlQMjdze49785VxPu3ky7M26gYdZvmLyoRUXfVQqBw3eXOyy6VCq
+   Ejuh3venC+xBCWcdC9THJecsHCNrsKiQJy1mxQKnGkiXaFWuBpgw8kzc6
+   CHumJH0MLYDJy172Po4wJD+aJmW/p9x16p2QHaRZgVSx0ibDpfeJpbBqU
+   YS+MiHW8/xavv6L6EHYnrQKx2C3YH5ZvF/VXxJ4ff5qv9AFi4inD5COfa
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="336171324"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="336171324"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 06:50:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="674391698"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="674391698"
+Received: from mbouhaou-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.61.151])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 06:50:15 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Timur Tabi <timur@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 1/2] serial: ucc_uart: Use uart_circ_empty()
+Date:   Mon, 20 Mar 2023 15:50:08 +0200
+Message-Id: <20230320135009.47170-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230320122225.414976-1-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 12:22:25PM +0000, Biju Das wrote:
-> commit 32e293be736b853f168cd065d9cbc1b0c69f545d upstream.
-> 
-> As per HW manual for  EMEV2 "R19UH0040EJ0400 Rev.4.00", the UART
-> IP found on EMMA mobile SoC is Register-compatible with the
-> general-purpose 16750 UART chip. Fix UART port type as 16750 and
-> enable 64-bytes fifo support.
-> 
-> Fixes: 22886ee96895 ("serial8250-em: Emma Mobile UART driver V2")
-> Cc: stable@vger.kernel.org # 4.19.y
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Link: https://lore.kernel.org/r/20230227114152.22265-2-biju.das.jz@bp.renesas.com
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> [biju: manually fixed the conflicts]
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> Resending to 4.19 with confilcts [1] fixed.
-> [1] https://lore.kernel.org/stable/1679303539169236@kroah.com/
+Use uart_circ_empty() rather than open coding it.
 
-Both now queued up, thanks.
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/ucc_uart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index 32c7a5b43f8e..e6bd1256a4e7 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -366,15 +366,14 @@ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
+ 	/* Pick next descriptor and fill from buffer */
+ 	bdp = qe_port->tx_cur;
+ 
+-	while (!(ioread16be(&bdp->status) & BD_SC_READY) &&
+-	       (xmit->tail != xmit->head)) {
++	while (!(ioread16be(&bdp->status) & BD_SC_READY) && !uart_circ_empty(xmit)) {
+ 		count = 0;
+ 		p = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
+ 		while (count < qe_port->tx_fifosize) {
+ 			*p++ = xmit->buf[xmit->tail];
+ 			uart_xmit_advance(port, 1);
+ 			count++;
+-			if (xmit->head == xmit->tail)
++			if (uart_circ_empty(xmit))
+ 				break;
+ 		}
+ 
+-- 
+2.30.2
+
