@@ -2,140 +2,195 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1775C6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 05:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E14D4C7619A
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Mar 2023 06:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbjCTF4B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Mar 2023 01:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
+        id S229843AbjCTG1A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Mar 2023 02:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjCTF4A (ORCPT
+        with ESMTP id S229763AbjCTG07 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Mar 2023 01:56:00 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA431C590;
-        Sun, 19 Mar 2023 22:55:58 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id l12so9176760wrm.10;
-        Sun, 19 Mar 2023 22:55:58 -0700 (PDT)
+        Mon, 20 Mar 2023 02:26:59 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C86C3597;
+        Sun, 19 Mar 2023 23:26:58 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id iw3so11378974plb.6;
+        Sun, 19 Mar 2023 23:26:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679291757;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QtJkCtqb2bB+MWR+u3Gmp/ztE97N0qX+dLRTfM+HQno=;
-        b=Y8W2POq43d9PZxpw/Chip8Rt29MbxPOWW3RRojLfpt9PXGMwEQqOyI4LeSXFFtZh3s
-         YOkMYf5gUJSlNsPtj354+Ph4O9zlpaZeErdnMbNOWUjzcJk5uTeDBLbnKsGx7TUhyohs
-         DPQOPe1qLiUELRNVlL0ZvoiV5ldFT/bAkPMm34GU2hV4a459noXFsdAU0P+o8gQT94dK
-         eBNKxVI9wfXHYz9Tu9dHWzpcuxBExIbvk0SYal5Mag98AbN+Co0RW5V5u7aHVk66Mxnn
-         3mLvh4oI3UYFynfpgchQRaflKJ6NkR8PEq91n4Cjm25kq8EqtJMcE0Z1PzbC5M66auQf
-         s5wQ==
+        d=gmail.com; s=20210112; t=1679293617;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=a00IFrfnw2eP3aBoOdd3PiLje9YjLbhrfjpITW/tA1k=;
+        b=G8QZZUE3Z19kup0/jT2H+kfn6FLOMSqxbVXoBvLtYuDkixzft3mbxHPltWN2yFC/oU
+         TYQOGmRMu4s3e3fuB5RzzI8UVQWdIjT+++7wSl1gLCSRI3+SzvAXJZKRHEiveip1760u
+         7D1Oa+1wFyYtf6rreRrsUPCVCD6kMbvG3ChaZQ1mwhyduCdbkko981yeE4ls7lPwb6D6
+         CV7On/Pvfg1NceEV1M+0tT47yEV+a+PhUVZgQ1CL0Ug5E+tBDmRdnRR9qmibSZedy+OQ
+         hFmMycHW/EbJAxyEqBqq4PA0olOI4/w6pUZb8YuIEDCgDnRAVEIuntODPr5XImNaPFjw
+         +Llw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679291757;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QtJkCtqb2bB+MWR+u3Gmp/ztE97N0qX+dLRTfM+HQno=;
-        b=D/4YnpKbr8XPl3CumYqxPkRg7WOTgF4WckV9WzY84/NerprFbApmlBpsXuv6WuQqAQ
-         E4A9NWhTFY/Y/GuZUSPhpXBVVwRLDZ9ZrUXhG5NGg4RMeYtXjcFeQLyvZkpS7e5FsOR/
-         XIPMzj/Bkc6KljwoJNr0sqXBzWeOmKE5oieYqBhHesH798bkRiKdhZBct+paj3M2DmOm
-         iHkh7njDajf96rI+D9EP60AVv9OUbAZCQG3S2zCCeM1iiFflYUhGjWObpMJ9eXSh7m2g
-         ypcDsJoEfe6eAmShKCdqfPak+56efdq90h9pkJtnxChkuLLi+nHhfTdWnpQoRHS3ZHgh
-         Y7fw==
-X-Gm-Message-State: AO0yUKVmDdA78GRIjyVI3iGpiMId8vXQV0xc/K7DMT2F1r4qla9oEEwX
-        qRaiNY7wGbDLA1IK6HXplDUmMsw133s=
-X-Google-Smtp-Source: AK7set/WH0FKeZbzMjkrVVepWxHIpvD3zUB2eBPb4v1+GHJS39m0q3R4OjFd8+1nkWP1u92Ah0DnUg==
-X-Received: by 2002:a5d:4708:0:b0:2cb:29eb:a35e with SMTP id y8-20020a5d4708000000b002cb29eba35emr9407803wrq.11.1679291757422;
-        Sun, 19 Mar 2023 22:55:57 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id p5-20020adfce05000000b002d64fcb362dsm2725967wrn.111.2023.03.19.22.55.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 22:55:57 -0700 (PDT)
-Date:   Mon, 20 Mar 2023 08:55:51 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     oe-kbuild@lists.linux.dev, Sherry Sun <sherry.sun@nxp.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org
-Cc:     lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH] tty: serdev: serdev-ttyport: add devt for ctrl->dev
-Message-ID: <d2c39186-9641-4aaa-90cb-bce92b2331f6@kili.mountain>
+        d=1e100.net; s=20210112; t=1679293617;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=a00IFrfnw2eP3aBoOdd3PiLje9YjLbhrfjpITW/tA1k=;
+        b=jYJBzDvRhE+49Z4K5vHr6L5UBuSK1YX8JHsUxQ/nRQLZYZ9crjDcVnZ3MYmfE55+eA
+         Xn5gPg9Hg19bYWEdQUP95yBiEZVenqDxQV/gHm6pKMi4qjoDiFEUZEMhny0OWE7z611P
+         IJ5MLGL7GDvu+Dp0JI154RyLum2MDHtbGkbgHKcuxzYWt+v/b8KlZ8GlVHArDFWuwurK
+         LaKKhsPb5tZ6VJlO7gXU47iyOjsmNuOX5vGm2SvlBox/1s+Iea6l0t1EtW/tP8x4EVAQ
+         O3Kegpr4/ymAcsPphdI6pqhLH2JxiGfmtyAV+hhREjs4eHcV5FIiIlTLpBfUcYqF2iVF
+         GJkQ==
+X-Gm-Message-State: AO0yUKV6jUzelho2yipH/LElIPnhCcYUPt2VmuwM6ompOA5jfNhR/q+E
+        WFJlM9yEdPDMnuuo9PFkv58=
+X-Google-Smtp-Source: AK7set+cy3CP0Y/5GQ8tEhoRqvIB947R3Q6hzn4nVrPMn1mCccHGAYXfBxJqXu/JmBGUGiZsjI1inA==
+X-Received: by 2002:a17:902:fb8b:b0:1a0:6721:6cdb with SMTP id lg11-20020a170902fb8b00b001a067216cdbmr14004368plb.40.1679293616921;
+        Sun, 19 Mar 2023 23:26:56 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id s18-20020a170902b19200b0019aa6bf4450sm5786074plr.188.2023.03.19.23.26.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Mar 2023 23:26:56 -0700 (PDT)
+Message-ID: <c6ca0988-f2a4-54ea-941b-1c84d1368239@gmail.com>
+Date:   Mon, 20 Mar 2023 14:26:52 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230315105400.23426-1-sherry.sun@nxp.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 09/15] dt-bindings: reset: Document ma35d1 reset
+ controller bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        schung@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230315072902.9298-1-ychuang570808@gmail.com>
+ <20230315072902.9298-10-ychuang570808@gmail.com>
+ <cee0497e-c441-3937-07ec-0b6c4621f4e4@linaro.org>
+ <b9f93711-7302-4ed6-3f71-7bb792507136@linaro.org>
+ <4d62376f-1b33-62ac-2ed9-6b71ae7485a2@gmail.com>
+ <fd0cb506-707a-4f5d-b917-de6a03787f6a@linaro.org>
+Content-Language: en-US
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <fd0cb506-707a-4f5d-b917-de6a03787f6a@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Sherry,
 
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sherry-Sun/tty-serdev-serdev-ttyport-add-devt-for-ctrl-dev/20230315-185913
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20230315105400.23426-1-sherry.sun%40nxp.com
-patch subject: [PATCH] tty: serdev: serdev-ttyport: add devt for ctrl->dev
-config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20230316/202303160201.bnmM2caW-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+On 2023/3/19 下午 07:05, Krzysztof Kozlowski wrote:
+> On 18/03/2023 05:30, Jacky Huang wrote:
+>> Dear Krzysztof,
+>>
+>>
+>> Thanks for your advice.
+>>
+>>
+>> On 2023/3/16 下午 03:39, Krzysztof Kozlowski wrote:
+>>> On 16/03/2023 08:37, Krzysztof Kozlowski wrote:
+>>>> On 15/03/2023 08:28, Jacky Huang wrote:
+>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>>>
+>>>>> Add documentation to describe nuvoton ma35d1 reset driver bindings.
+>>>> Subject: drop second/last, redundant "bindings". The "dt-bindings"
+>>>> prefix is already stating that these are bindings.
+>>
+>> OK, I will fix it.
+>>
+>>
+>>>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>>>> ---
+>>>>>    .../bindings/reset/nuvoton,ma35d1-reset.yaml  | 50 +++++++++++++++++++
+>>>>>    1 file changed, 50 insertions(+)
+>>>>>    create mode 100644 Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
+>>>>> new file mode 100644
+>>>>> index 000000000000..f66c566c6dce
+>>>>> --- /dev/null
+>>>>> +++ b/Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
+>>>>> @@ -0,0 +1,50 @@
+>>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>>>> +%YAML 1.2
+>>>>> +---
+>>>>> +$id: http://devicetree.org/schemas/reset/nuvoton,ma35d1-reset.yaml#
+>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>>>> +
+>>>>> +title: Nuvoton MA35D1 Reset Controller
+>>>>> +
+>>>>> +maintainers:
+>>>>> +  - Chi-Fang Li <cfli0@nuvoton.com>
+>>>>> +  - Jacky Huang <ychuang3@nuvoton.com>
+>>>>> +
+>>>>> +description:
+>>>>> +  The system reset controller can be used to reset various peripheral
+>>>>> +  controllers in MA35D1 SoC.
+>>>>> +
+>>>>> +properties:
+>>>>> +  compatible:
+>>>>> +    const: nuvoton,ma35d1-reset
+>>>>> +
+>>>>> +  regmap:
+>>>>> +    $ref: /schemas/types.yaml#/definitions/phandle
+>>>>> +    description: Phandle to the register map node.
+>>>> You need to be specific what is this. As you can easily check, there is
+>>>> no such property in any devices. I don't understand why do you need it
+>>>> in the first place.
+>>           reset: reset-controller {
+>>               compatible = "nuvoton,ma35d1-reset";
+>>               regmap = <&sys>;
+>>               #reset-cells = <1>;
+>>           };
+>>
+>> The dt_binding_check check report an error about the above "regmap".
+>>
+>> I found that add this can pass the test.
+> Do not add properties to bindings to "pass the test". That's not the
+> goal of bindings. Add there properties because they make sense...
+>
+> Anyway, you did not answer my question at all. So one by one - address them:
+> 1. As you can easily check, there is no such property in any devices.
+> Explanation: do you see it anywhere in existing bindings?
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <error27@gmail.com>
-| Link: https://lore.kernel.org/r/202303160201.bnmM2caW-lkp@intel.com/
+Yes, I cannot find it in all bindings. I know it's wrong.
 
-smatch warnings:
-drivers/tty/serdev/serdev-ttyport.c:273 serdev_tty_port_register() warn: variable dereferenced before check 'drv' (see line 270)
+> 2. I don't understand why do you need it in the first place.
+> Explanation: your binding suggest this is not needed. If you think
+> otherwise, you need to provide rationale.
+>
+>
+>
+> Best regards,
+> Krzysztof
+>
 
-vim +/drv +273 drivers/tty/serdev/serdev-ttyport.c
+Now we have removed regmap and modify the dtsi as:
 
-bed35c6dfa6a36 Rob Herring  2017-02-02  264  struct device *serdev_tty_port_register(struct tty_port *port,
-bed35c6dfa6a36 Rob Herring  2017-02-02  265  					struct device *parent,
-bed35c6dfa6a36 Rob Herring  2017-02-02  266  					struct tty_driver *drv, int idx)
-bed35c6dfa6a36 Rob Herring  2017-02-02  267  {
-bed35c6dfa6a36 Rob Herring  2017-02-02  268  	struct serdev_controller *ctrl;
-bed35c6dfa6a36 Rob Herring  2017-02-02  269  	struct serport *serport;
-225acc66b125b9 Sherry Sun   2023-03-15 @270  	dev_t devt = MKDEV(drv->major, drv->minor_start) + idx;
-                                                                   ^^^^^       ^^^^^
-Dereferences.
+     sys: system-management@40460000 {
+         compatible = "nuvoton,ma35d1-sys", "syscon", "simple-mfd";
+         reg = <0x0 0x40460000 0x0 0x200>;
 
-bed35c6dfa6a36 Rob Herring  2017-02-02  271  	int ret;
-bed35c6dfa6a36 Rob Herring  2017-02-02  272  
-bed35c6dfa6a36 Rob Herring  2017-02-02 @273  	if (!port || !drv || !parent)
-                                                             ^^^^
-Checked too late.  Are these checks really required?
+         reset: reset-controller {
+             compatible = "nuvoton,ma35d1-reset";
+             #reset-cells = <1>;
+         };
+     };
 
-bed35c6dfa6a36 Rob Herring  2017-02-02  274  		return ERR_PTR(-ENODEV);
-bed35c6dfa6a36 Rob Herring  2017-02-02  275  
-bed35c6dfa6a36 Rob Herring  2017-02-02  276  	ctrl = serdev_controller_alloc(parent, sizeof(struct serport));
-bed35c6dfa6a36 Rob Herring  2017-02-02  277  	if (!ctrl)
-bed35c6dfa6a36 Rob Herring  2017-02-02  278  		return ERR_PTR(-ENOMEM);
-bed35c6dfa6a36 Rob Herring  2017-02-02  279  	serport = serdev_controller_get_drvdata(ctrl);
-bed35c6dfa6a36 Rob Herring  2017-02-02  280  
-bed35c6dfa6a36 Rob Herring  2017-02-02  281  	serport->port = port;
-bed35c6dfa6a36 Rob Herring  2017-02-02  282  	serport->tty_idx = idx;
-bed35c6dfa6a36 Rob Herring  2017-02-02  283  	serport->tty_drv = drv;
-bed35c6dfa6a36 Rob Herring  2017-02-02  284  
-225acc66b125b9 Sherry Sun   2023-03-15  285  	ctrl->dev.devt = devt;
-bed35c6dfa6a36 Rob Herring  2017-02-02  286  	ctrl->ops = &ctrl_ops;
-bed35c6dfa6a36 Rob Herring  2017-02-02  287  
-aee5da7838787f Johan Hovold 2017-04-11  288  	port->client_ops = &client_ops;
-aee5da7838787f Johan Hovold 2017-04-11  289  	port->client_data = ctrl;
-aee5da7838787f Johan Hovold 2017-04-11  290  
-bed35c6dfa6a36 Rob Herring  2017-02-02  291  	ret = serdev_controller_add(ctrl);
-bed35c6dfa6a36 Rob Herring  2017-02-02  292  	if (ret)
-aee5da7838787f Johan Hovold 2017-04-11  293  		goto err_reset_data;
-bed35c6dfa6a36 Rob Herring  2017-02-02  294  
-bed35c6dfa6a36 Rob Herring  2017-02-02  295  	dev_info(&ctrl->dev, "tty port %s%d registered\n", drv->name, idx);
-bed35c6dfa6a36 Rob Herring  2017-02-02  296  	return &ctrl->dev;
-bed35c6dfa6a36 Rob Herring  2017-02-02  297  
-aee5da7838787f Johan Hovold 2017-04-11  298  err_reset_data:
-aee5da7838787f Johan Hovold 2017-04-11  299  	port->client_data = NULL;
-0c5aae59270fb1 Johan Hovold 2020-02-10  300  	port->client_ops = &tty_port_default_client_ops;
-bed35c6dfa6a36 Rob Herring  2017-02-02  301  	serdev_controller_put(ctrl);
-aee5da7838787f Johan Hovold 2017-04-11  302  
-bed35c6dfa6a36 Rob Herring  2017-02-02  303  	return ERR_PTR(ret);
-bed35c6dfa6a36 Rob Herring  2017-02-02  304  }
+In the reset driver, we obtain the regmap by parent node:
+     parent = of_get_parent(dev->of_node); /* parent should be syscon 
+node */
+     reset_data->regmap = syscon_node_to_regmap(parent);
+     of_node_put(parent);
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+We have it tested OK on ma35d1 SOM board.
+And it pass the dt_binding_check and dtbs_check.
+
+Best regards,
+Jacky Huang
+
+
 
