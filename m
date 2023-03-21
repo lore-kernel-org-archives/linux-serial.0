@@ -2,77 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC033C76195
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 21:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E28A5C6FD1D
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 21:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbjCUVcn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Mar 2023 17:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        id S229666AbjCUV4d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Mar 2023 17:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbjCUVcn (ORCPT
+        with ESMTP id S229512AbjCUV4c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Mar 2023 17:32:43 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A32BF979;
-        Tue, 21 Mar 2023 14:32:42 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-17997ccf711so17689772fac.0;
-        Tue, 21 Mar 2023 14:32:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679434361;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a/SrNI7Im7OQzPMwgFxuqdWvT+8hAcxHPUJhevfOoDk=;
-        b=ea1W35IywqqLc9uNP5X7MlLeAmIh0MLu1Ax4b1RPs1MQyJReLNg27NrLgZGqZVB+dj
-         33xtDtcqTsbti9d4pXptbDG22+0tlYI6uWFCff9kHh1u/9JHvAhhqAHK5qU0ehRPEhrC
-         f4xB1RTTzMSyVsSOjRwgObOkUA9zfj3+IdLVvfC9XR7ZLhS4RZQnQxYGwEEp9iXL5hgj
-         fz2sCCoe/mGsWEdW/x5AGmz34rN7ZbpAFq86ckJSMW0Xi4/RFI4rLKQ6twEM1Ab3+uuT
-         PB9AfMyZtvvqKfqB8KL19gNv1kqt8A95d71GKShKnYd/TCYEMAJ2YR+4fP6F/OJ28OzD
-         ELUQ==
-X-Gm-Message-State: AO0yUKVmccYPjuQ0V8gT2nhXzEveVYG2zbZojKg4rTyUdQ6acjuER8Vl
-        puTRUeL27qgzBA6Z36kOCuSw4w04MA==
-X-Google-Smtp-Source: AK7set+sV/jKtfFsliyuVdroKJyTtvegHA63GNPGyroahiRTLam+vd+reVQMt4XQK0cSjZ/4FRQ6ow==
-X-Received: by 2002:a05:6870:8888:b0:172:4748:32d9 with SMTP id m8-20020a056870888800b00172474832d9mr300895oam.3.1679434361552;
-        Tue, 21 Mar 2023 14:32:41 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id tk6-20020a05687189c600b0017703cd8ff6sm4604096oab.7.2023.03.21.14.32.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 14:32:41 -0700 (PDT)
-Received: (nullmailer pid 1648942 invoked by uid 1000);
-        Tue, 21 Mar 2023 21:32:40 -0000
-Date:   Tue, 21 Mar 2023 16:32:40 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-Cc:     joel@jms.id.au, pmenzel@molgen.mpg.de, dmaengine@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        andrew@aj.id.au, vkoul@kernel.org, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
-        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
-        openbmc@lists.ozlabs.org
-Subject: Re: [PATCH v3 2/5] dt-bindings: dmaengine: Add AST2600 UDMA bindings
-Message-ID: <167943435989.1648881.16454367602496486662.robh@kernel.org>
-References: <20230320081133.23655-1-chiawei_wang@aspeedtech.com>
- <20230320081133.23655-3-chiawei_wang@aspeedtech.com>
+        Tue, 21 Mar 2023 17:56:32 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDDC3E633;
+        Tue, 21 Mar 2023 14:56:30 -0700 (PDT)
+Received: from localhost (unknown [188.24.179.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3C3DB66030D8;
+        Tue, 21 Mar 2023 21:56:29 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1679435789;
+        bh=LuZwe7bTMqmCqjiHWWchmraD16aQHXj8HS9LSc1Ljfk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=edLkylBsVvkmnZKiwqZHTkYbZEwGbNfmRImklUR10H7Mg6YnVIbOIFv1p0CQjjdAt
+         LE6eaUFJL6kBiMfjWE+78/760zRywE2C90+6P3iXPqHGB2swj7A+k4dJ89tNL4nMS4
+         N15IsfCJWCOGDYhuq+EwLL3qL7IlTH0PA3wxnVCl2uyQ8qYc0WpHDjbyTTuh819kPE
+         c8poUMEq22cd5kZVShRByIfYFj1xdIdARjZXUOpcCZ7HcZPoamnyOGcDQp+iFkm8gw
+         sKXu5EJ8Vv2hG77WmMblrybY9mDLxiMUyNAlE6eauIkFwJpF9Jvzsj0BOSFj9XBmmn
+         S86+p7khrGDRA==
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Conor Dooley <conor@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org, kernel@collabora.com
+Subject: [PATCH v2 00/10] Enable I2S support for RK3588/RK3588S SoCs
+Date:   Tue, 21 Mar 2023 23:56:14 +0200
+Message-Id: <20230321215624.78383-1-cristian.ciocaltea@collabora.com>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230320081133.23655-3-chiawei_wang@aspeedtech.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+There are five I2S/PCM/TDM controllers and two I2S/PCM controllers embedded in
+the RK3588 and RK3588S SoCs. Furthermore, RK3588 provides four additional
+I2S/PCM/TDM controllers.
 
-On Mon, 20 Mar 2023 16:11:30 +0800, Chia-Wei Wang wrote:
-> Add the dmaengine bindings for the UART DMA engine of Aspeed AST2600 SoC.
-> 
-> Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-> ---
->  .../bindings/dma/aspeed,ast2600-udma.yaml     | 56 +++++++++++++++++++
->  1 file changed, 56 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/dma/aspeed,ast2600-udma.yaml
-> 
+This patch series adds the required device tree nodes to support all the above.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Additionally, it enables analog audio support for the Rock 5B SBC, which has
+been used to test both audio playback and recording.
+
+Note that some of the DT bindings fixes in this series are not particularly
+related to I2S, but are required for a proper dtbs_check validation.
+
+Changes in v2:
+ - Rebased onto next-20230321 and drop patches 03-08/11 already applied by Mark
+ - Replaced patch 01/11 with v2 07/10
+ - Reworked patch 02/11 to v2 01-06/10
+ - v1: https://lore.kernel.org/lkml/20230315114806.3819515-1-cristian.ciocaltea@collabora.com/
+
+Cristian Ciocaltea (10):
+  dt-bindings: serial: snps-dw-apb-uart: Switch dma-names order
+  ARM: dts: sun6i: a31: Switch dma-names order for snps,dw-apb-uart
+    nodes
+  ARM: dts: sun8i: a23/a33: Switch dma-names order for snps,dw-apb-uart
+    nodes
+  ARM: dts: sun8i: v3s: Switch dma-names order for snps,dw-apb-uart
+    nodes
+  ARM: dts: sunxi: h3/h5: Switch dma-names order for snps,dw-apb-uart
+    nodes
+  riscv: dts: allwinner: d1: Switch dma-names order for snps,dw-apb-uart
+    nodes
+  arm64: dts: rockchip: rk3588s: Move
+    assigned-clocks/assigned-clock-rates out of scmi
+  arm64: dts: rockchip: rk3588s: Add I2S nodes
+  arm64: dts: rockchip: rk3588: Add I2S nodes
+  arm64: dts: rockchip: rk3588-rock-5b: Add analog audio
+
+ .../bindings/serial/snps-dw-apb-uart.yaml     |   2 +-
+ arch/arm/boot/dts/sun6i-a31.dtsi              |  12 +-
+ arch/arm/boot/dts/sun8i-a23-a33.dtsi          |  10 +-
+ arch/arm/boot/dts/sun8i-v3s.dtsi              |   6 +-
+ arch/arm/boot/dts/sunxi-h3-h5.dtsi            |   8 +-
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      |  62 +++++++
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi      |  68 ++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi     | 156 +++++++++++++++++-
+ .../boot/dts/allwinner/sunxi-d1s-t113.dtsi    |  12 +-
+ 9 files changed, 307 insertions(+), 29 deletions(-)
+
+-- 
+2.40.0
 
