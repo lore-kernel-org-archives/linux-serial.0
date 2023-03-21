@@ -2,82 +2,93 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2E6C7618D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 10:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB78C7618D
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 11:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbjCUKwJ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Mar 2023 06:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        id S229970AbjCULsE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Mar 2023 07:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbjCUKvq (ORCPT
+        with ESMTP id S230491AbjCULsC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Mar 2023 06:51:46 -0400
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF0019100
-        for <linux-serial@vger.kernel.org>; Tue, 21 Mar 2023 03:51:43 -0700 (PDT)
-Received: by mail-pl1-f180.google.com with SMTP id u5so15540962plq.7
-        for <linux-serial@vger.kernel.org>; Tue, 21 Mar 2023 03:51:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679395903;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:to:from:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=qswG2/ZBW7aTCsKI3gXz0TlSSCCucbrgwXXHtDYCg7M=;
-        b=vIwYz7nlIOaxXDkD6NQe2iUvL1ARNY2xQuHedKOlqaYRP94mqiYuOLxcZaOqRKamnu
-         CC992hXIjlaPXknB0ydZP4Gth+fiu7AwxFObBv8SPdTj97unzTj5UskKwBlTn42LUfoh
-         uhQdg7uOn1XeW0kPRQBmC9OKpeLx5+NOosVNCFM/KFyYTKbsv/XIP3/9BZBKv/K5Ncj/
-         itSlmRYbH/LsABnTU45nsnVbhxKKyuZKtjNM2S9w1fQjq0HuIR8RJqMGCyYD+3oXCZDw
-         y8zcbgS+GvV0fbsB4rhDhUxB68B77ru5C/rcmFf2/MsmLnHu86NEY+x8zBvCMr0qvL7W
-         z9cw==
-X-Gm-Message-State: AO0yUKWk55cujEJzdbZ/c8QGbq0B7HA99fpt7qjfYG5z+QEgiWalJ7aj
-        MlviWY2q5EsQiF0SRxzvFz1Dhw==
-X-Google-Smtp-Source: AK7set/9jppZ/8fvwHpwmrSJGSCQmBWnfdRTrTdLhtDmmxg2bsp/b1grQinpEEOPKC3NJrRBf73Yag==
-X-Received: by 2002:a17:903:3092:b0:1a1:a706:5df3 with SMTP id u18-20020a170903309200b001a1a7065df3mr1614761plc.15.1679395903364;
-        Tue, 21 Mar 2023 03:51:43 -0700 (PDT)
-Received: from localhost (63-228-113-140.tukw.qwest.net. [63.228.113.140])
-        by smtp.gmail.com with ESMTPSA id g2-20020a170902c38200b001960706141fsm8408525plg.149.2023.03.21.03.51.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 03:51:42 -0700 (PDT)
-From:   Kevin Hilman <khilman@kernel.org>
-To:     Bernhard =?utf-8?Q?Rosenkr=C3=A4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, maz@kernel.org, tglx@linutronix.de
-Subject: Re: [PATCH v11 3/3] arm64: dts: mediatek: Initial mt8365-evk support
-In-Reply-To: <20230309213501.794764-4-bero@baylibre.com>
-References: <20230309213501.794764-1-bero@baylibre.com>
- <20230309213501.794764-4-bero@baylibre.com>
-Date:   Tue, 21 Mar 2023 03:51:41 -0700
-Message-ID: <7h8rfqwf5u.fsf@baylibre.com>
+        Tue, 21 Mar 2023 07:48:02 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 96AD2273E;
+        Tue, 21 Mar 2023 04:48:00 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.98,278,1673881200"; 
+   d="scan'208";a="156652119"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 21 Mar 2023 20:48:00 +0900
+Received: from localhost.localdomain (unknown [10.226.93.140])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 7001241E3338;
+        Tue, 21 Mar 2023 20:47:56 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        linux-serial@vger.kernel.org,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v4 0/5] Renesas SCI fixes
+Date:   Tue, 21 Mar 2023 11:47:48 +0000
+Message-Id: <20230321114753.75038-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Bernhard Rosenkränzer <bero@baylibre.com> writes:
+RZ/G2UL SMARC EVK has sci pins exposed through PMOD1 interface.
+On testing, found that irq handler, tx and rx is broken.
 
-> From: Fabien Parent <fparent@baylibre.com>
->
-> This adds minimal support for the Mediatek 8365 SOC and the EVK reference
-> board, allowing the board to boot to initramfs with serial port I/O.
->
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> [bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
-> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
-> [aouledameur@baylibre.com: Fix systimer properties]
-> Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
-> Tested-by: Kevin Hilman <khilman@baylibre.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+This series fixes these issues.
 
-Tested (again) and things are working well.  This is the last patch
-remaining to be merged.  As soon as this lands in linux-next, I'll add
-this board to my KernelCI lab.
+v3->v4:
+ * Updated the fixes tag for patch#2 and patch#3
+ * Replaced sci_port->is_rz_sci with dev->dev.of_node as regshift are only needed
+   for sh770x/sh7750/sh7760, which don't use DT yet.
+ * Dropped is_rz_sci variable from struct sci_port.
+ * Removed fixes tag from patch#4, as it is a feature enhancement to make tx
+   fully functional on RZ/G2L alike SOCs. With previous patch#3, eventhough
+   we get tx interrupts, still it is broken as characters entered on
+   uart terminal is not visible except for the first character.
+ * Updated commit header sci0 nodes->sci0 node for patch#5 
+ * Removed PMOD USBUART reference and connection details as user can connect
+   anything on that PMOD1 pins.
+ * Renamed r9a07g043-smarc.dtso->r9a07g043-smarc-pmod.dtso
+ * Dropped unused header file dt-bindings/gpio/gpio.h
+v2->v3:
+ * Cced stable@vger.kernel.org
+ * Added Rx, Tx and Tx end interrupt handler patch.
+v1->v2:
+ * Replaced the wrong fixes tag
+ * Added a simpler check in sci_init_single() and added a check in
+   probe to catch invalid interrupt count.
+Tested the SCI0 interface on RZ/G2UL by connecting to PMOD USBUART.
+ 39:          0     GICv3 437 Level     1004d000.serial:rx err
+ 40:         12     GICv3 438 Edge      1004d000.serial:rx full
+ 41:         70     GICv3 439 Edge      1004d000.serial:tx empty
+ 42:         18     GICv3 440 Level     1004d000.serial:tx end
 
-Kevin
+Biju Das (5):
+  tty: serial: sh-sci: Fix transmit end interrupt handler
+  tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
+  tty: serial: sh-sci: Fix Tx on SCI IP
+  tty: serial: sh-sci: Add support for tx end interrupt handling
+  arm64: dts: renesas: r9a07g044: Enable sci0 node using dt overlay
+
+ arch/arm64/boot/dts/renesas/Makefile          |  1 +
+ .../dts/renesas/r9a07g043-smarc-pmod.dtso     | 42 ++++++++++++
+ drivers/tty/serial/sh-sci.c                   | 66 +++++++++++++++++--
+ drivers/tty/serial/sh-sci.h                   |  3 +
+ 4 files changed, 106 insertions(+), 6 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a07g043-smarc-pmod.dtso
+
+-- 
+2.25.1
+
