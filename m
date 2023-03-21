@@ -2,26 +2,26 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1D1C6FD1D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 11:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A0FC77B60
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 11:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230363AbjCULsN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Mar 2023 07:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48978 "EHLO
+        id S230347AbjCULsY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Mar 2023 07:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbjCULsJ (ORCPT
+        with ESMTP id S230374AbjCULsQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Mar 2023 07:48:09 -0400
+        Tue, 21 Mar 2023 07:48:16 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF69D4A1DD;
-        Tue, 21 Mar 2023 04:48:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B305158BF;
+        Tue, 21 Mar 2023 04:48:13 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.98,278,1673881200"; 
-   d="scan'208";a="156652132"
+   d="scan'208";a="156652146"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 21 Mar 2023 20:48:06 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 21 Mar 2023 20:48:13 +0900
 Received: from localhost.localdomain (unknown [10.226.93.140])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id ECA8241E388B;
-        Tue, 21 Mar 2023 20:48:03 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 89C4041E3338;
+        Tue, 21 Mar 2023 20:48:10 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
@@ -30,10 +30,10 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Yoshinori Sato <ysato@users.sourceforge.jp>,
         linux-serial@vger.kernel.org,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH v4 2/5] tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
-Date:   Tue, 21 Mar 2023 11:47:50 +0000
-Message-Id: <20230321114753.75038-3-biju.das.jz@bp.renesas.com>
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v4 4/5] tty: serial: sh-sci: Add support for tx end interrupt handling
+Date:   Tue, 21 Mar 2023 11:47:52 +0000
+Message-Id: <20230321114753.75038-5-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230321114753.75038-1-biju.das.jz@bp.renesas.com>
 References: <20230321114753.75038-1-biju.das.jz@bp.renesas.com>
@@ -43,38 +43,99 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SCI IP on RZ/G2L alike SoCs do not need regshift compared to other SCI
-IPs on the SH platform. Currently, it does regshift and configuring Rx
-wrongly. Drop adding regshift for RZ/G2L alike SoCs.
+As per the RZ/G2L users hardware manual (Rev.1.20 Sep, 2022), section
+23.3.7 Serial Data Transmission (Asynchronous Mode), it is mentioned
+that, set the SCR.TIE bit to 0 and SCR.TEIE bit to 1, after the last
+data to be transmitted are written to the TDR.
 
-Fixes: dfc80387aefb ("serial: sh-sci: Compute the regshift value for SCI ports")
-Cc: stable@vger.kernel.org
+This will generate tx end interrupt and in the handler set SCR.TE and
+SCR.TEIE to 0.
+
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v3->v4:
- * Updated the fixes tag
- * Replaced sci_port->is_rz_sci with dev->dev.of_node as regshift are only needed
-   for sh770x/sh7750/sh7760, which don't use DT yet.
- * Dropped is_rz_sci variable from struct sci_port.
+ * Removed fixes tag, as it is a feature enhancement to make tx fully
+   functional on RZ/G2L alike SOCs. With previous patch#3, eventhough
+   we get tx interrupts, still it is broken as characters entered on
+   uart terminal is not visible except for the first character.
 v3:
- * New patch.
+ * New patch
 ---
- drivers/tty/serial/sh-sci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sh-sci.c | 31 ++++++++++++++++++++++++++++---
+ drivers/tty/serial/sh-sci.h |  3 +++
+ 2 files changed, 31 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 616041faab55..15954ca3e9dc 100644
+index bcc4152ce043..da7eb7a3ca6f 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -2937,7 +2937,7 @@ static int sci_init_single(struct platform_device *dev,
- 	port->flags		= UPF_FIXED_PORT | UPF_BOOT_AUTOCONF | p->flags;
- 	port->fifosize		= sci_port->params->fifosize;
+@@ -861,9 +861,16 @@ static void sci_transmit_chars(struct uart_port *port)
  
--	if (port->type == PORT_SCI) {
-+	if (port->type == PORT_SCI && !dev->dev.of_node) {
- 		if (sci_port->reg_size >= 0x20)
- 			port->regshift = 2;
- 		else
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+-	if (uart_circ_empty(xmit))
+-		sci_stop_tx(port);
++	if (uart_circ_empty(xmit)) {
++		if (port->type == PORT_SCI) {
++			ctrl = serial_port_in(port, SCSCR);
++			ctrl &= ~SCSCR_TIE;
++			ctrl |= SCSCR_TEIE;
++			serial_port_out(port, SCSCR, ctrl);
++		}
+ 
++		sci_stop_tx(port);
++	}
+ }
+ 
+ static void sci_receive_chars(struct uart_port *port)
+@@ -1752,6 +1759,24 @@ static irqreturn_t sci_tx_interrupt(int irq, void *ptr)
+ 	return IRQ_HANDLED;
+ }
+ 
++static irqreturn_t sci_tx_end_interrupt(int irq, void *ptr)
++{
++	struct uart_port *port = ptr;
++	unsigned long flags;
++	unsigned short ctrl;
++
++	if (port->type != PORT_SCI)
++		return sci_tx_interrupt(irq, ptr);
++
++	spin_lock_irqsave(&port->lock, flags);
++	ctrl = serial_port_in(port, SCSCR);
++	ctrl &= ~(SCSCR_TE | SCSCR_TEIE);
++	serial_port_out(port, SCSCR, ctrl);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	return IRQ_HANDLED;
++}
++
+ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
+ {
+ 	struct uart_port *port = ptr;
+@@ -1888,7 +1913,7 @@ static const struct sci_irq_desc {
+ 
+ 	[SCIx_TEI_IRQ] = {
+ 		.desc = "tx end",
+-		.handler = sci_tx_interrupt,
++		.handler = sci_tx_end_interrupt,
+ 	},
+ 
+ 	/*
+diff --git a/drivers/tty/serial/sh-sci.h b/drivers/tty/serial/sh-sci.h
+index c0ae78632dda..0b65563c4e9e 100644
+--- a/drivers/tty/serial/sh-sci.h
++++ b/drivers/tty/serial/sh-sci.h
+@@ -59,6 +59,9 @@ enum {
+ #define SCSMR_SRC_19	0x0600	/* Sampling rate 1/19 */
+ #define SCSMR_SRC_27	0x0700	/* Sampling rate 1/27 */
+ 
++/* Serial Control Register, SCI only bits */
++#define SCSCR_TEIE	BIT(2)  /* Transmit End Interrupt Enable */
++
+ /* Serial Control Register, SCIFA/SCIFB only bits */
+ #define SCSCR_TDRQE	BIT(15)	/* Tx Data Transfer Request Enable */
+ #define SCSCR_RDRQE	BIT(14)	/* Rx Data Transfer Request Enable */
 -- 
 2.25.1
 
