@@ -2,99 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1809AC6FD1D
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Mar 2023 22:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FD0C6FD1C
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Mar 2023 07:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbjCUWRg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Mar 2023 18:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S230013AbjCVHrg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Mar 2023 03:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbjCUWRf (ORCPT
+        with ESMTP id S230017AbjCVHrc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Mar 2023 18:17:35 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E081717E;
-        Tue, 21 Mar 2023 15:17:34 -0700 (PDT)
-Received: from [192.168.1.90] (unknown [188.24.179.102])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: cristicc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id A31A866030D8;
-        Tue, 21 Mar 2023 22:17:31 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1679437052;
-        bh=kISYc8jF93sURnyHntnC1OZ2p4p1sWgcPPfEJiI3pho=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DAlF+kqBJ+TEevV3l2dvq4UP4emcgYVVXEzpExVl2nEEZQG5wPo/gPGRhrebUJ4jB
-         6UuwSHDZL7gQadG/0pX/QwT7ZZZFuhysxpycz/tYEs+BX1pZC9hNMfwaFnJ8FI718S
-         HX3dybyqVznpzuASOX/4MQKrkzxdElPKo0R0J7/oCJbOGQbBgfu15V3g2EEsCgKg3O
-         I7C7YYalHMeiFiBzzMhgrgJqZtMzR9T1ai92Kz63OL3ffXAXSla6rJHdZbhEmEzNB6
-         EftcQErQx9ncAjS18lQI5SGVnMHuwCrZxx0b1cCZ3EZvTR5On2hyhy1IxBeDicRKnm
-         r++47+MMC+UQA==
-Message-ID: <7cd34af7-94e7-b5e2-053c-4cc831e4cfc4@collabora.com>
-Date:   Wed, 22 Mar 2023 00:17:28 +0200
+        Wed, 22 Mar 2023 03:47:32 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B61BD5CC34;
+        Wed, 22 Mar 2023 00:47:25 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.98,281,1673881200"; 
+   d="scan'208";a="153375710"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 22 Mar 2023 16:47:24 +0900
+Received: from localhost.localdomain (unknown [10.226.93.24])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 441AE4005E20;
+        Wed, 22 Mar 2023 16:47:22 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH] tty: serial: sh-sci: Remove setting {src,dst}_{addr,addr_width} based on DMA direction
+Date:   Wed, 22 Mar 2023 07:47:17 +0000
+Message-Id: <20230322074717.6057-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v2 01/10] dt-bindings: serial: snps-dw-apb-uart: Switch
- dma-names order
-To:     Conor Dooley <conor@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org, kernel@collabora.com
-References: <20230321215624.78383-1-cristian.ciocaltea@collabora.com>
- <20230321215624.78383-2-cristian.ciocaltea@collabora.com>
- <5287504e-c0f7-4964-8a61-fd49b7ee9547@spud>
-Content-Language: en-US
-From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-In-Reply-To: <5287504e-c0f7-4964-8a61-fd49b7ee9547@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/22/23 00:09, Conor Dooley wrote:
-> On Tue, Mar 21, 2023 at 11:56:15PM +0200, Cristian Ciocaltea wrote:
->> Commit 370f696e4474 ("dt-bindings: serial: snps-dw-apb-uart: add dma &
->> dma-names properties") documented dma-names property to handle Allwinner
->> D1 dtbs_check warnings, but relies on the rx->tx ordering, which is the
->> reverse of what a different board expects:
->>
->>    rk3326-odroid-go2.dtb: serial@ff030000: dma-names:0: 'rx' was expected
->>
->> A quick and incomplete check shows the inconsistency is present in many
->> other DTS files:
-> 
->> The initial proposed solution was to allow a flexible dma-names order in
->> the binding, due to potential ABI breakage concerns after fixing the DTS
->> files. But luckily the Allwinner boards are not really affected, since
->> all of them are using a shared DMA channel for rx and tx:
-> 
->> Switch dma-names order to tx->rx as the first step in fixing the
->> inconsistency. The remaining DTS fixes will be handled by separate
->> patches.
->>
->> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-> 
-> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-> 
-> Thanks for doing all of the switch overs too. I should've probably
-> broadened my searching beyond the allwinner platforms when I initially
-> added this, so yeah, thanks.
+The direction field in the DMA config is deprecated. The sh-sci driver
+sets {src,dst}_{addr,addr_width} based on the DMA direction and
+it results in dmaengine_slave_config() failure as RZ DMAC driver
+validates {src,dst}_addr_width values independent of DMA direction.
 
-Thanks for the quick review! And no worries, I'm glad I could help, 
-hopefully I didn't miss anything..
+Fix this issue by passing both {src,dst}_{addr,addr_width}
+values independent of DMA direction.
+
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+ drivers/tty/serial/sh-sci.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index da7eb7a3ca6f..4278aef59f6d 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1553,15 +1553,12 @@ static struct dma_chan *sci_request_dma_chan(struct uart_port *port,
+ 
+ 	memset(&cfg, 0, sizeof(cfg));
+ 	cfg.direction = dir;
+-	if (dir == DMA_MEM_TO_DEV) {
+-		cfg.dst_addr = port->mapbase +
+-			(sci_getreg(port, SCxTDR)->offset << port->regshift);
+-		cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+-	} else {
+-		cfg.src_addr = port->mapbase +
+-			(sci_getreg(port, SCxRDR)->offset << port->regshift);
+-		cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+-	}
++	cfg.dst_addr = port->mapbase +
++		(sci_getreg(port, SCxTDR)->offset << port->regshift);
++	cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
++	cfg.src_addr = port->mapbase +
++		(sci_getreg(port, SCxRDR)->offset << port->regshift);
++	cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 
+ 	ret = dmaengine_slave_config(chan, &cfg);
+ 	if (ret) {
+-- 
+2.25.1
+
