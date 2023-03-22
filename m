@@ -2,105 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 886FAC761A6
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Mar 2023 14:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D515C6FD1F
+	for <linux-serial@archiver.kernel.org>; Wed, 22 Mar 2023 14:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbjCVOmS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Mar 2023 10:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42786 "EHLO
+        id S230230AbjCVOtm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Mar 2023 10:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231654AbjCVOly (ORCPT
+        with ESMTP id S231847AbjCVOtU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Mar 2023 10:41:54 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CFC64B34;
-        Wed, 22 Mar 2023 07:41:28 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id t15so17318925wrz.7;
-        Wed, 22 Mar 2023 07:41:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679496087;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ml/8rgHxnh/Rcizr/HTKMeYH4wxYvAVSv7sbApQZNB8=;
-        b=XtAadWtr79aVV3gfVOVZS5A7aLvnPaZTy8EJEW+i7VzFaja/BFTha8SWE9A5XVQGky
-         /06tFDul6XXHZNW0UXWggE9j/BrfU9CFumViSPVXEglGdEhf3Xn06+4HLUObE1Ak19Lh
-         oYMLYyDEddYkJ0l6/9d6UQRanmmR56HdSjjzuVHvcAcyKvuCzk3Cq3AWOlqE3nRJMPe3
-         yTBQ/BIlAqulEWcs2oyeGL89UxCrmJ3mTYMw6DkjLip3s1AX+Lp45E0dVOh4oZ9QodpH
-         lwk/bIWJ+f7s1iDG4iB/9twuAISYsmVOaQKTjsOdMghMsyNcfiJsdmWoJK6d9xL1HHOb
-         dNXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679496087;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ml/8rgHxnh/Rcizr/HTKMeYH4wxYvAVSv7sbApQZNB8=;
-        b=pPcl/VL2Br2hqNtcwf+pnD/gCm/r7ojXmbguECesZDfyJsUBh1fRg+tBzmsFjm7Qbk
-         BCraq5k81Nl5cVvJt5CwQlX5GEJmHoiQYoMzac2xHyfXi9sjrHprUfuUugLgf+j+lahu
-         7+fJrtUIKc9l1U1K7IzkgNIN4ugGZN4J7Owv5ex2sOrGKQoiem/pdPqzfXedbqHJPGIm
-         R0VKLUTcvuc1FFbj+m4Xk70VMhSsBnHAskGC0JfZo0fWabs3YfSLAdwQYckXm8DPHeXD
-         8SxAxEtS3G7kHLgKsBBASz5hPgjjZjwp/+3VTzrTNjFyIOqyrRfmA5wnImOY6OJXRgq2
-         DIzg==
-X-Gm-Message-State: AAQBX9dVWFHh1xyWfmSM0jNCRbtg7ZzPBXv5F3svzrySc4thuuFawvUj
-        d+UcUCZBJHkLEINszCKbR5M=
-X-Google-Smtp-Source: AKy350awk2lLLkW6dcFjDzGAIqtfddOFvqewsAvecdc1km7DwkYiRTaHdnj8Boip9ea1915tUxvCvA==
-X-Received: by 2002:adf:f043:0:b0:2c7:70d:cc36 with SMTP id t3-20020adff043000000b002c7070dcc36mr69865wro.5.1679496086739;
-        Wed, 22 Mar 2023 07:41:26 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id v7-20020a5d4b07000000b002c56af32e8csm13896207wrq.35.2023.03.22.07.41.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 07:41:26 -0700 (PDT)
-Message-ID: <ed1f9faf-cb4f-9ff1-ab6b-813035a051bd@gmail.com>
-Date:   Wed, 22 Mar 2023 15:41:23 +0100
+        Wed, 22 Mar 2023 10:49:20 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2FF6782F;
+        Wed, 22 Mar 2023 07:47:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679496473; x=1711032473;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lj2AHpVNlWyegPAy0etEep0QsoP1FICJ6uYFf1nrmTY=;
+  b=dgK7NSMhzqIS2MXR/HXgbMWjU1jtpeEvoXAJKvAs7Yes91BFwDYlJ4oD
+   QOOmxMA+DuTIzS1O/Ghe6twUQjOqSjrnICEZLkbxKb6TxBDDkuX4+GOdc
+   d+MGjPKJuE+tJGtT95rBXa9es6M/KAsRy42SEsUwbr0jfhpXAB1WtN7Jq
+   VQMrNhdj4U/rQtdiOyjg2q/S9hUL/IbF3CvkPlDVn7rDLG40p0F1z5J9R
+   cGdNfYLc7CC3kk9hV/ln1v333vWvlbWEVa8mAizrNQhemxmVOgTCIGnRc
+   6A79MIDSqmC//jMjnRr2A/OPJDBp4fIjq22BpizoEJMJAw54Eo8CtPhQs
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="341590174"
+X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
+   d="scan'208";a="341590174"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 07:45:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="681919224"
+X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
+   d="scan'208";a="681919224"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002.jf.intel.com with ESMTP; 22 Mar 2023 07:45:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1pezik-007AYA-2e;
+        Wed, 22 Mar 2023 16:45:46 +0200
+Date:   Wed, 22 Mar 2023 16:45:46 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v8 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <ZBsUmkqKnP/jrNjv@smile.fi.intel.com>
+References: <20230322111255.29827-1-tony@atomide.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v11 3/3] arm64: dts: mediatek: Initial mt8365-evk support
-Content-Language: en-US
-To:     Kevin Hilman <khilman@kernel.org>,
-        =?UTF-8?Q?Bernhard_Rosenkr=c3=a4nzer?= <bero@baylibre.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, maz@kernel.org, tglx@linutronix.de
-References: <20230309213501.794764-1-bero@baylibre.com>
- <20230309213501.794764-4-bero@baylibre.com> <7h8rfqwf5u.fsf@baylibre.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <7h8rfqwf5u.fsf@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230322111255.29827-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 21/03/2023 11:51, Kevin Hilman wrote:
-> Bernhard Rosenkränzer <bero@baylibre.com> writes:
+On Wed, Mar 22, 2023 at 01:12:51PM +0200, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
 > 
->> From: Fabien Parent <fparent@baylibre.com>
->>
->> This adds minimal support for the Mediatek 8365 SOC and the EVK reference
->> board, allowing the board to boot to initramfs with serial port I/O.
->>
->> Signed-off-by: Fabien Parent <fparent@baylibre.com>
->> [bero@baylibre.com: Removed parts depending on drivers that aren't upstream yet, cleanups, add CPU cache layout, add systimer, fix GIC]
->> Signed-off-by: Bernhard Rosenkränzer <bero@baylibre.com>
->> [aouledameur@baylibre.com: Fix systimer properties]
->> Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
->> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
->> Tested-by: Kevin Hilman <khilman@baylibre.com>
->> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> To do this, let's set up a struct bus and struct device for the serial
+> core controller as suggested by Greg and Jiri. The serial core controller
+> devices are children of the physical serial port device. The serial core
+> controller device is needed to support multiple different kind of ports
+> connected to single physical serial port device.
 > 
-> Tested (again) and things are working well.  This is the last patch
-> remaining to be merged.  As soon as this lands in linux-next, I'll add
-> this board to my KernelCI lab.
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
 > 
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
 
-Applied now, thanks for testing. This should show up in linux-next in the next 
-couple of days.
+With below addressed, FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Regards,
-Matthias
+...
+
+> +	device_initialize(&sbd->dev);
+> +	sbd->dev.parent = parent_dev;
+> +	sbd->dev.bus = &serial_base_bus_type;
+> +	sbd->dev.release = &serial_base_release;
+> +
+> +	if (str_has_prefix(name, "ctrl")) {
+> +		id = port->ctrl_id;
+> +	} else {
+> +		id = port->line;
+> +		sbd->port = port;
+> +	}
+> +
+> +	err = dev_set_name(&sbd->dev, "%s.%s.%d", name, dev_name(port->dev), id);
+> +	if (err)
+> +		goto err_free_dev;
+> +
+> +	err = device_add(&sbd->dev);
+> +	if (err)
+> +		goto err_put_device;
+> +
+> +	return &sbd->dev;
+> +
+> +err_put_device:
+> +	put_device(&sbd->dev);
+
+> +	kfree_const(sbd->dev.kobj.name);
+
+This is double free if not const, right?
+At least that's how I read kobject_cleanup() implementation.
+
+Sorry I haven't paid attention to this earlier.
+
+...
+
+> +/*
+> + * Serial core port device driver
+> + */
+
+Put it on one line for now?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
