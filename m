@@ -2,95 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE991C6FD1D
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Mar 2023 07:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C952C6FD1C
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Mar 2023 11:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbjCWHLN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Mar 2023 03:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S230506AbjCWLNS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Mar 2023 07:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbjCWHLG (ORCPT
+        with ESMTP id S230165AbjCWLNR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Mar 2023 03:11:06 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D1522A1F;
-        Thu, 23 Mar 2023 00:11:05 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id h8so82436006ede.8;
-        Thu, 23 Mar 2023 00:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679555464;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IJhxQ9eegIy8auIeHDgaLNjJt7iECL+UFcBbA1fy0hU=;
-        b=aVitLeOd4WiRjj3IOZQfgiuCBqHztWLdBxrUzyM+3kiC9kxQ37/OZXqHSqfODTsNQv
-         bYqS5l9cWv3DUUEeQnsVCm4Iu6dDag4GXMmtQozJE6cFmAaeDmouxmWkLPtX7OCfsqdc
-         eSBpshyYkB3GWtyrmfp/ltuvV9QejWqjUQad6r0HUb4ckwnguwGfa9kUrpjzU8hhimnu
-         GOlLaXFwwvBgaUkks5j1xzVeYqW/7azy4MxBw6gRwIRFW4xhloI9WinCvGJBCc3NiRwb
-         xBgUDzVyzxXwEoNPxfnj0rWZpcwUvKml4xL47+rxLuCOz46rkxX/+B00Vb8bV9/+YI/0
-         FKWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679555464;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IJhxQ9eegIy8auIeHDgaLNjJt7iECL+UFcBbA1fy0hU=;
-        b=F8A8JIAYFREBsG6OdksNrCzSUFtG+SBemKrQdIpr74wusWatAhcu5mN6npEAjvXXZr
-         ++E3E9cVb7H4QKDoXZp8Ac3SZrlcOTaVzbjovZaMio0Mi647YfURB72USjanX+qLx67R
-         8qfBccdGTBaX/kpHM6TwKxoNCRAcUJkewlAx/oo1laaZQbosrLWy66/oHOZ6BzW9QZb1
-         +Z0WoNxvqG3h7vJWI78yJ7QLf9N/zdyPX02nUHyRDNM/zcmthTpMfmdEtrmRk8Ghxrrg
-         7cODCKxvNRi7Kdi21o8IXPyDwnssMEW/RNWtAx4FBnTGlUWo9oW/NOPK3N6t68nAuUgS
-         NOPQ==
-X-Gm-Message-State: AO0yUKUXqJ797i1ItVbnAT9pZv2+nJlud5sMxCmA4oA8FINzfNvV03lG
-        bocY6sn+vHbpxYicJJrFZ2g=
-X-Google-Smtp-Source: AK7set8JjIMI3M3MQ8kmGBM6/1q4GALj6FNnKbVN7GNh/M/c8BBNUJetqcy0nXuHa0jQ9Ir1ecy/FQ==
-X-Received: by 2002:a17:906:90cc:b0:930:18f5:d016 with SMTP id v12-20020a17090690cc00b0093018f5d016mr9996790ejw.15.1679555463531;
-        Thu, 23 Mar 2023 00:11:03 -0700 (PDT)
-Received: from felia.fritz.box ([2a02:810d:2a40:1104:d509:cbf0:f579:76f0])
-        by smtp.gmail.com with ESMTPSA id a27-20020a170906245b00b008d173604d72sm8385061ejb.174.2023.03.23.00.11.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 00:11:03 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] serial: sb1250-duart: clean up after SIBYTE_BCM1x55 removal
-Date:   Thu, 23 Mar 2023 08:10:53 +0100
-Message-Id: <20230323071053.417-1-lukas.bulwahn@gmail.com>
+        Thu, 23 Mar 2023 07:13:17 -0400
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2050.outbound.protection.outlook.com [40.107.249.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4652DE74;
+        Thu, 23 Mar 2023 04:12:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H9ycgVq/+9hP4vfe7LX0bxge4RNXt/zk3waLiU7tMyGtmlMMBQPr6aueDdH6DX9HE2OUjZXYeE3IVrRRTh8v6Z5hg23NQuAnGSTcvfR55ETdxd1qpLetQTtl5DG2jf8D/GREAhSRSu7JnBySCqz59LqS+lXO/BeVOhS+IxPamQzJOFvma7/nIpsT8edFr8sLmg0Sz0KcSZ+sumt+SsmEQiIFImFduRlrRvuZH+C0RhDXyyddi61e3XOoeIPsAQETWiItefXeZkR0b5iBJhkC3tC8b7VZX0QFQQIUrlRytrPrfQbvbiOZ6k3W4Jmyl0oHrg9eKaKzPc3s9kxFdK4gvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=huTnq9zFQIu3wVd4SNt0MvinA9EgU2tzSa9U63adbmQ=;
+ b=dHYUMiQmUkpi2THr8EWyjBtEPmou630pl+3LsAPZgz46bUwP5gFlvqLV7bwZO8zkxAP6rKxpJD7NvHShuI2+1xYEB+pa7R7sBCuaSHo8p4FCCIP8Zq1zUDiZj6skfkB9L7w3e+Uc2CaOb6q9Uy1wBH7GLqOZ7ZdDe+fM5C260xLxVD2vBT9NveG91Shmdnbh+GkttOSp/tCw6HKSfGvLO1Mv7f3xu1+f8225qZK8ekunqj/ryBRzXWvSPBWZ7xKYUyMZWmdGOWZxkOoAXNo8kfF1lmtGZWoBVdDmvRk14T5oJzJMo8aEKJrvUD5dyYC/zUNwy1w9OkC5gH53yPxMJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=huTnq9zFQIu3wVd4SNt0MvinA9EgU2tzSa9U63adbmQ=;
+ b=J9nwb2XFEnPW1ug+6a9kbeJS1MbFObkM2fmK3TJWoMBAVoMBYfj9D8dWP/uqWKrnIXlcpLq74j1KjjB6A9d/XrAs5LP/gUtuwYS51QuvW9SeRWTE7SkaJKTgkSaRUNwM+I73cCAapWyFbKROhO6HPRa4h9fb0gvLfBczQB7y+2g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by AS4PR04MB9505.eurprd04.prod.outlook.com (2603:10a6:20b:4e4::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Thu, 23 Mar
+ 2023 11:12:38 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3079:f55a:740e:c103]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3079:f55a:740e:c103%9]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
+ 11:12:38 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] tty: serial: fsl_lpuart: fix crash in lpuart_uport_is_active
+Date:   Thu, 23 Mar 2023 19:09:23 +0800
+Message-Id: <20230323110923.24581-1-sherry.sun@nxp.com>
 X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0008.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::10) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|AS4PR04MB9505:EE_
+X-MS-Office365-Filtering-Correlation-Id: 83dd35bd-4e72-4ba4-b63f-08db2b8f8321
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gTW0Y0MrFO2uy8cre3U0H7sRjYpuzjCjM4iwOlFwdwNuxLBot4uln+GH41OLh2zWboevFbPeKw4C2nMKogiKrZxXFOiAEsI6GVlFYMcbZHThaDYdD4ef7+3H7+ZNYODW9C3xMkvXV/fuki4nWAAUIZT72Ix39leqsbJyYeFEyDbAwO2ZvnJ6TvHOSweEDYWCmnbHattXFZywiGtddIc4RBDGsQEYqHTxgqaLRZ89pvBB16982DsxV2nrK31liAP4Go8jpRPr+qU5bp+mWldc5FVqlWQFthy0HoOoo/o3X0II8VhshgFTpLcHT5ERd3DaY8kbsb/84epoPIL3xjQ8MpKHRRNvnhzxGWWAAJ9UIoXvn6aYUeIL1xpBl5uCOmi/N83mB9THFBO6K615UVnen2Vn2/MsKDrMCr+6bHIiTrrpa62X2S1KcoACTx/oYjnmPbi1M5gJ53k4SWq9WAsAhe+f7a4/labDQgh62cs3a958F3CIsc/vjTqE2MAYZX4SI6+bXjM87oX85dUFKd6k/x7zBmSruiRa8jfRE2Roz/cIcY29WhYe8t/nA02ThUEQprFehPpsHQsxFyesaVG4Io/49unC4VpWvys9/y7f2DdrRQZUt3CSS9Gfgybc8irPNdkqAzLwnPupGh7LVYgOPQhMX5o3dZI4FAqMtJEdJ/eb7OMpRxS2ZC+OsWZ1LhPOi+J4LsW5ctdqPjx8oNabpg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(451199018)(38100700002)(2906002)(38350700002)(83380400001)(478600001)(6486002)(2616005)(186003)(86362001)(36756003)(52116002)(316002)(4744005)(66476007)(8676002)(66556008)(66946007)(4326008)(8936002)(6666004)(1076003)(26005)(6512007)(6506007)(44832011)(5660300002)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KYqWllz4zJcu4WHynuSFywtVnWzgfLXpz2aRwvBoLC/5Yb8qxW3VEb2jCa+l?=
+ =?us-ascii?Q?o8UNwGLIzq79S3er98aMWCYa2eCYwu5sFV5EeacbHyyCRknPZFSW9lUpiqzm?=
+ =?us-ascii?Q?xhWIvmEmK+qeppbzaJwFrgi1aNJ2Kq518Xm0/dw+gb31BRrykGxWtztz+UUG?=
+ =?us-ascii?Q?vNDwgTmij34u2HLiqXdz4PbLXVblBBtx7lEcq3/cTF/v7rTJsRkzKuQQQX9v?=
+ =?us-ascii?Q?DxBzbhd/KAt7viG9AKK0lxapexmA968v/baJmHwhVKtIgSq6AxcirbLtyqKd?=
+ =?us-ascii?Q?GQKlZwtHZSQzXGW6jj1mTiql5ZGMitNXkZop5UD1MrDSov8eU4PNWVTxtxIX?=
+ =?us-ascii?Q?GIngaZzNkabxJ8Qnppj/SvL+Wf01hGWEDMaG7EckW9T2cCdTR5AKkVI2qqTJ?=
+ =?us-ascii?Q?pL28A5iV6vn52J38891Lwl6O8FRTj3EAYqoxhOdTKcZS80nA79KBg0O+HjI/?=
+ =?us-ascii?Q?s37p3WL33jlObxKiNZDAggw7A7+AcDQk8Ae9s+NUoyGAfkaRjHQcZo0DpV0D?=
+ =?us-ascii?Q?KWlfhEfNsQzc3pQ2z/cTbw9W/7gnRiWMcJKTOkoPrfuleKkeW6UTzRPT2h3Z?=
+ =?us-ascii?Q?dmkIGx5GFkboG6BE5yPICrIKo3cxaBjHCfuVcoVDJXyQDZVGdY62Zf0v4mt6?=
+ =?us-ascii?Q?RuxAN89BpfS4gdq7fb8+k5L7MQKfwW2jVvivw+jiGoK7seXiOdnw5RF6s2/N?=
+ =?us-ascii?Q?mToVis5TS3LdQQ4OoeRgQT1k5rZxBPZDcKSr9SDEUtIchC6xa3ZDZK3RgfDm?=
+ =?us-ascii?Q?0jm1rIClZ+GrjiX8yby14+pJ1ZAl7jCXcEur+tyktTqi9TdY7Xfxx5QVbz5l?=
+ =?us-ascii?Q?R4qzAkhplA1kifPGeaLRKtIB1+CKbEiVhxXYX/VSA+cZhvhF3SmoRg5c3VK4?=
+ =?us-ascii?Q?0tYa/eC+Wdkz56SOY6TvGCMJ/nZWjhWSDQINUZHNWt8cvVoIM73uubi0bLrs?=
+ =?us-ascii?Q?f9yjsrFwm7XBJEgBADS3vgPnyAKIJOPmnNCB4A23ruZV6ZSv74JNjrHS97nx?=
+ =?us-ascii?Q?aVmsKILfCdzia68k8bpL3lX2bZP3kisJq4CARIzYB/Mrw+YqKne0DoouxK8A?=
+ =?us-ascii?Q?MhMe9L5HR6byQlr1Y4ruE2jJeiK6uQgvA3WaZSXIljtq2YkrrwG5gpioee8v?=
+ =?us-ascii?Q?IFXtTFRdeTEfDHyMMTGdLJjGvEUm04/6FsGH1F33UIPYFH+6LYWGergHLR8J?=
+ =?us-ascii?Q?roQ+3H1NwZeWD3KMozXac/ndBZGEbt8n/+4ktLrCoWwf8axMZ76pUv2OA3ja?=
+ =?us-ascii?Q?k9o+iNbB6QoHezY2pWsfipZeAfptnFJUV8jiFV0Pg97jdwhMlvYDJYnXsnDM?=
+ =?us-ascii?Q?hEJ/Uh2VPTtJ8emLo2pf7v4+gDamgLM391Ww6bGREN1i7E+fXLq60aEhIouW?=
+ =?us-ascii?Q?Kab67ZyA1EgkZW430Bhytwnxmu3vb9LYswo8u5wv48DVrEEEwrFCMneL/zLQ?=
+ =?us-ascii?Q?XIaC0gJ9U1T33Zuv9HK408afvV320KwG46y4oZw02uaTI/uPyxzrsJzErkuq?=
+ =?us-ascii?Q?TNCqlYUuurQr9EW5b1g92U5niV6vKSCaJJCNjvF41ILjsyHBpBpmM8XezO9T?=
+ =?us-ascii?Q?9u7IvQRxnx9zce4jSJ+qq72FpiUMhoFGwSGJnvyZ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83dd35bd-4e72-4ba4-b63f-08db2b8f8321
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 11:12:38.6367
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Bi5TF8WedQCpXL0tI+WJ3kVC9YPtjwrgiRxuBdKIebn1iYbPPndsy3nHuoqvNSV0kRV8YXSiSi2dXScHvtsf4Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9505
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-With commit b984d7b56dfc ("MIPS: sibyte: Remove unused config option
-SIBYTE_BCM1x55"), an #if in the Broadcom SiByte DUART driver can be
-simplified.
+For serdev framework, tty->dev is a NULL pointer, lpuart_uport_is_active
+calling device_may_wakeup() may cause kernel NULL pointer crash, so here
+add the NULL pointer check before using it.
 
-Simplify the prepreprocessor condition after config SIBYTE_BCM1x55 removal.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Fixes: 4f5cb8c5e915 ("tty: serial: fsl_lpuart: enable wakeup source for lpuart")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 ---
-I looked around on lore.kernel.org and could not find a pending patch from
-Thomas Bogendoerfer related to cleaning up this serial driver after he
-removed the config. So, to be on the safe side, I just sent this quick
-clean-up patch.
-
- drivers/tty/serial/sb1250-duart.c | 2 +-
+ drivers/tty/serial/fsl_lpuart.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
-index de56f383964e..b6de0dc51f29 100644
---- a/drivers/tty/serial/sb1250-duart.c
-+++ b/drivers/tty/serial/sb1250-duart.c
-@@ -41,7 +41,7 @@
- #include <asm/sibyte/swarm.h>
- 
- 
--#if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
-+#if defined(CONFIG_SIBYTE_BCM1x80)
- #include <asm/sibyte/bcm1480_regs.h>
- #include <asm/sibyte/bcm1480_int.h>
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 3281e81e1723..8daac87d063c 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -3022,7 +3022,7 @@ static bool lpuart_uport_is_active(struct lpuart_port *sport)
+ 	tty = tty_port_tty_get(port);
+ 	if (tty) {
+ 		tty_dev = tty->dev;
+-		may_wake = device_may_wakeup(tty_dev);
++		may_wake = tty_dev && device_may_wakeup(tty_dev);
+ 		tty_kref_put(tty);
+ 	}
  
 -- 
 2.17.1
