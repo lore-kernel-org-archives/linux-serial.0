@@ -2,80 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD59EC6FD1C
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 09:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B6D1C76196
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 10:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231621AbjCXJD4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Mar 2023 05:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
+        id S229834AbjCXKCg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Mar 2023 06:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbjCXJDz (ORCPT
+        with ESMTP id S231196AbjCXKCe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Mar 2023 05:03:55 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8DA3C3B
-        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 02:03:53 -0700 (PDT)
-Received: from [192.168.1.141] ([37.4.248.35]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MvJsF-1qWDxt1O1h-00rDzC; Fri, 24 Mar 2023 09:57:56 +0100
-Message-ID: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
-Date:   Fri, 24 Mar 2023 09:57:55 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Content-Language: en-US
-To:     =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Sergey Organov <sorganov@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+        Fri, 24 Mar 2023 06:02:34 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F36DC199DB;
+        Fri, 24 Mar 2023 03:02:33 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.98,287,1673881200"; 
+   d="scan'208";a="153660279"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 24 Mar 2023 19:02:33 +0900
+Received: from localhost.localdomain (unknown [10.226.93.228])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 738BA401BBFB;
+        Fri, 24 Mar 2023 19:02:31 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Regression: serial: imx: overrun errors on debug UART
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:ZEjzmc/onqBH6bcTalMaZKTG+xLG8wrB2968B2R5xruAGpYk+mW
- 70HyPSvCr0eBujHYn8IbubEvrzMJPN4dq9c4RoXsUzA7WT6Dv7CmU/znAaF3XqPkCA3Ocl0
- 0LoPGq/aaWTCqmMeSn6DvX3U/+pT31fuMS9RlIZYQK5jAXhRFC7mgYZsicqjNFHhlsFcGhk
- Yry8Lrjmbw+JC+KLvxtjA==
-UI-OutboundReport: notjunk:1;M01:P0:WSlttC6mHVY=;9luLpjd9jqceH7mrTr2v0DQ+lCK
- uq2vhOsxJlVVabtw1t9c2d4kDIFfj3KE8vUUMETf212UQBvbZVvJgWDmIfNbsc0oztMN/jgnn
- wjQc2bM6RNfsARwuoqJuC58sx7Yn7MXzmXV4cnd8d9s47QxKIVbSsIfpI7UH43YPAPiBs5dBL
- h1mP5MUuuJB2yhg2W/MwbNvM8ehYVd4hS75g9rcMDSSmJp9dUZ/OHevWikJoOupU0seyCxt4p
- UbJvyC6uZIzSo8yXli23McsCMLYGdxNWuWwPtNziA45OBBRa/uj1fcHGZ/7egvhvJa+9d4l1O
- lbqV4LOh62bnt5gRs+WFqBMAAU4keHa7ys2P9K2cNfw4Byb5necMp7IoR40Z3lFJX+DvEpGdY
- WRyP3hEIVFIIC0XveyNd+WEhfkj8HLDpBeHO2LB7PuxYcisMaC8laeynfqi46gHuVk5Q9oFcO
- pfw3vUcr1+ilV3K+y7UsZGljDlLPzOGY6mNNixr2q4xkRirSQA7dWvOuBMgMLKJGeK6m9IUlD
- DD0Ioc4PZIjCXzC6I362EhMGS8yMklor8w2D/GL5NCLpA42MOzJ/yKv4SrnnEmQZStttuht9b
- B1MQTdKJROGLriHdumo5zQLf2EB3b1E5yTWai/B45LRuCa9jLEKMCZPpFzVGhrSn5DzA+vc5K
- F12ABx5xOltOI37SCqG9+aZDgh1zyqldMTkH2L8NQw==
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v2 2/3] tty: serial: sh-sci: Add RZ/G2L SCIF DMA tx support
+Date:   Fri, 24 Mar 2023 10:02:21 +0000
+Message-Id: <20230324100222.116666-3-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230324100222.116666-1-biju.das.jz@bp.renesas.com>
+References: <20230324100222.116666-1-biju.das.jz@bp.renesas.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Add SCIF DMA tx support for RZ/G2L alike SoCs.
 
-after switching to Linux 6.1.21 on our Tarragon board (i.MX6ULL SoC), we 
-experience the following issues with the debug UART (115200 baud, 8N1, 
-no hardware flow control):
+RZ/G2L alike SoC use the same signal for both interrupt and DMA
+transfer requests, so we must disable line interrupts(tx and tx end)
+while transferring DMA and enable the TIE source interrupt.
 
-- overrun errors if we paste in multiple text lines while system is idle
-- no reaction to single key strokes while system is on higher load
+Based on a patch in the BSP by Long Luu
+<long.luu.ur@renesas.com>
 
-After reverting 7a637784d517 ("serial: imx: reduce RX interrupt 
-frequency") the issue disappear.
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+v1->v2:
+ * No change
+---
+ drivers/tty/serial/sh-sci.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-Maybe it's worth to mention that the Tarragon board uses two additional 
-application UARTs with similiar baud rates (9600 - 115200 baud, no 
-hardware flow control) for RS485 communication, but there are no overrun 
-errors (with and without the mention change).
-
-Best regards
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 4278aef59f6d..81797eb722cb 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -172,6 +172,13 @@ to_sci_port(struct uart_port *uart)
+ 	return container_of(uart, struct sci_port, port);
+ }
+ 
++static inline bool is_rz_scif_port(struct uart_port *port, struct sci_port *s)
++{
++	const struct plat_sci_port *p = s->cfg;
++
++	return port->type == PORT_SCIF && p->regtype == SCIx_RZ_SCIFA_REGTYPE;
++}
++
+ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 	/*
+ 	 * Common SCI definitions, dependent on the port's regshift
+@@ -588,6 +595,16 @@ static void sci_start_tx(struct uart_port *port)
+ 
+ 	if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit) &&
+ 	    dma_submit_error(s->cookie_tx)) {
++		if (is_rz_scif_port(port, s)) {
++			/* Switch irq from SCIF to DMA */
++			disable_irq(s->irqs[SCIx_TXI_IRQ]);
++			disable_irq(s->irqs[SCIx_TEI_IRQ]);
++
++			/* DMA need TIE enable */
++			ctrl = serial_port_in(port, SCSCR);
++			serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
++		}
++
+ 		s->cookie_tx = 0;
+ 		schedule_work(&s->work_tx);
+ 	}
+@@ -1214,9 +1231,16 @@ static void sci_dma_tx_complete(void *arg)
+ 		schedule_work(&s->work_tx);
+ 	} else {
+ 		s->cookie_tx = -EINVAL;
+-		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
++		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
++		    is_rz_scif_port(port, s)) {
+ 			u16 ctrl = serial_port_in(port, SCSCR);
+ 			serial_port_out(port, SCSCR, ctrl & ~SCSCR_TIE);
++			if (port->type == PORT_SCIF) {
++				/* Switch irq from DMA to SCIF */
++				dmaengine_pause(s->chan_tx_saved);
++				enable_irq(s->irqs[SCIx_TXI_IRQ]);
++				enable_irq(s->irqs[SCIx_TEI_IRQ]);
++			}
+ 		}
+ 	}
+ 
+-- 
+2.25.1
 
