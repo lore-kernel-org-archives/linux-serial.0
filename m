@@ -2,109 +2,163 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7708C6FD1C
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 12:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 921CFC6FD20
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 12:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbjCXMuX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Mar 2023 08:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
+        id S231228AbjCXM5x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Mar 2023 08:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbjCXMuW (ORCPT
+        with ESMTP id S231150AbjCXM5x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Mar 2023 08:50:22 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3478EC3
-        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 05:50:21 -0700 (PDT)
-Received: from [192.168.1.141] ([37.4.248.35]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N95qT-1qa0dG1zGh-016BTG; Fri, 24 Mar 2023 13:49:57 +0100
-Message-ID: <b6090d0f-c612-9916-06cf-8d791801e37d@i2se.com>
-Date:   Fri, 24 Mar 2023 13:49:56 +0100
+        Fri, 24 Mar 2023 08:57:53 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9411E5C1
+        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 05:57:52 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id r7-20020a17090b050700b002404be7920aso934135pjz.5
+        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 05:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679662671;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LKptuzGuQaJK21efBFKz2PjWJVwyLEkP1Oow1tblUdI=;
+        b=SUCuUAz1VvK/9MCXtMveCgbHkC/3BfY75pCWWyiHn2YKI1NG2ibiy1GK6IrN+nTZlW
+         IOqWibsy1p0S7hOIIjhltDr8B4MyO73tOz+PUS4tlQFoE+iyvBhcuHE38EDGRlQNvC2b
+         aefhxqFRhRhmM3hczANAYE3innxlfVFokff2ScweN3YlbE0lW12nWQ3WaDXqeUNovSVH
+         vudbhqq7Dysr/mGM/GmV37XepUUNDTUds6eqWvtW3uah3yIijePltd59sijienOykHGZ
+         3s3pMQdUf+WFlWmfrwKyvpmN+E3V3j61EU66FSTKn4qNsQNPOyLnt0zP0lqnuAodBfK/
+         xGiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679662671;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LKptuzGuQaJK21efBFKz2PjWJVwyLEkP1Oow1tblUdI=;
+        b=OXrn8vCyzCfDkc6jpGT8HVOqbw2BSRrMPRFktAOmpZJNnS38H4LcNo3a8Iv45DFQyS
+         jtRZP+EZZ77/XaNIvfkUiJPVo7zVoV4+6fyEAwHf20rcksH2Gvdi+0Js3KSJlUAnBo/U
+         hgjqKwcEE1P1uRE6ntR73luVI5P0KA3GXG7xN10i4viT0dOJhs31Dm2dQ2OqOBmzx0xt
+         O1KF6YJ+6EqnkxWB4vOvaH2tjEbkoB561JiWc1jsg5c6sXhkAX8J1oeSyAvL8+YH4XZm
+         E3hFYdNK4kWVoHgkcnXoQ0kzgrPmld4z29eUGoZPryQNzaGTMp1kL2ksySEP7u2hYwh+
+         WLGQ==
+X-Gm-Message-State: AAQBX9dk2bbQ5W5sUNZHLOBRW9WjJNHF+orqXCalxXrkYL6xhsEPl1PN
+        cJqZqDMddLO+jGBC7RuFcV2SVXgZPcxBtHrRmU0=
+X-Google-Smtp-Source: AKy350ZevwdwSX+C2Ix7/+qpd/UMSXvqBROeCRo84GEjTH2DAntVqzkVvjWqVoyrW4zpRrU81BbI7239e36XXPs6SdU=
+X-Received: by 2002:a17:903:2290:b0:19f:30be:e9f6 with SMTP id
+ b16-20020a170903229000b0019f30bee9f6mr946021plh.6.1679662671511; Fri, 24 Mar
+ 2023 05:57:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
+References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com> <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
+In-Reply-To: <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 24 Mar 2023 09:57:39 -0300
+Message-ID: <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
 Subject: Re: Regression: serial: imx: overrun errors on debug UART
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Francesco Dolcini <francesco@dolcini.it>
-Cc:     =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        =?UTF-8?Q?Tomasz_Mo=C5=84?= <tomasz.mon@camlingroup.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         Sergey Organov <sorganov@gmail.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
+        linux-serial@vger.kernel.org,
         Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Shawn Guo <shawnguo@kernel.org>,
         Stefan Wahren <stefan.wahren@chargebyte.com>
-References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
- <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
- <ZB2W4bKfuO7tvAaU@francesco-nb.int.toradex.com>
- <989d6a6f-fd4d-3e53-d417-ddf71ccf7af@linux.intel.com>
-Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <989d6a6f-fd4d-3e53-d417-ddf71ccf7af@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:UTGPJEe3V9ioEcmae8BlQwxtxLaM5E16Qxnl7nAdZRYVT9JUy2j
- I6Z0x0NnHh6Km9snhoj17/ZEDc76c4JQWpdIMRt67FgIdJ9WeGtus8nL13LO/wg6e48z9oz
- Wl7IRsdftI79p3vTvjyr9yuMYUqpPk5vXzY01CVi+ADykr6QX52Kw/VwpyGxa/Mh8ZEY8YC
- khotX2Nu0JcGas2IagNoA==
-UI-OutboundReport: notjunk:1;M01:P0:36wpV76/2PA=;N9A0E2QyaxxHc/ketHn5umgaQR4
- J/x/47m2i16nPU38E7Y4Gq3osar0RC5KIvLvQCkCpEEdKhiBHR2zeR1BUkeO8w+eaGf2dss6N
- jk/fkDO/8t5dgIJ4PJNJWen4iYrMqkkX5v1V2+h1623oEpqtSG6zRtBZZXcfO5t97NdGD31GE
- jpJiOVhhH9StKf3LDx1XZQtsVvqJbP5OJ1QcgCIQthaXBCsWhkvwBHYj0Ke4Ed+VygYDD0pdr
- DgN5p/IkmAQKr7d+3dIWKmmmMdbPXPPqd+fEQSdcvLuJz1ToMMILtOUqSdrmjsDadJO0gq3cT
- /RSjerSRESygvOvjBZDyCaleOODWibKMSZDgiX0kgw+lRJGX0K+T6irUpl+RR01qgydAdyfIu
- i4Pxj5QbTOW58TwllAtNSbrLIVbILJYZtc7Eymm8RgdGaqXNSwPgq9OkJmVdNolH8ZM4MtGUl
- mIiVs8z0434VyS3stGYBsSodUhI75drNgW1bZJrVMLf8qLVzUB6JOUpEJU7+9Ssb1ynNxETBc
- r10YTt8EzSkuiKB1AAGyc9mK6Zsubl2tFv2dVI5HafWQh5MyFbn4mVMd+yRJSKrW+huc83plr
- W1cI5J+4dD1pDCDHj9gTi7Wf64vMhfymIXuhgSWWuT5/9Oha6+bBfe6HkQ0zj/Fj9X6jJ6Kwb
- 6FkXI31iQMBeo2nBUlg4k0ZHUgsviL4/0dKu3qznFw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am 24.03.23 um 13:35 schrieb Ilpo Järvinen:
-> On Fri, 24 Mar 2023, Francesco Dolcini wrote:
+Hi Stefan,
+
+On Fri, Mar 24, 2023 at 8:48=E2=80=AFAM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+
+> This has come up earlier, see e.g.:
 >
->> Hello
->>
->> On Fri, Mar 24, 2023 at 01:47:59PM +0200, Ilpo Järvinen wrote:
->>> On Fri, 24 Mar 2023, Stefan Wahren wrote:
->>>> after switching to Linux 6.1.21 on our Tarragon board (i.MX6ULL SoC), we
->>>> experience the following issues with the debug UART (115200 baud, 8N1, no
->>>> hardware flow control):
->>>>
->>>> - overrun errors if we paste in multiple text lines while system is idle
->>>> - no reaction to single key strokes while system is on higher load
->>>>
->>>> After reverting 7a637784d517 ("serial: imx: reduce RX interrupt frequency")
->>>> the issue disappear.
->>>>
->>>> Maybe it's worth to mention that the Tarragon board uses two additional
->>>> application UARTs with similiar baud rates (9600 - 115200 baud, no hardware
->>>> flow control) for RS485 communication, but there are no overrun errors (with
->>>> and without the mention change).
->>> This has come up earlier, see e.g.:
->>>
->>> https://lore.kernel.org/linux-serial/20221003110850.GA28338@francesco-nb.int.toradex.com/
->> yep, it looks exactly the same issue.
->>
->> We did not verify if this was affecting other UARTs. However, isn't RS485
->> half-duplex?
-> While half-duplex is more likely by far due simplicity, RS485 could also
-> be full-duplex. It seems imx driver supports for both modes.
-
-The RS485 on Tarragon is half-duplex, but this is implemented in 
-external hardware. So from Linux / driver point of view it's a RS232.
-
-To us the current behavior (overrun errors and no reaction under load) 
-is not acceptable. I agree that increasing the rx threshold isn't the 
-real issue. But i needed a starting point for a discussion.
-
-So any ideas how to investigate this further are welcome.
-
+> https://lore.kernel.org/linux-serial/20221003110850.GA28338@francesco-nb.=
+int.toradex.com/
 >
+> My somewhat uninformed suggestion: if the overrun problems mostly show up
+> with console ports, maybe the trigger level could depend on the port
+> being a console or not?
+
+Does the change below help? Taking Ilpo's suggestion into account:
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 0fa1bd8cdec7..4d0aae38b7a5 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -233,6 +233,7 @@ struct imx_port {
+        enum imx_tx_state       tx_state;
+        struct hrtimer          trigger_start_tx;
+        struct hrtimer          trigger_stop_tx;
++       unsigned int            rxtl;
+ };
+
+ struct imx_port_ucrs {
+@@ -1309,6 +1310,7 @@ static void imx_uart_clear_rx_errors(struct
+imx_port *sport)
+ }
+
+ #define TXTL_DEFAULT 2 /* reset default */
++#define RXTL_DEFAULT_CONSOLE 1 /* 1 character or aging timer */
+ #define RXTL_DEFAULT 8 /* 8 characters or aging timer */
+ #define TXTL_DMA 8 /* DMA burst setting */
+ #define RXTL_DMA 9 /* DMA burst setting */
+@@ -1422,7 +1424,7 @@ static void imx_uart_disable_dma(struct imx_port *spo=
+rt)
+        ucr1 &=3D ~(UCR1_RXDMAEN | UCR1_TXDMAEN | UCR1_ATDMAEN);
+        imx_uart_writel(sport, ucr1, UCR1);
+
+-       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
++       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+
+        sport->dma_is_enabled =3D 0;
+ }
+@@ -1447,7 +1449,7 @@ static int imx_uart_startup(struct uart_port *port)
+                return retval;
+        }
+
+-       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
++       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+
+        /* disable the DREN bit (Data Ready interrupt enable) before
+         * requesting IRQs
+@@ -1464,6 +1466,11 @@ static int imx_uart_startup(struct uart_port *port)
+        if (!uart_console(port) && imx_uart_dma_init(sport) =3D=3D 0)
+                dma_is_inited =3D 1;
+
++       if (uart_console(port))
++               sport->rxtl =3D RXTL_DEFAULT_CONSOLE;
++       else
++               sport->rxtl =3D RXTL_DEFAULT;
++
+        spin_lock_irqsave(&sport->port.lock, flags);
+
+        /* Reset fifo's and state machines */
+@@ -1863,7 +1870,7 @@ static int imx_uart_poll_init(struct uart_port *port)
+        if (retval)
+                clk_disable_unprepare(sport->clk_ipg);
+
+-       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
++       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+
+        spin_lock_irqsave(&sport->port.lock, flags);
+
+@@ -2139,7 +2146,7 @@ imx_uart_console_setup(struct console *co, char *opti=
+ons)
+        else
+                imx_uart_console_get_options(sport, &baud, &parity, &bits);
+
+-       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
++       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+
+        retval =3D uart_set_options(&sport->port, co, baud, parity, bits, f=
+low);
