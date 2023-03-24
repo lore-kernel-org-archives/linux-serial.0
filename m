@@ -2,131 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C952C6FD1C
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Mar 2023 11:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD59EC6FD1C
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 09:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbjCWLNS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Mar 2023 07:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
+        id S231621AbjCXJD4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Mar 2023 05:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230165AbjCWLNR (ORCPT
+        with ESMTP id S232016AbjCXJDz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Mar 2023 07:13:17 -0400
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2050.outbound.protection.outlook.com [40.107.249.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4652DE74;
-        Thu, 23 Mar 2023 04:12:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H9ycgVq/+9hP4vfe7LX0bxge4RNXt/zk3waLiU7tMyGtmlMMBQPr6aueDdH6DX9HE2OUjZXYeE3IVrRRTh8v6Z5hg23NQuAnGSTcvfR55ETdxd1qpLetQTtl5DG2jf8D/GREAhSRSu7JnBySCqz59LqS+lXO/BeVOhS+IxPamQzJOFvma7/nIpsT8edFr8sLmg0Sz0KcSZ+sumt+SsmEQiIFImFduRlrRvuZH+C0RhDXyyddi61e3XOoeIPsAQETWiItefXeZkR0b5iBJhkC3tC8b7VZX0QFQQIUrlRytrPrfQbvbiOZ6k3W4Jmyl0oHrg9eKaKzPc3s9kxFdK4gvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=huTnq9zFQIu3wVd4SNt0MvinA9EgU2tzSa9U63adbmQ=;
- b=dHYUMiQmUkpi2THr8EWyjBtEPmou630pl+3LsAPZgz46bUwP5gFlvqLV7bwZO8zkxAP6rKxpJD7NvHShuI2+1xYEB+pa7R7sBCuaSHo8p4FCCIP8Zq1zUDiZj6skfkB9L7w3e+Uc2CaOb6q9Uy1wBH7GLqOZ7ZdDe+fM5C260xLxVD2vBT9NveG91Shmdnbh+GkttOSp/tCw6HKSfGvLO1Mv7f3xu1+f8225qZK8ekunqj/ryBRzXWvSPBWZ7xKYUyMZWmdGOWZxkOoAXNo8kfF1lmtGZWoBVdDmvRk14T5oJzJMo8aEKJrvUD5dyYC/zUNwy1w9OkC5gH53yPxMJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=huTnq9zFQIu3wVd4SNt0MvinA9EgU2tzSa9U63adbmQ=;
- b=J9nwb2XFEnPW1ug+6a9kbeJS1MbFObkM2fmK3TJWoMBAVoMBYfj9D8dWP/uqWKrnIXlcpLq74j1KjjB6A9d/XrAs5LP/gUtuwYS51QuvW9SeRWTE7SkaJKTgkSaRUNwM+I73cCAapWyFbKROhO6HPRa4h9fb0gvLfBczQB7y+2g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS4PR04MB9505.eurprd04.prod.outlook.com (2603:10a6:20b:4e4::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Thu, 23 Mar
- 2023 11:12:38 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::3079:f55a:740e:c103]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::3079:f55a:740e:c103%9]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 11:12:38 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH] tty: serial: fsl_lpuart: fix crash in lpuart_uport_is_active
-Date:   Thu, 23 Mar 2023 19:09:23 +0800
-Message-Id: <20230323110923.24581-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0008.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::10) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
+        Fri, 24 Mar 2023 05:03:55 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8DA3C3B
+        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 02:03:53 -0700 (PDT)
+Received: from [192.168.1.141] ([37.4.248.35]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MvJsF-1qWDxt1O1h-00rDzC; Fri, 24 Mar 2023 09:57:56 +0100
+Message-ID: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
+Date:   Fri, 24 Mar 2023 09:57:55 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|AS4PR04MB9505:EE_
-X-MS-Office365-Filtering-Correlation-Id: 83dd35bd-4e72-4ba4-b63f-08db2b8f8321
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gTW0Y0MrFO2uy8cre3U0H7sRjYpuzjCjM4iwOlFwdwNuxLBot4uln+GH41OLh2zWboevFbPeKw4C2nMKogiKrZxXFOiAEsI6GVlFYMcbZHThaDYdD4ef7+3H7+ZNYODW9C3xMkvXV/fuki4nWAAUIZT72Ix39leqsbJyYeFEyDbAwO2ZvnJ6TvHOSweEDYWCmnbHattXFZywiGtddIc4RBDGsQEYqHTxgqaLRZ89pvBB16982DsxV2nrK31liAP4Go8jpRPr+qU5bp+mWldc5FVqlWQFthy0HoOoo/o3X0II8VhshgFTpLcHT5ERd3DaY8kbsb/84epoPIL3xjQ8MpKHRRNvnhzxGWWAAJ9UIoXvn6aYUeIL1xpBl5uCOmi/N83mB9THFBO6K615UVnen2Vn2/MsKDrMCr+6bHIiTrrpa62X2S1KcoACTx/oYjnmPbi1M5gJ53k4SWq9WAsAhe+f7a4/labDQgh62cs3a958F3CIsc/vjTqE2MAYZX4SI6+bXjM87oX85dUFKd6k/x7zBmSruiRa8jfRE2Roz/cIcY29WhYe8t/nA02ThUEQprFehPpsHQsxFyesaVG4Io/49unC4VpWvys9/y7f2DdrRQZUt3CSS9Gfgybc8irPNdkqAzLwnPupGh7LVYgOPQhMX5o3dZI4FAqMtJEdJ/eb7OMpRxS2ZC+OsWZ1LhPOi+J4LsW5ctdqPjx8oNabpg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(451199018)(38100700002)(2906002)(38350700002)(83380400001)(478600001)(6486002)(2616005)(186003)(86362001)(36756003)(52116002)(316002)(4744005)(66476007)(8676002)(66556008)(66946007)(4326008)(8936002)(6666004)(1076003)(26005)(6512007)(6506007)(44832011)(5660300002)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KYqWllz4zJcu4WHynuSFywtVnWzgfLXpz2aRwvBoLC/5Yb8qxW3VEb2jCa+l?=
- =?us-ascii?Q?o8UNwGLIzq79S3er98aMWCYa2eCYwu5sFV5EeacbHyyCRknPZFSW9lUpiqzm?=
- =?us-ascii?Q?xhWIvmEmK+qeppbzaJwFrgi1aNJ2Kq518Xm0/dw+gb31BRrykGxWtztz+UUG?=
- =?us-ascii?Q?vNDwgTmij34u2HLiqXdz4PbLXVblBBtx7lEcq3/cTF/v7rTJsRkzKuQQQX9v?=
- =?us-ascii?Q?DxBzbhd/KAt7viG9AKK0lxapexmA968v/baJmHwhVKtIgSq6AxcirbLtyqKd?=
- =?us-ascii?Q?GQKlZwtHZSQzXGW6jj1mTiql5ZGMitNXkZop5UD1MrDSov8eU4PNWVTxtxIX?=
- =?us-ascii?Q?GIngaZzNkabxJ8Qnppj/SvL+Wf01hGWEDMaG7EckW9T2cCdTR5AKkVI2qqTJ?=
- =?us-ascii?Q?pL28A5iV6vn52J38891Lwl6O8FRTj3EAYqoxhOdTKcZS80nA79KBg0O+HjI/?=
- =?us-ascii?Q?s37p3WL33jlObxKiNZDAggw7A7+AcDQk8Ae9s+NUoyGAfkaRjHQcZo0DpV0D?=
- =?us-ascii?Q?KWlfhEfNsQzc3pQ2z/cTbw9W/7gnRiWMcJKTOkoPrfuleKkeW6UTzRPT2h3Z?=
- =?us-ascii?Q?dmkIGx5GFkboG6BE5yPICrIKo3cxaBjHCfuVcoVDJXyQDZVGdY62Zf0v4mt6?=
- =?us-ascii?Q?RuxAN89BpfS4gdq7fb8+k5L7MQKfwW2jVvivw+jiGoK7seXiOdnw5RF6s2/N?=
- =?us-ascii?Q?mToVis5TS3LdQQ4OoeRgQT1k5rZxBPZDcKSr9SDEUtIchC6xa3ZDZK3RgfDm?=
- =?us-ascii?Q?0jm1rIClZ+GrjiX8yby14+pJ1ZAl7jCXcEur+tyktTqi9TdY7Xfxx5QVbz5l?=
- =?us-ascii?Q?R4qzAkhplA1kifPGeaLRKtIB1+CKbEiVhxXYX/VSA+cZhvhF3SmoRg5c3VK4?=
- =?us-ascii?Q?0tYa/eC+Wdkz56SOY6TvGCMJ/nZWjhWSDQINUZHNWt8cvVoIM73uubi0bLrs?=
- =?us-ascii?Q?f9yjsrFwm7XBJEgBADS3vgPnyAKIJOPmnNCB4A23ruZV6ZSv74JNjrHS97nx?=
- =?us-ascii?Q?aVmsKILfCdzia68k8bpL3lX2bZP3kisJq4CARIzYB/Mrw+YqKne0DoouxK8A?=
- =?us-ascii?Q?MhMe9L5HR6byQlr1Y4ruE2jJeiK6uQgvA3WaZSXIljtq2YkrrwG5gpioee8v?=
- =?us-ascii?Q?IFXtTFRdeTEfDHyMMTGdLJjGvEUm04/6FsGH1F33UIPYFH+6LYWGergHLR8J?=
- =?us-ascii?Q?roQ+3H1NwZeWD3KMozXac/ndBZGEbt8n/+4ktLrCoWwf8axMZ76pUv2OA3ja?=
- =?us-ascii?Q?k9o+iNbB6QoHezY2pWsfipZeAfptnFJUV8jiFV0Pg97jdwhMlvYDJYnXsnDM?=
- =?us-ascii?Q?hEJ/Uh2VPTtJ8emLo2pf7v4+gDamgLM391Ww6bGREN1i7E+fXLq60aEhIouW?=
- =?us-ascii?Q?Kab67ZyA1EgkZW430Bhytwnxmu3vb9LYswo8u5wv48DVrEEEwrFCMneL/zLQ?=
- =?us-ascii?Q?XIaC0gJ9U1T33Zuv9HK408afvV320KwG46y4oZw02uaTI/uPyxzrsJzErkuq?=
- =?us-ascii?Q?TNCqlYUuurQr9EW5b1g92U5niV6vKSCaJJCNjvF41ILjsyHBpBpmM8XezO9T?=
- =?us-ascii?Q?9u7IvQRxnx9zce4jSJ+qq72FpiUMhoFGwSGJnvyZ?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83dd35bd-4e72-4ba4-b63f-08db2b8f8321
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 11:12:38.6367
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bi5TF8WedQCpXL0tI+WJ3kVC9YPtjwrgiRxuBdKIebn1iYbPPndsy3nHuoqvNSV0kRV8YXSiSi2dXScHvtsf4Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9505
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Content-Language: en-US
+To:     =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Sergey Organov <sorganov@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stefan Wahren <stefan.wahren@chargebyte.com>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Regression: serial: imx: overrun errors on debug UART
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:ZEjzmc/onqBH6bcTalMaZKTG+xLG8wrB2968B2R5xruAGpYk+mW
+ 70HyPSvCr0eBujHYn8IbubEvrzMJPN4dq9c4RoXsUzA7WT6Dv7CmU/znAaF3XqPkCA3Ocl0
+ 0LoPGq/aaWTCqmMeSn6DvX3U/+pT31fuMS9RlIZYQK5jAXhRFC7mgYZsicqjNFHhlsFcGhk
+ Yry8Lrjmbw+JC+KLvxtjA==
+UI-OutboundReport: notjunk:1;M01:P0:WSlttC6mHVY=;9luLpjd9jqceH7mrTr2v0DQ+lCK
+ uq2vhOsxJlVVabtw1t9c2d4kDIFfj3KE8vUUMETf212UQBvbZVvJgWDmIfNbsc0oztMN/jgnn
+ wjQc2bM6RNfsARwuoqJuC58sx7Yn7MXzmXV4cnd8d9s47QxKIVbSsIfpI7UH43YPAPiBs5dBL
+ h1mP5MUuuJB2yhg2W/MwbNvM8ehYVd4hS75g9rcMDSSmJp9dUZ/OHevWikJoOupU0seyCxt4p
+ UbJvyC6uZIzSo8yXli23McsCMLYGdxNWuWwPtNziA45OBBRa/uj1fcHGZ/7egvhvJa+9d4l1O
+ lbqV4LOh62bnt5gRs+WFqBMAAU4keHa7ys2P9K2cNfw4Byb5necMp7IoR40Z3lFJX+DvEpGdY
+ WRyP3hEIVFIIC0XveyNd+WEhfkj8HLDpBeHO2LB7PuxYcisMaC8laeynfqi46gHuVk5Q9oFcO
+ pfw3vUcr1+ilV3K+y7UsZGljDlLPzOGY6mNNixr2q4xkRirSQA7dWvOuBMgMLKJGeK6m9IUlD
+ DD0Ioc4PZIjCXzC6I362EhMGS8yMklor8w2D/GL5NCLpA42MOzJ/yKv4SrnnEmQZStttuht9b
+ B1MQTdKJROGLriHdumo5zQLf2EB3b1E5yTWai/B45LRuCa9jLEKMCZPpFzVGhrSn5DzA+vc5K
+ F12ABx5xOltOI37SCqG9+aZDgh1zyqldMTkH2L8NQw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For serdev framework, tty->dev is a NULL pointer, lpuart_uport_is_active
-calling device_may_wakeup() may cause kernel NULL pointer crash, so here
-add the NULL pointer check before using it.
+Hi,
 
-Fixes: 4f5cb8c5e915 ("tty: serial: fsl_lpuart: enable wakeup source for lpuart")
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+after switching to Linux 6.1.21 on our Tarragon board (i.MX6ULL SoC), we 
+experience the following issues with the debug UART (115200 baud, 8N1, 
+no hardware flow control):
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 3281e81e1723..8daac87d063c 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -3022,7 +3022,7 @@ static bool lpuart_uport_is_active(struct lpuart_port *sport)
- 	tty = tty_port_tty_get(port);
- 	if (tty) {
- 		tty_dev = tty->dev;
--		may_wake = device_may_wakeup(tty_dev);
-+		may_wake = tty_dev && device_may_wakeup(tty_dev);
- 		tty_kref_put(tty);
- 	}
- 
--- 
-2.17.1
+- overrun errors if we paste in multiple text lines while system is idle
+- no reaction to single key strokes while system is on higher load
+
+After reverting 7a637784d517 ("serial: imx: reduce RX interrupt 
+frequency") the issue disappear.
+
+Maybe it's worth to mention that the Tarragon board uses two additional 
+application UARTs with similiar baud rates (9600 - 115200 baud, no 
+hardware flow control) for RS485 communication, but there are no overrun 
+errors (with and without the mention change).
+
+Best regards
 
