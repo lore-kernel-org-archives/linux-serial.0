@@ -2,144 +2,158 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2123BC6FD20
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 14:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F58C6FD1C
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Mar 2023 15:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231826AbjCXOj4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Mar 2023 10:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53048 "EHLO
+        id S231499AbjCXPA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Mar 2023 11:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbjCXOjz (ORCPT
+        with ESMTP id S230015AbjCXPA2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Mar 2023 10:39:55 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17AED7
-        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 07:39:54 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pfia6-0007aU-GM; Fri, 24 Mar 2023 15:39:50 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pfia3-006PJd-QS; Fri, 24 Mar 2023 15:39:47 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pfia2-007dwO-Ju; Fri, 24 Mar 2023 15:39:46 +0100
-Date:   Fri, 24 Mar 2023 15:39:45 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Fri, 24 Mar 2023 11:00:28 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A39619F2E
+        for <linux-serial@vger.kernel.org>; Fri, 24 Mar 2023 08:00:27 -0700 (PDT)
+Received: from [192.168.1.141] ([37.4.248.35]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N9MlG-1qZhcQ0pk4-015IgX; Fri, 24 Mar 2023 16:00:06 +0100
+Message-ID: <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
+Date:   Fri, 24 Mar 2023 16:00:04 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: Regression: serial: imx: overrun errors on debug UART
+Content-Language: en-US
+To:     Fabio Estevam <festevam@gmail.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
         Sergey Organov <sorganov@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
         NXP Linux Team <linux-imx@nxp.com>,
         linux-serial@vger.kernel.org,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-Message-ID: <20230324143945.x56mxrzw3k2i4z7n@pengutronix.de>
+        Stefan Wahren <stefan.wahren@chargebyte.com>
 References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
  <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
  <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
- <20230324133739.rwo6yr75vrwatbhb@pengutronix.de>
- <547ab600-3630-4645-75c4-ff29610c9437@i2se.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="umwcintol67jnugz"
-Content-Disposition: inline
-In-Reply-To: <547ab600-3630-4645-75c4-ff29610c9437@i2se.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:V7vGuHjDvj23wx57HhYybgmdKTlhONAizcFChzLvIGmQKnGFFZv
+ F0eix1PIC9DftX/jMI8VtFLtD2rAoaBkwvejZcU0pcgFH3qGKiQGF4NVkeMeiQTteGFAUHf
+ VM0u5MnyoXUtqbcWr01jZtDj1HqVDceARAfa4HTr/A6+uOvBMzU6WHO+ivT6sJE6Y0PY3wR
+ vd+ay9AOSnutn6ss/slTQ==
+UI-OutboundReport: notjunk:1;M01:P0:VUWVSyxpcvQ=;teJUmopskKvOY/vN9yCsl3AwobU
+ 1h+0dAIozxtuaQzK0rEzwIcmhNE4XFgiC6qlPMp8/+luVzhbrXkMkvLcSYNWc2QRKlOnR27U5
+ n4yWTG//Tdo3oe2vNfh5BZUhJcczJDmpes5Cc5IijJxAUIBa7Rde/q6ne//70oqPl6o3mE36O
+ TxRaYIaIXnmPI/RgEGuKBMOK8xiTStrC6f0s9q08UDEVTtpPYL4pYi/7sizyGxGJjH1TyU3HL
+ L8g6LXlMQW6cBuTE3BAlh1drS1+1nT8yYD86PQr3RYHPghBHjJwL+3Fx3hx+yiMGnsfhWM3pU
+ FNXyB+mJxlVmvG2v14e/rU01WIXQWi1FhlgPaoemrtErMV5cgtnSb5KMuWDRBMFoXkA/RC4X+
+ p0SDkQFwhehUNIDCzbxhDUpBu5SCoWWc0NmIyXZ95mvL6hM6EULlPdMXBLeW2s90cVEWBCO07
+ SPqU8K1HPrCejvisjntyl8lc+y2uTKRIMOWESuw9k3CN7VFVmu4TLybhOtf4QvEmUdwoTlMFF
+ xLfSwVJZ0YOCzyfBqOQgtacinVQHGW/ID1VWCrOsdrMDzHTOj1FSvahOrDV0ai7m2LUupxh2p
+ fCB9QE5KI3A/Sy+ddwKb5lzDh7gyVATE5YnfQiuakbBVLhp4Rfu3icHXtOGggVmO5X0/tevb3
+ wyfQcZ4cmpTc0pOmWogMuYnoOxSGubz76/yfbS8nJw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Fabio,
 
---umwcintol67jnugz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Mar 24, 2023 at 03:19:46PM +0100, Stefan Wahren wrote:
-> Hi,
->=20
-> Am 24.03.23 um 14:37 schrieb Uwe Kleine-K=C3=B6nig:
-> > On Fri, Mar 24, 2023 at 09:57:39AM -0300, Fabio Estevam wrote:
-> > > Hi Stefan,
-> > >=20
-> > > On Fri, Mar 24, 2023 at 8:48=E2=80=AFAM Ilpo J=C3=A4rvinen
-> > > <ilpo.jarvinen@linux.intel.com> wrote:
-> > >=20
-> > > > This has come up earlier, see e.g.:
-> > > >=20
-> > > > https://lore.kernel.org/linux-serial/20221003110850.GA28338@frances=
-co-nb.int.toradex.com/
-> > > >=20
-> > > > My somewhat uninformed suggestion: if the overrun problems mostly s=
-how up
-> > > > with console ports, maybe the trigger level could depend on the port
-> > > > being a console or not?
-> > > Does the change below help? Taking Ilpo's suggestion into account:
-> > I wonder if it's a red herring that having the console on that port
-> > makes a difference. If I understand correctly the problem is pasting
-> > bigger amounts of data on a ttymxc after having logged in via a getty?
-> >=20
-> > @Stefan: Can you try to reproduce with the port being also a console?
->=20
-> Sorry, for the confusion. Maybe i should have mentioned that the debug UA=
-RT
-> was configured as a console. Here is the output to be more specific (ttym=
-xc0
-> and 4 are RS485, ttymxc3 is the debug console):
->=20
-> # cat /proc/tty/driver/IMX-uart
->=20
-> serinfo:1.0 driver revision:
-> 0: uart:IMX mmio:0x02020000 irq:192 tx:285207 rx:2633621 fe:2 DSR|CD
-> 3: uart:IMX mmio:0x021F0000 irq:193 tx:70502 rx:69 RTS|DTR|DSR
-> 4: uart:IMX mmio:0x021F4000 irq:194 tx:300988 rx:677223 DSR|CD
-> 5: uart:IMX mmio:0x021FC000 irq:195 tx:0 rx:0 DSR|CD
-> 6: uart:IMX mmio:0x02018000 irq:191 tx:0 rx:0 DSR|CD
->=20
-> Just for clarification the Tarragon board is build in a charging station.=
- So
-> hardware access is limited.
->=20
-> @Uwe which port should be configured as a console?
-
-I don't care as long as it's not hte port that you do your test on. None
-is fine.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---umwcintol67jnugz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmQdtjAACgkQj4D7WH0S
-/k7GuAgAgK8kjIUSQ8wdcJfMUcnQTaFK6M/8X6A6Ecyeig7o0eiuPn/d6pt+R8RH
-TTucUIoJm5dWBSFPl682Kl0Kae+yBK54Y9n/TLhAh6VVomQGg5lY9pUJN7W5dPXF
-7oG0aL/yKmh8lucto6lqcibwmw7LXk+f+AkItTXS+gnazMOanninvn+AXENiTbP2
-nnieWN3CP27xpiUxbyzw2kSZSYeghJGZC+PzMXUg6h0tbO4X981mKJ3RW0PwFf7m
-xGhW1DXMhfo2o8ch09Vvvv2UKkou3jj8Ldq2BJTr6NMGF/SCDw1BMJIV7UUz+QsD
-8Kdo2i5a0fmrdDPWHyEO48Zx0Qxw0A==
-=5zN2
------END PGP SIGNATURE-----
-
---umwcintol67jnugz--
+Am 24.03.23 um 13:57 schrieb Fabio Estevam:
+> Hi Stefan,
+>
+> On Fri, Mar 24, 2023 at 8:48 AM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+>
+>> This has come up earlier, see e.g.:
+>>
+>> https://lore.kernel.org/linux-serial/20221003110850.GA28338@francesco-nb.int.toradex.com/
+>>
+>> My somewhat uninformed suggestion: if the overrun problems mostly show up
+>> with console ports, maybe the trigger level could depend on the port
+>> being a console or not?
+> Does the change below help? Taking Ilpo's suggestion into account:
+this breaks the boot / debug console completely, but i got the idea.
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 0fa1bd8cdec7..4d0aae38b7a5 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -233,6 +233,7 @@ struct imx_port {
+>          enum imx_tx_state       tx_state;
+>          struct hrtimer          trigger_start_tx;
+>          struct hrtimer          trigger_stop_tx;
+> +       unsigned int            rxtl;
+>   };
+>
+>   struct imx_port_ucrs {
+> @@ -1309,6 +1310,7 @@ static void imx_uart_clear_rx_errors(struct
+> imx_port *sport)
+>   }
+>
+>   #define TXTL_DEFAULT 2 /* reset default */
+> +#define RXTL_DEFAULT_CONSOLE 1 /* 1 character or aging timer */
+>   #define RXTL_DEFAULT 8 /* 8 characters or aging timer */
+>   #define TXTL_DMA 8 /* DMA burst setting */
+>   #define RXTL_DMA 9 /* DMA burst setting */
+> @@ -1422,7 +1424,7 @@ static void imx_uart_disable_dma(struct imx_port *sport)
+>          ucr1 &= ~(UCR1_RXDMAEN | UCR1_TXDMAEN | UCR1_ATDMAEN);
+>          imx_uart_writel(sport, ucr1, UCR1);
+>
+> -       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+> +       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+>
+>          sport->dma_is_enabled = 0;
+>   }
+> @@ -1447,7 +1449,7 @@ static int imx_uart_startup(struct uart_port *port)
+>                  return retval;
+>          }
+>
+> -       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+> +       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+I think at lea this point sport->rxtl is not properly initialized.
+>
+>          /* disable the DREN bit (Data Ready interrupt enable) before
+>           * requesting IRQs
+> @@ -1464,6 +1466,11 @@ static int imx_uart_startup(struct uart_port *port)
+>          if (!uart_console(port) && imx_uart_dma_init(sport) == 0)
+>                  dma_is_inited = 1;
+>
+> +       if (uart_console(port))
+> +               sport->rxtl = RXTL_DEFAULT_CONSOLE;
+> +       else
+> +               sport->rxtl = RXTL_DEFAULT;
+> +
+>          spin_lock_irqsave(&sport->port.lock, flags);
+>
+>          /* Reset fifo's and state machines */
+> @@ -1863,7 +1870,7 @@ static int imx_uart_poll_init(struct uart_port *port)
+>          if (retval)
+>                  clk_disable_unprepare(sport->clk_ipg);
+>
+> -       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+> +       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+>
+>          spin_lock_irqsave(&sport->port.lock, flags);
+>
+> @@ -2139,7 +2146,7 @@ imx_uart_console_setup(struct console *co, char *options)
+>          else
+>                  imx_uart_console_get_options(sport, &baud, &parity, &bits);
+>
+> -       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+> +       imx_uart_setup_ufcr(sport, TXTL_DEFAULT, sport->rxtl);
+>
+>          retval = uart_set_options(&sport->port, co, baud, parity, bits, flow);
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
