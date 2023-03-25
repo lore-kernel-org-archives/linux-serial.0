@@ -2,98 +2,188 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5A4C76196
-	for <linux-serial@archiver.kernel.org>; Sat, 25 Mar 2023 18:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BD1C6FD1C
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Mar 2023 19:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbjCYS7b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 25 Mar 2023 14:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
+        id S229582AbjCYTAa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 25 Mar 2023 15:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbjCYS7a (ORCPT
+        with ESMTP id S229564AbjCYTA3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 25 Mar 2023 14:59:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46ACF5276;
-        Sat, 25 Mar 2023 11:59:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3FEDB80782;
-        Sat, 25 Mar 2023 18:59:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD1DAC433EF;
-        Sat, 25 Mar 2023 18:59:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679770766;
-        bh=cvkDQ5VUSugi/Mx0cXn8GHD+HIhy+RhvFVUaPPEbIaA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uQRaY0SdvHsMw3Qz1+oQ2OU67uhbpMc7NB4AyXGTJ/vep30XWbPOqxbW3fg1+ojV7
-         u34Y4IGvGvMqEtc+iLwpwoTEuXWcGUAMUFnV4umx8fuJI/ian4Ct+25DM5Hw7wsZD1
-         YCqfBlyPp/njAWIl8h2dhWigJZxZqHb1TOpTn3rGnreTCcepKTiFfZpaYBRj8SdtW3
-         7CpscxCm13XMUTxOgl7D5w3IG+8/oWhQl6wla27yb3TaNTBgy6GM1kvwNftE35OWZ7
-         ZGnP2ZtMyFSJiS4krHyoeBCpP7ehAbQarDoYa/F5JY5S3eGZ/zsYlUVhDwT3HI2G86
-         jkBrUKeIdDG5Q==
-Date:   Sat, 25 Mar 2023 19:14:26 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
-        michal.simek@amd.com, Jonathan.Cameron@huawei.com,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Sat, 25 Mar 2023 15:00:29 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128E6CC04
+        for <linux-serial@vger.kernel.org>; Sat, 25 Mar 2023 12:00:28 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id s8so6326919lfr.8
+        for <linux-serial@vger.kernel.org>; Sat, 25 Mar 2023 12:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679770826;
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=yNSNQHiJruuk+O1hCrFKL1wyio5CYnytaf4dbpeDgFY=;
+        b=EWIyx3YM6vIJ9ONLKTJykSnsWgvaTzHsvXW41cV5YZHzTr/BbPuDLZhUHjFPQKLhFU
+         tmwK5HhT/Ex3gF/67nMI1fM/0NtjO0mitDDEAik7xDLwl7RPC84/77KC9m22qVVbwHgJ
+         ncgXAZeqPAD3omhzZh/L7JRT+NII+RaP7mEik7/Mfva4ZxN4Sn5lTWA3KL0iE2RFvHhh
+         sjhSC5G9AWSrkrSIIX0YZ32qEPIdRc6HqQLy1ZxsYNxCntPJMml9M8YQSaiCTf0tMZj2
+         +cENYXchea7Cu/ZWjubMHsDxJtMoTDF+5ya7z8dgcjRi/IWYH81tEaVj74JjvCKWHCR/
+         BAlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679770826;
+        h=content-transfer-encoding:mime-version:user-agent:message-id
+         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yNSNQHiJruuk+O1hCrFKL1wyio5CYnytaf4dbpeDgFY=;
+        b=PYWB56mG1pIzw+AJITJnqwkviBj8HRhu56ZcTz215NudbUAL8OCrZLYNt8XUECfUu5
+         pNqIVayxmD7z4FWxIzNFIs29pEEs2ENO5buoKm5rTat5QpYDGuKmptulrhCnZ34ShR41
+         xVA1UMipFTUY/5jVmXITnlYjymMl1RhzEtOzI8G6J++9EfO3L+Bq+zCu7h6fjGkfpuE1
+         wYFQ41CjsKkcIFKJiICqxONFUyp1zlLGrR2kWTXX9hrqC3UmHn8CKjVupxN3ygFX0T9x
+         u/IBAbRCgmvuYoAZWg9MrhS76a2ag6sbV6s/lqAmuuCTj4SBxVLtTnSSzeLjvebXheA5
+         rRPg==
+X-Gm-Message-State: AAQBX9dv5pumk34ibaNS1TLXKSxWFfLbWJxs6ltyZKqfInoP4F29srJv
+        6zKxCmL+yFYytuIHAY7xsek=
+X-Google-Smtp-Source: AKy350YngVFUxD7u09eEZEJfOPCWgh0ZtJzsky3j1HfF2NZO07bL1q48DZDxI+9PY9ZPQtDBSR69nQ==
+X-Received: by 2002:ac2:446f:0:b0:4dd:a61c:8f74 with SMTP id y15-20020ac2446f000000b004dda61c8f74mr2262939lfl.51.1679770826063;
+        Sat, 25 Mar 2023 12:00:26 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id t18-20020ac243b2000000b004e92c0ed7a0sm3907519lfl.100.2023.03.25.12.00.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Mar 2023 12:00:25 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Stefan Wahren <stefan.wahren@chargebyte.com>,
+        linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] serial: qcom_geni: Comment use of devm_krealloc
- rather than devm_krealloc_array
-Message-ID: <20230325191426.5810b644@jic23-huawei>
-In-Reply-To: <20230320145710.1120469-5-james.clark@arm.com>
-References: <20230320145710.1120469-1-james.clark@arm.com>
-        <20230320145710.1120469-5-james.clark@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: Regression: serial: imx: overrun errors on debug UART
+References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
+        <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
+        <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
+        <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
+        <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
+        <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
+        <07d37e3e-dfe2-9e6e-a981-8d3c6a9fc5f5@i2se.com>
+Date:   Sat, 25 Mar 2023 22:00:24 +0300
+In-Reply-To: <07d37e3e-dfe2-9e6e-a981-8d3c6a9fc5f5@i2se.com> (Stefan Wahren's
+        message of "Sat, 25 Mar 2023 18:05:10 +0100")
+Message-ID: <878rfk64hj.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 20 Mar 2023 14:57:09 +0000
-James Clark <james.clark@arm.com> wrote:
+Hello,
 
-> Now that devm_krealloc_array is available, add a comment justifying not
-> changing this occurrence to avoid any future auto fixups.
-> 
-> Link: https://lore.kernel.org/all/20230318173402.20a4f60d@jic23-huawei/
-> Signed-off-by: James Clark <james.clark@arm.com>
-LGTM
+Stefan Wahren <stefan.wahren@i2se.com> writes:
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Hi Uwe,
+>
+> Am 25.03.23 um 16:11 schrieb Uwe Kleine-König:
+>> Hello,
+>> On Sat, Mar 25, 2023 at 12:31:01PM +0100, Stefan Wahren wrote:
+>>> Am 24.03.23 um 16:00 schrieb Stefan Wahren:
+>>>> Am 24.03.23 um 13:57 schrieb Fabio Estevam:
+>>>>> On Fri, Mar 24, 2023 at 8:48 AM Ilpo Järvinen
+>>>>> <ilpo.jarvinen@linux.intel.com> wrote:
+>>>>>
+>>>>>> This has come up earlier, see e.g.:
+>>>>>>
+>>>>>> https://lore.kernel.org/linux-serial/20221003110850.GA28338@francesco-nb.int.toradex.com/
+>>>>>>
+>>>>>> My somewhat uninformed suggestion: if the overrun problems
+>>>>>> mostly show up
+>>>>>> with console ports, maybe the trigger level could depend on the port
+>>>>>> being a console or not?
+>>>>> Does the change below help? Taking Ilpo's suggestion into account:
+>>>> this breaks the boot / debug console completely, but i got the idea.
+>>>>>
+>>>
+>>> based on your patch, i successfully tested this:
+>>>
+>>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+>>> index f07c4f9ff13c..1aacaa637ede 100644
+>>> --- a/drivers/tty/serial/imx.c
+>>> +++ b/drivers/tty/serial/imx.c
+>>> @@ -1277,6 +1277,7 @@ static void imx_uart_clear_rx_errors(struct imx_port
+>>> *sport)
+>>>   }
+>>>
+>>>   #define TXTL_DEFAULT 2 /* reset default */
+>>> +#define RXTL_DEFAULT_CONSOLE 1 /* reset default */
+>>>   #define RXTL_DEFAULT 8 /* 8 characters or aging timer */
+>>>   #define TXTL_DMA 8 /* DMA burst setting */
+>>>   #define RXTL_DMA 9 /* DMA burst setting */
+>>> @@ -1286,6 +1287,9 @@ static void imx_uart_setup_ufcr(struct imx_port
+>>> *sport,
+>>>   {
+>>>   	unsigned int val;
+>>>
+>>> +	if (uart_console(&sport->port))
+>>> +		rxwl = RXTL_DEFAULT_CONSOLE; // fallback
+>>> +
+>>>   	/* set receiver / transmitter trigger level */
+>>>   	val = imx_uart_readl(sport, UFCR) & (UFCR_RFDIV | UFCR_DCEDTE);
+>>>   	val |= txwl << UFCR_TXTL_SHF | rxwl;
+>> So the current theory that the issue occurs because of a combination of:
+>>   - With a higher watermark value the irq triggers later and so there is
+>>     less time the until the ISR must run before an overflow happens; and
+>>   - serial console activity disables irqs for a (relative) long time
+>> right?
+>> So on an UP system the problem should occur also on a non-console port?
+>
+> This is less likely, because UART applications usually need some kind
+> of flow control (either from hardware or protocol side). For a
+> non-console application the receiver usually wait until the end and
+> then starts to transmit.
 
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 28fbc927a546..8ae1fb7c2636 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1055,6 +1055,11 @@ static int setup_fifos(struct qcom_geni_serial_port *port)
->  		(port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
->  
->  	if (port->rx_buf && (old_rx_fifo_depth != port->rx_fifo_depth) && port->rx_fifo_depth) {
-> +		/*
-> +		 * Use krealloc rather than krealloc_array because rx_buf is
-> +		 * accessed as 1 byte entries as well as 4 byte entries so it's
-> +		 * not necessarily an array.
-> +		 */
->  		port->rx_buf = devm_krealloc(uport->dev, port->rx_buf,
->  					     port->rx_fifo_depth * sizeof(u32),
->  					     GFP_KERNEL);
+Only CTS/RTS hardware handshake could help, as otherwise printk() output
+is typically entirely async with respect to transmissions on another
+port, and software protocol(s) then are irrelevant, unless they enforce
+extremely short chunks of data (less than FIFO size).
 
+> Sure you can flood the UART with characters and it's only a question
+> of time until the RX FIFO is full and data get lost.
+
+In correctly working RT system this doesn't typically happen, as CPUs
+are way faster than typical UART speeds, and are able to handle the
+loads easily, provided UART has decent FIFO. It's disabling IRQs for
+prolonged times that makes shit happen.
+
+[...]
+
+>
+> According to these lines in imx.c DMA is never used for console:
+>
+>   /* Can we enable the DMA support? */
+>   if (!uart_console(port) && imx_uart_dma_init(sport) == 0)
+>     dma_is_inited = 1;
+>
+> At the end the patch above only restores the old console behavior, but
+> keep Tomasz Moń's optimization for non-console (which was indented
+> for).
+
+So this will likely only be of help for this particular case, and will
+leave the problem there on other DMA-disabled ports. To "fix" this, the
+old threshold is to be returned on all DMA-disabled ports, and then the
+Tomasz original patch would be entirely reverted, it seems.
+
+Disclaimer: all the above is said on the assumption that it's printk
+that is core cause of the problem in this case, that has not yet been
+shown in testing, as far as I know.
+
+Best regards,
+-- Sergey
