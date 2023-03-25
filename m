@@ -2,188 +2,277 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BD1C6FD1C
-	for <linux-serial@archiver.kernel.org>; Sat, 25 Mar 2023 19:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE546C6FD1C
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Mar 2023 23:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbjCYTAa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 25 Mar 2023 15:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
+        id S230087AbjCYXCu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 25 Mar 2023 19:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjCYTA3 (ORCPT
+        with ESMTP id S229988AbjCYXCt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 25 Mar 2023 15:00:29 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128E6CC04
-        for <linux-serial@vger.kernel.org>; Sat, 25 Mar 2023 12:00:28 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id s8so6326919lfr.8
-        for <linux-serial@vger.kernel.org>; Sat, 25 Mar 2023 12:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679770826;
-        h=content-transfer-encoding:mime-version:user-agent:message-id
-         :in-reply-to:date:references:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=yNSNQHiJruuk+O1hCrFKL1wyio5CYnytaf4dbpeDgFY=;
-        b=EWIyx3YM6vIJ9ONLKTJykSnsWgvaTzHsvXW41cV5YZHzTr/BbPuDLZhUHjFPQKLhFU
-         tmwK5HhT/Ex3gF/67nMI1fM/0NtjO0mitDDEAik7xDLwl7RPC84/77KC9m22qVVbwHgJ
-         ncgXAZeqPAD3omhzZh/L7JRT+NII+RaP7mEik7/Mfva4ZxN4Sn5lTWA3KL0iE2RFvHhh
-         sjhSC5G9AWSrkrSIIX0YZ32qEPIdRc6HqQLy1ZxsYNxCntPJMml9M8YQSaiCTf0tMZj2
-         +cENYXchea7Cu/ZWjubMHsDxJtMoTDF+5ya7z8dgcjRi/IWYH81tEaVj74JjvCKWHCR/
-         BAlg==
+        Sat, 25 Mar 2023 19:02:49 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3BEAF27
+        for <linux-serial@vger.kernel.org>; Sat, 25 Mar 2023 16:02:47 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id l10-20020a056e0205ca00b00322fdda7261so3447278ils.6
+        for <linux-serial@vger.kernel.org>; Sat, 25 Mar 2023 16:02:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679770826;
-        h=content-transfer-encoding:mime-version:user-agent:message-id
-         :in-reply-to:date:references:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yNSNQHiJruuk+O1hCrFKL1wyio5CYnytaf4dbpeDgFY=;
-        b=PYWB56mG1pIzw+AJITJnqwkviBj8HRhu56ZcTz215NudbUAL8OCrZLYNt8XUECfUu5
-         pNqIVayxmD7z4FWxIzNFIs29pEEs2ENO5buoKm5rTat5QpYDGuKmptulrhCnZ34ShR41
-         xVA1UMipFTUY/5jVmXITnlYjymMl1RhzEtOzI8G6J++9EfO3L+Bq+zCu7h6fjGkfpuE1
-         wYFQ41CjsKkcIFKJiICqxONFUyp1zlLGrR2kWTXX9hrqC3UmHn8CKjVupxN3ygFX0T9x
-         u/IBAbRCgmvuYoAZWg9MrhS76a2ag6sbV6s/lqAmuuCTj4SBxVLtTnSSzeLjvebXheA5
-         rRPg==
-X-Gm-Message-State: AAQBX9dv5pumk34ibaNS1TLXKSxWFfLbWJxs6ltyZKqfInoP4F29srJv
-        6zKxCmL+yFYytuIHAY7xsek=
-X-Google-Smtp-Source: AKy350YngVFUxD7u09eEZEJfOPCWgh0ZtJzsky3j1HfF2NZO07bL1q48DZDxI+9PY9ZPQtDBSR69nQ==
-X-Received: by 2002:ac2:446f:0:b0:4dd:a61c:8f74 with SMTP id y15-20020ac2446f000000b004dda61c8f74mr2262939lfl.51.1679770826063;
-        Sat, 25 Mar 2023 12:00:26 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id t18-20020ac243b2000000b004e92c0ed7a0sm3907519lfl.100.2023.03.25.12.00.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Mar 2023 12:00:25 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
-        <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
-        <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
-        <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
-        <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
-        <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
-        <07d37e3e-dfe2-9e6e-a981-8d3c6a9fc5f5@i2se.com>
-Date:   Sat, 25 Mar 2023 22:00:24 +0300
-In-Reply-To: <07d37e3e-dfe2-9e6e-a981-8d3c6a9fc5f5@i2se.com> (Stefan Wahren's
-        message of "Sat, 25 Mar 2023 18:05:10 +0100")
-Message-ID: <878rfk64hj.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        d=1e100.net; s=20210112; t=1679785367;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lR0SdRkmZ0uDrNHR1DU/gQI3jGgMYeMI0xS6Q4BLbPY=;
+        b=NAcqO3kOJO75ryU7mXQtlMDJymLW2FvtYdxt2fCo/XlAT3F8XbMz+inrE7iIAsMowj
+         X/zJTLKiLko6iOBmDgk8Lhs2RTguxSsEpwE6PwndbdEjq9WmZ+d846UvqAj8/2lQj87B
+         6qgjDwuOMPFcS3q40A06MWxTGaK2ZePgVS46ve9b8UjlKrdaxwBeRVuL9Onk16MCDszw
+         b8u9uSL9mZ6L1KWwcEVk7B+Ua9iL5FLgUl38Nt26q9uZ0slO32uuKijPO8J2ECrc1i2K
+         d9abOTkR5pCj0e9d8unr2tmWwqYnEB9Ssce51mMdCvdQt6kwZz3/8XNfDkisuSFgAGfg
+         /Mlg==
+X-Gm-Message-State: AAQBX9fkOyW2sQqe0gheWVg5zshiXu+iet9mp00xUFhmCaphh2K8NtP+
+        NNGGgeLjAdEMhs58EpVTuNYDSHLzvdVfsI/hjQivvrXfGRzY
+X-Google-Smtp-Source: AKy350YJfrOIY/ifM8DECBZw90bBxqihALYm9LbENURIiOiC54cbYpZgMieMGbfTqNVaQj5wuBjjB1cxApr8nyPf0THs7gU0FgNi
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1a26:b0:30f:6172:b11f with SMTP id
+ g6-20020a056e021a2600b0030f6172b11fmr3957047ile.4.1679785367267; Sat, 25 Mar
+ 2023 16:02:47 -0700 (PDT)
+Date:   Sat, 25 Mar 2023 16:02:47 -0700
+In-Reply-To: <000000000000b21f0a05e9ec310d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001d74d205f7c1821f@google.com>
+Subject: Re: [syzbot] [serial?] possible deadlock in tty_port_tty_get
+From:   syzbot <syzbot+223c7461c58c58a4cb10@syzkaller.appspotmail.com>
+To:     andy.shevchenko@gmail.com, etremblay@distech-controls.com,
+        gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        u.kleine-koenig@pengutronix.de, wander@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+syzbot has found a reproducer for the following issue on:
 
-Stefan Wahren <stefan.wahren@i2se.com> writes:
+HEAD commit:    65aca32efdcb Merge tag 'mm-hotfixes-stable-2023-03-24-17-0..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17b21b0ec80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8ef27c4ff127cda5
+dashboard link: https://syzkaller.appspot.com/bug?extid=223c7461c58c58a4cb10
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1591ba51c80000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12ac6789c80000
 
-> Hi Uwe,
->
-> Am 25.03.23 um 16:11 schrieb Uwe Kleine-König:
->> Hello,
->> On Sat, Mar 25, 2023 at 12:31:01PM +0100, Stefan Wahren wrote:
->>> Am 24.03.23 um 16:00 schrieb Stefan Wahren:
->>>> Am 24.03.23 um 13:57 schrieb Fabio Estevam:
->>>>> On Fri, Mar 24, 2023 at 8:48 AM Ilpo Järvinen
->>>>> <ilpo.jarvinen@linux.intel.com> wrote:
->>>>>
->>>>>> This has come up earlier, see e.g.:
->>>>>>
->>>>>> https://lore.kernel.org/linux-serial/20221003110850.GA28338@francesco-nb.int.toradex.com/
->>>>>>
->>>>>> My somewhat uninformed suggestion: if the overrun problems
->>>>>> mostly show up
->>>>>> with console ports, maybe the trigger level could depend on the port
->>>>>> being a console or not?
->>>>> Does the change below help? Taking Ilpo's suggestion into account:
->>>> this breaks the boot / debug console completely, but i got the idea.
->>>>>
->>>
->>> based on your patch, i successfully tested this:
->>>
->>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->>> index f07c4f9ff13c..1aacaa637ede 100644
->>> --- a/drivers/tty/serial/imx.c
->>> +++ b/drivers/tty/serial/imx.c
->>> @@ -1277,6 +1277,7 @@ static void imx_uart_clear_rx_errors(struct imx_port
->>> *sport)
->>>   }
->>>
->>>   #define TXTL_DEFAULT 2 /* reset default */
->>> +#define RXTL_DEFAULT_CONSOLE 1 /* reset default */
->>>   #define RXTL_DEFAULT 8 /* 8 characters or aging timer */
->>>   #define TXTL_DMA 8 /* DMA burst setting */
->>>   #define RXTL_DMA 9 /* DMA burst setting */
->>> @@ -1286,6 +1287,9 @@ static void imx_uart_setup_ufcr(struct imx_port
->>> *sport,
->>>   {
->>>   	unsigned int val;
->>>
->>> +	if (uart_console(&sport->port))
->>> +		rxwl = RXTL_DEFAULT_CONSOLE; // fallback
->>> +
->>>   	/* set receiver / transmitter trigger level */
->>>   	val = imx_uart_readl(sport, UFCR) & (UFCR_RFDIV | UFCR_DCEDTE);
->>>   	val |= txwl << UFCR_TXTL_SHF | rxwl;
->> So the current theory that the issue occurs because of a combination of:
->>   - With a higher watermark value the irq triggers later and so there is
->>     less time the until the ISR must run before an overflow happens; and
->>   - serial console activity disables irqs for a (relative) long time
->> right?
->> So on an UP system the problem should occur also on a non-console port?
->
-> This is less likely, because UART applications usually need some kind
-> of flow control (either from hardware or protocol side). For a
-> non-console application the receiver usually wait until the end and
-> then starts to transmit.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+223c7461c58c58a4cb10@syzkaller.appspotmail.com
 
-Only CTS/RTS hardware handshake could help, as otherwise printk() output
-is typically entirely async with respect to transmissions on another
-port, and software protocol(s) then are irrelevant, unless they enforce
-extremely short chunks of data (less than FIFO size).
+======================================================
+WARNING: possible circular locking dependency detected
+6.3.0-rc3-syzkaller-00317-g65aca32efdcb #0 Not tainted
+------------------------------------------------------
+syz-executor930/5168 is trying to acquire lock:
+ffffffff8c8e11e8 (zonelist_update_seq.seqcount){...-}-{0:0}, at: __alloc_pages+0x408/0x4a0 mm/page_alloc.c:5605
 
-> Sure you can flood the UART with characters and it's only a question
-> of time until the RX FIFO is full and data get lost.
+but task is already holding lock:
+ffff888014325958 (&port->lock){-...}-{2:2}, at: tty_insert_flip_string_and_push_buffer+0x2f/0x160 drivers/tty/tty_buffer.c:628
 
-In correctly working RT system this doesn't typically happen, as CPUs
-are way faster than typical UART speeds, and are able to handle the
-loads easily, provided UART has decent FIFO. It's disabling IRQs for
-prolonged times that makes shit happen.
+which lock already depends on the new lock.
 
-[...]
 
->
-> According to these lines in imx.c DMA is never used for console:
->
->   /* Can we enable the DMA support? */
->   if (!uart_console(port) && imx_uart_dma_init(sport) == 0)
->     dma_is_inited = 1;
->
-> At the end the patch above only restores the old console behavior, but
-> keep Tomasz Moń's optimization for non-console (which was indented
-> for).
+the existing dependency chain (in reverse order) is:
 
-So this will likely only be of help for this particular case, and will
-leave the problem there on other DMA-disabled ports. To "fix" this, the
-old threshold is to be returned on all DMA-disabled ports, and then the
-Tomasz original patch would be entirely reverted, it seems.
+-> #3 (&port->lock){-...}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x3d/0x60 kernel/locking/spinlock.c:162
+       tty_port_tty_get+0x21/0xf0 drivers/tty/tty_port.c:327
+       tty_port_default_wakeup+0x15/0x40 drivers/tty/tty_port.c:68
+       serial8250_tx_chars+0x53e/0xdf0 drivers/tty/serial/8250/8250_port.c:1865
+       serial8250_handle_irq.part.0+0x460/0x870 drivers/tty/serial/8250/8250_port.c:1955
+       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1928 [inline]
+       serial8250_default_handle_irq+0xb6/0x230 drivers/tty/serial/8250/8250_port.c:1975
+       serial8250_interrupt+0xfc/0x200 drivers/tty/serial/8250/8250_core.c:127
+       __handle_irq_event_percpu+0x22b/0x730 kernel/irq/handle.c:158
+       handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
+       handle_irq_event+0xab/0x1e0 kernel/irq/handle.c:210
+       handle_edge_irq+0x263/0xd00 kernel/irq/chip.c:819
+       generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
+       handle_irq arch/x86/kernel/irq.c:231 [inline]
+       __common_interrupt+0xa1/0x220 arch/x86/kernel/irq.c:250
+       common_interrupt+0xa8/0xd0 arch/x86/kernel/irq.c:240
+       asm_common_interrupt+0x26/0x40 arch/x86/include/asm/idtentry.h:636
+       native_safe_halt arch/x86/include/asm/irqflags.h:48 [inline]
+       arch_safe_halt arch/x86/include/asm/irqflags.h:86 [inline]
+       default_idle+0xf/0x20 arch/x86/kernel/process.c:703
+       default_idle_call+0x67/0xa0 kernel/sched/idle.c:97
+       cpuidle_idle_call kernel/sched/idle.c:170 [inline]
+       do_idle+0x31e/0x3e0 kernel/sched/idle.c:282
+       cpu_startup_entry+0x18/0x20 kernel/sched/idle.c:379
+       start_secondary+0x221/0x2b0 arch/x86/kernel/smpboot.c:264
+       secondary_startup_64_no_verify+0xce/0xdb
 
-Disclaimer: all the above is said on the assumption that it's printk
-that is core cause of the problem in this case, that has not yet been
-shown in testing, as far as I know.
+-> #2 (&port_lock_key
+){-...}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x3d/0x60 kernel/locking/spinlock.c:162
+       serial8250_console_write+0x4ba/0x1010 drivers/tty/serial/8250/8250_port.c:3401
+       console_emit_next_record kernel/printk/printk.c:2886 [inline]
+       console_flush_all+0x49c/0xcc0 kernel/printk/printk.c:2942
+       console_unlock+0xb8/0x1f0 kernel/printk/printk.c:3016
+       vprintk_emit+0x1bd/0x600 kernel/printk/printk.c:2316
+       vprintk+0x84/0xa0 kernel/printk/printk_safe.c:50
+       _printk+0xbf/0xf0 kernel/printk/printk.c:2337
+       register_console+0x7ef/0x10e0 kernel/printk/printk.c:3467
+       univ8250_console_init+0x38/0x50 drivers/tty/serial/8250/8250_core.c:688
+       console_init+0xba/0x5c0 kernel/printk/printk.c:3610
+       start_kernel+0x273/0x4d0 init/main.c:1081
+       secondary_startup_64_no_verify+0xce/0xdb
 
-Best regards,
--- Sergey
+-> #1 (console_owner){....}-{0:0}:
+       console_lock_spinning_enable kernel/printk/printk.c:1867 [inline]
+       console_emit_next_record kernel/printk/printk.c:2880 [inline]
+       console_flush_all+0x472/0xcc0 kernel/printk/printk.c:2942
+       console_unlock+0xb8/0x1f0 kernel/printk/printk.c:3016
+       vprintk_emit+0x1bd/0x600 kernel/printk/printk.c:2316
+       vprintk+0x84/0xa0 kernel/printk/printk_safe.c:50
+       _printk+0xbf/0xf0 kernel/printk/printk.c:2337
+       build_zonelists+0x357/0x560 mm/page_alloc.c:6543
+       __build_all_zonelists+0x122/0x180 mm/page_alloc.c:6656
+       build_all_zonelists_init+0x1c/0x190 mm/page_alloc.c:6681
+       build_all_zonelists+0x4a/0x150 mm/page_alloc.c:6714
+       start_kernel+0xb7/0x4d0 init/main.c:975
+       secondary_startup_64_no_verify+0xce/0xdb
+
+-> #0 (zonelist_update_seq.seqcount){...-}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3098 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3217 [inline]
+       validate_chain kernel/locking/lockdep.c:3832 [inline]
+       __lock_acquire+0x2ec7/0x5d40 kernel/locking/lockdep.c:5056
+       lock_acquire kernel/locking/lockdep.c:5669 [inline]
+       lock_acquire+0x1af/0x520 kernel/locking/lockdep.c:5634
+       seqcount_lockdep_reader_access include/linux/seqlock.h:102 [inline]
+       read_seqbegin include/linux/seqlock.h:836 [inline]
+       zonelist_iter_begin mm/page_alloc.c:4765 [inline]
+       __alloc_pages_slowpath.constprop.0+0x15a/0x2170 mm/page_alloc.c:5086
+       __alloc_pages+0x408/0x4a0 mm/page_alloc.c:5605
+       __alloc_pages_node include/linux/gfp.h:237 [inline]
+       kmem_getpages mm/slab.c:1360 [inline]
+       cache_grow_begin+0x9b/0x3b0 mm/slab.c:2570
+       cache_alloc_refill+0x27f/0x380 mm/slab.c:2943
+       ____cache_alloc mm/slab.c:3019 [inline]
+       ____cache_alloc mm/slab.c:3002 [inline]
+       __do_cache_alloc mm/slab.c:3202 [inline]
+       slab_alloc_node mm/slab.c:3250 [inline]
+       __kmem_cache_alloc_node+0x360/0x3f0 mm/slab.c:3541
+       __do_kmalloc_node mm/slab_common.c:966 [inline]
+       __kmalloc+0x4e/0x190 mm/slab_common.c:980
+       kmalloc include/linux/slab.h:584 [inline]
+       tty_buffer_alloc+0x275/0x2f0 drivers/tty/tty_buffer.c:180
+       __tty_buffer_request_room+0x15b/0x2d0 drivers/tty/tty_buffer.c:278
+       tty_insert_flip_string_fixed_flag+0x90/0x250 drivers/tty/tty_buffer.c:327
+       tty_insert_flip_string include/linux/tty_flip.h:41 [inline]
+       tty_insert_flip_string_and_push_buffer+0x42/0x160 drivers/tty/tty_buffer.c:629
+       pty_write+0xda/0x100 drivers/tty/pty.c:118
+       ppp_async_push+0x5cb/0x1660 drivers/net/ppp/ppp_async.c:670
+       ppp_async_send+0xe2/0x110 drivers/net/ppp/ppp_async.c:638
+       __ppp_channel_push+0xe3/0x230 drivers/net/ppp/ppp_generic.c:2150
+       ppp_channel_push+0x1c2/0x250 drivers/net/ppp/ppp_generic.c:2177
+       ppp_write+0x22b/0x2d0 drivers/net/ppp/ppp_generic.c:523
+       do_loop_readv_writev fs/read_write.c:759 [inline]
+       do_loop_readv_writev fs/read_write.c:743 [inline]
+       do_iter_write+0x4ef/0x700 fs/read_write.c:863
+       vfs_writev+0x1aa/0x670 fs/read_write.c:934
+       do_pwritev fs/read_write.c:1031 [inline]
+       __do_sys_pwritev fs/read_write.c:1078 [inline]
+       __se_sys_pwritev fs/read_write.c:1073 [inline]
+       __x64_sys_pwritev+0x22f/0x310 fs/read_write.c:1073
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+other info that might help us debug this:
+
+Chain exists of:
+  zonelist_update_seq.seqcount --> &port_lock_key --> &port->lock
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&port->lock);
+                               lock(&port_lock_key);
+                               lock(&port->lock);
+  lock(zonelist_update_seq.seqcount);
+
+ *** DEADLOCK ***
+
+4 locks held by syz-executor930/5168:
+ #0: ffff888000630a48 (&pch->upl){.+..}-{2:2}, at: ppp_channel_push+0x28/0x250 drivers/net/ppp/ppp_generic.c:2171
+ #1: ffff8880006309e0 (&pch->downl){+...}-{2:2}, at: spin_lock include/linux/spinlock.h:350 [inline]
+ #1: ffff8880006309e0 (&pch->downl){+...}-{2:2}, at: __ppp_channel_push+0x2a/0x230 drivers/net/ppp/ppp_generic.c:2146
+ #2: ffff8880283b8030 (&ap->xmit_lock){+...}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:355 [inline]
+ #2: ffff8880283b8030 (&ap->xmit_lock){+...}-{2:2}, at: ppp_async_push+0xb2/0x1660 drivers/net/ppp/ppp_async.c:663
+ #3: ffff888014325958 (&port->lock){-...}-{2:2}, at: tty_insert_flip_string_and_push_buffer+0x2f/0x160 drivers/tty/tty_buffer.c:628
+
+stack backtrace:
+CPU: 0 PID: 5168 Comm: syz-executor930 Not tainted 6.3.0-rc3-syzkaller-00317-g65aca32efdcb #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2178
+ check_prev_add kernel/locking/lockdep.c:3098 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3217 [inline]
+ validate_chain kernel/locking/lockdep.c:3832 [inline]
+ __lock_acquire+0x2ec7/0x5d40 kernel/locking/lockdep.c:5056
+ lock_acquire kernel/locking/lockdep.c:5669 [inline]
+ lock_acquire+0x1af/0x520 kernel/locking/lockdep.c:5634
+ seqcount_lockdep_reader_access include/linux/seqlock.h:102 [inline]
+ read_seqbegin include/linux/seqlock.h:836 [inline]
+ zonelist_iter_begin mm/page_alloc.c:4765 [inline]
+ __alloc_pages_slowpath.constprop.0+0x15a/0x2170 mm/page_alloc.c:5086
+ __alloc_pages+0x408/0x4a0 mm/page_alloc.c:5605
+ __alloc_pages_node include/linux/gfp.h:237 [inline]
+ kmem_getpages mm/slab.c:1360 [inline]
+ cache_grow_begin+0x9b/0x3b0 mm/slab.c:2570
+ cache_alloc_refill+0x27f/0x380 mm/slab.c:2943
+ ____cache_alloc mm/slab.c:3019 [inline]
+ ____cache_alloc mm/slab.c:3002 [inline]
+ __do_cache_alloc mm/slab.c:3202 [inline]
+ slab_alloc_node mm/slab.c:3250 [inline]
+ __kmem_cache_alloc_node+0x360/0x3f0 mm/slab.c:3541
+ __do_kmalloc_node mm/slab_common.c:966 [inline]
+ __kmalloc+0x4e/0x190 mm/slab_common.c:980
+ kmalloc include/linux/slab.h:584 [inline]
+ tty_buffer_alloc+0x275/0x2f0 drivers/tty/tty_buffer.c:180
+ __tty_buffer_request_room+0x15b/0x2d0 drivers/tty/tty_buffer.c:278
+ tty_insert_flip_string_fixed_flag+0x90/0x250 drivers/tty/tty_buffer.c:327
+ tty_insert_flip_string include/linux/tty_flip.h:41 [inline]
+ tty_insert_flip_string_and_push_buffer+0x42/0x160 drivers/tty/tty_buffer.c:629
+ pty_write+0xda/0x100 drivers/tty/pty.c:118
+ ppp_async_push+0x5cb/0x1660 drivers/net/ppp/ppp_async.c:670
+ ppp_async_send+0xe2/0x110 drivers/net/ppp/ppp_async.c:638
+ __ppp_channel_push+0xe3/0x230 drivers/net/ppp/ppp_generic.c:2150
+ ppp_channel_push+0x1c2/0x250 drivers/net/ppp/ppp_generic.c:2177
+ ppp_write+0x22b/0x2d0 drivers/net/ppp/ppp_generic.c:523
+ do_loop_readv_writev fs/read_write.c:759 [inline]
+ do_loop_readv_writev fs/read_write.c:743 [inline]
+ do_iter_write+0x4ef/0x700 fs/read_write.c:863
+ vfs_writev+0x1aa/0x670 fs/read_write.c:934
+ do_pwritev fs/read_write.c:1031 [inline]
+ __do_sys_pwritev fs/read_write.c:1078 [inline]
+ __se_sys_pwritev fs/read_write.c:1073 [inline]
+ __x64_sys_pwritev+0x22f/0x310 fs/read_write.c:1073
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f76be0b97d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fffcac24418 EFLAGS: 00000246 ORIG_RAX: 0000000000000128
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f76be0b97d9
+RDX: 0000000000000003 RSI: 0000000020000380 RDI: 0000000000000004
+RBP: 0000000000000000 R08: 0000000000000004 R09: 000000000000000d
+R10: 00000000000000f1 R11: 0000000000000246 R12: 00007fffcac24430
+R13: 00000000000f4240 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
