@@ -2,57 +2,56 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9281C761A6
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 09:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CACC761A6
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 10:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232792AbjC0Jti convert rfc822-to-8bit (ORCPT
+        id S232377AbjC0KGs convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Mar 2023 05:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
+        Mon, 27 Mar 2023 06:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232912AbjC0Jtd (ORCPT
+        with ESMTP id S232345AbjC0KGr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Mar 2023 05:49:33 -0400
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA4C4C15;
-        Mon, 27 Mar 2023 02:49:21 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-544787916d9so158785377b3.13;
-        Mon, 27 Mar 2023 02:49:21 -0700 (PDT)
+        Mon, 27 Mar 2023 06:06:47 -0400
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67B119AC;
+        Mon, 27 Mar 2023 03:06:46 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id cf7so9804338ybb.5;
+        Mon, 27 Mar 2023 03:06:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679910560;
+        d=1e100.net; s=20210112; t=1679911606;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=OIUcewTtZhKhGPfN3Y/89VYWw8yL2wWAKrkVuJWSYSA=;
-        b=5e2GVEpkwCtrlFM/zy2q5BGgAWbWAjd92JVYecgOjUxMFUgPQDZHaqqkx7eLJPPfUd
-         8v7TXue5hTafPd0/C7gIHNRXtMb1Ct5++1nFDfYCIV3ftBPp8gbfETuv2Otn5lOYueT+
-         Hf/ql8Tj6a4giP2EBP4WpSnZg5SDOcLgm97I78pPhmLV0iMp6Px5o0T5l9RbxM7YZ5XQ
-         DBTFOePGzCqpw/+VIacvniaT3ggei7AS9VuqX+kfuqvzu1/BWp1Swgjp95HAZ5FRGuAu
-         Qux15R9teglzHDA2yjyFzQ5yaj0DPDV7dwmP2k6CasXuhTm4MdAYV21DGn8sM0DMq2ma
-         nrBQ==
-X-Gm-Message-State: AAQBX9d9KTfApK9Brm3605dPIJcBqij5vJaysAQleslRx5uZy/X4typY
-        iYhXqJ/toAWAMxXyMRRA3BmmbGEmvI4IEA==
-X-Google-Smtp-Source: AKy350YBRpn1vM/MqHjbxQQ4bsy/A93kybcNKCpjBkpfxXaxRuiMoim4Nej3eDA3VDldm014iDHkng==
-X-Received: by 2002:a81:5a83:0:b0:544:7850:b62f with SMTP id o125-20020a815a83000000b005447850b62fmr10782131ywb.18.1679910560556;
-        Mon, 27 Mar 2023 02:49:20 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id c1-20020a811c01000000b00545a081848fsm1884888ywc.31.2023.03.27.02.49.19
+        bh=ZM8jmxEwwQzX+T6xlQC5mMvyxg/fLXphXlsDB+rOsjI=;
+        b=SJYFufU08Chq6+GVhhoig07ELAoRQJh1EANgledr3W5V+4u+6bmY8CyYg3bbHbCrDL
+         IeiOBiQf04idr8NrV6SDSBNpyAoWgFqBvuUWfFquDhB3YNNikNi/hh+UEswV986vi0AE
+         +ITwd9zGR2Fnmt1toa5qmANaa3JzEa3SPRGuiDM8WBSpBvfUg1+fTp/PWIPxme3x0rjX
+         mnlsHj2TuutQe1Z5AxPX86fRtjZVYtifYRF0rbwJUl71Ru+S9XQ8c2J6KyFg5tm+jiQU
+         QOTWyteDs/ONgWN77bH/2oyk0FUvBL0N7gfTU6Fa3KxIypNUEtNhWSYcUz5vS0OUGENh
+         cs8w==
+X-Gm-Message-State: AAQBX9emMK98kpcJwBZ6+5s/a2YBZ/ZFeCSprUUoQ2of2XBtkG72Pe93
+        Tce1Bvg8XSNtBh1sAZrZR0XDBaTOPtOlfg==
+X-Google-Smtp-Source: AKy350ZxiLxlCuUvrRv4B3KJGPpFu/cJvDKsW5NOagMiYg7SvqjO/5zkY8RXw8urjZho8Jaad1QTmg==
+X-Received: by 2002:a25:ac0e:0:b0:b75:eb12:6a59 with SMTP id w14-20020a25ac0e000000b00b75eb126a59mr12193486ybi.37.1679911605709;
+        Mon, 27 Mar 2023 03:06:45 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id 64-20020a250643000000b00b7767ca749esm2187513ybg.59.2023.03.27.03.06.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Mar 2023 02:49:20 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-536af432ee5so160250847b3.0;
-        Mon, 27 Mar 2023 02:49:19 -0700 (PDT)
-X-Received: by 2002:a81:b65f:0:b0:544:8bc1:a179 with SMTP id
- h31-20020a81b65f000000b005448bc1a179mr5122130ywk.4.1679910559684; Mon, 27 Mar
- 2023 02:49:19 -0700 (PDT)
+        Mon, 27 Mar 2023 03:06:45 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id r187so9786626ybr.6;
+        Mon, 27 Mar 2023 03:06:45 -0700 (PDT)
+X-Received: by 2002:a25:bb85:0:b0:b7c:1144:a708 with SMTP id
+ y5-20020a25bb85000000b00b7c1144a708mr627103ybg.12.1679911605042; Mon, 27 Mar
+ 2023 03:06:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230324100222.116666-1-biju.das.jz@bp.renesas.com> <20230324100222.116666-2-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20230324100222.116666-2-biju.das.jz@bp.renesas.com>
+References: <20230324100222.116666-1-biju.das.jz@bp.renesas.com> <20230324100222.116666-3-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20230324100222.116666-3-biju.das.jz@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 27 Mar 2023 11:49:08 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdULJcDryguGd-Y1fxkq2mrTQEkeEnrf_+yVhGU1SDUp0Q@mail.gmail.com>
-Message-ID: <CAMuHMdULJcDryguGd-Y1fxkq2mrTQEkeEnrf_+yVhGU1SDUp0Q@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] tty: serial: sh-sci: Remove setting
- {src,dst}_{addr,addr_width} based on DMA direction
+Date:   Mon, 27 Mar 2023 12:06:34 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUxf1Vc0wERHTAPB2BSGZVUnfuBR_ueNXM+hcm92ibr4g@mail.gmail.com>
+Message-ID: <CAMuHMdUxf1Vc0wERHTAPB2BSGZVUnfuBR_ueNXM+hcm92ibr4g@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] tty: serial: sh-sci: Add RZ/G2L SCIF DMA tx support
 To:     Biju Das <biju.das.jz@bp.renesas.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -66,24 +65,89 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Biju,
+
 On Fri, Mar 24, 2023 at 11:02 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> The direction field in the DMA config is deprecated. The sh-sci driver
-> sets {src,dst}_{addr,addr_width} based on the DMA direction and
-> it results in dmaengine_slave_config() failure as RZ DMAC driver
-> validates {src,dst}_addr_width values independent of DMA direction.
+> Add SCIF DMA tx support for RZ/G2L alike SoCs.
 >
-> Fix this issue by passing both {src,dst}_{addr,addr_width}
-> values independent of DMA direction.
+> RZ/G2L alike SoC use the same signal for both interrupt and DMA
+> transfer requests, so we must disable line interrupts(tx and tx end)
+> while transferring DMA and enable the TIE source interrupt.
+>
+> Based on a patch in the BSP by Long Luu
+> <long.luu.ur@renesas.com>
 >
 > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Thanks for your patch!
+
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -172,6 +172,13 @@ to_sci_port(struct uart_port *uart)
+>         return container_of(uart, struct sci_port, port);
+>  }
+>
+> +static inline bool is_rz_scif_port(struct uart_port *port, struct sci_port *s)
+> +{
+> +       const struct plat_sci_port *p = s->cfg;
+> +
+> +       return port->type == PORT_SCIF && p->regtype == SCIx_RZ_SCIFA_REGTYPE;
+
+The latter implies the former, so you can drop the first check.
+After that, the check becomes sufficiently simple to inline?
+
+> +}
+> +
+>  static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+>         /*
+>          * Common SCI definitions, dependent on the port's regshift
+> @@ -588,6 +595,16 @@ static void sci_start_tx(struct uart_port *port)
+>
+>         if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit) &&
+>             dma_submit_error(s->cookie_tx)) {
+> +               if (is_rz_scif_port(port, s)) {
+> +                       /* Switch irq from SCIF to DMA */
+> +                       disable_irq(s->irqs[SCIx_TXI_IRQ]);
+> +                       disable_irq(s->irqs[SCIx_TEI_IRQ]);
+> +
+> +                       /* DMA need TIE enable */
+> +                       ctrl = serial_port_in(port, SCSCR);
+> +                       serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
+
+Enabling TIE is also done for SCIFA below (out of visible context).
+Perhaps you can combine?
+
+> +               }
+> +
+>                 s->cookie_tx = 0;
+>                 schedule_work(&s->work_tx);
+>         }
+> @@ -1214,9 +1231,16 @@ static void sci_dma_tx_complete(void *arg)
+>                 schedule_work(&s->work_tx);
+>         } else {
+>                 s->cookie_tx = -EINVAL;
+> -               if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+> +               if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
+> +                   is_rz_scif_port(port, s)) {
+>                         u16 ctrl = serial_port_in(port, SCSCR);
+>                         serial_port_out(port, SCSCR, ctrl & ~SCSCR_TIE);
+> +                       if (port->type == PORT_SCIF) {
+
+"if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)"?
+
+> +                               /* Switch irq from DMA to SCIF */
+> +                               dmaengine_pause(s->chan_tx_saved);
+> +                               enable_irq(s->irqs[SCIx_TXI_IRQ]);
+> +                               enable_irq(s->irqs[SCIx_TEI_IRQ]);
+> +                       }
+>                 }
+>         }
 
 Gr{oetje,eeting}s,
 
                         Geert
 
--- 
+--
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
