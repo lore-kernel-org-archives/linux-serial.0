@@ -2,180 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735D3C6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 14:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550C0C77B72
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 15:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbjC0OnN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Mar 2023 10:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
+        id S233180AbjC0PBn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Mar 2023 11:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232636AbjC0OnL (ORCPT
+        with ESMTP id S232782AbjC0PBi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Mar 2023 10:43:11 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA7A10CA
-        for <linux-serial@vger.kernel.org>; Mon, 27 Mar 2023 07:42:57 -0700 (PDT)
-Received: from [192.168.1.141] ([37.4.248.58]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1N1u2b-1qQcFk1ZYf-012GBe; Mon, 27 Mar 2023 16:42:25 +0200
-Message-ID: <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com>
-Date:   Mon, 27 Mar 2023 16:42:23 +0200
+        Mon, 27 Mar 2023 11:01:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E84D4483;
+        Mon, 27 Mar 2023 08:01:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAE6061303;
+        Mon, 27 Mar 2023 15:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2FC4C4339E;
+        Mon, 27 Mar 2023 15:01:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679929296;
+        bh=dsoVd3bOkZ1/OXyt+ZP8t5ze5tdgtMoUGRvUuV6EukM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SHPAMbr7ynIEkq5oNWhug9hIbn4LJ0wlRJ6JgemhXBguNbBUPRRDeUdVcqazMWkWC
+         dk9d8QHtU103JjtWCjNwzZLwSakTbYVoyyZMPznbW2kNkDFCK+lV/7pj97e//rbFdB
+         KAcjBslm3nZ5BD8UOtzQgE313X4qN68GC8CjlYGQyBtCbPdHgVt918IpKotLwM74ca
+         Zn52WHW55dJ8f6+KX/RVedxJw0EkqlPTOL1x9rcwK7iDgIZU3Ce79U8tYgcWxannLX
+         MEStSzPPRTj0snsGEx0UFdc0kYSX/e0hXkgCvgkTLp0pcdTYZYHGlYYERA/m/ZwxGN
+         9en6lprtJ6hkQ==
+From:   Will Deacon <will@kernel.org>
+To:     mcgrof@kernel.org, Nick Alcock <nick.alcock@oracle.com>
+Cc:     catalin.marinas@arm.com, kernel-team@android.com,
+        Will Deacon <will@kernel.org>, linux-gpio@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-modules@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-actions@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, asahi@lists.linux.dev,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH 00/24] MODULE_LICENSE removals, second tranche
+Date:   Mon, 27 Mar 2023 16:01:15 +0100
+Message-Id: <167992609868.3834946.4831319626649638477.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20230217141059.392471-1-nick.alcock@oracle.com>
+References: <20230217141059.392471-1-nick.alcock@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Sergey Organov <sorganov@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
- <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
- <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
- <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
- <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
- <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
-Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:2x7dH306ege1cKmimn0+FtCBHNAmA+ZiUttxg/tsd+xVtyCHQqT
- iTKgGpMeNEuRtXpemvVLfOQk/vftDs1fIeyQSg+D1pBdYWsIrQbVpz0S7YiYrgBIsIgAlvS
- MeuyHUWnK7rnGk21e++me2cYjb5LcPBniF5NpR8rEfl7yCbyGmoaGsAtVTxPjv5Z3zP2NRS
- 7ikPfezjkYht1uf+hzoaA==
-UI-OutboundReport: notjunk:1;M01:P0:muF48CanQD8=;rxsc259Y/NZ/v0y+xS1ETgJndZT
- +DE5x0CGSCOhzv7uJ7G6NVRLBwU3i44RFZqqEZyaV76ULzDGeJvVf1cEE46dx10jd39h5OYDa
- 0qetQAIYRPENgJeun/4NHGt93KGHV69fk3qG7eCDz8G/FXTJl4TQf59N2ZpwlNLS9d7UrLiGf
- dBWaurh19z0R6G3x8c842I/lad817nMJF/62sqfdcBpb916hGW/emMvC/Bcm5ZS/rUKbaF1cp
- VsQ7uhCCSrijib0X7fGUbixC6ABlcGsMmCkKJDI/SnWPfvH7uk0vgvVIoWMlREkH3/2Lrg+zk
- RdjmTE1CqrN52/QsWuzz+MxIWF4wMLIRwKrg2DasFyy2ftcae1ppbcEH8Ku91/+yk5HU5cdpB
- 61SwHTxSNgsxdm72Rw0Xd2d+BitTbdCzVG4DxINNO6/4JtVjr6XF2bA1Q3yUXPPTPcuMage/e
- P96TXR2hm9+csAHsxUQlEwD+0NuRnDeU9w+s8RE8hAhMzRpKe2qKdIMlQ7IsRbxI/Wljkpelz
- OyoPurewXO8abqIv2lCgNLXG9Wm39S78tEwivZMNps4NdEK7XhMUyz0Nvxem4mZrSBp1IPQcy
- qys5+tHDWzd9hyjPjkGWk/nBDCthiZYqHAIfLz/24PDa94TH0m3q3FR3AYIJ+9RoMAD3QphJH
- 5VFTxxCDTWlriWfFKROIi7SvUirzPDCPuF8DDXyNZg==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-Am 25.03.23 um 16:11 schrieb Uwe Kleine-König:
-> Hello,
+On Fri, 17 Feb 2023 14:10:35 +0000, Nick Alcock wrote:
+> This series, based on current modules-next, is part of a treewide cleanup
+> suggested by Luis Chamberlain, to remove the LICENSE_MODULE usage from
+> files/objects that are not tristate.  Due to recent changes to kbuild, these
+> uses are now problematic.  See the commit logs for more details.
 > 
-> On Sat, Mar 25, 2023 at 12:31:01PM +0100, Stefan Wahren wrote:
->> Am 24.03.23 um 16:00 schrieb Stefan Wahren:
->>> Am 24.03.23 um 13:57 schrieb Fabio Estevam:
->>>> On Fri, Mar 24, 2023 at 8:48 AM Ilpo Järvinen
->>>> <ilpo.jarvinen@linux.intel.com> wrote:
->>>>
->>>>> This has come up earlier, see e.g.:
->>>>>
->>>>> https://lore.kernel.org/linux-serial/20221003110850.GA28338@francesco-nb.int.toradex.com/
->>>>>
->>>>> My somewhat uninformed suggestion: if the overrun problems
->>>>> mostly show up
->>>>> with console ports, maybe the trigger level could depend on the port
->>>>> being a console or not?
->>>> Does the change below help? Taking Ilpo's suggestion into account:
->>> this breaks the boot / debug console completely, but i got the idea.
->>>>
->>
->> based on your patch, i successfully tested this:
->>
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index f07c4f9ff13c..1aacaa637ede 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -1277,6 +1277,7 @@ static void imx_uart_clear_rx_errors(struct imx_port
->> *sport)
->>   }
->>
->>   #define TXTL_DEFAULT 2 /* reset default */
->> +#define RXTL_DEFAULT_CONSOLE 1 /* reset default */
->>   #define RXTL_DEFAULT 8 /* 8 characters or aging timer */
->>   #define TXTL_DMA 8 /* DMA burst setting */
->>   #define RXTL_DMA 9 /* DMA burst setting */
->> @@ -1286,6 +1287,9 @@ static void imx_uart_setup_ufcr(struct imx_port
->> *sport,
->>   {
->>   	unsigned int val;
->>
->> +	if (uart_console(&sport->port))
->> +		rxwl = RXTL_DEFAULT_CONSOLE; // fallback
->> +
->>   	/* set receiver / transmitter trigger level */
->>   	val = imx_uart_readl(sport, UFCR) & (UFCR_RFDIV | UFCR_DCEDTE);
->>   	val |= txwl << UFCR_TXTL_SHF | rxwl;
+> (The commit log prefixes and Cc lists are automatically determined using
+> the script mentioned below.  I've eyeballed them, and they seem reasonable:
+> my apologies if they are not.)
 > 
-> So the current theory that the issue occurs because of a combination of:
-> 
->   - With a higher watermark value the irq triggers later and so there is
->     less time the until the ISR must run before an overflow happens; and
-> 
->   - serial console activity disables irqs for a (relative) long time
-> 
-> right?
-> 
-> So on an UP system the problem should occur also on a non-console port?
-> Local irqs are only disabled if some printk is about to be emitted,
-> isn't it? Does this match the error you're seeing?
-> 
-> That makes me wonder if the error doesn't relate to the UART being a
-> console port, but the UART being used without DMA?! (So the patch above
-> fixes the problem for you because on the console port no DMA is used?)
+> [...]
 
-today i had time to do some testing. At first i tested with different 
-RXTL_DEFAULT values.
+Applied drivers/perf patch to will (for-next/perf), thanks!
 
-1 No overrun
-2 No overrun
-4 No overrun
-8 Overruns
+[08/24] kbuild, drivers/perf: remove MODULE_LICENSE in non-modules
+        https://git.kernel.org/will/c/a64021d3726a
 
-After that i look at the # echo 0 > /proc/sys/kernel/printk approach, 
-but this didn't change anything. The kernel is usually silent about log 
-message after boot and the console works still with echo. Enforcing some 
-driver to call printk periodically would make the console unusuable.
+Cheers,
+-- 
+Will
 
-Finally i tried to disabled the spin_lock in imx_uart_console_write:
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index f07c4f9ff13c..c342559ff1a2 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2007,14 +2007,12 @@ imx_uart_console_write(struct console *co, const 
-char *s, unsigned int count)
-  	struct imx_port_ucrs old_ucr;
-  	unsigned long flags;
-  	unsigned int ucr1;
--	int locked = 1;
-+	int locked = 0;
-
-  	if (sport->port.sysrq)
-  		locked = 0;
-  	else if (oops_in_progress)
-  		locked = spin_trylock_irqsave(&sport->port.lock, flags);
--	else
--		spin_lock_irqsave(&sport->port.lock, flags);
-
-  	/*
-  	 *	First, save UCR1/2/3 and then disable interrupts
-
-But the overruns still occured. Is this because the serial core already 
-helds a lock?
-
-> 
-> Best regards
-> Uwe
-> 
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
