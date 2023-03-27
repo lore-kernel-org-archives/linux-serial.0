@@ -2,135 +2,255 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE20C6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 15:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07AE6C6FD1D
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 17:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232860AbjC0PbA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Mar 2023 11:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49856 "EHLO
+        id S232670AbjC0RCA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Mar 2023 13:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232869AbjC0Paz (ORCPT
+        with ESMTP id S232685AbjC0RBt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Mar 2023 11:30:55 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C56A30C0
-        for <linux-serial@vger.kernel.org>; Mon, 27 Mar 2023 08:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7DkARw+ftkstubVefFishH1SCvWJh4z6LhiWzva17m0=; b=kfD67yfU5XGzBfYkoWPJRjxQfM
-        wVG0/RGPkfAWY94c95EKHuSxvW0Q07klCmjq8JSQSihSyLz+KNUTrflcQiLdHe7tbqMkrfgEsBxGv
-        v3fAz00XwMBqmQ3/s1FHLRPrOcZQioOObbRtb1Yll8IRpt0Yzuri9zPRjYZclewMZSVuDc1rL2wb6
-        tFcP/RtwzKvJcym3O0EAs1jrQNtEHfk4DP0T1gRB+QPSEgy1emq4l1GJ2IsfGHYcodWUX5hC/liYp
-        hL8ivwDbImzdfxhOdMf2kyC5eqrCvz2BGxVlMnDhluCSekr05pG/asgR/JaKeSzBpg3P1Z4bADNBC
-        3xzuPRgg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46212)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pgonw-00044t-Ht; Mon, 27 Mar 2023 16:30:40 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pgont-0005XF-Fo; Mon, 27 Mar 2023 16:30:37 +0100
-Date:   Mon, 27 Mar 2023 16:30:37 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sergey Organov <sorganov@gmail.com>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-Message-ID: <ZCG2nUUSU0NdP5cp@shell.armlinux.org.uk>
-References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
- <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
- <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
- <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
- <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
- <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
- <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com>
- <87mt3ynsa7.fsf@osv.gnss.ru>
+        Mon, 27 Mar 2023 13:01:49 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294FD40F3;
+        Mon, 27 Mar 2023 10:01:44 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-17aeb49429eso9961881fac.6;
+        Mon, 27 Mar 2023 10:01:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679936503;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vsiiS+cg9ETxQ7qmK+ws7pFEXw6XBClGT7/dY2V6YIU=;
+        b=bVZm5l7aTZvKBMXP9G98Z3wDRRJjdqKdDAITZtlzKVyXme4PC4Z4iKHDwJGpTrhByT
+         Xw/a3QUVakPT2UWf6lNGUXU3MlmMrf55AalH7XVcwObbVEAbbqGmaFLQSvoj8tYUd/2Q
+         7pTY6VERpZjqnH9oXbWHqibymarGVOfEaXIRflSZpKsJFjbFp9KxTNFVf9bkkomwSadM
+         ozE2/B/7WePreXRrva0FqWdK2y4g350rRyPPe7BoC+373uJ1giO6+fuVuFHSSlIRDD/y
+         QxT21rVYQLbT6LP8FS7xx2hozzI5CIcRFGw8lcy9KMyAzPM2X0LDm4eT+o+ziparSgjx
+         LkIw==
+X-Gm-Message-State: AAQBX9f3K1wQoTVpeX86/ix/PolQPHmot+CZDYNZXE6Yjl0GT+1VkVyo
+        KttlMa8S4qddb6Sz9L4sgg==
+X-Google-Smtp-Source: AKy350Y8FlKQ/y1NaNuo1nCVn3oPUauVYD2sc8z7OjA3kA1wH7XZPPgYFn9GWGfUSER2YH3YSr7JQg==
+X-Received: by 2002:a05:6870:9711:b0:177:b6ce:1e76 with SMTP id n17-20020a056870971100b00177b6ce1e76mr8661847oaq.55.1679936503338;
+        Mon, 27 Mar 2023 10:01:43 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id zq35-20020a0568718ea300b0017f647294f5sm503569oab.16.2023.03.27.10.01.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 10:01:42 -0700 (PDT)
+Received: (nullmailer pid 4104460 invoked by uid 1000);
+        Mon, 27 Mar 2023 17:01:41 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Hammer Hsieh <hammerh0314@gmail.com>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: Drop unneeded quotes
+Date:   Mon, 27 Mar 2023 12:01:36 -0500
+Message-Id: <20230327170137.4104272-1-robh@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87mt3ynsa7.fsf@osv.gnss.ru>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 06:11:12PM +0300, Sergey Organov wrote:
-> Stefan Wahren <stefan.wahren@i2se.com> writes:
-> 
-> > Hi,
-> >
-> > Am 25.03.23 um 16:11 schrieb Uwe Kleine-König:
-> 
-> [...]
-> 
-> > today i had time to do some testing. At first i tested with different RXTL_DEFAULT values.
-> >
-> > 1 No overrun
-> > 2 No overrun
-> > 4 No overrun
-> > 8 Overruns
-> >
-> > After that i look at the # echo 0 > /proc/sys/kernel/printk approach,
-> > but this didn't change anything. The kernel is usually silent about
-> > log message after boot and the console works still with echo.
-> > Enforcing some driver to call printk periodically would make the
-> > console unusuable.
-> 
-> As you figured that printk() is not the cause, it must be something else
-> that causes overruns, so there is no need to check printk case further.
-> 
-> >
-> > Finally i tried to disabled the spin_lock in imx_uart_console_write:
-> >
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > index f07c4f9ff13c..c342559ff1a2 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -2007,14 +2007,12 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
-> >  	struct imx_port_ucrs old_ucr;
-> >  	unsigned long flags;
-> >  	unsigned int ucr1;
-> > -	int locked = 1;
-> > +	int locked = 0;
-> >
-> >  	if (sport->port.sysrq)
-> >  		locked = 0;
-> >  	else if (oops_in_progress)
-> >  		locked = spin_trylock_irqsave(&sport->port.lock, flags);
-> > -	else
-> > -		spin_lock_irqsave(&sport->port.lock, flags);
-> >
-> >  	/*
-> >  	 *	First, save UCR1/2/3 and then disable interrupts
-> >
-> > But the overruns still occured. Is this because the serial core
-> > already helds a lock?
-> 
-> This probably isn't even called when there is no printk() output, as
-> user-space writes to /dev/console are rather performed through regular
-> generic code, AFAIK.
+Cleanup bindings dropping unneeded quotes. Once all these are fixed,
+checking for this can be enabled in yamllint.
 
-Correct on both points.
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/serial/amlogic,meson-uart.yaml        | 4 ++--
+ .../devicetree/bindings/serial/qcom,serial-geni-qcom.yaml     | 4 ++--
+ Documentation/devicetree/bindings/serial/renesas,em-uart.yaml | 4 ++--
+ Documentation/devicetree/bindings/serial/renesas,hscif.yaml   | 4 ++--
+ Documentation/devicetree/bindings/serial/renesas,sci.yaml     | 4 ++--
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml    | 4 ++--
+ Documentation/devicetree/bindings/serial/renesas,scifa.yaml   | 4 ++--
+ Documentation/devicetree/bindings/serial/renesas,scifb.yaml   | 4 ++--
+ Documentation/devicetree/bindings/serial/serial.yaml          | 4 ++--
+ Documentation/devicetree/bindings/serial/sprd-uart.yaml       | 4 ++--
+ .../devicetree/bindings/serial/sunplus,sp7021-uart.yaml       | 4 ++--
+ 11 files changed, 22 insertions(+), 22 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index 3cbdde85ed71..ad13df48a590 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -2,8 +2,8 @@
+ # Copyright 2019 BayLibre, SAS
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Amlogic Meson SoC UART Serial Interface
+ 
+diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+index 05a6999808d1..dd33794b3534 100644
+--- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
++++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Qualcomm Geni based QUP UART interface
+ 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+index 12d0fa34f9f9..3fc2601f1338 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/renesas,em-uart.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/renesas,em-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Renesas EMMA Mobile UART Interface
+ 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+index afedb6edfc34..1c7f1276aed6 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/renesas,hscif.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/renesas,hscif.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Renesas High Speed Serial Communication Interface with FIFO (HSCIF)
+ 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
+index dc445b327e0b..9f7305200c47 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/renesas,sci.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/renesas,sci.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Renesas Serial Communication Interface
+ 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+index 1989bd67d04e..f26bea2d7398 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/renesas,scif.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/renesas,scif.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Renesas Serial Communication Interface with FIFO (SCIF)
+ 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
+index 4c3b5e7270da..499507678cdf 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/renesas,scifa.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/renesas,scifa.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Renesas Serial Communications Interface with FIFO A (SCIFA)
+ 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
+index 2f7cbbb48960..810d8a991fdd 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/renesas,scifb.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/renesas,scifb.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Renesas Serial Communications Interface with FIFO B (SCIFB)
+ 
+diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
+index c9231e501f1f..ea277560a596 100644
+--- a/Documentation/devicetree/bindings/serial/serial.yaml
++++ b/Documentation/devicetree/bindings/serial/serial.yaml
+@@ -1,8 +1,8 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/serial.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/serial.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Serial Interface Generic
+ 
+diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+index da0e2745b5fc..28ff77aa86c8 100644
+--- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+@@ -2,8 +2,8 @@
+ # Copyright 2019 Unisoc Inc.
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/sprd-uart.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/sprd-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Spreadtrum serial UART
+ 
+diff --git a/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+index ea1e637661c7..7d0a4bcb88e9 100644
+--- a/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+@@ -2,8 +2,8 @@
+ # Copyright (C) Sunplus Co., Ltd. 2021
+ %YAML 1.2
+ ---
+-$id: "http://devicetree.org/schemas/serial/sunplus,sp7021-uart.yaml#"
+-$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/serial/sunplus,sp7021-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Sunplus SoC SP7021 UART Controller
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.39.2
+
