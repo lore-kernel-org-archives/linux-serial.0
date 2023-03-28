@@ -2,255 +2,189 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07AE6C6FD1D
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Mar 2023 17:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75C9C761A6
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Mar 2023 02:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232670AbjC0RCA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Mar 2023 13:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
+        id S229658AbjC1CTW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Mar 2023 22:19:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232685AbjC0RBt (ORCPT
+        with ESMTP id S229610AbjC1CTV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Mar 2023 13:01:49 -0400
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294FD40F3;
-        Mon, 27 Mar 2023 10:01:44 -0700 (PDT)
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-17aeb49429eso9961881fac.6;
-        Mon, 27 Mar 2023 10:01:44 -0700 (PDT)
+        Mon, 27 Mar 2023 22:19:21 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AC8171F;
+        Mon, 27 Mar 2023 19:19:20 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id l7so9493435pjg.5;
+        Mon, 27 Mar 2023 19:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679969960;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0WBf2jQarhSY4/8q0wFbU+ysG8lL+dw6EMEdvJUjZAE=;
+        b=iBsrxWW+TFjjRybX8B4FNvSRyl9gv9o8e2qkj5adMi9XOXv3+uMPxe4SGfO0ZxbIpM
+         Xgh37/8RbBcKf1GgVKtJIbdc67EpdZ5eDjFSCfC6ZsmPAoFolxkJxYb5nLDGJm93NmmL
+         LZWR6btsCJnr0e0Q4VWxbbIEuWYIh/8pfsv1DL2xS+YdWgqpeLeom7dQfAmoua6KbuTS
+         16MVGX27wJBDdwiYc9QKbEDFDsLsLYX3QPhWgKQfXFQ8eG8tNxSMJQ+4hMJUj9NcQRZg
+         xjU1WdaJfHjLP90i+iC+sD6oOt6mRb9D3I3RbuOiww0hD0oImBXyNwDbkv964WHriPHV
+         0LCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679936503;
+        d=1e100.net; s=20210112; t=1679969960;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=vsiiS+cg9ETxQ7qmK+ws7pFEXw6XBClGT7/dY2V6YIU=;
-        b=bVZm5l7aTZvKBMXP9G98Z3wDRRJjdqKdDAITZtlzKVyXme4PC4Z4iKHDwJGpTrhByT
-         Xw/a3QUVakPT2UWf6lNGUXU3MlmMrf55AalH7XVcwObbVEAbbqGmaFLQSvoj8tYUd/2Q
-         7pTY6VERpZjqnH9oXbWHqibymarGVOfEaXIRflSZpKsJFjbFp9KxTNFVf9bkkomwSadM
-         ozE2/B/7WePreXRrva0FqWdK2y4g350rRyPPe7BoC+373uJ1giO6+fuVuFHSSlIRDD/y
-         QxT21rVYQLbT6LP8FS7xx2hozzI5CIcRFGw8lcy9KMyAzPM2X0LDm4eT+o+ziparSgjx
-         LkIw==
-X-Gm-Message-State: AAQBX9f3K1wQoTVpeX86/ix/PolQPHmot+CZDYNZXE6Yjl0GT+1VkVyo
-        KttlMa8S4qddb6Sz9L4sgg==
-X-Google-Smtp-Source: AKy350Y8FlKQ/y1NaNuo1nCVn3oPUauVYD2sc8z7OjA3kA1wH7XZPPgYFn9GWGfUSER2YH3YSr7JQg==
-X-Received: by 2002:a05:6870:9711:b0:177:b6ce:1e76 with SMTP id n17-20020a056870971100b00177b6ce1e76mr8661847oaq.55.1679936503338;
-        Mon, 27 Mar 2023 10:01:43 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id zq35-20020a0568718ea300b0017f647294f5sm503569oab.16.2023.03.27.10.01.41
+        bh=0WBf2jQarhSY4/8q0wFbU+ysG8lL+dw6EMEdvJUjZAE=;
+        b=k4jOuUS6FNoHlfvLAAYmE85A8fa3epCcj9okQFr5pySeXkp2mGFZPE3w3L2yRIaI2/
+         wpPvy5SwUBVzVhPdhfi0Ox5opeZRJb42Va8jAL10u/j26d/COfLUdCYkaU17cm8dBXQp
+         XiJJ27k298W5EnKRLZWbu+A5Vy3Gq4maKwVz1KKfTRozp1inmvDSuEJVFUShkV7//7db
+         y5AjlEmIfoBNuDsHveQiWqKH3D0zMUBYAd2/85nCnYt2Sp5mYbBoE3cHPhqPBWzrThO8
+         5jkEDArXcfDh8vVBx4fVy7qk91TvPbFjmNBpqlgKS4OFi/BOv80moYAlmdc4Q8BNaTo/
+         s2JQ==
+X-Gm-Message-State: AAQBX9eSLDTURLcchhUnG1Mrq3je45JSshxeE/IMQGS+snt4eCF7LWGl
+        NFNiKlFdFPyudWjGeWngGQY=
+X-Google-Smtp-Source: AKy350ZmWZY6l9lRRsHhMPzolqKwxdjyI1+SD+9Rzy8K2LrjfxgG75DOeK8PQvTxmP7sNy/0JRVgzQ==
+X-Received: by 2002:a17:90a:86c1:b0:237:50b6:9843 with SMTP id y1-20020a17090a86c100b0023750b69843mr13217552pjv.0.1679969960035;
+        Mon, 27 Mar 2023 19:19:20 -0700 (PDT)
+Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id f17-20020a17090ac29100b00232cc61e16bsm5029301pjt.35.2023.03.27.19.19.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 10:01:42 -0700 (PDT)
-Received: (nullmailer pid 4104460 invoked by uid 1000);
-        Mon, 27 Mar 2023 17:01:41 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: Drop unneeded quotes
-Date:   Mon, 27 Mar 2023 12:01:36 -0500
-Message-Id: <20230327170137.4104272-1-robh@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        Mon, 27 Mar 2023 19:19:19 -0700 (PDT)
+From:   Jacky Huang <ychuang570808@gmail.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+Subject: [PATCH v6 00/12] Introduce Nuvoton ma35d1 SoC
+Date:   Tue, 28 Mar 2023 02:19:00 +0000
+Message-Id: <20230328021912.177301-1-ychuang570808@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Cleanup bindings dropping unneeded quotes. Once all these are fixed,
-checking for this can be enabled in yamllint.
+From: Jacky Huang <ychuang3@nuvoton.com>
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/serial/amlogic,meson-uart.yaml        | 4 ++--
- .../devicetree/bindings/serial/qcom,serial-geni-qcom.yaml     | 4 ++--
- Documentation/devicetree/bindings/serial/renesas,em-uart.yaml | 4 ++--
- Documentation/devicetree/bindings/serial/renesas,hscif.yaml   | 4 ++--
- Documentation/devicetree/bindings/serial/renesas,sci.yaml     | 4 ++--
- Documentation/devicetree/bindings/serial/renesas,scif.yaml    | 4 ++--
- Documentation/devicetree/bindings/serial/renesas,scifa.yaml   | 4 ++--
- Documentation/devicetree/bindings/serial/renesas,scifb.yaml   | 4 ++--
- Documentation/devicetree/bindings/serial/serial.yaml          | 4 ++--
- Documentation/devicetree/bindings/serial/sprd-uart.yaml       | 4 ++--
- .../devicetree/bindings/serial/sunplus,sp7021-uart.yaml       | 4 ++--
- 11 files changed, 22 insertions(+), 22 deletions(-)
+This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+initial device tree, clock driver, reset driver, and serial driver.
 
-diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-index 3cbdde85ed71..ad13df48a590 100644
---- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-@@ -2,8 +2,8 @@
- # Copyright 2019 BayLibre, SAS
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Amlogic Meson SoC UART Serial Interface
- 
-diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-index 05a6999808d1..dd33794b3534 100644
---- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-+++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Qualcomm Geni based QUP UART interface
- 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-index 12d0fa34f9f9..3fc2601f1338 100644
---- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/renesas,em-uart.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/renesas,em-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Renesas EMMA Mobile UART Interface
- 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-index afedb6edfc34..1c7f1276aed6 100644
---- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/renesas,hscif.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/renesas,hscif.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Renesas High Speed Serial Communication Interface with FIFO (HSCIF)
- 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-index dc445b327e0b..9f7305200c47 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/renesas,sci.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/renesas,sci.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Renesas Serial Communication Interface
- 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index 1989bd67d04e..f26bea2d7398 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/renesas,scif.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/renesas,scif.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Renesas Serial Communication Interface with FIFO (SCIF)
- 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-index 4c3b5e7270da..499507678cdf 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/renesas,scifa.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/renesas,scifa.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Renesas Serial Communications Interface with FIFO A (SCIFA)
- 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-index 2f7cbbb48960..810d8a991fdd 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/renesas,scifb.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/renesas,scifb.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Renesas Serial Communications Interface with FIFO B (SCIFB)
- 
-diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
-index c9231e501f1f..ea277560a596 100644
---- a/Documentation/devicetree/bindings/serial/serial.yaml
-+++ b/Documentation/devicetree/bindings/serial/serial.yaml
-@@ -1,8 +1,8 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/serial.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/serial.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Serial Interface Generic
- 
-diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-index da0e2745b5fc..28ff77aa86c8 100644
---- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-@@ -2,8 +2,8 @@
- # Copyright 2019 Unisoc Inc.
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/sprd-uart.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/sprd-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Spreadtrum serial UART
- 
-diff --git a/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-index ea1e637661c7..7d0a4bcb88e9 100644
---- a/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-@@ -2,8 +2,8 @@
- # Copyright (C) Sunplus Co., Ltd. 2021
- %YAML 1.2
- ---
--$id: "http://devicetree.org/schemas/serial/sunplus,sp7021-uart.yaml#"
--$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+$id: http://devicetree.org/schemas/serial/sunplus,sp7021-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Sunplus SoC SP7021 UART Controller
- 
+This patchset cover letter is based from the initial support for Nuvoton
+ma35d1 to keep tracking the version history.
+
+This patchset had been applied to Linux kernel 6.3-rc3 and tested on the
+Nuvoton ma35d1 SOM evaluation board.
+
+(ma35d1 information: https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+MA35D1 porting on linux-5.10.y can be found at: https://github.com/OpenNuvoton/MPU-Family
+
+v6:
+  - Combine nuvoton,ma35d1-clk.yaml and nuvoton,ma35d1-clk.h into one patch
+  - Combine nuvoton,ma35d1-reset.yaml and nuvoton,ma35d1-reset.h into one patch
+  - rename Documentation/devicetree/bindings/arm/npcm directory as nuvoton
+  - Remove patch for adding include/linux/mfd/ma35d1-sys.h as it's not required
+  - Update dtsi & dts files and move board-specific nodes to dts
+  - Modify reset driver
+  - Modify serial driver, fix coding style issues
+  - Modify clock driver, rewrite the PLL calculation functions
+
+v5:
+  - Add ARCH_NUVOTON to arm64 Kconfig
+  - Add ARCH_NUVOTON to defconfig
+  - Add the clock driver
+  - Add the reset driver
+  - Add the serial driver
+  - Add us to the maintainer
+
+v4:
+  - patch 4/5 is a resend
+  - Fixed dt_binding_check errors of nuvoton,ma35d1-clk.yaml
+  - Modify ma35d1.dtsi
+    1. Add a node hxt_24m
+    2. Fixed the base address of gic node
+    3. Add clocks and clock-names to clock node
+  - Fixed borad binding mistakes of nuvoton.yaml
+
+v3:
+  - added patch 4/5 and 5/5
+  - introduce CONFIG_ARCH_NUVOTON option
+  - add initial bindings for Nuvoton Platform boards
+  - fixed coding style problem of nuvoton,ma35d1-clk.h
+  - added CAPLL to clock-controller node
+  - modify the chosen node of ma35d1-evb.dts
+  - modify clock yaml "clk-pll-mode" to "nuvoton,clk-pll-mode"
+
+v2:
+  - fixed dt_binding_check failed of nuvoton,ma35d1-clk.yaml
+
+Jacky Huang (12):
+  arm64: Kconfig.platforms: Add config for Nuvoton MA35 platform
+  arm64: defconfig: Add support for Nuvoton MA35 family SoCs
+  dt-bindings: clock: nuvoton: add binding for ma35d1 clock controller
+  dt-bindings: reset: nuvoton: add binding for ma35d1 IP reset control
+  dt-bindings: mfd: syscon: Add nuvoton,ma35d1-sys compatible
+  dt-bindings: arm: Add initial bindings for Nuvoton platform
+  dt-bindings: serial: Document ma35d1 uart controller
+  arm64: dts: nuvoton: Add initial ma35d1 device tree
+  clk: nuvoton: Add clock driver for ma35d1 clock controller
+  reset: Add Nuvoton ma35d1 reset driver support
+  tty: serial: Add Nuvoton ma35d1 serial driver support
+  MAINTAINERS: Add entry for NUVOTON MA35
+
+ .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  |  30 +
+ .../nuvoton,npcm-gcr.yaml}                    |   2 +-
+ .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |   2 +-
+ .../bindings/clock/nuvoton,ma35d1-clk.yaml    |  72 ++
+ .../devicetree/bindings/mfd/syscon.yaml       |   1 +
+ .../bindings/reset/nuvoton,ma35d1-reset.yaml  |  44 +
+ .../serial/nuvoton,ma35d1-serial.yaml         |  48 +
+ MAINTAINERS                                   |   9 +
+ arch/arm64/Kconfig.platforms                  |   9 +
+ arch/arm64/boot/dts/nuvoton/Makefile          |   2 +
+ .../boot/dts/nuvoton/ma35d1-iot-512m.dts      |  56 +
+ .../boot/dts/nuvoton/ma35d1-som-256m.dts      |  56 +
+ arch/arm64/boot/dts/nuvoton/ma35d1.dtsi       | 231 +++++
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/clk/Makefile                          |   1 +
+ drivers/clk/nuvoton/Kconfig                   |  19 +
+ drivers/clk/nuvoton/Makefile                  |   4 +
+ drivers/clk/nuvoton/clk-ma35d1-divider.c      | 140 +++
+ drivers/clk/nuvoton/clk-ma35d1-pll.c          | 350 +++++++
+ drivers/clk/nuvoton/clk-ma35d1.c              | 963 ++++++++++++++++++
+ drivers/clk/nuvoton/clk-ma35d1.h              | 123 +++
+ drivers/reset/Kconfig                         |   6 +
+ drivers/reset/Makefile                        |   1 +
+ drivers/reset/reset-ma35d1.c                  | 152 +++
+ drivers/tty/serial/Kconfig                    |  18 +
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/ma35d1_serial.c            | 802 +++++++++++++++
+ .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 253 +++++
+ .../dt-bindings/reset/nuvoton,ma35d1-reset.h  | 108 ++
+ 29 files changed, 3502 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+ rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
+ rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
+ create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+ create mode 100644 Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+ create mode 100644 drivers/clk/nuvoton/Kconfig
+ create mode 100644 drivers/clk/nuvoton/Makefile
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1-divider.c
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1-pll.c
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1.c
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1.h
+ create mode 100644 drivers/reset/reset-ma35d1.c
+ create mode 100644 drivers/tty/serial/ma35d1_serial.c
+ create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
+ create mode 100644 include/dt-bindings/reset/nuvoton,ma35d1-reset.h
+
 -- 
-2.39.2
+2.34.1
 
