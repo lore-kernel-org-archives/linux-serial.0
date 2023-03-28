@@ -2,97 +2,262 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23642C76196
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Mar 2023 06:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8340AC761A6
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Mar 2023 09:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbjC1Gnz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Mar 2023 02:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
+        id S232289AbjC1JXw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Mar 2023 05:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232692AbjC1Gni (ORCPT
+        with ESMTP id S231374AbjC1JXv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Mar 2023 02:43:38 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACA33AB7
-        for <linux-serial@vger.kernel.org>; Mon, 27 Mar 2023 23:43:35 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id y4so45454644edo.2
-        for <linux-serial@vger.kernel.org>; Mon, 27 Mar 2023 23:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679985814;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MbHK9gxquzTu4OuudBalIqxg+HKqPSQ44lp6Dx4TnjQ=;
-        b=Foq1aZAHjoORNNMO4AEP6iM8Kfj1xj1TL4YoMPzZRa4lpdIUjbBTKP0y65K3Bmx9VZ
-         RK2laGsY4vm6D4cZhjoSzwCI2Qr6D/27EYSYDw2rlGClHXCVwk4l8xKX8YcBdu/7TBGo
-         YCQVw8YM+xU3dX3Xk3ZnrGU/L5vBWKmOnyeqoOQ5YTZj48dvZvAZZuMdapZp5DTy/xwD
-         RKe8MJDGP7dhcab1RykWhwTO4FOcBrSsMmIDRDYwYZyyjgH8XHTYbnm9ZgkwILN1GfFG
-         WZOuqm3l45knzAE19JVmtRKo+dWhRBKpLYVEkjAa8fk+kte6PETpVNgXjLkdnAdJrz7+
-         y6xA==
+        Tue, 28 Mar 2023 05:23:51 -0400
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA895254;
+        Tue, 28 Mar 2023 02:23:49 -0700 (PDT)
+Received: by mail-ed1-f50.google.com with SMTP id eh3so46732541edb.11;
+        Tue, 28 Mar 2023 02:23:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679985814;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20210112; t=1679995427;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MbHK9gxquzTu4OuudBalIqxg+HKqPSQ44lp6Dx4TnjQ=;
-        b=pnHJcWnoe/cmXjhwwQbZ54gKeUI95NRAm5Y++l41Bt0ccBZ3xL0DD6/tW7b8SeVuMW
-         152vFcVKyR8k+MDMtXr14XCa4nko4HQxdvhBZbg0F9Nonb4RBMlCGy+YS5ZYqMwd4poz
-         zOUPvOO4D/JIN5FiEbdoqPWS/HXCfO6Mhj5gQENTIUuGtM6QE/IGHZ61rT55+IPQhMlP
-         HM6lFpTvQj9fspiEOHuk9t59KlwgMnaDxZnAbTr2r7v5Hg4Qa/TDjgxWaFyskin7sIdz
-         LSDz8Vgp1OvcQo33eWc4nraUnqsweLmrtWbELbPZVBApmShfDdXCslyIafN8C5gYJipr
-         Sklw==
-X-Gm-Message-State: AAQBX9eQF9CExlHOZcItVydJgf6G+rbdcqMFuNr3uj+zAOcmOZtBW/Fd
-        n0mR6WZCM/Nd192nmVzOOGq39Q==
-X-Google-Smtp-Source: AKy350aozLV/kfMw0o+gXcWxC3Pkq1/8ASNpFZqkIcdiw/e7W0+mPismptepSP9CgSIhNrY4WS98Pw==
-X-Received: by 2002:a05:6402:125a:b0:4fe:9689:96bb with SMTP id l26-20020a056402125a00b004fe968996bbmr15336132edw.35.1679985813782;
-        Mon, 27 Mar 2023 23:43:33 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9e92:dca6:241d:71b6? ([2a02:810d:15c0:828:9e92:dca6:241d:71b6])
-        by smtp.gmail.com with ESMTPSA id x92-20020a50bae5000000b004fa19f5ba99sm15577741ede.79.2023.03.27.23.43.32
+        bh=l31qcmsAfbBMTOm3JDbwOz7mZ9GJ7Ef30fDGCWtgXJ4=;
+        b=SBr8nON2AcM9YlII8XGYCnTvlNxMZv/ciXju4iCbgaN7ZnNQyXGYsA/O+UwAVOFc1A
+         FcSamB1f2uvtVlxkVMLMizUJe/XTv64IqEy5KecytipZrIBzanwvsuneBeVUjCQ0uBea
+         qUGe7g8dbBdSDKutQDpw9SB8J2pkzujnRbI4HZNqma9r6aDfE2NPQ36MzuspjwtqUPXn
+         3A8sReqOBOutVxTEmZ3QLDzhh1gI43HjujPL1iOhe2OrHpFOrycoVdLP2cMA87SMwAXO
+         vp0ZjEu5ePkOTFrd57WzZDE2zhNq9RNSWcAlEKlM4DzMHXJg1AxGgh65BKV52kw7MleO
+         s+3w==
+X-Gm-Message-State: AAQBX9eZx9GWx+El+zljwzQEA1IM1swdzE5F+1QDh2P8u2F2YQ0Sd+cX
+        p+cEC0vD1kDQsUnR2hjlrMg=
+X-Google-Smtp-Source: AKy350axhg8A8xNabQ/bU2xIpk5SuH/99UCFfO21+2Ew5xSLa+UBLTbX2gQ0M+Kybvc6ygzyb+kipg==
+X-Received: by 2002:aa7:c249:0:b0:4fb:395a:6aa4 with SMTP id y9-20020aa7c249000000b004fb395a6aa4mr14939663edo.31.1679995427321;
+        Tue, 28 Mar 2023 02:23:47 -0700 (PDT)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id m10-20020a50998a000000b004e48f8df7e2sm15805828edb.72.2023.03.28.02.23.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Mar 2023 23:43:33 -0700 (PDT)
-Message-ID: <28789ca3-923b-2aed-b921-ed68b776dc92@linaro.org>
-Date:   Tue, 28 Mar 2023 08:43:32 +0200
+        Tue, 28 Mar 2023 02:23:46 -0700 (PDT)
+Message-ID: <f44fffcf-c592-0c73-6e6c-f5914de82503@kernel.org>
+Date:   Tue, 28 Mar 2023 11:23:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH] dt-bindings: serial: Drop unneeded quotes
 Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <20230327170137.4104272-1-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230327170137.4104272-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com>
+ <20230328021912.177301-12-ychuang570808@gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v6 11/12] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+In-Reply-To: <20230328021912.177301-12-ychuang570808@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 27/03/2023 19:01, Rob Herring wrote:
-> Cleanup bindings dropping unneeded quotes. Once all these are fixed,
-> checking for this can be enabled in yamllint.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+On 28. 03. 23, 4:19, Jacky Huang wrote:
+> +static void transmit_chars(struct uart_ma35d1_port *up)
+> +{
+> +	struct circ_buf *xmit = &up->port.state->xmit;
+> +	int count;
+> +	u8 ch;
+> +
+> +	if (uart_tx_stopped(&up->port)) {
+> +		ma35d1serial_stop_tx(&up->port);
+> +		return;
+> +	}
+> +	if (uart_circ_empty(xmit)) {
+> +		__stop_tx(up);
+> +		return;
+> +	}
+
+Why is this necessary?
+
+> +	count = UART_FIFO_DEPTH - ((serial_in(up, UART_REG_FSR) & FSR_TXPTR_MSK) >> 16);
+> +
+> +	uart_port_tx_limited(&up->port, ch, count,
+> +			     !(serial_in(up, UART_REG_FSR) & FSR_TX_FULL),
+> +			     serial_out(up, UART_REG_THR, ch),
+> +			     ({}));
+> +
+> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> +		uart_write_wakeup(&up->port);
+> +
+> +	if (uart_circ_empty(xmit))
+> +		__stop_tx(up);
+
+uart_port_tx_limited() should take care about the above and this too, right?
+
+> +}
+...
+> +static void receive_chars(struct uart_ma35d1_port *up)
+> +{
+> +	u8 flag;
+> +	u32 fsr;
+> +	unsigned int ch;
+
+Shouldn't ch be u8 too?
+
+> +	int max_count = 256;
+> +
+> +	fsr = serial_in(up, UART_REG_FSR);
+> +	do {
+> +		flag = TTY_NORMAL;
+> +		up->port.icount.rx++;
+> +
+> +		if (unlikely(fsr & (FSR_BIF | FSR_FEF | FSR_PEF | FSR_RX_OVER_IF))) {
+> +			if (fsr & FSR_BIF) {
+> +				up->port.icount.brk++;
+> +				if (uart_handle_break(&up->port))
+> +					continue;
+> +			}
+> +			if (fsr & FSR_FEF)
+> +				up->port.icount.frame++;
+> +			if (fsr & FSR_PEF)
+> +				up->port.icount.parity++;
+> +			if (fsr & FSR_RX_OVER_IF)
+> +				up->port.icount.overrun++;
+> +
+> +			serial_out(up, UART_REG_FSR, fsr &
+> +				   (FSR_BIF | FSR_FEF | FSR_PEF | FSR_RX_OVER_IF));
+> +
+> +			if (fsr & FSR_BIF)
+> +				flag = TTY_BREAK;
+> +			else if (fsr & FSR_PEF)
+> +				flag = TTY_PARITY;
+> +			else if (fsr & FSR_FEF)
+> +				flag = TTY_FRAME;
+> +		}
+> +
+> +		ch = serial_in(up, UART_REG_RBR);
+> +		if (uart_handle_sysrq_char(&up->port, ch))
+> +			continue;
+> +
+> +		spin_lock(&up->port.lock);
+> +		uart_insert_char(&up->port, fsr, FSR_RX_OVER_IF, ch, flag);
+> +		spin_unlock(&up->port.lock);
+> +
+> +		fsr = serial_in(up, UART_REG_FSR);
+> +	} while (!(fsr & FSR_RX_EMPTY) && (max_count-- > 0));
+> +
+> +	spin_lock(&up->port.lock);
+> +	tty_flip_buffer_push(&up->port.state->port);
+> +	spin_unlock(&up->port.lock);
+> +}
+...
+> +static int ma35d1serial_remove(struct platform_device *dev)
+> +{
+> +	struct uart_port *port = platform_get_drvdata(dev);
+> +
+> +	if (port) {
+
+Can this ever be NULL?
+
+> +		uart_remove_one_port(&ma35d1serial_reg, port);
+> +		free_irq(port->irq, port);
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int ma35d1serial_suspend(struct platform_device *dev, pm_message_t state)
+> +{
+> +	int i;
+> +	struct uart_ma35d1_port *up;
+> +
+> +	if (dev->dev.of_node)
+> +		i = of_alias_get_id(dev->dev.of_node, "serial");
+> +	if (i < 0) {
+> +		dev_err(&dev->dev, "failed to get alias/pdev id, errno %d\n", i);
+> +		return i;
+> +	}
+> +	up = &ma35d1serial_ports[i];
+
+platform_get_drvdata(dev) ?
+
+> +	if (i == 0) {
+> +		up->console_baud_rate = serial_in(up, UART_REG_BAUD);
+> +		up->console_line = serial_in(up, UART_REG_LCR);
+> +		up->console_int = serial_in(up, UART_REG_IER);
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int ma35d1serial_resume(struct platform_device *dev)
+> +{
+> +	int i;
+> +	struct uart_ma35d1_port *up;
+> +
+> +	if (dev->dev.of_node)
+> +		i = of_alias_get_id(dev->dev.of_node, "serial");
+> +	if (i < 0) {
+> +		dev_err(&dev->dev, "failed to get alias/pdev id, errno %d\n", i);
+> +		return i;
+> +	}
+> +	up = &ma35d1serial_ports[i];
+> +	if (i == 0) {
+> +		serial_out(up, UART_REG_BAUD, up->console_baud_rate);
+> +		serial_out(up, UART_REG_LCR, up->console_line);
+> +		serial_out(up, UART_REG_IER, up->console_int);
+> +	}
+> +	return 0;
+> +}
+
+No uart_suspend_port()/uart_resume_port()? You don't wait for 
+transmitter to be empty in suspend. You don't stop tx etc.
+
+> +static struct platform_driver ma35d1serial_driver = {
+> +	.probe      = ma35d1serial_probe,
+> +	.remove     = ma35d1serial_remove,
+> +	.suspend    = ma35d1serial_suspend,
+> +	.resume     = ma35d1serial_resume,
+> +	.driver     = {
+> +		.name   = "ma35d1-uart",
+> +		.owner  = THIS_MODULE,
+> +		.of_match_table = of_match_ptr(ma35d1_serial_of_match),
+> +	},
+> +};
+> +
+> +static int __init ma35d1serial_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = uart_register_driver(&ma35d1serial_reg);
+> +	if (ret)
+> +		return ret;
+> +	ret = platform_driver_register(&ma35d1serial_driver);
+> +	if (ret)
+> +		uart_unregister_driver(&ma35d1serial_reg);
+> +	return ret;
+> +}
+> +
+> +static void __exit ma35d1serial_exit(void)
+> +{
+> +	platform_driver_unregister(&ma35d1serial_driver);
+> +	uart_unregister_driver(&ma35d1serial_reg);
+> +}
+> +
+> +module_init(ma35d1serial_init);
+> +module_exit(ma35d1serial_exit);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("MA35D1 serial driver");
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> +MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
 
-Best regards,
-Krzysztof
+Why is this needed? How are other platform drivers autoloaded?
+
+thanks,
+-- 
+js
+suse labs
 
