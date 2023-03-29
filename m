@@ -2,117 +2,88 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 397DBC74A5B
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 10:14:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B643C74A5B
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 13:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbjC2KOK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 06:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
+        id S229949AbjC2NH5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 09:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231177AbjC2KOJ (ORCPT
+        with ESMTP id S229816AbjC2NH4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 06:14:09 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1B1B40F1;
-        Wed, 29 Mar 2023 03:14:07 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 945FD8107;
-        Wed, 29 Mar 2023 10:14:06 +0000 (UTC)
-Date:   Wed, 29 Mar 2023 13:14:05 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <20230329101405.GQ7501@atomide.com>
-References: <20230323071051.2184-1-tony@atomide.com>
- <ZCQClBeEtSLu2X0U@kroah.com>
+        Wed, 29 Mar 2023 09:07:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185044C02;
+        Wed, 29 Mar 2023 06:07:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 305F1CE2402;
+        Wed, 29 Mar 2023 13:07:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40378C433A8;
+        Wed, 29 Mar 2023 13:07:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680095244;
+        bh=64OVEta+8cwYkwrCXKWVXG9McVRJXZTO5LX36p5K5KQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=da3xQ3WAUJLpDJMDKtepK1aRetwmoI55sJpq3a8EswUK/icNIaY9hfMAMIT+3xZNM
+         7JM9/IeA2dRTwU68j/h2+1+bX42lN+q0s8eFi0alaIhCo/+AeNMhwrXPZQm+3pl00M
+         WdYAVEl4QdoqgFGSTD3jAUUfy3JNWekoDDm23ihZXgJtdnCOFPZ7x3NKJbLw3WNhVq
+         mhTwq5mQadQLupUBo88QJOvbW5hvcUdsacMTGbX16aL1dqd/Zqi7zXuaQEUJVn5X7r
+         2cewsUMi7bICrn4En/qApKzuCPmUYNEx/OQVknYayqIk0j9nmNh/m7FoM8HFM7XrJb
+         cP34LVWpqSeLQ==
+Received: by mail-yb1-f173.google.com with SMTP id r187so19191052ybr.6;
+        Wed, 29 Mar 2023 06:07:24 -0700 (PDT)
+X-Gm-Message-State: AAQBX9dDJu1IjLso0spHIxW3u+QVd30RcE7l8rF67YrOow8+ePnI19z8
+        Gxc3jNeK3TJnkhhK33zlD3gjt7WMD8f+YyUOhw==
+X-Google-Smtp-Source: AKy350bwcTIPA/G3ETRQktnXdBJhdzSnaF6sl6bCmHm1c0aOLy6nbEarw0pjdIo3RIbbloaB2gT0TDTk8aI9coR2H5Y=
+X-Received: by 2002:a05:6902:1586:b0:98e:6280:74ca with SMTP id
+ k6-20020a056902158600b0098e628074camr12456018ybu.1.1680095243200; Wed, 29 Mar
+ 2023 06:07:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCQClBeEtSLu2X0U@kroah.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com> <20230328021912.177301-7-ychuang570808@gmail.com>
+In-Reply-To: <20230328021912.177301-7-ychuang570808@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 29 Mar 2023 08:07:11 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
+Message-ID: <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
+Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
+ Nuvoton platform
+To:     Jacky Huang <ychuang570808@gmail.com>
+Cc:     krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230329 09:19]:
-> On Thu, Mar 23, 2023 at 09:10:47AM +0200, Tony Lindgren wrote:
-> > -obj-$(CONFIG_SERIAL_CORE) += serial_core.o
-> > +obj-$(CONFIG_SERIAL_CORE) += serial_base.o serial_core.o serial_ctrl.o serial_port.o
-> 
-> Why is this 3 new modules and not just all go into serial_base?  What's
-> going to auto-load the other modules you created here?  Feels like this
-> should all end up in the same .ko as they all depend on each other,
-> right?
+On Mon, Mar 27, 2023 at 9:19=E2=80=AFPM Jacky Huang <ychuang570808@gmail.co=
+m> wrote:
+>
+> From: Jacky Huang <ychuang3@nuvoton.com>
+>
+> Rename the bindings/arm/npcm directory as nuvoton.
+> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
+> Add initial bindings for ma35d1 series development boards.
+>
+> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> ---
+>  .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
+>  .../nuvoton,npcm-gcr.yaml}                    |  2 +-
+>  .../npcm.yaml =3D> nuvoton/nuvoton,npcm.yaml}   |  2 +-
+>  3 files changed, 32 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton=
+,ma35d1.yaml
+>  rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml =3D>=
+ nuvoton/nuvoton,npcm-gcr.yaml} (93%)
 
-OK sure, I'll build them into serial_base. We now have uart_add_one_port()
-and uart_remove_one_port() exported in serial_port so that ends up loading
-the serial_base related modules.
+Since you are moving it, this one should be moved to bindings/soc/nuvoton/
 
-> > +struct uart_port *serial_base_get_port(struct device *dev)
-> > +{
-> > +	struct serial_base_device *sbd;
-> > +
-> > +	if (!dev)
-> > +		return NULL;
-> > +
-> > +	sbd = to_serial_base_device(dev);
-> > +
-> > +	/* Check in case serial_core_add_one_port() happened to fail */
-> > +	if (!sbd->port->state) {
-> 
-> This is odd, how can it fail and then this function be called after that
-> failure?
-
-On uart_add_one_port(), runtime PM resume function in serial_port gets
-called before the port registration has completed. Sounds like I need
-to recheck this, maybe we can just enable runtime PM for serial_port
-after registration has completed.
-
-> > +/*
-> > + * Find a registered serial core controller device if one exists. Returns
-> > + * the first device matching the ctrl_id. Caller must hold port_mutex.
-> > + */
-> > +static struct device *serial_core_ctrl_find(struct uart_driver *drv,
-> > +					    struct device *phys_dev,
-> > +					    int ctrl_id)
-> > +{
-> > +	struct uart_state *state;
-> > +	int i;
-> > +
-> > +	if (ctrl_id < 0)
-> > +		return NULL;
-> 
-> Why is a negative number special here?
-
-I think this can go, will check.
-
-> > +	dev = serial_base_device_add(port, "port", ctrl_dev);
-> 
-> magic strings again :)
-> 
-> Do you really just want two different "types" of devices on this bus,
-> controllers and ports?  If so, just do that, don't make the name magic
-> here.
-> 
-> Then you can have:
-> 	serial_base_port_add()
-> 	serial_base_ctrl_add()
-> 
-> and one cleanup function will still work.
-
-Yes two different types should do here, I'll take a look.
-
-> Otherwise this looks good to me, thanks for doing all of this work.
-
-OK great thanks,
-
-Tony
+>  rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml =3D> nuvoto=
+n/nuvoton,npcm.yaml} (93%)
