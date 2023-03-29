@@ -2,51 +2,52 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 053CEC77B6E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4334BC74A5B
 	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbjC2VVz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 17:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        id S230174AbjC2VV4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 17:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbjC2VVr (ORCPT
+        with ESMTP id S229871AbjC2VVs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 17:21:47 -0400
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4F13591;
-        Wed, 29 Mar 2023 14:21:45 -0700 (PDT)
-Received: by mail-oo1-f44.google.com with SMTP id o15-20020a4ae58f000000b00538c0ec9567so2677230oov.1;
-        Wed, 29 Mar 2023 14:21:45 -0700 (PDT)
+        Wed, 29 Mar 2023 17:21:48 -0400
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0344EC3;
+        Wed, 29 Mar 2023 14:21:46 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id bj20so12708121oib.3;
+        Wed, 29 Mar 2023 14:21:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680124904;
+        d=1e100.net; s=20210112; t=1680124906;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=37Xl94wcW5o8GgPxt4yvsEyDEY9V4plxLsoIYPVLn9U=;
-        b=QF/udCgzylliagzBU+2PetUErv9u5VXOcuD4b5l/jdjOspM297JNnjeS6SYXLXzTnA
-         2KSwbuykjJ1pPfkBLgIEZ0LxyxJY6AzyK6Azh9FHtWFhXfueXc56EEpk5QFbsQwGbeTz
-         6JL6scLqPZ0PKWLeWaQL9C7UeTlZh/SYVmSS4QlW2PZunmTXg703SvrSc+EO3y6HFHQ2
-         FOFs/rtkdd87tgizBguempBmbCOYBhcGtIgZV0mVPxm9loBUmjZp/ZZYzU68mV8gCVa2
-         2uI7gf2Xv8nGxLVJ540pUsr9j1ymm31nuksb8+O3TZlp9FBaQYnZ60ySyUB1/lkJ4YNy
-         mpMQ==
-X-Gm-Message-State: AO0yUKXM88vjum8EtFj/jmyBQwOgIw9aC7tKL5x6UIjTT4jWOeyZRtpJ
-        afvyPDxTQH+yHA7+HVxYHA==
-X-Google-Smtp-Source: AK7set++w7Qvp7fi2DIzI+DP77MwWEUdgIW4IIMfm5HQ31TJqVwIb2TPyVmM9Cf/Vqup9kOVESVp/Q==
-X-Received: by 2002:a4a:2ccf:0:b0:52b:bab5:eba2 with SMTP id o198-20020a4a2ccf000000b0052bbab5eba2mr9319519ooo.0.1680124904322;
-        Wed, 29 Mar 2023 14:21:44 -0700 (PDT)
+        bh=Ztuu6Fsug8mRxKnYsfiismCx0sBKyfeU96HhnyE0Bjs=;
+        b=I6qA/D75s2omWMVeBi8J+UQ29cUBMOLzxP6dBJuK37jMGRnHzNRYGWX+zaoOh5VTHa
+         +Rxa3EyvEus4Ymt06XyEG9+Y/NtRGaJSLYnK4PTTEZ00jyPEHloHJ1o7OdaMlTeqfUAT
+         cQIXXYyeNLojp+pcmrAmhAJRI+c7iRfwBPHozM38Gbfr9wApqN6pfpgQmz5qkcEe3M3T
+         R2pohJZMMsHg6uYB5i8srzu12qzxC6PKZF32akNZ9hwLKt92KRJzXLzd7OyIfXxh1D/b
+         mlyTPcwcJ59MeH9QZ+OEo3auXds7+zXdq4nHSXQl29f9AKtgy6b7AHPXnm/WzArdg7LX
+         W43w==
+X-Gm-Message-State: AO0yUKXEaaD+7GAE0FrpkpMcYPnxX5Agfluv43vqFjfsCeQWo6oTJgyt
+        9+Vypy5VT5aHh0em4pe57A==
+X-Google-Smtp-Source: AK7set8ebntw2ESdGB7l5PdDO6NsIvCSiIc8J8/t/ipIkwSdCjkA74SknOyxYwAjPu2eirZsztFa4A==
+X-Received: by 2002:a05:6808:7cf:b0:35e:d787:ec7f with SMTP id f15-20020a05680807cf00b0035ed787ec7fmr8881054oij.50.1680124905841;
+        Wed, 29 Mar 2023 14:21:45 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c3-20020aca1c03000000b0038901ece6e9sm4982583oic.12.2023.03.29.14.21.43
+        by smtp.gmail.com with ESMTPSA id r184-20020a4a4ec1000000b005251e3f92ecsm14394555ooa.47.2023.03.29.14.21.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 14:21:44 -0700 (PDT)
-Received: (nullmailer pid 86891 invoked by uid 1000);
+        Wed, 29 Mar 2023 14:21:45 -0700 (PDT)
+Received: (nullmailer pid 86899 invoked by uid 1000);
         Wed, 29 Mar 2023 21:21:39 -0000
 From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 29 Mar 2023 16:20:42 -0500
-Subject: [PATCH 1/5] iio: adc: ad7292: Add explicit include for of.h
+Date:   Wed, 29 Mar 2023 16:20:46 -0500
+Subject: [PATCH 5/5] ACPI: Replace irqdomain.h include with struct
+ declarations
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-acpi-header-cleanup-v1-1-8dc5cd3c610e@kernel.org>
+Message-Id: <20230329-acpi-header-cleanup-v1-5-8dc5cd3c610e@kernel.org>
 References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
 In-Reply-To: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
 To:     "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -75,28 +76,36 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-With linux/acpi.h no longer implicitly including of.h, add an explicit
-include of of.h to fix the following error:
+linux/acpi.h includes irqdomain.h which includes of.h. Break the include
+chain by replacing the irqdomain include with forward declarations for
+struct irq_domain and irq_domain_ops which is sufficient for acpi.h.
 
-drivers/iio/adc/ad7292.c:307:9: error: implicit declaration of function 'for_each_available_child_of_node'; did you mean 'fwnode_for_each_available_child_node'? [-Werror=implicit-function-declaration]
-
+Cc: Marc Zyngier <maz@kernel.org>
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iio/adc/ad7292.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/acpi.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7292.c b/drivers/iio/adc/ad7292.c
-index a2f9fda25ff3..cccacec5db6d 100644
---- a/drivers/iio/adc/ad7292.c
-+++ b/drivers/iio/adc/ad7292.c
-@@ -8,6 +8,7 @@
- #include <linux/bitfield.h>
- #include <linux/device.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index efff750f326d..169c17c0b0dc 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -10,12 +10,14 @@
  
+ #include <linux/errno.h>
+ #include <linux/ioport.h>	/* for struct resource */
+-#include <linux/irqdomain.h>
+ #include <linux/resource_ext.h>
+ #include <linux/device.h>
+ #include <linux/property.h>
+ #include <linux/uuid.h>
+ 
++struct irq_domain;
++struct irq_domain_ops;
++
+ #ifndef _LINUX
+ #define _LINUX
+ #endif
 
 -- 
 2.39.2
