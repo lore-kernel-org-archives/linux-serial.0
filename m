@@ -2,128 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A123C6FD18
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 03:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3940FC74A5B
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 03:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbjC2DNT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Mar 2023 23:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        id S229753AbjC2DZ4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Mar 2023 23:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbjC2DNQ (ORCPT
+        with ESMTP id S229452AbjC2DZz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Mar 2023 23:13:16 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2ED3AB4;
-        Tue, 28 Mar 2023 20:13:15 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id a16so12782833pjs.4;
-        Tue, 28 Mar 2023 20:13:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680059595;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qpYwrBUei0Yntg7xFJOvTxfcN3SxHd8qVrHJBACjzb0=;
-        b=ngQGLIGxJ/+cQJqhNgkIdH0oCIopO/k2BvAgnR1YoxZo0+r2cDwjzwhzAgJ5bAhZcc
-         Gah6HI6eNok0z/c5KuGkgJzfHNXIjPCSuMR1gWXaaS7z7mYemW+bqXPjCeKV9+p3eiDN
-         nT1bPUZrgkBvFrteeb9hACT/d6bCac646emwLTO/SF+vjTzX8OCxdK7yZw+NiS7AdqaR
-         R87hxXb+KcnDn8LD4QH3RZjSRMcCpap7P2i4b/gL8aEkCDhu2C0jj7LQbF0G4V180Lkt
-         jO1OztpwCBACr3NUyVqma7WuISjprC8S++SgGaHSlaj/PqlFxjHcXMr947qwr6dqvKsH
-         WMGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680059595;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qpYwrBUei0Yntg7xFJOvTxfcN3SxHd8qVrHJBACjzb0=;
-        b=bGOQa6e96L5abXgTsFV0hPplM3V/FV163nTE73yCX13b7+JqY42dh/ULQMp1BwuBgp
-         ttp/O8l6BvA2TGOdymGoDT8X9Danff4Rqe+1ADy2kpezdwMjtICgkFHRMIW7VDqeefY4
-         xP0/NKwNI74HFNtxZA5RdZuW4jF10a1SzX/LYXoeOjLjqwc17CoBEYWVT183gWWJruV4
-         lN6lYqZT87PRXrQi9XINvvD++TfwR0E0kAlFaSlfJcPvbS7dsXUgrcF9XVt9LGVFkJue
-         IuxqeCGiVijBXqJrtNng1Px3EPTGrpYKxNZoJTG71BKKG7w9g8Lh8Bb41e+afktFX1ri
-         0f4g==
-X-Gm-Message-State: AAQBX9eSEi4V6qzHARFktlpj0ZxEhi7JKY/02WuSGAuAtFZYOUmG/uyd
-        D1Js8r74vj4mcFmCJzK4w6M=
-X-Google-Smtp-Source: AKy350b8F97veUYDd0LZIttnzIEOfuEPPq9b7fGWXm+kHGtxMVy8U/oAu5Wtr7QxcQVE4e9fx2QC5w==
-X-Received: by 2002:a17:902:f2d3:b0:199:1160:956c with SMTP id h19-20020a170902f2d300b001991160956cmr534268plc.31.1680059594885;
-        Tue, 28 Mar 2023 20:13:14 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id jl1-20020a170903134100b0019cc3d0e1basm21765949plb.112.2023.03.28.20.13.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Mar 2023 20:13:14 -0700 (PDT)
-Message-ID: <ad908782-8291-4240-d88e-61dff5a05ef7@gmail.com>
-Date:   Wed, 29 Mar 2023 11:13:11 +0800
+        Tue, 28 Mar 2023 23:25:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA31270D;
+        Tue, 28 Mar 2023 20:25:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03FC761A15;
+        Wed, 29 Mar 2023 03:25:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 524DEC433D2;
+        Wed, 29 Mar 2023 03:25:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680060352;
+        bh=rGesu/nbEnFvbtmlz6tgs+4c/cLzd437HpK/3VSCMlA=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=LFEQzM13qMc7C5WJrI2LVx8MuRWfOA/rOL5mZSpeoaaGr9GeppcMFsibDn211CaMK
+         C2pn4KIiFGVQvYabOI4zp7Vw3dGvIO3mjMYEeKc/v37cVk9Y38AJBvNDm238WsHCXz
+         Oq/QwUiNRF9CSlriFpkmFdkHDA8ysUFAJTVatpvDa2JpsR3VzOmcBtY1gEvh1vYYfg
+         Qko+pgK1lC1WF/+oJfBjbtJF1TZVxp/xHFkwouQfP3ZMgm/scmw8qfLdC02glQ+I0k
+         sXqVG+KsPCLLmOeXdjPxkO0KbCpktJ2sdjtRQmYmC0gAMn55Llko0CFwcQ6inBfvB7
+         MQnGQYRDzfJAw==
+Message-ID: <1d379f28f54fd025f687bfcb71e4bae5.sboyd@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v6 08/12] arm64: dts: nuvoton: Add initial ma35d1 device
- tree
-Content-Language: en-US
-To:     Stephen Boyd <sboyd@kernel.org>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, p.zabel@pengutronix.de,
-        robh+dt@kernel.org
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <ad908782-8291-4240-d88e-61dff5a05ef7@gmail.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com> <20230328021912.177301-9-ychuang570808@gmail.com> <ab4e0bc8834b7e618e9a88ea6a1c30cc.sboyd@kernel.org> <b7977069-4f82-76a1-10c1-b6400862c2c4@gmail.com> <c37e1f3a40c404acd81c2c9d5b28b340.sboyd@kernel.org> <129cf4b6-b3b5-2a12-5911-37e70a624812@gmail.com> <e5221cd020bc60513df6a1c1859e1acc.sboyd@kernel.org> <ad908782-8291-4240-d88e-61dff5a05ef7@gmail.com>
+Subject: Re: [PATCH v6 08/12] arm64: dts: nuvoton: Add initial ma35d1 device tree
+From:   Stephen Boyd <sboyd@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>
-References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-9-ychuang570808@gmail.com>
- <ab4e0bc8834b7e618e9a88ea6a1c30cc.sboyd@kernel.org>
- <b7977069-4f82-76a1-10c1-b6400862c2c4@gmail.com>
- <c37e1f3a40c404acd81c2c9d5b28b340.sboyd@kernel.org>
- <129cf4b6-b3b5-2a12-5911-37e70a624812@gmail.com>
- <e5221cd020bc60513df6a1c1859e1acc.sboyd@kernel.org>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <e5221cd020bc60513df6a1c1859e1acc.sboyd@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Jacky Huang <ychuang570808@gmail.com>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, p.zabel@pengutronix.de,
+        robh+dt@kernel.org
+Date:   Tue, 28 Mar 2023 20:25:50 -0700
+User-Agent: alot/0.10
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Stephen,
+Quoting Jacky Huang (2023-03-28 20:13:11)
+> Dear Stephen,
+>=20
+>=20
+> On 2023/3/29 =E4=B8=8A=E5=8D=88 10:46, Stephen Boyd wrote:
+> > Quoting Jacky Huang (2023-03-28 19:39:36)
+> >> On 2023/3/29 =E4=B8=8A=E5=8D=88 10:19, Stephen Boyd wrote:
+> >>> What do you use the syscon for then? The clock driver must want to use
+> >>> the syscon for something, implying that they are the same device.
+> >> The register lock mechanism is applied to protect many critical
+> >> registers from false written.
+> >> The register lock control register is one register in system controlle=
+r.
+> >> Some registers of the clock controller are lock protected. Not only
+> >> clock controller, but other
+> >> IP such as RTC, PWM, ADC, etc, also have lock protected registers. All
+> >> these IP requires
+> >> syscon to access the lock/unlock control register in the system contro=
+ller.
+> >> That's why we add a <&sys> to the clock controller.
+> >>
+> >> Should we implement a ma35d1-sysctl driver to protect register_lock()
+> >> and register_unlock()
+> >> and export to those drivers?=C2=A0 If yes, we can remove the <&sys> fr=
+om
+> >> clock controller.
+> >>
+> > You can implement the lock and unlock in the hwspinlock framework. See
+> > drivers/hwspinlock.
+>=20
+> I may not explain clearly enough. The lock/unlock register of system=20
+> controller is more like
+> a kind of write protection for specific registers, rather than=20
+> preventing hetero-core CPU access.
+> In many different IP of ma35d1 contain write protected registers.
+> In fact, ma35d1 has a "hardware semaphore" IP, and we have implemented=20
+> the driver in drivers/hwspinlock.
+> Even the control register of "hardware semaphore" is also write protected.
 
+What's the need to lock and unlock the registers? Is some other
+processor also writing to the registers that we need to synchronize
+against? Or is Linux the only entity reading and writing the registers?
+I'm wondering if we should simply unlock the registers and never lock
+them.
 
-On 2023/3/29 上午 10:46, Stephen Boyd wrote:
-> Quoting Jacky Huang (2023-03-28 19:39:36)
->> On 2023/3/29 上午 10:19, Stephen Boyd wrote:
->>> What do you use the syscon for then? The clock driver must want to use
->>> the syscon for something, implying that they are the same device.
->> The register lock mechanism is applied to protect many critical
->> registers from false written.
->> The register lock control register is one register in system controller.
->> Some registers of the clock controller are lock protected. Not only
->> clock controller, but other
->> IP such as RTC, PWM, ADC, etc, also have lock protected registers. All
->> these IP requires
->> syscon to access the lock/unlock control register in the system controller.
->> That's why we add a <&sys> to the clock controller.
->>
->> Should we implement a ma35d1-sysctl driver to protect register_lock()
->> and register_unlock()
->> and export to those drivers?  If yes, we can remove the <&sys> from
->> clock controller.
->>
-> You can implement the lock and unlock in the hwspinlock framework. See
-> drivers/hwspinlock.
+>=20
+> So, should we implement a system controller driver to provide=20
+> register_unlock() function?
+> Is it OK to have such a driver in drivers/mfd?
+> Or, just use syscon in device tree for those devices that have write=20
+> protect registers.
+>=20
 
-I may not explain clearly enough. The lock/unlock register of system 
-controller is more like
-a kind of write protection for specific registers, rather than 
-preventing hetero-core CPU access.
-In many different IP of ma35d1 contain write protected registers.
-In fact, ma35d1 has a "hardware semaphore" IP, and we have implemented 
-the driver in drivers/hwspinlock.
-Even the control register of "hardware semaphore" is also write protected.
-
-So, should we implement a system controller driver to provide 
-register_unlock() function?
-Is it OK to have such a driver in drivers/mfd?
-Or, just use syscon in device tree for those devices that have write 
-protect registers.
-
-
-Best regards,
-Jacky Huang
-
-
+The hwspinlock framework doesn't require there to be another entity
+accessing some resource. It's there to implement hardware locks. I don't
+see why it can't be used here.
