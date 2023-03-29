@@ -2,80 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E10DC761AF
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 17:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06580C74A5B
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbjC2RwH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 13:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
+        id S229678AbjC2VVo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 17:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbjC2RwG (ORCPT
+        with ESMTP id S229436AbjC2VVn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 13:52:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144F4DB;
-        Wed, 29 Mar 2023 10:52:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF665B823F8;
-        Wed, 29 Mar 2023 17:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57552C433EF;
-        Wed, 29 Mar 2023 17:52:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680112323;
-        bh=w8jUtzScreWIDo7Aw/aAc5jBL+unzSwEx2kU/1yGx60=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=XJeFVsqL56erab6j/2q5XeQRgm0r4cgkDDfbP/DntYv01dBpmrSTKXeflchMEmfdK
-         B+yanwrkDp0DIbDzuTZicO6LQuH3P4k4iJI6rcjs/qOWVPgDkOl4YxWAgKFGEyou3y
-         ZEMHuKqBcTIJKEq0k1juQqqWECXl7m0DV05zh4AwJ98oVG9lz618GdmGsDvoguRN3E
-         IYFKMd1aKt9cbHYrTA3ZF0ZBJFVOHZfOwSx6j2I2W6kOL+dPQqMMpVoOiRXtTuUvCF
-         KrwtRSWsLBbOIRIXmOulQyyaUkCQTexTEn4hW3Y5/zETHAuJsWKQcwVxbmiOAVVsyD
-         /x6aU27LAIQCQ==
-Message-ID: <e45cd7bb6dce2b8b2f08d3b3bd96bb06.sboyd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+        Wed, 29 Mar 2023 17:21:43 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2343F1711;
+        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-17683b570b8so17659270fac.13;
+        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680124901;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=c5JObOnJhn7Qa3BJtOdllaC7YuPWVzUh4uR8zZIj5qw=;
+        b=UIMWJFisKjBZbJG8KhqaOmyLuuUtyjz8jPVeNiOlU57ccMw+ibuLsl2TBGsRh/kLPC
+         g1AjoF1BpfCRBQgo3LNO8y83kB3vh9uyEqjrIWrRKcA+2WC1HQhFkjH9Phy7cHKq2OJ9
+         pCb+5JIOiBi80T4pzxR4mkoia+J1WjZGzGnfyvq09Zd4uMk4DkFe1d19K1C/h/QUulpt
+         lYaEKARCs5UVUhTGhCK7fUdcXlXSeRMjUDuEiphQUXumoUn9RGgR7CnoBSKWZBirpDJz
+         V0IXorir+CWkm7uJaXM2e3rwEVyev4d4G39KaeaokfCRfII6PSmjnI/W16weU7slwvcf
+         RoYQ==
+X-Gm-Message-State: AAQBX9dnl+6X/WcZxAmL5mxG8hyBcG5PA1TO9LNR//DRtp7XA4P4bwVB
+        Jd165V53Ft3MrxCwOfSfUFR45FrRWA==
+X-Google-Smtp-Source: AK7set/kayRJ98J+4lkqmTCrvYqUbSg+NPKMc5ZxUa6OI9imoPRJExO5faQF3fCKQ5rShmnmkvcw7Q==
+X-Received: by 2002:a05:6870:899c:b0:17b:1a4f:adfe with SMTP id f28-20020a056870899c00b0017b1a4fadfemr11592033oaq.10.1680124901366;
+        Wed, 29 Mar 2023 14:21:41 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id tk6-20020a05687189c600b0017703cd8ff6sm12167748oab.7.2023.03.29.14.21.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Mar 2023 14:21:40 -0700 (PDT)
+Received: (nullmailer pid 86888 invoked by uid 1000);
+        Wed, 29 Mar 2023 21:21:39 -0000
+From:   Rob Herring <robh@kernel.org>
+Subject: [PATCH 0/5] Remove acpi.h implicit include of of.h
+Date:   Wed, 29 Mar 2023 16:20:41 -0500
+Message-Id: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <458d454e-64ba-849a-38cb-88bf016f5a2e@gmail.com>
-References: <20230328021912.177301-1-ychuang570808@gmail.com> <b7977069-4f82-76a1-10c1-b6400862c2c4@gmail.com> <c37e1f3a40c404acd81c2c9d5b28b340.sboyd@kernel.org> <129cf4b6-b3b5-2a12-5911-37e70a624812@gmail.com> <e5221cd020bc60513df6a1c1859e1acc.sboyd@kernel.org> <ad908782-8291-4240-d88e-61dff5a05ef7@gmail.com> <1d379f28f54fd025f687bfcb71e4bae5.sboyd@kernel.org> <dd7940fd-bf63-552c-6e2e-05eff5fdb636@gmail.com> <b816411c301e2b3afe9c3df36728f946.sboyd@kernel.org> <458d454e-64ba-849a-38cb-88bf016f5a2e@gmail.com>
-Subject: Re: [PATCH v6 08/12] arm64: dts: nuvoton: Add initial ma35d1 device tree
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-To:     Jacky Huang <ychuang570808@gmail.com>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, p.zabel@pengutronix.de,
-        robh+dt@kernel.org
-Date:   Wed, 29 Mar 2023 10:52:01 -0700
-User-Agent: alot/0.10
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKmrJGQC/x2N0QrCMAwAf2Xk2cDWaJn+iviQddEGSi0pE2Hs3
+ w0+3sFxO3QxlQ63YQeTj3Z9V4fpNEDKXF+CujpDGAONFK7IqSlm4VUMUxGuW8MYL0TTHOYzRfB
+ y4S64GNeUva1bKS6byVO//9X9cRw/n6ivRnoAAAA=
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Marc Zyngier <maz@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-acpi@vger.kernel.org,
+        devicetree@vger.kernel.org
+X-Mailer: b4 0.13-dev
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Jacky Huang (2023-03-28 23:02:31)
->=20
-> On 2023/3/29 =E4=B8=8A=E5=8D=88 11:54, Stephen Boyd wrote:
-> > Quoting Jacky Huang (2023-03-28 20:43:23)
-> >
-> >> We just employ regmap mechansim for the access to REG_SYS_RLKTZNS regi=
-ster.
-> >> Is this implementation OK for you?=C2=A0 Thank you.
-> >>
-> > No. Why can't that be a hwspinlock? Or why can't it be unlocked all the
-> > time and rely on software spinlocks in the kernel to prevent concurrent
-> > access to the registers accessed by a driver, like a lock for the clk
-> > registers and a lock for the reset registers, etc. Or if no two clks or
-> > resets exist within one 32-bit word then no lock is necessary.
->=20
-> You gave a good suggestion here. Yes, of course we can let it be=20
-> unlocked all the time.
-> We can unlock the "register lock" before entering Linux.
-> As a result, the unlonk and lock register related code is not required.
-> Thus, we can remove syscon from the clock controller node.
->=20
-> If you agree with this, we will modify it in the next version.
->=20
+In the process of cleaning up DT includes, I found that some drivers 
+using DT functions could build without any explicit DT include. I traced 
+the include to be coming from acpi.h via irqdomain.h.
 
-Sure, that works.
+I was pleasantly surprised that there were not 100s or even 10s of 
+warnings when breaking the include chain. So here's the resulting 
+series.
+
+I'd suggest Rafael take the whole series. Alternatively,the fixes can be 
+applied in 6.4 and then the last patch either after rc1 or the 
+following cycle.
+
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+Rob Herring (5):
+      iio: adc: ad7292: Add explicit include for of.h
+      staging: iio: resolver: ad2s1210: Add explicit include for of.h
+      net: rfkill-gpio: Add explicit include for of.h
+      serial: 8250_tegra: Add explicit include for of.h
+      ACPI: Replace irqdomain.h include with struct declarations
+
+ drivers/iio/adc/ad7292.c                | 1 +
+ drivers/staging/iio/resolver/ad2s1210.c | 1 +
+ drivers/tty/serial/8250/8250_tegra.c    | 1 +
+ include/linux/acpi.h                    | 4 +++-
+ net/rfkill/rfkill-gpio.c                | 1 +
+ 5 files changed, 7 insertions(+), 1 deletion(-)
+---
+base-commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
+change-id: 20230329-acpi-header-cleanup-665331828436
+
+Best regards,
+-- 
+Rob Herring <robh@kernel.org>
+
