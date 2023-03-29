@@ -2,134 +2,227 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439DEC6FD18
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEA6C77B62
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 23:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjC2Vke (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 17:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
+        id S230498AbjC2XXq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 19:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbjC2Vkd (ORCPT
+        with ESMTP id S230091AbjC2XXp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 17:40:33 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F543C3B;
-        Wed, 29 Mar 2023 14:40:32 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id r14so7062917oiw.12;
-        Wed, 29 Mar 2023 14:40:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680126032;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=7/qJzs/hW1pmjhUHORKknf7d39R3TDMqbem1vTF6rpE=;
-        b=upXT3YGycA3MdO2RxV8X0Saw4DfWqH0es4Fa1QRAhlQ10iru6SSaRkdeTGLMKdJJdy
-         Jct5VxIr87A0zwuoQtex6n3XgL+Z8m5plWgVBF6+xEyX7OlMdr43ljCiFUwYqIOdvJO1
-         vkCZ+lvLpzvEWs9U+Mlu2CB19s8sCEEVUzRS91CGiW6BgYXTdB18sTCgbhUTUFN11k7M
-         HMXlkNV9+DT5tczjGPi1S4OQR0gY/f0+g8ext7dERO99kI5E1pKHeEuG9mJQYshoi4Bp
-         MlCHh6GJe3ZdrfhWTyTX+I3kFtBzPIj2U7pg1DRvsWlzMjOWfW199T0/vwUiTCFd+KQl
-         gmEA==
-X-Gm-Message-State: AO0yUKWqlXGiKMaf74jPtZvsL65Beaygk6eMEPxUKyCEaUKDpBZAeNLA
-        ag2FXpzVgNjfsIb+7jo7Gw==
-X-Google-Smtp-Source: AK7set8HqExr54n7KB+fv5GbG1F5mEostBq+sitshFffuWryo7IxT/gigISCoOi3ymblpK2cBSZfTg==
-X-Received: by 2002:a05:6808:984:b0:387:7b92:8b97 with SMTP id a4-20020a056808098400b003877b928b97mr8519158oic.43.1680126031713;
-        Wed, 29 Mar 2023 14:40:31 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id n67-20020acabd46000000b0038919e6eb5esm4278794oif.3.2023.03.29.14.40.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 14:40:31 -0700 (PDT)
-Received: (nullmailer pid 112250 invoked by uid 1000);
-        Wed, 29 Mar 2023 21:40:30 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Brenda Streiff <brenda.streiff@ni.com>
-Cc:     Jason Smith <jason.smith@ni.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Wed, 29 Mar 2023 19:23:45 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18B335B6;
+        Wed, 29 Mar 2023 16:23:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680132204; x=1711668204;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=4EafHpwZJ07cRRVjKdnM9mw9iawxEjekbPGw4y0jcXY=;
+  b=PgK/hDjeRC1Tm/pL06qaYXDzGLL15gey1SXJrZeNNTrQtKHxISgdQU5e
+   K9umHpKzOe5pu48EWWzvl/nWJzmWnHJ9P9n1J0Tp5irkX7bF50BgpWeWH
+   SITxVp5riENQQnl/BcOknGqJLn5h6J+aHiE5QlgE+ZIXNUBsgKJb03Y3P
+   1w3tT7Wi2J86nO+NCft0cAVcVd7oJD8edSH0sf+ZCrTXSs3ybyBqLEUto
+   4s4Fr+A8Jay+8UIGpUPNi9j09lYLTD4ebmpIoKV5VdJJeDS+l8MVW/9Tk
+   zDQVJhOYIJNg4Gmbw14GMpskUD9XkPUk6SYYQE70DjEdjTIil4PgnZO0x
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="341041052"
+X-IronPort-AV: E=Sophos;i="5.98,301,1673942400"; 
+   d="scan'208";a="341041052"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 16:23:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="930514062"
+X-IronPort-AV: E=Sophos;i="5.98,301,1673942400"; 
+   d="scan'208";a="930514062"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga006.fm.intel.com with ESMTP; 29 Mar 2023 16:23:24 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 29 Mar 2023 16:23:23 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 29 Mar 2023 16:23:23 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Wed, 29 Mar 2023 16:23:23 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Wed, 29 Mar 2023 16:23:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nLlg/v2DdmsaUBnGAgHo8/peOBB8I2cZinIObskyAXcCnhUeSGhNjyPEQZ89vCWEnVQGSDNA8ZEMyntRbQqEscFqxLyLUdyBb+mZ/npSYNhhGu/0adCiRWrj8a7jGrA5MLnaJguI488HFPH9DAl+/F88jCLBxPlniBj11oCHPiR47yxSRAVB5x8FGE+ggV5ozqZDMs3B3956cApLAHL4c4LuFJDiVE1+y2C+yP3EalWYhzH77XOwx08ad6R3JUzy+NFEtoWaPfHDGKPL/7E11EBBQwfGSDJLUE1C2/pUM/AO99oqeDz+YTouaIdh46Ooy+LUPYo0r+R+FP7YupSBqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4EafHpwZJ07cRRVjKdnM9mw9iawxEjekbPGw4y0jcXY=;
+ b=IuGaI7RjHK/aiQ2MzoSYvSj1WBiLI2zepB0akljO3njt8Cp7s2lhRnUGohBI5nR0b6K08IOgM1bvU3ob4G+12/kMtsFqhSU79jDluQ/R5Sl9Rp/agov0gu6mC62Y22sABJ6qlb9nNV6Y4fA6RPgQAXrjtsETC4quo9JKZrjAYaZ4UuLmF7O2Mintybf2QpAVORPDNfhoGU1Em3QwlTF1Oj94fw2SaexeKbTfOUIxZal9mWenXtNE3FpT/voO8pMahLpordkVEiztcpWLwapAQHjwq/6qmLWMsSYZE2vnKDJxGG6GD++nEBOroAYpws8L92lGH4UJBodgetc+3/FLWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by IA1PR11MB8247.namprd11.prod.outlook.com (2603:10b6:208:449::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.32; Wed, 29 Mar
+ 2023 23:23:21 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::ea5c:3d05:5d92:bc04]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::ea5c:3d05:5d92:bc04%8]) with mapi id 15.20.6222.035; Wed, 29 Mar 2023
+ 23:23:20 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Rob Herring <robh@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Gratian Crisan <gratian.crisan@ni.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-In-Reply-To: <20230329154235.615349-2-brenda.streiff@ni.com>
-References: <20230329154235.615349-1-brenda.streiff@ni.com>
- <20230329154235.615349-2-brenda.streiff@ni.com>
-Message-Id: <168012595979.110912.13924121978276239170.robh@kernel.org>
-Subject: Re: [PATCH tty-next 1/2] dt-bindings: serial: ni,ni16650: add
- bindings
-Date:   Wed, 29 Mar 2023 16:40:30 -0500
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "Marc Zyngier" <maz@kernel.org>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [PATCH 0/5] Remove acpi.h implicit include of of.h
+Thread-Topic: [PATCH 0/5] Remove acpi.h implicit include of of.h
+Thread-Index: AQHZYoSCF122w+cVw0Skw6T+0Rx/SK8SZUsg
+Date:   Wed, 29 Mar 2023 23:23:20 +0000
+Message-ID: <CO1PR11MB508970B2F338C9176CE32DD3D6899@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
+In-Reply-To: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB5089:EE_|IA1PR11MB8247:EE_
+x-ms-office365-filtering-correlation-id: 32aa7b70-246b-40b3-7cc4-08db30ac95c6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rakcu5VYvPmrNTT1IWayzZAOAHE3SMcJlwsHISLtPzqpTlaQhsl8mW6L5JopYe50UZS+l0ljbeZsL7d2wA5ArX+e0UCDGmIsEIVV4yhWWf2JNfkswBbr5JN5wX8a5lA4sx4IcYCHamKSL68vDZiUsalaaxsuSpf5zJ1d4I/b/hAlaa/TeVr4AUY32THnEOGw8wBbNQkWEVuKbtL7wNkoADdTtDJuizjBX7VGnXnAvH9sSV8lOoYoKrH51O48g5QjL9KGQeQc8lq4eSyxHjc5w8FhwNz+esr59KEi/yy1ryvc0I8mvoiSdqlptHDHwni853bn+Dw2MGNukQijyXogCz7kT9H0WO2K/f0cGCTdaEPKjMKQnZx+MeBKQXM/XjmjTxjfyhou74GYP2BaK/lPp6jv9SatuMOxE8rl1PMEqMetvtgwENJ7nl6PrqYn7loEVJTunZf8xrBdvOV22TK4Z7UP5dIFGUwW2Kr5YIVGfdT9GvZXot1sbKsk72qpE15DsWoui4tSVC/uOyR2YZP9ACPDQErmfUuUB3If4wzhi5Hp1XwKf301BADaBL0b/ekW/RSwAvTcM2abE1MQd3YwYHYKNVV8sgpNZPpcTRkSfEaYaBdT0Tx0Dnu3poD0y5M8PWJYJNPveWnCbpmLP65mtw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(396003)(376002)(366004)(346002)(39860400002)(451199021)(86362001)(2906002)(38070700005)(33656002)(55016003)(76116006)(53546011)(83380400001)(478600001)(71200400001)(66946007)(54906003)(38100700002)(7696005)(9686003)(5660300002)(8676002)(66446008)(66556008)(66476007)(64756008)(316002)(4326008)(122000001)(6506007)(26005)(110136005)(186003)(8936002)(52536014)(82960400001)(921005)(7416002)(41300700001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eldMRU03dFRDd3VpN25VSlE0dTY3Z2hJMjhZT3BIWVpyZmdNVDZySFp0RWYr?=
+ =?utf-8?B?b2Yvamxvb3VtdmV6bnc0TVBxcWFvUU5XS09tQ3ZpQmp5SVZWbDVwNnUxYlQ0?=
+ =?utf-8?B?OEJIWnpHTWUzVmhlajF0UWhWRXplbzBSVk0rSzJqd0twWmY1TEE4KzVlODlS?=
+ =?utf-8?B?T1ZhK3BpenJwOUdrbFdZYmJaZUR3SENWSm4yUmtvMCt3WVVjRGlnemxpZ1FN?=
+ =?utf-8?B?aGduaFdWMlR6WUZaQTZrNGltRE9GamtGUmNOdTJWc0tFWWtGQ2t2Um5lSG9m?=
+ =?utf-8?B?UmpOY1NHNVRFNXdubzVtcm51dC9VMVdDR2hpVXViMjVhWWFkem1XOHVJaGhr?=
+ =?utf-8?B?NkVxZnBaSlVOSk1PanJtdVl0eVB3ME1NQ2sxbS9DZVdnWXBlaTRSczhxNFJs?=
+ =?utf-8?B?bWpZZDNub0tGSTNUUzdmT2Y0MXUwVklBSHlQTnZWWlQ3M3ZGRDlWU01DZnJ6?=
+ =?utf-8?B?eklrejZ3Z0huV3BUZ29yUC80UHhyVDJvTENWV1E0U1ZYcXpIY1pRd2kwYzNr?=
+ =?utf-8?B?c1R0czN4TktTbWhUd0JQeEw5bndIVnZucndUejBISk0zbGtMY09qTkF1Q3gr?=
+ =?utf-8?B?WWMxRk9lMEUzalBhV0lRMlRDT3ZUOGNDOFpKck9CWU9BSy8rcGVBcHpHZGY4?=
+ =?utf-8?B?Mmx6U2czaXh2ckFSUEVFOEFZNlR1djloUERaYWk0TTY3T0M2aG5jU0EwaVBx?=
+ =?utf-8?B?UXEwN1pneVUvS0g1a0FrSk9YMzZnSFMxT05EYXNhSTFWRVp5cUlyWkdrRlVF?=
+ =?utf-8?B?RnZndVJzVUpSLytsKzUySTJRRStTVFdLbHUrSHZ6MTJEYTk2TzVIZjZMSGdD?=
+ =?utf-8?B?a3ZJa2dvaGVnb1hmUzFJYm9wWDRoQlYrdTJBLzJIRU1WVHdvNGhVQ0dQTGhz?=
+ =?utf-8?B?VUlCSnlVTldRMlVYeFpQZkJUSllEc0VGNmd6S1NTbFlLT0dYRnpaNW5hZHov?=
+ =?utf-8?B?TmJWSHUwb1I5L3JEK1hsRXBucWp5NDBTVThwTitGSlRtOW9DYUppUzlCNGhh?=
+ =?utf-8?B?dzByWis2dkVtamlEVDBtV3p1MlcwcGZ6b0Y1bXNEQjY5VHdzYUFYT1lNZ1NL?=
+ =?utf-8?B?SUhLTjd0dW11SmxqYUxQK01mQTczT0g1dVZjby83bVBBcGJrV2x4b0x4NHI5?=
+ =?utf-8?B?M3BSVWlFSUxndUp1amwzbHgvT0Q3a2EzYklTUm1FU0FTaEN6eVRXQS9MRGJZ?=
+ =?utf-8?B?em0rVko5bFY1OElJVmd2a0hpZWRadDB3RVk0aEVQVWNOaFhSWVRUNUZtZ0tP?=
+ =?utf-8?B?Tk5ySmxHU3gwVlZ3SXNYUndPODFHME0zNWJsNFBTSGQ0YlNEakdqT1cxMEs3?=
+ =?utf-8?B?K1F2MTRKVnBma3l2bWZOeWZ4cUNpK3RZUnI4QlRiYlVnR3NsekJUMGJqd3pX?=
+ =?utf-8?B?V1orSHFGUnMvcENyNTBzckFRM2NIQXpzWVBDM3lJaGJXWS93b01BZEF5SjMz?=
+ =?utf-8?B?bWt4dDZjenAxMEdMZ3ArbW13YU5LUUExS0ErY0ZFOHBCRFZXdzR2ZGtHNUVv?=
+ =?utf-8?B?aE45UkpMcWFtY2cwTGYyajB4WURJandQdE5BRndsVTVYbGRlc0FqQnI5dXVu?=
+ =?utf-8?B?b3BXazFRT0FTcnZ0WHJiTVByLzVhZ3pRQWxUVW9VenRxeEhsQVVuRWljNnJN?=
+ =?utf-8?B?Y3ljL1ArZTRqTXVUNE5URWFuV3V3SkVrOFZxV1lWWmFGWHlEU0YvWHg3cjQ5?=
+ =?utf-8?B?eVRqYVVuS2psTjkyNjJIWkpIRmRMeUQyS0RDNnl2VkY1SHdPbWhsalByZEFy?=
+ =?utf-8?B?L2JkbzBrUmZKK1hzT05BaUxUejJKeXhwNnFOR2JCay9yTlk1VDB5dFVaaUc0?=
+ =?utf-8?B?bXA4dnVoaGtJSElCWUNyblh3VndDZGJldGVQbGU1ZUM3L3M1TDIvYTZkZ2ho?=
+ =?utf-8?B?enBXL2d0djNxYlJZSVFrUUhPdDMxcDQ5bGt3VjVQOGMzeVJuWHFJeXNMOU96?=
+ =?utf-8?B?UnR3a0pYdnViMHRHRmtBQlJXeEZqVWY2bHVGYVI4UXkzNWp4M0EyQlMrUlNG?=
+ =?utf-8?B?cGhNWlYrdXFHZGorbXcxTjdTdUZQcndsYmZubkhmT3hWT0pMd0R2c1QwNzdY?=
+ =?utf-8?B?RERhaExVRUwweGVkRzFYN3ovMFlVdThQM2Vqem9xbFVGOVEvZEJzVVpEYlZx?=
+ =?utf-8?Q?Xyo216EKqqFeb7uZzgR+91xt8?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32aa7b70-246b-40b3-7cc4-08db30ac95c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2023 23:23:20.8343
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xvQ0H2nRC/6pcyh4kT+QV8UpZSeRhMpI3mrSfxV+maxoZ8rmZpv0Ur3/UtVnGuqBZ2BWgRNI4f1PKq/OlPcXqM6xVnWN0IF8m9lLe8FEZVc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8247
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-On Wed, 29 Mar 2023 10:42:34 -0500, Brenda Streiff wrote:
-> Add bindings for the NI 16550 UART.
-> 
-> Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
-> Cc: Gratian Crisan <gratian.crisan@ni.com>
-> Cc: Jason Smith <jason.smith@ni.com>
-> ---
->  .../bindings/serial/ni,ni16550.yaml           | 53 +++++++++++++++++++
->  1 file changed, 53 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/ni,ni16550.yaml
-> 
-
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: compatible: ['ni,ni16550', 'ns16550a'] is too long
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: Unevaluated properties are not allowed ('compatible' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['ni,ni16550', 'ns16550a'] is too long
-	['ni,ni16550', 'ns16550a'] is too short
-	'ns8250' was expected
-	'ns16450' was expected
-	'ns16550' was expected
-	'ns16550a' was expected
-	'ns16850' was expected
-	'aspeed,ast2400-vuart' was expected
-	'aspeed,ast2500-vuart' was expected
-	'intel,xscale-uart' was expected
-	'mrvl,pxa-uart' was expected
-	'nuvoton,wpcm450-uart' was expected
-	'nuvoton,npcm750-uart' was expected
-	'nvidia,tegra20-uart' was expected
-	'nxp,lpc3220-uart' was expected
-	'ni,ni16550' is not one of ['exar,xr16l2552', 'exar,xr16l2551', 'exar,xr16l2550']
-	'ni,ni16550' is not one of ['altr,16550-FIFO32', 'altr,16550-FIFO64', 'altr,16550-FIFO128', 'fsl,16550-FIFO64', 'fsl,ns16550', 'andestech,uart16550', 'nxp,lpc1850-uart', 'opencores,uart16550-rtlsvn105', 'ti,da830-uart']
-	'ni,ni16550' is not one of ['ns16750', 'cavium,octeon-3860-uart', 'xlnx,xps-uart16550-2.00.b', 'ralink,rt2880-uart']
-	'ni,ni16550' is not one of ['nuvoton,npcm845-uart']
-	'ni,ni16550' is not one of ['ralink,mt7620a-uart', 'ralink,rt3052-uart', 'ralink,rt3883-uart']
-	'ni,ni16550' is not one of ['mediatek,mt7622-btif', 'mediatek,mt7623-btif']
-	'mrvl,mmp-uart' was expected
-	'ni,ni16550' is not one of ['nvidia,tegra30-uart', 'nvidia,tegra114-uart', 'nvidia,tegra124-uart', 'nvidia,tegra210-uart', 'nvidia,tegra186-uart', 'nvidia,tegra194-uart', 'nvidia,tegra234-uart']
-	'ralink,rt2880-uart' was expected
-	'mediatek,mtk-btif' was expected
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/8250.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: Unevaluated properties are not allowed ('compatible', 'transceiver' were unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/8250.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230329154235.615349-2-brenda.streiff@ni.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iIEhlcnJpbmcgPHJv
+YmhAa2VybmVsLm9yZz4NCj4gU2VudDogV2VkbmVzZGF5LCBNYXJjaCAyOSwgMjAyMyAyOjIxIFBN
+DQo+IFRvOiBSYWZhZWwgSi4gV3lzb2NraSA8cmFmYWVsQGtlcm5lbC5vcmc+OyBMZW4gQnJvd24g
+PGxlbmJAa2VybmVsLm9yZz47DQo+IE1hcmNlbG8gU2NobWl0dCA8bWFyY2Vsby5zY2htaXR0MUBn
+bWFpbC5jb20+OyBMYXJzLVBldGVyIENsYXVzZW4NCj4gPGxhcnNAbWV0YWZvby5kZT47IE1pY2hh
+ZWwgSGVubmVyaWNoIDxNaWNoYWVsLkhlbm5lcmljaEBhbmFsb2cuY29tPjsNCj4gSm9uYXRoYW4g
+Q2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz47IEdyZWcgS3JvYWgtSGFydG1hbg0KPiA8Z3JlZ2to
+QGxpbnV4Zm91bmRhdGlvbi5vcmc+OyBKb2hhbm5lcyBCZXJnIDxqb2hhbm5lc0BzaXBzb2x1dGlv
+bnMubmV0PjsNCj4gRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgRXJpYyBE
+dW1hemV0DQo+IDxlZHVtYXpldEBnb29nbGUuY29tPjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2Vy
+bmVsLm9yZz47IFBhb2xvIEFiZW5pDQo+IDxwYWJlbmlAcmVkaGF0LmNvbT47IEppcmkgU2xhYnkg
+PGppcmlzbGFieUBrZXJuZWwub3JnPjsgVGhpZXJyeSBSZWRpbmcNCj4gPHRoaWVycnkucmVkaW5n
+QGdtYWlsLmNvbT47IEpvbmF0aGFuIEh1bnRlciA8am9uYXRoYW5oQG52aWRpYS5jb20+OyBNYXJj
+DQo+IFp5bmdpZXIgPG1hekBrZXJuZWwub3JnPg0KPiBDYzogbGludXgtaWlvQHZnZXIua2VybmVs
+Lm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtDQo+IHN0YWdpbmdAbGlz
+dHMubGludXguZGV2OyBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5vcmc7DQo+IG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiB0
+ZWdyYUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFjcGlAdmdlci5rZXJuZWwub3JnOyBkZXZpY2V0
+cmVlQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBbUEFUQ0ggMC81XSBSZW1vdmUgYWNwaS5o
+IGltcGxpY2l0IGluY2x1ZGUgb2Ygb2YuaA0KPiANCj4gSW4gdGhlIHByb2Nlc3Mgb2YgY2xlYW5p
+bmcgdXAgRFQgaW5jbHVkZXMsIEkgZm91bmQgdGhhdCBzb21lIGRyaXZlcnMNCj4gdXNpbmcgRFQg
+ZnVuY3Rpb25zIGNvdWxkIGJ1aWxkIHdpdGhvdXQgYW55IGV4cGxpY2l0IERUIGluY2x1ZGUuIEkg
+dHJhY2VkDQo+IHRoZSBpbmNsdWRlIHRvIGJlIGNvbWluZyBmcm9tIGFjcGkuaCB2aWEgaXJxZG9t
+YWluLmguDQo+IA0KPiBJIHdhcyBwbGVhc2FudGx5IHN1cnByaXNlZCB0aGF0IHRoZXJlIHdlcmUg
+bm90IDEwMHMgb3IgZXZlbiAxMHMgb2YNCj4gd2FybmluZ3Mgd2hlbiBicmVha2luZyB0aGUgaW5j
+bHVkZSBjaGFpbi4gU28gaGVyZSdzIHRoZSByZXN1bHRpbmcNCj4gc2VyaWVzLg0KPiANCj4gSSdk
+IHN1Z2dlc3QgUmFmYWVsIHRha2UgdGhlIHdob2xlIHNlcmllcy4gQWx0ZXJuYXRpdmVseSx0aGUg
+Zml4ZXMgY2FuIGJlDQo+IGFwcGxpZWQgaW4gNi40IGFuZCB0aGVuIHRoZSBsYXN0IHBhdGNoIGVp
+dGhlciBhZnRlciByYzEgb3IgdGhlDQo+IGZvbGxvd2luZyBjeWNsZS4NCj4gDQoNCk5pY2UgdGhh
+dCB0aGVyZSBhcmVuJ3QgdG9vIG1hbnkgZXJyb3JzLiBVc2Ugb2YgdGhlIGZvcndhcmQgZGVjbGFy
+YXRpb25zIG1ha2VzIHNlbnNlIHJhdGhlciB0aGFuIGluY2x1ZGluZyBhIGJ1bmNoIG9mIHVucmVs
+YXRlZCBkZWZpbml0aW9ucy4gTmljZS4NCg0KUmV2aWV3ZWQtYnk6IEphY29iIEtlbGxlciA8amFj
+b2IuZS5rZWxsZXJAaW50ZWwuY29tPg0KDQpUaGFua3MsDQpKYWtlDQoNCj4gU2lnbmVkLW9mZi1i
+eTogUm9iIEhlcnJpbmcgPHJvYmhAa2VybmVsLm9yZz4NCj4gLS0tDQo+IFJvYiBIZXJyaW5nICg1
+KToNCj4gICAgICAgaWlvOiBhZGM6IGFkNzI5MjogQWRkIGV4cGxpY2l0IGluY2x1ZGUgZm9yIG9m
+LmgNCj4gICAgICAgc3RhZ2luZzogaWlvOiByZXNvbHZlcjogYWQyczEyMTA6IEFkZCBleHBsaWNp
+dCBpbmNsdWRlIGZvciBvZi5oDQo+ICAgICAgIG5ldDogcmZraWxsLWdwaW86IEFkZCBleHBsaWNp
+dCBpbmNsdWRlIGZvciBvZi5oDQo+ICAgICAgIHNlcmlhbDogODI1MF90ZWdyYTogQWRkIGV4cGxp
+Y2l0IGluY2x1ZGUgZm9yIG9mLmgNCj4gICAgICAgQUNQSTogUmVwbGFjZSBpcnFkb21haW4uaCBp
+bmNsdWRlIHdpdGggc3RydWN0IGRlY2xhcmF0aW9ucw0KPiANCj4gIGRyaXZlcnMvaWlvL2FkYy9h
+ZDcyOTIuYyAgICAgICAgICAgICAgICB8IDEgKw0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9yZXNv
+bHZlci9hZDJzMTIxMC5jIHwgMSArDQo+ICBkcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX3Rl
+Z3JhLmMgICAgfCAxICsNCj4gIGluY2x1ZGUvbGludXgvYWNwaS5oICAgICAgICAgICAgICAgICAg
+ICB8IDQgKysrLQ0KPiAgbmV0L3Jma2lsbC9yZmtpbGwtZ3Bpby5jICAgICAgICAgICAgICAgIHwg
+MSArDQo+ICA1IGZpbGVzIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0K
+PiAtLS0NCj4gYmFzZS1jb21taXQ6IGZlMTVjMjZlZTI2ZWZhMTE3NDFhN2I2MzJlOWYyM2IwMWFj
+YTRjYzYNCj4gY2hhbmdlLWlkOiAyMDIzMDMyOS1hY3BpLWhlYWRlci1jbGVhbnVwLTY2NTMzMTgy
+ODQzNg0KPiANCj4gQmVzdCByZWdhcmRzLA0KPiAtLQ0KPiBSb2IgSGVycmluZyA8cm9iaEBrZXJu
+ZWwub3JnPg0KDQo=
