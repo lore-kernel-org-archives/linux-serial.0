@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06580C74A5B
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6F0C6FD18
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbjC2VVo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 17:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
+        id S230111AbjC2VVx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 17:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjC2VVn (ORCPT
+        with ESMTP id S229842AbjC2VVr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 17:21:43 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2343F1711;
-        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-17683b570b8so17659270fac.13;
-        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
+        Wed, 29 Mar 2023 17:21:47 -0400
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5019A1;
+        Wed, 29 Mar 2023 14:21:43 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id cm7-20020a056830650700b006a11f365d13so7668014otb.0;
+        Wed, 29 Mar 2023 14:21:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680124901;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c5JObOnJhn7Qa3BJtOdllaC7YuPWVzUh4uR8zZIj5qw=;
-        b=UIMWJFisKjBZbJG8KhqaOmyLuuUtyjz8jPVeNiOlU57ccMw+ibuLsl2TBGsRh/kLPC
-         g1AjoF1BpfCRBQgo3LNO8y83kB3vh9uyEqjrIWrRKcA+2WC1HQhFkjH9Phy7cHKq2OJ9
-         pCb+5JIOiBi80T4pzxR4mkoia+J1WjZGzGnfyvq09Zd4uMk4DkFe1d19K1C/h/QUulpt
-         lYaEKARCs5UVUhTGhCK7fUdcXlXSeRMjUDuEiphQUXumoUn9RGgR7CnoBSKWZBirpDJz
-         V0IXorir+CWkm7uJaXM2e3rwEVyev4d4G39KaeaokfCRfII6PSmjnI/W16weU7slwvcf
-         RoYQ==
-X-Gm-Message-State: AAQBX9dnl+6X/WcZxAmL5mxG8hyBcG5PA1TO9LNR//DRtp7XA4P4bwVB
-        Jd165V53Ft3MrxCwOfSfUFR45FrRWA==
-X-Google-Smtp-Source: AK7set/kayRJ98J+4lkqmTCrvYqUbSg+NPKMc5ZxUa6OI9imoPRJExO5faQF3fCKQ5rShmnmkvcw7Q==
-X-Received: by 2002:a05:6870:899c:b0:17b:1a4f:adfe with SMTP id f28-20020a056870899c00b0017b1a4fadfemr11592033oaq.10.1680124901366;
-        Wed, 29 Mar 2023 14:21:41 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680124903;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kTc/gK9GmP1rEeyJeskNOO/tBqpZ4qwY5m/PbyMALU8=;
+        b=6chlyWDT3cRgughqrwOB33jgJalt+fmIT9dgv/WwW82eeRnrdd0HoJjok1HdH+Xuam
+         D46u548U/W7WTvicSBVMqAijYxYheuI0nbStOfo/6SKeFvX8cZmSC5wWTdD1AjFFCbPg
+         Ke9Mt4mrzFaHq1aMO3YkqaO7Rg0lxrufdjGETxqwqRXL0BGfab6tQzj3wN6roz0lGc1Q
+         IdDzBMPAOY27FNXy5zq0E+plzuX4Cuodzwl+lCrKe3kBmtmxPVe4ZFcwZ2rZcyXFnsfK
+         lriCzslYdsDml8TPhH7jXVW/sC3TNPQD3d8Tr6hYrRsC6vme/yvxg/2L7R+JYuugIfHY
+         8kwg==
+X-Gm-Message-State: AO0yUKW1/56LMILzXzKRYNoa7sduzP0quDiE1Q3u4kijEgGeC9GefwZv
+        yjQAZak5rZmkKcvR2Ayztg==
+X-Google-Smtp-Source: AK7set+ImQpMRKobWrA54g0Rd55UmfWERJrl2wg/MsdZOQM+xtCfqAdTFVRvw6llUMom53yDtU8M2w==
+X-Received: by 2002:a05:6830:1bed:b0:69f:8fe4:38b9 with SMTP id k13-20020a0568301bed00b0069f8fe438b9mr10389551otb.21.1680124902837;
+        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id tk6-20020a05687189c600b0017703cd8ff6sm12167748oab.7.2023.03.29.14.21.39
+        by smtp.gmail.com with ESMTPSA id t16-20020a0568301e3000b0069f9209c84dsm9588548otr.60.2023.03.29.14.21.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 14:21:40 -0700 (PDT)
-Received: (nullmailer pid 86888 invoked by uid 1000);
+        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
+Received: (nullmailer pid 86897 invoked by uid 1000);
         Wed, 29 Mar 2023 21:21:39 -0000
 From:   Rob Herring <robh@kernel.org>
-Subject: [PATCH 0/5] Remove acpi.h implicit include of of.h
-Date:   Wed, 29 Mar 2023 16:20:41 -0500
-Message-Id: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
+Date:   Wed, 29 Mar 2023 16:20:45 -0500
+Subject: [PATCH 4/5] serial: 8250_tegra: Add explicit include for of.h
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAKmrJGQC/x2N0QrCMAwAf2Xk2cDWaJn+iviQddEGSi0pE2Hs3
- w0+3sFxO3QxlQ63YQeTj3Z9V4fpNEDKXF+CujpDGAONFK7IqSlm4VUMUxGuW8MYL0TTHOYzRfB
- y4S64GNeUva1bKS6byVO//9X9cRw/n6ivRnoAAAA=
+Message-Id: <20230329-acpi-header-cleanup-v1-4-8dc5cd3c610e@kernel.org>
+References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
+In-Reply-To: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
 To:     "Rafael J. Wysocki" <rafael@kernel.org>,
         Len Brown <lenb@kernel.org>,
         Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
@@ -76,38 +75,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In the process of cleaning up DT includes, I found that some drivers 
-using DT functions could build without any explicit DT include. I traced 
-the include to be coming from acpi.h via irqdomain.h.
+With linux/acpi.h no longer implicitly including of.h, add an explicit
+include of of.h to fix the following error:
 
-I was pleasantly surprised that there were not 100s or even 10s of 
-warnings when breaking the include chain. So here's the resulting 
-series.
-
-I'd suggest Rafael take the whole series. Alternatively,the fixes can be 
-applied in 6.4 and then the last patch either after rc1 or the 
-following cycle.
+drivers/tty/serial/8250/8250_tegra.c:68:15: error: implicit declaration of function 'of_alias_get_id' [-Werror=implicit-function-declaration]
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
-Rob Herring (5):
-      iio: adc: ad7292: Add explicit include for of.h
-      staging: iio: resolver: ad2s1210: Add explicit include for of.h
-      net: rfkill-gpio: Add explicit include for of.h
-      serial: 8250_tegra: Add explicit include for of.h
-      ACPI: Replace irqdomain.h include with struct declarations
+ drivers/tty/serial/8250/8250_tegra.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/iio/adc/ad7292.c                | 1 +
- drivers/staging/iio/resolver/ad2s1210.c | 1 +
- drivers/tty/serial/8250/8250_tegra.c    | 1 +
- include/linux/acpi.h                    | 4 +++-
- net/rfkill/rfkill-gpio.c                | 1 +
- 5 files changed, 7 insertions(+), 1 deletion(-)
----
-base-commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
-change-id: 20230329-acpi-header-cleanup-665331828436
+diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
+index e7cddeec9d8e..2509e7f74ccf 100644
+--- a/drivers/tty/serial/8250/8250_tegra.c
++++ b/drivers/tty/serial/8250/8250_tegra.c
+@@ -11,6 +11,7 @@
+ #include <linux/delay.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/reset.h>
+ #include <linux/slab.h>
+ 
 
-Best regards,
 -- 
-Rob Herring <robh@kernel.org>
+2.39.2
 
