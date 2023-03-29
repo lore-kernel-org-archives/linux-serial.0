@@ -2,104 +2,139 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AE7C77B60
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 08:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321B9C761A6
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 08:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbjC2Ioi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 04:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S231372AbjC2Ixa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 04:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbjC2Ioh (ORCPT
+        with ESMTP id S231311AbjC2IxV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 04:44:37 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26CF170F;
-        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso15430397pjb.3;
-        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
+        Wed, 29 Mar 2023 04:53:21 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF401FEE;
+        Wed, 29 Mar 2023 01:53:19 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id q102so13420372pjq.3;
+        Wed, 29 Mar 2023 01:53:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680079476;
+        d=gmail.com; s=20210112; t=1680079999;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=hYEpcK9HQA90h87FcKJb7lj4OLHxZGh1sA7YFQ0W1d0=;
-        b=PpMlDvDbCHBvEr7RIq8DRBYjSQc0DapVxTGUdNgkdjpez7Q9ryqDlSQV2i+PTrcYJL
-         R0p6iJ2JiHjHF5kodcu8d26bDQSmRYnCSVldNarOAyb5Yjrqad0P0tJO26kSXNNdUIIB
-         rAwSu85HSR8ThjnBs8MQwf0EhoD1Ok70XmAz2swZ7E+K3ADQW5BPTtL81AVnkqYggeZg
-         kRBoFIjM4KFt2JvCguzv0XsKZsGSU27+liIMHYvDduZgsqERVX+3SiLxOxdkFxzSt21a
-         u3VIDUMwxVuHiSFJ4UJUihSc2FnI8m7Ryye4AnX7xYWzJATPFs7VznqvlFmB8+u9vSXy
-         HOIg==
+        bh=l5acp6AQhlwlFMbsUP5vy6MLFKcrqnbcflb5MEM8oLg=;
+        b=TUpEINDEFayGGsDrfLfN0rTTbAU05RCkYmXKJG5fm5tCS8FdXpsrf574OqpT8ddkrN
+         Hpjms5xExEkX2Jp17FPQBL9Ev3v93QQTLTO8uWe5ZYb7etzt7LCNUX16iQd2grntbVWK
+         6DLumLoBXJnbYJjv3wtXGVRbwdurgXTuVzJORhqOIfg7f2liUzYLR0fIKcQvHK/k976h
+         Jck0t+YQRXd8yhCX4kvBjWUnP8MWXi63FvWMwE50pYVK9CoZnUML8MkVRprhDecOT9DE
+         0q8rjM5FSd7IdftgKTEx1DUGj54tKD93hOcfdet0tvftt336QAwRrSiW0V+vGcAJvhZs
+         fmUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680079476;
+        d=1e100.net; s=20210112; t=1680079999;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hYEpcK9HQA90h87FcKJb7lj4OLHxZGh1sA7YFQ0W1d0=;
-        b=4P134gysYjncZBm2vv8Jzo1Ykkq0rxf3kaTclqTEAXSLip1dB2vqHcgE6JgECX36TH
-         VPL1ywfi7/2qPe46YZ8zL8/magUo6iqpv5pipm9PmF1ngbUbm5DAqKtz9VaQ15HQK6ER
-         k4xSj5+WyZ7RIM4sABEIbPw5PNvH1v6ZpOr/bwuZ0dpfliUq/XjVVrKEJqgyVZfrCKNt
-         0LMDzlpEXUKwxhvorrK/3/QXi25nXF10ap+N85/tmYRbwKfi8Wat5wHukpkAadd2CVqi
-         y6JsWy+dpO75227la90pGZo6QaU1M4tEKio7Ypdh2Wj2MbmZbQZ0Pat7vYpMvLT+uQiW
-         ZegA==
-X-Gm-Message-State: AAQBX9e0KOhyntIZ62N8MIqcrnV96QCok41aGH/BftFO6ElHUQk4Hcqd
-        W4dc5E3/ycFFEpfbn4EPngs=
-X-Google-Smtp-Source: AKy350bAhAlegQKfwu/2+LY1ZHjWKyceXNFPIVYTvQkZT9D6R2AWO8cDGFFIrG8UkaF17gk0SQFxOw==
-X-Received: by 2002:a17:90b:4c45:b0:23d:35d9:d065 with SMTP id np5-20020a17090b4c4500b0023d35d9d065mr17712376pjb.48.1680079476257;
-        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
+        bh=l5acp6AQhlwlFMbsUP5vy6MLFKcrqnbcflb5MEM8oLg=;
+        b=TiQ9h+jpc27RzfD3Na6bBEZk1eyuorZh+LdzBoOzG3FzdA1j7H7GdZX+d30i6d3dqs
+         mDdDPGJTfctJwhxPzkpWKwfscBCnZtw6lzf9SAbDh+up5Wa2MFlFzQkUouZQIIZa9hmn
+         vLU1ppTuVkbi0wtK7YDR0NN8cCcbfr9dC7rMaNd0WKZfEQa41EtbkJcw4ysqD0xKetdC
+         dLFrs+e43mviNyXS80kuwMK8FGoU/QEqUdMPjS7c3EP6xbZqgLZK/aSNgHjCFnqvLnLW
+         Q/41jbGiH5h5LKxPFpP/MiUnDSxhsHNXVUusq1w5gP2cA7mo2iGP3Fgn8tnLy6+RYQ9I
+         AelA==
+X-Gm-Message-State: AAQBX9fz3LmuL5EImuZ3gs29rKZIirOlXzglAl6ZznbLNueaewHut/+z
+        YixcqFvFmX79Myk/eIleOfw=
+X-Google-Smtp-Source: AKy350a4gJx8D+PTIaoSFDTqQj66gF2BoV96BDG2IyVDNf4wsQKiAAfCez3ovrd5mXCyjmCqf8wKdQ==
+X-Received: by 2002:a17:90b:4c8b:b0:23f:44da:208d with SMTP id my11-20020a17090b4c8b00b0023f44da208dmr21373666pjb.47.1680079999329;
+        Wed, 29 Mar 2023 01:53:19 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id 63-20020a17090a0fc500b0023493354f37sm922823pjz.26.2023.03.29.01.44.33
+        by smtp.gmail.com with ESMTPSA id l3-20020a17090aec0300b002311ae14a01sm946541pjy.11.2023.03.29.01.53.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
-Message-ID: <7b5e42bc-0788-5208-e97e-10502da1c238@gmail.com>
-Date:   Wed, 29 Mar 2023 16:44:32 +0800
+        Wed, 29 Mar 2023 01:53:19 -0700 (PDT)
+Message-ID: <a1df76e0-3a60-eeb6-9120-3aa7103c2218@gmail.com>
+Date:   Wed, 29 Mar 2023 16:53:15 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH v6 07/12] dt-bindings: serial: Document ma35d1 uart
- controller
+Subject: Re: [PATCH v6 04/12] dt-bindings: reset: nuvoton: add binding for
+ ma35d1 IP reset control
 Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
+To:     Stephen Boyd <sboyd@kernel.org>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, p.zabel@pengutronix.de,
+        robh+dt@kernel.org
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>
 References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-8-ychuang570808@gmail.com>
- <be0bf335-39fc-2eac-ed37-112881bac675@linaro.org>
+ <20230328021912.177301-5-ychuang570808@gmail.com>
+ <81d8a7b18901c85fd24705977e6b9ce3.sboyd@kernel.org>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <be0bf335-39fc-2eac-ed37-112881bac675@linaro.org>
+In-Reply-To: <81d8a7b18901c85fd24705977e6b9ce3.sboyd@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Krzysztof,
+Dear Stephen,
 
 
-Thanks for your review.
+On 2023/3/29 上午 01:48, Stephen Boyd wrote:
+> Quoting Jacky Huang (2023-03-27 19:19:04)
+>> +description:
+>> +  The system reset controller can be used to reset various peripheral
+>> +  controllers in MA35D1 SoC.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: nuvoton,ma35d1-reset
+>> +
+>> +  '#reset-cells':
+>> +    const: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - '#reset-cells'
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  # system reset controller node:
+>> +  - |
+>> +
+>> +    system-management@40460000 {
+>> +        compatible = "nuvoton,ma35d1-sys", "syscon", "simple-mfd";
+>> +        reg = <0x40460000 0x200>;
+>> +
+>> +        reset-controller {
+>> +            compatible = "nuvoton,ma35d1-reset";
+>> +            #reset-cells = <1>;
+>> +        };
+> This is prescribing driver details to the system-management node. The
+> reset-controller node should be removed, the #reset-cells moved up one
+> level, and the "nuvoton,ma35d1-sys" should match a driver that registers
+> an auxiliary device for reset functionality. Is anything besides child
+> nodes like 'reset-controller' using the syscon@40460000?
 
+OK, I will modify it as:
 
-On 2023/3/29 下午 04:20, Krzysztof Kozlowski wrote:
-> On 28/03/2023 04:19, Jacky Huang wrote:
->> From: Jacky Huang <ychuang3@nuvoton.com>
->>
->> Add documentation to describe nuvoton ma35d1 uart driver bindings.
->>
-> This depends on clock patches, so it must be taken together.
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
-> Best regards,
-> Krzysztof
->
+     sys: system-management@40460000 {
+         compatible = "nuvoton,ma35d1-sys", "syscon",;
+         reg = <0x0 0x40460000 0x0 0x200>;
+         #reset-cells = <1>;
+         };
+     };
 
-OK, I will combine this patch with the clock patch.
+And my reset driver will use compatible "nuvoton,ma35d1-sys", instead of 
+"nuvoton,ma35d1-reset".
+There' no other node like reset-controller.
 
 
 Best regards,
-Jacky Huang
+Jack Huang
+
+
+
+
+
