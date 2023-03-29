@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CA6C6FD18
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 08:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AE7C77B60
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 08:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbjC2Ig4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 04:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S230368AbjC2Ioi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 04:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjC2Igz (ORCPT
+        with ESMTP id S229549AbjC2Ioh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 04:36:55 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2CBBA;
-        Wed, 29 Mar 2023 01:36:54 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id ja10so14241369plb.5;
-        Wed, 29 Mar 2023 01:36:54 -0700 (PDT)
+        Wed, 29 Mar 2023 04:44:37 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26CF170F;
+        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso15430397pjb.3;
+        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680079014;
+        d=gmail.com; s=20210112; t=1680079476;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=OvPiX5ci5jR6Qhqc7feloIWYWq1Fjc5rTBladfN4lhU=;
-        b=dyUUzHU4tiokOMdzwerinToRc3tjTR+C2f7uSV/CU3B1iLaLkYNetRFJGKuCklbpcr
-         YDJlVng+AupMYmc9dPSDC8MbwP7b1CHVPIpSAZe4Wq79d1re6XcParhQr0122TlpfYsN
-         Bos+pOP8Umxkk6HMP1V194HvHBUHBgqoyyQY+6mrd/OReaSfmDvS7mNoYuI/8tOahO+7
-         qu6v5NuPPEgImIxkPs55rNu6YF57vS+01omcdGFqFAeqV42gowpQ8pzdtBMnhQ4rLEN1
-         jAl1U3E3QbkzWUI51bULWKbd2bC/kUWyL7UxJXIlE6tn7JfurpIPrNaSm/hHSa+deKBc
-         xnbw==
+        bh=hYEpcK9HQA90h87FcKJb7lj4OLHxZGh1sA7YFQ0W1d0=;
+        b=PpMlDvDbCHBvEr7RIq8DRBYjSQc0DapVxTGUdNgkdjpez7Q9ryqDlSQV2i+PTrcYJL
+         R0p6iJ2JiHjHF5kodcu8d26bDQSmRYnCSVldNarOAyb5Yjrqad0P0tJO26kSXNNdUIIB
+         rAwSu85HSR8ThjnBs8MQwf0EhoD1Ok70XmAz2swZ7E+K3ADQW5BPTtL81AVnkqYggeZg
+         kRBoFIjM4KFt2JvCguzv0XsKZsGSU27+liIMHYvDduZgsqERVX+3SiLxOxdkFxzSt21a
+         u3VIDUMwxVuHiSFJ4UJUihSc2FnI8m7Ryye4AnX7xYWzJATPFs7VznqvlFmB8+u9vSXy
+         HOIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680079014;
+        d=1e100.net; s=20210112; t=1680079476;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OvPiX5ci5jR6Qhqc7feloIWYWq1Fjc5rTBladfN4lhU=;
-        b=FUpWm71DbbaLrhedojABm6JN979kzLeFxAARurQC19nyGYV6l9shzYKoiHLbsif3Sf
-         USmDsebHK+iP7JjtA2/ZJuSJ3yBdbY+1u9xaj2bJgzpTUMfQgXSsj/tHTwsDMYC8+AKX
-         AkzKRGoVosmpN9R2L10i98DONcJXin4p4gAwggiruqOYh4ysaCIOykSpjeT/69tNj3CG
-         lRt+vycXsJrQE6fLLVyCrHPLK+WVA67msbxhd/NMH3bgX6wwE/oGwW6fChMxUB5K0Yo1
-         Lsuqm3AjPgEwHu01XiQiGqZus/zQ10wAxJFWcEDzxAqs+uHFxJGYCAM5B/IZlsEdQBT1
-         /XFw==
-X-Gm-Message-State: AAQBX9dccCKNgsRQTvpAmB/CxlA27KMcChEZkfJsSQTFLguIQCt4Ochq
-        pz1XE0pz0pdHcTnvW5vXtpM=
-X-Google-Smtp-Source: AKy350YSk+R2sNpPl1vdd78/1HInutyjP12GZAdtg9vQ9/lJ/EkymFBWgcDnhrLRzz9RZGoi3crlrQ==
-X-Received: by 2002:a17:90b:33c7:b0:23d:4ffc:43e with SMTP id lk7-20020a17090b33c700b0023d4ffc043emr18456574pjb.38.1680079014215;
-        Wed, 29 Mar 2023 01:36:54 -0700 (PDT)
+        bh=hYEpcK9HQA90h87FcKJb7lj4OLHxZGh1sA7YFQ0W1d0=;
+        b=4P134gysYjncZBm2vv8Jzo1Ykkq0rxf3kaTclqTEAXSLip1dB2vqHcgE6JgECX36TH
+         VPL1ywfi7/2qPe46YZ8zL8/magUo6iqpv5pipm9PmF1ngbUbm5DAqKtz9VaQ15HQK6ER
+         k4xSj5+WyZ7RIM4sABEIbPw5PNvH1v6ZpOr/bwuZ0dpfliUq/XjVVrKEJqgyVZfrCKNt
+         0LMDzlpEXUKwxhvorrK/3/QXi25nXF10ap+N85/tmYRbwKfi8Wat5wHukpkAadd2CVqi
+         y6JsWy+dpO75227la90pGZo6QaU1M4tEKio7Ypdh2Wj2MbmZbQZ0Pat7vYpMvLT+uQiW
+         ZegA==
+X-Gm-Message-State: AAQBX9e0KOhyntIZ62N8MIqcrnV96QCok41aGH/BftFO6ElHUQk4Hcqd
+        W4dc5E3/ycFFEpfbn4EPngs=
+X-Google-Smtp-Source: AKy350bAhAlegQKfwu/2+LY1ZHjWKyceXNFPIVYTvQkZT9D6R2AWO8cDGFFIrG8UkaF17gk0SQFxOw==
+X-Received: by 2002:a17:90b:4c45:b0:23d:35d9:d065 with SMTP id np5-20020a17090b4c4500b0023d35d9d065mr17712376pjb.48.1680079476257;
+        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id ji17-20020a170903325100b00199023c688esm22480280plb.26.2023.03.29.01.36.51
+        by smtp.gmail.com with ESMTPSA id 63-20020a17090a0fc500b0023493354f37sm922823pjz.26.2023.03.29.01.44.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Mar 2023 01:36:54 -0700 (PDT)
-Message-ID: <c2e430ac-c23d-4268-151c-a3a398252382@gmail.com>
-Date:   Wed, 29 Mar 2023 16:36:50 +0800
+        Wed, 29 Mar 2023 01:44:36 -0700 (PDT)
+Message-ID: <7b5e42bc-0788-5208-e97e-10502da1c238@gmail.com>
+Date:   Wed, 29 Mar 2023 16:44:32 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH v6 08/12] arm64: dts: nuvoton: Add initial ma35d1 device
- tree
+Subject: Re: [PATCH v6 07/12] dt-bindings: serial: Document ma35d1 uart
+ controller
 Content-Language: en-US
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -68,10 +68,10 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>
 References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-9-ychuang570808@gmail.com>
- <36f75c71-cf5b-7cbd-8eac-8a8f628d1201@linaro.org>
+ <20230328021912.177301-8-ychuang570808@gmail.com>
+ <be0bf335-39fc-2eac-ed37-112881bac675@linaro.org>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <36f75c71-cf5b-7cbd-8eac-8a8f628d1201@linaro.org>
+In-Reply-To: <be0bf335-39fc-2eac-ed37-112881bac675@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -81,41 +81,25 @@ X-Mailing-List: linux-serial@vger.kernel.org
 Dear Krzysztof,
 
 
-On 2023/3/29 下午 04:21, Krzysztof Kozlowski wrote:
+Thanks for your review.
+
+
+On 2023/3/29 下午 04:20, Krzysztof Kozlowski wrote:
 > On 28/03/2023 04:19, Jacky Huang wrote:
 >> From: Jacky Huang <ychuang3@nuvoton.com>
 >>
->> Add initial device tree support for Nuvoton ma35d1 SoC, including
->> cpu, clock, reset, and serial controllers.
->> Add reference boards som-256m and iot-512m.
+>> Add documentation to describe nuvoton ma35d1 uart driver bindings.
 >>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> This depends on clock patches, so it must be taken together.
 >
->
->> +	gic: interrupt-controller@50801000 {
->> +		compatible = "arm,gic-400";
->> +		reg =   <0x0 0x50801000 0 0x1000>, /* GICD */
->> +			<0x0 0x50802000 0 0x2000>, /* GICC */
->> +			<0x0 0x50804000 0 0x2000>, /* GICH */
->> +			<0x0 0x50806000 0 0x2000>; /* GICV */
->> +		#interrupt-cells = <3>;
->> +		interrupt-parent = <&gic>;
->> +		interrupt-controller;
->> +		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
->> +			      IRQ_TYPE_LEVEL_HIGH)>;
->> +	};
->> +
->> +	uart0:serial@40700000 {
-> There is always space after label:.
->
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 >
 > Best regards,
 > Krzysztof
 >
 
-I will fix them all.
+OK, I will combine this patch with the clock patch.
 
 
 Best regards,
 Jacky Huang
-
