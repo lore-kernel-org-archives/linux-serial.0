@@ -2,285 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C362C6FD18
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439DEC6FD18
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 21:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229436AbjC2VcS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 17:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
+        id S229674AbjC2Vke (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 17:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbjC2VcR (ORCPT
+        with ESMTP id S229517AbjC2Vkd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 17:32:17 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAE619B5
-        for <linux-serial@vger.kernel.org>; Wed, 29 Mar 2023 14:32:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680125536; x=1711661536;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kmEac7w9/uG8JeyGuFT+nTK5fMFDaBCBjcHKToei5aE=;
-  b=lnF6R84V2zmRjD7O8QVOCsuput01mmREfaURj0NaMHZLWzlBcLE7dA1x
-   p0VKod2E5MS6s9mneCkNw7JmQE7sXe3uk3Ys36sluome/B5nCPakztEOk
-   aV79to1k4tOGyQMMwQM5Eoxvnmf6EFtghqo96Y/ob+PW8wBtpNkkzCtTP
-   eTvKI/2wq4pUo3X/0oi4htoQZBCgnaT/0qgA1z56E3zse2UzfxERvH/CN
-   4YbDAUp3gMp4pkjp1doQYIyKTdsgpf8l+o17aB2LtrCyVGQuiroJ5okF9
-   4a+nQ3Q66RWP3RNFS8OR1dzcGIekM/CtCE88Rhn5dZP98PcHBnH4coDyz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="324923373"
-X-IronPort-AV: E=Sophos;i="5.98,301,1673942400"; 
-   d="scan'208";a="324923373"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 14:32:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="858655544"
-X-IronPort-AV: E=Sophos;i="5.98,301,1673942400"; 
-   d="scan'208";a="858655544"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 29 Mar 2023 14:32:14 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1phdOv-000Jyq-1m;
-        Wed, 29 Mar 2023 21:32:13 +0000
-Date:   Thu, 30 Mar 2023 05:31:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- f92ed0cd9328aed918ebb0ebb64d259eccbcc6e7
-Message-ID: <6424ae27.z9Pe/0BpebSARGgj%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 29 Mar 2023 17:40:33 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F543C3B;
+        Wed, 29 Mar 2023 14:40:32 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id r14so7062917oiw.12;
+        Wed, 29 Mar 2023 14:40:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680126032;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=7/qJzs/hW1pmjhUHORKknf7d39R3TDMqbem1vTF6rpE=;
+        b=upXT3YGycA3MdO2RxV8X0Saw4DfWqH0es4Fa1QRAhlQ10iru6SSaRkdeTGLMKdJJdy
+         Jct5VxIr87A0zwuoQtex6n3XgL+Z8m5plWgVBF6+xEyX7OlMdr43ljCiFUwYqIOdvJO1
+         vkCZ+lvLpzvEWs9U+Mlu2CB19s8sCEEVUzRS91CGiW6BgYXTdB18sTCgbhUTUFN11k7M
+         HMXlkNV9+DT5tczjGPi1S4OQR0gY/f0+g8ext7dERO99kI5E1pKHeEuG9mJQYshoi4Bp
+         MlCHh6GJe3ZdrfhWTyTX+I3kFtBzPIj2U7pg1DRvsWlzMjOWfW199T0/vwUiTCFd+KQl
+         gmEA==
+X-Gm-Message-State: AO0yUKWqlXGiKMaf74jPtZvsL65Beaygk6eMEPxUKyCEaUKDpBZAeNLA
+        ag2FXpzVgNjfsIb+7jo7Gw==
+X-Google-Smtp-Source: AK7set8HqExr54n7KB+fv5GbG1F5mEostBq+sitshFffuWryo7IxT/gigISCoOi3ymblpK2cBSZfTg==
+X-Received: by 2002:a05:6808:984:b0:387:7b92:8b97 with SMTP id a4-20020a056808098400b003877b928b97mr8519158oic.43.1680126031713;
+        Wed, 29 Mar 2023 14:40:31 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n67-20020acabd46000000b0038919e6eb5esm4278794oif.3.2023.03.29.14.40.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Mar 2023 14:40:31 -0700 (PDT)
+Received: (nullmailer pid 112250 invoked by uid 1000);
+        Wed, 29 Mar 2023 21:40:30 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+From:   Rob Herring <robh@kernel.org>
+To:     Brenda Streiff <brenda.streiff@ni.com>
+Cc:     Jason Smith <jason.smith@ni.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Gratian Crisan <gratian.crisan@ni.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+In-Reply-To: <20230329154235.615349-2-brenda.streiff@ni.com>
+References: <20230329154235.615349-1-brenda.streiff@ni.com>
+ <20230329154235.615349-2-brenda.streiff@ni.com>
+Message-Id: <168012595979.110912.13924121978276239170.robh@kernel.org>
+Subject: Re: [PATCH tty-next 1/2] dt-bindings: serial: ni,ni16650: add
+ bindings
+Date:   Wed, 29 Mar 2023 16:40:30 -0500
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: f92ed0cd9328aed918ebb0ebb64d259eccbcc6e7  tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
 
-elapsed time: 734m
+On Wed, 29 Mar 2023 10:42:34 -0500, Brenda Streiff wrote:
+> Add bindings for the NI 16550 UART.
+> 
+> Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+> Cc: Gratian Crisan <gratian.crisan@ni.com>
+> Cc: Jason Smith <jason.smith@ni.com>
+> ---
+>  .../bindings/serial/ni,ni16550.yaml           | 53 +++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> 
 
-configs tested: 210
-configs skipped: 30
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+yamllint warnings/errors:
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha        buildonly-randconfig-r002-20230329   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r003-20230329   gcc  
-alpha                randconfig-r005-20230329   gcc  
-alpha                randconfig-r015-20230329   gcc  
-alpha                randconfig-r023-20230329   gcc  
-alpha                randconfig-r031-20230329   gcc  
-arc                              allyesconfig   gcc  
-arc          buildonly-randconfig-r002-20230329   gcc  
-arc          buildonly-randconfig-r003-20230329   gcc  
-arc          buildonly-randconfig-r005-20230329   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r013-20230329   gcc  
-arc                  randconfig-r016-20230329   gcc  
-arc                  randconfig-r033-20230329   gcc  
-arc                  randconfig-r034-20230329   gcc  
-arc                  randconfig-r043-20230329   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm          buildonly-randconfig-r006-20230329   gcc  
-arm                                 defconfig   gcc  
-arm                            dove_defconfig   clang
-arm                  randconfig-r003-20230329   clang
-arm                  randconfig-r046-20230329   gcc  
-arm64                            allyesconfig   gcc  
-arm64        buildonly-randconfig-r001-20230329   gcc  
-arm64        buildonly-randconfig-r002-20230329   gcc  
-arm64        buildonly-randconfig-r005-20230329   gcc  
-arm64                               defconfig   gcc  
-arm64                randconfig-r006-20230329   gcc  
-arm64                randconfig-r013-20230329   clang
-arm64                randconfig-r014-20230329   clang
-arm64                randconfig-r025-20230329   clang
-arm64                randconfig-r026-20230329   clang
-arm64                randconfig-r032-20230329   gcc  
-arm64                randconfig-r035-20230329   gcc  
-arm64                randconfig-r036-20230329   gcc  
-csky                                defconfig   gcc  
-csky                 randconfig-r003-20230329   gcc  
-csky                 randconfig-r004-20230329   gcc  
-csky                 randconfig-r011-20230329   gcc  
-hexagon              randconfig-r016-20230329   clang
-hexagon              randconfig-r041-20230329   clang
-hexagon              randconfig-r045-20230329   clang
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                          randconfig-a002   clang
-i386                          randconfig-a004   clang
-i386                          randconfig-a006   clang
-i386                          randconfig-a012   gcc  
-i386                          randconfig-a014   gcc  
-i386                          randconfig-a016   gcc  
-ia64                             allmodconfig   gcc  
-ia64         buildonly-randconfig-r003-20230329   gcc  
-ia64         buildonly-randconfig-r005-20230329   gcc  
-ia64                                defconfig   gcc  
-ia64                 randconfig-r004-20230329   gcc  
-ia64                 randconfig-r005-20230329   gcc  
-ia64                 randconfig-r012-20230329   gcc  
-ia64                 randconfig-r036-20230329   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch    buildonly-randconfig-r003-20230329   gcc  
-loongarch    buildonly-randconfig-r006-20230329   gcc  
-loongarch                           defconfig   gcc  
-loongarch            randconfig-r002-20230329   gcc  
-loongarch            randconfig-r006-20230329   gcc  
-loongarch            randconfig-r013-20230329   gcc  
-loongarch            randconfig-r015-20230329   gcc  
-loongarch            randconfig-r023-20230329   gcc  
-loongarch            randconfig-r025-20230329   gcc  
-loongarch            randconfig-r026-20230329   gcc  
-m68k                             alldefconfig   gcc  
-m68k                             allmodconfig   gcc  
-m68k         buildonly-randconfig-r004-20230329   gcc  
-m68k         buildonly-randconfig-r006-20230329   gcc  
-m68k                                defconfig   gcc  
-m68k                        m5407c3_defconfig   gcc  
-m68k                        mvme16x_defconfig   gcc  
-m68k                 randconfig-r002-20230329   gcc  
-m68k                 randconfig-r004-20230329   gcc  
-m68k                 randconfig-r014-20230329   gcc  
-m68k                 randconfig-r015-20230329   gcc  
-m68k                 randconfig-r031-20230329   gcc  
-m68k                 randconfig-r033-20230329   gcc  
-m68k                 randconfig-r035-20230329   gcc  
-m68k                           virt_defconfig   gcc  
-microblaze   buildonly-randconfig-r004-20230329   gcc  
-microblaze           randconfig-r005-20230329   gcc  
-microblaze           randconfig-r016-20230329   gcc  
-microblaze           randconfig-r024-20230329   gcc  
-microblaze           randconfig-r032-20230329   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                         db1xxx_defconfig   gcc  
-mips                           gcw0_defconfig   gcc  
-mips                 randconfig-r012-20230329   gcc  
-mips                 randconfig-r015-20230329   gcc  
-mips                 randconfig-r023-20230329   gcc  
-mips                 randconfig-r025-20230329   gcc  
-nios2        buildonly-randconfig-r004-20230329   gcc  
-nios2        buildonly-randconfig-r005-20230329   gcc  
-nios2                               defconfig   gcc  
-nios2                randconfig-r005-20230329   gcc  
-nios2                randconfig-r011-20230329   gcc  
-nios2                randconfig-r012-20230329   gcc  
-nios2                randconfig-r016-20230329   gcc  
-nios2                randconfig-r031-20230329   gcc  
-nios2                randconfig-r033-20230329   gcc  
-nios2                randconfig-r035-20230329   gcc  
-openrisc     buildonly-randconfig-r003-20230329   gcc  
-openrisc     buildonly-randconfig-r006-20230329   gcc  
-openrisc                    or1ksim_defconfig   gcc  
-openrisc             randconfig-r004-20230329   gcc  
-openrisc             randconfig-r006-20230329   gcc  
-openrisc             randconfig-r021-20230329   gcc  
-openrisc             randconfig-r026-20230329   gcc  
-openrisc             randconfig-r032-20230329   gcc  
-openrisc             randconfig-r034-20230329   gcc  
-openrisc             randconfig-r036-20230329   gcc  
-parisc       buildonly-randconfig-r005-20230329   gcc  
-parisc       buildonly-randconfig-r006-20230329   gcc  
-parisc                              defconfig   gcc  
-parisc               randconfig-r011-20230329   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                      arches_defconfig   gcc  
-powerpc                   bluestone_defconfig   clang
-powerpc                 mpc834x_itx_defconfig   gcc  
-powerpc                 mpc837x_rdb_defconfig   gcc  
-powerpc                     rainier_defconfig   gcc  
-powerpc              randconfig-r011-20230329   clang
-powerpc              randconfig-r024-20230329   clang
-powerpc              randconfig-r032-20230329   gcc  
-powerpc              randconfig-r034-20230329   gcc  
-powerpc                    socrates_defconfig   clang
-powerpc                     tqm8555_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                    nommu_virt_defconfig   clang
-riscv                randconfig-r022-20230329   clang
-riscv                randconfig-r031-20230329   gcc  
-riscv                randconfig-r032-20230329   gcc  
-riscv                randconfig-r035-20230329   gcc  
-riscv                randconfig-r042-20230329   clang
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r001-20230329   gcc  
-s390                 randconfig-r003-20230329   gcc  
-s390                 randconfig-r014-20230329   clang
-s390                 randconfig-r015-20230329   clang
-s390                 randconfig-r022-20230329   clang
-s390                 randconfig-r023-20230329   clang
-s390                 randconfig-r035-20230329   gcc  
-s390                 randconfig-r044-20230329   clang
-sh                               allmodconfig   gcc  
-sh                        dreamcast_defconfig   gcc  
-sh                         microdev_defconfig   gcc  
-sh                            migor_defconfig   gcc  
-sh                   randconfig-r006-20230329   gcc  
-sh                   randconfig-r015-20230329   gcc  
-sh                   randconfig-r022-20230329   gcc  
-sh                           se7206_defconfig   gcc  
-sh                           se7343_defconfig   gcc  
-sh                           sh2007_defconfig   gcc  
-sparc        buildonly-randconfig-r003-20230329   gcc  
-sparc        buildonly-randconfig-r006-20230329   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r013-20230329   gcc  
-sparc64      buildonly-randconfig-r003-20230329   gcc  
-sparc64              randconfig-r013-20230329   gcc  
-sparc64              randconfig-r031-20230329   gcc  
-sparc64              randconfig-r033-20230329   gcc  
-um                               alldefconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64                        randconfig-a001   clang
-x86_64                        randconfig-a002   gcc  
-x86_64                        randconfig-a003   clang
-x86_64                        randconfig-a004   gcc  
-x86_64                        randconfig-a005   clang
-x86_64                        randconfig-a006   gcc  
-x86_64                        randconfig-a011   gcc  
-x86_64                        randconfig-a012   clang
-x86_64                        randconfig-a013   gcc  
-x86_64                        randconfig-a014   clang
-x86_64                        randconfig-a015   gcc  
-x86_64                        randconfig-a016   clang
-x86_64                        randconfig-k001   clang
-x86_64                               rhel-8.3   gcc  
-xtensa       buildonly-randconfig-r004-20230329   gcc  
-xtensa                              defconfig   gcc  
-xtensa               randconfig-r003-20230329   gcc  
-xtensa               randconfig-r012-20230329   gcc  
-xtensa               randconfig-r021-20230329   gcc  
-xtensa               randconfig-r024-20230329   gcc  
-xtensa               randconfig-r031-20230329   gcc  
-xtensa               randconfig-r033-20230329   gcc  
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: compatible: ['ni,ni16550', 'ns16550a'] is too long
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: Unevaluated properties are not allowed ('compatible' was unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: compatible: 'oneOf' conditional failed, one must be fixed:
+	['ni,ni16550', 'ns16550a'] is too long
+	['ni,ni16550', 'ns16550a'] is too short
+	'ns8250' was expected
+	'ns16450' was expected
+	'ns16550' was expected
+	'ns16550a' was expected
+	'ns16850' was expected
+	'aspeed,ast2400-vuart' was expected
+	'aspeed,ast2500-vuart' was expected
+	'intel,xscale-uart' was expected
+	'mrvl,pxa-uart' was expected
+	'nuvoton,wpcm450-uart' was expected
+	'nuvoton,npcm750-uart' was expected
+	'nvidia,tegra20-uart' was expected
+	'nxp,lpc3220-uart' was expected
+	'ni,ni16550' is not one of ['exar,xr16l2552', 'exar,xr16l2551', 'exar,xr16l2550']
+	'ni,ni16550' is not one of ['altr,16550-FIFO32', 'altr,16550-FIFO64', 'altr,16550-FIFO128', 'fsl,16550-FIFO64', 'fsl,ns16550', 'andestech,uart16550', 'nxp,lpc1850-uart', 'opencores,uart16550-rtlsvn105', 'ti,da830-uart']
+	'ni,ni16550' is not one of ['ns16750', 'cavium,octeon-3860-uart', 'xlnx,xps-uart16550-2.00.b', 'ralink,rt2880-uart']
+	'ni,ni16550' is not one of ['nuvoton,npcm845-uart']
+	'ni,ni16550' is not one of ['ralink,mt7620a-uart', 'ralink,rt3052-uart', 'ralink,rt3883-uart']
+	'ni,ni16550' is not one of ['mediatek,mt7622-btif', 'mediatek,mt7623-btif']
+	'mrvl,mmp-uart' was expected
+	'ni,ni16550' is not one of ['nvidia,tegra30-uart', 'nvidia,tegra114-uart', 'nvidia,tegra124-uart', 'nvidia,tegra210-uart', 'nvidia,tegra186-uart', 'nvidia,tegra194-uart', 'nvidia,tegra234-uart']
+	'ralink,rt2880-uart' was expected
+	'mediatek,mtk-btif' was expected
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/8250.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/ni,ni16550.example.dtb: serial@80000000: Unevaluated properties are not allowed ('compatible', 'transceiver' were unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/8250.yaml
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230329154235.615349-2-brenda.streiff@ni.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
