@@ -2,107 +2,200 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B58C74A5B
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 09:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F076FC74A5B
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Mar 2023 09:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbjC2JUN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Mar 2023 05:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        id S229622AbjC2J1V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Mar 2023 05:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbjC2JUJ (ORCPT
+        with ESMTP id S229869AbjC2J1T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Mar 2023 05:20:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD93310CC;
-        Wed, 29 Mar 2023 02:20:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3050061B38;
-        Wed, 29 Mar 2023 09:20:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 459E6C433EF;
-        Wed, 29 Mar 2023 09:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1680081607;
-        bh=Duat8LbEKUF7NtbxrvgLRGKr5KTop238tLlGHRMMACQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MvTe+ukcqXEkAP7T2H/khZZ7o0O1+kGvyGFjI8qbuD4JB/FvnAZmfLsm/JfbMmO+d
-         3IT6tS6EMurGRWghQUjvpsvRd2R77bC3s4CMwl/cE1Iy3bClOhBqKxYjWh+orClkeL
-         r3RSR7R161M5/brfIzpWiQyXEKJD8jAZdDjbZOoU=
-Date:   Wed, 29 Mar 2023 11:20:05 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH v4 2/5] tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
-Message-ID: <ZCQCxQDwR1N4KT4r@kroah.com>
-References: <20230321114753.75038-1-biju.das.jz@bp.renesas.com>
- <20230321114753.75038-3-biju.das.jz@bp.renesas.com>
- <CAMuHMdXO+ZEotRSSRnqeB+YxY4jUm+zNyecEiZHqBQcAd_oXpA@mail.gmail.com>
- <OS0PR01MB5922092AD985055F7376611486889@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <ZCP-bdhw585BSKdx@kroah.com>
- <OS0PR01MB5922F0F9BB4D42C3E14F1A7A86899@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        Wed, 29 Mar 2023 05:27:19 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24E82685
+        for <linux-serial@vger.kernel.org>; Wed, 29 Mar 2023 02:27:17 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id a21so8199191ljq.10
+        for <linux-serial@vger.kernel.org>; Wed, 29 Mar 2023 02:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680082036;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4E1ihT1bk7FJWhZsymYfujANMixRZZjQV1eBAivQbCc=;
+        b=IIssgv4Nws9KMkhlj1SWdiTR8QeRnUyggLWHGk9OtquP6r1Ty66EXdDq+4yGO82O04
+         xb3pACE4ORMwgSdGT3zziPccod8yVO18IqGIP7m8Edr3VbipssR/2d8YKR/vh+fgZWgE
+         /FRqSX71P0xAbFyKEMCfRGnu5NLyiCOtQC8jPefeqgSjCCaWxu4D4NVzkQZXZCNX9GOg
+         O470eDDSqMC8uhdKs8jex4FJ/yYr/3S9V4Go6a6jdXxJx3td7U7DdAxZlKR/4DzsfzOc
+         hlTXVR2NHvsN1b9eS3LOTAj4rCdvPOGT6kBlLwqxd+5mGiXwviHoffNSVfQlAkUvb3V8
+         6wEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680082036;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4E1ihT1bk7FJWhZsymYfujANMixRZZjQV1eBAivQbCc=;
+        b=K3+B7BNLIYMqFwh5oEZKbqPyz6fGMFARqX0rCAb0KXhJKpPBctWHxZP0miTlVNYak6
+         +eLmyToXf4mhKkvWZ2UW/ZaLShcH01WG4E8Zgkq8PqXlIl/hPNkHRccZbdRdOKdGiK1a
+         UvhKaCNujGI+DHCg6dWZfWZ8CTkHGXE/lt3xzrmuWC8TgdV0fkEh+JdvPwH+lrEia3X3
+         33ji/AmEYOAHEFcFkx+4w8mRA9P6x0Yi5xiuL7D8RIizQ3oArQqInVGi8CQX8O3JH16P
+         QncHmIG92vryoSs+ju3jymiEpHYZVmQfh+Z+7jsFByyY/wurvN3e2kfjck4xY4Jw421i
+         eWIA==
+X-Gm-Message-State: AAQBX9fxEdWHP8LdREzZkT720i9f9IKIHsXg1Od3gMJJ5t7Yo12Aymdh
+        F3pAaCIamut1irWV6TJP9mkwWyDLk72JsIKRXcccKA==
+X-Google-Smtp-Source: AKy350a3WPd3nLMEIos8we3J7fDWmZ6UZx92CCwawDT5W787jUpRWjhmYBrGbnekUlPP6v6UTiX2Ow==
+X-Received: by 2002:a05:651c:446:b0:29c:88a7:9a96 with SMTP id g6-20020a05651c044600b0029c88a79a96mr6297508ljg.46.1680082036048;
+        Wed, 29 Mar 2023 02:27:16 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id s18-20020a2e9c12000000b00295765966d9sm5406109lji.86.2023.03.29.02.27.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Mar 2023 02:27:15 -0700 (PDT)
+Message-ID: <d69a2d6a-bf59-ad4c-2d6b-e520fe9d174d@linaro.org>
+Date:   Wed, 29 Mar 2023 11:27:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <OS0PR01MB5922F0F9BB4D42C3E14F1A7A86899@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v6 04/12] dt-bindings: reset: nuvoton: add binding for
+ ma35d1 IP reset control
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com>
+ <20230328021912.177301-5-ychuang570808@gmail.com>
+ <96bbb16a-1748-c0cb-0fc6-90804eab01c1@linaro.org>
+ <1ddf53be-3c4f-3f24-de69-9475c82341b1@gmail.com>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1ddf53be-3c4f-3f24-de69-9475c82341b1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 09:06:43AM +0000, Biju Das wrote:
-> Hi Greg,
+On 29/03/2023 11:12, Jacky Huang wrote:
+>>> +        };
+>>> +    };
+>>> +...
+>>> +
+>>> diff --git a/include/dt-bindings/reset/nuvoton,ma35d1-reset.h b/include/dt-bindings/reset/nuvoton,ma35d1-reset.h
+>>> new file mode 100644
+>>> index 000000000000..f3088bc0afec
+>>> --- /dev/null
+>>> +++ b/include/dt-bindings/reset/nuvoton,ma35d1-reset.h
+>>> @@ -0,0 +1,108 @@
+>>> +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause) */
+>> Weird license, why 2.0+?
+>>
+>> You already got here comment about license in previous version of this
+>> patch.
+>>
 > 
-> Thanks for the feedback.
+> In fact, I always be confused with the license.
+> It should be right if I just copy one from the same directory 
+> /include/dt-bindings/reset/.
+> But, when I find there are several versions there, I was confused and 
+> just select one of them.
 > 
-> > Subject: Re: [PATCH v4 2/5] tty: serial: sh-sci: Fix Rx on RZ/G2L SCI
-> > 
-> > On Tue, Mar 28, 2023 at 11:32:38AM +0000, Biju Das wrote:
-> > > Hi Geert,
-> > >
-> > > Thanks for the feedback.
-> > >
-> > > > Subject: Re: [PATCH v4 2/5] tty: serial: sh-sci: Fix Rx on RZ/G2L
-> > > > SCI
-> > > >
-> > > > On Tue, Mar 21, 2023 at 12:48 PM Biju Das
-> > > > <biju.das.jz@bp.renesas.com>
-> > > > wrote:
-> > > > > SCI IP on RZ/G2L alike SoCs do not need regshift compared to other
-> > > > > SCI IPs on the SH platform. Currently, it does regshift and
-> > > > > configuring Rx wrongly. Drop adding regshift for RZ/G2L alike SoCs.
-> > > > >
-> > > > > Fixes: dfc80387aefb ("serial: sh-sci: Compute the regshift value
-> > > > > for SCI ports")
-> > > > > Cc: stable@vger.kernel.org
-> > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > ---
-> > > > > v3->v4:
-> > > > >  * Updated the fixes tag
-> > > > >  * Replaced sci_port->is_rz_sci with dev->dev.of_node as regshift
-> > > > > are only
-> > > > needed
-> > > > >    for sh770x/sh7750/sh7760, which don't use DT yet.
-> > > > >  * Dropped is_rz_sci variable from struct sci_port.
-> > > >
-> > > > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > >
-> > > > One can wonder how this ever worked on DT-based H8/300...
-> > >
-> > > Yep, it is interesting to see whether SCI ever worked on DT-based
-> > > H8/300 Assuming it has same register layout as RZ/G2L SoC.
-> > 
-> > This is already in Linus's tree now, right?
+> /* SPDX-License-Identifier: GPL-2.0-only */
+> /* SPDX-License-Identifier: GPL-2.0+ */
+> /* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)*/
+> /* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
+> /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 > 
-> As per the discussion with Geert, It is been removed since 2022. Yes, It is present in backports.
+> So, should I fix the license as
 > 
-> Geert, please correct me If I am wrong.
+> /* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
+> 
+> just remove the '+' ?
 
-Seems to not apply against 6.3-rc3 :(
+The simplest is to use the same license as your binding, so
+(GPL-2.0-only OR BSD-2-Clause) .
+
+> 
+>>> +/*
+>>> + * Copyright (C) 2023 Nuvoton Technologies.
+>>> + * Author: Chi-Fen Li <cfli0@nuvoton.com>
+>>> + *
+>>> + * Device Tree binding constants for MA35D1 reset controller.
+>>> + */
+>>> +
+>>> +#ifndef __DT_BINDINGS_RESET_MA35D1_H
+>>> +#define __DT_BINDINGS_RESET_MA35D1_H
+>>> +
+>>> +#define MA35D1_RESET_CHIP	0
+>>> +#define MA35D1_RESET_CA35CR0	1
+>>> +#define MA35D1_RESET_CA35CR1	2
+>>> +#define MA35D1_RESET_CM4	3
+>>> +#define MA35D1_RESET_PDMA0	4
+>>> +#define MA35D1_RESET_PDMA1	5
+>>> +#define MA35D1_RESET_PDMA2	6
+>>> +#define MA35D1_RESET_PDMA3	7
+>>> +#define MA35D1_RESET_DISP	9
+>>> +#define MA35D1_RESET_VCAP0	10
+>>> +#define MA35D1_RESET_VCAP1	11
+>>> +#define MA35D1_RESET_GFX	12
+>>> +#define MA35D1_RESET_VDEC	13
+>>> +#define MA35D1_RESET_WHC0	14
+>>> +#define MA35D1_RESET_WHC1	15
+>>> +#define MA35D1_RESET_GMAC0	16
+>>> +#define MA35D1_RESET_GMAC1	17
+>>> +#define MA35D1_RESET_HWSEM	18
+>>> +#define MA35D1_RESET_EBI	19
+>>> +#define MA35D1_RESET_HSUSBH0	20
+>>> +#define MA35D1_RESET_HSUSBH1	21
+>>> +#define MA35D1_RESET_HSUSBD	22
+>>> +#define MA35D1_RESET_USBHL	23
+>>> +#define MA35D1_RESET_SDH0	24
+>>> +#define MA35D1_RESET_SDH1	25
+>>> +#define MA35D1_RESET_NAND	26
+>>> +#define MA35D1_RESET_GPIO	27
+>>> +#define MA35D1_RESET_MCTLP	28
+>>> +#define MA35D1_RESET_MCTLC	29
+>>> +#define MA35D1_RESET_DDRPUB	30
+>>> +#define MA35D1_RESET_TMR0	34
+>>> +#define MA35D1_RESET_TMR1	35
+>>> +#define MA35D1_RESET_TMR2	36
+>>> +#define MA35D1_RESET_TMR3	37
+>>> +#define MA35D1_RESET_I2C0	40
+>>> +#define MA35D1_RESET_I2C1	41
+>>> +#define MA35D1_RESET_I2C2	42
+>>> +#define MA35D1_RESET_I2C3	43
+>>> +#define MA35D1_RESET_QSPI0	44
+>>> +#define MA35D1_RESET_SPI0	45
+>>> +#define MA35D1_RESET_SPI1	46
+>>> +#define MA35D1_RESET_SPI2	47
+>>> +#define MA35D1_RESET_UART0	48
+>>> +#define MA35D1_RESET_UART1	49
+>>> +#define MA35D1_RESET_UART2	50
+>>> +#define MA35D1_RESET_UAER3	51
+>>> +#define MA35D1_RESET_UART4	52
+>>> +#define MA35D1_RESET_UART5	53
+>>> +#define MA35D1_RESET_UART6	54
+>>> +#define MA35D1_RESET_UART7	55
+>>> +#define MA35D1_RESET_CANFD0	56
+>>> +#define MA35D1_RESET_CANFD1	57
+>>> +#define MA35D1_RESET_EADC0	60
+>> Why do you have gaps here? These should be IDs, not register offsets.
+>>
+>> Best regards,
+>> Krzysztof
+>>
+> 
+> The reset controller registers are composed of four 32-bits register.
+> And the ID will be translated into the corresponding bit of these register.
+> Each ID is mapped to a unique bit position.
+
+That's not the usual way. IDs start from 0 or 1 and gets incremented by
+1, without gaps. Remember that IDs cannot change and your register bits
+could have some changes (e.g. HW errata).
+
+
+Best regards,
+Krzysztof
+
