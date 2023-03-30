@@ -2,174 +2,896 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4ADDC761AF
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 08:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763D6C761AF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 10:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbjC3Ivp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Mar 2023 04:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
+        id S230088AbjC3Kgk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Mar 2023 06:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbjC3IvT (ORCPT
+        with ESMTP id S229563AbjC3Kgj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Mar 2023 04:51:19 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A998A68;
-        Thu, 30 Mar 2023 01:50:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LhfRuW3I2Hqjm7XypU+eCxIrc0sYb35+nginsZAmIZzq2CBuHWW+mTZWvHvyDLbDmHBNRC6iynJxc4ww7U79l/zixEWfrpM6umjxS4m9zKSn7KJvwaMIeNlzDXE9BeQ6Jsc7YA5NgEB9x6ZdujnvMeLrNNmutKOsukxzwC/LhSu8G7AOyPCM345lodRyiP5fccLSL9kx43fRDH6kbhgGV+dHv36Z8dsWUSv8YBvHAZ8+EigNU7QzYfrIeH/JUOUl3jmVE+xdXw91pPpF7TjR3JiTp2zqLQRK5KWLnRGYXlUTbe8r0l+1f+awqjgTPqGWQ3rX84Ruz2ShaIOWG1LKFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Eqi5fwaz6U5F0sKqTUnlzsZZmNZAeYTrv13W+R9aG3M=;
- b=b707w9ES3blBbk9/K6bIFdreXgMoq+xiyYHPzQMInLPi9UZH0wFbZm6JcDeDO8F/RgtbYqx4zxoproUl3uCEnl7BcmQAfmO33OAgNIQHfLW/x6VX7X4a3eVSR/GvLyPfcLy+FXwNaEvc6F17RsBQNVlWnyNHiRgAkcv24wlcNjMm/xRh7IK6aL+PGxwOTCKQH+KmwOUM8FN2mQW047F237bYsIXb1JOyQreoFdkY+zGFgT8vo9rRJxBfoLFRzSeEksPkUmViyk2+adDSO7jqi5jhbsXN/9JkIuoW+kUbgYypyISm8/RXCs+AEqMYtyt+PyVBD53PBQXI++zRAgLEaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Eqi5fwaz6U5F0sKqTUnlzsZZmNZAeYTrv13W+R9aG3M=;
- b=Pdtp1F8U20ULqsm69jTBfmI++sQsQaIO/RppoPugIoR5zMyFFchxIcZpZvt+5jB+3GaGLjcsQqBzit7pDkTODGT2IlD6lJ+20GyOTzoDMOB5JCa0kDI4cuPEly5/59wB6NoP0sLoh6JRRm674vWEnxyzRRTpWhreP8NOXLv8oyrmh2Ake5gNpkkx/tQZ0oF2PoMcDWagbebKVLecrZhGu1TY9ExwPz8f7vYoR+ejt2eE92CfzPPG9u1kV07pC9Rbn5I8+Mh/5BR4SOtX9z7XnFTonju7nHbRcJIOxe521dxkIyzcKWU4NTxZpktdrDLOaVisOZ5pHIyk5afiCuLLMg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- PH7PR12MB6587.namprd12.prod.outlook.com (2603:10b6:510:211::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.35; Thu, 30 Mar
- 2023 08:50:41 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::abe1:c2f2:c4bb:ba78]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::abe1:c2f2:c4bb:ba78%2]) with mapi id 15.20.6254.021; Thu, 30 Mar 2023
- 08:50:41 +0000
-Message-ID: <502523a9-9737-d9ce-8ee5-ca8d39fc0c52@nvidia.com>
-Date:   Thu, 30 Mar 2023 09:50:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 4/5] serial: 8250_tegra: Add explicit include for of.h
-To:     Rob Herring <robh@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
- <20230329-acpi-header-cleanup-v1-4-8dc5cd3c610e@kernel.org>
-Content-Language: en-US
-From:   Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <20230329-acpi-header-cleanup-v1-4-8dc5cd3c610e@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0417.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a0::21) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
+        Thu, 30 Mar 2023 06:36:39 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679B8C4;
+        Thu, 30 Mar 2023 03:36:37 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id c4so806337pjs.4;
+        Thu, 30 Mar 2023 03:36:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680172597;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FyQd6sbMLfRKTpCpmWoRbFYb0Wmig1BiUyo03E2Vdvs=;
+        b=AkX7wiUAsePqi0jXhb9jRx1vQzVnds/haVlZ9goKCi7F1udi/DQAExdtk7i4ZXUGCp
+         dIWY8cjXP+50Y29gintckbKSI7Z5HIki3e8Gu70gOrb/MzeJXk0SsJGcE3YZjGY6OOzM
+         6uO/K860ctpM9MHf0yO+BISiKRY2KGXa09925KDgezbdAizy8kkHKeLQo6Ae6QCbRhNT
+         A6hgL4FJQyzmLOUM0idYYvemWCnJzMf1GWVpmMvadZYtU1b6u6MSDF7w14XST4p51PZM
+         SlECZ/7SGsJZkbgfswyDNJWP8D4EYD2SD2iXSvfgLrjTTclQkiGGYoqpLVoSeD7cyPAB
+         DOuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680172597;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FyQd6sbMLfRKTpCpmWoRbFYb0Wmig1BiUyo03E2Vdvs=;
+        b=7E579UFSMgi/k41cNFM1g48AgqzeblmOlla3o0LFp606WTjmS7mIfaQyWRE1TOvYdR
+         WyIx7NUcnBM/4e7TMNYOKVtiGB9dDB9fbUjMbjCg4RBZiL8QxnBC1uDBTTUQS/26OBs6
+         B45YVfmpYfOcliGqIDn2QT2jj5aFni6PgxTtO2yjdd+CkzqHacrjcEC+PaGgRlqRVuK9
+         BMGCXPSq3fvmhiVP0W8dHWGPLUgFeVFw3ztx35SVysQjXteaYyHLNyeW/a8JkjymuwA7
+         JYh5zCuXV4fJjHIrMUhi8pExiDvN/w0Pl2vaBCyEuj0r0isPLX2erHkVgGn41dff0iFW
+         x6YQ==
+X-Gm-Message-State: AAQBX9eSl1iiYxBdHP73J4Hct/VT6jcCymH4PkykyGPHW1lCfnW6OAnl
+        0OQaZIxLArwa3cycLCqZrdY=
+X-Google-Smtp-Source: AKy350YtoDGEKzaOnvxrfVw/9K5JJXJ3/Jm48sL6gBPn1MlYIfFGxvzp9OLuvj6hDUJA+T7AhrlaIA==
+X-Received: by 2002:a17:902:c44c:b0:1a1:8edc:c5f8 with SMTP id m12-20020a170902c44c00b001a18edcc5f8mr19228788plm.56.1680172596480;
+        Thu, 30 Mar 2023 03:36:36 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id bh4-20020a170902a98400b0019cb6222698sm9876977plb.266.2023.03.30.03.36.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Mar 2023 03:36:36 -0700 (PDT)
+Message-ID: <86291f77-9bcc-3740-73b4-7968175c7348@gmail.com>
+Date:   Thu, 30 Mar 2023 18:36:32 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO6PR12MB5444:EE_|PH7PR12MB6587:EE_
-X-MS-Office365-Filtering-Correlation-Id: 887686ea-9cf4-437b-7f29-08db30fbd702
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q1uU3pHquNG8d1PGDl54KNmh62fhkxMPG+UGLMR2MTG6P0mgQmB7cRz6QiKsGL3N8T5dVIOwP4VSFI59ILDZ2Br0IWqVXnh4RsfoV+qRtrOpREGHxE6fl/wn3iCijiyhjN4Wi0+d2HzkHcXP2GGuztw+lJh5/mGBC/2eD8JvA4EEvG3USAp3VYFexBN0BR431RY2Z7PJeAhmNSDDqFsrrWc2qE7LNIWP5VGD2808uLDI7vy/4rlIrXke98MMZM00Nv/z2anGZ4Ar70cfPYVPitHnE81g6xKkuf9C8f0axfFffHOZzvgU6V2ERfmuCEp+mJCLRGQYv/tSV2VEC+1+wf2TCGWJdmzSFm7TMWt0Y+pKWOnweUx5Dhv6XZ5d4zGbB/i3WupyQV87MqWlpc0vvkR+kNjULme1IfEYon9Kr/Y7PF+z5Qbx9U7mj8OF/z6k8C2yRAmuFO+BcN71JcI5XGzZwoVR8NXPpxbpp17yenoE+vLpX3c3QkrxPUo12iUye57dNzzC5dIfXWH7jmCal48kmlQbt6D18CvB5z1w9d8233Key8C8Ud5FtgagTbX1sAipV0vfKNLP+J4+jBwMoFiZ2nY1Vl551SHuCNJEdXS3yX7Fp0dKNVkN48b8X+W81SNLlj+wux6c9WJaF6bS+vAgxdgpkpsvlPY4BXh7SsI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(346002)(376002)(396003)(136003)(451199021)(4744005)(2906002)(31686004)(41300700001)(2616005)(316002)(66556008)(6666004)(110136005)(7416002)(8936002)(6486002)(36756003)(8676002)(4326008)(66476007)(66946007)(478600001)(86362001)(31696002)(53546011)(921005)(55236004)(6512007)(6506007)(5660300002)(26005)(186003)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TnExQkFHRkhuY0NZWTA3SU1xMExMNzFEbzNWSk1jNXMvYjVvNTJnS0FVeUM5?=
- =?utf-8?B?eWh5SWRqOUxVcU5ucHcwSjZSeTAxMzZyK3drNUdsR2k5VlRCNVVjNTNCbW04?=
- =?utf-8?B?aXNKNS9jbnB4ckExRUx5TFBNdUZEN3hyRWM4alNBZlh3QVlOR0JHTHdCSVRP?=
- =?utf-8?B?VTNIbEk5eTdmc1FJNGFMajA1Q1hoMG9RdVgrcm1hZ1ZjOU9VbytPaTFnZUVW?=
- =?utf-8?B?Mk1WQW41SzRrUU1qQ3dhbW8xSFJUN2RvdkRjZVV5eHJoU1F6VHN6NCtjZnRo?=
- =?utf-8?B?VVZacSttQzRCZ1dwczBZSmRNNXVEYXlLSXFYUWRpeGZTQ0dNMTZpNWtnU2Qx?=
- =?utf-8?B?dzU2aEZsMDE3YmJ3eW9aTFNKZDArQVRhMTFiekdzbXpYTG9tVGVFK0QzSGlB?=
- =?utf-8?B?S2hWU20wbUlLYmRIdDBxT2Y4b2lJZzM2YkRxalBqTmZqVDhiN3Zhdjh3WlhW?=
- =?utf-8?B?d3ZDbmNXWkRNM1laMng4QVdvbFJHci9USFJVN2praXJoV1YyUXZCcGNMKy8y?=
- =?utf-8?B?M3FmWjVoajdLYlNJVGE4dXZndEU4aFZDYUVJRkxkaXd4eEdtbGx0MCs3K1gz?=
- =?utf-8?B?UUhDREg2QVdobUgycjhKSkM1eW5rdW9OU2hrVGJmS285SEFlbU5EakdSUUl4?=
- =?utf-8?B?U1NIc1BSanBweUd5cld2am8vaC9XQzEyNlIyalpZLytDdHR5UG1FTDNhSVVV?=
- =?utf-8?B?ZmUySlNZNmZYRkMwN2xMMDdUTW83RWNqT0VOanY5elhwdHNQOVJlNHQ0MnRy?=
- =?utf-8?B?Sm0vMCs4ckw1UmNqOXhXM0RudWFMcnZMNVJhVnc1b0lxQUxXZEE4NFZ6UUtn?=
- =?utf-8?B?QW1CaEp4bTFVQXR6MzdqYWN2TlJpRnZTU3E2RkJpekQrZmUwc3ZKOXRuNHg4?=
- =?utf-8?B?Z2c3aWd4REYvTk1rNDhKSnV1UnFzR2NhVWxMMHRIUnRxOVdvclhTcUZHWXZ6?=
- =?utf-8?B?QjgzR1VIZUxCdENMeEMxY2UwNjF2T1VGcW5PYVFVYTlEWXVuVTljaVpUZzd2?=
- =?utf-8?B?cGVpZy85bkdmNDhadWlsQzJQWW02bmhIN09FclUzeFZjZFlpSkYvTlhDTkJU?=
- =?utf-8?B?dW5UcmgvemhTVnRJYUY0OElTNXQxQklHUUs4TVVmbkpPTjY3S0JJN2JyaTYv?=
- =?utf-8?B?Q3ZIcmhWOStYdkVSdGRQMmtPN1Y0aCtwRURRVng2ZzRtZVZOaXN3dmtzM1do?=
- =?utf-8?B?OXczS2ttU0htemhLcUxDdUJGc0dWNk9YL1JFTEx0RzE0cjBGNk5YV2Vzek03?=
- =?utf-8?B?RVNoWitoMGh4R1NEMzRpS0o5cWtOTHFyT0c1cTBYRWF6WkZtN1gzUWtFaWZV?=
- =?utf-8?B?UzBwS21HRTlKWkVzdE8xVTd1N1Evd2duZmwyQTZqNktPeVFTU1JJWVJHWHIz?=
- =?utf-8?B?cXByMjYrUDduaENpeGlCUGZqTUJNU2dZSEtnV1BDZVUrMlFtOGozRS8vMEwz?=
- =?utf-8?B?UXJEdjI4UThoVHo1NllObVpFd2d4dHJDSFRiNENtVUxPWmNKQWxoZVNWdXJT?=
- =?utf-8?B?LzhXbUhZTm5va1EvWUMvN1FCU3JjZmNVcG9XTEZVcDk0QXE2WmtWemRadmNO?=
- =?utf-8?B?VTlhOHg0RThyeEpqTys4T2dLUnBjODQvV2RIcVNYcDhEaWxHb0ZPVzJpTkRK?=
- =?utf-8?B?ZlJleExVb1pOQTJMeWxaT0t1K2llQkpBekQ0M1VxeUtNMXdmRG16RDZHSDFt?=
- =?utf-8?B?bzRzN1p2NEorR3ZmNHNVNVNRYUhEWTV3RVZ1Tll5VGN2ZHorQkt5MzdYcmwy?=
- =?utf-8?B?N1MxeHVoSG9uTU5TNG5WOEtmZHZlNWlBKzVqSTB0VmJKU0hQTy9JS01tNXFl?=
- =?utf-8?B?NVRtWlorcWlzRVFrZ2dURHVnYWtuSG1WOFVodTk2a0dQTVl3SVpYS2ptOTVy?=
- =?utf-8?B?eTJtVEV4MEpMak1lVjFZYVN3Q0IxeTA0U052cWJwckQzTWdpelp3T1BZdDFB?=
- =?utf-8?B?OFJtNEpiNEgxUmJ0RytPNHZuV1B4SlVtWjAzU1NESVNqOVhkRmswSUhyWDcw?=
- =?utf-8?B?T3dEV1J5aDJ2NmFXKzArcnE3eHhGZHBHSUFpZjkrZEc4ZXZueWFTRXNEMFpO?=
- =?utf-8?B?SHJiTGF2THdtYm84SHhTTnFBVnQ3L0t1N0xJeXllR3FIV0tJSjVBSDlMb3Qv?=
- =?utf-8?B?R3ZxNDFWNVVaUEFWVXdhUlJBa1BSY3RvdHlIMW1HWmIwdi9nKzNMSDhiRm9a?=
- =?utf-8?B?eVE9PQ==?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 887686ea-9cf4-437b-7f29-08db30fbd702
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 08:50:41.0173
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1A2OHZBSMWyPnKRifX0I/YPxAxz5T31l2E/AOwMR1z0pFDa4v3N7k4UYyW7MjUg0TnwoPbLwZyazuL2lxmpIQA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6587
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v6 09/12] clk: nuvoton: Add clock driver for ma35d1 clock
+ controller
+To:     Stephen Boyd <sboyd@kernel.org>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, p.zabel@pengutronix.de,
+        robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com>
+ <20230328021912.177301-10-ychuang570808@gmail.com>
+ <b425f98de9378ea8c725fef34fabade4.sboyd@kernel.org>
+Content-Language: en-US
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <b425f98de9378ea8c725fef34fabade4.sboyd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-On 29/03/2023 22:20, Rob Herring wrote:
-> With linux/acpi.h no longer implicitly including of.h, add an explicit
-> include of of.h to fix the following error:
-> 
-> drivers/tty/serial/8250/8250_tegra.c:68:15: error: implicit declaration of function 'of_alias_get_id' [-Werror=implicit-function-declaration]
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->   drivers/tty/serial/8250/8250_tegra.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
-> index e7cddeec9d8e..2509e7f74ccf 100644
-> --- a/drivers/tty/serial/8250/8250_tegra.c
-> +++ b/drivers/tty/serial/8250/8250_tegra.c
-> @@ -11,6 +11,7 @@
->   #include <linux/delay.h>
->   #include <linux/io.h>
->   #include <linux/module.h>
-> +#include <linux/of.h>
->   #include <linux/reset.h>
->   #include <linux/slab.h>
->   
-> 
+Dear Stephen,
 
 
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Thanks for your advice.
 
-Thanks!
-Jon
+On 2023/3/29 上午 02:18, Stephen Boyd wrote:
+> Quoting Jacky Huang (2023-03-27 19:19:09)
+>> diff --git a/drivers/clk/nuvoton/Kconfig b/drivers/clk/nuvoton/Kconfig
+>> new file mode 100644
+>> index 000000000000..c1324efedcb9
+>> --- /dev/null
+>> +++ b/drivers/clk/nuvoton/Kconfig
+>> @@ -0,0 +1,19 @@
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +# common clock support for Nuvoton SoC family.
+>> +
+>> +config COMMON_CLK_NUVOTON
+>> +       bool "Nuvoton clock controller common support"
+>> +       depends on ARCH_NUVOTON
+> Add || COMPILE_TEST
+>
+>> +       default ARCH_NUVOTON
+>> +       help
+>> +         Say y here to enable common clock controller for Nuvoton platforms.
+>> +
+>> +if COMMON_CLK_NUVOTON
+> Add a newline here.
+>
+>> +config CLK_MA35D1
+>> +       bool "Nuvoton MA35D1 clock controller support"
+>> +       depends on ARM64 || COMPILE_TEST
+> Drop this
+>
+>> +       default y
+> And this.
+>
+>> +       help
+>> +         Build the driver for MA35D1 Clock Driver.
+> This says driver twice. "Build the clk driver for MA35D1 SoCs"?
 
--- 
-nvpublic
+I will fix all above of Kconfig file. Thank you.
+
+>> +
+>> +endif
+>> diff --git a/drivers/clk/nuvoton/clk-ma35d1-divider.c b/drivers/clk/nuvoton/clk-ma35d1-divider.c
+>> new file mode 100644
+>> index 000000000000..340a889a1417
+>> --- /dev/null
+>> +++ b/drivers/clk/nuvoton/clk-ma35d1-divider.c
+>> @@ -0,0 +1,140 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Copyright (C) 2023 Nuvoton Technology Corp.
+>> + * Author: Chi-Fang Li <cfli0@nuvoton.com>
+>> + */
+>> +
+>> +#include <linux/clk-provider.h>
+>> +#include <linux/device.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/spinlock.h>
+>> +
+>> +#include "clk-ma35d1.h"
+>> +
+>> +#define clk_div_mask(width)    ((1 << (width)) - 1)
+> clk-provider.h defines this already, use that?
+
+Yes, I will remove this.
+
+>> +
+>> +struct ma35d1_adc_clk_div {
+>> +       struct clk_hw hw;
+>> +       void __iomem *reg;
+>> +       u8 shift;
+>> +       u8 width;
+>> +       u32 mask;
+>> +       const struct clk_div_table *table;
+>> +       /* protects concurrent access to clock divider registers */
+>> +       spinlock_t *lock;
+>> +};
+>> +
+>> +static inline struct ma35d1_adc_clk_div *to_ma35d1_adc_clk_div(struct clk_hw *_hw)
+>> +{
+>> +       return container_of(_hw, struct ma35d1_adc_clk_div, hw);
+>> +}
+>> +
+>> +static inline unsigned long ma35d1_clkdiv_recalc_rate(struct clk_hw *hw,
+>> +                                                     unsigned long parent_rate)
+>> +{
+>> +       unsigned int val;
+>> +       struct ma35d1_adc_clk_div *dclk = to_ma35d1_adc_clk_div(hw);
+>> +
+>> +       val = readl_relaxed(dclk->reg) >> dclk->shift;
+>> +       val &= clk_div_mask(dclk->width);
+>> +       val += 1;
+>> +       return divider_recalc_rate(hw, parent_rate, val, dclk->table,
+>> +                                  CLK_DIVIDER_ROUND_CLOSEST, dclk->width);
+>> +}
+>> +
+>> +static inline long ma35d1_clkdiv_round_rate(struct clk_hw *hw,
+>> +                                           unsigned long rate,
+>> +                                           unsigned long *prate)
+>> +{
+>> +       struct ma35d1_adc_clk_div *dclk = to_ma35d1_adc_clk_div(hw);
+>> +
+>> +       return divider_round_rate(hw, rate, prate, dclk->table,
+>> +                                 dclk->width, CLK_DIVIDER_ROUND_CLOSEST);
+>> +}
+>> +
+>> +static inline int ma35d1_clkdiv_set_rate(struct clk_hw *hw,
+>> +                                        unsigned long rate,
+>> +                                        unsigned long parent_rate)
+>> +{
+>> +       int value;
+>> +       unsigned long flags = 0;
+>> +       u32 data;
+>> +       struct ma35d1_adc_clk_div *dclk = to_ma35d1_adc_clk_div(hw);
+>> +
+>> +       value = divider_get_val(rate, parent_rate, dclk->table,
+>> +                               dclk->width, CLK_DIVIDER_ROUND_CLOSEST);
+>> +
+>> +       if (dclk->lock)
+>> +               spin_lock_irqsave(dclk->lock, flags);
+> Can you just always lock? That makes the conditional locking go away.
+
+OK, I will remove the "if (dclk->lock)" check.
+
+>
+>> +
+>> +       data = readl_relaxed(dclk->reg);
+>> +       data &= ~(clk_div_mask(dclk->width) << dclk->shift);
+>> +       data |= (value - 1) << dclk->shift;
+>> +       data |= dclk->mask;
+>> +
+>> +       writel_relaxed(data, dclk->reg);
+>> +
+>> +       if (dclk->lock)
+>> +               spin_unlock_irqrestore(dclk->lock, flags);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static const struct clk_ops ma35d1_adc_clkdiv_ops = {
+>> +       .recalc_rate = ma35d1_clkdiv_recalc_rate,
+>> +       .round_rate = ma35d1_clkdiv_round_rate,
+>> +       .set_rate = ma35d1_clkdiv_set_rate,
+>> +};
+>> +
+>> +struct clk_hw *ma35d1_reg_adc_clkdiv(struct device *dev, const char *name,
+>> +                                    const char *parent_name,
+>> +                                    spinlock_t *lock,
+>> +                                    unsigned long flags, void __iomem *reg,
+>> +                                    u8 shift, u8 width, u32 mask_bit)
+>> +{
+>> +       struct ma35d1_adc_clk_div *div;
+>> +       struct clk_init_data init;
+>> +       struct clk_div_table *table;
+>> +       u32 max_div, min_div;
+>> +       struct clk_hw *hw;
+>> +       int ret;
+>> +       int i;
+>> +
+>> +       div = devm_kzalloc(dev, sizeof(*div), GFP_KERNEL);
+>> +       if (!div)
+>> +               return ERR_PTR(-ENOMEM);
+>> +
+>> +       max_div = clk_div_mask(width) + 1;
+>> +       min_div = 1;
+>> +
+>> +       table = devm_kcalloc(dev, max_div + 1, sizeof(*table), GFP_KERNEL);
+>> +       if (!table)
+>> +               return ERR_PTR(-ENOMEM);
+>> +
+>> +       for (i = 0; i < max_div; i++) {
+>> +               table[i].val = (min_div + i);
+> Drop useless parenthesis.
+
+I will fix it.
+
+>
+>> +               table[i].div = 2 * table[i].val;
+>> +       }
+>> +       table[max_div].val = 0;
+>> +       table[max_div].div = 0;
+>> +
+>> +       init.name = name;
+>> +       init.ops = &ma35d1_adc_clkdiv_ops;
+>> +       init.flags |= flags;
+>> +       init.parent_names = parent_name ? &parent_name : NULL;
+>> +       init.num_parents = parent_name ? 1 : 0;
+>> +
+>> +       div->reg = reg;
+>> +       div->shift = shift;
+>> +       div->width = width;
+>> +       div->mask = mask_bit ? BIT(mask_bit) : 0;
+>> +       div->lock = lock;
+>> +       div->hw.init = &init;
+>> +       div->table = table;
+>> +
+>> +       hw = &div->hw;
+>> +       ret = devm_clk_hw_register(dev, hw);
+>> +       if (ret < 0)
+> Use if (ret) instead.
+
+I will fix it.
+
+>
+>> +               return ERR_PTR(ret);
+>> +       return hw;
+>> +}
+>> diff --git a/drivers/clk/nuvoton/clk-ma35d1-pll.c b/drivers/clk/nuvoton/clk-ma35d1-pll.c
+>> new file mode 100644
+>> index 000000000000..b36fbda4fa0a
+>> --- /dev/null
+>> +++ b/drivers/clk/nuvoton/clk-ma35d1-pll.c
+>> @@ -0,0 +1,350 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Copyright (C) 2023 Nuvoton Technology Corp.
+>> + * Author: Chi-Fang Li <cfli0@nuvoton.com>
+>> + */
+>> +
+>> +#include <linux/bitfield.h>
+>> +#include <linux/clk-provider.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/regmap.h>
+>> +
+>> +#include "clk-ma35d1.h"
+>> +
+>> +#define REG_SYS_RLKTZNS                0x1a4 /* Register Lock Control */
+>> +
+>> +struct ma35d1_clk_pll {
+>> +       struct clk_hw hw;
+>> +       u8 type;
+>> +       u8 mode;
+>> +       unsigned long rate;
+>> +       void __iomem *ctl0_base;
+> This needs an include for __iomem define. Just include kernel.h for now.
+
+OK, I will add it.
+
+>> +       void __iomem *ctl1_base;
+>> +       void __iomem *ctl2_base;
+>> +       struct regmap *regmap;
+>> +};
+>> +
+>> +static inline struct ma35d1_clk_pll *to_ma35d1_clk_pll(struct clk_hw *_hw)
+>> +{
+>> +       return container_of(_hw, struct ma35d1_clk_pll, hw);
+> Missing include as well.
+
+I will add the
+#include <linux/container_of.h>
+
+>
+>> +}
+>> +
+>> +static void ma35d1_unlock_regs(struct ma35d1_clk_pll *pll)
+>> +{
+>> +       int ret;
+>> +
+>> +       do {
+>> +               regmap_write(pll->regmap, REG_SYS_RLKTZNS, 0x59);
+>> +               regmap_write(pll->regmap, REG_SYS_RLKTZNS, 0x16);
+>> +               regmap_write(pll->regmap, REG_SYS_RLKTZNS, 0x88);
+>> +               regmap_read(pll->regmap, REG_SYS_RLKTZNS, &ret);
+>> +       } while (ret == 0);
+> Any sort of timeout?
+
+As we have discussed in [PATCH v6 08/12] of this patchset, we will 
+remove the register lock.
+So, this function will be removed in the next version.
+
+>> +}
+>> +
+>> +static void ma35d1_lock_regs(struct ma35d1_clk_pll *pll)
+>> +{
+>> +       regmap_write(pll->regmap, REG_SYS_RLKTZNS, 0x0);
+>> +}
+>> +
+>> +static unsigned long ma35d1_calc_smic_pll_freq(u32 pll0_ctl0,
+>> +                                              unsigned long parent_rate)
+>> +{
+>> +       u32 m, n, p, outdiv;
+>> +       u64 pll_freq;
+>> +       u32 clk_div_table[] = { 1, 2, 4, 8 };
+> const
+
+OK, I will add const to the clk_div_table[].
+>
+>> +
+>> +       if (pll0_ctl0 & SPLL0_CTL0_BP)
+>> +               return parent_rate;
+>> +
+>> +       n = FIELD_GET(SPLL0_CTL0_FBDIV, pll0_ctl0);
+>> +       m = FIELD_GET(SPLL0_CTL0_INDIV, pll0_ctl0);
+>> +       p = FIELD_GET(SPLL0_CTL0_OUTDIV, pll0_ctl0);
+>> +       outdiv = clk_div_table[p];
+>> +       pll_freq = (u64)parent_rate * n;
+>> +       do_div(pll_freq, m * outdiv);
+>> +       return (unsigned long)pll_freq;
+> Remove useless cast.
+
+I will fix it.
+
+>> +}
+>> +
+>> +static unsigned long ma35d1_calc_pll_freq(u8 mode, u32 *reg_ctl,
+>> +                                         unsigned long parent_rate)
+>> +{
+>> +       u32 m, n, p;
+>> +       u64 pll_freq, x;
+>> +
+>> +       if (reg_ctl[1] & PLL_CTL1_BP)
+>> +               return parent_rate;
+>> +
+>> +       if (mode == PLL_MODE_INT) {
+>> +               n = FIELD_GET(PLL_CTL0_FBDIV, reg_ctl[0]);
+>> +               m = FIELD_GET(PLL_CTL0_INDIV, reg_ctl[0]);
+>> +               p = FIELD_GET(PLL_CTL1_OUTDIV, reg_ctl[1]);
+>> +               pll_freq = (u64)parent_rate * n;
+>> +               do_div(pll_freq, m * p);
+>> +       } else {
+>> +               n = FIELD_GET(PLL_CTL0_FBDIV, reg_ctl[0]);
+>> +               m = FIELD_GET(PLL_CTL0_INDIV, reg_ctl[0]);
+>> +               p = FIELD_GET(PLL_CTL1_OUTDIV, reg_ctl[1]);
+> The n, m, p are the same, so pull them out of the if-else to deduplicate.
+
+Ok, I will modify it.
+
+>
+>> +               x = FIELD_GET(PLL_CTL1_FRAC, reg_ctl[1]);
+>> +               /* 2 decimal places floating to integer (ex. 1.23 to 123) */
+>> +               n = n * 100 + ((x * 100) / FIELD_MAX(PLL_CTL1_FRAC));
+> Is this mult_frac()?
+
+Not exactly. The number is represented as n.x.
+Suppose the number is 123.45, then n is 123 and x is 45.
+We have it be multiplied with 100 to be integer 12345, which is n.
+
+In the following
+pll_freq = ((u64)parent_rate * n) / 100 / m / p;
+
+We can keep precision of n.
+
+It seems not applicable to mult_frac().
+
+>
+>> +               pll_freq = ((u64)parent_rate * n) / 100 / m / p;
+>> +       }
+> Add a newline
+>
+>> +       return (unsigned long)pll_freq;
+> Remove useless cast.
+
+I will fix them.
+
+>> +}
+>> +
+>> +static int ma35d1_pll_find_closest(struct ma35d1_clk_pll *pll,
+>> +                                  unsigned long rate,
+>> +                                  unsigned long parent_rate,
+>> +                                  u32 *reg_ctl, unsigned long *freq)
+>> +{
+>> +       int p, m, n;
+>> +       int fbdiv_min, fbdiv_max;
+>> +       unsigned long diff = 0xffffffff;
+>> +
+>> +       *freq = 0;
+>> +       if ((rate < PLL_FCLKO_MIN_FREQ) || (rate > PLL_FCLKO_MAX_FREQ))
+>> +               return -EINVAL;
+>> +
+>> +       if (pll->mode == PLL_MODE_INT) {
+>> +               fbdiv_min = FBDIV_MIN;
+>> +               fbdiv_max = FBDIV_MAX;
+>> +       } else {
+>> +               fbdiv_min = FBDIV_FRAC_MIN;
+>> +               fbdiv_max = FBDIV_FRAC_MAX;
+>> +       }
+>> +
+>> +       for (m = INDIV_MIN; m <= INDIV_MAX; m++) {
+>> +               for (n = fbdiv_min; n <= fbdiv_max; n++) {
+>> +                       for (p = OUTDIV_MIN; p <= OUTDIV_MAX; p++) {
+>> +                               unsigned long tmp, fout;
+>> +                               u64 fclk;
+>> +
+>> +                               tmp = parent_rate / m;
+>> +                               if (tmp < PLL_FREF_M_MIN_FREQ ||
+>> +                                   tmp > PLL_FREF_M_MAX_FREQ)
+>> +                                       continue; /* constrain */
+>> +
+>> +                               fclk = (u64)parent_rate * n / m;
+>> +                               /* for 2 decimal places */
+>> +                               if (pll->mode != PLL_MODE_INT)
+>> +                                       fclk /= 100;
+>> +
+>> +                               if (fclk < PLL_FCLK_MIN_FREQ ||
+>> +                                   fclk > PLL_FCLK_MAX_FREQ)
+>> +                                       continue; /* constrain */
+>> +
+>> +                               fout = (unsigned long)(fclk / p);
+>> +                               if (fout < PLL_FCLKO_MIN_FREQ ||
+>> +                                   fout > PLL_FCLKO_MAX_FREQ)
+>> +                                       continue; /* constrain */
+>> +
+>> +                               if (abs(rate - fout) < diff) {
+>> +                                       reg_ctl[0] = FIELD_PREP(PLL_CTL0_INDIV, m) |
+>> +                                                    FIELD_PREP(PLL_CTL0_FBDIV, n);
+>> +                                       reg_ctl[1] = FIELD_PREP(PLL_CTL1_OUTDIV, p);
+>> +                                       *freq = fout;
+>> +                                       diff = abs(rate - fout);
+>> +                                       if (diff == 0)
+>> +                                               break;
+>> +                               }
+>> +                       }
+>> +               }
+>> +       }
+>> +       if (*freq == 0)
+>> +               return -EINVAL; /* cannot find even one valid setting */
+>> +       return 0;
+>> +}
+>> +
+>> +static int ma35d1_clk_pll_set_rate(struct clk_hw *hw, unsigned long rate,
+>> +                                  unsigned long parent_rate)
+>> +{
+>> +       struct ma35d1_clk_pll *pll = to_ma35d1_clk_pll(hw);
+>> +       u32 reg_ctl[3] = { 0 };
+>> +       unsigned long pll_freq;
+>> +       int ret;
+>> +
+>> +       if ((parent_rate < PLL_FREF_MIN_FREQ) ||
+>> +           (parent_rate > PLL_FREF_MAX_FREQ))
+> Remove useless parenthesis.
+>
+>> +               return -EINVAL;
+>> +
+>> +       if ((pll->type == MA35D1_CAPLL) || (pll->type == MA35D1_DDRPLL)) {
+> Remove useless parenthesis.
+
+I will fix them.
+
+>> +               pr_warn("Nuvoton MA35D1 CAPLL/DDRPLL is read only.\n");
+>> +               return -EACCES;
+>> +       }
+>> +
+>> +       ret = ma35d1_pll_find_closest(pll, rate, parent_rate, reg_ctl, &pll_freq);
+>> +       if (ret != 0)
+>> +               return ret;
+>> +       pll->rate = pll_freq;
+>> +
+>> +       switch (pll->mode) {
+>> +       case PLL_MODE_INT:
+>> +               reg_ctl[0] |= FIELD_PREP(PLL_CTL0_MODE, PLL_MODE_INT);
+>> +               break;
+>> +       case PLL_MODE_FRAC:
+>> +               reg_ctl[0] |= FIELD_PREP(PLL_CTL0_MODE, PLL_MODE_FRAC);
+>> +               break;
+>> +       case PLL_MODE_SS:
+>> +               reg_ctl[0] |= FIELD_PREP(PLL_CTL0_MODE, PLL_MODE_SS) |
+>> +                             FIELD_PREP(PLL_CTL0_SSRATE, PLL_SS_RATE);
+>> +               reg_ctl[2] = FIELD_PREP(PLL_CTL2_SLOPE, PLL_SLOPE);
+>> +               break;
+>> +       }
+>> +       reg_ctl[1] |= PLL_CTL1_PD;
+>> +
+>> +       ma35d1_unlock_regs(pll);
+>> +       writel_relaxed(reg_ctl[0], pll->ctl0_base);
+>> +       writel_relaxed(reg_ctl[1], pll->ctl1_base);
+>> +       writel_relaxed(reg_ctl[2], pll->ctl2_base);
+>> +       ma35d1_lock_regs(pll);
+>> +       return 0;
+>> +}
+>> +
+>> +static unsigned long ma35d1_clk_pll_recalc_rate(struct clk_hw *hw,
+>> +                                               unsigned long parent_rate)
+>> +{
+>> +       struct ma35d1_clk_pll *pll = to_ma35d1_clk_pll(hw);
+>> +       u32 reg_ctl[3];
+>> +       unsigned long pll_freq;
+>> +
+>> +       if ((parent_rate < PLL_FREF_MIN_FREQ) || (parent_rate > PLL_FREF_MAX_FREQ))
+> Remove useless parenthesis.
+
+I will fix it.
+
+>
+>> +               return 0;
+>> +
+>> +       switch (pll->type) {
+>> +       case MA35D1_CAPLL:
+>> +               reg_ctl[0] = readl_relaxed(pll->ctl0_base);
+>> +               pll_freq = ma35d1_calc_smic_pll_freq(reg_ctl[0], parent_rate);
+> return?
+
+Yes, I will have it return here.
+
+>> +               break;
+>> +       case MA35D1_DDRPLL:
+>> +       case MA35D1_APLL:
+>> +       case MA35D1_EPLL:
+>> +       case MA35D1_VPLL:
+>> +               reg_ctl[0] = readl_relaxed(pll->ctl0_base);
+>> +               reg_ctl[1] = readl_relaxed(pll->ctl1_base);
+>> +               pll_freq = ma35d1_calc_pll_freq(pll->mode, reg_ctl, parent_rate);
+> return?
+>
+>> +               break;
+>> +       }
+>> +       return pll_freq;
+> return 0?
+
+Yes, I will fix them.
+
+>
+>> +}
+>> +
+>> +static long ma35d1_clk_pll_round_rate(struct clk_hw *hw, unsigned long rate,
+>> +                                     unsigned long *parent_rate)
+>> +{
+>> +       struct ma35d1_clk_pll *pll = to_ma35d1_clk_pll(hw);
+>> +       u32 reg_ctl[3] = { 0 };
+>> +       unsigned long pll_freq;
+>> +       long ret;
+>> +
+>> +       if (*parent_rate < PLL_FREF_MIN_FREQ || *parent_rate > PLL_FREF_MAX_FREQ)
+>> +               return -EINVAL;
+>> +
+>> +       ret = ma35d1_pll_find_closest(pll, rate, *parent_rate, reg_ctl, &pll_freq);
+>> +       if (ret != 0)
+>> +               return ret;
+>> +
+>> +       switch (pll->type) {
+>> +       case MA35D1_CAPLL:
+>> +               reg_ctl[0] = readl_relaxed(pll->ctl0_base);
+>> +               pll_freq = ma35d1_calc_smic_pll_freq(reg_ctl[0], *parent_rate);
+> return?
+>
+>> +               break;
+>> +       case MA35D1_DDRPLL:
+>> +       case MA35D1_APLL:
+>> +       case MA35D1_EPLL:
+>> +       case MA35D1_VPLL:
+>> +               reg_ctl[0] = readl_relaxed(pll->ctl0_base);
+>> +               reg_ctl[1] = readl_relaxed(pll->ctl1_base);
+>> +               pll_freq = ma35d1_calc_pll_freq(pll->mode, reg_ctl, *parent_rate);
+> return?
+>
+>> +               break;
+>> +       }
+>> +       return pll_freq;
+> return 0?
+
+Yes, I will fix them.
+
+>> +}
+>> +
+>> +static int ma35d1_clk_pll_is_prepared(struct clk_hw *hw)
+>> +{
+>> +       struct ma35d1_clk_pll *pll = to_ma35d1_clk_pll(hw);
+>> +       u32 val = readl_relaxed(pll->ctl1_base);
+>> +
+>> +       return val & PLL_CTL1_PD ? 0 : 1;
+>> +}
+>> +
+>> +static int ma35d1_clk_pll_prepare(struct clk_hw *hw)
+>> +{
+>> +       struct ma35d1_clk_pll *pll = to_ma35d1_clk_pll(hw);
+>> +       u32 val;
+>> +
+>> +       if ((pll->type == MA35D1_CAPLL) || (pll->type == MA35D1_DDRPLL)) {
+> Drop useless parenthesis.
+
+I will fix it.
+
+>
+>> +               pr_warn("Nuvoton MA35D1 CAPLL/DDRPLL is read only.\n");
+>> +               return -EACCES;
+>> +       }
+>> +
+>> +       ma35d1_unlock_regs(pll);
+>> +       val = readl_relaxed(pll->ctl1_base);
+>> +       val &= ~PLL_CTL1_PD;
+>> +       writel_relaxed(val, pll->ctl1_base);
+>> +       ma35d1_lock_regs(pll);
+>> +       return 0;
+>> +}
+>> +
+>> +static void ma35d1_clk_pll_unprepare(struct clk_hw *hw)
+>> +{
+>> +       struct ma35d1_clk_pll *pll = to_ma35d1_clk_pll(hw);
+>> +       u32 val;
+>> +
+>> +       if ((pll->type == MA35D1_CAPLL) || (pll->type == MA35D1_DDRPLL)) {
+> Drop useless parenthesis.
+
+I will fix it.
+
+>
+>> +               pr_warn("Nuvoton MA35D1 CAPLL/DDRPLL is read only.\n");
+> These read-only checks should be removed and different clk_ops should be
+> assigned for the read-only type of clks.
+
+OK, I will fix it.
+
+>> +       } else {
+>> +               val = readl_relaxed(pll->ctl1_base);
+>> +               val |= PLL_CTL1_PD;
+>> +               writel_relaxed(val, pll->ctl1_base);
+>> +       }
+>> +}
+>> +
+>> +static const struct clk_ops ma35d1_clk_pll_ops = {
+>> +       .is_prepared = ma35d1_clk_pll_is_prepared,
+>> +       .prepare = ma35d1_clk_pll_prepare,
+>> +       .unprepare = ma35d1_clk_pll_unprepare,
+>> +       .set_rate = ma35d1_clk_pll_set_rate,
+>> +       .recalc_rate = ma35d1_clk_pll_recalc_rate,
+>> +       .round_rate = ma35d1_clk_pll_round_rate,
+>> +};
+>> +
+>> +struct clk_hw *ma35d1_reg_clk_pll(enum ma35d1_pll_type type,
+> Pass a device here.
+
+OK, I will add it.
+
+>> +                                 u8 u8mode, const char *name,
+>> +                                 const char *parent,
+>> +                                 unsigned long targetFreq,
+>> +                                 void __iomem *base,
+>> +                                 struct regmap *regmap)
+>> +{
+>> +       struct ma35d1_clk_pll *pll;
+>> +       struct clk_hw *hw;
+>> +       struct clk_init_data init;
+> init = {};
+>
+>> +       int ret;
+>> +
+>> +       pll = kmalloc(sizeof(*pll), GFP_KERNEL);
+> Just use kzalloc(). This isn't a hot path.
+
+I will use devm_kzalloc().
+
+>> +       if (!pll)
+>> +               return ERR_PTR(-ENOMEM);
+>> +
+>> +       pll->type = type;
+>> +       pll->mode = u8mode;
+>> +       pll->rate = targetFreq;
+>> +       pll->ctl0_base = base + REG_PLL_CTL0_OFFSET;
+>> +       pll->ctl1_base = base + REG_PLL_CTL1_OFFSET;
+>> +       pll->ctl2_base = base + REG_PLL_CTL2_OFFSET;
+>> +       pll->regmap = regmap;
+>> +
+>> +       init.name = name;
+>> +       init.flags = 0;
+>> +       init.parent_names = &parent;
+>> +       init.num_parents = 1;
+>> +       init.ops = &ma35d1_clk_pll_ops;
+>> +       pll->hw.init = &init;
+>> +       hw = &pll->hw;
+>> +
+>> +       ret = clk_hw_register(NULL, hw);
+> Use devm_
+
+OK, I will fix it.
+
+>
+>> +       if (ret) {
+>> +               pr_err("failed to register vsi-pll clock!!!\n");
+> I'm going to put a dev_err_probe() into clk registration code. Remove
+> this printk.
+
+OK, I will remove it.
+
+>> +               kfree(pll);
+>> +               return ERR_PTR(ret);
+>> +       }
+>> +       return hw;
+>> +}
+>> diff --git a/drivers/clk/nuvoton/clk-ma35d1.c b/drivers/clk/nuvoton/clk-ma35d1.c
+>> new file mode 100644
+>> index 000000000000..e4d3ced396a3
+>> --- /dev/null
+>> +++ b/drivers/clk/nuvoton/clk-ma35d1.c
+>> @@ -0,0 +1,963 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Copyright (C) 2023 Nuvoton Technology Corp.
+>> + * Author: Chi-Fang Li <cfli0@nuvoton.com>
+>> + */
+>> +
+>> +#include <linux/clk-provider.h>
+>> +#include <linux/mfd/syscon.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/of_address.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/spinlock.h>
+>> +#include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
+>> +
+>> +#include "clk-ma35d1.h"
+>> +
+>> +static DEFINE_SPINLOCK(ma35d1_lock);
+>> +
+>> +static const char *const ca35clk_sel_clks[] = {
+> Use clk_parent_data instead.
+
+I will fix it.
+
+>
+>> +       "hxt", "capll", "ddrpll", "dummy"
+>> +};
+>> +
+> [...]
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_fixed(const char *name, int rate)
+>> +{
+>> +       return clk_hw_register_fixed_rate(NULL, name, NULL, 0, rate);
+>> +}
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_mux(const char *name,
+>> +                                           void __iomem *reg,
+>> +                                           u8 shift, u8 width,
+>> +                                           const char *const *parents,
+>> +                                           int num_parents)
+>> +{
+>> +       return clk_hw_register_mux(NULL, name, parents, num_parents,
+>> +                                  CLK_SET_RATE_NO_REPARENT, reg, shift,
+>> +                                  width, 0, &ma35d1_lock);
+>> +}
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_divider(const char *name,
+>> +                                               const char *parent,
+>> +                                               void __iomem *reg, u8 shift,
+>> +                                               u8 width)
+>> +{
+>> +       return clk_hw_register_divider(NULL, name, parent, CLK_SET_RATE_PARENT,
+>> +                                      reg, shift, width, 0, &ma35d1_lock);
+>> +}
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_divider_pow2(const char *name,
+>> +                                                    const char *parent,
+>> +                                                    void __iomem *reg,
+>> +                                                    u8 shift, u8 width)
+>> +{
+>> +       return clk_hw_register_divider(NULL, name, parent,
+>> +                                      CLK_DIVIDER_POWER_OF_TWO, reg, shift,
+>> +                                      width, 0, &ma35d1_lock);
+>> +}
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_divider_table(const char *name,
+>> +                                       const char *parent,
+>> +                                       void __iomem *reg,
+>> +                                       u8 shift, u8 width,
+>> +                                       const struct clk_div_table *table)
+>> +{
+>> +       return clk_hw_register_divider_table(NULL, name, parent, 0,
+>> +                                            reg, shift, width, 0, table,
+>> +                                            &ma35d1_lock);
+>> +}
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_fixed_factor(const char *name,
+>> +                                                    const char *parent,
+>> +                                                    unsigned int mult,
+>> +                                                    unsigned int div)
+>> +{
+>> +       return clk_hw_register_fixed_factor(NULL, name, parent,
+>> +                                           CLK_SET_RATE_PARENT, mult, div);
+>> +}
+>> +
+>> +static inline struct clk_hw *ma35d1_clk_gate(const char *name,
+>> +                                            const char *parent,
+>> +                                            void __iomem *reg, u8 shift)
+>> +{
+>> +       return clk_hw_register_gate(NULL, name, parent, CLK_SET_RATE_PARENT,
+>> +                                   reg, shift, 0, &ma35d1_lock);
+>> +}
+> These need to use devm_ to unregister on failure.
+
+OK, I will fix them all.
+
+>> +
+>> +static int ma35d1_get_pll_setting(struct device_node *clk_node,
+>> +                                 u32 *pllmode, u32 *pllfreq)
+>> +{
+>> +       const char *of_str;
+>> +       int i;
+>> +
+>> +       for (i = 0; i < PLL_MAX_NUM; i++) {
+>> +               if (of_property_read_string_index(clk_node, "nuvoton,pll-mode", i, &of_str))
+>> +                       return -EINVAL;
+>> +               if (!strcmp(of_str, "integer"))
+>> +                       pllmode[i] = PLL_MODE_INT;
+>> +               else if (!strcmp(of_str, "fractional"))
+>> +                       pllmode[i] = PLL_MODE_FRAC;
+>> +               else if (!strcmp(of_str, "spread-spectrum"))
+>> +                       pllmode[i] = PLL_MODE_SS;
+>> +               else
+>> +                       return -EINVAL;
+>> +       }
+>> +       return of_property_read_u32_array(clk_node, "assigned-clock-rates",
+> The clk framework looks at this property. Why is the driver looking at
+> it too?
+
+We should not use "assigned-clock-rates", instead we should create a
+vendor-specific property to describe the pll frequency array.
+
+I will fix it in the next version.
+
+
+>> +                                         pllfreq, PLL_MAX_NUM);
+>> +}
+>> +
+
+
+Best regards,
+Jacky Huang
+
