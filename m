@@ -2,87 +2,114 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16896C761AF
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 13:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85131C761A6
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 13:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbjC3NOR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Mar 2023 09:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
+        id S231698AbjC3N0O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Mar 2023 09:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbjC3NOQ (ORCPT
+        with ESMTP id S231765AbjC3N0N (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Mar 2023 09:14:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CE3AD31;
-        Thu, 30 Mar 2023 06:14:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00AF662071;
-        Thu, 30 Mar 2023 13:14:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDD20C433D2;
-        Thu, 30 Mar 2023 13:14:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1680182042;
-        bh=KS4LCNe9lQlce8Dp6zV/p0jgbUK0QS/1mjfSUOf8RBg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xIYWpBhUmazj7wxv8o64t2zb3BZly6D92vtLeDbjvXe7Bf5Gl51PbVmP1UxRQSfmG
-         /cEToTozlmY87a1ixKF9FtsmQdvNZcbkQUxHYVXsscjFGApYGxMS0Ixwc+Mv5oKpjI
-         JktmegATsl1EN85wVXOSOZXPlYULCges5fhVq7kE=
-Date:   Thu, 30 Mar 2023 15:14:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <ZCWLGLNxj-02ALA1@kroah.com>
-References: <20230323071051.2184-1-tony@atomide.com>
- <ZCQAF-nrrsfBtviT@kroah.com>
- <20230330113231.GR7501@atomide.com>
- <ZCWF_Envuh3Qnaxm@kroah.com>
- <20230330125931.GT7501@atomide.com>
+        Thu, 30 Mar 2023 09:26:13 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E29AF36
+        for <linux-serial@vger.kernel.org>; Thu, 30 Mar 2023 06:25:55 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id t14so19602368ljd.5
+        for <linux-serial@vger.kernel.org>; Thu, 30 Mar 2023 06:25:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680182753;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mV0+oh+l7u4kJ6illcn1TzgHR8FXz7lNfEJu+cV2b3M=;
+        b=WZutxXbLCKTfXpxWNnSBlKxEjdN2v4d/BhD+EheqeQ8WcwjMKG25yVyhjOaqq1BrOE
+         yTLTDCEqavIImpTELh2zzMb91KKpvmTQ/5KL2snNGExuvq0RxHGjOqmznhHsA1kZPCFo
+         QQz2RrBSGp2hzBLAl4/URFLI40NM5gUYkpoE78nrqwtQuAkqlzacwGg0V0kN4TM1CM4a
+         EX1Y72eM1bq4CvNqW8+1sARHxVxGmZdFXpn/7zFALQ5+yHTbpn+rrJ4zE3itkh0j3d3i
+         e+RrIwaNq//4IG8QVodfA5Yn6br9KbetilGHiQULfrCTvnkNH1ITKRHC3RFFiqm5cvwA
+         PZIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680182753;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mV0+oh+l7u4kJ6illcn1TzgHR8FXz7lNfEJu+cV2b3M=;
+        b=BVIqegyCUZyLw0P63I5/I1eIP+VNkuF4dvkQ3/IOCk0bDjh2QMPfuU5Pk3lKUFXS6o
+         j8Xo+nDufdNQYxNseBVF/Mt8rbujLkvqwqFO2SjRnfLg6Shvp5ZwUYUXsKRHZQJjak1i
+         pOpo2yjfObPld4bwHPYsYdE9u8xIpJ/tp686B5X/3klLEI3nLcTlq+HS5Z0zeF/pAZwe
+         H5/p80ol91vI/lqT+T2iYCx/Mgy996Z1o9Cr5OipyN9uxEZrPduonWx0ahEhZL7FogwC
+         tdk5pOR17SyCnaqc3P82zDu34hq5erTZR2zfDxBQwIUjofAZs6UUk6zvGu/SbgY+nAb3
+         IsIw==
+X-Gm-Message-State: AAQBX9fkpQO8oKQJuoLZvPY8fv/FdALWCQQ80Yv/5rndl9xa7u1+KAC7
+        EUwlXkERqqZ7OMnJzPqk6Ha/Yg==
+X-Google-Smtp-Source: AKy350bBOfZplRWkTpeeT0ceEob3PTLeDFq8qkKToR90OcxrWk/VYqw3HmYPvoJjrh1ldTiwtdfHog==
+X-Received: by 2002:a2e:9ecb:0:b0:298:a7a7:47e with SMTP id h11-20020a2e9ecb000000b00298a7a7047emr7111926ljk.19.1680182753253;
+        Thu, 30 Mar 2023 06:25:53 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id v6-20020a2e9f46000000b002a6062f4a60sm1101270ljk.53.2023.03.30.06.25.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Mar 2023 06:25:52 -0700 (PDT)
+Message-ID: <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
+Date:   Thu, 30 Mar 2023 15:25:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230330125931.GT7501@atomide.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
+ Nuvoton platform
+Content-Language: en-US
+To:     Jacky Huang <ychuang570808@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com>
+ <20230328021912.177301-7-ychuang570808@gmail.com>
+ <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
+ <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 03:59:31PM +0300, Tony Lindgren wrote:
-> * Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230330 12:52]:
-> > On Thu, Mar 30, 2023 at 02:32:31PM +0300, Tony Lindgren wrote:
-> > > * Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230329 09:08]:
-> > > > On Thu, Mar 23, 2023 at 09:10:47AM +0200, Tony Lindgren wrote:
-> > > > > --- /dev/null
-> > > > > +++ b/drivers/tty/serial/serial_base.c
-> > > > > @@ -0,0 +1,142 @@
-> > > > > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > > > 
-> > > > Given that the driver core is "GPL-2.0-only", why is this -or-later?
-> > > 
-> > > Thanks for noticing, the intention was to set it to what serial_core.c has:
-> > > 
-> > > $ git grep -e SPDX -e MODULE_LICENSE drivers/tty/serial/serial_core.c
-> > > drivers/tty/serial/serial_core.c:// SPDX-License-Identifier: GPL-2.0+
-> > > drivers/tty/serial/serial_core.c:MODULE_LICENSE("GPL");
-> > 
-> > Doesn't mean you have to copy it, it's your choice :)
+On 30/03/2023 12:41, Jacky Huang wrote:
+> Dear Rob,
 > 
-> In this case my preference is to use the same as for serial_core.c. This is
-> so folks can start moving serial port specific functions from serial_core.c
-> to serial_port.c. And not have to worry about the possible differences with
-> various licenses at that point :)
+> 
+> On 2023/3/29 下午 09:07, Rob Herring wrote:
+>> On Mon, Mar 27, 2023 at 9:19 PM Jacky Huang <ychuang570808@gmail.com> wrote:
+>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>
+>>> Rename the bindings/arm/npcm directory as nuvoton.
+>>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
+>>> Add initial bindings for ma35d1 series development boards.
+>>>
+>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>> ---
+>>>   .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
+>>>   .../nuvoton,npcm-gcr.yaml}                    |  2 +-
+>>>   .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
+>>>   3 files changed, 32 insertions(+), 2 deletions(-)
+>>>   create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+>>>   rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
+>> Since you are moving it, this one should be moved to bindings/soc/nuvoton/
+>>
+>>>   rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
+> 
+> OK, I will move "Documentation/devicetree/bindings/arm/npcm" to
+> "Documentation/devicetree/bindings/soc/nuvoton".
 
-That's great, no objection from me, sorry, but I had to ask, the "no
-fun" part of my job...
+To clarify - Rob asked *this one*. Not all.
 
-greg k-h
+
+
+Best regards,
+Krzysztof
+
