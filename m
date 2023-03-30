@@ -2,114 +2,93 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85131C761A6
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 13:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B863CC77B60
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 17:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231698AbjC3N0O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Mar 2023 09:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
+        id S232276AbjC3RTM convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Mar 2023 13:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231765AbjC3N0N (ORCPT
+        with ESMTP id S232237AbjC3RTI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Mar 2023 09:26:13 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E29AF36
-        for <linux-serial@vger.kernel.org>; Thu, 30 Mar 2023 06:25:55 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id t14so19602368ljd.5
-        for <linux-serial@vger.kernel.org>; Thu, 30 Mar 2023 06:25:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680182753;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mV0+oh+l7u4kJ6illcn1TzgHR8FXz7lNfEJu+cV2b3M=;
-        b=WZutxXbLCKTfXpxWNnSBlKxEjdN2v4d/BhD+EheqeQ8WcwjMKG25yVyhjOaqq1BrOE
-         yTLTDCEqavIImpTELh2zzMb91KKpvmTQ/5KL2snNGExuvq0RxHGjOqmznhHsA1kZPCFo
-         QQz2RrBSGp2hzBLAl4/URFLI40NM5gUYkpoE78nrqwtQuAkqlzacwGg0V0kN4TM1CM4a
-         EX1Y72eM1bq4CvNqW8+1sARHxVxGmZdFXpn/7zFALQ5+yHTbpn+rrJ4zE3itkh0j3d3i
-         e+RrIwaNq//4IG8QVodfA5Yn6br9KbetilGHiQULfrCTvnkNH1ITKRHC3RFFiqm5cvwA
-         PZIA==
+        Thu, 30 Mar 2023 13:19:08 -0400
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3983CE1A2;
+        Thu, 30 Mar 2023 10:19:05 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id eg48so79228577edb.13;
+        Thu, 30 Mar 2023 10:19:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680182753;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mV0+oh+l7u4kJ6illcn1TzgHR8FXz7lNfEJu+cV2b3M=;
-        b=BVIqegyCUZyLw0P63I5/I1eIP+VNkuF4dvkQ3/IOCk0bDjh2QMPfuU5Pk3lKUFXS6o
-         j8Xo+nDufdNQYxNseBVF/Mt8rbujLkvqwqFO2SjRnfLg6Shvp5ZwUYUXsKRHZQJjak1i
-         pOpo2yjfObPld4bwHPYsYdE9u8xIpJ/tp686B5X/3klLEI3nLcTlq+HS5Z0zeF/pAZwe
-         H5/p80ol91vI/lqT+T2iYCx/Mgy996Z1o9Cr5OipyN9uxEZrPduonWx0ahEhZL7FogwC
-         tdk5pOR17SyCnaqc3P82zDu34hq5erTZR2zfDxBQwIUjofAZs6UUk6zvGu/SbgY+nAb3
-         IsIw==
-X-Gm-Message-State: AAQBX9fkpQO8oKQJuoLZvPY8fv/FdALWCQQ80Yv/5rndl9xa7u1+KAC7
-        EUwlXkERqqZ7OMnJzPqk6Ha/Yg==
-X-Google-Smtp-Source: AKy350bBOfZplRWkTpeeT0ceEob3PTLeDFq8qkKToR90OcxrWk/VYqw3HmYPvoJjrh1ldTiwtdfHog==
-X-Received: by 2002:a2e:9ecb:0:b0:298:a7a7:47e with SMTP id h11-20020a2e9ecb000000b00298a7a7047emr7111926ljk.19.1680182753253;
-        Thu, 30 Mar 2023 06:25:53 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id v6-20020a2e9f46000000b002a6062f4a60sm1101270ljk.53.2023.03.30.06.25.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Mar 2023 06:25:52 -0700 (PDT)
-Message-ID: <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
-Date:   Thu, 30 Mar 2023 15:25:51 +0200
+        d=1e100.net; s=20210112; t=1680196743;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/sK01N/HcAzey7kutWyAm0fiwuXpPIV0t8lDayMPKNs=;
+        b=4r8n6zZoDCBwTrqlp6Wpc0Opn4JmZTEDhm+FmJNJeKI6a+Pv+Q3RRlFjsr1uHrpUiY
+         0HSzyc61/TnpDx/H/pVUreWsdyBdtGV+x4Csmimk+qL4CaKEQMubSejsU5t7TkBMumlV
+         tqiiK1nGmdaZLimos68yQmt1f3rcJRT4uVCgkc47+ucCL1iL7lmNy8YFh9nBs7zOXLG6
+         sZIPb3oDVkR5WJ++wT5no7X6p2SqTJUDaasZwkK9CcE/cbpVuFmpool7B2KL62Td03OE
+         GGEkFXgbAdf8+ln3IVOVQxQlslyu5WkIMOajXpclKe5atWNr3Gqhro3KV1qkmKwGqKii
+         +B/g==
+X-Gm-Message-State: AAQBX9c/Q3e3+Ef2ddBZtuqGNsgJGTlZ/KKCVMs9gQtpXl2WcW/c8ddy
+        DbjroA3ziOmH0T8o6RJuuzwZjXfwszhnQIk8fr4=
+X-Google-Smtp-Source: AKy350YytQ1yNiR6W3Bf1WUTGN6F1FlrOPm5tq5wq5gaK9i6al6bWOGltYKF/XedV9kSLG6QNcyQIMF5Rh1uNWAeOVs=
+X-Received: by 2002:a17:907:a0cd:b0:947:4b15:51e5 with SMTP id
+ hw13-20020a170907a0cd00b009474b1551e5mr1794105ejc.2.1680196743353; Thu, 30
+ Mar 2023 10:19:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
- Nuvoton platform
-Content-Language: en-US
-To:     Jacky Huang <ychuang570808@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-7-ychuang570808@gmail.com>
- <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
- <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org> <ZCUon17pXpgBr0eQ@kroah.com>
+In-Reply-To: <ZCUon17pXpgBr0eQ@kroah.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 30 Mar 2023 19:18:52 +0200
+Message-ID: <CAJZ5v0jKA9GQULe360ZnwiKc4HRHcLJR=LxDwwm7DGP59JU_rw@mail.gmail.com>
+Subject: Re: [PATCH 0/5] Remove acpi.h implicit include of of.h
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>
+Cc:     Len Brown <lenb@kernel.org>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Marc Zyngier <maz@kernel.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 30/03/2023 12:41, Jacky Huang wrote:
-> Dear Rob,
-> 
-> 
-> On 2023/3/29 下午 09:07, Rob Herring wrote:
->> On Mon, Mar 27, 2023 at 9:19 PM Jacky Huang <ychuang570808@gmail.com> wrote:
->>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>
->>> Rename the bindings/arm/npcm directory as nuvoton.
->>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
->>> Add initial bindings for ma35d1 series development boards.
->>>
->>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->>> ---
->>>   .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
->>>   .../nuvoton,npcm-gcr.yaml}                    |  2 +-
->>>   .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
->>>   3 files changed, 32 insertions(+), 2 deletions(-)
->>>   create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
->>>   rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
->> Since you are moving it, this one should be moved to bindings/soc/nuvoton/
->>
->>>   rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
-> 
-> OK, I will move "Documentation/devicetree/bindings/arm/npcm" to
-> "Documentation/devicetree/bindings/soc/nuvoton".
+On Thu, Mar 30, 2023 at 8:13 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Mar 29, 2023 at 04:20:41PM -0500, Rob Herring wrote:
+> > In the process of cleaning up DT includes, I found that some drivers
+> > using DT functions could build without any explicit DT include. I traced
+> > the include to be coming from acpi.h via irqdomain.h.
+> >
+> > I was pleasantly surprised that there were not 100s or even 10s of
+> > warnings when breaking the include chain. So here's the resulting
+> > series.
+> >
+> > I'd suggest Rafael take the whole series. Alternatively,the fixes can be
+> > applied in 6.4 and then the last patch either after rc1 or the
+> > following cycle.
+> >
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+>
+> Nice cleanup, all are:
+>
+> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-To clarify - Rob asked *this one*. Not all.
-
-
-
-Best regards,
-Krzysztof
-
+All applied as 6.4 material with the tags collected so far, thanks!
