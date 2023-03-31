@@ -2,38 +2,37 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E666C6FD18
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 11:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FE8C76196
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 11:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229437AbjCaLe2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 31 Mar 2023 07:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        id S231915AbjCaLe3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 31 Mar 2023 07:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbjCaLeX (ORCPT
+        with ESMTP id S231966AbjCaLeW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 31 Mar 2023 07:34:23 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA73C1DF82;
-        Fri, 31 Mar 2023 04:34:00 -0700 (PDT)
+        Fri, 31 Mar 2023 07:34:22 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ADAB1EFD8;
+        Fri, 31 Mar 2023 04:33:57 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.98,307,1673881200"; 
-   d="scan'208";a="157862793"
+   d="scan'208";a="154460154"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 31 Mar 2023 20:34:00 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 31 Mar 2023 20:33:56 +0900
 Received: from localhost.localdomain (unknown [10.226.93.148])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 7D50B436D614;
-        Fri, 31 Mar 2023 20:33:57 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id A622E436D615;
+        Fri, 31 Mar 2023 20:33:54 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
         linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH v3 3/5] tty: serial: sh-sci: Fix TE setting on SCI IP
-Date:   Fri, 31 Mar 2023 12:33:44 +0100
-Message-Id: <20230331113346.170602-4-biju.das.jz@bp.renesas.com>
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v3 2/5] tty: serial: sh-sci: Add RZ/G2L SCIF DMA rx support
+Date:   Fri, 31 Mar 2023 12:33:43 +0100
+Message-Id: <20230331113346.170602-3-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
 References: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
@@ -43,61 +42,90 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As per the RZ/G2L users hardware manual (Rev.1.20 Sep, 2022), section
-23.3.7 Serial Data Transmission (Asynchronous Mode) it is mentioned
-that the TE (transmit enable) must be set after setting TIE (transmit
-interrupt enable) or these 2 bits are set to 1 simultaneously by a
-single instruction. So set these 2 bits in single instruction.
+Add SCIF DMA rx support for RZ/G2L alike SoCs.
 
-Fixes: 93bcefd4c6ba ("serial: sh-sci: Fix setting SCSCR_TIE while transferring data")
-Cc: stable@vger.kernel.org
+RZ/G2L alike SoCs use the same signal for both interrupt and DMA transfer
+requests, so we must disable line interrupt while transferring DMA.
+
+Apart from this, we must set FIFO trigger to 1 so that SCIF will request
+DMA compared to other SoCs.
+
+While at it replace the parameter irq to s->irqs[SCIx_RXI_IRQ] in
+disable_irq_nosync() to match enable_irq() in sci_dma_rx_reenable_irq().
+
+Based on a patch in the BSP by Long Luu
+<long.luu.ur@renesas.com>
+
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
-v3:
- * New patch moved here from Renesas SCI fixes patch series
- * Updated commit description
- * Moved handling of clearing TE bit as separate patch#5.
+v2->v3:
+ * Replaced is_rz_scif_port to s->cfg->regtype check
+ * Updated the code flow similar to SCIFA/SCIFB DMA rx handling.
+v2:
+ * New patch
 ---
- drivers/tty/serial/sh-sci.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sh-sci.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 15743c2f3d3d..32f5c1f7d697 100644
+index f70d06a03864..15743c2f3d3d 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -601,6 +601,15 @@ static void sci_start_tx(struct uart_port *port)
- 	    port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
- 		/* Set TIE (Transmit Interrupt Enable) bit in SCSCR */
- 		ctrl = serial_port_in(port, SCSCR);
-+
-+		/*
-+		 * For SCI, TE (transmit enable) must be set after setting TIE
-+		 * (transmit interrupt enable) or in the same instruction to start
-+		 * the transmit process.
-+		 */
-+		if (port->type == PORT_SCI)
-+			ctrl |= SCSCR_TE;
-+
- 		serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
+@@ -1277,9 +1277,13 @@ static void sci_dma_rx_reenable_irq(struct sci_port *s)
+ 
+ 	/* Direct new serial port interrupts back to CPU */
+ 	scr = serial_port_in(port, SCSCR);
+-	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+-		scr &= ~SCSCR_RDRQE;
++	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
++	    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
+ 		enable_irq(s->irqs[SCIx_RXI_IRQ]);
++		if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)
++			scif_set_rtrg(port, s->rx_trigger);
++		else
++			scr &= ~SCSCR_RDRQE;
  	}
+ 	serial_port_out(port, SCSCR, scr | SCSCR_RIE);
  }
-@@ -2600,8 +2609,14 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 		sci_set_mctrl(port, port->mctrl);
+@@ -1516,7 +1520,8 @@ static enum hrtimer_restart sci_dma_rx_timer_fn(struct hrtimer *t)
+ 			tty_flip_buffer_push(&port->state->port);
  	}
  
--	scr_val |= SCSCR_RE | SCSCR_TE |
--		   (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0));
-+	/*
-+	 * For SCI, TE (transmit enable) must be set after setting TIE
-+	 * (transmit interrupt enable) or in the same instruction to
-+	 * start the transmitting process. So skip setting TE here for SCI.
-+	 */
-+	if (port->type != PORT_SCI)
-+		scr_val |= SCSCR_TE;
-+	scr_val |= SCSCR_RE | (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0));
- 	serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
- 	if ((srr + 1 == 5) &&
- 	    (port->type == PORT_SCIFA || port->type == PORT_SCIFB)) {
+-	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
++	    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)
+ 		sci_dma_rx_submit(s, true);
+ 
+ 	sci_dma_rx_reenable_irq(s);
+@@ -1640,7 +1645,8 @@ static void sci_request_dma(struct uart_port *port)
+ 
+ 		s->chan_rx_saved = s->chan_rx = chan;
+ 
+-		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
++		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
++		    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)
+ 			sci_dma_rx_submit(s, false);
+ 	}
+ }
+@@ -1693,9 +1699,15 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 		u16 ssr = serial_port_in(port, SCxSR);
+ 
+ 		/* Disable future Rx interrupts */
+-		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+-			disable_irq_nosync(irq);
+-			scr |= SCSCR_RDRQE;
++		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
++		    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
++			disable_irq_nosync(s->irqs[SCIx_RXI_IRQ]);
++			if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
++				scif_set_rtrg(port, 1);
++				scr |= SCSCR_RIE;
++			} else {
++				scr |= SCSCR_RDRQE;
++			}
+ 		} else {
+ 			if (sci_dma_rx_submit(s, false) < 0)
+ 				goto handle_pio;
 -- 
 2.25.1
 
