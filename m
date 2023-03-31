@@ -2,137 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CB2C77B6C
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 02:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CC4C76196
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 11:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbjCaCPX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Mar 2023 22:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        id S231542AbjCaLe0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 31 Mar 2023 07:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCaCPW (ORCPT
+        with ESMTP id S231881AbjCaLeW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Mar 2023 22:15:22 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9963E18B;
-        Thu, 30 Mar 2023 19:15:21 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id j13so19059810pjd.1;
-        Thu, 30 Mar 2023 19:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680228921;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zFs1M4FHeogHRWVUs63pLt774ztEF1h66obdsW+D9oo=;
-        b=hoNgpgf4aLzwSLP/BeB7GheyN/ekC/VIniLYkDG8Bzjw8dAusZoKtuLdkWW/RIlJ/F
-         rrwcBwWq2TZm9mpbTDoY90Q/sj13Chrmy1Rl3JBS/XOsLcB3AGbltI8IQnF1KxxzqB+6
-         BIVxyZ7hwg4b1fLb4t2Vj2E9paTpeUB9jnXORN3+MvGoQ9+7NFO9e+dUDXoSQLiPIOk8
-         qIFcKSlH7OGb1QrmRRdrzaSOAOp1Gkmq0+8vyKaoWStp4YlfH6s5K4/OClHx3lNshl40
-         RWvrkpEQTDdPgVj2EQblhYQ1pVj17kvgFDgQqKbzt1WsVMQEAA7Ms7EXLV/ug4XfMXOS
-         In/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680228921;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zFs1M4FHeogHRWVUs63pLt774ztEF1h66obdsW+D9oo=;
-        b=UVIvn3+uNPUnKcmaOGO0Hkh++BSen9w5EGZY2F1rrnclVcFcH+pTmiLDwQ80YItruR
-         w6v3s81qe49FYZhuGpSITFk8PBBvqa+g8X0aa8yqYJmJ1KktKI/GizOU9wjemP/e1E/K
-         GJXXGlEW7vmaCThLgccasb+vPFM9DBzLml2EK/brPAAUylo/srT1/ExtFReOmLIGaCcj
-         onM28Va0Srl0LU+pc7C4qhswd+3DH2380kYK26WEYtAx+H2GcWkcMT4SKn44+1rotSrT
-         qI6rE3/5TntwHzoLPjTJhNzFpld8e1AQo0v8Xqlxi/9++pZJg+xbYt+CUleCMlQPb7XN
-         BOZA==
-X-Gm-Message-State: AAQBX9dCRxbGViB7YXXjjz53Onc92EGvPyNLJhXMiqERFJRt+/fvIjlT
-        mbuHCwWlfww1XK8Bx9YE6wcqR5/yA8npmg==
-X-Google-Smtp-Source: AKy350Z25zRGMGsijn+lkfwgpeoLaG0vQTga3fyakeBYu0nJOmIM+xWkUKhvVhuhSHcb82X4GMUJoQ==
-X-Received: by 2002:a17:90b:4094:b0:23f:d487:1bc8 with SMTP id jb20-20020a17090b409400b0023fd4871bc8mr8650609pjb.13.1680228921239;
-        Thu, 30 Mar 2023 19:15:21 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id gq16-20020a17090b105000b002309279baf8sm3866155pjb.43.2023.03.30.19.15.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Mar 2023 19:15:20 -0700 (PDT)
-Message-ID: <f39edbfe-75bd-3b39-e325-8d24673a4501@gmail.com>
-Date:   Fri, 31 Mar 2023 10:15:16 +0800
+        Fri, 31 Mar 2023 07:34:22 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 853A31D91B;
+        Fri, 31 Mar 2023 04:33:57 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.98,307,1673881200"; 
+   d="scan'208";a="157862784"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 31 Mar 2023 20:33:54 +0900
+Received: from localhost.localdomain (unknown [10.226.93.148])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id CF910436D614;
+        Fri, 31 Mar 2023 20:33:51 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v3 1/5] tty: serial: sh-sci: Add RZ/G2L SCIF DMA tx support
+Date:   Fri, 31 Mar 2023 12:33:42 +0100
+Message-Id: <20230331113346.170602-2-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
+References: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
- Nuvoton platform
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-7-ychuang570808@gmail.com>
- <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
- <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
- <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Add SCIF DMA tx support for RZ/G2L alike SoCs.
 
+RZ/G2L alike SoC use the same signal for both interrupt and DMA
+transfer requests, so we must disable line interrupts(tx and tx end)
+while transferring DMA and enable the TIE source interrupt.
 
-On 2023/3/30 下午 09:25, Krzysztof Kozlowski wrote:
-> On 30/03/2023 12:41, Jacky Huang wrote:
->> Dear Rob,
->>
->>
->> On 2023/3/29 下午 09:07, Rob Herring wrote:
->>> On Mon, Mar 27, 2023 at 9:19 PM Jacky Huang <ychuang570808@gmail.com> wrote:
->>>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>>
->>>> Rename the bindings/arm/npcm directory as nuvoton.
->>>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
->>>> Add initial bindings for ma35d1 series development boards.
->>>>
->>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->>>> ---
->>>>    .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
->>>>    .../nuvoton,npcm-gcr.yaml}                    |  2 +-
->>>>    .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
->>>>    3 files changed, 32 insertions(+), 2 deletions(-)
->>>>    create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
->>>>    rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
->>> Since you are moving it, this one should be moved to bindings/soc/nuvoton/
->>>
->>>>    rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
->> OK, I will move "Documentation/devicetree/bindings/arm/npcm" to
->> "Documentation/devicetree/bindings/soc/nuvoton".
-> To clarify - Rob asked *this one*. Not all.
->
->
->
-> Best regards,
-> Krzysztof
->
+Based on a patch in the BSP by Long Luu
+<long.luu.ur@renesas.com>
 
-Dear Krzysztof,
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+v2->v3:
+ * Dropped inline function is_rz_scif_port() and instead using
+   s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE for finding RZ SCIF port.
+ * Dropped SCIx_TEI_IRQ as DMAC activation not possible with TEI interrupt.
+ * Updated the code flow similar to SCIFA/SCIFB DMAC tx handling.
+v1->v2:
+ * No change
+---
+ drivers/tty/serial/sh-sci.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-I am sorry that still cannot get it exactly.
-
-1. Just only submit  the nuvoton,ma35d1.yaml to
-Documentation/devicetree/bindings/soc/nuvoton/nuvoton,ma35d1.yaml
-     and keep Documentation/devicetree/bindings/arm/npcm unchanged
-
-2. Move the directory "Documentation/devicetree/bindings/arm/npcm" to 
-"Documentation/devicetree/bindings/soc/nuvoton"
-    and submit  the nuvoton,ma35d1.yaml to 
-"Documentation/devicetree/bindings/soc/nuvoton"
-
-I should do 1 or 2?  Thank you very much.
-
-
-Best regards,
-Jacky Huang
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index ca31e34afd83..f70d06a03864 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -588,12 +588,17 @@ static void sci_start_tx(struct uart_port *port)
+ 
+ 	if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit) &&
+ 	    dma_submit_error(s->cookie_tx)) {
++		if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)
++			/* Switch irq from SCIF to DMA */
++			disable_irq(s->irqs[SCIx_TXI_IRQ]);
++
+ 		s->cookie_tx = 0;
+ 		schedule_work(&s->work_tx);
+ 	}
+ #endif
+ 
+-	if (!s->chan_tx || port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
++	if (!s->chan_tx || s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE ||
++	    port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+ 		/* Set TIE (Transmit Interrupt Enable) bit in SCSCR */
+ 		ctrl = serial_port_in(port, SCSCR);
+ 		serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
+@@ -1192,9 +1197,15 @@ static void sci_dma_tx_complete(void *arg)
+ 		schedule_work(&s->work_tx);
+ 	} else {
+ 		s->cookie_tx = -EINVAL;
+-		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
++		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
++		    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
+ 			u16 ctrl = serial_port_in(port, SCSCR);
+ 			serial_port_out(port, SCSCR, ctrl & ~SCSCR_TIE);
++			if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
++				/* Switch irq from DMA to SCIF */
++				dmaengine_pause(s->chan_tx_saved);
++				enable_irq(s->irqs[SCIx_TXI_IRQ]);
++			}
+ 		}
+ 	}
+ 
+-- 
+2.25.1
 
