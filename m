@@ -2,64 +2,65 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B2C0C77B6C
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 02:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CB2C77B6C
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 02:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229656AbjCaCDY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Mar 2023 22:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
+        id S229531AbjCaCPX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Mar 2023 22:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjCaCDX (ORCPT
+        with ESMTP id S229475AbjCaCPW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Mar 2023 22:03:23 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125A2BB95;
-        Thu, 30 Mar 2023 19:03:23 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id q102so19020185pjq.3;
-        Thu, 30 Mar 2023 19:03:23 -0700 (PDT)
+        Thu, 30 Mar 2023 22:15:22 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9963E18B;
+        Thu, 30 Mar 2023 19:15:21 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id j13so19059810pjd.1;
+        Thu, 30 Mar 2023 19:15:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680228202;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=gmail.com; s=20210112; t=1680228921;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=GKIofgr/GCTBNuO9ZygMr6tfiN0nXLiY+RGo82nSz7Q=;
-        b=Ig9evASaqAhW6JpaKUEv1RDr56mWfL5iElcEno2q1KtDuqIgijiCy1ZrYLZvzMzg/Z
-         NTWJQeqHR7wOBj4OZHtG6faG7dmvHPkuoCznrytnE38dev0eq0McXsKCq+ZfY/nWodVB
-         ofw2HCD40DIsz9olk1fowvOVGmCbuUD4++kRcQMZKry0X5UG+fGQIA2lSmp/V0Bu3Iml
-         fArad05lm1o7bEyzqzVEswhv8ZAg26uQVdv8f7GXR3p3gvEndBDxFbx+8tup1vQQbPFk
-         ybPU/pMBGeGzo29SPCz5HgOdtS1TkBdOyEC6h2kWax9BRhCHVEm3PgqsjmnvMxH08TO5
-         0uFA==
+        bh=zFs1M4FHeogHRWVUs63pLt774ztEF1h66obdsW+D9oo=;
+        b=hoNgpgf4aLzwSLP/BeB7GheyN/ekC/VIniLYkDG8Bzjw8dAusZoKtuLdkWW/RIlJ/F
+         rrwcBwWq2TZm9mpbTDoY90Q/sj13Chrmy1Rl3JBS/XOsLcB3AGbltI8IQnF1KxxzqB+6
+         BIVxyZ7hwg4b1fLb4t2Vj2E9paTpeUB9jnXORN3+MvGoQ9+7NFO9e+dUDXoSQLiPIOk8
+         qIFcKSlH7OGb1QrmRRdrzaSOAOp1Gkmq0+8vyKaoWStp4YlfH6s5K4/OClHx3lNshl40
+         RWvrkpEQTDdPgVj2EQblhYQ1pVj17kvgFDgQqKbzt1WsVMQEAA7Ms7EXLV/ug4XfMXOS
+         In/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680228202;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20210112; t=1680228921;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GKIofgr/GCTBNuO9ZygMr6tfiN0nXLiY+RGo82nSz7Q=;
-        b=6z9lBRQZFQAOlNwy3UAljTaqOwVHjflXP7ebIQ0pCjBiNmg5SegLR51ZFXIY4mwXtj
-         1kfqGcIXVlaBWhjEsRARByAdkjiHJbQBdTt5FFf5qvA62I0JLNE1FF3OTmqMVZHsty8t
-         1zDCLP96SaulsrcJTvVPpVlEvZiiXsdl21FHYmI5IKQjnb8niP3m4hBfh9FZs9kiXCk7
-         l/eOkZUXknQ9YsK18ZZfmEzQhArghxeYOzphrgSDZYEXyQhxh4mpewmh766vkp3HSoQZ
-         FSgbOx/69tMYY4FExZ9LqVpFebOKfHVX0c35sijrCPvMKO2YmgoAgq9tgxYx01uKi3jT
-         YzsQ==
-X-Gm-Message-State: AO0yUKXHUZQxlRz1Xlu9bvjVM20DoRF/1JF6XnlCY6NKJPvph8B/1XdJ
-        vPkGj5e10HEX1DYGqnh7k+8=
-X-Google-Smtp-Source: AK7set9AVhm0k3VBBBlPzTAy/S+MsPVrdmvsUCwwjsGEX0hjdJZ+Uy1zuSQ4Yh33ScbmvVN9orFXPg==
-X-Received: by 2002:a05:6a20:2494:b0:d3:72c6:b018 with SMTP id m20-20020a056a20249400b000d372c6b018mr21002448pzd.39.1680228202279;
-        Thu, 30 Mar 2023 19:03:22 -0700 (PDT)
+        bh=zFs1M4FHeogHRWVUs63pLt774ztEF1h66obdsW+D9oo=;
+        b=UVIvn3+uNPUnKcmaOGO0Hkh++BSen9w5EGZY2F1rrnclVcFcH+pTmiLDwQ80YItruR
+         w6v3s81qe49FYZhuGpSITFk8PBBvqa+g8X0aa8yqYJmJ1KktKI/GizOU9wjemP/e1E/K
+         GJXXGlEW7vmaCThLgccasb+vPFM9DBzLml2EK/brPAAUylo/srT1/ExtFReOmLIGaCcj
+         onM28Va0Srl0LU+pc7C4qhswd+3DH2380kYK26WEYtAx+H2GcWkcMT4SKn44+1rotSrT
+         qI6rE3/5TntwHzoLPjTJhNzFpld8e1AQo0v8Xqlxi/9++pZJg+xbYt+CUleCMlQPb7XN
+         BOZA==
+X-Gm-Message-State: AAQBX9dCRxbGViB7YXXjjz53Onc92EGvPyNLJhXMiqERFJRt+/fvIjlT
+        mbuHCwWlfww1XK8Bx9YE6wcqR5/yA8npmg==
+X-Google-Smtp-Source: AKy350Z25zRGMGsijn+lkfwgpeoLaG0vQTga3fyakeBYu0nJOmIM+xWkUKhvVhuhSHcb82X4GMUJoQ==
+X-Received: by 2002:a17:90b:4094:b0:23f:d487:1bc8 with SMTP id jb20-20020a17090b409400b0023fd4871bc8mr8650609pjb.13.1680228921239;
+        Thu, 30 Mar 2023 19:15:21 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id e22-20020aa78256000000b00625cfe645ddsm529160pfn.2.2023.03.30.19.03.19
+        by smtp.gmail.com with ESMTPSA id gq16-20020a17090b105000b002309279baf8sm3866155pjb.43.2023.03.30.19.15.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Mar 2023 19:03:21 -0700 (PDT)
-Message-ID: <28df13b6-201c-2fad-6f69-f12d24fba8e8@gmail.com>
-Date:   Fri, 31 Mar 2023 10:03:17 +0800
+        Thu, 30 Mar 2023 19:15:20 -0700 (PDT)
+Message-ID: <f39edbfe-75bd-3b39-e325-8d24673a4501@gmail.com>
+Date:   Fri, 31 Mar 2023 10:15:16 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH v6 07/12] dt-bindings: serial: Document ma35d1 uart
- controller
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
+ Nuvoton platform
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
         mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
         gregkh@linuxfoundation.org, jirislaby@kernel.org,
         devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
@@ -67,15 +68,12 @@ Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>
 References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-8-ychuang570808@gmail.com>
- <be0bf335-39fc-2eac-ed37-112881bac675@linaro.org>
- <7b5e42bc-0788-5208-e97e-10502da1c238@gmail.com>
- <4c1fa450-79c9-2c66-4bb8-b880f2cf07a5@linaro.org>
- <8bf559ec-0f5f-7ac5-6400-ccd2395b3b95@gmail.com>
- <20230330131219.GA1849090-robh@kernel.org>
-Content-Language: en-US
+ <20230328021912.177301-7-ychuang570808@gmail.com>
+ <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
+ <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
+ <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <20230330131219.GA1849090-robh@kernel.org>
+In-Reply-To: <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -84,63 +82,57 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 2023/3/30 下午 09:12, Rob Herring wrote:
-> On Thu, Mar 30, 2023 at 06:52:11PM +0800, Jacky Huang wrote:
+On 2023/3/30 下午 09:25, Krzysztof Kozlowski wrote:
+> On 30/03/2023 12:41, Jacky Huang wrote:
+>> Dear Rob,
 >>
->> On 2023/3/30 下午 03:33, Krzysztof Kozlowski wrote:
->>> On 29/03/2023 10:44, Jacky Huang wrote:
->>>> Dear Krzysztof,
+>>
+>> On 2023/3/29 下午 09:07, Rob Herring wrote:
+>>> On Mon, Mar 27, 2023 at 9:19 PM Jacky Huang <ychuang570808@gmail.com> wrote:
+>>>> From: Jacky Huang <ychuang3@nuvoton.com>
 >>>>
+>>>> Rename the bindings/arm/npcm directory as nuvoton.
+>>>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
+>>>> Add initial bindings for ma35d1 series development boards.
 >>>>
->>>> Thanks for your review.
->>>>
->>>>
->>>> On 2023/3/29 下午 04:20, Krzysztof Kozlowski wrote:
->>>>> On 28/03/2023 04:19, Jacky Huang wrote:
->>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>>>>
->>>>>> Add documentation to describe nuvoton ma35d1 uart driver bindings.
->>>>>>
->>>>> This depends on clock patches, so it must be taken together.
->>>>>
->>>>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>>>>
->>>>> Best regards,
->>>>> Krzysztof
->>>>>
->>>> OK, I will combine this patch with the clock patch.
->>> I don't know what you mean by "combine", but I don't think this is what
->>> we want. You must clearly state all dependencies and patch merging
->>> strategy/way.
+>>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>>> ---
+>>>>    .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
+>>>>    .../nuvoton,npcm-gcr.yaml}                    |  2 +-
+>>>>    .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
+>>>>    3 files changed, 32 insertions(+), 2 deletions(-)
+>>>>    create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+>>>>    rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
+>>> Since you are moving it, this one should be moved to bindings/soc/nuvoton/
 >>>
->>> Best regards,
->>> Krzysztof
->>>
->> Dear Krzysztof,
->>
->>
->> I may be misunderstanding your request.
->> I thought it was moving the "nuvoton,ma35d1-serial.yaml" to the patch of
->> nuvoton,ma35d1-clk.h.
->> Would you please provide guidance what should I do next on this [PATCH v6
->> 07/12]. Thank you.
-> The only combining you should do is putting the 2 patches in the same
-> series. Combining to 1 patch would be wrong.
+>>>>    rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
+>> OK, I will move "Documentation/devicetree/bindings/arm/npcm" to
+>> "Documentation/devicetree/bindings/soc/nuvoton".
+> To clarify - Rob asked *this one*. Not all.
 >
-> Your other option is just drop the header in the example and use the
-> raw numbers. Then there is no dependency to manage and each subsystem
-> maintainer can take the relevant patches.
 >
-> Rob
+>
+> Best regards,
+> Krzysztof
+>
 
-Dear Rob,
+Dear Krzysztof,
 
-Thanks for your detailed explanation. I got it now.
+I am sorry that still cannot get it exactly.
+
+1. Just only submit  the nuvoton,ma35d1.yaml to
+Documentation/devicetree/bindings/soc/nuvoton/nuvoton,ma35d1.yaml
+     and keep Documentation/devicetree/bindings/arm/npcm unchanged
+
+2. Move the directory "Documentation/devicetree/bindings/arm/npcm" to 
+"Documentation/devicetree/bindings/soc/nuvoton"
+    and submit  the nuvoton,ma35d1.yaml to 
+"Documentation/devicetree/bindings/soc/nuvoton"
+
+I should do 1 or 2?  Thank you very much.
 
 
 Best regards,
 Jacky Huang
-
-
 
 
