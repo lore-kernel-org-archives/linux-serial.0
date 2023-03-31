@@ -2,128 +2,239 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D57C6FD1D
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Mar 2023 19:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B222C6FD1D
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 00:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbjC3T2W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Mar 2023 15:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        id S229604AbjCaAag (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Mar 2023 20:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbjC3T2L (ORCPT
+        with ESMTP id S229550AbjCaAaf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Mar 2023 15:28:11 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB68FF2F;
-        Thu, 30 Mar 2023 12:28:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=hSsnOko9sGhkX9GeGg7lRAXU38w+ZJny3hsOl+XpUFI=; b=Az7EnUEBQ0lDG3OS4izH9AEY5X
-        pCtOwKJ09t5440CpQF/K+16nluRB59Z6erAqx4yLXXN8M1b74e7zvGqVlVa2CnhiL7oLZCWHcMjBR
-        aptzDwOSSsCkR6m9uYyai5JKHDTZOYtHAbbbLCydbX1xa6CWqvvlKKDKWaO6dFEXJqq7sgZRJxT/o
-        WXeW0hVoGES7aTSdY1MRDl0mJo7Pks5wUW/JY5rdZr5Cl/+iHhaGOOkeS6Kwv62CdWnADvxg+Fa+b
-        nMRahIf3avBY32LiXzBSOHJn+pGW/Nz7GvUgNVb96ltkOAgmrWiDdV6IOcLOjHXIUjsQi5PTxjsQQ
-        9j8kWmnw==;
-Received: from [2601:1c2:980:9ec0::2764]
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1phxwH-004vIK-0g;
-        Thu, 30 Mar 2023 19:28:01 +0000
-Message-ID: <97d745be-afb4-dfc0-5eeb-20d86e407cf4@infradead.org>
-Date:   Thu, 30 Mar 2023 12:28:00 -0700
+        Thu, 30 Mar 2023 20:30:35 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ECAF75C;
+        Thu, 30 Mar 2023 17:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680222628; x=1711758628;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=291iR8fs89AY3P1z/Ojn7EHb26WDXguxsSvangQrPS4=;
+  b=ZrWcomVeImflRNd7wbezdICfLICWxVjDmc9LItUAoOaLkRlOYeJBYQO4
+   JIZvGjWXjty+5HWKcV2hwDKSXadEWYt4bacTotDS/ivTYEnov+/VJJZMi
+   JUqvmBz0Ftt7jti7amwBLf+d1PtcltxiArdRna3Rsft7CNEdxwCTbSrRY
+   ZPNV8pb4CjAY1+rqd2pHlf4zdRH/X3NKmM70zs5P2KLSqTRnPUNxwJN9n
+   xErJ5HcYH1cxHliwLWXZ8O/wp8Z+7BuFa/TNMPkSPsbLMofd1NpUH28EB
+   3QbDCWRLrzhi85KmIu5Ymycz/b+56qb/QBTM4zrCH2lmiIXXD7iUezjjB
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="329844024"
+X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
+   d="scan'208";a="329844024"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 17:30:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="715219715"
+X-IronPort-AV: E=Sophos;i="5.98,306,1673942400"; 
+   d="scan'208";a="715219715"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2023 17:30:22 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pi2em-000LLc-2j;
+        Fri, 31 Mar 2023 00:30:16 +0000
+Date:   Fri, 31 Mar 2023 08:29:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v6 11/12] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+Message-ID: <202303310829.6uVozWbB-lkp@intel.com>
+References: <20230328021912.177301-12-ychuang570808@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 7/7] serial: allow COMPILE_TEST for some drivers
-Content-Language: en-US
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220421101708.5640-1-jslaby@suse.cz>
- <20220421101708.5640-8-jslaby@suse.cz>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220421101708.5640-8-jslaby@suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230328021912.177301-12-ychuang570808@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiri,
+Hi Jacky,
 
-On 4/21/22 03:17, Jiri Slaby wrote:
-> Some more serial drivers can be compile-tested under certain
-> circumstances (when building a specific architecture). So allow for
-> that.
-> 
-> This reduces the need of zillion mach/subarch-specific configs. And
-> since the 0day bot has only allmodconfig's for some archs, this
-> increases build coverage there too.
-> 
-> Note that cpm needs a minor update in the header, so that it drags in
-> at least some defines (CPM2 ones).
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
->  drivers/tty/serial/Kconfig             | 6 +++---
->  drivers/tty/serial/cpm_uart/cpm_uart.h | 2 ++
->  2 files changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 20cb103972fa..2d3eed53b43e 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -782,7 +782,7 @@ config SERIAL_PMACZILOG_CONSOLE
->  
->  config SERIAL_CPM
->  	tristate "CPM SCC/SMC serial port support"
-> -	depends on CPM2 || CPM1
-> +	depends on CPM2 || CPM1 || (PPC32 && COMPILE_TEST)
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on clk/clk-next linus/master]
+[cannot apply to pza/reset/next pza/imx-drm/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230328-102245
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20230328021912.177301-12-ychuang570808%40gmail.com
+patch subject: [PATCH v6 11/12] tty: serial: Add Nuvoton ma35d1 serial driver support
+config: powerpc-allyesconfig (https://download.01.org/0day-ci/archive/20230331/202303310829.6uVozWbB-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install powerpc cross compiling tool for clang build
+        # apt-get install binutils-powerpc-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/380d83a62e873855024ca4c660865c654a62748a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230328-102245
+        git checkout 380d83a62e873855024ca4c660865c654a62748a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/tty/serial/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303310829.6uVozWbB-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/serial/ma35d1_serial.c:672:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           if (pdev->dev.of_node) {
+               ^~~~~~~~~~~~~~~~~
+   drivers/tty/serial/ma35d1_serial.c:679:27: note: uninitialized use occurs here
+           up = &ma35d1serial_ports[ret];
+                                    ^~~
+   drivers/tty/serial/ma35d1_serial.c:672:2: note: remove the 'if' if its condition is always true
+           if (pdev->dev.of_node) {
+           ^~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/ma35d1_serial.c:668:9: note: initialize the variable 'ret' to silence this warning
+           int ret;
+                  ^
+                   = 0
+>> drivers/tty/serial/ma35d1_serial.c:730:6: warning: variable 'i' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           if (dev->dev.of_node)
+               ^~~~~~~~~~~~~~~~
+   drivers/tty/serial/ma35d1_serial.c:732:6: note: uninitialized use occurs here
+           if (i < 0) {
+               ^
+   drivers/tty/serial/ma35d1_serial.c:730:2: note: remove the 'if' if its condition is always true
+           if (dev->dev.of_node)
+           ^~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/ma35d1_serial.c:727:7: note: initialize the variable 'i' to silence this warning
+           int i;
+                ^
+                 = 0
+   drivers/tty/serial/ma35d1_serial.c:750:6: warning: variable 'i' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           if (dev->dev.of_node)
+               ^~~~~~~~~~~~~~~~
+   drivers/tty/serial/ma35d1_serial.c:752:6: note: uninitialized use occurs here
+           if (i < 0) {
+               ^
+   drivers/tty/serial/ma35d1_serial.c:750:2: note: remove the 'if' if its condition is always true
+           if (dev->dev.of_node)
+           ^~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/ma35d1_serial.c:747:7: note: initialize the variable 'i' to silence this warning
+           int i;
+                ^
+                 = 0
+   3 warnings generated.
 
 
-This patch (now commit e3e7b13bffae) causes build errors
-when neither CPM1 nor CPM2 is set but PPC32=y and COMPILE_TEST=y:
+vim +672 drivers/tty/serial/ma35d1_serial.c
 
-ERROR: modpost: "cpm_uart_freebuf" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-ERROR: modpost: "cpm_uart_allocbuf" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-ERROR: modpost: "cpm_line_cr_cmd" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-ERROR: modpost: "__cpm2_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-ERROR: modpost: "cpm_uart_unmap_pram" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-ERROR: modpost: "cpm_uart_map_pram" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-
->  	select SERIAL_CORE
->  	help
->  	  This driver supports the SCC and SMC serial ports on Motorola 
-> @@ -806,7 +806,7 @@ config SERIAL_CPM_CONSOLE
->  
->  config SERIAL_PIC32
->  	tristate "Microchip PIC32 serial support"
-> -	depends on MACH_PIC32
-> +	depends on MACH_PIC32 || (MIPS && COMPILE_TEST)
->  	select SERIAL_CORE
->  	help
->  	  If you have a PIC32, this driver supports the serial ports.
-> @@ -1246,7 +1246,7 @@ config SERIAL_XILINX_PS_UART_CONSOLE
->  
->  config SERIAL_AR933X
->  	tristate "AR933X serial port support"
-> -	depends on HAVE_CLK && ATH79
-> +	depends on (HAVE_CLK && ATH79) || (MIPS && COMPILE_TEST)
->  	select SERIAL_CORE
->  	select SERIAL_MCTRL_GPIO if GPIOLIB
->  	help
-> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
-> index 6113b953ce25..8c582779cf22 100644
-> --- a/drivers/tty/serial/cpm_uart/cpm_uart.h
-> +++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
-> @@ -19,6 +19,8 @@ struct gpio_desc;
->  #include "cpm_uart_cpm2.h"
->  #elif defined(CONFIG_CPM1)
->  #include "cpm_uart_cpm1.h"
-> +#elif defined(CONFIG_COMPILE_TEST)
-> +#include "cpm_uart_cpm2.h"
->  #endif
->  
->  #define SERIAL_CPM_MAJOR	204
+   658	
+   659	/*
+   660	 * Register a set of serial devices attached to a platform device.
+   661	 * The list is terminated with a zero flags entry, which means we expect
+   662	 * all entries to have at least UPF_BOOT_AUTOCONF set.
+   663	 */
+   664	static int ma35d1serial_probe(struct platform_device *pdev)
+   665	{
+   666		struct resource *res_mem;
+   667		struct uart_ma35d1_port *up;
+   668		int ret;
+   669		struct clk *clk;
+   670		int err;
+   671	
+ > 672		if (pdev->dev.of_node) {
+   673			ret = of_alias_get_id(pdev->dev.of_node, "serial");
+   674			if (ret < 0) {
+   675				dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
+   676				return ret;
+   677			}
+   678		}
+   679		up = &ma35d1serial_ports[ret];
+   680		up->port.line = ret;
+   681		res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+   682		if (!res_mem)
+   683			return -ENODEV;
+   684	
+   685		up->port.iobase = res_mem->start;
+   686		up->port.membase = ioremap(up->port.iobase, UART_REG_SIZE);
+   687		up->port.ops = &ma35d1serial_ops;
+   688	
+   689		spin_lock_init(&up->port.lock);
+   690	
+   691		clk = of_clk_get(pdev->dev.of_node, 0);
+   692		if (IS_ERR(clk)) {
+   693			err = PTR_ERR(clk);
+   694			dev_err(&pdev->dev, "failed to get core clk: %d\n", err);
+   695			return -ENOENT;
+   696		}
+   697		err = clk_prepare_enable(clk);
+   698		if (err)
+   699			return -ENOENT;
+   700	
+   701		if (up->port.line != 0)
+   702			up->port.uartclk = clk_get_rate(clk);
+   703		up->port.irq = platform_get_irq(pdev, 0);
+   704		up->port.dev = &pdev->dev;
+   705		up->port.flags = UPF_BOOT_AUTOCONF;
+   706		ret = uart_add_one_port(&ma35d1serial_reg, &up->port);
+   707		platform_set_drvdata(pdev, up);
+   708		return 0;
+   709	}
+   710	
+   711	/*
+   712	 * Remove serial ports registered against a platform device.
+   713	 */
+   714	static int ma35d1serial_remove(struct platform_device *dev)
+   715	{
+   716		struct uart_port *port = platform_get_drvdata(dev);
+   717	
+   718		if (port) {
+   719			uart_remove_one_port(&ma35d1serial_reg, port);
+   720			free_irq(port->irq, port);
+   721		}
+   722		return 0;
+   723	}
+   724	
+   725	static int ma35d1serial_suspend(struct platform_device *dev, pm_message_t state)
+   726	{
+   727		int i;
+   728		struct uart_ma35d1_port *up;
+   729	
+ > 730		if (dev->dev.of_node)
+   731			i = of_alias_get_id(dev->dev.of_node, "serial");
+   732		if (i < 0) {
+   733			dev_err(&dev->dev, "failed to get alias/pdev id, errno %d\n", i);
+   734			return i;
+   735		}
+   736		up = &ma35d1serial_ports[i];
+   737		if (i == 0) {
+   738			up->console_baud_rate = serial_in(up, UART_REG_BAUD);
+   739			up->console_line = serial_in(up, UART_REG_LCR);
+   740			up->console_int = serial_in(up, UART_REG_IER);
+   741		}
+   742		return 0;
+   743	}
+   744	
 
 -- 
-~Randy
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
