@@ -2,71 +2,102 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DF1C761AF
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 11:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E666C6FD18
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Mar 2023 11:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbjCaLe0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 31 Mar 2023 07:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
+        id S229437AbjCaLe2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 31 Mar 2023 07:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbjCaLeW (ORCPT
+        with ESMTP id S230501AbjCaLeX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 31 Mar 2023 07:34:22 -0400
+        Fri, 31 Mar 2023 07:34:23 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7ACE71D905;
-        Fri, 31 Mar 2023 04:33:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA73C1DF82;
+        Fri, 31 Mar 2023 04:34:00 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.98,307,1673881200"; 
-   d="scan'208";a="157862781"
+   d="scan'208";a="157862793"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 31 Mar 2023 20:33:51 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 31 Mar 2023 20:34:00 +0900
 Received: from localhost.localdomain (unknown [10.226.93.148])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 02DEB436D614;
-        Fri, 31 Mar 2023 20:33:48 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 7D50B436D614;
+        Fri, 31 Mar 2023 20:33:57 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        linux-serial@vger.kernel.org,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v3 0/5] Add RZ/G2L SCIFA DMAC/ SCI TX support
-Date:   Fri, 31 Mar 2023 12:33:41 +0100
-Message-Id: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
+        linux-renesas-soc@vger.kernel.org, stable@vger.kernel.org
+Subject: [PATCH v3 3/5] tty: serial: sh-sci: Fix TE setting on SCI IP
+Date:   Fri, 31 Mar 2023 12:33:44 +0100
+Message-Id: <20230331113346.170602-4-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
+References: <20230331113346.170602-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch series aims to add DMA support for SCIFA/ SCI TX support on
-RZ/G2L alike SoCs.
+As per the RZ/G2L users hardware manual (Rev.1.20 Sep, 2022), section
+23.3.7 Serial Data Transmission (Asynchronous Mode) it is mentioned
+that the TE (transmit enable) must be set after setting TIE (transmit
+interrupt enable) or these 2 bits are set to 1 simultaneously by a
+single instruction. So set these 2 bits in single instruction.
 
-v2->v3:
- * Dropped inline function is_rz_scif_port() and instead using
-   s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE for finding RZ SCIF port.
- * Dropped SCIx_TEI_IRQ as DMAC activation not possible with TEI interrupt.
- * Updated the code flow similar to SCIFA/SCIFB DMAC tx handling.
- * Replaced is_rz_scif_port to s->cfg->regtype check
- * Updated the code flow similar to SCIFA/SCIFB DMA rx handling.
- * Added remaining patches from Renesas SCI fixes patch series to this series.
- * Updated commit description for patch#3
+Fixes: 93bcefd4c6ba ("serial: sh-sci: Fix setting SCSCR_TIE while transferring data")
+Cc: stable@vger.kernel.org
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+v3:
+ * New patch moved here from Renesas SCI fixes patch series
+ * Updated commit description
  * Moved handling of clearing TE bit as separate patch#5.
-v1->v2:
- * Added support for DMA tx and rx.
+---
+ drivers/tty/serial/sh-sci.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-Biju Das (5):
-  tty: serial: sh-sci: Add RZ/G2L SCIF DMA tx support
-  tty: serial: sh-sci: Add RZ/G2L SCIF DMA rx support
-  tty: serial: sh-sci: Fix TE setting on SCI IP
-  tty: serial: sh-sci: Add support for tx end interrupt handling
-  tty: serial: sh-sci: Fix end of transmission on SCI
-
- drivers/tty/serial/sh-sci.c | 96 +++++++++++++++++++++++++++++++------
- drivers/tty/serial/sh-sci.h |  3 ++
- 2 files changed, 85 insertions(+), 14 deletions(-)
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 15743c2f3d3d..32f5c1f7d697 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -601,6 +601,15 @@ static void sci_start_tx(struct uart_port *port)
+ 	    port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+ 		/* Set TIE (Transmit Interrupt Enable) bit in SCSCR */
+ 		ctrl = serial_port_in(port, SCSCR);
++
++		/*
++		 * For SCI, TE (transmit enable) must be set after setting TIE
++		 * (transmit interrupt enable) or in the same instruction to start
++		 * the transmit process.
++		 */
++		if (port->type == PORT_SCI)
++			ctrl |= SCSCR_TE;
++
+ 		serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
+ 	}
+ }
+@@ -2600,8 +2609,14 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		sci_set_mctrl(port, port->mctrl);
+ 	}
+ 
+-	scr_val |= SCSCR_RE | SCSCR_TE |
+-		   (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0));
++	/*
++	 * For SCI, TE (transmit enable) must be set after setting TIE
++	 * (transmit interrupt enable) or in the same instruction to
++	 * start the transmitting process. So skip setting TE here for SCI.
++	 */
++	if (port->type != PORT_SCI)
++		scr_val |= SCSCR_TE;
++	scr_val |= SCSCR_RE | (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0));
+ 	serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
+ 	if ((srr + 1 == 5) &&
+ 	    (port->type == PORT_SCIFA || port->type == PORT_SCIFB)) {
 -- 
 2.25.1
 
