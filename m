@@ -2,97 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2484C7619A
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 11:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855EEC76188
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 11:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237706AbjDELTU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S237801AbjDELTU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 5 Apr 2023 07:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237801AbjDELTS (ORCPT
+        with ESMTP id S237740AbjDELTT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 07:19:18 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EF135BE
-        for <linux-serial@vger.kernel.org>; Wed,  5 Apr 2023 04:19:16 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id x20so36889342ljq.9
-        for <linux-serial@vger.kernel.org>; Wed, 05 Apr 2023 04:19:16 -0700 (PDT)
+        Wed, 5 Apr 2023 07:19:19 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFDF4EF2
+        for <linux-serial@vger.kernel.org>; Wed,  5 Apr 2023 04:19:17 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id y7so4492984ljp.2
+        for <linux-serial@vger.kernel.org>; Wed, 05 Apr 2023 04:19:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google; t=1680693555;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=72pc9vhyxIvuldDD9tgX3t3tikielO9csSBNDuIyf3o=;
-        b=K6oEpw3Ow3MY/fIglFjdqs7nhBovJ0r5oo8cyRibK36zpeJpjRGoLS7cgvCWHIa9nF
-         fuK7Im4DfoKzl13jtvCJPkvke1aMER4AkFs2ONuIQhUaVujKGb4on2TyBAnIEB/dAtxK
-         HpOoJmobAOKP95UMTLXV2MIrbFYNOGb5aI2MBq5OLbvK/YuOqMNJsD1ZfIyMHwvyofdI
-         PgkKrr0sPrWdKV8wkgnaEe2+sud3GoBYRiJ5d50+dBiQtsG5XRX5E/1CDz0e8MkDqdEC
-         PmHs3opQgWj9ngvvEqs/aHWunR4WSCK4nnIx3Sa5sBo9C68kKTeR1qeXpe5ZfBNJr7/c
-         JfeA==
+        d=semihalf.com; s=google; t=1680693556;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uSFYI7j66ps5gPOzhCvfrqWJlEEBkt6nqqDRdGGPNWs=;
+        b=ZRZYDZjb9UaQoM5xipqVaih2q2qQxdW+75scFDNwTkOWzj5AOn/6IzMeL95eQ6fD92
+         MkEaGbjNZ1YZsGZgx0jehxkuD9ObaD1WH4q9rcsJA17e6eA4juTKVmZEaVFvAZOGWh9O
+         4nWR7jh6GAsWilAbgoNRIqTh9bsfb5I5WrjvDHBgrHtK99x4spl9oE54ZLSh8f7aELbK
+         loF2pv7z6hUBQotlHBb1avnuuW+nyLkj4hR0H1Sm3s9PQ2RCyO/vZ664fJrauutfDV7v
+         n+dcjt2LdkUu1GTIyAhgVurBo8wP7+icLnOtF1o8bjlJTY0C6wRlwpCYEHAB7ACL01QX
+         mqfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680693555;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=72pc9vhyxIvuldDD9tgX3t3tikielO9csSBNDuIyf3o=;
-        b=y3IsLraWMjV2JEgU7zMRqOQkyS0E5BgxN81nDzmNXR3Aw0b+Fdx7ho1nuvD2GZgFoa
-         R6Lv4NHmGtZNy29SVf9tXQVLd4JXnG8tT9hzXtccos0oaZ89eE7KrU0T1Bb/aBnbLX6P
-         tKySxZyqRx5yUo7iBO6NCzXbjKHIO6AFccl73r+f5Ih+rfMsVbwKfhCq/xk2D3hQdXeA
-         ONbOHv0CcGaZWN36ZSj+PgkCeuUVAeTYRAm2I5xFbMgrD5PVkcG8BcZZSZEuj9pXngpm
-         bLWEAhS+wMl6r/KcjCjF3LAn9XIJHgabnlJ/3eiWLp0UhQWdnF9MH6e6y0ywWzvM432K
-         nwfA==
-X-Gm-Message-State: AAQBX9dH+cRxqSRWUmSflHF7ZfWAKIrCZw7g/bFTon8kJxAb+YLHE13m
-        RiOEE3+QtWuGFk+w3QtkTGmQuoDltepGgf/+/XI=
-X-Google-Smtp-Source: AKy350aqpMgxzpiwXdM0m+GyuhcnrtO6q0xeQ4vOzynG0W8GswzngaH57R0hUCWQ9zYyklnBmvSXCA==
-X-Received: by 2002:a2e:93c3:0:b0:2a6:3570:72d1 with SMTP id p3-20020a2e93c3000000b002a6357072d1mr1893217ljh.19.1680693554998;
-        Wed, 05 Apr 2023 04:19:14 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680693556;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uSFYI7j66ps5gPOzhCvfrqWJlEEBkt6nqqDRdGGPNWs=;
+        b=v2saUz7Dwnh2yxwmk9YbkSio+CJQYhypVanJYcnMU37Xu2OCoGHdHXCjlHEMvoH1FY
+         4U4tBxqJUCcKzp5+nNe8Vsw2kr1cvW/WYVFG/0A53k9jb6I6SaF/L47vuxZNVYWE6DNq
+         Q0FqJUl6Eseg8y2N3KeV3FPlfnTJx/JTaOSb29vAUlVVrBWlgsSOuNrvnkA1jPfVspp+
+         FFpSUpyjwah0Mw7xGLVDIT7Mddw8g5/OUw8wR8x5BKDXljWLWzriY+NxZfvOdGzB2ujC
+         JsR57UKqap1n3zLQoj4FBSHHVV0zKXuiv6/bHCsV6UFRzbVMk2TB0PtdgHIPFeRiTcmZ
+         ZlDw==
+X-Gm-Message-State: AAQBX9evjtqVsNguOzPQH8bg5DKz6ZC/N/YAfmgnu122/AFnd6U283ez
+        9NjmPuTXyCNER7OEsBn+F7tu71yZWwtUEuwokAU=
+X-Google-Smtp-Source: AKy350aFzI2aNBR5MfpNTrIYh9Wa208NBwtIuPbYLOClHOuwpmtcl7SA9+n1MxM5vjHoBl3aTedR4w==
+X-Received: by 2002:a2e:8ed2:0:b0:299:a55a:f66f with SMTP id e18-20020a2e8ed2000000b00299a55af66fmr1471636ljl.22.1680693555793;
+        Wed, 05 Apr 2023 04:19:15 -0700 (PDT)
 Received: from lmajczak1-l.roam.corp.google.com ([83.142.187.84])
-        by smtp.gmail.com with ESMTPSA id i19-20020a2e8093000000b0029f3e2efbb9sm2817730ljg.90.2023.04.05.04.19.14
+        by smtp.gmail.com with ESMTPSA id i19-20020a2e8093000000b0029f3e2efbb9sm2817730ljg.90.2023.04.05.04.19.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 04:19:14 -0700 (PDT)
+        Wed, 05 Apr 2023 04:19:15 -0700 (PDT)
 From:   Lukasz Majczak <lma@semihalf.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        upstream@semihalf.com, Lukasz Majczak <lma@semihalf.com>
-Subject: [PATCH v2 0/2] serial: core: fix broken console after suspend
-Date:   Wed,  5 Apr 2023 13:15:57 +0200
-Message-Id: <20230405111559.110220-1-lma@semihalf.com>
+        upstream@semihalf.com, Lukasz Majczak <lma@semihalf.com>,
+        stable@vger.kernel.org
+Subject: [PATCH v2 1/2] serial: core: preserve cflags, ispeed and ospeed
+Date:   Wed,  5 Apr 2023 13:15:58 +0200
+Message-Id: <20230405111559.110220-2-lma@semihalf.com>
 X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
+In-Reply-To: <20230405111559.110220-1-lma@semihalf.com>
+References: <20230405111559.110220-1-lma@semihalf.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This is v2 of a patch[1].
-v1->v2:
-* Fixed typos in commit message
-* Tested[2] patch "serial: core: preserve cflags, ispeed and ospeed" on all
-  current LTS kernels (4.14, 4.19, 5.4, 5.10, 5.15, 6.1) and on top of
-  6.3-rc5 with positive results - console was working after resume
-* During tests another issue was observed  on 6.1+ - FIFO not enabled after
-  resume - and an additional change was needed ("serial: core: enable
-  FIFO after resume")
-* Test procedure:
-  1) ensure the console output is ok
-  2) suspend device with "echo freeze > /sys/power/state"
-     (/sys/module/printk/parameters/console_suspend == N)
-  3) resume device and check the console output
-  4) suspend device with "echo freeze > /sys/power/state"
-     (/sys/module/printk/parameters/console_suspend == Y)
-  5) resume device and check the console output
+Re-enable the console device after suspending, causes its cflags,
+ispeed and ospeed to be set anew, basing on the values stored in
+uport->cons. These values are set only once,
+when parsing console parameters after boot (see uart_set_options()),
+next after configuring a port in uart_port_startup() these parameters
+(cflags, ispeed and ospeed) are copied to termios structure and
+the original one (stored in uport->cons) are cleared, but there is no place
+in code where those fields are checked against 0.
+When kernel calls uart_resume_port() and setups console, it copies cflags,
+ispeed and ospeed values from uart->cons, but those are already cleared.
+The effect is that the console is broken.
+This patch address the issue by preserving the cflags, ispeed and
+ospeed fields in uart->cons during uart_port_startup().
 
-[1] https://lore.kernel.org/lkml/20230301075751.43839-1-lma@semihalf.com/
-[2] Test platforms: PC with i5-8400 + GB H370M D3H
-		    HP Elite c1030 Chromebook Enterprise i5-10310U
+Signed-off-by: Lukasz Majczak <lma@semihalf.com>
+Cc: <stable@vger.kernel.org> # 4.14+
+---
+ drivers/tty/serial/serial_core.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Lukasz Majczak (2):
-  serial: core: preserve cflags, ispeed and ospeed
-  serial: core: enable FIFO after resume
-
- drivers/tty/serial/serial_core.c | 57 +++++++++++++++-----------------
- 1 file changed, 27 insertions(+), 30 deletions(-)
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2bd32c8ece39..394a05c09d87 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -225,9 +225,6 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+ 			tty->termios.c_cflag = uport->cons->cflag;
+ 			tty->termios.c_ispeed = uport->cons->ispeed;
+ 			tty->termios.c_ospeed = uport->cons->ospeed;
+-			uport->cons->cflag = 0;
+-			uport->cons->ispeed = 0;
+-			uport->cons->ospeed = 0;
+ 		}
+ 		/*
+ 		 * Initialise the hardware port settings.
 -- 
 2.40.0.577.gac1e443424-goog
 
