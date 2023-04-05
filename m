@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA7EC76188
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B63EC761AF
 	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 05:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236900AbjDEFsw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 01:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
+        id S236897AbjDEFsy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 01:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236897AbjDEFsp (ORCPT
+        with ESMTP id S236902AbjDEFsp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 5 Apr 2023 01:48:45 -0400
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D7D198C
-        for <linux-serial@vger.kernel.org>; Tue,  4 Apr 2023 22:48:41 -0700 (PDT)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230405054839202dda9e880bc61d1a
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C64B30EB
+        for <linux-serial@vger.kernel.org>; Tue,  4 Apr 2023 22:48:43 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202304050548416e87a4b47d52cbaeb8
         for <linux-serial@vger.kernel.org>;
-        Wed, 05 Apr 2023 07:48:39 +0200
+        Wed, 05 Apr 2023 07:48:41 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=4HQ/5t4h1V7LJfN8OsbuPnPZmtymnOtNckgYd4DfAxE=;
- b=T4gOJLO0EONRcJ/JhF17g7thnU5wmgZ1MRfNRjRSe8lb5VDGp8sMWH+UBGvu67yrB49PXW
- gk1Hyi7XvA8pCFnPFfeoWTO2CWsV0QrYazyVvzAiymXj3By/y7doeRDKQ+uzGlxq+hVDgO8f
- AYBP/QQs4W4/B5TigMY06Pnw9iWIk=;
+ bh=uJwl9+ZDqP0Gge7uLTPceewqkWgzi1mhsOlMd09/Rek=;
+ b=JXWjQW5q8OoaEBEhqWxkx7OVJ7Uguem4duDJb8hts9xh1cc6h93WGQ4UqYil6K0aCTayT9
+ 3BFKIU+j93dhtYG+VlHMyb5eDS40h/C7D5GAponp1aBSXlrD1jPDD6zCYEA7wxY30bVlvDM4
+ 1p5h2cWc+zQQnWHH8DjbO+/kLC+I4=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 3/9] tty: n_gsm: add missing description to gsm_config
-Date:   Wed,  5 Apr 2023 07:47:24 +0200
-Message-Id: <20230405054730.3850-3-daniel.starke@siemens.com>
+Subject: [PATCH 6/9] tty: n_gsm: increase malformed counter for malformed control frames
+Date:   Wed,  5 Apr 2023 07:47:27 +0200
+Message-Id: <20230405054730.3850-6-daniel.starke@siemens.com>
 In-Reply-To: <20230405054730.3850-1-daniel.starke@siemens.com>
 References: <20230405054730.3850-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -45,49 +45,35 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, all available structure fields in gsmmux.h except those
-for gsm_config are commented.
+The malformed counter in gsm_mux is already increased in case of errors
+detected in gsm_queue() and gsm1_receive(). gsm_dlci_command() also
+detects a case for a malformed frame but does not increase the malformed
+counter yet.
 
-Fix this by adding appropriate comments to the not commented fields.
+Fix this by also increasing the gsm_mux malformed counter in case of a
+malformed frame in gsm_dlci_command().
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/tty/n_gsm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index 33ee7b857c52..422a52e184b3 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -8,17 +8,17 @@
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 9f6669686c59..317aa67ed169 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2454,8 +2454,10 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ 	data += dlen;
  
- struct gsm_config
- {
--	unsigned int adaption;
--	unsigned int encapsulation;
--	unsigned int initiator;
--	unsigned int t1;
--	unsigned int t2;
--	unsigned int t3;
--	unsigned int n2;
--	unsigned int mru;
--	unsigned int mtu;
--	unsigned int k;
--	unsigned int i;
-+	unsigned int adaption;	/* Convergence layer type */
-+	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
-+	unsigned int initiator;	/* Initiator or responder */
-+	unsigned int t1;	/* Acknowledgment timer */
-+	unsigned int t2;	/* Response timer for multiplexer control channel */
-+	unsigned int t3;	/* Response timer for wake-up procedure */
-+	unsigned int n2;	/* Maximum number of retransmissions */
-+	unsigned int mru;	/* Maximum incoming frame payload size */
-+	unsigned int mtu;	/* Maximum outgoing frame payload size */
-+	unsigned int k;		/* Window size */
-+	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
- 	unsigned int unused[8];	/* Can not be used */
- };
+ 	/* Malformed command? */
+-	if (clen > len)
++	if (clen > len) {
++		dlci->gsm->malformed++;
+ 		return;
++	}
  
+ 	if (command & 1)
+ 		gsm_control_message(dlci->gsm, command, data, clen);
 -- 
 2.34.1
 
