@@ -2,101 +2,114 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A3BC7619A
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 08:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4F2C76188
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 08:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237413AbjDEIQT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 04:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36714 "EHLO
+        id S236934AbjDEISx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 04:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237209AbjDEIQT (ORCPT
+        with ESMTP id S237406AbjDEISw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 04:16:19 -0400
+        Wed, 5 Apr 2023 04:18:52 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B7EE4D;
-        Wed,  5 Apr 2023 01:16:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4C71BEA;
+        Wed,  5 Apr 2023 01:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680682578; x=1712218578;
+  t=1680682731; x=1712218731;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=Ex8tbN3S36AvX1h7p6j4FUqtHtDawlFDD/rozOdZF6I=;
-  b=B+AP+ERA2CGZEAyeWWtAWfPvRXc9RRDr7SeIZnNd0vEMpZI1ee10/RTb
-   25cPQhjoF0JPK/pm5btS5DyFmfyslgnzJlNnPoww6seOgQmrJwQ0FPblw
-   Q65c5+prPcjmHAQ7Dgd+UU54gZo0271cn5YdQpXboO0Iu2VwTUOydpTAS
-   JlYmW4c3TIBBY0ZC/0ZVFJMqS4GdOke4TdDYVCUM6Zr16mpHaQyoQK7jr
-   qKhfcxGz8WXX2/2TVMnh57jUV0S+gqYFon2PsiUZTZLQLl3Ai4QdoE5U5
-   o3JGHj/gntAxpPOrAb0ivCwFkFV0de4zeMtbMtwp9cWHDIwxwspNIIKlc
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="330997841"
+  bh=mQQPj6i078SAwQLMyeQrAvgZg4bOovjLPAaM+2lUrCI=;
+  b=LC5/VB3LTGh/x/x1I9cSyNBu/9umO/j+XYhE9WPyJBrKe5aeyt4kGhcR
+   B5TniE6vXx9WtR0qDBczhnd9DE6l2Dmit4bvAqKoX6LFoXxhcD7v5EGo+
+   DVhbAwKXnr1b8E6mqFLkCZoMaKgW7Tn/d/4KHMioJfR6UAVpC9gd3MLYS
+   nMm3vO2WQzPq3poZatIuVCO2kz/WfZ7E/0xEDzqjOu8MGGQ+wp4Ff9HHY
+   Q5UEenxLnCfoDXvMvvKHNrGEmE4Jncu8fgzQAWTRZbIWOuuOYwBfl7gQl
+   g2AbVn/5kTxiozb3ZFqHCnu9L24o/bgH0eYTkG8QYCdEMH9rVMFOO6jtS
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="330998154"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="330997841"
+   d="scan'208";a="330998154"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:16:18 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:18:51 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="755934098"
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="755934318"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="755934098"
+   d="scan'208";a="755934318"
 Received: from wtedesch-mobl1.ger.corp.intel.com ([10.252.53.134])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:16:15 -0700
-Date:   Wed, 5 Apr 2023 11:16:13 +0300 (EEST)
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:18:49 -0700
+Date:   Wed, 5 Apr 2023 11:18:47 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "D. Starke" <daniel.starke@siemens.com>
-cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/9] tty: n_gsm: fix redundant assignment of
- gsm->encoding
-In-Reply-To: <20230405054730.3850-1-daniel.starke@siemens.com>
-Message-ID: <adf7aae2-2fd8-b191-f37-75185167f418@linux.intel.com>
-References: <20230405054730.3850-1-daniel.starke@siemens.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/9] tty: n_gsm: add missing description to gsm_config
+In-Reply-To: <20230405054730.3850-3-daniel.starke@siemens.com>
+Message-ID: <9d7289fe-7a3-2cfe-b023-a892528044e4@linux.intel.com>
+References: <20230405054730.3850-1-daniel.starke@siemens.com> <20230405054730.3850-3-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-943274229-1680682577=:2159"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-943274229-1680682577=:2159
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
 
 On Wed, 5 Apr 2023, D. Starke wrote:
 
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> The function gsmld_open() contains a redundant assignment of gsm->encoding.
-> The same value of GSM_ADV_OPT is already assigned to it during the
-> initialization of the struct in gsm_alloc_mux() a few lines earlier.
+> Currently, all available structure fields in gsmmux.h except those
+> for gsm_config are commented.
 > 
-> Fix this by removing the redundant second assignment of gsm->encoding in
-> gsmld_open().
+> Fix this by adding appropriate comments to the not commented fields.
 > 
-> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  drivers/tty/n_gsm.c | 1 -
->  1 file changed, 1 deletion(-)
+>  include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
+>  1 file changed, 11 insertions(+), 11 deletions(-)
 > 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index b7e1369a035c..c42c8b89fd46 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -3585,7 +3585,6 @@ static int gsmld_open(struct tty_struct *tty)
->  	tty->receive_room = 65536;
+> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+> index 33ee7b857c52..422a52e184b3 100644
+> --- a/include/uapi/linux/gsmmux.h
+> +++ b/include/uapi/linux/gsmmux.h
+> @@ -8,17 +8,17 @@
 >  
->  	/* Attach the initial passive connection */
-> -	gsm->encoding = GSM_ADV_OPT;
->  	gsmld_attach_gsm(tty, gsm);
->  
->  	/* The mux will not be activated yet, we wait for correct
-> 
+>  struct gsm_config
+>  {
+> -	unsigned int adaption;
+> -	unsigned int encapsulation;
+> -	unsigned int initiator;
+> -	unsigned int t1;
+> -	unsigned int t2;
+> -	unsigned int t3;
+> -	unsigned int n2;
+> -	unsigned int mru;
+> -	unsigned int mtu;
+> -	unsigned int k;
+> -	unsigned int i;
+> +	unsigned int adaption;	/* Convergence layer type */
+> +	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
+> +	unsigned int initiator;	/* Initiator or responder */
+> +	unsigned int t1;	/* Acknowledgment timer */
+> +	unsigned int t2;	/* Response timer for multiplexer control channel */
+> +	unsigned int t3;	/* Response timer for wake-up procedure */
+> +	unsigned int n2;	/* Maximum number of retransmissions */
+> +	unsigned int mru;	/* Maximum incoming frame payload size */
+> +	unsigned int mtu;	/* Maximum outgoing frame payload size */
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+I'm used to "payload" referring in networking context to "useful" part of 
+the frame but MTU/MRU probably includes headers too? Maybe just say "frame 
+size"?
+
+> +	unsigned int k;		/* Window size */
+> +	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
+>  	unsigned int unused[8];	/* Can not be used */
+>  };
+>  
+> 
 
 -- 
  i.
 
---8323329-943274229-1680682577=:2159--
