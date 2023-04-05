@@ -2,125 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C47E5C76188
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 09:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F88C76188
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 10:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236556AbjDEJPq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 05:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45650 "EHLO
+        id S236928AbjDEKRo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 06:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237418AbjDEJPl (ORCPT
+        with ESMTP id S235049AbjDEKRn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 05:15:41 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095643599;
-        Wed,  5 Apr 2023 02:15:40 -0700 (PDT)
+        Wed, 5 Apr 2023 06:17:43 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B84198D;
+        Wed,  5 Apr 2023 03:17:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680686140; x=1712222140;
+  t=1680689862; x=1712225862;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=bHy1m8omGSbY31gJ7zZnNXDyunNZY0LNuQxVb0Jyz+w=;
-  b=TrZzEWmgYRs3PT6XfYCsQlRWaPHlS4COPIC3/Sc3lcbCGo4tCHoL20ld
-   Hlh41SBuiRLntOY7X4HHHZMQyt2ujRbW10DLx+gmdKASsxGb40i9LNtsT
-   6yVAurCUwpfjRgw0rsef4qyekKOdaF1oFk7yKljO1msMkBeayTz9usED3
-   oB7sGY7jIdwSZofV9SYwhWBFOmCu/Clx+0saeZscdnku4c5QH+uBz5mxN
-   zwP40MPHSWULAbP6UPDudg4WcJT5KCSgjUIDS3SyCxfsbX/u3weDZ/5Tu
-   YluGBq/XFln773LcE8HlXK2aqTgDYhQru9EERWCBQBkuxDO4p0XfPDBKD
+  bh=EGf9OnEDe3hrZhNghZlA7uytU/26J3PuuPCSwZuV6VU=;
+  b=Q0qSPoXc9eXYvSEWmBpNiGhrHVJZSAqC15dLlMer+/NBgkovDK0e71VQ
+   gmOQd6z2jmUzFwLTHNLhMNd8Ig3BjhofI722ngCZlRhDlI7Ya7VIbmzu/
+   IgNFX4mKJttcoUNVvwB1jRwZCBbdlrHtfJKkWb+HPQSi3xn5GO8+9wY6d
+   DPyr+sWysBCOTpA5kGVUCcKo+EVkE6gprTd2fGwfxRoGC/w2RjWH9QvHf
+   lDtSUap094gKpRunmWjJSj1VOKDOUn+LmtzhmvZEZikeBCU232kpXIuxI
+   o7sn2DwHQePl/5uxRNFplr5VluxBVsfmo41ygYN9JU7CMFYqVxL+/D0Zp
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="405179446"
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="344132895"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="405179446"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 02:15:26 -0700
+   d="scan'208";a="344132895"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 03:17:42 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="1016409697"
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="810584030"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="1016409697"
+   d="scan'208";a="810584030"
 Received: from wtedesch-mobl1.ger.corp.intel.com ([10.252.53.134])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 02:15:24 -0700
-Date:   Wed, 5 Apr 2023 12:15:22 +0300 (EEST)
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 03:17:39 -0700
+Date:   Wed, 5 Apr 2023 13:17:36 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "D. Starke" <daniel.starke@siemens.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
+To:     Brenda Streiff <brenda.streiff@ni.com>
+cc:     Gratian Crisan <gratian.crisan@ni.com>,
+        Jason Smith <jason.smith@ni.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 9/9] tty: n_gsm: cleanup gsm_control_command and
- gsm_control_reply
-In-Reply-To: <20230405054730.3850-9-daniel.starke@siemens.com>
-Message-ID: <345feade-76b0-b8e4-60fc-6ce03df3ebe1@linux.intel.com>
-References: <20230405054730.3850-1-daniel.starke@siemens.com> <20230405054730.3850-9-daniel.starke@siemens.com>
+        linux-serial <linux-serial@vger.kernel.org>,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH tty-next 2/2] serial: 8250: add driver for NI UARTs
+In-Reply-To: <862a78b5-b89a-0b26-e0f8-f910dd3434ba@ni.com>
+Message-ID: <b5736c6e-6b2d-875e-5a81-8f7b66a19d5f@linux.intel.com>
+References: <20230329154235.615349-1-brenda.streiff@ni.com> <20230329154235.615349-3-brenda.streiff@ni.com> <4687fc63-65ad-c717-70b4-731079be38f7@linux.intel.com> <862a78b5-b89a-0b26-e0f8-f910dd3434ba@ni.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; boundary="8323329-906799157-1680689861=:2159"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 5 Apr 2023, D. Starke wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> There are multiple places in gsm_control_command and gsm_control_reply that
-> derive the specific DLCI handle directly out of the DLCI table in gsm.
-> 
-> Add a local variable which holds this handle and use it instead to improve
-> code readability.
-> 
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->  drivers/tty/n_gsm.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 61f9825fde3c..87720ebc38d7 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -1454,16 +1454,17 @@ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
->  			       int dlen)
->  {
->  	struct gsm_msg *msg;
-> +	struct gsm_dlci *dlci = gsm->dlci[0];
->  
-> -	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->dlci[0]->ftype);
-> +	msg = gsm_data_alloc(gsm, 0, dlen + 2, dlci->ftype);
->  	if (msg == NULL)
->  		return -ENOMEM;
->  
->  	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
->  	msg->data[1] = (dlen << 1) | EA;
->  	memcpy(msg->data + 2, data, dlen);
-> -	gsm_data_queue(gsm->dlci[0], msg);
-> -	gsm->dlci[0]->tx += dlen;
-> +	gsm_data_queue(dlci, msg);
-> +	dlci->tx += dlen;
->  
->  	return 0;
->  }
-> @@ -1482,15 +1483,16 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, const u8 *data,
->  					int dlen)
->  {
->  	struct gsm_msg *msg;
-> +	struct gsm_dlci *dlci = gsm->dlci[0];
->  
-> -	msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->dlci[0]->ftype);
-> +	msg = gsm_data_alloc(gsm, 0, dlen + 2, dlci->ftype);
->  	if (msg == NULL)
->  		return;
->  	msg->data[0] = (cmd & 0xFE) << 1 | EA;	/* Clear C/R */
->  	msg->data[1] = (dlen << 1) | EA;
->  	memcpy(msg->data + 2, data, dlen);
-> -	gsm_data_queue(gsm->dlci[0], msg);
-> -	gsm->dlci[0]->tx += dlen;
-> +	gsm_data_queue(dlci, msg);
-> +	dlci->tx += dlen;
->  }
->  
->  /**
-> 
+--8323329-906799157-1680689861=:2159
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-IMO, this patch should be done before patch 8/9.
+On Fri, 31 Mar 2023, Brenda Streiff wrote:
+
+> On 3/31/23 06:46, Ilpo Järvinen wrote:
+> > On Wed, 29 Mar 2023, Brenda Streiff wrote:
+> 
+> > > +	int irq;
+> > > +	int rs232_property = 0;
+> > > +	unsigned int prescaler;
+> > > +	const char *transceiver;
+> > > +	int txfifosz, rxfifosz;
+> > 
+> > Try to follow reverse xmas-tree order.
+> 
+> Is reverse xmas tree also the rule in the tty subsystem? I was aware of
+> it for netdev but I thought that was a netdev-specific rule (since it
+> only shows up in maintainer-netdev.rst and not more broadly)
+
+I'd say that not as strictly as e.g. netdev does so if e.g. due to 
+initialization order it cannot be fully achieved no special trickery is 
+required (in contrast to what you'd get from e.g. netdev telling to put
+them out of line).
+
+It seems generally useful for declarations, especially when they're as 
+many as in the one I picked up above (I think might be due to less eye 
+movement required when looking for a particular variable by its name).
+
 
 -- 
  i.
 
+--8323329-906799157-1680689861=:2159--
