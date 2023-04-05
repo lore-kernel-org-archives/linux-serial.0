@@ -2,37 +2,39 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77886C76188
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 05:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA7EC76188
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 05:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236922AbjDEFsq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 01:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        id S236900AbjDEFsw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 01:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236900AbjDEFsp (ORCPT
+        with ESMTP id S236897AbjDEFsp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 5 Apr 2023 01:48:45 -0400
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B65170F
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D7D198C
         for <linux-serial@vger.kernel.org>; Tue,  4 Apr 2023 22:48:41 -0700 (PDT)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202304050548383dc287bdeb837d5e9d
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230405054839202dda9e880bc61d1a
         for <linux-serial@vger.kernel.org>;
-        Wed, 05 Apr 2023 07:48:38 +0200
+        Wed, 05 Apr 2023 07:48:39 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=eaofLLxNrKLouJpv9xBZNno2aDJjC1A6uNHxejf6/ws=;
- b=e8Ukaa/HzGzvXcqtUvbQdG5KcX2P/0y9PDnqTdEYsORtJQFZfi2xjCxy4xYFM2/JcGc9YL
- Sxg5qzx/0dY36h77qkhpOEEGSY9bw9Q6dJoKxArmeSzf+PLcVLYdoPiZohXvjsn5JV/u1Aiv
- HvsXzSDLzKV8vIeqY1oqSxkd9t3AI=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=4HQ/5t4h1V7LJfN8OsbuPnPZmtymnOtNckgYd4DfAxE=;
+ b=T4gOJLO0EONRcJ/JhF17g7thnU5wmgZ1MRfNRjRSe8lb5VDGp8sMWH+UBGvu67yrB49PXW
+ gk1Hyi7XvA8pCFnPFfeoWTO2CWsV0QrYazyVvzAiymXj3By/y7doeRDKQ+uzGlxq+hVDgO8f
+ AYBP/QQs4W4/B5TigMY06Pnw9iWIk=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 1/9] tty: n_gsm: fix redundant assignment of gsm->encoding
-Date:   Wed,  5 Apr 2023 07:47:22 +0200
-Message-Id: <20230405054730.3850-1-daniel.starke@siemens.com>
+Subject: [PATCH 3/9] tty: n_gsm: add missing description to gsm_config
+Date:   Wed,  5 Apr 2023 07:47:24 +0200
+Message-Id: <20230405054730.3850-3-daniel.starke@siemens.com>
+In-Reply-To: <20230405054730.3850-1-daniel.starke@siemens.com>
+References: <20230405054730.3850-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -43,31 +45,49 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-The function gsmld_open() contains a redundant assignment of gsm->encoding.
-The same value of GSM_ADV_OPT is already assigned to it during the
-initialization of the struct in gsm_alloc_mux() a few lines earlier.
+Currently, all available structure fields in gsmmux.h except those
+for gsm_config are commented.
 
-Fix this by removing the redundant second assignment of gsm->encoding in
-gsmld_open().
+Fix this by adding appropriate comments to the not commented fields.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index b7e1369a035c..c42c8b89fd46 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -3585,7 +3585,6 @@ static int gsmld_open(struct tty_struct *tty)
- 	tty->receive_room = 65536;
+diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+index 33ee7b857c52..422a52e184b3 100644
+--- a/include/uapi/linux/gsmmux.h
++++ b/include/uapi/linux/gsmmux.h
+@@ -8,17 +8,17 @@
  
- 	/* Attach the initial passive connection */
--	gsm->encoding = GSM_ADV_OPT;
- 	gsmld_attach_gsm(tty, gsm);
+ struct gsm_config
+ {
+-	unsigned int adaption;
+-	unsigned int encapsulation;
+-	unsigned int initiator;
+-	unsigned int t1;
+-	unsigned int t2;
+-	unsigned int t3;
+-	unsigned int n2;
+-	unsigned int mru;
+-	unsigned int mtu;
+-	unsigned int k;
+-	unsigned int i;
++	unsigned int adaption;	/* Convergence layer type */
++	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
++	unsigned int initiator;	/* Initiator or responder */
++	unsigned int t1;	/* Acknowledgment timer */
++	unsigned int t2;	/* Response timer for multiplexer control channel */
++	unsigned int t3;	/* Response timer for wake-up procedure */
++	unsigned int n2;	/* Maximum number of retransmissions */
++	unsigned int mru;	/* Maximum incoming frame payload size */
++	unsigned int mtu;	/* Maximum outgoing frame payload size */
++	unsigned int k;		/* Window size */
++	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
+ 	unsigned int unused[8];	/* Can not be used */
+ };
  
- 	/* The mux will not be activated yet, we wait for correct
 -- 
 2.34.1
 
