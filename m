@@ -2,52 +2,51 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6120C77B62
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 20:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 369F8C7619A
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 20:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234198AbjDEU1f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 16:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        id S233331AbjDEU1p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 16:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233955AbjDEU1a (ORCPT
+        with ESMTP id S231804AbjDEU1Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 16:27:30 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645E176A9;
-        Wed,  5 Apr 2023 13:27:26 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id bx42so12025182oib.6;
-        Wed, 05 Apr 2023 13:27:26 -0700 (PDT)
+        Wed, 5 Apr 2023 16:27:25 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9087F6A4E;
+        Wed,  5 Apr 2023 13:27:24 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-17e140619fdso39908039fac.11;
+        Wed, 05 Apr 2023 13:27:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680726445;
+        d=1e100.net; s=20210112; t=1680726444;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=amARnlOF1iPOroaq57gvCO3EUIjXtRKKLgV+BAa7GyA=;
-        b=oNWBdf+LJQeupNotyx3roKGHF2oYc0YiILjtkYmJvehMr5/wxkeHGosGb0bTzOweuA
-         4h8IGp9M7u3BekL8X8G4FUjRKMAcSjxzvZ8fIQiSAantTZmAgubAz4pybtH6B0wVT9FQ
-         GBL6s8eNhlYr0Ctr0OHe5BDj0wHD90vKOwsln7BUj7mdxVfAB6pJHrWtftd03uMNox8L
-         31feFQEogsD9Nbs6HRHghcdTc9m3FPT4aTtXCPxo/qNZqXYBLnsFcDVolwAOI+5+0CVT
-         4nT6nzUuGy0558tTyOvbRsE2zw3WbbY7MbQBC2HUr0c7JkiZxn/CVCfH7JzA4Bb+c+Xi
-         O5dw==
-X-Gm-Message-State: AAQBX9eZrNhhLYHSF/kMOFlWdWlq+TwT9Ek0wE0TDpmidHb8oeltfidp
-        dD7qxUlKiG6/Pf0WgcW1ZQ==
-X-Google-Smtp-Source: AKy350ajTaLy0qTbb9yH+lxLfyhHHpsFZm2vXmFygDhy0JelJ9qq76gGsOP0SKY6SaEK7ABF4E+UaA==
-X-Received: by 2002:a05:6808:1a09:b0:389:4f05:5fa8 with SMTP id bk9-20020a0568081a0900b003894f055fa8mr1613117oib.9.1680726445531;
-        Wed, 05 Apr 2023 13:27:25 -0700 (PDT)
+        bh=yg1K4foqDaidaPo4/5C6TY3pSXqX5fHqLYuPmpMmEgg=;
+        b=BYa0WEarrsDeVoxsCZAbMJe53T4FjZgjm7/eseO9AduGQyxtKk1kk83suhMUUpDsEV
+         IUW7EqrNdikKRDGKMz8tQmAKiURxg1SP34d19kQTPLHELHHb7AlzlgpLbTMBs71l2bB+
+         pOf4dPAFgHEZB9kgDjWc7IOUorbz2AZXswFXjpWrS1dzsWnK7rqEQ04a4sGjlaUbWDYe
+         nva86QTMH+EEWzDOC4g4WxVUdABCj3xeooC5DgKYDkqaS4VFZCnNnFkua51CjYBqeyiq
+         gXgMkPAUufe0XdbhJIP6bzqKtsiGLvL+HR4dk7if26FJHcmODsoWfyslLvra7ovTO/id
+         mOEw==
+X-Gm-Message-State: AAQBX9dx6yOuPhIf/Jv2OJNiXlcceGH4Vu1ifGxDErSgsbhUk5LMppbb
+        gNrsssk0WWJSVHFSslhynw==
+X-Google-Smtp-Source: AKy350bTANSJNYjcjMqwec2FcT3JaHREFNy2cg8JiUp8B+fT5fTAH8S+FermWNwrA9+XTX/0poqDFg==
+X-Received: by 2002:a05:6870:9614:b0:177:9ece:6b32 with SMTP id d20-20020a056870961400b001779ece6b32mr4080421oaq.34.1680726443848;
+        Wed, 05 Apr 2023 13:27:23 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r204-20020acadad5000000b00383eaf88e75sm6759620oig.39.2023.04.05.13.27.24
+        by smtp.gmail.com with ESMTPSA id us16-20020a056870df9000b00177b33ce85bsm6324810oab.30.2023.04.05.13.27.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:27:25 -0700 (PDT)
-Received: (nullmailer pid 425898 invoked by uid 1000);
+        Wed, 05 Apr 2023 13:27:23 -0700 (PDT)
+Received: (nullmailer pid 425880 invoked by uid 1000);
         Wed, 05 Apr 2023 20:27:17 -0000
 From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 05 Apr 2023 15:27:24 -0500
-Subject: [PATCH v2 10/10] ACPI: Replace irqdomain.h include with struct
- declarations
+Date:   Wed, 05 Apr 2023 15:27:15 -0500
+Subject: [PATCH v2 01/10] iio: adc: ad7292: Add explicit include for of.h
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-acpi-header-cleanup-v2-10-c902e581923b@kernel.org>
+Message-Id: <20230329-acpi-header-cleanup-v2-1-c902e581923b@kernel.org>
 References: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
 In-Reply-To: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
 To:     "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -72,60 +71,39 @@ Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-tegra@vger.kernel.org, linux-acpi@vger.kernel.org,
         devicetree@vger.kernel.org,
         Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jacob Keller <jacob.e.keller@intel.com>
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
 X-Mailer: b4 0.13-dev
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-linux/acpi.h includes irqdomain.h which includes of.h. Break the include
-chain by replacing the irqdomain include with forward declarations for
-struct irq_domain and irq_domain_ops which is sufficient for acpi.h.
+With linux/acpi.h no longer implicitly including of.h, add an explicit
+include of of.h to fix the following error:
 
-of.h also includes mod_devicetable.h which many drivers implicitly
-depend on. As acpi.h already includes it, just move it out of the
-'#ifdef CONFIG_ACPI'.
+drivers/iio/adc/ad7292.c:307:9: error: implicit declaration of function 'for_each_available_child_of_node'; did you mean 'fwnode_for_each_available_child_node'? [-Werror=implicit-function-declaration]
 
-Cc: Marc Zyngier <maz@kernel.org>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
-v2:
- - Move mod_devicetable.h out of #ifdef
----
- include/linux/acpi.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ad7292.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index efff750f326d..96bd672dc336 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -10,12 +10,15 @@
- 
- #include <linux/errno.h>
- #include <linux/ioport.h>	/* for struct resource */
--#include <linux/irqdomain.h>
- #include <linux/resource_ext.h>
+diff --git a/drivers/iio/adc/ad7292.c b/drivers/iio/adc/ad7292.c
+index a2f9fda25ff3..cccacec5db6d 100644
+--- a/drivers/iio/adc/ad7292.c
++++ b/drivers/iio/adc/ad7292.c
+@@ -8,6 +8,7 @@
+ #include <linux/bitfield.h>
  #include <linux/device.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/property.h>
- #include <linux/uuid.h>
- 
-+struct irq_domain;
-+struct irq_domain_ops;
-+
- #ifndef _LINUX
- #define _LINUX
- #endif
-@@ -24,7 +27,6 @@
- #ifdef	CONFIG_ACPI
- 
- #include <linux/list.h>
--#include <linux/mod_devicetable.h>
- #include <linux/dynamic_debug.h>
  #include <linux/module.h>
- #include <linux/mutex.h>
++#include <linux/of.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
+ 
 
 -- 
 2.39.2
