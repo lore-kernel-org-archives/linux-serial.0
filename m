@@ -2,99 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F88C76188
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 10:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2484C7619A
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 11:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236928AbjDEKRo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 06:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
+        id S237706AbjDELTU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 07:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235049AbjDEKRn (ORCPT
+        with ESMTP id S237801AbjDELTS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 06:17:43 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B84198D;
-        Wed,  5 Apr 2023 03:17:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680689862; x=1712225862;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=EGf9OnEDe3hrZhNghZlA7uytU/26J3PuuPCSwZuV6VU=;
-  b=Q0qSPoXc9eXYvSEWmBpNiGhrHVJZSAqC15dLlMer+/NBgkovDK0e71VQ
-   gmOQd6z2jmUzFwLTHNLhMNd8Ig3BjhofI722ngCZlRhDlI7Ya7VIbmzu/
-   IgNFX4mKJttcoUNVvwB1jRwZCBbdlrHtfJKkWb+HPQSi3xn5GO8+9wY6d
-   DPyr+sWysBCOTpA5kGVUCcKo+EVkE6gprTd2fGwfxRoGC/w2RjWH9QvHf
-   lDtSUap094gKpRunmWjJSj1VOKDOUn+LmtzhmvZEZikeBCU232kpXIuxI
-   o7sn2DwHQePl/5uxRNFplr5VluxBVsfmo41ygYN9JU7CMFYqVxL+/D0Zp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="344132895"
-X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="344132895"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 03:17:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="810584030"
-X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="810584030"
-Received: from wtedesch-mobl1.ger.corp.intel.com ([10.252.53.134])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 03:17:39 -0700
-Date:   Wed, 5 Apr 2023 13:17:36 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Brenda Streiff <brenda.streiff@ni.com>
-cc:     Gratian Crisan <gratian.crisan@ni.com>,
-        Jason Smith <jason.smith@ni.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH tty-next 2/2] serial: 8250: add driver for NI UARTs
-In-Reply-To: <862a78b5-b89a-0b26-e0f8-f910dd3434ba@ni.com>
-Message-ID: <b5736c6e-6b2d-875e-5a81-8f7b66a19d5f@linux.intel.com>
-References: <20230329154235.615349-1-brenda.streiff@ni.com> <20230329154235.615349-3-brenda.streiff@ni.com> <4687fc63-65ad-c717-70b4-731079be38f7@linux.intel.com> <862a78b5-b89a-0b26-e0f8-f910dd3434ba@ni.com>
+        Wed, 5 Apr 2023 07:19:18 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EF135BE
+        for <linux-serial@vger.kernel.org>; Wed,  5 Apr 2023 04:19:16 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id x20so36889342ljq.9
+        for <linux-serial@vger.kernel.org>; Wed, 05 Apr 2023 04:19:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google; t=1680693555;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=72pc9vhyxIvuldDD9tgX3t3tikielO9csSBNDuIyf3o=;
+        b=K6oEpw3Ow3MY/fIglFjdqs7nhBovJ0r5oo8cyRibK36zpeJpjRGoLS7cgvCWHIa9nF
+         fuK7Im4DfoKzl13jtvCJPkvke1aMER4AkFs2ONuIQhUaVujKGb4on2TyBAnIEB/dAtxK
+         HpOoJmobAOKP95UMTLXV2MIrbFYNOGb5aI2MBq5OLbvK/YuOqMNJsD1ZfIyMHwvyofdI
+         PgkKrr0sPrWdKV8wkgnaEe2+sud3GoBYRiJ5d50+dBiQtsG5XRX5E/1CDz0e8MkDqdEC
+         PmHs3opQgWj9ngvvEqs/aHWunR4WSCK4nnIx3Sa5sBo9C68kKTeR1qeXpe5ZfBNJr7/c
+         JfeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680693555;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=72pc9vhyxIvuldDD9tgX3t3tikielO9csSBNDuIyf3o=;
+        b=y3IsLraWMjV2JEgU7zMRqOQkyS0E5BgxN81nDzmNXR3Aw0b+Fdx7ho1nuvD2GZgFoa
+         R6Lv4NHmGtZNy29SVf9tXQVLd4JXnG8tT9hzXtccos0oaZ89eE7KrU0T1Bb/aBnbLX6P
+         tKySxZyqRx5yUo7iBO6NCzXbjKHIO6AFccl73r+f5Ih+rfMsVbwKfhCq/xk2D3hQdXeA
+         ONbOHv0CcGaZWN36ZSj+PgkCeuUVAeTYRAm2I5xFbMgrD5PVkcG8BcZZSZEuj9pXngpm
+         bLWEAhS+wMl6r/KcjCjF3LAn9XIJHgabnlJ/3eiWLp0UhQWdnF9MH6e6y0ywWzvM432K
+         nwfA==
+X-Gm-Message-State: AAQBX9dH+cRxqSRWUmSflHF7ZfWAKIrCZw7g/bFTon8kJxAb+YLHE13m
+        RiOEE3+QtWuGFk+w3QtkTGmQuoDltepGgf/+/XI=
+X-Google-Smtp-Source: AKy350aqpMgxzpiwXdM0m+GyuhcnrtO6q0xeQ4vOzynG0W8GswzngaH57R0hUCWQ9zYyklnBmvSXCA==
+X-Received: by 2002:a2e:93c3:0:b0:2a6:3570:72d1 with SMTP id p3-20020a2e93c3000000b002a6357072d1mr1893217ljh.19.1680693554998;
+        Wed, 05 Apr 2023 04:19:14 -0700 (PDT)
+Received: from lmajczak1-l.roam.corp.google.com ([83.142.187.84])
+        by smtp.gmail.com with ESMTPSA id i19-20020a2e8093000000b0029f3e2efbb9sm2817730ljg.90.2023.04.05.04.19.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Apr 2023 04:19:14 -0700 (PDT)
+From:   Lukasz Majczak <lma@semihalf.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com, Lukasz Majczak <lma@semihalf.com>
+Subject: [PATCH v2 0/2] serial: core: fix broken console after suspend
+Date:   Wed,  5 Apr 2023 13:15:57 +0200
+Message-Id: <20230405111559.110220-1-lma@semihalf.com>
+X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-906799157-1680689861=:2159"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This is v2 of a patch[1].
+v1->v2:
+* Fixed typos in commit message
+* Tested[2] patch "serial: core: preserve cflags, ispeed and ospeed" on all
+  current LTS kernels (4.14, 4.19, 5.4, 5.10, 5.15, 6.1) and on top of
+  6.3-rc5 with positive results - console was working after resume
+* During tests another issue was observed  on 6.1+ - FIFO not enabled after
+  resume - and an additional change was needed ("serial: core: enable
+  FIFO after resume")
+* Test procedure:
+  1) ensure the console output is ok
+  2) suspend device with "echo freeze > /sys/power/state"
+     (/sys/module/printk/parameters/console_suspend == N)
+  3) resume device and check the console output
+  4) suspend device with "echo freeze > /sys/power/state"
+     (/sys/module/printk/parameters/console_suspend == Y)
+  5) resume device and check the console output
 
---8323329-906799157-1680689861=:2159
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+[1] https://lore.kernel.org/lkml/20230301075751.43839-1-lma@semihalf.com/
+[2] Test platforms: PC with i5-8400 + GB H370M D3H
+		    HP Elite c1030 Chromebook Enterprise i5-10310U
 
-On Fri, 31 Mar 2023, Brenda Streiff wrote:
+Lukasz Majczak (2):
+  serial: core: preserve cflags, ispeed and ospeed
+  serial: core: enable FIFO after resume
 
-> On 3/31/23 06:46, Ilpo Järvinen wrote:
-> > On Wed, 29 Mar 2023, Brenda Streiff wrote:
-> 
-> > > +	int irq;
-> > > +	int rs232_property = 0;
-> > > +	unsigned int prescaler;
-> > > +	const char *transceiver;
-> > > +	int txfifosz, rxfifosz;
-> > 
-> > Try to follow reverse xmas-tree order.
-> 
-> Is reverse xmas tree also the rule in the tty subsystem? I was aware of
-> it for netdev but I thought that was a netdev-specific rule (since it
-> only shows up in maintainer-netdev.rst and not more broadly)
-
-I'd say that not as strictly as e.g. netdev does so if e.g. due to 
-initialization order it cannot be fully achieved no special trickery is 
-required (in contrast to what you'd get from e.g. netdev telling to put
-them out of line).
-
-It seems generally useful for declarations, especially when they're as 
-many as in the one I picked up above (I think might be due to less eye 
-movement required when looking for a particular variable by its name).
-
+ drivers/tty/serial/serial_core.c | 57 +++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 30 deletions(-)
 
 -- 
- i.
+2.40.0.577.gac1e443424-goog
 
---8323329-906799157-1680689861=:2159--
