@@ -2,55 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF45C76188
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 08:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC0DC76188
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 08:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237443AbjDEIXO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 04:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        id S237385AbjDEIlq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 04:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237406AbjDEIXN (ORCPT
+        with ESMTP id S237109AbjDEIlq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 04:23:13 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249061993;
-        Wed,  5 Apr 2023 01:23:13 -0700 (PDT)
+        Wed, 5 Apr 2023 04:41:46 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24441273D;
+        Wed,  5 Apr 2023 01:41:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680682993; x=1712218993;
+  t=1680684106; x=1712220106;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=r504Qe8P4MHFcScLYxteLcGwz6RXRu5O8J4JW4W87o0=;
-  b=GZNeTiga5r2eTOS0bd8C7vVVeaW35a8WZJIRmjYie+Jsbp0Vr4JYTETz
-   jBIAAyl7hmTsm12qkRSB3oUm2UvDaQq3yAqF516M2qhmaG97Sh9pQJqSK
-   MPfUCme3LKmHKOabQuZpMZFBaQy1olXoG4bOd9Ewkw3+lThPiKmV1Va7j
-   zgCXm1tavYdQcS2RL+0UzP9VVE/JvVmRA7CVvP9a8i1l0bz7zjMMlslt0
-   O+nXDMI/KTIbFT5FiOdwZ+jNAvTA+RVctL4mFjc7OF3Oi/lk/3hnHP2W9
-   vjJVVmEnnt1Dh/u9GXczydnUZb3oQAWyp26a9bykJaHJxdr4z7ZXxhDxv
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="339892296"
+  bh=aSEnaur7VF25s/BeoCbYIGmSK0flElXeOMmnrUL78c0=;
+  b=CbZPt7N+QTR6IaZ8N0RnDcoRZ3jFFjpoLSbjBxddR9HEcYWCcICbA6vE
+   1m5fXLQCvabv48vGpnLZyQjqz/t2AjkG6PUkV1jAmExCl5My+jluKOVd6
+   JUQh9TKqw4pvlvFHwLjBA6rKeIDRM/RZotGDreoHbJkXr4IvdqhjCFp+p
+   pVkd6iJbpte5PQjwJ0Nf2yf7wiNPa7tgTaQUNHZMeCFt13L2V6C+WYlrU
+   rSaN5NoMiZYlrhgMnVKTUrxNDmdQESzmPQEsOxHgvCsmnZFJp3CnIuAea
+   L083NhkD/rJvVeW633cioq3PxcKJumNl7EQG1J+SpZ5MGWKV/+fVOnbUc
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="326434969"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="339892296"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:23:12 -0700
+   d="scan'208";a="326434969"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:41:46 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="1016393497"
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="751193590"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="1016393497"
+   d="scan'208";a="751193590"
 Received: from wtedesch-mobl1.ger.corp.intel.com ([10.252.53.134])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:23:11 -0700
-Date:   Wed, 5 Apr 2023 11:23:09 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:41:42 -0700
+Date:   Wed, 5 Apr 2023 11:41:40 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "D. Starke" <daniel.starke@siemens.com>
 cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/9] tty: n_gsm: fix unneeded initialization of ret in
- gsm_dlci_config
-In-Reply-To: <20230405054730.3850-4-daniel.starke@siemens.com>
-Message-ID: <2d67db22-3a5d-1ed7-cfa7-d549aa1475b@linux.intel.com>
-References: <20230405054730.3850-1-daniel.starke@siemens.com> <20230405054730.3850-4-daniel.starke@siemens.com>
+Subject: Re: [PATCH 5/9] tty: n_gsm: add open_error counter to gsm_mux
+In-Reply-To: <20230405054730.3850-5-daniel.starke@siemens.com>
+Message-ID: <ffacb4a7-7875-445d-a2ab-38c4e595e3bc@linux.intel.com>
+References: <20230405054730.3850-1-daniel.starke@siemens.com> <20230405054730.3850-5-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -61,42 +60,140 @@ On Wed, 5 Apr 2023, D. Starke wrote:
 
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> The variable 'ret' is not used before assignment from gsm_activate_mux().
-> Still it gets initialized to zero at declaration.
-> 
-> Fix this as remarked in the link below by removing the initialization.
-> 
-> Fixes: edd5f60c3400 ("tty: n_gsm: fix mux activation issues in gsm_config()")
-
-This doesn't "fix" any bug so Fixes tag seems inappropriate unless does it 
-fix a compiler warning (in which case you should quote the warning in 
-this changelog and state you're fixing this warning from compiler)?
-
-> Link: https://lore.kernel.org/all/b42bc4d1-cc9d-d115-c981-aaa053bdc59f@kernel.org/
+> Extend the n_gsm link statistics by a failed link open counter in
+> preparation for an upcoming patch which will expose these.
+> This counter is increased whenever an attempt to open the control channel
+> failed.
 > 
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  drivers/tty/n_gsm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/tty/n_gsm.c | 33 ++++++++++++++++++++++++++-------
+>  1 file changed, 26 insertions(+), 7 deletions(-)
 > 
 > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index eb21ca583642..d42b92cbae88 100644
+> index d42b92cbae88..9f6669686c59 100644
 > --- a/drivers/tty/n_gsm.c
 > +++ b/drivers/tty/n_gsm.c
-> @@ -3276,7 +3276,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+> @@ -338,6 +338,7 @@ struct gsm_mux {
+>  	unsigned long bad_fcs;
+>  	unsigned long malformed;
+>  	unsigned long io_error;
+> +	unsigned long open_error;
+>  	unsigned long bad_size;
+>  	unsigned long unsupported;
+>  };
+> @@ -1729,25 +1730,32 @@ static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
+>  	struct gsm_dlci *dlci;
+>  	struct gsm_dlci_param_bits *params;
 >  
->  static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
->  {
-> -	int ret = 0;
-> +	int ret;
-
-While at it, I'd move the declaration into the block where it's used so 
-the scope where the variable is used is easier to see on the first glance.
-
->  	int need_close = 0;
->  	int need_restart = 0;
+> -	if (dlen < sizeof(struct gsm_dlci_param_bits))
+> +	if (dlen < sizeof(struct gsm_dlci_param_bits)) {
+> +		gsm->open_error++;
+>  		return;
+> +	}
 >  
+>  	/* Invalid DLCI? */
+>  	params = (struct gsm_dlci_param_bits *)data;
+>  	addr = FIELD_GET(PN_D_FIELD_DLCI, params->d_bits);
+> -	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr])
+> +	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr]) {
+> +		gsm->open_error++;
+>  		return;
+> +	}
+>  	dlci = gsm->dlci[addr];
+>  
+>  	/* Too late for parameter negotiation? */
+> -	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN)
+> +	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN) {
+> +		gsm->open_error++;
+>  		return;
+> +	}
+>  
+>  	/* Process the received parameters */
+>  	if (gsm_process_negotiation(gsm, addr, cr, params) != 0) {
+>  		/* Negotiation failed. Close the link. */
+>  		if (debug & DBG_ERRORS)
+>  			pr_info("%s PN failed\n", __func__);
+> +		gsm->open_error++;
+>  		gsm_dlci_close(dlci);
+>  		return;
+>  	}
+> @@ -1767,6 +1775,7 @@ static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
+>  	} else {
+>  		if (debug & DBG_ERRORS)
+>  			pr_info("%s PN in invalid state\n", __func__);
+> +		gsm->open_error++;
+>  	}
+
+I'd use the "rollback" pattern here for all these and goto open_failed;
++ do the open_error increment there only once.
+
+>  }
+>  
+> @@ -2220,6 +2229,7 @@ static void gsm_dlci_t1(struct timer_list *t)
+>  			dlci->retries--;
+>  			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+>  		} else {
+> +			gsm->open_error++;
+>  			gsm_dlci_begin_close(dlci); /* prevent half open link */
+>  		}
+>  		break;
+> @@ -2235,6 +2245,7 @@ static void gsm_dlci_t1(struct timer_list *t)
+>  			dlci->mode = DLCI_MODE_ADM;
+>  			gsm_dlci_open(dlci);
+>  		} else {
+> +			gsm->open_error++;
+>  			gsm_dlci_begin_close(dlci); /* prevent half open link */
+>  		}
+>  
+> @@ -2756,12 +2767,16 @@ static void gsm_queue(struct gsm_mux *gsm)
+>  
+>  	switch (gsm->control) {
+>  	case SABM|PF:
+> -		if (cr == 1)
+> +		if (cr == 1) {
+> +			gsm->open_error++;
+>  			goto invalid;
+> +		}
+>  		if (dlci == NULL)
+>  			dlci = gsm_dlci_alloc(gsm, address);
+> -		if (dlci == NULL)
+> +		if (dlci == NULL) {
+> +			gsm->open_error++;
+>  			return;
+> +		}
+>  		if (dlci->dead)
+>  			gsm_response(gsm, address, DM|PF);
+>  		else {
+> @@ -3754,8 +3769,10 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
+>  		dlci = gsm->dlci[dc.channel];
+>  		if (!dlci) {
+>  			dlci = gsm_dlci_alloc(gsm, dc.channel);
+> -			if (!dlci)
+> +			if (!dlci) {
+> +				gsm->open_error++;
+>  				return -ENOMEM;
+> +			}
+>  		}
+>  		gsm_dlci_copy_config_values(dlci, &dc);
+>  		if (copy_to_user((void __user *)arg, &dc, sizeof(dc)))
+> @@ -3769,8 +3786,10 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
+>  		dlci = gsm->dlci[dc.channel];
+>  		if (!dlci) {
+>  			dlci = gsm_dlci_alloc(gsm, dc.channel);
+> -			if (!dlci)
+> +			if (!dlci) {
+> +				gsm->open_error++;
+>  				return -ENOMEM;
+> +			}
+>  		}
+>  		return gsm_dlci_config(dlci, &dc, 0);
+>  	default:
 > 
+
+In general, the changelog could be more verbose about state machine 
+states, message names which imply that the error is happening during 
+"opening" phase/state.
 
 
 -- 
