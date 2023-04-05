@@ -2,54 +2,55 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4F2C76188
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 08:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF45C76188
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 08:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236934AbjDEISx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 04:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
+        id S237443AbjDEIXO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 04:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237406AbjDEISw (ORCPT
+        with ESMTP id S237406AbjDEIXN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 04:18:52 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4C71BEA;
-        Wed,  5 Apr 2023 01:18:51 -0700 (PDT)
+        Wed, 5 Apr 2023 04:23:13 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249061993;
+        Wed,  5 Apr 2023 01:23:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680682731; x=1712218731;
+  t=1680682993; x=1712218993;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=mQQPj6i078SAwQLMyeQrAvgZg4bOovjLPAaM+2lUrCI=;
-  b=LC5/VB3LTGh/x/x1I9cSyNBu/9umO/j+XYhE9WPyJBrKe5aeyt4kGhcR
-   B5TniE6vXx9WtR0qDBczhnd9DE6l2Dmit4bvAqKoX6LFoXxhcD7v5EGo+
-   DVhbAwKXnr1b8E6mqFLkCZoMaKgW7Tn/d/4KHMioJfR6UAVpC9gd3MLYS
-   nMm3vO2WQzPq3poZatIuVCO2kz/WfZ7E/0xEDzqjOu8MGGQ+wp4Ff9HHY
-   Q5UEenxLnCfoDXvMvvKHNrGEmE4Jncu8fgzQAWTRZbIWOuuOYwBfl7gQl
-   g2AbVn/5kTxiozb3ZFqHCnu9L24o/bgH0eYTkG8QYCdEMH9rVMFOO6jtS
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="330998154"
+  bh=r504Qe8P4MHFcScLYxteLcGwz6RXRu5O8J4JW4W87o0=;
+  b=GZNeTiga5r2eTOS0bd8C7vVVeaW35a8WZJIRmjYie+Jsbp0Vr4JYTETz
+   jBIAAyl7hmTsm12qkRSB3oUm2UvDaQq3yAqF516M2qhmaG97Sh9pQJqSK
+   MPfUCme3LKmHKOabQuZpMZFBaQy1olXoG4bOd9Ewkw3+lThPiKmV1Va7j
+   zgCXm1tavYdQcS2RL+0UzP9VVE/JvVmRA7CVvP9a8i1l0bz7zjMMlslt0
+   O+nXDMI/KTIbFT5FiOdwZ+jNAvTA+RVctL4mFjc7OF3Oi/lk/3hnHP2W9
+   vjJVVmEnnt1Dh/u9GXczydnUZb3oQAWyp26a9bykJaHJxdr4z7ZXxhDxv
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="339892296"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="330998154"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:18:51 -0700
+   d="scan'208";a="339892296"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:23:12 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="755934318"
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="1016393497"
 X-IronPort-AV: E=Sophos;i="5.98,319,1673942400"; 
-   d="scan'208";a="755934318"
+   d="scan'208";a="1016393497"
 Received: from wtedesch-mobl1.ger.corp.intel.com ([10.252.53.134])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:18:49 -0700
-Date:   Wed, 5 Apr 2023 11:18:47 +0300 (EEST)
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 01:23:11 -0700
+Date:   Wed, 5 Apr 2023 11:23:09 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "D. Starke" <daniel.starke@siemens.com>
 cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/9] tty: n_gsm: add missing description to gsm_config
-In-Reply-To: <20230405054730.3850-3-daniel.starke@siemens.com>
-Message-ID: <9d7289fe-7a3-2cfe-b023-a892528044e4@linux.intel.com>
-References: <20230405054730.3850-1-daniel.starke@siemens.com> <20230405054730.3850-3-daniel.starke@siemens.com>
+Subject: Re: [PATCH 4/9] tty: n_gsm: fix unneeded initialization of ret in
+ gsm_dlci_config
+In-Reply-To: <20230405054730.3850-4-daniel.starke@siemens.com>
+Message-ID: <2d67db22-3a5d-1ed7-cfa7-d549aa1475b@linux.intel.com>
+References: <20230405054730.3850-1-daniel.starke@siemens.com> <20230405054730.3850-4-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -60,55 +61,43 @@ On Wed, 5 Apr 2023, D. Starke wrote:
 
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Currently, all available structure fields in gsmmux.h except those
-> for gsm_config are commented.
+> The variable 'ret' is not used before assignment from gsm_activate_mux().
+> Still it gets initialized to zero at declaration.
 > 
-> Fix this by adding appropriate comments to the not commented fields.
+> Fix this as remarked in the link below by removing the initialization.
+> 
+> Fixes: edd5f60c3400 ("tty: n_gsm: fix mux activation issues in gsm_config()")
+
+This doesn't "fix" any bug so Fixes tag seems inappropriate unless does it 
+fix a compiler warning (in which case you should quote the warning in 
+this changelog and state you're fixing this warning from compiler)?
+
+> Link: https://lore.kernel.org/all/b42bc4d1-cc9d-d115-c981-aaa053bdc59f@kernel.org/
 > 
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
->  1 file changed, 11 insertions(+), 11 deletions(-)
+>  drivers/tty/n_gsm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-> index 33ee7b857c52..422a52e184b3 100644
-> --- a/include/uapi/linux/gsmmux.h
-> +++ b/include/uapi/linux/gsmmux.h
-> @@ -8,17 +8,17 @@
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index eb21ca583642..d42b92cbae88 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -3276,7 +3276,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
 >  
->  struct gsm_config
+>  static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
 >  {
-> -	unsigned int adaption;
-> -	unsigned int encapsulation;
-> -	unsigned int initiator;
-> -	unsigned int t1;
-> -	unsigned int t2;
-> -	unsigned int t3;
-> -	unsigned int n2;
-> -	unsigned int mru;
-> -	unsigned int mtu;
-> -	unsigned int k;
-> -	unsigned int i;
-> +	unsigned int adaption;	/* Convergence layer type */
-> +	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
-> +	unsigned int initiator;	/* Initiator or responder */
-> +	unsigned int t1;	/* Acknowledgment timer */
-> +	unsigned int t2;	/* Response timer for multiplexer control channel */
-> +	unsigned int t3;	/* Response timer for wake-up procedure */
-> +	unsigned int n2;	/* Maximum number of retransmissions */
-> +	unsigned int mru;	/* Maximum incoming frame payload size */
-> +	unsigned int mtu;	/* Maximum outgoing frame payload size */
+> -	int ret = 0;
+> +	int ret;
 
-I'm used to "payload" referring in networking context to "useful" part of 
-the frame but MTU/MRU probably includes headers too? Maybe just say "frame 
-size"?
+While at it, I'd move the declaration into the block where it's used so 
+the scope where the variable is used is easier to see on the first glance.
 
-> +	unsigned int k;		/* Window size */
-> +	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
->  	unsigned int unused[8];	/* Can not be used */
->  };
+>  	int need_close = 0;
+>  	int need_restart = 0;
 >  
 > 
+
 
 -- 
  i.
