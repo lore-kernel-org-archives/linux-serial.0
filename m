@@ -2,134 +2,168 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D51AAC77B6C
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 08:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46340C7618D
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 10:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234878AbjDFIAm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 Apr 2023 04:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
+        id S229702AbjDFKK1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Apr 2023 06:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235162AbjDFIAk (ORCPT
+        with ESMTP id S235962AbjDFKK0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 Apr 2023 04:00:40 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CE2E62;
-        Thu,  6 Apr 2023 01:00:38 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id eh3so147227535edb.11;
-        Thu, 06 Apr 2023 01:00:38 -0700 (PDT)
+        Thu, 6 Apr 2023 06:10:26 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE043B5;
+        Thu,  6 Apr 2023 03:10:25 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id bb36so2966611qtb.3;
+        Thu, 06 Apr 2023 03:10:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680768037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1680775825;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CQH+iRWXQXzrMch9aFmJkKfa79kh+f41Jg9zUvyUDYc=;
-        b=IzH1LBufvIiF5rjtHs2OViOTXLaUQ/nT0dvzEtNTVKku7M2CyskBPXnebDVe/qA0aR
-         FusvQs0umKVGxpL/VTQ0zwtxVwYQPwvXR2akjtb/iV1UkJZYhJlzwof2ojROi0PmDAJG
-         jvbqQ9+83P9+lvKfeB9y/itUyMR5fqY/xoRvOLFVcd8DzX6Ug/KMAag65CqjQgsStuTc
-         FO5wHPzoDfkHBSjioRBu5486GaRhP2qMTsgc210CuUEMvdXz+HT3YunOSDi9a/Oy9GIb
-         8fu52k0CNbdwc/s3N6aDZnO84/uixLGPYXKSKmfMV2POalKrRWGUYRhL2F0SeI9ItmvP
-         SS8w==
+        bh=7JYPXgDX/Nfy87g0s7pL1XNdk5ri1X9AO3b/t8fNcmQ=;
+        b=qO7RLs5sEqmG7jai5So9ohvNoJl6wDoc5spFeogqpnmuc7TwViTzrJ5zQJSfDxpox1
+         S9TXPt4XEtSqXLXgASqEwVB3rO9fnwxs2Z0LSXCKMEpZILcWzIT3NgTxLZyJN8CXXGlB
+         3dUFP9EgPoGekogN8EiMY9Nzj5ZuPhGO/+smv5MbDQwZt8qopOpcedK8god8KayhpNP+
+         cOBUP7yArxxUOgb824mXdF5UXY3P3KEHB7VnlOTAeV5/c4k3Nf4njtFIRR6y2s59QqMN
+         YL9iE7XdbvSw5G7BqXlVrLGtgRYGgPJ4ORcRoMGn3m0R0fiyHalO9laDRzn0O0MocwGG
+         sU9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680768037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112; t=1680775825;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=CQH+iRWXQXzrMch9aFmJkKfa79kh+f41Jg9zUvyUDYc=;
-        b=5Abx5pe6n5EWTtYAiP42uAPLN4Ljwyp2PttL5l5E9Mwk31t4Kbwn76NOsKMU7tFnh5
-         w3tBxdbfYeK/V6FWrMx1LQ9yf5hitJHNm90oGckjxiy0XmJSVi9qAutP792lkEs+U4Dg
-         L8zl2RdwTR9zAQuPdfz+T4bFpuIGFAzhb0R0858WtXD19NcPsWMp966I6rRpvBtS2DXC
-         wyuWHqWe6dzZfU+L9h63UIj9T3BW0rPkiKAszHFTZiAQktNQx82EK1O5Nd2kcs4g9S8B
-         X7kAbP1Kj9Kv4Cc8dpXn8S1bbDLr0CjizNg2uWOPzgYUPvGEw8av7opSGJJEFae2xwW2
-         /QsA==
-X-Gm-Message-State: AAQBX9dax8qyvgkXQ7uCKChe1DyLqg/m+OXxFyWXRq/+oLS3H6cLRSDT
-        I1lazfbmv1tgdlRqYmpFfT4=
-X-Google-Smtp-Source: AKy350Zln1rHkseAywxn36shRvYFdkWQ7QSVBFsGgDypBCXbFctm0iaYDiDxGcFUUhAKWrU2spc3MA==
-X-Received: by 2002:a17:906:fa9b:b0:945:d94e:7054 with SMTP id lt27-20020a170906fa9b00b00945d94e7054mr6300868ejb.36.1680768036990;
-        Thu, 06 Apr 2023 01:00:36 -0700 (PDT)
-Received: from orome (p200300e41f1c0800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f1c:800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id xf4-20020a17090731c400b00938041aef83sm452290ejb.169.2023.04.06.01.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 01:00:36 -0700 (PDT)
-Date:   Thu, 6 Apr 2023 10:00:34 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Marc Zyngier <maz@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: Re: [PATCH v2 04/10] serial: 8250_tegra: Add explicit include for
- of.h
-Message-ID: <ZC58Ikn9_BUFg_-h@orome>
-References: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
- <20230329-acpi-header-cleanup-v2-4-c902e581923b@kernel.org>
+        bh=7JYPXgDX/Nfy87g0s7pL1XNdk5ri1X9AO3b/t8fNcmQ=;
+        b=5CeWAln5fJqo+6WcHtmSHjHPegEozE8lZNKzjyoYvAkCnkRZ95w44xG/23E5NsZ+gU
+         LAijjCPnIrrFE+/Ex7gdZzxmycd+tkIQ5kc8Q5Nv9oevP4uEMWphQrfa46Nm36V7ZWSc
+         YQpAvKNaAoe/Hyeuasi6rVNLnxijbe9PoakDN+SCewBMSd6o+m4DuuN4naAlZ1H60clx
+         NN3Qnxp7JN9LajN+Xd6NHg3rmfqWqGYzN1JXqWUuom8mvVTQyNkm+db+lpPyx/iN2f8d
+         OQi9UCv0PBtKbTypbChg9zVhcPChTex6MlLnKwpuc5EJZl5fpziVYxXq6GNl+x2uTeEK
+         UcYA==
+X-Gm-Message-State: AAQBX9e8NMwfg6Ndcl47j6gFbToZjkHy8N+V4mpjOmWsEJKWzmFh+Zdr
+        UkwV7QhFO9eucd4V+YPTIXm3D/bDwRqbXUV0KCQ=
+X-Google-Smtp-Source: AKy350a6JgVWE3mUxuYvEyYT4UCWCRlFmDAUdy39pH+JJebrzroPmFFZzbnGM+53LnTJ/F03pipNMnvUny4O72USn3U=
+X-Received: by 2002:a05:622a:1716:b0:3de:1720:b54b with SMTP id
+ h22-20020a05622a171600b003de1720b54bmr2279520qtk.0.1680775824739; Thu, 06 Apr
+ 2023 03:10:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="E3hFsuwxav/nr+wF"
-Content-Disposition: inline
-In-Reply-To: <20230329-acpi-header-cleanup-v2-4-c902e581923b@kernel.org>
-User-Agent: Mutt/2.2.10 (2023-03-25)
+References: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
+In-Reply-To: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 6 Apr 2023 13:09:46 +0300
+Message-ID: <CAHp75Veyu+-mJ6k+oRai3XatGY5fXi8E7f77V=_6ztzpzaxODQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: max310x: fix IO data corruption in batched operations
+To:     =?UTF-8?B?SmFuIEt1bmRyw6F0?= <jan.kundrat@cesnet.cz>
+Cc:     linux-serial@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, Apr 6, 2023 at 1:08=E2=80=AFAM Jan Kundr=C3=A1t <jan.kundrat@cesnet=
+.cz> wrote:
+>
+> After upgrading from 5.16 to 6.1, our board with a MAX14830 started
+> producing lots of garbage data over UART. Bisection pointed out commit
+> 285e76fc049c as the culprit. That patch tried to replace hand-written
+> code which I added in 2b4bac48c1084 ("serial: max310x: Use batched reads
+> when reasonably safe") with the generic regmap infrastructure for
+> batched operations.
+>
+> Unfortunately, the `regmap_raw_read` and `regmap_raw_write` which were
+> used are actually functions which perform IO over *multiple* registers.
+> That's not what is needed for accessing these Tx/Rx FIFOs; the
+> appropriate functions are the `_noinc_` versions, not the `_raw_` ones.
+>
+> Fix this regression by using `regmap_noinc_read()` and
+> `regmap_noinc_write()` along with the necessary `regmap_config` setup;
+> with this patch in place, our board communicates happily again. Since
+> our board uses SPI for talking to this chip, the I2C part is completely
+> untested.
 
---E3hFsuwxav/nr+wF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Make sense, thanks for fixing this!
 
-On Wed, Apr 05, 2023 at 03:27:18PM -0500, Rob Herring wrote:
-> With linux/acpi.h no longer implicitly including of.h, add an explicit
-> include of of.h to fix the following error:
->=20
-> drivers/tty/serial/8250/8250_tegra.c:68:15: error: implicit declaration o=
-f function 'of_alias_get_id' [-Werror=3Dimplicit-function-declaration]
->=20
-> Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+> Fixes: 285e76fc049c serial: max310x: use regmap methods for SPI batch ope=
+rations
+> Signed-off-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
+> Cc: stable@vger.kernel.org
 > ---
->  drivers/tty/serial/8250/8250_tegra.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/tty/serial/max310x.c | 17 +++++++++++++++--
+>  1 file changed, 15 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index c82391c928cb..47520d4a381f 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -529,6 +529,11 @@ static bool max310x_reg_precious(struct device *dev,=
+ unsigned int reg)
+>         return false;
+>  }
+>
+> +static bool max310x_reg_noinc(struct device *dev, unsigned int reg)
+> +{
+> +       return reg =3D=3D MAX310X_RHR_REG;
+> +}
+> +
+>  static int max310x_set_baud(struct uart_port *port, int baud)
+>  {
+>         unsigned int mode =3D 0, div =3D 0, frac =3D 0, c =3D 0, F =3D 0;
+> @@ -658,14 +663,14 @@ static void max310x_batch_write(struct uart_port *p=
+ort, u8 *txbuf, unsigned int
+>  {
+>         struct max310x_one *one =3D to_max310x_port(port);
+>
+> -       regmap_raw_write(one->regmap, MAX310X_THR_REG, txbuf, len);
+> +       regmap_noinc_write(one->regmap, MAX310X_THR_REG, txbuf, len);
+>  }
+>
+>  static void max310x_batch_read(struct uart_port *port, u8 *rxbuf, unsign=
+ed int len)
+>  {
+>         struct max310x_one *one =3D to_max310x_port(port);
+>
+> -       regmap_raw_read(one->regmap, MAX310X_RHR_REG, rxbuf, len);
+> +       regmap_noinc_read(one->regmap, MAX310X_RHR_REG, rxbuf, len);
+>  }
+>
+>  static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen=
+)
+> @@ -1480,6 +1485,10 @@ static struct regmap_config regcfg =3D {
+>         .writeable_reg =3D max310x_reg_writeable,
+>         .volatile_reg =3D max310x_reg_volatile,
+>         .precious_reg =3D max310x_reg_precious,
+> +       .writeable_noinc_reg =3D max310x_reg_noinc,
+> +       .readable_noinc_reg =3D max310x_reg_noinc,
+> +       .max_raw_read =3D MAX310X_FIFO_SIZE,
+> +       .max_raw_write =3D MAX310X_FIFO_SIZE,
+>  };
+>
+>  #ifdef CONFIG_SPI_MASTER
+> @@ -1565,6 +1574,10 @@ static struct regmap_config regcfg_i2c =3D {
+>         .volatile_reg =3D max310x_reg_volatile,
+>         .precious_reg =3D max310x_reg_precious,
+>         .max_register =3D MAX310X_I2C_REVID_EXTREG,
+> +       .writeable_noinc_reg =3D max310x_reg_noinc,
+> +       .readable_noinc_reg =3D max310x_reg_noinc,
+> +       .max_raw_read =3D MAX310X_FIFO_SIZE,
+> +       .max_raw_write =3D MAX310X_FIFO_SIZE,
+>  };
+>
+>  static const struct max310x_if_cfg max310x_i2c_if_cfg =3D {
+> --
+> 2.39.2
+>
+>
 
-Acked-by: Thierry Reding <treding@nvidia.com>
 
---E3hFsuwxav/nr+wF
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmQufCIACgkQ3SOs138+
-s6F+KA/7Bm/KfMbX17OH6FnJh9eMe6ljjpv/iZNRAm7bGZO0mhFGi50XBZsNztqA
-VNB3JF2eIsl5fLvZBh3scXkKTB1CEYLOAuhQtUehAXCTDLIgRUn9IzRjit6RBnnU
-XTeYRtdEyWtdS90j2nK0edHGOcfOMxYyn1UV/Whtawnx16Ub/ZdIHmTvg454Upqd
-2Dv4LpcZIfLFJdPl5B+bYP/Q6Dg9mLDYr7U5V2zxziaDKMOb2L7gN5GMOCL0S+rw
-9yHOVa0YxfP6B1zvUjJ8xW0e0XPcRO2f1zApQ0SYpN9DVyKozeB1/U+itoq2wkXS
-zVAYUCydZ7TGrFL/NkksLddPwzdLiLeAVDTjwHadnaQERW8NGQkN0Dy+GKSGFFAo
-Vsd3TxyP107px9msXa9QHVlPnC2mVgwkg5ZJeWRonPo5lFTC/XpbPe1pnbtn3yjg
-o+CKRA75MyFgOIytYdgGK/3/9OJu85zmc0WEQy+0kJnnjLe45y7V7tpMHObl3dGa
-KqGTSfMmnf3G7cFAfE1PDdOh/vMO/z2oCc0XR9GdAsEbTXd2E0lrGuw5zrbZYWLO
-CeYAiWdsUDmqLEWwKwUT04Z9315lKkJvueZGXfxlGtsz/1j7jVDeC7lUl0u9zt9h
-pEq0jCI12awFhFZmUO+3w5b9DBTnKowjD+JwRlg+hs5o0OD1d88=
-=T9ol
------END PGP SIGNATURE-----
-
---E3hFsuwxav/nr+wF--
+--=20
+With Best Regards,
+Andy Shevchenko
