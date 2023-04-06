@@ -2,203 +2,160 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 954F9C7619A
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 02:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CD0C76196
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 05:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbjDFCqK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 22:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
+        id S234846AbjDFFR4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Apr 2023 01:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234768AbjDFCpK (ORCPT
+        with ESMTP id S233007AbjDFFRz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 22:45:10 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A169034;
-        Wed,  5 Apr 2023 19:45:09 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id j13so35999618pjd.1;
-        Wed, 05 Apr 2023 19:45:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680749108;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sKxOWbr7rDn/qnvB6FljLF8vj/aIxvx/70FeQshH1rE=;
-        b=PggzUDOpVU+7UjjH7jcpIcnIkrXHNAPPpkqDPITfJESnV+tSnMfKo6ZDROKEB2bMDC
-         vh5CI8iNy/2VbDAZcheeq6DhUaImFn7l5/HC323FAak6EEtBg/UFsB7MGwAfYpsd0oLd
-         PWzxXWTakUmUVOkFIoxpgnQs0QlIToYpY8SiCLoIoZIqpTdQc37Hzb7Pb6X/N6SzdXId
-         m1MsiNk2cK99oPSvXzngEb0aCx7ymqV0KsX6Gradsv7rYGKxVrY379ddEAkGD/bBLuiX
-         iKKgE8HzVv/0bCpZx2ZTjXP7SPHBBKc0T2ytUNbPY96ltPfRLxvAD2MIuWpDGV6dmKat
-         4sjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680749108;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sKxOWbr7rDn/qnvB6FljLF8vj/aIxvx/70FeQshH1rE=;
-        b=1pnNbWW2ZexTTKD4zD8LDjc/pksRDsHFVn6d6hG004/lWdxtQuA+33O+UKt7q8ce41
-         TjJoYUzCN2RfLWZKGk+PQnZpoiD1e0JTcQx9plXCMrESqBLMZZVrs1hHmw6STgSPY2Rt
-         aVnjp575Wb/H9wOdfEZf7ApCPAxIJmEDtAOB++zeo0FCKe1FVLsFUe/25RR3gxAR61/A
-         GonfqlN4BnTA2JNEGvXFI/9jU7v0VNe66yfLl0Rl03d52ivMvkGpLB90csppi3jKfOp8
-         3h/Myb5oFlegcPN0XamE+WRlEQF9d8592WKxP+FFg8KvMiVyhEq4/ujX+L5sy5gyUv/K
-         VbQA==
-X-Gm-Message-State: AAQBX9epVo1eLQ93ihH930Y7lKQz2It6NhDP9/bzb20UlBx2F0lfBAH9
-        yC6fla7EZk61DwbcniUKSRI=
-X-Google-Smtp-Source: AKy350al49pn09cKU9mnQ5KGBI7hgLFHlH//fL84AGw/2LD0tpEz2STzpoTTsgOtQdFN/hoMzcqu+Q==
-X-Received: by 2002:a05:6a20:6690:b0:d9:e45d:95da with SMTP id o16-20020a056a20669000b000d9e45d95damr1425321pzh.20.1680749108397;
-        Wed, 05 Apr 2023 19:45:08 -0700 (PDT)
-Received: from localhost.localdomain ([43.155.90.222])
-        by smtp.googlemail.com with ESMTPSA id 3-20020aa79243000000b0062e12f945adsm86374pfp.135.2023.04.05.19.45.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Apr 2023 19:45:07 -0700 (PDT)
-From:   juanfengpy@gmail.com
-X-Google-Original-From: caelli@tencent.com
-To:     jirislaby@kernel.org, gregkh@linuxfoundation.org
-Cc:     ilpo.jarvinen@linux.intel.com, bagasdotme@gmail.com,
-        benbjiang@tencent.com, robinlai@tencent.com,
-        linux-serial@vger.kernel.org, juanfengpy@gmail.com,
-        Hui Li <caelli@tencent.com>, <stable@vger.kernel.org>
-Subject: [PATCH v9] tty: fix hang on tty device with no_room set
-Date:   Thu,  6 Apr 2023 10:44:50 +0800
-Message-Id: <1680749090-14106-1-git-send-email-caelli@tencent.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1679037946-18156-1-git-send-email-caelli@tencent.com>
-References: <1679037946-18156-1-git-send-email-caelli@tencent.com>
+        Thu, 6 Apr 2023 01:17:55 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2078.outbound.protection.outlook.com [40.107.104.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA3D8A66;
+        Wed,  5 Apr 2023 22:17:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cuQfL2l36RFo1Gq0isbLWsjATbAenalVqSP/EACE6AltDmfwQG7Dwrcs22OiCuJeXaVfpRx/w0uKjkb5LIv8mysKb8F5+uvz4WkYR6xjBexWus9SJnatMteJ1zt+P2n2EslKuHOzCeNdNzubEg9dBCwni4Vku7O2sSIYoug2dNlm9MioZ1mz+RPQ/4pV5jV2Ogj/dyavMwaLeUYQBTQCTst/LZHUKICzZYjtEjDZYq2YsOj0FhTkOIOI4dPwE6WHvao9Wp0XUDXlvAofWe2c5C0H02bcx0MU2DzXMrgbM5T+f0gpJMZhDyIqSFCgI3Ato/76js/s5Ah+oum+iYd66w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PxYHOjdQtLE+b9TeWYy0elsfDosH096qMf2JKON2x8E=;
+ b=GXzcbMdcBKXlsdVtcqeXZq6Zi1OQAEixgGnmWszraayFpc7FiAhXmgmjfm0BsKsClOPhIlCfvczoqxpLLRi/71l3YxiDr/QLXJk11zy5hTYJUIZe1rmp6G7e8lLXlxLrtJ6D6xGrqy3S/PLjR17M/q9PtOOkPrvm5HzSWmgJ9Encq/Ce2KwPDHrompoYHMG8Xi3tF+nm8rkUoP9LGwmINm9Iiyo9JkrhUyEc//rmd2rzL4VvtENVwF7+wLrSBmu71/44JIMtcZ9StIv4kLxQQ56agsX84pMDOmFq0y0Tsr+MDBXHOqJW0oV6rDCetUi3FGjnSYdi3MzpxMHpgXbxJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PxYHOjdQtLE+b9TeWYy0elsfDosH096qMf2JKON2x8E=;
+ b=qEdyolnYV6BUFMUHzG04R/N+uoxl2/zSlxZp53GiRsgxY5r2ADF8S/XrGDGMjZauabCI/1Z/70sGI/dQyrRN0au4jt8ntWjZVhZ6IvigyLLrQ8ZRmYW5CAUMD9K2v3broLicT67qdI8qsvwk0dCsKTNGuhGJPJfsiIb/dlx/km+NUWuUwb4q8SIXLhwxhUkLgNkB3NgkCWHZ1qiLDAPFW3AxcsWFO83qz1yKTIVTLDBRu60SltRZ/9Pm/NajfP2z/Ya1DoF0lRsgGP8SSOm2hrTDzGmCDSweMOEubryrsyOiY+DX5bGDAB1kCuVnJExRFG8zTXjv53R9BZ8OsWu3iw==
+Received: from AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:517::18)
+ by AM7PR10MB3592.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:13d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31; Thu, 6 Apr
+ 2023 05:17:50 +0000
+Received: from AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7268:b477:8203:8c6a]) by AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7268:b477:8203:8c6a%9]) with mapi id 15.20.6277.028; Thu, 6 Apr 2023
+ 05:17:47 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+CC:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 2/9] tty: n_gsm: add restart parameter to DLC specific
+ ioctl config
+Thread-Topic: [PATCH 2/9] tty: n_gsm: add restart parameter to DLC specific
+ ioctl config
+Thread-Index: AQHZZ5bbwe8nLRzr8Eyt66RoZhL9na8dvxFg
+Date:   Thu, 6 Apr 2023 05:17:47 +0000
+Message-ID: <AS4PR10MB5895BA5B2ECFFF74DDBAB571E0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM>
+References: <20230405054730.3850-1-daniel.starke@siemens.com>
+ <20230405054730.3850-2-daniel.starke@siemens.com>
+ <cd7c33c8-2634-382d-cf62-3785e391af2@linux.intel.com>
+In-Reply-To: <cd7c33c8-2634-382d-cf62-3785e391af2@linux.intel.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-04-06T05:17:46Z;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Privileged;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=4c241105-fd99-4e42-a3e6-9d6f692c5f7e;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0
+document_confidentiality: Restricted
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AS4PR10MB5895:EE_|AM7PR10MB3592:EE_
+x-ms-office365-filtering-correlation-id: 3d827d75-f695-4fc1-645b-08db365e42a9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gHXZuxGW3fwrGaKgET+heEaKxgI+Mj1kSGiOwdDKEJ+n6Zc52ALW6tDEkg9jXUwjOwhnciUR/3708zz22j8Mmbas2bXS4HSVZ6vlRTroqrTL9ZoP42v2G0uZRFvb6eqllocQLMD9gYPCTAymv9Y+UAbu4JJVeNe2Wp18qbbV1S1fqAWcABNYgE3bhsAKbNmti2anAqLtUV0Ix2IkH2I72yhztznvOg4AVCrWgBexpEC5QoH1d+5qeQNVoOxrZDSkktgb2y+HXqCsRfk/U5xzVpWO6N4kYGKg263wWyfCczdukR584xjK1Esv4010b8cujFH+G4oGDX+qBg/95dhGkCpUEz0MFDZXTHReu1a7scPo31+9yjU83ApFp8/Zdge6JAQIqthibhv+n4BRmuAOsBDT6W1SZ81gJHq+1yAMikZ+TV58yQhgRFEzg3zf0+tqc8kfAFCeTHy1Q4zdEvxtkYc0q1Izwq+WcKH/tCqWClj3GT0JgJp0Hjci5siFXVNHTGe70ZcCmBzFTBpLFgmnoSV1ALjvlaRAqCgrO683gDNZPAPhT1QhrW8RShqLDu+Pf7bTtE0ManavLvp2125oDHmBV8mth1iYv9oECBIE+F3FBVVxu2rNVmkZ7WFYcz/sdUgL4Qd6BOaR7EoCEVhQYhSfhgOoVXRFj75qfuZRNPw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(366004)(346002)(136003)(451199021)(26005)(33656002)(9686003)(6506007)(52536014)(5660300002)(2906002)(4744005)(186003)(8676002)(8936002)(55016003)(71200400001)(82960400001)(478600001)(7696005)(122000001)(41300700001)(83380400001)(66946007)(6916009)(66556008)(66446008)(76116006)(316002)(66476007)(64756008)(4326008)(38070700005)(54906003)(38100700002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?qYJ84Gqz/oh8VyKvofMm0Vv5c6XmzUkBejtD80xHOp2J9GEl13Kyfy5u7y?=
+ =?iso-8859-1?Q?mTyIV6s2YvS1wXRoMzlwqySJKdjvNy9hDv/22r6uLmM7FRvNIunO/AmUet?=
+ =?iso-8859-1?Q?Byc4/ul8A6FToFQt221/Uy7krm6YnvXlpYJ70qtRsLHNG0z4/Del/1LRO3?=
+ =?iso-8859-1?Q?9kDcVdOga1At8d0tctr9GsvxytxIKrZb7sK2S5Kp/B3gTdcCEyXLHZcSdQ?=
+ =?iso-8859-1?Q?U1B+Dx1TOVWiUXoqZykYwb/9FU+DkM/Ic/jy0cxMCcYIT9KwH7PxHnlLVI?=
+ =?iso-8859-1?Q?chcQ4qb/KxuIJkf9QaTx0aKwGWwBFd1oom7XpaznhfETB+cBPKCJAR1S5z?=
+ =?iso-8859-1?Q?Sqgksf1bS1gnPcXFcmPmJXeWXoRFOWkdqfF1wcGTN2Ie9J9rSkx+zjSi+7?=
+ =?iso-8859-1?Q?n8TGghRAv3nTxFFZb14LRWkiBRXiEP2U+2NU+x61J64YobWuKvP5SxTayl?=
+ =?iso-8859-1?Q?JsMeCH4zzB052zXKT2Y3tJOTKeXERVbekN7W4o0wsOH2T9y1hoRYZ/5T1N?=
+ =?iso-8859-1?Q?X24SnRZW6mqq1CmC8fjyRBZ67TU2f7ayGKJRatvCWNPqyv3YH8wSvWWBwQ?=
+ =?iso-8859-1?Q?HkjqERyzWtzs9iiCXnkSB+BOzkWPp44ddHfrKIrHwo5SNi9nn9LBI5Gq8n?=
+ =?iso-8859-1?Q?LiiQF6p6hABM/otmM/lbWuwRmk8lxas+BxvQgN19aacVsLXLDO8xJ+HfVU?=
+ =?iso-8859-1?Q?rC3zxd+XVGorjx0H93jHQopqfo9ZVdtk3s2vxDsj6cx6OwJU8t5yyRrW+u?=
+ =?iso-8859-1?Q?nUot8FavOAglaI6Vtd0NdDssxKUlVQnoPUCfcRIpNl3e2TConIkKSohoxN?=
+ =?iso-8859-1?Q?VO1BIN3ymdAkNyakKMJyAhaVmbU+2Ieka9CnqLLTfJtk6bSfCDdtN9mb96?=
+ =?iso-8859-1?Q?SmKjbu25nHqxXKAyIzHG10/v5HZeLec29R4jqKDySwoko4983FWsoYZIUu?=
+ =?iso-8859-1?Q?J7aEypBgPT0f8nq9o8FzK8+pLGGyP3DiwOSX6XQLSOnALw3JwEPO1y+Zw9?=
+ =?iso-8859-1?Q?3M5Ix/b8oYzQU3J2+Qkk1BPY4m2El9Ry+KuiGWsali5gPB9bFdg4jGNQFr?=
+ =?iso-8859-1?Q?gZFaGX22MRnjEuTpFZnHETV659dCvLyp765SH7CVT1B4qwRrWcp23J9LiU?=
+ =?iso-8859-1?Q?Bbhb+mAdZj5DXQdtVq0ge7Jc9Z8OXtSdQ6umkTR+m2lcNGc2ahlqPN2e4x?=
+ =?iso-8859-1?Q?zYxN1gAo2diGnRarKhBKAaJrwT0Oca0AOYN9nwPhfXRH7JdVoi5q+F+cQL?=
+ =?iso-8859-1?Q?SkcM1yN8LzREWUHR/4JTD5fOqZjSvPlGYyeeMEK9+BJ8p2gspVRpQb9CKq?=
+ =?iso-8859-1?Q?ilpjMXbELrDmGx8wGhgS7aOrOdWccHemVWkRci0ps9nyY910v55YprwiQ9?=
+ =?iso-8859-1?Q?HtTNMS8DP4+smcVNdH0qE4QRQN9tTKb3bdHMJkfc/TKAlEcJvjx8VrWLH2?=
+ =?iso-8859-1?Q?j0DmpBs6r750lBTi2WaBtNP6FkJlmF21Cs8ytDKiHr5nyYLR6lpV77uoJI?=
+ =?iso-8859-1?Q?FVgQmsOQ4IurHN0l7kUwH9E9P3aT82Zl6nAsK3qq6lLuMrOwANbhf1lykT?=
+ =?iso-8859-1?Q?y9ubQsJ6RYIx2COri4wg0UCIslhcFVU7SZgepbBQPQoTmC/o34nQVWrbWo?=
+ =?iso-8859-1?Q?jQe9bOM9oc0/JdLqOAdvnoFqTaTkMuIJv9?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d827d75-f695-4fc1-645b-08db365e42a9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2023 05:17:47.5665
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2a/bY+/4lZXcvfNYpwob3Hx4vzOd40SK16c82jP0NNPjdTXSfDahNS2zWAcbCvcVy/WL4Z2e3hW94/txrFYkKU4zjWYdVIjSxI7BdPiycp4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3592
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hui Li <caelli@tencent.com>
+> > From: Daniel Starke <daniel.starke@siemens.com>
+> >=20
+> > 'gsm_config_ext' already allows to force a link reset via 'restart'
+> > parameter.
+>=20
+> Please be more precise, there a function and struct with this name.
+>=20
+> HOWEVER, there is no such parameter in tty-next (am I looking from wrong=
+=20
+> repo??):
+>=20
+> static int gsm_config_ext(struct gsm_mux *gsm, struct gsm_config_ext *ce)
+>=20
+> ...nor here:
+>=20
+> struct gsm_config_ext {
+>         __u32 keep_alive;       /* Control channel keep-alive in 1/100th =
+of a
+>                                  * second (0 to disable)
+>                                  */
+>         __u32 wait_config;      /* Wait for DLCI config before opening vi=
+rtual link? */
+>         __u32 reserved[6];      /* For future use, must be initialized to=
+ zero */
+> };
+>=20
+> ???
 
-It is possible to hang pty devices in this case, the reader was
-blocking at epoll on master side, the writer was sleeping at
-wait_woken inside n_tty_write on slave side, and the write buffer
-on tty_port was full, we found that the reader and writer would
-never be woken again and blocked forever.
+You are right. Looks like I was looking at the wrong branch. I will reword
+the commit message and deliver the patch for 'struct gsm_config_ext'
+afterwards.
 
-The problem was caused by a race between reader and kworker:
-n_tty_read(reader):  n_tty_receive_buf_common(kworker):
-copy_from_read_buf()|
-                    |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
-                    |room <= 0
-n_tty_kick_worker() |
-                    |ldata->no_room = true
-
-After writing to slave device, writer wakes up kworker to flush
-data on tty_port to reader, and the kworker finds that reader
-has no room to store data so room <= 0 is met. At this moment,
-reader consumes all the data on reader buffer and calls
-n_tty_kick_worker to check ldata->no_room which is false and
-reader quits reading. Then kworker sets ldata->no_room=true
-and quits too.
-
-If write buffer is not full, writer will wake kworker to flush data
-again after following writes, but if write buffer is full and writer
-goes to sleep, kworker will never be woken again and tty device is
-blocked.
-
-This problem can be solved with a check for read buffer size inside
-n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
-is true, a call to n_tty_kick_worker is necessary to keep flushing
-data to reader.
-
-Cc: <stable@vger.kernel.org>
-Fixes: 42458f41d08f ("n_tty: Ensure reader restarts worker for next reader")
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Hui Li <caelli@tencent.com>
----
-Patch changelogs between v1 and v2:
-	-add barrier inside n_tty_read and n_tty_receive_buf_common;
-	-comment why barrier is needed;
-	-access to ldata->no_room is changed with READ_ONCE and WRITE_ONCE;
-Patch changelogs between v2 and v3:
-	-in function n_tty_receive_buf_common, add unlikely to check
-	 ldata->no_room, eg: if (unlikely(ldata->no_room)), and READ_ONCE
-	 is removed here to get locality;
-	-change comment for barrier to show the race condition to make
-	 comment easier to understand;
-Patch changelogs between v3 and v4:
-	-change subject from 'tty: fix a possible hang on tty device' to
-	 'tty: fix hang on tty device with no_room set' to make subject 
-	 more obvious;
-Patch changelogs between v4 and v5:
-	-name is changed from cael to caelli, li is added as the family
-	 name and caelli is the fullname.
-Patch changelogs between v5 and v6:
-	-change from and Signed-off-by, from 'caelli <juanfengpy@gmail.com>'
-	 to 'caelli <caelli@tencent.com>', later one is my corporate address.
-Patch changelogs between v6 and v7:
-	-change name from caelli to 'Hui Li', which is my name in chinese.
-	-the comment for barrier is improved, and a Fixes and Reviewed-by
-	 tags is added.
-Patch changelogs between v7 and v8:
-	-Simplify the comments for barriers.
-Patch changelogs between v8 and v9:
-	-change the commit messages as suggested by Bagas Sanjaya.
-
- drivers/tty/n_tty.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index c8f56c9b1a1c..4dff2f34e2d0 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -204,8 +204,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
- 	struct n_tty_data *ldata = tty->disc_data;
- 
- 	/* Did the input worker stop? Restart it */
--	if (unlikely(ldata->no_room)) {
--		ldata->no_room = 0;
-+	if (unlikely(READ_ONCE(ldata->no_room))) {
-+		WRITE_ONCE(ldata->no_room, 0);
- 
- 		WARN_RATELIMIT(tty->port->itty == NULL,
- 				"scheduling with invalid itty\n");
-@@ -1698,7 +1698,7 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
- 			if (overflow && room < 0)
- 				ldata->read_head--;
- 			room = overflow;
--			ldata->no_room = flow && !room;
-+			WRITE_ONCE(ldata->no_room, flow && !room);
- 		} else
- 			overflow = 0;
- 
-@@ -1729,6 +1729,17 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
- 	} else
- 		n_tty_check_throttle(tty);
- 
-+	if (unlikely(ldata->no_room)) {
-+		/*
-+		 * Barrier here is to ensure to read the latest read_tail in
-+		 * chars_in_buffer() and to make sure that read_tail is not loaded
-+		 * before ldata->no_room is set.
-+		 */
-+		smp_mb();
-+		if (!chars_in_buffer(tty))
-+			n_tty_kick_worker(tty);
-+	}
-+
- 	up_read(&tty->termios_rwsem);
- 
- 	return rcvd;
-@@ -2282,8 +2293,14 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 		if (time)
- 			timeout = time;
- 	}
--	if (old_tail != ldata->read_tail)
-+	if (old_tail != ldata->read_tail) {
-+		/*
-+		 * Make sure no_room is not read in n_tty_kick_worker()
-+		 * before setting ldata->read_tail in copy_from_read_buf().
-+		 */
-+		smp_mb();
- 		n_tty_kick_worker(tty);
-+	}
- 	up_read(&tty->termios_rwsem);
- 
- 	remove_wait_queue(&tty->read_wait, &wait);
--- 
-2.27.0
-
+Best regards,
+Daniel Starke
