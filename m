@@ -2,172 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE37C7618D
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 05:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF2CC7618D
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 05:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233998AbjDFFb6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 Apr 2023 01:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
+        id S231474AbjDFFmz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Apr 2023 01:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjDFFb5 (ORCPT
+        with ESMTP id S229737AbjDFFmy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 Apr 2023 01:31:57 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2085.outbound.protection.outlook.com [40.107.104.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40499903A;
-        Wed,  5 Apr 2023 22:31:56 -0700 (PDT)
+        Thu, 6 Apr 2023 01:42:54 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2057.outbound.protection.outlook.com [40.107.6.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B70E6A65;
+        Wed,  5 Apr 2023 22:42:53 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gQRu38+eXbOGpTyzVIJ+d9c80xsfjVvSwwG+6leFJQq1qg7lWo23WQk7uLz4I5GqPUk79wn1MjSQ6jZEeoUyRz+dtZjtrvo/UbKKQnoG4Jir1pQv16uysoRoloUEYzlj2p8q8VlIMM0US3UD0G0H5q3IsT5+tAtcwrHasmRkMrYWvN3GDRiVK97nhDDms5aTH8lzkqj2G0JmffjK2/girqED2F7U7EMw4T39h03pdvR7Bf2fnAtp/zW46Eid8QhqasKzuX/RuvsoqakDSOaZJVnUTaiDI/+X90yXU021IPXIROfzZQA6ynQ+jbdWb49gKcWkMpXUsBMSFegU8ai7lg==
+ b=RL5H4Eln5PUQ24luDM7BTdeRjUSKh8ixdzZpRMR75Qi9vfVyyB/QiaZ/+rmRJnw+eYvL4ZB2ZlSGiPALyu0HQPtwc5hobQRl/PfWmsJEUU24VSLG5fcRtbf6+CkzTmtYJ7JtdrNOqw1BZltGs/UlhOC1Qe7krkl9cqaB6rTEPj5V4aL4DRG0cRibCmN9mF7lPNd6u8b+sbbphY84XCmZ5YmQdV7rubqmjIUqXApNC/y4OwzEgzncZKmFPCNusTATs5aa1Pto0DaJVC8emullpgVo6B9LGtdH+y0xBQzOOS89h1xOrCPcBFmLxDIsYI/jg/9wzRjyqdx7C/5D8bqdsA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fS86FlQcKztKHrDg6ffj8W41544VCRPfDbFqfSDMrrc=;
- b=FbM8LaBOoAOiVN0zCh9r3XiVAA48SsZ3U8C8o9Jdpce2yWkdEIKF3VDu8Q8KUJYQktMgDPOxPzHJ1XhanUTYGKKREGVRL6t7XTgukMjfdnLGf1JuYzaRHmOjT6yS8r0JnYBW27pfh/sMvGj5pKW5Tjzczt9eREg6WvjMlVS9Fg28BMk75e/DjFWDlPs4+wET1LmkayoRiT/+ENfirBd0w7YZSutqtWwzuDtZTm4rbQlYlgsT++XvT3UIV/ImalCmtjcQKlvE7KBNicgQDPVEWYKS3GKKLGs2vW+4KLA94Ej+8Pt4PyfWiLVNZa/uRsilLG7O90dDMYg4oJOVkSARrQ==
+ bh=Z6r+0CCOR254Jzhyxnnk59OR7PMlP8G3vDcJtx6ELCU=;
+ b=lVtpfQv1f3W5rXlN1GH2w9wurY+AwuovjOQdWMtTumkYrlIXKl5k/eg7EdCfphGyosph4i7P1t2N2SSUeqvSjbvvgi85hFsw3tQX6/bQV7FZU1Ddp9qiG+ap4Anb6wOGrMgFPXFnlgB24lTAcsdIxrpIOnMeI+8jplPB116W+6hdrCf0BXC9OuFUnEDulql6+BmTQkesowWXKBArWsNH7kTy3P8RXW6oLiUHDtm+QIfntn2na726XIiMqCkYp7V2x8BOeM9LIUeyOPoQZJVKBI2z1NwN45pc7ts8iNrZMqTlqCa6Z+/GqSbMHAq5YQPgR/XgGhM9MegRUjL4Q4vEkw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fS86FlQcKztKHrDg6ffj8W41544VCRPfDbFqfSDMrrc=;
- b=0Du5867pXW1lSgtc/sBbRaA3PVvkR7CEj5/CV1oWZ/g+3+49KJHSC6Ck4/LNtWLRvJLkTSJK8WDqt6yTkrzyhWjbH61iatLuVtuyjbCCS+fpVrP6vHvzsvlIQFc6ET7jWbJgpnB1LX3OihtQQIJ4+lvGT1Mlw25K2EWZn8CjarziY+t5MaNHT1SG3XeW15jC2UPwahTOtyAKpv++PJsh7Qm0T3J9m6ctySLGB9sVRDPJJBFC7CeKYsxHEdx4hh5hD7N1Ojg/hHzXRyK+YlETwMWT8DrAJ6BdHntLvkk99pw1zbpGJILVgr05fLitAjX//C7wD1Z4W/t2ucz4eXB4cw==
+ bh=Z6r+0CCOR254Jzhyxnnk59OR7PMlP8G3vDcJtx6ELCU=;
+ b=G0tzVNtPxZmtaJm8BXAqY8X6B52kQhm8YVshdfb06qrh2KStI8DbHnnrwJCPa06rJCzdFU8TUnd/wRDyEQfb8i5AAX+Z4JrP4DxfTMEnOZzfiVVCzYK1JbIpaVUld26d4L1T/m4nO4HQWHgj0AUcCLTp8eX90OKb6n182ENLdQaJM9hjyUKbDcpA66L57IiTNS63r15P6oh+0MqgWeo0Z3Evolfl2flKhHQgNDcm6G/8Y0NZga+e2QECPD/WQxPoN3+AHjh+D1AG0ePFBuRvd6VTX+OIqxTyozHPcTQdpWGIpH3mZrjypCzu/dDtnccM+sUdv/yZ9z7P/3kLVsg2rw==
 Received: from AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:517::18)
- by AM7PR10MB3127.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:106::13) with
+ by DB8PR10MB3957.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:165::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.30; Thu, 6 Apr
- 2023 05:31:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.14; Thu, 6 Apr
+ 2023 05:42:51 +0000
 Received: from AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::7268:b477:8203:8c6a]) by AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::7268:b477:8203:8c6a%9]) with mapi id 15.20.6277.028; Thu, 6 Apr 2023
- 05:31:54 +0000
+ 05:42:50 +0000
 From:   "Starke, Daniel" <daniel.starke@siemens.com>
 To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 CC:     linux-serial <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 4/9] tty: n_gsm: fix unneeded initialization of ret in
- gsm_dlci_config
-Thread-Topic: [PATCH 4/9] tty: n_gsm: fix unneeded initialization of ret in
- gsm_dlci_config
-Thread-Index: AQHZZ5ffOE4Q3Wd0YUq3rGUD8vSlua8dwwAg
-Date:   Thu, 6 Apr 2023 05:31:54 +0000
-Message-ID: <AS4PR10MB58958C282E7E0FB653BC9406E0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM>
+Subject: RE: [PATCH 5/9] tty: n_gsm: add open_error counter to gsm_mux
+Thread-Topic: [PATCH 5/9] tty: n_gsm: add open_error counter to gsm_mux
+Thread-Index: AQHZZ5p2LcMicqjphEaUZsIcVH5ES68dxgrA
+Date:   Thu, 6 Apr 2023 05:42:50 +0000
+Message-ID: <AS4PR10MB58956955D236587153FDDA47E0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM>
 References: <20230405054730.3850-1-daniel.starke@siemens.com>
- <20230405054730.3850-4-daniel.starke@siemens.com>
- <2d67db22-3a5d-1ed7-cfa7-d549aa1475b@linux.intel.com>
-In-Reply-To: <2d67db22-3a5d-1ed7-cfa7-d549aa1475b@linux.intel.com>
+ <20230405054730.3850-5-daniel.starke@siemens.com>
+ <ffacb4a7-7875-445d-a2ab-38c4e595e3bc@linux.intel.com>
+In-Reply-To: <ffacb4a7-7875-445d-a2ab-38c4e595e3bc@linux.intel.com>
 Accept-Language: de-DE, en-US
 Content-Language: de-DE
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 msip_labels: MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Enabled=true;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-04-06T05:31:52Z;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SetDate=2023-04-06T05:42:49Z;
  MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Method=Privileged;
  MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_Name=restricted;
  MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
- MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=d0cc106f-30fe-496b-b1eb-177801be3abf;
+ MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ActionId=6c2b7a3a-6d88-4abd-9dcb-e006abc17ea0;
  MSIP_Label_9d258917-277f-42cd-a3cd-14c4e9ee58bc_ContentBits=0
 document_confidentiality: Restricted
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS4PR10MB5895:EE_|AM7PR10MB3127:EE_
-x-ms-office365-filtering-correlation-id: 9566d652-9ff2-426e-4272-08db36603b31
+x-ms-traffictypediagnostic: AS4PR10MB5895:EE_|DB8PR10MB3957:EE_
+x-ms-office365-filtering-correlation-id: 5656857f-8962-44c4-dd2e-08db3661c2aa
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5Nuk79wue4x7rcZQo6XlOfY7Szmlc+8RFRABzIgb5VsBLFfparFlsWDqGa6zOjv87FteMkPwOietrTVwpPiimDBWx6q1bb3fm+xwvWyssYUVeDk6fTYySv0vwnFkW6Z5SgUV5Yuu5WpMmkHBSQGQpXPfiqIC3XFskueilRRsnRhiuFla6Z3KaqKrMfedL+dhz3K3WYI2bUjr8Nv7IJx5sm7MyN2rquFiTL/Dkh8I7AodBFuARbf50pKCwxb3DZWbRaN/HCd6aaQSa3ly9L4pbrnGOTnu8tJ33p7d/JxtITO8J2MqhgIRI5gamJGxY9v3NPLMjrDearnpAzhnN5CF/0K6K8KUs5NN39UMkjktDfC5icvWdIWMM5kgjblBssHYimM7TVmPUzdY6P5CvzMETaiQzGfxrczQNYQTWDVnL7verHLLQAEWTEfr/aer3dq8mJ5P/6VUdiHVvQoToSmMP9Yd6HqibH7uexbtfxISR9D380B1paIXSYCry0sNEnD+II+7FPPUkDJkJuCGCrvS8an0T6lqXD+QBpiYmk+O0x/zkjcTacGeQgKaL/dnaL5JUsg66S7fwmBpFWR5+tB2sHStq9Y4wvJ5lzy/aNAVto0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39860400002)(346002)(136003)(376002)(451199021)(41300700001)(2906002)(122000001)(7696005)(86362001)(38070700005)(186003)(54906003)(8676002)(966005)(6916009)(4326008)(82960400001)(71200400001)(478600001)(38100700002)(76116006)(66946007)(66556008)(64756008)(66446008)(66476007)(83380400001)(316002)(26005)(8936002)(52536014)(5660300002)(6506007)(9686003)(33656002)(55016003);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: pmZQ/dDWiSbSAIoUPAWDvyWFJ3swj7adkMr+tvzYxYbEM+YYWkrBfl9/lrhJRIEYoV1nvpkfKT6g6xir/WaJGShBf6a81KUZfv6VaxpTcqIM335RmsC5kOMeTpoRb4FluSAK4KYDh4d/BAsNLvEqR9nXcsOxC31eY6fm2M7KaF1+oXEilcYzkI+VireeqRcRZj16ksHN4hTeW81MsmisOHoraQiHFANxn9AztN6kDkDFLMpF7GWaJ8m737YI64hobDF26EBDT/4AWYXOuwOk+P+7fYyV7pes/0wKw3qGazD7HpWw2v9T8jiwJgxrW1n0iyrwAtT+alMyGsNqT7JSlMouW3z62uKvtNszgntKdWjfYawTjLbZSLmJn0OIaOwP9JSRImZMjAEgb78ZshwUSSc0Tg0KbxgElKgyoft6B4ruSJqe/piq7SC+w/a07dyv4VQh+geJP2skBTTt+l9LTweArfvcmRC97FkSzjkxrm40rwiYRldY7yHpY5v1icYQGWBxBF7na0pxSZDGr3zsko/mFeQ3P5CkSygui4qezMCKmRbhx8ORGXWkvYz373cOmh5I2lSPyNSGJqPX6RE3hGBuXEuyNsBs5U0sP+Dx4RvDaBny3wp18YP4pvVRD7QX
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(376002)(396003)(39860400002)(451199021)(2906002)(83380400001)(4744005)(5660300002)(52536014)(8936002)(82960400001)(41300700001)(122000001)(9686003)(38100700002)(186003)(8676002)(4326008)(6916009)(64756008)(66476007)(66946007)(66446008)(76116006)(66556008)(6506007)(7696005)(33656002)(26005)(38070700005)(55016003)(316002)(54906003)(478600001)(86362001)(71200400001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?O7L9BpOrMLRHKP9hqp5ysmlWEhocXx0aiFzXS3rbWIc7YxRyAcXvP99kz5?=
- =?iso-8859-1?Q?5AznooCOf71Z9o7+2mmI3JybewrQz+ZhVJDvnC/WwCaimIROC8Xg3vn5Y3?=
- =?iso-8859-1?Q?aBvWIiPl8ojCYmtVfUxt7gpeBXbJPZp5EPJ+9Nq7KoH+fiYGisRELG/Ehx?=
- =?iso-8859-1?Q?NGpQLkiuIhuRkBs5ZutzPMoQp2RMnSgA0WRR3tNzjknUgWR1LYyfEoj7io?=
- =?iso-8859-1?Q?m+7h4hMPlgyIo+cstpStg66wBAq4I14HqMGx1Cz6buR98OGxwqapygkpI8?=
- =?iso-8859-1?Q?IEmtH4uKtB+qK8asx/OjbwjMlyfPr0zBuuLbofQdxRQxeWJV3ne9SM++q1?=
- =?iso-8859-1?Q?xzTdKWFjP+DIijcIhv6OkIJNWKR+68unFKODv6ryFnIS93Qn42kWwh01+f?=
- =?iso-8859-1?Q?USE2fnFbJ/urBLKanauD7vLo/CCTTQzGpZHmMv4/6OVkKVqzN+sHzjeQts?=
- =?iso-8859-1?Q?p+qRQpN8R8TG7t1q9Jy2Ncor0UE9ahX0U06DyXioNNu4WO709RwUMJH7Qj?=
- =?iso-8859-1?Q?aVlHXrXEznvr802GWKDI74dvM+hBeoU51BRtdK1R++SwYCaKYJP6OPmE8c?=
- =?iso-8859-1?Q?w0pW9Dd1kboJ/NGj4JDyiI7dUk2Eu/Qp6lpM9QlA+RlkoJldJty53iLZw4?=
- =?iso-8859-1?Q?NUI4rVSOcNfRw3p180l6GynZUjrf5jxhZmP2uluqIanwmq7IIhA55q2Hec?=
- =?iso-8859-1?Q?gdA0ldcDD3BTAAClS2HkRTBNHDG14Mf2440miiP3vI0ODoZT0vc5/1gZ9B?=
- =?iso-8859-1?Q?H2HCGBCmkfomQocQrgzpM7Yb1TIwH8+M7vD/mtJbrll71/j6N+Hr8OwmYb?=
- =?iso-8859-1?Q?oV9dH5u6OiFfcJS3DzmqoOI/hQM0utsqoo6uOELLPWvJN+pC15HxpmsO7l?=
- =?iso-8859-1?Q?35nEe9gsHGEDEPZzbM5UgKprlZeOtkzdEJWKeH0Iw/oDoz/pHG5tpzAqnN?=
- =?iso-8859-1?Q?0bo3m25eUGAuttP32WUUN86FAGkHeC1lKx0W7heLaJ4V7o8Tyrn/7SV16C?=
- =?iso-8859-1?Q?wg7AIPT8gxR8TLfKYzSBLdi62vuhdRc2Bk11CuNnmIv07eW9xF/b1d0K86?=
- =?iso-8859-1?Q?iY7asIl664FaRpnx0nNvge8wSzV9zpbw5YSsKMtgyjiygB+60NSuAQ+t3n?=
- =?iso-8859-1?Q?KrAfyBGAeKr0zpDxaKShVKl/u0p/C9cWXlq39wE9Otmu3AiAFXExIvMhpZ?=
- =?iso-8859-1?Q?CzyeQtq+WVnLY/UgeKw39+JXZTu6qa2ceUbXupKfFiYgce+u7Ef78zNaB3?=
- =?iso-8859-1?Q?lpP7AMJykpHO9ZNZWSPtlE1W0hNLRLpvPmEFC7WdMBUU2dvr27454miH+G?=
- =?iso-8859-1?Q?dV012CTWJZLE6PBbKppmQIHgFMSHcVuETYvg4VBeC/F3h5anTG4z7T++A0?=
- =?iso-8859-1?Q?JCCG02spdeVK3W75iNPGcjcIIK5H4zoQf8yqmvBzy6EgaN0nxpkjBQMsQP?=
- =?iso-8859-1?Q?EeDI2Hn9NzhiQJFLOn/2L2qJFlZ0nC1+8WkZMbqiYElan1g3t0ugfAn6na?=
- =?iso-8859-1?Q?Plo6jGgmsB3eGVT651i0aH5f9RVL3o0eBTPCQXXLmETpYyCVwjvCdiTzuM?=
- =?iso-8859-1?Q?kMDok18STIk7MbUkRjIbwo2ka/L/SRxa7rhy9eX6Dmg7gmTIv0wHukJoi1?=
- =?iso-8859-1?Q?u2AxrErxxh0rDFiTE2hhi6RODMDmYvYlLb?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?hB2VFdgsSH7H14VjYG/aDfCRu5KNPY/5xec5gLl6naSMrU2k7khjCJRGyI?=
+ =?iso-8859-1?Q?IxAJpO9TsNVYwYlKtIPdrkRrNN7iUwFql4czYmodaajKOEdHZIMatOYmjh?=
+ =?iso-8859-1?Q?tRptNTXbBNspfeiaeqI5VQLGr9iRwXm7gnRiQXGEurGoi8fB7IAQZ2GCjm?=
+ =?iso-8859-1?Q?JxgMDcvE7RIQ4IU3DLp32rwHNiP/+fI7feHB4zQYQkNO+igrPlmUvkKMbR?=
+ =?iso-8859-1?Q?hAZj/Unz4OLxLEsGU17O31NKJRjs313xfoh76dtapE7nT9owgN8yKfLc/M?=
+ =?iso-8859-1?Q?IFjRgZNLp0RFJ6AXcFvUFQ18OcWqVfQ+EiV4O/bW2nyJWZr7NqmlYXRArm?=
+ =?iso-8859-1?Q?KSlyQQQ59Mw5t21O2Yr64dpsVcy9mtpY2U5kiekrVQ6Sz3jra0X3UWnGqo?=
+ =?iso-8859-1?Q?hdWxyHZuhoSuZhppzJTUDw0UViVscv1q93i2HEMwjEvAoR0rq06hUA3DBv?=
+ =?iso-8859-1?Q?TzSmsV9c3tJcCS7HrlkseVhSgAjwkwepS/CaO7C0POssHndixqvdU5Rrqz?=
+ =?iso-8859-1?Q?aeoVXPUmmLiehCYcGkzzH2FEPPNHGwGm7PxJajfpkapGfItwGd5g6/MhGZ?=
+ =?iso-8859-1?Q?LytcVQ4hatWa0jTSE90aJdijaVPCPqVf8mf98xCtonE7U1nhh2MjXydPaJ?=
+ =?iso-8859-1?Q?/BH0YJuEx8V/7XOs7VbGa+8fiMpSkit5uASNS/6rU2J4kcQ38kJc4YB5JG?=
+ =?iso-8859-1?Q?8J8CvgO5/lyW5TN/wZ+ZtqMc4mekXuQfyBZEz1Lk5pVbbG++yam4t2D/cU?=
+ =?iso-8859-1?Q?ALjeQe3XSodaRMVvpYeYKdgJvoLp2FVnX+Et9flsT1Ppq5YX2wFO+czzkU?=
+ =?iso-8859-1?Q?zUXHl2l8wTZV7vnw1mbLhLtsDyid/lgXV+huMZ6sVf1auCvY3TR54QPHdo?=
+ =?iso-8859-1?Q?ajanT0xu4QyyhXWPc+PRGIcyS55Zz1sroOoNg8g2gP6LIPSOyGSVpM1wZu?=
+ =?iso-8859-1?Q?QBHEGM5JzuwlBXi8aJk6woiTgtJGXrqyvWtGxT2+4+sBATqpWnTFb41OGj?=
+ =?iso-8859-1?Q?yIIP8ZFdq1/yIyIsYhBso0suaAsEDR1BmWmrOO2jv0HrC+oJYbUsrlo6P1?=
+ =?iso-8859-1?Q?W4l7l25Ydf7dErWgWZTLx0NoMPC/ZXpjjsiEPXwleDIVtIaI14otY0LT1n?=
+ =?iso-8859-1?Q?BvllsNPQgv9ixReAXQTSm/LbZOLzXrnyPVEYLKrBuQ2FLjWKdz+l4uLHgZ?=
+ =?iso-8859-1?Q?Ic/wBlqdToGq+1zHqJUHZOxZGnEjqzoat9cgMJvx4uXWeDdIsSZ+FonUPt?=
+ =?iso-8859-1?Q?5ysyNzPi51Me2+xpyv9VbnWZR5A+1B7rkfWdODj7P+ZhVEB/RC9JINpffE?=
+ =?iso-8859-1?Q?s3EYUL5/BZ+K+vcZAB5mxic1lWhyRr4NfKdnEeqZ+02UtO2oB6OnSzPbF8?=
+ =?iso-8859-1?Q?Xc78NQGLVSt6ycKmfzXamPK1mYT02nKj3Fe4if24pG4vKIrihF1Hv67Nmy?=
+ =?iso-8859-1?Q?U9y6MQp9k806wN+fpBRRg8P5QzYiY1v2l77ZrkK7VJEDohBQGNOU4zB5L5?=
+ =?iso-8859-1?Q?imzKl1oo8U5jVSPUO+SiGV/B+wK8h75kHyImcXjXDsFppYKFu0WiE0Yptd?=
+ =?iso-8859-1?Q?RF5+lR4LDbJ+KxinfzbS7xH290vUnGxbLkHYFF30ONTs6lANHP5/D6EsS9?=
+ =?iso-8859-1?Q?E/qfhApOugfiYuvYYzoujr8m5aBIf+IOu2?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: siemens.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9566d652-9ff2-426e-4272-08db36603b31
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2023 05:31:54.0596
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5656857f-8962-44c4-dd2e-08db3661c2aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2023 05:42:50.8506
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1YZqEojxtEJ9JniTGBAZbsGbfzRzOavlzUP+X40OsD8IOmAH4doZlcpKo2KODTPvbyLsDHXzkZ6US3tqhwBCGsp/z+M32rOfAPoEJ+PS82M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3127
+X-MS-Exchange-CrossTenant-userprincipalname: TOkLW3w+Qax3vAhs5IsBiggd2+/w6qcW2j2RIyRc08weKhOnQq6yXuv9qktXmwUr/6HAU0YMaBsLglClKeZd3//vllkIB4J5Js97DnEzzf0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3957
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> > From: Daniel Starke <daniel.starke@siemens.com>
-> >=20
-> > The variable 'ret' is not used before assignment from gsm_activate_mux(=
-).
-> > Still it gets initialized to zero at declaration.
-> >=20
-> > Fix this as remarked in the link below by removing the initialization.
-> >=20
-> > Fixes: edd5f60c3400 ("tty: n_gsm: fix mux activation issues in gsm_conf=
-ig()")
+> > @@ -1767,6 +1775,7 @@ static void gsm_control_negotiation(struct gsm_mu=
+x *gsm, unsigned int cr,
+> >  	} else {
+> >  		if (debug & DBG_ERRORS)
+> >  			pr_info("%s PN in invalid state\n", __func__);
+> > +		gsm->open_error++;
+> >  	}
 >=20
-> This doesn't "fix" any bug so Fixes tag seems inappropriate unless does i=
-t=20
-> fix a compiler warning (in which case you should quote the warning in=20
-> this changelog and state you're fixing this warning from compiler)?
+> I'd use the "rollback" pattern here for all these and goto open_failed;
+> + do the open_error increment there only once.
 
-No, it does not change any compiler warning. I will remove the tag.
+True, that would be a more elegant way to handle this. However, it does
+more than just adding this counter. Therefore, I would prefer to do this
+in a later cleanup.
 
-> > Link: https://lore.kernel.org/all/b42bc4d1-cc9d-d115-c981-aaa053bdc59f@=
-kernel.org/
-> >=20
-> > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> > ---
-> >  drivers/tty/n_gsm.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> > index eb21ca583642..d42b92cbae88 100644
-> > --- a/drivers/tty/n_gsm.c
-> > +++ b/drivers/tty/n_gsm.c
-> > @@ -3276,7 +3276,7 @@ static void gsm_copy_config_values(struct gsm_mux=
- *gsm,
-> > =20
-> >  static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
-> >  {
-> > -	int ret =3D 0;
-> > +	int ret;
->=20
-> While at it, I'd move the declaration into the block where it's used so=20
-> the scope where the variable is used is easier to see on the first glance=
-.
+...
+> In general, the changelog could be more verbose about state machine=20
+> states, message names which imply that the error is happening during=20
+> "opening" phase/state.
 
-I will move it accordingly.
+I will add a more detailed description.
 
 Best regards,
 Daniel Starke
