@@ -2,135 +2,156 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75179C7619A
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Apr 2023 22:34:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 726E4C7618D
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 02:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231574AbjDEWeA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 18:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        id S231232AbjDFCJx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 22:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232512AbjDEWd6 (ORCPT
+        with ESMTP id S230059AbjDFCJw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 18:33:58 -0400
-X-Greylist: delayed 899 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 05 Apr 2023 15:33:42 PDT
-Received: from office2.cesnet.cz (office2.cesnet.cz [IPv6:2001:718:1:101::144:244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759BA10CA;
-        Wed,  5 Apr 2023 15:33:42 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a07:b241:1002:700:4e4e:6933:e4c7:c369])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by office2.cesnet.cz (Postfix) with ESMTPSA id 8949440006E;
-        Thu,  6 Apr 2023 00:08:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cesnet.cz;
-        s=office2-2020; t=1680732520;
-        bh=7uoEWwtS5aJ2FrMUmr00QijBbcq8rkXN+j+WBOIPi1I=;
-        h=Resent-Date:Resent-From:Resent-To:Resent-Cc:From:Date:Subject:To:
-         Cc;
-        b=lId1yiwyie/IA9AUQqZtXkz+5EdsylFbItckRK5vzpwUPL8a1zaWdbGZvUQUKC/0Z
-         cA36rcXiMpzBaezgE+FVC45qnQl4zMb+EXbyTRo8ditkKEzmarX8V+Ca5lJ2MNwSo+
-         8HtBvk9ZUPVEquI6ibBV98v07vAeKjJyVolz2E7W9BudD9Y6K9Dx0fjiQwZpNrq+bH
-         rydHxzrofuc4RFFn0mRfP6xRSPGeRLNAWAIcgLA4fuBcgWtpWmrnb9s9mbEkg9c03l
-         5TYzoBleOaDfZ/Wevy7i3MqmJQvAaAQWH1OxOyP/qGIllk7ShzMJiAYCWlRKFUhQWH
-         lRynuEHP0jr/w==
-Message-Id: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
-From:   =?UTF-8?q?Jan=20Kundr=C3=A1t?= <jan.kundrat@cesnet.cz>
-Date:   Wed, 5 Apr 2023 22:14:23 +0200
-Subject: [PATCH] serial: max310x: fix IO data corruption in batched operations
+        Wed, 5 Apr 2023 22:09:52 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FA44EEB;
+        Wed,  5 Apr 2023 19:09:51 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mp3-20020a17090b190300b0023fcc8ce113so41445536pjb.4;
+        Wed, 05 Apr 2023 19:09:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680746990;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jDj+eIZP1IBl3cm+vrX+HXVFRJPLqgSdyxr8utmbIjE=;
+        b=h6Q+NXLQyIEa36PKr/1WzGbsDNDfKEYm+dOiV/ApaoLGt+7ZNuBj8Irn7W504d10ly
+         5emknI7Pfxxinw9eMxy/md4IIN6GkWotv04pDaUoIlP+J8MAL++Pj6u0koDVFUgu3stS
+         FoOZEum5KCkP+Vr0ryyZqdE2GGWmd3nKrgSqdSn1ft2BCuKrT/tuS7rCOMBWQ6XWKhEj
+         pT7LEyVOEz33oTEBOw4LQ9Rbdk545ytJ4nVaB3VftzqN2b/uaTt7UoQlsTUuxSTE7tv7
+         fxf24juZkHTuL8zitk5WpMF61A9/oKTV3hRY5Dg7PeHAtlKSguoRQi53XrIhgDZT/trc
+         0B1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680746990;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jDj+eIZP1IBl3cm+vrX+HXVFRJPLqgSdyxr8utmbIjE=;
+        b=JkS6CcZhJ/F3ob5BSXA8oGYiG9yhGJWMGeZa2v5M4NNKbAGRBjZ8ZBD17PfoImf6xJ
+         BT3fuN6SYctGYaUnVeaav7OkilNOAmKBrP2Tzgfdt26oEZhhUgTSiH/MHWxL3DOSMNIA
+         edMEKth5HC0tHdgKKo/f8CCis0dX1yBa5k1MpxL4OcEIee3C12etZpL3Br6QtdHJm7up
+         t7joYDsmFiLOvoCRC93kITdKUD6UOX3A/GTCmSS5PRypA7PGKnTCdp1f2wCIGt+4b99e
+         B5JTxmOfmWTH28zHLT/3I5R5i7QdPLMECyPz8LWxjc055g9TaNwutlmCfrEjcy0VKU2N
+         aPaA==
+X-Gm-Message-State: AAQBX9etnHqEHrFRgYl98EiFHJWbx6QYytTBdFv1Y9R20aUqzJltVB2j
+        A+3Y5c7MIiyky1LaXE3Oap0=
+X-Google-Smtp-Source: AKy350aamNfXjrdleRXHKCW87e/AlADBfBL5Ykcht2rfnwOkDw7oTlMOzLwKwFp3d1HKMch7gEwaxg==
+X-Received: by 2002:a17:90b:1d81:b0:23f:7c82:2468 with SMTP id pf1-20020a17090b1d8100b0023f7c822468mr9357903pjb.31.1680746990495;
+        Wed, 05 Apr 2023 19:09:50 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id p13-20020a17090a348d00b002310ed024adsm2032412pjb.12.2023.04.05.19.09.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Apr 2023 19:09:50 -0700 (PDT)
+Message-ID: <dd5c3875-ad42-d41c-0c21-94472828484a@gmail.com>
+Date:   Thu, 6 Apr 2023 10:09:45 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
+ Nuvoton platform
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230328021912.177301-1-ychuang570808@gmail.com>
+ <20230328021912.177301-7-ychuang570808@gmail.com>
+ <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
+ <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
+ <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
+ <f39edbfe-75bd-3b39-e325-8d24673a4501@gmail.com>
+ <20230403203349.GA1692472-robh@kernel.org>
+Content-Language: en-US
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <20230403203349.GA1692472-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-To:     linux-serial@vger.kernel.org
-Cc:     Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-After upgrading from 5.16 to 6.1, our board with a MAX14830 started
-producing lots of garbage data over UART. Bisection pointed out commit
-285e76fc049c as the culprit. That patch tried to replace hand-written
-code which I added in 2b4bac48c1084 ("serial: max310x: Use batched reads
-when reasonably safe") with the generic regmap infrastructure for
-batched operations.
 
-Unfortunately, the `regmap_raw_read` and `regmap_raw_write` which were
-used are actually functions which perform IO over *multiple* registers.
-That's not what is needed for accessing these Tx/Rx FIFOs; the
-appropriate functions are the `_noinc_` versions, not the `_raw_` ones.
 
-Fix this regression by using `regmap_noinc_read()` and
-`regmap_noinc_write()` along with the necessary `regmap_config` setup;
-with this patch in place, our board communicates happily again. Since
-our board uses SPI for talking to this chip, the I2C part is completely
-untested.
+On 2023/4/4 上午 04:33, Rob Herring wrote:
+> On Fri, Mar 31, 2023 at 10:15:16AM +0800, Jacky Huang wrote:
+>>
+>> On 2023/3/30 下午 09:25, Krzysztof Kozlowski wrote:
+>>> On 30/03/2023 12:41, Jacky Huang wrote:
+>>>> Dear Rob,
+>>>>
+>>>>
+>>>> On 2023/3/29 下午 09:07, Rob Herring wrote:
+>>>>> On Mon, Mar 27, 2023 at 9:19 PM Jacky Huang <ychuang570808@gmail.com> wrote:
+>>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>>>>
+>>>>>> Rename the bindings/arm/npcm directory as nuvoton.
+>>>>>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
+>>>>>> Add initial bindings for ma35d1 series development boards.
+>>>>>>
+>>>>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>>>>> ---
+>>>>>>     .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
+>>>>>>     .../nuvoton,npcm-gcr.yaml}                    |  2 +-
+>>>>>>     .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
+>>>>>>     3 files changed, 32 insertions(+), 2 deletions(-)
+>>>>>>     create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+>>>>>>     rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
+>>>>> Since you are moving it, this one should be moved to bindings/soc/nuvoton/
+>>>>>
+>>>>>>     rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
+>>>> OK, I will move "Documentation/devicetree/bindings/arm/npcm" to
+>>>> "Documentation/devicetree/bindings/soc/nuvoton".
+>>> To clarify - Rob asked *this one*. Not all.
+> nuvoton,gcr.yaml is what should be moved to bindings/soc/... The rest
+> are the correct locations.
+>
+>>>
+>>>
+>>> Best regards,
+>>> Krzysztof
+>>>
+>> Dear Krzysztof,
+>>
+>> I am sorry that still cannot get it exactly.
+>>
+>> 1. Just only submit  the nuvoton,ma35d1.yaml to
+>> Documentation/devicetree/bindings/soc/nuvoton/nuvoton,ma35d1.yaml
+>>      and keep Documentation/devicetree/bindings/arm/npcm unchanged
+>>
+>> 2. Move the directory "Documentation/devicetree/bindings/arm/npcm" to
+>> "Documentation/devicetree/bindings/soc/nuvoton"
+>>     and submit  the nuvoton,ma35d1.yaml to
+>> "Documentation/devicetree/bindings/soc/nuvoton"
+>>
+>> I should do 1 or 2?  Thank you very much.
+> Neither.
+>
+> Arm board and soc root node bindings go in bindings/arm/...
+>
+> Miscellaneous system registers that don't fit into any other bindings/*
+> subsystem directory go in bindings/soc/
+>
+> Rob
 
-Fixes: 285e76fc049c serial: max310x: use regmap methods for SPI batch operations
-Signed-off-by: Jan Kundrát <jan.kundrat@cesnet.cz>
-Cc: stable@vger.kernel.org
----
- drivers/tty/serial/max310x.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+Dear Rob,
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index c82391c928cb..47520d4a381f 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -529,6 +529,11 @@ static bool max310x_reg_precious(struct device *dev, unsigned int reg)
- 	return false;
- }
- 
-+static bool max310x_reg_noinc(struct device *dev, unsigned int reg)
-+{
-+	return reg == MAX310X_RHR_REG;
-+}
-+
- static int max310x_set_baud(struct uart_port *port, int baud)
- {
- 	unsigned int mode = 0, div = 0, frac = 0, c = 0, F = 0;
-@@ -658,14 +663,14 @@ static void max310x_batch_write(struct uart_port *port, u8 *txbuf, unsigned int
- {
- 	struct max310x_one *one = to_max310x_port(port);
- 
--	regmap_raw_write(one->regmap, MAX310X_THR_REG, txbuf, len);
-+	regmap_noinc_write(one->regmap, MAX310X_THR_REG, txbuf, len);
- }
- 
- static void max310x_batch_read(struct uart_port *port, u8 *rxbuf, unsigned int len)
- {
- 	struct max310x_one *one = to_max310x_port(port);
- 
--	regmap_raw_read(one->regmap, MAX310X_RHR_REG, rxbuf, len);
-+	regmap_noinc_read(one->regmap, MAX310X_RHR_REG, rxbuf, len);
- }
- 
- static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen)
-@@ -1480,6 +1485,10 @@ static struct regmap_config regcfg = {
- 	.writeable_reg = max310x_reg_writeable,
- 	.volatile_reg = max310x_reg_volatile,
- 	.precious_reg = max310x_reg_precious,
-+	.writeable_noinc_reg = max310x_reg_noinc,
-+	.readable_noinc_reg = max310x_reg_noinc,
-+	.max_raw_read = MAX310X_FIFO_SIZE,
-+	.max_raw_write = MAX310X_FIFO_SIZE,
- };
- 
- #ifdef CONFIG_SPI_MASTER
-@@ -1565,6 +1574,10 @@ static struct regmap_config regcfg_i2c = {
- 	.volatile_reg = max310x_reg_volatile,
- 	.precious_reg = max310x_reg_precious,
- 	.max_register = MAX310X_I2C_REVID_EXTREG,
-+	.writeable_noinc_reg = max310x_reg_noinc,
-+	.readable_noinc_reg = max310x_reg_noinc,
-+	.max_raw_read = MAX310X_FIFO_SIZE,
-+	.max_raw_write = MAX310X_FIFO_SIZE,
- };
- 
- static const struct max310x_if_cfg max310x_i2c_if_cfg = {
--- 
-2.39.2
+Thank you very much. I got it now.
+
+
+Best regards,
+Jacky Huang
+
 
 
