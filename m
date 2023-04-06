@@ -2,156 +2,203 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 726E4C7618D
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 02:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 954F9C7619A
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Apr 2023 02:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231232AbjDFCJx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Apr 2023 22:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41554 "EHLO
+        id S234555AbjDFCqK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Apr 2023 22:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbjDFCJw (ORCPT
+        with ESMTP id S234768AbjDFCpK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Apr 2023 22:09:52 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FA44EEB;
-        Wed,  5 Apr 2023 19:09:51 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id mp3-20020a17090b190300b0023fcc8ce113so41445536pjb.4;
-        Wed, 05 Apr 2023 19:09:51 -0700 (PDT)
+        Wed, 5 Apr 2023 22:45:10 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A169034;
+        Wed,  5 Apr 2023 19:45:09 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id j13so35999618pjd.1;
+        Wed, 05 Apr 2023 19:45:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680746990;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jDj+eIZP1IBl3cm+vrX+HXVFRJPLqgSdyxr8utmbIjE=;
-        b=h6Q+NXLQyIEa36PKr/1WzGbsDNDfKEYm+dOiV/ApaoLGt+7ZNuBj8Irn7W504d10ly
-         5emknI7Pfxxinw9eMxy/md4IIN6GkWotv04pDaUoIlP+J8MAL++Pj6u0koDVFUgu3stS
-         FoOZEum5KCkP+Vr0ryyZqdE2GGWmd3nKrgSqdSn1ft2BCuKrT/tuS7rCOMBWQ6XWKhEj
-         pT7LEyVOEz33oTEBOw4LQ9Rbdk545ytJ4nVaB3VftzqN2b/uaTt7UoQlsTUuxSTE7tv7
-         fxf24juZkHTuL8zitk5WpMF61A9/oKTV3hRY5Dg7PeHAtlKSguoRQi53XrIhgDZT/trc
-         0B1g==
+        d=gmail.com; s=20210112; t=1680749108;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sKxOWbr7rDn/qnvB6FljLF8vj/aIxvx/70FeQshH1rE=;
+        b=PggzUDOpVU+7UjjH7jcpIcnIkrXHNAPPpkqDPITfJESnV+tSnMfKo6ZDROKEB2bMDC
+         vh5CI8iNy/2VbDAZcheeq6DhUaImFn7l5/HC323FAak6EEtBg/UFsB7MGwAfYpsd0oLd
+         PWzxXWTakUmUVOkFIoxpgnQs0QlIToYpY8SiCLoIoZIqpTdQc37Hzb7Pb6X/N6SzdXId
+         m1MsiNk2cK99oPSvXzngEb0aCx7ymqV0KsX6Gradsv7rYGKxVrY379ddEAkGD/bBLuiX
+         iKKgE8HzVv/0bCpZx2ZTjXP7SPHBBKc0T2ytUNbPY96ltPfRLxvAD2MIuWpDGV6dmKat
+         4sjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680746990;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jDj+eIZP1IBl3cm+vrX+HXVFRJPLqgSdyxr8utmbIjE=;
-        b=JkS6CcZhJ/F3ob5BSXA8oGYiG9yhGJWMGeZa2v5M4NNKbAGRBjZ8ZBD17PfoImf6xJ
-         BT3fuN6SYctGYaUnVeaav7OkilNOAmKBrP2Tzgfdt26oEZhhUgTSiH/MHWxL3DOSMNIA
-         edMEKth5HC0tHdgKKo/f8CCis0dX1yBa5k1MpxL4OcEIee3C12etZpL3Br6QtdHJm7up
-         t7joYDsmFiLOvoCRC93kITdKUD6UOX3A/GTCmSS5PRypA7PGKnTCdp1f2wCIGt+4b99e
-         B5JTxmOfmWTH28zHLT/3I5R5i7QdPLMECyPz8LWxjc055g9TaNwutlmCfrEjcy0VKU2N
-         aPaA==
-X-Gm-Message-State: AAQBX9etnHqEHrFRgYl98EiFHJWbx6QYytTBdFv1Y9R20aUqzJltVB2j
-        A+3Y5c7MIiyky1LaXE3Oap0=
-X-Google-Smtp-Source: AKy350aamNfXjrdleRXHKCW87e/AlADBfBL5Ykcht2rfnwOkDw7oTlMOzLwKwFp3d1HKMch7gEwaxg==
-X-Received: by 2002:a17:90b:1d81:b0:23f:7c82:2468 with SMTP id pf1-20020a17090b1d8100b0023f7c822468mr9357903pjb.31.1680746990495;
-        Wed, 05 Apr 2023 19:09:50 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id p13-20020a17090a348d00b002310ed024adsm2032412pjb.12.2023.04.05.19.09.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Apr 2023 19:09:50 -0700 (PDT)
-Message-ID: <dd5c3875-ad42-d41c-0c21-94472828484a@gmail.com>
-Date:   Thu, 6 Apr 2023 10:09:45 +0800
+        d=1e100.net; s=20210112; t=1680749108;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sKxOWbr7rDn/qnvB6FljLF8vj/aIxvx/70FeQshH1rE=;
+        b=1pnNbWW2ZexTTKD4zD8LDjc/pksRDsHFVn6d6hG004/lWdxtQuA+33O+UKt7q8ce41
+         TjJoYUzCN2RfLWZKGk+PQnZpoiD1e0JTcQx9plXCMrESqBLMZZVrs1hHmw6STgSPY2Rt
+         aVnjp575Wb/H9wOdfEZf7ApCPAxIJmEDtAOB++zeo0FCKe1FVLsFUe/25RR3gxAR61/A
+         GonfqlN4BnTA2JNEGvXFI/9jU7v0VNe66yfLl0Rl03d52ivMvkGpLB90csppi3jKfOp8
+         3h/Myb5oFlegcPN0XamE+WRlEQF9d8592WKxP+FFg8KvMiVyhEq4/ujX+L5sy5gyUv/K
+         VbQA==
+X-Gm-Message-State: AAQBX9epVo1eLQ93ihH930Y7lKQz2It6NhDP9/bzb20UlBx2F0lfBAH9
+        yC6fla7EZk61DwbcniUKSRI=
+X-Google-Smtp-Source: AKy350al49pn09cKU9mnQ5KGBI7hgLFHlH//fL84AGw/2LD0tpEz2STzpoTTsgOtQdFN/hoMzcqu+Q==
+X-Received: by 2002:a05:6a20:6690:b0:d9:e45d:95da with SMTP id o16-20020a056a20669000b000d9e45d95damr1425321pzh.20.1680749108397;
+        Wed, 05 Apr 2023 19:45:08 -0700 (PDT)
+Received: from localhost.localdomain ([43.155.90.222])
+        by smtp.googlemail.com with ESMTPSA id 3-20020aa79243000000b0062e12f945adsm86374pfp.135.2023.04.05.19.45.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 05 Apr 2023 19:45:07 -0700 (PDT)
+From:   juanfengpy@gmail.com
+X-Google-Original-From: caelli@tencent.com
+To:     jirislaby@kernel.org, gregkh@linuxfoundation.org
+Cc:     ilpo.jarvinen@linux.intel.com, bagasdotme@gmail.com,
+        benbjiang@tencent.com, robinlai@tencent.com,
+        linux-serial@vger.kernel.org, juanfengpy@gmail.com,
+        Hui Li <caelli@tencent.com>, <stable@vger.kernel.org>
+Subject: [PATCH v9] tty: fix hang on tty device with no_room set
+Date:   Thu,  6 Apr 2023 10:44:50 +0800
+Message-Id: <1680749090-14106-1-git-send-email-caelli@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1679037946-18156-1-git-send-email-caelli@tencent.com>
+References: <1679037946-18156-1-git-send-email-caelli@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v6 06/12] dt-bindings: arm: Add initial bindings for
- Nuvoton platform
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-References: <20230328021912.177301-1-ychuang570808@gmail.com>
- <20230328021912.177301-7-ychuang570808@gmail.com>
- <CAL_JsqKrrWyOKGUAaT-8r-nKvtS5f_gHAhE5=XaXuGtuYC2gCw@mail.gmail.com>
- <a497eb9c-8279-d4e9-3b8d-537ffa1f7522@gmail.com>
- <cfa5904e-8ae4-6d39-ed4e-35d1b55e2b04@linaro.org>
- <f39edbfe-75bd-3b39-e325-8d24673a4501@gmail.com>
- <20230403203349.GA1692472-robh@kernel.org>
-Content-Language: en-US
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <20230403203349.GA1692472-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Hui Li <caelli@tencent.com>
 
+It is possible to hang pty devices in this case, the reader was
+blocking at epoll on master side, the writer was sleeping at
+wait_woken inside n_tty_write on slave side, and the write buffer
+on tty_port was full, we found that the reader and writer would
+never be woken again and blocked forever.
 
-On 2023/4/4 上午 04:33, Rob Herring wrote:
-> On Fri, Mar 31, 2023 at 10:15:16AM +0800, Jacky Huang wrote:
->>
->> On 2023/3/30 下午 09:25, Krzysztof Kozlowski wrote:
->>> On 30/03/2023 12:41, Jacky Huang wrote:
->>>> Dear Rob,
->>>>
->>>>
->>>> On 2023/3/29 下午 09:07, Rob Herring wrote:
->>>>> On Mon, Mar 27, 2023 at 9:19 PM Jacky Huang <ychuang570808@gmail.com> wrote:
->>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>>>>
->>>>>> Rename the bindings/arm/npcm directory as nuvoton.
->>>>>> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
->>>>>> Add initial bindings for ma35d1 series development boards.
->>>>>>
->>>>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->>>>>> ---
->>>>>>     .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
->>>>>>     .../nuvoton,npcm-gcr.yaml}                    |  2 +-
->>>>>>     .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
->>>>>>     3 files changed, 32 insertions(+), 2 deletions(-)
->>>>>>     create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
->>>>>>     rename Documentation/devicetree/bindings/arm/{npcm/nuvoton,gcr.yaml => nuvoton/nuvoton,npcm-gcr.yaml} (93%)
->>>>> Since you are moving it, this one should be moved to bindings/soc/nuvoton/
->>>>>
->>>>>>     rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
->>>> OK, I will move "Documentation/devicetree/bindings/arm/npcm" to
->>>> "Documentation/devicetree/bindings/soc/nuvoton".
->>> To clarify - Rob asked *this one*. Not all.
-> nuvoton,gcr.yaml is what should be moved to bindings/soc/... The rest
-> are the correct locations.
->
->>>
->>>
->>> Best regards,
->>> Krzysztof
->>>
->> Dear Krzysztof,
->>
->> I am sorry that still cannot get it exactly.
->>
->> 1. Just only submit  the nuvoton,ma35d1.yaml to
->> Documentation/devicetree/bindings/soc/nuvoton/nuvoton,ma35d1.yaml
->>      and keep Documentation/devicetree/bindings/arm/npcm unchanged
->>
->> 2. Move the directory "Documentation/devicetree/bindings/arm/npcm" to
->> "Documentation/devicetree/bindings/soc/nuvoton"
->>     and submit  the nuvoton,ma35d1.yaml to
->> "Documentation/devicetree/bindings/soc/nuvoton"
->>
->> I should do 1 or 2?  Thank you very much.
-> Neither.
->
-> Arm board and soc root node bindings go in bindings/arm/...
->
-> Miscellaneous system registers that don't fit into any other bindings/*
-> subsystem directory go in bindings/soc/
->
-> Rob
+The problem was caused by a race between reader and kworker:
+n_tty_read(reader):  n_tty_receive_buf_common(kworker):
+copy_from_read_buf()|
+                    |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
+                    |room <= 0
+n_tty_kick_worker() |
+                    |ldata->no_room = true
 
-Dear Rob,
+After writing to slave device, writer wakes up kworker to flush
+data on tty_port to reader, and the kworker finds that reader
+has no room to store data so room <= 0 is met. At this moment,
+reader consumes all the data on reader buffer and calls
+n_tty_kick_worker to check ldata->no_room which is false and
+reader quits reading. Then kworker sets ldata->no_room=true
+and quits too.
 
-Thank you very much. I got it now.
+If write buffer is not full, writer will wake kworker to flush data
+again after following writes, but if write buffer is full and writer
+goes to sleep, kworker will never be woken again and tty device is
+blocked.
 
+This problem can be solved with a check for read buffer size inside
+n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
+is true, a call to n_tty_kick_worker is necessary to keep flushing
+data to reader.
 
-Best regards,
-Jacky Huang
+Cc: <stable@vger.kernel.org>
+Fixes: 42458f41d08f ("n_tty: Ensure reader restarts worker for next reader")
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Hui Li <caelli@tencent.com>
+---
+Patch changelogs between v1 and v2:
+	-add barrier inside n_tty_read and n_tty_receive_buf_common;
+	-comment why barrier is needed;
+	-access to ldata->no_room is changed with READ_ONCE and WRITE_ONCE;
+Patch changelogs between v2 and v3:
+	-in function n_tty_receive_buf_common, add unlikely to check
+	 ldata->no_room, eg: if (unlikely(ldata->no_room)), and READ_ONCE
+	 is removed here to get locality;
+	-change comment for barrier to show the race condition to make
+	 comment easier to understand;
+Patch changelogs between v3 and v4:
+	-change subject from 'tty: fix a possible hang on tty device' to
+	 'tty: fix hang on tty device with no_room set' to make subject 
+	 more obvious;
+Patch changelogs between v4 and v5:
+	-name is changed from cael to caelli, li is added as the family
+	 name and caelli is the fullname.
+Patch changelogs between v5 and v6:
+	-change from and Signed-off-by, from 'caelli <juanfengpy@gmail.com>'
+	 to 'caelli <caelli@tencent.com>', later one is my corporate address.
+Patch changelogs between v6 and v7:
+	-change name from caelli to 'Hui Li', which is my name in chinese.
+	-the comment for barrier is improved, and a Fixes and Reviewed-by
+	 tags is added.
+Patch changelogs between v7 and v8:
+	-Simplify the comments for barriers.
+Patch changelogs between v8 and v9:
+	-change the commit messages as suggested by Bagas Sanjaya.
 
+ drivers/tty/n_tty.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index c8f56c9b1a1c..4dff2f34e2d0 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -204,8 +204,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+ 	/* Did the input worker stop? Restart it */
+-	if (unlikely(ldata->no_room)) {
+-		ldata->no_room = 0;
++	if (unlikely(READ_ONCE(ldata->no_room))) {
++		WRITE_ONCE(ldata->no_room, 0);
+ 
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+ 				"scheduling with invalid itty\n");
+@@ -1698,7 +1698,7 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
+ 			if (overflow && room < 0)
+ 				ldata->read_head--;
+ 			room = overflow;
+-			ldata->no_room = flow && !room;
++			WRITE_ONCE(ldata->no_room, flow && !room);
+ 		} else
+ 			overflow = 0;
+ 
+@@ -1729,6 +1729,17 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
+ 	} else
+ 		n_tty_check_throttle(tty);
+ 
++	if (unlikely(ldata->no_room)) {
++		/*
++		 * Barrier here is to ensure to read the latest read_tail in
++		 * chars_in_buffer() and to make sure that read_tail is not loaded
++		 * before ldata->no_room is set.
++		 */
++		smp_mb();
++		if (!chars_in_buffer(tty))
++			n_tty_kick_worker(tty);
++	}
++
+ 	up_read(&tty->termios_rwsem);
+ 
+ 	return rcvd;
+@@ -2282,8 +2293,14 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 		if (time)
+ 			timeout = time;
+ 	}
+-	if (old_tail != ldata->read_tail)
++	if (old_tail != ldata->read_tail) {
++		/*
++		 * Make sure no_room is not read in n_tty_kick_worker()
++		 * before setting ldata->read_tail in copy_from_read_buf().
++		 */
++		smp_mb();
+ 		n_tty_kick_worker(tty);
++	}
+ 	up_read(&tty->termios_rwsem);
+ 
+ 	remove_wait_queue(&tty->read_wait, &wait);
+-- 
+2.27.0
 
