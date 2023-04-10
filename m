@@ -2,159 +2,186 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E195C7EE20
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Apr 2023 20:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BE2C76196
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Apr 2023 21:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229971AbjDJU7L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Apr 2023 16:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46160 "EHLO
+        id S229660AbjDJVNG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Apr 2023 17:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbjDJU7G (ORCPT
+        with ESMTP id S229591AbjDJVNF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Apr 2023 16:59:06 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47F31986;
-        Mon, 10 Apr 2023 13:59:03 -0700 (PDT)
-Received: from stefanw-SCHENKER ([37.4.248.58]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1Mbies-1qMxZc4AEY-00dHHu; Mon, 10 Apr 2023 22:58:27 +0200
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
+        Mon, 10 Apr 2023 17:13:05 -0400
+Received: from mx0b-00010702.pphosted.com (mx0b-00010702.pphosted.com [148.163.158.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FF51BF7;
+        Mon, 10 Apr 2023 14:13:04 -0700 (PDT)
+Received: from pps.filterd (m0098778.ppops.net [127.0.0.1])
+        by mx0b-00010702.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33AFDYcd008151;
+        Mon, 10 Apr 2023 16:12:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ni.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : content-type : mime-version; s=PPS11062020;
+ bh=uf8rVM6G8gt2Yd75V9JHp3LKgDW0FZIRYo4qK7Bcmvs=;
+ b=LJtD9Zwfn4eH/1WUz1SUUD+KYdnAyiqJmzjP2bm2Q3rpesWcCGBKqHMDP7p6EuufFs/8
+ SPlK8CWZK9OurZHuCyXkWKgQ4KeF13xNW4plFx5MHOkeQovf12VNHMNqBtMRxkuXT9ga
+ rUR5EGZBk7kmPBdJEfzI7iXzey4YUNgnlDWIiloNPCCQITK6s0GSAEJy1gGPKGSb3MsJ
+ rr58prLEatqiP7Jk3jjJPRl+3n6CZDGjb4Z5aImw1c10j7UcVG9bB6pT/n/zqLLMEfXB
+ +3WNwDgp9fS3ovz9Q/Pqjo1hQty/gV1Quk6DHtZ72ufqdlAHj0dayODtsDwQ053FvYd+ sg== 
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
+        by mx0b-00010702.pphosted.com (PPS) with ESMTPS id 3pu5832yj9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Apr 2023 16:12:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tu/9p8UrYFzXMhxai5gRHdO4GuZZ7VxM1IiO1lwfVG9F0uZV+wybo6VCHSOD8d6RYWu7F2p9sQDE6kgBBPGno4IWX/SaLCUr+eRWPzx90bemRxpepr6TQMyTmupNVhutljoiDWi0HTHKZjGCFy0jrg5QTBGSeHbqb7yj6h4bKeNZvIwiKsM5Qatc8m9ar/VZq7R090K1tzFfrZW7a/JQmJnabbS2wmynIZmjCwoIW8UKpXVJdMjR2mKB7XPz0JCDbO0pKjJKEm9rdALs7/UHS/fdzhVA+6X34puRhKVa92KI8y3jNjl47jI/MtMjulzwz55HnRFqhLbNjEfthEUqzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uf8rVM6G8gt2Yd75V9JHp3LKgDW0FZIRYo4qK7Bcmvs=;
+ b=WVWZHv8jm5i02aMUvdPTwrMzBAEiD+jdxYlkf+PxBzNVyA7JYIv9BW2JcskaH9j03oRhDNOW+F66GDo1ja5DItmg3EjDjAMwikPPvyTLfSyblCKyRabYoUqL+QlmJhJz7JvcMFEWCdq0ykw7MXxv4hh0cB6M0UlXk9PCnHKAkPEU1lUepW6NwUuKBwoPAS2MJJfANh6lHkjyBPyM7aRST4cPbRT3m6l4a0pOHNF6Lt1rKVA8N6YjtIifELTyVZwP5TqfKLZ6wqFFzLwaonGgALI5qhhS5Aor8fFWByBLQify15Lw2lN4ryF/VgMBz6cCEC9OQ2P94ZcV9F0W9pedEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ni.com; dmarc=pass action=none header.from=ni.com; dkim=pass
+ header.d=ni.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=nio365.onmicrosoft.com; s=selector2-nio365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uf8rVM6G8gt2Yd75V9JHp3LKgDW0FZIRYo4qK7Bcmvs=;
+ b=ptsoTb4vVNH6gGoG2ybAFl6GmyU3TTSSkJjNZ7oLolViSAxQZ6FePAp7EnriSTF84YdpMsZWuEx9pse4RA9R62jN7rwBEKm+SPaV8KBYpiiU/zvZ9M4FPPyLXAUu3VI8F+oru6fypxpH3IrAMDF3IC97g7THzT6G/7mN7jaF/bI=
+Received: from SN6PR04MB4973.namprd04.prod.outlook.com (2603:10b6:805:91::30)
+ by SJ0PR04MB8568.namprd04.prod.outlook.com (2603:10b6:a03:4e7::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Mon, 10 Apr
+ 2023 21:12:49 +0000
+Received: from SN6PR04MB4973.namprd04.prod.outlook.com
+ ([fe80::bb22:1910:9f48:1f00]) by SN6PR04MB4973.namprd04.prod.outlook.com
+ ([fe80::bb22:1910:9f48:1f00%7]) with mapi id 15.20.6254.033; Mon, 10 Apr 2023
+ 21:12:49 +0000
+From:   Brenda Streiff <brenda.streiff@ni.com>
+Cc:     ilpo.jarvinen@linux.intel.com,
+        Brenda Streiff <brenda.streiff@ni.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
-        linux-imx@nxp.com, "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pm@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH V2 5/6] ARM: dts: imx: Adjust dma-apbh node name
-Date:   Mon, 10 Apr 2023 22:58:02 +0200
-Message-Id: <20230410205803.45853-6-stefan.wahren@i2se.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230410205803.45853-1-stefan.wahren@i2se.com>
-References: <20230410205803.45853-1-stefan.wahren@i2se.com>
-MIME-Version: 1.0
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 tty-next 0/2] serial: Add driver for National Instruments UARTs
+Date:   Mon, 10 Apr 2023 16:11:49 -0500
+Message-Id: <20230410211152.94332-1-brenda.streiff@ni.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230329154235.615349-1-brenda.streiff@ni.com>
+References: <20230329154235.615349-1-brenda.streiff@ni.com>
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:dFgTmzeQNO8zmrMdWcR6j1768YcKmhjLtnhqM0x6Xny26HEQOmo
- GV38Wx261D8cXTYuPbkPCQ79QGk0YQoMKlnR7qoiM+aGXVbNL7MGgf9uvLCWS0n4LLlhDlj
- 8dinS22sNnhS5r9lkcsNx5ny6rt8oXJ6OxERSmJjAHvQE5EbqViPLa5ml9j4v4fwgHBDo6g
- JGSVAew/YneAyT10h7Tfg==
-UI-OutboundReport: notjunk:1;M01:P0:nMwNnZNfjPc=;sHCyT8PgYZQuE/55DCBO5aIcaGQ
- XON7AHXAS6nlLtkpUpExmee4BcKAPmmh4lUnOQfpTXcvGDGX2KOOGvfXnNgUeRoy3qG21OL/V
- 151IzrdXt2dK9hZs0/x/NvHwYSs+JJqlnYzW+HDSCRg4oMAY4DiG/tbp7FvVHIU15IPJQh9le
- K6GVxNEQfCP1t8VlUwYr0OCtZNEWpBGOhB3tl6viTRkJcAcTomfCqcE8lGc30wkrxMsIurGu0
- a/OQts95Xf4G7+a3nzMPvt615AQWWRM3QDefkSxVdc9UF+ie6Pm6h7lor8XwzwSmM8pxBfkwN
- yM0m9B1S2xo6MkubUVL2Fj6o4+tTRZCZvZaAvzcLU9crTOQoWEaRvk+sRCmCfc2HqnX0j1iKb
- LKg4ENcKgfTRMWlJcly3ky+wFK79LR6qJOXY//PEoewFZSyF+7J5OTfbW7f4Bu3Dne3W7UY0r
- oIaZRus/XfI8HS+KWWPFE4/RlUYuLk2SMXsVTgzDNxsJG0liqmMQmE+kKBfuOPXZhvzY+F9Pz
- eNOjOGSknF5DQwJ6nssxfrluXQtagEDDrIWLnRotmrBhcT/+IVuefPLxhr72mg827ZEcLTl6p
- cIKJgc9LmB5VBE02RNEZBzS55pHA2t0J+f7AhEja7hAKWhfL9bf7oM78/oKblwniHnYQvwlws
- MqOAXFneLLFGz7QnpIapFEN832gmjHy61Z15Eq2kjw==
+Content-Type: text/plain
+X-ClientProxiedBy: SA9PR03CA0027.namprd03.prod.outlook.com
+ (2603:10b6:806:20::32) To SN6PR04MB4973.namprd04.prod.outlook.com
+ (2603:10b6:805:91::30)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR04MB4973:EE_|SJ0PR04MB8568:EE_
+X-MS-Office365-Filtering-Correlation-Id: 038dbc69-0879-4976-8921-08db3a08569f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZBmQpyx7zWOvDaq1HnCcdF78RUaM1MC+Z/QeSpD6CCDti8XZHq4+SVFrJ6xhBS87XPzmmZxyGABIk1CLGB0kY3e9gELIjT4rdmjAGzQfciNMmWVzzHhhtL/CyTOyrH9goZ2nmusBwkZtTYT2fJV/knLo2Efzuaa2AMUh3pcforVK5yyCkYnwegMubanqfUh2dRzgkOUkaLI/h/Px7nPf59ylmbbA2RdcpwEZCjVqZrUm3EAM4dUfuC8iO3ji73mUOC5HHesuiAfvSTkvWrI3+Md+thjdYnfrrV6ejWt7xc3/m8R5bX3ewxwWDioFf8aENZpjBhUAsQt37L/vpvt5r/ej5vxaOXunWMBDQindPBSdqHbgZXsZfg68LaOZi+kmWERfW9xDdvsCcMq07TGVRVqiuFCskytzs2+BVEpWksW63gxaTKsNhIOzLND9/uE5N4Zp/eUPWZDLxgGBJQ+CgF8Y4u1GXQGIxrf7vglZs3QwLwRMDqdsY0g8gR+y9/9b73cFDV16ipOAVp0vSSqvNRRPvhPTSsV2yzojIpg47gcG5e2pEL6cCidRJE/PvCrYcYVxh5FmuaS0wsmAadMC1mxlM/3tPufN8QBwv8AMbYs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR04MB4973.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(346002)(376002)(366004)(396003)(109986019)(451199021)(66476007)(66556008)(38100700002)(8676002)(66946007)(4326008)(5660300002)(2616005)(44832011)(8936002)(2906002)(41300700001)(54906003)(86362001)(26005)(186003)(316002)(36756003)(478600001)(1076003)(6486002)(6506007)(6512007)(266003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yD9GNp26j5d4lNqO7Mi7PyZcEXrq0xm9dlpSMMYgfy343kY+y6Cv+d1RH1LX?=
+ =?us-ascii?Q?ar0oAXoUFDcLzENJur6OXHhrFWTrTsIl31GP7tfCPTLBr061DVnPe+2g/byy?=
+ =?us-ascii?Q?8WtlddAl9tD/VZHg4EKyDfNtBZu09iTAgaZq2c9Nfip5DQ48SUvnWk3Lh9q1?=
+ =?us-ascii?Q?LiB56htKlMFzFharSWfCd1G2RcE29NhU1N4A9TZA+QXfuG46sbx5tZs6yMfI?=
+ =?us-ascii?Q?q6wtUmUIfmlvQZCKXd46TYwHnen14ogDsvZ9VUYGAT3ZbVg9XnzjvcXJEM38?=
+ =?us-ascii?Q?ZWiBxno4rFWoQ+L4zcPqpuSULUBGISsr6XCoKNGBSybZWNzVsavomwcRZoJ6?=
+ =?us-ascii?Q?vWbY57hHOAXGiwGJ5wE9mulGc/RidpB5B1pXHH/M3j7ErjydjMNF18z7uRU4?=
+ =?us-ascii?Q?0QE9EkwrJcankLz76nStJZm7ahltnkb44UTaZ19CXU8mSexCIJXeXSUH2ZcS?=
+ =?us-ascii?Q?+Df7fYMXeysxl1fNcWI1T8h7oUOhzTEkOnnm5vp2S8bLY6uHD1XqTWSI/ri5?=
+ =?us-ascii?Q?GoTbhAjjmxFtpXBAe1BNvQO5cP6PEIL5l27bK+iOJwKlAtVJh9IavTL7FgWc?=
+ =?us-ascii?Q?dyf4NUUQWmR9kBWIB+BwbcU4W/OBC05URout2NOb6gwft/Ejbrcx7tBwgUJF?=
+ =?us-ascii?Q?Ou1tTDZjfa0bldpEUnzssjsa8Ah5FLNAPgH/kc5n9+is8smW0QU3C1O8/tVG?=
+ =?us-ascii?Q?r8GZqkF9ZFaEWzD5pQzemOAahEX3J8sKRtKeS9j/YzvJsaH/+vbD/uksXfV6?=
+ =?us-ascii?Q?KFLqccivri8UEW7UCYAIeIZyBiIhK+dloFRgqvpDTzJJPFHjMc+w7uaJqJ2k?=
+ =?us-ascii?Q?1poDDjj9KsjtVf0pyffPKiqMX+lXxMCW/D0dviMgOzmBuSKGKO187z2lbC01?=
+ =?us-ascii?Q?+UO62zcIpFWLfNQNci/dsaLu5meYAsK7XDaGqi6bpqvu2o7YLOHFZEvsnxhn?=
+ =?us-ascii?Q?QVtKT3Lj79QdYuyoVy0dgdS47c/RIuFMocGrymwbSOb5clu8VhFBzP75apv0?=
+ =?us-ascii?Q?R77rsfMz3Q35xjFZuRmDwbxy34AiszQB0eEblIFeNRjXuVxgMWRnp0svVJXD?=
+ =?us-ascii?Q?bs0gdvzk+vpJQ/emaud9O98mV6Qn9xKTfW9A+7FxNT4AgnFa+8j3J7EXB5RJ?=
+ =?us-ascii?Q?uzeidB15hWePbj32U4y3/Bu3+WLeFvHJuqoJE+SkUKnmi/GrmKEZ5ncfqWoG?=
+ =?us-ascii?Q?JTrqvs28Gt6Pq/17IkMa6riw6HvpSVk+bruhUZphyt6poA0cAwucRl12qq5M?=
+ =?us-ascii?Q?gjPf9FuKkMJldR4ujQ69xNcn1nYfexQEwVnnYeJIjDPg7u9ScRfF2xYBUbS1?=
+ =?us-ascii?Q?hE+cdUrH8VcYEL4ZdvLxKDa6BHwhFIt06MotHqOWjsfbMrynkKqqYB83R+Oe?=
+ =?us-ascii?Q?DEwze5IyKQf3r1qylhoUAnrlz0cyB5IUZ9Vgj29tdKBWKB0pwUwvN8eXVrmU?=
+ =?us-ascii?Q?OLceG3WWk5ipyjJoeL4NAKy+b5sTPy5b0jwOroGX7pvhO8/4vinBR6pkB0DE?=
+ =?us-ascii?Q?1xW/rLQ9u/1BwLGDevTr1n83iaKVgn4R7+9M7GhCmMX2GLnvAktX2Vx2bT0D?=
+ =?us-ascii?Q?V331Rq6SP+PMWI7Q9oYeTGJ3oaoL0zkOOa77ZMtt?=
+X-OriginatorOrg: ni.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 038dbc69-0879-4976-8921-08db3a08569f
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR04MB4973.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 21:12:49.2173
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 87ba1f9a-44cd-43a6-b008-6fdb45a5204e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 339yMwG4/cjah9uZvTTyRGHIvHg0suI46JMZongqnw1HcjFlpBGXa2nYeV51a/997Be1+VLfo1T6mLZbg0Bs/Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR04MB8568
+X-Proofpoint-GUID: -tgrRowrQYsQfJEyAp_V6pFjoHHetwwm
+X-Proofpoint-ORIG-GUID: -tgrRowrQYsQfJEyAp_V6pFjoHHetwwm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-10_15,2023-04-06_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=30 bulkscore=0
+ adultscore=0 phishscore=0 mlxlogscore=945 priorityscore=1501
+ malwarescore=0 suspectscore=0 spamscore=0 mlxscore=0 impostorscore=0
+ clxscore=1015 lowpriorityscore=0 classifier=spam adjust=30 reason=mlx
+ scancount=1 engine=8.12.0-2303200000 definitions=main-2304100184
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Currently the dtbs_check generates warnings like this:
+This patch series adds a driver for the 16550-like UARTs on National
+Instruments (NI) embedded controller hardware.
 
-$nodename:0: 'dma-apbh@110000' does not match '^dma-controller(@.*)?$'
+These UARTs have an interface that is compatble with the TL16C550C (for
+which we build on top of 8250_core) but also has extra registers for
+the embedded RS-232/RS-485 tranceiver control circuitry.
 
-So fix all affected dma-apbh node names.
+Changes from v1 -> v2:
+- Schema fixes:
+  - Fix schema to now pass "make DT_CHECKER_FLAGS=-m dt_binding_check"
+  - Rename unprefixed "transceiver" to "ni,serial-port-mode" with a
+    description. Describing this as a "mode" rather than a "transceiver"
+    seems more semantically correct in comparison to other DTs; other
+    schemas with a "transceiver" property (isp1301, lpc32xx-udc) have
+    phandle values, which is not the case here.
+- Driver fixes:
+  - replace C99 integer types with kernel types
+  - reverse christmas tree
+  - stuff PMR mode/cap masks into locals to avoid repetition
+  - wrap ACPI match table in #ifdef CONFIG_ACPI to avoid build error on
+    non-ACPI platforms
+  - NI 16550s are only on x86 and Zynq-7000 NI devices, so constrain the
+    Kconfig "depends" to only present it as an option to users on those
+    architectures, to prevent it from being needlessly built on platforms
+    that would not possibly have them.
+  - document module name
+  - add check for "ni,serial-port-mode" property; "transceiver" remains
+    for sake of compatibility with _DSD ACPI objects for NI controller
+    BIOSes currently in-field (but also DSD-properties-rules.rst says
+    that _DSD properties don't have to be identical to DT bindings.)
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- arch/arm/boot/dts/imx23.dtsi   | 2 +-
- arch/arm/boot/dts/imx28.dtsi   | 2 +-
- arch/arm/boot/dts/imx6qdl.dtsi | 2 +-
- arch/arm/boot/dts/imx6sx.dtsi  | 2 +-
- arch/arm/boot/dts/imx6ul.dtsi  | 2 +-
- arch/arm/boot/dts/imx7s.dtsi   | 2 +-
- 6 files changed, 6 insertions(+), 6 deletions(-)
+Brenda Streiff (2):
+  dt-bindings: serial: ni,ni16650: add bindings
+  serial: 8250: add driver for NI UARTs
 
-diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
-index d19508c8f9ed..a3668a0827fc 100644
---- a/arch/arm/boot/dts/imx23.dtsi
-+++ b/arch/arm/boot/dts/imx23.dtsi
-@@ -59,7 +59,7 @@ icoll: interrupt-controller@80000000 {
- 				reg = <0x80000000 0x2000>;
- 			};
- 
--			dma_apbh: dma-apbh@80004000 {
-+			dma_apbh: dma-controller@80004000 {
- 				compatible = "fsl,imx23-dma-apbh";
- 				reg = <0x80004000 0x2000>;
- 				interrupts = <0 14 20 0
-diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
-index a8d3c3113e0f..29e37b1fae66 100644
---- a/arch/arm/boot/dts/imx28.dtsi
-+++ b/arch/arm/boot/dts/imx28.dtsi
-@@ -78,7 +78,7 @@ hsadc: hsadc@80002000 {
- 				status = "disabled";
- 			};
- 
--			dma_apbh: dma-apbh@80004000 {
-+			dma_apbh: dma-controller@80004000 {
- 				compatible = "fsl,imx28-dma-apbh";
- 				reg = <0x80004000 0x2000>;
- 				interrupts = <82 83 84 85
-diff --git a/arch/arm/boot/dts/imx6qdl.dtsi b/arch/arm/boot/dts/imx6qdl.dtsi
-index b72ec745f6d1..bda182edc589 100644
---- a/arch/arm/boot/dts/imx6qdl.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl.dtsi
-@@ -150,7 +150,7 @@ soc: soc {
- 		interrupt-parent = <&gpc>;
- 		ranges;
- 
--		dma_apbh: dma-apbh@110000 {
-+		dma_apbh: dma-controller@110000 {
- 			compatible = "fsl,imx6q-dma-apbh", "fsl,imx28-dma-apbh";
- 			reg = <0x00110000 0x2000>;
- 			interrupts = <0 13 IRQ_TYPE_LEVEL_HIGH>,
-diff --git a/arch/arm/boot/dts/imx6sx.dtsi b/arch/arm/boot/dts/imx6sx.dtsi
-index 93ac2380ca1e..4233943a1cca 100644
---- a/arch/arm/boot/dts/imx6sx.dtsi
-+++ b/arch/arm/boot/dts/imx6sx.dtsi
-@@ -209,7 +209,7 @@ gpu: gpu@1800000 {
- 			power-domains = <&pd_pu>;
- 		};
- 
--		dma_apbh: dma-apbh@1804000 {
-+		dma_apbh: dma-controller@1804000 {
- 			compatible = "fsl,imx6sx-dma-apbh", "fsl,imx28-dma-apbh";
- 			reg = <0x01804000 0x2000>;
- 			interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 3d9d0f823568..118764c50d92 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -164,7 +164,7 @@ intc: interrupt-controller@a01000 {
- 			      <0x00a06000 0x2000>;
- 		};
- 
--		dma_apbh: dma-apbh@1804000 {
-+		dma_apbh: dma-controller@1804000 {
- 			compatible = "fsl,imx6q-dma-apbh", "fsl,imx28-dma-apbh";
- 			reg = <0x01804000 0x2000>;
- 			interrupts = <0 13 IRQ_TYPE_LEVEL_HIGH>,
-diff --git a/arch/arm/boot/dts/imx7s.dtsi b/arch/arm/boot/dts/imx7s.dtsi
-index efe2525b62fa..54026c2c93fa 100644
---- a/arch/arm/boot/dts/imx7s.dtsi
-+++ b/arch/arm/boot/dts/imx7s.dtsi
-@@ -1257,7 +1257,7 @@ fec1: ethernet@30be0000 {
- 			};
- 		};
- 
--		dma_apbh: dma-apbh@33000000 {
-+		dma_apbh: dma-controller@33000000 {
- 			compatible = "fsl,imx7d-dma-apbh", "fsl,imx28-dma-apbh";
- 			reg = <0x33000000 0x2000>;
- 			interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
+ .../bindings/serial/ni,ni16550.yaml           |  51 ++
+ MAINTAINERS                                   |   7 +
+ drivers/tty/serial/8250/8250_ni.c             | 454 ++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig               |  13 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ 5 files changed, 526 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+ create mode 100644 drivers/tty/serial/8250/8250_ni.c
+
 -- 
-2.34.1
+2.30.2
 
