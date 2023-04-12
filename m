@@ -2,133 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E72C77B6E
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Apr 2023 13:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29175C77B6F
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Apr 2023 14:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjDLNFo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Apr 2023 09:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58366 "EHLO
+        id S230024AbjDLOvD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Apr 2023 10:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjDLNFn (ORCPT
+        with ESMTP id S231328AbjDLOvC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Apr 2023 09:05:43 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9301846B1;
-        Wed, 12 Apr 2023 06:05:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681304743; x=1712840743;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=SIIbTWQFtQiwPFHLG3XRxl427QCGbNZPIB/wgRCV9gw=;
-  b=ImipW82lxvv7OmeYSD/zm32eB6/dUxj7Gj5E/grSNNfbFKpE9Sgp9UGA
-   24qwRQLHkl4D/dLdat0YtV/OY+2GXBTAMoExdWLlKgq5y7AozVkIxGO+Y
-   tYxgwh4H5LH28+4+MLhMaXYJ3xzxTpkrWvGKHWOmda2rsZmdkRAtEUrYa
-   IZ+6jPk4QPzN4MIfMNvsdbLHHyC0YqyVXtv3C5k5fmXrPW1Rv2DLGaidP
-   oO9/hYASxYMRha8JtTG6P6b6V3w7j9v16OXHdVN7QQBclmWRQErzNc/Zv
-   RutCD9qxnSvWsGm3DxoQwJgd1VPA3b17FLt2fDfiKTXlW7pAExDeto0OI
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="332583354"
-X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="332583354"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 06:03:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="639226969"
-X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="639226969"
-Received: from chanse1-mobl2.ger.corp.intel.com ([10.251.213.80])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 06:03:47 -0700
-Date:   Wed, 12 Apr 2023 16:03:45 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Johan Hovold <johan@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 12 Apr 2023 10:51:02 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF3195FD6;
+        Wed, 12 Apr 2023 07:50:58 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.98,339,1673881200"; 
+   d="scan'208";a="155739568"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 12 Apr 2023 23:50:58 +0900
+Received: from localhost.localdomain (unknown [10.226.93.18])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id D8602400F959;
+        Wed, 12 Apr 2023 23:50:55 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH] serial: fix TIOCSRS485 locking
-In-Reply-To: <20230412124811.11217-1-johan@kernel.org>
-Message-ID: <1c814de8-ea36-7a63-34c2-b957d6608cec@linux.intel.com>
-References: <20230412124811.11217-1-johan@kernel.org>
+        linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v4 0/5] Add RZ/G2L SCIFA DMAC/ SCI TX support
+Date:   Wed, 12 Apr 2023 15:50:48 +0100
+Message-Id: <20230412145053.114847-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1754916380-1681304629=:2300"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This patch series aims to add DMA support for SCIFA/ SCI TX support on
+RZ/G2L alike SoCs.
 
---8323329-1754916380-1681304629=:2300
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+v3->v4:
+ * Updated commit description for patch#1,#2,#3 and #5
+ * Removed fixes tag from patch#3
+v2->v3:
+ * Dropped inline function is_rz_scif_port() and instead using
+   s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE for finding RZ SCIF port.
+ * Dropped SCIx_TEI_IRQ as DMAC activation not possible with TEI interrupt.
+ * Updated the code flow similar to SCIFA/SCIFB DMAC tx handling.
+ * Replaced is_rz_scif_port to s->cfg->regtype check
+ * Updated the code flow similar to SCIFA/SCIFB DMA rx handling.
+ * Added remaining patches from Renesas SCI fixes patch series to this series.
+ * Updated commit description for patch#3
+ * Moved handling of clearing TE bit as separate patch#5.
+v1->v2:
+ * Added support for DMA tx and rx.
 
-On Wed, 12 Apr 2023, Johan Hovold wrote:
+Biju Das (5):
+  tty: serial: sh-sci: Add RZ/G2L SCIF DMA tx support
+  tty: serial: sh-sci: Add RZ/G2L SCIF DMA rx support
+  tty: serial: sh-sci: Fix TE setting on SCI IP
+  tty: serial: sh-sci: Add support for tx end interrupt handling
+  tty: serial: sh-sci: Fix end of transmission on SCI
 
-> The RS485 multipoint addressing support for some reason added a new
-> ADDRB termios cflag which is (only!) updated from one of the RS485
-> ioctls.
-> 
-> Make sure to take the termios rw semaphore for the right ioctl (i.e.
-> set, not get).
-> 
-> Fixes: ae50bb275283 ("serial: take termios_rwsem for ->rs485_config() & pass termios as param")
-> Cc: stable@vger.kernel.org	# 6.0
-> Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> ---
-> 
-> I did not have time to review the multipoint addressing patches at the
-> time and only skimmed the archives now, but I can't seem to find any
-> motivation for why a precious termios bit was seemingly wasted on ADDRB
-> when it is only updated from the RS485 ioctls.
-> 
-> I hope it wasn't done just to simplify the implementation of
-> tty_get_frame_size()? Or was it a left-over from the RFC which
-> apparently actually used termios to enable this feature?
-
-No. I made it intentionally. It felt natural place for storing it because 
-ADDRB does impact the wire format and cflag is where other wire-format 
-impacting bits are also stored.
-
-> Should we consider dropping the Linux-specific ADDRB bit again?
-> 
-> Johan
-> 
-> 
->  drivers/tty/serial/serial_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 2bd32c8ece39..728cb72be066 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1552,7 +1552,7 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
->  		goto out;
->  
->  	/* rs485_config requires more locking than others */
-> -	if (cmd == TIOCGRS485)
-> +	if (cmd == TIOCSRS485)
->  		down_write(&tty->termios_rwsem);
->  
->  	mutex_lock(&port->mutex);
-> @@ -1595,7 +1595,7 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
->  	}
->  out_up:
->  	mutex_unlock(&port->mutex);
-> -	if (cmd == TIOCGRS485)
-> +	if (cmd == TIOCSRS485)
->  		up_write(&tty->termios_rwsem);
->  out:
->  	return ret;
-> 
-
-Indeed, the caps are so blinding.
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+ drivers/tty/serial/sh-sci.c | 96 +++++++++++++++++++++++++++++++------
+ drivers/tty/serial/sh-sci.h |  3 ++
+ 2 files changed, 85 insertions(+), 14 deletions(-)
 
 -- 
- i.
+2.25.1
 
---8323329-1754916380-1681304629=:2300--
