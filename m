@@ -2,74 +2,130 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4A4C7619A
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Apr 2023 06:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB886C77B6F
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Apr 2023 06:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229451AbjDLGDA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Apr 2023 02:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S229762AbjDLGhn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Apr 2023 02:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbjDLGC5 (ORCPT
+        with ESMTP id S229503AbjDLGhm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Apr 2023 02:02:57 -0400
-X-Greylist: delayed 377 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 11 Apr 2023 23:02:54 PDT
-Received: from mail.iszf.irk.ru (mx.iszf.irk.ru [84.237.20.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DEF955A6
-        for <linux-serial@vger.kernel.org>; Tue, 11 Apr 2023 23:02:53 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.0.6.6])
-        by mail.iszf.irk.ru (Postfix) with ESMTP id 8FC4D65DEC;
-        Wed, 12 Apr 2023 13:56:31 +0800 (IRKT)
-From:   tomin@iszf.irk.ru
-To:     linux-serial@vger.kernel.org
-Cc:     Vitaliy Tomin <tomin@iszf.irk.ru>
-Subject: [PATCH] serial: Add support for Advantech PCI-1611U card
-Date:   Wed, 12 Apr 2023 13:56:22 +0800
-Message-Id: <20230412055622.3787514-1-tomin@iszf.irk.ru>
-X-Mailer: git-send-email 2.34.1
+        Wed, 12 Apr 2023 02:37:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A147D5BBD;
+        Tue, 11 Apr 2023 23:37:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4C6C62E84;
+        Wed, 12 Apr 2023 06:37:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA6BDC433EF;
+        Wed, 12 Apr 2023 06:37:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1681281452;
+        bh=C08xlScrwcFLdBM4M2cjiejNGUOC2cBgygJXW4F0akQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OvPmm65tFUtKMb6uvKdWdj+CwHnU3HWMLPT3Jz6E92n9YwogMdR4ulZuq7okqBdT7
+         Ffzjig8MFiNLWWQIW/VHk4EEiH38RDfTTckhEH97Sknhaf8qxgdKfAgBJ1vkBkVssg
+         a3tVu+XhCbytOYlwY1MasJtSi0KC2KPJkv2UM58I=
+Date:   Wed, 12 Apr 2023 08:37:29 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Jiri Slaby <jslaby@suse.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>, stable <stable@kernel.org>
+Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
+Message-ID: <2023041214-epidural-overrate-3b81@gregkh>
+References: <20230411100859.305617-1-biju.das.jz@bp.renesas.com>
+ <2023041129-skeleton-nursery-f9b0@gregkh>
+ <OS0PR01MB59225DFD2073B3A6C8249104869A9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB59220D9E0C52F5413046CAFB869A9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <2023041158-crisped-obtrusive-2309@gregkh>
+ <TYCPR01MB5933C7188612037F0787A5E3869A9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <TYCPR01MB5933C7188612037F0787A5E3869A9@TYCPR01MB5933.jpnprd01.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Vitaliy Tomin <tomin@iszf.irk.ru>
+On Tue, Apr 11, 2023 at 03:36:04PM +0000, Biju Das wrote:
+> 
+> Hi Greg,
+> 
+> > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt handler
+> > 
+> > On Tue, Apr 11, 2023 at 02:40:52PM +0000, Biju Das wrote:
+> > > Hi Greg,
+> > >
+> > > > Subject: RE: [PATCH] tty: serial: sh-sci: Fix transmit end interrupt
+> > > > handler
+> > > >
+> > > > Hi Greg,
+> > > >
+> > > > Thanks for the feedback.
+> > > >
+> > > > > Subject: Re: [PATCH] tty: serial: sh-sci: Fix transmit end
+> > > > > interrupt handler
+> > > > >
+> > > > > On Tue, Apr 11, 2023 at 11:08:59AM +0100, Biju Das wrote:
+> > > > > > commit b43a18647f03c87e77d50d6fe74904b61b96323e upstream.
+> > > > > >
+> > > > > > The fourth interrupt on SCI port is transmit end interrupt
+> > > > > > compared to the break interrupt on other port types. So, shuffle
+> > > > > > the interrupts to fix the transmit end interrupt handler.
+> > > > > >
+> > > > > > Fixes: e1d0be616186 ("sh-sci: Add h8300 SCI")
+> > > > > > Cc: stable <stable@kernel.org>
+> > > > > > Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > > > Link:
+> > > > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > > > [biju: manually fixed the conflicts]
+> > > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > > > ---
+> > > > > > Resending to 4.14 with confilcts [1] fixed.
+> > > > > > [1]
+> > > > >
+> > > > > You did not actually build your patch, as it breaks the build :(
+> > > >
+> > > > Actually, I build the patch, but did not test it on target as I
+> > > > don't have the platform to test it.
+> > > >
+> > > > I got some issues while building modules which is unrelated to this
+> > change.
+> > > >
+> > > > Anyway, I will double check again and confirm.
+> > >
+> > > I confirm, there is an issue with this patch.
+> > >
+> > > I disabled building modules from my build script and it showed the below
+> > error.
+> > > So I would like to drop this patch for 4.14 as this header file does not
+> > exist for 4.14.
+> > >
+> > > drivers/tty/serial/sh-sci.c:40:10: fatal error: linux/minmax.h: No such
+> > file or directory
+> > >    40 | #include <linux/minmax.h>
+> > >       |          ^~~~~~~~~~~~~~~~
+> > 
+> > Yes, minmax is not there, but the function needed by that is there (hint, I
+> > had to remove that include in 4.19).  Remove it and see the next error you
+> > get :)
+> > 
+> 
+> OK got it, The SCIx_TEI_IRQ  is introduced after 4.18 by patch [1]. 
+> 
+> [1] 
+> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/drivers/tty/serial/sh-sci.c?h=linux-5.4.y&id=628c534ae73581fd21a09a27b7a4222b01a44d64
+> 
+> So, 4.14 does not require this patch, as it have combined interrupt.
 
-Add support for Advantech PCI-1611U card
-
-Advantech provides opensource drivers for this and many others card
-based on legacy copy of 8250_pci driver called adv950
-
-https://www.advantech.com/emt/support/details/driver?id=1-TDOIMJ
-
-It is hard to maintain to run as out of tree module on newer kernels.
-Just adding PCI ID to kernel 8250_pci works perfect.
----
- drivers/tty/serial/8250/8250_pci.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index c55be6fda0ca..e80c4f6551a1 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1920,6 +1920,8 @@ pci_moxa_setup(struct serial_private *priv,
- #define PCI_SUBDEVICE_ID_SIIG_DUAL_30	0x2530
- #define PCI_VENDOR_ID_ADVANTECH		0x13fe
- #define PCI_DEVICE_ID_INTEL_CE4100_UART 0x2e66
-+#define PCI_DEVICE_ID_ADVANTECH_PCI1600	0x1600
-+#define PCI_DEVICE_ID_ADVANTECH_PCI1600_1611	0x1611
- #define PCI_DEVICE_ID_ADVANTECH_PCI3620	0x3620
- #define PCI_DEVICE_ID_ADVANTECH_PCI3618	0x3618
- #define PCI_DEVICE_ID_ADVANTECH_PCIf618	0xf618
-@@ -4085,6 +4087,9 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
- 			 pciserial_resume_one);
- 
- static const struct pci_device_id serial_pci_tbl[] = {
-+	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI1600,
-+		PCI_DEVICE_ID_ADVANTECH_PCI1600_1611, PCI_ANY_ID, 0, 0,
-+		pbn_b0_4_921600 },
- 	/* Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUBVENDOR_ID' */
- 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
- 		PCI_DEVICE_ID_ADVANTECH_PCI3620, 0x0001, 0, 0,
--- 
-2.34.1
-
+Great, thanks for checking, it turns out that the Fixes: tag was wrong :(
