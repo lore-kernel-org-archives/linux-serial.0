@@ -2,120 +2,118 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66B3C77B6C
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Apr 2023 08:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AD2C77B61
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Apr 2023 16:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjDMI6L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Apr 2023 04:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
+        id S229481AbjDMQGm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Apr 2023 12:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbjDMI5j (ORCPT
+        with ESMTP id S229560AbjDMQGl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Apr 2023 04:57:39 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3228486BC;
-        Thu, 13 Apr 2023 01:56:01 -0700 (PDT)
+        Thu, 13 Apr 2023 12:06:41 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D93383EA;
+        Thu, 13 Apr 2023 09:06:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681376161; x=1712912161;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Dx/KcB1yuWxjVTqAdCjBiSdHBqk0SPkHcsrbO43oHeQ=;
-  b=Ry3wuscH5Es2scla0SeJ33oiO3feD45rQ1xsl804xXKNXA6S4W7OX8Md
-   Tjao+9MTxBmjB2GzzJf+ev1o9TYqmR5QhmwCyoHpZ+U/dFrjuJk/YTQY3
-   2RDkgtQgdAH3QMsIsggGqM+bZRjW1TpUvwX0SBnsvcNpf0BhkEpMtZOdO
-   w70x91Mrl3gE/Xs1XSltzg7QL3asTxrez1oSiL2/PBlzE4X/yXNTz+mnb
-   aPBh10nTOc9djh5BvzT+5J7FVU4IvdjF1S4ycBONbVBCnXrkqngO4fXJe
-   z7UcIN8JLSnw5oGBxouo0gREkGatR7fAOw/3aiKBtGm1/EnR8yZRnej4S
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="332836327"
-X-IronPort-AV: E=Sophos;i="5.98,341,1673942400"; 
-   d="scan'208";a="332836327"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 01:55:54 -0700
+  t=1681402000; x=1712938000;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rOehdBIrreHkMjOxugsVNu2ybTTdqeAOr5KilNtz1OA=;
+  b=Ak1fzE/z0NYUWwyrwx5KhjEgUwCa0MKMf+/q3lV+R9NdM9s6ZnfEdb4v
+   s2kbg6iNqyj8OVt4LrMqeS53s4t2so4GXfp8DOCZzSXq0bo6TMo2PWkTq
+   5Bs+9SOVy2tHa8PpXzgB2K8a5DHq6EeuwVJctX1OdmvXiW0zF3ps7Wo3D
+   wLxQQHl844g/j+rDGI6GaA2DMEQoqbxQ5krsuwl9o/U5nxmEJDrZY75PC
+   cbdhgJ2TFl2NabQ1dQv9Zx+JknH0A5c5JTRtzZeibF+31OpQVifl4I7rF
+   //JAV3/uM8z2OuINv+qELQV6vKCkMAJZfvq4336dt8AySqCtupXNVT3Kv
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="341722722"
+X-IronPort-AV: E=Sophos;i="5.99,194,1677571200"; 
+   d="scan'208";a="341722722"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 09:06:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="719754073"
-X-IronPort-AV: E=Sophos;i="5.98,341,1673942400"; 
-   d="scan'208";a="719754073"
-Received: from pkudryav-mobl1.ger.corp.intel.com ([10.252.45.220])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 01:55:52 -0700
-Date:   Thu, 13 Apr 2023 11:55:46 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Sherry Sun <sherry.sun@nxp.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="754062124"
+X-IronPort-AV: E=Sophos;i="5.99,194,1677571200"; 
+   d="scan'208";a="754062124"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Apr 2023 09:06:37 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pmzT1-00GcXx-1e;
+        Thu, 13 Apr 2023 19:06:35 +0300
+Date:   Thu, 13 Apr 2023 19:06:35 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        philippe.schenker@toradex.com,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-imx@nxp.com
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: use UARTMODIR register bits
- for lpuart32 platform
-In-Reply-To: <20230413053908.17702-1-sherry.sun@nxp.com>
-Message-ID: <a8e12926-58e7-43c3-f4d1-a67b4bfbc1@linux.intel.com>
-References: <20230413053908.17702-1-sherry.sun@nxp.com>
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250: Clear port->pm on port specific driver
+ unbind
+Message-ID: <ZDgoi2mFYYqswAhu@smile.fi.intel.com>
+References: <20230413070342.36155-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1437061742-1681376154=:1987"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230413070342.36155-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1437061742-1681376154=:1987
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 13 Apr 2023, Sherry Sun wrote:
-
-> For lpuart32 platforms, UARTMODIR register is used instead of UARTMODEM.
-> So here should configure the corresponding UARTMODIR register bits.
+On Thu, Apr 13, 2023 at 10:03:41AM +0300, Tony Lindgren wrote:
+> When we unbind a serial port hardware specific 8250 driver, the generic
+> serial8250 driver takes over the port. After that we see an oops about 10
+> seconds later. This can produce the following at least on some TI SoCs:
 > 
-> Fixes: 67b01837861c ("tty: serial: lpuart: Add RS485 support for 32-bit uart flavour")
+> Unhandled fault: imprecise external abort (0x1406)
+> Internal error: : 1406 [#1] SMP ARM
+> 
+> Turns out that we may still have the serial port hardware specific driver
+> port->pm in use, and serial8250_pm() tries to call it after the port
+> specific driver is gone:
+> 
+> serial8250_pm [8250_base] from uart_change_pm+0x54/0x8c [serial_base]
+> uart_change_pm [serial_base] from uart_hangup+0x154/0x198 [serial_base]
+> uart_hangup [serial_base] from __tty_hangup.part.0+0x328/0x37c
+> __tty_hangup.part.0 from disassociate_ctty+0x154/0x20c
+> disassociate_ctty from do_exit+0x744/0xaac
+> do_exit from do_group_exit+0x40/0x8c
+> do_group_exit from __wake_up_parent+0x0/0x1c
+> 
+> Let's fix the issue by clearing port->pm in serial8250_unregister_port().
 
-The patch is good but I don't think Fixes tag is warranted here because 
-TXRTSPOL and TXRTSE bits are the same for both registers. ...So this 
-is mostly to avoid reader confusion rather than fix an actual problem.
+Sounds to me like a fix that needs a Fixes tag.
+Code wise LGTM,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -1157,6 +1157,7 @@ void serial8250_unregister_port(int line)
+>  		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
+>  		uart->port.type = PORT_UNKNOWN;
+>  		uart->port.dev = &serial8250_isa_devs->dev;
+> +		uart->port.pm = NULL;
+>  		uart->capabilities = 0;
+>  		serial8250_apply_quirks(uart);
+>  		uart_add_one_port(&serial8250_reg, &uart->port);
+> -- 
+> 2.40.0
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 074bfed57fc9..9845d3f5b84b 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -1406,12 +1406,12 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
->  			struct lpuart_port, port);
->  
->  	unsigned long modem = lpuart32_read(&sport->port, UARTMODIR)
-> -				& ~(UARTMODEM_TXRTSPOL | UARTMODEM_TXRTSE);
-> +				& ~(UARTMODIR_TXRTSPOL | UARTMODIR_TXRTSE);
->  	lpuart32_write(&sport->port, modem, UARTMODIR);
->  
->  	if (rs485->flags & SER_RS485_ENABLED) {
->  		/* Enable auto RS-485 RTS mode */
-> -		modem |= UARTMODEM_TXRTSE;
-> +		modem |= UARTMODIR_TXRTSE;
->  
->  		/*
->  		 * The hardware defaults to RTS logic HIGH while transfer.
-> @@ -1420,9 +1420,9 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
->  		 * Note: UART is assumed to be active high.
->  		 */
->  		if (rs485->flags & SER_RS485_RTS_ON_SEND)
-> -			modem |= UARTMODEM_TXRTSPOL;
-> +			modem |= UARTMODIR_TXRTSPOL;
->  		else if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
-> -			modem &= ~UARTMODEM_TXRTSPOL;
-> +			modem &= ~UARTMODIR_TXRTSPOL;
->  	}
->  
->  	lpuart32_write(&sport->port, modem, UARTMODIR);
-> 
---8323329-1437061742-1681376154=:1987--
+
