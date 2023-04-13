@@ -2,118 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AD2C77B61
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Apr 2023 16:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55646C77B61
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Apr 2023 16:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbjDMQGm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Apr 2023 12:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
+        id S230176AbjDMQro (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Apr 2023 12:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbjDMQGl (ORCPT
+        with ESMTP id S229582AbjDMQrn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Apr 2023 12:06:41 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D93383EA;
-        Thu, 13 Apr 2023 09:06:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681402000; x=1712938000;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rOehdBIrreHkMjOxugsVNu2ybTTdqeAOr5KilNtz1OA=;
-  b=Ak1fzE/z0NYUWwyrwx5KhjEgUwCa0MKMf+/q3lV+R9NdM9s6ZnfEdb4v
-   s2kbg6iNqyj8OVt4LrMqeS53s4t2so4GXfp8DOCZzSXq0bo6TMo2PWkTq
-   5Bs+9SOVy2tHa8PpXzgB2K8a5DHq6EeuwVJctX1OdmvXiW0zF3ps7Wo3D
-   wLxQQHl844g/j+rDGI6GaA2DMEQoqbxQ5krsuwl9o/U5nxmEJDrZY75PC
-   cbdhgJ2TFl2NabQ1dQv9Zx+JknH0A5c5JTRtzZeibF+31OpQVifl4I7rF
-   //JAV3/uM8z2OuINv+qELQV6vKCkMAJZfvq4336dt8AySqCtupXNVT3Kv
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="341722722"
-X-IronPort-AV: E=Sophos;i="5.99,194,1677571200"; 
-   d="scan'208";a="341722722"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 09:06:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="754062124"
-X-IronPort-AV: E=Sophos;i="5.99,194,1677571200"; 
-   d="scan'208";a="754062124"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Apr 2023 09:06:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pmzT1-00GcXx-1e;
-        Thu, 13 Apr 2023 19:06:35 +0300
-Date:   Thu, 13 Apr 2023 19:06:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: Clear port->pm on port specific driver
- unbind
-Message-ID: <ZDgoi2mFYYqswAhu@smile.fi.intel.com>
-References: <20230413070342.36155-1-tony@atomide.com>
+        Thu, 13 Apr 2023 12:47:43 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1674BA5DA
+        for <linux-serial@vger.kernel.org>; Thu, 13 Apr 2023 09:47:32 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id c9so140615ejz.1
+        for <linux-serial@vger.kernel.org>; Thu, 13 Apr 2023 09:47:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681404450; x=1683996450;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=51DVCd/h3/cJO7cjSlyrYI32aoEqdT9dgNs9Eih2opE=;
+        b=nwu0GWON8U6TXZ3AT7gmRhnXNlY7lxqUiwgRLU2Uw3ieZXA+uUVn8nCJ7nbTT46IVu
+         wwLwRAaXeAkQoRk45Ctu06Gj5+w2VTE0sNRhlPVtvb+AVprqq6Mdk+suH2aNI6BYPsiB
+         6cNLN8+zEtGyNX/KyEoBvn46OtTtt2tlVT85GHip2cSO1/PBq/JhKMCRQNv9eIztyRY5
+         w0q2os13wwQcZx6p0frcHHUtOiYimZakYu6fNc8RLvh0Y24ZX/hjuJYP7ELV1yb5wJJC
+         25g8s6YrMZYnPPeLL4eVKHQqkfBw8CBaCSw83aYue3fTj6hcTSKEfMrhPzS81jXREH2C
+         PvUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681404450; x=1683996450;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=51DVCd/h3/cJO7cjSlyrYI32aoEqdT9dgNs9Eih2opE=;
+        b=aDzQnI4E/Bny4rM69tE74+cnemtB/lztHWuMm0Hp+7883EebFe+fLSZpY7I31TB7T/
+         kK8h8YPoyi0jQ6Cge1w+RU28ZE310dyRRh9FLXs5xO+oI/SHB/GtId2wHxSmnFMUEVJR
+         6+ZUvXKO9JGIOxmAnrR4pO5sjI+H0BZtnG7L0HBQsemPnAR2srflBkmlOfsufIAhAsJB
+         sAB6QUOCwBSBTcEmwp5QrWxZZmt6n7M/FEY2My4ZUYBsk5uVy96UcAdGHDgvOI80Hj4A
+         cLw5r4Rk9pS1YCKqwZtRq/usHuClKmulFCZoHBsyE3KZzC62khvg3yLEaep2Bek+xjU0
+         fuiA==
+X-Gm-Message-State: AAQBX9eeq5za3HtA694HRnu4gRLDEUjnR6HzreWASUGs/tSY/8eGbVou
+        gtDRfrxG4vnmybZQxdhG6atSOw==
+X-Google-Smtp-Source: AKy350b4Jz7APW0X824PXsHeC5e1sHTqjV9UgCwCrxjufPBWxBtgGffJCq1hAMMiXPCq9xLeN0mhEA==
+X-Received: by 2002:a17:907:3f16:b0:930:f953:962c with SMTP id hq22-20020a1709073f1600b00930f953962cmr4155726ejc.1.1681404450522;
+        Thu, 13 Apr 2023 09:47:30 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:5032:d2d4:ece5:b035? ([2a02:810d:15c0:828:5032:d2d4:ece5:b035])
+        by smtp.gmail.com with ESMTPSA id ka20-20020a170907991400b0094c67e537c8sm1208815ejc.38.2023.04.13.09.47.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Apr 2023 09:47:29 -0700 (PDT)
+Message-ID: <d11b6acb-b072-9496-5ad6-0635357394f1@linaro.org>
+Date:   Thu, 13 Apr 2023 18:47:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230413070342.36155-1-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v7 05/12] dt-bindings: mfd: syscon: Add nuvoton,ma35d1-sys
+ compatible
+Content-Language: en-US
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230412053824.106-1-ychuang570808@gmail.com>
+ <20230412053824.106-6-ychuang570808@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230412053824.106-6-ychuang570808@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 10:03:41AM +0300, Tony Lindgren wrote:
-> When we unbind a serial port hardware specific 8250 driver, the generic
-> serial8250 driver takes over the port. After that we see an oops about 10
-> seconds later. This can produce the following at least on some TI SoCs:
+On 12/04/2023 07:38, Jacky Huang wrote:
+> From: Jacky Huang <ychuang3@nuvoton.com>
 > 
-> Unhandled fault: imprecise external abort (0x1406)
-> Internal error: : 1406 [#1] SMP ARM
+> Add Nuvoton ma35d1 system registers compatible.
 > 
-> Turns out that we may still have the serial port hardware specific driver
-> port->pm in use, and serial8250_pm() tries to call it after the port
-> specific driver is gone:
-> 
-> serial8250_pm [8250_base] from uart_change_pm+0x54/0x8c [serial_base]
-> uart_change_pm [serial_base] from uart_hangup+0x154/0x198 [serial_base]
-> uart_hangup [serial_base] from __tty_hangup.part.0+0x328/0x37c
-> __tty_hangup.part.0 from disassociate_ctty+0x154/0x20c
-> disassociate_ctty from do_exit+0x744/0xaac
-> do_exit from do_group_exit+0x40/0x8c
-> do_group_exit from __wake_up_parent+0x0/0x1c
-> 
-> Let's fix the issue by clearing port->pm in serial8250_unregister_port().
+> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 
-Sounds to me like a fix that needs a Fixes tag.
-Code wise LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+What about the tag? Why did you ignore it?
 
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1157,6 +1157,7 @@ void serial8250_unregister_port(int line)
->  		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
->  		uart->port.type = PORT_UNKNOWN;
->  		uart->port.dev = &serial8250_isa_devs->dev;
-> +		uart->port.pm = NULL;
->  		uart->capabilities = 0;
->  		serial8250_apply_quirks(uart);
->  		uart_add_one_port(&serial8250_reg, &uart->port);
-> -- 
-> 2.40.0
+Also, wasn't this applied? Why do you resend (incorrect version)?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+Krzysztof
 
