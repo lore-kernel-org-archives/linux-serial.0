@@ -2,142 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1719AC77B6F
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 09:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF6BC77B6F
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 09:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbjDNJE5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Apr 2023 05:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
+        id S229540AbjDNJUp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Apr 2023 05:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjDNJE4 (ORCPT
+        with ESMTP id S229448AbjDNJUo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Apr 2023 05:04:56 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA3B4EF2;
-        Fri, 14 Apr 2023 02:04:55 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id y6so16655774plp.2;
-        Fri, 14 Apr 2023 02:04:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681463095; x=1684055095;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yXmHkC1a048CwiQG8SZ7PoO3Ikz1HsLxMGbsHdgDqWk=;
-        b=gL7zqSMoji7E25lrTbA+NFwfZFoNEYCO3zElJ4oZwNWgUkl6SI01khkvKSUhLKiB9z
-         JXmBMaw5Pi50VXy58HT64n61hVbzFrjXBTZOC+wLq1ayDPbY1ycSdSPtjd6DYZ0Xdruv
-         XJUVaMSO53/NxvUR2UBSumqvXbD1CnllgAPFBV3jIT0PkwMmpguY5MGFYK9l9qh3GnTH
-         ckuCX7ckZvnbFp3ZozvbNeM98vV+xDw5DidolfQlBpAEBZl+abuxXxdnkb2M3hIqbeXf
-         fxQVg6eFTc1sFJOtmOJKWObx6zQ2t85KxyItoZUSYMj6tKW5+t5CcDLLdkY77i83Y4gR
-         lGXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681463095; x=1684055095;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yXmHkC1a048CwiQG8SZ7PoO3Ikz1HsLxMGbsHdgDqWk=;
-        b=bw0aVaPrUQaa4/VQjIslExOi0Uwg8mJz5llA6Jpa9bKCalFlFAwuhI+BDD/IMLL49Z
-         IKi9w2pbfJcEz9xSb7ZPnLiBra1pdpUNYkfZTfLet/d1dv6TVuvyMPNbzeyXHfIPptOs
-         Me1PABZclre9fUZR1Cgd9SovpWqOvUAncjRMnjxb76l80//j3QKUni3ob1nXSy+Cr38M
-         4rzkHsIRtTU8CCilNrt49TpYknDV4EMNZ/ijpggy9ba6Zl2TcXXEQeaFS7HGum6zlCDV
-         MH/DngKYwIRBJY7k/mJSsHc44uohLi2Fm8nTyUj+S7bI1apbUjgqfxXCssgV9OCsziIy
-         g1Qw==
-X-Gm-Message-State: AAQBX9fkTo3EGHgiM5pMPlWQAWwYNbmuKyBbX1IpOz9TqCmyFmMzEr8b
-        IfEoh8lriQ7WBAccMr69qMo=
-X-Google-Smtp-Source: AKy350YivyfWQMADG9PcbVLMIrbWErTwYNxSC9hCuLgFDtEkOvvbmCap6Cd7PVP8BXxl5AsCsGM4IA==
-X-Received: by 2002:a17:902:c601:b0:1a6:87ae:542d with SMTP id r1-20020a170902c60100b001a687ae542dmr1808247plr.48.1681463095070;
-        Fri, 14 Apr 2023 02:04:55 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id jo10-20020a170903054a00b001a190baea88sm2681102plb.97.2023.04.14.02.04.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Apr 2023 02:04:54 -0700 (PDT)
-Message-ID: <1bca6745-23df-5898-7675-c914531fa40b@gmail.com>
-Date:   Fri, 14 Apr 2023 17:04:50 +0800
+        Fri, 14 Apr 2023 05:20:44 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F5C59FF;
+        Fri, 14 Apr 2023 02:20:43 -0700 (PDT)
+Received: from stefanw-SCHENKER ([37.4.248.58]) by mrelayeu.kundenserver.de
+ (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N8X9L-1qQnTW2gUL-014RZd; Fri, 14 Apr 2023 11:20:11 +0200
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
+        linux-imx@nxp.com, "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pm@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH V3 3/6] dt-bindings: imx-thermal: add imx6sll and imx6ul compatible
+Date:   Fri, 14 Apr 2023 11:19:44 +0200
+Message-Id: <20230414091947.7831-4-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230414091947.7831-1-stefan.wahren@i2se.com>
+References: <20230414091947.7831-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v7 12/12] MAINTAINERS: Add entry for NUVOTON MA35
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-References: <20230412053824.106-1-ychuang570808@gmail.com>
- <20230412053824.106-13-ychuang570808@gmail.com>
- <241f6cb1-193f-d372-0eda-157946b15780@linaro.org>
- <91861072-dc2d-46d3-dc0d-26d17a3693c7@gmail.com>
- <4b9a0f13-d03a-8496-a400-8621b8d7c98a@linaro.org>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <4b9a0f13-d03a-8496-a400-8621b8d7c98a@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:yhVLvdOtotpcDXG6lxpSO4LOeUKBcNbf9LpLbV/9MnR3OlD+Ttj
+ GR5NmFY7sFWd/sGUYtTg1kiWDWMczU/jUX8FpwS83xxBWTX9d2I+6U7VQf9uYBU5BCDZdji
+ cV26mP7jBSQRSF5Q+9D5LDaBf6UvEeLaKMhweNXe+fQeptU81b5JkN2R1Fqge3+A7hLi1Dg
+ SoZwiewyvQCWZYEt0YoOQ==
+UI-OutboundReport: notjunk:1;M01:P0:rDISmrQLwxc=;Ki/zD+XBOrmhx9wA7kHnYw5dyFg
+ CH7yv0LZEQK0zsViWPmQVjJZOi4RYTTTJKmQB8xWtlZQAjme9vvifMGVnEEnRkogQ31gxtJMy
+ d502Ff7m3gsCQDo2dYJBLqkhlGBgsUFtHu354fhi4gnS0TmgITYCU1FEEg3/7y4ghDLJnZDOI
+ +gIAIYId+D3+GXgsG7pYSTJwYYMVswv0vHfroVnpyYE2I3pkMzltQtJBvH0v+Vu7Gswz1bfEb
+ FONzLodS1ERhzl9KfDl8kuC4yMmNJJZiJlrx0e3u7gOZUm+FBRSPz80vGxD1ppXhf08xoiOry
+ tzsohwwGEt/Q4jdgJtqDx1WZ4sUMRL6gwFfS99+IXYSB/yn4l3ZgPQdbKJwCoepg1P+X8i//J
+ FpzRCO/IWsCnGMCcMcPZngQYHaqrg3k5qGkl36QnYfl+GYAsOzLGI589mhdmxfaOhRZH0zZN0
+ 32/XmSvi/dgoeAEcY0cjrsaGbjxxxe5PZ1VhaK87oIoytnw5gtcATKQF/c+j//HKESp1BeQVh
+ USd/ULRvdZqIzvcbJuIVXw89vbr+k1e5iDkZ0z+qouiKV0YwqEQ6eg85BrWim6WKp5MNey739
+ UdWV4U0h3ZSwRK+ytGKWJxZjJb51QYWmTk3R9GsR0btSbexk5/oYwqOxv34uGjWXVjQPO/rb8
+ Sq8hWuOBUkfkbaQtXF1Oy2OQuz9c2tJyKKvYpKqM5Q==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Currently the dtbs_check for imx6 generates warnings like this:
 
+['fsl,imx6sll-tempmon', 'fsl,imx6sx-tempmon'] is too long
 
-On 2023/4/14 下午 03:46, Krzysztof Kozlowski wrote:
-> On 14/04/2023 03:22, Jacky Huang wrote:
->> Dear Krzysztof,
->>
->>
->> On 2023/4/14 上午 01:01, Krzysztof Kozlowski wrote:
->>> On 12/04/2023 07:38, Jacky Huang wrote:
->>>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>>
->>>> Add entry for Nuvoton ma35d1 maintainer and files.
->>>> In addition, update board binding paths of NUVOTON NPCM.
->>>>    ARM/NUVOTON NPCM ARCHITECTURE
->>>>    M:	Avi Fishman <avifishman70@gmail.com>
->>>>    M:	Tomer Maimon <tmaimon77@gmail.com>
->>>> @@ -2512,7 +2522,8 @@ L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
->>>>    S:	Supported
->>>>    F:	Documentation/devicetree/bindings/*/*/*npcm*
->>>>    F:	Documentation/devicetree/bindings/*/*npcm*
->>>> -F:	Documentation/devicetree/bindings/arm/npcm/*
->>> It is not a bisectable change.
->>>
->>> Best regards,
->>> Krzysztof
->>>
->> F:    Documentation/devicetree/bindings/*/*/*npcm*
->> F:    Documentation/devicetree/bindings/*/*npcm*
->> F:    Documentation/devicetree/bindings/arm/nuvoton/*npcm*    <-- remove
->> this
->> F:    Documentation/devicetree/bindings/soc/nuvoton/*npcm* <-- remove this
->>
->> Yes, the two statements at the bottom seem redundant. I will remove them.
-> I did not comment about "redundant". I used the word "bisectable". git
-> help bisect.
->
-> Best regards,
-> Krzysztof
->
-Dear Krzysztof,
+So add them to the devicetree binding.
 
-I do a test on it, but cannot find issues.
-Could you please advise on how to duplicate the issue? Thank you.
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/thermal/imx-thermal.yaml   | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-I do the following 'git bisect' test.
-
-$ git log --oneline
-5e186f4f1f94 (HEAD, master) MAINTAINERS: Add entry for NUVOTON MA35
-. . .
-1a8a804a4f5d Merge tag 'trace-v6.3-rc5-2' of 
-git://git.kernel.org/pub/scm/linux/kernel/git/trace/linux-trace
-
-
-$ git bisect start 5e186f4f1f94 1a8a804a4f5d
-  HEAD is now at 5e186f4f1f94 MAINTAINERS: Add entry for NUVOTON MA35
-  Bisecting: 68 revisions left to test after this (roughly 6 steps)
-
-
-Best regards,
-Jacky Huang
-
+diff --git a/Documentation/devicetree/bindings/thermal/imx-thermal.yaml b/Documentation/devicetree/bindings/thermal/imx-thermal.yaml
+index b22c8b59d5c7..8902e9499c96 100644
+--- a/Documentation/devicetree/bindings/thermal/imx-thermal.yaml
++++ b/Documentation/devicetree/bindings/thermal/imx-thermal.yaml
+@@ -12,10 +12,16 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - fsl,imx6q-tempmon
+-      - fsl,imx6sx-tempmon
+-      - fsl,imx7d-tempmon
++    oneOf:
++      - enum:
++          - fsl,imx6q-tempmon
++          - fsl,imx6sx-tempmon
++          - fsl,imx7d-tempmon
++      - items:
++          - enum:
++              - fsl,imx6sll-tempmon
++              - fsl,imx6ul-tempmon
++          - const: fsl,imx6sx-tempmon
+ 
+   interrupts:
+     description: |
+-- 
+2.34.1
 
