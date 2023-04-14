@@ -2,78 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0F3C77B70
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 08:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1719AC77B6F
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 09:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbjDNIeq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Apr 2023 04:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S229917AbjDNJE5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Apr 2023 05:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbjDNIep (ORCPT
+        with ESMTP id S229457AbjDNJE4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Apr 2023 04:34:45 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2694ED5;
-        Fri, 14 Apr 2023 01:34:38 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id b2-20020a17090a6e0200b002470b249e59so6937372pjk.4;
-        Fri, 14 Apr 2023 01:34:38 -0700 (PDT)
+        Fri, 14 Apr 2023 05:04:56 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA3B4EF2;
+        Fri, 14 Apr 2023 02:04:55 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id y6so16655774plp.2;
+        Fri, 14 Apr 2023 02:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681461278; x=1684053278;
+        d=gmail.com; s=20221208; t=1681463095; x=1684055095;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=SXMwXqcrpUiU9dk+EsfRSt5kNG0i+4dtdeK+iRChPWc=;
-        b=SvKsmpW4bm6DL+E4UfMWhLf77qqTurbgjNAeMlCkEKhmHwoX1lcM2KGJweIhJsSWUM
-         +aLFrme183Er6PtYgySl/1KNdYhdlQeAwi7pjO13QI/8MF2yEc1CkFX8S7gLCgggq6+u
-         zOCrcHv6X8Tv3R/XRdQwqjAt2RzPA7zrVXqIOu12XItrq01jPT6E1zicRXFaXTIVybK3
-         Sp0mGAtUGl1x413GRyolpv0kxnjcy+SkX2gtF0LaMpGCBvMQmBQYGPJNxtEDjzw4a1ye
-         SKC9db/3odJHenRwFK15SV1PO6NkwWPzFVg0+Y/bGd/Dfk9dDL+JSzWS7y8CGSDfsOWR
-         QqbA==
+        bh=yXmHkC1a048CwiQG8SZ7PoO3Ikz1HsLxMGbsHdgDqWk=;
+        b=gL7zqSMoji7E25lrTbA+NFwfZFoNEYCO3zElJ4oZwNWgUkl6SI01khkvKSUhLKiB9z
+         JXmBMaw5Pi50VXy58HT64n61hVbzFrjXBTZOC+wLq1ayDPbY1ycSdSPtjd6DYZ0Xdruv
+         XJUVaMSO53/NxvUR2UBSumqvXbD1CnllgAPFBV3jIT0PkwMmpguY5MGFYK9l9qh3GnTH
+         ckuCX7ckZvnbFp3ZozvbNeM98vV+xDw5DidolfQlBpAEBZl+abuxXxdnkb2M3hIqbeXf
+         fxQVg6eFTc1sFJOtmOJKWObx6zQ2t85KxyItoZUSYMj6tKW5+t5CcDLLdkY77i83Y4gR
+         lGXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681461278; x=1684053278;
+        d=1e100.net; s=20221208; t=1681463095; x=1684055095;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SXMwXqcrpUiU9dk+EsfRSt5kNG0i+4dtdeK+iRChPWc=;
-        b=SiF6DvSwJvQQPRugZoMHxsa6oAZAyOOLel+ENZHkP+c7IupdfK3EQHsUYVQIm/Av2z
-         SPx/OyKO5aimHdOLBkfxZ1BWedwA6u2sKf0UaX36dOZ9twDS4epU7ZnlEcVHvHKWsR0R
-         okafsn8BMZjPgkMuqxQB68APDx1+7rHilAtb+wGeZdFodD7aK3qFg6TBlwmc07eqnQdK
-         b4pMw0qKGDSTc8G2yb/uhBt3F6nJczD2KSVRzY9oM2Jk0QJ/Ll9+fKMvx7bgBKohDYG7
-         ZH9JRCJnTmekGbqnLldi2z85gtii4Y6e2lXo96wQqcikNjNGHZY+K1FHotXY7hKhzUVW
-         xrJg==
-X-Gm-Message-State: AAQBX9e6XXjruiYIZYkr2sKhCKARsJSgM9rBR1YpQ+uHqP7po3B/5tBy
-        ZVytJTQ0RBTimAavGa2VK3I=
-X-Google-Smtp-Source: AKy350ZutiwM2zHwZT3hOp9PJUH4ekEPRJgSWPP3fk5qersMoeH3CbZx7I5ACHxSY3zuxWKS7sBsoQ==
-X-Received: by 2002:a17:90a:43c6:b0:246:b4b4:555f with SMTP id r64-20020a17090a43c600b00246b4b4555fmr4861345pjg.7.1681461278098;
-        Fri, 14 Apr 2023 01:34:38 -0700 (PDT)
+        bh=yXmHkC1a048CwiQG8SZ7PoO3Ikz1HsLxMGbsHdgDqWk=;
+        b=bw0aVaPrUQaa4/VQjIslExOi0Uwg8mJz5llA6Jpa9bKCalFlFAwuhI+BDD/IMLL49Z
+         IKi9w2pbfJcEz9xSb7ZPnLiBra1pdpUNYkfZTfLet/d1dv6TVuvyMPNbzeyXHfIPptOs
+         Me1PABZclre9fUZR1Cgd9SovpWqOvUAncjRMnjxb76l80//j3QKUni3ob1nXSy+Cr38M
+         4rzkHsIRtTU8CCilNrt49TpYknDV4EMNZ/ijpggy9ba6Zl2TcXXEQeaFS7HGum6zlCDV
+         MH/DngKYwIRBJY7k/mJSsHc44uohLi2Fm8nTyUj+S7bI1apbUjgqfxXCssgV9OCsziIy
+         g1Qw==
+X-Gm-Message-State: AAQBX9fkTo3EGHgiM5pMPlWQAWwYNbmuKyBbX1IpOz9TqCmyFmMzEr8b
+        IfEoh8lriQ7WBAccMr69qMo=
+X-Google-Smtp-Source: AKy350YivyfWQMADG9PcbVLMIrbWErTwYNxSC9hCuLgFDtEkOvvbmCap6Cd7PVP8BXxl5AsCsGM4IA==
+X-Received: by 2002:a17:902:c601:b0:1a6:87ae:542d with SMTP id r1-20020a170902c60100b001a687ae542dmr1808247plr.48.1681463095070;
+        Fri, 14 Apr 2023 02:04:55 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id c15-20020a63d50f000000b0051b603bf22csm1287769pgg.69.2023.04.14.01.34.35
+        by smtp.gmail.com with ESMTPSA id jo10-20020a170903054a00b001a190baea88sm2681102plb.97.2023.04.14.02.04.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Apr 2023 01:34:37 -0700 (PDT)
-Message-ID: <a7217c06-1037-9245-1241-33a7b1398907@gmail.com>
-Date:   Fri, 14 Apr 2023 16:34:34 +0800
+        Fri, 14 Apr 2023 02:04:54 -0700 (PDT)
+Message-ID: <1bca6745-23df-5898-7675-c914531fa40b@gmail.com>
+Date:   Fri, 14 Apr 2023 17:04:50 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH v7 05/12] dt-bindings: mfd: syscon: Add nuvoton,ma35d1-sys
- compatible
+Subject: Re: [PATCH v7 12/12] MAINTAINERS: Add entry for NUVOTON MA35
 Content-Language: en-US
-To:     Lee Jones <lee@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>
 References: <20230412053824.106-1-ychuang570808@gmail.com>
- <20230412053824.106-6-ychuang570808@gmail.com>
- <d11b6acb-b072-9496-5ad6-0635357394f1@linaro.org>
- <69b0aa3a-f5d2-8310-81ae-61d379db0d3b@gmail.com>
- <20230414070326.GA1036697@google.com>
+ <20230412053824.106-13-ychuang570808@gmail.com>
+ <241f6cb1-193f-d372-0eda-157946b15780@linaro.org>
+ <91861072-dc2d-46d3-dc0d-26d17a3693c7@gmail.com>
+ <4b9a0f13-d03a-8496-a400-8621b8d7c98a@linaro.org>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <20230414070326.GA1036697@google.com>
+In-Reply-To: <4b9a0f13-d03a-8496-a400-8621b8d7c98a@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -82,50 +81,63 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 2023/4/14 下午 03:03, Lee Jones wrote:
-> On Fri, 14 Apr 2023, Jacky Huang wrote:
->
+On 2023/4/14 下午 03:46, Krzysztof Kozlowski wrote:
+> On 14/04/2023 03:22, Jacky Huang wrote:
 >> Dear Krzysztof,
 >>
 >>
->> On 2023/4/14 上午 12:47, Krzysztof Kozlowski wrote:
+>> On 2023/4/14 上午 01:01, Krzysztof Kozlowski wrote:
 >>> On 12/04/2023 07:38, Jacky Huang wrote:
 >>>> From: Jacky Huang <ychuang3@nuvoton.com>
 >>>>
->>>> Add Nuvoton ma35d1 system registers compatible.
->>>>
->>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->>> What about the tag? Why did you ignore it?
->>>
->>> Also, wasn't this applied? Why do you resend (incorrect version)?
+>>>> Add entry for Nuvoton ma35d1 maintainer and files.
+>>>> In addition, update board binding paths of NUVOTON NPCM.
+>>>>    ARM/NUVOTON NPCM ARCHITECTURE
+>>>>    M:	Avi Fishman <avifishman70@gmail.com>
+>>>>    M:	Tomer Maimon <tmaimon77@gmail.com>
+>>>> @@ -2512,7 +2522,8 @@ L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
+>>>>    S:	Supported
+>>>>    F:	Documentation/devicetree/bindings/*/*/*npcm*
+>>>>    F:	Documentation/devicetree/bindings/*/*npcm*
+>>>> -F:	Documentation/devicetree/bindings/arm/npcm/*
+>>> It is not a bisectable change.
 >>>
 >>> Best regards,
 >>> Krzysztof
 >>>
->> When I was making this patchset, this patch was still not merged.
->> So I'm not sure if I should remove it.
->> This is just a resend with no updates. And I will remove this patch
->> in the next version as it was applied.
->> If possible, please add the following tags for this patch.
+>> F:    Documentation/devicetree/bindings/*/*/*npcm*
+>> F:    Documentation/devicetree/bindings/*/*npcm*
+>> F:    Documentation/devicetree/bindings/arm/nuvoton/*npcm*    <-- remove
+>> this
+>> F:    Documentation/devicetree/bindings/soc/nuvoton/*npcm* <-- remove this
 >>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> I added this.
+>> Yes, the two statements at the bottom seem redundant. I will remove them.
+> I did not comment about "redundant". I used the word "bisectable". git
+> help bisect.
 >
->> Reviewed-by: Lee Jones <lee@kernel.org>
-> When did I provide this?
+> Best regards,
+> Krzysztof
 >
-> --
-> Lee Jones [李琼斯]
+Dear Krzysztof,
 
-Dear Lee,
+I do a test on it, but cannot find issues.
+Could you please advise on how to duplicate the issue? Thank you.
 
-Thank you for your help. And, I'm sorry, I thought 'applied' meant 
-'reviewed', and this patch
-didn't actually get your review tag. If this offends you, please remove 
-it. Of course, if you are
-willing to provide a review tag, I would greatly appreciate it.
+I do the following 'git bisect' test.
+
+$ git log --oneline
+5e186f4f1f94 (HEAD, master) MAINTAINERS: Add entry for NUVOTON MA35
+. . .
+1a8a804a4f5d Merge tag 'trace-v6.3-rc5-2' of 
+git://git.kernel.org/pub/scm/linux/kernel/git/trace/linux-trace
+
+
+$ git bisect start 5e186f4f1f94 1a8a804a4f5d
+  HEAD is now at 5e186f4f1f94 MAINTAINERS: Add entry for NUVOTON MA35
+  Bisecting: 68 revisions left to test after this (roughly 6 steps)
 
 
 Best regards,
 Jacky Huang
+
 
