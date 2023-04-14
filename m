@@ -2,121 +2,78 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1D0C77B71
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 17:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5D0C77B6E
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 17:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjDNRCz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Apr 2023 13:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
+        id S230261AbjDNRHs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Apr 2023 13:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbjDNRCy (ORCPT
+        with ESMTP id S229744AbjDNRHr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Apr 2023 13:02:54 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386814C06;
-        Fri, 14 Apr 2023 10:02:51 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id w11so19439892pjh.5;
-        Fri, 14 Apr 2023 10:02:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681491770; x=1684083770;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4982OWHBZFhKv5G5U9s7PCqJchTkqnqBTBjMwU+qIoM=;
-        b=AKABNLwNp2FFLU0n3xMsC2JflB03vvtj1T3GTLay/ZkfhxW9UaUayh7gSQVbzAMZq2
-         zU7YdBx55xiMa0W3499dZivNG3AWfpQxNwSRuTVe34hV/vDcsTvJ7V92JN7bFaIUSL4o
-         gQNW4UioKlixgBP1jIoWWhrGEzzFCW1aEQlqfZf6UAgQRunKNgLUl+f9Bebo8RYN4GqS
-         lX13cKrP1gnfX5f5VLgvhdVPjqwFkbmFq8GvZRS3UNEo8C3oh1MXSIR3s0MCXnirPl4a
-         SrBbSH39o0AzW2xqj6DlDPuK5NgluYYaCMAcALsocsmwohCN0m8Pn0+80zVRhx7SoBjf
-         AWjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681491770; x=1684083770;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4982OWHBZFhKv5G5U9s7PCqJchTkqnqBTBjMwU+qIoM=;
-        b=M9jAzSYJ40UD3oBFLjmI3xy9vHCSfWeilV55DhFls/f8Cx4lnCvF5nrMojlwIhDZXY
-         bBBiCZ1zl24DzPhNrISl/RnY/THDH2coRGOax/9j6OU5aVb4sjSrH5lgaAHPmfLohQMz
-         SGw6VNA4NZmrqN1CsDTilCaXMWbgzXh5vUfwJ4pulKKVOnPtC/D2aMxEFu7YCZAzyetL
-         3XGHYpJmoW1nrQgP6vl2le0dgCMbBLQS7smTxsY21Zh2q+d2WUcTv3atNDotvheXYwii
-         X6hvUPPNmnt0R4ZICMc9zuXhX+oCZblf1OgcLipl4BMVWO4Dov8FDesuyGWCRZQdMo5d
-         sXWw==
-X-Gm-Message-State: AAQBX9dFPyHd7rJKM8ly4VK2jJ9ugdLkbd0xbteqLEOleuSM8dIgHU9h
-        dl8tCe45N02ZYyRnBbhXVAXoBMvSsxXxrQ==
-X-Google-Smtp-Source: AKy350ZGzpLaL1wGYb0Z+uFCylT8WrWM+ZvFm1RF6KgTGa2eSNliC8e7nCR8cXPuw1/GVPIKVJTFkg==
-X-Received: by 2002:a17:903:1252:b0:1a2:7d:8a8d with SMTP id u18-20020a170903125200b001a2007d8a8dmr3840441plh.57.1681491769102;
-        Fri, 14 Apr 2023 10:02:49 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l14-20020a17090add8e00b0024702e7c80fsm3137129pjv.23.2023.04.14.10.02.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 10:02:48 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     opendmb@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 14 Apr 2023 13:07:47 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFAF12F;
+        Fri, 14 Apr 2023 10:07:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681492066; x=1713028066;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GBoNCViOEvk6woG7iq2pnj+UK5lo70w24v6Gu/PxKA0=;
+  b=hl55Ouq+lFG1MGwxu7G3UOZNoV76W7pKLygPnyMiyaQ3YV/7pRZ0yZ53
+   PE3swiFpVUefTSf/ctxOJjeEQ8p3g6xGepqiwaZvwN4FAq+MIVJSyh/tI
+   x+kkMYOltTRc6Ym7fFG3fMO11ZYZ0YomlQ/IaTKjux1WoWdjELgcq1Zjk
+   Z8bBMWWBRL4of++L0mb0nyWD2c7xoFEyTzuknODBSJx87RrKWtNcX1wdr
+   2rQHqVCrK1NRdPoTOxih15Wx54WTJYlOs3FosxYZzDHzD+Bwx4ILgcJx2
+   35PDSZ+1BXOwB+PJT7FYAp1sGAxrJGbJmKxAHLuDYsKxF33rknMb6XWXM
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="324142458"
+X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
+   d="scan'208";a="324142458"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 10:07:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="692496616"
+X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
+   d="scan'208";a="692496616"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007.fm.intel.com with ESMTP; 14 Apr 2023 10:07:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pnMtj-00HDNV-0q;
+        Fri, 14 Apr 2023 20:07:43 +0300
+Date:   Fri, 14 Apr 2023 20:07:42 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andrew Davis <afd@ti.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS)
-Subject: [PATCH v2] serial: 8250: Add missing wakeup event reporting
-Date:   Fri, 14 Apr 2023 10:02:39 -0700
-Message-Id: <20230414170241.2016255-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] serial: 8250_exar: Use PCI_DEVICE_DATA macro directly
+Message-ID: <ZDmIXoARLYXb8k9z@smile.fi.intel.com>
+References: <20230413214421.6251-1-afd@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230413214421.6251-1-afd@ti.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-An 8250 UART configured as a wake-up source would not have reported
-itself through sysfs as being the source of wake-up, correct that.
+On Thu, Apr 13, 2023 at 04:44:20PM -0500, Andrew Davis wrote:
+> The EXAR_DEVICE macro was converted to use PCI_DEVICE_DATA, having
+> this macro at doesn't add much, remove it.
 
-Fixes: b3b708fa2780 ("wake up from a serial port")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v2:
+I'm not against this, but I have to point out that this patch brings
+inconsistency into the table. Either convert all, or none, I think.
 
-- added Fixes: tag
+That's why the patch that converts EXAR_DEVICE() to use PCI_DEVICE_DATA()
+had a little intrusion.
 
- drivers/tty/serial/8250/8250_port.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index dfbc501cf9d1..fe8d79c4ae95 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -15,6 +15,7 @@
- #include <linux/moduleparam.h>
- #include <linux/ioport.h>
- #include <linux/init.h>
-+#include <linux/irq.h>
- #include <linux/console.h>
- #include <linux/gpio/consumer.h>
- #include <linux/sysrq.h>
-@@ -1932,6 +1933,7 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
- int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
-+	struct tty_port *tport = &port->state->port;
- 	bool skip_rx = false;
- 	unsigned long flags;
- 	u16 status;
-@@ -1957,6 +1959,8 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 		skip_rx = true;
- 
- 	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
-+		if (irqd_is_wakeup_set(irq_get_irq_data(port->irq)))
-+			pm_wakeup_event(tport->tty->dev, 0);
- 		if (!up->dma || handle_rx_dma(up, iir))
- 			status = serial8250_rx_chars(up, status);
- 	}
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
