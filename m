@@ -2,106 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E48B5C77B6E
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 12:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1D0C77B71
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 17:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbjDNMyQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Apr 2023 08:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
+        id S229895AbjDNRCz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Apr 2023 13:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbjDNMyP (ORCPT
+        with ESMTP id S229685AbjDNRCy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Apr 2023 08:54:15 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE5E977F;
-        Fri, 14 Apr 2023 05:54:10 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id f2so9696133pjs.3;
-        Fri, 14 Apr 2023 05:54:10 -0700 (PDT)
+        Fri, 14 Apr 2023 13:02:54 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386814C06;
+        Fri, 14 Apr 2023 10:02:51 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id w11so19439892pjh.5;
+        Fri, 14 Apr 2023 10:02:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681476850; x=1684068850;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=F1QwZkwEn6xrzyo5DQTCYy/azTv/nyRhxJzIWb9QpKo=;
-        b=ZlQHDJaxfFOBDNnlsQ5DFBkAhD/kgVmgKr8JQtBLs11Yyil3+q84lTINMny83+k4Fc
-         92P9ctaA3ohsMwY+l5IH5Oq97mKvlB25/1KdawxX40WTSPLvkju8u7wDOxYy2YwZNCSS
-         +YXa2KLFmukli2dtKCatUzk1Osk0wvnuD79psCpnrLXaZDE6xyuAxLMpA8cdh7q6hRfi
-         MU8LKOiM5u3/QiQ37taeEfimP76+JnpfLR1MxbAdI8l7iq/zf7Z36tXU1JENRB2JQnel
-         GbIK+r3frbmAbU7nC+ioZpwi4WXfZPe4pvMU7UG/GfnxHlUbO6PSGyR0id9V5ss3eiim
-         VqgA==
+        d=gmail.com; s=20221208; t=1681491770; x=1684083770;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4982OWHBZFhKv5G5U9s7PCqJchTkqnqBTBjMwU+qIoM=;
+        b=AKABNLwNp2FFLU0n3xMsC2JflB03vvtj1T3GTLay/ZkfhxW9UaUayh7gSQVbzAMZq2
+         zU7YdBx55xiMa0W3499dZivNG3AWfpQxNwSRuTVe34hV/vDcsTvJ7V92JN7bFaIUSL4o
+         gQNW4UioKlixgBP1jIoWWhrGEzzFCW1aEQlqfZf6UAgQRunKNgLUl+f9Bebo8RYN4GqS
+         lX13cKrP1gnfX5f5VLgvhdVPjqwFkbmFq8GvZRS3UNEo8C3oh1MXSIR3s0MCXnirPl4a
+         SrBbSH39o0AzW2xqj6DlDPuK5NgluYYaCMAcALsocsmwohCN0m8Pn0+80zVRhx7SoBjf
+         AWjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681476850; x=1684068850;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=F1QwZkwEn6xrzyo5DQTCYy/azTv/nyRhxJzIWb9QpKo=;
-        b=SN5ZJQzEVCHbSWkZnVMJfxAe6gDwXchyfkCuw6FyREELif1w42iBWF0ZfBmh5UJYUN
-         XXyXd+jHKn676i1/5R6r3Uu0uTpb3TBiV/1rFLNu9P5R2ntGi5yYDr0uiBfF02/GKCub
-         3sQvWq/zhcOwgIpb0ZmtXL+jPvEYc4MDZIHDdbavBEC8YD6hWLEQ3rgUUJ4RimTbYmde
-         AeWubdAVycEEKQTQp98Y1Hv12O+/XAwB74dJsV++pr1KN9vPTcPh1g3FTt3pyXh+2W5x
-         iQCX4bXBu39qi2OP9clwqOeYYj2uyG4Fej/KzK+T1/W+KrMZvyXXbFtBOD7/9U78XVsa
-         vbdg==
-X-Gm-Message-State: AAQBX9dR2X0dGA5l7zGmyuC86H46HqBxGdQ84FYafJh9dG5Qmb9A1dLV
-        VeZldi1q057gUrGHGmk16+I=
-X-Google-Smtp-Source: AKy350bVdsNcSykv+SI7jRhrzajw1AY99JX8jbvhF3NwG40IfJgwp3GQ/Rn1ZF4VmBuQ0CesUO/oeg==
-X-Received: by 2002:a05:6a20:b2a4:b0:ec:60a:d04d with SMTP id ei36-20020a056a20b2a400b000ec060ad04dmr5217378pzb.33.1681476850006;
-        Fri, 14 Apr 2023 05:54:10 -0700 (PDT)
-Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id e24-20020aa78c58000000b005895f9657ebsm3005541pfd.70.2023.04.14.05.54.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Apr 2023 05:54:09 -0700 (PDT)
-Message-ID: <fd092a59-dc44-2c26-5c72-c9b442cf2bc8@gmail.com>
-Date:   Fri, 14 Apr 2023 05:54:06 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] serial: 8250: Add missing wakeup event reporting
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        d=1e100.net; s=20221208; t=1681491770; x=1684083770;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4982OWHBZFhKv5G5U9s7PCqJchTkqnqBTBjMwU+qIoM=;
+        b=M9jAzSYJ40UD3oBFLjmI3xy9vHCSfWeilV55DhFls/f8Cx4lnCvF5nrMojlwIhDZXY
+         bBBiCZ1zl24DzPhNrISl/RnY/THDH2coRGOax/9j6OU5aVb4sjSrH5lgaAHPmfLohQMz
+         SGw6VNA4NZmrqN1CsDTilCaXMWbgzXh5vUfwJ4pulKKVOnPtC/D2aMxEFu7YCZAzyetL
+         3XGHYpJmoW1nrQgP6vl2le0dgCMbBLQS7smTxsY21Zh2q+d2WUcTv3atNDotvheXYwii
+         X6hvUPPNmnt0R4ZICMc9zuXhX+oCZblf1OgcLipl4BMVWO4Dov8FDesuyGWCRZQdMo5d
+         sXWw==
+X-Gm-Message-State: AAQBX9dFPyHd7rJKM8ly4VK2jJ9ugdLkbd0xbteqLEOleuSM8dIgHU9h
+        dl8tCe45N02ZYyRnBbhXVAXoBMvSsxXxrQ==
+X-Google-Smtp-Source: AKy350ZGzpLaL1wGYb0Z+uFCylT8WrWM+ZvFm1RF6KgTGa2eSNliC8e7nCR8cXPuw1/GVPIKVJTFkg==
+X-Received: by 2002:a17:903:1252:b0:1a2:7d:8a8d with SMTP id u18-20020a170903125200b001a2007d8a8dmr3840441plh.57.1681491769102;
+        Fri, 14 Apr 2023 10:02:49 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id l14-20020a17090add8e00b0024702e7c80fsm3137129pjv.23.2023.04.14.10.02.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Apr 2023 10:02:48 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     opendmb@gmail.com, bcm-kernel-feedback-list@broadcom.com,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Cc:     linux-kernel@vger.kernel.org, opendmb@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Eric Tremblay <etremblay@distech-controls.com>,
         Wander Lairson Costa <wander@redhat.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-References: <20230413213957.1985949-1-f.fainelli@gmail.com>
- <ZDj-htAWWxJ5gqPr@kroah.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <ZDj-htAWWxJ5gqPr@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS)
+Subject: [PATCH v2] serial: 8250: Add missing wakeup event reporting
+Date:   Fri, 14 Apr 2023 10:02:39 -0700
+Message-Id: <20230414170241.2016255-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+An 8250 UART configured as a wake-up source would not have reported
+itself through sysfs as being the source of wake-up, correct that.
 
+Fixes: b3b708fa2780 ("wake up from a serial port")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v2:
 
-On 4/14/2023 12:19 AM, Greg Kroah-Hartman wrote:
-> On Thu, Apr 13, 2023 at 02:39:54PM -0700, Florian Fainelli wrote:
->> An 8250 UART configured as a wake-up source would not have reported
->> itself through sysfs as being the source of wake-up, correct that.
->>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>   drivers/tty/serial/8250/8250_port.c | 4 ++++
->>   1 file changed, 4 insertions(+)
-> 
-> What commit does this fix?  Is it needed to go to stable kernel(s)?
+- added Fixes: tag
 
-That would be b3b708fa2780cd2b5d8266a8f0c3a1cab364d4d2 ("wake up from a 
-serial port").
+ drivers/tty/serial/8250/8250_port.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I do not know of standard Linux distribution user-space relying on the 
-wake-up counts from sysfs, though I certainly do care.
-
-The patch I submitted should backport fine all the way down to 4.14 
-where irqd_is_wakeup_set is available. Do you want me to submit a v2 
-with that Fixes tag?
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index dfbc501cf9d1..fe8d79c4ae95 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -15,6 +15,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/ioport.h>
+ #include <linux/init.h>
++#include <linux/irq.h>
+ #include <linux/console.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/sysrq.h>
+@@ -1932,6 +1933,7 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
+ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
++	struct tty_port *tport = &port->state->port;
+ 	bool skip_rx = false;
+ 	unsigned long flags;
+ 	u16 status;
+@@ -1957,6 +1959,8 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 		skip_rx = true;
+ 
+ 	if (status & (UART_LSR_DR | UART_LSR_BI) && !skip_rx) {
++		if (irqd_is_wakeup_set(irq_get_irq_data(port->irq)))
++			pm_wakeup_event(tport->tty->dev, 0);
+ 		if (!up->dma || handle_rx_dma(up, iir))
+ 			status = serial8250_rx_chars(up, status);
+ 	}
 -- 
-Florian
+2.34.1
+
