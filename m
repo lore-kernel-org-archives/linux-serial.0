@@ -2,96 +2,69 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3088C77B6E
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 07:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAB8C77B70
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 07:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbjDNHDh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Apr 2023 03:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
+        id S229464AbjDNHTl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Apr 2023 03:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbjDNHDh (ORCPT
+        with ESMTP id S229448AbjDNHTl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Apr 2023 03:03:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CAD30F3;
-        Fri, 14 Apr 2023 00:03:34 -0700 (PDT)
+        Fri, 14 Apr 2023 03:19:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4214C06;
+        Fri, 14 Apr 2023 00:19:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FC2E6142A;
-        Fri, 14 Apr 2023 07:03:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA87C433D2;
-        Fri, 14 Apr 2023 07:03:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681455813;
-        bh=rqjQ+JkmQ5s8hFO6KOYrqJpPjXCe/ybWx2ES9pfKxNY=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03167615AB;
+        Fri, 14 Apr 2023 07:19:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A930AC433EF;
+        Fri, 14 Apr 2023 07:19:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1681456779;
+        bh=YOGmlIeWOea1UxwP1vvPEOA2tt31dy0r2k9+GNwWsyA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OeVa61hpWjJ355wmCLO1BoZhJiNSREBnBDe+T/Sl542IrJ34P0/Qs0XNcqYRPOfwS
-         71N3861EHRYKuIko2FBs+YPNMb2fW8jY/Zg1kD7dDsWSYJVXzBocLn9+nKvm0H8yX1
-         gHuFJ1gt4jE8K2RidIXyn5VlNnFlkWvOvq8BJnwzOyHm2NHaMDaLPG5aO7IFHKkZiG
-         w6RmvDN0olHUmWpZURGrYsSQhgwQcnG4WnEyBnD7PouZCBskpHkNOfEm2pVkj4gRLr
-         K4JEudrWmKe6KR1+gxklLROMsbaZgdYE5hstLqJxWl0gtIpvCMKZkpadblSN1sae54
-         4PDEErmfBSEGw==
-Date:   Fri, 14 Apr 2023 08:03:26 +0100
-From:   Lee Jones <lee@kernel.org>
-To:     Jacky Huang <ychuang570808@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v7 05/12] dt-bindings: mfd: syscon: Add
- nuvoton,ma35d1-sys compatible
-Message-ID: <20230414070326.GA1036697@google.com>
-References: <20230412053824.106-1-ychuang570808@gmail.com>
- <20230412053824.106-6-ychuang570808@gmail.com>
- <d11b6acb-b072-9496-5ad6-0635357394f1@linaro.org>
- <69b0aa3a-f5d2-8310-81ae-61d379db0d3b@gmail.com>
+        b=QRaDMit2dyhVao2j3mKIItS8mOLHwqSVKHsGQeOt8JzdOJLwYskhISpYG0yY2dqxR
+         fK8jLFP5w6C35+3bMhjx3KwT8whYd6geSkmRPLiTnJ0zlsryvXJQjZHr+XnpMBYqgr
+         LG2sxe4ff5oERS369yXmNA1SDT00FNYhZYPfqxdM=
+Date:   Fri, 14 Apr 2023 09:19:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, opendmb@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Eric Tremblay <etremblay@distech-controls.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250: Add missing wakeup event reporting
+Message-ID: <ZDj-htAWWxJ5gqPr@kroah.com>
+References: <20230413213957.1985949-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <69b0aa3a-f5d2-8310-81ae-61d379db0d3b@gmail.com>
+In-Reply-To: <20230413213957.1985949-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 14 Apr 2023, Jacky Huang wrote:
+On Thu, Apr 13, 2023 at 02:39:54PM -0700, Florian Fainelli wrote:
+> An 8250 UART configured as a wake-up source would not have reported
+> itself through sysfs as being the source of wake-up, correct that.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-> Dear Krzysztof,
->
->
-> On 2023/4/14 上午 12:47, Krzysztof Kozlowski wrote:
-> > On 12/04/2023 07:38, Jacky Huang wrote:
-> > > From: Jacky Huang <ychuang3@nuvoton.com>
-> > >
-> > > Add Nuvoton ma35d1 system registers compatible.
-> > >
-> > > Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-> > What about the tag? Why did you ignore it?
-> >
-> > Also, wasn't this applied? Why do you resend (incorrect version)?
-> >
-> > Best regards,
-> > Krzysztof
-> >
->
-> When I was making this patchset, this patch was still not merged.
-> So I'm not sure if I should remove it.
-> This is just a resend with no updates. And I will remove this patch
-> in the next version as it was applied.
-> If possible, please add the following tags for this patch.
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+What commit does this fix?  Is it needed to go to stable kernel(s)?
 
-I added this.
+thanks,
 
-> Reviewed-by: Lee Jones <lee@kernel.org>
-
-When did I provide this?
-
---
-Lee Jones [李琼斯]
+gre gk-h
