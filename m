@@ -2,86 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5DAC77B71
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 17:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC973C77B71
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 17:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjDNRMh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Apr 2023 13:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38308 "EHLO
+        id S229841AbjDNRUw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Apr 2023 13:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbjDNRMh (ORCPT
+        with ESMTP id S229542AbjDNRUv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Apr 2023 13:12:37 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EA412F;
-        Fri, 14 Apr 2023 10:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681492356; x=1713028356;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BvUZ/WxkZ91U7aHTLOgkDO1QjRQQwhV++ic08HnfP2U=;
-  b=YV2lUzJPWeMtN4AN70nEVaSLBcog3BOgmq2Vs7uovxQNAJaqitvV2Her
-   FHp78uNsmKsX9nOMtx06W3tktSyipvkaVH4xvNdUipZh+1XgQ0IEVxnXN
-   JinMq3MWrlAKMhj3TKL+s3RnNpJ9o5g8Af42g047nPc96aPSpXB9J0euj
-   0tej53wkib//1OadH4TIdLMxliXaAcCUqACQRuSdy66nOTAQBPtqXrKsY
-   ugp3GHb9WQPFGmB36y9GVAjs0sxZzRIXg/n5NYwTYsqgYPK6l8Y5nlU9D
-   nQIibOADhyR8b4F9qEKw9kffRrD7tSoFWTnyaZPXGpnI48n4tGcv13+/l
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="407396285"
-X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
-   d="scan'208";a="407396285"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 10:10:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="689878765"
-X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
-   d="scan'208";a="689878765"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002.jf.intel.com with ESMTP; 14 Apr 2023 10:10:35 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pnMwT-00HDQf-2Z;
-        Fri, 14 Apr 2023 20:10:33 +0300
-Date:   Fri, 14 Apr 2023 20:10:33 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andrew Davis <afd@ti.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250_exar: Add support for USR298x PCI Modems
-Message-ID: <ZDmJCa4I5EA9GLMm@smile.fi.intel.com>
-References: <20230413214421.6251-1-afd@ti.com>
- <20230413214421.6251-2-afd@ti.com>
+        Fri, 14 Apr 2023 13:20:51 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E023AA0;
+        Fri, 14 Apr 2023 10:20:49 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33EHKggP108172;
+        Fri, 14 Apr 2023 12:20:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1681492842;
+        bh=JF/2JgozJ0OBWGZ5LniP6mjhSeBRS0/u484NSdXRmu8=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=FTajqF5DoEjE0NwKfj+MeJXONySICmmFOwYaCw+rEcZDt8l+lP/7sOZRSKdhl1Irf
+         hlbvPq8Lz2zaPpsWWWzLKBA9td33KebTV3F4SgFnXKvJToHRBmXOllxw3Zcl3uMY6K
+         XhxC7cInNoecEHi+413jPCWfFGuN0erx41vN81FM=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33EHKgNu009448
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 14 Apr 2023 12:20:42 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 14
+ Apr 2023 12:20:42 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 14 Apr 2023 12:20:42 -0500
+Received: from [10.250.32.8] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33EHKfhh004216;
+        Fri, 14 Apr 2023 12:20:42 -0500
+Message-ID: <d9c98ab1-dc78-8f68-6a2d-28d9185d3294@ti.com>
+Date:   Fri, 14 Apr 2023 12:20:41 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230413214421.6251-2-afd@ti.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/2] serial: 8250_exar: Use PCI_DEVICE_DATA macro directly
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20230413214421.6251-1-afd@ti.com>
+ <ZDmIXoARLYXb8k9z@smile.fi.intel.com>
+From:   Andrew Davis <afd@ti.com>
+In-Reply-To: <ZDmIXoARLYXb8k9z@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 04:44:21PM -0500, Andrew Davis wrote:
-> Possibly the last PCI controller-based (i.e. not a soft/winmodem)
-> dial-up modem one can still buy.
+On 4/14/23 12:07 PM, Andy Shevchenko wrote:
+> On Thu, Apr 13, 2023 at 04:44:20PM -0500, Andrew Davis wrote:
+>> The EXAR_DEVICE macro was converted to use PCI_DEVICE_DATA, having
+>> this macro at doesn't add much, remove it.
 > 
-> Looks to have a stock XR17C154 PCI UART chip for communication, but for
-> some reason when provisioning the PCI IDs they swapped the vendor and
-> subvendor IDs. Otherwise this card would have worked out of the box.
+> I'm not against this, but I have to point out that this patch brings
+> inconsistency into the table. Either convert all, or none, I think.
 > 
-> Searching online, some folks seem to not have this issue and others do,
-> so it is possible only some batches of cards have this error.
+
+I did notice that, and was not sure how I feel about it either. The
+issue is the others in the table have SUBDEVICE_IDs but we have
+no simple macro for that.
+
+Maybe what we need is a PCI_DEVICE_SUB_DATA() macro in pci.h, basically
+it would be to PCI_DEVICE_SUB() what PCI_DEVICE_DATA() is to PCI_DEVICE().
+
+Then I could re-consistify the table later with that. Thoughts?
+
+Andrew
+
+> That's why the patch that converts EXAR_DEVICE() to use PCI_DEVICE_DATA()
+> had a little intrusion.
 > 
-> Create a new macro to handle the switched IDs and add support here.
-
-Yeah, and here you just going to support the schema before your patch 1.
-
-For this patch
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> 
