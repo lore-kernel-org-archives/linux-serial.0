@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A64C77B6F
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 00:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C35C77B78
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Apr 2023 01:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbjDNAzh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Apr 2023 20:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
+        id S229721AbjDNBLv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Apr 2023 21:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjDNAzg (ORCPT
+        with ESMTP id S229754AbjDNBLv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Apr 2023 20:55:36 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3329826B8;
-        Thu, 13 Apr 2023 17:55:35 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id lh8so3890749plb.1;
-        Thu, 13 Apr 2023 17:55:35 -0700 (PDT)
+        Thu, 13 Apr 2023 21:11:51 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B71130F3;
+        Thu, 13 Apr 2023 18:11:50 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id 21so8715246plg.12;
+        Thu, 13 Apr 2023 18:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681433734; x=1684025734;
+        d=gmail.com; s=20221208; t=1681434710; x=1684026710;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=NpHU9YxApA1ZTwJM58qtSmQ3DAXg++Ijjf/3LEHCZOE=;
-        b=SYv+xqmhUKPO/BqQmTHclmV8WG2ugMN6WHnZ5NGCWvDGaeFH3U+WeKkIo7x7qmomjv
-         Ej5ZKlARiwjXkH6o8k+/5DGj+yToPFeewRgzDjcXdCWpjBJlWIp+twZlDDJt7R0ZSS6F
-         Hun4pA0jUZtE7NUNg/gqSAdFUigLWrxKlPT39cG1bqLzIKlUWQ+c/PZvk1/ilPAKJtqF
-         4VIx+4Hjum2TgZCjDCgZtr2LjmWH+h6/queEirWL6SFvEIjjeFDT3gNtQRyvivyZxtjo
-         bDh/92nZRtIyFLxrVaFH5/3t1aio8kAfNStIEPu//s4up4//zb2HOkQDMiJYlxSFZtgx
-         BFGw==
+        bh=+r3aux4yucH9SfhX2QxRIhHkcAuFbVjbJD90j5NQDME=;
+        b=LTiTK/swZV7NKEl/gDQ0Kwa8lG0QRiTNpM1bhk4UU41HQuNi9JvxoHuDzJapEkGiIc
+         blCXwG1azwi7xwTxv9JdkUjPiaEHYdfrDPfkGAll4qwo8RzViZDWtaJ++2ZlZ57+6QfN
+         l92H1aSvlNf55kdN/jJg3bSceXHk+7ExmBszbvjg9gV9W74dT6OjUgpGUlAY7eSnJR6N
+         wjkOarxQXE6IucpxP+Y0m8+M9p47ONQS++51wdNvgMPVVCY1Jb/5tkzEboDUcxINpDtS
+         W5vESFC/L20aEt0ijgh7o3pz8Qf26NJlWX9KSNOdal/6hNzQYpEfHmWRMfCty40vsYH5
+         ns7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681433734; x=1684025734;
+        d=1e100.net; s=20221208; t=1681434710; x=1684026710;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NpHU9YxApA1ZTwJM58qtSmQ3DAXg++Ijjf/3LEHCZOE=;
-        b=Ae+09IwAjjRGCt0dCTlK0QvFvclB09SVq9v249GHcLt6X3z30zm7qvmoCNAOapQIOu
-         hG5dWjg43W0/Ym5cy6fkM3+wl33/QwhydgAKzdyHHfLDcYUOGRlrolycpkULJ4FyJTC2
-         uzoHWGdhFuw+AowWBfAka2nFx2Zb4Fptvk05SDC2KNThNlnhj0JLZqDq/Hu9hjXI4Uft
-         z204nG3eaDB58hKSyzdmyS21a9MpWT+cLPrykOy7UCbF4MZvU93sh7Z9BjGNiZCumTBR
-         N6TmJe3eGQwqXv9roeLA9lWx2+bs2M3cjTSrHSG8wkZUs2oJtdz8kUbW0U/UBRHVPyPZ
-         8D6g==
-X-Gm-Message-State: AAQBX9dcOg3/nLr7Cd+ZwyZfzYlNknG+Fvc9oTAmk7Pjs8fZn+xblQRR
-        RDQ4cGchrulPrLFad+w3vKZkdgPmOJQ=
-X-Google-Smtp-Source: AKy350b7ieJJ6BjqKMsXT60jZuiYxBbQoHhNssVmZ6GX2/YBWtkZ4XWybUefT/7qMUJw/a3FDaW0mA==
-X-Received: by 2002:a17:90a:fa4f:b0:247:4c7:4d53 with SMTP id dt15-20020a17090afa4f00b0024704c74d53mr3543640pjb.36.1681433734244;
-        Thu, 13 Apr 2023 17:55:34 -0700 (PDT)
+        bh=+r3aux4yucH9SfhX2QxRIhHkcAuFbVjbJD90j5NQDME=;
+        b=bkvJLZBgEtobCIfQaE/BF2tEJzAoDs4UN+Ha5rm6VdwDvh5rEy4G0sxlIsvwPhlOEA
+         7Jr/p3ywuaaxNXhNQdJufG8U0XZbqmAB0QflHHyESVm2ewYJRe9RszAwDfUScvotocyL
+         Kj5UPDAsOGIajvzHXl0oUfPdSO/Cnu3M9DVj87jZKdsYIPNrRedV2L+QRQ36cHuTE243
+         c3Kx4tt1zuNIhcFG/RviJqGoxRVV2vlGPczu/v4yNDXrBkh7LrAoR7zuOUJTi0AE3r1u
+         vOgSSPhUVrruZ0wk8Ek9QcMofoFIn/SAMoYKir3afhiHoI/ovuFzDXv6akBGCc5M4+zP
+         p/Bg==
+X-Gm-Message-State: AAQBX9enm73TV2EliM6D040mAAVa23T8hgzlFqw3bqbZn1+i9TEXwzaN
+        EdYgcZ4eJdLtrjfDhdUMGko=
+X-Google-Smtp-Source: AKy350alZnXk2cEN2Fxwx4ap7KVspTrFpi0rTKMdrKoiKVa0Y51FgzPgsfTKRY54nCDiY47kD8MhqQ==
+X-Received: by 2002:a17:903:4281:b0:1a1:bf22:2b6e with SMTP id ju1-20020a170903428100b001a1bf222b6emr891939plb.43.1681434709602;
+        Thu, 13 Apr 2023 18:11:49 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id t4-20020a1709028c8400b001a653a32173sm418179plo.29.2023.04.13.17.55.30
+        by smtp.gmail.com with ESMTPSA id jw19-20020a170903279300b0019f3cc463absm2074638plb.0.2023.04.13.18.11.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Apr 2023 17:55:33 -0700 (PDT)
-Message-ID: <41807e8d-b081-6c91-3fc8-f273770ea493@gmail.com>
-Date:   Fri, 14 Apr 2023 08:55:29 +0800
+        Thu, 13 Apr 2023 18:11:49 -0700 (PDT)
+Message-ID: <69b0aa3a-f5d2-8310-81ae-61d379db0d3b@gmail.com>
+Date:   Fri, 14 Apr 2023 09:11:46 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH v7 04/12] dt-bindings: reset: nuvoton: Document ma35d1
- reset control
+Subject: Re: [PATCH v7 05/12] dt-bindings: mfd: syscon: Add nuvoton,ma35d1-sys
+ compatible
 Content-Language: en-US
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -68,10 +68,10 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>
 References: <20230412053824.106-1-ychuang570808@gmail.com>
- <20230412053824.106-5-ychuang570808@gmail.com>
- <874a1e5c-f82e-68d7-3617-042deb928071@linaro.org>
+ <20230412053824.106-6-ychuang570808@gmail.com>
+ <d11b6acb-b072-9496-5ad6-0635357394f1@linaro.org>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <874a1e5c-f82e-68d7-3617-042deb928071@linaro.org>
+In-Reply-To: <d11b6acb-b072-9496-5ad6-0635357394f1@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -81,44 +81,31 @@ X-Mailing-List: linux-serial@vger.kernel.org
 Dear Krzysztof,
 
 
-On 2023/4/14 上午 12:58, Krzysztof Kozlowski wrote:
+On 2023/4/14 上午 12:47, Krzysztof Kozlowski wrote:
 > On 12/04/2023 07:38, Jacky Huang wrote:
 >> From: Jacky Huang <ychuang3@nuvoton.com>
 >>
->> Add the dt-bindings header for Nuvoton ma35d1, that gets shared
->> between the reset controller and reset references in the dts.
->> Add documentation to describe nuvoton ma35d1 reset driver.
+>> Add Nuvoton ma35d1 system registers compatible.
 >>
 >> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> What about the tag? Why did you ignore it?
 >
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
->
-> This is an automated instruction, just in case, because many review tags
-> are being ignored. If you do not know the process, here is a short
-> explanation:
->
-> Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-> versions, under or above your Signed-off-by tag. Tools like b4 can help
-> here. However, there's no need to repost patches *only* to add the tags.
-> The upstream maintainer will do that for acks received on the version
-> they apply.
->
-> https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
+> Also, wasn't this applied? Why do you resend (incorrect version)?
 >
 > Best regards,
 > Krzysztof
 >
 
-Thank you for your explanation. I was not aware of the rules for adding 
-tags, and it was my mistake.
-I thought that it was necessary for the reviewer to proactively add the 
-"reviewed-by" tag to the patch
-before I could attach the tag. I am glad to collect the past records and 
-add the tags and will update
-in the next version.
+When I was making this patchset, this patch was still not merged.
+So I'm not sure if I should remove it.
+This is just a resend with no updates. And I will remove this patch
+in the next version as it was applied.
+If possible, please add the following tags for this patch.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Lee Jones <lee@kernel.org>
 
 
-Best regards,
+Thank you,
 Jacky Huang
 
