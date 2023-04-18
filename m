@@ -2,46 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40312C77B72
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Apr 2023 20:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BAEC77B76
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Apr 2023 09:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbjDQUmf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Apr 2023 16:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
+        id S229664AbjDRJlt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Apr 2023 05:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjDQUmf (ORCPT
+        with ESMTP id S230519AbjDRJl1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Apr 2023 16:42:35 -0400
-X-Greylist: delayed 1809 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 17 Apr 2023 13:42:34 PDT
-Received: from slot0.gie-nz.com (slot0.gie-nz.com [45.81.243.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A52A8
-        for <linux-serial@vger.kernel.org>; Mon, 17 Apr 2023 13:42:33 -0700 (PDT)
-From:   FASTWAYBASE.US94@consultant.com
-To:     linux-serial@vger.kernel.org
-Subject: Re: new order
-Date:   17 Apr 2023 22:12:06 +0200
-Message-ID: <20230417221206.0A7EBB1267AEFD92@consultant.com>
+        Tue, 18 Apr 2023 05:41:27 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5C47170E;
+        Tue, 18 Apr 2023 02:41:25 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 9FFF38106;
+        Tue, 18 Apr 2023 09:41:24 +0000 (UTC)
+Date:   Tue, 18 Apr 2023 12:41:23 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250: Clear port->pm on port specific driver
+ unbind
+Message-ID: <20230418094123.GA14287@atomide.com>
+References: <20230413070342.36155-1-tony@atomide.com>
+ <ZDgoi2mFYYqswAhu@smile.fi.intel.com>
+ <20230414054726.GE36234@atomide.com>
+ <63b333cb-13c7-db58-9cf-697aa1c4c48a@linux.intel.com>
+ <20230414094035.GF36234@atomide.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
-        boundary="----=_NextPart_000_0012_14D6C7A4.1CADF3AC"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230414094035.GF36234@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This is a multi-part message in MIME format.
+* Tony Lindgren <tony@atomide.com> [230414 09:40]:
+> I'm now wondering still if we should clear all the conditional hardware
+> specific functions too in addition to port->pm that get set in
+> serial8250_register_8250_port(). Maybe best done in a separate patch
+> as needed.. Any suggestions?
 
-------=_NextPart_000_0012_14D6C7A4.1CADF3AC
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Well we can't do memset on the port for sure at this point.. But what
+we can do is call serial8250_set_defaults() instead of clearing just
+port->pm. This will set the port back to serial8250 default functions,
+and will set port->pm too.
 
-Dea Sir.
+I'll send v2 patch after some more testing.
 
-Please see attached new order and revert to us the delivery date/
-FOB
-also inform us payment terms.
+Regards,
 
-Best Regards=20
-Susan
-Purchase Manager.
-------=_NextPart_000_0012_14D6C7A4.1CADF3AC--
+Tony
