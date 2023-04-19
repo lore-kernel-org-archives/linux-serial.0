@@ -2,120 +2,179 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26E0C77B7A
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Apr 2023 03:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFB4C77B73
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Apr 2023 08:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbjDSDoj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Apr 2023 23:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60250 "EHLO
+        id S232715AbjDSIqt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Apr 2023 04:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbjDSDoh (ORCPT
+        with ESMTP id S232707AbjDSIqr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Apr 2023 23:44:37 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BCA4205;
-        Tue, 18 Apr 2023 20:44:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681875873; x=1713411873;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4EP/2Cmk9H4XCoBfJIrk4quFOnVhOKLLl6A0ydsMZ54=;
-  b=CcVUpJorIz0KqAW9SqUImVys9IxGwlmABWar054LhypHTHiDzXxdUREb
-   V3JrIPaxGmPf40Sl6o9Alh12JzPSgZbmSI6JClvMW3dpMBGSOSflrcxqb
-   0jZa4usR7Q5tLpDHrjWT4CFjSxPIi5cN1I7oYUUD5Raq5n7lHsRO6jPwb
-   rto0REAZ0IKoormM47HRCICjyZX1PsgC9jFk4LCZk5G0szxjzFonfy6wR
-   DX8AkB6IqDPvKU5CWLgq/MQpWyefcsXTsacVwSSHZzoJIxkptQIwYOSQL
-   yXN3Kw3rqDuFNFL9frsiHjO499b8+ewYoZZfZXgRin5YdRti0LAITjkru
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="408251571"
-X-IronPort-AV: E=Sophos;i="5.99,208,1677571200"; 
-   d="scan'208";a="408251571"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 20:44:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="691346028"
-X-IronPort-AV: E=Sophos;i="5.99,208,1677571200"; 
-   d="scan'208";a="691346028"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 18 Apr 2023 20:44:28 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1poyk7-000eRb-1Z;
-        Wed, 19 Apr 2023 03:44:27 +0000
-Date:   Wed, 19 Apr 2023 11:43:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, arnd@arndb.de, schung@nuvoton.com,
-        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v7 11/12] tty: serial: Add Nuvoton ma35d1 serial driver
- support
-Message-ID: <202304191134.r0D17Yjq-lkp@intel.com>
-References: <20230412053824.106-12-ychuang570808@gmail.com>
+        Wed, 19 Apr 2023 04:46:47 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7528C17B
+        for <linux-serial@vger.kernel.org>; Wed, 19 Apr 2023 01:46:38 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id ud9so79440586ejc.7
+        for <linux-serial@vger.kernel.org>; Wed, 19 Apr 2023 01:46:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681893997; x=1684485997;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3Qlld2XzCVc9i+xQE2LggHCC3Vx3E3mH6+jFp7qQ9zM=;
+        b=MduE4DHJYpYX+4Z6wgZ3OC+ZDMyRLERM8BiJKfNWT9m++IVpL9Yc9EYhsCO1GsxAvE
+         s+JY7chVmt2eSmGliP6EJOt7x6eTq3f+K+RVcztMzx5AP76uAovJu/0uy/RbJrGXTUKz
+         Y8/t376OT2br4IWEycIIzYKo9Q4V8+t/6LZ5AraS/3OXPa9zZbLC0sig0VZPrETv2Ss+
+         zVhggOZVv81Svmej57j0HwptfjUkSTse9gIEYiDm6/YEhKCCTpqPREILsRuc0r5p39nq
+         hJooQISbvzJsD6bF3wAPxD8H976HWt7EoxKnnGrN+NtMj3EmQONubbSshTEJh22GBuyz
+         zdAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681893997; x=1684485997;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Qlld2XzCVc9i+xQE2LggHCC3Vx3E3mH6+jFp7qQ9zM=;
+        b=VpsuNfyWgordOZ4DzBb1ggVrJ8VcVTJLv7KRme10VNySAFrMsUcUUeI98LKxsDrErC
+         8DeCCwm2HvS+iN0ecWZqY9QwbYLkuoMe/16+DWP56MSxBhPfNtUp+hBQ4s/9qIW2Efcn
+         RVo7ITKDPq+RHc5hTP/Dc17LL7JP+tEqf5cflJ6z0TOj3570XWo0XMc3cw1iwYvpaNcU
+         edgAC/TUGwGmuOnsBaV7m/hYdDFQkNuAQhULZfidAo4bcfy6yPLW8THQuDEulSAKKj9V
+         iG/BQfK/N3pV+rIshlFfUeSjtHwb6NpPeCie19j00TyuP5C9JDZlXApggEXqcA8TmI99
+         6KVQ==
+X-Gm-Message-State: AAQBX9fFaK3cF3GXsQe3VKQSM6qabGZHs5QZNNgybWWZWzmBu5NPSynI
+        /nZI7oZPCEGaCVXNbBFhfg+kfg==
+X-Google-Smtp-Source: AKy350a3ad4rvpuXlGu5kLo02wt9E68lw9Fg1s5V7be19/JE7DHuyesuKe2dSzP8ohc25nQ1DxZMWQ==
+X-Received: by 2002:a17:906:5255:b0:94a:5a9e:9da0 with SMTP id y21-20020a170906525500b0094a5a9e9da0mr12067444ejm.77.1681893994109;
+        Wed, 19 Apr 2023 01:46:34 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:62f5:eb43:f726:5fee? ([2a02:810d:15c0:828:62f5:eb43:f726:5fee])
+        by smtp.gmail.com with ESMTPSA id c1-20020a17090603c100b00882f9130eafsm8961438eja.26.2023.04.19.01.46.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 01:46:33 -0700 (PDT)
+Message-ID: <a663a061-f882-ec37-013f-90c5cb0181ea@linaro.org>
+Date:   Wed, 19 Apr 2023 10:46:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230412053824.106-12-ychuang570808@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v3 tty-next 1/2] dt-bindings: serial: ni,ni16650: add
+ bindings
+Content-Language: en-US
+To:     Brenda Streiff <brenda.streiff@ni.com>
+Cc:     ilpo.jarvinen@linux.intel.com,
+        Gratian Crisan <gratian.crisan@ni.com>,
+        Jason Smith <jason.smith@ni.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230410211152.94332-1-brenda.streiff@ni.com>
+ <20230418223800.284601-1-brenda.streiff@ni.com>
+ <20230418223800.284601-2-brenda.streiff@ni.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230418223800.284601-2-brenda.streiff@ni.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jacky,
+On 19/04/2023 00:37, Brenda Streiff wrote:
+> Add bindings for the NI 16550 UART.
 
-kernel test robot noticed the following build warnings:
+Do not attach (thread) your patchsets to some other threads (unrelated
+or older versions). This buries them deep in the mailbox and might
+interfere with applying entire sets.
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on clk/clk-next linus/master pza/reset/next v6.3-rc7]
-[cannot apply to pza/imx-drm/next next-20230418]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> 
+> Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+> Cc: Gratian Crisan <gratian.crisan@ni.com>
+> Cc: Jason Smith <jason.smith@ni.com>
+> ---
+>  .../bindings/serial/ni,ni16550.yaml           | 64 +++++++++++++++++++
+>  1 file changed, 64 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/ni,ni16550.yaml b/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> new file mode 100644
+> index 000000000000..93b88c8206b9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/ni,ni16550.yaml
+> @@ -0,0 +1,64 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/ni,ni16550.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NI 16550 asynchronous serial interface (UART)
+> +
+> +maintainers:
+> +  - Brenda Streiff <brenda.streiff@ni.com>
+> +
+> +allOf:
+> +  - $ref: serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: ni,ni16550
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    items:
+> +      - const: baudclk
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230412-134123
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20230412053824.106-12-ychuang570808%40gmail.com
-patch subject: [PATCH v7 11/12] tty: serial: Add Nuvoton ma35d1 serial driver support
-config: csky-randconfig-c041-20230419 (https://download.01.org/0day-ci/archive/20230419/202304191134.r0D17Yjq-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7918adf6941fa4fe48d57dffbcc09eee92b88e26
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230412-134123
-        git checkout 7918adf6941fa4fe48d57dffbcc09eee92b88e26
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash drivers/tty/serial/
+No need for names for one clock entry.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304191134.r0D17Yjq-lkp@intel.com/
+> +
+> +  # legacy clock property; prefer 'clocks' instead
+> +  clock-frequency: true
 
-All warnings (new ones prefixed by >>):
+Drop it, we do not want legacy or deprecated properties on new bindings.
+It's not a legacy binding...
 
->> drivers/tty/serial/ma35d1_serial.c:151:64: warning: excess elements in struct initializer
-     151 | static struct uart_ma35d1_port ma35d1serial_ports[UART_NR] = { 0 };
-         |                                                                ^
-   drivers/tty/serial/ma35d1_serial.c:151:64: note: (near initialization for 'ma35d1serial_ports[0].port.lock.<anonymous>.rlock.raw_lock')
-   drivers/tty/serial/ma35d1_serial.c:150:28: warning: 'ma35d1serial_uart_nodes' defined but not used [-Wunused-variable]
-     150 | static struct device_node *ma35d1serial_uart_nodes[UART_NR];
-         |                            ^~~~~~~~~~~~~~~~~~~~~~~
+> +
+> +  ni,serial-port-mode:
+> +    description: Indicates whether this is an RS-232 or RS-485 serial port.
+> +    $ref: /schemas/types.yaml#/definitions/string
+> +    enum: [ RS-232, RS-485 ]
+> +    default: RS-485
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    serial@80000000 {
+> +      compatible = "ni,ni16550";
+> +      reg = <0x80000000 0x8>;
+> +      interrupts = <0 30 4>;
+
+I still wonder what are these. Flags? Then use common defines.
+
+> +      clock-names = "baudclk";
+> +      clocks = <&clk_uart>;
+> +      ni,serial-port-mode = "RS-232";
+> +    };
+> +
+> +    clk_uart: clock {
+
+Drop node, not related to your code. You are not documenting usage of
+fixed-clock as it is obvious and already documented in other place.
 
 
-vim +151 drivers/tty/serial/ma35d1_serial.c
+Best regards,
+Krzysztof
 
-   149	
-   150	static struct device_node *ma35d1serial_uart_nodes[UART_NR];
- > 151	static struct uart_ma35d1_port ma35d1serial_ports[UART_NR] = { 0 };
-   152	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
