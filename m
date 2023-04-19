@@ -2,101 +2,120 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4AFC77B73
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Apr 2023 03:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26E0C77B7A
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Apr 2023 03:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231642AbjDSDjq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Apr 2023 23:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
+        id S231894AbjDSDoj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Apr 2023 23:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbjDSDjo (ORCPT
+        with ESMTP id S230033AbjDSDoh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Apr 2023 23:39:44 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDF840DB
-        for <linux-serial@vger.kernel.org>; Tue, 18 Apr 2023 20:39:43 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-63b4e5fdb1eso3239673b3a.1
-        for <linux-serial@vger.kernel.org>; Tue, 18 Apr 2023 20:39:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20221208.gappssmtp.com; s=20221208; t=1681875582; x=1684467582;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=a0e/blrL6Tf9C9Zm88s7yEUaau7+OiJEMt6DtUxmn8U=;
-        b=heQMR9KeF4YP7cYFKebZxUoa0zwSm6yermCbrw1yWPuH8qOnanz2PICoK7wFsHoCii
-         ITyyopfMMFdHPQ3l53RQJ9R0iCJNIqSOBu8v2kGorc56fgoHdo+lwQn7Rtyot6Fc2TRr
-         edENA3S1GqNaFQoyAISXSMcD9w43pa2t9HmnVeof/RNZ8rjOMFaCqEAh77zgB8EAoQ6W
-         kv4VzctHo6uh6MWOsPvjXLQbUvLQo6wLB2L4hbWjvmnu6qu8dtL4oR5XBt2/YOm2Avu/
-         Hj08KoyiW66V1OPkWan8ZU06NlDH8ZrKHOh5SaFHvZXODbRYM1HW4zSJDCITBvWtjQwK
-         dRYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681875582; x=1684467582;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a0e/blrL6Tf9C9Zm88s7yEUaau7+OiJEMt6DtUxmn8U=;
-        b=Swe4SRutkomqi0ewz26uMywYlUuGdXAZnZIwgABoNmT4lDfOUS03VhflG5EgqkSM4e
-         86ADdLyRbf8E13Mav8+wYbSTUGQCRq9G3IwBQ/xxCpjYP4t0kaRyoynAnBvWM4edGgwY
-         PfvMj0pdTwLogJ/cwXc0ctX4QNqY1DRhD9dLYir+SHQW4uuFzDBW5lUqtRAO14xhPqTh
-         i0xUB/6ipmZzEFIDqb0SFT/x9FlFxK3ILEkd6i6l9385PD3mJcXJUHtQRc5dItJ6XMf5
-         hIivAFhjfgWJLnRGcxEuUKcW22jC6pXAhtIobeeIFlXC9S3lh9Ib1B03jYBNufLGWvDe
-         g30g==
-X-Gm-Message-State: AAQBX9e1v3YZA9rmaCG2r92diCJ1Tawso3PkQwlVkkV+Y4j6Sm6AcH+W
-        6m0M1Y8NR3VKh8nZtNHQeOIg6Q==
-X-Google-Smtp-Source: AKy350bVWhvudAUkLl/P0TT9j1GmLD1pufJBRjFi20EeKXYqEO3qjLGawXTfX3mlLaN9b1oPB/HNmA==
-X-Received: by 2002:a05:6a00:2e94:b0:63b:89a2:d62d with SMTP id fd20-20020a056a002e9400b0063b89a2d62dmr2618037pfb.20.1681875582590;
-        Tue, 18 Apr 2023 20:39:42 -0700 (PDT)
-Received: from localhost ([135.180.227.0])
-        by smtp.gmail.com with ESMTPSA id n9-20020aa79049000000b0062ddcad2cbesm10270224pfo.145.2023.04.18.20.39.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 20:39:42 -0700 (PDT)
-Date:   Tue, 18 Apr 2023 20:39:42 -0700 (PDT)
-X-Google-Original-Date: Tue, 18 Apr 2023 20:39:34 PDT (-0700)
-Subject:     Re: [PATCH v1 3/4] soc: sifive: make SiFive's cache controller driver depend on ARCH_ symbols
-In-Reply-To: <20230406-subdued-observer-cbb0e2f72cc7@spud>
-CC:     linux-riscv@lists.infradead.org, Conor Dooley <conor@kernel.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
-        bhelgaas@google.com, Greg KH <gregkh@linuxfoundation.org>,
-        jirislaby@kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-serial@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     Conor Dooley <conor@kernel.org>
-Message-ID: <mhng-8318a24b-b187-4056-ba08-3dfe2054d4fe@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 18 Apr 2023 23:44:37 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BCA4205;
+        Tue, 18 Apr 2023 20:44:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681875873; x=1713411873;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4EP/2Cmk9H4XCoBfJIrk4quFOnVhOKLLl6A0ydsMZ54=;
+  b=CcVUpJorIz0KqAW9SqUImVys9IxGwlmABWar054LhypHTHiDzXxdUREb
+   V3JrIPaxGmPf40Sl6o9Alh12JzPSgZbmSI6JClvMW3dpMBGSOSflrcxqb
+   0jZa4usR7Q5tLpDHrjWT4CFjSxPIi5cN1I7oYUUD5Raq5n7lHsRO6jPwb
+   rto0REAZ0IKoormM47HRCICjyZX1PsgC9jFk4LCZk5G0szxjzFonfy6wR
+   DX8AkB6IqDPvKU5CWLgq/MQpWyefcsXTsacVwSSHZzoJIxkptQIwYOSQL
+   yXN3Kw3rqDuFNFL9frsiHjO499b8+ewYoZZfZXgRin5YdRti0LAITjkru
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="408251571"
+X-IronPort-AV: E=Sophos;i="5.99,208,1677571200"; 
+   d="scan'208";a="408251571"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 20:44:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10684"; a="691346028"
+X-IronPort-AV: E=Sophos;i="5.99,208,1677571200"; 
+   d="scan'208";a="691346028"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 18 Apr 2023 20:44:28 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1poyk7-000eRb-1Z;
+        Wed, 19 Apr 2023 03:44:27 +0000
+Date:   Wed, 19 Apr 2023 11:43:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, arnd@arndb.de, schung@nuvoton.com,
+        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v7 11/12] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+Message-ID: <202304191134.r0D17Yjq-lkp@intel.com>
+References: <20230412053824.106-12-ychuang570808@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230412053824.106-12-ychuang570808@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 06 Apr 2023 13:57:49 PDT (-0700), Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
->
-> As part of converting RISC-V SOC_FOO symbols to ARCH_FOO to match the
-> use of such symbols on other architectures, convert the SiFive soc
-> drivers to use the new ARCH_FOO symbols.
->
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  drivers/soc/sifive/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/soc/sifive/Kconfig b/drivers/soc/sifive/Kconfig
-> index e86870be34c9..139884addc41 100644
-> --- a/drivers/soc/sifive/Kconfig
-> +++ b/drivers/soc/sifive/Kconfig
-> @@ -1,6 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0
->
-> -if SOC_SIFIVE || SOC_STARFIVE
-> +if ARCH_SIFIVE || ARCH_STARFIVE
->
->  config SIFIVE_CCACHE
->  	bool "Sifive Composable Cache controller"
+Hi Jacky,
 
-Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on clk/clk-next linus/master pza/reset/next v6.3-rc7]
+[cannot apply to pza/imx-drm/next next-20230418]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230412-134123
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20230412053824.106-12-ychuang570808%40gmail.com
+patch subject: [PATCH v7 11/12] tty: serial: Add Nuvoton ma35d1 serial driver support
+config: csky-randconfig-c041-20230419 (https://download.01.org/0day-ci/archive/20230419/202304191134.r0D17Yjq-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7918adf6941fa4fe48d57dffbcc09eee92b88e26
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230412-134123
+        git checkout 7918adf6941fa4fe48d57dffbcc09eee92b88e26
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash drivers/tty/serial/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304191134.r0D17Yjq-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/serial/ma35d1_serial.c:151:64: warning: excess elements in struct initializer
+     151 | static struct uart_ma35d1_port ma35d1serial_ports[UART_NR] = { 0 };
+         |                                                                ^
+   drivers/tty/serial/ma35d1_serial.c:151:64: note: (near initialization for 'ma35d1serial_ports[0].port.lock.<anonymous>.rlock.raw_lock')
+   drivers/tty/serial/ma35d1_serial.c:150:28: warning: 'ma35d1serial_uart_nodes' defined but not used [-Wunused-variable]
+     150 | static struct device_node *ma35d1serial_uart_nodes[UART_NR];
+         |                            ^~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +151 drivers/tty/serial/ma35d1_serial.c
+
+   149	
+   150	static struct device_node *ma35d1serial_uart_nodes[UART_NR];
+ > 151	static struct uart_ma35d1_port ma35d1serial_ports[UART_NR] = { 0 };
+   152	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
