@@ -2,121 +2,81 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93F8C77B72
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 11:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 334C1C77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 11:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbjDTLit (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 07:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
+        id S229775AbjDTLpO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 07:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231978AbjDTLis (ORCPT
+        with ESMTP id S234468AbjDTLo7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 07:38:48 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4CEAD
-        for <linux-serial@vger.kernel.org>; Thu, 20 Apr 2023 04:38:47 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 921345C0184;
-        Thu, 20 Apr 2023 07:38:43 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 20 Apr 2023 07:38:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1681990723; x=1682077123; bh=J+
-        606rOXxsuiMhT8G+OyCiSalvoR/fuvBBQJvB3Dksk=; b=WRiTk6gXmPdAIabhaQ
-        fmx+xSqnM8c0HOcMUzxkcMnwaqCiO4dsmqdGdv1Zupz1uuYtry2s0g/25NkxMZjK
-        /Ym0HgPn+E/7IK0KVIECfyoMPmDe8VWXQg/PSW2txPVJM09rJNP17A5GSD7oOMYC
-        RSyF4rcaxd46429eN6+K9VZLSth1xUabN2tpjrB0wAByTpXukEzJcctEWuDK656f
-        CoJ2KX5LdHk++sbL2v1sMyocXV4TY+//goJgk/duei1vD6V/sd92K2rgpN/Xrdt1
-        z0Dms07/vFKNNHwLb2zMAjYLO61JUYuKUDAk7310A8Aevr1edcpqoD/NVug18nNT
-        yM1A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1681990723; x=1682077123; bh=J+606rOXxsuiM
-        hT8G+OyCiSalvoR/fuvBBQJvB3Dksk=; b=DjhYu4fjco8DsPAlx0vykcxyAjnUS
-        h6jqBpwnOrDpkUxlVJ1W0ngJ8Pam20nvvJcnK6LLaqnArMP8E2NGoh4mwK8rBkAS
-        3SFLLCljd2P1J/zQpm8I8AHd8eDj6dB/oWEKHQ0oPTXv2VYmddkn1mcL9AFU0nxE
-        fwmHZAcpsvAuMP2PXbmrgH7vtvSPafv7Nahemh+oDnSLc7zEoTwHSnUPjqOmPTdL
-        M7/zUXMN2iU5mRFwLZ0WwHvP6Q3TK2p5zGVQdQbYvr4l90B9PqpUrpIoZyBJELO+
-        siatOp1VUps6hvVWbVpbtWohhSEutTCgfBxKjLTgBs0vCypvHo4mEOReQ==
-X-ME-Sender: <xms:QiRBZLQjXxSfLqqZAwxbEfffA6dycodLLqKp2sAimxCIB_NjgPFGEw>
-    <xme:QiRBZMwHfHCX3Bemp28dXI1qgeZLJZBkg8xXOUTcrqxouK-QeKzZrGARKaPDSv0Q_
-    Wxnupj3vr8m1w>
-X-ME-Received: <xmr:QiRBZA3yQGMBkm6bHLWm656GFVrJrQAxHGJaldvDGEWiscBiqDuRv7BPNP3W>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedtvddggeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhm
-    qeenucggtffrrghtthgvrhhnpeeglefgjeelgfevfeduvedtheethfehtddthedtfedtte
-    dvieffffdvkeduudeuudenucffohhmrghinheprgguvhgrnhhtvggthhdrtghomhenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskh
-    hrohgrhhdrtghomh
-X-ME-Proxy: <xmx:QiRBZLAp_kqaWxxqxgYPHVlbb1jN58MvaFAAhLWB_kjTK29cOjbSXQ>
-    <xmx:QiRBZEikL5IvqPeKA3t0LtdA2WJXqPFxE3Hdfr-qPNa5qukvOLdV3Q>
-    <xmx:QiRBZPo-KG9Fw0dQ0b4lH6dqbc7dHONuneL7nx4khdK2QBXONpulNA>
-    <xmx:QyRBZHvyX6KI1kcJ82vh5t5O8nzHdxeZqIi3l_fuvQ9xQHGzo5k3zw>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 20 Apr 2023 07:38:42 -0400 (EDT)
-Date:   Thu, 20 Apr 2023 13:38:40 +0200
-From:   Greg KH <greg@kroah.com>
-To:     tomin@iszf.irk.ru
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: Add support for Advantech PCI-1611U card
-Message-ID: <ZEEkQDdvEU060_zv@kroah.com>
-References: <20230412055622.3787514-1-tomin@iszf.irk.ru>
+        Thu, 20 Apr 2023 07:44:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B401FFD;
+        Thu, 20 Apr 2023 04:44:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0D9A64888;
+        Thu, 20 Apr 2023 11:44:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AD6C433D2;
+        Thu, 20 Apr 2023 11:44:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1681991097;
+        bh=mxT4Z21/XVsyNYG6RT6Fgz7Gjc9mu3RGm/K/+qrP4qE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=INPO/Bq4JZwK7ru0J9qGurRlPrlYIm8CkO9DiFRNATMuJ5gRR39lB2HL0bhGm5p2Y
+         jmoVXt8jSDr2UhTghxUi7oEfk3eKNGMlHtOrPZ+b7pxHCPpVWDqpd3t+RZVWJmejdB
+         /hX7TjiXMiNlk9UvTmdrDfVY5bf+3tOeRtlBtUag=
+Date:   Thu, 20 Apr 2023 13:44:55 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>
+Cc:     linux-serial@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Cosmin Tanislav <demonsingur@gmail.com>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH] serial: max310x: fix IO data corruption in batched
+ operations
+Message-ID: <ZEEltx415gdhy5Ck@kroah.com>
+References: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230412055622.3787514-1-tomin@iszf.irk.ru>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 01:56:22PM +0800, tomin@iszf.irk.ru wrote:
-> From: Vitaliy Tomin <tomin@iszf.irk.ru>
+On Wed, Apr 05, 2023 at 10:14:23PM +0200, Jan Kundrát wrote:
+> After upgrading from 5.16 to 6.1, our board with a MAX14830 started
+> producing lots of garbage data over UART. Bisection pointed out commit
+> 285e76fc049c as the culprit. That patch tried to replace hand-written
+> code which I added in 2b4bac48c1084 ("serial: max310x: Use batched reads
+> when reasonably safe") with the generic regmap infrastructure for
+> batched operations.
 > 
-> Add support for Advantech PCI-1611U card
+> Unfortunately, the `regmap_raw_read` and `regmap_raw_write` which were
+> used are actually functions which perform IO over *multiple* registers.
+> That's not what is needed for accessing these Tx/Rx FIFOs; the
+> appropriate functions are the `_noinc_` versions, not the `_raw_` ones.
 > 
-> Advantech provides opensource drivers for this and many others card
-> based on legacy copy of 8250_pci driver called adv950
+> Fix this regression by using `regmap_noinc_read()` and
+> `regmap_noinc_write()` along with the necessary `regmap_config` setup;
+> with this patch in place, our board communicates happily again. Since
+> our board uses SPI for talking to this chip, the I2C part is completely
+> untested.
 > 
-> https://www.advantech.com/emt/support/details/driver?id=1-TDOIMJ
-> 
-> It is hard to maintain to run as out of tree module on newer kernels.
-> Just adding PCI ID to kernel 8250_pci works perfect.
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 5 +++++
->  1 file changed, 5 insertions(+)
+> Fixes: 285e76fc049c serial: max310x: use regmap methods for SPI batch operations
 
-Hi,
+Nit, please use the style that the documentation asks for here, which
+should look like:
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Fixes: 285e76fc049c ("serial: max310x: use regmap methods for SPI batch operations")
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+otherwise our tools complain :(
+I'll go fix this up by hand...
 
-- Your patch does not have a Signed-off-by: line.  Please read the
-  kernel file, Documentation/process/submitting-patches.rst and resend
-  it after adding that line.  Note, the line needs to be in the body of
-  the email, before the patch, not at the bottom of the patch or in the
-  email signature.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+greg k-h
