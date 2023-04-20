@@ -2,81 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 334C1C77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 11:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 122ADC77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 15:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbjDTLpO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 07:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
+        id S232140AbjDTP5Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 11:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234468AbjDTLo7 (ORCPT
+        with ESMTP id S232332AbjDTP5O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 07:44:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B401FFD;
-        Thu, 20 Apr 2023 04:44:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0D9A64888;
-        Thu, 20 Apr 2023 11:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AD6C433D2;
-        Thu, 20 Apr 2023 11:44:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1681991097;
-        bh=mxT4Z21/XVsyNYG6RT6Fgz7Gjc9mu3RGm/K/+qrP4qE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=INPO/Bq4JZwK7ru0J9qGurRlPrlYIm8CkO9DiFRNATMuJ5gRR39lB2HL0bhGm5p2Y
-         jmoVXt8jSDr2UhTghxUi7oEfk3eKNGMlHtOrPZ+b7pxHCPpVWDqpd3t+RZVWJmejdB
-         /hX7TjiXMiNlk9UvTmdrDfVY5bf+3tOeRtlBtUag=
-Date:   Thu, 20 Apr 2023 13:44:55 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jan =?iso-8859-1?Q?Kundr=E1t?= <jan.kundrat@cesnet.cz>
-Cc:     linux-serial@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Cosmin Tanislav <demonsingur@gmail.com>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH] serial: max310x: fix IO data corruption in batched
- operations
-Message-ID: <ZEEltx415gdhy5Ck@kroah.com>
-References: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
+        Thu, 20 Apr 2023 11:57:14 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C3210B;
+        Thu, 20 Apr 2023 08:57:09 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33KFuN5p076111;
+        Thu, 20 Apr 2023 10:56:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1682006183;
+        bh=eA6xMuLyhPVGtL8UDWOL6E2qJ/1uFYQBafDZUPTdxi0=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=zIfgIEYsz22Ou9E/lr6T4FaCmKp0BjdLUO9Kl3YeJhfrig/NnEeG8xeI28m0O6tR2
+         PpjCiyCH3/0tT3na8VsdGnNEdP3hiYGFpqGU5fLjGp7sqTN0jVBSO9iE8fHQ9mSxsS
+         BRqkaibLEAz0wq7Hx8xhELGViaAj5pYCgfXda0BM=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33KFuNtd068948
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 20 Apr 2023 10:56:23 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 20
+ Apr 2023 10:56:23 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Thu, 20 Apr 2023 10:56:23 -0500
+Received: from [10.250.35.77] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33KFuMvn072033;
+        Thu, 20 Apr 2023 10:56:22 -0500
+Message-ID: <db9182f5-b070-0504-ccd1-8ff427ae85ee@ti.com>
+Date:   Thu, 20 Apr 2023 10:56:22 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <79db8e82aadb0e174bc82b9996423c3503c8fb37.1680732084.git.jan.kundrat@cesnet.cz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 2/2] serial: 8250_exar: Add support for USR298x PCI Modems
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20230413214421.6251-1-afd@ti.com>
+ <20230413214421.6251-2-afd@ti.com> <ZEEkGzoemaSgKovK@kroah.com>
+From:   Andrew Davis <afd@ti.com>
+In-Reply-To: <ZEEkGzoemaSgKovK@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 10:14:23PM +0200, Jan Kundrát wrote:
-> After upgrading from 5.16 to 6.1, our board with a MAX14830 started
-> producing lots of garbage data over UART. Bisection pointed out commit
-> 285e76fc049c as the culprit. That patch tried to replace hand-written
-> code which I added in 2b4bac48c1084 ("serial: max310x: Use batched reads
-> when reasonably safe") with the generic regmap infrastructure for
-> batched operations.
+On 4/20/23 6:38 AM, Greg Kroah-Hartman wrote:
+> On Thu, Apr 13, 2023 at 04:44:21PM -0500, Andrew Davis wrote:
+>> Possibly the last PCI controller-based (i.e. not a soft/winmodem)
+>> dial-up modem one can still buy.
+>>
+>> Looks to have a stock XR17C154 PCI UART chip for communication, but for
+>> some reason when provisioning the PCI IDs they swapped the vendor and
+>> subvendor IDs. Otherwise this card would have worked out of the box.
+>>
+>> Searching online, some folks seem to not have this issue and others do,
+>> so it is possible only some batches of cards have this error.
+>>
+>> Create a new macro to handle the switched IDs and add support here.
+>>
+>> Signed-off-by: Andrew Davis <afd@ti.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_exar.c | 17 +++++++++++++++++
+>>   1 file changed, 17 insertions(+)
 > 
-> Unfortunately, the `regmap_raw_read` and `regmap_raw_write` which were
-> used are actually functions which perform IO over *multiple* registers.
-> That's not what is needed for accessing these Tx/Rx FIFOs; the
-> appropriate functions are the `_noinc_` versions, not the `_raw_` ones.
+> Please redo this without patch 1/2 as that would not make sense to
+> backport anywhere, but adding new device ids are allowed in stable
+> kernels.  Also, as others pointed out, either convert them all or none
+> :)
 > 
-> Fix this regression by using `regmap_noinc_read()` and
-> `regmap_noinc_write()` along with the necessary `regmap_config` setup;
-> with this patch in place, our board communicates happily again. Since
-> our board uses SPI for talking to this chip, the I2C part is completely
-> untested.
-> 
-> Fixes: 285e76fc049c serial: max310x: use regmap methods for SPI batch operations
 
-Nit, please use the style that the documentation asks for here, which
-should look like:
+Fair enough, posting v2 with only the second patch now.
 
-Fixes: 285e76fc049c ("serial: max310x: use regmap methods for SPI batch operations")
-
-otherwise our tools complain :(
-I'll go fix this up by hand...
-
-greg k-h
+Thanks,
+Andrew
