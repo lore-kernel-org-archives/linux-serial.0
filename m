@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA910C77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 08:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E70C77B7A
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 08:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234017AbjDTIyy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 04:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
+        id S234182AbjDTIyz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 04:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234192AbjDTIxq (ORCPT
+        with ESMTP id S233880AbjDTIxr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 04:53:46 -0400
+        Thu, 20 Apr 2023 04:53:47 -0400
 Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F05F6A7A
-        for <linux-serial@vger.kernel.org>; Thu, 20 Apr 2023 01:52:01 -0700 (PDT)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202304200851597bbd3e95150ce54b3e
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48F97290
+        for <linux-serial@vger.kernel.org>; Thu, 20 Apr 2023 01:52:02 -0700 (PDT)
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202304200852017ead3f89a6c06438c9
         for <linux-serial@vger.kernel.org>;
-        Thu, 20 Apr 2023 10:51:59 +0200
+        Thu, 20 Apr 2023 10:52:01 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=7MNaE1HTKvukMJ9m1g98lEt+XmsMRBduxzjINiIWnBE=;
- b=m8YbMEjKF+E6FgUq5fYKF2eWGxj7w+j9I3bjoFkFNp8aCCRvicaQk8PVd8ppp4prvwdKtZ
- X1JCTiDZupsxpka8ng9gldocD2BiRzMWIVQaRMVFTejbrTveDf/tVaWxj05Y7szJMecanHny
- 60I8IosV5p1r0QxwUxJtvRu6UnrtM=;
+ bh=XYVykcI9EtHEvwVp8QrpLutUdz6E6nO+3d071pliXpo=;
+ b=BPrlmz2iLtFt4KgsBHX92M5GrD9Pt3OJMqVBvib3Io93kFjCTv048H+b+o9JGp6y5uauV0
+ URbfPyELH+q3i8dtyQjSD8Vuace/REOIp4M2oTRWK0nKj7wklscF7p09uFQjB4D9hvHW8gmy
+ fwuae2S8aP9bcOpkhr09thIbi/Scw=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 3/9] tty: n_gsm: add missing description to gsm_config
-Date:   Thu, 20 Apr 2023 10:50:11 +0200
-Message-Id: <20230420085017.7314-3-daniel.starke@siemens.com>
+Subject: [PATCH v2 6/9] tty: n_gsm: increase malformed counter for malformed control frames
+Date:   Thu, 20 Apr 2023 10:50:14 +0200
+Message-Id: <20230420085017.7314-6-daniel.starke@siemens.com>
 In-Reply-To: <20230420085017.7314-1-daniel.starke@siemens.com>
 References: <20230420085017.7314-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -45,58 +45,42 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, all available structure fields in gsmmux.h except those
-for gsm_config are commented.
+The malformed counter in gsm_mux is already increased in case of errors
+detected in gsm_queue() and gsm1_receive(). gsm_dlci_command() also
+detects a case for a malformed frame but does not increase the malformed
+counter yet.
 
-Fix this by adding appropriate comments to the not commented fields.
-Note that 'mru' and 'mtu' refer to the size without basic/advanced option
-mode header and byte stuffing as defined in the standard in chapter 5.7.2.
+Fix this by also increasing the gsm_mux malformed counter in case of a
+malformed frame in gsm_dlci_command().
+Note that the malformed counter is not yet exposed and only set internally.
 
-Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/tty/n_gsm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 v1 -> v2:
-Added remark regarding the mru/mtu size comment as this was unclear in the
-review.
+Added remark to the commit message that the malformed counter is not yet
+exposed to the user. This was remarked in the review.
 
-Link: https://lore.kernel.org/all/AS4PR10MB5895ADDAF211A669CCF7F8C5E0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM/
+Link: https://lore.kernel.org/all/AS4PR10MB589597931E257D7CACB984BCE0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM/
 
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index 33ee7b857c52..422a52e184b3 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -8,17 +8,17 @@
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 1e97a41e6be9..cc7be05c37ce 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2454,8 +2454,10 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ 	data += dlen;
  
- struct gsm_config
- {
--	unsigned int adaption;
--	unsigned int encapsulation;
--	unsigned int initiator;
--	unsigned int t1;
--	unsigned int t2;
--	unsigned int t3;
--	unsigned int n2;
--	unsigned int mru;
--	unsigned int mtu;
--	unsigned int k;
--	unsigned int i;
-+	unsigned int adaption;	/* Convergence layer type */
-+	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
-+	unsigned int initiator;	/* Initiator or responder */
-+	unsigned int t1;	/* Acknowledgment timer */
-+	unsigned int t2;	/* Response timer for multiplexer control channel */
-+	unsigned int t3;	/* Response timer for wake-up procedure */
-+	unsigned int n2;	/* Maximum number of retransmissions */
-+	unsigned int mru;	/* Maximum incoming frame payload size */
-+	unsigned int mtu;	/* Maximum outgoing frame payload size */
-+	unsigned int k;		/* Window size */
-+	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
- 	unsigned int unused[8];	/* Can not be used */
- };
+ 	/* Malformed command? */
+-	if (clen > len)
++	if (clen > len) {
++		dlci->gsm->malformed++;
+ 		return;
++	}
  
+ 	if (command & 1)
+ 		gsm_control_message(dlci->gsm, command, data, clen);
 -- 
 2.34.1
 
