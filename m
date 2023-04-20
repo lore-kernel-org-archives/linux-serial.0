@@ -2,125 +2,70 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E83CDC77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 09:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87B9C77B72
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 11:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234091AbjDTJL1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 05:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
+        id S234002AbjDTLRW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 07:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234296AbjDTJLP (ORCPT
+        with ESMTP id S234808AbjDTLQx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 05:11:15 -0400
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03095258;
-        Thu, 20 Apr 2023 02:10:30 -0700 (PDT)
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-94a34d3812cso57068066b.2;
-        Thu, 20 Apr 2023 02:10:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681981714; x=1684573714;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0eXhKdE5lqprqiAflIQDndd2L6jOpCRY4FudSchqd5w=;
-        b=VJLJka4YDGT0SebadLggkylpPlxsqX/kUssRHuXOLFjgLTJDvbaOLre7i23WylDJTi
-         zW3XU9F03ofh9XncGr0phQfa6wsatVE9ZhxcvGdnPHMjImH4F+sHRLb2Nc6TGUoHRwFb
-         M4N023d0xNInKXQVA+yDRtTgANQ4vBlTLlXarf10HuRa6SZA5iYy+2mdlI/62ln18J+/
-         OtzvWbEnBLdeJO5QmnFq6p7sAhvK96GqUrRY0weSOC6lT10wIl/gJ20o5LyMZaNpHk/q
-         DPDxSCxN+cSSsHLF0c550cQgP4+bs391/Cbt9MFH15d2bmPq9rALzsoujxs6qey+X3Vm
-         9whw==
-X-Gm-Message-State: AAQBX9dIElfFxhINVdnRJ2daCegGfjEezHrBZlv5DSAZk2QBiCqVkbAs
-        G3aqOq3PNDlX2rbLZUQU8BvP/Ietxtk=
-X-Google-Smtp-Source: AKy350b0zw8rIX4c6M83szqn5QLghUr1D5U9pggBpQOuprP8Z9Obhj2Iw7t6obXeGfEGZPk5z+HGRA==
-X-Received: by 2002:aa7:c406:0:b0:506:9ece:60cb with SMTP id j6-20020aa7c406000000b005069ece60cbmr842503edq.38.1681981714091;
-        Thu, 20 Apr 2023 02:08:34 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id e7-20020a170906844700b0094f7b713e40sm490180ejy.126.2023.04.20.02.08.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Apr 2023 02:08:33 -0700 (PDT)
-Message-ID: <2f2b20e4-34cd-a154-022f-c76c1b0e06c5@kernel.org>
-Date:   Thu, 20 Apr 2023 11:08:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
+        Thu, 20 Apr 2023 07:16:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE579005;
+        Thu, 20 Apr 2023 04:13:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EF86182A;
+        Thu, 20 Apr 2023 11:12:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64A0CC433D2;
+        Thu, 20 Apr 2023 11:12:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1681989121;
+        bh=ki1I+acTvaNeCF2/hcBCCeIphdRJsZPU6VtB7/o13sQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1Y+ThRgyj9oNFM7XcwX4qEiVBh/iUA4zdKXG5Osv5F6q1GkDp75gGerbiwrQ6a1BG
+         /ZrlyORFuPCuu4VZ4BfII7t8DjSYd5MbxNhWMEvaZRWuPkea5lW9y16Ls2TT8FCaLm
+         wiktB+MYHQzrHVcVqMy081RW9IivXslxPx2UkB2w=
+Date:   Thu, 20 Apr 2023 13:11:58 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
+        linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 3/9] tty: n_gsm: add missing description to gsm_config
-Content-Language: en-US
-To:     "D. Starke" <daniel.starke@siemens.com>,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org
+Message-ID: <ZEEd_oOvJYranmzN@kroah.com>
 References: <20230420085017.7314-1-daniel.starke@siemens.com>
  <20230420085017.7314-3-daniel.starke@siemens.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230420085017.7314-3-daniel.starke@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <2f2b20e4-34cd-a154-022f-c76c1b0e06c5@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2f2b20e4-34cd-a154-022f-c76c1b0e06c5@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 20. 04. 23, 10:50, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
+On Thu, Apr 20, 2023 at 11:08:32AM +0200, Jiri Slaby wrote:
+> On 20. 04. 23, 10:50, D. Starke wrote:
+> > From: Daniel Starke <daniel.starke@siemens.com>
+> > 
+> > Currently, all available structure fields in gsmmux.h except those
+> > for gsm_config are commented.
+> > 
+> > Fix this by adding appropriate comments to the not commented fields.
+> > Note that 'mru' and 'mtu' refer to the size without basic/advanced option
+> > mode header and byte stuffing as defined in the standard in chapter 5.7.2.
 > 
-> Currently, all available structure fields in gsmmux.h except those
-> for gsm_config are commented.
-> 
-> Fix this by adding appropriate comments to the not commented fields.
-> Note that 'mru' and 'mtu' refer to the size without basic/advanced option
-> mode header and byte stuffing as defined in the standard in chapter 5.7.2.
+> Maybe you can start documenting them using kernel-doc? And convert the
+> others and expose them all to Documentation and finally to:
+> https://www.kernel.org/doc/html/latest/
+> ?
 
-Maybe you can start documenting them using kernel-doc? And convert the 
-others and expose them all to Documentation and finally to:
-https://www.kernel.org/doc/html/latest/
-?
+I agree, this should be done in kerneldoc format please.
 
-> Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->   include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
->   1 file changed, 11 insertions(+), 11 deletions(-)
-> 
-> v1 -> v2:
-> Added remark regarding the mru/mtu size comment as this was unclear in the
-> review.
-> 
-> Link: https://lore.kernel.org/all/AS4PR10MB5895ADDAF211A669CCF7F8C5E0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM/
-> 
-> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-> index 33ee7b857c52..422a52e184b3 100644
-> --- a/include/uapi/linux/gsmmux.h
-> +++ b/include/uapi/linux/gsmmux.h
-> @@ -8,17 +8,17 @@
->   
->   struct gsm_config
->   {
-> -	unsigned int adaption;
-> -	unsigned int encapsulation;
-> -	unsigned int initiator;
-> -	unsigned int t1;
-> -	unsigned int t2;
-> -	unsigned int t3;
-> -	unsigned int n2;
-> -	unsigned int mru;
-> -	unsigned int mtu;
-> -	unsigned int k;
-> -	unsigned int i;
-> +	unsigned int adaption;	/* Convergence layer type */
-> +	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
-> +	unsigned int initiator;	/* Initiator or responder */
-> +	unsigned int t1;	/* Acknowledgment timer */
-> +	unsigned int t2;	/* Response timer for multiplexer control channel */
-> +	unsigned int t3;	/* Response timer for wake-up procedure */
-> +	unsigned int n2;	/* Maximum number of retransmissions */
-> +	unsigned int mru;	/* Maximum incoming frame payload size */
-> +	unsigned int mtu;	/* Maximum outgoing frame payload size */
-> +	unsigned int k;		/* Window size */
-> +	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
->   	unsigned int unused[8];	/* Can not be used */
->   };
->   
+thanks,
 
--- 
-js
-suse labs
-
+greg k-h
