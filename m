@@ -2,69 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B87B9C77B72
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 11:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF78C77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 11:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbjDTLRW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 07:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
+        id S231978AbjDTLf1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 07:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234808AbjDTLQx (ORCPT
+        with ESMTP id S230246AbjDTLf1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 07:16:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE579005;
-        Thu, 20 Apr 2023 04:13:12 -0700 (PDT)
+        Thu, 20 Apr 2023 07:35:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE77440CA;
+        Thu, 20 Apr 2023 04:35:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EF86182A;
-        Thu, 20 Apr 2023 11:12:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64A0CC433D2;
-        Thu, 20 Apr 2023 11:12:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF381647CB;
+        Thu, 20 Apr 2023 11:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC007C433EF;
+        Thu, 20 Apr 2023 11:34:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1681989121;
-        bh=ki1I+acTvaNeCF2/hcBCCeIphdRJsZPU6VtB7/o13sQ=;
+        s=korg; t=1681990445;
+        bh=VsfZrco2JQZGfIqPwGjRvxKZSNISIaz4em2BpQLe6c0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1Y+ThRgyj9oNFM7XcwX4qEiVBh/iUA4zdKXG5Osv5F6q1GkDp75gGerbiwrQ6a1BG
-         /ZrlyORFuPCuu4VZ4BfII7t8DjSYd5MbxNhWMEvaZRWuPkea5lW9y16Ls2TT8FCaLm
-         wiktB+MYHQzrHVcVqMy081RW9IivXslxPx2UkB2w=
-Date:   Thu, 20 Apr 2023 13:11:58 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     "D. Starke" <daniel.starke@siemens.com>,
-        linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/9] tty: n_gsm: add missing description to gsm_config
-Message-ID: <ZEEd_oOvJYranmzN@kroah.com>
-References: <20230420085017.7314-1-daniel.starke@siemens.com>
- <20230420085017.7314-3-daniel.starke@siemens.com>
- <2f2b20e4-34cd-a154-022f-c76c1b0e06c5@kernel.org>
+        b=BDpo9ghQp8RBnno7IyBfZhU+f1LWUGRZE9uPmuOOaaRrJKBWQCyU3YIBTocmUU3io
+         Z09//nBu/OvgR/EDUIn/KzXXL1861GS/FCBu6x8/jSlYPsQ7ts8xCTJ7bzqxdEGeLF
+         MvgmqSlUQN5YYAifuBMFxqxUjBnlPF/WjMZfPKnk=
+Date:   Thu, 20 Apr 2023 13:34:02 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <ZEEjKiHTyGsbpfma@kroah.com>
+References: <20230116080002.47315-1-tony@atomide.com>
+ <Y9jo9bTnmejWYoH2@kroah.com>
+ <Y9oI8m132aQOeSed@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2f2b20e4-34cd-a154-022f-c76c1b0e06c5@kernel.org>
+In-Reply-To: <Y9oI8m132aQOeSed@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 11:08:32AM +0200, Jiri Slaby wrote:
-> On 20. 04. 23, 10:50, D. Starke wrote:
-> > From: Daniel Starke <daniel.starke@siemens.com>
+On Wed, Feb 01, 2023 at 08:38:42AM +0200, Tony Lindgren wrote:
+> * Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230131 10:10]:
+> > On Mon, Jan 16, 2023 at 09:59:58AM +0200, Tony Lindgren wrote:
+> > > We want to enable runtime PM for serial port device drivers in a generic
+> > > way. To do this, we want to have the serial core layer manage the
+> > > registered physical serial controller devices.
+> > > 
+> > > To do this, let's set up a struct device for the serial core controller
+> > > as suggested by Greg and Jiri. The serial core controller devices are
+> > > children of the physical serial port device. The serial core controller
+> > > device is needed to support multiple different kind of ports connected
+> > > to single physical serial port device.
+> > > 
+> > > Let's also set up a struct device for the serial core port. The serial
+> > > core port instances are children of the serial core controller device.
 > > 
-> > Currently, all available structure fields in gsmmux.h except those
-> > for gsm_config are commented.
-> > 
-> > Fix this by adding appropriate comments to the not commented fields.
-> > Note that 'mru' and 'mtu' refer to the size without basic/advanced option
-> > mode header and byte stuffing as defined in the standard in chapter 5.7.2.
+> > Looking better, but why is this new device a platform device?  That
+> > feels odd, you should never have a platform device hanging off of a
+> > non-platform device, right?
 > 
-> Maybe you can start documenting them using kernel-doc? And convert the
-> others and expose them all to Documentation and finally to:
-> https://www.kernel.org/doc/html/latest/
-> ?
+> No special need for it to be a platform device. It just is easy to set
+> up, and for my test case the serial port physical device is also a
+> platform device.
+> 
+> What's your preference here?
 
-I agree, this should be done in kerneldoc format please.
+Never make up a "fake" platform device please.  Only use them for real
+platform devices.  Use a virtual device if you want a virtual one.
 
 thanks,
 
