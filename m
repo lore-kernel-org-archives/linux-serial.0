@@ -2,98 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B892EC77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 08:56:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83CDC77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 09:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234429AbjDTI4G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 04:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        id S234091AbjDTJL1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 05:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233917AbjDTIyh (ORCPT
+        with ESMTP id S234296AbjDTJLP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 04:54:37 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 20 Apr 2023 01:53:05 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE304C1F
-        for <linux-serial@vger.kernel.org>; Thu, 20 Apr 2023 01:53:05 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20230420085201b9c3c2b9b3ac27f3c3
-        for <linux-serial@vger.kernel.org>;
-        Thu, 20 Apr 2023 10:52:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=3x2yGjeK5u1omGmfHkW7ePEBZf1+enMbPDW41ey/pcA=;
- b=jC6VnpGptfOYjt/kcGttoWZ0iYVUQEywQ1BjuMJ7ovnlexEs3HPeifOq1ZgRqGafxcj8qQ
- jvlLATkBil/ZBinzu123fmdn65aKhGVKJ4W9IhUFH94BNEuBOIdUGJcTrOo/7WghXGT6vWi2
- IWDn2WVzvkkdHrkZZQAu4MDiJzsMY=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 7/9] tty: n_gsm: increase gsm_mux unsupported counted where appropriate
-Date:   Thu, 20 Apr 2023 10:50:15 +0200
-Message-Id: <20230420085017.7314-7-daniel.starke@siemens.com>
-In-Reply-To: <20230420085017.7314-1-daniel.starke@siemens.com>
-References: <20230420085017.7314-1-daniel.starke@siemens.com>
+        Thu, 20 Apr 2023 05:11:15 -0400
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03095258;
+        Thu, 20 Apr 2023 02:10:30 -0700 (PDT)
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-94a34d3812cso57068066b.2;
+        Thu, 20 Apr 2023 02:10:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681981714; x=1684573714;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0eXhKdE5lqprqiAflIQDndd2L6jOpCRY4FudSchqd5w=;
+        b=VJLJka4YDGT0SebadLggkylpPlxsqX/kUssRHuXOLFjgLTJDvbaOLre7i23WylDJTi
+         zW3XU9F03ofh9XncGr0phQfa6wsatVE9ZhxcvGdnPHMjImH4F+sHRLb2Nc6TGUoHRwFb
+         M4N023d0xNInKXQVA+yDRtTgANQ4vBlTLlXarf10HuRa6SZA5iYy+2mdlI/62ln18J+/
+         OtzvWbEnBLdeJO5QmnFq6p7sAhvK96GqUrRY0weSOC6lT10wIl/gJ20o5LyMZaNpHk/q
+         DPDxSCxN+cSSsHLF0c550cQgP4+bs391/Cbt9MFH15d2bmPq9rALzsoujxs6qey+X3Vm
+         9whw==
+X-Gm-Message-State: AAQBX9dIElfFxhINVdnRJ2daCegGfjEezHrBZlv5DSAZk2QBiCqVkbAs
+        G3aqOq3PNDlX2rbLZUQU8BvP/Ietxtk=
+X-Google-Smtp-Source: AKy350b0zw8rIX4c6M83szqn5QLghUr1D5U9pggBpQOuprP8Z9Obhj2Iw7t6obXeGfEGZPk5z+HGRA==
+X-Received: by 2002:aa7:c406:0:b0:506:9ece:60cb with SMTP id j6-20020aa7c406000000b005069ece60cbmr842503edq.38.1681981714091;
+        Thu, 20 Apr 2023 02:08:34 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id e7-20020a170906844700b0094f7b713e40sm490180ejy.126.2023.04.20.02.08.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Apr 2023 02:08:33 -0700 (PDT)
+Message-ID: <2f2b20e4-34cd-a154-022f-c76c1b0e06c5@kernel.org>
+Date:   Thu, 20 Apr 2023 11:08:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v2 3/9] tty: n_gsm: add missing description to gsm_config
+Content-Language: en-US
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        ilpo.jarvinen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20230420085017.7314-1-daniel.starke@siemens.com>
+ <20230420085017.7314-3-daniel.starke@siemens.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230420085017.7314-3-daniel.starke@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 20. 04. 23, 10:50, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
+> 
+> Currently, all available structure fields in gsmmux.h except those
+> for gsm_config are commented.
+> 
+> Fix this by adding appropriate comments to the not commented fields.
+> Note that 'mru' and 'mtu' refer to the size without basic/advanced option
+> mode header and byte stuffing as defined in the standard in chapter 5.7.2.
 
-The structure gsm_mux contains the 'unsupported' field. However, there is
-currently no place in the code which increases this counter.
+Maybe you can start documenting them using kernel-doc? And convert the 
+others and expose them all to Documentation and finally to:
+https://www.kernel.org/doc/html/latest/
+?
 
-Increase the 'unsupported' statistics counter in the following case:
-- an unsupported frame type has been requested by the peer via parameter
-  negotiation
-- a control frame with an unsupported but known command has been received
+> Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>   include/uapi/linux/gsmmux.h | 22 +++++++++++-----------
+>   1 file changed, 11 insertions(+), 11 deletions(-)
+> 
+> v1 -> v2:
+> Added remark regarding the mru/mtu size comment as this was unclear in the
+> review.
+> 
+> Link: https://lore.kernel.org/all/AS4PR10MB5895ADDAF211A669CCF7F8C5E0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM/
+> 
+> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+> index 33ee7b857c52..422a52e184b3 100644
+> --- a/include/uapi/linux/gsmmux.h
+> +++ b/include/uapi/linux/gsmmux.h
+> @@ -8,17 +8,17 @@
+>   
+>   struct gsm_config
+>   {
+> -	unsigned int adaption;
+> -	unsigned int encapsulation;
+> -	unsigned int initiator;
+> -	unsigned int t1;
+> -	unsigned int t2;
+> -	unsigned int t3;
+> -	unsigned int n2;
+> -	unsigned int mru;
+> -	unsigned int mtu;
+> -	unsigned int k;
+> -	unsigned int i;
+> +	unsigned int adaption;	/* Convergence layer type */
+> +	unsigned int encapsulation; /* Framing (0 = basic option, 1 = advanced option) */
+> +	unsigned int initiator;	/* Initiator or responder */
+> +	unsigned int t1;	/* Acknowledgment timer */
+> +	unsigned int t2;	/* Response timer for multiplexer control channel */
+> +	unsigned int t3;	/* Response timer for wake-up procedure */
+> +	unsigned int n2;	/* Maximum number of retransmissions */
+> +	unsigned int mru;	/* Maximum incoming frame payload size */
+> +	unsigned int mtu;	/* Maximum outgoing frame payload size */
+> +	unsigned int k;		/* Window size */
+> +	unsigned int i;		/* Frame type (1 = UIH, 2 = UI) */
+>   	unsigned int unused[8];	/* Can not be used */
+>   };
+>   
 
-Note that we have no means to detect an inconsistent/unsupported adaptation
-sufficient accuracy as this changes the structure of the UI/UIH frames.
-E.g. a one byte header is added in case of convergence layer type 2 instead
-of 1 and contains the modem signal octet with the state of the signal
-lines. There is no checksum or other value which indicates of this field is
-correct or should be present. Therefore, we can only assume protocol
-correctness here. See also 'gsm_dlci_data()' where this is handled.
-
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-v1 -> v2:
-Added details about missing detection of inconsistent/unsupported adaption
-to the commit message. A question about this came up during the review.
-
-Link: https://lore.kernel.org/all/AS4PR10MB58955AB89CC251446B7509CBE0919@AS4PR10MB5895.EURPRD10.PROD.OUTLOOK.COM/
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index cc7be05c37ce..ce06cbbe79af 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1589,6 +1589,7 @@ static int gsm_process_negotiation(struct gsm_mux *gsm, unsigned int addr,
- 		if (debug & DBG_ERRORS)
- 			pr_info("%s unsupported I frame request in PN\n",
- 				__func__);
-+		gsm->unsupported++;
- 		return -EINVAL;
- 	default:
- 		if (debug & DBG_ERRORS)
-@@ -1896,6 +1897,8 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- 		/* Optional unsupported commands */
- 	case CMD_RPN:	/* Remote port negotiation */
- 	case CMD_SNC:	/* Service negotiation command */
-+		gsm->unsupported++;
-+		fallthrough;
- 	default:
- 		/* Reply to bad commands with an NSC */
- 		buf[0] = command;
 -- 
-2.34.1
+js
+suse labs
 
