@@ -2,117 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 948EBC77B73
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Apr 2023 01:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45859C77B75
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Apr 2023 09:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbjDUBOH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 21:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33880 "EHLO
+        id S230440AbjDUJWd convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Apr 2023 05:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbjDUBOF (ORCPT
+        with ESMTP id S231329AbjDUJWc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 21:14:05 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B45949F7
-        for <linux-serial@vger.kernel.org>; Thu, 20 Apr 2023 18:14:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682039641; x=1713575641;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zXdrwKOIkvgbH4Lgiru77ULgWhnXUB4kovqjzNh5V4Y=;
-  b=eFBcZ1JxClnVqGsaj4LvfjTbzol1xP7Szql46Ubd4LG/TxfVLv07V70k
-   Ohwb6X1TNXYF8jzrRj0x4XIV9WvSBQ2Uu/u6frySTv/BVgKFYfV0qarMt
-   VaX8gRX4D+0KxHz4hDrzcCUzKM8HuJgxQa+GckFeZK+S/2xBNIX9YwLw1
-   2T0T0H6YIUpKx6+2RWdw5C3qvKttgpbMnw1Tef8IsqYteDBRvzWb8pUJb
-   zQXALiqui4OE3q6hB7NOA4420zoVKm3WFOVvvdO0Hq6b/SR1eWfMyD2Kw
-   Z9l7ipOj1CV5iJgPS4Yt0twzLDerYBTo88n1VEgH3Km0b/gvfmzuqwfmu
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="411155074"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="411155074"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 18:14:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="816245540"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="816245540"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 20 Apr 2023 18:13:59 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1ppfLa-000gDQ-2m;
-        Fri, 21 Apr 2023 01:13:58 +0000
-Date:   Fri, 21 Apr 2023 09:13:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 2b3174c96696cde676393474f0e01d0d108462f5
-Message-ID: <6441e332.1RGPPoPLBw6fZkTd%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 21 Apr 2023 05:22:32 -0400
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FCB1B5;
+        Fri, 21 Apr 2023 02:22:31 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-b8f557b241fso571499276.0;
+        Fri, 21 Apr 2023 02:22:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682068951; x=1684660951;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UEKA1Gx7mJciCmuYCrZqOgGmz04NJJ/oYo7VmE63L90=;
+        b=D8xC/E5mLG1hVgwAgUqVBgGq5fh8DdmPakZ87600JPU1iZ2pprjldCVxRvOdozy3zD
+         LX4N4h6X1fciYLaXshC54p0s7DK81ZaUsb2LQZ9MNJH9shLxiXnXvruN7XuDEoK7m/YF
+         nIjKA1tszH3SdfyjHm49jRCa8sS6LK6TLr58t5u27VnTqqxbnQTMCVLVhvEqzv3W3bmx
+         p8492eSR+RRj3rBKyxXV9F1KF2Em5jGpaoSFBjj8libRGfcQtQKHKy8qa1Qp0x+rKZk5
+         EdpQ7ieEAZDmmSkf7TxCmss3CMbTCVUjYj8UkgHtAjtT1aTAuk9/RQLlfLCjfUYE/q0c
+         wMag==
+X-Gm-Message-State: AAQBX9dZEUsVSdl68sP1FDBE8bjdznyAoSlRoRqhMbnX1Z0eW7RnLYTQ
+        jVKyEuLDWXopYGEcbFLwoRUseKdSF8u7mF2X
+X-Google-Smtp-Source: AKy350a6C8bonRIoNjdJexdFWFIucGl/xDTjSymQiv8lwC4Epqk+VCG3LdDLmpHJBF648Sm9z0AZIA==
+X-Received: by 2002:a25:d8c5:0:b0:b92:5af3:43cf with SMTP id p188-20020a25d8c5000000b00b925af343cfmr1566075ybg.63.1682068950726;
+        Fri, 21 Apr 2023 02:22:30 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id e131-20020a253789000000b00b7767ca7473sm848176yba.16.2023.04.21.02.22.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Apr 2023 02:22:30 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id 3f1490d57ef6-b97ec4bbc5aso563679276.3;
+        Fri, 21 Apr 2023 02:22:29 -0700 (PDT)
+X-Received: by 2002:a81:8302:0:b0:54f:9b01:b353 with SMTP id
+ t2-20020a818302000000b0054f9b01b353mr1184520ywf.9.1682068949777; Fri, 21 Apr
+ 2023 02:22:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20230412145053.114847-1-biju.das.jz@bp.renesas.com> <20230412145053.114847-2-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20230412145053.114847-2-biju.das.jz@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 21 Apr 2023 11:22:18 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWozy3JLxomwv44aqKFGavC5zyeX6RY7rraR=+CcaB11w@mail.gmail.com>
+Message-ID: <CAMuHMdWozy3JLxomwv44aqKFGavC5zyeX6RY7rraR=+CcaB11w@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx support
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 2b3174c96696cde676393474f0e01d0d108462f5  n_gsm: Use array_index_nospec() with index that comes from userspace
+Hi Biju,
 
-elapsed time: 729m
+On Wed, Apr 12, 2023 at 4:51 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> SCIFA IP on RZ/G2L SoC has the same signal for both interrupt
+> and DMA transfer request. Setting DMARS register for DMA transfer
+> makes the signal to work as a DMA transfer request signal and
+> subsequent interrupt requests to the interrupt controller
+> are masked. Similarly clearing DMARS register makes signal to work as
+> interrupt signal and subsequent interrupt requests to the interrupt
+> controller are unmasked.
+>
+> Add SCIFA DMA tx support for RZ/G2L alike SoCs by disabling TXI line
+> interrupt and setting DMARS registers by DMA api for DMA transfer request.
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> v3->v4:
+>  * Updated commit description by removing tx end interrupt.
 
-configs tested: 42
-configs skipped: 3
+Thanks for the update!
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -588,12 +588,17 @@ static void sci_start_tx(struct uart_port *port)
+>
+>         if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit) &&
+>             dma_submit_error(s->cookie_tx)) {
+> +               if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)
+> +                       /* Switch irq from SCIF to DMA */
+> +                       disable_irq(s->irqs[SCIx_TXI_IRQ]);
 
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                                defconfig   gcc  
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-ia64                             allmodconfig   gcc  
-ia64                                defconfig   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-m68k                             allmodconfig   gcc  
-m68k                                defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                               defconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-sh                               allmodconfig   gcc  
-sparc                               defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64                               rhel-8.3   gcc  
+Please wrap this block inside curly braces.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+> +
+
+The rest LGTM, so
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
