@@ -2,71 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E107C77B75
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Apr 2023 09:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1388C77B78
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Apr 2023 10:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229599AbjDUJ6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Apr 2023 05:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
+        id S229599AbjDUKEQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Apr 2023 06:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbjDUJ6p (ORCPT
+        with ESMTP id S231150AbjDUKEP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Apr 2023 05:58:45 -0400
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFAEAF3F
-        for <linux-serial@vger.kernel.org>; Fri, 21 Apr 2023 02:58:14 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.187.55])
-        by andre.telenet-ops.be with bizsmtp
-        id nMy72900H1C8whw01My7h8; Fri, 21 Apr 2023 11:58:08 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtp (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ppnVv-00HQwh-Ha;
-        Fri, 21 Apr 2023 11:58:07 +0200
-Received: from geert by rox.of.borg with local (Exim 4.95)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ppnWp-00GXP1-Lf;
-        Fri, 21 Apr 2023 11:58:07 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: 8250: Document termios parameter of serial8250_em485_config()
-Date:   Fri, 21 Apr 2023 11:58:06 +0200
-Message-Id: <2bd1e62be1d5d33333002910372feecc6d52e78f.1682071013.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
+        Fri, 21 Apr 2023 06:04:15 -0400
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71154AD1C;
+        Fri, 21 Apr 2023 03:04:14 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-b8ed0d0a33dso1886622276.1;
+        Fri, 21 Apr 2023 03:04:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682071453; x=1684663453;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jXfq5wPcYig3ttn/WfDfPN5Eq2yimQwaoQDMVt582eE=;
+        b=U7SZyhaLQF+vuTMA2SzTLXyS5RCre66PwxilzHZmkqrLmfuViQG4GwKR+KsS14rMNw
+         KPbB37vIPi8tOQV5pQqOlYkHlKmHF4J+G50IDtm6fxr1ZwZ4KJ+6NWYPX9d9W+B3YmSc
+         mfFU3pssBY8GCvgu/BBFkNEIT9D7KUhpuJ/0e3vbGPLST3DkQmDwopa3Ph6eMpg5bW/7
+         iHK27YlnxkwgdI4RsVWXPunln1ldNv5uX9//7EgrezOBfd7poHc56Bqkm3xBGIY3g5fc
+         3T6meP835rPjzeAUbMsuJpn3mP2u28cX1WFmQdCGprjHGigQ5sIGU+tP2VcYIZmn7avb
+         TYIg==
+X-Gm-Message-State: AAQBX9f1quO2hIkqII4sm/LEf9+lhYyuebk4RfM+pJx0hSbvysma9uyE
+        sGmFOLvFSkh3UntRn+ymGqU6gMo3ltMHK/c7
+X-Google-Smtp-Source: AKy350b3e7+T9/qtnqW52e4II+EiDW42l6+2Q2aRsAK2jP1MyG2wJqGcAVeUf4Fkf3rgeQEZyauEfA==
+X-Received: by 2002:a25:b0a4:0:b0:b8f:6c2b:8fcf with SMTP id f36-20020a25b0a4000000b00b8f6c2b8fcfmr2076203ybj.13.1682071453312;
+        Fri, 21 Apr 2023 03:04:13 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id r125-20020a818183000000b00552ccda9bb3sm858960ywf.92.2023.04.21.03.04.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Apr 2023 03:04:13 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-b8f5219653fso1875240276.2;
+        Fri, 21 Apr 2023 03:04:13 -0700 (PDT)
+X-Received: by 2002:a25:6e07:0:b0:b96:ca60:b043 with SMTP id
+ j7-20020a256e07000000b00b96ca60b043mr1384310ybc.59.1682071452891; Fri, 21 Apr
+ 2023 03:04:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230412145053.114847-1-biju.das.jz@bp.renesas.com>
+ <20230412145053.114847-2-biju.das.jz@bp.renesas.com> <CAMuHMdWozy3JLxomwv44aqKFGavC5zyeX6RY7rraR=+CcaB11w@mail.gmail.com>
+ <OS0PR01MB59220F311276F8C09603A1AC86609@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB59220F311276F8C09603A1AC86609@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 21 Apr 2023 12:04:01 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXZZiy8J7qF+Reij3zFnw3Xvax96FzTzBUmf_=BDpO4vg@mail.gmail.com>
+Message-ID: <CAMuHMdXZZiy8J7qF+Reij3zFnw3Xvax96FzTzBUmf_=BDpO4vg@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx support
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-With W=1:
+Hi Biju,
 
-    drivers/tty/serial/8250/8250_port.c:679: warning: Function parameter or member 'termios' not described in 'serial8250_em485_config'
+On Fri, Apr 21, 2023 at 11:56 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > -----Original Message-----
+> > From: Geert Uytterhoeven <geert@linux-m68k.org>
+> > Sent: Friday, April 21, 2023 10:22 AM
+> > To: Biju Das <biju.das.jz@bp.renesas.com>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby
+> > <jirislaby@kernel.org>; linux-serial@vger.kernel.org; Geert Uytterhoeven
+> > <geert+renesas@glider.be>; Prabhakar Mahadev Lad <prabhakar.mahadev-
+> > lad.rj@bp.renesas.com>; linux-renesas-soc@vger.kernel.org
+> > Subject: Re: [PATCH v4 1/5] tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx
+> > support
+> >
+> > Hi Biju,
+> >
+> > On Wed, Apr 12, 2023 at 4:51 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > SCIFA IP on RZ/G2L SoC has the same signal for both interrupt and DMA
+> > > transfer request. Setting DMARS register for DMA transfer makes the
+> > > signal to work as a DMA transfer request signal and subsequent
+> > > interrupt requests to the interrupt controller are masked. Similarly
+> > > clearing DMARS register makes signal to work as interrupt signal and
+> > > subsequent interrupt requests to the interrupt controller are
+> > > unmasked.
+> > >
+> > > Add SCIFA DMA tx support for RZ/G2L alike SoCs by disabling TXI line
+> > > interrupt and setting DMARS registers by DMA api for DMA transfer request.
+> > >
+> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > ---
+> > > v3->v4:
+> > >  * Updated commit description by removing tx end interrupt.
+> >
+> > Thanks for the update!
+> >
+> > > --- a/drivers/tty/serial/sh-sci.c
+> > > +++ b/drivers/tty/serial/sh-sci.c
+> > > @@ -588,12 +588,17 @@ static void sci_start_tx(struct uart_port *port)
+> > >
+> > >         if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit) &&
+> > >             dma_submit_error(s->cookie_tx)) {
+> > > +               if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE)
+> > > +                       /* Switch irq from SCIF to DMA */
+> > > +                       disable_irq(s->irqs[SCIx_TXI_IRQ]);
+> >
+> > Please wrap this block inside curly braces.
+>
+> I thought, for single if statement braces not needed.
+> That is why I haven't added. Am I missing anything here?
 
-Fix this by documenting the parameter.
+Technically, it's indeed a single statement.  But combined with the comment,
+it spans multiple lines.
 
-Fixes: ae50bb2752836277 ("serial: take termios_rwsem for ->rs485_config() & pass termios as param")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/8250/8250_port.c | 1 +
- 1 file changed, 1 insertion(+)
+Gr{oetje,eeting}s,
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index dfbc501cf9d1561e..a0fd5ecc07ac66f3 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(serial8250_em485_supported);
- /**
-  * serial8250_em485_config() - generic ->rs485_config() callback
-  * @port: uart port
-+ * @termios: termios structure
-  * @rs485: rs485 settings
-  *
-  * Generic callback usable by 8250 uart drivers to activate rs485 settings
+                        Geert
+
 -- 
-2.34.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
