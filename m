@@ -2,130 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68421C77B72
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Apr 2023 16:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 948EBC77B73
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Apr 2023 01:14:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbjDTQCT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Apr 2023 12:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
+        id S232339AbjDUBOH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Apr 2023 21:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232671AbjDTQCS (ORCPT
+        with ESMTP id S230521AbjDUBOF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Apr 2023 12:02:18 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4C2110;
-        Thu, 20 Apr 2023 09:02:15 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33KG2Ab9077822;
-        Thu, 20 Apr 2023 11:02:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1682006530;
-        bh=32rTaG1sMuRUvRiLcC0IxZFq/Gj51HyH/Fwu02QIUCE=;
-        h=From:To:CC:Subject:Date;
-        b=qBEqdpU1cnTmsVzSP2waazDdib0k6TIuueTGleriAzdaHyZxroCedIYWpS9YNUjEC
-         F2h+dirVAncewIF4pRfl2dPn9mEYN5X1RAx7Qi4azXhz5TWNsqxabIEwywJ1AcBGRw
-         z3sBFEFHyZ8hCvNM+E+R2yBuSlw1lsPTJTJjMq2A=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33KG2Aip074012
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 20 Apr 2023 11:02:10 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 20
- Apr 2023 11:02:10 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Thu, 20 Apr 2023 11:02:09 -0500
-Received: from ula0226330.dal.design.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33KG29Xn031429;
-        Thu, 20 Apr 2023 11:02:09 -0500
-From:   Andrew Davis <afd@ti.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Davis <afd@ti.com>
-Subject: [PATCH v2] serial: 8250_exar: Add support for USR298x PCI Modems
-Date:   Thu, 20 Apr 2023 11:02:09 -0500
-Message-ID: <20230420160209.28221-1-afd@ti.com>
-X-Mailer: git-send-email 2.39.2
+        Thu, 20 Apr 2023 21:14:05 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B45949F7
+        for <linux-serial@vger.kernel.org>; Thu, 20 Apr 2023 18:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682039641; x=1713575641;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zXdrwKOIkvgbH4Lgiru77ULgWhnXUB4kovqjzNh5V4Y=;
+  b=eFBcZ1JxClnVqGsaj4LvfjTbzol1xP7Szql46Ubd4LG/TxfVLv07V70k
+   Ohwb6X1TNXYF8jzrRj0x4XIV9WvSBQ2Uu/u6frySTv/BVgKFYfV0qarMt
+   VaX8gRX4D+0KxHz4hDrzcCUzKM8HuJgxQa+GckFeZK+S/2xBNIX9YwLw1
+   2T0T0H6YIUpKx6+2RWdw5C3qvKttgpbMnw1Tef8IsqYteDBRvzWb8pUJb
+   zQXALiqui4OE3q6hB7NOA4420zoVKm3WFOVvvdO0Hq6b/SR1eWfMyD2Kw
+   Z9l7ipOj1CV5iJgPS4Yt0twzLDerYBTo88n1VEgH3Km0b/gvfmzuqwfmu
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="411155074"
+X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
+   d="scan'208";a="411155074"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 18:14:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="816245540"
+X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
+   d="scan'208";a="816245540"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 20 Apr 2023 18:13:59 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1ppfLa-000gDQ-2m;
+        Fri, 21 Apr 2023 01:13:58 +0000
+Date:   Fri, 21 Apr 2023 09:13:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 2b3174c96696cde676393474f0e01d0d108462f5
+Message-ID: <6441e332.1RGPPoPLBw6fZkTd%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Possibly the last PCI controller-based (i.e. not a soft/winmodem)
-dial-up modem one can still buy.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 2b3174c96696cde676393474f0e01d0d108462f5  n_gsm: Use array_index_nospec() with index that comes from userspace
 
-Looks to have a stock XR17C154 PCI UART chip for communication, but for
-some reason when provisioning the PCI IDs they swapped the vendor and
-subvendor IDs. Otherwise this card would have worked out of the box.
+elapsed time: 729m
 
-Searching online, some folks seem to not have this issue and others do,
-so it is possible only some batches of cards have this error.
+configs tested: 42
+configs skipped: 3
 
-Create a new macro to handle the switched IDs and add support here.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Signed-off-by: Andrew Davis <afd@ti.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+csky                                defconfig   gcc  
+i386                             allyesconfig   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+ia64                             allmodconfig   gcc  
+ia64                                defconfig   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k                                defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+nios2                               defconfig   gcc  
+parisc                              defconfig   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+sh                               allmodconfig   gcc  
+sparc                               defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64                               rhel-8.3   gcc  
 
-Changes from v1:
- - Removed first patch in series, will convert these all later
- - Add Reviewed-by tag
-
- drivers/tty/serial/8250/8250_exar.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 64770c62bbec5..b406cba10b0eb 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -40,9 +40,13 @@
- #define PCI_DEVICE_ID_COMMTECH_4224PCIE		0x0020
- #define PCI_DEVICE_ID_COMMTECH_4228PCIE		0x0021
- #define PCI_DEVICE_ID_COMMTECH_4222PCIE		0x0022
-+
- #define PCI_DEVICE_ID_EXAR_XR17V4358		0x4358
- #define PCI_DEVICE_ID_EXAR_XR17V8358		0x8358
- 
-+#define PCI_SUBDEVICE_ID_USR_2980		0x0128
-+#define PCI_SUBDEVICE_ID_USR_2981		0x0129
-+
- #define PCI_DEVICE_ID_SEALEVEL_710xC		0x1001
- #define PCI_DEVICE_ID_SEALEVEL_720xC		0x1002
- #define PCI_DEVICE_ID_SEALEVEL_740xC		0x1004
-@@ -829,6 +833,15 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
- 		(kernel_ulong_t)&bd			\
- 	}
- 
-+#define USR_DEVICE(devid, sdevid, bd) {			\
-+	PCI_DEVICE_SUB(					\
-+		PCI_VENDOR_ID_USR,			\
-+		PCI_DEVICE_ID_EXAR_##devid,		\
-+		PCI_VENDOR_ID_EXAR,			\
-+		PCI_SUBDEVICE_ID_USR_##sdevid), 0, 0,	\
-+		(kernel_ulong_t)&bd			\
-+	}
-+
- static const struct pci_device_id exar_pci_tbl[] = {
- 	EXAR_DEVICE(ACCESSIO, COM_2S, pbn_exar_XR17C15x),
- 	EXAR_DEVICE(ACCESSIO, COM_4S, pbn_exar_XR17C15x),
-@@ -853,6 +866,10 @@ static const struct pci_device_id exar_pci_tbl[] = {
- 
- 	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
- 
-+	/* USRobotics USR298x-OEM PCI Modems */
-+	USR_DEVICE(XR17C152, 2980, pbn_exar_XR17C15x),
-+	USR_DEVICE(XR17C152, 2981, pbn_exar_XR17C15x),
-+
- 	/* Exar Corp. XR17C15[248] Dual/Quad/Octal UART */
- 	EXAR_DEVICE(EXAR, XR17C152, pbn_exar_XR17C15x),
- 	EXAR_DEVICE(EXAR, XR17C154, pbn_exar_XR17C15x),
 -- 
-2.39.2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
