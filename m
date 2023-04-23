@@ -2,120 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A74BCC77B7D
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Apr 2023 12:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CD5C77B76
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Apr 2023 03:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbjDUMxw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Apr 2023 08:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        id S229606AbjDWDpd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Apr 2023 23:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbjDUMxu (ORCPT
+        with ESMTP id S229580AbjDWDpc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Apr 2023 08:53:50 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A198AAD34;
-        Fri, 21 Apr 2023 05:53:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682081629; x=1713617629;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=40yFO2isFfj0uBmtH69VPOZjEsJTEo1olV7IUMUdoNs=;
-  b=jk7QBg4pMFhuquznAlYb0vMAKTUTBOBR7sxP9soWSsE5ZJIZ9lOUaCOc
-   jCZuxfW4Mn9zgS6sLC6VYTQxUmLq459NcBlsqIujhtcIo1bko8qdqvMeO
-   UwSn3yTEgUZEWcxrPkbNPXfz6XeyBgMEyz7HQA9ykYU2LUjUF5q1ByhYu
-   OuBtMBR4Hur1dllfA2RlzsB2dvXz89GNjqob9XWUynPPX4T2a84U9TaQL
-   f290AsyZ0ECOeK6y60Ms7GPgYqTdph2aE9oz0ZAbxF7jLe+BNlGSLmyRG
-   zpBeMKzhAkks7UxlOURLEqR2nHVr7wYw8pArMZF37sjEq28GMcf3WwOv4
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="408924037"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="408924037"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 05:53:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="724811655"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="724811655"
-Received: from nram1-mobl.ger.corp.intel.com ([10.251.214.219])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 05:53:46 -0700
-Date:   Fri, 21 Apr 2023 15:53:33 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v4 5/5] tty: serial: sh-sci: Fix end of transmission on
- SCI
-In-Reply-To: <CAMuHMdUQ05U9oiepVJsShg8xFoHTD6M7XczQ2=Qce+pE+0RPag@mail.gmail.com>
-Message-ID: <1860434a-8915-3ea4-60e1-5f7d4598a16@linux.intel.com>
-References: <20230412145053.114847-1-biju.das.jz@bp.renesas.com> <20230412145053.114847-6-biju.das.jz@bp.renesas.com> <CAMuHMdUQ05U9oiepVJsShg8xFoHTD6M7XczQ2=Qce+pE+0RPag@mail.gmail.com>
+        Sat, 22 Apr 2023 23:45:32 -0400
+Received: from mail.iszf.irk.ru (mx.iszf.irk.ru [84.237.20.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A62310D7
+        for <linux-serial@vger.kernel.org>; Sat, 22 Apr 2023 20:45:29 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.0.6.6])
+        by mail.iszf.irk.ru (Postfix) with ESMTP id AFA8465EDB;
+        Sun, 23 Apr 2023 11:45:25 +0800 (IRKT)
+From:   tomin@iszf.irk.ru
+To:     linux-serial@vger.kernel.org
+Cc:     Vitaliy Tomin <tomin@iszf.irk.ru>
+Subject: [PATCH] serial: Add support for Advantech PCI-1611U card
+Date:   Sun, 23 Apr 2023 11:45:12 +0800
+Message-Id: <20230423034512.2671157-1-tomin@iszf.irk.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <ZEEkQDdvEU060_zv () kroah ! com>
+References: <ZEEkQDdvEU060_zv () kroah ! com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-352577639-1682080734=:1951"
-Content-ID: <51b37d64-afdf-b262-3129-d2f41b4ba260@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Vitaliy Tomin <tomin@iszf.irk.ru>
 
---8323329-352577639-1682080734=:1951
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-ID: <97f35493-426e-62b5-86c9-6337f87dbc49@linux.intel.com>
+Add support for Advantech PCI-1611U card
 
-On Fri, 21 Apr 2023, Geert Uytterhoeven wrote:
+Advantech provides opensource drivers for this and many others card
+based on legacy copy of 8250_pci driver called adv950
 
-> Hi Biju,
-> 
-> On Wed, Apr 12, 2023 at 4:51 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > We need to set TE to "0" (i.e., disable serial transmission) to
-> > get the expected behavior of the end of serial transmission.
-> >
-> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> 
-> Thanks for your patch!
-> 
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -847,6 +847,11 @@ static void sci_transmit_chars(struct uart_port *port)
-> >                 } else if (!uart_circ_empty(xmit) && !stopped) {
-> >                         c = xmit->buf[xmit->tail];
-> >                         xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> > +               } else if (port->type == PORT_SCI && uart_circ_empty(xmit)) {
-> > +                       ctrl = serial_port_in(port, SCSCR);
-> > +                       ctrl &= ~SCSCR_TE;
-> > +                       serial_port_out(port, SCSCR, ctrl);
-> > +                       return;
-> 
-> So nothing after the while loop should be done anymore?
-> What about clearing SCSCR_TE in sci_stop_tx() (which is called after
-> the while loop) instead?
+https://www.advantech.com/emt/support/details/driver?id=1-TDOIMJ
 
-Yes, this added fragment doesn't really seem to belong into the tx loop.
+It is hard to maintain to run as out of tree module on newer kernels.
+Just adding PCI ID to kernel 8250_pci works perfect.
 
-The right direction would be to aim towards converting the whole tx loop 
-into using uart_port_tx_limited().
+Signed-off-by: Vitaliy Tomin <tomin@iszf.irk.ru>
+---
+ drivers/tty/serial/8250/8250_pci.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index c55be6fda0ca..e80c4f6551a1 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1920,6 +1920,8 @@ pci_moxa_setup(struct serial_private *priv,
+ #define PCI_SUBDEVICE_ID_SIIG_DUAL_30	0x2530
+ #define PCI_VENDOR_ID_ADVANTECH		0x13fe
+ #define PCI_DEVICE_ID_INTEL_CE4100_UART 0x2e66
++#define PCI_DEVICE_ID_ADVANTECH_PCI1600	0x1600
++#define PCI_DEVICE_ID_ADVANTECH_PCI1600_1611	0x1611
+ #define PCI_DEVICE_ID_ADVANTECH_PCI3620	0x3620
+ #define PCI_DEVICE_ID_ADVANTECH_PCI3618	0x3618
+ #define PCI_DEVICE_ID_ADVANTECH_PCIf618	0xf618
+@@ -4085,6 +4087,9 @@ static SIMPLE_DEV_PM_OPS(pciserial_pm_ops, pciserial_suspend_one,
+ 			 pciserial_resume_one);
+ 
+ static const struct pci_device_id serial_pci_tbl[] = {
++	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI1600,
++		PCI_DEVICE_ID_ADVANTECH_PCI1600_1611, PCI_ANY_ID, 0, 0,
++		pbn_b0_4_921600 },
+ 	/* Advantech use PCI_DEVICE_ID_ADVANTECH_PCI3620 (0x3620) as 'PCI_SUBVENDOR_ID' */
+ 	{	PCI_VENDOR_ID_ADVANTECH, PCI_DEVICE_ID_ADVANTECH_PCI3620,
+ 		PCI_DEVICE_ID_ADVANTECH_PCI3620, 0x0001, 0, 0,
 -- 
- i.
+2.34.1
 
-> >                 } else {
-> >                         break;
-> >                 }
-> 
-> So combined with my comments on patch 4/5, that would become
-> 
-> -    if (port->type == PORT_SCI)
-> +    if (port->type == PORT_SCI) {
->              ctrl |= SCSCR_TEIE;
-> +            ctrl &= ~SCSCR_TE;
-> +    }
-> 
-> in sci_stop_tx().
---8323329-352577639-1682080734=:1951--
