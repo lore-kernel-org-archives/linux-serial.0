@@ -2,89 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45D0C77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 12:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B78AAC77B61
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 13:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbjDXMy4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Apr 2023 08:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S232022AbjDXNUl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Apr 2023 09:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbjDXMym (ORCPT
+        with ESMTP id S231977AbjDXNU3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Apr 2023 08:54:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09A9DB;
-        Mon, 24 Apr 2023 05:54:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C2A561F45;
-        Mon, 24 Apr 2023 12:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C11AC433D2;
-        Mon, 24 Apr 2023 12:54:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1682340880;
-        bh=kjIOJqt6fDyIyHZ3y0G83AnvzhtK3rSWAYbassPvJf8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UbwXbXHiYRuiBQRy0DWoQMrt5zHCF37csuY/HY2uIaWlnzCG3lMHEGJ4uy6cruSUq
-         XIbEO55bMzI47Cg2YkI5jDpXz2DC2GSxoTJlnEankQ77n3lLzLDVARznEwVUQXp0h/
-         8v7ELqUGWXvzv6aFoc9KS3edrIFEXZvditIfQ5kY=
-Date:   Mon, 24 Apr 2023 14:54:38 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
+        Mon, 24 Apr 2023 09:20:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECEF4C17;
+        Mon, 24 Apr 2023 06:20:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682342407; x=1713878407;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=07zWWxHob+csZ4llanNrZm26lx7Ujo9dMi7dGSKoJlI=;
+  b=boz8bSmjawVci97IRC+kE4ssiGgw4y54MZnBIjaRqX/tO088/ZfZZzSX
+   7xYOOJr7xjgeVkkPoAgza13RGdnVXB069diatepe7Ey27knt3ok+X09QG
+   A0Fr/gqUB3ZFHUe9EsYvM5ZsK2ydhJBIhXDNLNTkKIaN8qbMmvAe+G6QE
+   l/jsuzKCSuqUnEIUl3dY1/RZi78abEHeiG6yWdq4wQNtadSKxrrp9KSc5
+   b0Oq9fENc7I32LwhmBVajly6H36+VlMP5CnaUSVzXrbyFJMuK1PZop9SW
+   P39B/u/V6KmEg6GBV79/uVka/kf+oQJ/ruyoicrrlS9Jf7bXDDjiy7YSj
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10690"; a="374394885"
+X-IronPort-AV: E=Sophos;i="5.99,222,1677571200"; 
+   d="scan'208";a="374394885"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2023 06:20:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10690"; a="939324604"
+X-IronPort-AV: E=Sophos;i="5.99,222,1677571200"; 
+   d="scan'208";a="939324604"
+Received: from wlwpo-8.amr.corp.intel.com ([10.251.215.143])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2023 06:20:03 -0700
+Date:   Mon, 24 Apr 2023 16:20:00 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v3 1/8] tty: n_gsm: add restart parameter to DLC specific
  ioctl config
-Message-ID: <2023042459-humbly-confusing-9721@gregkh>
-References: <20230424075251.5216-1-daniel.starke@siemens.com>
- <2023042438-whole-cannot-1945@gregkh>
- <DB9PR10MB588138A96EE5E7CE96E28221E0679@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+In-Reply-To: <2023042459-humbly-confusing-9721@gregkh>
+Message-ID: <bdb4347-d0e9-96c5-031-ecc549a7d1cd@linux.intel.com>
+References: <20230424075251.5216-1-daniel.starke@siemens.com> <2023042438-whole-cannot-1945@gregkh> <DB9PR10MB588138A96EE5E7CE96E28221E0679@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM> <2023042459-humbly-confusing-9721@gregkh>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB9PR10MB588138A96EE5E7CE96E28221E0679@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 11:03:26AM +0000, Starke, Daniel wrote:
-> > > --- a/include/uapi/linux/gsmmux.h
-> > > +++ b/include/uapi/linux/gsmmux.h
-> > > @@ -58,7 +58,8 @@ struct gsm_dlci_config {
-> > >  	__u32 priority;		/* Priority (0 for default value) */
-> > >  	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
-> > >  	__u32 k;		/* Window size (0 for default value) */
-> > > -	__u32 reserved[8];	/* For future use, must be initialized to zero */
-> > > +	__u32 restart;		/* Force DLCI channel reset? */
+On Mon, 24 Apr 2023, Greg KH wrote:
+
+> On Mon, Apr 24, 2023 at 11:03:26AM +0000, Starke, Daniel wrote:
+> > > > --- a/include/uapi/linux/gsmmux.h
+> > > > +++ b/include/uapi/linux/gsmmux.h
+> > > > @@ -58,7 +58,8 @@ struct gsm_dlci_config {
+> > > >  	__u32 priority;		/* Priority (0 for default value) */
+> > > >  	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
+> > > >  	__u32 k;		/* Window size (0 for default value) */
+> > > > -	__u32 reserved[8];	/* For future use, must be initialized to zero */
+> > > > +	__u32 restart;		/* Force DLCI channel reset? */
+> > > 
+> > > Why are you using a full 32 bits for just 1 bit of data here?  Why not
+> > > use a bitfield?
 > > 
-> > Why are you using a full 32 bits for just 1 bit of data here?  Why not
-> > use a bitfield?
+> > The ioctrl guide states:
+> >   Bitfields and enums generally work as one would expect them to,
+> >   but some properties of them are implementation-defined, so it is better
+> >   to avoid them completely in ioctl interfaces.
+> > 
+> > Therefore, I tried to avoid them here.
 > 
-> The ioctrl guide states:
->   Bitfields and enums generally work as one would expect them to,
->   but some properties of them are implementation-defined, so it is better
->   to avoid them completely in ioctl interfaces.
+> Then use a u8?
+
+To add further, I think that the ioctl guidance tries to say that C 
+bitfields using :number postfix are not a good idea, not that much to 
+disallow flag like content within an integer type.
+
+-- 
+ i.
+
+> > > And what happened to the request to turn the documentation for this
+> > > structure into proper kerneldoc format?
+> > 
+> > That applied to patch 2/8 and is unrelated to this patch. Another patch
+> > will need to fix this.
+> > 
+> > Link: https://lore.kernel.org/all/20230424075251.5216-2-daniel.starke@siemens.com/
 > 
-> Therefore, I tried to avoid them here.
-
-Then use a u8?
-
-> > And what happened to the request to turn the documentation for this
-> > structure into proper kerneldoc format?
+> It's kind of related in that the format is not right :)
 > 
-> That applied to patch 2/8 and is unrelated to this patch. Another patch
-> will need to fix this.
+> As it's a few weeks before I am allowed to even apply this, please
+> rework the series a bit.
 > 
-> Link: https://lore.kernel.org/all/20230424075251.5216-2-daniel.starke@siemens.com/
+> thanks,
+> 
+> greg k-h
+> 
 
-It's kind of related in that the format is not right :)
-
-As it's a few weeks before I am allowed to even apply this, please
-rework the series a bit.
-
-thanks,
-
-greg k-h
