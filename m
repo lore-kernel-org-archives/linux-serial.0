@@ -2,77 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 930F8C77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 09:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C992C77B61
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 10:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbjDXJVG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Apr 2023 05:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S231140AbjDXKyq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Apr 2023 06:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbjDXJVF (ORCPT
+        with ESMTP id S230185AbjDXKyq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Apr 2023 05:21:05 -0400
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D92C211D;
-        Mon, 24 Apr 2023 02:20:50 -0700 (PDT)
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-958bb7731a9so304315066b.0;
-        Mon, 24 Apr 2023 02:20:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682328048; x=1684920048;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UA6jSt5gQmRcw1KPPidEx6UfEGnWKcs24u88lBvdmFQ=;
-        b=ZxR/h5iBTJ0MLTmY9fzuwPRroPSkHpVuhOb2Kju5rYDFaDIJxcE6MfinGPp8n5mikX
-         jrOhx2+5gjfNa9NgzXGtJP1ZlAp1rr+EQju0bj5scSTXTPnQ1R3trwn7keu5g1TFhYiW
-         FXUE2Cxf64pJM/PpsY6xaVfWIWMTGQCrUAMz36kXZ4BMO7OAhm4ttRO6xIneNYs9qsB2
-         Ikza2kkH/iCUIQbdTrZ/DfFo5fRFb9z3UvA4I2JzSvv1DIzdiNH0LoqrzsKC7kkuXZuV
-         WL4QigIYur0VcAo66WTuFy2Xd+AvxjCuuulLPZshvXjz4EQ8iMNT5dj4+7b+ck8pXV/U
-         mkjQ==
-X-Gm-Message-State: AAQBX9fbj9XJaiZWdmznCDFD5Fd5iWzaKnhM1yhsC7M1NLWvW7jt0ovy
-        Rk0LWgGMzrWpdLBlTMUVtdvCd4V8OXw=
-X-Google-Smtp-Source: AKy350ZS7ohYuDvxcs3eJSlQ8UgKSMbR7vddFPaKhmUbmEKlSuNL05qiNE9VZNVNCJ0SDz7Z3DMopQ==
-X-Received: by 2002:a17:906:3698:b0:958:5c21:3fa7 with SMTP id a24-20020a170906369800b009585c213fa7mr4384903ejc.25.1682328048284;
-        Mon, 24 Apr 2023 02:20:48 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id lh15-20020a170906f8cf00b0094e62aa8bcesm5315525ejb.29.2023.04.24.02.20.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Apr 2023 02:20:47 -0700 (PDT)
-Message-ID: <e87f6675-283b-652a-4d5e-b1d41371efd7@kernel.org>
-Date:   Mon, 24 Apr 2023 11:20:46 +0200
+        Mon, 24 Apr 2023 06:54:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B9FB0;
+        Mon, 24 Apr 2023 03:54:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADA5F61272;
+        Mon, 24 Apr 2023 10:54:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D66AC433EF;
+        Mon, 24 Apr 2023 10:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1682333684;
+        bh=BXGM8fpfIzQRY5jCqRwKzG4f2BvNL62GtTIZ72FIrVs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wPZKiM3nIDoEi68j5goIAqxAN2wtc18cFqYy1KmRpgptWEFSW/ga3iu+2rQLqa+8l
+         k0FJuMqmf6i3HOP7T13dMZTMublMQ50iBAoSd9YuctsT4NiGu4DKUwtDxZsBokqBzL
+         +AI5yu+rRHZuiPXyuXIAHd+Pz/+OWDnlZDKrtOMQ=
+Date:   Mon, 24 Apr 2023 12:54:41 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/8] tty: n_gsm: add restart parameter to DLC specific
+ ioctl config
+Message-ID: <2023042438-whole-cannot-1945@gregkh>
+References: <20230424075251.5216-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] serial: 8250: Document termios parameter of
- serial8250_em485_config()
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <2bd1e62be1d5d33333002910372feecc6d52e78f.1682071013.git.geert+renesas@glider.be>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <2bd1e62be1d5d33333002910372feecc6d52e78f.1682071013.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230424075251.5216-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21. 04. 23, 11:58, Geert Uytterhoeven wrote:
-> With W=1:
+On Mon, Apr 24, 2023 at 09:52:44AM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
->      drivers/tty/serial/8250/8250_port.c:679: warning: Function parameter or member 'termios' not described in 'serial8250_em485_config'
+> Currently, changing the parameters of a DLCI gives no direct control to the
+> user whether this should trigger a channel reset or not. The decision is
+> solely made by the driver based on the assumption which parameter changes
+> are compatible or not. Therefore, the user has no means to perform an
+> automatic channel reset after parameter configuration for non-conflicting
+> changes.
 > 
-> Fix this by documenting the parameter.
+> Add the parameter 'restart' to 'gsm_dlci_config' to force a channel reset
+> after ioctl setting regardless of whether the changes made require this or
+> not.
 > 
-> Fixes: ae50bb2752836277 ("serial: take termios_rwsem for ->rs485_config() & pass termios as param")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Note that the parameter is limited to the values 0 and 1 to allow future
+> additions here.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c         | 4 ++++
+>  include/uapi/linux/gsmmux.h | 3 ++-
+>  2 files changed, 6 insertions(+), 1 deletion(-)
+> 
+> v2 -> v3:
+> No changes.
+> 
+> Link: https://lore.kernel.org/all/20230420085017.7314-2-daniel.starke@siemens.com/
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index b411a26cc092..00f692e2e810 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -2532,6 +2532,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+>  		return -EINVAL;
+>  	if (dc->k > 7)
+>  		return -EINVAL;
+> +	if (dc->restart > 1)   /* allow future extensions */
+> +		return -EINVAL;
+>  
+>  	/*
+>  	 * See what is needed for reconfiguration
+> @@ -2546,6 +2548,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+>  	/* Requires care */
+>  	if (dc->priority != dlci->prio)
+>  		need_restart = true;
+> +	if (dc->restart)
+> +		need_restart = true;
+>  
+>  	if ((open && gsm->wait_config) || need_restart)
+>  		need_open = true;
+> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+> index eb67884e5f38..33ee7b857c52 100644
+> --- a/include/uapi/linux/gsmmux.h
+> +++ b/include/uapi/linux/gsmmux.h
+> @@ -58,7 +58,8 @@ struct gsm_dlci_config {
+>  	__u32 priority;		/* Priority (0 for default value) */
+>  	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
+>  	__u32 k;		/* Window size (0 for default value) */
+> -	__u32 reserved[8];	/* For future use, must be initialized to zero */
+> +	__u32 restart;		/* Force DLCI channel reset? */
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Why are you using a full 32 bits for just 1 bit of data here?  Why not
+use a bitfield?
+
+And what happened to the request to turn the documentation for this
+structure into proper kerneldoc format?
 
 thanks,
--- 
-js
-suse labs
 
+greg k-h
