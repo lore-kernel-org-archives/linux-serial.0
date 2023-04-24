@@ -2,37 +2,39 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 932C6C77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 07:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7863C77B7E
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 07:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbjDXHyk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Apr 2023 03:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        id S231373AbjDXHym (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Apr 2023 03:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231240AbjDXHyk (ORCPT
+        with ESMTP id S231416AbjDXHyk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 24 Apr 2023 03:54:40 -0400
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6442310C4
-        for <linux-serial@vger.kernel.org>; Mon, 24 Apr 2023 00:54:36 -0700 (PDT)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20230424075434cdb87ec348e56e1f23
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD90010E5
+        for <linux-serial@vger.kernel.org>; Mon, 24 Apr 2023 00:54:38 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20230424075437aa189d47b40358c043
         for <linux-serial@vger.kernel.org>;
-        Mon, 24 Apr 2023 09:54:34 +0200
+        Mon, 24 Apr 2023 09:54:37 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=+v3MIb8PNZ4ZgxyCgk4r+KodnCwVlLhLxXYg0SWiEHo=;
- b=PUI5S/qZHtiME/0oNhuHpCviJ3YzaxRqU25OBtOu7Lw8ANfD1ludQuEAyGuIB9nVHrgBnY
- 57GBs63dQxYNL+wabT8LutbGG6scReu7HhKMrAx7zaesgTN01oLka4qmDKpWsMfhRI/oerRo
- wmXDyiGtRY5wUe5WrIdxB2lu1qhVk=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=RH+IPOwJITsK55x7GggxOQ9MIYHJ4riLL8mEAOOeoXc=;
+ b=SzKskAqAU1VFoE/Uv0dZm+lVtO9JrwPoRL43i05+A47eUJ1Gq2QWJ74nmZhFludD8f0vJL
+ CEvajtupfrgJEa4JHVrFxU9gWTkjSx/r3Yz37kq0Bggso5aUulPBm1Hz0HLMLOx0UlaYshGa
+ PWO4s5g2WPpWsmhEeD6qSkx/Wy/Ss=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 1/8] tty: n_gsm: add restart parameter to DLC specific ioctl config
-Date:   Mon, 24 Apr 2023 09:52:44 +0200
-Message-Id: <20230424075251.5216-1-daniel.starke@siemens.com>
+Subject: [PATCH v3 6/8] tty: n_gsm: increase gsm_mux unsupported counted where appropriate
+Date:   Mon, 24 Apr 2023 09:52:49 +0200
+Message-Id: <20230424075251.5216-6-daniel.starke@siemens.com>
+In-Reply-To: <20230424075251.5216-1-daniel.starke@siemens.com>
+References: <20230424075251.5216-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -43,67 +45,53 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, changing the parameters of a DLCI gives no direct control to the
-user whether this should trigger a channel reset or not. The decision is
-solely made by the driver based on the assumption which parameter changes
-are compatible or not. Therefore, the user has no means to perform an
-automatic channel reset after parameter configuration for non-conflicting
-changes.
+The structure gsm_mux contains the 'unsupported' field. However, there is
+currently no place in the code which increases this counter.
 
-Add the parameter 'restart' to 'gsm_dlci_config' to force a channel reset
-after ioctl setting regardless of whether the changes made require this or
-not.
+Increase the 'unsupported' statistics counter in the following case:
+- an unsupported frame type has been requested by the peer via parameter
+  negotiation
+- a control frame with an unsupported but known command has been received
 
-Note that the parameter is limited to the values 0 and 1 to allow future
-additions here.
+Note that we have no means to detect an inconsistent/unsupported adaptation
+sufficient accuracy as this changes the structure of the UI/UIH frames.
+E.g. a one byte header is added in case of convergence layer type 2 instead
+of 1 and contains the modem signal octet with the state of the signal
+lines. There is no checksum or other value which indicates of this field is
+correct or should be present. Therefore, we can only assume protocol
+correctness here. See also 'gsm_dlci_data()' where this is handled.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c         | 4 ++++
- include/uapi/linux/gsmmux.h | 3 ++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 v2 -> v3:
 No changes.
 
-Link: https://lore.kernel.org/all/20230420085017.7314-2-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20230420085017.7314-7-daniel.starke@siemens.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index b411a26cc092..00f692e2e810 100644
+index 10fc02133efa..941489230f9f 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2532,6 +2532,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+@@ -1590,6 +1590,7 @@ static int gsm_process_negotiation(struct gsm_mux *gsm, unsigned int addr,
+ 		if (debug & DBG_ERRORS)
+ 			pr_info("%s unsupported I frame request in PN\n",
+ 				__func__);
++		gsm->unsupported++;
  		return -EINVAL;
- 	if (dc->k > 7)
- 		return -EINVAL;
-+	if (dc->restart > 1)   /* allow future extensions */
-+		return -EINVAL;
- 
- 	/*
- 	 * See what is needed for reconfiguration
-@@ -2546,6 +2548,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
- 	/* Requires care */
- 	if (dc->priority != dlci->prio)
- 		need_restart = true;
-+	if (dc->restart)
-+		need_restart = true;
- 
- 	if ((open && gsm->wait_config) || need_restart)
- 		need_open = true;
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index eb67884e5f38..33ee7b857c52 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -58,7 +58,8 @@ struct gsm_dlci_config {
- 	__u32 priority;		/* Priority (0 for default value) */
- 	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
- 	__u32 k;		/* Window size (0 for default value) */
--	__u32 reserved[8];	/* For future use, must be initialized to zero */
-+	__u32 restart;		/* Force DLCI channel reset? */
-+	__u32 reserved[7];	/* For future use, must be initialized to zero */
- };
- 
- #define GSMIOC_GETCONF_DLCI	_IOWR('G', 7, struct gsm_dlci_config)
+ 	default:
+ 		if (debug & DBG_ERRORS)
+@@ -1897,6 +1898,8 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
+ 		/* Optional unsupported commands */
+ 	case CMD_RPN:	/* Remote port negotiation */
+ 	case CMD_SNC:	/* Service negotiation command */
++		gsm->unsupported++;
++		fallthrough;
+ 	default:
+ 		/* Reply to bad commands with an NSC */
+ 		buf[0] = command;
 -- 
 2.34.1
 
