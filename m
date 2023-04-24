@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB68DC77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 07:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4F0C77B76
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 07:56:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbjDXH4T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Apr 2023 03:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
+        id S230205AbjDXH4V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Apr 2023 03:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbjDXH4S (ORCPT
+        with ESMTP id S231223AbjDXH4T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Apr 2023 03:56:18 -0400
-X-Greylist: delayed 79 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 24 Apr 2023 00:55:55 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E4C210A
+        Mon, 24 Apr 2023 03:56:19 -0400
+X-Greylist: delayed 78 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 24 Apr 2023 00:55:56 PDT
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F962133
         for <linux-serial@vger.kernel.org>; Mon, 24 Apr 2023 00:55:55 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20230424075434df3b1f24bbcf64070f
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20230424075435b0546cd02705b001ff
         for <linux-serial@vger.kernel.org>;
-        Mon, 24 Apr 2023 09:54:34 +0200
+        Mon, 24 Apr 2023 09:54:36 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=cRH4nX3kvz4VCstupXacwcxAHkGzJLXypxwShXAZZ2M=;
- b=kue6cTzmaDbSfYeW6YTZMOGBGGHNT040b0t12m37SYwKO0peb9FAPlTRUFA+WbICtx9wTt
- h/iR0Xaidy2Vl713gfMVstd6aZkyyyHi3YAp89KQPCWNYJM6A6lCHoc6ZSgeCG/mOGzZ11rW
- EkP7Ur4tFflpqlYqQCEl0sGqb8Krg=;
+ bh=ULLYgmbG/ykB1RRdK7/F/RuI/3VzvVuXKuXWTjBDDSs=;
+ b=J5DfR/zRamnMR2A/mdk89g4pEaRG1IP+wLnRwMuVMv24OT2IBtHlltQ/FEW9HL4Hp238qs
+ BuZyf/OhbT+b5S6GkZ89IuDCths74oqPh1aG8RHTTkaVAeJiWlppk9w9EcPK5h+b8/9s3cj3
+ QvaweLxZDH9Pv8dsVIMoM5+XNar+A=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 2/8] tty: n_gsm: add missing description to gsm_config
-Date:   Mon, 24 Apr 2023 09:52:45 +0200
-Message-Id: <20230424075251.5216-2-daniel.starke@siemens.com>
+Subject: [PATCH v3 4/8] tty: n_gsm: add open_error counter to gsm_mux
+Date:   Mon, 24 Apr 2023 09:52:47 +0200
+Message-Id: <20230424075251.5216-4-daniel.starke@siemens.com>
 In-Reply-To: <20230424075251.5216-1-daniel.starke@siemens.com>
 References: <20230424075251.5216-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,70 +46,118 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, all available structure fields in gsmmux.h except those
-for gsm_config are commented.
+Extend the n_gsm link statistics by a failed link open counter in
+preparation for an upcoming patch which will expose these.
+This counter is increased whenever an attempt to open the control channel
+failed. This is true in the following cases:
+- new DLCI allocation failed
+- connection request (SAMB) with invalid CR flag has been received
+- connection response (UA) timed out
+- parameter negotiation timed out or failed
 
-Fix this by adding appropriate comments to the not commented fields.
-Note that 'mru' and 'mtu' refer to the size without basic/advanced option
-mode header and byte stuffing as defined in the standard in chapter 5.7.2.
-
-Converting the other fields to kernel doc format remains an open task for
-future patches.
-
-Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- include/uapi/linux/gsmmux.h | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
 v2 -> v3:
-Changed added comments to kernel doc format as remarked in the review.
-Added remark regarding remaining documentation fields to commit message.
+Merged
+commit 2b3174c96696 ("n_gsm: Use array_index_nospec() with index that comes from userspace")
+No other changes.
 
-Link: https://lore.kernel.org/all/ZEEd_oOvJYranmzN@kroah.com/
+Link: https://lore.kernel.org/all/20230420085017.7314-5-daniel.starke@siemens.com/
 
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index 33ee7b857c52..d3b9b37a9082 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -6,6 +6,28 @@
- #include <linux/ioctl.h>
- #include <linux/types.h>
- 
-+/**
-+ * struct gsm_config - n_gsm basic configuration parameters
-+ *
-+ * This structure is used in combination with GSMIOC_GETCONF and GSMIOC_SETCONF
-+ * to retrieve and set the basic parameters of an n_gsm ldisc.
-+ * struct gsm_config_ext can be used to configure extended ldisc parameters.
-+ *
-+ * All timers are in units of 1/100th of a second.
-+ *
-+ * @adaption: Convergence layer type
-+ * @encapsulation: Framing (0 = basic option, 1 = advanced option)
-+ * @initiator: Initiator or responder
-+ * @t1: Acknowledgment timer
-+ * @t2: Response timer for multiplexer control channel
-+ * @t3: Response timer for wake-up procedure
-+ * @n2: Maximum number of retransmissions
-+ * @mru: Maximum incoming frame payload size
-+ * @mtu: Maximum outgoing frame payload size
-+ * @k: Window size
-+ * @i: Frame type (1 = UIH, 2 = UI)
-+ * @unused: Can not be used
-+ */
- struct gsm_config
- {
- 	unsigned int adaption;
-@@ -19,7 +41,7 @@ struct gsm_config
- 	unsigned int mtu;
- 	unsigned int k;
- 	unsigned int i;
--	unsigned int unused[8];	/* Can not be used */
-+	unsigned int unused[8];
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 9a2cf3e14678..6b6fafb1098a 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -339,6 +339,7 @@ struct gsm_mux {
+ 	unsigned long bad_fcs;
+ 	unsigned long malformed;
+ 	unsigned long io_error;
++	unsigned long open_error;
+ 	unsigned long bad_size;
+ 	unsigned long unsupported;
  };
+@@ -1730,25 +1731,32 @@ static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
+ 	struct gsm_dlci *dlci;
+ 	struct gsm_dlci_param_bits *params;
  
- #define GSMIOC_GETCONF		_IOR('G', 0, struct gsm_config)
+-	if (dlen < sizeof(struct gsm_dlci_param_bits))
++	if (dlen < sizeof(struct gsm_dlci_param_bits)) {
++		gsm->open_error++;
+ 		return;
++	}
+ 
+ 	/* Invalid DLCI? */
+ 	params = (struct gsm_dlci_param_bits *)data;
+ 	addr = FIELD_GET(PN_D_FIELD_DLCI, params->d_bits);
+-	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr])
++	if (addr == 0 || addr >= NUM_DLCI || !gsm->dlci[addr]) {
++		gsm->open_error++;
+ 		return;
++	}
+ 	dlci = gsm->dlci[addr];
+ 
+ 	/* Too late for parameter negotiation? */
+-	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN)
++	if ((!cr && dlci->state == DLCI_OPENING) || dlci->state == DLCI_OPEN) {
++		gsm->open_error++;
+ 		return;
++	}
+ 
+ 	/* Process the received parameters */
+ 	if (gsm_process_negotiation(gsm, addr, cr, params) != 0) {
+ 		/* Negotiation failed. Close the link. */
+ 		if (debug & DBG_ERRORS)
+ 			pr_info("%s PN failed\n", __func__);
++		gsm->open_error++;
+ 		gsm_dlci_close(dlci);
+ 		return;
+ 	}
+@@ -1768,6 +1776,7 @@ static void gsm_control_negotiation(struct gsm_mux *gsm, unsigned int cr,
+ 	} else {
+ 		if (debug & DBG_ERRORS)
+ 			pr_info("%s PN in invalid state\n", __func__);
++		gsm->open_error++;
+ 	}
+ }
+ 
+@@ -2221,6 +2230,7 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 			dlci->retries--;
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else {
++			gsm->open_error++;
+ 			gsm_dlci_begin_close(dlci); /* prevent half open link */
+ 		}
+ 		break;
+@@ -2236,6 +2246,7 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 			dlci->mode = DLCI_MODE_ADM;
+ 			gsm_dlci_open(dlci);
+ 		} else {
++			gsm->open_error++;
+ 			gsm_dlci_begin_close(dlci); /* prevent half open link */
+ 		}
+ 
+@@ -2757,12 +2768,16 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 
+ 	switch (gsm->control) {
+ 	case SABM|PF:
+-		if (cr == 1)
++		if (cr == 1) {
++			gsm->open_error++;
+ 			goto invalid;
++		}
+ 		if (dlci == NULL)
+ 			dlci = gsm_dlci_alloc(gsm, address);
+-		if (dlci == NULL)
++		if (dlci == NULL) {
++			gsm->open_error++;
+ 			return;
++		}
+ 		if (dlci->dead)
+ 			gsm_response(gsm, address, DM|PF);
+ 		else {
 -- 
 2.34.1
 
