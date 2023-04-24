@@ -2,100 +2,89 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F9BC77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 12:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E45D0C77B61
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 12:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbjDXMxr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Apr 2023 08:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
+        id S230454AbjDXMy4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Apr 2023 08:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbjDXMxq (ORCPT
+        with ESMTP id S231717AbjDXMym (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Apr 2023 08:53:46 -0400
-Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75EF123;
-        Mon, 24 Apr 2023 05:53:45 -0700 (PDT)
-Received: from haru.localdomain ([10.12.176.125])
-        (user=m202071377@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 33OCpkk5030859-33OCpkk6030859
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 24 Apr 2023 20:51:53 +0800
-From:   XuDong Liu <m202071377@hust.edu.cn>
-To:     Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     XuDong Liu <m202071377@hust.edu.cn>,
-        Dongliang Mu <dzm91@hust.edu.cn>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [Patch] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
-Date:   Mon, 24 Apr 2023 20:51:00 +0800
-Message-Id: <20230424125100.4783-1-m202071377@hust.edu.cn>
-X-Mailer: git-send-email 2.34.1
+        Mon, 24 Apr 2023 08:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09A9DB;
+        Mon, 24 Apr 2023 05:54:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C2A561F45;
+        Mon, 24 Apr 2023 12:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C11AC433D2;
+        Mon, 24 Apr 2023 12:54:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1682340880;
+        bh=kjIOJqt6fDyIyHZ3y0G83AnvzhtK3rSWAYbassPvJf8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UbwXbXHiYRuiBQRy0DWoQMrt5zHCF37csuY/HY2uIaWlnzCG3lMHEGJ4uy6cruSUq
+         XIbEO55bMzI47Cg2YkI5jDpXz2DC2GSxoTJlnEankQ77n3lLzLDVARznEwVUQXp0h/
+         8v7ELqUGWXvzv6aFoc9KS3edrIFEXZvditIfQ5kY=
+Date:   Mon, 24 Apr 2023 14:54:38 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Starke, Daniel" <daniel.starke@siemens.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/8] tty: n_gsm: add restart parameter to DLC specific
+ ioctl config
+Message-ID: <2023042459-humbly-confusing-9721@gregkh>
+References: <20230424075251.5216-1-daniel.starke@siemens.com>
+ <2023042438-whole-cannot-1945@gregkh>
+ <DB9PR10MB588138A96EE5E7CE96E28221E0679@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: m202071377@hust.edu.cn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB9PR10MB588138A96EE5E7CE96E28221E0679@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Smatch reports:
-drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn: 
-'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
+On Mon, Apr 24, 2023 at 11:03:26AM +0000, Starke, Daniel wrote:
+> > > --- a/include/uapi/linux/gsmmux.h
+> > > +++ b/include/uapi/linux/gsmmux.h
+> > > @@ -58,7 +58,8 @@ struct gsm_dlci_config {
+> > >  	__u32 priority;		/* Priority (0 for default value) */
+> > >  	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
+> > >  	__u32 k;		/* Window size (0 for default value) */
+> > > -	__u32 reserved[8];	/* For future use, must be initialized to zero */
+> > > +	__u32 restart;		/* Force DLCI channel reset? */
+> > 
+> > Why are you using a full 32 bits for just 1 bit of data here?  Why not
+> > use a bitfield?
+> 
+> The ioctrl guide states:
+>   Bitfields and enums generally work as one would expect them to,
+>   but some properties of them are implementation-defined, so it is better
+>   to avoid them completely in ioctl interfaces.
+> 
+> Therefore, I tried to avoid them here.
 
-In the function brcmuart_probe(), baud_mux_clk was not correctly released
-in subsequent error handling, which may cause memory leaks.
+Then use a u8?
 
-To fix this issue, an error handling branch, err_clk_put, is added to
-release the variable using clk_put(), and an err_disable branch is added
-to meet the requirement of balancing clk_disable and clk_enable calls.
+> > And what happened to the request to turn the documentation for this
+> > structure into proper kerneldoc format?
+> 
+> That applied to patch 2/8 and is unrelated to this patch. Another patch
+> will need to fix this.
+> 
+> Link: https://lore.kernel.org/all/20230424075251.5216-2-daniel.starke@siemens.com/
 
-Fixes: 15ac1122fd6d ("serial: 8250_bcm7271: Fix arbitration handling")
-Signed-off-by: XuDong Liu <m202071377@hust.edu.cn>
-Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
----
-The issue is discovered by static analysis, and the patch is not tested
-yet.
----
- drivers/tty/serial/8250/8250_bcm7271.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+It's kind of related in that the format is not right :)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index f801b1f5b46c..b1670558868b 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1023,7 +1023,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 		dev_dbg(dev, "BAUD MUX clock found\n");
- 		ret = clk_prepare_enable(baud_mux_clk);
- 		if (ret)
--			goto release_dma;
-+			goto err_clk_put;
- 		priv->baud_mux_clk = baud_mux_clk;
- 		init_real_clk_rates(dev, priv);
- 		clk_rate = priv->default_mux_rate;
-@@ -1032,7 +1032,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	if (clk_rate == 0) {
- 		dev_err(dev, "clock-frequency or clk not defined\n");
- 		ret = -EINVAL;
--		goto release_dma;
-+		goto err_clk_disable;
- 	}
- 
- 	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
-@@ -1119,6 +1119,10 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	serial8250_unregister_port(priv->line);
- err:
- 	brcmuart_free_bufs(dev, priv);
-+err_clk_disable:
-+	clk_disable_unprepare(baud_mux_clk);
-+err_clk_put:
-+	clk_put(baud_mux_clk);
- release_dma:
- 	if (priv->dma_enabled)
- 		brcmuart_arbitration(priv, 0);
--- 
-2.34.1
+As it's a few weeks before I am allowed to even apply this, please
+rework the series a bit.
 
+thanks,
+
+greg k-h
