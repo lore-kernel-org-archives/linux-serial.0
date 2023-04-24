@@ -2,180 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 010FAC77B61
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 07:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 930F8C77B61
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Apr 2023 09:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbjDXH4Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Apr 2023 03:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41084 "EHLO
+        id S231520AbjDXJVG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Apr 2023 05:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbjDXH4X (ORCPT
+        with ESMTP id S231447AbjDXJVF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Apr 2023 03:56:23 -0400
-X-Greylist: delayed 97 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 24 Apr 2023 00:56:17 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EF610F5
-        for <linux-serial@vger.kernel.org>; Mon, 24 Apr 2023 00:56:17 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202304240754385519345c86860d788b
-        for <linux-serial@vger.kernel.org>;
-        Mon, 24 Apr 2023 09:54:38 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=TMiKHVqdPJJ94SJ7CYeAuedDKJjk5C6OoKfwHyNkX74=;
- b=KcyPzwEzxq2cT9bEVkBbcU6KeITsFXBmrV3DKv5X/CId4YV28+aCpg5P5nmoc5aSn7xmUV
- EaguzZ+QCskm9vYOt323mnEieR8xIa1+FgMX1Nw/0AvgtS4KMFWI4zQQ+AKDWq2QhbV1jWUs
- eINdAk2KwYh1y5eBJdr7K0YZi5gCg=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 8/8] tty: n_gsm: add DLCI specific rx/tx statistics
-Date:   Mon, 24 Apr 2023 09:52:51 +0200
-Message-Id: <20230424075251.5216-8-daniel.starke@siemens.com>
-In-Reply-To: <20230424075251.5216-1-daniel.starke@siemens.com>
-References: <20230424075251.5216-1-daniel.starke@siemens.com>
+        Mon, 24 Apr 2023 05:21:05 -0400
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D92C211D;
+        Mon, 24 Apr 2023 02:20:50 -0700 (PDT)
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-958bb7731a9so304315066b.0;
+        Mon, 24 Apr 2023 02:20:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682328048; x=1684920048;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UA6jSt5gQmRcw1KPPidEx6UfEGnWKcs24u88lBvdmFQ=;
+        b=ZxR/h5iBTJ0MLTmY9fzuwPRroPSkHpVuhOb2Kju5rYDFaDIJxcE6MfinGPp8n5mikX
+         jrOhx2+5gjfNa9NgzXGtJP1ZlAp1rr+EQju0bj5scSTXTPnQ1R3trwn7keu5g1TFhYiW
+         FXUE2Cxf64pJM/PpsY6xaVfWIWMTGQCrUAMz36kXZ4BMO7OAhm4ttRO6xIneNYs9qsB2
+         Ikza2kkH/iCUIQbdTrZ/DfFo5fRFb9z3UvA4I2JzSvv1DIzdiNH0LoqrzsKC7kkuXZuV
+         WL4QigIYur0VcAo66WTuFy2Xd+AvxjCuuulLPZshvXjz4EQ8iMNT5dj4+7b+ck8pXV/U
+         mkjQ==
+X-Gm-Message-State: AAQBX9fbj9XJaiZWdmznCDFD5Fd5iWzaKnhM1yhsC7M1NLWvW7jt0ovy
+        Rk0LWgGMzrWpdLBlTMUVtdvCd4V8OXw=
+X-Google-Smtp-Source: AKy350ZS7ohYuDvxcs3eJSlQ8UgKSMbR7vddFPaKhmUbmEKlSuNL05qiNE9VZNVNCJ0SDz7Z3DMopQ==
+X-Received: by 2002:a17:906:3698:b0:958:5c21:3fa7 with SMTP id a24-20020a170906369800b009585c213fa7mr4384903ejc.25.1682328048284;
+        Mon, 24 Apr 2023 02:20:48 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id lh15-20020a170906f8cf00b0094e62aa8bcesm5315525ejb.29.2023.04.24.02.20.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Apr 2023 02:20:47 -0700 (PDT)
+Message-ID: <e87f6675-283b-652a-4d5e-b1d41371efd7@kernel.org>
+Date:   Mon, 24 Apr 2023 11:20:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] serial: 8250: Document termios parameter of
+ serial8250_em485_config()
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <2bd1e62be1d5d33333002910372feecc6d52e78f.1682071013.git.geert+renesas@glider.be>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <2bd1e62be1d5d33333002910372feecc6d52e78f.1682071013.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 21. 04. 23, 11:58, Geert Uytterhoeven wrote:
+> With W=1:
+> 
+>      drivers/tty/serial/8250/8250_port.c:679: warning: Function parameter or member 'termios' not described in 'serial8250_em485_config'
+> 
+> Fix this by documenting the parameter.
+> 
+> Fixes: ae50bb2752836277 ("serial: take termios_rwsem for ->rs485_config() & pass termios as param")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Add counters for the number of data bytes received/transmitted per DLCI in
-for preparation for an upcoming patch which will expose these values to the
-user.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
-
-v2 -> v3:
-No changes.
-
-Link: https://lore.kernel.org/all/20230420085017.7314-9-daniel.starke@siemens.com/
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 6bfcaf8fe54c..7377a37320af 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -186,6 +186,9 @@ struct gsm_dlci {
- 	void (*data)(struct gsm_dlci *dlci, const u8 *data, int len);
- 	void (*prev_data)(struct gsm_dlci *dlci, const u8 *data, int len);
- 	struct net_device *net; /* network interface, if created */
-+	/* Statistics (not currently exposed) */
-+	u64 tx;			/* Data bytes sent on this DLCI */
-+	u64 rx;			/* Data bytes received on this DLCI */
- };
- 
- /*
-@@ -1216,6 +1219,7 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 	tty_port_tty_wakeup(&dlci->port);
- 
- 	__gsm_data_queue(dlci, msg);
-+	dlci->tx += len;
- 	/* Bytes of data we used up */
- 	return size;
- }
-@@ -1283,6 +1287,7 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
- 	memcpy(dp, dlci->skb->data, len);
- 	skb_pull(dlci->skb, len);
- 	__gsm_data_queue(dlci, msg);
-+	dlci->tx += len;
- 	if (last) {
- 		dev_kfree_skb_any(dlci->skb);
- 		dlci->skb = NULL;
-@@ -1461,6 +1466,7 @@ static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
- 	msg->data[1] = (dlen << 1) | EA;
- 	memcpy(msg->data + 2, data, dlen);
- 	gsm_data_queue(dlci, msg);
-+	dlci->tx += dlen;
- 
- 	return 0;
- }
-@@ -1488,6 +1494,7 @@ static void gsm_control_reply(struct gsm_mux *gsm, int cmd, const u8 *data,
- 	msg->data[1] = (dlen << 1) | EA;
- 	memcpy(msg->data + 2, data, dlen);
- 	gsm_data_queue(dlci, msg);
-+	dlci->tx += dlen;
- }
- 
- /**
-@@ -1852,10 +1859,13 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- 						const u8 *data, int clen)
- {
- 	u8 buf[1];
-+	struct gsm_dlci *dlci = gsm->dlci[0];
-+
-+	if (dlci)
-+		dlci->rx += clen;
- 
- 	switch (command) {
- 	case CMD_CLD: {
--		struct gsm_dlci *dlci = gsm->dlci[0];
- 		/* Modem wishes to close down */
- 		if (dlci) {
- 			dlci->dead = true;
-@@ -1934,6 +1944,8 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
- 
- 	ctrl = gsm->pending_cmd;
- 	dlci = gsm->dlci[0];
-+	if (dlci)
-+		dlci->rx += clen;
- 	command |= 1;
- 	/* Does the reply match our command */
- 	if (ctrl != NULL && (command == ctrl->cmd || command == CMD_NSC)) {
-@@ -2298,6 +2310,9 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
- 			need_pn = true;
- 	}
- 
-+	dlci->tx = 0;
-+	dlci->rx = 0;
-+
- 	switch (dlci->state) {
- 	case DLCI_CLOSED:
- 	case DLCI_WAITING_CONFIG:
-@@ -2330,6 +2345,9 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
-  */
- static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
- {
-+	dlci->tx = 0;
-+	dlci->rx = 0;
-+
- 	switch (dlci->state) {
- 	case DLCI_CLOSED:
- 	case DLCI_WAITING_CONFIG:
-@@ -2349,6 +2367,9 @@ static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
-  */
- static void gsm_dlci_set_wait_config(struct gsm_dlci *dlci)
- {
-+	dlci->tx = 0;
-+	dlci->rx = 0;
-+
- 	switch (dlci->state) {
- 	case DLCI_CLOSED:
- 	case DLCI_CLOSING:
-@@ -2425,6 +2446,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
- 		fallthrough;
- 	case 1:		/* Line state will go via DLCI 0 controls only */
- 	default:
-+		dlci->rx += clen;
- 		tty_insert_flip_string(port, data, clen);
- 		tty_flip_buffer_push(port);
- 	}
-@@ -2785,6 +2807,7 @@ static void gsm_queue(struct gsm_mux *gsm)
- 			gsm->open_error++;
- 			return;
- 		}
-+		dlci->rx += gsm->len;
- 		if (dlci->dead)
- 			gsm_response(gsm, address, DM|PF);
- 		else {
+thanks,
 -- 
-2.34.1
+js
+suse labs
 
