@@ -2,113 +2,179 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E48DDC77B76
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Apr 2023 13:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09053C6FD18
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Apr 2023 14:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbjDYNAb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Apr 2023 09:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
+        id S234315AbjDYOCx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Apr 2023 10:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233952AbjDYNA1 (ORCPT
+        with ESMTP id S234304AbjDYOCw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Apr 2023 09:00:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E7313C30;
-        Tue, 25 Apr 2023 06:00:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6850260D56;
-        Tue, 25 Apr 2023 13:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8F6C43442;
-        Tue, 25 Apr 2023 13:00:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1682427625;
-        bh=XO4S6eeVuuK3+SDKORRmedfITWuDoW1zGPNl7NOvUEI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KtEhLdOBnurJeUJQrhRpFGl4Tgyhno3iPi3QkHG0mf7kYqcYUz0XDHj8NVORHsFjx
-         cuawNStCPmhSv7qK6pr/mI1oQYw3t77Gy8g73tMUvgf+I7J3Ae+s/tqokcG2PBgBgy
-         RODcFuC1A27hV1/r7wFxS6rcI72EY/QIEr7eXUNQ=
-Date:   Tue, 25 Apr 2023 15:00:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@roeck-us.net,
-        michal.simek@amd.com, Jonathan.Cameron@huawei.com,
-        andriy.shevchenko@linux.intel.com
-Subject: Re: [PATCH v3 0/4] devres: Provide krealloc_array
-Message-ID: <ZEfO5kXIBVifamC4@kroah.com>
-References: <20230320145710.1120469-1-james.clark@arm.com>
- <108babe4-20cb-e637-e7da-7d04127d2a9e@arm.com>
+        Tue, 25 Apr 2023 10:02:52 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B25B61A4;
+        Tue, 25 Apr 2023 07:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682431368; x=1713967368;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=l6q1dc5C1/q1Geq8yt82kUpPLs/7UC9mtgVUN2I56UE=;
+  b=h5LpmLC4zIWnHrVCNUQ/ECOWOAd+4R/QT75d9q2qc5VctZZaxAc3Gj6y
+   Xjp+cxDNpW3Si7YkTZ1H5p0OJMi8VRLamHllThRqBLou1Eu0ngqQGhZn5
+   G63f4GyiGr/ZtnV91Fhl36qYN9F972kpIbqBp0XzB+ISpJRWxT9BFPTUk
+   4YMpZdXj0U9Aq0CDkvfOG6QNs3rzgBbdF9agu/Iy4w1xrGtMkk3ISVX7Z
+   834mf+lwqAG3NIl+IOs0HsECaBIseIEaFZ+FD33lmXRoboRFN/WsYoYUz
+   RiFC/bD+PCU4+SSosNOZ4/3WXaV5soFRZsw7FA6xV2I6ezOhxGc1Fac51
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10691"; a="412062305"
+X-IronPort-AV: E=Sophos;i="5.99,225,1677571200"; 
+   d="scan'208";a="412062305"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2023 07:02:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10691"; a="837448058"
+X-IronPort-AV: E=Sophos;i="5.99,225,1677571200"; 
+   d="scan'208";a="837448058"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Apr 2023 07:02:43 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1prJFh-000jRg-39;
+        Tue, 25 Apr 2023 14:02:41 +0000
+Date:   Tue, 25 Apr 2023 22:01:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        tmaimon77@gmail.com, catalin.marinas@arm.com, will@kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        arnd@arndb.de, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v8 10/11] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+Message-ID: <202304252118.P0ZCvlQO-lkp@intel.com>
+References: <20230425102418.185783-11-ychuang570808@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <108babe4-20cb-e637-e7da-7d04127d2a9e@arm.com>
+In-Reply-To: <20230425102418.185783-11-ychuang570808@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 01:51:31PM +0100, James Clark wrote:
-> 
-> 
-> On 20/03/2023 14:57, James Clark wrote:
-> > Changes since v2:
-> >  
-> >  * Remove change in qcom_geni_serial.c in the last commmit and replace
-> >    it with a comment instead
-> >  * Whitespace fix
-> > 
-> > Changes since v1:
-> > 
-> >  * Style fix
-> > 
-> > -----------------------
-> > 
-> > Hi,
-> > 
-> > I had a use for a devm realloc_array in a separate change, so I've
-> > added one and updated all the obvious existing uses of it that I could
-> > find. This is basically a copy paste of the one in slab.h
-> > 
-> > Applies to v6.3-rc3
-> > 
-> > Thanks
-> > James
-> > 
-> > James Clark (4):
-> >   devres: Provide krealloc_array
-> >   hwmon: pmbus: Use devm_krealloc_array
-> >   iio: adc: Use devm_krealloc_array
-> >   serial: qcom_geni: Comment use of devm_krealloc rather than
-> >     devm_krealloc_array
-> > 
-> >  .../driver-api/driver-model/devres.rst          |  1 +
-> >  drivers/hwmon/pmbus/pmbus_core.c                |  6 +++---
-> >  drivers/iio/adc/xilinx-ams.c                    |  9 +++------
-> >  drivers/iio/adc/xilinx-xadc-core.c              | 17 +++++++----------
-> >  drivers/tty/serial/qcom_geni_serial.c           |  5 +++++
-> >  include/linux/device.h                          | 11 +++++++++++
-> >  6 files changed, 30 insertions(+), 19 deletions(-)
-> > 
-> 
-> Hi Greg,
-> 
-> Is it possible to take this one? Or at least the first commit?
+Hi Jacky,
 
-It's the middle of the merge window, no one can take anything new,
-sorry.  Please wait for -rc1 to come out and then resend.
+kernel test robot noticed the following build warnings:
 
-thanks,
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on clk/clk-next linus/master v6.3 next-20230424]
+[cannot apply to pza/reset/next pza/imx-drm/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-greg k-h
+url:    https://github.com/intel-lab-lkp/linux/commits/Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230425-182746
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20230425102418.185783-11-ychuang570808%40gmail.com
+patch subject: [PATCH v8 10/11] tty: serial: Add Nuvoton ma35d1 serial driver support
+config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230425/202304252118.P0ZCvlQO-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9f299bce6e0e871aa112e06e2451e88198a75d97
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jacky-Huang/arm64-Kconfig-platforms-Add-config-for-Nuvoton-MA35-platform/20230425-182746
+        git checkout 9f299bce6e0e871aa112e06e2451e88198a75d97
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/tty/serial/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304252118.P0ZCvlQO-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   drivers/tty/serial/ma35d1_serial.c: In function 'ma35d1serial_probe':
+   drivers/tty/serial/ma35d1_serial.c:675:28: error: implicit declaration of function 'devm_ioremap'; did you mean 'of_ioremap'? [-Werror=implicit-function-declaration]
+     675 |         up->port.membase = devm_ioremap(&pdev->dev, up->port.iobase, UART_REG_SIZE);
+         |                            ^~~~~~~~~~~~
+         |                            of_ioremap
+>> drivers/tty/serial/ma35d1_serial.c:675:26: warning: assignment to 'unsigned char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     675 |         up->port.membase = devm_ioremap(&pdev->dev, up->port.iobase, UART_REG_SIZE);
+         |                          ^
+   cc1: some warnings being treated as errors
+
+
+vim +675 drivers/tty/serial/ma35d1_serial.c
+
+   647	
+   648	/*
+   649	 * Register a set of serial devices attached to a platform device.
+   650	 * The list is terminated with a zero flags entry, which means we expect
+   651	 * all entries to have at least UPF_BOOT_AUTOCONF set.
+   652	 */
+   653	static int ma35d1serial_probe(struct platform_device *pdev)
+   654	{
+   655		struct resource *res_mem;
+   656		struct uart_ma35d1_port *up;
+   657		int ret = 0;
+   658		struct clk *clk;
+   659		int err;
+   660	
+   661		if (pdev->dev.of_node) {
+   662			ret = of_alias_get_id(pdev->dev.of_node, "serial");
+   663			if (ret < 0) {
+   664				dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
+   665				return ret;
+   666			}
+   667		}
+   668		up = &ma35d1serial_ports[ret];
+   669		up->port.line = ret;
+   670		res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+   671		if (!res_mem)
+   672			return -ENODEV;
+   673	
+   674		up->port.iobase = res_mem->start;
+ > 675		up->port.membase = devm_ioremap(&pdev->dev, up->port.iobase, UART_REG_SIZE);
+   676		up->port.ops = &ma35d1serial_ops;
+   677	
+   678		spin_lock_init(&up->port.lock);
+   679	
+   680		clk = of_clk_get(pdev->dev.of_node, 0);
+   681		if (IS_ERR(clk)) {
+   682			err = PTR_ERR(clk);
+   683			dev_err(&pdev->dev, "failed to get core clk: %d\n", err);
+   684			return -ENOENT;
+   685		}
+   686	
+   687		err = clk_prepare_enable(clk);
+   688		if (err)
+   689			return -ENOENT;
+   690	
+   691		if (up->port.line != 0)
+   692			up->port.uartclk = clk_get_rate(clk);
+   693	
+   694		ret = platform_get_irq(pdev, 0);
+   695		if (ret < 0)
+   696			return ret;
+   697		up->port.irq = ret;
+   698		up->port.dev = &pdev->dev;
+   699		up->port.flags = UPF_BOOT_AUTOCONF;
+   700	
+   701		platform_set_drvdata(pdev, up);
+   702	
+   703		return uart_add_one_port(&ma35d1serial_reg, &up->port);
+   704	}
+   705	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
