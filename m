@@ -2,37 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0B9C77B60
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Apr 2023 08:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA20C77B60
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Apr 2023 08:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239384AbjDZIDn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Apr 2023 04:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S235605AbjDZIFN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Apr 2023 04:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239936AbjDZIDg (ORCPT
+        with ESMTP id S240101AbjDZIFD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Apr 2023 04:03:36 -0400
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C2435AD
-        for <linux-serial@vger.kernel.org>; Wed, 26 Apr 2023 01:03:32 -0700 (PDT)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202304260803306d2cd6d10f9ed92a57
+        Wed, 26 Apr 2023 04:05:03 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 26 Apr 2023 01:04:36 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1002D35A3
+        for <linux-serial@vger.kernel.org>; Wed, 26 Apr 2023 01:04:35 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20230426080332cfe647af680e261001
         for <linux-serial@vger.kernel.org>;
-        Wed, 26 Apr 2023 10:03:30 +0200
+        Wed, 26 Apr 2023 10:03:32 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=yEGcgQ5Kvtx1tgonDU+9HHY5hBo4q5pCkYVLeZOHs5M=;
- b=pPtLUQAUadLjVnVs6hB73r7wlCQNX66VtpS9hgOjmZx+bjh7yUSUhnk0wqiOJfmvmymY+G
- 2S+2knT+AGT5BWzXKSI8Gbcrl4ZSGDaFINdQnhtioG1csliGbRngHDJu8RYd7pjT6FrIDCEB
- YkC8PZxduG2jn/ql1GQBoTVWeHf90=;
+ bh=saTOVTX775J8QuM0f3QiYXo+gF2XB4EnX95vsbsYgmg=;
+ b=H4A9kP5YhkfD+yrRnUdwwGuDj+lWE7tRshaKZLg3c2yOrbUb7TVnK6QQZHQmcYUNMgbaBN
+ TDTWPD4BcK+9YqPawXyq4EtNO7s13h1TPu9TIuHvMrp4jX86gjUE+V7pVLGyT7kFodwJLUdd
+ aOYfaHspkuG36aDzD02WLeeGbF3WQ=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v4 2/8] tty: n_gsm: add missing description to structs in gsmmux.h
-Date:   Wed, 26 Apr 2023 10:03:09 +0200
-Message-Id: <20230426080315.7595-2-daniel.starke@siemens.com>
+Subject: [PATCH v4 6/8] tty: n_gsm: increase gsm_mux unsupported counted where appropriate
+Date:   Wed, 26 Apr 2023 10:03:13 +0200
+Message-Id: <20230426080315.7595-6-daniel.starke@siemens.com>
 In-Reply-To: <20230426080315.7595-1-daniel.starke@siemens.com>
 References: <20230426080315.7595-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -45,171 +46,53 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently, all available structure fields in gsmmux.h except those
-for gsm_config are commented. Furthermore, no kernel doc comments are used.
+The structure gsm_mux contains the 'unsupported' field. However, there is
+currently no place in the code which increases this counter.
 
-Fix this by adding appropriate comments to the not commented fields of
-gsm_config. Convert the comments of the other structs to kernel doc format.
+Increase the 'unsupported' statistics counter in the following case:
+- an unsupported frame type has been requested by the peer via parameter
+  negotiation
+- a control frame with an unsupported but known command has been received
 
-Note that 'mru' and 'mtu' refer to the size without basic/advanced option
-mode header and byte stuffing as defined in the standard in chapter 5.7.2.
+Note that we have no means to detect an inconsistent/unsupported adaptation
+sufficient accuracy as this changes the structure of the UI/UIH frames.
+E.g. a one byte header is added in case of convergence layer type 2 instead
+of 1 and contains the modem signal octet with the state of the signal
+lines. There is no checksum or other value which indicates of this field is
+correct or should be present. Therefore, we can only assume protocol
+correctness here. See also 'gsm_dlci_data()' where this is handled.
 
-Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- include/uapi/linux/gsmmux.h | 104 +++++++++++++++++++++++++++++-------
- 1 file changed, 84 insertions(+), 20 deletions(-)
+ drivers/tty/n_gsm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 v3 -> v4:
-Changed comments of all other structs in gsmmux.h to kernel doc format as
-suggested during review. The patch description and subject was changed to
-match this.
+No changes.
 
-Link: https://lore.kernel.org/all/2023042438-whole-cannot-1945@gregkh/
-Link: https://lore.kernel.org/all/20230424075251.5216-2-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20230424075251.5216-6-daniel.starke@siemens.com/
 
-diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
-index 958257af05ab..54bc8767bd75 100644
---- a/include/uapi/linux/gsmmux.h
-+++ b/include/uapi/linux/gsmmux.h
-@@ -16,6 +16,28 @@
- /* Force DLCI channel reset? Always cleared on retrieval. */
- #define GSM_FL_RESTART	_BITUL(0)
- 
-+/**
-+ * struct gsm_config - n_gsm basic configuration parameters
-+ *
-+ * This structure is used in combination with GSMIOC_GETCONF and GSMIOC_SETCONF
-+ * to retrieve and set the basic parameters of an n_gsm ldisc.
-+ * struct gsm_config_ext can be used to configure extended ldisc parameters.
-+ *
-+ * All timers are in units of 1/100th of a second.
-+ *
-+ * @adaption:      Convergence layer type
-+ * @encapsulation: Framing (0 = basic option, 1 = advanced option)
-+ * @initiator:     Initiator or responder
-+ * @t1:            Acknowledgment timer
-+ * @t2:            Response timer for multiplexer control channel
-+ * @t3:            Response timer for wake-up procedure
-+ * @n2:            Maximum number of retransmissions
-+ * @mru:           Maximum incoming frame payload size
-+ * @mtu:           Maximum outgoing frame payload size
-+ * @k:             Window size
-+ * @i:             Frame type (1 = UIH, 2 = UI)
-+ * @unused:        Can not be used
-+ */
- struct gsm_config
- {
- 	unsigned int adaption;
-@@ -29,18 +51,32 @@ struct gsm_config
- 	unsigned int mtu;
- 	unsigned int k;
- 	unsigned int i;
--	unsigned int unused[8];	/* Can not be used */
-+	unsigned int unused[8];
- };
- 
- #define GSMIOC_GETCONF		_IOR('G', 0, struct gsm_config)
- #define GSMIOC_SETCONF		_IOW('G', 1, struct gsm_config)
- 
-+/**
-+ * struct gsm_netconfig - n_gsm network configuration parameters
-+ *
-+ * This structure is used in combination with GSMIOC_ENABLE_NET and
-+ * GSMIOC_DISABLE_NET to enable or disable a network data connection
-+ * over a mux virtual tty channel. This is for modems that support
-+ * data connections with raw IP frames instead of PPP.
-+ *
-+ * @adaption: Adaption to use in network mode.
-+ * @protocol: Protocol to use - only ETH_P_IP supported.
-+ * @unused2:  Can not be used.
-+ * @if_name:  Interface name format string.
-+ * @unused:   Can not be used.
-+ */
- struct gsm_netconfig {
--	unsigned int adaption;  /* Adaption to use in network mode */
--	unsigned short protocol;/* Protocol to use - only ETH_P_IP supported */
--	unsigned short unused2;	/* Can not be used */
--	char if_name[IFNAMSIZ];	/* interface name format string */
--	__u8 unused[28];        /* Can not be used */
-+	unsigned int adaption;
-+	unsigned short protocol;
-+	unsigned short unused2;
-+	char if_name[IFNAMSIZ];
-+	__u8 unused[28];
- };
- 
- #define GSMIOC_ENABLE_NET      _IOW('G', 2, struct gsm_netconfig)
-@@ -49,27 +85,55 @@ struct gsm_netconfig {
- /* get the base tty number for a configured gsmmux tty */
- #define GSMIOC_GETFIRST		_IOR('G', 4, __u32)
- 
-+/**
-+ * struct gsm_config_ext - n_gsm extended configuration parameters
-+ *
-+ * This structure is used in combination with GSMIOC_GETCONF_EXT and
-+ * GSMIOC_SETCONF_EXT to retrieve and set the extended parameters of an
-+ * n_gsm ldisc.
-+ *
-+ * All timers are in units of 1/100th of a second.
-+ *
-+ * @keep_alive:  Control channel keep-alive in 1/100th of a second (0 to disable).
-+ * @wait_config: Wait for DLCI config before opening virtual link?
-+ * @reserved:    For future use, must be initialized to zero.
-+ */
- struct gsm_config_ext {
--	__u32 keep_alive;	/* Control channel keep-alive in 1/100th of a
--				 * second (0 to disable)
--				 */
--	__u32 wait_config;	/* Wait for DLCI config before opening virtual link? */
--	__u32 reserved[6];	/* For future use, must be initialized to zero */
-+	__u32 keep_alive;
-+	__u32 wait_config;
-+	__u32 reserved[6];
- };
- 
- #define GSMIOC_GETCONF_EXT	_IOR('G', 5, struct gsm_config_ext)
- #define GSMIOC_SETCONF_EXT	_IOW('G', 6, struct gsm_config_ext)
- 
--/* Set channel accordingly before calling GSMIOC_GETCONF_DLCI. */
-+/**
-+ * struct gsm_dlci_config - n_gsm channel configuration parameters
-+ *
-+ * This structure is used in combination with GSMIOC_GETCONF_DLCI and
-+ * GSMIOC_SETCONF_DLCI to retrieve and set the channel specific parameters
-+ * of an n_gsm ldisc.
-+ *
-+ * Set the channel accordingly before calling GSMIOC_GETCONF_DLCI.
-+ *
-+ * @channel:  DLCI (0 for the associated DLCI).
-+ * @adaption: Convergence layer type.
-+ * @mtu:      Maximum transfer unit.
-+ * @priority: Priority (0 for default value).
-+ * @i:        Frame type (1 = UIH, 2 = UI).
-+ * @k:        Window size (0 for default value).
-+ * @flags:    DLCI specific flags.
-+ * @reserved: For future use, must be initialized to zero.
-+ */
- struct gsm_dlci_config {
--	__u32 channel;		/* DLCI (0 for the associated DLCI) */
--	__u32 adaption;		/* Convergence layer type */
--	__u32 mtu;		/* Maximum transfer unit */
--	__u32 priority;		/* Priority (0 for default value) */
--	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
--	__u32 k;		/* Window size (0 for default value) */
--	__u32 flags;		/* DLCI specific flags. */
--	__u32 reserved[7];	/* For future use, must be initialized to zero */
-+	__u32 channel;
-+	__u32 adaption;
-+	__u32 mtu;
-+	__u32 priority;
-+	__u32 i;
-+	__u32 k;
-+	__u32 flags;
-+	__u32 reserved[7];
- };
- 
- #define GSMIOC_GETCONF_DLCI	_IOWR('G', 7, struct gsm_dlci_config)
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 5b6a03668c78..42a8507aae4a 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1590,6 +1590,7 @@ static int gsm_process_negotiation(struct gsm_mux *gsm, unsigned int addr,
+ 		if (debug & DBG_ERRORS)
+ 			pr_info("%s unsupported I frame request in PN\n",
+ 				__func__);
++		gsm->unsupported++;
+ 		return -EINVAL;
+ 	default:
+ 		if (debug & DBG_ERRORS)
+@@ -1897,6 +1898,8 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
+ 		/* Optional unsupported commands */
+ 	case CMD_RPN:	/* Remote port negotiation */
+ 	case CMD_SNC:	/* Service negotiation command */
++		gsm->unsupported++;
++		fallthrough;
+ 	default:
+ 		/* Reply to bad commands with an NSC */
+ 		buf[0] = command;
 -- 
 2.34.1
 
