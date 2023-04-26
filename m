@@ -2,39 +2,37 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE8D1C77B60
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Apr 2023 08:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B58C7618E
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Apr 2023 08:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239982AbjDZIDj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Apr 2023 04:03:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
+        id S239928AbjDZIDk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Apr 2023 04:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239928AbjDZIDg (ORCPT
+        with ESMTP id S239944AbjDZIDg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 26 Apr 2023 04:03:36 -0400
 Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D035A3598
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12FD03C15
         for <linux-serial@vger.kernel.org>; Wed, 26 Apr 2023 01:03:32 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202304260803303979a9d9c3efaf709d
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202304260803307b14267cdf3a7f8288
         for <linux-serial@vger.kernel.org>;
-        Wed, 26 Apr 2023 10:03:31 +0200
+        Wed, 26 Apr 2023 10:03:30 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=xx1dZ9evczfWs6mTbL4YlHvxtmGbUbagLFOnGgHTeoI=;
- b=XuUQJT2WG5DehG0o+Dj51+tV8lafeJCVbcaZuMDf8dYR67lzQL/AqNjJLnFn9gXOV71c/Q
- 5AT1vNnUH+9cqPWiQuK8B4KYaNfrYKSXOHpvtzzdvyNcKN29LlzVz0HnjuDMxVvicFL1foqe
- Wg74gBZMyeFqdzevY96QvVERuEPtg=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=btnpjanps7GZuVDl1HyLhoOR3uwTdi+jFgZdJzn8lO8=;
+ b=W5lRVWftuxQ4NVdnxx0NWP7jI7LdRTLWA1YNChTZ29wLWaE4GfdqQf5dZzFXItnI1kdeRh
+ W3yvJuZ/H0lNGx+fSsEaHFHhL/zVScNUR5u78WS+aws60YBQzCDiw1f1kJxL+Db4wmFbbb+N
+ lh/lSTsV82AlfnHts8V0yqXXxFsXw=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v4 3/8] tty: n_gsm: remove unneeded initialization of ret in gsm_dlci_config
-Date:   Wed, 26 Apr 2023 10:03:10 +0200
-Message-Id: <20230426080315.7595-3-daniel.starke@siemens.com>
-In-Reply-To: <20230426080315.7595-1-daniel.starke@siemens.com>
-References: <20230426080315.7595-1-daniel.starke@siemens.com>
+Subject: [PATCH v4 1/8] tty: n_gsm: add restart flag to DLC specific ioctl config
+Date:   Wed, 26 Apr 2023 10:03:08 +0200
+Message-Id: <20230426080315.7595-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -45,45 +43,91 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-The variable 'ret' is not used before assignment from gsm_activate_mux().
-Still it gets initialized to zero at declaration.
+Currently, changing the parameters of a DLCI gives no direct control to the
+user whether this should trigger a channel reset or not. The decision is
+solely made by the driver based on the assumption which parameter changes
+are compatible or not. Therefore, the user has no means to perform an
+automatic channel reset after parameter configuration for non-conflicting
+changes.
 
-Fix this as remarked in the link below by moving the declaration to the
-first assignment.
+Add the parameter 'flags' to 'gsm_dlci_config' to force a channel reset
+after ioctl setting regardless of whether the changes made require this or
+not by setting this to 'GSM_FL_RESTART'.
 
-Link: https://lore.kernel.org/all/b42bc4d1-cc9d-d115-c981-aaa053bdc59f@kernel.org/
+Note that 'GSM_FL_RESTART' is currently the only allow flag to allow
+additions here.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/n_gsm.c         |  4 ++++
+ include/uapi/linux/gsmmux.h | 13 ++++++++++++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
 
 v3 -> v4:
-No changes.
+Changed gsm_dlci_config field name from 'restart' to 'flags' and introduced
+'GSM_FL_RESTART' to set the restart flag. The patch description was changed
+accordingly. This was done as suggested during the review.
+The remarked kernel doc compatible field comment is done in patch 2/8.
 
-Link: https://lore.kernel.org/all/20230424075251.5216-3-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/2023042453-dubbed-botany-2ed9@gregkh/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 66edcf65a4dd..ebb71957f783 100644
+index b411a26cc092..66edcf65a4dd 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -3277,7 +3277,6 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+@@ -2532,6 +2532,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+ 		return -EINVAL;
+ 	if (dc->k > 7)
+ 		return -EINVAL;
++	if (dc->flags & ~GSM_FL_RESTART)   /* allow future extensions */
++		return -EINVAL;
  
- static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 	/*
+ 	 * See what is needed for reconfiguration
+@@ -2546,6 +2548,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+ 	/* Requires care */
+ 	if (dc->priority != dlci->prio)
+ 		need_restart = true;
++	if (dc->flags & GSM_FL_RESTART)
++		need_restart = true;
+ 
+ 	if ((open && gsm->wait_config) || need_restart)
+ 		need_open = true;
+diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+index eb67884e5f38..958257af05ab 100644
+--- a/include/uapi/linux/gsmmux.h
++++ b/include/uapi/linux/gsmmux.h
+@@ -2,10 +2,20 @@
+ #ifndef _LINUX_GSMMUX_H
+ #define _LINUX_GSMMUX_H
+ 
++#include <linux/const.h>
+ #include <linux/if.h>
+ #include <linux/ioctl.h>
+ #include <linux/types.h>
+ 
++/*
++ * flags definition for n_gsm
++ *
++ * Used by:
++ * struct gsm_dlci_config.flags
++ */
++/* Force DLCI channel reset? Always cleared on retrieval. */
++#define GSM_FL_RESTART	_BITUL(0)
++
+ struct gsm_config
  {
--	int ret = 0;
- 	int need_close = 0;
- 	int need_restart = 0;
+ 	unsigned int adaption;
+@@ -58,7 +68,8 @@ struct gsm_dlci_config {
+ 	__u32 priority;		/* Priority (0 for default value) */
+ 	__u32 i;		/* Frame type (1 = UIH, 2 = UI) */
+ 	__u32 k;		/* Window size (0 for default value) */
+-	__u32 reserved[8];	/* For future use, must be initialized to zero */
++	__u32 flags;		/* DLCI specific flags. */
++	__u32 reserved[7];	/* For future use, must be initialized to zero */
+ };
  
-@@ -3356,7 +3355,7 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- 	 * and removing from the mux array
- 	 */
- 	if (gsm->dead) {
--		ret = gsm_activate_mux(gsm);
-+		int ret = gsm_activate_mux(gsm);
- 		if (ret)
- 			return ret;
- 		if (gsm->initiator)
+ #define GSMIOC_GETCONF_DLCI	_IOWR('G', 7, struct gsm_dlci_config)
 -- 
 2.34.1
 
