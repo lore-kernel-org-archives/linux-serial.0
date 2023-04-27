@@ -2,134 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 621D1C77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 18:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99480C77B61
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 19:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244039AbjD0S3e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 14:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
+        id S245159AbjD0TUm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Apr 2023 15:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244533AbjD0S3b (ORCPT
+        with ESMTP id S245161AbjD0TUV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 14:29:31 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21A94494;
-        Thu, 27 Apr 2023 11:29:28 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-51b603bb360so8621428a12.2;
-        Thu, 27 Apr 2023 11:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682620168; x=1685212168;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=o7ab0uNFW98iuvjPHQi6nmFc33X+FneWQ9yUEiExG+8=;
-        b=QJU5pMJXmsiurfixLvJuicvg2EPKuXqO1QjsrrRXTxF/Au/+RssVsX8E5+VyUcItru
-         ryTXz7dvIqxd/6v1gi765lY3nz51/9nTrNQ4llsJDsBNZoGL/GCUV446DkUrLjchzgeI
-         B0Z/arM2F/MsxvCOzTHm8Amfg2CNfy416hdsG2xa4MG2QQjOKkF07M+LufBTNpZCqDk/
-         8stDzvKYrdXlCKcQi1BoU9ZXuHFhfHm01804G3EwNSBUu0BQeupOjp9n/lQc0dOIqApG
-         2wUr3Dygq/XCOzRL9V+IzLtnt0aM/hNQ9p/XgugN7N0In1O6TdAoyv4W9dWhWncYbYmr
-         HD3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682620168; x=1685212168;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=o7ab0uNFW98iuvjPHQi6nmFc33X+FneWQ9yUEiExG+8=;
-        b=Khrirg1HFcvuX0iK9gPFrj3RZltowyglNp4fdWimAZxydDIQkU8VuGI0kgepwcmGDD
-         iRpO8tjVY4KIKIOIvlhWI8rApQGd9EUJZwsd26HZ2WOWNrxu4Fr4mf0c0IwS5Y0quGNv
-         6SuBzd1N4HcIHxERuLrFBed0C2GmCMrfQGTt8ceU+XoOVlgXvMSgCDNyAuDb7s4rK5qE
-         FNr2j63QZoWkyhKoEok/iqJQ9xAzn6D4eFpZSCoKD7OiSDGdTMKxhmL2tjpmBdcxiqu8
-         V9MlmWGsj9Je+QXVCxua5PnRqY3A6/wIywE7ziDKpNjFeqJelPvknK0pqOYr52GxMwQk
-         td9g==
-X-Gm-Message-State: AC+VfDxVHGvegizHPyb8ZBt5XfP7176sH5nUlZYgCBjBTTsHKgQSMKlj
-        2ShST3rmx1+G1NPkyNa3j9FxDmXWGV8=
-X-Google-Smtp-Source: ACHHUZ5gcNxTHdITc6sgRyyPCh1gMKHpoD9c9c3Q7qoMnHI7WefsPpWgcA1RQqhoeDR6LDQfeNT+rg==
-X-Received: by 2002:a17:902:e153:b0:1a2:23f7:20f with SMTP id d19-20020a170902e15300b001a223f7020fmr2051917pla.28.1682620168237;
-        Thu, 27 Apr 2023 11:29:28 -0700 (PDT)
-Received: from [10.69.53.73] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y9-20020a170902864900b001a800e03cf9sm11884347plt.256.2023.04.27.11.29.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Apr 2023 11:29:27 -0700 (PDT)
-Message-ID: <e16612a6-abb3-c11c-bfe1-ad82cedeee50@gmail.com>
-Date:   Thu, 27 Apr 2023 11:29:25 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [Patch] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
-To:     XuDong Liu <m202071377@hust.edu.cn>,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230424125100.4783-1-m202071377@hust.edu.cn>
-Content-Language: en-US
-From:   Doug Berger <opendmb@gmail.com>
-In-Reply-To: <20230424125100.4783-1-m202071377@hust.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Thu, 27 Apr 2023 15:20:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAEC269F;
+        Thu, 27 Apr 2023 12:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FC9863F64;
+        Thu, 27 Apr 2023 19:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 89314C4339B;
+        Thu, 27 Apr 2023 19:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682623212;
+        bh=S9TvSveIhpPgxxbmig84vXb4AlGlP4k37of9iTaCeiE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=RVvhEKr2brA7UbvVMmCaTN6HNNKsnrUOx+dxEWQFaTPC6+PvvjbQZJeDqUm06jA5o
+         /Xp4k4zLz9/SIIG49uZz7e7tXOEmmLDHcHPUqZ31SONnLq2TJs1IuwD/VHaktFPPN+
+         kSUh0egP8uYgFYV/R0tf9IWIip2f9aA/2HkCeB7S5tqjDlPSFz3rRLrGq89ydmT3+9
+         eeVdI1+Qq7vT+kDCHLGxMVQSqU5inbzVArJxY+jbb5HIiiKyDPVTdQpbeAygEOGClg
+         mv2f5zbPjF/bKDKcZnseFex45Qgk8429WJbbHU4Zhx7mTtt0HNptEFKUrBIN3NIagq
+         M8Omr/x4TdGXA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 667F0C39562;
+        Thu, 27 Apr 2023 19:20:12 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver changes for 6.4-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <ZEqElASSM07hTjHH@kroah.com>
+References: <ZEqElASSM07hTjHH@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZEqElASSM07hTjHH@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc1
+X-PR-Tracked-Commit-Id: 2b3174c96696cde676393474f0e01d0d108462f5
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b39667abcdcc754e32a0eb0df9cf49d45333d4ae
+Message-Id: <168262321241.21394.717021532706292851.pr-tracker-bot@kernel.org>
+Date:   Thu, 27 Apr 2023 19:20:12 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 4/24/2023 5:51 AM, XuDong Liu wrote:
-> Smatch reports:
-> drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn:
-> 'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
-> 
-> In the function brcmuart_probe(), baud_mux_clk was not correctly released
-> in subsequent error handling, which may cause memory leaks.
-> 
-> To fix this issue, an error handling branch, err_clk_put, is added to
-> release the variable using clk_put(), and an err_disable branch is added
-> to meet the requirement of balancing clk_disable and clk_enable calls.
-> 
-> Fixes: 15ac1122fd6d ("serial: 8250_bcm7271: Fix arbitration handling")
-> Signed-off-by: XuDong Liu <m202071377@hust.edu.cn>
-> Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
-> ---
-> The issue is discovered by static analysis, and the patch is not tested
-> yet.
-> ---
->   drivers/tty/serial/8250/8250_bcm7271.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-> index f801b1f5b46c..b1670558868b 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
-> @@ -1023,7 +1023,7 @@ static int brcmuart_probe(struct platform_device *pdev)
->   		dev_dbg(dev, "BAUD MUX clock found\n");
->   		ret = clk_prepare_enable(baud_mux_clk);
->   		if (ret)
-> -			goto release_dma;
-> +			goto err_clk_put;
->   		priv->baud_mux_clk = baud_mux_clk;
->   		init_real_clk_rates(dev, priv);
->   		clk_rate = priv->default_mux_rate;
-> @@ -1032,7 +1032,7 @@ static int brcmuart_probe(struct platform_device *pdev)
->   	if (clk_rate == 0) {
->   		dev_err(dev, "clock-frequency or clk not defined\n");
->   		ret = -EINVAL;
-> -		goto release_dma;
-> +		goto err_clk_disable;
->   	}
->   
->   	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
-> @@ -1119,6 +1119,10 @@ static int brcmuart_probe(struct platform_device *pdev)
->   	serial8250_unregister_port(priv->line);
->   err:
->   	brcmuart_free_bufs(dev, priv);
-> +err_clk_disable:
-> +	clk_disable_unprepare(baud_mux_clk);
-> +err_clk_put:
-> +	clk_put(baud_mux_clk);
->   release_dma:
->   	if (priv->dma_enabled)
->   		brcmuart_arbitration(priv, 0);
-Thank you for bringing this to my attention.
+The pull request you sent on Thu, 27 Apr 2023 16:20:04 +0200:
 
--Doug
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc1
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b39667abcdcc754e32a0eb0df9cf49d45333d4ae
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
