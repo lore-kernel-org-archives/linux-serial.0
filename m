@@ -2,104 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6058DC77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 16:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3910CC77B61
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 18:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244007AbjD0Qnz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 12:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36454 "EHLO
+        id S244039AbjD0SUC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Apr 2023 14:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243665AbjD0Qny (ORCPT
+        with ESMTP id S231577AbjD0SUB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 12:43:54 -0400
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84C2423C;
-        Thu, 27 Apr 2023 09:43:53 -0700 (PDT)
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-18f16bb1a9bso5471358fac.1;
-        Thu, 27 Apr 2023 09:43:53 -0700 (PDT)
+        Thu, 27 Apr 2023 14:20:01 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D4830F6;
+        Thu, 27 Apr 2023 11:20:00 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id af79cd13be357-74d2597fdb2so436766085a.2;
+        Thu, 27 Apr 2023 11:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682619600; x=1685211600;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=q7ATKwYmuUSj/ogSpDjDq/5jbaMNI6uN2RRcY4VcdQU=;
+        b=JOCYJplpxoGq4Gx3tOkSbP5MJ1e8JEdMLZWEEKKqARz9vZ0cCP/2A5zaqBJUM2PdH8
+         3fn+Gpg6iSnVEEW1QU1ACL0/909mfOd7cCBOuorbhRACGMBtd2x0dRxKOQTN/dw4W7g5
+         p21U+sl6BgEybZ9Iq7IOLi+SLh8Xdem88Q6P4X2X4NBaAERAStw+CqIVy3WbADo7Cs1j
+         PtRP885AlS9Rg6HHvTq/901NA2afjlvnamn2/5XCeFCpT5UQ3ZVSopKfi1544pDKHY3P
+         tTMaGkiJbWYvGFqmgFuCJ2xWUVHg5LCXbOwgWddbNErkyvrlCMuzbaTkJVIQtlkHJgqU
+         1BgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682613833; x=1685205833;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IJiIdA94Q3aS3ARaP8pkL/+d3e0e0KYGSZTN/HqjbiA=;
-        b=WhlqsutqQb97ZudArF5BW7gsxIhQVCNtYEVi/uWlOI1dRXnpfLNBQc4v5GD8FlymnN
-         CmoPPp0KjfsbnJ/2YwqBqj2JHRxF82hPWXi5A4bCBdL+EoI0E+NilMEzvgmRnHYaW/m3
-         JaHfTLftKa6fF5mUs2a9fCPJAHKRTAfEzaD8x7Iymyw+kwxQ9eLmp1t2X/8wLf2roM6r
-         FNXFH2aUaez9xNe62rjw6Gz38DTDmP7Ngzx4x+LCwS8K4wzn99zM5m0pzT5F559moBBL
-         F1jnjrF8A7BpKWwt+31qbC/K2+0H9zduiZlEGCJ+uX1+fHQrHAt6G9untqDa4mSnhy8P
-         /RtA==
-X-Gm-Message-State: AC+VfDy8Vbd46isq81f5CseOs8c9r3KHNqdSw52N/mZlE+aci1AbOhHr
-        B9VUeOoP8xDtXvhaYqc1eA==
-X-Google-Smtp-Source: ACHHUZ55HiToOuHvfKeip0szuZ15vtRZWifdWsue8eOz2R5vLG2dLRCg/IzNKYj+3l+gh1lxFjue9Q==
-X-Received: by 2002:a9d:651a:0:b0:6a6:463a:1a0b with SMTP id i26-20020a9d651a000000b006a6463a1a0bmr1066482otl.1.1682613832950;
-        Thu, 27 Apr 2023 09:43:52 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w21-20020a056830145500b006a6558ef17fsm5245754otp.30.2023.04.27.09.43.52
+        d=1e100.net; s=20221208; t=1682619600; x=1685211600;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=q7ATKwYmuUSj/ogSpDjDq/5jbaMNI6uN2RRcY4VcdQU=;
+        b=DzWipB9NfwLXUJtU7wVkXzHshpEsufrhGIQer1PJ7QOU9zhd1zcMZHIIQTwxoZmPTb
+         CN01a1OG9neMweDUbWMgJMJJ0EbsXfIK5U8fo0pEhgjj/IIoX8v4PFXk0aWqglf8lrGt
+         djIYoW1E9yUOZAtwfR+OkRSQq+a10NvJz2zmLpIifFX90cLhIChOQ6En//Gsto3TeQTk
+         qQP844FlbcxySzmaCeVBIhXM0jX9CTKNr/5gAFPBOC8FqjNQjDQ8LQA6KBUFDvctVOgd
+         3Rmy2Va7BDEbUNOvurGifrqce2uEoC9TfzoBPKz0BP/BUwyzsvaOw2qnFWVz7jIqEhsy
+         nE9g==
+X-Gm-Message-State: AC+VfDxxfNpiHD8znS1TrisxiAJv3roSmxvifH8KON/a1t/hCaNx0dgy
+        uwZQESmcEVf8fODLTnk24cCQt8pHUec=
+X-Google-Smtp-Source: ACHHUZ5nf1sWqiRPMpIvBmXBWFXwoqYBBHvnQ6gThP4Mm//W1aDjHOS6sPIa48NYNaXFjJ6oN4KA6Q==
+X-Received: by 2002:a05:6214:c47:b0:5ef:564a:3296 with SMTP id r7-20020a0562140c4700b005ef564a3296mr3654265qvj.44.1682619599827;
+        Thu, 27 Apr 2023 11:19:59 -0700 (PDT)
+Received: from stbirv-lnx-1.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id s14-20020a0cdc0e000000b005e5b30eef24sm5788316qvk.56.2023.04.27.11.19.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 09:43:52 -0700 (PDT)
-Received: (nullmailer pid 3147753 invoked by uid 1000);
-        Thu, 27 Apr 2023 16:43:51 -0000
-Date:   Thu, 27 Apr 2023 11:43:51 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-Cc:     gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        michal.simek@xilinx.com, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
-        michal.simek@amd.com, git@amd.com, radhey.shyam.pandey@amd.com,
-        shubhrajyoti.datta@amd.com, srinivas.goud@amd.com,
-        manion05gk@gmail.com
-Subject: Re: [PATCH 1/2] dt-bindings: Add optional gpio property to uartps
- node to support rs485
-Message-ID: <20230427164351.GA3146210-robh@kernel.org>
-References: <1682512187-8828-1-git-send-email-manikanta.guntupalli@amd.com>
- <1682512187-8828-2-git-send-email-manikanta.guntupalli@amd.com>
+        Thu, 27 Apr 2023 11:19:59 -0700 (PDT)
+From:   Doug Berger <opendmb@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        XuDong Liu <m202071377@hust.edu.cn>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Doug Berger <opendmb@gmail.com>
+Subject: [PATCH 0/2] serial: 8250_bcm7271: Fix clock handling
+Date:   Thu, 27 Apr 2023 11:19:14 -0700
+Message-Id: <20230427181916.2983697-1-opendmb@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1682512187-8828-2-git-send-email-manikanta.guntupalli@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 26, 2023 at 05:59:46PM +0530, Manikanta Guntupalli wrote:
-> Add optional gpio property to uartps node and add reference to rs485.yaml
+XuDong Liu offered a patch to correct some clock issues detected
+in the probe function and Christophe JAILLET pointed out that
+there was a similar issue in remove.
 
-The diff tells me that already. Why?
+Since no V2 has appeared, I am providing this pair of commits to
+address both cases. This set chooses to use a managed clock to
+avoid the need to explicitly call clk_put from the driver.
 
-> 
-> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-> ---
->  Documentation/devicetree/bindings/serial/cdns,uart.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> index a8b323d7bf94..34ed0d80b923 100644
-> --- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> @@ -46,6 +46,10 @@ properties:
->    power-domains:
->      maxItems: 1
->  
-> +  txrx-gpios:
-> +    description: Optional GPIO to switch transmit and receive modes via pmod.
+Doug Berger (2):
+  serial: 8250_bcm7271: balance clk_enable calls
+  serial: 8250_bcm7271: fix leak in `brcmuart_probe`
 
-What's pmod?
+ drivers/tty/serial/8250/8250_bcm7271.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> +    maxItems: 1
-> +
->  required:
->    - compatible
->    - reg
-> @@ -55,6 +59,7 @@ required:
->  
->  allOf:
->    - $ref: serial.yaml#
-> +  - $ref: rs485.yaml#
->    - if:
->        properties:
->          compatible:
-> -- 
-> 2.25.1
-> 
+-- 
+2.34.1
+
