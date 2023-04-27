@@ -2,71 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99480C77B61
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 19:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D38C77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 20:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245159AbjD0TUm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 15:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
+        id S1344239AbjD0U3k (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Apr 2023 16:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245161AbjD0TUV (ORCPT
+        with ESMTP id S229824AbjD0U3j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 15:20:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAEC269F;
-        Thu, 27 Apr 2023 12:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FC9863F64;
-        Thu, 27 Apr 2023 19:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89314C4339B;
-        Thu, 27 Apr 2023 19:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682623212;
-        bh=S9TvSveIhpPgxxbmig84vXb4AlGlP4k37of9iTaCeiE=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=RVvhEKr2brA7UbvVMmCaTN6HNNKsnrUOx+dxEWQFaTPC6+PvvjbQZJeDqUm06jA5o
-         /Xp4k4zLz9/SIIG49uZz7e7tXOEmmLDHcHPUqZ31SONnLq2TJs1IuwD/VHaktFPPN+
-         kSUh0egP8uYgFYV/R0tf9IWIip2f9aA/2HkCeB7S5tqjDlPSFz3rRLrGq89ydmT3+9
-         eeVdI1+Qq7vT+kDCHLGxMVQSqU5inbzVArJxY+jbb5HIiiKyDPVTdQpbeAygEOGClg
-         mv2f5zbPjF/bKDKcZnseFex45Qgk8429WJbbHU4Zhx7mTtt0HNptEFKUrBIN3NIagq
-         M8Omr/x4TdGXA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 667F0C39562;
-        Thu, 27 Apr 2023 19:20:12 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver changes for 6.4-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <ZEqElASSM07hTjHH@kroah.com>
-References: <ZEqElASSM07hTjHH@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZEqElASSM07hTjHH@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc1
-X-PR-Tracked-Commit-Id: 2b3174c96696cde676393474f0e01d0d108462f5
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b39667abcdcc754e32a0eb0df9cf49d45333d4ae
-Message-Id: <168262321241.21394.717021532706292851.pr-tracker-bot@kernel.org>
-Date:   Thu, 27 Apr 2023 19:20:12 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Thu, 27 Apr 2023 16:29:39 -0400
+Received: from smtp.smtpout.orange.fr (smtp-15.smtpout.orange.fr [80.12.242.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1244233
+        for <linux-serial@vger.kernel.org>; Thu, 27 Apr 2023 13:29:38 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id s8FCpJCcq9Qtjs8FCpvUK5; Thu, 27 Apr 2023 22:29:36 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+        s=t20230301; t=1682627376;
+        bh=1rsbZtenHmrnqF4Ffk+H2ILDLPPocKXAqSr9a8KsmVQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=YfPbKyrO2pe5kB/c6GCh9r1DveBEBvc6MPrDkGfciG/EuieQ+ED+Kzem0wR5xNxFJ
+         4APp/yRWPBksSycpJWsgCUcMaM372gtwgbWI67LkOrZcqmfprB47wPczQ8e6WkkWSX
+         yZJ70o6I/+MSgSA3pAL9PW7tuVnd3b6/Cs4tyNzkVnVteP5e5ZjmN4P3U7S7cGoWG5
+         pGB4RXCg1u/fmkoaVCfpGM2BDT+A+y1MIyM3W28ehz/bunV2F5/I6/xRmj+wR04aPb
+         PKM6iaYzXPCXBRuUG7aXj88OwZmzeuk4KFckHLyi3UwQ706+0WreLNEHihFPm8h8cp
+         sZXwq7gvpZskQ==
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 27 Apr 2023 22:29:36 +0200
+X-ME-IP: 86.243.2.178
+Message-ID: <37c23054-1590-b33d-9299-7d5d6198f8f0@wanadoo.fr>
+Date:   Thu, 27 Apr 2023 22:29:34 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH 2/2] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
+To:     Doug Berger <opendmb@gmail.com>
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        XuDong Liu <m202071377@hust.edu.cn>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20230427181916.2983697-1-opendmb@gmail.com>
+ <20230427181916.2983697-3-opendmb@gmail.com>
+Content-Language: fr, en-GB
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20230427181916.2983697-3-opendmb@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Thu, 27 Apr 2023 16:20:04 +0200:
+Le 27/04/2023 à 20:19, Doug Berger a écrit :
+> Smatch reports:
+> drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn:
+> 'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
+> 
+> The issue is fixed by using a managed clock.
+> 
+> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+> Reported-by: XuDong Liu <m202071377@hust.edu.cn>
+> Link: https://lore.kernel.org/lkml/20230424125100.4783-1-m202071377@hust.edu.cn/
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> ---
+>   drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+> index 90ee7bc12f77..af0e1c070187 100644
+> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+> @@ -1012,7 +1012,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+>   	of_property_read_u32(np, "clock-frequency", &clk_rate);
+>   
+>   	/* See if a Baud clock has been specified */
+> -	baud_mux_clk = of_clk_get_by_name(np, "sw_baud");
+> +	baud_mux_clk = devm_clk_get(dev, "sw_baud");
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc1
+If switching to devm_clk_get(), maybe devm_clk_get_enabled() could also 
+be an option to fix both issues and avoid adding some LoC.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b39667abcdcc754e32a0eb0df9cf49d45333d4ae
+The order of operation in the remove function would then be different. I 
+don't know if it can be an issue.
 
-Thank you!
+Just my 2c.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+CJ
+
+>   	if (IS_ERR(baud_mux_clk)) {
+>   		if (PTR_ERR(baud_mux_clk) == -EPROBE_DEFER) {
+>   			ret = -EPROBE_DEFER;
+
