@@ -2,113 +2,125 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFDCC77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 22:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30BEC77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 23:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbjD0WAJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 18:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
+        id S1344351AbjD0X3l (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Apr 2023 19:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbjD0WAI (ORCPT
+        with ESMTP id S1344331AbjD0X3l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 18:00:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1ED30EA;
-        Thu, 27 Apr 2023 15:00:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6567E63F9F;
-        Thu, 27 Apr 2023 22:00:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD92C433EF;
-        Thu, 27 Apr 2023 22:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682632806;
-        bh=XAJcs9Tq27uSYzyxKqynry6iOShK22+/4P+2nWhnVG4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nmduOKFPBzQZKl9iACWKsy1r+NBRkDCvE/gjaOt5trThiFnAgRb8ApVPqQ0ai4ZPg
-         HQjeNRXos8H2zB0tzul+TrvMaJLKJPFD7Arn6gxSppALgIY6tZoA+FdQNyafXACfCn
-         GnqJ8rHXfVt0zO6R94Olgc+uj2Gz7pXBzJLqX7Pu4NTScksSQ+2PGAGKNnc/igsH5P
-         oYlklycCDK4Mz1CbFvMdZ51p84cmb1Knv6tjca3gxDes3I/9V/noC1AxlX7m4uwL+O
-         gtKlVxu8YvXn5/Jg4l7aEhtCPvgGQbJA9+lz5Ka8i1Gk93fRyhIm7ijtbHE3ehJs75
-         KL12Joi/HBsvw==
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-b9a6869dd3cso2563593276.2;
-        Thu, 27 Apr 2023 15:00:06 -0700 (PDT)
-X-Gm-Message-State: AC+VfDxRyNsJ+gdR87FpJ8y7wA8HZ/h8J8BkoD76Hqg3RV+SYm3f6t2n
-        wv+WBrvhibigoDf3KtUoJL6DcXROh2HCxjfyYw==
-X-Google-Smtp-Source: ACHHUZ7mW/EfaNcdgWrWRr2AEvbTi7Q+LlVB+H74Yy1MlvvgiGwV1CSsI0Flt3OOunhIdUkchExT6Rm/BmnFgYyRSHM=
-X-Received: by 2002:a05:6902:18c8:b0:b8f:3781:248e with SMTP id
- ck8-20020a05690218c800b00b8f3781248emr2890576ybb.51.1682632805841; Thu, 27
- Apr 2023 15:00:05 -0700 (PDT)
+        Thu, 27 Apr 2023 19:29:41 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534C32D6B;
+        Thu, 27 Apr 2023 16:29:40 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d9443c01a7336-1a667067275so71201965ad.1;
+        Thu, 27 Apr 2023 16:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682638180; x=1685230180;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tfABu7Cc2LVPUFjUnfFsZx1Y3J2FYen/EYucbIUAmiM=;
+        b=bB6ttVGdDlatWPnwYoqs9EpnA38tcqe6dI8rkdN0lUdtTiomKwPJyAKJVkbtqZ0628
+         2Bz2Db0BDnMHrVjn3iuL/CrT7/TerOMRTTAm3sijJreV8OWlOBh3lqUjiRd0vDMxD9yv
+         lVyzsdDqvBtaHDfXlsoP6J0v3/3z9A7s1/bBnXNaQeSrTes6G2PEsepIllHxoIIWJhVF
+         QkHWry40uVZKJFw8jqwUgjIFvEqw7+u5Ptq20Jv3QkuWaEmkXskEcffjv57LEPGXt4ol
+         e4inqVBHiptE+YK28eptMcW86cpYiBVN6jykZ6mnYopA/pmR9qNsv6LitUBIQWSjMDaL
+         VBvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682638180; x=1685230180;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tfABu7Cc2LVPUFjUnfFsZx1Y3J2FYen/EYucbIUAmiM=;
+        b=Hsj7z8arCnFBd9kTB5q/a3Qv1r6I/AHMFxroCzWz2skZvNKl8IZ1eZ6kN8zQJmmslW
+         AyjanV2o/qnVo9lJC8hLBz1Jlx3PS/LDR0uPEIzMiicYUzSThrIVcgnzXgBJwhcx7puK
+         7qllE6pP++Vx++9oRZd4+p9Mv9l4fTl94YkV4Xqn5toBJfhIoFZnfhKblxlrGWJoJYwT
+         v8Srg3YqgoOn3T2SKr7hyk45gPpYRxFBAEiaMtKAxE5A/kBRbBahStdhKmEaO8qzMShR
+         3szH7LJKWmHeZrfGX+Q1v9ggiEXNFSQAktngqAnmz6Y5M1vMt1MTwmSi2YxWHAhT035g
+         QXzg==
+X-Gm-Message-State: AC+VfDwijJ5L93W8XYKaFYu/a2iiKKDPP/il9rK6yVCfF6sClRru7us7
+        Hb23H0KlNVbEqru54rf/v1M=
+X-Google-Smtp-Source: ACHHUZ4+LxQiAZFcsCO3jxQhJcObopxUPcV8H3quHLqumCeHYnO9PWdu3969Yc9tzcIQEcM2NIAmJw==
+X-Received: by 2002:a17:902:ebd1:b0:1a6:52f9:d4c7 with SMTP id p17-20020a170902ebd100b001a652f9d4c7mr3052365plg.60.1682638179758;
+        Thu, 27 Apr 2023 16:29:39 -0700 (PDT)
+Received: from [10.69.53.73] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id jl13-20020a170903134d00b001a9666376a9sm8330235plb.226.2023.04.27.16.29.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Apr 2023 16:29:39 -0700 (PDT)
+Message-ID: <a8e21766-266c-c0dc-157c-c6951a5727a7@gmail.com>
+Date:   Thu, 27 Apr 2023 16:29:37 -0700
 MIME-Version: 1.0
-References: <20230426012721.6856-1-m202171830@hust.edu.cn>
-In-Reply-To: <20230426012721.6856-1-m202171830@hust.edu.cn>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 27 Apr 2023 16:59:54 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLR_REJWVn_dO8R4ngkrqL=E_ksNr=jS0qRmdpmAaD8hQ@mail.gmail.com>
-Message-ID: <CAL_JsqLR_REJWVn_dO8R4ngkrqL=E_ksNr=jS0qRmdpmAaD8hQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: arc_uart: fix of_iomap leak in `arc_serial_probe`
-To:     Ke Zhang <m202171830@hust.edu.cn>
-Cc:     Vineet Gupta <vgupta@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        hust-os-kernel-patches@googlegroups.com,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH 2/2] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        XuDong Liu <m202071377@hust.edu.cn>,
         Dongliang Mu <dzm91@hust.edu.cn>,
-        Vineet Gupta <Vineet.Gupta1@synopsys.com>,
-        linux-snps-arc@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20230427181916.2983697-1-opendmb@gmail.com>
+ <20230427181916.2983697-3-opendmb@gmail.com>
+ <37c23054-1590-b33d-9299-7d5d6198f8f0@wanadoo.fr>
+From:   Doug Berger <opendmb@gmail.com>
+In-Reply-To: <37c23054-1590-b33d-9299-7d5d6198f8f0@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 8:27=E2=80=AFPM Ke Zhang <m202171830@hust.edu.cn> w=
-rote:
->
-> Smatch reports:
->
-> drivers/tty/serial/arc_uart.c:631 arc_serial_probe() warn:
-> 'port->membase' from of_iomap() not released on lines: 631.
->
-> In arc_serial_probe(), if uart_add_one_port() fails,
-> port->membase is not released, which would cause a resource leak.
->
-> To fix this, I replace of_iomap with devm_of_iomap.
+On 4/27/2023 1:29 PM, Christophe JAILLET wrote:
+> Le 27/04/2023 à 20:19, Doug Berger a écrit :
+>> Smatch reports:
+>> drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn:
+>> 'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
+>>
+>> The issue is fixed by using a managed clock.
+>>
+>> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom 
+>> STB driver")
+>> Reported-by: XuDong Liu <m202071377@hust.edu.cn>
+>> Link: 
+>> https://lore.kernel.org/lkml/20230424125100.4783-1-m202071377@hust.edu.cn/
+>> Signed-off-by: Doug Berger <opendmb@gmail.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c 
+>> b/drivers/tty/serial/8250/8250_bcm7271.c
+>> index 90ee7bc12f77..af0e1c070187 100644
+>> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+>> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+>> @@ -1012,7 +1012,7 @@ static int brcmuart_probe(struct platform_device 
+>> *pdev)
+>>       of_property_read_u32(np, "clock-frequency", &clk_rate);
+>>       /* See if a Baud clock has been specified */
+>> -    baud_mux_clk = of_clk_get_by_name(np, "sw_baud");
+>> +    baud_mux_clk = devm_clk_get(dev, "sw_baud");
+> 
+> If switching to devm_clk_get(), maybe devm_clk_get_enabled() could also 
+> be an option to fix both issues and avoid adding some LoC.
+> 
+> The order of operation in the remove function would then be different. I 
+> don't know if it can be an issue.
+I like the idea, but it doesn't backport to the source of the error.
+I'll try to remember to submit something after the merge closes.
 
-How about use devm_platform_ioremap_resource() instead (or any ioremap
-variant) as that is preferred over of_iomap().
+> 
+> Just my 2c.
+> 
+> CJ
+Thanks!
+     Doug
 
-Rob
-
->
-> Fixes: 8dbe1d5e09a7 ("serial/arc: inline the probe helper")
-> Signed-off-by: Ke Zhang <m202171830@hust.edu.cn>
-> Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
-> ---
-> This issue is found by static analysis and remains untested.
-> ---
->  drivers/tty/serial/arc_uart.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.=
-c
-> index 59e25f2b6632..be1f3c379382 100644
-> --- a/drivers/tty/serial/arc_uart.c
-> +++ b/drivers/tty/serial/arc_uart.c
-> @@ -606,10 +606,11 @@ static int arc_serial_probe(struct platform_device =
-*pdev)
->         }
->         uart->baud =3D val;
->
-> -       port->membase =3D of_iomap(np, 0);
-> -       if (!port->membase)
-> +       port->membase =3D devm_of_iomap(&pdev->dev, np, 0, NULL);
-> +       if (IS_ERR(port->membase)) {
->                 /* No point of dev_err since UART itself is hosed here */
->                 return -ENXIO;
-
-If an errno was returned, you should return that errno and not a different =
-one.
-
-Rob
