@@ -2,101 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D38C77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 20:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFDCC77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 22:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344239AbjD0U3k (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 16:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
+        id S229750AbjD0WAJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Apr 2023 18:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbjD0U3j (ORCPT
+        with ESMTP id S229724AbjD0WAI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 16:29:39 -0400
-Received: from smtp.smtpout.orange.fr (smtp-15.smtpout.orange.fr [80.12.242.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1244233
-        for <linux-serial@vger.kernel.org>; Thu, 27 Apr 2023 13:29:38 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.2.178])
-        by smtp.orange.fr with ESMTPA
-        id s8FCpJCcq9Qtjs8FCpvUK5; Thu, 27 Apr 2023 22:29:36 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-        s=t20230301; t=1682627376;
-        bh=1rsbZtenHmrnqF4Ffk+H2ILDLPPocKXAqSr9a8KsmVQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=YfPbKyrO2pe5kB/c6GCh9r1DveBEBvc6MPrDkGfciG/EuieQ+ED+Kzem0wR5xNxFJ
-         4APp/yRWPBksSycpJWsgCUcMaM372gtwgbWI67LkOrZcqmfprB47wPczQ8e6WkkWSX
-         yZJ70o6I/+MSgSA3pAL9PW7tuVnd3b6/Cs4tyNzkVnVteP5e5ZjmN4P3U7S7cGoWG5
-         pGB4RXCg1u/fmkoaVCfpGM2BDT+A+y1MIyM3W28ehz/bunV2F5/I6/xRmj+wR04aPb
-         PKM6iaYzXPCXBRuUG7aXj88OwZmzeuk4KFckHLyi3UwQ706+0WreLNEHihFPm8h8cp
-         sZXwq7gvpZskQ==
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 27 Apr 2023 22:29:36 +0200
-X-ME-IP: 86.243.2.178
-Message-ID: <37c23054-1590-b33d-9299-7d5d6198f8f0@wanadoo.fr>
-Date:   Thu, 27 Apr 2023 22:29:34 +0200
+        Thu, 27 Apr 2023 18:00:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1ED30EA;
+        Thu, 27 Apr 2023 15:00:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6567E63F9F;
+        Thu, 27 Apr 2023 22:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD92C433EF;
+        Thu, 27 Apr 2023 22:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682632806;
+        bh=XAJcs9Tq27uSYzyxKqynry6iOShK22+/4P+2nWhnVG4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=nmduOKFPBzQZKl9iACWKsy1r+NBRkDCvE/gjaOt5trThiFnAgRb8ApVPqQ0ai4ZPg
+         HQjeNRXos8H2zB0tzul+TrvMaJLKJPFD7Arn6gxSppALgIY6tZoA+FdQNyafXACfCn
+         GnqJ8rHXfVt0zO6R94Olgc+uj2Gz7pXBzJLqX7Pu4NTScksSQ+2PGAGKNnc/igsH5P
+         oYlklycCDK4Mz1CbFvMdZ51p84cmb1Knv6tjca3gxDes3I/9V/noC1AxlX7m4uwL+O
+         gtKlVxu8YvXn5/Jg4l7aEhtCPvgGQbJA9+lz5Ka8i1Gk93fRyhIm7ijtbHE3ehJs75
+         KL12Joi/HBsvw==
+Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-b9a6869dd3cso2563593276.2;
+        Thu, 27 Apr 2023 15:00:06 -0700 (PDT)
+X-Gm-Message-State: AC+VfDxRyNsJ+gdR87FpJ8y7wA8HZ/h8J8BkoD76Hqg3RV+SYm3f6t2n
+        wv+WBrvhibigoDf3KtUoJL6DcXROh2HCxjfyYw==
+X-Google-Smtp-Source: ACHHUZ7mW/EfaNcdgWrWRr2AEvbTi7Q+LlVB+H74Yy1MlvvgiGwV1CSsI0Flt3OOunhIdUkchExT6Rm/BmnFgYyRSHM=
+X-Received: by 2002:a05:6902:18c8:b0:b8f:3781:248e with SMTP id
+ ck8-20020a05690218c800b00b8f3781248emr2890576ybb.51.1682632805841; Thu, 27
+ Apr 2023 15:00:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH 2/2] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
-To:     Doug Berger <opendmb@gmail.com>
-Cc:     Al Cooper <alcooperx@gmail.com>,
-        XuDong Liu <m202071377@hust.edu.cn>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
+References: <20230426012721.6856-1-m202171830@hust.edu.cn>
+In-Reply-To: <20230426012721.6856-1-m202171830@hust.edu.cn>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 27 Apr 2023 16:59:54 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLR_REJWVn_dO8R4ngkrqL=E_ksNr=jS0qRmdpmAaD8hQ@mail.gmail.com>
+Message-ID: <CAL_JsqLR_REJWVn_dO8R4ngkrqL=E_ksNr=jS0qRmdpmAaD8hQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: arc_uart: fix of_iomap leak in `arc_serial_probe`
+To:     Ke Zhang <m202171830@hust.edu.cn>
+Cc:     Vineet Gupta <vgupta@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20230427181916.2983697-1-opendmb@gmail.com>
- <20230427181916.2983697-3-opendmb@gmail.com>
-Content-Language: fr, en-GB
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20230427181916.2983697-3-opendmb@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        hust-os-kernel-patches@googlegroups.com,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Vineet Gupta <Vineet.Gupta1@synopsys.com>,
+        linux-snps-arc@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 27/04/2023 à 20:19, Doug Berger a écrit :
+On Tue, Apr 25, 2023 at 8:27=E2=80=AFPM Ke Zhang <m202171830@hust.edu.cn> w=
+rote:
+>
 > Smatch reports:
-> drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn:
-> 'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
-> 
-> The issue is fixed by using a managed clock.
-> 
-> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-> Reported-by: XuDong Liu <m202071377@hust.edu.cn>
-> Link: https://lore.kernel.org/lkml/20230424125100.4783-1-m202071377@hust.edu.cn/
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
+>
+> drivers/tty/serial/arc_uart.c:631 arc_serial_probe() warn:
+> 'port->membase' from of_iomap() not released on lines: 631.
+>
+> In arc_serial_probe(), if uart_add_one_port() fails,
+> port->membase is not released, which would cause a resource leak.
+>
+> To fix this, I replace of_iomap with devm_of_iomap.
+
+How about use devm_platform_ioremap_resource() instead (or any ioremap
+variant) as that is preferred over of_iomap().
+
+Rob
+
+>
+> Fixes: 8dbe1d5e09a7 ("serial/arc: inline the probe helper")
+> Signed-off-by: Ke Zhang <m202171830@hust.edu.cn>
+> Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
 > ---
->   drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-> index 90ee7bc12f77..af0e1c070187 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
-> @@ -1012,7 +1012,7 @@ static int brcmuart_probe(struct platform_device *pdev)
->   	of_property_read_u32(np, "clock-frequency", &clk_rate);
->   
->   	/* See if a Baud clock has been specified */
-> -	baud_mux_clk = of_clk_get_by_name(np, "sw_baud");
-> +	baud_mux_clk = devm_clk_get(dev, "sw_baud");
+> This issue is found by static analysis and remains untested.
+> ---
+>  drivers/tty/serial/arc_uart.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.=
+c
+> index 59e25f2b6632..be1f3c379382 100644
+> --- a/drivers/tty/serial/arc_uart.c
+> +++ b/drivers/tty/serial/arc_uart.c
+> @@ -606,10 +606,11 @@ static int arc_serial_probe(struct platform_device =
+*pdev)
+>         }
+>         uart->baud =3D val;
+>
+> -       port->membase =3D of_iomap(np, 0);
+> -       if (!port->membase)
+> +       port->membase =3D devm_of_iomap(&pdev->dev, np, 0, NULL);
+> +       if (IS_ERR(port->membase)) {
+>                 /* No point of dev_err since UART itself is hosed here */
+>                 return -ENXIO;
 
-If switching to devm_clk_get(), maybe devm_clk_get_enabled() could also 
-be an option to fix both issues and avoid adding some LoC.
+If an errno was returned, you should return that errno and not a different =
+one.
 
-The order of operation in the remove function would then be different. I 
-don't know if it can be an issue.
-
-Just my 2c.
-
-CJ
-
->   	if (IS_ERR(baud_mux_clk)) {
->   		if (PTR_ERR(baud_mux_clk) == -EPROBE_DEFER) {
->   			ret = -EPROBE_DEFER;
-
+Rob
