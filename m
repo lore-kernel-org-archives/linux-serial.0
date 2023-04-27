@@ -2,105 +2,134 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F65C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 18:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 621D1C77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Apr 2023 18:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244418AbjD0SUJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 14:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
+        id S244039AbjD0S3e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Apr 2023 14:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244429AbjD0SUH (ORCPT
+        with ESMTP id S244533AbjD0S3b (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 14:20:07 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C79449A;
-        Thu, 27 Apr 2023 11:20:04 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id 6a1803df08f44-5ef8af5d211so68128706d6.3;
-        Thu, 27 Apr 2023 11:20:04 -0700 (PDT)
+        Thu, 27 Apr 2023 14:29:31 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21A94494;
+        Thu, 27 Apr 2023 11:29:28 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 41be03b00d2f7-51b603bb360so8621428a12.2;
+        Thu, 27 Apr 2023 11:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682619604; x=1685211604;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=M3ybj49I0azNPq8mUJZxYJ7OaIdhKs0dZovAgS2rqE8=;
-        b=U89HRMpmyZlcTTn96nVf6SFQOC43UMedTYIBj2PDadzSbWoo792cepjuYgCy9eXraJ
-         MQqMMxvgMRxDDehnECB6pWT3pfAJYJqZK0dRfqBl+dw+QQTYS5ESUlhlikynsPChclad
-         +ENs6hONhfCZ/hCQsha4vW28bgnCF9b48fBosFRrqgNZrlxTuzPWOyEjfkerrCHW+XsF
-         t/cEk6NEYeoij5WzgaH+Ym0eaYUVFEIENQLnZ0NtxhZawULOn0rE8Rp/z+mBCwBO127a
-         NU9N21v8CVfN65WuOYWzQlFJ8NFGCQqBQy9IKwLRXg7k/sTEEIN2Ivx1KGD9xL5AFiSB
-         h9qw==
+        d=gmail.com; s=20221208; t=1682620168; x=1685212168;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=o7ab0uNFW98iuvjPHQi6nmFc33X+FneWQ9yUEiExG+8=;
+        b=QJU5pMJXmsiurfixLvJuicvg2EPKuXqO1QjsrrRXTxF/Au/+RssVsX8E5+VyUcItru
+         ryTXz7dvIqxd/6v1gi765lY3nz51/9nTrNQ4llsJDsBNZoGL/GCUV446DkUrLjchzgeI
+         B0Z/arM2F/MsxvCOzTHm8Amfg2CNfy416hdsG2xa4MG2QQjOKkF07M+LufBTNpZCqDk/
+         8stDzvKYrdXlCKcQi1BoU9ZXuHFhfHm01804G3EwNSBUu0BQeupOjp9n/lQc0dOIqApG
+         2wUr3Dygq/XCOzRL9V+IzLtnt0aM/hNQ9p/XgugN7N0In1O6TdAoyv4W9dWhWncYbYmr
+         HD3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682619604; x=1685211604;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=M3ybj49I0azNPq8mUJZxYJ7OaIdhKs0dZovAgS2rqE8=;
-        b=DFDiaurqMtRY2T0oNlYdr0qRX/zrI3f3GOL3nC0EXwc5WwFTL+J2mrccCExigxQDvN
-         ObiBv1SmK/elOyJZcDPUTxqlq+yeqMdCDuVvi5TeGmHU4cVedMTTR8tRe15873OuUv1T
-         2dlnarJefeZdLjKvV3ZeIW9oj+rajL+lklmgDOBqe4CBQZUgXzSr8DNQpgVwJFN2R5WV
-         M15jndHfKzb+Ex3UDuFWgv8v37XoV358EsvvablVigMhJrWifqWSA82n3CYx0IPdHRUX
-         ckDHth/KHUtTcm3nQ6AOWslysLzk0AiYnGTcB8Jh9BLenLKVAs9YrwrH75s9s26hlpBT
-         HRTQ==
-X-Gm-Message-State: AC+VfDwaHqrjclkzVY4Xc4+C0QSRtREByg9V+1nCYlNA/JYEDQ8+oQ0v
-        I7rOgaM8ZJ5GNAaenbUqlXo=
-X-Google-Smtp-Source: ACHHUZ5cYl3jgQZm6SGSvJtiMMs2doLTMTbPU0Kv/GWLf+po8Dd7JG/XRhHNP9301io5yiD2i8lx+Q==
-X-Received: by 2002:a05:6214:5015:b0:5dd:aee7:dffb with SMTP id jo21-20020a056214501500b005ddaee7dffbmr3785649qvb.22.1682619603698;
-        Thu, 27 Apr 2023 11:20:03 -0700 (PDT)
-Received: from stbirv-lnx-1.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s14-20020a0cdc0e000000b005e5b30eef24sm5788316qvk.56.2023.04.27.11.20.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 11:20:03 -0700 (PDT)
-From:   Doug Berger <opendmb@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Al Cooper <alcooperx@gmail.com>,
-        XuDong Liu <m202071377@hust.edu.cn>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        d=1e100.net; s=20221208; t=1682620168; x=1685212168;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=o7ab0uNFW98iuvjPHQi6nmFc33X+FneWQ9yUEiExG+8=;
+        b=Khrirg1HFcvuX0iK9gPFrj3RZltowyglNp4fdWimAZxydDIQkU8VuGI0kgepwcmGDD
+         iRpO8tjVY4KIKIOIvlhWI8rApQGd9EUJZwsd26HZ2WOWNrxu4Fr4mf0c0IwS5Y0quGNv
+         6SuBzd1N4HcIHxERuLrFBed0C2GmCMrfQGTt8ceU+XoOVlgXvMSgCDNyAuDb7s4rK5qE
+         FNr2j63QZoWkyhKoEok/iqJQ9xAzn6D4eFpZSCoKD7OiSDGdTMKxhmL2tjpmBdcxiqu8
+         V9MlmWGsj9Je+QXVCxua5PnRqY3A6/wIywE7ziDKpNjFeqJelPvknK0pqOYr52GxMwQk
+         td9g==
+X-Gm-Message-State: AC+VfDxVHGvegizHPyb8ZBt5XfP7176sH5nUlZYgCBjBTTsHKgQSMKlj
+        2ShST3rmx1+G1NPkyNa3j9FxDmXWGV8=
+X-Google-Smtp-Source: ACHHUZ5gcNxTHdITc6sgRyyPCh1gMKHpoD9c9c3Q7qoMnHI7WefsPpWgcA1RQqhoeDR6LDQfeNT+rg==
+X-Received: by 2002:a17:902:e153:b0:1a2:23f7:20f with SMTP id d19-20020a170902e15300b001a223f7020fmr2051917pla.28.1682620168237;
+        Thu, 27 Apr 2023 11:29:28 -0700 (PDT)
+Received: from [10.69.53.73] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y9-20020a170902864900b001a800e03cf9sm11884347plt.256.2023.04.27.11.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Apr 2023 11:29:27 -0700 (PDT)
+Message-ID: <e16612a6-abb3-c11c-bfe1-ad82cedeee50@gmail.com>
+Date:   Thu, 27 Apr 2023 11:29:25 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [Patch] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
+To:     XuDong Liu <m202071377@hust.edu.cn>,
+        Al Cooper <alcooperx@gmail.com>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Doug Berger <opendmb@gmail.com>
-Subject: [PATCH 2/2] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
-Date:   Thu, 27 Apr 2023 11:19:16 -0700
-Message-Id: <20230427181916.2983697-3-opendmb@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230427181916.2983697-1-opendmb@gmail.com>
-References: <20230427181916.2983697-1-opendmb@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230424125100.4783-1-m202071377@hust.edu.cn>
+Content-Language: en-US
+From:   Doug Berger <opendmb@gmail.com>
+In-Reply-To: <20230424125100.4783-1-m202071377@hust.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Smatch reports:
-drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn:
-'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
+On 4/24/2023 5:51 AM, XuDong Liu wrote:
+> Smatch reports:
+> drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn:
+> 'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
+> 
+> In the function brcmuart_probe(), baud_mux_clk was not correctly released
+> in subsequent error handling, which may cause memory leaks.
+> 
+> To fix this issue, an error handling branch, err_clk_put, is added to
+> release the variable using clk_put(), and an err_disable branch is added
+> to meet the requirement of balancing clk_disable and clk_enable calls.
+> 
+> Fixes: 15ac1122fd6d ("serial: 8250_bcm7271: Fix arbitration handling")
+> Signed-off-by: XuDong Liu <m202071377@hust.edu.cn>
+> Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
+> ---
+> The issue is discovered by static analysis, and the patch is not tested
+> yet.
+> ---
+>   drivers/tty/serial/8250/8250_bcm7271.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+> index f801b1f5b46c..b1670558868b 100644
+> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+> @@ -1023,7 +1023,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+>   		dev_dbg(dev, "BAUD MUX clock found\n");
+>   		ret = clk_prepare_enable(baud_mux_clk);
+>   		if (ret)
+> -			goto release_dma;
+> +			goto err_clk_put;
+>   		priv->baud_mux_clk = baud_mux_clk;
+>   		init_real_clk_rates(dev, priv);
+>   		clk_rate = priv->default_mux_rate;
+> @@ -1032,7 +1032,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+>   	if (clk_rate == 0) {
+>   		dev_err(dev, "clock-frequency or clk not defined\n");
+>   		ret = -EINVAL;
+> -		goto release_dma;
+> +		goto err_clk_disable;
+>   	}
+>   
+>   	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
+> @@ -1119,6 +1119,10 @@ static int brcmuart_probe(struct platform_device *pdev)
+>   	serial8250_unregister_port(priv->line);
+>   err:
+>   	brcmuart_free_bufs(dev, priv);
+> +err_clk_disable:
+> +	clk_disable_unprepare(baud_mux_clk);
+> +err_clk_put:
+> +	clk_put(baud_mux_clk);
+>   release_dma:
+>   	if (priv->dma_enabled)
+>   		brcmuart_arbitration(priv, 0);
+Thank you for bringing this to my attention.
 
-The issue is fixed by using a managed clock.
-
-Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-Reported-by: XuDong Liu <m202071377@hust.edu.cn>
-Link: https://lore.kernel.org/lkml/20230424125100.4783-1-m202071377@hust.edu.cn/
-Signed-off-by: Doug Berger <opendmb@gmail.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 90ee7bc12f77..af0e1c070187 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1012,7 +1012,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	of_property_read_u32(np, "clock-frequency", &clk_rate);
- 
- 	/* See if a Baud clock has been specified */
--	baud_mux_clk = of_clk_get_by_name(np, "sw_baud");
-+	baud_mux_clk = devm_clk_get(dev, "sw_baud");
- 	if (IS_ERR(baud_mux_clk)) {
- 		if (PTR_ERR(baud_mux_clk) == -EPROBE_DEFER) {
- 			ret = -EPROBE_DEFER;
--- 
-2.34.1
-
+-Doug
