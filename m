@@ -2,88 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68BDEC77B60
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Apr 2023 03:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A4CC77B61
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Apr 2023 17:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345099AbjD1DSb (ORCPT
+        id S1346417AbjD1RmP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Apr 2023 23:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
+        Fri, 28 Apr 2023 13:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345101AbjD1DSa (ORCPT
+        with ESMTP id S230099AbjD1RmL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Apr 2023 23:18:30 -0400
-Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E512101;
-        Thu, 27 Apr 2023 20:18:28 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=m202171830@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 33S3GctD016701-33S3GctE016701
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Fri, 28 Apr 2023 11:16:43 +0800
-From:   Ke Zhang <m202171830@hust.edu.cn>
-To:     Vineet Gupta <vgupta@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     hust-os-kernel-patches@googlegroups.com,
-        Ke Zhang <m202171830@hust.edu.cn>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Vineet Gupta <Vineet.Gupta1@synopsys.com>,
-        linux-snps-arc@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] serial: arc_uart: fix of_iomap leak in `arc_serial_probe`
-Date:   Fri, 28 Apr 2023 11:16:36 +0800
-Message-Id: <20230428031636.44642-1-m202171830@hust.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 28 Apr 2023 13:42:11 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC90468F;
+        Fri, 28 Apr 2023 10:42:10 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id af79cd13be357-74fb8677a36so5000085a.0;
+        Fri, 28 Apr 2023 10:42:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682703729; x=1685295729;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=l67YUxlMnkaGZuUZgq5z9SXdJ72p+MYe/kIUPDNC8kw=;
+        b=LxBha8esb4yLQ3KSIaTSo/VFi71Eq8OXn8kG2J5zj9/vGd97lRmpReQffJt0GuLqqf
+         3HaeoA7KPbZ+kTztSXCZly0L3UFPd/sVmDGeTLKa5JtUuggXRfg6/DGgcQZL1z5l1XST
+         IYkMnjptJR38zpWwnJ29WMFGDhrfB8Tu8MNqaj4072BkLggixKHZWkRu4Ac+Q6Q/vUfK
+         cnpOajSPvW3xljKZ92DqCbYjrY0BO3AbbFiLMlvAag1joRInjnhL3aHsVg3kKJsV+gf7
+         tEOAwy/EaoXjdfiFglnHm4MyLP2sD0YGCE39vS2KvSxWccSEHkUWSbuBFWCFdKCLwGX/
+         BoMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682703729; x=1685295729;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=l67YUxlMnkaGZuUZgq5z9SXdJ72p+MYe/kIUPDNC8kw=;
+        b=Bce2wzLa1bhKR2yNHuW+DuLY2ar6ohvnia8/WRV16vzsbRnoyUaRWIRSBRllg2P7ay
+         AVBAGZ36JDWmzYmIklAsLikRtQyIsgfcdeZ1LDGd2FtpzuJ7ttix0jeM0Z4C9QC+AIZY
+         dYn2QZFwVc25GpmZRVG1JOjgWLT9Km39cFsFO8N4YPIUsiiTWW5TDXY3U+KniMAYYeEz
+         OeLuSNarKPaIgAQNlsfWuYUJFRWSaClvDdltV8DtnSvwEVuZv2q/hBI/6mSovgbrDihr
+         NE3ELorqiG3bl3cM/kGf94ezm7YY6UEyFXioWmHV75lDf4Te7gB+9fcDHefapEu+zamx
+         nGLw==
+X-Gm-Message-State: AC+VfDz0K2N2VgZ5YNooNZjf7JtXCXuGNPw81dQLn3FFMmNtlEFSyWkc
+        LAMgpDs7qEfvCs3vXcs9eWs=
+X-Google-Smtp-Source: ACHHUZ48PpjpFeDxPGXE7wMzlMMSfCw3wFAMa6sjQnCJlfFPWJA5URu23pVIApjal8WsPtep/sp3Zg==
+X-Received: by 2002:ac8:5cd1:0:b0:3ba:2203:6c92 with SMTP id s17-20020ac85cd1000000b003ba22036c92mr11314980qta.10.1682703728873;
+        Fri, 28 Apr 2023 10:42:08 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id cf23-20020a05622a401700b003ef58044a4bsm6871236qtb.34.2023.04.28.10.42.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Apr 2023 10:42:07 -0700 (PDT)
+Message-ID: <a9bbc2e2-faf4-7107-7496-66ba08e1f5b0@gmail.com>
+Date:   Fri, 28 Apr 2023 10:42:01 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: m202171830@hust.edu.cn
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH 1/2] serial: 8250_bcm7271: balance clk_enable calls
+Content-Language: en-US
+To:     Doug Berger <opendmb@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Al Cooper <alcooperx@gmail.com>,
+        XuDong Liu <m202071377@hust.edu.cn>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+References: <20230427181916.2983697-1-opendmb@gmail.com>
+ <20230427181916.2983697-2-opendmb@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230427181916.2983697-2-opendmb@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Smatch reports:
+On 4/27/23 11:19, Doug Berger wrote:
+> The sw_baud clock must be disabled when the device driver is not
+> connected to the device. This now occurs when probe fails and
+> upon remove.
+> 
+> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+> Reported-by: XuDong Liu <m202071377@hust.edu.cn>
+> Link: https://lore.kernel.org/lkml/20230424125100.4783-1-m202071377@hust.edu.cn/
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
 
-drivers/tty/serial/arc_uart.c:631 arc_serial_probe() warn:
-'port->membase' from of_iomap() not released on lines: 631.
-
-In arc_serial_probe(), if uart_add_one_port() fails,
-port->membase is not released, which would cause a resource leak.
-
-To fix this, I replace of_iomap with devm_platform_ioremap_resource.
-
-Fixes: 8dbe1d5e09a7 ("serial/arc: inline the probe helper")
-Signed-off-by: Ke Zhang <m202171830@hust.edu.cn>
-Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
----
-v1 -> v2: Use devm_platform_ioremap_resource() and
-return that errno if an errno was returned.
-
-This issue is found by static analysis and remains untested.
----
- drivers/tty/serial/arc_uart.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 59e25f2b6632..4b2512eef577 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -606,10 +606,11 @@ static int arc_serial_probe(struct platform_device *pdev)
- 	}
- 	uart->baud = val;
- 
--	port->membase = of_iomap(np, 0);
--	if (!port->membase)
-+	port->membase = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(port->membase)) {
- 		/* No point of dev_err since UART itself is hosed here */
--		return -ENXIO;
-+		return PTR_ERR(port->membase);
-+	}
- 
- 	port->irq = irq_of_parse_and_map(np, 0);
- 
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
+Florian
 
