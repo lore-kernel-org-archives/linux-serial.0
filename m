@@ -2,99 +2,122 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E95AC7EE25
-	for <linux-serial@archiver.kernel.org>; Mon,  1 May 2023 09:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58266C7EE21
+	for <linux-serial@archiver.kernel.org>; Tue,  2 May 2023 01:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232272AbjEAJu5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 1 May 2023 05:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        id S232363AbjEBBb0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 1 May 2023 21:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbjEAJu4 (ORCPT
+        with ESMTP id S229822AbjEBBbZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 1 May 2023 05:50:56 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFD11BB
-        for <linux-serial@vger.kernel.org>; Mon,  1 May 2023 02:50:53 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id 4fb4d7f45d1cf-50bcb229adaso149898a12.2
-        for <linux-serial@vger.kernel.org>; Mon, 01 May 2023 02:50:53 -0700 (PDT)
+        Mon, 1 May 2023 21:31:25 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C08A1BEF;
+        Mon,  1 May 2023 18:31:24 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1ab032d9266so9484505ad.0;
+        Mon, 01 May 2023 18:31:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1682934651; x=1685526651;
+        d=gmail.com; s=20221208; t=1682991084; x=1685583084;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=R3qMWocL6/wpbuDG6gR5Wtg+ZCiwCsubf8C3G4b5aRI=;
-        b=pezXIELbzEAcCjV+boWauNmc5FQspzcpLCEDI67YIbKjgfsjTRBKe0Wf1wNUHmk3nN
-         aJoPy4O0HwPQBG4M/iEiPUcZl8mqheFvGGEJs5FgO/ikYVqByWbj9QFqdO4bG7jG8UtR
-         RRNyIunTTrHFKdrMpfP7Nsiz+Skn7pFEk6SV3A+sbnvkWriC7e8QOxRNl3HwA99ta9ff
-         /zV8wOJnyflarJDy9mG1Jo3lM7CSov/LGAnQNieTzTzr0o24xCgQubpfFWADbpQl7T68
-         KlPoPIeZjUtFfecyoHnbbms6ha2I7OBuMR/O2SrjLbbYt7/8DboATrH913BBTLXgtI/Y
-         lCSQ==
+        bh=3UiPi93XxKnJZMKFtiJdn8rcY/Fce5ICdXhxYOZLt7g=;
+        b=eth/IVwicIFgK8HA1XDSLyb6VLbPTLyzYwkwQcEmLwCPkzxJVDGxL6inORC2A34Z2J
+         FZCZYM2a2fTcnBGN0jW8n9HS3hYWcxzvM9FGywG0dkoMGWLiDNMd9KJxRHjMy3VL2a+g
+         nn8ZPY7TCTup/d9Y5q/RrOVWxEyWCusDi2XOhsDBsQWwPD/ZUgSiACkZowehrEj5LM0J
+         93YVmj87JQO4uz7OPLfkNoomiRz8hC2UXXa2akAqEXJnnWNeclwVnIyM81dlord4HcZq
+         UCApej9G6fdrWoSdGxPcgiLr+daRGm+LsXuqpedlLbfE1YKKk1CzmyoeRrmiExVqmXCZ
+         kZlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682934651; x=1685526651;
+        d=1e100.net; s=20221208; t=1682991084; x=1685583084;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R3qMWocL6/wpbuDG6gR5Wtg+ZCiwCsubf8C3G4b5aRI=;
-        b=anxMibUXLjt0Ww+aJSmC+lpgIuJ9IF2sTXUx6wklPIUpCceOYeCHRNIvNdFq2e9pX5
-         llIVB1GvVGP2olQfbWxITF8iSkXIyRXA0G0NHaWIrcT2AwZ9SNBXq1OPA/FY417dK2Sl
-         +FJKY5gARdo36GxR/H3sZaA6KCzGjmADhpTZcJIZnLOYlaUXkhPVpprGsNfWEQqidCbd
-         A8Cm8s/i6+6iSJO4jsHIZyRE83b26YGs0sMT7NNtD1XDTMtu4O99PYVcrSH8iuOrQqZr
-         3z4qfyxDonJh7zrivK2G47H9w5MfGw65TA+O0z43M2dxYIm2xaxFw3DYXwgxnthwXLC+
-         Cj+w==
-X-Gm-Message-State: AC+VfDzg83OloWnXrTYkononwLdJxsPcCODgQ0VEHyq87X+ywABePW91
-        1kdQwsxoenkfBsePxaqerr40MA==
-X-Google-Smtp-Source: ACHHUZ5aoCRJwdM01aHJAYJ6FZM0GaX+jTFGr55aLgScxrfNq6frPl2fubj4mP8pK+VDgPengBFaAA==
-X-Received: by 2002:aa7:cd10:0:b0:506:b228:7aff with SMTP id b16-20020aa7cd10000000b00506b2287affmr5635208edw.23.1682934651694;
-        Mon, 01 May 2023 02:50:51 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:637a:fd0c:58fd:9f00? ([2a02:810d:15c0:828:637a:fd0c:58fd:9f00])
-        by smtp.gmail.com with ESMTPSA id n20-20020aa7d054000000b004fc01b0aa55sm12145335edo.4.2023.05.01.02.50.49
+        bh=3UiPi93XxKnJZMKFtiJdn8rcY/Fce5ICdXhxYOZLt7g=;
+        b=C+djaZ3lAY/VAo1pHpVBLALTyk2tC2X5o1afzZjxEOqXKyH0grO9NjMNyj4Rqlf5/f
+         mDORKHZBeRVCX6+S27Ln6gbu3xJk+ZecqdXeyI9JSX+EaRdphgCF0J8W8+QJ10nVAsDh
+         ONoqhYY8MSY0zIeARHrNeiMoBHrNaUiDcXRlLwRrYACoCAsE8AtvFnHfWm8w3AyAhFD6
+         qWSOu72g8x8TB8d8+dqvuI0nFrs3iIRsFsAuTMXQ7Gcmo1w8kGrVvazEVJstIoJkJJl/
+         +eqVn14fPNDbgbmxrHv54DoFQpQYkjQc6fbuRx04+etacK2mtwb9JlHouPLaejuPMQT8
+         VWBg==
+X-Gm-Message-State: AC+VfDxUsdI10Djii7bJhfz0IFC0K1dmBNCbjCSNICgZF+2aqKdxHmxh
+        itLe/Z46ftlOcO4H/4bBQO4=
+X-Google-Smtp-Source: ACHHUZ54DEsjzfPJFYIrD41DzqrmDV4UclbY63nLz0F0Xw9gBVL6xTBmdtV4bBR5dePMxArsAvWpzg==
+X-Received: by 2002:a17:902:c950:b0:1a1:9020:f9c7 with SMTP id i16-20020a170902c95000b001a19020f9c7mr18185423pla.44.1682991083602;
+        Mon, 01 May 2023 18:31:23 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id y18-20020a170903011200b001a674fb0dd8sm18621719plc.247.2023.05.01.18.31.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 May 2023 02:50:51 -0700 (PDT)
-Message-ID: <2b79021d-3793-5f2d-8659-5d0d8fc78017@linaro.org>
-Date:   Mon, 1 May 2023 11:50:49 +0200
+        Mon, 01 May 2023 18:31:23 -0700 (PDT)
+Message-ID: <ded0c68a-e0b3-b106-e24d-7d9087c6ca4c@gmail.com>
+Date:   Tue, 2 May 2023 09:31:18 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.1
 Subject: Re: [PATCH v8 05/11] dt-bindings: arm: Add initial bindings for
  Nuvoton platform
-To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        tmaimon77@gmail.com, catalin.marinas@arm.com, will@kernel.org
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, tmaimon77@gmail.com, catalin.marinas@arm.com,
+        will@kernel.org
 Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-serial@vger.kernel.org, arnd@arndb.de, schung@nuvoton.com,
         mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
 References: <20230425102418.185783-1-ychuang570808@gmail.com>
  <20230425102418.185783-6-ychuang570808@gmail.com>
+ <2b79021d-3793-5f2d-8659-5d0d8fc78017@linaro.org>
 Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230425102418.185783-6-ychuang570808@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <2b79021d-3793-5f2d-8659-5d0d8fc78017@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25/04/2023 12:24, Jacky Huang wrote:
-> From: Jacky Huang <ychuang3@nuvoton.com>
-> 
-> Move 'nuvoton,npcm-gcr.yaml' from 'arm/npcm' to 'soc/nuvoton'.
-> Rename the '/arm/npcm' directory to 'arm/nuvoton'. Additionally, add
-> bindings for ARMv8-based Nuvoton SoCs and platform boards, and include
-> the initial bindings for ma35d1 series development boards.
-> 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-> ---
->  .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
->  .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
->  .../nuvoton/nuvoton,npcm-gcr.yaml}            |  2 +-
->  3 files changed, 32 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+Dear Krzysztof,
 
-I don't see any improvements here. Path in maintainers is still broken.
 
-Best regards,
-Krzysztof
+On 2023/5/1 下午 05:50, Krzysztof Kozlowski wrote:
+> On 25/04/2023 12:24, Jacky Huang wrote:
+>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>
+>> Move 'nuvoton,npcm-gcr.yaml' from 'arm/npcm' to 'soc/nuvoton'.
+>> Rename the '/arm/npcm' directory to 'arm/nuvoton'. Additionally, add
+>> bindings for ARMv8-based Nuvoton SoCs and platform boards, and include
+>> the initial bindings for ma35d1 series development boards.
+>>
+>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>> ---
+>>   .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  | 30 +++++++++++++++++++
+>>   .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |  2 +-
+>>   .../nuvoton/nuvoton,npcm-gcr.yaml}            |  2 +-
+>>   3 files changed, 32 insertions(+), 2 deletions(-)
+>>   create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+> I don't see any improvements here. Path in maintainers is still broken.
+>
+> Best regards,
+> Krzysztof
+>
+
+Does this line cover 
+'Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml'?
+==>  F:    Documentation/devicetree/bindings/*/*/*ma35*
+
+I ran 'get_maintainer.pl' on this patch, and it was able to find 
+maintainers and looked good.
+I also ran 'make htmldocs' and did not see any warnings or errors 
+related to the .yaml files
+in this patch. However, I am still unsure where the problem lies. Can 
+you suggest any
+tools I can use to check for errors? I would greatly appreciate any 
+guidance you can provide.
+
+
+Best Regards,
+Jacky Huang
 
