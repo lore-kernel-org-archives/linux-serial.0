@@ -2,323 +2,218 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A64FEC77B7F
-	for <linux-serial@archiver.kernel.org>; Wed,  3 May 2023 18:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6015FC77B75
+	for <linux-serial@archiver.kernel.org>; Thu,  4 May 2023 03:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229541AbjECSiq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 May 2023 14:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
+        id S229651AbjEDDhg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 3 May 2023 23:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjECSip (ORCPT
+        with ESMTP id S229461AbjEDDhf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 May 2023 14:38:45 -0400
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2088.outbound.protection.outlook.com [40.107.105.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6DF4C24
-        for <linux-serial@vger.kernel.org>; Wed,  3 May 2023 11:38:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iXhywOuxrwAhLPBHv9XjIMwEOfmP24QfOUpn/RLBDnDPZPOEJFzqJSKcuOhD14DLt+W8Y2D9rPjGNPGI7Kw931GLcvcMU0+u+ZJHOp6aYsV9AYolmPRHmr2F7TPQRlOB3CUZpXGAoN/jWIOAPSldEgVsax9RcqUZM/c4PkRyB2r8e+C0Y4PyKd3htPwEw6EduBx/fztYHsX5w1E5OUjHrwG+cUkzjmBrO8Ufea1IqOD+U7rgUTQTKyr7RnyjB5+OBZfwAfVAMFaVd8C8XXeDprNO5/JQtS5iqT8/MqNaTofg8umvR+wkL9ZzcfZNjfWvpm4Q1AdkZ3ZzmZOPLRjCVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dqzUnapbSQ9heovHsHJ9LuWp6gHn1ZTp4WxxSafWFx4=;
- b=ED6aty3OcaNaiaCFXfvP0CxTmv5hiH3ssV+1lgas5vSJghJJ9jJHadFiXuoKKZesweFQHnXTokPdCeaZLfkkS9t94u8yJBCYo6tcX6ithApmaXzqoKElGR1Wds9BbwXHD4S23oZtzSs1VWRBX4T0nxCTwX7luuWlXMVlHXR8zZlolumxaI0oBuyzEND8o6ZlC5jzJ8uCDK7Lt3ezitC4/dsxFbAD2ovgJTXVm/VLp8QZsyrZIMAlOrP3iFblq1M3VUKMThneZQBLURHsLyI5z3VJbK2+7oC00EQvaXhoJajc5oXw0G0VcKG2hXuaE6PdIUVwx96DYpclkyUrzlehuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dqzUnapbSQ9heovHsHJ9LuWp6gHn1ZTp4WxxSafWFx4=;
- b=H/QgKebZRxRfEsk5StqxZx5Hmz9b6pfmplkVw80Sfu6+S5Uv00bEG+br28jhJZN1w2zmrBmBDngaSXhEqV6SsvE+hryHi19zAc0mQp7blsD/lckDk9X/cBjBuremhXi1Gmk3T/0qbDJpfAFbuQr/9dGr8YyE54N2K0u5cRjl3Xg=
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by AS1PR04MB9240.eurprd04.prod.outlook.com (2603:10a6:20b:4c4::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.31; Wed, 3 May
- 2023 18:38:40 +0000
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::28fb:82ec:7a6:62f3]) by PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::28fb:82ec:7a6:62f3%5]) with mapi id 15.20.6363.022; Wed, 3 May 2023
- 18:38:40 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        "imx@lists.linux.dev" <imx@lists.linux.dev>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [EXT] Re: [PATCH 1/1] tty: serial: fsl_lpuart: optimize the timer
- based EOP logic
-Thread-Topic: [EXT] Re: [PATCH 1/1] tty: serial: fsl_lpuart: optimize the
- timer based EOP logic
-Thread-Index: AQHZfSlNM2e41/dBg02uWPwIr2d5EK9IQdAAgAB9nPA=
-Date:   Wed, 3 May 2023 18:38:40 +0000
-Message-ID: <PAXPR04MB9185C216231729D3EF8091E3896C9@PAXPR04MB9185.eurprd04.prod.outlook.com>
-References: <20230502190641.657483-1-shenwei.wang@nxp.com>
- <2a4bec70-4285-c48c-1bb9-c2e713ce3e0@linux.intel.com>
-In-Reply-To: <2a4bec70-4285-c48c-1bb9-c2e713ce3e0@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAXPR04MB9185:EE_|AS1PR04MB9240:EE_
-x-ms-office365-filtering-correlation-id: c5cffcd0-8019-40c2-743d-08db4c059d66
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: tdvq2BhvfSGM+LY62f3We5rPcmrTqQcMMasGU9XfeJRPsMjHkDDE9FWRT3Q3YaDREDX+/8FNtxpSHwXLC6mQ4vBrJHXw647Msh64pPRAJCZWIquiqLSh9GDtH6SfrPMMmE0x6QE3Qdh1Qmc393G6yxc9h2P7dxIJEE+ymD2AeWvLhLPOqhinvHbcaa7WO9hSx6jgvlseGQn4g4vOSnnAgnI/dGV+pEFHoXEwVYXrvl1DVo7Nidrx1MGTc8srfzpS7UE7xboEQbuYox8JwUNhm/CLfrDwEITuIw7xgQWC5sLJNuizhEFBkqHGV50Pdr3HVPcKgCYp3m3sZoY6CFFCnVqcj9gCTZv9tEQMb779+zv9wRqX/liUUeiuhbCgGiL4Nd7F4upKiIxuAY4KDcx/VBcukXiWyyhOS6Sh2rmuMLGw49UdFYa+pv5XXL+CT+FtPQoyZ7kAZqjG6G17tVIPp/4YN2jW4mRl7WA3lXPhvapOAFV17be+SoWDA5OL3tjU00WD7lIO3A8gVnk02TCu1bc+LOQYUCxvutpKEKo7rONr2CDk2P948fFg3pmX0VKTqNM+crSA/I9BXtj9Cj36JVRAlXIMD4VNUSPUzMxpu9OuPx8nPWARW7cmGjM+Fpum
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(451199021)(55236004)(122000001)(186003)(26005)(9686003)(38100700002)(53546011)(66574015)(83380400001)(6506007)(8936002)(38070700005)(8676002)(5660300002)(52536014)(2906002)(41300700001)(478600001)(55016003)(54906003)(33656002)(44832011)(316002)(71200400001)(7696005)(4326008)(86362001)(76116006)(66476007)(66446008)(64756008)(66946007)(66556008)(6916009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?hvO/u9n4BbAb9tsaCEBy/xpTy/ZtasrygLl04IbyEOzhNQO04FPqXCO6VC?=
- =?iso-8859-1?Q?b2JSjrhHVFnZqgvc1BWfRAwFGbPw+aqYR5Riu9tyWemS3iiOFOJyU2XL9v?=
- =?iso-8859-1?Q?+JA/PJ6lxNXIYr+6tzP7c9CEjku9Znq2VNHvNp9WT7ASJEVEuU+ugkYco4?=
- =?iso-8859-1?Q?KphPIs86lFX681HC9eDFSAadi+xnuHkysFXjTRC5Ma9OI6la2U4CZBadjK?=
- =?iso-8859-1?Q?/ehANZ8tmMg/sI/F6wcL/Oj1P3VSP2y/huK9smlwIrvSJSDN38o/qUFJg6?=
- =?iso-8859-1?Q?rY3/yEtBoh8GoefTQWI0rH1lfuoHLiFm7A01EgMCWAaUtoBi0WuwnO8vCn?=
- =?iso-8859-1?Q?Y+X3JMhmGEAjSghBRTMVKe8UeeFh/68Wb/9GzyvuQcriNgJBO+UWSPFUof?=
- =?iso-8859-1?Q?f631SzOQXTvGTS7roUYw08mdBWin6IXMJGODsCs+HFim/MG/lIG15tmZwQ?=
- =?iso-8859-1?Q?93VNUKcd6YEB26kYf6G0QQzSGSxzmSsIfQCHBN4DI7/4d2iOnXePXNyJO3?=
- =?iso-8859-1?Q?BSAeJCgkp1dackatSp6CgQltPb+2Yg+ezD+BPVjDInUp4ikPsFCB2yB7/H?=
- =?iso-8859-1?Q?9hSoNvOyTbl4+76wM0e6AtRQNs+yA6N8gv4XyYcZ/GERqnf63N03m4gQur?=
- =?iso-8859-1?Q?OHXOOgX2/mXSMhBLZk/LYrle5Ew3IJnK0G593L+MSBLNkZKbZ+2vLWccvS?=
- =?iso-8859-1?Q?uChUqCS2XDJWEYF4MrK7rU+7K9IrMYBhiBExkmVj+/WQXNWqBbHu3bxyeU?=
- =?iso-8859-1?Q?WtSR5Cm9aqjIG+hhmjEwDzcZYHawCS5DXC4Ph6+MJMOHC2wkITn+0gjj32?=
- =?iso-8859-1?Q?QpkkMAEm+cdlVUWzDPf0uvp5z+ueiScUzZ3IGzzDZ84s6K8UvAgJ+lZX+N?=
- =?iso-8859-1?Q?kYJZ2WdKwudvxvgdiODAFMl9QVuuwDDMNDrKKhwAdnKs5Lbsy8BPRhfJB8?=
- =?iso-8859-1?Q?NQUkmBRmZ/NIJvNVODJrCY0z6WjSDgpcaWkAQyNPm3WI432wB5bxyVLmml?=
- =?iso-8859-1?Q?u1VQiTi4OInZR/Pkrm1ouoAVMXdwbizcq/rg0YLHGKxv/t3D1bcFtu+FrK?=
- =?iso-8859-1?Q?1pJ+zjWc+67UEYL75wFTC1Dn8djaWkGxIIAKcwV/TLV58qI0ZavP+Br3yC?=
- =?iso-8859-1?Q?sLv4JN1OOQhGyzsNTpfFzIfoUC4qe/XypbF+V+Dqz4CI6tRVhBupHNKbZi?=
- =?iso-8859-1?Q?obFalu23DNlXashwvFO3VZA1nYN41FUAuTKaqV/RbewQ8TcXvurlXIyso6?=
- =?iso-8859-1?Q?bwYSIdVFbXq6v1uCC5iemQy+LmY8ETkvQVTEk6j077eoyfy2ZtDa68pxQt?=
- =?iso-8859-1?Q?Sk1OowHrLFvE/8gjtsBxbA1bEuoRCr25Jj5jQ++OA9CbHsF856YhInNhWM?=
- =?iso-8859-1?Q?JKI+l8jFNascBqnfL772DXYsjoM9Doja0evdjLXDkzitsKlsbit+1WqfmH?=
- =?iso-8859-1?Q?nfHjQqGzQvn+r3OZHmFGsXy/r+Y5lxOXxzBxgnOL+jk8ZaZYq9ELLDzVV7?=
- =?iso-8859-1?Q?L1MdLEvEUtN4uc49HMUcyEMSY5Ni6pZWFawzIBSEKgmmGVOABRzllozleo?=
- =?iso-8859-1?Q?E899hx4Vpz5nWkeHAJlAOyVplrDHEn4vPT65UMYAfFStdnL454YTgg+k0o?=
- =?iso-8859-1?Q?GQNYDZa5zS0v8+p7OWl3SCBvIDbPIwNxnE?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 3 May 2023 23:37:35 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9787F10B;
+        Wed,  3 May 2023 20:37:33 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1ab267e3528so8518875ad.0;
+        Wed, 03 May 2023 20:37:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683171453; x=1685763453;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=LgN7t4ySVrsePI7gTpw7jm/XrMm27nwpeBG4Gq9yHWM=;
+        b=pEo0jS86RBGaBUdC325/Uzz8UKWyJr7la/6/yXu6/+9GVnLYxGn7/46D9XYOQ58CU/
+         JTmjAXRBrbuLdmSCFO016EIMfMFRQo2YwHX7j8ebUhq/1kGk+DeumNiSVldDxe1Lu6hE
+         /rO9R0izSGZyR3bdOD1z3MAbOmXUpsSXkpRcXXrIvrTYlt3LXsYJZiAlrmUYh0LPLiRM
+         W+An6SxErPsQiOmyhILiKhXqbM67B03x9G4dvurUE79nAzeq2RAyGBqLvf6TwWUnAqjl
+         eN05QPAj0MrGdTUytZXuxAmXIicZMd8sD6srvzv7vYsEmYKcGy7pk+SSh3ZM1hu/EfX0
+         Syng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683171453; x=1685763453;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LgN7t4ySVrsePI7gTpw7jm/XrMm27nwpeBG4Gq9yHWM=;
+        b=Tgy69nRm7wuf4/gHI7Hx43JGamhEusiv708w2T8bdd2dZpaTcgyZ4SjlgR4RQ/4TPd
+         35pgQ45Wp66QWl993CXiuwcatO6x6UzpVKY2n/qafTYN7PTKEcg50xtvoP45zGM9wWzC
+         iX95XUOJoJRiSA4LbdrLzjcKeAbTtby7yRh8MuXtOM1OIeG4diqHPQQGIYKXlp26TLDD
+         YOfDUn+Bz4fO8yEMJklnvtEkCwIIMEEoiWAbS058MzP1RN+aema0ZOAij2FjN+pe+YTx
+         suqTZv/RPto5pfiv+DfE+up5Pp4E5Yiz48O+6nUNf20QhgSdsxtv9gs5QTHHNWAxP+Sn
+         NzBA==
+X-Gm-Message-State: AC+VfDxqj73LdhQz5dgM+TdM+frjnFKgLieQfCZkorBK2Dbe723G9/tO
+        tgVUNmiJyvzsjYSYEzdARts=
+X-Google-Smtp-Source: ACHHUZ7So9rhL/k5QU4+DAR7KJPod4FKhCQJ+bVR9MzYkiwrJOT1+Q9ztYV34qRPFppkos9x3LtyMA==
+X-Received: by 2002:a17:902:b48d:b0:1ab:8f4:af2b with SMTP id y13-20020a170902b48d00b001ab08f4af2bmr1811115plr.38.1683171452874;
+        Wed, 03 May 2023 20:37:32 -0700 (PDT)
+Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id jj3-20020a170903048300b001ab849b46d3sm468761plb.178.2023.05.03.20.37.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 May 2023 20:37:32 -0700 (PDT)
+From:   Jacky Huang <ychuang570808@gmail.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, tmaimon77@gmail.com, catalin.marinas@arm.com,
+        will@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, arnd@arndb.de, schung@nuvoton.com,
+        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+Subject: [PATCH v9 00/10] Introduce Nuvoton ma35d1 SoC
+Date:   Thu,  4 May 2023 03:37:16 +0000
+Message-Id: <20230504033726.93-1-ychuang570808@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5cffcd0-8019-40c2-743d-08db4c059d66
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2023 18:38:40.1828
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 19XnCXDU5/5vzJ6VraKv66bTHKpH5lzRrh0bcZ9l/Cgegz8VJPgXP2viaiuvmTJJ+SDCuTmEGnfNI9hbGTcLxA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9240
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Jacky Huang <ychuang3@nuvoton.com>
 
+This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+initial device tree, clock driver, reset driver, and serial driver.
 
-> -----Original Message-----
-> From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> Sent: Wednesday, May 3, 2023 4:03 AM
-> To: Shenwei Wang <shenwei.wang@nxp.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby
-> <jirislaby@kernel.org>; linux-serial <linux-serial@vger.kernel.org>;
-> imx@lists.linux.dev; dl-linux-imx <linux-imx@nxp.com>
-> Subject: [EXT] Re: [PATCH 1/1] tty: serial: fsl_lpuart: optimize the time=
-r based
-> EOP logic
->=20
-> Caution: This is an external email. Please take care when clicking links =
-or
-> opening attachments. When in doubt, report the message using the 'Report =
-this
-> email' button
->=20
->=20
-> On Tue, 2 May 2023, Shenwei Wang wrote:
->=20
-> > At low baud rates, the DMA transfer may end prematurely due to the
-> > timer, even during an active transfer. This does not accurately
-> > simulate an EOP event as intended. We expect the timer to only
-> > complete a DMA transfer once the idle period satisfies a specified inte=
-rval.
-> >
-> > The patch checks the DMA residue count before copying data to the TTY
-> > buffer. If the residue count remains unchanged since the last
-> > interrupt, that indicates no new data was received. In this case, the
-> > DMA should complete as an EOP event. Instead, the timer restarts.
->=20
-> This description is lacking something. It does not explain why the stuff =
-in second
-> paragraph is necessary at all as setting a longer timer based on the (low=
-er) baud
-> rate would avoid the need to do the timer restart.
->=20
+This patchset cover letter is based from the initial support for Nuvoton
+ma35d1 to keep tracking the version history.
 
-Agree. Would add the following to the last sentence: "if no new characters =
-are received, the timer just restarts".=20
+This patchset had been applied to Linux kernel 6.3.0-12728-g348551ddaf31-dirty
+and tested on the Nuvoton ma35d1 SOM evaluation board.
 
-> > Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
-> > ---
-> >  drivers/tty/serial/fsl_lpuart.c | 52
-> > ++++++++++++++++++++++++++++++---
-> >  1 file changed, 48 insertions(+), 4 deletions(-)
-> >  }
-> >
-> > +/*
-> > + * Timer function to simulate the hardware EOP(End Of Package) event.
->=20
-> Missing space
->=20
+(ma35d1 information: https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+MA35D1 porting on linux-5.10.y can be found at: https://github.com/OpenNuvoton/MPU-Family
 
-Will fix it in next version.
+v9:
+  - Combine MAINTAINERS patch into patch 5 'dt-bindings: arm: Add initial bindings
+    for Nuvoton platform'
+  - Modify clock driver
+    - Use the helper function for 64-bit division
+    - Fixed minor issues
+  - Modify reset driver
+    - Refine coding style and add required header files
+    - Add spin_lock protection
+  - Add error return handling to the serial driver probe function
 
-> > + * The timer callback is to check for new RX data and copy to TTY buff=
-er.
-> > + * If no new data since last interrupt, restart timer. Otherwise,
-> > + copy data
-> > + * and continue normal logic.
-> > + */
-> >  static void lpuart_timer_func(struct timer_list *t)  {
-> >       struct lpuart_port *sport =3D from_timer(sport, t, lpuart_timer);
-> > +     struct dma_chan *chan =3D sport->dma_rx_chan;
-> > +     struct circ_buf *ring =3D &sport->rx_ring;
-> > +     struct dma_tx_state state;
-> > +     unsigned long flags;
-> > +     int count =3D 0;
-> >
-> > -     lpuart_copy_rx_to_tty(sport);
-> > +     dmaengine_tx_status(chan, sport->dma_rx_cookie, &state);
->=20
-> > +     ring->head =3D sport->rx_sgl.length - state.residue;
-> > +
-> > +     if (ring->head < ring->tail)
-> > +             count =3D sport->rx_sgl.length - ring->tail;
-> > +     else if (ring->tail < ring->head)
-> > +             count =3D ring->head - ring->tail;
->=20
-> linux/circ_buf.h has functions which likely handle what you want to do he=
-re.
-> They will get you true count across wrap too which this above does not do=
-.
->=20
-> Given this is essentially duplicates count calculation some refactor woul=
-d seem
-> more useful here rather than recalculating the count again in
-> lpuart_copy_rx_to_tty().
->=20
-> Also lpuart_handle_sysrq() duplicates the same calculations.
->=20
+v8:
+  - Remove '0005-dt-bindings-mfd-syscon-Add-nuvoton-ma35d1-sys-compat.patch' as it was applied.
+  - Modify MAINTAINERS NUVOTON MA35 and NPCM path settings
+  - Remove 'syscon' from dtsi 'sys' node and modify the corresponding yaml
+  - Modify clock driver
+    - Remove the header file and move definitions into .c files.
+    - Use parent_data instead of parent name.
+  - Modify serial driver
+  - Modify reset driver
+    - Modify reset register/offset lookup table to be indexed by reset id
+    - Combined reset and reboot structure
 
-Just had a check with the circ_buf.h, and this piece of codes can be simpli=
-fied
-with the CIRC_CNT() function.
+v7:
+  - Fixed dts system-management node and compatible driver
+  - move 'nuvoton,npcm-gcr.yaml' from 'binding/arm/nuvoton' to 'binding/soc/nuvoton'
+  - In ma35d1.dtsi, create the soc node for ma35d1 SoC
+  - Modify the issues found in serial driver
+  - Modify the issues found in clock driver
+  - Modify the IDs of reset driver to be contiguous numbers and use lookup table
+    to find register offset and bit position.
+  - Modify MAINTAINERS NUVOTON NPCM path as npcm directory name to nuvoton
 
-The other part you mentioned should be optimized as well. I will submit a s=
-eparate
-patch to do that after finishing this one.
+v6:
+  - Combine nuvoton,ma35d1-clk.yaml and nuvoton,ma35d1-clk.h into one patch
+  - Combine nuvoton,ma35d1-reset.yaml and nuvoton,ma35d1-reset.h into one patch
+  - rename Documentation/devicetree/bindings/arm/npcm directory as nuvoton
+  - Remove patch for adding include/linux/mfd/ma35d1-sys.h as it's not required
+  - Update dtsi & dts files and move board-specific nodes to dts
+  - Modify reset driver
+  - Modify serial driver, fix coding style issues
+  - Modify clock driver, rewrite the PLL calculation functions
 
-> > +
-> > +     /* Check if new data received before copying */
-> > +     if ((count !=3D 0) && (sport->last_residue =3D=3D state.residue))
->=20
-> I'm unsure about this condition being right.
->=20
-> What will happen when rx_sgl.length (or -1 of that, I'm not sure which wa=
-y "full
-> size" is here) worth of data has been DMA'ed. Does this condition end up
-> delaying copy such that it's done only on every other call here?
->=20
+v5:
+  - Add ARCH_NUVOTON to arm64 Kconfig
+  - Add ARCH_NUVOTON to defconfig
+  - Add the clock driver
+  - Add the reset driver
+  - Add the serial driver
+  - Add us to the maintainer
 
-The timer function will only complete a DMA transfer when there is new data=
- in the buffer=20
-and the data has been idle for the specified interval.=20
+v4:
+  - patch 4/5 is a resend
+  - Fixed dt_binding_check errors of nuvoton,ma35d1-clk.yaml
+  - Modify ma35d1.dtsi
+    1. Add a node hxt_24m
+    2. Fixed the base address of gic node
+    3. Add clocks and clock-names to clock node
+  - Fixed borad binding mistakes of nuvoton.yaml
 
-The "full buffer" situation should be handled by the DMA completion callbac=
-k itself.  A "full" buffer=20
-means the DMA transaction has received sufficient data and invoked the comp=
-letion callback.
+v3:
+  - added patch 4/5 and 5/5
+  - introduce CONFIG_ARCH_NUVOTON option
+  - add initial bindings for Nuvoton Platform boards
+  - fixed coding style problem of nuvoton,ma35d1-clk.h
+  - added CAPLL to clock-controller node
+  - modify the chosen node of ma35d1-evb.dts
+  - modify clock yaml "clk-pll-mode" to "nuvoton,clk-pll-mode"
 
-> Also, should you reset last_residue in lpuart_start_rx_dma() ? I think th=
-at would
-> solve the "full size" problem.
->=20
-> > +             lpuart_copy_rx_to_tty(sport);
-> > +     else
-> > +             mod_timer(&sport->lpuart_timer,
-> > +                             jiffies + sport->dma_rx_timeout);
-> > +
-> > +     if (spin_trylock_irqsave(&sport->port.lock, flags)) {
-> > +             sport->last_residue =3D state.residue;
-> > +             spin_unlock_irqrestore(&sport->port.lock, flags);
-> > +     }
-> >  }
-> >
-> >  static inline int lpuart_start_rx_dma(struct lpuart_port *sport) @@
-> > -1297,9 +1330,19 @@ static inline int lpuart_start_rx_dma(struct lpuart=
-_port
-> *sport)
-> >        */
-> >       sport->rx_dma_rng_buf_len =3D (DMA_RX_TIMEOUT * baud /  bits / 10=
-00) * 2;
-> >       sport->rx_dma_rng_buf_len =3D (1 <<
-> > fls(sport->rx_dma_rng_buf_len));
-> > +     if (sport->rx_dma_rng_buf_len < sport->rxfifo_size * 2)
-> > +             sport->rx_dma_rng_buf_len =3D sport->rxfifo_size * 2;
->=20
-> max_t()
->=20
-> > +
-> > +     /*
-> > +      * Keep this condition check in case rxfifo_size is unavailable
-> > +      * for some SoCs.
-> > +      */
-> >       if (sport->rx_dma_rng_buf_len < 16)
-> >               sport->rx_dma_rng_buf_len =3D 16;
-> >
-> > +     sport->dma_rx_timeout =3D
-> > +             msecs_to_jiffies((1000 * 10 * DMA_RX_IDLE_CHARS) / baud
-> > + + 1);
->=20
-> There's ->frame_time these days in uart_port which you should base frame
-> timing related calculations. I wouldn't mind if that existing ->frame_tim=
-e math
-> that is visible in your patch's context is also converted (in a separate =
-patch).
->=20
-> I'm assuming that magic 10 is assumed number of bits and 1000 MSEC_PER_SE=
-C.
-> That +1 seems odd, did you mean DIV_ROUND_UP() ?
+v2:
+  - fixed dt_binding_check failed of nuvoton,ma35d1-clk.yaml
 
-Yes, it is 10 bits and 1000 ms. +1 here is similar to the result of round u=
-p.=20
-And also the ->frame_time could be used for simplicity.
+Jacky Huang (10):
+  arm64: Kconfig.platforms: Add config for Nuvoton MA35 platform
+  arm64: defconfig: Add support for Nuvoton MA35 family SoCs
+  dt-bindings: clock: nuvoton: add binding for ma35d1 clock controller
+  dt-bindings: reset: nuvoton: Document ma35d1 reset control
+  dt-bindings: arm: Add initial bindings for Nuvoton platform
+  dt-bindings: serial: Document ma35d1 uart controller
+  arm64: dts: nuvoton: Add initial ma35d1 device tree
+  clk: nuvoton: Add clock driver for ma35d1 clock controller
+  reset: Add Nuvoton ma35d1 reset driver support
+  tty: serial: Add Nuvoton ma35d1 serial driver support
 
->=20
-> > +
-> >       ring->buf =3D kzalloc(sport->rx_dma_rng_buf_len, GFP_ATOMIC);
-> >       if (!ring->buf)
-> >               return -ENOMEM;
-> > @@ -1687,12 +1730,13 @@ static void lpuart_rx_dma_startup(struct
-> lpuart_port *sport)
-> >       if (!sport->dma_rx_chan)
-> >               goto err;
-> >
-> > +     /* set default Rx DMA timeout */
-> > +     sport->dma_rx_timeout =3D msecs_to_jiffies(DMA_RX_TIMEOUT);
-> > +
-> >       ret =3D lpuart_start_rx_dma(sport);
-> >       if (ret)
-> >               goto err;
-> >
-> > -     /* set Rx DMA timeout */
-> > -     sport->dma_rx_timeout =3D msecs_to_jiffies(DMA_RX_TIMEOUT);
-> >       if (!sport->dma_rx_timeout)
-> >               sport->dma_rx_timeout =3D 1;
-> >
-> >
->=20
-> --
->  i.
+ .../bindings/arm/nuvoton/nuvoton,ma35d1.yaml  |  30 +
+ .../npcm.yaml => nuvoton/nuvoton,npcm.yaml}   |   2 +-
+ .../bindings/clock/nuvoton,ma35d1-clk.yaml    |  63 ++
+ .../bindings/reset/nuvoton,ma35d1-reset.yaml  |  45 +
+ .../serial/nuvoton,ma35d1-serial.yaml         |  48 +
+ .../nuvoton/nuvoton,npcm-gcr.yaml}            |   2 +-
+ MAINTAINERS                                   |  13 +-
+ arch/arm64/Kconfig.platforms                  |   9 +
+ arch/arm64/boot/dts/nuvoton/Makefile          |   2 +
+ .../boot/dts/nuvoton/ma35d1-iot-512m.dts      |  56 ++
+ .../boot/dts/nuvoton/ma35d1-som-256m.dts      |  56 ++
+ arch/arm64/boot/dts/nuvoton/ma35d1.dtsi       | 232 +++++
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/clk/Makefile                          |   1 +
+ drivers/clk/nuvoton/Kconfig                   |  19 +
+ drivers/clk/nuvoton/Makefile                  |   4 +
+ drivers/clk/nuvoton/clk-ma35d1-divider.c      | 140 +++
+ drivers/clk/nuvoton/clk-ma35d1-pll.c          | 365 +++++++
+ drivers/clk/nuvoton/clk-ma35d1.c              | 948 ++++++++++++++++++
+ drivers/reset/Kconfig                         |   6 +
+ drivers/reset/Makefile                        |   1 +
+ drivers/reset/reset-ma35d1.c                  | 234 +++++
+ drivers/tty/serial/Kconfig                    |  18 +
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/ma35d1_serial.c            | 796 +++++++++++++++
+ .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 253 +++++
+ .../dt-bindings/reset/nuvoton,ma35d1-reset.h  | 108 ++
+ 27 files changed, 3450 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/nuvoton/nuvoton,ma35d1.yaml
+ rename Documentation/devicetree/bindings/arm/{npcm/npcm.yaml => nuvoton/nuvoton,npcm.yaml} (93%)
+ create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+ create mode 100644 Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
+ rename Documentation/devicetree/bindings/{arm/npcm/nuvoton,gcr.yaml => soc/nuvoton/nuvoton,npcm-gcr.yaml} (93%)
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
+ create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+ create mode 100644 drivers/clk/nuvoton/Kconfig
+ create mode 100644 drivers/clk/nuvoton/Makefile
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1-divider.c
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1-pll.c
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1.c
+ create mode 100644 drivers/reset/reset-ma35d1.c
+ create mode 100644 drivers/tty/serial/ma35d1_serial.c
+ create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
+ create mode 100644 include/dt-bindings/reset/nuvoton,ma35d1-reset.h
+
+-- 
+2.34.1
 
