@@ -2,249 +2,280 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8216EC77B78
-	for <linux-serial@archiver.kernel.org>; Thu,  4 May 2023 15:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 497E5C77B73
+	for <linux-serial@archiver.kernel.org>; Fri,  5 May 2023 02:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbjEDPoy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 May 2023 11:44:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        id S229472AbjEEC7Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 May 2023 22:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231546AbjEDPov (ORCPT
+        with ESMTP id S229459AbjEEC7T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 May 2023 11:44:51 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2074.outbound.protection.outlook.com [40.107.7.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EE45FCD
-        for <linux-serial@vger.kernel.org>; Thu,  4 May 2023 08:44:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a0KTM2wQj9yCXZbqFTnhkb8HBVdY0d0sd/QRHU++Oe5NI2HhVEhiwZdSeSwOxTabadmcjVpy7dRCIL69uh4G5PMGmyIRSDax36cpq7glp2suzSxNu2uSHMvxU/RWOp8yBzV3SLhxiw0qceEMSmfIP/3eXugFBZ6wYFa6WnSfDMy0rf4yU/cSsUTLyM3oDRPKeLv0njVPJ+dSqIQds2Lg3n32MSKRRWtjLRErWaWMyxXJ5AolFMPAK5Go5t/R8Q4yPXQKcEj/CvvtQfr2KnaMkfGMVKhKqfpsUtSwTU1w9FA0Tr5XpNFNKwCOC1xka8pTMQ0QLugQT9A6Mrn+5ZlY6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dm7ysvoDvqPQByMjh+LDOtml/pAR9RmrG6Yad6YqJKw=;
- b=kyGWyHE5NE3GEIz68wKuQb2lRpgRMXWFgmfPqxG1xa0UfUqAH7voxii1I2YHxFsJi4A3YNcSIHX9BYaZNX4hUhzpRdtf8s37TKaut9OLjFTtjdv4xmns68SQqD66sNgYAwXti5S36mzC7rVb5JDL0gO4ZdhUIG6RVuZMybsR7T3gb9oa6XcWhQmU5vOLWpfY+qEM9xLWPHuYH40/HbflSpqywm0702aKAUx9kCML9FgTVL9yhGyPftZoxDfFuZ8f+iD1YpqaVG6sXNF7SpZ8xXdu6DGaAp0EqKN2hsNsRJNHx6wV5kb/Y2iefkQb3OWV36uyJXUY22kzosYsDTVBxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dm7ysvoDvqPQByMjh+LDOtml/pAR9RmrG6Yad6YqJKw=;
- b=n5Qpy+Nj7oHjNW4YxlrGfdrzLwJ5eq2WJ4QYP8retvXc4fBKHSUXquDeXVH1sXCNOpI1wRA9Uo5lc2ph2TYbC8TxhJEpSusowrqQmMyKBd3sAbkGIzkRXojNNFQ+GggurO3YrE7T52qgCCQHGGLY9CVKW8xg4HrOMnJ1dgJFfuA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by AS8PR04MB8262.eurprd04.prod.outlook.com (2603:10a6:20b:3fa::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26; Thu, 4 May
- 2023 15:44:38 +0000
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::28fb:82ec:7a6:62f3]) by PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::28fb:82ec:7a6:62f3%5]) with mapi id 15.20.6363.022; Thu, 4 May 2023
- 15:44:38 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, imx@lists.linux.dev,
-        linux-imx@nxp.com, Shenwei Wang <shenwei.wang@nxp.com>
-Subject: [PATCH v2 1/1] tty: serial: fsl_lpuart: optimize the timer based EOP logic
-Date:   Thu,  4 May 2023 10:44:27 -0500
-Message-Id: <20230504154427.816736-1-shenwei.wang@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR03CA0299.namprd03.prod.outlook.com
- (2603:10b6:a03:39e::34) To PAXPR04MB9185.eurprd04.prod.outlook.com
- (2603:10a6:102:231::11)
+        Thu, 4 May 2023 22:59:19 -0400
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5828D1163A
+        for <linux-serial@vger.kernel.org>; Thu,  4 May 2023 19:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Message-ID:Date:MIME-Version:Subject:From:
+        Content-Type; bh=bfkS6nQp5UWtLxqsn/xk94v8llWEfonyL/vrhIQScOY=;
+        b=AI1Pwf8nGV9BrOEDuc/SP0Ee5FTyCxC56ffhPX/VyzhoeWZ6Kecsk5yHc8OzMv
+        h1eiXcuneuDf13YkgNfg5YlpGr4rBjzsDeggy4JWhUd1fazYJO4VZmqg8vB6DrpJ
+        Eok//OEzMvBKvOoFOHVBxPpTKTIRN5xXdqjO7CM+1SlhY=
+Received: from [172.21.25.67] (unknown [218.201.129.19])
+        by zwqz-smtp-mta-g5-0 (Coremail) with SMTP id _____wBX1jLwcFRkWqoBBA--.23157S2;
+        Fri, 05 May 2023 10:58:57 +0800 (CST)
+Message-ID: <d8693191-be31-b471-7ddc-b491daa48650@163.com>
+Date:   Fri, 5 May 2023 10:58:56 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9185:EE_|AS8PR04MB8262:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4f3bcc4-461a-4453-d384-08db4cb677b6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LaaD0cMegYdFIhNeA9fjlWKYttB18D3hlOd6stxgmC8vNelkfahx9VcHoR/QpzOhuem2sxUVEGCWLjYRWe+FyUU2uGMTkScADZ/rJiq43VBmS8Ro7pkZwOSaT+qvngYTC7krjy6UNOJeJ/++KAUUmP+PelSVddEgO7eW8SwpzHzdFSt6j+264EgZ9EXa9fih5QaI4d78837QrUT8XF4UoVW7o44zhF5VS9UihUf165FTcwenXJZD6M/usK6+XHNzq3zjOiyXZf7OJ8t4G0t3ZoG1uCByW6Ihde177K1cnbrIDhLVS6OZ6wxkZ/Qe4oppx9d9SS2Fr9SKPN6e2KDw8VNawo776T3S6SBHjvPROv+36lqb/eJqKfUqfSWyHXm3CDGVq0DPuvcLKF4jxuVwk3hPZp7nJS38dePFixomIgtrzWcwMlBypYFrA+bdkaZ+C2dZVznal0gyRSlUvWK1E1qOLZo+O+pEi9dop7KIX687/cdGPK6QdnYmZY9bTx7BvxENnueHjfm+9jzW5m+4ehRgwWq1kTlpvCP4sRyf0/TbPWxd9J4tsJYuOPB698tQ87Ni3K4sK+4VlYJDXEArHfg+Lb++sx3eWNNsxs9obM5vpKHe6aEfpbPmKeQMgRfa
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(451199021)(83380400001)(5660300002)(54906003)(2906002)(38350700002)(66946007)(38100700002)(186003)(316002)(66899021)(55236004)(8676002)(8936002)(6512007)(6506007)(1076003)(26005)(41300700001)(36756003)(6486002)(2616005)(66556008)(66476007)(44832011)(52116002)(4326008)(6916009)(478600001)(6666004)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1Co2y43biGmpV2BW1vibp+GHt7Q8UcvWmZEXmT681kN6vQKdo3p0Pm7QcdnJ?=
- =?us-ascii?Q?o3b8r/DRT1C1vO5dmW9yFE2SPwwdzRZ7lxR605zGM+MxPF6tws9JWawdTeSD?=
- =?us-ascii?Q?xXoNDXa3z9NsPwTBN7dGqm1Es+GhJumJEsy+EnWgM06IQgSDEMQuf0ESmi/l?=
- =?us-ascii?Q?nNkfWcVZ2gEGyhofb8XuvaGPBftrguMUYOkJUg0Ul508QPQWuW7GYipRXnqX?=
- =?us-ascii?Q?r45+p5qDDXNW4TxtLF4hpo8LwcBavESgkH1p6Xv1eolkxiIW5hZDnkSThzb7?=
- =?us-ascii?Q?1BWYoB/ycSUToYFPTr4qhzH/KdqXE/rHLoGk1kIL99T0phv8FcnY+6YhijW1?=
- =?us-ascii?Q?dvifhNpPcBn5MsIACHgnsq1bWi4ZKBPE1ebsfG/vXJR7oj4kcMAlfc+VpU/1?=
- =?us-ascii?Q?awxgJ29HM2g4yu/76ZtfqthNP3knlyHe3BfHrq4Lm88KpEdVCKATKtbMqXfv?=
- =?us-ascii?Q?eGQ0Bpf5L8UetghiwlAACDoABiTGOnh/pHxzLrUExvx+Vk8Hr0zPSsKaJUXD?=
- =?us-ascii?Q?85PlEONEmF0jBJx/CpkztuvsYhWLW2RJgHPOrLd0G8GQ0dZ6GA0tRIHSWnKk?=
- =?us-ascii?Q?o1Gz4LtYa8lfczpUfXyDLsq9tZPzFVaKtiUmdq8e4eClkat3PtdCYZrn7gi2?=
- =?us-ascii?Q?w7I+Z9a4CZI5+sGKdeqZTT81X9t67ICIaUA5K6DDiW9FUHkzESLoKdwrtOxK?=
- =?us-ascii?Q?ee7julXwgdLmCCayxyn1bA5XTiqtqIpnGj2Z3yIGbdTLv/pz54X3tzABg7hg?=
- =?us-ascii?Q?1UXl+v3teEpe17ER9niMOrgxUmqKLrygN2mW7rhaP8Em6f8kFU12D2LkJl0z?=
- =?us-ascii?Q?zOwGf1BZP1PkoArSXOwAcuuiphltltsypqLO1zmjXm5V2m91eXyb/BgYJTcj?=
- =?us-ascii?Q?BodIhCrXVlXmAbtziCV8tpDsQSjiGVAYnVxC5+iXocl0L4mJXoBpAD4flMZ1?=
- =?us-ascii?Q?AeFdU3fhUjb4MZDhYIo2tA8wllY4LRuFwPIVUXCJ1Mtz7WGbOUBr6GfW4p9s?=
- =?us-ascii?Q?CBrCNWwJGIRzZI0MkwLb7bb+XpziuSWot/m/Cwt85CqZSd1ihCvJGAEhNwhe?=
- =?us-ascii?Q?WHnw86blphbMgNHCZuq79DgYvh5ffBb8euzkUGLAr/DlwfVSSgVsfHWWDNuV?=
- =?us-ascii?Q?JSdHXHUYDTR+esra4WtGdVv0VCxOgJyNJZ68rhQXiaBh7xB/npjM4g7TqnN/?=
- =?us-ascii?Q?unSAIwmLJkU2K5uiJQClSUKsQRn+6gfTRJ8I0iFesQcW8gEP3rwKnrz19hHn?=
- =?us-ascii?Q?vpe7ah/VC36OjxcCGWKkiNxJ4s1QELQFW+P54wH2EmoRhZLNSXvLBAQ1IRco?=
- =?us-ascii?Q?4bBP/gxl6DlMkALo0BcPFLb/kSaqCPKLB5n2AiN2Um+ht+sJ+CantI53X8e8?=
- =?us-ascii?Q?CpyfpeFlTAZrPKaLjJXr8NOAgASU8UT5syAZ7RqBeS3f1CwHN67vKb4xzdO1?=
- =?us-ascii?Q?vxzWdRQwCDIZkUKa1rzG7zTkOtb7vdX3w2Zm3m3bEgsupCWUbAP/bIPu/MsW?=
- =?us-ascii?Q?d2JEZWf0vMue2rSh0NmXVpIvHfYlA85Mqsuw2+FG4mvuNrbrRDUfmWqjyVP3?=
- =?us-ascii?Q?D7MssoXhNK4GR6hHGOnPX7xk4S0ElBsQw+W/t7Z5?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4f3bcc4-461a-4453-d384-08db4cb677b6
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2023 15:44:38.1752
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KSJDhYA1CjNIyjegFoyuiRyOXLi+Ame54Ieu2qUf54xY2Xo+nU+LhN0MGx1m3t119ci78rjQ3gU/7uLgqGj44Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8262
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: serial8250: can not change baudrate while the controller is busy
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <289bb78a-7509-1c5c-2923-a04ed3b6487d@163.com>
+ <ab524eb-da1d-bf74-6d73-2defb7f7118@linux.intel.com>
+Content-Language: en-US
+From:   qianfan <qianfanguijin@163.com>
+In-Reply-To: <ab524eb-da1d-bf74-6d73-2defb7f7118@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wBX1jLwcFRkWqoBBA--.23157S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3JrykXF18CryfZryDGr18Grg_yoW3XryUpF
+        y5Kay3KrWqgw47Gws2yr4ktF4YqFs3G342kFsrGryFyFn8tr9agF1xK3yrta4fCrykKr1D
+        ArsIkFy7Ca1DZF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UuwZcUUUUU=
+X-Originating-IP: [218.201.129.19]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbBzhZm7WI0ZE4+IgAAsz
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-At low baud rates, the DMA transfer may end prematurely due to the timer,
-even during an active transfer. This does not accurately simulate an EOP
-event as intended. We expect the timer to only complete a DMA transfer
-once the idle period satisfies a specified interval.
 
-The patch checks the DMA residue count before copying data to the TTY
-buffer. If the residue count remains unchanged since the last interrupt,
-that indicates no new data was received. In this case, the DMA should
-complete as an EOP event. Otherwise, it indicates that new data were
-received during the interval, the EOP condition was not met and the
-timer restarted.
 
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+在 2023/4/14 20:10, Ilpo Järvinen 写道:
+> On Fri, 14 Apr 2023, qianfan wrote:
+>
+>> Hi:
+>>
+>> My custom board is based on allwinner R40, the uart is compatibled with
+>> serial8250. Based on it's datasheet:
+>>
+>>> When TX transmit data, or RX receives data, or TX FIFO is not empty, then
+>> the
+>>> BUSY flag bit can be set to 1 by hardware, which indicates the UART
+>>> controller is busy.
+>> We cannot write LCR and DLL to update UART params such as baudrate and partity
+>> while the UART is busy, however `serial8250_do_set_termios` is a void
+>> function,
+>> the upper level always assume the uart params is updated.
+>>
+>> The upper level `uart_set_termios` do noting if ktermios params is not
+>> changed,
+>> it will not update when the user space program running tcsetattr set a same
+>> baudrate again.
+>>
+>> So we can not fix the baudrate when
+>> `serial8250_do_set_termios`
+>> failed.
+>>
+>> Allwinner R40's datasheet provided a way for this case.
+>>
+>>> CHCFG_AT_BUSY(configure at busy): Enable the bit, software can also set UART
+>>> controller when UART is busy, such as the LCR, DLH, DLL register.
+>>> CHANGE_UPDATE(change update): If CHCFG_AT_BUSY is enabled, and CHANGE_UPDATE
+>>> is written to 1, the configuration of UART controller can be updated.
+>>> After completed update, the bit is cleared to 0 automatically.
+>> I can't know this feature is expanded by allwinner, or it is a common
+>> functiton
+>> of serial8250. Perhaps the serial8250 driver need this.
+> tcsetattr() can be given a flag which enforces TX empty condition before
+> core calls into the lower layer HW set_termios function. Would that be
+> enough to solve the case you're interested in?
+>
+> Obviously, nothing can prevent Rx from occuring as it's not under local
+> UART's control (e.g. a busy flag check would still be racy). But does
+> writing those registers actually break something or just corrupts the
+> character under Tx/Rx (which can be handled by flushing)?
+Hi:
+
+I speed long times to create a common solution for this problem.
+
+(I had create two commit, the first one add some sysfs debug interface
+and the second one try solve this problem. So the next following patch
+has only patch-2. Let's we discuess this solution and I will send all
+patches if it is good.)
+
+Allwinner introduce some bits in HALT_TX register which can change
+baudrate while the serial is busy. But that is not a common feature
+of dw-uart. Rockchip's uart is also based on dw-uart and they doesn't
+has such feature.
+
+The loopback is a common feature of 16450/16550 serial, so we can set
+loopback mode to cut down the external serial line to force the serial
+to idle.
+
+Next is the second patch:
+
+ From 171e981c3695e3efcc76a2c4f0d0937d366d6e2a Mon Sep 17 00:00:00 2001
+From: qianfan Zhao <qianfanguijin@163.com>
+Date: Fri, 5 May 2023 08:46:50 +0800
+Subject: [PATCH] drivers: serial: 8250_dw: Make uart idle before set 
+baudrate
+
+Some registers which control the baudrate such as DLL, DLM can not
+write while the uart is busy. So set the controller to loopback mode
+and clear fifos to force idle before change baudrate.
+
+Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
 ---
-V2:
-  - this version is to address the review feedback from Ilpo.
-  - reset the last_residue when rx dma starts.
-  - simplified the character counting in the RX circular buffer.
-  - use max_t() and DIV_ROUND_UP()
+  drivers/tty/serial/8250/8250_dw.c | 57 ++++++++++++++++++++++++++++++-
+  1 file changed, 56 insertions(+), 1 deletion(-)
 
- drivers/tty/serial/fsl_lpuart.c | 51 ++++++++++++++++++++++++++++++---
- 1 file changed, 47 insertions(+), 4 deletions(-)
+diff --git a/drivers/tty/serial/8250/8250_dw.c 
+b/drivers/tty/serial/8250/8250_dw.c
+index 3dca344ca19c..4eaa4d05a43e 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -35,6 +35,7 @@
+  #define DW_UART_USR    0x1f /* UART Status Register */
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c91916e13648..0ee1161bc789 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -238,6 +238,7 @@
+  /* DesignWare specific register fields */
++#define DW_UART_USR_BUSY        BIT(0)
+  #define DW_UART_MCR_SIRE        BIT(6)
 
- /* Rx DMA timeout in ms, which is used to calculate Rx ring buffer size */
- #define DMA_RX_TIMEOUT		(10)
-+#define DMA_RX_IDLE_CHARS	(8)
- #define UART_AUTOSUSPEND_TIMEOUT	3000
+  struct dw8250_data {
+@@ -43,6 +44,8 @@ struct dw8250_data {
+      u8            usr_reg;
+      int            msr_mask_on;
+      int            msr_mask_off;
++    u8            dll;
++    u8            dlm;
+      struct clk        *clk;
+      struct clk        *pclk;
+      struct notifier_block    clk_notifier;
+@@ -52,7 +55,9 @@ struct dw8250_data {
+      unsigned int        skip_autocfg:1;
+      unsigned int        uart_16550_compatible:1;
 
- #define DRIVER_NAME	"fsl-lpuart"
-@@ -282,6 +283,7 @@ struct lpuart_port {
- 	struct scatterlist	rx_sgl, tx_sgl[2];
- 	struct circ_buf		rx_ring;
- 	int			rx_dma_rng_buf_len;
-+	int                     last_residue;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
- 	bool			is_cs7; /* Set to true when character size is 7 */
-@@ -331,7 +333,7 @@ static struct lpuart_soc_data imx8qxp_data = {
- 	.devtype = IMX8QXP_LPUART,
- 	.iotype = UPIO_MEM32,
- 	.reg_off = IMX_REG_OFF,
--	.rx_watermark = 31,
-+	.rx_watermark = 8, /* A lower watermark is ideal for low baud rates. */
- };
- static struct lpuart_soc_data imxrt1050_data = {
- 	.devtype = IMXRT1050_LPUART,
-@@ -1255,6 +1257,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
- 		sport->port.icount.rx += copied;
- 	}
++    unsigned int        last_loopback_waiting_time;
+      unsigned long        iir_busy_count;
++    unsigned long        lcr_busy_count;
+  };
 
-+	sport->last_residue = state.residue;
+  static inline struct dw8250_data *to_dw8250_data(struct 
+dw8250_port_data *data)
+@@ -93,6 +98,7 @@ static void dw8250_force_idle(struct uart_port *p)
+
+  static void dw8250_check_lcr(struct uart_port *p, int value)
+  {
++    struct dw8250_data *d = to_dw8250_data(p->private_data);
+      void __iomem *offset = p->membase + (UART_LCR << p->regshift);
+      int tries = 1000;
+
+@@ -121,6 +127,7 @@ static void dw8250_check_lcr(struct uart_port *p, 
+int value)
+       * FIXME: this deadlocks if port->lock is already held
+       * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
+       */
++    d->lcr_busy_count++;
+  }
+
+  /* Returns once the transmitter is empty or we run out of retries */
+@@ -360,6 +367,46 @@ static void dw8250_set_termios(struct uart_port *p, 
+struct ktermios *termios,
+      serial8250_do_set_termios(p, termios, old);
+  }
+
++static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
++                   unsigned int quot, unsigned int quot_frac)
++{
++    struct uart_8250_port *up = up_to_u8250p(p);
++    struct dw8250_data *d = to_dw8250_data(p->private_data);
++    unsigned int usr;
++    int retries;
 +
- exit:
- 	dma_sync_sg_for_device(chan->device->dev, &sport->rx_sgl, 1,
- 			       DMA_FROM_DEVICE);
-@@ -1272,11 +1276,37 @@ static void lpuart_dma_rx_complete(void *arg)
- 	lpuart_copy_rx_to_tty(sport);
- }
-
-+/*
-+ * Timer function to simulate the hardware EOP (End Of Package) event.
-+ * The timer callback is to check for new RX data and copy to TTY buffer.
-+ * If no new data are received since last interval, the EOP condition is
-+ * met, complete the DMA transfer by copying the data. Otherwise, just
-+ * restart timer.
-+ */
- static void lpuart_timer_func(struct timer_list *t)
- {
- 	struct lpuart_port *sport = from_timer(sport, t, lpuart_timer);
-+	struct dma_chan *chan = sport->dma_rx_chan;
-+	struct circ_buf *ring = &sport->rx_ring;
-+	struct dma_tx_state state;
-+	unsigned long flags;
-+	int count;
-
--	lpuart_copy_rx_to_tty(sport);
-+	dmaengine_tx_status(chan, sport->dma_rx_cookie, &state);
-+	ring->head = sport->rx_sgl.length - state.residue;
-+	count = CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length);
++    /*
++     * LCR, DLL, DLM registers can not write while the uart is busy,
++     * set uart to loopback mode, clear fifos to force idle.
++     * The loopback mode doesn't take effect immediately, it will waiting
++     * current byte received done, the lower baudrate the longer waiting
++     * time.
++     */
++    p->serial_out(p, UART_MCR, up->mcr | UART_MCR_LOOP);
++    for (retries = 0; retries < 10000; retries++) {
++        dw8250_force_idle(p);
 +
-+	/* Check if new data received before copying */
-+	if ((count != 0) && (sport->last_residue == state.residue))
-+		lpuart_copy_rx_to_tty(sport);
-+	else
-+		mod_timer(&sport->lpuart_timer,
-+				jiffies + sport->dma_rx_timeout);
++        usr = p->serial_in(p, d->usr_reg);
++        if (!(usr & DW_UART_USR_BUSY))
++            break;
++        udelay(1);
++    }
 +
-+	if (spin_trylock_irqsave(&sport->port.lock, flags)) {
-+		sport->last_residue = state.residue;
-+		spin_unlock_irqrestore(&sport->port.lock, flags);
-+	}
- }
-
- static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
-@@ -1297,9 +1327,21 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
- 	 */
- 	sport->rx_dma_rng_buf_len = (DMA_RX_TIMEOUT * baud /  bits / 1000) * 2;
- 	sport->rx_dma_rng_buf_len = (1 << fls(sport->rx_dma_rng_buf_len));
-+	sport->rx_dma_rng_buf_len = max_t(int,
-+			sport->rxfifo_size * 2,
-+			sport->rx_dma_rng_buf_len);
-+	/*
-+	 * Keep this condition check in case rxfifo_size is unavailable
-+	 * for some SoCs.
-+	 */
- 	if (sport->rx_dma_rng_buf_len < 16)
- 		sport->rx_dma_rng_buf_len = 16;
-
-+	sport->last_residue = 0;
-+	sport->dma_rx_timeout = msecs_to_jiffies(
-+		DIV_ROUND_UP(sport->port.frame_time * DMA_RX_IDLE_CHARS,
-+		NSEC_PER_MSEC));
++    d->last_loopback_waiting_time = retries;
 +
- 	ring->buf = kzalloc(sport->rx_dma_rng_buf_len, GFP_ATOMIC);
- 	if (!ring->buf)
- 		return -ENOMEM;
-@@ -1687,12 +1729,13 @@ static void lpuart_rx_dma_startup(struct lpuart_port *sport)
- 	if (!sport->dma_rx_chan)
- 		goto err;
-
-+	/* set default Rx DMA timeout */
-+	sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
++    p->serial_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
++    if (p->serial_in(p, UART_LCR) & UART_LCR_DLAB) {
++        d->dll = quot & 0xff;
++        d->dlm = (quot >> 8) & 0xff;
 +
- 	ret = lpuart_start_rx_dma(sport);
- 	if (ret)
- 		goto err;
++        p->serial_out(p, UART_DLL, d->dll);
++        p->serial_out(p, UART_DLM, d->dlm);
++        p->serial_out(p, UART_LCR, up->lcr);
++    }
++
++    p->serial_out(p, UART_MCR, up->mcr);
++}
++
+  static void dw8250_set_ldisc(struct uart_port *p, struct ktermios 
+*termios)
+  {
+      struct uart_8250_port *up = up_to_u8250p(p);
+@@ -449,6 +496,8 @@ static ssize_t register_show(struct device *dev, 
+struct device_attribute *attr,
 
--	/* set Rx DMA timeout */
--	sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
- 	if (!sport->dma_rx_timeout)
- 		sport->dma_rx_timeout = 1;
+      spin_lock_irqsave(&p->lock, flags);
+      ret = scnprintf(buf, PAGE_SIZE,
++            "%s: %02x\n"
++            "%s: %02x\n"
+              "%s: %02x/%02x\n"
+              "%s: %02x\n"
+              "%s: %02x\n"
+@@ -458,6 +507,8 @@ static ssize_t register_show(struct device *dev, 
+struct device_attribute *attr,
+              "%s: %02x\n"
+              "%s: %02x\n"
+              ,
++            "DLL", d->dll,
++            "DLM", d->dlm,
+              "IER", up->ier, p->serial_in(p, UART_IER),
+              "IIR", p->serial_in(p, UART_IIR),
+              "FCR", up->fcr,
+@@ -478,7 +529,10 @@ static ssize_t busy_show(struct device *dev, struct 
+device_attribute *attr,
+  {
+      struct dw8250_data *d = platform_get_drvdata(to_platform_device(dev));
 
---
-2.34.1
+-    return scnprintf(buf, PAGE_SIZE, "%lu\n", d->iir_busy_count);
++    return scnprintf(buf, PAGE_SIZE, "%lu %lu %u\n",
++             d->iir_busy_count,
++             d->lcr_busy_count,
++             d->last_loopback_waiting_time);
+  }
+  static DEVICE_ATTR_RO(busy);
+
+@@ -570,6 +624,7 @@ static int dw8250_probe(struct platform_device *pdev)
+      p->serial_out    = dw8250_serial_out;
+      p->set_ldisc    = dw8250_set_ldisc;
+      p->set_termios    = dw8250_set_termios;
++    p->set_divisor    = dw8250_set_divisor;
+
+      p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
+      if (!p->membase)
+-- 
+2.25.1
+
+
 
