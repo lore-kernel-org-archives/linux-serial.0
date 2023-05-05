@@ -2,280 +2,149 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 497E5C77B73
-	for <linux-serial@archiver.kernel.org>; Fri,  5 May 2023 02:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 702AFC77B7C
+	for <linux-serial@archiver.kernel.org>; Fri,  5 May 2023 15:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229472AbjEEC7Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 4 May 2023 22:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
+        id S232585AbjEEPZY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 May 2023 11:25:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjEEC7T (ORCPT
+        with ESMTP id S232572AbjEEPZD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 4 May 2023 22:59:19 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5828D1163A
-        for <linux-serial@vger.kernel.org>; Thu,  4 May 2023 19:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:Subject:From:
-        Content-Type; bh=bfkS6nQp5UWtLxqsn/xk94v8llWEfonyL/vrhIQScOY=;
-        b=AI1Pwf8nGV9BrOEDuc/SP0Ee5FTyCxC56ffhPX/VyzhoeWZ6Kecsk5yHc8OzMv
-        h1eiXcuneuDf13YkgNfg5YlpGr4rBjzsDeggy4JWhUd1fazYJO4VZmqg8vB6DrpJ
-        Eok//OEzMvBKvOoFOHVBxPpTKTIRN5xXdqjO7CM+1SlhY=
-Received: from [172.21.25.67] (unknown [218.201.129.19])
-        by zwqz-smtp-mta-g5-0 (Coremail) with SMTP id _____wBX1jLwcFRkWqoBBA--.23157S2;
-        Fri, 05 May 2023 10:58:57 +0800 (CST)
-Message-ID: <d8693191-be31-b471-7ddc-b491daa48650@163.com>
-Date:   Fri, 5 May 2023 10:58:56 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: serial8250: can not change baudrate while the controller is busy
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Fri, 5 May 2023 11:25:03 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78001A62F
+        for <linux-serial@vger.kernel.org>; Fri,  5 May 2023 08:23:24 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-50bd37ca954so28251066a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 05 May 2023 08:23:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1683300186; x=1685892186;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PJ0MjyN2tPXJnBiN7+wdwcYqZoiGnIUzbIIwgINFMQk=;
+        b=t9cPpIqjIu7IP/FdOUGPJXKMeX+ktMi3VAhNdww6MEKLAn96lOAvAwzMNvfTc9Jjga
+         WnoJJ131iQm+jk9XN/xGVpPUI64t7dQi0B4H96pUjMS2LeGH0cQSJsGjVBL33BBlXiqM
+         mn41G/W98ig6WwbwBP4ik9n1E0dScC9iDZTbx+UPNxbO0MrjMACBQUIOxjRtsPxDP52v
+         NYCuj+zDxmf79qI+sY4hweoZ3QB8TlacHWry4QETuSMhODClU/hDrmLsx38jxYNCgc+K
+         NEvScEv3zGQ3SXf+QfEANMhP9xpl7hUoAP686nFlLu59btn+5YLdemzDKtqsvKgl4bOf
+         t+Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683300186; x=1685892186;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PJ0MjyN2tPXJnBiN7+wdwcYqZoiGnIUzbIIwgINFMQk=;
+        b=fSWxeHjSke6bCQxZQoCsZT7mjHVF7I+pQtBBCOLk9NUbfbmRPgNvVgAceo3dlw7S7K
+         v7aB55P9jk7qFH4B4ELKXVasAKzwAcPyY1+81aWKj86ZVrgWzoaKxLmMfkA91Ot4sPtJ
+         7gJCWVea1dx+YUxPsQg64e6u2/9wYQUbyq/CrnNciRBtxsJU+6OPjpcKG7WuJYIEu18r
+         cIaQARmJEm5s2Y70GB0CCZRq4SzoAzO627XCSk5WsRYyalnexO88TIyU0ZR5/GFeHDsY
+         D1FGk7k06mRbpJNixObl8au5hp6D19acU/vIXEtUF64Psc/LY5WeJmHts04z19h5cczo
+         K9Eg==
+X-Gm-Message-State: AC+VfDwBBOrK3jUb5m9II42OMmK7xSd5WJZfxlm0ZVGXUONnEJIEeScN
+        pAyQ2O4jGT1y6nmI60PF42/9ig==
+X-Google-Smtp-Source: ACHHUZ5N5HWekvFr0K66lggYS0aqJcCoHia21AcHCedlBnfdA7aLDt9GxSSzEBIoWYEuVNio2WSufQ==
+X-Received: by 2002:a17:907:7f02:b0:958:46aa:7f99 with SMTP id qf2-20020a1709077f0200b0095846aa7f99mr2781417ejc.7.1683300186053;
+        Fri, 05 May 2023 08:23:06 -0700 (PDT)
+Received: from krzk-bin.. ([2a02:810d:15c0:828:52e:24ce:bbc1:127d])
+        by smtp.gmail.com with ESMTPSA id hy19-20020a1709068a7300b00961277a426dsm1053667ejc.205.2023.05.05.08.23.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 May 2023 08:23:05 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <289bb78a-7509-1c5c-2923-a04ed3b6487d@163.com>
- <ab524eb-da1d-bf74-6d73-2defb7f7118@linux.intel.com>
-Content-Language: en-US
-From:   qianfan <qianfanguijin@163.com>
-In-Reply-To: <ab524eb-da1d-bf74-6d73-2defb7f7118@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Akash Asthana <akashast@codeaurora.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] serial: qcom-geni: fix enabling deactivated interrupt
+Date:   Fri,  5 May 2023 17:23:01 +0200
+Message-Id: <20230505152301.2181270-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wBX1jLwcFRkWqoBBA--.23157S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW3JrykXF18CryfZryDGr18Grg_yoW3XryUpF
-        y5Kay3KrWqgw47Gws2yr4ktF4YqFs3G342kFsrGryFyFn8tr9agF1xK3yrta4fCrykKr1D
-        ArsIkFy7Ca1DZF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UuwZcUUUUU=
-X-Originating-IP: [218.201.129.19]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbBzhZm7WI0ZE4+IgAAsz
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The driver have a race, experienced only with PREEMPT_RT patchset:
 
+CPU0                         | CPU1
+==================================================================
+qcom_geni_serial_probe       |
+  uart_add_one_port          |
+                             | serdev_drv_probe
+                             |   qca_serdev_probe
+                             |     serdev_device_open
+                             |       uart_open
+                             |         uart_startup
+                             |           qcom_geni_serial_startup
+                             |             enable_irq
+                             |               __irq_startup
+                             |                 WARN_ON()
+                             |                 IRQ not activated
+  request_threaded_irq       |
+    irq_domain_activate_irq  |
 
-在 2023/4/14 20:10, Ilpo Järvinen 写道:
-> On Fri, 14 Apr 2023, qianfan wrote:
->
->> Hi:
->>
->> My custom board is based on allwinner R40, the uart is compatibled with
->> serial8250. Based on it's datasheet:
->>
->>> When TX transmit data, or RX receives data, or TX FIFO is not empty, then
->> the
->>> BUSY flag bit can be set to 1 by hardware, which indicates the UART
->>> controller is busy.
->> We cannot write LCR and DLL to update UART params such as baudrate and partity
->> while the UART is busy, however `serial8250_do_set_termios` is a void
->> function,
->> the upper level always assume the uart params is updated.
->>
->> The upper level `uart_set_termios` do noting if ktermios params is not
->> changed,
->> it will not update when the user space program running tcsetattr set a same
->> baudrate again.
->>
->> So we can not fix the baudrate when
->> `serial8250_do_set_termios`
->> failed.
->>
->> Allwinner R40's datasheet provided a way for this case.
->>
->>> CHCFG_AT_BUSY(configure at busy): Enable the bit, software can also set UART
->>> controller when UART is busy, such as the LCR, DLH, DLL register.
->>> CHANGE_UPDATE(change update): If CHCFG_AT_BUSY is enabled, and CHANGE_UPDATE
->>> is written to 1, the configuration of UART controller can be updated.
->>> After completed update, the bit is cleared to 0 automatically.
->> I can't know this feature is expanded by allwinner, or it is a common
->> functiton
->> of serial8250. Perhaps the serial8250 driver need this.
-> tcsetattr() can be given a flag which enforces TX empty condition before
-> core calls into the lower layer HW set_termios function. Would that be
-> enough to solve the case you're interested in?
->
-> Obviously, nothing can prevent Rx from occuring as it's not under local
-> UART's control (e.g. a busy flag check would still be racy). But does
-> writing those registers actually break something or just corrupts the
-> character under Tx/Rx (which can be handled by flushing)?
-Hi:
+The warning:
 
-I speed long times to create a common solution for this problem.
+  894000.serial: ttyHS1 at MMIO 0x894000 (irq = 144, base_baud = 0) is a MSM
+  serial serial0: tty port ttyHS1 registered
+  WARNING: CPU: 7 PID: 107 at kernel/irq/chip.c:241 __irq_startup+0x78/0xd8
+  ...
+  qcom_geni_serial 894000.serial: serial engine reports 0 RX bytes in!
 
-(I had create two commit, the first one add some sysfs debug interface
-and the second one try solve this problem. So the next following patch
-has only patch-2. Let's we discuess this solution and I will send all
-patches if it is good.)
+Adding UART port triggers probe of child serial devices - serdev and
+eventually Qualcomm Bluetooth hci_qca driver.  This opens UART port
+which enables the interrupt before it got activated in
+request_threaded_irq().  The issue originates in commit f3974413cf02
+("tty: serial: qcom_geni_serial: Wakeup IRQ cleanup") and discussion on
+mailing list [1].  However the above commit does not explain why the
+uart_add_one_port() is moved above requesting interrupt.
 
-Allwinner introduce some bits in HALT_TX register which can change
-baudrate while the serial is busy. But that is not a common feature
-of dw-uart. Rockchip's uart is also based on dw-uart and they doesn't
-has such feature.
+[1] https://lore.kernel.org/all/5d9f3dfa.1c69fb81.84c4b.30bf@mx.google.com/
 
-The loopback is a common feature of 16450/16550 serial, so we can set
-loopback mode to cut down the external serial line to force the serial
-to idle.
-
-Next is the second patch:
-
- From 171e981c3695e3efcc76a2c4f0d0937d366d6e2a Mon Sep 17 00:00:00 2001
-From: qianfan Zhao <qianfanguijin@163.com>
-Date: Fri, 5 May 2023 08:46:50 +0800
-Subject: [PATCH] drivers: serial: 8250_dw: Make uart idle before set 
-baudrate
-
-Some registers which control the baudrate such as DLL, DLM can not
-write while the uart is busy. So set the controller to loopback mode
-and clear fifos to force idle before change baudrate.
-
-Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+Fixes: f3974413cf02 ("tty: serial: qcom_geni_serial: Wakeup IRQ cleanup")
+Cc: <stable@vger.kernel.org>
+Cc: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-  drivers/tty/serial/8250/8250_dw.c | 57 ++++++++++++++++++++++++++++++-
-  1 file changed, 56 insertions(+), 1 deletion(-)
+ drivers/tty/serial/qcom_geni_serial.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c 
-b/drivers/tty/serial/8250/8250_dw.c
-index 3dca344ca19c..4eaa4d05a43e 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -35,6 +35,7 @@
-  #define DW_UART_USR    0x1f /* UART Status Register */
-
-  /* DesignWare specific register fields */
-+#define DW_UART_USR_BUSY        BIT(0)
-  #define DW_UART_MCR_SIRE        BIT(6)
-
-  struct dw8250_data {
-@@ -43,6 +44,8 @@ struct dw8250_data {
-      u8            usr_reg;
-      int            msr_mask_on;
-      int            msr_mask_off;
-+    u8            dll;
-+    u8            dlm;
-      struct clk        *clk;
-      struct clk        *pclk;
-      struct notifier_block    clk_notifier;
-@@ -52,7 +55,9 @@ struct dw8250_data {
-      unsigned int        skip_autocfg:1;
-      unsigned int        uart_16550_compatible:1;
-
-+    unsigned int        last_loopback_waiting_time;
-      unsigned long        iir_busy_count;
-+    unsigned long        lcr_busy_count;
-  };
-
-  static inline struct dw8250_data *to_dw8250_data(struct 
-dw8250_port_data *data)
-@@ -93,6 +98,7 @@ static void dw8250_force_idle(struct uart_port *p)
-
-  static void dw8250_check_lcr(struct uart_port *p, int value)
-  {
-+    struct dw8250_data *d = to_dw8250_data(p->private_data);
-      void __iomem *offset = p->membase + (UART_LCR << p->regshift);
-      int tries = 1000;
-
-@@ -121,6 +127,7 @@ static void dw8250_check_lcr(struct uart_port *p, 
-int value)
-       * FIXME: this deadlocks if port->lock is already held
-       * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-       */
-+    d->lcr_busy_count++;
-  }
-
-  /* Returns once the transmitter is empty or we run out of retries */
-@@ -360,6 +367,46 @@ static void dw8250_set_termios(struct uart_port *p, 
-struct ktermios *termios,
-      serial8250_do_set_termios(p, termios, old);
-  }
-
-+static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
-+                   unsigned int quot, unsigned int quot_frac)
-+{
-+    struct uart_8250_port *up = up_to_u8250p(p);
-+    struct dw8250_data *d = to_dw8250_data(p->private_data);
-+    unsigned int usr;
-+    int retries;
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 08dc3e2a729c..8582479f0211 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1664,19 +1664,18 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	uport->private_data = &port->private_data;
+ 	platform_set_drvdata(pdev, port);
+ 
+-	ret = uart_add_one_port(drv, uport);
+-	if (ret)
+-		return ret;
+-
+ 	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+ 	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+ 			IRQF_TRIGGER_HIGH, port->name, uport);
+ 	if (ret) {
+ 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+-		uart_remove_one_port(drv, uport);
+ 		return ret;
+ 	}
+ 
++	ret = uart_add_one_port(drv, uport);
++	if (ret)
++		return ret;
 +
-+    /*
-+     * LCR, DLL, DLM registers can not write while the uart is busy,
-+     * set uart to loopback mode, clear fifos to force idle.
-+     * The loopback mode doesn't take effect immediately, it will waiting
-+     * current byte received done, the lower baudrate the longer waiting
-+     * time.
-+     */
-+    p->serial_out(p, UART_MCR, up->mcr | UART_MCR_LOOP);
-+    for (retries = 0; retries < 10000; retries++) {
-+        dw8250_force_idle(p);
-+
-+        usr = p->serial_in(p, d->usr_reg);
-+        if (!(usr & DW_UART_USR_BUSY))
-+            break;
-+        udelay(1);
-+    }
-+
-+    d->last_loopback_waiting_time = retries;
-+
-+    p->serial_out(p, UART_LCR, up->lcr | UART_LCR_DLAB);
-+    if (p->serial_in(p, UART_LCR) & UART_LCR_DLAB) {
-+        d->dll = quot & 0xff;
-+        d->dlm = (quot >> 8) & 0xff;
-+
-+        p->serial_out(p, UART_DLL, d->dll);
-+        p->serial_out(p, UART_DLM, d->dlm);
-+        p->serial_out(p, UART_LCR, up->lcr);
-+    }
-+
-+    p->serial_out(p, UART_MCR, up->mcr);
-+}
-+
-  static void dw8250_set_ldisc(struct uart_port *p, struct ktermios 
-*termios)
-  {
-      struct uart_8250_port *up = up_to_u8250p(p);
-@@ -449,6 +496,8 @@ static ssize_t register_show(struct device *dev, 
-struct device_attribute *attr,
-
-      spin_lock_irqsave(&p->lock, flags);
-      ret = scnprintf(buf, PAGE_SIZE,
-+            "%s: %02x\n"
-+            "%s: %02x\n"
-              "%s: %02x/%02x\n"
-              "%s: %02x\n"
-              "%s: %02x\n"
-@@ -458,6 +507,8 @@ static ssize_t register_show(struct device *dev, 
-struct device_attribute *attr,
-              "%s: %02x\n"
-              "%s: %02x\n"
-              ,
-+            "DLL", d->dll,
-+            "DLM", d->dlm,
-              "IER", up->ier, p->serial_in(p, UART_IER),
-              "IIR", p->serial_in(p, UART_IIR),
-              "FCR", up->fcr,
-@@ -478,7 +529,10 @@ static ssize_t busy_show(struct device *dev, struct 
-device_attribute *attr,
-  {
-      struct dw8250_data *d = platform_get_drvdata(to_platform_device(dev));
-
--    return scnprintf(buf, PAGE_SIZE, "%lu\n", d->iir_busy_count);
-+    return scnprintf(buf, PAGE_SIZE, "%lu %lu %u\n",
-+             d->iir_busy_count,
-+             d->lcr_busy_count,
-+             d->last_loopback_waiting_time);
-  }
-  static DEVICE_ATTR_RO(busy);
-
-@@ -570,6 +624,7 @@ static int dw8250_probe(struct platform_device *pdev)
-      p->serial_out    = dw8250_serial_out;
-      p->set_ldisc    = dw8250_set_ldisc;
-      p->set_termios    = dw8250_set_termios;
-+    p->set_divisor    = dw8250_set_divisor;
-
-      p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
-      if (!p->membase)
+ 	/*
+ 	 * Set pm_runtime status as ACTIVE so that wakeup_irq gets
+ 	 * enabled/disabled from dev_pm_arm_wake_irq during system
 -- 
-2.25.1
-
-
+2.34.1
 
