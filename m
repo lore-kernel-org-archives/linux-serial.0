@@ -2,92 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D449C77B7F
-	for <linux-serial@archiver.kernel.org>; Sat,  6 May 2023 06:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E43B7C7EE22
+	for <linux-serial@archiver.kernel.org>; Sun,  7 May 2023 00:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbjEFGuq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 May 2023 02:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
+        id S231366AbjEGAdz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 May 2023 20:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbjEFGup (ORCPT
+        with ESMTP id S231359AbjEGAdr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 May 2023 02:50:45 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB56A5CB
-        for <linux-serial@vger.kernel.org>; Fri,  5 May 2023 23:50:43 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-965e4be7541so282082966b.1
-        for <linux-serial@vger.kernel.org>; Fri, 05 May 2023 23:50:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683355842; x=1685947842;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uyLSGcqzev4ScCUTVAy/dI0FShLpsKcG+iQhkbBmwu4=;
-        b=AlfRNVG3E3APA+Cf7R720DagAe1db7tpRUYFB5jhqr3xtQD0uysDqwcdi3u6Ezxk7m
-         KP70xR7fbiv48VXV98A86UvtqVHK01ERc2R5PuMt5hT6q540GxKOUFECRkrcrqYFdtUY
-         cOAVmo4HkSVubck+5re4/FrqcoCKARUE+PqsrOdHpoKh9Z5m+o5OqsVkQlCjK3h2zRyM
-         OPuhnNA5r1Z4mHkrQ5Sl7992aAFU/ZyrsLwxTCBDSOPtf2kNcElmYTi1qiJjkrlGxw5z
-         SGoZHEf/NoNhESk59YswB3fJz4QcGdJ3e+5zfmD7ixDyi5oA/5Be3+SfDfYZ1Zwn+5Pw
-         V6ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683355842; x=1685947842;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uyLSGcqzev4ScCUTVAy/dI0FShLpsKcG+iQhkbBmwu4=;
-        b=RyWiXz6XyPtQGt2D9YRrf3hNDqI99HmKNhUTQD4ChBUeWK/bidaxgf9/woayiPssJb
-         /kqCaKvuyFZvimMKoODXYR1HVfMTHPDOTTWQgP5ZT0pUNGHcpDXU0MU9OHiTDDDa3WLB
-         ulXGuRScBAFEPpcQDiNUk9EnRimORZn+4b50IR3PUXTnKT93BycMposlWZkABFtVGKuh
-         St09f9prgTVIB+gUC5jD+JyUX6AmWmgDapbwOzn+z1TiRvX5GLmY2FVuDOmD2VROspT2
-         4+7lZmt631l4zpQr9ysSYLjqYErOLpsfOubNgRWiOn6rRCLHHSehYB2VFJ1AddFh7eD1
-         v4Rg==
-X-Gm-Message-State: AC+VfDxpVREswnHXjbq+WFSeuAqoAjuMZNyD+2EHn7PbOU4hVWskT1ZN
-        T7sRfPpY4Ng4IefNSiOSbPQdFg==
-X-Google-Smtp-Source: ACHHUZ4qwZlWqW21bAjZx+NhonFjoZxHRzhnBe74050ohLqDg+tEhybkuwIbcn3+p0SMly0JESZ5CQ==
-X-Received: by 2002:a17:907:6d1f:b0:94e:f1b9:e933 with SMTP id sa31-20020a1709076d1f00b0094ef1b9e933mr3426437ejc.53.1683355842265;
-        Fri, 05 May 2023 23:50:42 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:efe5:7c03:a10a:7a40? ([2a02:810d:15c0:828:efe5:7c03:a10a:7a40])
-        by smtp.gmail.com with ESMTPSA id ia24-20020a170907a07800b00959b3c30f2csm1880807ejc.222.2023.05.05.23.50.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 May 2023 23:50:41 -0700 (PDT)
-Message-ID: <b799be60-0ba6-c856-517d-0b0ed3adeab7@linaro.org>
-Date:   Sat, 6 May 2023 08:50:40 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH v4 tty-next 1/2] dt-bindings: serial: ni,ni16650: add
- bindings
-Content-Language: en-US
-To:     Brenda Streiff <brenda.streiff@ni.com>
-Cc:     ilpo.jarvinen@linux.intel.com,
-        Gratian Crisan <gratian.crisan@ni.com>,
-        Jason Smith <jason.smith@ni.com>,
+        Sat, 6 May 2023 20:33:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D8B203E6;
+        Sat,  6 May 2023 17:33:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 199B8614A2;
+        Sun,  7 May 2023 00:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD06C433EF;
+        Sun,  7 May 2023 00:32:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1683419539;
+        bh=3p+9e8vGBlUdQVKw0AGlqTnNog2VVF6wtKKeITwhn4k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qAp0NbEZUAnGw3mQvlbP6eukkSuLCCX1t+kuaowa0U3zNSNqf2ZohO7sRYxGvYHCr
+         L/mbuIa/iW8tSTARme2PdnZfOV0GY6weA5N2kMHIcOmYx6udaoOKk8zgP7MvntG0HM
+         J9DvOXVMXew/M8QyabDV6tiXRbeiPJA1TLUnGkbHY/epVMvZY7yG/A/8K/OzDMPORE
+         V2AJKXVFdMKDtulrWuCZzCoP++T9qVsyxF8dIMMGRNCSeF4qM8yzXvl+YCRHrARkPd
+         7RxRobyRv+t2H8gKD9ypr5SdRGmah+wgPyA+kwZ7FcUlgLSJhhjNzXbvOA7boWRlPr
+         rX1GPy4ZKgR7w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Tony Lindgren <tony@atomide.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230505213850.829639-1-brenda.streiff@ni.com>
- <20230505213850.829639-2-brenda.streiff@ni.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230505213850.829639-2-brenda.streiff@ni.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
+        pmladek@suse.com, john.ogness@linutronix.de,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.3 23/24] serial: 8250: Reinit port->pm on port specific driver unbind
+Date:   Sat,  6 May 2023 20:30:19 -0400
+Message-Id: <20230507003022.4070535-23-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230507003022.4070535-1-sashal@kernel.org>
+References: <20230507003022.4070535-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05/05/2023 23:38, Brenda Streiff wrote:
-> Add bindings for the NI 16550 UART.
-> 
-> Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
-> Cc: Gratian Crisan <gratian.crisan@ni.com>
-> Cc: Jason Smith <jason.smith@ni.com>
-> ---
+From: Tony Lindgren <tony@atomide.com>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[ Upstream commit 04e82793f068d2f0ffe62fcea03d007a8cdc16a7 ]
 
-Best regards,
-Krzysztof
+When we unbind a serial port hardware specific 8250 driver, the generic
+serial8250 driver takes over the port. After that we see an oops about 10
+seconds later. This can produce the following at least on some TI SoCs:
+
+Unhandled fault: imprecise external abort (0x1406)
+Internal error: : 1406 [#1] SMP ARM
+
+Turns out that we may still have the serial port hardware specific driver
+port->pm in use, and serial8250_pm() tries to call it after the port
+specific driver is gone:
+
+serial8250_pm [8250_base] from uart_change_pm+0x54/0x8c [serial_base]
+uart_change_pm [serial_base] from uart_hangup+0x154/0x198 [serial_base]
+uart_hangup [serial_base] from __tty_hangup.part.0+0x328/0x37c
+__tty_hangup.part.0 from disassociate_ctty+0x154/0x20c
+disassociate_ctty from do_exit+0x744/0xaac
+do_exit from do_group_exit+0x40/0x8c
+do_group_exit from __wake_up_parent+0x0/0x1c
+
+Let's fix the issue by calling serial8250_set_defaults() in
+serial8250_unregister_port(). This will set the port back to using
+the serial8250 default functions, and sets the port->pm to point to
+serial8250_pm.
+
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20230418101407.12403-1-tony@atomide.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/8250/8250_core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index ab63c308be0a2..13bf535eedcd5 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1158,6 +1158,7 @@ void serial8250_unregister_port(int line)
+ 		uart->port.type = PORT_UNKNOWN;
+ 		uart->port.dev = &serial8250_isa_devs->dev;
+ 		uart->capabilities = 0;
++		serial8250_init_port(uart);
+ 		serial8250_apply_quirks(uart);
+ 		uart_add_one_port(&serial8250_reg, &uart->port);
+ 	} else {
+-- 
+2.39.2
 
