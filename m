@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E43B7C7EE22
-	for <linux-serial@archiver.kernel.org>; Sun,  7 May 2023 00:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDBEC77B75
+	for <linux-serial@archiver.kernel.org>; Sun,  7 May 2023 00:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbjEGAdz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 6 May 2023 20:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
+        id S231604AbjEGAet (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 6 May 2023 20:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbjEGAdr (ORCPT
+        with ESMTP id S231603AbjEGAeP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 6 May 2023 20:33:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D8B203E6;
-        Sat,  6 May 2023 17:33:30 -0700 (PDT)
+        Sat, 6 May 2023 20:34:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48A7203D2;
+        Sat,  6 May 2023 17:33:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 199B8614A2;
-        Sun,  7 May 2023 00:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD06C433EF;
-        Sun,  7 May 2023 00:32:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C3FD61475;
+        Sun,  7 May 2023 00:33:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18489C4339B;
+        Sun,  7 May 2023 00:33:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1683419539;
+        s=k20201202; t=1683419625;
         bh=3p+9e8vGBlUdQVKw0AGlqTnNog2VVF6wtKKeITwhn4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qAp0NbEZUAnGw3mQvlbP6eukkSuLCCX1t+kuaowa0U3zNSNqf2ZohO7sRYxGvYHCr
-         L/mbuIa/iW8tSTARme2PdnZfOV0GY6weA5N2kMHIcOmYx6udaoOKk8zgP7MvntG0HM
-         J9DvOXVMXew/M8QyabDV6tiXRbeiPJA1TLUnGkbHY/epVMvZY7yG/A/8K/OzDMPORE
-         V2AJKXVFdMKDtulrWuCZzCoP++T9qVsyxF8dIMMGRNCSeF4qM8yzXvl+YCRHrARkPd
-         7RxRobyRv+t2H8gKD9ypr5SdRGmah+wgPyA+kwZ7FcUlgLSJhhjNzXbvOA7boWRlPr
-         rX1GPy4ZKgR7w==
+        b=WRfSaCg8Gev+ay/K7omjbDrF524UeV9iL5+eM3gWNVxF76+GW73utMDXws+TCLeUq
+         nuLPLBq72r7jEgohQ7tnXZcMRIt2rOhW95zF2gRHMsF8SbudE5TezNllqODtdFoRQk
+         PiPtMsEfPk9bYHyhUYYv5nbRDIX3N64a9pTHzcua6g9OgPTCJSjAZ4hcoQjt6fHvNj
+         7sKlijokY3hg/8NBhprqsKlc3iYXC4p84VaMPYzarTP6BjWae85rHk3c3kyp379ETY
+         lsDiQaEl/HEqNl20hBsKLNcDZRcWtSr8nTtQvEiRQz4bDREFJeH3Lt8M0Q9lPRm1Wl
+         6xdvp8JmL/Seg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Tony Lindgren <tony@atomide.com>,
@@ -40,12 +40,12 @@ Cc:     Tony Lindgren <tony@atomide.com>,
         ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
         pmladek@suse.com, john.ogness@linutronix.de,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.3 23/24] serial: 8250: Reinit port->pm on port specific driver unbind
-Date:   Sat,  6 May 2023 20:30:19 -0400
-Message-Id: <20230507003022.4070535-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.2 19/20] serial: 8250: Reinit port->pm on port specific driver unbind
+Date:   Sat,  6 May 2023 20:32:34 -0400
+Message-Id: <20230507003237.4074305-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230507003022.4070535-1-sashal@kernel.org>
-References: <20230507003022.4070535-1-sashal@kernel.org>
+In-Reply-To: <20230507003237.4074305-1-sashal@kernel.org>
+References: <20230507003237.4074305-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
