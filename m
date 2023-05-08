@@ -2,228 +2,170 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9822EC77B7F
-	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 15:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 463C1C77B75
+	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 23:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234511AbjEHPmO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 May 2023 11:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
+        id S233238AbjEHXNx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 May 2023 19:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233475AbjEHPmL (ORCPT
+        with ESMTP id S230022AbjEHXNw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 May 2023 11:42:11 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ED18A43
-        for <linux-serial@vger.kernel.org>; Mon,  8 May 2023 08:42:09 -0700 (PDT)
+        Mon, 8 May 2023 19:13:52 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8406249FE;
+        Mon,  8 May 2023 16:13:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1683560529; x=1715096529;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=cXBCL8GteBF+l0TfDGtFNX7YYIHHX/+d+yQ1RMNgqjc=;
-  b=ANmYP2pw0RbG+8s3RxdNXc6O8pBrwmiW1puR8fJiBkA7alIF98cTsCnr
-   /CYgjkRYo9t6nV89vAwlRfSfld7oYYyitCJHX/qjONY08GZ0DMqOyJQhS
-   s4GFes0RKOsFmjX0SPWIreWovS3AC00A4PL6cUczja/vEQabD/nQw3mJj
-   zbj+5TlBgG1IuRYRs9gGnMdlXHbxJcmCS6pftoXpR19BNeYcJc4XyZn6U
-   GHg0vXpa2R3O6PdtXYIgjhRYDwdKos/c8vuEEjB12FIYb3jFtI8TOdq34
-   Og2e1yZBnY8np/lkn0H/nqPzulgZ7t7t8wK2JIGU+1M+fTtyBIK/fT4iF
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="334121690"
+  t=1683587630; x=1715123630;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UpsSTff8/0ZXEy+QYlfFYcdPyMTh1FDGgu5tOGHwm04=;
+  b=KvguI4bktPpyYQuKGuMO3HJJQ4z5GOEy6n5udFyl6S8YCz//4YKnqrdX
+   kThhm+btaG1KFbw9PjukUzBf4RCEEfCzoIVt6T8fAKPDaaHxfzkQV3iKY
+   tdpNj1sl9/viNGZsP9AE+HrRvBcEY4YsInuV0VE4Zi01EH+K7lcwi5pOI
+   KS4R68Uf3bNsFJ/sYYCyzf7HM+eNouswoRAGlcNwVZYNkrXFycdw4a+3T
+   evk2kWHkci2Hh4185evYnDACEH+ohKD0YABHNcO0VelsN1VaP07mshsKH
+   8Mh6LsKJkEhmzoTnSDa9RugSDsmHDTUlIRbdkWma3umzJtBdFeZ9Nj/Yh
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="351937836"
 X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="334121690"
+   d="scan'208";a="351937836"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 08:42:09 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 16:13:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="788154214"
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="788295124"
 X-IronPort-AV: E=Sophos;i="5.99,259,1677571200"; 
-   d="scan'208";a="788154214"
-Received: from cciobanu-mobl1.ger.corp.intel.com ([10.249.37.159])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 08:42:06 -0700
-Date:   Mon, 8 May 2023 18:42:04 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Shenwei Wang <shenwei.wang@nxp.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>, imx@lists.linux.dev,
-        linux-imx@nxp.com
-Subject: Re: [PATCH v3 1/1] tty: serial: fsl_lpuart: optimize the timer based
- EOP logic
-In-Reply-To: <20230508141038.979924-1-shenwei.wang@nxp.com>
-Message-ID: <31e2514b-a09d-64dd-5cfa-ad7faf4ba718@linux.intel.com>
-References: <20230508141038.979924-1-shenwei.wang@nxp.com>
+   d="scan'208";a="788295124"
+Received: from lkp-server01.sh.intel.com (HELO dea6d5a4f140) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 May 2023 16:13:46 -0700
+Received: from kbuild by dea6d5a4f140 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pwA37-0001SX-09;
+        Mon, 08 May 2023 23:13:45 +0000
+Date:   Tue, 9 May 2023 07:13:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v10 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <202305090752.w4XZxmsN-lkp@intel.com>
+References: <20230508110339.38699-1-tony@atomide.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230508110339.38699-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 8 May 2023, Shenwei Wang wrote:
+Hi Tony,
 
-> At low baud rates, the DMA transfer may end prematurely due to the timer,
-> even during an active transfer. This does not accurately simulate an EOP
-> event as intended. We expect the timer to only complete a DMA transfer
-> once the idle period satisfies a specified interval.
+kernel test robot noticed the following build warnings:
 
-This reorganization would perhaps explain the problem space better:
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.4-rc1 next-20230508]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-DMA transfer may end prematurely due to the DMA Rx timeout even during an 
-active transfer because a constant timeout does not accurately simulate an 
-EOP event. The timer should only complete a DMA transfer once the idle 
-period satisfies a specified interval which is baud rate dependant. 
-The problem has been observed with low baud rates but could occur also 
-with high baud rates.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-core-Start-managing-serial-controllers-to-enable-runtime-PM/20230508-190805
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20230508110339.38699-1-tony%40atomide.com
+patch subject: [PATCH v10 1/1] serial: core: Start managing serial controllers to enable runtime PM
+config: x86_64-randconfig-a001-20230508 (https://download.01.org/0day-ci/archive/20230509/202305090752.w4XZxmsN-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2f298f9dbe3a1d9550e1f15bb1415aeaf9ce4311
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Tony-Lindgren/serial-core-Start-managing-serial-controllers-to-enable-runtime-PM/20230508-190805
+        git checkout 2f298f9dbe3a1d9550e1f15bb1415aeaf9ce4311
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/tty/serial/
 
-...I would also open the EOP here too and not just in the comment below.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202305090752.w4XZxmsN-lkp@intel.com/
 
-> The patch checks the DMA residue count before copying data to the TTY
+All warnings (new ones prefixed by >>):
 
-Make the DMA Rx timeout baud rate dependent and check the DMA residue 
-count before copying data to the TTY
+>> drivers/tty/serial/serial_base_bus.c:97:13: warning: variable 'id' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           } else if (type == &serial_port_type) {
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/serial_base_bus.c:102:77: note: uninitialized use occurs here
+           err = dev_set_name(&sbd->dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
+                                                                                      ^~
+   drivers/tty/serial/serial_base_bus.c:97:9: note: remove the 'if' if its condition is always true
+           } else if (type == &serial_port_type) {
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/tty/serial/serial_base_bus.c:83:13: note: initialize the variable 'id' to silence this warning
+           int err, id;
+                      ^
+                       = 0
+   1 warning generated.
 
-> buffer. If the residue count remains unchanged since the last interrupt,
-> that indicates no new data was received. In this case, the DMA should
-> complete as an EOP event. Otherwise, it indicates that new data were
-> received during the interval, the EOP condition was not met and the
-> timer restarted.
 
-Otherwise, new data was received during the interval and the EOP condition 
-is not met so restart the DMA Rx timeout.
+vim +97 drivers/tty/serial/serial_base_bus.c
 
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
-> ---
-> V3:
->   - change the rx_watermark from 8 to 7 because the dma request is
->     generated when the fifo level is greater than this value.
-> V2:
->   - this version is to address the review feedback from Ilpo.
->   - reset the last_residue when rx dma starts.
->   - simplified the character counting in the RX circular buffer.
->   - use max_t() and DIV_ROUND_UP()
-> 
->  drivers/tty/serial/fsl_lpuart.c | 51 ++++++++++++++++++++++++++++++---
->  1 file changed, 47 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index c91916e13648..0ee1161bc789 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -238,6 +238,7 @@
-> 
->  /* Rx DMA timeout in ms, which is used to calculate Rx ring buffer size */
->  #define DMA_RX_TIMEOUT		(10)
-> +#define DMA_RX_IDLE_CHARS	(8)
->  #define UART_AUTOSUSPEND_TIMEOUT	3000
-> 
->  #define DRIVER_NAME	"fsl-lpuart"
-> @@ -282,6 +283,7 @@ struct lpuart_port {
->  	struct scatterlist	rx_sgl, tx_sgl[2];
->  	struct circ_buf		rx_ring;
->  	int			rx_dma_rng_buf_len;
-> +	int                     last_residue;
->  	unsigned int		dma_tx_nents;
->  	wait_queue_head_t	dma_wait;
->  	bool			is_cs7; /* Set to true when character size is 7 */
-> @@ -331,7 +333,7 @@ static struct lpuart_soc_data imx8qxp_data = {
->  	.devtype = IMX8QXP_LPUART,
->  	.iotype = UPIO_MEM32,
->  	.reg_off = IMX_REG_OFF,
-> -	.rx_watermark = 31,
-> +	.rx_watermark = 7, /* A lower watermark is ideal for low baud rates. */
->  };
->  static struct lpuart_soc_data imxrt1050_data = {
->  	.devtype = IMXRT1050_LPUART,
-> @@ -1255,6 +1257,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
->  		sport->port.icount.rx += copied;
->  	}
-> 
-> +	sport->last_residue = state.residue;
-> +
->  exit:
->  	dma_sync_sg_for_device(chan->device->dev, &sport->rx_sgl, 1,
->  			       DMA_FROM_DEVICE);
-> @@ -1272,11 +1276,37 @@ static void lpuart_dma_rx_complete(void *arg)
->  	lpuart_copy_rx_to_tty(sport);
->  }
-> 
-> +/*
-> + * Timer function to simulate the hardware EOP (End Of Package) event.
-> + * The timer callback is to check for new RX data and copy to TTY buffer.
-> + * If no new data are received since last interval, the EOP condition is
-> + * met, complete the DMA transfer by copying the data. Otherwise, just
-> + * restart timer.
-> + */
->  static void lpuart_timer_func(struct timer_list *t)
->  {
->  	struct lpuart_port *sport = from_timer(sport, t, lpuart_timer);
-> +	struct dma_chan *chan = sport->dma_rx_chan;
-> +	struct circ_buf *ring = &sport->rx_ring;
-> +	struct dma_tx_state state;
-> +	unsigned long flags;
-> +	int count;
-> 
-> -	lpuart_copy_rx_to_tty(sport);
-> +	dmaengine_tx_status(chan, sport->dma_rx_cookie, &state);
-> +	ring->head = sport->rx_sgl.length - state.residue;
-> +	count = CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length);
-> +
-> +	/* Check if new data received before copying */
-> +	if ((count != 0) && (sport->last_residue == state.residue))
-> +		lpuart_copy_rx_to_tty(sport);
-> +	else
-> +		mod_timer(&sport->lpuart_timer,
-> +				jiffies + sport->dma_rx_timeout);
-> +
-> +	if (spin_trylock_irqsave(&sport->port.lock, flags)) {
-> +		sport->last_residue = state.residue;
-> +		spin_unlock_irqrestore(&sport->port.lock, flags);
-> +	}
->  }
-> 
->  static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
-> @@ -1297,9 +1327,21 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
->  	 */
->  	sport->rx_dma_rng_buf_len = (DMA_RX_TIMEOUT * baud /  bits / 1000) * 2;
->  	sport->rx_dma_rng_buf_len = (1 << fls(sport->rx_dma_rng_buf_len));
-> +	sport->rx_dma_rng_buf_len = max_t(int,
-> +			sport->rxfifo_size * 2,
-> +			sport->rx_dma_rng_buf_len);
-> +	/*
-> +	 * Keep this condition check in case rxfifo_size is unavailable
-> +	 * for some SoCs.
-> +	 */
->  	if (sport->rx_dma_rng_buf_len < 16)
->  		sport->rx_dma_rng_buf_len = 16;
-> 
-> +	sport->last_residue = 0;
-> +	sport->dma_rx_timeout = msecs_to_jiffies(
-> +		DIV_ROUND_UP(sport->port.frame_time * DMA_RX_IDLE_CHARS,
-> +		NSEC_PER_MSEC));
-
-nsecs_to_jiffies() also exists.
+    77	
+    78	static struct device *serial_base_device_add(struct uart_port *port,
+    79						     struct device *parent_dev,
+    80						     const struct device_type *type)
+    81	{
+    82		struct serial_base_device *sbd;
+    83		int err, id;
+    84	
+    85		sbd = kzalloc(sizeof(*sbd), GFP_KERNEL);
+    86		if (!sbd)
+    87			return NULL;
+    88	
+    89		device_initialize(&sbd->dev);
+    90		sbd->dev.type = type;
+    91		sbd->dev.parent = parent_dev;
+    92		sbd->dev.bus = &serial_base_bus_type;
+    93		sbd->dev.release = &serial_base_release;
+    94	
+    95		if (type == &serial_ctrl_type) {
+    96			id = port->ctrl_id;
+  > 97		} else if (type == &serial_port_type) {
+    98			id = port->line;
+    99			sbd->port = port;
+   100		}
+   101	
+   102		err = dev_set_name(&sbd->dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
+   103		if (err)
+   104			goto err_free_dev;
+   105	
+   106		err = device_add(&sbd->dev);
+   107		if (err)
+   108			goto err_put_device;
+   109	
+   110		return &sbd->dev;
+   111	
+   112	err_put_device:
+   113		put_device(&sbd->dev);
+   114	
+   115	err_free_dev:
+   116		kfree(sbd);
+   117	
+   118		return NULL;
+   119	}
+   120	
 
 -- 
- i.
-
-> +
->  	ring->buf = kzalloc(sport->rx_dma_rng_buf_len, GFP_ATOMIC);
->  	if (!ring->buf)
->  		return -ENOMEM;
-> @@ -1687,12 +1729,13 @@ static void lpuart_rx_dma_startup(struct lpuart_port *sport)
->  	if (!sport->dma_rx_chan)
->  		goto err;
-> 
-> +	/* set default Rx DMA timeout */
-> +	sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
-> +
->  	ret = lpuart_start_rx_dma(sport);
->  	if (ret)
->  		goto err;
-> 
-> -	/* set Rx DMA timeout */
-> -	sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
->  	if (!sport->dma_rx_timeout)
->  		sport->dma_rx_timeout = 1;
-> 
-> --
-> 2.34.1
-> 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
