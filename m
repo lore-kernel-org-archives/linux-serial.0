@@ -2,158 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB9AC77B73
-	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 08:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B1DC77B7F
+	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 09:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233587AbjEHIVH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 May 2023 04:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45544 "EHLO
+        id S233710AbjEHJzs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 May 2023 05:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233655AbjEHIUz (ORCPT
+        with ESMTP id S232753AbjEHJzr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 May 2023 04:20:55 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB4401F4BF;
-        Mon,  8 May 2023 01:20:46 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 675FD8111;
-        Mon,  8 May 2023 08:20:44 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
+        Mon, 8 May 2023 05:55:47 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E382ABE2;
+        Mon,  8 May 2023 02:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683539746; x=1715075746;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=WTX1dz7lHf4L+q8fzbM1rRR3mOShmgZOjskHSySl7QI=;
+  b=QME4RNf0BNSE6SzV8Xf3CyGjrDUt3YxJllz6VJurxALe1JrkBX1qvbGj
+   BRxIrD6NZ9FU71ThbaCUEMOj+jOmfcQF4c/bjwI8Z47VMka5eY3/0vAY5
+   7B+FSoItRVvSYzkIdUl3BMemMFb4ZGz4bdBxXFEWjaVbpz8AiMWhnGm+k
+   sAQL1wNMVXJ1iHD95Yd9Ded1dNnPqhspESqJbyXlM5G4eCAG2rcFBiE5D
+   /xV2sHW6Gc0LsW7sCIzIwoQh4Fejt3GJfobF7yrF88SFV5qn3M8JPyeIN
+   rykvu1CVRF9E3w2JZ6vaf0fype3HNUgvwDbOGyAUu+YHWPZ+g+5RH8zni
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="338826299"
+X-IronPort-AV: E=Sophos;i="5.99,258,1677571200"; 
+   d="scan'208";a="338826299"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 02:55:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10703"; a="842634466"
+X-IronPort-AV: E=Sophos;i="5.99,258,1677571200"; 
+   d="scan'208";a="842634466"
+Received: from cciobanu-mobl1.ger.corp.intel.com ([10.249.37.159])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 02:55:41 -0700
+Date:   Mon, 8 May 2023 12:55:38 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>, Johan Hovold <johan@kernel.org>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] serial: 8250: omap: Shut down on remove for console uart
-Date:   Mon,  8 May 2023 11:20:14 +0300
-Message-Id: <20230508082014.23083-5-tony@atomide.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230508082014.23083-1-tony@atomide.com>
-References: <20230508082014.23083-1-tony@atomide.com>
+        linux-omap@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/4] serial: 8250: omap: Fix freeing of resources on
+ failed register
+In-Reply-To: <20230508082014.23083-2-tony@atomide.com>
+Message-ID: <9ea78388-86f-736b-e46-b3bc6223ddbe@linux.intel.com>
+References: <20230508082014.23083-1-tony@atomide.com> <20230508082014.23083-2-tony@atomide.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="8323329-543991086-1683538786=:1790"
+Content-ID: <16ee339f-7443-12e0-5159-93dbbb6ea79@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When unbinding the console uart, we want to power down the uart hardware
-on remove. For the console uart, the normal shutdown path will never get
-called as the cons_filp stays open. Let's rearrange the dma related
-functions a bit so we can call driver shutdown also on console uart rebind.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Currently we set up->dma on probe, but that causes issues calling
-omap_8250_shutdown() on remove. The dma startup will not get called on
-the next rebind as we still have up->dma set from probe.
+--8323329-543991086-1683538786=:1790
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <e92d2f17-9e4c-c55c-9e41-e213b929c4d0@linux.intel.com>
 
-Note that serial8250_release_dma() already checks for dma so we can
-remove the check for it in 8205_omap driver.
+On Mon, 8 May 2023, Tony Lindgren wrote:
 
-With these changes we also avoid hogging dma virtual channels for the
-unused uarts that may be limited on some devices.
+> If serial8250_register_8250_port() fails, the SoC can hang as the
+> deferred PMQoS work will still run as is not flushed and removed.
+> 
+> Fixes: 61929cf0169d ("tty: serial: Add 8250-core based omap driver")
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1532,7 +1532,9 @@ static int omap8250_probe(struct platform_device *pdev)
+>  err:
+>  	pm_runtime_dont_use_autosuspend(&pdev->dev);
+>  	pm_runtime_put_sync(&pdev->dev);
+> +	flush_work(&priv->qos_work);
+>  	pm_runtime_disable(&pdev->dev);
+> +	cpu_latency_qos_remove_request(&priv->pm_qos_request);
+>  	return ret;
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_omap.c | 36 ++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 16 deletions(-)
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -679,6 +679,7 @@ static int omap_8250_startup(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct omap8250_priv *priv = port->private_data;
-+	struct uart_8250_dma *dma = &priv->omap8250_dma;
- 	int ret;
- 
- 	if (priv->wakeirq) {
-@@ -697,16 +698,16 @@ static int omap_8250_startup(struct uart_port *port)
- 	up->msr_saved_flags = 0;
- 
- 	/* Disable DMA for console UART */
--	if (uart_console(port))
--		up->dma = NULL;
--
--	if (up->dma) {
-+	if (dma->fn && !uart_console(port)) {
-+		up->dma = &priv->omap8250_dma;
- 		ret = serial8250_request_dma(up);
- 		if (ret) {
- 			dev_warn_ratelimited(port->dev,
- 					     "failed to request DMA\n");
- 			up->dma = NULL;
- 		}
-+	} else {
-+		up->dma = NULL;
- 	}
- 
- 	up->ier = UART_IER_RLSI | UART_IER_RDI;
-@@ -752,8 +753,8 @@ static void omap_8250_shutdown(struct uart_port *port)
- 	disable_irq_nosync(up->port.irq);
- 	dev_pm_clear_wake_irq(port->dev);
- 
--	if (up->dma)
--		serial8250_release_dma(up);
-+	serial8250_release_dma(up);
-+	up->dma = NULL;
- 
- 	/*
- 	 * Disable break condition and FIFOs
-@@ -1499,24 +1500,24 @@ static int omap8250_probe(struct platform_device *pdev)
- 	ret = of_property_count_strings(np, "dma-names");
- 	if (ret == 2) {
- 		struct omap8250_dma_params *dma_params = NULL;
-+		struct uart_8250_dma *dma = &priv->omap8250_dma;
- 
--		up.dma = &priv->omap8250_dma;
--		up.dma->fn = the_no_dma_filter_fn;
--		up.dma->tx_dma = omap_8250_tx_dma;
--		up.dma->rx_dma = omap_8250_rx_dma;
-+		dma->fn = the_no_dma_filter_fn;
-+		dma->tx_dma = omap_8250_tx_dma;
-+		dma->rx_dma = omap_8250_rx_dma;
- 		if (pdata)
- 			dma_params = pdata->dma_params;
- 
- 		if (dma_params) {
--			up.dma->rx_size = dma_params->rx_size;
--			up.dma->rxconf.src_maxburst = dma_params->rx_trigger;
--			up.dma->txconf.dst_maxburst = dma_params->tx_trigger;
-+			dma->rx_size = dma_params->rx_size;
-+			dma->rxconf.src_maxburst = dma_params->rx_trigger;
-+			dma->txconf.dst_maxburst = dma_params->tx_trigger;
- 			priv->rx_trigger = dma_params->rx_trigger;
- 			priv->tx_trigger = dma_params->tx_trigger;
- 		} else {
--			up.dma->rx_size = RX_TRIGGER;
--			up.dma->rxconf.src_maxburst = RX_TRIGGER;
--			up.dma->txconf.dst_maxburst = TX_TRIGGER;
-+			dma->rx_size = RX_TRIGGER;
-+			dma->rxconf.src_maxburst = RX_TRIGGER;
-+			dma->txconf.dst_maxburst = TX_TRIGGER;
- 		}
- 	}
- #endif
-@@ -1550,12 +1551,15 @@ static int omap8250_probe(struct platform_device *pdev)
- static int omap8250_remove(struct platform_device *pdev)
- {
- 	struct omap8250_priv *priv = platform_get_drvdata(pdev);
-+	struct uart_8250_port *up;
- 	int err;
- 
- 	err = pm_runtime_resume_and_get(&pdev->dev);
- 	if (err)
- 		return err;
- 
-+	up = serial8250_get_port(priv->line);
-+	omap_8250_shutdown(&up->port);
- 	serial8250_unregister_port(priv->line);
- 	priv->line = -ENODEV;
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+An unrelated comment to the patch itself, there seems to be somewhat 
+handwavy and possibly wrong calculation for the pm qos latency. First of 
+all, I think it would want something based on port->frame_time, and I'm 
+far from convinced that 64 is right as it matches FIFO size which doesn't 
+feel correct for a wakeup related time.
+
 -- 
-2.40.1
+ i.
+--8323329-543991086-1683538786=:1790--
