@@ -2,86 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3237C7EE2A
-	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 03:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F1AC77B75
+	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 03:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232024AbjEHD0g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 7 May 2023 23:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
+        id S232238AbjEHD0m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 7 May 2023 23:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbjEHD0d (ORCPT
+        with ESMTP id S231609AbjEHD0f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 7 May 2023 23:26:33 -0400
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D9CA5E9;
-        Sun,  7 May 2023 20:26:32 -0700 (PDT)
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-54cbb666aa5so2163309eaf.1;
-        Sun, 07 May 2023 20:26:32 -0700 (PDT)
+        Sun, 7 May 2023 23:26:35 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2A79ECD;
+        Sun,  7 May 2023 20:26:34 -0700 (PDT)
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-38de3338abeso2097306b6e.1;
+        Sun, 07 May 2023 20:26:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683516391; x=1686108391;
+        d=1e100.net; s=20221208; t=1683516394; x=1686108394;
         h=date:subject:message-id:references:in-reply-to:cc:to:from
          :mime-version:content-transfer-encoding:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=GUP740VSIFLDV8rZCQ5oBsU29cPyJ7u+vd58HVBat4Y=;
-        b=WNg9LdmW9hKC+3u6qdtyh03vW/t+SFJlh0j+umH8H3Avh7EUoTS/plV7eL2OM81sSc
-         0Uzp9qtkax88v1YerIAH69Zz0Ekdh09zY7/vr9P2/f70iWMX2+samMypIVGXmYI+eWSU
-         xe394LkK6rK5LqC2gUC6xx0036/1ru9TttzsGbcg7TSAhgS/WoUROAE4KoVvwbrGA2+9
-         QsoDyB8yBCQkeQcNj0B8oEDOHU4Htkw4N985DL55wOWDARWvX8m+AvW6033gz/1WCSt2
-         Tax5sg0HfW0rCsDxCCZRRzMmLBx+NCLAA63bAiVYALm6GnXAo9nT/8XNcJEcbojHZAGU
-         Tvrg==
-X-Gm-Message-State: AC+VfDyDp4JQqDDOvSoDHCQbb1Tfr+MKDDOJcH50KN1Vr1kRo8zMncjq
-        0p3WvaW9VVOplNVIFJvVdf9ZSsiUDnqB
-X-Google-Smtp-Source: ACHHUZ59A+v/ZumD/ssBM+TZ58XgiyDzEywM9UukDF60uWTxIK5s4tu0gz+Y+rdJF7rmlB0m0eKp1A==
-X-Received: by 2002:a05:6808:251:b0:38e:8e30:677d with SMTP id m17-20020a056808025100b0038e8e30677dmr4240684oie.3.1683516391495;
-        Sun, 07 May 2023 20:26:31 -0700 (PDT)
+        bh=qOB4cMVMck53fRMNOsixuHMoaFEzDyEqYLNlrgAaE6E=;
+        b=ecGvUzGanM1X3TXxTfk7HdgtfyEXig6iNdhwDn/89C/OCRsqPQ5Y+dEafzUWL1LGFn
+         3dRE3dPYiT8bDXFocgCPpLgyMyEUtY1XdY/9CxxDqrrrWJ0aTB5UtRAbJEIPmfOpuauB
+         FkjDNIi9lClkgOGPwfNaG7LP/7OQ5x5i3wtiZwwqZNxH2tC/gzgjM73whj9SWw1/JflT
+         2zYjLIRfxyK68XLF5Mx2A2ripcaWV5jXC4fFqharfprIC1fh6rWpTSW57Vd0ed9vLWA5
+         Ul4RAPosaUBkLUjtRdd3Ujif96K9qFP+jUclT5fjcZu1wdELx++TR7s+uiyWuAdIBCok
+         EThg==
+X-Gm-Message-State: AC+VfDw39GPOdAzP4h8TdLrK7GHLUMuPbi54wmzP61LDxFhnv4CxNhBK
+        1qDuBv1xOBjDk/tptVDoJQ==
+X-Google-Smtp-Source: ACHHUZ5sEqhXlV8uwwweYHNv2XwKFWmslbtTAH8WEWZjeUkCj9PxKq14Z05hVAe+wocpSM4YCZ2saw==
+X-Received: by 2002:aca:2b06:0:b0:38c:11b3:a397 with SMTP id i6-20020aca2b06000000b0038c11b3a397mr3874384oik.14.1683516393616;
+        Sun, 07 May 2023 20:26:33 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id fe9-20020a0568082b0900b0038bb2f60064sm5199849oib.30.2023.05.07.20.26.29
+        by smtp.gmail.com with ESMTPSA id y15-20020a4ae70f000000b0054c7a08d4casm1002976oou.38.2023.05.07.20.26.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 May 2023 20:26:30 -0700 (PDT)
-Received: (nullmailer pid 4154764 invoked by uid 1000);
+        Sun, 07 May 2023 20:26:32 -0700 (PDT)
+Received: (nullmailer pid 4154768 invoked by uid 1000);
         Mon, 08 May 2023 03:26:27 -0000
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
 From:   Rob Herring <robh@kernel.org>
 To:     Jacky Huang <ychuang570808@gmail.com>
-Cc:     tmaimon77@gmail.com, mjchen@nuvoton.com,
+Cc:     p.zabel@pengutronix.de, arnd@arndb.de, jirislaby@kernel.org,
+        schung@nuvoton.com, tmaimon77@gmail.com,
+        devicetree@vger.kernel.org, catalin.marinas@arm.com,
+        gregkh@linuxfoundation.org, sboyd@kernel.org,
+        linux-serial@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        gregkh@linuxfoundation.org, catalin.marinas@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        mturquette@baylibre.com, linux-kernel@vger.kernel.org,
-        p.zabel@pengutronix.de, krzysztof.kozlowski+dt@linaro.org,
-        sboyd@kernel.org, will@kernel.org, schung@nuvoton.com,
-        robh+dt@kernel.org, jirislaby@kernel.org, arnd@arndb.de,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        Jacky Huang <ychuang3@nuvoton.com>, lee@kernel.org
-In-Reply-To: <20230508025936.36776-5-ychuang570808@gmail.com>
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        will@kernel.org, Jacky Huang <ychuang3@nuvoton.com>,
+        lee@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, mjchen@nuvoton.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20230508025936.36776-7-ychuang570808@gmail.com>
 References: <20230508025936.36776-1-ychuang570808@gmail.com>
- <20230508025936.36776-5-ychuang570808@gmail.com>
-Message-Id: <168351638608.4154679.2636482702680796849.robh@kernel.org>
-Subject: Re: [PATCH v10 04/10] dt-bindings: reset: nuvoton: Document ma35d1
- reset control
+ <20230508025936.36776-7-ychuang570808@gmail.com>
+Message-Id: <168351638748.4154745.16515916544783600377.robh@kernel.org>
+Subject: Re: [PATCH v10 06/10] dt-bindings: serial: Document ma35d1 uart
+ controller
 Date:   Sun, 07 May 2023 22:26:27 -0500
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On Mon, 08 May 2023 02:59:30 +0000, Jacky Huang wrote:
+On Mon, 08 May 2023 02:59:32 +0000, Jacky Huang wrote:
 > From: Jacky Huang <ychuang3@nuvoton.com>
 > 
-> Add the dt-bindings header for Nuvoton ma35d1, that gets shared
-> between the reset controller and reset references in the dts.
-> Add documentation to describe nuvoton ma35d1 reset driver.
+> Add documentation that describes the nuvoton ma35d1 UART driver bindings.
 > 
 > Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  .../bindings/reset/nuvoton,ma35d1-reset.yaml  |  45 ++++++++
->  .../dt-bindings/reset/nuvoton,ma35d1-reset.h  | 108 ++++++++++++++++++
->  2 files changed, 153 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/reset/nuvoton,ma35d1-reset.yaml
->  create mode 100644 include/dt-bindings/reset/nuvoton,ma35d1-reset.h
+>  .../serial/nuvoton,ma35d1-serial.yaml         | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -96,12 +93,19 @@ dtschema/dtc warnings/errors:
 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/media/i2c/ovti,ov2685.yaml
 /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie-ep.example.dtb: pcie-ep@33800000: Unevaluated properties are not allowed ('assigned-clock-parents', 'assigned-clock-rates', 'assigned-clocks' were unexpected)
 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pci/fsl,imx6q-pcie-ep.yaml
+Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.example.dts:25:18: fatal error: dt-bindings/clock/nuvoton,ma35d1-clk.h: No such file or directory
+   25 |         #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:419: Documentation/devicetree/bindings/serial/nuvoton,ma35d1-serial.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1512: dt_binding_check] Error 2
 
 doc reference errors (make refcheckdocs):
 Documentation/usb/gadget_uvc.rst: Documentation/userspace-api/media/v4l/pixfmt-packed.yuv.rst
 MAINTAINERS: Documentation/devicetree/bindings/pwm/pwm-apple.yaml
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230508025936.36776-5-ychuang570808@gmail.com
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230508025936.36776-7-ychuang570808@gmail.com
 
 The base for the series is generally the latest rc1. A different dependency
 should be noted in *this* patch.
