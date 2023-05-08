@@ -2,70 +2,157 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5238C77B73
-	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 08:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC932C7EE2A
+	for <linux-serial@archiver.kernel.org>; Mon,  8 May 2023 08:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233698AbjEHIUs convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
+        id S233659AbjEHIUs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 8 May 2023 04:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233496AbjEHIUm (ORCPT
+        with ESMTP id S233658AbjEHIUn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 May 2023 04:20:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C805E1CFE2
-        for <linux-serial@vger.kernel.org>; Mon,  8 May 2023 01:20:40 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1pvw6S-0007dD-75; Mon, 08 May 2023 10:20:16 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1pvw6P-001wiy-2O; Mon, 08 May 2023 10:20:13 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1pvw6O-00053V-9l; Mon, 08 May 2023 10:20:12 +0200
-Message-ID: <3d46c5db402fc8c5edb60e614974a7709065fc34.camel@pengutronix.de>
-Subject: Re: [PATCH v10 09/10] reset: Add Nuvoton ma35d1 reset driver support
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        tmaimon77@gmail.com, catalin.marinas@arm.com, will@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, arnd@arndb.de, schung@nuvoton.com,
-        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-Date:   Mon, 08 May 2023 10:20:12 +0200
-In-Reply-To: <20230508025936.36776-10-ychuang570808@gmail.com>
-References: <20230508025936.36776-1-ychuang570808@gmail.com>
-         <20230508025936.36776-10-ychuang570808@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1+deb11u2 
+        Mon, 8 May 2023 04:20:43 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49C0E1E98E;
+        Mon,  8 May 2023 01:20:41 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 198178111;
+        Mon,  8 May 2023 08:20:38 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/4] serial: 8250: omap: Fix life cycle issues for interrupt handlers
+Date:   Mon,  8 May 2023 11:20:13 +0300
+Message-Id: <20230508082014.23083-4-tony@atomide.com>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230508082014.23083-1-tony@atomide.com>
+References: <20230508082014.23083-1-tony@atomide.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mo, 2023-05-08 at 02:59 +0000, Jacky Huang wrote:
-> From: Jacky Huang <ychuang3@nuvoton.com>
-> 
-> This driver supports individual IP reset for ma35d1. The reset
-> control registers is a subset of system control registers.
-> 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+We have the struct uart_8250_port instance recycled on device rebind while
+the struct omap8250_priv instance is not. For the console uart,
+__tty_hangup() does not call tty->ops->hangup() as cons_filp stays open,
+and uart shutdown won't get called. This means we have a stale
+priv->wakeirq handler around after unbind, and port->irq is not freed on
+unbind.
 
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+There's no need to claim the interrupts on startup. We can fix this and
+simplify the driver a bit by claiming the interrupts in probe, and clearing
+them on remove. For the device interrupt, we can use devm_request_irq().
 
-regards
-Philipp
+To do this, we change omap8250_irq() to use struct omap8250_priv data
+directly so we don't have to wait for the assigned port from
+serial8250_register_8250_port().
 
+We must also drop IRQF_SHARED to set IRQ_NOAUTOEN to avoid spurious
+interrupts until the port has been registered. There's no need for
+IRQF_SHARED for 8250_omap, the serial port interrupt lines are dedicated
+lines.
+
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 33 ++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -623,9 +623,9 @@ static int omap_8250_dma_handle_irq(struct uart_port *port);
+ 
+ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ {
+-	struct uart_port *port = dev_id;
+-	struct omap8250_priv *priv = port->private_data;
+-	struct uart_8250_port *up = up_to_u8250p(port);
++	struct omap8250_priv *priv = dev_id;
++	struct uart_8250_port *up = serial8250_get_port(priv->line);
++	struct uart_port *port = &up->port;
+ 	unsigned int iir, lsr;
+ 	int ret;
+ 
+@@ -709,11 +709,6 @@ static int omap_8250_startup(struct uart_port *port)
+ 		}
+ 	}
+ 
+-	ret = request_irq(port->irq, omap8250_irq, IRQF_SHARED,
+-			  dev_name(port->dev), port);
+-	if (ret < 0)
+-		goto err;
+-
+ 	up->ier = UART_IER_RLSI | UART_IER_RDI;
+ 	serial_out(up, UART_IER, up->ier);
+ 
+@@ -730,14 +725,11 @@ static int omap_8250_startup(struct uart_port *port)
+ 	if (up->dma && !(priv->habit & UART_HAS_EFR2))
+ 		up->dma->rx_dma(up);
+ 
++	enable_irq(up->port.irq);
++
+ 	pm_runtime_mark_last_busy(port->dev);
+ 	pm_runtime_put_autosuspend(port->dev);
+ 	return 0;
+-err:
+-	pm_runtime_mark_last_busy(port->dev);
+-	pm_runtime_put_autosuspend(port->dev);
+-	dev_pm_clear_wake_irq(port->dev);
+-	return ret;
+ }
+ 
+ static void omap_8250_shutdown(struct uart_port *port)
+@@ -757,6 +749,8 @@ static void omap_8250_shutdown(struct uart_port *port)
+ 
+ 	up->ier = 0;
+ 	serial_out(up, UART_IER, 0);
++	disable_irq_nosync(up->port.irq);
++	dev_pm_clear_wake_irq(port->dev);
+ 
+ 	if (up->dma)
+ 		serial8250_release_dma(up);
+@@ -770,8 +764,6 @@ static void omap_8250_shutdown(struct uart_port *port)
+ 
+ 	pm_runtime_mark_last_busy(port->dev);
+ 	pm_runtime_put_autosuspend(port->dev);
+-	free_irq(port->irq, port);
+-	dev_pm_clear_wake_irq(port->dev);
+ }
+ 
+ static void omap_8250_throttle(struct uart_port *port)
+@@ -1451,8 +1443,6 @@ static int omap8250_probe(struct platform_device *pdev)
+ 				 &up.overrun_backoff_time_ms) != 0)
+ 		up.overrun_backoff_time_ms = 0;
+ 
+-	priv->wakeirq = irq_of_parse_and_map(np, 1);
+-
+ 	pdata = of_device_get_match_data(&pdev->dev);
+ 	if (pdata)
+ 		priv->habit |= pdata->habit;
+@@ -1530,6 +1520,15 @@ static int omap8250_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ #endif
++
++	irq_set_status_flags(irq, IRQ_NOAUTOEN);
++	ret = devm_request_irq(&pdev->dev, irq, omap8250_irq, 0,
++			       dev_name(&pdev->dev), priv);
++	if (ret < 0)
++		return ret;
++
++	priv->wakeirq = irq_of_parse_and_map(np, 1);
++
+ 	ret = serial8250_register_8250_port(&up);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "unable to register 8250 port\n");
+-- 
+2.40.1
