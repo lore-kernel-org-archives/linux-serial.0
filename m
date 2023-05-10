@@ -2,172 +2,156 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE17C77B75
-	for <linux-serial@archiver.kernel.org>; Tue,  9 May 2023 19:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6498DC7EE26
+	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 01:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbjEITKk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 May 2023 15:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        id S229737AbjEJB1C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 9 May 2023 21:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbjEITKf (ORCPT
+        with ESMTP id S230316AbjEJB1B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 May 2023 15:10:35 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B04340C9;
-        Tue,  9 May 2023 12:10:31 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 349ER8Ym002726;
-        Tue, 9 May 2023 19:10:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2023-03-30;
- bh=ewPY1TNUNNQgf5lnWkZB2J41Mv5DBP76uVt2kOutHyE=;
- b=DFsTKNcwX3Y9/MFZ//7eKUVjY0YvMazqyJiJDMZDmVCGWOhD25YJPowySiyT0q1aCJjL
- Fq7QlvHykp/F+mxu735tIQFpsz0hQZ7n1jMUull1sMF2tnPVOa4BOLxe5z7ljXdKV7bS
- 63WfomRETDyI2UhhHfstMpqqTHAAHyoAfDCHEaaMFIe33KdssHQiPLWM8zvLRu6W3J+i
- gYHnYogeTugaF/KV13UK8NOPiWsuVurKtnC6oSb3OEadaINCd3WKt09bOgNVB4AmwgCF
- G0iXfEWF1BaOzinJNmkG9AP/01nos894+qUO3FJ9p3C5nH+g9EgYVxGo1mv9NwRv3mxW bw== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3qf77c2qp3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 09 May 2023 19:10:11 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 349I0qWa002118;
-        Tue, 9 May 2023 19:10:11 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3qf81eu3en-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 09 May 2023 19:10:11 +0000
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 349J8CFi033427;
-        Tue, 9 May 2023 19:10:10 GMT
-Received: from gkennedy-linux.us.oracle.com (gkennedy-linux.us.oracle.com [10.152.170.45])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3qf81eu3de-1;
-        Tue, 09 May 2023 19:10:10 +0000
-From:   George Kennedy <george.kennedy@oracle.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     george.kennedy@oracle.com, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux@weissschuh.net,
-        regressions@lists.linux.dev
-Subject: [PATCH] vc_screen: reload load of struct vc_data pointer in vcs_write() to avoid UAF
-Date:   Tue,  9 May 2023 14:08:39 -0500
-Message-Id: <1683659319-29701-1-git-send-email-george.kennedy@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-09_12,2023-05-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0 mlxscore=0
- bulkscore=0 suspectscore=0 malwarescore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2304280000
- definitions=main-2305090158
-X-Proofpoint-GUID: j9uN6TZ7areNZWC1Pk6Ho4UONls_fWW5
-X-Proofpoint-ORIG-GUID: j9uN6TZ7areNZWC1Pk6Ho4UONls_fWW5
+        Tue, 9 May 2023 21:27:01 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED1E26BD;
+        Tue,  9 May 2023 18:26:59 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-6435bbedb4fso7159750b3a.3;
+        Tue, 09 May 2023 18:26:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1683682019; x=1686274019;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eEArS+kabsb+fSj/X6VQ7ACodsIFNt5JLcPXN1+j86M=;
+        b=AMofmhhQxuI+/Ta/xu+zM0kGDlwMOD4fuf2FL646bvCis5kncCEXK8AT4f5ZvuIwqk
+         oCroTcsYRu4Du+YQSHP/YrGptUN63h3JJlXOmukQUQjqZ18bttEnvW3se533CBAdszr5
+         TyQrYfkrgOb0Y7TbM60svXzh12GzV8LyS9IAw9VqU3ka5vrDQs9bMxWdJeMka4CzntIS
+         8C3ymzUXGRk7wa3sxNsMbSOhfiOiv0tuDEx2sIHTMRsTk9zb+N8cNXIyjvbiEv0lWp+e
+         rVdSpXKKNO1RCfGPs5deb/tGsUynv+DjfJMF2XPrRhzrLQ+WmB3QJ+3tFP9sxKuABk+f
+         Y+kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1683682019; x=1686274019;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eEArS+kabsb+fSj/X6VQ7ACodsIFNt5JLcPXN1+j86M=;
+        b=ZDWxV1sQcuJKiGnf1P5b4EjMBw3jx7TnP2MldZKudWShSoCXfQh0Oh5EGpi/rWmM36
+         JIVeVJvmkoq2EJY828GvAigsG/aeK2svSe21tEK4VlIpgS6qjGmtxAelqas6EKmS+qiX
+         WFVODWfuz8q01VgUU4+7fC1AzYP0Ru3s+EkFeP4RD+iqXRKst9p+D/cOJ/QIvZ6RBeL1
+         BoUZm57eIpT8O01qMsnQ/ODLq7w5i9+0ujcRJ6LTBqm0VjdWfS056gQwS54xEAEJ1Zqu
+         GSSYJF89AJOCPNFtNbAhs841WvaJeAY/FuIUpSVlHCHEsZSkweKNKUs72IWGy1v25xtL
+         dp/w==
+X-Gm-Message-State: AC+VfDw2OsKG+p7KjE5eaKP8iuIzxgMVkpxGBLyRjr0R2Sgb14ugUVJi
+        ydK4r+ZVGeg+JccnyykUdcA=
+X-Google-Smtp-Source: ACHHUZ7Fe4IYlb9nVqD1imy2o9VmsAZXxyb26u3Hau9eW97be7LwC+3ZfqjpjiWPm4YHL9LsNN9IVA==
+X-Received: by 2002:a05:6a20:1608:b0:f2:c2a3:3a1 with SMTP id l8-20020a056a20160800b000f2c2a303a1mr20395456pzj.43.1683682018908;
+        Tue, 09 May 2023 18:26:58 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id a16-20020a62e210000000b006439df7ed5fsm2426977pfi.6.2023.05.09.18.26.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 May 2023 18:26:58 -0700 (PDT)
+Message-ID: <6bee2314-043d-e1af-016b-779df88f1868@gmail.com>
+Date:   Wed, 10 May 2023 09:26:53 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v10 10/10] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-serial <linux-serial@vger.kernel.org>, schung@nuvoton.com,
+        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230508025936.36776-1-ychuang570808@gmail.com>
+ <20230508025936.36776-11-ychuang570808@gmail.com>
+ <2ba483e9-267f-2159-1ea8-75a2618fcdf9@linux.intel.com>
+ <eeeaf258-8f2b-436a-aba0-b32dc90b359f@app.fastmail.com>
+ <b9573562-d4d7-3535-fb4d-f2bc694f2a4@linux.intel.com>
+ <72983689-0e98-4482-b549-ba2530274943@app.fastmail.com>
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <72983689-0e98-4482-b549-ba2530274943@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-After a call to console_unlock() in vcs_write() the vc_data struct can be
-freed by vc_port_destruct(). Because of that, the struct vc_data pointer
-must be reloaded in the while loop in vcs_write() after console_lock() to
-avoid a UAF when vcs_size() is called.
 
-Syzkaller reported a UAF in vcs_size().
+Dear Arnd and Ilpo,
 
-BUG: KASAN: slab-use-after-free in vcs_size (drivers/tty/vt/vc_screen.c:215)
-Read of size 4 at addr ffff8880beab89a8 by task repro_vcs_size/4119
 
-Call Trace:
- <TASK>
-__asan_report_load4_noabort (mm/kasan/report_generic.c:380)
-vcs_size (drivers/tty/vt/vc_screen.c:215)
-vcs_write (drivers/tty/vt/vc_screen.c:664)
-vfs_write (fs/read_write.c:582 fs/read_write.c:564)
-...
- <TASK>
+Thank you for the comments.
 
-Allocated by task 1213:
-kmalloc_trace (mm/slab_common.c:1064)
-vc_allocate (./include/linux/slab.h:559 ./include/linux/slab.h:680
-    drivers/tty/vt/vt.c:1078 drivers/tty/vt/vt.c:1058)
-con_install (drivers/tty/vt/vt.c:3334)
-tty_init_dev (drivers/tty/tty_io.c:1303 drivers/tty/tty_io.c:1415
-    drivers/tty/tty_io.c:1392)
-tty_open (drivers/tty/tty_io.c:2082 drivers/tty/tty_io.c:2128)
-chrdev_open (fs/char_dev.c:415)
-do_dentry_open (fs/open.c:921)
-vfs_open (fs/open.c:1052)
-...
 
-Freed by task 4116:
-kfree (mm/slab_common.c:1016)
-vc_port_destruct (drivers/tty/vt/vt.c:1044)
-tty_port_destructor (drivers/tty/tty_port.c:296)
-tty_port_put (drivers/tty/tty_port.c:312)
-vt_disallocate_all (drivers/tty/vt/vt_ioctl.c:662 (discriminator 2))
-vt_ioctl (drivers/tty/vt/vt_ioctl.c:903)
-tty_ioctl (drivers/tty/tty_io.c:2778)
-...
+On 2023/5/9 下午 08:32, Arnd Bergmann wrote:
+> On Tue, May 9, 2023, at 14:25, Ilpo Järvinen wrote:
+>> On Tue, 9 May 2023, Arnd Bergmann wrote:
+>>> On Tue, May 9, 2023, at 12:17, Ilpo Järvinen wrote:
+>>>> On Mon, 8 May 2023, Jacky Huang wrote:
+>>>>> +
+>>>>> +#define UART_NR			17
+>>>>> +
+>>>>> +#define UART_REG_RBR		0x00
+>>>>> +#define UART_REG_THR		0x00
+>>>>> +#define UART_REG_IER		0x04
+>>>>> +#define UART_REG_FCR		0x08
+>>>>> +#define UART_REG_LCR		0x0C
+>>>>> +#define UART_REG_MCR		0x10
+>>>> These duplicate include/uapi/linux/serial_reg.h ones, use the std ones
+>>>> directly.
+>>>>
+>>>> Setup regshift too and use it in serial_in.
+>>> I think this came up in previous reviews, but it turned out that
+>>> only the first six registers are compatible, while the later
+>>> ones are all different, and it's not 8250 compatible.
+>> So use the normal name for compatible ones and HW specific names for the
+>> others?
+>>
+>> It might not be compatible in everything but surely 8250 influence is
+>> visible here and there.
+> I'd rename all of them and share nothing. I had the same thought as you
+> when I first looked at the driver, and thought of how we merged the omap
+> uart into 8250 for this reason, but after I found a datasheet for this
+> one, my impression was that it's a much more distant cousin of 8250
+> than the others,
+>
+> There is clearly some family lineage, but there are differences
+> everywhere, and I don't think it was designed by extending a 8250
+> compatible hardware block with extra features, but rather built
+> from scratch (sigh) based only loosely on a register description
+> but then extending it with no intent of retaining compatibility.
+>
+>         Arnd
 
-The buggy address belongs to the object at ffff8880beab8800
- which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 424 bytes inside of
- freed 1024-byte region [ffff8880beab8800, ffff8880beab8c00)
+Yes, the design of this UART IP is indeed incompatible with the 8250, but it
+does imitate the 8250 in some register and register bit field naming, and
+even in usage definitions, which can easily lead to misunderstandings.
 
-The buggy address belongs to the physical page:
-page:00000000afc77580 refcount:1 mapcount:0 mapping:0000000000000000
-    index:0x0 pfn:0xbeab8
-head:00000000afc77580 order:3 entire_mapcount:0 nr_pages_mapped:0
-    pincount:0
-flags: 0xfffffc0010200(slab|head|node=0|zone=1|lastcpupid=0x1fffff)
-page_type: 0xffffffff()
-raw: 000fffffc0010200 ffff888100042dc0 ffffea000426de00 dead000000000002
-raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+In order to distinguish it from the 8250 and make it clear that it has 
+nothing
+to do with the 8250, I hope you can agree with me not to use the existing
+register and bit field definitions of the 8250 in this driver.
 
-Memory state around the buggy address:
- ffff8880beab8880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880beab8900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880beab8980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                  ^
- ffff8880beab8a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880beab8a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-Disabling lock debugging due to kernel taint
+In fact, this UART design has been used for more than 15 years and is used
+in our M0/M23/M4, ARM7/ARM9 MCUs and MPUs. The MA35 series will also
+continue to use this design. I will add the MA35_ prefix to all 
+registers and bit
+fields, and make the modifications suggested by Ilpo that are unrelated to
+this 8250 issue.
 
-Fixes: ac751efa6a0d ("console: rename acquire/release_console_sem() to console_lock/unlock()")
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
----
-This patch is similar to the recent UAF vcs_read() patches (226fae124b2d & 46d733d0efc7).
-vcs_write() should have been checked for the same UAF issue at the same time the fixes went
-into vcs_read().
 
- drivers/tty/vt/vc_screen.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
-index 498ba9c0ee93..cbd534a5cead 100644
---- a/drivers/tty/vt/vc_screen.c
-+++ b/drivers/tty/vt/vc_screen.c
-@@ -656,10 +656,16 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
- 			}
- 		}
- 
--		/* The vcs_size might have changed while we slept to grab
--		 * the user buffer, so recheck.
-+		/* The vc might have been freed or vcs_size might have changed
-+		 * while we slept to grab the user buffer, so recheck.
- 		 * Return data written up to now on failure.
- 		 */
-+		vc = vcs_vc(inode, &viewed);
-+		if (!vc) {
-+			if (written)
-+				break;
-+			goto unlock_out;
-+		}
- 		size = vcs_size(vc, attr, false);
- 		if (size < 0) {
- 			if (written)
--- 
-2.31.1
+Best Regards,
+Jacky Huang
 
