@@ -2,223 +2,182 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D758C77B7C
-	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 15:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC865C77B7C
+	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 16:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237399AbjEJPiZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 May 2023 11:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53288 "EHLO
+        id S229732AbjEJQ1Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 May 2023 12:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbjEJPiY (ORCPT
+        with ESMTP id S235820AbjEJQ1B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 May 2023 11:38:24 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298F31BE4
-        for <linux-serial@vger.kernel.org>; Wed, 10 May 2023 08:38:22 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f42769a0c1so34114195e9.2
-        for <linux-serial@vger.kernel.org>; Wed, 10 May 2023 08:38:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1683733100; x=1686325100;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2FAQoNbre0FsDXKzpUgqTNuLSD+XLqPxWH+hYHe3dIQ=;
-        b=Xb7wK3tPCgTn92pn2iFaqW9dREWyeCq5B9aVjXqcjc1UjRLdt8us5Ew9xQVy/vY/4P
-         vcmbPC7HU5N6bhfRG+bLwaLrALL2w3lIJxdwe163JbchdVhtjWQQbYEDui9km65S/OfS
-         HzMWYou8pPQdd/rlv/972r7MnGzHE1aJXhVBirTSavwnwoS21Empbxo/1K4iohkIYAMd
-         FmgxbXyU38YuL9T3OEz4JPys/qjBYuobytm7yF5UmGoNenMybdv4bvsCrBt4Z7N7Z6MS
-         5KPoczVoCy8szy+Cv5esahdQtXdwWDQqpshnwDPCEaDrYfXhSPhTL6nEa19RuMDlqOuu
-         6yDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683733100; x=1686325100;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2FAQoNbre0FsDXKzpUgqTNuLSD+XLqPxWH+hYHe3dIQ=;
-        b=F0kJJLGg8D8Cn9pafwDEn2jfxXAah6FjrzLXTfNR3SLxyA5suA3WBSTGEKv0xOS48x
-         D12JJiMfKr3F+NbWpB4hqz+NXB1VnM1FaPqXTatqx+uG/2ZcyB4ocj/yxPytN/kKuoa4
-         VeyZaAX+Mw3G9j5hRFU1oXP8klyf1phaFATnxVeSY3af3QaF8HVvKNpjJ/7w2aO/xsei
-         OfvSwWfLd9Ivun5fpUP33PybHTDAxd1FY52/QehJki8jxw6TQI5OoAoykvpYQyFhzjQW
-         xa1/vUJyw0CFQcrbrvyy/g8erO4GYBXPENSn2hQMmG7+6CpA6lO7swkNEcD22s6HivFN
-         YhZQ==
-X-Gm-Message-State: AC+VfDzC7r9v8431bSJsDzJfCZENE/0UFhr2PXo8Mv2VMzpsP2Gjl/ar
-        0PxMS2Tx4/jZFHh2mRny9eCEYg==
-X-Google-Smtp-Source: ACHHUZ7rY3ZwXCWbT7a6XTw9vvs4ouHN/edMh3i+1gRTvOPkefoTDCNKnCpLC1laYYpKyl0WYMVapQ==
-X-Received: by 2002:a05:600c:2056:b0:3f4:2bbf:40a with SMTP id p22-20020a05600c205600b003f42bbf040amr4392894wmg.37.1683733100492;
-        Wed, 10 May 2023 08:38:20 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id l11-20020a7bc34b000000b003f195d2f1a9sm23022460wmj.15.2023.05.10.08.38.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 May 2023 08:38:18 -0700 (PDT)
-Date:   Wed, 10 May 2023 18:38:02 +0300
-From:   Dan Carpenter <dan.carpenter@linaro.org>
-To:     oe-kbuild@lists.linux.dev,
-        George Kennedy <george.kennedy@oracle.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-        george.kennedy@oracle.com, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux@weissschuh.net,
-        regressions@lists.linux.dev
-Subject: Re: [PATCH] vc_screen: reload load of struct vc_data pointer in
- vcs_write() to avoid UAF
-Message-ID: <ad36d0ab-e81f-4f21-a5a4-8a72c88e61bd@kili.mountain>
+        Wed, 10 May 2023 12:27:01 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2054.outbound.protection.outlook.com [40.107.94.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2BA8A72;
+        Wed, 10 May 2023 09:26:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b2GTmkpQQO6+8JqOXYpBpV7K0Pqe7R1yPpwM0m4BButIv2nmYRjvRqxvp7yJCGq4h/rnrlcQDcgOg/uLhXF5OZo8UZatA9q/OEHNHtHC5ObU0PIIMBlK6NdY9oVY9HXpNmMRotiJ5BBCGcsG8++g1wE7/QNHBAbJNk/4o3ztv8fD/niA9LqFNUtpIYlBXcpljn1KMKPTc/j6j7RP5VlX+sWW7TzCdltRS5eQEdip8ePlLASRw+cFhXhriB3nQ3ESRJzFWUu/yKSoThM3aTr5w87IJEX+1TjVDfJpNDC6a2ZEcY5k8NJ35RAEmA1o8pf5je/r4ldbltdsdRII5C35Qg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SOEtRSq4RO4MgU26PsYnEg30GrscVDwby04JFTOIbZo=;
+ b=iXCAaXsJfLtjBoITzwEENvKlTDT6PGVk850OUH3vMrX2FiZdyLj2zwbt7Mi54hf8N115cNMSN4YK7r60cHtCMfO4YacZtXlqMn682DWtUOYExtE8Te3ulU83sRd5+zhjvcK0wV97gEzgW4WlD/GghN14l4bEsSOXRq7n+hmihLWNCk2fPnwgaIhjiS99+HJq3fRiAnFkSqy3naiyAWbigbsQp8QBtprmvt0IBdnPFwhDjzFHum7YzO9fpeDxCEL2CETsqN9ZN1+4hqldsOQ3xRaKUjNHMT2IgzwG+MNNg01pNrSWTgDmoZoaIc9mN0WLIpyNwvrmDO4GMtGBT6q3Fw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SOEtRSq4RO4MgU26PsYnEg30GrscVDwby04JFTOIbZo=;
+ b=XC6C5ovFm5k3bIh0ciMVqj6BoW+LL0wJ7cDPxQrvudnSJpYl6WE1m1PWAAus2JxPabpytppdXg+N+yDoSwVym+4IW1imS1NIVM2GRqVkVTYsvkObYY852s6eXrx8qGLcgi8TbsYP5te8WTagsHDBjJpUcIAS2g97xKLzk9KeroY=
+Received: from DM4PR12MB6109.namprd12.prod.outlook.com (2603:10b6:8:ae::11) by
+ SN7PR12MB7370.namprd12.prod.outlook.com (2603:10b6:806:299::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.30; Wed, 10 May
+ 2023 16:26:05 +0000
+Received: from DM4PR12MB6109.namprd12.prod.outlook.com
+ ([fe80::209c:2728:9fa5:a78a]) by DM4PR12MB6109.namprd12.prod.outlook.com
+ ([fe80::209c:2728:9fa5:a78a%4]) with mapi id 15.20.6387.019; Wed, 10 May 2023
+ 16:26:05 +0000
+From:   "Guntupalli, Manikanta" <manikanta.guntupalli@amd.com>
+To:     "m.brock@vanmierlo.com" <m.brock@vanmierlo.com>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "Simek, Michal" <michal.simek@amd.com>,
+        "git (AMD-Xilinx)" <git@amd.com>,
+        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
+        "Datta, Shubhrajyoti" <shubhrajyoti.datta@amd.com>,
+        "Goud, Srinivas" <srinivas.goud@amd.com>,
+        "manion05gk@gmail.com" <manion05gk@gmail.com>
+Subject: RE: [PATCH 0/2] Add rs485 support to uartps driver
+Thread-Topic: [PATCH 0/2] Add rs485 support to uartps driver
+Thread-Index: AQHZfoMOVvbvY/C9EUCU2o5qmO6xr69Tub0g
+Date:   Wed, 10 May 2023 16:26:05 +0000
+Message-ID: <DM4PR12MB61098014775DE9950A0E2E588C779@DM4PR12MB6109.namprd12.prod.outlook.com>
+References: <1682512187-8828-1-git-send-email-manikanta.guntupalli@amd.com>
+ <6b72c56e79a44fec348de26d14d9dce0@vanmierlo.com>
+In-Reply-To: <6b72c56e79a44fec348de26d14d9dce0@vanmierlo.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM4PR12MB6109:EE_|SN7PR12MB7370:EE_
+x-ms-office365-filtering-correlation-id: 85816334-cecd-4cbc-3a44-08db517340dc
+x-ld-processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: CNf8ETN/FEcRnIetHTbKp+k9W6YzI6fxf7FTfr9dEu9wE8DDrmaX9HOLwOJp8FAjaUiQZzfj8X+VovD3fE/B6Fc6prS1Gw5/ixKZO22JiHfNkXoWpmfZL5GeSoX6j3fyU+nYOUKLNVmreVz4TnDWK/E42Lec3561GhSweCMUuhH84pYG8fU/4mfRRFR3FHaSvYevzJ87IjkuKe2A9+dM6KetVTckiNS3W0RqlEcALN+bjuQkqWd/p1iBJNsCwpJGFoUiTrquOnvdIvMhkoYKUUO1T9xuTEwC9+3oISzBFPPHP+utwHZ55T2ekWj1tkKZ7k6KR44jDy5EfReWU/IMneEUaa5VFWFmIRLxV40zmcPxH+XpjmIwzMHMGCiK6Ps1ZIVw1t6l154agWI9XGVFegAohTN0h7FprcSPkYQHmApxYMCPUIHqxOqXn8wl0o93Mky2UsYwHOceNJbPfxOpW1xwK5IMrR4Bk14UiLkCHDnedQw7vLBxphWw9Jt910Mtbl1E52l1zUuOl6dxq3Lfw8ni/e7FF+Nd/QltH71Go1lY6yPq9RKY+Ctt491fYSfCAHbwo0ZDvoTrJ/VUUl/afSS+ZM6uc+sWSZcWp9nkjlWCdZNxT6kR0t6IgPzhmxPf
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB6109.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(346002)(376002)(396003)(366004)(451199021)(33656002)(4326008)(86362001)(316002)(54906003)(478600001)(64756008)(6916009)(66556008)(66946007)(66476007)(66446008)(7696005)(76116006)(83380400001)(55016003)(5660300002)(2906002)(7416002)(52536014)(8936002)(41300700001)(38100700002)(38070700005)(122000001)(6506007)(53546011)(26005)(71200400001)(186003)(9686003)(8676002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iz19szwkg8UoER17Wa6i87N7CiFAKbieZDOBjh1jhy+mTj9jFDMxaLwE4iDI?=
+ =?us-ascii?Q?RaNTz5e33+jin/W7QK+btkI0rL8qu1vKSiuWUyTuEl4SgX5LT8e3RAOywNM7?=
+ =?us-ascii?Q?D1jzUjY9pM/wWdWaJHAGHesWEAxpYbz9EPKTvWNc4fSDTu3WgB8IH+F8jr+x?=
+ =?us-ascii?Q?LvegnsrMTG5zGGsob5aBHw6PtrTK5mrs28CA9K7Ipc6Mh4qLNFiSQTfEtpWg?=
+ =?us-ascii?Q?jtOXMDcagIWCuIMUldTpJfGjZlC0O42vSQlRrlQePDEnej2/P0uLUYBfH3MJ?=
+ =?us-ascii?Q?vCqGk4X5ftGffvIIkr7jFtPXGvpSadbnfPHrmp9Dx+lovoate37kmNN9bOg8?=
+ =?us-ascii?Q?KQsiFWl2DUWyhp8Sfx5seZn3vzkJjf+lmnKo6o2y/nJSc7QHlhuNtAuY1pf7?=
+ =?us-ascii?Q?SdCxPVHOd5s8ZPKnaaLAk86RznNdV6NO2Vt6PATmOYPvVYDTTI62MgqoFfP2?=
+ =?us-ascii?Q?KA87G/4c7vgBQArRxcJ0YrKxLvOHQgajIHrVBfEOFqvPxa4YjjLRpRam/w96?=
+ =?us-ascii?Q?16drBcounrkBN9iz4IKruEUwnMsxlIvaBrwQ5fF7FJKKLkHuFzQMLYTK362S?=
+ =?us-ascii?Q?ivq+fYRBG2GwFMJ81JZabTbj+DlSXL0s+od2J1wb1YIEEmcvXYCZW3FA7oW+?=
+ =?us-ascii?Q?Mk3b+8y8wGVpE7zz9PoQSeYDJhY4VGlVLlPCLGbJO2SaMeEoFurvl5cGx5cY?=
+ =?us-ascii?Q?mjna3CaKSFQP5FaHmwRVgLy5U3N1sDxmm4xj9xlfvJkhUUFvcqqVTc0UfGhC?=
+ =?us-ascii?Q?ByKPZeoH0i2iJc/raiQ/opWE1Jp2dbUNGLU7V3/y3uD5cPkcioJc0YSjTlPx?=
+ =?us-ascii?Q?g2zSGv9UzFjoEa7ADl+hQWsLnsL/uZGpIYNLX3D2rDkjVSabeuQj2UW3WVpU?=
+ =?us-ascii?Q?7iC0zIoTiwcHz8rUWuTheQrqgq9T8u9jJNyMRHHeLrJ7igs69yEuaswnQ+Mg?=
+ =?us-ascii?Q?Fp8r1GZcCjuUMJSB43Z3kkbPhKwFLavwGfYHTb1IbTqcYYLk+PrRmVgvlU6H?=
+ =?us-ascii?Q?DSGrzbkEg+QjB9r0MHhstjKjX8ViVe1Vf7qcxTCcn2zirHkzGBEAaR+6IvXq?=
+ =?us-ascii?Q?LA8CpUnDEZJA56inhShaQFkFxare5Q0Nuv5OuUT+2t60yX+ulQRYlY182lh3?=
+ =?us-ascii?Q?6wMD/9gG6a0CHWO8Y6lnwBoPEYI5GupVbvvQx3F3O47Ty3v5V9IoSVPmwIMO?=
+ =?us-ascii?Q?6skiV1FDrV6O8oHgZMxBep+NEaWTpP3AZQeAS+Ql5FMCZHCZWwqDCb/Z827D?=
+ =?us-ascii?Q?G8R1fcoJMMs5wCzCDNCN+1YHFpiDf28IuJMLjvODOJ9BhPqDF+MeogGZSVPo?=
+ =?us-ascii?Q?p6v1Yl3zVis/6f8Loq0APicn0NILDLJyLj7H1QGrnnECmf52qR8yLObGzED9?=
+ =?us-ascii?Q?cYU3PDgBbvny5pzub4iSiTUvA2ghBLFM1ga82NEmjGbmp2PwXxyPB9jK2KBj?=
+ =?us-ascii?Q?EfQmk92cbHoi1sq2jJUpkZokBmYPaoMVvp90wXdy8VERRs5O8e0BaO+7J0/u?=
+ =?us-ascii?Q?iWIy8jdNm2kGAEPPDJ9QPJfD6mOQWk0Yo33Oqo32Kn5GUPphvjnSkQELpe86?=
+ =?us-ascii?Q?2XzmwBvQGHO1QFwe65w=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1683659319-29701-1-git-send-email-george.kennedy@oracle.com>
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB6109.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85816334-cecd-4cbc-3a44-08db517340dc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2023 16:26:05.3900
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 90qE0RWVcTr3jd95wAzqxvaPhhzIYeBHi5BKz5aT23YTHptVI7KEGJxrv5eYCLCn3vMj5dyMzCgwqZg2hg58rw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7370
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi George,
+Hi Maarten,
 
-kernel test robot noticed the following build warnings:
+> -----Original Message-----
+> From: m.brock@vanmierlo.com <m.brock@vanmierlo.com>
+> Sent: Thursday, May 4, 2023 5:52 PM
+> To: Guntupalli, Manikanta <manikanta.guntupalli@amd.com>
+> Cc: gregkh@linuxfoundation.org; robh+dt@kernel.org;
+> krzysztof.kozlowski+dt@linaro.org; michal.simek@xilinx.com; linux-
+> serial@vger.kernel.org; devicetree@vger.kernel.org; linux-
+> kernel@vger.kernel.org; jirislaby@kernel.org; linux-arm-
+> kernel@lists.infradead.org; Simek, Michal <michal.simek@amd.com>; git
+> (AMD-Xilinx) <git@amd.com>; Pandey, Radhey Shyam
+> <radhey.shyam.pandey@amd.com>; Datta, Shubhrajyoti
+> <shubhrajyoti.datta@amd.com>; Goud, Srinivas <srinivas.goud@amd.com>;
+> manion05gk@gmail.com
+> Subject: Re: [PATCH 0/2] Add rs485 support to uartps driver
+>=20
+> Manikanta Guntupalli wrote 2023-04-26 14:29:
+> > Add optional gpio property to uartps node to support rs485 Add rs485
+> > support to uartps driver
+> >
+> > Manikanta Guntupalli (2):
+> >   dt-bindings: Add optional gpio property to uartps node to support
+> >     rs485
+> >   tty: serial: uartps: Add rs485 support to uartps driver
+> >
+> >  .../devicetree/bindings/serial/cdns,uart.yaml |  5 +
+> >  drivers/tty/serial/xilinx_uartps.c            | 96 ++++++++++++++++++-
+> >  2 files changed, 100 insertions(+), 1 deletion(-)
+>=20
+> Why would you want to use a GPIO and not RTS for choosing the direction a=
+s
+> is more common in this case?
+In ZynqMp platform Cadence UART Controller RTS signal routed to external th=
+rough the PL(Programmable Logic) design not through Multiplexed IO.
 
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> And have you thought about configuring the polarity?
+GPIO polarity configured through device tree property.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/George-Kennedy/vc_screen-reload-load-of-struct-vc_data-pointer-in-vcs_write-to-avoid-UAF/20230510-031202
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/1683659319-29701-1-git-send-email-george.kennedy%40oracle.com
-patch subject: [PATCH] vc_screen: reload load of struct vc_data pointer in vcs_write() to avoid UAF
-config: ia64-randconfig-m031-20230509 (https://download.01.org/0day-ci/archive/20230510/202305101936.1ROFaVa9-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
+&uart0 {
+        ...
+        txrx-gpios =3D <&gpio 72 GPIO_ACTIVE_LOW>;
+        linux,rs485-enabled-at-boot-time;
+};
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <error27@gmail.com>
-| Link: https://lore.kernel.org/r/202305101936.1ROFaVa9-lkp@intel.com/
+> How long will the signal be active before the real transmission begins so=
+ the
+> driver can settle?
+Default is RE(GPIO LOW) and while sending we drive the pin to HIGH. We wait=
+ for transmission completion, for that we check Transmitter state machine a=
+ctive status to ZERO and TX FIFO EMPTY.=20
 
-smatch warnings:
-drivers/tty/vt/vc_screen.c:707 vcs_write() warn: maybe return -EFAULT instead of the bytes remaining?
-
-vim +707 drivers/tty/vt/vc_screen.c
-
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  589  static ssize_t
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  590  vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  591  {
-496ad9aa8ef448 drivers/tty/vt/vc_screen.c Al Viro        2013-01-23  592  	struct inode *inode = file_inode(file);
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  593  	struct vc_data *vc;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  594  	char *con_buf;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  595  	u16 *org0, *org;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  596  	unsigned int written;
-2665bef49f96df drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  597  	int size;
-2665bef49f96df drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  598  	ssize_t ret;
-2665bef49f96df drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  599  	loff_t pos;
-2665bef49f96df drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  600  	bool viewed, attr;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  601  
-0c9acb1af77a3c drivers/tty/vt/vc_screen.c Nicolas Pitre  2019-11-05  602  	if (use_unicode(inode))
-0c9acb1af77a3c drivers/tty/vt/vc_screen.c Nicolas Pitre  2019-11-05  603  		return -EOPNOTSUPP;
-0c9acb1af77a3c drivers/tty/vt/vc_screen.c Nicolas Pitre  2019-11-05  604  
-fcdba07ee390d9 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  605  	con_buf = (char *) __get_free_page(GFP_KERNEL);
-fcdba07ee390d9 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  606  	if (!con_buf)
-fcdba07ee390d9 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  607  		return -ENOMEM;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  608  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  609  	pos = *ppos;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  610  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  611  	/* Select the proper current console and verify
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  612  	 * sanity of the situation under the console lock.
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  613  	 */
-ac751efa6a0d70 drivers/tty/vt/vc_screen.c Torben Hohn    2011-01-25  614  	console_lock();
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  615  
-d21b0be246bf3b drivers/tty/vt/vc_screen.c Nicolas Pitre  2018-06-26  616  	attr = use_attributes(inode);
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  617  	ret = -ENXIO;
-fcdba07ee390d9 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  618  	vc = vcs_vc(inode, &viewed);
-fcdba07ee390d9 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  619  	if (!vc)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  620  		goto unlock_out;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  621  
-71d4abfab322e8 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  622  	size = vcs_size(vc, attr, false);
-71d4abfab322e8 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  623  	if (size < 0) {
-71d4abfab322e8 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  624  		ret = size;
-71d4abfab322e8 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  625  		goto unlock_out;
-71d4abfab322e8 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  626  	}
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  627  	ret = -EINVAL;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  628  	if (pos < 0 || pos > size)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  629  		goto unlock_out;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  630  	if (count > size - pos)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  631  		count = size - pos;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  632  	written = 0;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  633  	while (count) {
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  634  		unsigned int this_round = count;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  635  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  636  		if (this_round > CON_BUF_SIZE)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  637  			this_round = CON_BUF_SIZE;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  638  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  639  		/* Temporarily drop the console lock so that we can read
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  640  		 * in the write data from userspace safely.
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  641  		 */
-ac751efa6a0d70 drivers/tty/vt/vc_screen.c Torben Hohn    2011-01-25  642  		console_unlock();
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  643  		ret = copy_from_user(con_buf, buf, this_round);
-ac751efa6a0d70 drivers/tty/vt/vc_screen.c Torben Hohn    2011-01-25  644  		console_lock();
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  645  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  646  		if (ret) {
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  647  			this_round -= ret;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  648  			if (!this_round) {
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  649  				/* Abort loop if no data were copied. Otherwise
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  650  				 * fail with -EFAULT.
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  651  				 */
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  652  				if (written)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  653  					break;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  654  				ret = -EFAULT;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  655  				goto unlock_out;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  656  			}
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  657  		}
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  658  
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  659  		/* The vc might have been freed or vcs_size might have changed
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  660  		 * while we slept to grab the user buffer, so recheck.
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  661  		 * Return data written up to now on failure.
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  662  		 */
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  663  		vc = vcs_vc(inode, &viewed);
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  664  		if (!vc) {
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  665  			if (written)
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  666  				break;
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  667  			goto unlock_out;
-
-The warning message is wrong, but there does need to be a
-"ret = something" here.  Either an error code or ret = size on success.
-
-50f4095ab8ede7 drivers/tty/vt/vc_screen.c George Kennedy 2023-05-09  668  		}
-71d4abfab322e8 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  669  		size = vcs_size(vc, attr, false);
-dc1892c4bc6960 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  670  		if (size < 0) {
-dc1892c4bc6960 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  671  			if (written)
-dc1892c4bc6960 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  672  				break;
-dc1892c4bc6960 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  673  			ret = size;
-dc1892c4bc6960 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  674  			goto unlock_out;
-dc1892c4bc6960 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  675  		}
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  676  		if (pos >= size)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  677  			break;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  678  		if (this_round > size - pos)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  679  			this_round = size - pos;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  680  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  681  		/* OK, now actually push the write to the console
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  682  		 * under the lock using the local kernel buffer.
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  683  		 */
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  684  
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  685  		if (attr)
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  686  			org = vcs_write_buf(vc, con_buf, pos, this_round,
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  687  					viewed, &org0);
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  688  		else
-9e6363784e3f1e drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  689  			org = vcs_write_buf_noattr(vc, con_buf, pos, this_round,
-9e6363784e3f1e drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  690  					viewed, &org0);
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  691  
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  692  		count -= this_round;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  693  		written += this_round;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  694  		buf += this_round;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  695  		pos += this_round;
-95e0d57fd49780 drivers/tty/vt/vc_screen.c Jiri Slaby     2020-08-18  696  		if (org)
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  697  			update_region(vc, (unsigned long)(org0), org - org0);
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  698  	}
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  699  	*ppos += written;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  700  	ret = written;
-432c9ed22aff64 drivers/char/vc_screen.c   Nicolas Pitre  2010-10-01  701  	if (written)
-432c9ed22aff64 drivers/char/vc_screen.c   Nicolas Pitre  2010-10-01  702  		vcs_scr_updated(vc);
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  703  
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  704  unlock_out:
-ac751efa6a0d70 drivers/tty/vt/vc_screen.c Torben Hohn    2011-01-25  705  	console_unlock();
-fcdba07ee390d9 drivers/tty/vt/vc_screen.c Jiri Olsa      2011-02-07  706  	free_page((unsigned long) con_buf);
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16 @707  	return ret;
-^1da177e4c3f41 drivers/char/vc_screen.c   Linus Torvalds 2005-04-16  708  }
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Thanks,
+Manikanta.
 
