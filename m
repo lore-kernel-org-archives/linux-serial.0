@@ -2,90 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E961BC7EE22
-	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 05:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53428C7EE22
+	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 06:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235606AbjEJFzc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 May 2023 01:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
+        id S235195AbjEJGLR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 May 2023 02:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235717AbjEJFzb (ORCPT
+        with ESMTP id S236161AbjEJGK4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 May 2023 01:55:31 -0400
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6ED3C0C;
-        Tue,  9 May 2023 22:55:30 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-50bc1612940so12566218a12.2;
-        Tue, 09 May 2023 22:55:29 -0700 (PDT)
+        Wed, 10 May 2023 02:10:56 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FFA40F4
+        for <linux-serial@vger.kernel.org>; Tue,  9 May 2023 23:10:40 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f4c6c4b51eso911875e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 09 May 2023 23:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google; t=1683699039; x=1686291039;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dF6pa9jOL+FS7sdVMkryy+XB+jWacnITy30HAcpROQk=;
+        b=sYyonTPDuVD12f/fRHqYxhmS4ZV0pC4hkHkJ6WwnCLZjoQW+mEnk2DitOpbXpw5Nub
+         AakkPdsTHP2M/niggFjawLcQ9I/B/QGUX6B7Ons+ZhViohhr10jRRYNQfgQ91Pwb39C+
+         NvGrOyOuw8m8Ha0DsqXLBsrk5BSt5FcU9U/uGmgOi6hPKyr4GvtEy8oV8ZypI7HKeCno
+         U0xmbByQ7D/1KG9F0pOzIdjVZUKWYEPgx4IQckQERhwBLiZaEwHbK9+vo8rRSvy8yTno
+         gdhbvJwFnohLfb5OPC8Wrx7FJcFESybuMkjsfCHkOV0wQ9TGS0XckhTD8jDRPQPSjf3i
+         p69Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683698128; x=1686290128;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UvksywUSURVRlCm5zQiV7rq77JOAXf05KhB1WTtG+Rs=;
-        b=NIN5kSDW507bt4rW07fpnBrzTatmEybyml6sXqVsRoD6o72eN18ftEL5Ub/yVsJV3u
-         XMQF68XldEwtKkKlgfQkTXw0d5h9WocXOkomTQomoYhRthzS4xshjWS/WbQPtjxlTqbF
-         btFigaX9jvbdQDXIuomwf+53WsFaesULlZMM+IdJWVc81jp37fidwl/37yPz272mm7Vr
-         UEemvnlhvQSxVHEmXdbkpIvTHAiboVpPtJ9Ww7xbKn6mG07DgF8MseVDGm53RD5RgqRl
-         3fxhASR4L6c5NCcnDiRokCkbF1QykaRdCcaOFMlaSoZrP5GBAOfLXFTlX0Fip1e0X2gB
-         sa+A==
-X-Gm-Message-State: AC+VfDy8ihMRTySHnDm3XwzK1kZC49FoHEsUqsN+H7Tb0sLQd4cFH519
-        OxuG5cp8cQ2V7msUFVG2RN0=
-X-Google-Smtp-Source: ACHHUZ7KYs0Mf9UjBf966hG0bnUtGRzTlrZZavRjNoegFMXCG68MrVCUiSENczjvyyjTkx5Jn5ENsw==
-X-Received: by 2002:a17:906:dc93:b0:965:4b44:6f5a with SMTP id cs19-20020a170906dc9300b009654b446f5amr14952752ejc.10.1683698128285;
-        Tue, 09 May 2023 22:55:28 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id fe18-20020a1709072a5200b00968242f8c37sm2236449ejc.50.2023.05.09.22.55.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 May 2023 22:55:27 -0700 (PDT)
-Message-ID: <b9e29856-69a4-007c-930a-87e05b82eaf8@kernel.org>
-Date:   Wed, 10 May 2023 07:55:26 +0200
+        d=1e100.net; s=20221208; t=1683699039; x=1686291039;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dF6pa9jOL+FS7sdVMkryy+XB+jWacnITy30HAcpROQk=;
+        b=PdP8dlyj4EjM7H23111GcHLUQf8/N8ZWYqrXvdYCF4Hvygu92IaPP99BWzSmCvFcFN
+         9YkfjpWaF2u5Q9MAJ9F8jbky/jLrc5Wt4BQz544TmZ1b9lkZ4ZZcoYPKSL5dLTXmhtDl
+         X8P6c37HAUhHo+f8AfirLl6hoB3Oe18d7AL00HR2IYllmpOPHI55qb7lZ9YIOq1ji4PK
+         /rkNlfKZBzQ8fspeVYvFIw9uSANk28ViM7WejeuEdoiZBxOj7tkF4Wz9ZuPu6Msx475p
+         YoHQh2pt1/wiP4nEbhxehcNzOYUmZkSPA6qLsaCfqcx28dL20wxlfM5Uva49cWsZghaR
+         AuhQ==
+X-Gm-Message-State: AC+VfDwIuf4r8RXX0QITUIy1AqV2KS1urx42/abCOWfpC7XXqyyMjd0P
+        r0agFTlh2Jht+pcSD9RAZRY+51Kl3vJ10ce7qiuwcS4IMw1pJak0
+X-Google-Smtp-Source: ACHHUZ5h/hKJcCSMOATO3TWn2+Pew1ggT0AjsCAr+Xf1zU8r/ZTlkjNEafbkGI660Tjoga1A1wtCDO8cAPrOei90ovQ=
+X-Received: by 2002:a7b:c398:0:b0:3f4:2907:20d8 with SMTP id
+ s24-20020a7bc398000000b003f4290720d8mr4534823wmj.36.1683699039337; Tue, 09
+ May 2023 23:10:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH v3 3/6] serial: 8250: Add dl_read/write, bugs and mapsize
- into plat_serial8250_port
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>,
-        linux-kernel@vger.kernel.org
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>
-References: <20230509113924.19540-1-ilpo.jarvinen@linux.intel.com>
- <20230509113924.19540-4-ilpo.jarvinen@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230509113924.19540-4-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20230405111559.110220-1-lma@semihalf.com>
+In-Reply-To: <20230405111559.110220-1-lma@semihalf.com>
+From:   Lukasz Majczak <lma@semihalf.com>
+Date:   Wed, 10 May 2023 08:10:28 +0200
+Message-ID: <CAFJ_xbqNu3=_jq0HADad9zj+F=TPa4zCoi_8y6Fp3FjymQLkrA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] serial: core: fix broken console after suspend
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 09. 05. 23, 13:39, Ilpo Järvinen wrote:
-> Add mapsize, bugs, and divisor latch read/write functions
-> (->dl_read/write()) into plat_serial8250_port to carry the setup
-> necessary for RT288x/Au1xxx devices over to uart port.
-> 
-> Document the added members with kerneldoc style but do not enable
-> kerneldoc yet as there are many fields which remain undocumented.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Hi,
 
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-...
-> @@ -28,8 +44,11 @@ struct plat_serial8250_port {
->   	unsigned char	has_sysrq;	/* supports magic SysRq */
->   	unsigned int	type;		/* If UPF_FIXED_TYPE */
->   	upf_t		flags;		/* UPF_* flags */
-> +	unsigned short	bugs;		/* port bugs */
+Is there anything more I should do regarding these changes ?
 
-I would suggest u16 for bitfields like this. (Or DECLARE_BITMAP, but 
-that would unnecessarily eat a long.)
-
-thanks,
--- 
-js
-suse labs
-
+Best regards,
+Lukasz
+=C5=9Br., 5 kwi 2023 o 13:19 Lukasz Majczak <lma@semihalf.com> napisa=C5=82=
+(a):
+>
+> This is v2 of a patch[1].
+> v1->v2:
+> * Fixed typos in commit message
+> * Tested[2] patch "serial: core: preserve cflags, ispeed and ospeed" on a=
+ll
+>   current LTS kernels (4.14, 4.19, 5.4, 5.10, 5.15, 6.1) and on top of
+>   6.3-rc5 with positive results - console was working after resume
+> * During tests another issue was observed  on 6.1+ - FIFO not enabled aft=
+er
+>   resume - and an additional change was needed ("serial: core: enable
+>   FIFO after resume")
+> * Test procedure:
+>   1) ensure the console output is ok
+>   2) suspend device with "echo freeze > /sys/power/state"
+>      (/sys/module/printk/parameters/console_suspend =3D=3D N)
+>   3) resume device and check the console output
+>   4) suspend device with "echo freeze > /sys/power/state"
+>      (/sys/module/printk/parameters/console_suspend =3D=3D Y)
+>   5) resume device and check the console output
+>
+> [1] https://lore.kernel.org/lkml/20230301075751.43839-1-lma@semihalf.com/
+> [2] Test platforms: PC with i5-8400 + GB H370M D3H
+>                     HP Elite c1030 Chromebook Enterprise i5-10310U
+>
+> Lukasz Majczak (2):
+>   serial: core: preserve cflags, ispeed and ospeed
+>   serial: core: enable FIFO after resume
+>
+>  drivers/tty/serial/serial_core.c | 57 +++++++++++++++-----------------
+>  1 file changed, 27 insertions(+), 30 deletions(-)
+>
+> --
+> 2.40.0.577.gac1e443424-goog
+>
