@@ -2,156 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6498DC7EE26
-	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 01:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 373BDC77B7C
+	for <linux-serial@archiver.kernel.org>; Wed, 10 May 2023 05:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbjEJB1C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 May 2023 21:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
+        id S235954AbjEJFry (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 May 2023 01:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbjEJB1B (ORCPT
+        with ESMTP id S229487AbjEJFrx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 May 2023 21:27:01 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED1E26BD;
-        Tue,  9 May 2023 18:26:59 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-6435bbedb4fso7159750b3a.3;
-        Tue, 09 May 2023 18:26:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683682019; x=1686274019;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=eEArS+kabsb+fSj/X6VQ7ACodsIFNt5JLcPXN1+j86M=;
-        b=AMofmhhQxuI+/Ta/xu+zM0kGDlwMOD4fuf2FL646bvCis5kncCEXK8AT4f5ZvuIwqk
-         oCroTcsYRu4Du+YQSHP/YrGptUN63h3JJlXOmukQUQjqZ18bttEnvW3se533CBAdszr5
-         TyQrYfkrgOb0Y7TbM60svXzh12GzV8LyS9IAw9VqU3ka5vrDQs9bMxWdJeMka4CzntIS
-         8C3ymzUXGRk7wa3sxNsMbSOhfiOiv0tuDEx2sIHTMRsTk9zb+N8cNXIyjvbiEv0lWp+e
-         rVdSpXKKNO1RCfGPs5deb/tGsUynv+DjfJMF2XPrRhzrLQ+WmB3QJ+3tFP9sxKuABk+f
-         Y+kQ==
+        Wed, 10 May 2023 01:47:53 -0400
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6323ABA;
+        Tue,  9 May 2023 22:47:52 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-9659e9bbff5so1227579566b.1;
+        Tue, 09 May 2023 22:47:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683682019; x=1686274019;
+        d=1e100.net; s=20221208; t=1683697671; x=1686289671;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eEArS+kabsb+fSj/X6VQ7ACodsIFNt5JLcPXN1+j86M=;
-        b=ZDWxV1sQcuJKiGnf1P5b4EjMBw3jx7TnP2MldZKudWShSoCXfQh0Oh5EGpi/rWmM36
-         JIVeVJvmkoq2EJY828GvAigsG/aeK2svSe21tEK4VlIpgS6qjGmtxAelqas6EKmS+qiX
-         WFVODWfuz8q01VgUU4+7fC1AzYP0Ru3s+EkFeP4RD+iqXRKst9p+D/cOJ/QIvZ6RBeL1
-         BoUZm57eIpT8O01qMsnQ/ODLq7w5i9+0ujcRJ6LTBqm0VjdWfS056gQwS54xEAEJ1Zqu
-         GSSYJF89AJOCPNFtNbAhs841WvaJeAY/FuIUpSVlHCHEsZSkweKNKUs72IWGy1v25xtL
-         dp/w==
-X-Gm-Message-State: AC+VfDw2OsKG+p7KjE5eaKP8iuIzxgMVkpxGBLyRjr0R2Sgb14ugUVJi
-        ydK4r+ZVGeg+JccnyykUdcA=
-X-Google-Smtp-Source: ACHHUZ7Fe4IYlb9nVqD1imy2o9VmsAZXxyb26u3Hau9eW97be7LwC+3ZfqjpjiWPm4YHL9LsNN9IVA==
-X-Received: by 2002:a05:6a20:1608:b0:f2:c2a3:3a1 with SMTP id l8-20020a056a20160800b000f2c2a303a1mr20395456pzj.43.1683682018908;
-        Tue, 09 May 2023 18:26:58 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id a16-20020a62e210000000b006439df7ed5fsm2426977pfi.6.2023.05.09.18.26.55
+        bh=Sg0FkSVvrjlyggw4C3h0xdz7n3dXd4oy5mZxYMDijT0=;
+        b=lixYvLaLGQTRVWGn3heWXGsbKpZC9c/QMQHMebo6JQ/QUrOQaiTSzsiGACN516bBk7
+         g3hP9Yc6z0208N/CBVpFHLkihXjvhvxeD72xDI0ERHMZfo8M3ggIbylYFY86UDEPPdJ+
+         2dOeoD4KdW8nsR1dDXCuJHb39yOzumw8FHYg001t4rL0h4Z6uGxHytjbtpRXuuI8M6h7
+         hpM4oKXMzuYIG+/Rz620ZWjstBnEg4Arrxf0Tu3dGq8Gav4g6Ql7MbyNRZW7cukl4W3Y
+         04y5u6l7N16CuyoaM9Rlm5yZDnsx6uXACO6zQTxvPSQ9HBqYBl9Pu6Y+sbn4OV6gjQg3
+         +q8w==
+X-Gm-Message-State: AC+VfDwZTT/CohvZNcSgKhQ/gUG/KJ7UD3EZh8Knnojtizsm9eRU4Eul
+        NfZ7TCfh9pOURCRLo71P7Go=
+X-Google-Smtp-Source: ACHHUZ5h2mn/D2OP/eltk2czCD55FmQUa5PyiY/W/Kk9ERcEWCZWCuXABlynT8JMCgY0PPz38Ty4Pw==
+X-Received: by 2002:a17:907:62aa:b0:94f:62a2:d1ab with SMTP id nd42-20020a17090762aa00b0094f62a2d1abmr15410946ejc.63.1683697670652;
+        Tue, 09 May 2023 22:47:50 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id la26-20020a170906ad9a00b00967a18df1easm2214299ejb.117.2023.05.09.22.47.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 May 2023 18:26:58 -0700 (PDT)
-Message-ID: <6bee2314-043d-e1af-016b-779df88f1868@gmail.com>
-Date:   Wed, 10 May 2023 09:26:53 +0800
+        Tue, 09 May 2023 22:47:50 -0700 (PDT)
+Message-ID: <f03cd481-c5ee-2561-ea0a-b1ce5d039631@kernel.org>
+Date:   Wed, 10 May 2023 07:47:48 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.1
-Subject: Re: [PATCH v10 10/10] tty: serial: Add Nuvoton ma35d1 serial driver
- support
+Subject: Re: [PATCH v3 1/6] serial: 8250: Change dl_read/write to handle value
+ as u32
 Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-serial <linux-serial@vger.kernel.org>, schung@nuvoton.com,
-        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-References: <20230508025936.36776-1-ychuang570808@gmail.com>
- <20230508025936.36776-11-ychuang570808@gmail.com>
- <2ba483e9-267f-2159-1ea8-75a2618fcdf9@linux.intel.com>
- <eeeaf258-8f2b-436a-aba0-b32dc90b359f@app.fastmail.com>
- <b9573562-d4d7-3535-fb4d-f2bc694f2a4@linux.intel.com>
- <72983689-0e98-4482-b549-ba2530274943@app.fastmail.com>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <72983689-0e98-4482-b549-ba2530274943@app.fastmail.com>
+        =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>
+References: <20230509113924.19540-1-ilpo.jarvinen@linux.intel.com>
+ <20230509113924.19540-2-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230509113924.19540-2-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 09. 05. 23, 13:39, Ilpo Järvinen wrote:
+> Divisor latch read/write functions currently handle the value is int.
 
-Dear Arnd and Ilpo,
+*as* int?
 
+> As the value is related to HW context, u32 makes much more sense than a
+> signed type.
+> 
+> While at it, name the parameters in the callback signature.
+...
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+...
+> @@ -847,7 +847,7 @@ static void disable_rsa(struct uart_8250_port *up)
+>   static int size_fifo(struct uart_8250_port *up)
+>   {
+>   	unsigned char old_fcr, old_mcr, old_lcr;
+> -	unsigned short old_dl;
+> +	unsigned int old_dl;
 
-Thank you for the comments.
+I am missing the context, but why not u32 here?
 
-
-On 2023/5/9 下午 08:32, Arnd Bergmann wrote:
-> On Tue, May 9, 2023, at 14:25, Ilpo Järvinen wrote:
->> On Tue, 9 May 2023, Arnd Bergmann wrote:
->>> On Tue, May 9, 2023, at 12:17, Ilpo Järvinen wrote:
->>>> On Mon, 8 May 2023, Jacky Huang wrote:
->>>>> +
->>>>> +#define UART_NR			17
->>>>> +
->>>>> +#define UART_REG_RBR		0x00
->>>>> +#define UART_REG_THR		0x00
->>>>> +#define UART_REG_IER		0x04
->>>>> +#define UART_REG_FCR		0x08
->>>>> +#define UART_REG_LCR		0x0C
->>>>> +#define UART_REG_MCR		0x10
->>>> These duplicate include/uapi/linux/serial_reg.h ones, use the std ones
->>>> directly.
->>>>
->>>> Setup regshift too and use it in serial_in.
->>> I think this came up in previous reviews, but it turned out that
->>> only the first six registers are compatible, while the later
->>> ones are all different, and it's not 8250 compatible.
->> So use the normal name for compatible ones and HW specific names for the
->> others?
->>
->> It might not be compatible in everything but surely 8250 influence is
->> visible here and there.
-> I'd rename all of them and share nothing. I had the same thought as you
-> when I first looked at the driver, and thought of how we merged the omap
-> uart into 8250 for this reason, but after I found a datasheet for this
-> one, my impression was that it's a much more distant cousin of 8250
-> than the others,
->
-> There is clearly some family lineage, but there are differences
-> everywhere, and I don't think it was designed by extending a 8250
-> compatible hardware block with extra features, but rather built
-> from scratch (sigh) based only loosely on a register description
-> but then extending it with no intent of retaining compatibility.
->
->         Arnd
-
-Yes, the design of this UART IP is indeed incompatible with the 8250, but it
-does imitate the 8250 in some register and register bit field naming, and
-even in usage definitions, which can easily lead to misunderstandings.
-
-In order to distinguish it from the 8250 and make it clear that it has 
-nothing
-to do with the 8250, I hope you can agree with me not to use the existing
-register and bit field definitions of the 8250 in this driver.
-
-In fact, this UART design has been used for more than 15 years and is used
-in our M0/M23/M4, ARM7/ARM9 MCUs and MPUs. The MA35 series will also
-continue to use this design. I will add the MA35_ prefix to all 
-registers and bit
-fields, and make the modifications suggested by Ilpo that are unrelated to
-this 8250 issue.
-
-
-Best Regards,
-Jacky Huang
+thanks,
+-- 
+js
+suse labs
 
