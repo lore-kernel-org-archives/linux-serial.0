@@ -2,321 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CC1C77B75
-	for <linux-serial@archiver.kernel.org>; Fri, 12 May 2023 17:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F064C77B7C
+	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 10:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238107AbjELRiz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 12 May 2023 13:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
+        id S231736AbjEMKbS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 13 May 2023 06:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237841AbjELRiy (ORCPT
+        with ESMTP id S229653AbjEMKbR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 12 May 2023 13:38:54 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC161718
-        for <linux-serial@vger.kernel.org>; Fri, 12 May 2023 10:38:52 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pxWil-0004k0-3E; Fri, 12 May 2023 19:38:23 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pxWig-0031HN-UI; Fri, 12 May 2023 19:38:18 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pxWig-003ns0-8o; Fri, 12 May 2023 19:38:18 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Richard Genoud <richard.genoud@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Michal Simek <michal.simek@amd.com>,
-        =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        YueHaibing <yuehaibing@huawei.com>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        "moderated list:ARM/Microchip" <linux-arm-kernel@lists.infradead.org>,
-        kernel@pengutronix.de
-Subject: [PATCH 2/2] serial: Make uart_remove_one_port() return void
-Date:   Fri, 12 May 2023 19:38:10 +0200
-Message-Id: <20230512173810.131447-3-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230512173810.131447-1-u.kleine-koenig@pengutronix.de>
-References: <20230512173810.131447-1-u.kleine-koenig@pengutronix.de>
+        Sat, 13 May 2023 06:31:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A553C2707;
+        Sat, 13 May 2023 03:31:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C79860DC1;
+        Sat, 13 May 2023 10:31:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F78EC433EF;
+        Sat, 13 May 2023 10:31:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1683973875;
+        bh=5NN3vTvtA3k7NEEN2qxhzaq6KiSZLMr+MGh82yJ/Gh8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v0jjWKo1+3GZCdJ3KjIyvX16eX9tVdbZfjAF4e3JGaJej2iSZ6hPfFrqapXPTDKQN
+         tLzrMP/rRv9YFpF3x/Qqdw55ah9nsdlZuK2l9oxgNxmibyVXvfiVMkljwMMBRbKf95
+         W8hmsYoeRfZoi1OE5gCCshO5y07cnwVrF8BG9fPI=
+Date:   Sat, 13 May 2023 19:22:26 +0900
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/8] tty: n_gsm: add restart flag to DLC specific
+ ioctl config
+Message-ID: <2023051316-flatly-spookily-5a0a@gregkh>
+References: <20230426080315.7595-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=9090; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=5Puc2QTtWZXExc99bvBiOOISWBz32tevF3baPk/jSIc=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkXnl9IqWsM0ex3oTZcPddAGl6ZNIKVeedASEHl AxWE7pnYx2JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZF55fQAKCRCPgPtYfRL+ TmV3CACS1JWHTfoiJlh+r3W0DYrElFTckwqRIEH3yWkslMx6DTSO7ZQqKbyt7SzicFEw/C+xUIs au1SND9MKLxmZiq9WeZhDBVonMO69pQPEPOP39mCtUgepDIA3BktWna1dm7emQx6Ca4/ZrWp9/d 5QZRYruLLBgse0ghv1AA2Cs5mIB4hw7IaQZ2Ti9CyLMgz64On5U4p0VxkxSKeKjf/WbBAv/0X3w SLZh+ZALumCsKSCOtf4hoBJrB4bHkPABbjhraUdN8yIjdZy2HBXFEme6hp14pHlvZnVs5ekFeVq EsBfWNQueuvZOnhhTNOmpYpCH2+GsQIZJ4HGlDLXGd0n7VPU
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230426080315.7595-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The return value is only ever used as a return value for remove callbacks
-of platform drivers. This return value is ignored by the driver core.
-(The only effect is an error message, but uart_remove_one_port() already
-emitted one in this case.)
+On Wed, Apr 26, 2023 at 10:03:08AM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
+> 
+> Currently, changing the parameters of a DLCI gives no direct control to the
+> user whether this should trigger a channel reset or not. The decision is
+> solely made by the driver based on the assumption which parameter changes
+> are compatible or not. Therefore, the user has no means to perform an
+> automatic channel reset after parameter configuration for non-conflicting
+> changes.
+> 
+> Add the parameter 'flags' to 'gsm_dlci_config' to force a channel reset
+> after ioctl setting regardless of whether the changes made require this or
+> not by setting this to 'GSM_FL_RESTART'.
+> 
+> Note that 'GSM_FL_RESTART' is currently the only allow flag to allow
+> additions here.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c         |  4 ++++
+>  include/uapi/linux/gsmmux.h | 13 ++++++++++++-
+>  2 files changed, 16 insertions(+), 1 deletion(-)
+> 
+> v3 -> v4:
+> Changed gsm_dlci_config field name from 'restart' to 'flags' and introduced
+> 'GSM_FL_RESTART' to set the restart flag. The patch description was changed
+> accordingly. This was done as suggested during the review.
+> The remarked kernel doc compatible field comment is done in patch 2/8.
+> 
+> Link: https://lore.kernel.org/all/2023042453-dubbed-botany-2ed9@gregkh/
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index b411a26cc092..66edcf65a4dd 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -2532,6 +2532,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+>  		return -EINVAL;
+>  	if (dc->k > 7)
+>  		return -EINVAL;
+> +	if (dc->flags & ~GSM_FL_RESTART)   /* allow future extensions */
+> +		return -EINVAL;
+>  
+>  	/*
+>  	 * See what is needed for reconfiguration
+> @@ -2546,6 +2548,8 @@ static int gsm_dlci_config(struct gsm_dlci *dlci, struct gsm_dlci_config *dc, in
+>  	/* Requires care */
+>  	if (dc->priority != dlci->prio)
+>  		need_restart = true;
+> +	if (dc->flags & GSM_FL_RESTART)
+> +		need_restart = true;
+>  
+>  	if ((open && gsm->wait_config) || need_restart)
+>  		need_open = true;
+> diff --git a/include/uapi/linux/gsmmux.h b/include/uapi/linux/gsmmux.h
+> index eb67884e5f38..958257af05ab 100644
+> --- a/include/uapi/linux/gsmmux.h
+> +++ b/include/uapi/linux/gsmmux.h
+> @@ -2,10 +2,20 @@
+>  #ifndef _LINUX_GSMMUX_H
+>  #define _LINUX_GSMMUX_H
+>  
+> +#include <linux/const.h>
+>  #include <linux/if.h>
+>  #include <linux/ioctl.h>
+>  #include <linux/types.h>
+>  
+> +/*
+> + * flags definition for n_gsm
+> + *
+> + * Used by:
+> + * struct gsm_dlci_config.flags
+> + */
+> +/* Force DLCI channel reset? Always cleared on retrieval. */
 
-So the return value isn't used at all and uart_remove_one_port() can be
-changed to return void without any loss. Also this better matches the
-Linux device model as remove functions are not supposed to fail.
+I do not understand this comment, sorry.  What question are you asking?
+What happens if it is set?  What happens if it is not set?  More
+documentation is always good, especially for new user/kernel apis that
+are not documented anywhere else.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/atmel_serial.c           |  5 ++---
- drivers/tty/serial/clps711x.c               |  4 +++-
- drivers/tty/serial/cpm_uart/cpm_uart_core.c |  5 ++++-
- drivers/tty/serial/imx.c                    |  4 +++-
- drivers/tty/serial/lantiq.c                 |  4 +++-
- drivers/tty/serial/serial_core.c            |  6 +-----
- drivers/tty/serial/st-asc.c                 |  4 +++-
- drivers/tty/serial/uartlite.c               | 12 ++++--------
- drivers/tty/serial/xilinx_uartps.c          |  5 ++---
- include/linux/serial_core.h                 |  2 +-
- 10 files changed, 26 insertions(+), 25 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 9cd7479b03c0..6e9192f122aa 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -3006,14 +3006,13 @@ static int atmel_serial_remove(struct platform_device *pdev)
- {
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
--	int ret = 0;
- 
- 	tasklet_kill(&atmel_port->tasklet_rx);
- 	tasklet_kill(&atmel_port->tasklet_tx);
- 
- 	device_init_wakeup(&pdev->dev, 0);
- 
--	ret = uart_remove_one_port(&atmel_uart, port);
-+	uart_remove_one_port(&atmel_uart, port);
- 
- 	kfree(atmel_port->rx_ring.buf);
- 
-@@ -3023,7 +3022,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
- 
- 	pdev->dev.of_node = NULL;
- 
--	return ret;
-+	return 0;
- }
- 
- static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index e190dce58f46..e49bc4019b50 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -514,7 +514,9 @@ static int uart_clps711x_remove(struct platform_device *pdev)
- {
- 	struct clps711x_port *s = platform_get_drvdata(pdev);
- 
--	return uart_remove_one_port(&clps711x_uart, &s->port);
-+	uart_remove_one_port(&clps711x_uart, &s->port);
-+
-+	return 0;
- }
- 
- static const struct of_device_id __maybe_unused clps711x_uart_dt_ids[] = {
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index 349e7da643f0..66afa9bea6bf 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -1431,7 +1431,10 @@ static int cpm_uart_probe(struct platform_device *ofdev)
- static int cpm_uart_remove(struct platform_device *ofdev)
- {
- 	struct uart_cpm_port *pinfo = platform_get_drvdata(ofdev);
--	return uart_remove_one_port(&cpm_reg, &pinfo->port);
-+
-+	uart_remove_one_port(&cpm_reg, &pinfo->port);
-+
-+	return 0;
- }
- 
- static const struct of_device_id cpm_uart_match[] = {
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index c5e17569c3ad..b2bf3cb449f4 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -2467,7 +2467,9 @@ static int imx_uart_remove(struct platform_device *pdev)
- {
- 	struct imx_port *sport = platform_get_drvdata(pdev);
- 
--	return uart_remove_one_port(&imx_uart_uart_driver, &sport->port);
-+	uart_remove_one_port(&imx_uart_uart_driver, &sport->port);
-+
-+	return 0;
- }
- 
- static void imx_uart_restore_context(struct imx_port *sport)
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index a58e9277dfad..d413f97f7190 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -889,7 +889,9 @@ static int lqasc_remove(struct platform_device *pdev)
- {
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 
--	return uart_remove_one_port(&lqasc_reg, port);
-+	uart_remove_one_port(&lqasc_reg, port);
-+
-+	return 0;
- }
- 
- static const struct ltq_soc_data soc_data_lantiq = {
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 54e82f476a2c..4b98d13555c0 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3154,13 +3154,12 @@ EXPORT_SYMBOL(uart_add_one_port);
-  * This unhooks (and hangs up) the specified port structure from the core
-  * driver. No further calls will be made to the low-level code for this port.
-  */
--int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
-+void uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- {
- 	struct uart_state *state = drv->state + uport->line;
- 	struct tty_port *port = &state->port;
- 	struct uart_port *uart_port;
- 	struct tty_struct *tty;
--	int ret = 0;
- 
- 	mutex_lock(&port_mutex);
- 
-@@ -3176,7 +3175,6 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 
- 	if (!uart_port) {
- 		mutex_unlock(&port->mutex);
--		ret = -EINVAL;
- 		goto out;
- 	}
- 	uport->flags |= UPF_DEAD;
-@@ -3219,8 +3217,6 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	mutex_unlock(&port->mutex);
- out:
- 	mutex_unlock(&port_mutex);
--
--	return ret;
- }
- EXPORT_SYMBOL(uart_remove_one_port);
- 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 5215e6910f68..dc2f2051435c 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -796,7 +796,9 @@ static int asc_serial_remove(struct platform_device *pdev)
- {
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 
--	return uart_remove_one_port(&asc_uart_driver, port);
-+	uart_remove_one_port(&asc_uart_driver, port);
-+
-+	return 0;
- }
- 
- #ifdef CONFIG_PM_SLEEP
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 94584e54ebbe..679574893ebe 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -685,18 +685,15 @@ static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
-  *
-  * @dev: pointer to device structure
-  */
--static int ulite_release(struct device *dev)
-+static void ulite_release(struct device *dev)
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
--	int rc = 0;
- 
- 	if (port) {
--		rc = uart_remove_one_port(&ulite_uart_driver, port);
-+		uart_remove_one_port(&ulite_uart_driver, port);
- 		dev_set_drvdata(dev, NULL);
- 		port->mapbase = 0;
- 	}
--
--	return rc;
- }
- 
- /**
-@@ -900,14 +897,13 @@ static int ulite_remove(struct platform_device *pdev)
- {
- 	struct uart_port *port = dev_get_drvdata(&pdev->dev);
- 	struct uartlite_data *pdata = port->private_data;
--	int rc;
- 
- 	clk_disable_unprepare(pdata->clk);
--	rc = ulite_release(&pdev->dev);
-+	ulite_release(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_set_suspended(&pdev->dev);
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
--	return rc;
-+	return 0;
- }
- 
- /* work with hotplug and coldplug */
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 8e521c69a959..20a751663ef9 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1670,14 +1670,13 @@ static int cdns_uart_remove(struct platform_device *pdev)
- {
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 	struct cdns_uart *cdns_uart_data = port->private_data;
--	int rc;
- 
- 	/* Remove the cdns_uart port from the serial core */
- #ifdef CONFIG_COMMON_CLK
- 	clk_notifier_unregister(cdns_uart_data->uartclk,
- 			&cdns_uart_data->clk_rate_change_nb);
- #endif
--	rc = uart_remove_one_port(cdns_uart_data->cdns_uart_driver, port);
-+	uart_remove_one_port(cdns_uart_data->cdns_uart_driver, port);
- 	port->mapbase = 0;
- 	clk_disable_unprepare(cdns_uart_data->uartclk);
- 	clk_disable_unprepare(cdns_uart_data->pclk);
-@@ -1693,7 +1692,7 @@ static int cdns_uart_remove(struct platform_device *pdev)
- 
- 	if (!--instances)
- 		uart_unregister_driver(cdns_uart_data->cdns_uart_driver);
--	return rc;
-+	return 0;
- }
- 
- static struct platform_driver cdns_uart_platform_driver = {
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 66ecec15a1bf..ddcdb5b8523e 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -853,7 +853,7 @@ void uart_console_write(struct uart_port *port, const char *s,
- int uart_register_driver(struct uart_driver *uart);
- void uart_unregister_driver(struct uart_driver *uart);
- int uart_add_one_port(struct uart_driver *reg, struct uart_port *port);
--int uart_remove_one_port(struct uart_driver *reg, struct uart_port *port);
-+void uart_remove_one_port(struct uart_driver *reg, struct uart_port *port);
- bool uart_match_port(const struct uart_port *port1,
- 		const struct uart_port *port2);
- 
--- 
-2.39.2
-
+greg k-h
