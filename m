@@ -2,110 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6075C7EE24
-	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 11:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3567FC77B7C
+	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 11:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237665AbjEMLJT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 13 May 2023 07:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
+        id S233804AbjEMLKD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 13 May 2023 07:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233804AbjEMLJR (ORCPT
+        with ESMTP id S231736AbjEMLKB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 13 May 2023 07:09:17 -0400
+        Sat, 13 May 2023 07:10:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F3440E3;
-        Sat, 13 May 2023 04:09:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9655240CD;
+        Sat, 13 May 2023 04:10:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87CD760B73;
-        Sat, 13 May 2023 11:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E93D2C433D2;
-        Sat, 13 May 2023 11:09:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 262B560A36;
+        Sat, 13 May 2023 11:10:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC3EC433D2;
+        Sat, 13 May 2023 11:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1683976154;
-        bh=uXFoiR1SWFtZOtGgV5o4WxStrNeNIyIJxeYxRx+a7hQ=;
+        s=korg; t=1683976199;
+        bh=d6U6HY4Y147yLj/hkR4VH4OA5h+IAkhNN7SsSQMVw2Y=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t5xMjIXx3kXmI5AGZ+OV2hLCDwdg5B4Io7eigd84X5cC9TCmNGEWkD3eFWtpwqfsN
-         IHavtVhWBzvBtYoyMy8qruC3SpuVVoE0fQfF6XwMuzTWqNzIjRYD2Numx1NTD5MZTQ
-         PubhhDESdtazxWt29zBxdGxLLKnhefo0yeOXkqkw=
-Date:   Sat, 13 May 2023 20:04:40 +0900
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
-        michal.simek@amd.com, Jonathan.Cameron@huawei.com,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] devres: Provide krealloc_array
-Message-ID: <2023051340-sinuous-darkroom-2497@gregkh>
-References: <20230509094942.396150-1-james.clark@arm.com>
- <20230509094942.396150-2-james.clark@arm.com>
+        b=ptS5Mq+PYQvQxKaGII3Bvz7UtKN661n9Mp0jjAtuIlc8ZxaucY2LZnAmWPN+K4QY2
+         vxx17LOmeusIfM8qxE7dQMAI25tOkWga9iC0jvOA27QKXVOEMVn6vpjy9cZTiZ/20w
+         Vle63pCtnK4g3OHW+q8WYUDT4TUagFdwHlA+QlYU=
+Date:   Sat, 13 May 2023 20:07:31 +0900
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v11 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <2023051332-pretended-spoiler-61fc@gregkh>
+References: <20230511065355.47525-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230509094942.396150-2-james.clark@arm.com>
+In-Reply-To: <20230511065355.47525-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 09, 2023 at 10:49:38AM +0100, James Clark wrote:
-> There is no krealloc_array equivalent in devres. Users would have to
-> do their own multiplication overflow check so provide one.
+On Thu, May 11, 2023 at 09:53:51AM +0300, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
 > 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Signed-off-by: James Clark <james.clark@arm.com>
-> ---
->  Documentation/driver-api/driver-model/devres.rst |  1 +
->  include/linux/device.h                           | 11 +++++++++++
->  2 files changed, 12 insertions(+)
+> To do this, let's set up a struct bus and struct device for the serial
+> core controller as suggested by Greg and Jiri. The serial core controller
+> devices are children of the physical serial port device. The serial core
+> controller device is needed to support multiple different kind of ports
+> connected to single physical serial port device.
 > 
-> diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-> index 4249eb4239e0..8be086b3f829 100644
-> --- a/Documentation/driver-api/driver-model/devres.rst
-> +++ b/Documentation/driver-api/driver-model/devres.rst
-> @@ -364,6 +364,7 @@ MEM
->    devm_kmalloc_array()
->    devm_kmemdup()
->    devm_krealloc()
-> +  devm_krealloc_array()
->    devm_kstrdup()
->    devm_kstrdup_const()
->    devm_kvasprintf()
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 472dd24d4823..58f4f5948edb 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -223,6 +223,17 @@ static inline void *devm_kcalloc(struct device *dev,
->  {
->  	return devm_kmalloc_array(dev, n, size, flags | __GFP_ZERO);
->  }
-> +static inline __realloc_size(3, 4) void * __must_check
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
+> 
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
 
-Shouldn't you have a blank line before this one?
+Much better, thanks!
 
-> +devm_krealloc_array(struct device *dev, void *p, size_t new_n, size_t new_size, gfp_t flags)
-> +{
-> +	size_t bytes;
-> +
-> +	if (unlikely(check_mul_overflow(new_n, new_size, &bytes)))
-> +		return NULL;
-> +
-> +	return devm_krealloc(dev, p, bytes, flags);
-> +}
+One thing jumps out at me though, you are passing around "raw" struct
+device pointers as the serial port structure, why?
 
-I dislike how we have to keep copying the "real" functions (i.e.
-krealloc_array) into something like this, but I can't think of a better
-way to do it.
+Shouldn't:
+
+> @@ -563,7 +564,8 @@ struct uart_port {
+>  	unsigned int		minor;
+>  	resource_size_t		mapbase;		/* for ioremap */
+>  	resource_size_t		mapsize;
+> -	struct device		*dev;			/* parent device */
+> +	struct device		*dev;			/* serial port physical parent device */
+> +	struct device		*port_dev;		/* serial core port device */
+
+port_dev here be something like "struct serial_port" (or some better
+name)?  That way you enforce the type being passed around to the serial
+code in this change which will help catch any type mistakes.
+
+Yes, this structure can just be a "wrapper" around 'struct device' but
+at least it's a unique type.
+
+Or am I missing why this was done this way?
 
 thanks,
 
