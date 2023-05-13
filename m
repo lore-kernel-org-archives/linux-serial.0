@@ -2,75 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7B8C77B7C
-	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 10:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3105C77B7C
+	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 10:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238042AbjEMKcG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 13 May 2023 06:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35474 "EHLO
+        id S238353AbjEMKcS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 13 May 2023 06:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238148AbjEMKb6 (ORCPT
+        with ESMTP id S238195AbjEMKcN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 13 May 2023 06:31:58 -0400
+        Sat, 13 May 2023 06:32:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267A42D48;
-        Sat, 13 May 2023 03:31:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50630199;
+        Sat, 13 May 2023 03:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A094860DC6;
-        Sat, 13 May 2023 10:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4203C433EF;
-        Sat, 13 May 2023 10:31:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E1A60E55;
+        Sat, 13 May 2023 10:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91DBC43442;
+        Sat, 13 May 2023 10:32:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1683973913;
-        bh=u50lLtvY55sXJ6aAw7TPVTe3dvV4Gb02rVRmx7/nGog=;
+        s=korg; t=1683973931;
+        bh=I6n/Wl4AyJXEMoZSIpmwZ/P5E/Hax6wd2nxD+SdjZTY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZlBmZ/ZH3vTLqfj7Br+NXVtQxakLYeVMCWh29YPYaO93jKy4gMCMyFNpqZrr4xZpb
-         uy4Rq+YDJbcF89Tb2VDO/MLxSJ+YQVh5rUN5RbewmNQEA3q+WdTjS87aG0Fq1ChrmV
-         GR6AxXOep1JzNCmUPjb9PvVcWmDktQFbDBy4r0hU=
-Date:   Sat, 13 May 2023 19:25:03 +0900
+        b=duAM9D1jOgQ2rE/m65/Q/JIqlaRQOUxwjyXWf6bAxasoa7oPSYI+dzjX/aa5Z5OjZ
+         uvhi0WAx4hMkDjqZEuF8Q5QicQuMUbm4RQC+GI2zDhP9PEmQKTaQSMTBmpl4p66Iwz
+         auiHVrXsBH0FcGnzbd3Qty4vKcOfu0M9NgJDfH/c=
+Date:   Sat, 13 May 2023 19:28:08 +0900
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     XuDong Liu <m202071377@hust.edu.cn>
-Cc:     Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Patch] serial: 8250_bcm7271: fix leak in `brcmuart_probe`
-Message-ID: <2023051354-tubeless-footprint-973c@gregkh>
-References: <20230424125100.4783-1-m202071377@hust.edu.cn>
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_pci: remove unreachable code for ASIX
+ devices
+Message-ID: <2023051343-cringing-junction-54f7@gregkh>
+References: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230424125100.4783-1-m202071377@hust.edu.cn>
+In-Reply-To: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 08:51:00PM +0800, XuDong Liu wrote:
-> Smatch reports:
-> drivers/tty/serial/8250/8250_bcm7271.c:1120 brcmuart_probe() warn: 
-> 'baud_mux_clk' from clk_prepare_enable() not released on lines: 1032.
+On Wed, May 10, 2023 at 02:28:56PM +0000, Jiaqing Zhao wrote:
+> PCI_VENDOR_ID_ASIX (0x9710) is the same as PCI_VENDOR_ID_NETMOS. In
+> pci_serial_quirks array, the NetMos entry always takes precedence over
+> the ASIX entry. So the code for ASIX devices is always unreachable,
+> even when it was initially merged. Since the NetMos vendor driver
+> doesn't mention such FIFO bug, it's safe to remove the code.
 > 
-> In the function brcmuart_probe(), baud_mux_clk was not correctly released
-> in subsequent error handling, which may cause memory leaks.
+> This reverts commit eb26dfe8aa7e ("8250: add support for ASIX devices
+> with a FIFO bug").
 > 
-> To fix this issue, an error handling branch, err_clk_put, is added to
-> release the variable using clk_put(), and an err_disable branch is added
-> to meet the requirement of balancing clk_disable and clk_enable calls.
-> 
-> Fixes: 15ac1122fd6d ("serial: 8250_bcm7271: Fix arbitration handling")
-> Signed-off-by: XuDong Liu <m202071377@hust.edu.cn>
-> Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
-> ---
-> The issue is discovered by static analysis, and the patch is not tested
-> yet.
+> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
 
-Please test it.
+Please follow the documented Intel kernel developer requirements before
+you submit this again, based on the changes that process will require.
 
 thanks,
 
