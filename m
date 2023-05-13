@@ -2,63 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3105C77B7C
-	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 10:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6075C7EE24
+	for <linux-serial@archiver.kernel.org>; Sat, 13 May 2023 11:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238353AbjEMKcS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 13 May 2023 06:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
+        id S237665AbjEMLJT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 13 May 2023 07:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238195AbjEMKcN (ORCPT
+        with ESMTP id S233804AbjEMLJR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 13 May 2023 06:32:13 -0400
+        Sat, 13 May 2023 07:09:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50630199;
-        Sat, 13 May 2023 03:32:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F3440E3;
+        Sat, 13 May 2023 04:09:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E1A60E55;
-        Sat, 13 May 2023 10:32:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91DBC43442;
-        Sat, 13 May 2023 10:32:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87CD760B73;
+        Sat, 13 May 2023 11:09:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E93D2C433D2;
+        Sat, 13 May 2023 11:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1683973931;
-        bh=I6n/Wl4AyJXEMoZSIpmwZ/P5E/Hax6wd2nxD+SdjZTY=;
+        s=korg; t=1683976154;
+        bh=uXFoiR1SWFtZOtGgV5o4WxStrNeNIyIJxeYxRx+a7hQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=duAM9D1jOgQ2rE/m65/Q/JIqlaRQOUxwjyXWf6bAxasoa7oPSYI+dzjX/aa5Z5OjZ
-         uvhi0WAx4hMkDjqZEuF8Q5QicQuMUbm4RQC+GI2zDhP9PEmQKTaQSMTBmpl4p66Iwz
-         auiHVrXsBH0FcGnzbd3Qty4vKcOfu0M9NgJDfH/c=
-Date:   Sat, 13 May 2023 19:28:08 +0900
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_pci: remove unreachable code for ASIX
- devices
-Message-ID: <2023051343-cringing-junction-54f7@gregkh>
-References: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com>
+        b=t5xMjIXx3kXmI5AGZ+OV2hLCDwdg5B4Io7eigd84X5cC9TCmNGEWkD3eFWtpwqfsN
+         IHavtVhWBzvBtYoyMy8qruC3SpuVVoE0fQfF6XwMuzTWqNzIjRYD2Numx1NTD5MZTQ
+         PubhhDESdtazxWt29zBxdGxLLKnhefo0yeOXkqkw=
+Date:   Sat, 13 May 2023 20:04:40 +0900
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux@roeck-us.net,
+        michal.simek@amd.com, Jonathan.Cameron@huawei.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 1/4] devres: Provide krealloc_array
+Message-ID: <2023051340-sinuous-darkroom-2497@gregkh>
+References: <20230509094942.396150-1-james.clark@arm.com>
+ <20230509094942.396150-2-james.clark@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com>
+In-Reply-To: <20230509094942.396150-2-james.clark@arm.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 10, 2023 at 02:28:56PM +0000, Jiaqing Zhao wrote:
-> PCI_VENDOR_ID_ASIX (0x9710) is the same as PCI_VENDOR_ID_NETMOS. In
-> pci_serial_quirks array, the NetMos entry always takes precedence over
-> the ASIX entry. So the code for ASIX devices is always unreachable,
-> even when it was initially merged. Since the NetMos vendor driver
-> doesn't mention such FIFO bug, it's safe to remove the code.
+On Tue, May 09, 2023 at 10:49:38AM +0100, James Clark wrote:
+> There is no krealloc_array equivalent in devres. Users would have to
+> do their own multiplication overflow check so provide one.
 > 
-> This reverts commit eb26dfe8aa7e ("8250: add support for ASIX devices
-> with a FIFO bug").
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  Documentation/driver-api/driver-model/devres.rst |  1 +
+>  include/linux/device.h                           | 11 +++++++++++
+>  2 files changed, 12 insertions(+)
 > 
-> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+> diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+> index 4249eb4239e0..8be086b3f829 100644
+> --- a/Documentation/driver-api/driver-model/devres.rst
+> +++ b/Documentation/driver-api/driver-model/devres.rst
+> @@ -364,6 +364,7 @@ MEM
+>    devm_kmalloc_array()
+>    devm_kmemdup()
+>    devm_krealloc()
+> +  devm_krealloc_array()
+>    devm_kstrdup()
+>    devm_kstrdup_const()
+>    devm_kvasprintf()
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 472dd24d4823..58f4f5948edb 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -223,6 +223,17 @@ static inline void *devm_kcalloc(struct device *dev,
+>  {
+>  	return devm_kmalloc_array(dev, n, size, flags | __GFP_ZERO);
+>  }
+> +static inline __realloc_size(3, 4) void * __must_check
 
-Please follow the documented Intel kernel developer requirements before
-you submit this again, based on the changes that process will require.
+Shouldn't you have a blank line before this one?
+
+> +devm_krealloc_array(struct device *dev, void *p, size_t new_n, size_t new_size, gfp_t flags)
+> +{
+> +	size_t bytes;
+> +
+> +	if (unlikely(check_mul_overflow(new_n, new_size, &bytes)))
+> +		return NULL;
+> +
+> +	return devm_krealloc(dev, p, bytes, flags);
+> +}
+
+I dislike how we have to keep copying the "real" functions (i.e.
+krealloc_array) into something like this, but I can't think of a better
+way to do it.
 
 thanks,
 
