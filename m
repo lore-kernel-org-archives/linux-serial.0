@@ -2,122 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10481C7EE24
-	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 11:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54ABFC77B7F
+	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 11:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232134AbjENLBX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 May 2023 07:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        id S234152AbjENLZy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 May 2023 07:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjENLBW (ORCPT
+        with ESMTP id S233804AbjENLZw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 May 2023 07:01:22 -0400
-Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DE61FE4;
-        Sun, 14 May 2023 04:01:17 -0700 (PDT)
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by connect.vanmierlo.com (Kerio Connect 9.4.2) with ESMTPA;
-        Sun, 14 May 2023 13:01:10 +0200
+        Sun, 14 May 2023 07:25:52 -0400
+Received: from smtp.smtpout.orange.fr (smtp-29.smtpout.orange.fr [80.12.242.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D3D1737
+        for <linux-serial@vger.kernel.org>; Sun, 14 May 2023 04:25:48 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id y9rEps5u40mnzy9rEpymsF; Sun, 14 May 2023 13:25:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+        s=t20230301; t=1684063546;
+        bh=Tk5vW0hntOxhf9yNrtaC6tGBir59FsySHi0FcdBXXAI=;
+        h=From:To:Cc:Subject:Date;
+        b=FV2bx2ix6lKtmL7MYGq8pRxmng1uDjs+Xs2Kw89KaEbCz660xESHOksEtl/mA6Y6f
+         mWYet7tuNG1qLo6fQCaW+5rLv7BM9gsnz8Arv6CNNhVukWxc5JTHtcNxJLSpLBhA4K
+         x3/zwsBsy6n/9oZxuunAXoHED3ntqDWeLEzYCfolEscH+fSiVxE4669/chJSGfPKam
+         TX9Ueo8I/oMN/pB2hjXG0XfnaWBS7Lyx5JES0SR39M8JsRIwqvs3HMQb2Ney8ov7yi
+         bfjUysLAdqgcAzT/mbkFeZCA0ze8q1CMOrtoOFpnCKFTYyL/QS4EZ9rM+pTrB6e9tx
+         fdYhXYHd6QgaQ==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 14 May 2023 13:25:46 +0200
+X-ME-IP: 86.243.2.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jeff Brasen <jbrasen@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: [PATCH] serial: 8250_tegra: Fix an error handling path in tegra_uart_probe()
+Date:   Sun, 14 May 2023 13:25:42 +0200
+Message-Id: <f8130f35339cc80edc6b9aac4bb2a60b60a226bf.1684063511.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Date:   Sun, 14 May 2023 13:01:10 +0200
-From:   m.brock@vanmierlo.com
-To:     "Guntupalli, Manikanta" <manikanta.guntupalli@amd.com>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, michal.simek@xilinx.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        "Simek, Michal" <michal.simek@amd.com>,
-        "git (AMD-Xilinx)" <git@amd.com>,
-        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
-        "Datta, Shubhrajyoti" <shubhrajyoti.datta@amd.com>,
-        "Goud, Srinivas" <srinivas.goud@amd.com>, manion05gk@gmail.com
-Subject: Re: [PATCH 0/2] Add rs485 support to uartps driver
-In-Reply-To: <DM4PR12MB61098014775DE9950A0E2E588C779@DM4PR12MB6109.namprd12.prod.outlook.com>
-References: <1682512187-8828-1-git-send-email-manikanta.guntupalli@amd.com>
- <6b72c56e79a44fec348de26d14d9dce0@vanmierlo.com>
- <DM4PR12MB61098014775DE9950A0E2E588C779@DM4PR12MB6109.namprd12.prod.outlook.com>
-Message-ID: <309c98bbe25b8493ac35c8da97f9bff1@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Guntupalli, Manikanta schreef op 2023-05-10 18:26:
-> Hi Maarten,
-> 
->> -----Original Message-----
->> From: m.brock@vanmierlo.com <m.brock@vanmierlo.com>
->> Sent: Thursday, May 4, 2023 5:52 PM
->> To: Guntupalli, Manikanta <manikanta.guntupalli@amd.com>
->> Cc: gregkh@linuxfoundation.org; robh+dt@kernel.org;
->> krzysztof.kozlowski+dt@linaro.org; michal.simek@xilinx.com; linux-
->> serial@vger.kernel.org; devicetree@vger.kernel.org; linux-
->> kernel@vger.kernel.org; jirislaby@kernel.org; linux-arm-
->> kernel@lists.infradead.org; Simek, Michal <michal.simek@amd.com>; git
->> (AMD-Xilinx) <git@amd.com>; Pandey, Radhey Shyam
->> <radhey.shyam.pandey@amd.com>; Datta, Shubhrajyoti
->> <shubhrajyoti.datta@amd.com>; Goud, Srinivas <srinivas.goud@amd.com>;
->> manion05gk@gmail.com
->> Subject: Re: [PATCH 0/2] Add rs485 support to uartps driver
->> 
->> Manikanta Guntupalli wrote 2023-04-26 14:29:
->> > Add optional gpio property to uartps node to support rs485 Add rs485
->> > support to uartps driver
->> >
->> > Manikanta Guntupalli (2):
->> >   dt-bindings: Add optional gpio property to uartps node to support
->> >     rs485
->> >   tty: serial: uartps: Add rs485 support to uartps driver
->> >
->> >  .../devicetree/bindings/serial/cdns,uart.yaml |  5 +
->> >  drivers/tty/serial/xilinx_uartps.c            | 96 ++++++++++++++++++-
->> >  2 files changed, 100 insertions(+), 1 deletion(-)
->> 
->> Why would you want to use a GPIO and not RTS for choosing the 
->> direction as
->> is more common in this case?
-> In ZynqMp platform Cadence UART Controller RTS signal routed to
-> external through the PL(Programmable Logic) design not through
-> Multiplexed IO.
+If an error occurs after reset_control_deassert(), it must be re-asserted,
+as already done in the .remove() function.
 
-Then why not route RXD & TXD to the PL as well and connect the module to 
-a
-PMOD connector connected to the PL? But I admit that a GPIO always works 
-as
-well.
+Fixes: c6825c6395b7 ("serial: 8250_tegra: Create Tegra specific 8250 driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/tty/serial/8250/8250_tegra.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->> And have you thought about configuring the polarity?
-> GPIO polarity configured through device tree property.
-> 
-> &uart0 {
->         ...
->         txrx-gpios = <&gpio 72 GPIO_ACTIVE_LOW>;
->         linux,rs485-enabled-at-boot-time;
-> };
-
-Useable, but not honoring 
-SER_RS485_RTS_ON_SEND/SER_RS485_RTS_AFTER_SEND.
-
->> How long will the signal be active before the real transmission begins 
->> so the
->> driver can settle?
-> Default is RE(GPIO LOW) and while sending we drive the pin to HIGH. We
-> wait for transmission completion, for that we check Transmitter state
-> machine active status to ZERO and TX FIFO EMPTY.
-
-How does that take delay_rts_before_send/delay_rts_after_send into 
-account?
-Not every driver switches direction as fast as you would like.
-
-> Thanks,
-> Manikanta.
-
-Greetings,
-Maarten
+diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
+index 2509e7f74ccf..89956bbf34d9 100644
+--- a/drivers/tty/serial/8250/8250_tegra.c
++++ b/drivers/tty/serial/8250/8250_tegra.c
+@@ -113,13 +113,15 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 
+ 	ret = serial8250_register_8250_port(&port8250);
+ 	if (ret < 0)
+-		goto err_clkdisable;
++		goto err_ctrl_assert;
+ 
+ 	platform_set_drvdata(pdev, uart);
+ 	uart->line = ret;
+ 
+ 	return 0;
+ 
++err_ctrl_assert:
++	reset_control_assert(uart->rst);
+ err_clkdisable:
+ 	clk_disable_unprepare(uart->clk);
+ 
+-- 
+2.34.1
 
