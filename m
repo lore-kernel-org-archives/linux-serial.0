@@ -2,75 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA254C77B7F
-	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 02:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8754C77B7D
+	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 05:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229834AbjENCck (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 13 May 2023 22:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        id S231860AbjENFl0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 May 2023 01:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjENCcj (ORCPT
+        with ESMTP id S229548AbjENFlZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 13 May 2023 22:32:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFD92130;
-        Sat, 13 May 2023 19:32:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E864861491;
-        Sun, 14 May 2023 02:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 850C4C433D2;
-        Sun, 14 May 2023 02:32:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684031557;
-        bh=sc8UrLU9bo7pQFPgnJPVQgPMdYWPTHV76oVXH1yQ2AE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I2LbixDJa5CO0sa33Glfx6FSbrCkYbFMusB55WLtTGdpkdXw/8hSVSflSnFD5CSpi
-         itvewSz2ZSY5lOQlFvd9EraxKA79s/VGOQD0Rz/MGyqIMCiU5K5ncPo60bOphoBzxu
-         2h0n8YwyX/pzW7DFyA7J7xyXMyd/AdiCm4GEdn/Fu5e4XlYKgihI7GXidUbBTUcD5K
-         BQ/znbT5RyERmzxRUzWJ2A8USeazmJvKc7mQJCRM+mooSQCEkw1ea263a/fYK92SGu
-         5M/51hoazdfTe5rXR08zPb/TNEZRtROx+0oMrx4v5UA9J1Mmp00InheM7jc7Cb5vZX
-         hJl0Na02paMZw==
-Date:   Sun, 14 May 2023 10:32:22 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>, kernel@pengutronix.de,
-        Fabio Estevam <festevam@gmail.com>, linux-imx@nxp.com,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pm@vger.kernel.org, Jacky Bai <ping.bai@nxp.com>
-Subject: Re: [PATCH V3 6/6] ARM: dts: imx6ul: Add clock and PGC node to GPC
-Message-ID: <20230514023222.GH727834@dragon>
-References: <20230414091947.7831-1-stefan.wahren@i2se.com>
- <20230414091947.7831-7-stefan.wahren@i2se.com>
+        Sun, 14 May 2023 01:41:25 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 968C52129;
+        Sat, 13 May 2023 22:41:24 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 634638106;
+        Sun, 14 May 2023 05:41:23 +0000 (UTC)
+Date:   Sun, 14 May 2023 08:41:22 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v11 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <20230514054122.GH14287@atomide.com>
+References: <20230511065355.47525-1-tony@atomide.com>
+ <2023051332-pretended-spoiler-61fc@gregkh>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230414091947.7831-7-stefan.wahren@i2se.com>
+In-Reply-To: <2023051332-pretended-spoiler-61fc@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 11:19:47AM +0200, Stefan Wahren wrote:
-> According to fsl,imx-gpc.yaml the General Power Control requires
-> a ipg clock and a Power Gating Control node. So add them to fix
-> the dtbs_check warnings on i.MX6UL boards:
+* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230513 11:10]:
+> On Thu, May 11, 2023 at 09:53:51AM +0300, Tony Lindgren wrote:
+> > We want to enable runtime PM for serial port device drivers in a generic
+> > way. To do this, we want to have the serial core layer manage the
+> > registered physical serial controller devices.
+> > 
+> > To do this, let's set up a struct bus and struct device for the serial
+> > core controller as suggested by Greg and Jiri. The serial core controller
+> > devices are children of the physical serial port device. The serial core
+> > controller device is needed to support multiple different kind of ports
+> > connected to single physical serial port device.
+> > 
+> > Let's also set up a struct device for the serial core port. The serial
+> > core port instances are children of the serial core controller device.
+> > 
+> > With the serial core port device we can now flush pending TX on the
+> > runtime PM resume as suggested by Johan.
 > 
-> gpc@20dc000: 'clocks' is a required property
-> gpc@20dc000: 'clock-names' is a required property
-> gpc@20dc000: 'pgc' is a required property
+> Much better, thanks!
 > 
-> Suggested-by: Jacky Bai <ping.bai@nxp.com>
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> One thing jumps out at me though, you are passing around "raw" struct
+> device pointers as the serial port structure, why?
+> 
+> Shouldn't:
+> 
+> > @@ -563,7 +564,8 @@ struct uart_port {
+> >  	unsigned int		minor;
+> >  	resource_size_t		mapbase;		/* for ioremap */
+> >  	resource_size_t		mapsize;
+> > -	struct device		*dev;			/* parent device */
+> > +	struct device		*dev;			/* serial port physical parent device */
+> > +	struct device		*port_dev;		/* serial core port device */
+> 
+> port_dev here be something like "struct serial_port" (or some better
+> name)?  That way you enforce the type being passed around to the serial
+> code in this change which will help catch any type mistakes.
+> 
+> Yes, this structure can just be a "wrapper" around 'struct device' but
+> at least it's a unique type.
 
-Applied, thanks!
+Good idea thanks, will change.
+
+> Or am I missing why this was done this way?
+
+No reason to keep it as struct device.
+
+Regards,
+
+Tony
