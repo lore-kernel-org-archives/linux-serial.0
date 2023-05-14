@@ -2,94 +2,122 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8754C77B7D
-	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 05:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10481C7EE24
+	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 11:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231860AbjENFl0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 May 2023 01:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
+        id S232134AbjENLBX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 May 2023 07:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjENFlZ (ORCPT
+        with ESMTP id S229548AbjENLBW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 May 2023 01:41:25 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 968C52129;
-        Sat, 13 May 2023 22:41:24 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 634638106;
-        Sun, 14 May 2023 05:41:23 +0000 (UTC)
-Date:   Sun, 14 May 2023 08:41:22 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v11 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <20230514054122.GH14287@atomide.com>
-References: <20230511065355.47525-1-tony@atomide.com>
- <2023051332-pretended-spoiler-61fc@gregkh>
+        Sun, 14 May 2023 07:01:22 -0400
+Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DE61FE4;
+        Sun, 14 May 2023 04:01:17 -0700 (PDT)
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by connect.vanmierlo.com (Kerio Connect 9.4.2) with ESMTPA;
+        Sun, 14 May 2023 13:01:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023051332-pretended-spoiler-61fc@gregkh>
+Date:   Sun, 14 May 2023 13:01:10 +0200
+From:   m.brock@vanmierlo.com
+To:     "Guntupalli, Manikanta" <manikanta.guntupalli@amd.com>
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, michal.simek@xilinx.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        "Simek, Michal" <michal.simek@amd.com>,
+        "git (AMD-Xilinx)" <git@amd.com>,
+        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
+        "Datta, Shubhrajyoti" <shubhrajyoti.datta@amd.com>,
+        "Goud, Srinivas" <srinivas.goud@amd.com>, manion05gk@gmail.com
+Subject: Re: [PATCH 0/2] Add rs485 support to uartps driver
+In-Reply-To: <DM4PR12MB61098014775DE9950A0E2E588C779@DM4PR12MB6109.namprd12.prod.outlook.com>
+References: <1682512187-8828-1-git-send-email-manikanta.guntupalli@amd.com>
+ <6b72c56e79a44fec348de26d14d9dce0@vanmierlo.com>
+ <DM4PR12MB61098014775DE9950A0E2E588C779@DM4PR12MB6109.namprd12.prod.outlook.com>
+Message-ID: <309c98bbe25b8493ac35c8da97f9bff1@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [230513 11:10]:
-> On Thu, May 11, 2023 at 09:53:51AM +0300, Tony Lindgren wrote:
-> > We want to enable runtime PM for serial port device drivers in a generic
-> > way. To do this, we want to have the serial core layer manage the
-> > registered physical serial controller devices.
-> > 
-> > To do this, let's set up a struct bus and struct device for the serial
-> > core controller as suggested by Greg and Jiri. The serial core controller
-> > devices are children of the physical serial port device. The serial core
-> > controller device is needed to support multiple different kind of ports
-> > connected to single physical serial port device.
-> > 
-> > Let's also set up a struct device for the serial core port. The serial
-> > core port instances are children of the serial core controller device.
-> > 
-> > With the serial core port device we can now flush pending TX on the
-> > runtime PM resume as suggested by Johan.
+Guntupalli, Manikanta schreef op 2023-05-10 18:26:
+> Hi Maarten,
 > 
-> Much better, thanks!
-> 
-> One thing jumps out at me though, you are passing around "raw" struct
-> device pointers as the serial port structure, why?
-> 
-> Shouldn't:
-> 
-> > @@ -563,7 +564,8 @@ struct uart_port {
-> >  	unsigned int		minor;
-> >  	resource_size_t		mapbase;		/* for ioremap */
-> >  	resource_size_t		mapsize;
-> > -	struct device		*dev;			/* parent device */
-> > +	struct device		*dev;			/* serial port physical parent device */
-> > +	struct device		*port_dev;		/* serial core port device */
-> 
-> port_dev here be something like "struct serial_port" (or some better
-> name)?  That way you enforce the type being passed around to the serial
-> code in this change which will help catch any type mistakes.
-> 
-> Yes, this structure can just be a "wrapper" around 'struct device' but
-> at least it's a unique type.
+>> -----Original Message-----
+>> From: m.brock@vanmierlo.com <m.brock@vanmierlo.com>
+>> Sent: Thursday, May 4, 2023 5:52 PM
+>> To: Guntupalli, Manikanta <manikanta.guntupalli@amd.com>
+>> Cc: gregkh@linuxfoundation.org; robh+dt@kernel.org;
+>> krzysztof.kozlowski+dt@linaro.org; michal.simek@xilinx.com; linux-
+>> serial@vger.kernel.org; devicetree@vger.kernel.org; linux-
+>> kernel@vger.kernel.org; jirislaby@kernel.org; linux-arm-
+>> kernel@lists.infradead.org; Simek, Michal <michal.simek@amd.com>; git
+>> (AMD-Xilinx) <git@amd.com>; Pandey, Radhey Shyam
+>> <radhey.shyam.pandey@amd.com>; Datta, Shubhrajyoti
+>> <shubhrajyoti.datta@amd.com>; Goud, Srinivas <srinivas.goud@amd.com>;
+>> manion05gk@gmail.com
+>> Subject: Re: [PATCH 0/2] Add rs485 support to uartps driver
+>> 
+>> Manikanta Guntupalli wrote 2023-04-26 14:29:
+>> > Add optional gpio property to uartps node to support rs485 Add rs485
+>> > support to uartps driver
+>> >
+>> > Manikanta Guntupalli (2):
+>> >   dt-bindings: Add optional gpio property to uartps node to support
+>> >     rs485
+>> >   tty: serial: uartps: Add rs485 support to uartps driver
+>> >
+>> >  .../devicetree/bindings/serial/cdns,uart.yaml |  5 +
+>> >  drivers/tty/serial/xilinx_uartps.c            | 96 ++++++++++++++++++-
+>> >  2 files changed, 100 insertions(+), 1 deletion(-)
+>> 
+>> Why would you want to use a GPIO and not RTS for choosing the 
+>> direction as
+>> is more common in this case?
+> In ZynqMp platform Cadence UART Controller RTS signal routed to
+> external through the PL(Programmable Logic) design not through
+> Multiplexed IO.
 
-Good idea thanks, will change.
+Then why not route RXD & TXD to the PL as well and connect the module to 
+a
+PMOD connector connected to the PL? But I admit that a GPIO always works 
+as
+well.
 
-> Or am I missing why this was done this way?
+>> And have you thought about configuring the polarity?
+> GPIO polarity configured through device tree property.
+> 
+> &uart0 {
+>         ...
+>         txrx-gpios = <&gpio 72 GPIO_ACTIVE_LOW>;
+>         linux,rs485-enabled-at-boot-time;
+> };
 
-No reason to keep it as struct device.
+Useable, but not honoring 
+SER_RS485_RTS_ON_SEND/SER_RS485_RTS_AFTER_SEND.
 
-Regards,
+>> How long will the signal be active before the real transmission begins 
+>> so the
+>> driver can settle?
+> Default is RE(GPIO LOW) and while sending we drive the pin to HIGH. We
+> wait for transmission completion, for that we check Transmitter state
+> machine active status to ZERO and TX FIFO EMPTY.
 
-Tony
+How does that take delay_rts_before_send/delay_rts_after_send into 
+account?
+Not every driver switches direction as fast as you would like.
+
+> Thanks,
+> Manikanta.
+
+Greetings,
+Maarten
+
