@@ -2,131 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5562EC77B75
-	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 16:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73360C7EE23
+	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 16:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242192AbjEOQUZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 May 2023 12:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
+        id S242954AbjEOQql (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 May 2023 12:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242723AbjEOQUR (ORCPT
+        with ESMTP id S242990AbjEOQqg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 May 2023 12:20:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC2B2D58;
-        Mon, 15 May 2023 09:20:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1795762733;
-        Mon, 15 May 2023 16:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B042C433EF;
-        Mon, 15 May 2023 16:20:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1684167605;
-        bh=nBf8uSvL9LXLbznmFYahzkzw9v0anK6Riy2/JiUwy2Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U2RS9eiuZzSrjBM9jF1GSnFBo9GDfN7gzwpXoYG9CLz2zSUYtPAckYZ2Ez9BxYOZn
-         3kfvRK9ZkyM85jwg6IvWZwMUSIVGWEA37x7/XYnCLTGCIBPodWePQ3Sd+J1dcw6BAb
-         hpLEBJhDsQJfw8GJ8zFYTu1HDoR/DMocotKU7i/4=
-Date:   Mon, 15 May 2023 18:20:02 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Mon, 15 May 2023 12:46:36 -0400
+X-Greylist: delayed 2622 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 May 2023 09:46:30 PDT
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8D25259;
+        Mon, 15 May 2023 09:46:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+        :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
+        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+        List-Owner:List-Archive; bh=XUIEpNRUXpJvYmFAKwBCCJfgCkzLAHM5z0DC/nHI13A=; b=C
+        OQJj6sqPxX1Q7FxQhjaUUWeXuw3XXan7JNUCzhueLTvMhc5UVRePxj/9FrhWq8xoK/PYs8Qz6OmsS
+        db1EVVcO8JeQ/mCL9KxlCEZB2ew42iYk5ZwNzStoIz1YTCn7Ah3Cchp3zITdcEILi/J9FYpyyEJXx
+        +bbtXKn9wrC1d8zM=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:41230 helo=pettiford.lan)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1pyaeU-0003GD-Fw; Mon, 15 May 2023 12:02:23 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Lech Perczak <l.perczak@camlintechnologies.com>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>
+Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] Revert "sc16is7xx: Separate GPIOs from modem control
- lines"
-Message-ID: <2023051551-quickstep-outshine-5526@gregkh>
-References: <20230515160206.2801991-1-hugo@hugovil.com>
+Date:   Mon, 15 May 2023 12:02:07 -0400
+Message-Id: <20230515160206.2801991-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230515160206.2801991-1-hugo@hugovil.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: [RFC PATCH] Revert "sc16is7xx: Separate GPIOs from modem control lines"
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 15, 2023 at 12:02:07PM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> This reverts commit 679875d1d8802669590ef4d69b0e7d13207ebd61.
-> 
-> Because of this commit, it is no longer possible to use the 16 GPIO
-> lines as dedicated GPIOs on the SC16IS752.
-> 
-> Reverting it makes it work again.
-> 
-> The log message of the original commit states:
->     "Export only the GPIOs that are not shared with hardware modem
->     control lines"
-> 
-> But there is no explanation as to why this decision was taken to
-> permanently set the function of the GPIO lines as modem control
-> lines. AFAIK, there is no problem with using these lines as GPIO or modem
-> control lines.
-> 
-> Maybe after reverting this commit, we could define a new
-> device-tree property named, for example,
-> "use-modem-control-lines", so that both options can be supported.
-> 
-> Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
-> lines")
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Please do not line-wrap these lines.
+This reverts commit 679875d1d8802669590ef4d69b0e7d13207ebd61.
 
-> 
+Because of this commit, it is no longer possible to use the 16 GPIO
+lines as dedicated GPIOs on the SC16IS752.
 
-Nor is a blank line needed here.
+Reverting it makes it work again.
 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 14 ++++----------
->  1 file changed, 4 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 5bd98e4316f5..25f1b2f6ec51 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -306,7 +306,6 @@ struct sc16is7xx_devtype {
->  	char	name[10];
->  	int	nr_gpio;
->  	int	nr_uart;
-> -	int	has_mctrl;
->  };
->  
->  #define SC16IS7XX_RECONF_MD		(1 << 0)
-> @@ -447,35 +446,30 @@ static const struct sc16is7xx_devtype sc16is74x_devtype = {
->  	.name		= "SC16IS74X",
->  	.nr_gpio	= 0,
->  	.nr_uart	= 1,
-> -	.has_mctrl	= 0,
->  };
->  
->  static const struct sc16is7xx_devtype sc16is750_devtype = {
->  	.name		= "SC16IS750",
-> -	.nr_gpio	= 4,
-> +	.nr_gpio	= 8,
+The log message of the original commit states:
+    "Export only the GPIOs that are not shared with hardware modem
+    control lines"
 
-I think this one line change is all you really need here, right?  the
-otner changes do nothing in this patch, so you should just create a new
-one changing this value.  Oh, and this one:
+But there is no explanation as to why this decision was taken to
+permanently set the function of the GPIO lines as modem control
+lines. AFAIK, there is no problem with using these lines as GPIO or modem
+control lines.
 
->  	.nr_uart	= 1,
-> -	.has_mctrl	= 1,
->  };
->  
->  static const struct sc16is7xx_devtype sc16is752_devtype = {
->  	.name		= "SC16IS752",
-> -	.nr_gpio	= 0,
-> +	.nr_gpio	= 8,
+Maybe after reverting this commit, we could define a new
+device-tree property named, for example,
+"use-modem-control-lines", so that both options can be supported.
 
-right?
+Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
+lines")
 
-Don't mess with the has_mctrl stuff, that's not relevant here.
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 5bd98e4316f5..25f1b2f6ec51 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -306,7 +306,6 @@ struct sc16is7xx_devtype {
+ 	char	name[10];
+ 	int	nr_gpio;
+ 	int	nr_uart;
+-	int	has_mctrl;
+ };
+ 
+ #define SC16IS7XX_RECONF_MD		(1 << 0)
+@@ -447,35 +446,30 @@ static const struct sc16is7xx_devtype sc16is74x_devtype = {
+ 	.name		= "SC16IS74X",
+ 	.nr_gpio	= 0,
+ 	.nr_uart	= 1,
+-	.has_mctrl	= 0,
+ };
+ 
+ static const struct sc16is7xx_devtype sc16is750_devtype = {
+ 	.name		= "SC16IS750",
+-	.nr_gpio	= 4,
++	.nr_gpio	= 8,
+ 	.nr_uart	= 1,
+-	.has_mctrl	= 1,
+ };
+ 
+ static const struct sc16is7xx_devtype sc16is752_devtype = {
+ 	.name		= "SC16IS752",
+-	.nr_gpio	= 0,
++	.nr_gpio	= 8,
+ 	.nr_uart	= 2,
+-	.has_mctrl	= 1,
+ };
+ 
+ static const struct sc16is7xx_devtype sc16is760_devtype = {
+ 	.name		= "SC16IS760",
+-	.nr_gpio	= 4,
++	.nr_gpio	= 8,
+ 	.nr_uart	= 1,
+-	.has_mctrl	= 1,
+ };
+ 
+ static const struct sc16is7xx_devtype sc16is762_devtype = {
+ 	.name		= "SC16IS762",
+-	.nr_gpio	= 0,
++	.nr_gpio	= 8,
+ 	.nr_uart	= 2,
+-	.has_mctrl	= 1,
+ };
+ 
+ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+-- 
+2.30.2
 
-greg k-h
