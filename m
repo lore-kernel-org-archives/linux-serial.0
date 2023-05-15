@@ -2,81 +2,111 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D06C77B7D
-	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 03:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79158C7EE24
+	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 06:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbjEODtr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 May 2023 23:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        id S238513AbjEOGY3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 May 2023 02:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235181AbjEODtq (ORCPT
+        with ESMTP id S239340AbjEOGY2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 May 2023 23:49:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0137114;
-        Sun, 14 May 2023 20:49:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B8A360FE6;
-        Mon, 15 May 2023 03:49:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483ACC433D2;
-        Mon, 15 May 2023 03:49:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1684122584;
-        bh=EUj7znvCGp1G8Lnb+QoBaZCBVv84NL+yeZsmz1wRgc4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m7/dxqYtEmuwkdMvJxwT7Bq7Blq5x3uGDESPrtsSuWb2dUJfVmuR7WhUkfywAIMpw
-         an/8ZA/lxBxa0P1TIrUyJLDqN/iqOSTtAEdAaBW2dD4wN/JJR2OQL+TfVSGu4OyLvY
-         P1oBLZkWSYnayKUAqOqDuiIFGHKycYTtED62lWyA=
-Date:   Mon, 15 May 2023 05:49:41 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_pci: remove unreachable code for ASIX
- devices
-Message-ID: <2023051533-harmonize-ozone-bc72@gregkh>
-References: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com>
- <2023051343-cringing-junction-54f7@gregkh>
- <188db6e4-d1de-6643-f6e1-5cb3807b28ee@linux.intel.com>
+        Mon, 15 May 2023 02:24:28 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620F41FE8
+        for <linux-serial@vger.kernel.org>; Sun, 14 May 2023 23:24:20 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9659f452148so2246685666b.1
+        for <linux-serial@vger.kernel.org>; Sun, 14 May 2023 23:24:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1684131859; x=1686723859;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8ZrCCJnB8j04SQidDp73H5RlpBN8W7gZ1uSfWyGv/a0=;
+        b=gw8iMh754Svye3MoH+GldEiAvTGQQ3ivNI4h9pqyp5ulva34F/fRSSXTHRZrTh5qzs
+         UCZKLAvuLoPMqtYIyZI9y5iqamV6v0lLZDIm39CVNRaXT1ptv7iyTHPWkKezjx2HSMra
+         EVvPokJmbZe3x1BxjF1oo/ju1eh1ktk1QTxLgtf3Il3PvdTcOACQiuiPzR3KrOauzvBs
+         zLKcxwTWzFe3EIkgo7KYO6tVHvXSMKFf3ZZXtOC9xY4s7FJoRNM7detu2IexNxkmHJEW
+         L5es9j/sFYxpWMvQ0VdZGWxmkOesVtUFgTbUP7KEBPPKR52rwzdoS3EOYjeUgR1qvxT8
+         FgeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684131859; x=1686723859;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8ZrCCJnB8j04SQidDp73H5RlpBN8W7gZ1uSfWyGv/a0=;
+        b=kl49iazYYtZZn8mm007MzUDvj/b9m3lkqqJh3oCU9NdY+hxvTG9ImgTg2YsC62yu/K
+         s5hN14aVJivT8Qb8z4sT1xae3mu7yS4e1RFqS8riFctbX39v5PT6q+u7Y0ubQubuETWu
+         blV5ddAkiWQtVYg4IsLeNb2jfG/lkcXaBOEinQ6cQsYoWut6k+6VTGciIq2bCFpdXIVT
+         sqmg/VZUw1u1wxDfcvxyWsleXGw3YoPufriCbFGvsIsU+hfHwGfDQd5i1mE6Vdh+chAj
+         fVMW8DLgE6bJ5Qx2vwvNbioRW9yBr70ssAFCfeVSLwmyLSq2OW4wjyy5kqmTp4qqjMLk
+         ytpg==
+X-Gm-Message-State: AC+VfDxMPB+shX/NSWB2y0upJV8CUoKMWhOPRVWolUVzVLjzMFEuu6bG
+        AUr/yaormpYAY/rG3AoEGsrPNQ==
+X-Google-Smtp-Source: ACHHUZ4k7nrcgyH1Qra2Mu296AsBuB70tNW9OEut7qSvtCarjgHLds9kwSn1mp7vLBj5nECNleh6Mw==
+X-Received: by 2002:a17:907:6d85:b0:966:5eb6:40e1 with SMTP id sb5-20020a1709076d8500b009665eb640e1mr25219014ejc.74.1684131858857;
+        Sun, 14 May 2023 23:24:18 -0700 (PDT)
+Received: from krzk-bin ([2a02:810d:15c0:828:6470:25b8:7c2d:1992])
+        by smtp.gmail.com with ESMTPSA id ci18-20020a170907267200b00959c6cb82basm8981963ejc.105.2023.05.14.23.24.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 May 2023 23:24:18 -0700 (PDT)
+Date:   Mon, 15 May 2023 08:24:16 +0200
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Palmer Dabbelt <palmer@rivosinc.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-riscv@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-serial@vger.kernel.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 03/10] dt-bindings: serial: add documentation for
+ Bouffalolab UART Driver
+Message-ID: <20230515062416.mnxuudjbx44skclh@krzk-bin>
+References: <20230514165651.2199-1-jszhang@kernel.org>
+ <20230514165651.2199-4-jszhang@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <188db6e4-d1de-6643-f6e1-5cb3807b28ee@linux.intel.com>
+In-Reply-To: <20230514165651.2199-4-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 15, 2023 at 10:36:30AM +0800, Jiaqing Zhao wrote:
+On Mon, 15 May 2023 00:56:44 +0800, Jisheng Zhang wrote:
+> Add bindings doc for Bouffalolab UART Driver
 > 
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+> ---
+>  .../serial/bouffalolab,bl808-uart.yaml        | 47 +++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
 > 
-> On 2023-05-13 18:28, Greg Kroah-Hartman wrote:
-> > On Wed, May 10, 2023 at 02:28:56PM +0000, Jiaqing Zhao wrote:
-> >> PCI_VENDOR_ID_ASIX (0x9710) is the same as PCI_VENDOR_ID_NETMOS. In
-> >> pci_serial_quirks array, the NetMos entry always takes precedence over
-> >> the ASIX entry. So the code for ASIX devices is always unreachable,
-> >> even when it was initially merged. Since the NetMos vendor driver
-> >> doesn't mention such FIFO bug, it's safe to remove the code.
-> >>
-> >> This reverts commit eb26dfe8aa7e ("8250: add support for ASIX devices
-> >> with a FIFO bug").
-> >>
-> >> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-> > 
-> > Please follow the documented Intel kernel developer requirements before
-> > you submit this again, based on the changes that process will require.
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Sorry I am unable to find this "Intel kernel developer requirements". Is
-> there any link or contact where I can find this information? Thank you.
 
-Contact the Intel Linux developer team and they will point you at them.
-This is a company-wide requirement, it is odd that your normal "Here is
-how you can contribute to Linux!" training at Intel did not cover it?
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-thanks,
+yamllint warnings/errors:
 
-greg k-h
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/serial/bouffalolab,bl808-uart.yaml#
+
+See https://patchwork.ozlabs.org/patch/1781053
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
