@@ -2,80 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E0EC7EE25
-	for <linux-serial@archiver.kernel.org>; Sun, 14 May 2023 23:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC09AC77B7F
+	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 01:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbjENXjZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 May 2023 19:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        id S230190AbjEOBwv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 May 2023 21:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbjENXjY (ORCPT
+        with ESMTP id S229976AbjEOBwv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 May 2023 19:39:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E710E6;
-        Sun, 14 May 2023 16:39:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38A4961290;
-        Sun, 14 May 2023 23:39:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE78C433D2;
-        Sun, 14 May 2023 23:39:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684107562;
-        bh=UaKQd7JGnnIhaE2P6Uv9otEEJS3MWlvbWfKVnt8tm50=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ym9b1hIewy3LcWK8uerVc+T0edQyUjw6sbk43zg29D8HcMvmRUGaX6jFJhnyPWVDp
-         jBmv8+ZsWr58Ou0R5Sj+STSutBJui2B0qRLXZ+7Mpg0RIUbCffx68SgZAtsQh8yBn1
-         Ovr832HqjVXTwej0377wJyozx3dY2WQDcrnlfYtJ0asjidOkBpOoFE+rTQug81fmvc
-         ElOkNZV+3IhyMNxvW3Edgvmzz/6yYDm5f857izJJGc4dyGJ1obDe4Ecd3Oc6sv4ifi
-         ZZMHsj9R2DhG1FMeXbgUxBPyAM0RF3J6TLvVqz1IolAb57gIqjDvwYKzpXrOCzlwqD
-         RYczemM5WLzFw==
-Date:   Mon, 15 May 2023 07:28:10 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Conor Dooley <conor@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: Re: [PATCH v3 03/10] dt-bindings: serial: add documentation for
- Bouffalolab UART Driver
-Message-ID: <ZGFuikzSsP81/d23@xhacker>
-References: <20230514165651.2199-1-jszhang@kernel.org>
- <20230514165651.2199-4-jszhang@kernel.org>
- <20230514-bust-slam-10c7b9cbe455@spud>
+        Sun, 14 May 2023 21:52:51 -0400
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DFC10E9;
+        Sun, 14 May 2023 18:52:49 -0700 (PDT)
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-6436e075166so9027331b3a.0;
+        Sun, 14 May 2023 18:52:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684115569; x=1686707569;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=E0suyFxCmAkOw6AgMCfdjO1B28V30GfAoapR+6WV58I=;
+        b=OWhOypm8sxtjsZm9jbpMnB4BlqvtXCDdVUKO7z03JZjsn6PZHqqSZ28JlPYfN24uSF
+         7c35jCI329y+7IRkje29eoQ7kQQuT0w//v69zvZG5+6hE6/Buwf655X9JrmsljcRnUZt
+         U9Jnu76Vtu3k6foGNgxyVkMfAfXEohoytF0j4HhP482aSm6cEMjQjSvlp/30OHtJYkam
+         KxO2PxILVeduTuPOa5MDDvn9oYYkq10PCndhc3Fv4FGvHlShnxdD/OYVHL+SwcYPRgqc
+         WPb9hNB6MDEjkFSXjskRpKRREC2U9HseE3J4cDRMeEuegQCw0gSTrQN6eXCTlh/3GUj+
+         cL3A==
+X-Gm-Message-State: AC+VfDx0Ipv63mV6Rn7rxWB/dJNX2hreLBML6MFEZVGU1pc+C7e8/9MU
+        eNm9luyf1BjXFchkYLgibZYVgE5HT88=
+X-Google-Smtp-Source: ACHHUZ77Y7418OU7UeRduhisRYiaujYGLlK5fknTtsdDWxJ1NZMWrG5aO3zQVDFP/bIHFE1Jf1AOGQ==
+X-Received: by 2002:a05:6a00:cca:b0:63d:5de3:b3f2 with SMTP id b10-20020a056a000cca00b0063d5de3b3f2mr46671589pfv.18.1684115568733;
+        Sun, 14 May 2023 18:52:48 -0700 (PDT)
+Received: from localhost ([116.128.244.169])
+        by smtp.gmail.com with ESMTPSA id c1-20020aa78e01000000b00622e01989cbsm4274138pfr.176.2023.05.14.18.52.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 May 2023 18:52:48 -0700 (PDT)
+From:   Hongyu Xie <xiehongyu1@kylinos.cn>
+To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hongyu Xie <xiehongyu1@kylinos.cn>
+Subject: [PATCH v2 -next] tty: serial: pl011: set UART011_CR_RXE in pl011_set_termios after port shutdown
+Date:   Mon, 15 May 2023 09:52:40 +0800
+Message-Id: <20230515015240.38565-1-xiehongyu1@kylinos.cn>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230514-bust-slam-10c7b9cbe455@spud>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, May 14, 2023 at 07:17:27PM +0100, Conor Dooley wrote:
-> On Mon, May 15, 2023 at 12:56:44AM +0800, Jisheng Zhang wrote:
-> 
-> > +$id: http://devicetree.org/schemas/serial/bouffalolab,uart.yaml#
-> 
-> $id: relative path/filename doesn't match actual path or filename
->         expected: http://devicetree.org/schemas/serial/bouffalolab,bl808-uart.yaml#
-> 
-> Please test the bindings before submission - even dtbs_check catches
-> that one!
+UART011_CR_RXE is set in pl011_startup() during normal initialization, and
+cleared by pl011_disable_uart() during port shutdown.
 
-Aha, I knew the reason. I did run dt_binding_check and dtbs_check,
-but then I read one of comments in v2 which suggests the renaming,
-that's to say the dtbs_check is done before the renmaing. Sorry for
-confusion
+You can use a none-console port in poll mode like kgdboc does with
+tty_find_polling_driver() after a port shutdown. But pl011_startup() is not
+called in tty_find_polling_driver(). So you need to set UART011_CR_RXE to
+reenable receive function.
+
+Not sure setting UART011_CR_RXE in pl011_set_termios() is a good idea
+though.
+
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+---
+
+v2: fix a typo in commit message and add "tty" in subject
+
+ drivers/tty/serial/amba-pl011.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index d8c2f3455eeb..c5c3f4674459 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2166,6 +2166,13 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * ----------^----------^----------^----------^-----
+ 	 */
+ 	pl011_write_lcr_h(uap, lcr_h);
++
++	/*
++	 * Receive was disabled by pl011_disable_uart during shutdown.
++	 * Need to reenable receive if you need to use a tty_driver
++	 * returns from tty_find_polling_driver() after a port shutdown.
++	 */
++	old_cr |= UART011_CR_RXE;
+ 	pl011_write(old_cr, uap, REG_CR);
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+-- 
+2.34.1
 
