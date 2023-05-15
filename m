@@ -2,165 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0958FC77B7D
-	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 16:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FABC77B75
+	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 16:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243121AbjEOQwT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 May 2023 12:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
+        id S243298AbjEOQ62 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 May 2023 12:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243159AbjEOQwG (ORCPT
+        with ESMTP id S243283AbjEOQ61 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 May 2023 12:52:06 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C05518C;
-        Mon, 15 May 2023 09:52:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=b+W/F7yXZR7s3otsypsoipKP62aBFg8kZ9xQo9eyh/4=; b=InYa3CgIkshvdnMxAk5ao/bQ0I
-        yrBJ1N29URrJWujN6c3ZJ2gLjM0SqV+qzzlN0IalOB5ZQSpqmMBZpCLGJSKGsog38vOCaScX/3yZg
-        ZFaJbwZjrnoIMewuE9liNeb/uxQqPFSbQzjnbTXAb6Mq3MA6nymy2yPQdhzFaxPYQO2I=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:48548 helo=debian-acer)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1pybQR-0003hf-Mu; Mon, 15 May 2023 12:51:56 -0400
-Date:   Mon, 15 May 2023 12:51:55 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Lech Perczak <l.perczak@camlintechnologies.com>,
-        Tomasz =?UTF-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <20230515125155.bf6d64c292ba96f4f6971ac0@hugovil.com>
-In-Reply-To: <2023051551-quickstep-outshine-5526@gregkh>
-References: <20230515160206.2801991-1-hugo@hugovil.com>
-        <2023051551-quickstep-outshine-5526@gregkh>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [RFC PATCH] Revert
- "sc16is7xx: Separate GPIOs from modem control lines"
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Mon, 15 May 2023 12:58:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C2E76B4;
+        Mon, 15 May 2023 09:58:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF3062A44;
+        Mon, 15 May 2023 16:58:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A470BC433EF;
+        Mon, 15 May 2023 16:58:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1684169903;
+        bh=6BQOnnLnMvzGvxFLqtdRHmW64RX2LYl5ly/0PZlbWY4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uFA00hLTT5BbFjhLbVztbrAoZT+hr5ViQyB6ttyIf7aUbfStvozk22/i/6bAcrdg6
+         cOXaJ8HN8AS5wkECfmYsjWqmoELp8BIhmyltHys4ngMw16sKLauCO1xeq6HGGsmKex
+         MSFSCp/eBwuFj3PmRoQhrC8YGmxw1IpVxS7uJ7f0ARLSzo7SskAoZFowQyVUderMAU
+         Dk2qPGrvwwB/IAXx9WENV3imzu5pacDz3Bm1apJ4YRz3/V3UjLuXwWPq2nduKPSx0h
+         gt2sERrWqrHBakuTYxNmDdQjBKrceNd+4Hvn+9hOLBvMPHAtXatfbl/wTGIVwPd/Qk
+         4ptkXcYrwi4eA==
+Date:   Mon, 15 May 2023 17:58:17 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: Re: [PATCH v3 03/10] dt-bindings: serial: add documentation for
+ Bouffalolab UART Driver
+Message-ID: <20230515-florist-perky-f26b996f2179@spud>
+References: <20230514165651.2199-1-jszhang@kernel.org>
+ <20230514165651.2199-4-jszhang@kernel.org>
+ <20230514-bust-slam-10c7b9cbe455@spud>
+ <ZGFuikzSsP81/d23@xhacker>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="YTtL81Hy5mMcU1A7"
+Content-Disposition: inline
+In-Reply-To: <ZGFuikzSsP81/d23@xhacker>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
 
-On Mon, 15 May 2023 18:20:02 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+--YTtL81Hy5mMcU1A7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Mon, May 15, 2023 at 12:02:07PM -0400, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > This reverts commit 679875d1d8802669590ef4d69b0e7d13207ebd61.
-> > 
-> > Because of this commit, it is no longer possible to use the 16 GPIO
-> > lines as dedicated GPIOs on the SC16IS752.
-> > 
-> > Reverting it makes it work again.
-> > 
-> > The log message of the original commit states:
-> >     "Export only the GPIOs that are not shared with hardware modem
-> >     control lines"
-> > 
-> > But there is no explanation as to why this decision was taken to
-> > permanently set the function of the GPIO lines as modem control
-> > lines. AFAIK, there is no problem with using these lines as GPIO or modem
-> > control lines.
-> > 
-> > Maybe after reverting this commit, we could define a new
-> > device-tree property named, for example,
-> > "use-modem-control-lines", so that both options can be supported.
-> > 
-> > Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
-> > lines")
-> 
-> Please do not line-wrap these lines.
+On Mon, May 15, 2023 at 07:28:10AM +0800, Jisheng Zhang wrote:
+> On Sun, May 14, 2023 at 07:17:27PM +0100, Conor Dooley wrote:
+> > On Mon, May 15, 2023 at 12:56:44AM +0800, Jisheng Zhang wrote:
+> >=20
+> > > +$id: http://devicetree.org/schemas/serial/bouffalolab,uart.yaml#
+> >=20
+> > $id: relative path/filename doesn't match actual path or filename
+> >         expected: http://devicetree.org/schemas/serial/bouffalolab,bl80=
+8-uart.yaml#
+> >=20
+> > Please test the bindings before submission - even dtbs_check catches
+> > that one!
+>=20
+> Aha, I knew the reason. I did run dt_binding_check and dtbs_check,
+> but then I read one of comments in v2 which suggests the renaming,
+> that's to say the dtbs_check is done before the renmaing. Sorry for
+> confusion
 
-Ok.
+No worries.
+Serial aisde, rest of the series looks grand to me, perhaps you want to
+resubmit the serial bits separately & I'll grab the riscv bits once the
+serial side is sorted out?
 
-> > 
-> 
-> Nor is a blank line needed here.
+--YTtL81Hy5mMcU1A7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Ok.
+-----BEGIN PGP SIGNATURE-----
 
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > ---
-> >  drivers/tty/serial/sc16is7xx.c | 14 ++++----------
-> >  1 file changed, 4 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> > index 5bd98e4316f5..25f1b2f6ec51 100644
-> > --- a/drivers/tty/serial/sc16is7xx.c
-> > +++ b/drivers/tty/serial/sc16is7xx.c
-> > @@ -306,7 +306,6 @@ struct sc16is7xx_devtype {
-> >  	char	name[10];
-> >  	int	nr_gpio;
-> >  	int	nr_uart;
-> > -	int	has_mctrl;
-> >  };
-> >  
-> >  #define SC16IS7XX_RECONF_MD		(1 << 0)
-> > @@ -447,35 +446,30 @@ static const struct sc16is7xx_devtype sc16is74x_devtype = {
-> >  	.name		= "SC16IS74X",
-> >  	.nr_gpio	= 0,
-> >  	.nr_uart	= 1,
-> > -	.has_mctrl	= 0,
-> >  };
-> >  
-> >  static const struct sc16is7xx_devtype sc16is750_devtype = {
-> >  	.name		= "SC16IS750",
-> > -	.nr_gpio	= 4,
-> > +	.nr_gpio	= 8,
-> 
-> I think this one line change is all you really need here, right?  the
-> otner changes do nothing in this patch, so you should just create a new
-> one changing this value.  Oh, and this one:
-> 
-> >  	.nr_uart	= 1,
-> > -	.has_mctrl	= 1,
-> >  };
-> >  
-> >  static const struct sc16is7xx_devtype sc16is752_devtype = {
-> >  	.name		= "SC16IS752",
-> > -	.nr_gpio	= 0,
-> > +	.nr_gpio	= 8,
-> 
-> right?
-> 
-> Don't mess with the has_mctrl stuff, that's not relevant here.
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGJkqQAKCRB4tDGHoIJi
+0jbsAQDmdx3opFq95JKgP8MHlcdz0QcdrvfeH/2ZDILcK+oWWAD/YaBNfF32rw1t
+yXQ9e/DkpxyDG+ftGg6vVGK3FORScA8=
+=PWZq
+-----END PGP SIGNATURE-----
 
-Sorry, I just noticed that simply reverting commit 679875d1d880 is not sufficient (and will not compile). We must also revert part of commit:
-21144bab4f11 ("sc16is7xx: Handle modem status lines").
-
-The problem is that the commit 679875d1d880 was incomplete, and it was (unfortunately) completed by integrating it in commit 21144bab4f11 ("sc16is7xx: Handle modem status lines"). The relevant change was only these 5 new lines, burried deeply into the second commit: 
-
-@@ -1353,9 +1452,17 @@ static int sc16is7xx_probe(struct device *dev,
-                sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFCR_REG,
-                                     SC16IS7XX_EFCR_RXDISABLE_BIT |
-                                     SC16IS7XX_EFCR_TXDISABLE_BIT);
-+
-+               /* Use GPIO lines as modem status registers */
-+               if (devtype->has_mctrl)
-+                       sc16is7xx_port_write(&s->p[i].port,
-+                                            SC16IS7XX_IOCONTROL_REG,
-+                                            SC16IS7XX_IOCONTROL_MODEM_BIT);
-+
-
-Therefore, I should also remove these lines if we go forward with a revert of the patch (should I add another tag "Fixes..." in that case?).
-
-And what do you think of my proposal to maybe replace has_mctrl with a device tree property so that both modes can be fully supported?
-
-Thank you,
-Hugo.
+--YTtL81Hy5mMcU1A7--
