@@ -2,94 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC09AC77B7F
-	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 01:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E09C77B7D
+	for <linux-serial@archiver.kernel.org>; Mon, 15 May 2023 02:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbjEOBwv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 May 2023 21:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
+        id S232048AbjEOCgg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 May 2023 22:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbjEOBwv (ORCPT
+        with ESMTP id S230281AbjEOCge (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 May 2023 21:52:51 -0400
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DFC10E9;
-        Sun, 14 May 2023 18:52:49 -0700 (PDT)
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-6436e075166so9027331b3a.0;
-        Sun, 14 May 2023 18:52:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684115569; x=1686707569;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=E0suyFxCmAkOw6AgMCfdjO1B28V30GfAoapR+6WV58I=;
-        b=OWhOypm8sxtjsZm9jbpMnB4BlqvtXCDdVUKO7z03JZjsn6PZHqqSZ28JlPYfN24uSF
-         7c35jCI329y+7IRkje29eoQ7kQQuT0w//v69zvZG5+6hE6/Buwf655X9JrmsljcRnUZt
-         U9Jnu76Vtu3k6foGNgxyVkMfAfXEohoytF0j4HhP482aSm6cEMjQjSvlp/30OHtJYkam
-         KxO2PxILVeduTuPOa5MDDvn9oYYkq10PCndhc3Fv4FGvHlShnxdD/OYVHL+SwcYPRgqc
-         WPb9hNB6MDEjkFSXjskRpKRREC2U9HseE3J4cDRMeEuegQCw0gSTrQN6eXCTlh/3GUj+
-         cL3A==
-X-Gm-Message-State: AC+VfDx0Ipv63mV6Rn7rxWB/dJNX2hreLBML6MFEZVGU1pc+C7e8/9MU
-        eNm9luyf1BjXFchkYLgibZYVgE5HT88=
-X-Google-Smtp-Source: ACHHUZ77Y7418OU7UeRduhisRYiaujYGLlK5fknTtsdDWxJ1NZMWrG5aO3zQVDFP/bIHFE1Jf1AOGQ==
-X-Received: by 2002:a05:6a00:cca:b0:63d:5de3:b3f2 with SMTP id b10-20020a056a000cca00b0063d5de3b3f2mr46671589pfv.18.1684115568733;
-        Sun, 14 May 2023 18:52:48 -0700 (PDT)
-Received: from localhost ([116.128.244.169])
-        by smtp.gmail.com with ESMTPSA id c1-20020aa78e01000000b00622e01989cbsm4274138pfr.176.2023.05.14.18.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 May 2023 18:52:48 -0700 (PDT)
-From:   Hongyu Xie <xiehongyu1@kylinos.cn>
-To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hongyu Xie <xiehongyu1@kylinos.cn>
-Subject: [PATCH v2 -next] tty: serial: pl011: set UART011_CR_RXE in pl011_set_termios after port shutdown
-Date:   Mon, 15 May 2023 09:52:40 +0800
-Message-Id: <20230515015240.38565-1-xiehongyu1@kylinos.cn>
-X-Mailer: git-send-email 2.34.1
+        Sun, 14 May 2023 22:36:34 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA6911B;
+        Sun, 14 May 2023 19:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684118193; x=1715654193;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Lmvigu2LVD+dyp7F4wMiiB3aqm5KVe5Jfon5GleiNWg=;
+  b=T2PebQbJ4IriMenf/0kWckndoCsKS6A5oQgp3t0j7oIHE8feG4FHbiwh
+   FN4WY1912P94YbpSM+UMvbptlavajmYJYrUMRg216s4PI39wJj/luELOp
+   WeuZfCkhz0qEcEccarTB+9+tc85kiizOIp/uj29vH6AOvYN5CZAimWlkI
+   Ryq0JDDAJvmFrrMsBxI/4nUfpz66rPSY+9X2HusZtc9DaZiebit2OfY6q
+   o/tDJvh957PFdzoY1I2pVXYzQMMy1P2GFWGZ7CL34cnLlE7j8VK7qiFbf
+   TIP4LwXy+GF3IFUAFdl2I/4k4cCOFxJfqlRsyxDdYqPZltrlTVLaBkLRg
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10710"; a="351128680"
+X-IronPort-AV: E=Sophos;i="5.99,275,1677571200"; 
+   d="scan'208";a="351128680"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2023 19:36:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10710"; a="733697378"
+X-IronPort-AV: E=Sophos;i="5.99,275,1677571200"; 
+   d="scan'208";a="733697378"
+Received: from jiaqingz-mobl.ccr.corp.intel.com (HELO [10.254.210.235]) ([10.254.210.235])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2023 19:36:32 -0700
+Message-ID: <188db6e4-d1de-6643-f6e1-5cb3807b28ee@linux.intel.com>
+Date:   Mon, 15 May 2023 10:36:30 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH] serial: 8250_pci: remove unreachable code for ASIX
+ devices
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com>
+ <2023051343-cringing-junction-54f7@gregkh>
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+In-Reply-To: <2023051343-cringing-junction-54f7@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-UART011_CR_RXE is set in pl011_startup() during normal initialization, and
-cleared by pl011_disable_uart() during port shutdown.
 
-You can use a none-console port in poll mode like kgdboc does with
-tty_find_polling_driver() after a port shutdown. But pl011_startup() is not
-called in tty_find_polling_driver(). So you need to set UART011_CR_RXE to
-reenable receive function.
 
-Not sure setting UART011_CR_RXE in pl011_set_termios() is a good idea
-though.
+On 2023-05-13 18:28, Greg Kroah-Hartman wrote:
+> On Wed, May 10, 2023 at 02:28:56PM +0000, Jiaqing Zhao wrote:
+>> PCI_VENDOR_ID_ASIX (0x9710) is the same as PCI_VENDOR_ID_NETMOS. In
+>> pci_serial_quirks array, the NetMos entry always takes precedence over
+>> the ASIX entry. So the code for ASIX devices is always unreachable,
+>> even when it was initially merged. Since the NetMos vendor driver
+>> doesn't mention such FIFO bug, it's safe to remove the code.
+>>
+>> This reverts commit eb26dfe8aa7e ("8250: add support for ASIX devices
+>> with a FIFO bug").
+>>
+>> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+> 
+> Please follow the documented Intel kernel developer requirements before
+> you submit this again, based on the changes that process will require.
+> 
+> thanks,
+> 
+> greg k-h
 
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
----
-
-v2: fix a typo in commit message and add "tty" in subject
-
- drivers/tty/serial/amba-pl011.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index d8c2f3455eeb..c5c3f4674459 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2166,6 +2166,13 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * ----------^----------^----------^----------^-----
- 	 */
- 	pl011_write_lcr_h(uap, lcr_h);
-+
-+	/*
-+	 * Receive was disabled by pl011_disable_uart during shutdown.
-+	 * Need to reenable receive if you need to use a tty_driver
-+	 * returns from tty_find_polling_driver() after a port shutdown.
-+	 */
-+	old_cr |= UART011_CR_RXE;
- 	pl011_write(old_cr, uap, REG_CR);
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
--- 
-2.34.1
-
+Sorry I am unable to find this "Intel kernel developer requirements". Is
+there any link or contact where I can find this information? Thank you.
