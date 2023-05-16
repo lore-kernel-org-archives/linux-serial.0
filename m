@@ -2,278 +2,156 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955D5C77B7A
-	for <linux-serial@archiver.kernel.org>; Tue, 16 May 2023 08:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6F8C77B7F
+	for <linux-serial@archiver.kernel.org>; Tue, 16 May 2023 10:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231695AbjEPIvh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 May 2023 04:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
+        id S230313AbjEPKQN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 May 2023 06:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231694AbjEPIvg (ORCPT
+        with ESMTP id S231776AbjEPKQM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 May 2023 04:51:36 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 16 May 2023 01:51:34 PDT
-Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.86.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB54421A
-        for <linux-serial@vger.kernel.org>; Tue, 16 May 2023 01:51:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
-        s=mimecast20210310; t=1684227093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UfrwO3I7Wntgx4Yq1x3zHJdd64znZ5MwlGsGgBB2mMg=;
-        b=CGPPZw59fMY8ghCRaOFFQ05qKpkMQ0OhSiNwU0z8NztE9d1kHl3CXQFoI/y992NfcmDtDi
-        tdv9LlxR+q0NNN+yKOcn8olnqYXqo5cu4b3beTR8Yne5nddALRTWfbgUjPX4JoAwLC46iM
-        HKuaC6rDZCzwtk2Cy7+pXtbvVLp+5VA=
-Received: from GBR01-CWL-obe.outbound.protection.outlook.com
- (mail-cwlgbr01lp2059.outbound.protection.outlook.com [104.47.20.59]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- uk-mta-229-QQvvDjvIMjibtnlqK_cf7g-1; Tue, 16 May 2023 09:50:15 +0100
-X-MC-Unique: QQvvDjvIMjibtnlqK_cf7g-1
-Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
- by CWXP123MB3064.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:3a::15) with
+        Tue, 16 May 2023 06:16:12 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2074.outbound.protection.outlook.com [40.107.20.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790214494;
+        Tue, 16 May 2023 03:16:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=enHUBaMQXIRcZcsvfbGDsY0e+zgKEor9Tydu6DWbSH5J3nhBju5b7k+yb/9VL7S3eXYsyZgxWunqoC8QZczO2SCDYQfBgaOEUmVByUyLX5y21uSxv1Yq9msSSM8p9GIO9NIbzpYe6hbiHFn3FvMNa7n6q5LNVDlpQQfPvkI1Pv/oFLtX/0KXrfpnZRB2TITlsyrIvFnJVgu6S0Pv4//Al5c6zsmxDerDmbJqZRT8I3afv0GBAUQNlhmxgrauA3vOlom1Lio2UJJBgOGTLyiW4ZW6s+N+kQ2k3NzxFrEbpKD93lfXckNEp3/qNDXtNhY54K3F0kWYVmID+Pja54UWyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NbvlaIEOok+xfw+k2ssg2oof0mhplIQcJMInjqSHJPc=;
+ b=JcbruSaPMGfMOwboGPluUC7ggTdxbiVV/UnYds8xZaIlyvgaZeFbVMNScpqUM55CgIyKSFNmTKAdIJP9MnSpOynnGQrtSLoCj+T3GH6BK6e+nL1wsXLjPGm+Xe2dbYUAHq9k7gh8fK/CjprNXG4WUryP2QLto9VB0Pw6OpZyVjeWA+X3QjqfJ0Srpgc0Sc9rU4nEd9pY0YPhx9YPS3W+Z2QpLHOXhq+l1J/cKJ93uDdY4U5qVvGKLzC/5lILPUOCH+S+AfDymSqsC4Pz+NURHksHusft11t3nklgBOsxoQ+TemyIv6eR1BpdB+3NHvGsLex6uyzrOTsBO3O2IvW1FA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NbvlaIEOok+xfw+k2ssg2oof0mhplIQcJMInjqSHJPc=;
+ b=eImw0oouDuHozSdH1jy7aVNpyWhx325II3/3X4PC3J7BCq0M3Ba2RXVmuor9hw+v7hGLHthHeya7u73MwEAVbnozGEm6FdzZx0JQq3Xth5nYL/O6pHd9ZLkZIAjbrx3cgLp8XdroT9xVg5wrRqfmrWOmRBAuYU0p+s4XQe1wTic=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DB9PR04MB8107.eurprd04.prod.outlook.com (2603:10a6:10:243::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.32; Tue, 16 May
- 2023 08:50:14 +0000
-Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- ([fe80::6c38:e856:880a:704f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- ([fe80::6c38:e856:880a:704f%7]) with mapi id 15.20.6387.033; Tue, 16 May 2023
- 08:50:14 +0000
-Message-ID: <a27271d5-6d28-d994-b06f-905eea0514aa@camlingroup.com>
-Date:   Tue, 16 May 2023 10:50:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [RFC PATCH] Revert "sc16is7xx: Separate GPIOs from modem control
- lines"
-To:     Hugo Villeneuve <hugo@hugovil.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Lech Perczak <l.perczak@camlintechnologies.com>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Krzysztof_Drobi=c5=84ski?= 
-        <krzysztof.drobinski@camlingroup.com>
-References: <20230515160206.2801991-1-hugo@hugovil.com>
- <2023051551-quickstep-outshine-5526@gregkh>
- <20230515125155.bf6d64c292ba96f4f6971ac0@hugovil.com>
-From:   Lech Perczak <lech.perczak@camlingroup.com>
-In-Reply-To: <20230515125155.bf6d64c292ba96f4f6971ac0@hugovil.com>
-X-ClientProxiedBy: FR0P281CA0070.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:49::20) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:400:142::9)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.33; Tue, 16 May
+ 2023 10:16:05 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::e1cd:e733:d3aa:ea49]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::e1cd:e733:d3aa:ea49%7]) with mapi id 15.20.6387.033; Tue, 16 May 2023
+ 10:16:04 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] tty: serial: fsl_lpuart: make sure to turn off break before enabling CTS
+Date:   Tue, 16 May 2023 18:11:38 +0800
+Message-Id: <20230516101138.24179-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR04CA0004.apcprd04.prod.outlook.com
+ (2603:1096:4:197::22) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|CWXP123MB3064:EE_
-X-MS-Office365-Filtering-Correlation-Id: ba9c4c15-8c17-47e9-a175-08db55ea9095
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|DB9PR04MB8107:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2503af29-fd7d-4868-72e3-08db55f68e98
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: FHXsjIwmJcqoZqVE7k76MM9Dmlm2RjBAOVX1uTyaNSaelgiNhQu2gf8ehsXonnFNaU2uSGu12D1TruA4TgIGgm2zWg5/z6Dxruz6Q1viAPiXSeOKj7tDqsW/PTTbhAuU15xXcAzfxhY2RX0nrDm8YP7sEiLZ7rey5q4idCPgDueDidmRLFzfwE8stiDUOoMXBdC1kq4GCX5pU0tH5YuxgusRYjmw3uFNZyb+PgJLWOak9WiuuRRQ8Tj3DUBadwyjA8FlOolNU9fwcCR3eqQ7c6PWqcHvkFhHxUIvV2nw+1oA4ssBKdniXaj4lkk6YHTowpZfg0/NklvCA5L0XA4DWE3bndKu2HWYOMNxd3arGH9Rl2ZVJuRx0/zIEYON8XjjgsZYsYvUBz+FmWQRASFPHj5XYuQtSTiBWnwcsxwPA18Imy1b9YRFfIFobBDPZNgFVR7WEfQ/3JiTY2kNsfWTxsyXJMGSTgRaIhrsbbf9DSKphS3Ci6s8YNLYhtaiExMZ0vy7hWrAR2mDe9ySUPSYq37xirXUqcZmgNY5H+k7Z56IXQUdnS05XpU3a+Afu4qIHC+z1AnoeZqMjH7LoXVNW9COy7SxpKDQw3BpOwfyr8rkHE/dvqLXSPb+B7jd2gFw/tsPoB0KePQ1eUXa+x9mm3vqWwdBzj7boG+2U6n22uc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(376002)(39850400004)(346002)(396003)(136003)(366004)(451199021)(2906002)(41300700001)(316002)(54906003)(478600001)(44832011)(110136005)(6666004)(6486002)(8676002)(31686004)(66946007)(8936002)(66556008)(66476007)(4326008)(5660300002)(966005)(6506007)(6512007)(107886003)(26005)(186003)(83380400001)(36756003)(2616005)(86362001)(38100700002)(31696002)(43740500002)(45980500001)(18886065003);DIR:OUT;SFP:1101
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4kmwt6pyjqxnyRqdvHs5JpIqHart/SsZ1VqVtgcjxoRUQFePOVpCCPHXtIk6iR+hLmgL6VDgqt9u6VhTVL8C8TIjFoM7FRt8cXusNHhf6gkNrpZDJuKIJMZBT2RV1kQaCAkVaPIp6Q1LMxcKB7yyLbfx1wpKhKwbl1Ply9QnVIdZBSRjDaB4qKINZkGv0CUGv7qdR/20uNpnhUmNBqpwdNbdrqm/z0LCFsnIWZXX/fsCBJOA0LlU3Va8YwuBKcS5pgkav72d84w+i0P1BsTOY7JozSbmwGZVOCK050DOBLYEENPsizVT6+9o4ZeM9PHuPwfnMFWVVEy1bh3QAjqfKpzj4ybQfJNr8RfLVYbjobXfq8fWEwAopffrD+aEYZc+qb614t+ni9WeaSrp7IcHQsvjWrXp5znVsTpwjlv6aFbZNtf1rKL4b/p+ujQyockYgpt9zqVltCfYf0tPCJSL2/CCImHZtX/HeX+Ie8KE2wVFBXM/SlIPpmZzaqXTfChuiiookPyl7COUAQBg8qunfl3k8CnDn4UJXDw3G+Gu7Vr3YKvcw7lXRqxg3R7rqdIDBC1eyl17hwJMAXOkDW+U/opmvHNX7jhdhODpVxC7ZID9xPam2Gn1ImSqWQUijuDD
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(451199021)(2906002)(41300700001)(478600001)(5660300002)(4326008)(66946007)(66556008)(66476007)(8676002)(8936002)(44832011)(316002)(6486002)(6666004)(6512007)(26005)(6506007)(1076003)(52116002)(186003)(2616005)(36756003)(38350700002)(86362001)(83380400001)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R6RHyZjOEzLaKNSBSfRyIHQ5qYUtoDqqJ7QiYmbAUyuHyUuVcpv9h69pqYwA?=
- =?us-ascii?Q?6RaJfHKLrMv1WfS9Wreg0nJTLLUI6fSBv840l+Gw78xCcRCLyDKFhcStsQrZ?=
- =?us-ascii?Q?J7StZjUtD9Uu5PXljNY1TS9GAvGDhFEA26S4t4vzdM9wGt5ErtEERhpXuvO3?=
- =?us-ascii?Q?7LGCEIpN5SSB9Jrv9p436/WKDOXtME2Xv8Qtb09v6M0PUQEKMFb5922HKIZH?=
- =?us-ascii?Q?DuXqvttB0TIXeDh0IPZc1e1DejZ/rOr/IiwTvHJ8IlIlc03EDLLNIo9S0NMI?=
- =?us-ascii?Q?6uKKWNacEAHk1rFJvfe0gH3QAIzzvkN1izvs4IjqIsa+N3ZRsbTPNlpe60SV?=
- =?us-ascii?Q?AB2gQiIO84EvEPHpwxfrhgH6DxSJ5DEdLamMrIQ/eDI/RafoBzdBlLqqiAYW?=
- =?us-ascii?Q?pCmgjKrYqSucG5GC+5HDX76uFhNQwIFxW0RycN0qrKu7iw5aHEaYFIMgCF2n?=
- =?us-ascii?Q?gU5ld8vOxo3tUthRSqdrEu5GR3ruSPe7If0lnVhb8SYjKwkOZYA+SaJMjlX2?=
- =?us-ascii?Q?ZHs5hhbSOA6XUdjCmD3nPQKtdrjJ0dVOt94BhF+aNbQVSCfvpZXQLzuPlQHR?=
- =?us-ascii?Q?AAmGAc72N7vGRr7jOE3DPi/YgvUyCce77JYocZgtwg7IbGCroaxJaDDolxzF?=
- =?us-ascii?Q?lDGLzg96PUFqBhPrw66AQUTFds0iteWRKanaHgwBz7nuNvPkdMTmMHcknc2v?=
- =?us-ascii?Q?m7aQwL0kLc8iWII0NFVna2AUyQK9DWR3O0nOebcS4A2laoQt6BGi30i5yPQV?=
- =?us-ascii?Q?8Mpt9efXMPhnPfz1p2ML1QiT6ItzBKZ4lQMNfE98AGSpdoR9cfjzB2BAI7Ii?=
- =?us-ascii?Q?H2S6KUQ1X7AKQqfPwTjcdbEKY9x90RUKYnWKBJujdAtfm3ELA5aoayMFd+dG?=
- =?us-ascii?Q?P2y/pS5tL/xps8UyJr0tnG7hW9PlnG3xXs2o2gmPky+eMuzHR3BLVkW0dNhG?=
- =?us-ascii?Q?Meuuu7jvMlhH3z9s3BIVZPh3tUyj2cROhlw5dJWGjhpAfbJ2ngsQGa03MtzR?=
- =?us-ascii?Q?fzxbiNcL/4bwoby7sfSNFqo0v1K/GO6LbwGYkMriIA+PnboB/Emkas86/LbF?=
- =?us-ascii?Q?uZC+ujcvZN7Lq4Vbu7h8i0UzfQupxcb724numJCGc/fO68Ihntm37+f5kx9c?=
- =?us-ascii?Q?o2rsL55ImaEfI7KXi224KMJIGO/ZObgFqNkar1CrTfv2N8D3FGr2fkGRCHKp?=
- =?us-ascii?Q?PKavpNJYKk22fK+RRbKJSslqg5MTVb9HJy4Efy/SGqUrSV7Gewx2NS5cNab0?=
- =?us-ascii?Q?9SNKmydKXc0RZOmsAgEgMnX1MBJqSBhEtn/GDJLxzJBCForFfgNW9vIdVby7?=
- =?us-ascii?Q?1ldVAO03+1EeG/R6lfqwvq7AnLBOKl/29XfbP6nkmVe/pOrSJ0kPY5t7Nz1N?=
- =?us-ascii?Q?YsJRxcrV5Rm4G7TVdSP8ZZjpOonvJMM62xFh6Uozslt/rHsIUBcQywUJkGS0?=
- =?us-ascii?Q?08INaO/PjWaxO8vMDK5ZgnXYNNhuyi7Dm41Nmgj/OVJMPJe/GpUR0AatQGiP?=
- =?us-ascii?Q?0c1rLg+8GWAbL7FWB3gaFJtumGR769DGAl95gXMP3S4H9J3pmso7vPPsUpqa?=
- =?us-ascii?Q?7LHzPD4nqVEgNFJn5XIOOrvCUDa0WRbF4LhJcAtqo5RKUy/4pIrckTxAgFrx?=
- =?us-ascii?Q?Ug=3D=3D?=
-X-OriginatorOrg: camlingroup.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba9c4c15-8c17-47e9-a175-08db55ea9095
-X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4hW/GL4MAoqfFhSASW5YaKoylVN5cDFuBUMc699ExgLDZiU36vw/DG6qoPii?=
+ =?us-ascii?Q?brfmti4zRdXnJ46hipyVRjvNay/xWZNmn5y90h1QlBUCVxa1CwnqkkJEx2U4?=
+ =?us-ascii?Q?MCYmDjCmuAUh4OnFc1wuKxbmzkQNXvHNK09nIif+kK1WKiKsazI9c50wR7fF?=
+ =?us-ascii?Q?waC0PCuHf1SxHuV9SCz+7gSMC4V5FGYK87Bil1W0ULN7uIJPi/ffI9n5syLr?=
+ =?us-ascii?Q?5WC9dp3BjphRAZDVZmRLq2zR8x0wM/ICEw2pLHcl7lkG82614KaoQD0sKRGq?=
+ =?us-ascii?Q?r9MfXDBWC5kxiWEA3FWEB0G9bX0TcMwSrWWIMQTCSGwrSKG4Lhlyx6V4xoI5?=
+ =?us-ascii?Q?zw4dG5ury+DUPjFk1QbCToosPRbVa/dAJy+7SIxTM9FSbCThxrOxrWETSU6D?=
+ =?us-ascii?Q?NjWm1TYPHdV3Ai0/TjEF2L5QVyIkvM75o6a3dighnZgqQpD8kvYws92GuRPn?=
+ =?us-ascii?Q?dR7z1FnYxUfrXgg868zjI9bzvRU/rFhD0JkuMFOf1Hev3VcjBrPV8fFWf9f0?=
+ =?us-ascii?Q?QB/7wTEP153fRzr0ANoFGJdDjUgUttJLd+d+0Yf+A4+Ue4XojPNp7LSnMswY?=
+ =?us-ascii?Q?is+h76bHKhbudJ7j/LwqfvR1LvHcXl5DenxnmMaNiFnFwpK0tFYLrItwwyAn?=
+ =?us-ascii?Q?DkU5ST3fnTd1bQbSZKEFjJiSyr3lEYmCQg+Uu1gfeujmKYvrJB30N2cXiYFE?=
+ =?us-ascii?Q?6TV1/qi23bvHYCAjQL7OipbOdG1+zTzZVqXaOVD5MQ9uDqr35P+hrPw/rjbo?=
+ =?us-ascii?Q?BmtK0b3APo4+pJtwe9rHp8Si8/m2DURfF1Vw/XgVzBy80rAtP3M7QZtnHxoC?=
+ =?us-ascii?Q?1eMPIFk4u9bI5mvho981dDXfgPubr4pfe/iOKNyhDH2+JUTBBD56jOi7+Di4?=
+ =?us-ascii?Q?ArO9N1FVCqoQjfJaz2Fhw9p6IeG/nM2yxnpqzWtCxco1jWfRtFjF/UZFntp+?=
+ =?us-ascii?Q?dCCPe0k94rhsiCm/nrlO3AZ1FZfq9RQY5/A4rSWveVu7gMZ5ufXSAhC+9Xb1?=
+ =?us-ascii?Q?Nk5uK3vOtbquvzLF99IhMjfBTke1exsT+z1O434FWeJCVCYNmkXEO5ttlNDk?=
+ =?us-ascii?Q?uYBDl2Ux7Hig1eXWQW2Wx4VVl7LGwf+QfSMVGzlfE3YwTjfU5gUQFXZ+O2kn?=
+ =?us-ascii?Q?blxxUUYSIsvQMu6oUTsOepghWD1gD0uyMC/7prmljpfy+2ZFnR6ON3hvkRe8?=
+ =?us-ascii?Q?YRmWvIb1dOpf462pbwimcbUG12pGT4Ys+5vt26aJmfoW2Nz+56u0QDnXQPTs?=
+ =?us-ascii?Q?FZnCDq4khB98fCERRJsWchY4OIgOp0UnCRK57R3wb6JfqiLTwB5PK/KtZXfh?=
+ =?us-ascii?Q?bDbWQobiSt6dAqsIicYhAJs9C0gxhKmxzwGVBAII3vrcLShKSRFFZXrgFrZJ?=
+ =?us-ascii?Q?vFOurDriF5XPW7kVNsfSveoso2Q7h6mrxT3PL54WHpCvDBhgBmRHxHarq0am?=
+ =?us-ascii?Q?NsZ99xmNyZdvTzTmTqa5+9Rs7MG3FQSmvlLOrX4FyeQnaoPQgLyPPe9SDD8D?=
+ =?us-ascii?Q?9zR5DqIDOy/t1oK4nDW29aAZssPUa67oZGfMSrE4FSXePb1zsB4PqHYMhp7j?=
+ =?us-ascii?Q?b/NFlh+mx/ULFC+tOyjH3d/NA96emSArTvvwhjaV?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2503af29-fd7d-4868-72e3-08db55f68e98
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 08:50:14.1015
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 10:16:04.7797
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mEacQMigrSVeGO0d6DLSEjzHhipzSRFIS8iTb8j/26Pik2wveyEtBg0hogmM1vAWZ5qfuJ8zTZupr419leNGxc6f99UeVe9945rFHQTtFYQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWXP123MB3064
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: camlingroup.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-UserPrincipalName: X82Q2wV0xpYSmRrZFPC0Ecx01JVZO+D8XBIva37i5zk3vUMhWi/musU8oCwc7IuCkqHbhHkD7J7yo0jQyH5rAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8107
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Hugo,
+Due to one LPUART IP bug which treat the CTS as higher priority than the
+break signal, that cause the break signal sending through UARTCTRL_SBK
+may impacted by the CTS input if the HW flow control is enabled.
 
-Please see my answers inline.
+So commit c4c81db5cf8b ("tty: serial: fsl_lpuart: disable the CTS when
+send break signal") try to workaround this IP issue, it disables CTS
+before asserting SBK to avoid any interference from CTS, and re-enable
+it when break off.
 
-W dniu 15.05.2023 o=C2=A018:51, Hugo Villeneuve pisze:
-> Hi Greg,
->
-> On Mon, 15 May 2023 18:20:02 +0200
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
->
->> On Mon, May 15, 2023 at 12:02:07PM -0400, Hugo Villeneuve wrote:
->>> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->>>
->>> This reverts commit 679875d1d8802669590ef4d69b0e7d13207ebd61.
->>>
->>> Because of this commit, it is no longer possible to use the 16 GPIO
->>> lines as dedicated GPIOs on the SC16IS752.
->>>
->>> Reverting it makes it work again.
->>>
->>> The log message of the original commit states:
->>>     "Export only the GPIOs that are not shared with hardware modem
->>>     control lines"
->>>
->>> But there is no explanation as to why this decision was taken to
->>> permanently set the function of the GPIO lines as modem control
->>> lines. AFAIK, there is no problem with using these lines as GPIO or mod=
-em
->>> control lines.
->>>
->>> Maybe after reverting this commit, we could define a new
->>> device-tree property named, for example,
->>> "use-modem-control-lines", so that both options can be supported.
->>>
->>> Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control
->>> lines")
->> Please do not line-wrap these lines.
-> Ok.
->
->> Nor is a blank line needed here.
-> Ok.
->
->>> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->>> ---
->>>  drivers/tty/serial/sc16is7xx.c | 14 ++++----------
->>>  1 file changed, 4 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is=
-7xx.c
->>> index 5bd98e4316f5..25f1b2f6ec51 100644
->>> --- a/drivers/tty/serial/sc16is7xx.c
->>> +++ b/drivers/tty/serial/sc16is7xx.c
->>> @@ -306,7 +306,6 @@ struct sc16is7xx_devtype {
->>>     char    name[10];
->>>     int     nr_gpio;
->>>     int     nr_uart;
->>> -   int     has_mctrl;
->>>  };
->>>
->>>  #define SC16IS7XX_RECONF_MD                (1 << 0)
->>> @@ -447,35 +446,30 @@ static const struct sc16is7xx_devtype sc16is74x_d=
-evtype =3D {
->>>     .name           =3D "SC16IS74X",
->>>     .nr_gpio        =3D 0,
->>>     .nr_uart        =3D 1,
->>> -   .has_mctrl      =3D 0,
->>>  };
->>>
->>>  static const struct sc16is7xx_devtype sc16is750_devtype =3D {
->>>     .name           =3D "SC16IS750",
->>> -   .nr_gpio        =3D 4,
->>> +   .nr_gpio        =3D 8,
->> I think this one line change is all you really need here, right?  the
->> otner changes do nothing in this patch, so you should just create a new
->> one changing this value.  Oh, and this one:
->>
->>>     .nr_uart        =3D 1,
->>> -   .has_mctrl      =3D 1,
->>>  };
->>>
->>>  static const struct sc16is7xx_devtype sc16is752_devtype =3D {
->>>     .name           =3D "SC16IS752",
->>> -   .nr_gpio        =3D 0,
->>> +   .nr_gpio        =3D 8,
->> right?
->>
->> Don't mess with the has_mctrl stuff, that's not relevant here.
-> Sorry, I just noticed that simply reverting commit 679875d1d880 is not su=
-fficient (and will not compile). We must also revert part of commit:
-> 21144bab4f11 ("sc16is7xx: Handle modem status lines").
->
-> The problem is that the commit 679875d1d880 was incomplete, and it was (u=
-nfortunately) completed by integrating it in commit 21144bab4f11 ("sc16is7x=
-x: Handle modem status lines"). The relevant change was only these 5 new li=
-nes, burried deeply into the second commit:
-Just as you noticed, this was required to support full set of flow control =
-lines on this device.
-The commit you're trying to revert was a preparation for it. Disabling has_=
-mctrl will break it.
-I kindly suggest to suggest a fix, instead of hurrying a revert, and waitin=
-g for a proper fix later.
->
-> @@ -1353,9 +1452,17 @@ static int sc16is7xx_probe(struct device *dev,
->                 sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFCR_REG,
->                                      SC16IS7XX_EFCR_RXDISABLE_BIT |
->                                      SC16IS7XX_EFCR_TXDISABLE_BIT);
-> +
-> +               /* Use GPIO lines as modem status registers */
-> +               if (devtype->has_mctrl)
-> +                       sc16is7xx_port_write(&s->p[i].port,
-> +                                            SC16IS7XX_IOCONTROL_REG,
-> +                                            SC16IS7XX_IOCONTROL_MODEM_BI=
-T);
-> +
->
-> Therefore, I should also remove these lines if we go forward with a rever=
-t of the patch (should I add another tag "Fixes..." in that case?).
->
-> And what do you think of my proposal to maybe replace has_mctrl with a de=
-vice tree property so that both modes can be fully supported?
-I think the proper solution here, is not to invent a new device tree proper=
-ty for every single use case.
-I would start by looking for other drivers, if, and how they handle similar=
- cases.
-For example, imx-serial driver respects "uart-has-rtscts" property, as do a=
- lot of other controllers built into SoC-s.
-On the other hand, other devices which can also provide GPIOs, respect "gpi=
-o-controller" property.
+Here we enable CTS before turning off the break, there is still a risk
+of the break signal been impacted by CTS input. The correct sequence is
+to disable CTS before asserting SBK, and re-enable CTS after break off,
+which ensures the break signal won't be impacted by CTS, so fix it.
 
-According to SC16IS752 datasheet [1], respecting one of those should be eno=
-ugh,
-as GPIOs can be enabled in groups of four pins even for dual UART version.
-Every group matches a single port, so probably this can be probably selecte=
-d per UART even on dual-port versions.
+Fixes: c4c81db5cf8b ("tty: serial: fsl_lpuart: disable the CTS when send break signal")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-I'll be more than happy to assist with that.
-
->
-> Thank you,
-> Hugo.
->
-[1] https://www.nxp.com/docs/en/data-sheet/SC16IS752_SC16IS762.pdf
-
---=20
-Pozdrawiam/With kind regards,
-Lech Perczak
-
-Sr. Software Engineer
-Camlin Technologies Poland Limited Sp. z o.o.
-Strzegomska 54,
-53-611 Wroclaw
-Tel:     (+48) 71 75 000 16
-Email:   lech.perczak@camlingroup.com
-Website: http://www.camlingroup.com
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 0e56fa64b4ce..d9e46f7b80e5 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1550,20 +1550,19 @@ static void lpuart32_break_ctl(struct uart_port *port, int break_state)
+ 	modem = lpuart32_read(port, UARTMODIR);
+ 
+ 	if (break_state != 0) {
+-		temp |= UARTCTRL_SBK;
+ 		/*
+ 		 * LPUART CTS has higher priority than SBK, need to disable CTS before
+ 		 * asserting SBK to avoid any interference if flow control is enabled.
+ 		 */
+ 		if (cflag & CRTSCTS && modem & UARTMODIR_TXCTSE)
+ 			lpuart32_write(port, modem & ~UARTMODIR_TXCTSE, UARTMODIR);
++		lpuart32_write(port, temp | UARTCTRL_SBK, UARTCTRL);
+ 	} else {
+-		/* Re-enable the CTS when break off. */
++		lpuart32_write(port, temp, UARTCTRL);
++		/* Re-enable the CTS after break off. */
+ 		if (cflag & CRTSCTS && !(modem & UARTMODIR_TXCTSE))
+ 			lpuart32_write(port, modem | UARTMODIR_TXCTSE, UARTMODIR);
+ 	}
+-
+-	lpuart32_write(port, temp, UARTCTRL);
+ }
+ 
+ static void lpuart_setup_watermark(struct lpuart_port *sport)
+-- 
+2.17.1
 
