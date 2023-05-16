@@ -2,469 +2,559 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4829EC7EE23
-	for <linux-serial@archiver.kernel.org>; Tue, 16 May 2023 11:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD79C77B75
+	for <linux-serial@archiver.kernel.org>; Tue, 16 May 2023 13:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232813AbjEPLLS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 May 2023 07:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
+        id S233819AbjEPNvt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 May 2023 09:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232814AbjEPLLD (ORCPT
+        with ESMTP id S232708AbjEPNvp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 May 2023 07:11:03 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967E2D8;
-        Tue, 16 May 2023 04:09:53 -0700 (PDT)
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34GB44eq006482;
-        Tue, 16 May 2023 11:08:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Xnmp6X0qL0zeKYH38Xvfl6ZMW1/Auj5gq04lGrIhuYs=;
- b=YlkmCd7H5u0sgJ0X74Msc0g3bz+X+QmSM6w2BaWeGdcq2KotsdMr/JoDCb63or7niaXh
- nMpGm9Ov/D+SJqaS+VLhUxmWH6nIfUGLABQQVhQuQZUiAeumUtr2iNT82WAps1U0qwR/
- Kb4y4B+8tpyBedF+rJGsVF9jdzDzRHJI6sBN90qltifLz+WacTWJ37UHITUopGARAriI
- WlNIYeUmkvi76XawiSlx9ZAjKoCUWZh56AIVe6IuUulqGdRSichNwWoHbHgjJIKaONhL
- FltTdlagv98hhtZRDLvQ23Gzl05/xkAz+w0LjeoqBwIDQW6yGa/LnePI0ESBIuEasg87 Pg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qm8mrrc6d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 May 2023 11:08:49 +0000
-Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34GB5gt2017876;
-        Tue, 16 May 2023 11:07:01 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qm8mrr7nq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 May 2023 11:07:01 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34G1c0ip027917;
-        Tue, 16 May 2023 11:01:12 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-        by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3qj264sjvm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 May 2023 11:01:12 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-        by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34GB19vt24445640
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 May 2023 11:01:09 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B675A20043;
-        Tue, 16 May 2023 11:01:09 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 596E220040;
-        Tue, 16 May 2023 11:01:09 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Tue, 16 May 2023 11:01:09 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
+        Tue, 16 May 2023 09:51:45 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2040.outbound.protection.outlook.com [40.107.237.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475C64691;
+        Tue, 16 May 2023 06:51:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NkKiRcJ7uiZPimt/Sz+uhsQsvB1KXjiOxahShyh2HAw6u4frxMA6CK9ekYKMAyKFLeJCtSUfthQMEHlEINGwynXIO8fGPsgJ0OZm5matuSg7oMdwpH0n6LltzXgX8WkA4jcKoWDCUgGKtquzy0GqQieORJQBz3kDYcdRouGv2se/aBEeEYytvQXXzxkifomLayJtFLOATWuZXbhNLzADrhiEVZ/prHBVcXT/rMhNEgDX5zxWOnMVDpc++8fPcJnOCFZa8FYvkUlPBOOsw4tL21sI5jrF05MA88eO/xso1VCRVpOvNIgf8FP4pkwgd2j21oMGiXjB3OSNPWP2+s9UUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R2ZgRpCc/7+ww9IN5ckUA3E+YG3MxBndy5MLIRl9WYw=;
+ b=YalqqcfeIx5wceDCYOdmlu4Fr0aAKRsOuDX3FKMVy3SxtPHbdO+aXZ6Kq2ntCtF3hZ0pqxvXtY0lMqtCRPelJyb53gFw0J7fNzT00yIQ0pGDCpcax9eSusQgTbEgmWAbjIcNy0TojbIxwFWXBlZwbmFhWZcL68wuAdkQqDOqrAzqCQTLHjvH27/FWfalsT5L3lEFsBZ9dr96IqXWB1sPrrLZGtigJxR/JNMylmI0PcYOXXu8xnweXG6SNr9AQbSmltT8cdBzDbB7tlIQ96ZVclDTKj1O+Ib6Gp1nWbWEMK4iUP0FvuWY+KY6QVWviYIOk0GnrfSmTeSZaz5J6MIzvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R2ZgRpCc/7+ww9IN5ckUA3E+YG3MxBndy5MLIRl9WYw=;
+ b=RxTXlBGwIn4+NJwTYx3gvXWeisYprpMBCgCXYDU1ox77EuMh7kDy9phfm4hHdMXd+4G92oAzWACfeElvh3c3EtYQgmHU5k0pspA05F5OaYQOsOlTwxQGRn8yHWgHkTeG4j0QnIbzX5KuFPq5WCxaoHtnm0lZt3Ns7cPse/8yA28=
+Received: from DM6PR02CA0042.namprd02.prod.outlook.com (2603:10b6:5:177::19)
+ by PH7PR12MB6442.namprd12.prod.outlook.com (2603:10b6:510:1fa::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Tue, 16 May
+ 2023 13:51:37 +0000
+Received: from DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:177:cafe::86) by DM6PR02CA0042.outlook.office365.com
+ (2603:10b6:5:177::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.31 via Frontend
+ Transport; Tue, 16 May 2023 13:51:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT033.mail.protection.outlook.com (10.13.172.221) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6411.15 via Frontend Transport; Tue, 16 May 2023 13:51:37 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 16 May
+ 2023 08:51:35 -0500
+From:   Michal Simek <michal.simek@amd.com>
+To:     <piyush.mehta@amd.com>, <nava.kishore.manne@amd.com>,
+        <sai.krishna.potthuri@amd.com>, <shubhrajyoti.datta@amd.com>,
+        <vishal.sagar@amd.com>, <kalyani.akula@amd.com>,
+        <bharat.kumar.gogada@amd.com>, <linux-kernel@vger.kernel.org>,
+        <monstr@monstr.eu>, <michal.simek@xilinx.com>, <git@xilinx.com>
+CC:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "Bartosz Golaszewski" <brgl@bgdev.pl>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Conor Dooley" <conor+dt@kernel.org>,
+        Damien Le Moal <dlemoal@kernel.org>,
+        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v4 33/41] tty: serial: handle HAS_IOPORT dependencies
-Date:   Tue, 16 May 2023 13:00:29 +0200
-Message-Id: <20230516110038.2413224-34-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230516110038.2413224-1-schnelle@linux.ibm.com>
-References: <20230516110038.2413224-1-schnelle@linux.ibm.com>
+        Guenter Roeck <linux@roeck-us.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Jolly Shah <jolly.shah@xilinx.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        "Manish Narani" <manish.narani@xilinx.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Rajan Vaja <rajan.vaja@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Srinivas Neeli <srinivas.neeli@amd.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tom Rix <trix@redhat.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Wu Hao <hao.wu@intel.com>, Xu Yilun <yilun.xu@intel.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-clk@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-fpga@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>
+Subject: [PATCH] dt-bindings: xilinx: Switch xilinx.com emails to amd.com
+Date:   Tue, 16 May 2023 15:51:08 +0200
+Message-ID: <f5b2bd1e78407e4128fc8f0b5874ba723e710a88.1684245058.git.michal.simek@amd.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=20389; i=michal.simek@amd.com; h=from:subject:message-id; bh=UJh2IbZcbImCfax+wplr5YvbR5aWcrJrXIpjLjnMnSs=; b=owGbwMvMwCR4yjP1tKYXjyLjabUkhpTkLk+OHWYbE3oiF9ay/d2mueFPf5/0P6sGc7nIqE1zT j1Yrx/ZEcvCIMjEICumyCJtc+XM3soZU4QvHpaDmcPKBDKEgYtTACYy/zvDPJta2ci3Xy+8/Lu8 N1UhN3blTv6MpQzzXQ4Gnal0DlhhWi333uJTBJdIyNoTAA==
+X-Developer-Key: i=michal.simek@amd.com; a=openpgp; fpr=67350C9BF5CCEE9B5364356A377C7F21FE3D1F91
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: biHOP2Q-2JiF04-XB4LVy_v4nFDt1Nw_
-X-Proofpoint-GUID: H3GNej9JNcqM914NpYfwBLPvDlpiYJ9v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-05-16_04,2023-05-16_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 spamscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 suspectscore=0 adultscore=0 phishscore=0 bulkscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2305160094
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT033:EE_|PH7PR12MB6442:EE_
+X-MS-Office365-Filtering-Correlation-Id: eea31f22-da87-40fd-0b8c-08db5614ab4c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FxBbdi+PqJuPQd3NwHFgquM7450SbmDYv5U/7QfqGNNZIWYg8lyePWtjewTDEJbJ/W4AX9l1RfZsAdy5PK93YG6jVC897ku4VSqPDA4XM3f/1ZUx4OjL+z4Zcxy0aJZKdtqi53yttgve6fJJSVqC9JlAv1PCDuYnf++BZRmKvV6pQD4dV4lHkCFVhIW3NTYjec+w3J/UZDjwGHj3x7FRDWKvQwfOXzbQUfFmNTo1NoHZmEOU99sH8UCu9nTeYRYCA2FYPRaG5pWG3iK/bULaeiB5QA1Lesp5P1igVtubXsBlUqlPeUpu6PE6al7CuBxEBt6steuhO6cdirQOWU9cTYOXk5d00BA4TE1OplPH0zK+kopUP5MUCFcGhGOzzL23uEDcdlEKI+xnDzqkqLunOhrPyU2E4TT48KOetVqKziTAYFmgbrdNDUlv6x9ByvEmRuQ1ZIj2pI/qvgn9T2famQkyU6pMRSLA2kTI8BE6dtyJ40/LLBHz3xF+G8+sZDtM7uXqg30+ZUUiROkoAsniGPWdX6X4r9LWNCwMXvqELWISaw/aoMaBeKDjqDS8513+9vOnD22lJP6RDFAsbohraMllgHaoPP9bummSfU0kE/hpvAp0Q3eoK1BhuahJau3fDCaoB1zHOM1oygZJ8Qfya89rh28ljOJWMjfF8KwD3yWGu769+FuaqZOfeGKh8XyIqFscH4jl5SAGzCeH96/DftpZ6QQ0mZso4oKiQYUPAh01L7tkpNQa60jLUlk5GAv2KJL38YPzZWSBW8O76dkgQPGqtaeaDtkUyqLUuy9epT3OSusM9lp3plq0cx7y4LTB
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(376002)(39860400002)(451199021)(46966006)(40470700004)(36840700001)(36756003)(70586007)(54906003)(110136005)(316002)(478600001)(70206006)(966005)(4326008)(86362001)(81166007)(82740400003)(82310400005)(921005)(40480700001)(2616005)(5660300002)(8676002)(7366002)(7416002)(8936002)(6666004)(30864003)(7406005)(2906002)(44832011)(16526019)(356005)(41300700001)(26005)(186003)(336012)(36860700001)(47076005)(426003)(83380400001)(40460700003)(2101003)(83996005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 13:51:37.5029
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: eea31f22-da87-40fd-0b8c-08db5614ab4c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6442
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-not being declared. We thus need to add HAS_IOPORT as dependency for
-those drivers using them unconditionally. For 8250 based drivers some
-support MMIO only use so fence only the parts requiring I/O ports.
+@xilinx.com is still working but better to switch to new amd.com after
+AMD/Xilinx acquisition.
 
-Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Michal Simek <michal.simek@amd.com>
 ---
-Note: The HAS_IOPORT Kconfig option was added in v6.4-rc1 so
-      per-subsystem patches may be applied independently
 
- drivers/tty/Kconfig                  |  4 +--
- drivers/tty/serial/8250/8250_early.c |  4 +++
- drivers/tty/serial/8250/8250_pci.c   | 14 +++++++++
- drivers/tty/serial/8250/8250_port.c  | 44 +++++++++++++++++++++++-----
- drivers/tty/serial/8250/Kconfig      |  5 ++--
- drivers/tty/serial/Kconfig           |  2 +-
- 6 files changed, 60 insertions(+), 13 deletions(-)
+ Documentation/devicetree/bindings/arm/xilinx.yaml             | 2 +-
+ Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml     | 2 +-
+ .../devicetree/bindings/clock/xlnx,clocking-wizard.yaml       | 2 +-
+ Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml  | 2 +-
+ Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml | 4 ++--
+ .../bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml        | 2 +-
+ .../devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml        | 2 +-
+ Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml  | 2 +-
+ .../devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml       | 2 +-
+ Documentation/devicetree/bindings/gpio/gpio-zynq.yaml         | 2 +-
+ Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml  | 2 +-
+ .../devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml    | 2 +-
+ Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml     | 2 +-
+ .../devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml  | 2 +-
+ .../devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml       | 2 +-
+ .../bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml      | 2 +-
+ .../bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml       | 2 +-
+ Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml  | 2 +-
+ .../devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml        | 2 +-
+ .../devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml      | 2 +-
+ .../devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml    | 2 +-
+ Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml    | 2 +-
+ Documentation/devicetree/bindings/serial/cdns,uart.yaml       | 2 +-
+ Documentation/devicetree/bindings/spi/spi-cadence.yaml        | 2 +-
+ Documentation/devicetree/bindings/spi/spi-xilinx.yaml         | 2 +-
+ Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml    | 2 +-
+ Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml     | 2 +-
+ Documentation/devicetree/bindings/timer/cdns,ttc.yaml         | 2 +-
+ .../devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml   | 4 ++--
+ 29 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
-index 341abaed4ce2..bdd267dbd5e4 100644
---- a/drivers/tty/Kconfig
-+++ b/drivers/tty/Kconfig
-@@ -222,7 +222,7 @@ config MOXA_INTELLIO
+diff --git a/Documentation/devicetree/bindings/arm/xilinx.yaml b/Documentation/devicetree/bindings/arm/xilinx.yaml
+index b3071d10ea65..f57ed0347894 100644
+--- a/Documentation/devicetree/bindings/arm/xilinx.yaml
++++ b/Documentation/devicetree/bindings/arm/xilinx.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq Platforms
  
- config MOXA_SMARTIO
- 	tristate "Moxa SmartIO support v. 2.0"
--	depends on SERIAL_NONSTANDARD && PCI
-+	depends on SERIAL_NONSTANDARD && PCI && HAS_IOPORT
- 	help
- 	  Say Y here if you have a Moxa SmartIO multiport serial card and/or
- 	  want to help develop a new version of this driver.
-@@ -303,7 +303,7 @@ config GOLDFISH_TTY_EARLY_CONSOLE
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
  
- config IPWIRELESS
- 	tristate "IPWireless 3G UMTS PCMCIA card support"
--	depends on PCMCIA && NETDEVICES
-+	depends on PCMCIA && NETDEVICES && HAS_IOPORT
- 	select PPP
- 	help
- 	  This is a driver for 3G UMTS PCMCIA card from IPWireless company. In
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index 0ebde0ab8167..4192b1ae2736 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -48,8 +48,10 @@ static unsigned int serial8250_early_in(struct uart_port *port, int offset)
- 		return readl(port->membase + offset);
- 	case UPIO_MEM32BE:
- 		return ioread32be(port->membase + offset);
-+#ifdef CONFIG_HAS_IOPORT
- 	case UPIO_PORT:
- 		return inb(port->iobase + offset);
-+#endif
- 	case UPIO_AU:
- 		return port->serial_in(port, reg_offset);
- 	default:
-@@ -75,9 +77,11 @@ static void serial8250_early_out(struct uart_port *port, int offset, int value)
- 	case UPIO_MEM32BE:
- 		iowrite32be(value, port->membase + offset);
- 		break;
-+#ifdef CONFIG_HAS_IOPORT
- 	case UPIO_PORT:
- 		outb(value, port->iobase + offset);
- 		break;
-+#endif
- 	case UPIO_AU:
- 		port->serial_out(port, reg_offset, value);
- 		break;
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index c55be6fda0ca..70bd84a05da7 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -847,6 +847,7 @@ static int pci_netmos_init(struct pci_dev *dev)
- 	return num_serial;
- }
+ description: |
+   Xilinx boards with Zynq-7000 SOC or Zynq UltraScale+ MPSoC
+diff --git a/Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml b/Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml
+index 71364c6081ff..b29ce598f9aa 100644
+--- a/Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml
++++ b/Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Ceva AHCI SATA Controller
  
-+#ifdef CONFIG_HAS_IOPORT
- /*
-  * These chips are available with optionally one parallel port and up to
-  * two serial ports. Unfortunately they all have the same product id.
-@@ -973,6 +974,7 @@ static void pci_ite887x_exit(struct pci_dev *dev)
- 	ioport &= 0xffff;
- 	release_region(ioport, ITE_887x_IOSIZE);
- }
-+#endif /* CONFIG_HAS_IOPORT */
+ maintainers:
+-  - Piyush Mehta <piyush.mehta@xilinx.com>
++  - Piyush Mehta <piyush.mehta@amd.com>
  
- /*
-  * Oxford Semiconductor Inc.
-@@ -1255,6 +1257,7 @@ static int pci_asix_setup(struct serial_private *priv,
- #define QOPR_CLOCK_X8		0x0003
- #define QOPR_CLOCK_RATE_MASK	0x0003
+ description: |
+   The Ceva SATA controller mostly conforms to the AHCI interface with some
+diff --git a/Documentation/devicetree/bindings/clock/xlnx,clocking-wizard.yaml b/Documentation/devicetree/bindings/clock/xlnx,clocking-wizard.yaml
+index c1f04830a832..02bd556bd91a 100644
+--- a/Documentation/devicetree/bindings/clock/xlnx,clocking-wizard.yaml
++++ b/Documentation/devicetree/bindings/clock/xlnx,clocking-wizard.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx clocking wizard
  
-+#ifdef CONFIG_HAS_IOPORT
- /* Quatech devices have their own extra interface features */
- static struct pci_device_id quatech_cards[] = {
- 	{ PCI_DEVICE_DATA(QUATECH, QSC100,   1) },
-@@ -1474,6 +1477,7 @@ static int pci_quatech_setup(struct serial_private *priv,
- 		pci_warn(priv->dev, "software control of RS422 features not currently supported.\n");
- 	return pci_default_setup(priv, board, port, idx);
- }
-+#endif /* CONFIG_HAS_IOPORT */
+ maintainers:
+-  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
++  - Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
  
- static int pci_default_setup(struct serial_private *priv,
- 		  const struct pciserial_board *board,
-@@ -1753,6 +1757,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, port, idx);
- }
+ description:
+   The clocking wizard is a soft ip clocking block of Xilinx versal. It
+diff --git a/Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml b/Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml
+index 229af98b1d30..93ae349cf9e9 100644
+--- a/Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml
++++ b/Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Versal clock controller
  
-+#ifdef CONFIG_HAS_IOPORT
- static void kt_handle_break(struct uart_port *p)
- {
- 	struct uart_8250_port *up = up_to_u8250p(p);
-@@ -1796,6 +1801,7 @@ static int kt_serial_setup(struct serial_private *priv,
- 	port->port.handle_break = kt_handle_break;
- 	return skip_tx_en_setup(priv, board, port, idx);
- }
-+#endif /* CONFIG_HAS_IOPORT */
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+   - Jolly Shah <jolly.shah@xilinx.com>
+   - Rajan Vaja <rajan.vaja@xilinx.com>
  
- static int pci_eg20t_init(struct pci_dev *dev)
- {
-@@ -1840,6 +1846,7 @@ pci_wch_ch38x_setup(struct serial_private *priv,
- #define CH384_XINT_ENABLE_REG   0xEB
- #define CH384_XINT_ENABLE_BIT   0x02
+diff --git a/Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml b/Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml
+index 9e8fbd02b150..8aead97a585b 100644
+--- a/Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml
++++ b/Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml
+@@ -7,8 +7,8 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx ZynqMP AES-GCM Hardware Accelerator
  
-+#ifdef CONFIG_HAS_IOPORT
- static int pci_wch_ch38x_init(struct pci_dev *dev)
- {
- 	int max_port;
-@@ -1867,6 +1874,7 @@ static void pci_wch_ch38x_exit(struct pci_dev *dev)
- 	iobase = pci_resource_start(dev, 0);
- 	outb(0x0, iobase + CH384_XINT_ENABLE_REG);
- }
-+#endif /* CONFIG_HAS_IOPORT */
+ maintainers:
+-  - Kalyani Akula <kalyani.akula@xilinx.com>
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Kalyani Akula <kalyani.akula@amd.com>
++  - Michal Simek <michal.simek@amd.com>
  
+ description: |
+   The ZynqMP AES-GCM hardened cryptographic accelerator is used to
+diff --git a/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml b/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml
+index f14f7b454f07..910bebe6cfa8 100644
+--- a/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml
++++ b/Documentation/devicetree/bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx firmware driver
  
- static int
-@@ -2070,6 +2078,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.subdevice	= PCI_ANY_ID,
- 		.setup		= ce4100_serial_setup,
- 	},
-+#ifdef CONFIG_HAS_IOPORT
- 	{
- 		.vendor		= PCI_VENDOR_ID_INTEL,
- 		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
-@@ -2089,6 +2098,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.setup		= pci_default_setup,
- 		.exit		= pci_ite887x_exit,
- 	},
-+#endif
- 	/*
- 	 * National Instruments
- 	 */
-@@ -2210,6 +2220,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.exit		= pci_ni8430_exit,
- 	},
- 	/* Quatech */
-+#ifdef CONFIG_HAS_IOPORT
- 	{
- 		.vendor		= PCI_VENDOR_ID_QUATECH,
- 		.device		= PCI_ANY_ID,
-@@ -2218,6 +2229,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.init		= pci_quatech_init,
- 		.setup		= pci_quatech_setup,
- 	},
-+#endif
- 	/*
- 	 * Panacom
- 	 */
-@@ -2588,6 +2600,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.subdevice      = PCI_ANY_ID,
- 		.setup          = pci_wch_ch38x_setup,
- 	},
-+#ifdef CONFIG_HAS_IOPORT
- 	/* WCH CH384 8S card (16850 clone) */
- 	{
- 		.vendor         = PCIE_VENDOR_ID_WCH,
-@@ -2598,6 +2611,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.exit		= pci_wch_ch38x_exit,
- 		.setup          = pci_wch_ch38x_setup,
- 	},
-+#endif
- 	/*
- 	 * ASIX devices with FIFO bug
- 	 */
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index fe8d79c4ae95..8d8606dc763b 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -401,6 +401,7 @@ static void au_serial_dl_write(struct uart_8250_port *up, int value)
+ maintainers:
+-  - Nava kishore Manne <nava.manne@xilinx.com>
++  - Nava kishore Manne <nava.kishore.manne@amd.com>
  
- #endif
+ description: The zynqmp-firmware node describes the interface to platform
+   firmware. ZynqMP has an interface to communicate with secure firmware.
+diff --git a/Documentation/devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml
+index f47b6140a742..04dcadc2c20e 100644
+--- a/Documentation/devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml
++++ b/Documentation/devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq FPGA Manager
  
-+#ifdef CONFIG_HAS_IOPORT
- static unsigned int hub6_serial_in(struct uart_port *p, int offset)
- {
- 	offset = offset << p->regshift;
-@@ -414,6 +415,7 @@ static void hub6_serial_out(struct uart_port *p, int offset, int value)
- 	outb(p->hub6 - 1 + offset, p->iobase);
- 	outb(value, p->iobase + 1);
- }
-+#endif /* CONFIG_HAS_IOPORT */
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
  
- static unsigned int mem_serial_in(struct uart_port *p, int offset)
- {
-@@ -463,6 +465,7 @@ static unsigned int mem32be_serial_in(struct uart_port *p, int offset)
- 	return ioread32be(p->membase + offset);
- }
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml b/Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml
+index ac6a207278d5..26f18834caa3 100644
+--- a/Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml
++++ b/Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Versal FPGA driver.
  
-+#ifdef CONFIG_HAS_IOPORT
- static unsigned int io_serial_in(struct uart_port *p, int offset)
- {
- 	offset = offset << p->regshift;
-@@ -474,6 +477,24 @@ static void io_serial_out(struct uart_port *p, int offset, int value)
- 	offset = offset << p->regshift;
- 	outb(value, p->iobase + offset);
- }
-+#endif
-+static unsigned int no_serial_in(struct uart_port *p, int offset)
-+{
-+	return (unsigned int)-1;
-+}
-+
-+static void no_serial_out(struct uart_port *p, int offset, int value)
-+{
-+}
-+
-+#ifdef CONFIG_HAS_IOPORT
-+static inline bool is_upf_fourport(struct uart_port *port)
-+{
-+	return port->flags & UPF_FOURPORT;
-+}
-+#else
-+#define is_upf_fourport(x)	false
-+#endif
+ maintainers:
+-  - Nava kishore Manne <nava.manne@xilinx.com>
++  - Nava kishore Manne <nava.kishore.manne@amd.com>
  
- static int serial8250_default_handle_irq(struct uart_port *port);
+ description: |
+   Device Tree Versal FPGA bindings for the Versal SoC, controlled
+diff --git a/Documentation/devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml b/Documentation/devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml
+index 00a8d92ff736..1390ae103b0b 100644
+--- a/Documentation/devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml
++++ b/Documentation/devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq Ultrascale MPSoC FPGA Manager
  
-@@ -485,10 +506,12 @@ static void set_io_from_upio(struct uart_port *p)
- 	up->dl_write = default_serial_dl_write;
+ maintainers:
+-  - Nava kishore Manne <navam@xilinx.com>
++  - Nava kishore Manne <nava.kishore.manne@amd.com>
  
- 	switch (p->iotype) {
-+#ifdef CONFIG_HAS_IOPORT
- 	case UPIO_HUB6:
- 		p->serial_in = hub6_serial_in;
- 		p->serial_out = hub6_serial_out;
- 		break;
-+#endif
+ description: |
+   Device Tree Bindings for Zynq Ultrascale MPSoC FPGA Manager.
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml b/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
+index 572e1718f501..5e2496379a3c 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
++++ b/Documentation/devicetree/bindings/gpio/gpio-zynq.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq GPIO controller
  
- 	case UPIO_MEM:
- 		p->serial_in = mem_serial_in;
-@@ -519,10 +542,17 @@ static void set_io_from_upio(struct uart_port *p)
- 		break;
- #endif
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
  
--	default:
-+#ifdef CONFIG_HAS_IOPORT
-+	case UPIO_PORT:
- 		p->serial_in = io_serial_in;
- 		p->serial_out = io_serial_out;
- 		break;
-+#endif
-+
-+	default:
-+		WARN(1, "Unsupported UART type %x\n", p->iotype);
-+		p->serial_in = no_serial_in;
-+		p->serial_out = no_serial_out;
- 	}
- 	/* Remember loaded iotype */
- 	up->cur_iotype = p->iotype;
-@@ -1379,7 +1409,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	unsigned long irqs;
- 	int irq;
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml b/Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml
+index f333ee2288e7..c1060e5fcef3 100644
+--- a/Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml
++++ b/Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx AXI GPIO controller
  
--	if (port->flags & UPF_FOURPORT) {
-+	if (is_upf_fourport(port)) {
- 		ICP = (port->iobase & 0xfe0) | 0x1f;
- 		save_ICP = inb_p(ICP);
- 		outb_p(0x80, ICP);
-@@ -1398,7 +1428,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	irqs = probe_irq_on();
- 	serial8250_out_MCR(up, 0);
- 	udelay(10);
--	if (port->flags & UPF_FOURPORT) {
-+	if (is_upf_fourport(port)) {
- 		serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
- 	} else {
- 		serial8250_out_MCR(up,
-@@ -1416,7 +1446,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	serial8250_out_MCR(up, save_mcr);
- 	serial_out(up, UART_IER, save_ier);
+ maintainers:
+-  - Neeli Srinivas <srinivas.neeli@xilinx.com>
++  - Neeli Srinivas <srinivas.neeli@amd.com>
  
--	if (port->flags & UPF_FOURPORT)
-+	if (is_upf_fourport(port))
- 		outb_p(save_ICP, ICP);
+ description:
+   The AXI GPIO design provides a general purpose input/output interface
+diff --git a/Documentation/devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml b/Documentation/devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml
+index 31c0fc345903..18e61aff2185 100644
+--- a/Documentation/devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml
++++ b/Documentation/devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml
+@@ -12,7 +12,7 @@ description:
+   PS_MODE). Every pin can be configured as input/output.
  
- 	if (uart_console(port))
-@@ -2381,7 +2411,7 @@ int serial8250_do_startup(struct uart_port *port)
- 	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+ maintainers:
+-  - Piyush Mehta <piyush.mehta@xilinx.com>
++  - Piyush Mehta <piyush.mehta@amd.com>
  
- 	spin_lock_irqsave(&port->lock, flags);
--	if (up->port.flags & UPF_FOURPORT) {
-+	if (is_upf_fourport(&up->port)) {
- 		if (!up->port.irq)
- 			up->port.mctrl |= TIOCM_OUT1;
- 	} else
-@@ -2463,7 +2493,7 @@ int serial8250_do_startup(struct uart_port *port)
- 	 */
- 	up->ier = UART_IER_RLSI | UART_IER_RDI;
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml b/Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml
+index cb24d7b3221c..ff57c5416ebc 100644
+--- a/Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml
++++ b/Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence I2C controller
  
--	if (port->flags & UPF_FOURPORT) {
-+	if (is_upf_fourport(port)) {
- 		unsigned int icp;
- 		/*
- 		 * Enable interrupts on the AST Fourport board
-@@ -2506,7 +2536,7 @@ void serial8250_do_shutdown(struct uart_port *port)
- 		serial8250_release_dma(up);
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
  
- 	spin_lock_irqsave(&port->lock, flags);
--	if (port->flags & UPF_FOURPORT) {
-+	if (is_upf_fourport(port)) {
- 		/* reset interrupts on the AST Fourport board */
- 		inb((port->iobase & 0xfe0) | 0x1f);
- 		port->mctrl |= TIOCM_OUT1;
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 5313aa31930f..2a43bea7d7c3 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -6,7 +6,6 @@
+ allOf:
+   - $ref: /schemas/i2c/i2c-controller.yaml#
+diff --git a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+index 374ffe64016f..aeaddbf574b0 100644
+--- a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
++++ b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+@@ -33,7 +33,7 @@ description: |
+               +------------------------------------------+
  
- config SERIAL_8250
- 	tristate "8250/16550 and compatible serial support"
--	depends on !S390
- 	select SERIAL_CORE
- 	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	help
-@@ -72,7 +71,7 @@ config SERIAL_8250_16550A_VARIANTS
+ maintainers:
+-  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
++  - Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
  
- config SERIAL_8250_FINTEK
- 	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
--	depends on SERIAL_8250
-+	depends on SERIAL_8250 && HAS_IOPORT
- 	help
- 	  Selecting this option will add support for the RS485 capabilities
- 	  of the Fintek F81216A LPC to 4 UART.
-@@ -160,7 +159,7 @@ config SERIAL_8250_HP300
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml b/Documentation/devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml
+index 7d77823dbb7a..43daf837fc9f 100644
+--- a/Documentation/devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml
++++ b/Documentation/devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx MIPI CSI-2 Receiver Subsystem
  
- config SERIAL_8250_CS
- 	tristate "8250/16550 PCMCIA device support"
--	depends on PCMCIA && SERIAL_8250
-+	depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
- 	help
- 	  Say Y here to enable support for 16-bit PCMCIA serial devices,
- 	  including serial port cards, modems, and the modem functions of
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 398e5aac2e77..dc41b3be6800 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -871,7 +871,7 @@ config SERIAL_TXX9_STDSERIAL
+ maintainers:
+-  - Vishal Sagar <vishal.sagar@xilinx.com>
++  - Vishal Sagar <vishal.sagar@amd.com>
  
- config SERIAL_JSM
- 	tristate "Digi International NEO and Classic PCI Support"
--	depends on PCI
-+	depends on PCI && HAS_IOPORT
- 	select SERIAL_CORE
- 	help
- 	  This is a driver for Digi International's Neo and Classic series
+ description: |
+   The Xilinx MIPI CSI-2 Receiver Subsystem is used to capture MIPI CSI-2
+diff --git a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
+index e68c4306025a..6b62d5d83476 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml
+@@ -9,7 +9,7 @@ title: Synopsys DesignWare Universal Multi-Protocol Memory Controller
+ maintainers:
+   - Krzysztof Kozlowski <krzk@kernel.org>
+   - Manish Narani <manish.narani@xilinx.com>
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ description: |
+   Synopsys DesignWare Enhanced uMCTL2 DDR Memory Controller is capable of
+diff --git a/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml b/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
+index 8f72e2f8588a..7864a1c994eb 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml
+@@ -9,7 +9,7 @@ title: Zynq A05 DDR Memory Controller
+ maintainers:
+   - Krzysztof Kozlowski <krzk@kernel.org>
+   - Manish Narani <manish.narani@xilinx.com>
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ description:
+   The Zynq DDR ECC controller has an optional ECC support in half-bus width
+diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+index 24ddc2855b94..4734be456bde 100644
+--- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
++++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: CPM Host Controller device tree for Xilinx Versal SoCs
+ 
+ maintainers:
+-  - Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
++  - Bharat Kumar Gogada <bharat.kumar.gogada@amd.com>
+ 
+ allOf:
+   - $ref: /schemas/pci/pci-bus.yaml#
+diff --git a/Documentation/devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml
+index 598a042850b8..b85f9e36ce4b 100644
+--- a/Documentation/devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq Pinctrl
+ 
+ maintainers:
+-  - Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
++  - Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+ 
+ description: |
+   Please refer to pinctrl-bindings.txt in this directory for details of the
+diff --git a/Documentation/devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml
+index 2722dc7bb03d..cdebfa991e06 100644
+--- a/Documentation/devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx ZynqMP Pinctrl
+ 
+ maintainers:
+-  - Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
++  - Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+   - Rajan Vaja <rajan.vaja@xilinx.com>
+ 
+ description: |
+diff --git a/Documentation/devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml b/Documentation/devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml
+index 11f1f98c1cdc..45792e216981 100644
+--- a/Documentation/devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml
++++ b/Documentation/devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq MPSoC Power Management
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ description: |
+   The zynqmp-power node describes the power management configurations.
+diff --git a/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml b/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
+index 7ed0230f6c67..d1f5eb996dba 100644
+--- a/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
++++ b/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
+@@ -11,7 +11,7 @@ description:
+   The RTC controller has separate IRQ lines for seconds and alarm.
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ allOf:
+   - $ref: rtc.yaml#
+diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+index a8b323d7bf94..e35ad1109efc 100644
+--- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
++++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence UART Controller
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/spi/spi-cadence.yaml b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+index b0f83b5c2cdd..b7552739b554 100644
+--- a/Documentation/devicetree/bindings/spi/spi-cadence.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-cadence.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence SPI controller
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ allOf:
+   - $ref: spi-controller.yaml#
+diff --git a/Documentation/devicetree/bindings/spi/spi-xilinx.yaml b/Documentation/devicetree/bindings/spi/spi-xilinx.yaml
+index 6bd83836eded..4beb3af0416d 100644
+--- a/Documentation/devicetree/bindings/spi/spi-xilinx.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-xilinx.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx SPI controller
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ allOf:
+   - $ref: spi-controller.yaml#
+diff --git a/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml b/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
+index 226d8b493b57..e5199b109dad 100644
+--- a/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx Zynq UltraScale+ MPSoC GQSPI controller
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ allOf:
+   - $ref: spi-controller.yaml#
+diff --git a/Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml b/Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml
+index 83e8fb4a548d..7ea8fb42ce2c 100644
+--- a/Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml
+@@ -14,7 +14,7 @@ allOf:
+   - $ref: spi-controller.yaml#
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ # Everything else is described in the common file
+ properties:
+diff --git a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
+index bc5e6f226295..dbba780c9b02 100644
+--- a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
++++ b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Cadence TTC - Triple Timer Counter
+ 
+ maintainers:
+-  - Michal Simek <michal.simek@xilinx.com>
++  - Michal Simek <michal.simek@amd.com>
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml b/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml
+index 8444c56dd602..dc1ff39d05a0 100644
+--- a/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml
++++ b/Documentation/devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml
+@@ -7,8 +7,8 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Xilinx AXI/PLB softcore and window Watchdog Timer
+ 
+ maintainers:
+-  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+-  - Srinivas Neeli <srinivas.neeli@xilinx.com>
++  - Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
++  - Srinivas Neeli <srinivas.neeli@amd.com>
+ 
+ description:
+   The Timebase watchdog timer(WDT) is a free-running 32 bit counter.
 -- 
-2.39.2
+2.36.1
 
