@@ -2,102 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DDAC7EE33
-	for <linux-serial@archiver.kernel.org>; Tue, 16 May 2023 23:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9866C77B7D
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 05:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231154AbjEPXRF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 May 2023 19:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
+        id S231715AbjEQFvb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 01:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjEPXRC (ORCPT
+        with ESMTP id S229596AbjEQFva (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 May 2023 19:17:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC9D448C;
-        Tue, 16 May 2023 16:17:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9780463848;
-        Tue, 16 May 2023 23:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFDC5C433EF;
-        Tue, 16 May 2023 23:16:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684279020;
-        bh=zCFk9ckmMwoH0fK8TjR+DgTP01W/heIVljzahFq+A38=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=NICfEbOp4ULW5GEyU9ohb43NabVga42QJFmD77gToi4aEEmSR4l23+0E6WVSr+LG9
-         t5+BAjOEL6PQZ0svP9qh+u4sTZapXD2zezdB6CH2J6m2hVn7D7iO3XqzZY/EWCDhwJ
-         DEbBC96l0uq2HKlTsqmZPc/xkBFpLCnzN5uv5diojginclAUxcz68Op66s+MLJD+mc
-         lly1L8n6Xgcayt36KyXXYITiWlon+A1YCip9Drmo8s70vIqb2MrTzlJbH91J06QHS1
-         ClKINgaDfe9Wp3LKGUtPjq6lkZ1EA+qETfcYX5XYF6zsbpu57WZXYJC3pjoiIssXkj
-         9S0PnO9uDsqWg==
-Message-ID: <174a6ed0-1a2a-40d1-9a14-8bbbdd6e582c@kernel.org>
-Date:   Wed, 17 May 2023 08:16:52 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] dt-bindings: xilinx: Switch xilinx.com emails to amd.com
-To:     Michal Simek <michal.simek@amd.com>, piyush.mehta@amd.com,
-        nava.kishore.manne@amd.com, sai.krishna.potthuri@amd.com,
-        shubhrajyoti.datta@amd.com, vishal.sagar@amd.com,
-        kalyani.akula@amd.com, bharat.kumar.gogada@amd.com,
-        linux-kernel@vger.kernel.org, monstr@monstr.eu,
-        michal.simek@xilinx.com, git@xilinx.com
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Wed, 17 May 2023 01:51:30 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF4D11BE3;
+        Tue, 16 May 2023 22:51:29 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 99E798108;
+        Wed, 17 May 2023 05:51:28 +0000 (UTC)
+Date:   Wed, 17 May 2023 08:51:27 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Jolly Shah <jolly.shah@xilinx.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Mark Brown <broonie@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Moritz Fischer <mdf@kernel.org>,
-        Rajan Vaja <rajan.vaja@xilinx.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Srinivas Neeli <srinivas.neeli@amd.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tom Rix <trix@redhat.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Wu Hao <hao.wu@intel.com>, Xu Yilun <yilun.xu@intel.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-References: <f5b2bd1e78407e4128fc8f0b5874ba723e710a88.1684245058.git.michal.simek@amd.com>
-Content-Language: en-US
-From:   Damien Le Moal <dlemoal@kernel.org>
-Organization: Western Digital Research
-In-Reply-To: <f5b2bd1e78407e4128fc8f0b5874ba723e710a88.1684245058.git.michal.simek@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: linux-next: Tree for May 15 (drivers/tty/serial/8250/8250_omap.c)
+Message-ID: <20230517055127.GJ14287@atomide.com>
+References: <20230515141235.0777c631@canb.auug.org.au>
+ <db4d4826-93ad-d5c7-372a-82818b1ebe9a@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db4d4826-93ad-d5c7-372a-82818b1ebe9a@infradead.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 5/16/23 22:51, Michal Simek wrote:
-> @xilinx.com is still working but better to switch to new amd.com after
-> AMD/Xilinx acquisition.
+* Randy Dunlap <rdunlap@infradead.org> [230516 02:40]:
 > 
-> Signed-off-by: Michal Simek <michal.simek@amd.com>
-Acked-by: Damien Le Moal <dlemoal@kernel.org>
+> 
+> On 5/14/23 21:12, Stephen Rothwell wrote:
+> > Hi all,
+> > 
+> > Changes since 20230512:
+> > 
+> 
+> # CONFIG_PM is not set
+> 
+> 
+> ../drivers/tty/serial/8250/8250_omap.c:169:13: warning: 'uart_write' defined but not used [-Wunused-function]
+>   169 | static void uart_write(struct omap8250_priv *priv, u32 reg, u32 val)
+>       |             ^~~~~~~~~~
+
+Thanks Geert has posted a fix for it:
+
+https://lore.kernel.org/linux-serial/20230515122356.GI14287@atomide.com/T/#t
+
+Regards,
+
+Tony
