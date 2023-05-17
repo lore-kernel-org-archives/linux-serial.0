@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620C4C77B75
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 15:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148C6C77B7F
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 15:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231964AbjEQP6y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 11:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        id S231676AbjEQP6z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 11:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbjEQP6i (ORCPT
+        with ESMTP id S231890AbjEQP6y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 11:58:38 -0400
+        Wed, 17 May 2023 11:58:54 -0400
 Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D73040EF
-        for <linux-serial@vger.kernel.org>; Wed, 17 May 2023 08:58:29 -0700 (PDT)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202305171558275de52a7b8d6f9c52ba
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC17A72B2
+        for <linux-serial@vger.kernel.org>; Wed, 17 May 2023 08:58:30 -0700 (PDT)
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230517155829cf70f7be4e52fa5dd1
         for <linux-serial@vger.kernel.org>;
-        Wed, 17 May 2023 17:58:28 +0200
+        Wed, 17 May 2023 17:58:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=hLYDLew2BnYtz1yW2u/0Fx5TXlG323HFpawW+DCWpzs=;
- b=Fqfhp1cD0EJa9fFC2xJ8Z/9CSQcupvI8O/bp8c5vIAutEnR19ycF8fvP4O+gmlkgOXkf/n
- lrRDLnfjngvNIs/8gf95e539zjWt88BJ8mhLaEMzCk9Xox9AADDI9OtfmX6/PNMa9RoNpiPU
- xjH1rHgia9rJCIlM1UatJ154LFEpU=;
+ bh=E9IwZtdfkhkPpswS1gYiZOwz+Ap7dZzs6d4A7WBwoPE=;
+ b=ioRufgCk8NB5DNeaUoJVm9cmWHMmWgBGFMClospy6Ao5HltN4+fhPsfdnk4znAq71vXbac
+ tgRBS3uEJXEPJHwq1kSKiEsSR4ARUTcXTw00Vqz7NEKYYXdkewOrGg9tEZMXsK+mLwjlZzCY
+ inSnh6ULQ45hbJaaWRWJY9ewOoBpc=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
         felix-haase@siemens.com
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v5 03/10] tty: n_gsm: remove unneeded initialization of ret in gsm_dlci_config
-Date:   Wed, 17 May 2023 17:56:57 +0200
-Message-Id: <20230517155704.5701-3-daniel.starke@siemens.com>
+Subject: [PATCH v5 05/10] tty: n_gsm: increase malformed counter for malformed control frames
+Date:   Wed, 17 May 2023 17:56:59 +0200
+Message-Id: <20230517155704.5701-5-daniel.starke@siemens.com>
 In-Reply-To: <20230517155704.5701-1-daniel.starke@siemens.com>
 References: <20230517155704.5701-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,18 +46,19 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-The variable 'ret' is not used before assignment from gsm_activate_mux().
-Still it gets initialized to zero at declaration.
+The malformed counter in gsm_mux is already increased in case of errors
+detected in gsm_queue() and gsm1_receive(). gsm_dlci_command() also
+detects a case for a malformed frame but does not increase the malformed
+counter yet.
 
-Fix this as remarked in the link below by moving the declaration to the
-first assignment.
-
-Link: https://lore.kernel.org/all/b42bc4d1-cc9d-d115-c981-aaa053bdc59f@kernel.org/
+Fix this by also increasing the gsm_mux malformed counter in case of a
+malformed frame in gsm_dlci_command().
+Note that the malformed counter is not yet exposed and only set internally.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 v4 -> v5:
 No changes.
@@ -66,29 +67,24 @@ Please note that I cannot response to emails until August 7th. Felix Haase
 will take over from our side for questions regarding this patch series or
 the n_gsm.
 
-Link: https://lore.kernel.org/all/20230426080315.7595-3-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20230426080315.7595-5-daniel.starke@siemens.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 66edcf65a4dd..ebb71957f783 100644
+index 186f463f0f11..5b6a03668c78 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -3277,7 +3277,6 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+@@ -2455,8 +2455,10 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ 	data += dlen;
  
- static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- {
--	int ret = 0;
- 	int need_close = 0;
- 	int need_restart = 0;
+ 	/* Malformed command? */
+-	if (clen > len)
++	if (clen > len) {
++		dlci->gsm->malformed++;
+ 		return;
++	}
  
-@@ -3356,7 +3355,7 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- 	 * and removing from the mux array
- 	 */
- 	if (gsm->dead) {
--		ret = gsm_activate_mux(gsm);
-+		int ret = gsm_activate_mux(gsm);
- 		if (ret)
- 			return ret;
- 		if (gsm->initiator)
+ 	if (command & 1)
+ 		gsm_control_message(dlci->gsm, command, data, clen);
 -- 
 2.34.1
 
