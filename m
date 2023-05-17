@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28065C77B7F
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 11:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7ACC77B7F
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 11:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbjEQL44 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 07:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
+        id S231190AbjEQL6D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 07:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbjEQL4z (ORCPT
+        with ESMTP id S231416AbjEQL6B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 07:56:55 -0400
+        Wed, 17 May 2023 07:58:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5A03C32;
-        Wed, 17 May 2023 04:56:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BCF5FEB;
+        Wed, 17 May 2023 04:58:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E37E63F04;
-        Wed, 17 May 2023 11:56:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7726BC433EF;
-        Wed, 17 May 2023 11:56:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B972F64608;
+        Wed, 17 May 2023 11:57:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF55C433D2;
+        Wed, 17 May 2023 11:57:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1684324612;
-        bh=r8fCFHI0vDUbWODciAGJaFnCrt0HoR76KzXe9eNEcQY=;
+        s=korg; t=1684324679;
+        bh=2yg5dulfXCIZ4ZKB358Eid67ZN4o7nDbGJVhWhZT5Wg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n241V8HTuwy6Cj5xxUQCIA6WjB/F4MQ3Pr9sEbzqKfL5YdVL9K5tx7Xn4WNp6ULbt
-         yoSucBJud83rCWwKTO1oLp1t/LLS341BV+XLQuNQipXCYtZzMARNWvhPfYqQ/7D6BA
-         dHbJDkzKI+BVOw3nu7t34zYCaLwYNBfDlYOLxcc8=
-Date:   Wed, 17 May 2023 13:56:50 +0200
+        b=xlKIH9bNuIM8nx6vlJhuRP/iHRzPPbdsawJQ+njinxjyPkSVhS+0oq4EtDCn3mWX2
+         1iDKfP0ioycYNT/W+PNFBE+7g3M2EML6FGFs3pzhQsjCwHhfHwRqGkK59UsghAiHgd
+         R3cdRMIYRVUw5Mv25bYqcBhn5kHTCWlbE2HoR+LQ=
+Date:   Wed, 17 May 2023 13:57:56 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Hongyu Xie <xiehongyu1@kylinos.cn>
 Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         xy521521@gmail.com
 Subject: Re: [RFC PATCH -next] tty: serial: add panic serial helper
-Message-ID: <2023051759-pushiness-briar-81b7@gregkh>
+Message-ID: <2023051739-ouch-pound-7b1c@gregkh>
 References: <20230517101403.232594-1-xiehongyu1@kylinos.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -47,35 +47,24 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On Wed, May 17, 2023 at 06:14:03PM +0800, Hongyu Xie wrote:
-> It works like this:
->     1.Attach the uart side of an USB-to-UART tool to any uart port on your
->     device after panic. Attach the USB side of that tool to another PC.
->     Open minicom(or other app) on that PC, set /dev/ttyUSB0 with
->     "115200 8N1".
-> 
->     2.press "Enter", you'll get something like,
-> 
->     "
->     wrong password
->     Panic now, please input keyword to debug
->     "
-> 
->     3.type "123456" and press "Enter" will prompt a help menu.
->     "
->     help:
->         -a      show all kernel msg
->         -3      show S3 msg
->         -4      show S4 msg
->         -filter-[string]        show msg contains [string]
->         -q-     quit
->     "
-> 
->     4.Finally type 'a', '3', '4', 'q' or "filter-xxx" to get what you want.
+> --- /dev/null
+> +++ b/drivers/tty/serial/panic_serial_helper.h
+> @@ -0,0 +1,12 @@
+> +/* SPDX-License-Identifier: GPL
+> + *
+> + * panic_serial_helper.h Debug through uart when panic.
+> + *
+> + * Copyright (C) 2023 Xie Hongyu <xiehongyu1@kylinos.cn>
+> + *
+> + * Inspired by kgdboc.
+> + */
+> +#ifndef __PANIC_SERIAL_HELPER_H
+> +#define __PANIC_SERIAL_HELPER_H
+> +/*TODO*/
+> +#endif /* __PANIC_SERIAL_HELPER_H */
 
-All of this needs to be documented somewhere, right?
+A whole file that does nothing?
 
-And what is this magic "123456" stuff?
-
-thanks,
+confused,
 
 greg k-h
