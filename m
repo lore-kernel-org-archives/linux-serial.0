@@ -2,469 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 729E4C77B75
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 15:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F24A9C77B75
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 17:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbjEQP7G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 11:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
+        id S229575AbjEQRZ3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 13:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232023AbjEQP7A (ORCPT
+        with ESMTP id S229505AbjEQRZ1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 11:59:00 -0400
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A031E7DB4
-        for <linux-serial@vger.kernel.org>; Wed, 17 May 2023 08:58:34 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202305171558310addda4a0e58bc7b4c
-        for <linux-serial@vger.kernel.org>;
-        Wed, 17 May 2023 17:58:31 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=I8rIrez1vOp3Ee2KwKlOwpZ0Tbuw1W2GBhq4oZuF5uE=;
- b=U3dT0lEv/7vXDxEa2b4ExjZOaQ6BgZLNqITOvBauRtuUiF7rnDZHSlc9pIhMevI9NSeHua
- 7ofnwszIsoQLYl5LcBeC6SW3oQzirPWxoKG+0k1BfwXkMcQ8x7hSKzYvCPXOaVuQWGVkmLcv
- sXiQ3CZlypLDEZ3YbQrI1f1s3NdCQ=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        felix-haase@siemens.com
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v5 09/10] tty: n_gsm: expose configuration and statistics via proc fs
-Date:   Wed, 17 May 2023 17:57:03 +0200
-Message-Id: <20230517155704.5701-9-daniel.starke@siemens.com>
-In-Reply-To: <20230517155704.5701-1-daniel.starke@siemens.com>
-References: <20230517155704.5701-1-daniel.starke@siemens.com>
+        Wed, 17 May 2023 13:25:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38ACD93F7;
+        Wed, 17 May 2023 10:25:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FB1363E35;
+        Wed, 17 May 2023 17:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E9E6C433D2;
+        Wed, 17 May 2023 17:25:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1684344311;
+        bh=mjFoAWFzRrM9eTl/Zbmccy0cVg5yWUVZAjtxpZaRWyI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JJSAp3/DeICH3C9UGkhuNBJHDqlTc+oJYD3lah9UEjSbbpdIHvYVt4JKbJrnKpfq8
+         jGOB90ZzNGUrHIdwLsKVgnZZeJha/DjxWrpMMNkKQenM/5a3pr4oDcH6tm0RoB1OSv
+         TyFFVgNn198G+8R8noWEfYc/XgQ4fkTWHH1R8mo5MCCpwQIl4ZI1EYBX4jX3sNLuWX
+         nB7N1AzvlkCZ9eFoTVWSVlQTQl8WV62hJOsoU/+VR77WAywEPx3jeZ2kioD+F2uEhE
+         bgZb3B4QWO7VWT8KQJ0+Jo1reEbgfSETto+mmz5A5VKu/zBOVO47qqyNwcnaAhuVRe
+         keX2nmUYvMgVg==
+Date:   Wed, 17 May 2023 18:25:07 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: sc16is7xx: Add property to change GPIO
+ function
+Message-ID: <20230517-argue-unbeaten-b07405fdd313@spud>
+References: <20230517150746.3823249-1-hugo@hugovil.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mpbHctzDX7UX2Sd6"
+Content-Disposition: inline
+In-Reply-To: <20230517150746.3823249-1-hugo@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
 
-The n_gsm mux collects various statistics about the mux and its channels.
-These are currently not exposed to the user. There exists already a proc fs
-path for tty ldiscs (/proc/tty/ldisc).
+--mpbHctzDX7UX2Sd6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Extend this path by an 'n_gsm' node and create a proc file for each mux
-instance if active. The file exposes protocol statistics and channel states
-and configuration to the user. Mutex based locks are introduced to avoid
-inconsistent states.
+On Wed, May 17, 2023 at 11:07:46AM -0400, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>=20
+> Some variants in this series of uart controllers have GPIO pins that
+> are shared between GPIO and modem control lines.
+>=20
+> The pin mux mode (GPIO or modem control lines) can be set for each
+> ports (channels) supported by the variant.
+>=20
+> This adds a property to the device tree to set the GPIO pin mux to
+> modem control lines on selected ports if needed.
+>=20
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> ---
+>  .../bindings/serial/nxp,sc16is7xx.txt         | 28 +++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b=
+/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> index 0fa8e3e43bf8..426b7285ad50 100644
+> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+> @@ -23,6 +23,9 @@ Optional properties:
+>      1 =3D active low.
+>  - irda-mode-ports: An array that lists the indices of the port that
+>  		   should operate in IrDA mode.
+> +- modem-control-line-ports: An array that lists the indices of the port =
+that
+> +			    should have shared GPIO lines configured as modem
+> +			    control lines.
 
-The following shows an example output:
- tty:ttyS1 flags:
- initiator:1 mode:1 mru:64 mtu:64 t1:10 t2:34 t3:10 n2:3 k:2 wc:0 ka:100
- bad_fcs:0 malformed:0 io_error:0 open_error:0 bad_size:0 unsupported:0
+If this is an NXP specific property, should it not have an nxp, vendor
+prefix?
 
- dlci:0 state:OPEN cl:2 prio:0 i:UIH k:2 mtu:64 tx:35 rx:35
 
-Description:
-tty:         The underlying device used by this mux.
-flags:       Tty flags relevant to the mux protocol.
-initiator:   0 for responder, 1 for initiator.
-mode:        0 for basic option mode, 1 for advanced option mode
-mru:         Maximum receive unit size.
-mtu:         Maximum transmission unit size.
-t1:          Acknowledgment timer.
-t2:          Response timer for multiplexer control channel.
-t3:          Response timer for wake-up procedure.
-n2:          Maximum number of retransmissions.
-k:           Window size.
-wc:          Wait for configuration before starting parameter negotiation?
-ka:          Control channel keep-alive timer (0 if disabled).
-bad_fcs:     Number of bad FCS.
-malformed:   Number of malformed frames.
-io_error:    Number of I/O errors on the underlying tty.
-open_error:  Number of failed DLCI open attempts.
-bad_size:    Number of n_gsm frames with bad size.
-unsupported: Number of malformed control frames.
-dlci:        Related channel number.
-state:       Current channel state. Possible values are CLOSED,
-             WAITING_CONFIG, CONFIGURE, OPENING, OPEN and CLOSING.
-cl:          Convergence layer type.
-prio:        Priority.
-i:           Framing. Possible values are UI and UIH.
-k:           Window size.
-mtu:         Maximum transmission unit size.
-tx:          Transmitted payload size in bytes (incl. convergence layer
-             type header).
-rx:          Received payload size in bytes (incl. convergence layer type
-             header).
+--mpbHctzDX7UX2Sd6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-All timers are in 1/100th of a second units.
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 207 +++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 196 insertions(+), 11 deletions(-)
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGUN8wAKCRB4tDGHoIJi
+0hp1AP9FdcuRN7IO7H2al/5we3uqXf0P4Jd54EhBY+MkzKRGxwD8DuYBxPPExott
+pQjz7PK7eIvyCdbZuUagAiV4Q8GrCAQ=
+=M+2F
+-----END PGP SIGNATURE-----
 
-v4 -> v5:
-Newly added patch to expose the collected statistics to the user via proc
-fs.
-
-Please note that I cannot response to emails until August 7th. Felix Haase
-will take over from our side for questions regarding this patch series or
-the n_gsm.
-
-Link: https://lore.kernel.org/all/DB9PR10MB5881A7A09725EAF8FDB5F35BE0789@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM/
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 511f22489754..30f73ab2491f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -46,10 +46,12 @@
- #include <linux/string.h>
- #include <linux/slab.h>
- #include <linux/poll.h>
-+#include <linux/proc_fs.h>
- #include <linux/bitops.h>
- #include <linux/file.h>
- #include <linux/uaccess.h>
- #include <linux/module.h>
-+#include <linux/stringify.h>
- #include <linux/timer.h>
- #include <linux/tty_flip.h>
- #include <linux/tty_driver.h>
-@@ -187,7 +189,7 @@ struct gsm_dlci {
- 	void (*prev_data)(struct gsm_dlci *dlci, const u8 *data, int len);
- 	struct net_device *net; /* network interface, if created */
- 
--	/* Statistics (not currently exposed) */
-+	/* Statistics (exposed via proc file) */
- 	u64 tx;			/* Data bytes sent on this DLCI */
- 	u64 rx;			/* Data bytes received on this DLCI */
- };
-@@ -272,6 +274,7 @@ enum gsm_mux_state {
- 
- struct gsm_mux {
- 	struct tty_struct *tty;		/* The tty our ldisc is bound to */
-+	struct proc_dir_entry *proc;	/* Associated proc fs entry */
- 	spinlock_t lock;
- 	struct mutex mutex;
- 	unsigned int num;
-@@ -339,7 +342,7 @@ struct gsm_mux {
- 	bool wait_config;	/* Wait for configuration by ioctl before DLCI open */
- 	u32 keep_alive;		/* Control channel keep-alive in 10ms */
- 
--	/* Statistics (not currently exposed) */
-+	/* Statistics (exposed via proc file) */
- 	unsigned long bad_fcs;
- 	unsigned long malformed;
- 	unsigned long io_error;
-@@ -357,6 +360,7 @@ struct gsm_mux {
- #define MAX_MUX		4			/* 256 minors */
- static struct gsm_mux *gsm_mux[MAX_MUX];	/* GSM muxes */
- static DEFINE_SPINLOCK(gsm_mux_lock);
-+static DEFINE_MUTEX(gsm_mux_mutex);
- 
- static struct tty_driver *gsm_tty_driver;
- 
-@@ -3079,6 +3083,153 @@ static void gsm_error(struct gsm_mux *gsm)
- 	gsm->io_error++;
- }
- 
-+/*
-+ * Entry to the proc file system in tty/ldisc/n_gsm/
-+ */
-+
-+static struct proc_dir_entry *proc_gsm;
-+
-+/**
-+ * gsm_proc_print_flag	-	check and print termios flag
-+ * @m: output handle
-+ * @flags: termios flags
-+ * @val: flag to check and print
-+ * @str: string representation of val
-+ * @first: does not need separator?
-+ */
-+static bool gsm_proc_print_flag(struct seq_file *m, unsigned short flags,
-+				int val, const char *str, bool first)
-+{
-+	if ((flags & val) == 0)
-+		return first;
-+	if (!first)
-+		seq_putc(m, '|');
-+	seq_puts(m, str);
-+	return false;
-+}
-+
-+#define gsm_proc_print_flag_str(m, flags, val) \
-+	(first = gsm_proc_print_flag((m), (flags), (val), __stringify(val), first))
-+
-+/**
-+ * gsm_proc_show	-	output proc file
-+ * @m: output handle
-+ * @v: result from start
-+ *
-+ * Handles the output of /proc/tty/ldisc/n_gsm/mux%d
-+ */
-+static int gsm_proc_show(struct seq_file *m, void *v)
-+{
-+	struct gsm_mux *gsm = m->private;
-+	struct gsm_dlci *dlci = NULL;
-+	unsigned short flags;
-+	int i;
-+	bool first = true;
-+	const char *state, *ftype;
-+
-+	if (!gsm)
-+		return -ENODEV;
-+
-+	/* The proc file may get removed in gsm_cleanup_mux() if the connection
-+	 * was closed. Early out here to avoid a deadlock.
-+	 */
-+	if (!mutex_trylock(&gsm_mux_mutex))
-+		return -EBUSY;
-+	if (!mutex_trylock(&gsm->mutex)) {
-+		mutex_unlock(&gsm_mux_mutex);
-+		return -EBUSY;
-+	}
-+
-+	seq_printf(m, "tty:%s flags:", tty_name(gsm->tty));
-+	flags = gsm->tty->termios.c_iflag;
-+	gsm_proc_print_flag_str(m, flags, IGNBRK);
-+	gsm_proc_print_flag_str(m, flags, IXON);
-+	gsm_proc_print_flag_str(m, flags, IXOFF);
-+	flags = gsm->tty->termios.c_cflag;
-+	gsm_proc_print_flag_str(m, flags, CLOCAL);
-+	gsm_proc_print_flag_str(m, flags, CRTSCTS);
-+	seq_putc(m, '\n');
-+
-+	seq_printf(m, "initiator:%d mode:%d mru:%u mtu:%u t1:%d t2:%d t3:%d",
-+		   gsm->initiator, gsm->encoding, gsm->mru, gsm->mtu, gsm->t1,
-+		   gsm->t2, gsm->t3);
-+	seq_printf(m, " n2:%d k:%d wc:%d ka:%u", gsm->n2, gsm->k,
-+		   gsm->wait_config ? 1 : 0, gsm->keep_alive);
-+	if (gsm->dead)
-+		seq_puts(m, " DEAD");
-+	seq_putc(m, '\n');
-+
-+	seq_printf(m, "bad_fcs:%lu malformed:%lu io_error:%lu open_error:%lu",
-+		   gsm->bad_fcs, gsm->malformed, gsm->io_error,
-+		   gsm->open_error);
-+	seq_printf(m, " bad_size:%lu unsupported:%lu\n\n", gsm->bad_size,
-+		   gsm->unsupported);
-+
-+	for (i = 0; i < NUM_DLCI; i++) {
-+		dlci = gsm->dlci[i];
-+		if (!dlci)
-+			continue;
-+		switch (dlci->state) {
-+		case DLCI_CLOSED:
-+			state = "CLOSED";
-+			break;
-+		case DLCI_WAITING_CONFIG:
-+			state = "WAITING_CONFIG";
-+			break;
-+		case DLCI_CONFIGURE:
-+			state = "CONFIGURE";
-+			break;
-+		case DLCI_OPENING:
-+			state = "OPENING";
-+			break;
-+		case DLCI_OPEN:
-+			state = "OPEN";
-+			break;
-+		case DLCI_CLOSING:
-+			state = "CLOSING";
-+			break;
-+		default:
-+			state = "???";
-+			break;
-+		}
-+		switch (dlci->ftype) {
-+		case UI:
-+			ftype = "UI";
-+			break;
-+		case UIH:
-+			ftype = "UIH";
-+			break;
-+		default:
-+			ftype = "???";
-+			break;
-+		}
-+		seq_printf(m, "dlci:%d state:%s cl:%d prio:%d i:%s k:%d mtu:%u",
-+			   i, state, dlci->adaption, dlci->prio, ftype, dlci->k,
-+			   dlci->mtu);
-+		seq_printf(m, " tx:%llu rx:%llu", dlci->tx, dlci->rx);
-+		if (dlci->dead)
-+			seq_puts(m, " DEAD");
-+		seq_putc(m, '\n');
-+	}
-+
-+	mutex_unlock(&gsm->mutex);
-+	mutex_unlock(&gsm_mux_mutex);
-+
-+	return 0;
-+}
-+
-+static int gsm_proc_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, gsm_proc_show, pde_data(inode));
-+}
-+
-+static const struct proc_ops gsm_proc_ops = {
-+	.proc_open    = gsm_proc_open,
-+	.proc_read    = seq_read,
-+	.proc_lseek   = seq_lseek,
-+	.proc_release = single_release,
-+};
-+
- /**
-  *	gsm_cleanup_mux		-	generic GSM protocol cleanup
-  *	@gsm: our mux
-@@ -3131,6 +3282,9 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_data_list, list)
- 		kfree(txq);
- 	INIT_LIST_HEAD(&gsm->tx_data_list);
-+
-+	if (gsm->proc)
-+		proc_remove(gsm->proc);
- }
- 
- /**
-@@ -3145,6 +3299,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- static int gsm_activate_mux(struct gsm_mux *gsm)
- {
- 	struct gsm_dlci *dlci;
-+	char pbuf[8];
- 	int ret;
- 
- 	dlci = gsm_dlci_alloc(gsm, 0);
-@@ -3162,6 +3317,9 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 
- 	gsm->has_devices = true;
- 	gsm->dead = false;		/* Tty opens are now permissible */
-+
-+	if (proc_gsm && snprintf(pbuf, sizeof(pbuf), "mux%u", gsm->num) > 0)
-+		gsm->proc = proc_create_data(pbuf, 0444, proc_gsm, &gsm_proc_ops, gsm);
- 	return 0;
- }
- 
-@@ -3596,6 +3754,8 @@ static void gsmld_close(struct tty_struct *tty)
- {
- 	struct gsm_mux *gsm = tty->disc_data;
- 
-+	mutex_lock(&gsm_mux_mutex);
-+
- 	/* The ldisc locks and closes the port before calling our close. This
- 	 * means we have no way to do a proper disconnect. We will not bother
- 	 * to do one.
-@@ -3607,6 +3767,8 @@ static void gsmld_close(struct tty_struct *tty)
- 	gsmld_flush_buffer(tty);
- 	/* Do other clean up here */
- 	mux_put(gsm);
-+
-+	mutex_unlock(&gsm_mux_mutex);
- }
- 
- /**
-@@ -3622,14 +3784,20 @@ static void gsmld_close(struct tty_struct *tty)
- static int gsmld_open(struct tty_struct *tty)
- {
- 	struct gsm_mux *gsm;
-+	int ret = 0;
- 
--	if (tty->ops->write == NULL)
--		return -EINVAL;
-+	mutex_lock(&gsm_mux_mutex);
-+	if (tty->ops->write == NULL) {
-+		ret = -EINVAL;
-+		goto err_unlock;
-+	}
- 
- 	/* Attach our ldisc data */
- 	gsm = gsm_alloc_mux();
--	if (gsm == NULL)
--		return -ENOMEM;
-+	if (gsm == NULL) {
-+		ret = -ENOMEM;
-+		goto err_unlock;
-+	}
- 
- 	tty->disc_data = gsm;
- 	tty->receive_room = 65536;
-@@ -3645,7 +3813,9 @@ static int gsmld_open(struct tty_struct *tty)
- 	else
- 		gsm->receive = gsm1_receive;
- 
--	return 0;
-+err_unlock:
-+	mutex_unlock(&gsm_mux_mutex);
-+	return ret;
- }
- 
- /**
-@@ -3769,17 +3939,24 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	struct gsm_mux *gsm = tty->disc_data;
- 	unsigned int base, addr;
- 	struct gsm_dlci *dlci;
-+	int ret = 0;
- 
- 	switch (cmd) {
- 	case GSMIOC_GETCONF:
- 		gsm_copy_config_values(gsm, &c);
-+		mutex_lock(&gsm_mux_mutex);
- 		if (copy_to_user((void __user *)arg, &c, sizeof(c)))
--			return -EFAULT;
--		return 0;
-+			ret = -EFAULT;
-+		mutex_unlock(&gsm_mux_mutex);
-+		break;
- 	case GSMIOC_SETCONF:
-+		mutex_lock(&gsm_mux_mutex);
- 		if (copy_from_user(&c, (void __user *)arg, sizeof(c)))
--			return -EFAULT;
--		return gsm_config(gsm, &c);
-+			ret = -EFAULT;
-+		else
-+			ret = gsm_config(gsm, &c);
-+		mutex_unlock(&gsm_mux_mutex);
-+		break;
- 	case GSMIOC_GETFIRST:
- 		base = mux_num_to_base(gsm);
- 		return put_user(base + 1, (__u32 __user *)arg);
-@@ -3824,6 +4001,7 @@ static int gsmld_ioctl(struct tty_struct *tty, unsigned int cmd,
- 	default:
- 		return n_tty_ioctl_helper(tty, cmd, arg);
- 	}
-+	return ret;
- }
- 
- /*
-@@ -4497,7 +4675,9 @@ static void gsmtty_cleanup(struct tty_struct *tty)
- 
- 	dlci_put(dlci);
- 	dlci_put(gsm->dlci[0]);
-+	mutex_lock(&gsm_mux_mutex);
- 	mux_put(gsm);
-+	mutex_unlock(&gsm_mux_mutex);
- }
- 
- /* Virtual ttys for the demux */
-@@ -4556,6 +4736,9 @@ static int __init gsm_init(void)
- 		status = -EBUSY;
- 		goto err_put_driver;
- 	}
-+
-+	proc_gsm = proc_mkdir_mode("tty/ldisc/n_gsm", 0555, NULL);
-+
- 	pr_debug("gsm_init: loaded as %d,%d.\n",
- 			gsm_tty_driver->major, gsm_tty_driver->minor_start);
- 	return 0;
-@@ -4569,6 +4752,8 @@ static int __init gsm_init(void)
- static void __exit gsm_exit(void)
- {
- 	tty_unregister_ldisc(&tty_ldisc_packet);
-+	if (proc_gsm)
-+		proc_remove(proc_gsm);
- 	tty_unregister_driver(gsm_tty_driver);
- 	tty_driver_kref_put(gsm_tty_driver);
- }
--- 
-2.34.1
-
+--mpbHctzDX7UX2Sd6--
