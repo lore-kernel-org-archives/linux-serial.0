@@ -2,112 +2,128 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 796AEC7EE22
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 19:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2A9C77B75
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 20:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbjEQTo7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 15:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
+        id S229448AbjEQUUW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 16:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbjEQTox (ORCPT
+        with ESMTP id S229532AbjEQUUV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 15:44:53 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C9240D4;
-        Wed, 17 May 2023 12:44:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-        :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
-        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=uRn5jY22yg/grNtbC+Tg4kXWRa2p3rPCDtHdGv1KI5M=; b=s
-        qRxIcJ6vuRm9doZ4eNPugrtGBiFVBL+9R0zAVWVFmlUvZn1wjnpcKr2QIzNufuvkAz4y4YyeBWXSf
-        i0/cBmyy8bMp1HuTIRzOl1S8rgHuByC/W9mhE9SacLobZj1t0YZaVHc2x9jlZ3DB+l6/rvntTAfms
-        tcQJ4zpd4lJ+/MtU=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:36992 helo=pettiford.lan)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1pzN4l-0001n2-71; Wed, 17 May 2023 15:44:43 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
+        Wed, 17 May 2023 16:20:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5851FEB;
+        Wed, 17 May 2023 13:20:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78D1464AFF;
+        Wed, 17 May 2023 20:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A9F7C433D2;
+        Wed, 17 May 2023 20:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1684354817;
+        bh=tmrEqMSlltVVWCR826sj25ts9zl6YULEBavsqHAY8to=;
+        h=From:To:Cc:Subject:Date:From;
+        b=heAqux+yqXgxXkijDEAiFmUchjVlz/v6KJhWZCe6P5zq4SpPdRo95hufWL9UwLfDP
+         q8bmR8CLw+ubMxjTT4b2nAAqQg254sbAryZReih0XIyrXXsjOcOY0sARWFEPHQe4Ti
+         7aE7pS3721poCYt4gnaEnUFAo4frdbIXerV9OCscoIG/UWwtOPl0G/7V3DKIFy1D5J
+         qFtrPPY3KrscAD9nAoF8XdyvFiapgeKjwo3JXT/anN1qbPrCCHCc41eKFr4dqObPR9
+         f27UJY6anzLAiejtanf0SvyuRONjQwe9XmczmWR5NkNcgoua6lafEpyFgebvU9kRI2
+         i1obqdAcXlLqg==
+From:   Arnd Bergmann <arnd@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Tony Lindgren <tony@atomide.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 17 May 2023 15:44:07 -0400
-Message-Id: <20230517194406.4125912-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
+Subject: [PATCH] serial: 8250: omap: convert to modern PM ops
+Date:   Wed, 17 May 2023 22:20:07 +0200
+Message-Id: <20230517202012.634386-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [RFC PATCH] serial: sc16is7xx: fix broken port 0 uart init
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-While experimenting with rs485 configuration on a SC16IS752 dual UART,
-I found that the sc16is7xx_config_rs485() function was called only for
-the second port (index 1, channel B), causing initialization problems
-for the first port.
+The new uart_write() function is only called from suspend/resume code, causing
+a build warning when those are left out:
 
-For the sc16is7xx driver, port->membase and port->mapbase are not set,
-and their default values are 0. And we set port->iobase to the device
-index. This means that when the first device is registered using the
-uart_add_one_port() function, the following values will be in the port
-structure:
-    port->membase = 0
-    port->mapbase = 0
-    port->iobase  = 0
+drivers/tty/serial/8250/8250_omap.c:169:13: error: 'uart_write' defined but not used [-Werror=unused-function]
 
-Therefore, the function uart_configure_port() in serial_core.c will
-exit early because of the following check:
-	/*
-	 * If there isn't a port here, don't do anything further.
-	 */
-	if (!port->iobase && !port->mapbase && !port->membase)
-		return;
+Remove the #ifdefs and use the modern pm_ops/pm_sleep_ops and their wrappers
+to let the compiler see where it's used but still drop the dead code.
 
-Typically, I2C and SPI drivers do not set port->membase and
-port->mapbase. But I found that the max310x driver sets
-port->membase to ~0 (all ones). By implementing the same change in our
-driver, uart_configure_port() is now correctly executed.
-
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Fixes: 398cecc24846 ("serial: 8250: omap: Fix imprecise external abort for omap_8250_pm()")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
+ drivers/tty/serial/8250/8250_omap.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-I am not sure if this change is the best long-term solution to this
-problem, and maybe uart_configure_port() itself could be modified to
-take into account the fact that some devices have all three *base
-values set to zero?
-
-Also, many drivers use port->iobase as an index, is it the correct way
-to use it?
-
-For example, for our driver, there was
-commit 5da6b1c079e6 ("sc16is7xx: Set iobase to device index") with the
-following explanation:
-    "Set the .iobase value to the relative index within the device to allow
-    infering the order through sysfs."
-
- drivers/tty/serial/sc16is7xx.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 1a3143331c1f..3e0e63498052 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1432,6 +1432,7 @@ static int sc16is7xx_probe(struct device *dev,
- 		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
- 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
- 		s->p[i].port.iobase	= i;
-+		s->p[i].port.membase	= (void __iomem *)~0;
- 		s->p[i].port.iotype	= UPIO_PORT;
- 		s->p[i].port.uartclk	= freq;
- 		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 5c093dfcee1d..00b2c35042ee 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1571,7 +1571,6 @@ static int omap8250_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int omap8250_prepare(struct device *dev)
+ {
+ 	struct omap8250_priv *priv = dev_get_drvdata(dev);
+@@ -1616,12 +1615,7 @@ static int omap8250_resume(struct device *dev)
+ 	serial8250_resume_port(priv->line);
+ 	return 0;
+ }
+-#else
+-#define omap8250_prepare NULL
+-#define omap8250_complete NULL
+-#endif
+ 
+-#ifdef CONFIG_PM
+ static int omap8250_lost_context(struct uart_8250_port *up)
+ {
+ 	u32 val;
+@@ -1738,7 +1732,6 @@ static int omap8250_runtime_resume(struct device *dev)
+ 	schedule_work(&priv->qos_work);
+ 	return 0;
+ }
+-#endif
+ 
+ #ifdef CONFIG_SERIAL_8250_OMAP_TTYO_FIXUP
+ static int __init omap8250_console_fixup(void)
+@@ -1781,17 +1774,17 @@ console_initcall(omap8250_console_fixup);
+ #endif
+ 
+ static const struct dev_pm_ops omap8250_dev_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(omap8250_suspend, omap8250_resume)
+-	SET_RUNTIME_PM_OPS(omap8250_runtime_suspend,
++	SYSTEM_SLEEP_PM_OPS(omap8250_suspend, omap8250_resume)
++	RUNTIME_PM_OPS(omap8250_runtime_suspend,
+ 			   omap8250_runtime_resume, NULL)
+-	.prepare        = omap8250_prepare,
+-	.complete       = omap8250_complete,
++	.prepare        = pm_sleep_ptr(omap8250_prepare),
++	.complete       = pm_sleep_ptr(omap8250_complete),
+ };
+ 
+ static struct platform_driver omap8250_platform_driver = {
+ 	.driver = {
+ 		.name		= "omap8250",
+-		.pm		= &omap8250_dev_pm_ops,
++		.pm		= pm_ptr(&omap8250_dev_pm_ops),
+ 		.of_match_table = omap8250_dt_ids,
+ 	},
+ 	.probe			= omap8250_probe,
 -- 
-2.30.2
+2.39.2
 
