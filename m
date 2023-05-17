@@ -2,45 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F07CC77B75
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 14:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D73A9C77B7F
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 14:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbjEQOMm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 10:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38316 "EHLO
+        id S231860AbjEQOOe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 10:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbjEQOMl (ORCPT
+        with ESMTP id S229957AbjEQOOb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 10:12:41 -0400
+        Wed, 17 May 2023 10:14:31 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343FB1701;
-        Wed, 17 May 2023 07:12:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1597DB2;
+        Wed, 17 May 2023 07:14:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
         ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
         :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
         :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
         References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=K0/NQ2Lp/XTRzOV/EA3J1QX3fKqgngHY8xvfRZV0kl8=; b=e
-        RMkw991QT8kDW2JH5WUNnG3BeTR/C5yFP+Cd2xiwA+L9sVl5VyyqPiQZhBs08eOUP3yWtFhws9anA
-        fwKb/8CSUzHybYQHsnQm0ro/HQLZjobkT9Qk9N1hfbYRPaCf4KF4nUU240PW7gkW0mLHUfkTfpj29
-        S3uW9X26sa739Hv0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:59502 helo=pettiford.lan)
+        List-Owner:List-Archive; bh=oMgj+tKoLcLXXYaEiSRJStVpk7eDMdwwfoe9DPEgx18=; b=Y
+        pr3Tk5UxxBEHfeWG4zsdrv4VyWj/e310JeG+XlAmHUUx2ZwsC2/QviXEGyBUF2NBTxkRZLhfjzobW
+        BoR4+5Izy61ehBz4Rjtj2me8COeS8SQOPZCvguXBd55PCjxaExulW6jbm6SRjX2T/uxJPfYWr4RR8
+        cyIEWLqpFRDAhUkg=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:54876 helo=pettiford.lan)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1pzHtI-0006nK-FO; Wed, 17 May 2023 10:12:32 -0400
+        id 1pzHv4-0006ow-H1; Wed, 17 May 2023 10:14:23 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
 Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 17 May 2023 10:12:29 -0400
-Message-Id: <20230517141229.3792446-1-hugo@hugovil.com>
+Date:   Wed, 17 May 2023 10:13:49 -0400
+Message-Id: <20230517141348.3792842-1-hugo@hugovil.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH] serial: sc16is7xx: fix syntax error in comments
+Subject: [PATCH] serial: sc16is7xx: improve comments about variants
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -49,26 +49,48 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-cotroller -> controller
+Replace 740/750/760 with generic terms like 74x/75x/76x to account for
+variants like 741, 752 and 762.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sc16is7xx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index abad091baeea..5bd98e4316f5 100644
+index 5bd98e4316f5..00054bb49780 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1501,7 +1501,7 @@ static int sc16is7xx_probe(struct device *dev,
+@@ -223,7 +223,7 @@
+  * trigger levels. Trigger levels from 4 characters to 60 characters are
+  * available with a granularity of four.
+  *
+- * When the trigger level setting in TLR is zero, the SC16IS740/750/760 uses the
++ * When the trigger level setting in TLR is zero, the SC16IS74x/75x/76x uses the
+  * trigger level setting defined in FCR. If TLR has non-zero trigger level value
+  * the trigger level defined in FCR is discarded. This applies to both transmit
+  * FIFO and receive FIFO trigger level setting.
+@@ -234,7 +234,7 @@
+ #define SC16IS7XX_TLR_TX_TRIGGER(words)	((((words) / 4) & 0x0f) << 0)
+ #define SC16IS7XX_TLR_RX_TRIGGER(words)	((((words) / 4) & 0x0f) << 4)
  
- #ifdef CONFIG_GPIOLIB
- 	if (devtype->nr_gpio) {
--		/* Setup GPIO cotroller */
-+		/* Setup GPIO controller */
- 		s->gpio.owner		 = THIS_MODULE;
- 		s->gpio.parent		 = dev;
- 		s->gpio.label		 = dev_name(dev);
+-/* IOControl register bits (Only 750/760) */
++/* IOControl register bits (Only 75x/76x) */
+ #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
+ #define SC16IS7XX_IOCONTROL_MODEM_BIT	(1 << 1) /* Enable GPIO[7:4] as modem pins */
+ #define SC16IS7XX_IOCONTROL_SRESET_BIT	(1 << 3) /* Software Reset */
+@@ -248,9 +248,9 @@
+ #define SC16IS7XX_EFCR_RTS_INVERT_BIT	(1 << 5) /* RTS output inversion */
+ #define SC16IS7XX_EFCR_IRDA_MODE_BIT	(1 << 7) /* IrDA mode
+ 						  * 0 = rate upto 115.2 kbit/s
+-						  *   - Only 750/760
++						  *   - Only 75x/76x
+ 						  * 1 = rate upto 1.152 Mbit/s
+-						  *   - Only 760
++						  *   - Only 76x
+ 						  */
+ 
+ /* EFR register bits */
 -- 
 2.30.2
 
