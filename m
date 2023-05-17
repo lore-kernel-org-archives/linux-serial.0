@@ -2,383 +2,875 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B070DC77B75
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 09:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233E7C77B7F
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 10:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbjEQJWP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 05:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        id S230247AbjEQKOh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 06:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229916AbjEQJWI (ORCPT
+        with ESMTP id S230262AbjEQKOf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 05:22:08 -0400
-X-Greylist: delayed 74 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 May 2023 02:22:03 PDT
-Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.85.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197A64EC2
-        for <linux-serial@vger.kernel.org>; Wed, 17 May 2023 02:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
-        s=mimecast20210310; t=1684315320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LDYPw34Kj49AIqJeQ82kevzLLePrQ5tWGk8sPMmQJi0=;
-        b=AIdnXtNkL02PCeXPeAFHguPmberBb7R6eq47iwVRsWiTfhTJaTw185xUnoE4DIqTiMhYZA
-        gmrRsxzKdGW36ZUGaA2EbkYVVXujpqYEwZQEfuolwvibJ4hg+86GxPw5jheBVyRnZ8+DK1
-        nvUaz/Duh0oNqW8SbmB69dYWPePzcxk=
-Received: from GBR01-LO2-obe.outbound.protection.outlook.com
- (mail-lo2gbr01lp2055.outbound.protection.outlook.com [104.47.21.55]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- uk-mta-116-WvHBbwjDNJqVFu7_b8_c3w-1; Wed, 17 May 2023 10:20:34 +0100
-X-MC-Unique: WvHBbwjDNJqVFu7_b8_c3w-1
-Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
- by LO6P123MB6630.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:2b4::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.17; Wed, 17 May
- 2023 09:20:33 +0000
-Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- ([fe80::6c38:e856:880a:704f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- ([fe80::6c38:e856:880a:704f%7]) with mapi id 15.20.6411.017; Wed, 17 May 2023
- 09:20:32 +0000
-Message-ID: <35a79a3d-1fc6-5f18-fc11-2cee3c1da148@camlingroup.com>
-Date:   Wed, 17 May 2023 11:18:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [RFC PATCH] Revert "sc16is7xx: Separate GPIOs from modem control
- lines"
-To:     Hugo Villeneuve <hugo@hugovil.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lech Perczak <l.perczak@camlintechnologies.com>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Krzysztof_Drobi=c5=84ski?= 
-        <krzysztof.drobinski@camlingroup.com>
-References: <20230515160206.2801991-1-hugo@hugovil.com>
- <2023051551-quickstep-outshine-5526@gregkh>
- <20230515125155.bf6d64c292ba96f4f6971ac0@hugovil.com>
- <a27271d5-6d28-d994-b06f-905eea0514aa@camlingroup.com>
- <20230516115906.9d93685696ae7dc02faff752@hugovil.com>
- <20230516180942.46a51d85746e4246a9a4bba4@hugovil.com>
-From:   Lech Perczak <lech.perczak@camlingroup.com>
-In-Reply-To: <20230516180942.46a51d85746e4246a9a4bba4@hugovil.com>
-X-ClientProxiedBy: FR0P281CA0242.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:af::12) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:400:142::9)
+        Wed, 17 May 2023 06:14:35 -0400
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17934C3D;
+        Wed, 17 May 2023 03:14:30 -0700 (PDT)
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1aaea43def7so5208595ad.2;
+        Wed, 17 May 2023 03:14:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684318470; x=1686910470;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=i+hD44ykF8wSz7LDDbcz9xlzND91wuWk4tyOCQtPLDo=;
+        b=WNscKMBH6cU0BOPeMggHKfM7mUsm6vQiHbmDtjX7nTy7uvQP/2Eb4dQmIkLfaTUvJm
+         CwfeDiR3hus+NAK1+pws+OSf+dB9Jt9rwVy+3ort4NEAI6xrKqdK1UPEqZ5SuRNLPJGz
+         76nYGl9Zd1nLBsW+ytiUm6s8e8kWNyY2S+F1/rrMcE2gDQzxGi36kYMJrJ0z65IDZxmt
+         MPDKKssty0c60Ppg9wcyeah5S8lkYeQicmvmuVD6RwAfffvhTh21rtwS8Gv1wgrHH4RE
+         Xs9jj/24OAINrneNH6IVA9HNUsX2dRB5IT6w6RgYKJjGN+kb+b24jbc6jQIYf6p4v3FK
+         ZaUg==
+X-Gm-Message-State: AC+VfDxjaf2fsUfaoDV/SowLkEMm79OZevp/7OBMoW8Ma1IB6uXAukt4
+        Y/fLfIZRtQYBdMJi9tIlycY=
+X-Google-Smtp-Source: ACHHUZ7laVUNaXMGS86cqHoVsqR5++wTb3zhlVGbUppyEY/JF52l6T8wdcbHwTW40P3a92w9XyTfNQ==
+X-Received: by 2002:a17:902:ea11:b0:1ac:7f56:de04 with SMTP id s17-20020a170902ea1100b001ac7f56de04mr40374396plg.45.1684318469950;
+        Wed, 17 May 2023 03:14:29 -0700 (PDT)
+Received: from localhost ([116.128.244.169])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902e9cd00b001ab0669d84csm17164104plk.26.2023.05.17.03.14.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 May 2023 03:14:29 -0700 (PDT)
+From:   Hongyu Xie <xiehongyu1@kylinos.cn>
+To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xy521521@gmail.com, Hongyu Xie <xiehongyu1@kylinos.cn>
+Subject: [RFC PATCH -next] tty: serial: add panic serial helper
+Date:   Wed, 17 May 2023 18:14:03 +0800
+Message-Id: <20230517101403.232594-1-xiehongyu1@kylinos.cn>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|LO6P123MB6630:EE_
-X-MS-Office365-Filtering-Correlation-Id: cf05e58e-887a-439d-d6a8-08db56b7f719
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: yYiDNKi1SHvGBmykK8b+vhA+8MmdZOTPNLtFB7jrynkWNo+EjiGHK9ro/2h4rdf7k+VQqFadAcOt5ibh8SB2MNmoDlafS7r2K8VMpo58SNya6EJMFD/0Ga+Ad3Hs4yWY6s4enzZpDn9/4jQDiwqANq11b2o8YuEGKJmNQjMngBT88tamr+q/wFBCiOi+BN0bALabCp8i2IYH9kCevBB33I1mgsrA9cED9pfHLdettcDbw+THMhUP43GKe5mcaoLhPIFFA4qlKRptmyFRA1K4oiauL7g2DmLsR23iGMGuYAUzYavxpLdxuFaAAxUD92hl/DoVnMv+OlByXUS+7gMP6PkhxRtXr7uYdLKW660rZeMWqcg/poSqxORqmgMBYuL73/VZz5uitDiOOW4OYzEu0wPQd665omvKSp5T+neYR6y9nmrbJcFitWqfoPePV/fHAMoC8SHu7jpoVT7/kIXXTu6I4TD/wpPkU7EqTBKndmHg1eu5pjrx5pV8wkgJlJh0CdKxpikwKoHSlO/lC3N73NmdZ6pQGEQmlaW7o7jtJ9AwiWF5KSevks2BwjeNeDlhDB/i9RhrIuE5zNFahKIqvmFPRGySqWivQi3CXiSRc3UWOt1tlBxXClrEZXmgm7N+M1e7TNca0FNRyogpnRi91Eh0f7ZqaOqHVx11b/SaVv2jtZ8mLiRVbqyXV9rQFlyg
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(376002)(136003)(366004)(396003)(39850400004)(346002)(451199021)(31696002)(6506007)(6512007)(186003)(2906002)(86362001)(107886003)(26005)(83380400001)(2616005)(36756003)(38100700002)(6666004)(41300700001)(6486002)(6916009)(66946007)(66476007)(66556008)(316002)(4326008)(966005)(54906003)(31686004)(478600001)(44832011)(5660300002)(8676002)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1101
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0EhVN281Wt7rK+4yKcwhKTQ+yZK/9alZUSihGuT1jkCm5IR54i6lKT8JkqwN?=
- =?us-ascii?Q?2+DMRV59xMQfWGgwKy9T/kEOO8fMcy4c2IgA8SlZ3tLxtcCnM1K82xTZ0NYa?=
- =?us-ascii?Q?yHd1PiyVCwb0POE9rBL+y6fSuSThGLMAP6ipxQYX9ySG4Opbl5Ypix5SvPwd?=
- =?us-ascii?Q?TK36n+mxVdBRyMUcFI0Dx7ADSIXMxHXXGqkl/M7h4znCC6bkjdu6ece8jzKF?=
- =?us-ascii?Q?pQcn6MQX93URxtz1AIc+3AiaXrtvRxpHvU2XoxAbq/HNLGniJFXi+xkErB5S?=
- =?us-ascii?Q?EhcQYG4pF+4U5cLmrNqqZ/DDwYth0OLxJZCGo6Aqjd7C81KKgm2t/hYNRBcm?=
- =?us-ascii?Q?lffQ42R5nrsieky4Qj9sz91uT7z1u1NNLp++Hdo44ASS52e3jLTyNAQaZS6T?=
- =?us-ascii?Q?jtXL77TTXAZifbvhYE0ZCnrYG0/7H3OoU2lqDT6rZ8IdpDqF3amAlRDIPBMh?=
- =?us-ascii?Q?cNNTmCnTKop25OnmCsSMNYX6K3dahvK1ssMvId3J+R0UIL/KngjBPuRoo9xp?=
- =?us-ascii?Q?dIh7EZQlQ7PWMDBOe9v0Eg/ldKxJOHjDyKq8i1csNnMruj4t3lWw+OIgGHRh?=
- =?us-ascii?Q?jidqkx9KBGorOEOHAKfofVmt9LScUhE+XdT33VygMVF597XTWyzvz4LVoWok?=
- =?us-ascii?Q?iS4kwZXBlAyGl10L1WhRJcWmWXnC3SJbJ4H0umAUeNT83YCUOUcBcRXMZgFE?=
- =?us-ascii?Q?IGcDucC6TMHbIaqJ0Q0/JMtUHQFPu82/RpPlAHa95tnKzRbZ4d0dXDa7sYsE?=
- =?us-ascii?Q?H7oWafCH34TVVrt6H5u/OrAUbyfXdHbnE5iRqYmynmo54OeY25VgeyFUkbFi?=
- =?us-ascii?Q?BwO7y5rIO+XvcVOUp+hxXSZhKaeKP4XY8S+usCdaTKkp3S4UqpMbc1NjBnDZ?=
- =?us-ascii?Q?69VQEMChOXQ+t58uDiYwvWwjr9wquvIr2t+zoEf+OdxWQMJYhP2VgnIqziE4?=
- =?us-ascii?Q?Rf2CDSVxu2zAR5JvTC6xbSdUkAtMixeV3rZBp5SHoYtiTwFHWMM8YqE/mBOh?=
- =?us-ascii?Q?VueNXA1UAtxWWnuklFBfbFWqjm17RFUZ/ISqdsZbWZ/Yl+GsrvJbK4bj5tJe?=
- =?us-ascii?Q?ez31aGt5P9K6Tac/OJ0ZFCnEVg9PVsR+w5sMaGTgiDg9CkIpQMQ6mLixW/42?=
- =?us-ascii?Q?6PsC6zT49XbFewELies1Tac6gKOcyPA1EcAco0ZZCZbcW1BZy5JovetqSJRo?=
- =?us-ascii?Q?cSlznjpqm29/3jQ1ZxgsMWnQ67Gstpv/ilSkd+CU2/gwM5pPul6i/4skJ8ie?=
- =?us-ascii?Q?ojmtv9dOBQcTqcULlo3swkDzP72qH6odB0uE/jevNKxcMLzCswoL/Mk5/wGC?=
- =?us-ascii?Q?SLqiBjBD6NWVNmG5GFATg8EysmRlB8lPZGcRH+ssA+6O82ObjjAK9+7ZUMQP?=
- =?us-ascii?Q?iesEi6uUTu/+lVs2d8JIoDSLTeTvoRdvyFv46L2dTJJ+tNS91Ak1zCaxVab2?=
- =?us-ascii?Q?bFmQaoxijiTNxNqyMmDaiKVwo5CqcewCjapIb0v3tzrsWMWyqTAG/Yn6FomF?=
- =?us-ascii?Q?fDjFe4Q9PBOwQTyA+wfQ67f+7cE8DD46Q9VOBWW9yTonQJsaEY96O84mgpad?=
- =?us-ascii?Q?3jLGk9/CCfKLeq+nNL0H5k5cP8maMf46JkdBMb76xyfgLslZUb2Ebm6Mnv1b?=
- =?us-ascii?Q?jw=3D=3D?=
-X-OriginatorOrg: camlingroup.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf05e58e-887a-439d-d6a8-08db56b7f719
-X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2023 09:20:32.9269
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: os+BPngnoM5t/Z9uneULAi/n3m6asYr/QA78yhUtK5zhqhrIqhdhSYqijyb7mygPA9/ek6Nxi5kYJddZjy/A2yNSDbysAIvF/NCUI9eZKWM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO6P123MB6630
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: camlingroup.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+It was inspired by kgdboc.
 
-W dniu 17.05.2023 o=C2=A000:09, Hugo Villeneuve pisze:
-> On Tue, 16 May 2023 11:59:06 -0400
-> Hugo Villeneuve <hugo@hugovil.com> wrote:
->
-> > On Tue, 16 May 2023 10:50:11 +0200
-> > Lech Perczak <lech.perczak@camlingroup.com> wrote:
-> >
-> > > Hi Hugo,
-> > >
-> > > Please see my answers inline.
-> > >
-> > > W dniu 15.05.2023 o=C2=A018:51, Hugo Villeneuve pisze:
-> > > > Hi Greg,
-> > > >
-> > > > On Mon, 15 May 2023 18:20:02 +0200
-> > > > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > >> On Mon, May 15, 2023 at 12:02:07PM -0400, Hugo Villeneuve wrote:
-> > > >>> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > >>>
-> > > >>> This reverts commit 679875d1d8802669590ef4d69b0e7d13207ebd61.
-> > > >>>
-> > > >>> Because of this commit, it is no longer possible to use the 16 GP=
-IO
-> > > >>> lines as dedicated GPIOs on the SC16IS752.
-> > > >>>
-> > > >>> Reverting it makes it work again.
-> > > >>>
-> > > >>> The log message of the original commit states:
-> > > >>> "Export only the GPIOs that are not shared with hardware modem
-> > > >>> control lines"
-> > > >>>
-> > > >>> But there is no explanation as to why this decision was taken to
-> > > >>> permanently set the function of the GPIO lines as modem control
-> > > >>> lines. AFAIK, there is no problem with using these lines as GPIO =
-or modem
-> > > >>> control lines.
-> > > >>>
-> > > >>> Maybe after reverting this commit, we could define a new
-> > > >>> device-tree property named, for example,
-> > > >>> "use-modem-control-lines", so that both options can be supported.
-> > > >>>
-> > > >>> Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem contro=
-l
-> > > >>> lines")
-> > > >> Please do not line-wrap these lines.
-> > > > Ok.
-> > > >
-> > > >> Nor is a blank line needed here.
-> > > > Ok.
-> > > >
-> > > >>> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > >>> ---
-> > > >>> drivers/tty/serial/sc16is7xx.c | 14 ++++----------
-> > > >>> 1 file changed, 4 insertions(+), 10 deletions(-)
-> > > >>>
-> > > >>> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/=
-sc16is7xx.c
-> > > >>> index 5bd98e4316f5..25f1b2f6ec51 100644
-> > > >>> --- a/drivers/tty/serial/sc16is7xx.c
-> > > >>> +++ b/drivers/tty/serial/sc16is7xx.c
-> > > >>> @@ -306,7 +306,6 @@ struct sc16is7xx_devtype {
-> > > >>> char name[10];
-> > > >>> int nr_gpio;
-> > > >>> int nr_uart;
-> > > >>> - int has_mctrl;
-> > > >>> };
-> > > >>>
-> > > >>> #define SC16IS7XX_RECONF_MD (1 << 0)
-> > > >>> @@ -447,35 +446,30 @@ static const struct sc16is7xx_devtype sc16i=
-s74x_devtype =3D {
-> > > >>> .name =3D "SC16IS74X",
-> > > >>> .nr_gpio =3D 0,
-> > > >>> .nr_uart =3D 1,
-> > > >>> - .has_mctrl =3D 0,
-> > > >>> };
-> > > >>>
-> > > >>> static const struct sc16is7xx_devtype sc16is750_devtype =3D {
-> > > >>> .name =3D "SC16IS750",
-> > > >>> - .nr_gpio =3D 4,
-> > > >>> + .nr_gpio =3D 8,
-> > > >> I think this one line change is all you really need here, right? t=
-he
-> > > >> otner changes do nothing in this patch, so you should just create =
-a new
-> > > >> one changing this value. Oh, and this one:
-> > > >>
-> > > >>> .nr_uart =3D 1,
-> > > >>> - .has_mctrl =3D 1,
-> > > >>> };
-> > > >>>
-> > > >>> static const struct sc16is7xx_devtype sc16is752_devtype =3D {
-> > > >>> .name =3D "SC16IS752",
-> > > >>> - .nr_gpio =3D 0,
-> > > >>> + .nr_gpio =3D 8,
-> > > >> right?
-> > > >>
-> > > >> Don't mess with the has_mctrl stuff, that's not relevant here.
-> > > > Sorry, I just noticed that simply reverting commit 679875d1d880 is =
-not sufficient (and will not compile). We must also revert part of commit:
-> > > > 21144bab4f11 ("sc16is7xx: Handle modem status lines").
-> > > >
-> > > > The problem is that the commit 679875d1d880 was incomplete, and it =
-was (unfortunately) completed by integrating it in commit 21144bab4f11 ("sc=
-16is7xx: Handle modem status lines"). The relevant change was only these 5 =
-new lines, burried deeply into the second commit:
-> > > Just as you noticed, this was required to support full set of flow co=
-ntrol lines on this device.
-> > > The commit you're trying to revert was a preparation for it. Disablin=
-g has_mctrl will break it.
-> > > I kindly suggest to suggest a fix, instead of hurrying a revert, and =
-waiting for a proper fix later.
-> >
-> > Hi Lech,
-> > the [RFC] in the subject was there to discuss about a possible revert, =
-and/or maybe a possible fix that would allow both modes to be supported. I =
-am not hurrying anything and I am certainly not waiting for a later fix, as=
- I very much want to help and maybe submit such a fix myself.
-> >
-> > But the reality is that commits 679875d1d880/21144bab4f11 broke userspa=
-ce by forcing GPIOs as modem control lines. I understand that reverting the=
-se patches could also potentially break things for applications depending o=
-n these patches. I am simply wondering what is the proper course of action =
-here: revert patches and work on a fix to support both modes, or skip rever=
-t and work on a fix (my preference)?
-> >
-> > > > @@ -1353,9 +1452,17 @@ static int sc16is7xx_probe(struct device *de=
-v,
-> > > > sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFCR_REG,
-> > > > SC16IS7XX_EFCR_RXDISABLE_BIT |
-> > > > SC16IS7XX_EFCR_TXDISABLE_BIT);
-> > > > +
-> > > > + /* Use GPIO lines as modem status registers */
-> > > > + if (devtype->has_mctrl)
-> > > > + sc16is7xx_port_write(&s->p[i].port,
-> > > > + SC16IS7XX_IOCONTROL_REG,
-> > > > + SC16IS7XX_IOCONTROL_MODEM_BIT);
-> > > > +
-> > > >
-> > > > Therefore, I should also remove these lines if we go forward with a=
- revert of the patch (should I add another tag "Fixes..." in that case?).
-> > > >
-> > > > And what do you think of my proposal to maybe replace has_mctrl wit=
-h a device tree property so that both modes can be fully supported?
-> > > I think the proper solution here, is not to invent a new device tree =
-property for every single use case.
-> > > I would start by looking for other drivers, if, and how they handle s=
-imilar cases.
-> > > For example, imx-serial driver respects "uart-has-rtscts" property, a=
-s do a lot of other controllers built into SoC-s.
-> > > On the other hand, other devices which can also provide GPIOs, respec=
-t "gpio-controller" property.
-> >
-> > I think that testing the presence of the "uart-has-rtscts" to force GPI=
-Os as modem control lines would make a lot of sense.
-> >
-> > > According to SC16IS752 datasheet [1], respecting one of those should =
-be enough,
-> > > as GPIOs can be enabled in groups of four pins even for dual UART ver=
-sion.
-> > > Every group matches a single port, so probably this can be probably s=
-elected per UART even on dual-port versions.
-> >
-> > I am trying to see how we could set "uart-has-rtscts" for only UART cha=
-nnel A or B in the device tree, but cannot find any example or documentatio=
-n about that. How do you propose to do it?
-> >
-> > From what I understand, the property "uart-has-rtscts" can be set only =
-for the whole chip (channels A and B)...
->
-> After some analysis, I don't think that we should be using the property "=
-uart-has-rtscts". For our chip, this doesn't make sense because RTS/CTS are=
- dedicated pins. also, like I said, this property applies to the whole chip=
-/device, not to indivual A or B channels (like sc16is752).
+Normally you need to attach a debug tool (usually an USB-to-UART device)
+or enable kdump before panic happens to get log from kernel after panic.
+If you didn't attach a debug device before panic and kdump is not working,
+you might not get any log from kernel.
 
-Hi Hugo,
+If you do have a USB-to-UART device and the uart port on your
+computer is working. This module helps to get all kernel logs after
+panic() is called.
 
-That's correct, my idea was to analyze what is available and pick the best =
-one, if at all possible.
-"gpio-controller" could also be used - in theory - but it isn't a great cho=
-ice either, because it doesn't allow us to specify, which pin groups should=
- be used as GPIOs.
->
-> The way to go would be to define a new DT property similar to "irda-mode-=
-ports" (for the same sc16is7xx driver). Defining a new property named "mode=
-m-control-line-ports" would allow us to specify an array that lists the ind=
-ices of the port that should have shared GPIO lines configured as modem con=
-trol lines.
->
-> I already implemented that as a proof of concept and it works great.
+It automatically selects the port where you typing the keyword. This is
+for those devices with more than 1 uart port and sometimes you need to
+disassemble the device to use the console-uart port, now you can use any
+uart port on the device after panic.
 
-There is nothing wrong per se in adding new device tree property, I'd just =
-like to avoid jumping the gun in inventing one.
-After quickly reviewing documentation of available bindings I see that it's=
- most likely unavoidable.
-The "modem-control-line-ports" proposal with a mask of ports sounds very re=
-asonable - please share your PoC,
-it will be easier to discuss having a concrete example.
+This module use serial port in poll mode, more stable than other debugging
+methods.
 
-The general approach I noticed in other places (for example, the WF8960 aud=
-io codec) is setting a register value directly.
-This would allow us to control the IOLATCH bit in IOControl register, to ma=
-ke inputs register behave as interrupt flag register,
-but I think that if we ever need it, it would be cleaner to set it with a s=
-eparate boolean property - I'm in favor of modem-control-line-ports.
+It works like this:
+    1.Attach the uart side of an USB-to-UART tool to any uart port on your
+    device after panic. Attach the USB side of that tool to another PC.
+    Open minicom(or other app) on that PC, set /dev/ttyUSB0 with
+    "115200 8N1".
 
-I think it would be a good idea to include DT and GPIO maintainers and mail=
-ing lists as well.
-Especially the DT maintainers - they would like to see this property docume=
-nted. They however, are not concerned with the code changes themselves.
+    2.press "Enter", you'll get something like,
 
-BTW, the commit split between adding has_mctrl property and the rest of imp=
-lementation warrants some explanation - this was based on my previous patch=
-es,
-which Tomasz reworked and submitted. The split was kept to split up the cha=
-nges to minimal, logical chunks, and to maintain correct authorship of the =
-changes.
+    "
+    wrong password
+    Panic now, please input keyword to debug
+    "
 
-With kind regards,
-Lech
->
-> Hugo.
->
->
-> > > I'll be more than happy to assist with that.
-> > >
-> > > >
-> > > > Thank you,
-> > > > Hugo.
-> > > >
-> > > [1] https://www.nxp.com/docs/en/data-sheet/SC16IS752_SC16IS762.pdf <h=
-ttps://www.nxp.com/docs/en/data-sheet/SC16IS752_SC16IS762.pdf>
-> > >
-> > > --
-> > > Pozdrawiam/With kind regards,
-> > > Lech Perczak
-> > >
-> > > Sr. Software Engineer
-> > > Camlin Technologies Poland Limited Sp. z o.o.
-> > > Strzegomska 54,
-> > > 53-611 Wroclaw
-> > > Tel: (+48) 71 75 000 16
-> > > Email: lech.perczak@camlingroup.com
-> > > Website: http://www.camlingroup.com <http://www.camlingroup.com>
-> > >
-> > >
-> >
-> >
-> > --
-> > Hugo Villeneuve
-> >
->
->
-> --=20
-> Hugo Villeneuve
+    3.type "123456" and press "Enter" will prompt a help menu.
+    "
+    help:
+        -a      show all kernel msg
+        -3      show S3 msg
+        -4      show S4 msg
+        -filter-[string]        show msg contains [string]
+        -q-     quit
+    "
+
+    4.Finally type 'a', '3', '4', 'q' or "filter-xxx" to get what you want.
+
+Tested on an arm64 PC with 6.4.0-rc2.
+
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+---
+ MAINTAINERS                              |   5 +
+ drivers/tty/serial/Kconfig               |  11 +
+ drivers/tty/serial/Makefile              |   1 +
+ drivers/tty/serial/panic_serial_helper.c | 635 +++++++++++++++++++++++
+ drivers/tty/serial/panic_serial_helper.h |  12 +
+ include/linux/panic.h                    |   1 +
+ kernel/panic.c                           |  12 +
+ 7 files changed, 677 insertions(+)
+ create mode 100644 drivers/tty/serial/panic_serial_helper.c
+ create mode 100644 drivers/tty/serial/panic_serial_helper.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5bd0f510f744..951c6804b3cb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11552,6 +11552,11 @@ F:	include/linux/kgdb.h
+ F:	kernel/debug/
+ F:	kernel/module/kdb.c
+ 
++PANIC SERIAL CONSOLE
++M:	Hongyu Xie <xiehongyu1@kylinos.cn>
++F:	drivers/tty/serial/panic_serial_helper.c
++F:	drivers/tty/serial/panic_serial_helper.h
++
+ KHADAS MCU MFD DRIVER
+ M:	Neil Armstrong <neil.armstrong@linaro.org>
+ L:	linux-amlogic@lists.infradead.org
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 398e5aac2e77..f890f3e3e334 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -198,6 +198,17 @@ config SERIAL_KGDB_NMI
+ 
+ 	  If unsure, say N.
+ 
++config PANIC_SERIAL_HELPER
++	tristate "debug through uart when panic"
++	depends on PANIC_TIMEOUT=0
++	select CONSOLE_POLL
++	default m
++	help
++	    Debug through uart when kernel panic happens.
++	    This module helps you to get full kernel message through uart.
++	    Say Y if you want add this to built-in kernel.
++	    Say M if you want add this as a module driver.
++
+ config SERIAL_MESON
+ 	tristate "Meson serial port support"
+ 	depends on ARCH_MESON || COMPILE_TEST
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 531ec3a19dae..d7f6fdc8913c 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -93,3 +93,4 @@ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
+ 
+ obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
+ obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
++obj-$(CONFIG_PANIC_SERIAL_HELPER) += panic_serial_helper.o
+diff --git a/drivers/tty/serial/panic_serial_helper.c b/drivers/tty/serial/panic_serial_helper.c
+new file mode 100644
+index 000000000000..c9d8cf4d146d
+--- /dev/null
++++ b/drivers/tty/serial/panic_serial_helper.c
+@@ -0,0 +1,635 @@
++// SPDX-License-Identifier: GPL
++/*
++ * panic_serial_helper.c Debug through uart when panic.
++ *
++ * Copyright (C) 2023 Xie Hongyu <xiehongyu1@kylinos.cn>
++ *
++ * Inspired by kgdboc.
++ *
++ */
++
++#define pr_fmt(fmt) "panic-seial-helper: " fmt
++
++#include <linux/kmsg_dump.h>
++#include <linux/bsearch.h>
++#include <linux/slab.h>
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/tty_driver.h>
++#include <linux/serial_core.h>
++
++#include "panic_serial_helper.h"
++
++#define INPUT_PWD "Panic now, please input keyword to debug\n"
++#define WRONG_PWD "wrong password\n"
++
++#define S3_ENTRY "PM: suspend entry"
++#define S3_EXIT "PM: suspend exit"
++#define S4_ENTRY "PM: hibernation entry"
++#define S4_EXIT "PM: hibernation exit"
++
++/* list to store msg lines */
++static LIST_HEAD(psh_list);
++
++/* msg line prototype */
++struct dmesg_lines {
++	struct list_head entry;
++	char *buf;
++	int size;
++};
++
++/* panic serial helper status*/
++enum PSHS {
++	PSHS_INIT,
++	PSHS_WAIT_PWD_INPUT,
++	PSHS_WAIT_HELP_INPUT,
++};
++
++/* panic serial helper msg type */
++enum PSHM_TYPE {
++	PSHM_TYPE_ALL,
++	PSHM_TYPE_S3,
++	PSHM_TYPE_S4,
++	PSHM_TYPE_STRINGS,
++	PSHM_TYPE_QUIT,
++};
++
++/* whether uart is dumping msg */
++static bool dumping_msg;
++
++/* to filter msg */
++static char filter[256] = {0};
++
++/* keyword */
++static const char _passwd[] = "123456";
++
++struct psh_buf {
++#define PSH_BUF_SIZE 256
++	char buf[PSH_BUF_SIZE];
++	int cur;
++};
++
++static const char psh_tty_types[][32] = {
++	{"ttyAMA"},
++	{"ttyS"},
++	{"ttyPS"},
++	{"ttyLP"},
++	{"ttyARC"},
++	{"ttyAL"},
++	{"ttyUL"},
++};
++
++#define TTY_OPS "115200n8n"
++
++struct psh_serial_dev {
++	struct list_head entry;
++	struct tty_driver *drv;
++	struct psh_buf buf;
++	enum PSHS psh_status;
++	enum PSHM_TYPE psh_msg_type;
++	int line;
++};
++
++struct psh_serial_dev *psh_dev;
++
++/* char handle prototype */
++struct c_handle {
++	char c;
++	int (*handler)(struct psh_serial_dev *dev, void *d);
++};
++
++static inline void psh_show_func_line(struct psh_serial_dev *dev,
++	char *func, int line);
++static struct psh_buf *psh_get_rx_buffer(struct psh_serial_dev *dev)
++{
++	return !dev ? NULL : &dev->buf;
++}
++
++static int psh_poll_get_char(struct psh_serial_dev *dev)
++{
++	if (!dev || !dev->drv)
++		return -EINVAL;
++
++	return dev->drv->ops->poll_get_char(dev->drv, dev->line);
++}
++
++static void psh_poll_put_char(struct psh_serial_dev *dev, u8 c)
++{
++	if (!dev || !dev->drv)
++		return;
++
++	dev->drv->ops->poll_put_char(dev->drv,
++					dev->line, c);
++}
++
++static void psh_clear_rx_buffer(struct psh_serial_dev *dev)
++{
++	struct psh_buf *_buf = psh_get_rx_buffer(dev);
++
++	if (!_buf)
++		return;
++
++	_buf->cur = 0;
++	memset(_buf->buf, 0, sizeof(_buf->buf));
++}
++
++static int psh_getc(struct psh_serial_dev *dev)
++{
++	return psh_poll_get_char(dev);
++}
++
++static void psh_putc(struct psh_serial_dev *dev, char c)
++{
++	psh_poll_put_char(dev, c);
++}
++
++static void psh_put_strings(struct psh_serial_dev *dev, const char *buf, int size)
++{
++	int i = 0;
++
++	while (i < size) {
++		psh_putc(dev, buf[i]);
++		i++;
++	}
++}
++
++static void psh_input_pwd(struct psh_serial_dev *dev)
++{
++	psh_put_strings(dev, INPUT_PWD, strlen(INPUT_PWD));
++}
++
++static void psh_help(struct psh_serial_dev *dev)
++{
++	static const char help[] = "\nhelp:\n";
++	static const char show_all[] = "\t-a\tshow all kernel msg\n";
++	static const char show_s3[] = "\t-3\tshow S3 msg\n";
++	static const char show_s4[] = "\t-4\tshow S4 msg\n";
++	static const char _filter[] =
++		"\t-filter-[string]\tshow msg contains [string]\n";
++	static const char _quit[] = "\t-q-\tquit\n";
++
++	psh_put_strings(dev, help, strlen(help));
++	psh_put_strings(dev, show_all, strlen(show_all));
++	psh_put_strings(dev, show_s3, strlen(show_s3));
++	psh_put_strings(dev, show_s4, strlen(show_s4));
++	psh_put_strings(dev, _filter, strlen(_filter));
++	psh_put_strings(dev, _quit, strlen(_quit));
++}
++
++static void psh_wrong_passwd(struct psh_serial_dev *dev)
++{
++	psh_put_strings(dev, WRONG_PWD, strlen(WRONG_PWD));
++}
++
++static int psh_check_passwd(struct psh_serial_dev *dev)
++{
++	struct psh_buf *_buf = psh_get_rx_buffer(dev);
++
++	if (!_buf)
++		return -EINVAL;
++
++	if ((strlen(_passwd) == strlen(_buf->buf)) &&
++		!strncmp(_buf->buf, _passwd, strlen(_passwd)))
++		return 0;
++
++	return -1;
++}
++
++static void psh_dump_msg(struct psh_serial_dev *dev)
++{
++	struct dmesg_lines *p;
++	bool print = false;
++	char *start = NULL;
++	char *end = NULL;
++
++	if (!dev)
++		return;
++
++	dumping_msg = true;
++	switch (dev->psh_msg_type) {
++	case PSHM_TYPE_ALL:
++		print = true;
++		break;
++	case PSHM_TYPE_S3:
++		start = S3_ENTRY;
++		end = S3_EXIT;
++		break;
++	case PSHM_TYPE_S4:
++		start = S4_ENTRY;
++		end = S4_EXIT;
++		break;
++	case PSHM_TYPE_STRINGS:
++		start = filter;
++		end = NULL;
++		break;
++	default:
++		return;
++	}
++
++	psh_putc(dev, '\n');
++	list_for_each_entry_reverse(p, &psh_list, entry) {
++		if (print || (start && strstr(p->buf,
++				start))) {
++			psh_put_strings(dev, p->buf, p->size);
++			if (dev->psh_msg_type != PSHM_TYPE_STRINGS)
++				print = true;
++		}
++
++		if (end && strstr(p->buf, end))
++			print = false;
++	}
++
++	dumping_msg = false;
++}
++
++static int psh_parse_help_ops(struct psh_serial_dev *dev)
++{
++	char _filter[] = "filter-";
++	struct psh_buf *_buf = psh_get_rx_buffer(dev);
++
++	if (!_buf)
++		return -EINVAL;
++
++	switch (_buf->buf[0]) {
++	case 'a':
++		dev->psh_msg_type = PSHM_TYPE_ALL;
++		break;
++	case '3':
++		dev->psh_msg_type = PSHM_TYPE_S3;
++		break;
++	case '4':
++		dev->psh_msg_type = PSHM_TYPE_S4;
++		break;
++	case 'q':
++		dev->psh_msg_type = PSHM_TYPE_QUIT;
++		break;
++	case 'f':
++		psh_put_strings(dev, _filter, strlen(_filter));
++		psh_putc(dev, '\r');
++		psh_put_strings(dev, _buf->buf, _buf->cur);
++		psh_putc(dev, '\r');
++		if (!strncmp(_buf->buf, _filter, strlen(_filter))) {
++			dev->psh_msg_type =
++				PSHM_TYPE_STRINGS;
++			memset(filter, 0, sizeof(filter));
++			memcpy(filter, &_buf->buf[strlen(_filter)],
++				strlen(_buf->buf) - strlen(_filter));
++		}
++		break;
++	default:
++		break;
++	}
++
++	return dev->psh_msg_type;
++}
++
++static int psh_serial_backspace_handler(struct psh_serial_dev *dev, void *buf)
++{
++	struct psh_buf *_buf = psh_get_rx_buffer(dev);
++
++	if (!_buf)
++		return -EINVAL;
++
++
++	if (_buf->cur > 0) {
++		_buf->cur -= 1;
++		_buf->buf[_buf->cur] = 0;
++	}
++
++	psh_putc(dev, '\b');
++	psh_putc(dev, ' ');
++	psh_putc(dev, '\b');
++	return 0;
++}
++
++static int psh_serial_enter_handler(struct psh_serial_dev *dev, void *buf)
++{
++	bool help = false;
++	bool wrong_passwd = false;
++
++	if (!dev || !buf)
++		return -EINVAL;
++
++	switch (dev->psh_status) {
++	case PSHS_WAIT_PWD_INPUT:
++		if (!psh_check_passwd(dev)) {
++			dev->psh_status = PSHS_WAIT_HELP_INPUT;
++			help = true;
++			psh_dev = dev;
++		} else {
++			wrong_passwd = true;
++		}
++		break;
++	case PSHS_WAIT_HELP_INPUT:
++		if (psh_parse_help_ops(dev) != PSHM_TYPE_QUIT)
++			psh_dump_msg(dev);
++		else
++			help = true;
++		break;
++	default:
++		break;
++	}
++
++	if (help)
++		psh_help(dev);
++
++	if (wrong_passwd) {
++		psh_wrong_passwd(dev);
++		psh_input_pwd(dev);
++	}
++
++	psh_clear_rx_buffer(dev);
++	return 0;
++}
++
++static struct c_handle c_handles[] = {
++	{'\b', psh_serial_backspace_handler},
++	{'\r', psh_serial_enter_handler},
++};
++
++static int c_handles_cmp(const void *key, const void *elt)
++{
++	const int *c = (int *)key;
++	const struct c_handle *e = (struct c_handle *)elt;
++
++	if (*c < e->c)
++		return -1;
++	else if (*c > e->c)
++		return 1;
++
++	return 0;
++}
++
++static void psh_buffer_input(struct psh_serial_dev *dev, int c)
++{
++	struct psh_buf *_buf = psh_get_rx_buffer(dev);
++
++	if (!_buf)
++		return;
++
++	if ((_buf->cur >= sizeof(_buf->buf)) || (_buf->cur < 0))
++		_buf->cur = 0;
++
++	_buf->buf[_buf->cur] = (char)c;
++	_buf->cur++;
++}
++
++#ifdef PSH_SERIAL_DEBUG
++static inline void psh_show_func_line(struct psh_serial_dev *dev,
++	char *func, int line)
++{
++	char buff[256] = {0};
++
++	snprintf(buff, sizeof(buff), "%s-%d\n", func, line);
++	psh_put_strings(dev, buff, strlen(buff));
++}
++#else
++static inline void psh_show_func_line(struct psh_serial_dev *dev,
++	char *func, int line)
++{
++}
++
++#endif
++
++static int psh_serial_check_char(struct psh_serial_dev *dev, int ch)
++{
++	struct c_handle *found = NULL;
++	int c = ch;
++
++	size_t num = sizeof(c_handles) / sizeof(struct c_handle);
++
++	found = bsearch(&c, c_handles, num,
++			sizeof(struct c_handle), c_handles_cmp);
++	if (found)
++		return found->handler(dev, &c);
++
++	psh_putc(dev, ch);
++	psh_buffer_input(dev, ch);
++
++	return 1;
++}
++
++static int psh_wait_for_input(struct psh_serial_dev *dev)
++{
++	int c_input = psh_getc(dev);
++
++	if (c_input < 0 || c_input > 127) {
++		mdelay(1);
++		return c_input;
++	}
++
++	return psh_serial_check_char(dev, c_input);
++}
++
++static int psh_msg(struct psh_serial_dev *dev)
++{
++	int ret = 0;
++
++	if (!dumping_msg)
++		ret = psh_wait_for_input(dev);
++
++	return ret;
++}
++
++struct psh_serial_dev *create_psh_serial_dev(struct uart_driver *drv,
++	int line)
++{
++	struct psh_serial_dev *dev = NULL;
++	struct uart_port *uport = NULL;
++	struct uart_state *state = NULL;
++	struct tty_driver *p = drv->tty_driver;
++
++	state = drv->state + line;
++	uport = state->uart_port;
++	if (!uport)
++		goto err;
++
++	dev = kzalloc(sizeof(struct psh_serial_dev),
++		GFP_KERNEL);
++	if (!dev)
++		goto err;
++
++	dev->buf.cur = 0;
++	dev->drv = p;
++	dev->line = line;
++	dev->psh_status = PSHS_INIT;
++	dev->psh_msg_type = PSHM_TYPE_ALL;
++	return dev;
++err:
++	return NULL;
++}
++
++/* find uart driver by name */
++static struct uart_driver *psh_find_uart_driver(char *name)
++{
++	struct tty_driver *p = NULL;
++	struct uart_driver *drv = NULL;
++	int tty_line;
++
++	p = tty_find_polling_driver(name, &tty_line);
++	if (!p) {
++		pr_debug("no such tty driver %s\n",
++			name);
++		goto out;
++	}
++
++	drv = (struct uart_driver *)p->driver_state;
++	if (!drv) {
++		pr_debug("no uart_driver %s\n",
++			name);
++		tty_driver_kref_put(p);
++	}
++
++out:
++	return drv;
++}
++
++/* try all uart port under the same driver */
++int psh_try_all_uart_port(struct uart_driver *drv)
++{
++	struct psh_serial_dev *dev = NULL;
++	struct uart_driver *driver = NULL;
++	char drv_name[64] = {0};
++	int count = 10000;
++	int i = 0, nr = drv->nr;
++
++	for (i = 0; i < nr; i++) {
++		memset(drv_name, 0, sizeof(drv_name));
++		snprintf(drv_name, sizeof(drv_name), "%s%d,%s",
++			drv->driver_name,
++			i, TTY_OPS);
++
++		driver = psh_find_uart_driver(drv_name);
++		if (!driver)
++			continue;
++
++		dev = create_psh_serial_dev(driver, i);
++		if (!dev) {
++			tty_driver_kref_put(driver->tty_driver);
++			driver = NULL;
++			continue;
++		}
++
++		dev->psh_status = PSHS_WAIT_PWD_INPUT;
++		psh_input_pwd(dev);
++
++		count = 10000;
++		while (count-- > 0) {
++			psh_wait_for_input(dev);
++
++			if (psh_dev)
++				return 0;
++		}
++
++		tty_driver_kref_put(driver->tty_driver);
++		driver = NULL;
++		kfree(dev);
++		dev = NULL;
++	}
++
++	return -1;
++}
++
++/* try all uart driver */
++int psh_try_all_uart_driver(void)
++{
++	struct uart_driver *drv = NULL;
++	char drv_name[64] = {0};
++	int i = 0;
++
++	for (i = 0; i < ARRAY_SIZE(psh_tty_types); i++) {
++		memset(drv_name, 0, sizeof(drv_name));
++		snprintf(drv_name, sizeof(drv_name), "%s0,%s",
++		psh_tty_types[i], TTY_OPS);
++
++		drv = psh_find_uart_driver(drv_name);
++		if (!drv)
++			continue;
++
++		if (!psh_try_all_uart_port(drv)) {
++			tty_driver_kref_put(drv->tty_driver);
++			return 0;
++		}
++
++		tty_driver_kref_put(drv->tty_driver);
++		drv = NULL;
++	}
++
++	return 0;
++}
++
++static int dump_dmsg(void)
++{
++	if (!psh_dev)
++		return psh_try_all_uart_driver();
++
++	return psh_msg(psh_dev);
++}
++
++static void panic_serial_dump(struct kmsg_dumper *dumper,
++			enum kmsg_dump_reason reason)
++{
++	struct kmsg_dump_iter iter;
++	static char line[1024];
++	size_t len = 0;
++	struct dmesg_lines *p = NULL;
++
++	panic_serial_helper = dump_dmsg;
++
++	kmsg_dump_rewind(&iter);
++	while (kmsg_dump_get_line(&iter, true, line, sizeof(line), &len)) {
++		p = kzalloc(sizeof(struct dmesg_lines), GFP_KERNEL);
++		if (!p)
++			continue;
++
++		INIT_LIST_HEAD(&p->entry);
++		p->buf = kzalloc(len + 1, GFP_KERNEL);
++		if (!p->buf) {
++			kfree(p);
++			p = NULL;
++			continue;
++		}
++
++		memcpy(p->buf, line, len);
++		p->buf[len] = '\0';
++		p->size = len;
++		list_add(&p->entry, &psh_list);
++	}
++}
++
++static struct kmsg_dumper panic_serial_dumper = {
++	.dump = panic_serial_dump,
++};
++
++static void __exit panic_serial_helper_exit(void)
++{
++	struct dmesg_lines *line;
++
++	kmsg_dump_unregister(&panic_serial_dumper);
++	list_for_each_entry_reverse(line, &psh_list, entry) {
++		kfree(line->buf);
++		line->buf = NULL;
++		kfree(line);
++		line = NULL;
++	}
++
++	tty_driver_kref_put(psh_dev->drv);
++	kfree(psh_dev);
++}
++
++static int __init panic_serial_helper_init(void)
++{
++	long err = 0;
++
++	err = kmsg_dump_register(&panic_serial_dumper);
++	if (err)
++		pr_info("panic_serial_dumper register failed\n");
++
++	return err;
++}
++
++module_init(panic_serial_helper_init);
++module_exit(panic_serial_helper_exit);
++MODULE_AUTHOR("Hongyu Xie <xiehongyu1@kylinos.cn>");
++MODULE_DESCRIPTION("debug through uart when panic");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/tty/serial/panic_serial_helper.h b/drivers/tty/serial/panic_serial_helper.h
+new file mode 100644
+index 000000000000..678cbbeabfd6
+--- /dev/null
++++ b/drivers/tty/serial/panic_serial_helper.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL
++ *
++ * panic_serial_helper.h Debug through uart when panic.
++ *
++ * Copyright (C) 2023 Xie Hongyu <xiehongyu1@kylinos.cn>
++ *
++ * Inspired by kgdboc.
++ */
++#ifndef __PANIC_SERIAL_HELPER_H
++#define __PANIC_SERIAL_HELPER_H
++/*TODO*/
++#endif /* __PANIC_SERIAL_HELPER_H */
+diff --git a/include/linux/panic.h b/include/linux/panic.h
+index 979b776e3bcb..4ddedbd2253d 100644
+--- a/include/linux/panic.h
++++ b/include/linux/panic.h
+@@ -8,6 +8,7 @@
+ struct pt_regs;
+ 
+ extern long (*panic_blink)(int state);
++extern int (*panic_serial_helper)(void);
+ __printf(1, 2)
+ void panic(const char *fmt, ...) __noreturn __cold;
+ void nmi_panic(struct pt_regs *regs, const char *msg);
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 886d2ebd0a0d..a5a92693fa61 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -134,10 +134,18 @@ static long no_blink(int state)
+ 	return 0;
+ }
+ 
++static int no_panic_serial_helper(void)
++{
++	return 0;
++}
++
+ /* Returns how long it waited in ms */
+ long (*panic_blink)(int state);
+ EXPORT_SYMBOL(panic_blink);
+ 
++int (*panic_serial_helper)(void);
++EXPORT_SYMBOL(panic_serial_helper);
++
+ /*
+  * Stop ourself in panic -- architecture code may override this
+  */
+@@ -400,6 +408,9 @@ void panic(const char *fmt, ...)
+ 	if (!panic_blink)
+ 		panic_blink = no_blink;
+ 
++	if (!panic_serial_helper)
++		panic_serial_helper = no_panic_serial_helper;
++
+ 	if (panic_timeout > 0) {
+ 		/*
+ 		 * Delay timeout seconds before rebooting the machine.
+@@ -449,6 +460,7 @@ void panic(const char *fmt, ...)
+ 			i += panic_blink(state ^= 1);
+ 			i_next = i + 3600 / PANIC_BLINK_SPD;
+ 		}
++		panic_serial_helper();
+ 		mdelay(PANIC_TIMER_STEP);
+ 	}
+ }
+-- 
+2.34.1
 
