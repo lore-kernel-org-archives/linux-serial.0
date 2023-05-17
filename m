@@ -2,109 +2,112 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F24A9C77B75
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 17:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 796AEC7EE22
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 19:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbjEQRZ3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 13:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S229449AbjEQTo7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 15:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbjEQRZ1 (ORCPT
+        with ESMTP id S230077AbjEQTox (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 13:25:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38ACD93F7;
-        Wed, 17 May 2023 10:25:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FB1363E35;
-        Wed, 17 May 2023 17:25:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E9E6C433D2;
-        Wed, 17 May 2023 17:25:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684344311;
-        bh=mjFoAWFzRrM9eTl/Zbmccy0cVg5yWUVZAjtxpZaRWyI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JJSAp3/DeICH3C9UGkhuNBJHDqlTc+oJYD3lah9UEjSbbpdIHvYVt4JKbJrnKpfq8
-         jGOB90ZzNGUrHIdwLsKVgnZZeJha/DjxWrpMMNkKQenM/5a3pr4oDcH6tm0RoB1OSv
-         TyFFVgNn198G+8R8noWEfYc/XgQ4fkTWHH1R8mo5MCCpwQIl4ZI1EYBX4jX3sNLuWX
-         nB7N1AzvlkCZ9eFoTVWSVlQTQl8WV62hJOsoU/+VR77WAywEPx3jeZ2kioD+F2uEhE
-         bgZb3B4QWO7VWT8KQJ0+Jo1reEbgfSETto+mmz5A5VKu/zBOVO47qqyNwcnaAhuVRe
-         keX2nmUYvMgVg==
-Date:   Wed, 17 May 2023 18:25:07 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: sc16is7xx: Add property to change GPIO
- function
-Message-ID: <20230517-argue-unbeaten-b07405fdd313@spud>
-References: <20230517150746.3823249-1-hugo@hugovil.com>
+        Wed, 17 May 2023 15:44:53 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C9240D4;
+        Wed, 17 May 2023 12:44:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+        :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
+        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+        List-Owner:List-Archive; bh=uRn5jY22yg/grNtbC+Tg4kXWRa2p3rPCDtHdGv1KI5M=; b=s
+        qRxIcJ6vuRm9doZ4eNPugrtGBiFVBL+9R0zAVWVFmlUvZn1wjnpcKr2QIzNufuvkAz4y4YyeBWXSf
+        i0/cBmyy8bMp1HuTIRzOl1S8rgHuByC/W9mhE9SacLobZj1t0YZaVHc2x9jlZ3DB+l6/rvntTAfms
+        tcQJ4zpd4lJ+/MtU=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:36992 helo=pettiford.lan)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1pzN4l-0001n2-71; Wed, 17 May 2023 15:44:43 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 17 May 2023 15:44:07 -0400
+Message-Id: <20230517194406.4125912-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mpbHctzDX7UX2Sd6"
-Content-Disposition: inline
-In-Reply-To: <20230517150746.3823249-1-hugo@hugovil.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: [RFC PATCH] serial: sc16is7xx: fix broken port 0 uart init
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
---mpbHctzDX7UX2Sd6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+While experimenting with rs485 configuration on a SC16IS752 dual UART,
+I found that the sc16is7xx_config_rs485() function was called only for
+the second port (index 1, channel B), causing initialization problems
+for the first port.
 
-On Wed, May 17, 2023 at 11:07:46AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->=20
-> Some variants in this series of uart controllers have GPIO pins that
-> are shared between GPIO and modem control lines.
->=20
-> The pin mux mode (GPIO or modem control lines) can be set for each
-> ports (channels) supported by the variant.
->=20
-> This adds a property to the device tree to set the GPIO pin mux to
-> modem control lines on selected ports if needed.
->=20
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  .../bindings/serial/nxp,sc16is7xx.txt         | 28 +++++++++++++++++++
->  1 file changed, 28 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b=
-/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> index 0fa8e3e43bf8..426b7285ad50 100644
-> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> @@ -23,6 +23,9 @@ Optional properties:
->      1 =3D active low.
->  - irda-mode-ports: An array that lists the indices of the port that
->  		   should operate in IrDA mode.
-> +- modem-control-line-ports: An array that lists the indices of the port =
-that
-> +			    should have shared GPIO lines configured as modem
-> +			    control lines.
+For the sc16is7xx driver, port->membase and port->mapbase are not set,
+and their default values are 0. And we set port->iobase to the device
+index. This means that when the first device is registered using the
+uart_add_one_port() function, the following values will be in the port
+structure:
+    port->membase = 0
+    port->mapbase = 0
+    port->iobase  = 0
 
-If this is an NXP specific property, should it not have an nxp, vendor
-prefix?
+Therefore, the function uart_configure_port() in serial_core.c will
+exit early because of the following check:
+	/*
+	 * If there isn't a port here, don't do anything further.
+	 */
+	if (!port->iobase && !port->mapbase && !port->membase)
+		return;
 
+Typically, I2C and SPI drivers do not set port->membase and
+port->mapbase. But I found that the max310x driver sets
+port->membase to ~0 (all ones). By implementing the same change in our
+driver, uart_configure_port() is now correctly executed.
 
---mpbHctzDX7UX2Sd6
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
 
------BEGIN PGP SIGNATURE-----
+I am not sure if this change is the best long-term solution to this
+problem, and maybe uart_configure_port() itself could be modified to
+take into account the fact that some devices have all three *base
+values set to zero?
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGUN8wAKCRB4tDGHoIJi
-0hp1AP9FdcuRN7IO7H2al/5we3uqXf0P4Jd54EhBY+MkzKRGxwD8DuYBxPPExott
-pQjz7PK7eIvyCdbZuUagAiV4Q8GrCAQ=
-=M+2F
------END PGP SIGNATURE-----
+Also, many drivers use port->iobase as an index, is it the correct way
+to use it?
 
---mpbHctzDX7UX2Sd6--
+For example, for our driver, there was
+commit 5da6b1c079e6 ("sc16is7xx: Set iobase to device index") with the
+following explanation:
+    "Set the .iobase value to the relative index within the device to allow
+    infering the order through sysfs."
+
+ drivers/tty/serial/sc16is7xx.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 1a3143331c1f..3e0e63498052 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1432,6 +1432,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
+ 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+ 		s->p[i].port.iobase	= i;
++		s->p[i].port.membase	= (void __iomem *)~0;
+ 		s->p[i].port.iotype	= UPIO_PORT;
+ 		s->p[i].port.uartclk	= freq;
+ 		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+-- 
+2.30.2
+
