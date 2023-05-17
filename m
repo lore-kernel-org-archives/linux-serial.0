@@ -2,95 +2,172 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73A9C77B7F
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 14:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F28C77B7A
+	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 14:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231860AbjEQOOe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 10:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        id S231691AbjEQOQ7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 May 2023 10:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbjEQOOb (ORCPT
+        with ESMTP id S231888AbjEQOQ4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 10:14:31 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1597DB2;
-        Wed, 17 May 2023 07:14:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-        :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
-        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=oMgj+tKoLcLXXYaEiSRJStVpk7eDMdwwfoe9DPEgx18=; b=Y
-        pr3Tk5UxxBEHfeWG4zsdrv4VyWj/e310JeG+XlAmHUUx2ZwsC2/QviXEGyBUF2NBTxkRZLhfjzobW
-        BoR4+5Izy61ehBz4Rjtj2me8COeS8SQOPZCvguXBd55PCjxaExulW6jbm6SRjX2T/uxJPfYWr4RR8
-        cyIEWLqpFRDAhUkg=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:54876 helo=pettiford.lan)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1pzHv4-0006ow-H1; Wed, 17 May 2023 10:14:23 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 17 May 2023 10:13:49 -0400
-Message-Id: <20230517141348.3792842-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 17 May 2023 10:16:56 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9A718C;
+        Wed, 17 May 2023 07:16:54 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-9661a1ff1e9so119738366b.1;
+        Wed, 17 May 2023 07:16:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684333013; x=1686925013;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9mWuBFORINAsgkFiENnuZWACjGF2Zo8AfvFi7n4DTJY=;
+        b=biypyogl/DqZwN8+l2p9gGZMhx1QXp7js5dS6YSXbdcF3ZHK3bAXOKr9bIZ2d5+mvl
+         Qn4Gx8A74tCXzyGwgnn35/7evQqgN/7wXY9AeQJjQf2d0yv+FYmCHdYp8GwNzBMM0M2X
+         RepZrNuNaoOJQYiVZCSiNqbUDnKxLYbuFDB8j4b1yBI/QsVPe3WOIE4R72ZLtO7EIxoT
+         24iEumAIof2PKi6dQYEuyikyK+F0NROw542Ffk8G2rKhOQY1gF3SmvrkEBVbE4TJefAI
+         GSNWr7uxGsud5z6OeWp2cGbBzJ4OT09LPkQaqsMmhTV5gi2hCXnVzgGn3dz+0FxHoXgI
+         VP5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684333013; x=1686925013;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9mWuBFORINAsgkFiENnuZWACjGF2Zo8AfvFi7n4DTJY=;
+        b=Z+pQ/oqFjWFJrG9+QOfmcz2fk6OWGFRuNpj7cn7shDKRiYpYGRowq2JkVCH+kIFmIE
+         Z+0NVG8IOQUjZKlbbISdY7MjZKegbdAZtLRCoaG1zNR0fgP1TIgmH3N5XFiNQzdHdBnq
+         /abMBpvgJN9Fhoxr2Unjzxbrf982Poi9gPfMU/V+4s8UYXrLNCrOxyg/2ZFPVVdup7oM
+         V2twmI0RsL0z51GbdEiOchF4MggywuQOyDAYGkJlRsqmXHdd7IprC9JGRI2HIlRl0F42
+         5AjgXpG+NqpXRXqQKXbczJ3a9xWbkvy1NFceT+GK4eMZUxXbd6K/9yEmefwohVyZzQ0P
+         lziQ==
+X-Gm-Message-State: AC+VfDwxtRBr8RIE7cgkgUEf6LEFJU/lPfTBEAuqBqM5CSGiYZfEo1KB
+        BXxqVrmLl5g5ht0kVKhEg9+SlUrulB4J1qMrc2c=
+X-Google-Smtp-Source: ACHHUZ5TyNAWL0L+xFq4qCoGU4tNyKIEpqxlZu0ALd+ZVRg36+lSEN4BwR3Z/P1zVEHc2oshTTV+tnv1x2FEG17G5M8=
+X-Received: by 2002:a17:907:36c3:b0:96a:3811:f589 with SMTP id
+ bj3-20020a17090736c300b0096a3811f589mr24647279ejc.10.1684333012989; Wed, 17
+ May 2023 07:16:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH] serial: sc16is7xx: improve comments about variants
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+References: <f5b2bd1e78407e4128fc8f0b5874ba723e710a88.1684245058.git.michal.simek@amd.com>
+In-Reply-To: <f5b2bd1e78407e4128fc8f0b5874ba723e710a88.1684245058.git.michal.simek@amd.com>
+From:   Jassi Brar <jassisinghbrar@gmail.com>
+Date:   Wed, 17 May 2023 09:16:41 -0500
+Message-ID: <CABb+yY2JaC8b-HFEU_WnSBSCr2edgEezXJkfMUYqjeLBA1MvYw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: xilinx: Switch xilinx.com emails to amd.com
+To:     Michal Simek <michal.simek@amd.com>
+Cc:     piyush.mehta@amd.com, nava.kishore.manne@amd.com,
+        sai.krishna.potthuri@amd.com, shubhrajyoti.datta@amd.com,
+        vishal.sagar@amd.com, kalyani.akula@amd.com,
+        bharat.kumar.gogada@amd.com, linux-kernel@vger.kernel.org,
+        monstr@monstr.eu, michal.simek@xilinx.com, git@xilinx.com,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Damien Le Moal <dlemoal@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jolly Shah <jolly.shah@xilinx.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Mark Brown <broonie@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Rajan Vaja <rajan.vaja@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Srinivas Neeli <srinivas.neeli@amd.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tom Rix <trix@redhat.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Wu Hao <hao.wu@intel.com>, Xu Yilun <yilun.xu@intel.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Tue, May 16, 2023 at 8:51=E2=80=AFAM Michal Simek <michal.simek@amd.com>=
+ wrote:
+>
+> @xilinx.com is still working but better to switch to new amd.com after
+> AMD/Xilinx acquisition.
+>
+> Signed-off-by: Michal Simek <michal.simek@amd.com>
+> ---
+>
+>  Documentation/devicetree/bindings/arm/xilinx.yaml             | 2 +-
+>  Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml     | 2 +-
+>  .../devicetree/bindings/clock/xlnx,clocking-wizard.yaml       | 2 +-
+>  Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml  | 2 +-
+>  Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml | 4 ++--
+>  .../bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml        | 2 +-
+>  .../devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml        | 2 +-
+>  Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml  | 2 +-
+>  .../devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml       | 2 +-
+>  Documentation/devicetree/bindings/gpio/gpio-zynq.yaml         | 2 +-
+>  Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml  | 2 +-
+>  .../devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml    | 2 +-
+>  Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml     | 2 +-
+>  .../devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml  | 2 +-
+>  .../devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml       | 2 +-
+>  .../bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml      | 2 +-
+>  .../bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml       | 2 +-
+>  Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml  | 2 +-
+>  .../devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml        | 2 +-
+>  .../devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml      | 2 +-
+>  .../devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml    | 2 +-
+>  Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml    | 2 +-
+>  Documentation/devicetree/bindings/serial/cdns,uart.yaml       | 2 +-
+>  Documentation/devicetree/bindings/spi/spi-cadence.yaml        | 2 +-
+>  Documentation/devicetree/bindings/spi/spi-xilinx.yaml         | 2 +-
+>  Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml    | 2 +-
+>  Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml     | 2 +-
+>  Documentation/devicetree/bindings/timer/cdns,ttc.yaml         | 2 +-
+>  .../devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml   | 4 ++--
+>  29 files changed, 31 insertions(+), 31 deletions(-)
+>
+.....
+> diff --git a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-ma=
+ilbox.yaml b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mail=
+box.yaml
+> index 374ffe64016f..aeaddbf574b0 100644
+> --- a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.y=
+aml
+> +++ b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.y=
+aml
+> @@ -33,7 +33,7 @@ description: |
+>                +------------------------------------------+
+>
+>  maintainers:
+> -  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> +  - Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+>
+>  properties:
+>    compatible:
+>
+Acked-by: Jassi Brar <jassisinghbrar@gmail.com>
 
-Replace 740/750/760 with generic terms like 74x/75x/76x to account for
-variants like 741, 752 and 762.
+Just curious, some developers' ids are left unchanged, and not all
+devs have S.O.B.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sc16is7xx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 5bd98e4316f5..00054bb49780 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -223,7 +223,7 @@
-  * trigger levels. Trigger levels from 4 characters to 60 characters are
-  * available with a granularity of four.
-  *
-- * When the trigger level setting in TLR is zero, the SC16IS740/750/760 uses the
-+ * When the trigger level setting in TLR is zero, the SC16IS74x/75x/76x uses the
-  * trigger level setting defined in FCR. If TLR has non-zero trigger level value
-  * the trigger level defined in FCR is discarded. This applies to both transmit
-  * FIFO and receive FIFO trigger level setting.
-@@ -234,7 +234,7 @@
- #define SC16IS7XX_TLR_TX_TRIGGER(words)	((((words) / 4) & 0x0f) << 0)
- #define SC16IS7XX_TLR_RX_TRIGGER(words)	((((words) / 4) & 0x0f) << 4)
- 
--/* IOControl register bits (Only 750/760) */
-+/* IOControl register bits (Only 75x/76x) */
- #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
- #define SC16IS7XX_IOCONTROL_MODEM_BIT	(1 << 1) /* Enable GPIO[7:4] as modem pins */
- #define SC16IS7XX_IOCONTROL_SRESET_BIT	(1 << 3) /* Software Reset */
-@@ -248,9 +248,9 @@
- #define SC16IS7XX_EFCR_RTS_INVERT_BIT	(1 << 5) /* RTS output inversion */
- #define SC16IS7XX_EFCR_IRDA_MODE_BIT	(1 << 7) /* IrDA mode
- 						  * 0 = rate upto 115.2 kbit/s
--						  *   - Only 750/760
-+						  *   - Only 75x/76x
- 						  * 1 = rate upto 1.152 Mbit/s
--						  *   - Only 760
-+						  *   - Only 76x
- 						  */
- 
- /* EFR register bits */
--- 
-2.30.2
-
+cheers.
