@@ -2,195 +2,124 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE12C77B7A
-	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 13:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE564C7EE23
+	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 15:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbjERNdL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 May 2023 09:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
+        id S231232AbjERPd6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 May 2023 11:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbjERNdJ (ORCPT
+        with ESMTP id S230446AbjERPd5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 May 2023 09:33:09 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FA6136;
-        Thu, 18 May 2023 06:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/SjU7VJHu8rs69xHjrWeUQDqa6nd3qZED99q96cmKQs=; b=tclMhemWYtVli5Zf46cKVlUmVv
-        mZIVvbTfvXFVxH2vndSfJHnimOZpJE/ab3Y/e2ZinuKyYz+X7bl+rhvhhj9tKcpi97t4qJq1Lo+ph
-        YxQ5tSrvpxndfOwGvmTfzJKUsUC+Eob8nfzhNix/7DcI64wMyqgZLOrOd0ARjwyp9tCE=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:36904 helo=pettiford.lan)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1pzdkU-0004WC-V3; Thu, 18 May 2023 09:32:55 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lech Perczak <l.perczak@camlintechnologies.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Cc:     hugo@hugovil.com, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 18 May 2023 09:29:08 -0400
-Message-Id: <20230518132905.4182265-2-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230518132905.4182265-1-hugo@hugovil.com>
-References: <20230518132905.4182265-1-hugo@hugovil.com>
+        Thu, 18 May 2023 11:33:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5ABF9;
+        Thu, 18 May 2023 08:33:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE9465026;
+        Thu, 18 May 2023 15:33:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB67BC433D2;
+        Thu, 18 May 2023 15:33:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1684424035;
+        bh=Idwi7pRttqveLxo342VgrsknBdG/Au/cKRfftR8uEfI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NIF7wQwjVOQEUO5xrDWJvv67MCL86sfKCsUrui3Tb0RW0bGUc7fXDF9W0AOwLaNV8
+         YeFFPfbhYUIHnZH/T/gY7jeug1/bCL1hryRXp9HdiWtYD6mWxkJVT0vrexNjYo1H8z
+         Hz2O2lFWfjlW9RRIcHBIExnwnV6gW/DC+kEKzVCrXDyw9MpIr6J+Y2DQELB1OJEF0N
+         FbcQyKTY/+mXNqyCnmRSCiRx8Sl3JRbm/CHRicQ2L0Fu/a65uQBZSWSKAnHdLhbfc+
+         voKTAOWOhPAeCNEKuafI4+en8us7bKh/TGXKArKdWv4KppBmDvLMmbcos1DXESE2eT
+         UqQNBfpVbar2Q==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v4 00/10] riscv: add Bouffalolab bl808 support
+Date:   Thu, 18 May 2023 23:22:34 +0800
+Message-Id: <20230518152244.2178-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [RFC PATCH v2 2/2] serial: sc16is7xx: fix regression with GPIO configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+This series adds Bouffalolab uart driver and basic devicetrees for
+Bouffalolab bl808 SoC and Sipeed M1s dock board.
 
-Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-changed the function of the GPIOs pins to act as modem control
-lines without any possibility of selecting GPIO function.
+Since v3:
+  - fix build error reported by lkp@intel.com
+  - fix earlycon compatible string
+  - fix dtbs_check
+  - collect Reviewed-by tag
 
-As a consequence, applications that depends on GPIO lines configured
-by default as GPIO pins no longer work as expected.
+Since v2:
+  - fix dt_binding_check and dtbs_check warnings
+  - use uart_port_tx_limited() helper in uart driver
+  - collect Acked-by/Reviewed-by tag
+  - uart0 -> uart3
+  - update "riscv,ndev" property
+  - mv vendor prefix binding as the first patch
+  - add compatible string for bouffalolab bl808 plic
 
-Also, the change to select modem control lines function was done only
-for channel A of dual UART variants (752/762). This was not documented
-in the log message.
+Since v1:
+  - use FIELD_PREP and FIELD_GET macro
+  - rewrite bflb_uart_tx_chars()
+  - add vendor prefix for bouffalolab
+  - add dt binding for bl808 compatibles
+  - enable SOC_BOUFFALOLAB in defconfig
+  - collect Reviewed-by tag
+  - modify commit-msg as suggested
 
-This new patch allows to specify GPIO or modem control line function
-in the device tree, and for each of the ports (A or B).
 
-This is done by using the new device-tree property named
-"modem-control-line-ports" (property added in separate patch).
+Jisheng Zhang (10):
+  dt-bindings: vendor-prefixes: add bouffalolab
+  dt-bindings: interrupt-controller: Add bouffalolab bl808 plic
+  dt-bindings: serial: add documentation for Bouffalolab UART Driver
+  serial: bflb_uart: add Bouffalolab UART Driver
+  riscv: add the Bouffalolab SoC family Kconfig option
+  dt-bindings: riscv: Add bouffalolab bl808 board compatibles
+  riscv: dts: bouffalolab: add the bl808 SoC base device tree
+  riscv: dts: bouffalolab: add Sipeed M1s SoM and Dock devicetree
+  MAINTAINERS: riscv: add entry for Bouffalolab SoC
+  riscv: defconfig: enable BOUFFALOLAB SoC
 
-Boards that need to have GPIOS configured as modem control lines
-should add that property to their device tree. Here is a list of
-boards using the sc16is7xx driver in their device tree and that may
-need to be modified:
-    arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
-    mips/boot/dts/ingenic/cu1830-neo.dts
-    mips/boot/dts/ingenic/cu1000-neo.dts
+ .../sifive,plic-1.0.0.yaml                    |   1 +
+ .../bindings/riscv/bouffalolab.yaml           |  29 +
+ .../serial/bouffalolab,bl808-uart.yaml        |  47 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   7 +
+ arch/riscv/Kconfig.socs                       |   5 +
+ arch/riscv/boot/dts/Makefile                  |   1 +
+ arch/riscv/boot/dts/bouffalolab/Makefile      |   2 +
+ .../dts/bouffalolab/bl808-sipeed-m1s-dock.dts |  25 +
+ .../dts/bouffalolab/bl808-sipeed-m1s.dtsi     |  21 +
+ arch/riscv/boot/dts/bouffalolab/bl808.dtsi    |  73 +++
+ arch/riscv/configs/defconfig                  |   1 +
+ drivers/tty/serial/Kconfig                    |  18 +
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/bflb_uart.c                | 586 ++++++++++++++++++
+ include/uapi/linux/serial_core.h              |   3 +
+ 16 files changed, 822 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/riscv/bouffalolab.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
+ create mode 100644 arch/riscv/boot/dts/bouffalolab/Makefile
+ create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s-dock.dts
+ create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808-sipeed-m1s.dtsi
+ create mode 100644 arch/riscv/boot/dts/bouffalolab/bl808.dtsi
+ create mode 100644 drivers/tty/serial/bflb_uart.c
 
-Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
-v1 -> v2: Rebase because original patch did not apply properly
-          Add git base-commit
-
- drivers/tty/serial/sc16is7xx.c | 42 ++++++++++++++++++++--------------
- 1 file changed, 25 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index abad091baeea..4e3d2325ef6e 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -236,7 +236,8 @@
- 
- /* IOControl register bits (Only 750/760) */
- #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
--#define SC16IS7XX_IOCONTROL_MODEM_BIT	(1 << 1) /* Enable GPIO[7:4] as modem pins */
-+#define SC16IS7XX_IOCONTROL_MODEM_A_BIT	(1 << 1) /* Enable GPIO[7:4] as modem A pins */
-+#define SC16IS7XX_IOCONTROL_MODEM_B_BIT	(1 << 2) /* Enable GPIO[3:0] as modem B pins */
- #define SC16IS7XX_IOCONTROL_SRESET_BIT	(1 << 3) /* Software Reset */
- 
- /* EFCR register bits */
-@@ -306,7 +307,6 @@ struct sc16is7xx_devtype {
- 	char	name[10];
- 	int	nr_gpio;
- 	int	nr_uart;
--	int	has_mctrl;
- };
- 
- #define SC16IS7XX_RECONF_MD		(1 << 0)
-@@ -447,35 +447,30 @@ static const struct sc16is7xx_devtype sc16is74x_devtype = {
- 	.name		= "SC16IS74X",
- 	.nr_gpio	= 0,
- 	.nr_uart	= 1,
--	.has_mctrl	= 0,
- };
- 
- static const struct sc16is7xx_devtype sc16is750_devtype = {
- 	.name		= "SC16IS750",
--	.nr_gpio	= 4,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 1,
--	.has_mctrl	= 1,
- };
- 
- static const struct sc16is7xx_devtype sc16is752_devtype = {
- 	.name		= "SC16IS752",
--	.nr_gpio	= 0,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 2,
--	.has_mctrl	= 1,
- };
- 
- static const struct sc16is7xx_devtype sc16is760_devtype = {
- 	.name		= "SC16IS760",
--	.nr_gpio	= 4,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 1,
--	.has_mctrl	= 1,
- };
- 
- static const struct sc16is7xx_devtype sc16is762_devtype = {
- 	.name		= "SC16IS762",
--	.nr_gpio	= 0,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 2,
--	.has_mctrl	= 1,
- };
- 
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
-@@ -1456,12 +1451,6 @@ static int sc16is7xx_probe(struct device *dev,
- 				     SC16IS7XX_EFCR_RXDISABLE_BIT |
- 				     SC16IS7XX_EFCR_TXDISABLE_BIT);
- 
--		/* Use GPIO lines as modem status registers */
--		if (devtype->has_mctrl)
--			sc16is7xx_port_write(&s->p[i].port,
--					     SC16IS7XX_IOCONTROL_REG,
--					     SC16IS7XX_IOCONTROL_MODEM_BIT);
--
- 		/* Initialize kthread work structs */
- 		kthread_init_work(&s->p[i].tx_work, sc16is7xx_tx_proc);
- 		kthread_init_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
-@@ -1497,6 +1486,25 @@ static int sc16is7xx_probe(struct device *dev,
- 					 prop, p, u)
- 			if (u < devtype->nr_uart)
- 				s->p[u].irda_mode = true;
-+
-+		val = 0;
-+
-+		of_property_for_each_u32(dev->of_node, "nxp,modem-control-line-ports",
-+					 prop, p, u)
-+			if (u < devtype->nr_uart) {
-+				/* Use GPIO lines as modem control lines */
-+				if (u == 0)
-+					val |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
-+				else if (u == 1)
-+					val |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
-+			}
-+
-+		if (val)
-+			regmap_update_bits(
-+				s->regmap,
-+				SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
-+				SC16IS7XX_IOCONTROL_MODEM_A_BIT |
-+				SC16IS7XX_IOCONTROL_MODEM_B_BIT, val);
- 	}
- 
- #ifdef CONFIG_GPIOLIB
 -- 
-2.30.2
+2.40.0
 
