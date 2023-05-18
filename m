@@ -2,128 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2A9C77B75
-	for <linux-serial@archiver.kernel.org>; Wed, 17 May 2023 20:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61604C77B7A
+	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 05:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229448AbjEQUUW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 May 2023 16:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S229675AbjERFq2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 May 2023 01:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbjEQUUV (ORCPT
+        with ESMTP id S229586AbjERFq1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 May 2023 16:20:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5851FEB;
-        Wed, 17 May 2023 13:20:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78D1464AFF;
-        Wed, 17 May 2023 20:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A9F7C433D2;
-        Wed, 17 May 2023 20:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684354817;
-        bh=tmrEqMSlltVVWCR826sj25ts9zl6YULEBavsqHAY8to=;
-        h=From:To:Cc:Subject:Date:From;
-        b=heAqux+yqXgxXkijDEAiFmUchjVlz/v6KJhWZCe6P5zq4SpPdRo95hufWL9UwLfDP
-         q8bmR8CLw+ubMxjTT4b2nAAqQg254sbAryZReih0XIyrXXsjOcOY0sARWFEPHQe4Ti
-         7aE7pS3721poCYt4gnaEnUFAo4frdbIXerV9OCscoIG/UWwtOPl0G/7V3DKIFy1D5J
-         qFtrPPY3KrscAD9nAoF8XdyvFiapgeKjwo3JXT/anN1qbPrCCHCc41eKFr4dqObPR9
-         f27UJY6anzLAiejtanf0SvyuRONjQwe9XmczmWR5NkNcgoua6lafEpyFgebvU9kRI2
-         i1obqdAcXlLqg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: 8250: omap: convert to modern PM ops
-Date:   Wed, 17 May 2023 22:20:07 +0200
-Message-Id: <20230517202012.634386-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        Thu, 18 May 2023 01:46:27 -0400
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAA42738
+        for <linux-serial@vger.kernel.org>; Wed, 17 May 2023 22:46:26 -0700 (PDT)
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-50c8d87c775so2333920a12.3
+        for <linux-serial@vger.kernel.org>; Wed, 17 May 2023 22:46:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684388785; x=1686980785;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sg1ipJ/xqrWpBZefD9GYZV3hg4iDZ0jnNq8Z1o+bP1Y=;
+        b=Z6o1MLs49YkXHDuMPjpw1Jr0tYAHQ1wmpMgS1JhE+BfywbybFsT6SNtDT0yWw+M0vt
+         daaVBnyWpYORZ3W1e46qxDl6W6TH5KRFDnm6TQnEdCAVCXNTIiOgcksDE0DMaHJkOfn9
+         wUL3B9CjPUkyAaMcKoWdEFIptKv2wrzADAsfIcOKJSVdEmf9hdAUklpnWpZ3IeOJiixE
+         Cwj43kIoe+z3yHTb/ilYJ4QMwIAyxll5sNLwPALUjAkGv8rD9zk89/0vQOpn5UXiXNzl
+         LJ/3eox+LYIi4dyDnpZD5JwpSGdTM1ibgfrbaIl46zrwbY551Tdo2Ean48OJWWNu2Hkd
+         LCRg==
+X-Gm-Message-State: AC+VfDyMj+zfIuSFDAmX8u4OUNaeF7QPp6zYFJYv7icIoS/y9Owhiqu1
+        +OrRNRHQss+QfWZjeAhGq9E=
+X-Google-Smtp-Source: ACHHUZ5A8mVUFWn6dzYNlaZFRS53TAWd8SvSdu0ZW+GG0oBLQWbUYRXeKM/OJVOhHJR6U+wn/ea/ww==
+X-Received: by 2002:a17:907:9716:b0:966:350f:f43b with SMTP id jg22-20020a170907971600b00966350ff43bmr39024185ejc.9.1684388785134;
+        Wed, 17 May 2023 22:46:25 -0700 (PDT)
+Received: from [10.223.1.187] ([195.39.106.162])
+        by smtp.gmail.com with ESMTPSA id f24-20020a056402161800b00510de087302sm156934edv.47.2023.05.17.22.46.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 May 2023 22:46:24 -0700 (PDT)
+Message-ID: <335bd9b7-e27a-2702-91a0-a1e476122223@kernel.org>
+Date:   Thu, 18 May 2023 07:46:23 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH 2/2] serial: Make uart_remove_one_port() return void
+Content-Language: en-US
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Michal Simek <michal.simek@amd.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        YueHaibing <yuehaibing@huawei.com>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org,
+        "moderated list:ARM/Microchip" <linux-arm-kernel@lists.infradead.org>,
+        kernel@pengutronix.de
+References: <20230512173810.131447-1-u.kleine-koenig@pengutronix.de>
+ <20230512173810.131447-3-u.kleine-koenig@pengutronix.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230512173810.131447-3-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On 12. 05. 23, 19:38, Uwe Kleine-König wrote:
+> The return value is only ever used as a return value for remove callbacks
+> of platform drivers. This return value is ignored by the driver core.
+> (The only effect is an error message, but uart_remove_one_port() already
+> emitted one in this case.)
+> 
+> So the return value isn't used at all and uart_remove_one_port() can be
+> changed to return void without any loss. Also this better matches the
+> Linux device model as remove functions are not supposed to fail.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-The new uart_write() function is only called from suspend/resume code, causing
-a build warning when those are left out:
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-drivers/tty/serial/8250/8250_omap.c:169:13: error: 'uart_write' defined but not used [-Werror=unused-function]
-
-Remove the #ifdefs and use the modern pm_ops/pm_sleep_ops and their wrappers
-to let the compiler see where it's used but still drop the dead code.
-
-Fixes: 398cecc24846 ("serial: 8250: omap: Fix imprecise external abort for omap_8250_pm()")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/tty/serial/8250/8250_omap.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 5c093dfcee1d..00b2c35042ee 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1571,7 +1571,6 @@ static int omap8250_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int omap8250_prepare(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
-@@ -1616,12 +1615,7 @@ static int omap8250_resume(struct device *dev)
- 	serial8250_resume_port(priv->line);
- 	return 0;
- }
--#else
--#define omap8250_prepare NULL
--#define omap8250_complete NULL
--#endif
- 
--#ifdef CONFIG_PM
- static int omap8250_lost_context(struct uart_8250_port *up)
- {
- 	u32 val;
-@@ -1738,7 +1732,6 @@ static int omap8250_runtime_resume(struct device *dev)
- 	schedule_work(&priv->qos_work);
- 	return 0;
- }
--#endif
- 
- #ifdef CONFIG_SERIAL_8250_OMAP_TTYO_FIXUP
- static int __init omap8250_console_fixup(void)
-@@ -1781,17 +1774,17 @@ console_initcall(omap8250_console_fixup);
- #endif
- 
- static const struct dev_pm_ops omap8250_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(omap8250_suspend, omap8250_resume)
--	SET_RUNTIME_PM_OPS(omap8250_runtime_suspend,
-+	SYSTEM_SLEEP_PM_OPS(omap8250_suspend, omap8250_resume)
-+	RUNTIME_PM_OPS(omap8250_runtime_suspend,
- 			   omap8250_runtime_resume, NULL)
--	.prepare        = omap8250_prepare,
--	.complete       = omap8250_complete,
-+	.prepare        = pm_sleep_ptr(omap8250_prepare),
-+	.complete       = pm_sleep_ptr(omap8250_complete),
- };
- 
- static struct platform_driver omap8250_platform_driver = {
- 	.driver = {
- 		.name		= "omap8250",
--		.pm		= &omap8250_dev_pm_ops,
-+		.pm		= pm_ptr(&omap8250_dev_pm_ops),
- 		.of_match_table = omap8250_dt_ids,
- 	},
- 	.probe			= omap8250_probe,
+thanks,
 -- 
-2.39.2
+js
+suse labs
 
