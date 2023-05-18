@@ -2,952 +2,231 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C5BC77B7D
-	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 10:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0466C7EE23
+	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 10:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbjERK3b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 May 2023 06:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
+        id S231130AbjERKqH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 May 2023 06:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbjERK3L (ORCPT
+        with ESMTP id S230036AbjERKqD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 May 2023 06:29:11 -0400
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56C31BE2;
-        Thu, 18 May 2023 03:29:08 -0700 (PDT)
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-6439df6c268so1341100b3a.0;
-        Thu, 18 May 2023 03:29:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684405748; x=1686997748;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=eS3Qgg5CeBJoS//kNALh+y8Xf31nfTouXYRNaSTkfYs=;
-        b=KFrMznRPaWyM+7A8skEr0m6pYNFZrqNgx0o/KLacxn99CYhFULJhU9/zrirhofevhp
-         M7ms5ELHyztamRwM43ctj7Tq2rUeUYUYzzNjtH/Ih36BJP754GqlGBa2RhfB5afYZSHS
-         GhwAydQD+w0OQPAdRJUKzJzyT/dd3x8HAaaQ8HVtD+gg9hqhgjojp7iwt4GST95iYHQ/
-         lGIKa2JdECdwa8DMCtX2g/UCLt/4qfSPwl7lzl5+4agNKdcEG3hDjpEQel4pV+ik8UaC
-         Zi6dhpX+HIpC/o9h4MpuewoSbDF9aR8pqaZ58S6FNEkntPe3j8zV/oSwrfOC64jVkuyY
-         GH2g==
-X-Gm-Message-State: AC+VfDwXwtWdtw3ARCBO2fT8exEdaU6NS4gOty9wc7ZgXEOfim24zTDO
-        8RlcXHSTKuQ5Bhtbr3/V2YM=
-X-Google-Smtp-Source: ACHHUZ6Y2T0/lUG8PIsAChZs1/Y9oaDgmd3TebW3tD+teQm2fTQgyaN1IAyn7zqH0d12RDQO2E/Ucw==
-X-Received: by 2002:a05:6a00:17aa:b0:64a:5cde:3a8c with SMTP id s42-20020a056a0017aa00b0064a5cde3a8cmr3936958pfg.28.1684405747903;
-        Thu, 18 May 2023 03:29:07 -0700 (PDT)
-Received: from localhost ([116.128.244.169])
-        by smtp.gmail.com with ESMTPSA id i12-20020aa78d8c000000b0063f16daf7dbsm1061987pfr.55.2023.05.18.03.29.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 May 2023 03:29:07 -0700 (PDT)
-From:   Hongyu Xie <xiehongyu1@kylinos.cn>
-To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xy521521@gmail.com, Hongyu Xie <xiehongyu1@kylinos.cn>
-Subject: [RFC PATCH v2 -next] tty: serial: add panic serial helper
-Date:   Thu, 18 May 2023 18:29:03 +0800
-Message-Id: <20230518102903.1179581-1-xiehongyu1@kylinos.cn>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+        Thu, 18 May 2023 06:46:03 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D90410D8;
+        Thu, 18 May 2023 03:46:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ns9SK9wL30wTOCqtYqSkspI43Zt3BD8EmBGTJd3YKsCzNFgBSyeSjJ9Wrt6upy3ng4Qk6DtKykIA0243lUGM3QNwSHABSLl+PhkiHWlYEt/hmm4WO9Oj3Vcme9jOuYbFWQv/jWPW8x1bqKj3PYYFnwYccmG6LjfVBdNTuKSZSXFY5N6JhC1aFY/InChsRkQtkpGRWYFLN/ia9ASCCmBDaY4X3dR+wTlpD8LdA18Pzv/HVhlwbwH8pZBFvtHBLUlizZkZGDjFi+8zKigW0D9FjPoSQY88koQ2UmKlcICpM4ZedtA2isbI+7LapXWp979rE6w0B6QqZjgpKlhBgEF0LA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zgG52cfylsN99bm4Vj4x3TNKL1ezCzLg8m+LQg9FHFU=;
+ b=I79Yotpw+EdyKryhgVKYxdTCoqq4S24QH88KdbdIXH5TYZ+o1eO3vxENEkr+X7tycKtE0j6IOyVRypIjMbz13UFPnw3qcV7x+0/9MI/6oAHnV5/83XQgBAX6TttOGSdQSWPF0CP9I1COHvLDQ9CQ+XJLy7fYaNxq6bgVXWbdLGTPXTOWDiTTmKjFYSwRlb2/WAu11AsHHCcLBUuhqvuxDPxo9vghjGKBveabegUrhklfPCSi5d0MZsFVD3hCR4VCmmVYGHt4to53KblMdG343srLzr+HoEIrQAL40BY7mgWcSCXm/RzwzA0eruuER07Oe6kSNsYlqx9QUKIlZoLO2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zgG52cfylsN99bm4Vj4x3TNKL1ezCzLg8m+LQg9FHFU=;
+ b=Sg2mE75qykbR9+ZgDLRZee2+yups9B70qdAw9pcUZ6kdeEPsgWjGwCIMNf4DJJf26pXCZnL5D7zf/31Ubfumi2tu8XG3QN+TYshy7S1GDZFs5hRmL/E4p83G/yjUDS022iJVA3Xa885tvTrbKvQaGAYEo5ef+rskCd1Sva55HlA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB4758.namprd12.prod.outlook.com (2603:10b6:a03:a5::28)
+ by DM6PR12MB4169.namprd12.prod.outlook.com (2603:10b6:5:215::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19; Thu, 18 May
+ 2023 10:45:57 +0000
+Received: from BYAPR12MB4758.namprd12.prod.outlook.com
+ ([fe80::e78e:b7da:7b9a:a578]) by BYAPR12MB4758.namprd12.prod.outlook.com
+ ([fe80::e78e:b7da:7b9a:a578%4]) with mapi id 15.20.6411.019; Thu, 18 May 2023
+ 10:45:56 +0000
+Message-ID: <fe90f121-3e7e-7071-f654-6d77a7a8102e@amd.com>
+Date:   Thu, 18 May 2023 12:45:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH] dt-bindings: xilinx: Switch xilinx.com emails to amd.com
+Content-Language: en-US
+To:     Jassi Brar <jassisinghbrar@gmail.com>
+Cc:     piyush.mehta@amd.com, nava.kishore.manne@amd.com,
+        sai.krishna.potthuri@amd.com, shubhrajyoti.datta@amd.com,
+        vishal.sagar@amd.com, kalyani.akula@amd.com,
+        bharat.kumar.gogada@amd.com, linux-kernel@vger.kernel.org,
+        monstr@monstr.eu, michal.simek@xilinx.com, git@xilinx.com,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Damien Le Moal <dlemoal@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jolly Shah <jolly.shah@xilinx.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Mark Brown <broonie@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Rajan Vaja <rajan.vaja@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Srinivas Neeli <srinivas.neeli@amd.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tom Rix <trix@redhat.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Wu Hao <hao.wu@intel.com>, Xu Yilun <yilun.xu@intel.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+References: <f5b2bd1e78407e4128fc8f0b5874ba723e710a88.1684245058.git.michal.simek@amd.com>
+ <CABb+yY2JaC8b-HFEU_WnSBSCr2edgEezXJkfMUYqjeLBA1MvYw@mail.gmail.com>
+From:   Michal Simek <michal.simek@amd.com>
+In-Reply-To: <CABb+yY2JaC8b-HFEU_WnSBSCr2edgEezXJkfMUYqjeLBA1MvYw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: VI1PR10CA0099.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:803:28::28) To BYAPR12MB4758.namprd12.prod.outlook.com
+ (2603:10b6:a03:a5::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB4758:EE_|DM6PR12MB4169:EE_
+X-MS-Office365-Filtering-Correlation-Id: 139c61e8-0e11-4501-c53b-08db578d0eb4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nNxcxbO1ZyA8v3QXLrLu1RZCAhkAg5XTPt+/NpY2K9pd0a7iedl6t0bIWl2fAKhfpCdB6kXY3vy24R32C8mvSL5HWebPqi1fpxgrhZBtQ+tw6zY8TjYVvVi+jF0o/WE/FvGm5CgRILU/uE8jteJoQy2YXfhJmhs2Jus4A97zvGzXtK/CYJX47unLpMFH3BLDq6iAi1qdVcLGLEGpQZSK6EYSIW9DfhMrnw3+IGegRBthtPNJnjlLfY8e5+XxahA4j7eGtYMfOg7EikxA4VfJriXXPzX9lDAjFtM3/BlAyt8LwQrdgdGoFMgFDRCHbXpaeDpIGBrN7KKsNodPddc2abXvW6O6lNz7HjxOjjE8LeuT34jAHrbE5k8hxpmGvASUrmR2opIJqNQqeuzzztu2tEjDSF5GbZ7K0FeXzeMhFK0T/PDJq9uxcEokNOPZL+1A+vqcKXuoo6F71xwiCGJD7Ah90VS2BOPUgfaFwDdRHq1ouGh9nK2g9jb39k4NJSLrC1XQgHPdqpSqTp0rDAOZVqR1YsPgAJcCRfUlBbENAFMwU8AX9OVgk28DoXsfVFb9pEK4hmaoy7VlJ0yM2/FGtKvaljAnZavCwjtNJ4bWffQlKUVBgbc4ZlSpO/9ZPgr+vvo5tg3YTDP3AHmR0xGNsg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4758.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(366004)(396003)(39860400002)(136003)(451199021)(26005)(6506007)(6512007)(53546011)(36756003)(2616005)(83380400001)(31696002)(86362001)(38100700002)(186003)(6486002)(54906003)(44832011)(7416002)(7406005)(7366002)(478600001)(2906002)(316002)(31686004)(8936002)(4326008)(8676002)(6916009)(41300700001)(5660300002)(66476007)(66946007)(66556008)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NThMaTdpK0VaRjd6M3BWbkNPYVJocmo2OFJZdEMvVThBazZqR0sxN2tMeUxT?=
+ =?utf-8?B?dk4rcG1SV0pmeWcxMlhVdUxRdEhFUFVuNzkwVTJwRVFJb2FGd0RpamtwWjZy?=
+ =?utf-8?B?Y2dBQVc4NFMybmNBMmdRWGJ6QWZ2QkRydnN2anBCcDYwQ2dRY1VhSXBBZitW?=
+ =?utf-8?B?aGN4d2FGejB1eFhRWHQ3V0QrSkl6Y2hrNFU2RFFOY0NUSDFRMzcvUURBbW9R?=
+ =?utf-8?B?MkN4cWkvejRQL2JINXJia2pUOG1TQVVyS2dxSVZtVnVSMTBxcFcvTXpPTjZQ?=
+ =?utf-8?B?dG5MWFpUOTh5aDFnaXdDc05Pd1lVcUxaZTZOU2s1TlhhWVdLUENDZ3gwSzY0?=
+ =?utf-8?B?WE5GYXEreHhLMTNYdmRtOWIrU2JqVEs3S3JTcTRBUGxmam1XRjQ3Qjh2d0JH?=
+ =?utf-8?B?NlEvdW92WE9hK2pxZGpLN1lRV1g2MG94WVpCMWhrcTJGd1IzamRXc0MyakZJ?=
+ =?utf-8?B?dmlGOGhOWnJ6d2JkS2tKb3JvZnM2TGpnVEJWamxqcXV4RTFhVVY2MmVGY2wx?=
+ =?utf-8?B?aW1FVk0wYkFySnIxeXEwcUl5UkdsU2JGWEhIdS9ISEhvWDFETUp2dklCcWN5?=
+ =?utf-8?B?Z25jeFR4YktLUUp6Rm5oUnpPSndKSERmL2xTeTArTXd3K1pkWjE1RVlpSXNt?=
+ =?utf-8?B?N0M3VFZNQTZFK0Q3Skd4YkhzSlJ4OWFUK1JNbFFmSGp3WC9XTTYrdVpMQ2lm?=
+ =?utf-8?B?bmV1STZzUGNwSGVjUkcwbjU3NjdGZmRhYit2ajZjdHFIZ3BkS3BQRkY5WHRs?=
+ =?utf-8?B?czYvZHJJbFBrNGZ0YTJPbHlMdTR4dUViMGdaSHZaVEZ2ODBIcllIK0Z5NGM3?=
+ =?utf-8?B?NG5zdytRY3JydXRlVjhvVTd0QzZId1oxazZGOWhzR3ZCQ0pSaDBrblRRNTdU?=
+ =?utf-8?B?Z3dMd0M3L1NsbzVuRnpQWUo1R09lMTZ1K0tSTzdmdi9BNG1nVTFza0p0cFJ6?=
+ =?utf-8?B?QWxualNYS3VzNjFIY0c4QTd2VC9wV3Urb3R6NzIzUnFIU01wc1hJai85Q1Ir?=
+ =?utf-8?B?RjRWY3pmTXUzazlWdm5sTUs2TlNtVUtURVdXT3JzdC9RalhzaW00MnpVcGg3?=
+ =?utf-8?B?bGt1UTA2aDdFdGhFQlNKbnRHVmcxMm5KcHRUYmR2dDNGbUVZN1cwSE9xL1BI?=
+ =?utf-8?B?LzVzaFY0UkFZMjdUWG1xRkpJd2RFS1JXN2F6WkhlNHhzWU9pM1llbkFCb2lk?=
+ =?utf-8?B?TW9OTG8rN0hQT1lFTU8yN1pYemQxcC8xcmd1Z01aNFg0MkpET1U3Mk5WcTVB?=
+ =?utf-8?B?aFJjSnNIcE5zRndSZklUa0J5Njd1WC8yZnAwa2dBT1FvSEhCNDRyc1VBYUpl?=
+ =?utf-8?B?RGJxMTRGWnRhbjArbnc3d2ovc2dlb0Jpa2tXMDB1czdSVVE5eFBFWFpnSTdt?=
+ =?utf-8?B?cW5rbHJ5STErcHYwOG8zalZ1d3V4SUdwazhUazZGTjE2anIxRzZQUjJMVFA2?=
+ =?utf-8?B?Ymw4N2hOdk9hSnk5aHREQ3VWWER1UlJiQ0NrSkg1QlFiOEloZXdSMi9LTnFK?=
+ =?utf-8?B?U0JmeVhDRkVJbGNlVlVqNk91UzJabnZMWHZjN0U0Q1RxK0V5c1VobWtUdHZB?=
+ =?utf-8?B?WDNjaldtZ1F4UVJkZXIzcVk0TW1KbGp0V0QxbklBS1pEeldxV01aUnNUWVZw?=
+ =?utf-8?B?Z3RSWFRGYWlDb0k1b1JOUjlxWks1Ykd5V21xTE5zdlNCc1gzelViTldsbHlB?=
+ =?utf-8?B?K3JXRXE2V2NETWd2VXgzb05ySVo5Mi8reXljSXlGVjVWRENOY2tzOE5sUjVR?=
+ =?utf-8?B?M2sxVFdKa05CSkRjUnFaMlkrYjNJSDk3Z2ZuU3I1QlJLRmVvcFJlM1psRWNZ?=
+ =?utf-8?B?T1pxQ3A2aGNnUHFmMytUVHd5VjRtSWF6eThMK1dFYUtkY1hPeXduNEQ3eHhy?=
+ =?utf-8?B?NHN5Q0h3RXQrMGljMnlTUjUwQ0g3MGpnbmNHbjRWcllUQklsMUNJVUN1ZmZj?=
+ =?utf-8?B?Q1VLOGM5aGt4eFMzbFM3YkJZdTluZ0wvYzNiTExydFZib1lzY0t3TEk1SEFY?=
+ =?utf-8?B?cmR2b2VmQUErSVlIOS96TnVVM2F6em1sUXpmTFp1NlBobFI0d21MTGNxZ3Aw?=
+ =?utf-8?B?K3UwV2JnbEpOWHlpd1E5MmhpVmYxWTlsSnh2RU9LM3F2cnVLbDQyQlNVcG9k?=
+ =?utf-8?Q?OAEqqTVcjKJxC4XXXeR2O6Ti3?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 139c61e8-0e11-4501-c53b-08db578d0eb4
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4758.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2023 10:45:55.7579
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6uZrmYD6r6sRW89Dt84pAx+OxwD6OlCnhivy0DFHHJjHbPhyEpwOrBfXE7lpxyRz
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4169
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It was inspired by kgdboc.
 
-This is a debug module that allows you to get all kernel logs
-after panic.
 
-Normally you need to attach a USB-to-UART tool or enable kdump
-before panic happens to get log from kernel after panic. If you
-didn't do that and kdump is not working, you can't get any log to
-know what happened before panic. If you have a USB-to-UART tool
-and the uart port on your computer is working. This module helps
-you to get all kernel log after panic() is called.
+On 5/17/23 16:16, Jassi Brar wrote:
+> On Tue, May 16, 2023 at 8:51 AM Michal Simek <michal.simek@amd.com> wrote:
+>>
+>> @xilinx.com is still working but better to switch to new amd.com after
+>> AMD/Xilinx acquisition.
+>>
+>> Signed-off-by: Michal Simek <michal.simek@amd.com>
+>> ---
+>>
+>>   Documentation/devicetree/bindings/arm/xilinx.yaml             | 2 +-
+>>   Documentation/devicetree/bindings/ata/ceva,ahci-1v84.yaml     | 2 +-
+>>   .../devicetree/bindings/clock/xlnx,clocking-wizard.yaml       | 2 +-
+>>   Documentation/devicetree/bindings/clock/xlnx,versal-clk.yaml  | 2 +-
+>>   Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.yaml | 4 ++--
+>>   .../bindings/firmware/xilinx/xlnx,zynqmp-firmware.yaml        | 2 +-
+>>   .../devicetree/bindings/fpga/xilinx-zynq-fpga-mgr.yaml        | 2 +-
+>>   Documentation/devicetree/bindings/fpga/xlnx,versal-fpga.yaml  | 2 +-
+>>   .../devicetree/bindings/fpga/xlnx,zynqmp-pcap-fpga.yaml       | 2 +-
+>>   Documentation/devicetree/bindings/gpio/gpio-zynq.yaml         | 2 +-
+>>   Documentation/devicetree/bindings/gpio/xlnx,gpio-xilinx.yaml  | 2 +-
+>>   .../devicetree/bindings/gpio/xlnx,zynqmp-gpio-modepin.yaml    | 2 +-
+>>   Documentation/devicetree/bindings/i2c/cdns,i2c-r1p10.yaml     | 2 +-
+>>   .../devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml  | 2 +-
+>>   .../devicetree/bindings/media/xilinx/xlnx,csi2rxss.yaml       | 2 +-
+>>   .../bindings/memory-controllers/snps,dw-umctl2-ddrc.yaml      | 2 +-
+>>   .../bindings/memory-controllers/xlnx,zynq-ddrc-a05.yaml       | 2 +-
+>>   Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml  | 2 +-
+>>   .../devicetree/bindings/pinctrl/xlnx,zynq-pinctrl.yaml        | 2 +-
+>>   .../devicetree/bindings/pinctrl/xlnx,zynqmp-pinctrl.yaml      | 2 +-
+>>   .../devicetree/bindings/power/reset/xlnx,zynqmp-power.yaml    | 2 +-
+>>   Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml    | 2 +-
+>>   Documentation/devicetree/bindings/serial/cdns,uart.yaml       | 2 +-
+>>   Documentation/devicetree/bindings/spi/spi-cadence.yaml        | 2 +-
+>>   Documentation/devicetree/bindings/spi/spi-xilinx.yaml         | 2 +-
+>>   Documentation/devicetree/bindings/spi/spi-zynqmp-qspi.yaml    | 2 +-
+>>   Documentation/devicetree/bindings/spi/xlnx,zynq-qspi.yaml     | 2 +-
+>>   Documentation/devicetree/bindings/timer/cdns,ttc.yaml         | 2 +-
+>>   .../devicetree/bindings/watchdog/xlnx,xps-timebase-wdt.yaml   | 4 ++--
+>>   29 files changed, 31 insertions(+), 31 deletions(-)
+>>
+> .....
+>> diff --git a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+>> index 374ffe64016f..aeaddbf574b0 100644
+>> --- a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+>> +++ b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+>> @@ -33,7 +33,7 @@ description: |
+>>                 +------------------------------------------+
+>>
+>>   maintainers:
+>> -  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+>> +  - Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+>>
+>>   properties:
+>>     compatible:
+>>
+> Acked-by: Jassi Brar <jassisinghbrar@gmail.com>
+> 
+> Just curious, some developers' ids are left unchanged, and not all
+> devs have S.O.B.
 
-To use this, see Documentation/dev-tools/panic_serial_helper.rst.
+I want to go over all xilinx.com emails and move that bindings to proper person 
+if that current person is no more active.
 
-Tested on arm64, x86 device.
-
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
----
-
-v2:
- 1. add a doc file
- 2. remove the password thing
-
- .../dev-tools/panic_serial_helper.rst         | 143 +++++
- MAINTAINERS                                   |   5 +
- drivers/tty/serial/Kconfig                    |  46 ++
- drivers/tty/serial/Makefile                   |   1 +
- drivers/tty/serial/panic_serial_helper.c      | 571 ++++++++++++++++++
- include/linux/panic.h                         |   1 +
- kernel/panic.c                                |  12 +
- 7 files changed, 779 insertions(+)
- create mode 100644 Documentation/dev-tools/panic_serial_helper.rst
- create mode 100644 drivers/tty/serial/panic_serial_helper.c
-
-diff --git a/Documentation/dev-tools/panic_serial_helper.rst b/Documentation/dev-tools/panic_serial_helper.rst
-new file mode 100644
-index 000000000000..adbc4026fbe4
---- /dev/null
-+++ b/Documentation/dev-tools/panic_serial_helper.rst
-@@ -0,0 +1,143 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=================================================
-+Using panic serial helper to get kernel logs after panic
-+=================================================
-+
-+:Author: Hongyu Xie <xiehongyu1@kylinos.cn>
-+
-+What is this?
-+============
-+
-+A debug module inspired by kgdboc that allows you to get all kernel logs
-+after panic.
-+
-+When do you need it and why?
-+============
-+
-+When
-+--------------
-+
-+Didn't enable debugging tool like Kdump and didn't connect a USB-to-UART
-+tool to the debug uart port on your PC before panic.
-+
-+Why
-+--------------
-+
-+There are many debugging methods to know what was going on before panic.
-+
-+Kdump, for example. If Kdump is enabled, you can get a core image after
-+panic. Then use GDB or Crash to debug that core image to know what happened
-+before panic(see ``Documentation/admin-guide/kdump/kdump.rst`` for more
-+information about Kdump).
-+
-+Another way is to connect the UART side of a USB-to-UART tool to the
-+debugging uart port(normally a 3 pin slot on the motherborad or a RS232
-+port on the back panel of your PC) before panic happens. Then connect the
-+USB side of a USB-to-UART tool to another PC. You can read all the kernel
-+logs coming from that uart port through apps like minicom on another PC.
-+So when panic happens you'll know what was going on.
-+
-+What if Kdump hasn't been enabled? And in production environment you don't
-+always connect a USB-to-UART tool before panic happens.
-+
-+So if Kdump is not enabled, you can use this module to get all the kernel
-+logs after panic.
-+
-+How to use it?
-+============
-+
-+Prerequisites
-+--------------
-+
-+1. Same as kgdboc, the UART driver must implement two callbacks in the
-+struct uart_ops. See ``Documentation/dev-tools/kgdb.rst`` section
-+``kgdboc and uarts``
-+
-+2. Your PC has an uart port and it's working.
-+
-+How
-+--------------
-+
-+First you need to enable ``CONFIG_PANIC_SERIAL_HELPER`` in your
-+config. To enable ``CONFIG_PANIC_SERIAL_HELPER`` you should look under
-+:menuselection:
-+`Device Drivers
-+  --> Character devices
-+    --> Enable TTY (TTY [=y])
-+      --> Serial drivers`
-+and select
-+:menuselection:`debug through uart after panic`.
-+
-+Second, build and update the kernel image. Then wait for panic.
-+
-+After panic, you need to do the following,
-+1. connect the uart side of an USB-to-UART tool to any uart
-+  port on your device(PC, server, Laptop, etc...) after panic.
-+  Connect the USB side of that tool to another PC. Open
-+  minicom(or other app) on that PC, and set "/dev/ttyUSB0"(or
-+  "/dev/ttyUSB1 if there is already another USB-to-UART tool
-+  connected to your device) with "115200 8N1".
-+
-+  It automatically selects the port where you first pressing the
-+  "Enter"(some keyboard labeled with "Return")
-+
-+2. press "Enter"(some keyboard labeled with "Return") in that
-+  minicom window, you'll get a help menu,
-+  "
-+  help:
-+      -a      show all kernel msg
-+      -3      show S3 msg
-+      -4      show S4 msg
-+      -filter-[string]        show msg contains [string]
-+      -q-     quit
-+  "
-+
-+see ``Help menu options`` for details.
-+
-+3. finally, type 'a', '3', '4', 'q' or "filter-xxx" then press
-+ "Enter" to get what you want.
-+
-+Help menu options
-+--------------
-+Available options:
-+
-+ - a
-+
-+   Show all the messages starting from ``Booting Linux on ...``
-+
-+ - 3
-+
-+   If STR happened before panic, this will show messages starting from
-+   ``PM: suspend entry...``
-+
-+ - 4
-+
-+   If STD happened before panic, this will show messages starting from
-+   ``PM: hibernation entry...``
-+
-+ - filter-[string]
-+
-+   Only show messages that contain ``string``. For example, if you're only
-+   interesting in message lines that contain ``CPU``, you just input
-+   ``filter-CPU``.
-+   Here is an output example for fitering ``CPU``::
-+
-+   <6>[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x701f6633
-+   <6>[    0.000000] Detected PIPT I-cache on CPU0
-+   <6>[    0.000000] CPU features: detected: Kernel page table isolation (K
-+   ...
-+   <6>[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000
-+   <6>[    0.002411] smp: Bringing up secondary CPUs ...
-+   <6>[    0.039105] Detected PIPT I-cache on CPU1
-+   ...
-+   <4>[    6.432129] CPU: 3 PID: 392 Comm: (crub_all) Tainted: G        W
-+   <4>[    6.560279] CPU: 2 PID: 478 Comm: (ostnamed) Tainted: G        W
-+   ...
-+   <4>[  225.297828] CPU: 4 PID: 0 Comm: swapper/4 Tainted: G        W
-+   <2>[  225.297909] SMP: stopping secondary CPUs
-+   <0>[  225.297919] CPU features: 0x000000,02000800,0400421b
-+
-+ - q-
-+
-+   return to help menu.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5bd0f510f744..951c6804b3cb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11552,6 +11552,11 @@ F:	include/linux/kgdb.h
- F:	kernel/debug/
- F:	kernel/module/kdb.c
- 
-+PANIC SERIAL CONSOLE
-+M:	Hongyu Xie <xiehongyu1@kylinos.cn>
-+F:	drivers/tty/serial/panic_serial_helper.c
-+F:	drivers/tty/serial/panic_serial_helper.h
-+
- KHADAS MCU MFD DRIVER
- M:	Neil Armstrong <neil.armstrong@linaro.org>
- L:	linux-amlogic@lists.infradead.org
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 398e5aac2e77..66cc7bddf561 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -198,6 +198,52 @@ config SERIAL_KGDB_NMI
- 
- 	  If unsure, say N.
- 
-+config PANIC_SERIAL_HELPER
-+	tristate "debug through uart after panic"
-+	depends on PANIC_TIMEOUT=0
-+	select CONSOLE_POLL
-+	help
-+	  This is a debug module that allows you to get all kernel logs
-+	  after panic.
-+
-+	  Normally you need to attach a USB-to-UART tool or enable kdump
-+	  before panic happens to get log from kernel after panic. If you
-+	  didn't do that and kdump is not working, you can't get any log to
-+	  know what happened before panic. If you have a USB-to-UART tool
-+	  and the uart port on your computer is working. This module helps
-+	  you to get all kernel log after panic() is called.
-+
-+	  This module use serial port in poll mode, so it's more stable
-+	  than other debugging methods.
-+
-+	  To use this, you need to do the following after panic,
-+	    1. connect the uart side of an USB-to-UART tool to any uart
-+	    port on your device(PC, server, Laptop, etc...) after panic.
-+	    Connect the USB side of that tool to another PC. Open
-+	    minicom(or other app) on that PC, and set "/dev/ttyUSB0"(or
-+	    "/dev/ttyUSB1 if there is already another USB-to-UART tool
-+	    connected to your device) with "115200 8N1".
-+
-+	    It automatically selects the port where you first pressing the
-+	    "Enter"(some keyboard labeled with "Return")
-+
-+	    2.press "Enter"(some keyboard labeled with "Return") in that
-+	    minicom window, you'll get a help menu,
-+	    "
-+	    help:
-+	        -a      show all kernel msg
-+	        -3      show S3 msg
-+	        -4      show S4 msg
-+	        -filter-[string]        show msg contains [string]
-+	        -q-     quit
-+	    "
-+
-+	   3.Finally, type 'a', '3', '4', 'q' or "filter-xxx" then press
-+	   "Enter" to get what you want.
-+
-+	  Say Y if you have an UART port that is working.  If unsure, say N
-+	  Say M if you want add this as a module driver.
-+
- config SERIAL_MESON
- 	tristate "Meson serial port support"
- 	depends on ARCH_MESON || COMPILE_TEST
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 531ec3a19dae..d7f6fdc8913c 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -93,3 +93,4 @@ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
- 
- obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
- obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
-+obj-$(CONFIG_PANIC_SERIAL_HELPER) += panic_serial_helper.o
-diff --git a/drivers/tty/serial/panic_serial_helper.c b/drivers/tty/serial/panic_serial_helper.c
-new file mode 100644
-index 000000000000..59863f777331
---- /dev/null
-+++ b/drivers/tty/serial/panic_serial_helper.c
-@@ -0,0 +1,571 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * panic_serial_helper.c Debug through uart when panic.
-+ *
-+ * Copyright (C) 2023 Xie Hongyu <xiehongyu1@kylinos.cn>
-+ *
-+ * Inspired by kgdboc.
-+ *
-+ */
-+
-+#define MODULE_NAME "panic_seial_helper"
-+#define pr_fmt(fmt) MODULE_NAME ": " fmt
-+
-+#include <linux/kmsg_dump.h>
-+#include <linux/bsearch.h>
-+#include <linux/slab.h>
-+#include <linux/delay.h>
-+#include <linux/module.h>
-+#include <linux/tty_driver.h>
-+#include <linux/serial_core.h>
-+
-+#define S3_ENTRY "PM: suspend entry"
-+#define S3_EXIT "PM: suspend exit"
-+#define S4_ENTRY "PM: hibernation entry"
-+#define S4_EXIT "PM: hibernation exit"
-+
-+/* list to store msg lines */
-+static LIST_HEAD(psh_list);
-+
-+/* msg line prototype */
-+struct dmesg_lines {
-+	struct list_head entry;
-+	char *buf;
-+	int size;
-+};
-+
-+/* panic serial helper status*/
-+enum PSHS {
-+	PSHS_INIT,
-+	PSHS_WAIT_HELP_INPUT,
-+};
-+
-+/* panic serial helper msg type */
-+enum PSHM_TYPE {
-+	PSHM_TYPE_ALL,
-+	PSHM_TYPE_S3,
-+	PSHM_TYPE_S4,
-+	PSHM_TYPE_STRINGS,
-+	PSHM_TYPE_QUIT,
-+};
-+
-+/* whether uart is dumping msg */
-+static bool dumping_msg;
-+
-+/* to filter msg */
-+static char filter[256] = {0};
-+
-+struct psh_buf {
-+#define PSH_BUF_SIZE 256
-+	char buf[PSH_BUF_SIZE];
-+	int cur;
-+};
-+
-+static const char psh_tty_types[][32] = {
-+	{"ttyAMA"},
-+	{"ttyS"},
-+	{"ttyPS"},
-+	{"ttyLP"},
-+	{"ttyARC"},
-+	{"ttyAL"},
-+	{"ttyUL"},
-+};
-+
-+#define TTY_OPS "115200n8n"
-+
-+struct psh_serial_dev {
-+	struct list_head entry;
-+	struct tty_driver *drv;
-+	struct psh_buf buf;
-+	enum PSHS psh_status;
-+	enum PSHM_TYPE psh_msg_type;
-+	int line;
-+};
-+
-+struct psh_serial_dev *psh_dev;
-+
-+/* char handle prototype */
-+struct c_handle {
-+	char c;
-+	int (*handler)(struct psh_serial_dev *dev, void *d);
-+};
-+
-+static struct psh_buf *psh_get_rx_buffer(struct psh_serial_dev *dev)
-+{
-+	return !dev ? NULL : &dev->buf;
-+}
-+
-+static int psh_poll_get_char(struct psh_serial_dev *dev)
-+{
-+	if (!dev || !dev->drv)
-+		return -EINVAL;
-+
-+	return dev->drv->ops->poll_get_char(dev->drv, dev->line);
-+}
-+
-+static void psh_poll_put_char(struct psh_serial_dev *dev, u8 c)
-+{
-+	if (!dev || !dev->drv)
-+		return;
-+
-+	dev->drv->ops->poll_put_char(dev->drv,
-+					dev->line, c);
-+}
-+
-+static void psh_clear_rx_buffer(struct psh_serial_dev *dev)
-+{
-+	struct psh_buf *_buf = psh_get_rx_buffer(dev);
-+
-+	if (!_buf)
-+		return;
-+
-+	_buf->cur = 0;
-+	memset(_buf->buf, 0, sizeof(_buf->buf));
-+}
-+
-+static int psh_getc(struct psh_serial_dev *dev)
-+{
-+	return psh_poll_get_char(dev);
-+}
-+
-+static void psh_putc(struct psh_serial_dev *dev, char c)
-+{
-+	psh_poll_put_char(dev, c);
-+}
-+
-+static void psh_put_strings(struct psh_serial_dev *dev, const char *buf, int size)
-+{
-+	int i = 0;
-+
-+	while (i < size) {
-+		psh_putc(dev, buf[i]);
-+		i++;
-+	}
-+}
-+
-+static void psh_help(struct psh_serial_dev *dev)
-+{
-+	static const char help[] = "\nhelp:\n";
-+	static const char show_all[] = "\t-a\tshow all kernel msg\n";
-+	static const char show_s3[] = "\t-3\tshow S3 msg\n";
-+	static const char show_s4[] = "\t-4\tshow S4 msg\n";
-+	static const char _filter[] =
-+		"\t-filter-[string]\tshow msg contains [string]\n";
-+	static const char _quit[] = "\t-q-\tquit\n";
-+
-+	psh_put_strings(dev, help, strlen(help));
-+	psh_put_strings(dev, show_all, strlen(show_all));
-+	psh_put_strings(dev, show_s3, strlen(show_s3));
-+	psh_put_strings(dev, show_s4, strlen(show_s4));
-+	psh_put_strings(dev, _filter, strlen(_filter));
-+	psh_put_strings(dev, _quit, strlen(_quit));
-+}
-+
-+static void psh_dump_msg(struct psh_serial_dev *dev)
-+{
-+	struct dmesg_lines *p;
-+	bool print = false;
-+	char *start = NULL;
-+	char *end = NULL;
-+
-+	if (!dev)
-+		return;
-+
-+	dumping_msg = true;
-+	switch (dev->psh_msg_type) {
-+	case PSHM_TYPE_ALL:
-+		print = true;
-+		break;
-+	case PSHM_TYPE_S3:
-+		start = S3_ENTRY;
-+		end = S3_EXIT;
-+		break;
-+	case PSHM_TYPE_S4:
-+		start = S4_ENTRY;
-+		end = S4_EXIT;
-+		break;
-+	case PSHM_TYPE_STRINGS:
-+		start = filter;
-+		end = NULL;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	psh_putc(dev, '\n');
-+	list_for_each_entry_reverse(p, &psh_list, entry) {
-+		if (print || (start && strstr(p->buf,
-+				start))) {
-+			psh_put_strings(dev, p->buf, p->size);
-+			if (dev->psh_msg_type != PSHM_TYPE_STRINGS)
-+				print = true;
-+		}
-+
-+		if (end && strstr(p->buf, end))
-+			print = false;
-+	}
-+
-+	dumping_msg = false;
-+}
-+
-+static int psh_parse_help_ops(struct psh_serial_dev *dev)
-+{
-+	char _filter[] = "filter-";
-+	struct psh_buf *_buf = psh_get_rx_buffer(dev);
-+
-+	if (!_buf)
-+		return -EINVAL;
-+
-+	switch (_buf->buf[0]) {
-+	case 'a':
-+		dev->psh_msg_type = PSHM_TYPE_ALL;
-+		break;
-+	case '3':
-+		dev->psh_msg_type = PSHM_TYPE_S3;
-+		break;
-+	case '4':
-+		dev->psh_msg_type = PSHM_TYPE_S4;
-+		break;
-+	case 'q':
-+		dev->psh_msg_type = PSHM_TYPE_QUIT;
-+		break;
-+	case 'f':
-+		psh_put_strings(dev, _filter, strlen(_filter));
-+		psh_putc(dev, '\r');
-+		psh_put_strings(dev, _buf->buf, _buf->cur);
-+		psh_putc(dev, '\r');
-+		if (!strncmp(_buf->buf, _filter, strlen(_filter))) {
-+			dev->psh_msg_type =
-+				PSHM_TYPE_STRINGS;
-+			memset(filter, 0, sizeof(filter));
-+			memcpy(filter, &_buf->buf[strlen(_filter)],
-+				strlen(_buf->buf) - strlen(_filter));
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return dev->psh_msg_type;
-+}
-+
-+static int psh_serial_backspace_handler(struct psh_serial_dev *dev, void *buf)
-+{
-+	struct psh_buf *_buf = psh_get_rx_buffer(dev);
-+
-+	if (!_buf)
-+		return -EINVAL;
-+
-+
-+	if (_buf->cur > 0) {
-+		_buf->cur -= 1;
-+		_buf->buf[_buf->cur] = 0;
-+	}
-+
-+	psh_putc(dev, '\b');
-+	psh_putc(dev, ' ');
-+	psh_putc(dev, '\b');
-+	return 0;
-+}
-+
-+static int psh_serial_enter_handler(struct psh_serial_dev *dev, void *buf)
-+{
-+	bool help = false;
-+
-+	if (!dev || !buf)
-+		return -EINVAL;
-+
-+	switch (dev->psh_status) {
-+	case PSHS_INIT:
-+		dev->psh_status = PSHS_WAIT_HELP_INPUT;
-+		help = true;
-+		psh_dev = dev;
-+		break;
-+	case PSHS_WAIT_HELP_INPUT:
-+		if (psh_parse_help_ops(dev) != PSHM_TYPE_QUIT)
-+			psh_dump_msg(dev);
-+		else
-+			help = true;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (help)
-+		psh_help(dev);
-+
-+	psh_clear_rx_buffer(dev);
-+	return 0;
-+}
-+
-+static struct c_handle c_handles[] = {
-+	{'\b', psh_serial_backspace_handler},
-+	{'\r', psh_serial_enter_handler},
-+};
-+
-+static int c_handles_cmp(const void *key, const void *elt)
-+{
-+	const int *c = (int *)key;
-+	const struct c_handle *e = (struct c_handle *)elt;
-+
-+	if (*c < e->c)
-+		return -1;
-+	else if (*c > e->c)
-+		return 1;
-+
-+	return 0;
-+}
-+
-+static void psh_buffer_input(struct psh_serial_dev *dev, int c)
-+{
-+	struct psh_buf *_buf = psh_get_rx_buffer(dev);
-+
-+	if (!_buf)
-+		return;
-+
-+	if ((_buf->cur >= sizeof(_buf->buf)) || (_buf->cur < 0))
-+		_buf->cur = 0;
-+
-+	_buf->buf[_buf->cur] = (char)c;
-+	_buf->cur++;
-+}
-+
-+static int psh_serial_check_char(struct psh_serial_dev *dev, int ch)
-+{
-+	struct c_handle *found = NULL;
-+	int c = ch;
-+
-+	size_t num = sizeof(c_handles) / sizeof(struct c_handle);
-+
-+	found = bsearch(&c, c_handles, num,
-+			sizeof(struct c_handle), c_handles_cmp);
-+	if (found)
-+		return found->handler(dev, &c);
-+
-+	psh_putc(dev, ch);
-+	psh_buffer_input(dev, ch);
-+
-+	return 1;
-+}
-+
-+static int psh_wait_for_input(struct psh_serial_dev *dev)
-+{
-+	int c_input = psh_getc(dev);
-+
-+	if (c_input < 0 || c_input > 127) {
-+		mdelay(1);
-+		return c_input;
-+	}
-+
-+	return psh_serial_check_char(dev, c_input);
-+}
-+
-+static int psh_msg(struct psh_serial_dev *dev)
-+{
-+	int ret = 0;
-+
-+	if (!dumping_msg)
-+		ret = psh_wait_for_input(dev);
-+
-+	return ret;
-+}
-+
-+static struct psh_serial_dev *create_psh_serial_dev(struct uart_driver *drv,
-+	int line)
-+{
-+	struct psh_serial_dev *dev = NULL;
-+	struct uart_port *uport = NULL;
-+	struct uart_state *state = NULL;
-+	struct tty_driver *p = drv->tty_driver;
-+
-+	state = drv->state + line;
-+	uport = state->uart_port;
-+	if (!uport)
-+		goto err;
-+
-+	dev = kzalloc(sizeof(struct psh_serial_dev),
-+		GFP_KERNEL);
-+	if (!dev)
-+		goto err;
-+
-+	dev->buf.cur = 0;
-+	dev->drv = p;
-+	dev->line = line;
-+	dev->psh_status = PSHS_INIT;
-+	dev->psh_msg_type = PSHM_TYPE_QUIT;
-+	return dev;
-+err:
-+	return NULL;
-+}
-+
-+/* find uart driver by name */
-+static struct uart_driver *psh_find_uart_driver(char *name)
-+{
-+	struct tty_driver *p = NULL;
-+	struct uart_driver *drv = NULL;
-+	int tty_line;
-+
-+	p = tty_find_polling_driver(name, &tty_line);
-+	if (!p) {
-+		pr_debug("no such tty driver %s\n",
-+			name);
-+		goto out;
-+	}
-+
-+	drv = (struct uart_driver *)p->driver_state;
-+	if (!drv) {
-+		pr_debug("no uart_driver %s\n",
-+			name);
-+		tty_driver_kref_put(p);
-+	}
-+
-+out:
-+	return drv;
-+}
-+
-+/* try all uart port under the same driver */
-+static int psh_try_all_uart_port(struct uart_driver *drv)
-+{
-+	struct psh_serial_dev *dev = NULL;
-+	struct uart_driver *driver = NULL;
-+	char drv_name[64] = {0};
-+	int count = 10000;
-+	int i = 0, nr = drv->nr;
-+
-+	for (i = 0; i < nr; i++) {
-+		memset(drv_name, 0, sizeof(drv_name));
-+		snprintf(drv_name, sizeof(drv_name), "%s%d,%s",
-+			drv->driver_name,
-+			i, TTY_OPS);
-+
-+		driver = psh_find_uart_driver(drv_name);
-+		if (!driver)
-+			continue;
-+
-+		dev = create_psh_serial_dev(driver, i);
-+		if (!dev) {
-+			tty_driver_kref_put(driver->tty_driver);
-+			driver = NULL;
-+			continue;
-+		}
-+
-+		count = 10000;
-+		while (count-- > 0) {
-+			psh_wait_for_input(dev);
-+
-+			if (psh_dev)
-+				return 0;
-+		}
-+
-+		tty_driver_kref_put(driver->tty_driver);
-+		driver = NULL;
-+		kfree(dev);
-+		dev = NULL;
-+	}
-+
-+	return -1;
-+}
-+
-+/* try all uart driver */
-+static int psh_try_all_uart_driver(void)
-+{
-+	struct uart_driver *drv = NULL;
-+	char drv_name[64] = {0};
-+	int i = 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(psh_tty_types); i++) {
-+		memset(drv_name, 0, sizeof(drv_name));
-+		snprintf(drv_name, sizeof(drv_name), "%s0,%s",
-+		psh_tty_types[i], TTY_OPS);
-+
-+		drv = psh_find_uart_driver(drv_name);
-+		if (!drv)
-+			continue;
-+
-+		if (!psh_try_all_uart_port(drv)) {
-+			tty_driver_kref_put(drv->tty_driver);
-+			return 0;
-+		}
-+
-+		tty_driver_kref_put(drv->tty_driver);
-+		drv = NULL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int dump_dmsg(void)
-+{
-+	if (!psh_dev)
-+		return psh_try_all_uart_driver();
-+
-+	return psh_msg(psh_dev);
-+}
-+
-+static void panic_serial_dump(struct kmsg_dumper *dumper,
-+			enum kmsg_dump_reason reason)
-+{
-+	struct kmsg_dump_iter iter;
-+	static char line[1024];
-+	size_t len = 0;
-+	struct dmesg_lines *p = NULL;
-+
-+	panic_serial_helper = dump_dmsg;
-+
-+	kmsg_dump_rewind(&iter);
-+	while (kmsg_dump_get_line(&iter, true, line, sizeof(line), &len)) {
-+		p = kzalloc(sizeof(struct dmesg_lines), GFP_KERNEL);
-+		if (!p)
-+			continue;
-+
-+		INIT_LIST_HEAD(&p->entry);
-+		p->buf = kzalloc(len + 1, GFP_KERNEL);
-+		if (!p->buf) {
-+			kfree(p);
-+			p = NULL;
-+			continue;
-+		}
-+
-+		memcpy(p->buf, line, len);
-+		p->buf[len] = '\0';
-+		p->size = len;
-+		list_add(&p->entry, &psh_list);
-+	}
-+}
-+
-+static struct kmsg_dumper panic_serial_dumper = {
-+	.dump = panic_serial_dump,
-+};
-+
-+static void __exit panic_serial_helper_exit(void)
-+{
-+	struct dmesg_lines *line;
-+
-+	kmsg_dump_unregister(&panic_serial_dumper);
-+	list_for_each_entry_reverse(line, &psh_list, entry) {
-+		kfree(line->buf);
-+		line->buf = NULL;
-+		kfree(line);
-+		line = NULL;
-+	}
-+
-+	tty_driver_kref_put(psh_dev->drv);
-+	kfree(psh_dev);
-+}
-+
-+static int __init panic_serial_helper_init(void)
-+{
-+	long err = 0;
-+
-+	err = kmsg_dump_register(&panic_serial_dumper);
-+	if (err)
-+		pr_info("panic_serial_dumper register failed\n");
-+
-+	return err;
-+}
-+
-+module_init(panic_serial_helper_init);
-+module_exit(panic_serial_helper_exit);
-+MODULE_AUTHOR("Hongyu Xie <xiehongyu1@kylinos.cn>");
-+MODULE_DESCRIPTION("debug through uart when panic");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/panic.h b/include/linux/panic.h
-index 979b776e3bcb..4ddedbd2253d 100644
---- a/include/linux/panic.h
-+++ b/include/linux/panic.h
-@@ -8,6 +8,7 @@
- struct pt_regs;
- 
- extern long (*panic_blink)(int state);
-+extern int (*panic_serial_helper)(void);
- __printf(1, 2)
- void panic(const char *fmt, ...) __noreturn __cold;
- void nmi_panic(struct pt_regs *regs, const char *msg);
-diff --git a/kernel/panic.c b/kernel/panic.c
-index 886d2ebd0a0d..a5a92693fa61 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -134,10 +134,18 @@ static long no_blink(int state)
- 	return 0;
- }
- 
-+static int no_panic_serial_helper(void)
-+{
-+	return 0;
-+}
-+
- /* Returns how long it waited in ms */
- long (*panic_blink)(int state);
- EXPORT_SYMBOL(panic_blink);
- 
-+int (*panic_serial_helper)(void);
-+EXPORT_SYMBOL(panic_serial_helper);
-+
- /*
-  * Stop ourself in panic -- architecture code may override this
-  */
-@@ -400,6 +408,9 @@ void panic(const char *fmt, ...)
- 	if (!panic_blink)
- 		panic_blink = no_blink;
- 
-+	if (!panic_serial_helper)
-+		panic_serial_helper = no_panic_serial_helper;
-+
- 	if (panic_timeout > 0) {
- 		/*
- 		 * Delay timeout seconds before rebooting the machine.
-@@ -449,6 +460,7 @@ void panic(const char *fmt, ...)
- 			i += panic_blink(state ^= 1);
- 			i_next = i + 3600 / PANIC_BLINK_SPD;
- 		}
-+		panic_serial_helper();
- 		mdelay(PANIC_TIMER_STEP);
- 	}
- }
--- 
-2.34.1
+Thanks,
+Michal
 
