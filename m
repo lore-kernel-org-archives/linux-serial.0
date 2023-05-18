@@ -2,171 +2,160 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 216CCC77B7A
-	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 19:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DF3C7EE25
+	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 19:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbjERTYb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 May 2023 15:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
+        id S229749AbjERTfB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 May 2023 15:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjERTYa (ORCPT
+        with ESMTP id S229461AbjERTfA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 May 2023 15:24:30 -0400
+        Thu, 18 May 2023 15:35:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FAAE51;
-        Thu, 18 May 2023 12:24:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A704CB5;
+        Thu, 18 May 2023 12:34:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01533650EA;
-        Thu, 18 May 2023 19:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C3FC433EF;
-        Thu, 18 May 2023 19:24:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4494B6147B;
+        Thu, 18 May 2023 19:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 566DAC433D2;
+        Thu, 18 May 2023 19:34:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684437868;
-        bh=9y5z0Zh9SKhRJ32I+c6VHljZLGX++RZUWFETdlqq5/E=;
+        s=k20201202; t=1684438498;
+        bh=7ujIWrAt84CAZqQbL29G5T7eA+bKtP7cAoWHbXBRRSA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=enQ75GL1FCW38vWayzQ/Op9Ry1yLQtGXwICdKzhVl7iHy5v02MBr6CJo0DTDNkmAJ
-         3pr81/lnc/Cm+nkpOyTVV3bbkdoc6W9hfSNN9XlNNbbPeNrb6k1KOSKbrIa3UwGJso
-         1OC6xBtPel3MbuFGfdWwdoK5YnkRnoPDb8xQObBxOMYmavgPAiGmTe3pVcQjsDHBsQ
-         G3V1GZt8/7ej+Xrs75fPfGDi6xgtzr2T4Vid33VzgByM9k+T5PnPqZk0Pp4c+WGn+A
-         E4v+33Fy1UxY8QsTvTBkGHDCV62U01u6w7FSxnTgyKmCyznqSq/VLPMEZrV33P9ebZ
-         y3wY6AqaCxIzg==
-Date:   Thu, 18 May 2023 20:24:23 +0100
+        b=KMQutcyQydYIMUy+S4sHDOHbFI3j3EoUAuB0fK97AryoNM3b2FTsoc0xFzqMB4OPw
+         OhEDOzmqLZ+Rl4EHLUYB6geNVB2QAj9vaODRla6CGbujnpL9629f14msjWwjvoGbVb
+         A9XwhsBdQmI34fbiR/TQ5SD0ZuK8F8XpTA3HPVhhVFqvkkXf1WrJhrpmukZT5U0DQe
+         w5V9rY6TAvkqOjpUDupOXGC74qLFnUm6zrnlPnH44eHFegwsZyflWQkJFgonXSHrrH
+         Jlro1LIyXFu60QWNyci6+URTT4xuHAkmO4AJFk8wvkn9ty0rgTuyT24aCNGHtnjw1U
+         opZOZ5LleonIQ==
+Date:   Thu, 18 May 2023 20:34:52 +0100
 From:   Conor Dooley <conor@kernel.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/2] dt-bindings: sc16is7xx: Add property to
- change GPIO function
-Message-ID: <20230518-paralegal-stalemate-837e59310526@spud>
-References: <20230518132905.4182265-1-hugo@hugovil.com>
+        Conor Dooley <conor+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: Re: [PATCH v4 03/10] dt-bindings: serial: add documentation for
+ Bouffalolab UART Driver
+Message-ID: <20230518-wish-duplicity-a280b19d9dcf@spud>
+References: <20230518152244.2178-1-jszhang@kernel.org>
+ <20230518152244.2178-4-jszhang@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="QUo98p4l0BRHVwjm"
+        protocol="application/pgp-signature"; boundary="rVUuxQlCNvY2DQNY"
 Content-Disposition: inline
-In-Reply-To: <20230518132905.4182265-1-hugo@hugovil.com>
+In-Reply-To: <20230518152244.2178-4-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---QUo98p4l0BRHVwjm
+--rVUuxQlCNvY2DQNY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 18, 2023 at 09:29:06AM -0400, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Thu, May 18, 2023 at 11:22:37PM +0800, Jisheng Zhang wrote:
+> Add bindings doc for Bouffalolab UART Driver
 >=20
-> Some variants in this series of uart controllers have GPIO pins that
-> are shared between GPIO and modem control lines.
->=20
-> The pin mux mode (GPIO or modem control lines) can be set for each
-> ports (channels) supported by the variant.
->=20
-> This adds a property to the device tree to set the GPIO pin mux to
-> modem control lines on selected ports if needed.
->=20
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-On the basis of similarity to existing properties due to my lack of
-understanding of the hardware it'll have to be an Ack. Hopefully Greg &
-Co. have more specific insight.
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 
-Thanks,
+As I said previously, happy to grab the non-serial parts of the series
+once Greg (or Jiri?) pick the serial bits.
+
+Cheers,
 Conor.
 
 > ---
-> v1 -> v2: Add nxp vendor prefix
->           Add git base-commit
+>  .../serial/bouffalolab,bl808-uart.yaml        | 47 +++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,=
+bl808-uart.yaml
 >=20
->  .../bindings/serial/nxp,sc16is7xx.txt         | 28 +++++++++++++++++++
->  1 file changed, 28 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b=
-/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> index 0fa8e3e43bf8..23a81c83f012 100644
-> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> @@ -23,6 +23,9 @@ Optional properties:
->      1 =3D active low.
->  - irda-mode-ports: An array that lists the indices of the port that
->  		   should operate in IrDA mode.
-> +- nxp,modem-control-line-ports: An array that lists the indices of the p=
-ort that
-> +				should have shared GPIO lines configured as modem
-> +				control lines.
-> =20
->  Example:
->          sc16is750: sc16is750@51 {
-> @@ -35,6 +38,17 @@ Example:
->                  #gpio-cells =3D <2>;
->          };
-> =20
-> +	sc16is752: sc16is752@54 {
-> +		compatible =3D "nxp,sc16is752";
-> +		reg =3D <0x54>;
-> +		clocks =3D <&clk20m>;
-> +		interrupt-parent =3D <&gpio3>;
-> +		interrupts =3D <7 IRQ_TYPE_EDGE_FALLING>;
-> +		nxp,modem-control-line-ports =3D <1>; /* Port 1 as modem control lines=
- */
-> +		gpio-controller; /* Port 0 as GPIOs */
-> +		#gpio-cells =3D <2>;
-> +	};
+> diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,bl808-u=
+art.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.=
+yaml
+> new file mode 100644
+> index 000000000000..0ef858e50efb
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
+> @@ -0,0 +1,47 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/bouffalolab,bl808-uart.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  * spi as bus
-> =20
->  Required properties:
-> @@ -59,6 +73,9 @@ Optional properties:
->      1 =3D active low.
->  - irda-mode-ports: An array that lists the indices of the port that
->  		   should operate in IrDA mode.
-> +- nxp,modem-control-line-ports: An array that lists the indices of the p=
-ort that
-> +				should have shared GPIO lines configured as modem
-> +				control lines.
-> =20
->  Example:
->  	sc16is750: sc16is750@0 {
-> @@ -70,3 +87,14 @@ Example:
->  		gpio-controller;
->  		#gpio-cells =3D <2>;
->  	};
+> +title: Bouffalolab UART Controller
 > +
-> +	sc16is752: sc16is752@0 {
-> +		compatible =3D "nxp,sc16is752";
-> +		reg =3D <0>;
-> +		clocks =3D <&clk20m>;
-> +		interrupt-parent =3D <&gpio3>;
-> +		interrupts =3D <7 IRQ_TYPE_EDGE_FALLING>;
-> +		nxp,modem-control-line-ports =3D <1>; /* Port 1 as modem control lines=
- */
-> +		gpio-controller; /* Port 0 as GPIOs */
-> +		#gpio-cells =3D <2>;
-> +	};
->=20
-> base-commit: 4d6d4c7f541d7027beed4fb86eb2c451bd8d6fff
+> +maintainers:
+> +  - Jisheng Zhang <jszhang@kernel.org>
+> +
+> +allOf:
+> +  - $ref: serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: bouffalolab,bl808-uart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    uart0: serial@30002000 {
+> +        compatible =3D "bouffalolab,bl808-uart";
+> +        reg =3D <0x30002000 0x1000>;
+> +        interrupts =3D <53 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks =3D <&xtal>;
+> +    };
+> +...
 > --=20
-> 2.30.2
+> 2.40.0
 >=20
 
---QUo98p4l0BRHVwjm
+--rVUuxQlCNvY2DQNY
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGZ7ZwAKCRB4tDGHoIJi
-0uYTAP4tDKRMsIUu27At7Dk9yy1NuplvDrXUPMlw3rnjrRmOmwEAmuKoF33s1VNw
-warqgbiHQMVfMdj05TKNmJkIWuInbAI=
-=xMCv
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGZ93AAKCRB4tDGHoIJi
+0teFAP46CSNElMa0c7OcjRrJ/GQ7TOxHpbogOcpZFdwwTXKeNgEAzNPSSkAc4/dK
+dd5WbA7VZXyjq0zpoa8VCbEssGLkTQY=
+=T+6e
 -----END PGP SIGNATURE-----
 
---QUo98p4l0BRHVwjm--
+--rVUuxQlCNvY2DQNY--
