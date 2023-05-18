@@ -2,38 +2,40 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B389C77B7A
-	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 15:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7428C77B7D
+	for <linux-serial@archiver.kernel.org>; Thu, 18 May 2023 16:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231223AbjERPfq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 May 2023 11:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
+        id S229680AbjERQLM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 May 2023 12:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbjERPfS (ORCPT
+        with ESMTP id S229854AbjERQLK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 May 2023 11:35:18 -0400
+        Thu, 18 May 2023 12:11:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6B4E5C;
-        Thu, 18 May 2023 08:34:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F24CE5E;
+        Thu, 18 May 2023 09:11:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD4E265045;
-        Thu, 18 May 2023 15:34:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0192C433EF;
-        Thu, 18 May 2023 15:34:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD05B6509D;
+        Thu, 18 May 2023 16:11:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 016A4C43443;
+        Thu, 18 May 2023 16:11:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684424077;
-        bh=Y38ByHJH7UauSxGlzX9LVYgXc2kOZJd7HsQTY6MaJRM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hWCbdO9DHFo/ts9yJlLNv64Ady+ieuZOm2oYyGY2khzOATcofHyYc8EKBB0BujC3q
-         QO9NrqmRqTF55RGbzBUbSdlWnT1SkiO4NSWDO0B6JK5+YO477zsLCYe0Hcw+9oGhiv
-         mYokGuQfa2d2izgleLAWSy2jY5xZDOk/ylUWUUyXzMDdV/114xIzz+XHj2Nk/Eni0E
-         fOeYjW8mTXfgaeTWl0aubcAQoW0Gs/SxrbGqd2Pkd2EdDTBzSZkuiM+XCWVBlUSwD9
-         NI0coaD2HIz1NuSP1uHh09/bSC06n9HSJKMDpjYPd9Ic0VAC5scrDBUBuP8zwBqPJm
-         XpRr84kwwPKBA==
+        s=k20201202; t=1684426268;
+        bh=+yx8G76DZdMcQ+TOxR1LsNaIds3YTBmYDcoIcqhWsms=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=INaiwJ6j1tWXc5PRvt9VriLPtLdS9H81vHAsM9ZDlTdydZXBPHmt3M6ceJ5xLjqFO
+         Nojk+sFVSHWX8ZjQqLjMCfbXQ9OijzZd3gTposYHqCEjIrW/gK4AGPAiJTVp9BxkGk
+         z4Q6MH732znret5C9S4HqnP5dJU2+2DKFJvJaSE9plYy7zY2s88YW3YRC/2y+xPaRg
+         GGFvmRUMpCGSf4rIRjnqQB5fhCb51nKDxbmA0XNy6XTQ6NO5eGCi773gkLyAOF6eZk
+         LayUvRWAQuub7QklE4Kif3bo5WPekXmqPvbTA0744i22Lho4cTsprYgQEegkuCfOcV
+         ZI4Dv9i95al/g==
+Date:   Thu, 18 May 2023 23:59:55 +0800
 From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,45 +44,55 @@ To:     Thomas Gleixner <tglx@linutronix.de>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        Conor Dooley <conor.dooley@microchip.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
         Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v4 10/10] riscv: defconfig: enable BOUFFALOLAB SoC
-Date:   Thu, 18 May 2023 23:22:44 +0800
-Message-Id: <20230518152244.2178-11-jszhang@kernel.org>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <20230518152244.2178-1-jszhang@kernel.org>
-References: <20230518152244.2178-1-jszhang@kernel.org>
+Subject: Re: [PATCH v3 06/10] dt-bindings: riscv: Add bouffalolab bl808 board
+ compatibles
+Message-ID: <ZGZLe6kGaD7HWQJ3@xhacker>
+References: <20230514165651.2199-1-jszhang@kernel.org>
+ <20230514165651.2199-7-jszhang@kernel.org>
+ <20230514-kinetic-backlog-b9573ae06507@spud>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230514-kinetic-backlog-b9573ae06507@spud>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Enable BOUFFALOLAB soc config in defconfig to allow the default
-upstream kernel to boot on Sipeed M1s Dock board.
+On Sun, May 14, 2023 at 07:39:28PM +0100, Conor Dooley wrote:
+> On Mon, May 15, 2023 at 12:56:47AM +0800, Jisheng Zhang wrote:
+> 
+> > +title: Bouffalo Lab Technology SoC-based boards
+> 
+> I know you're only propagating an existing pattern, but the "SoC-based"
+> looks rather odd!
+> 
+> > +properties:
+> > +  $nodename:
+> > +    const: '/'
+> > +  compatible:
+> > +    oneOf:
+> > +      - description: Carrier boards for the Sipeed M1s SoM
+> > +        items:
+> > +          - enum:
+> > +              - sipeed,m1s-dock
+> 
+> BTW, do you know of any other m1s compatible docks?
+> I couldn't find any other ones via Google, so maybe it is just worth
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- arch/riscv/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+FWICT, there's no other m1s compatible docks, but in theory the SoM
+can be used to build different docks, I just keep it as is since you
+are fine with it too ;)
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index d98d6e90b2b8..e8d77b55ce86 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -26,6 +26,7 @@ CONFIG_EXPERT=y
- # CONFIG_SYSFS_SYSCALL is not set
- CONFIG_PROFILING=y
- CONFIG_SOC_MICROCHIP_POLARFIRE=y
-+CONFIG_ARCH_BOUFFALOLAB=y
- CONFIG_ARCH_RENESAS=y
- CONFIG_SOC_SIFIVE=y
- CONFIG_SOC_STARFIVE=y
--- 
-2.40.0
+> swapping the enum here for another const.
+> Either is fine by me though.
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+> 
+> Thanks,
+> Conor.
+
 
