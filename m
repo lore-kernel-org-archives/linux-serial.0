@@ -2,211 +2,308 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E517C77B7A
-	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 11:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF2CCC77B7F
+	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 13:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231258AbjESLza (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 May 2023 07:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
+        id S229917AbjESNBZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 May 2023 09:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbjESLz3 (ORCPT
+        with ESMTP id S229546AbjESNBX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 May 2023 07:55:29 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBCD191;
-        Fri, 19 May 2023 04:55:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1684497328; x=1716033328;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZcnD1s9sB8FFoJCCwAYWXI3hUc+y0AnVUaksQh1t5oY=;
-  b=YthhLdx4CS3XELfxLHioR1+9GNrJt2q81drKB8VR7LtAb2CX1fhlaXTf
-   aKEKalHMVHPfTFplE5layI5DaQj0mrL4OtYx9XR/ZRzrTD0DXUPLL77FM
-   f3fZidlmePAFf0Wkty77ExnW4iEDXLfnq85YU2hE9TUkjzhGmAZqaM9Ma
-   J3m+DlbVFLwMDpgWVefB4jDa735SQRZoYohQ+IWBfpIS7wHqxGiF8XR4/
-   C8h6Lfjbf9XoRjx7CYPey1NGLw1ulU4yvaQeyLBpqnjx57mYaiV/T6xoN
-   fBE1QvItW6bQ8zVDFx0t5a5mTWLUDOvn9y/nEPR5ogDQt/GUh1J9Dqggd
-   w==;
-X-IronPort-AV: E=Sophos;i="6.00,176,1681196400"; 
-   d="asc'?scan'208";a="214581983"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 May 2023 04:55:27 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 19 May 2023 04:55:26 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Fri, 19 May 2023 04:55:24 -0700
-Date:   Fri, 19 May 2023 12:55:02 +0100
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Samuel Holland <samuel@sholland.org>
-CC:     Jisheng Zhang <jszhang@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
+        Fri, 19 May 2023 09:01:23 -0400
+Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.86.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B807BD2
+        for <linux-serial@vger.kernel.org>; Fri, 19 May 2023 06:01:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
+        s=mimecast20210310; t=1684501275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cGWrr6tPjsNEmNEJDedXsdITYAHgXv6ME1TpI5iusdA=;
+        b=DJV6JVCjNN6Uy54KRAqq71zEhvg30IMRExAr9vBv8/u8N6Ya4Rq1QsRRmduFmeU4UAV5G7
+        9vSC/TewPufqUaL6e5JrQ59Je7Wm1N6kIxSZjQlOTXbIvx5Vs9nWtIEVvOguPkpt52qspW
+        wuJyapfDYT88FxJ27J1KmH8MX9tUS0s=
+Received: from GBR01-CWL-obe.outbound.protection.outlook.com
+ (mail-cwlgbr01lp2052.outbound.protection.outlook.com [104.47.20.52]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ uk-mta-317-amOO_usBN1qxs3KuROUdow-1; Fri, 19 May 2023 14:01:05 +0100
+X-MC-Unique: amOO_usBN1qxs3KuROUdow-1
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
+ by CWLP123MB6858.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:1ec::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21; Fri, 19 May
+ 2023 13:01:01 +0000
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::6c38:e856:880a:704f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::6c38:e856:880a:704f%7]) with mapi id 15.20.6411.021; Fri, 19 May 2023
+ 13:01:01 +0000
+Message-ID: <3a8cf0e2-b11c-d2f3-081e-a43bdad66224@camlingroup.com>
+Date:   Fri, 19 May 2023 15:00:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [RFC PATCH v2 2/2] serial: sc16is7xx: fix regression with GPIO
+ configuration
+To:     Hugo Villeneuve <hugo@hugovil.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v4 06/10] dt-bindings: riscv: Add bouffalolab bl808 board
- compatibles
-Message-ID: <20230519-squad-undermine-6124aafebafa@wendy>
-References: <20230518152244.2178-1-jszhang@kernel.org>
- <20230518152244.2178-7-jszhang@kernel.org>
- <c6e44e14-35b2-da09-5e8c-4d47e7a7a055@sholland.org>
+        Lech Perczak <l.perczak@camlintechnologies.com>,
+        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>
+CC:     linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230518132905.4182265-1-hugo@hugovil.com>
+ <20230518132905.4182265-2-hugo@hugovil.com>
+From:   Lech Perczak <lech.perczak@camlingroup.com>
+In-Reply-To: <20230518132905.4182265-2-hugo@hugovil.com>
+X-ClientProxiedBy: FR2P281CA0026.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:14::13) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:400:142::9)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="LxBuwS+otbeaG+3j"
-Content-Disposition: inline
-In-Reply-To: <c6e44e14-35b2-da09-5e8c-4d47e7a7a055@sholland.org>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|CWLP123MB6858:EE_
+X-MS-Office365-Filtering-Correlation-Id: d921dd76-a0d3-4a9d-4db7-08db58691880
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: 8W8AWFYGYc9gHAjKaXpTuYb0g8cd8giCmNnNEOyWxSu66cFDNT4/lsBQbBYFda0o49uWFPvRtwWh3BPCl3Rn///9aMyjxW6FyB+C7T8IBiIYgitwbCGB9rv0pAvnuQ+uJvd1BnjzR6s7vi7rwQV7Tk6r8g9iVtQSQYd6Cw7yOOAtO6Q+k7qrEuNPSQFCj6ros+WzKAGBI0Ha8n+sFMknaXZCnVW1Tz91UUb43M/soN6zgAPHl8r9QSN0TD+IxOGVnuTc65q8BknKQ0PWicKEk/jxAKlS1skXYBx7FqpieYL7AUzDKmYyrHJ1WqnGM/bEhDp4v2oU3tcCizpKVd7bDB1evYiYQXLs6kS5iYNS1yJ6LffIQ6wXnoU8iXSNzQr+49xqxv3I/sgCh3D2oKrufVAPSNQtHiZC8wkwK6QT4g0y6fRNDd/DzZwf43Sx27re2yyk0YQns/8txuFo9+nj9EiFfRnjywICzWPF87in1+NkJBETotW2iHuzqpRkoVF1Q0Lpmd9K/7hirpcdqBebrpQ2+Fd6iwSMwPKmJ22sLY8j8uS5R/sA3m53BIGpGjlOmogBX/tGFZxee29qpF3gJpYWj9AseEgmG5FU5euKqeei1AQbghnlIcr3c5P4315+KpVxoBRCPuCQOibMZGdyJ1mBe8HhjpyJ6xYhrPTsD1c=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(136003)(39850400004)(346002)(366004)(451199021)(966005)(6666004)(6486002)(38100700002)(186003)(26005)(6512007)(6506007)(2616005)(83380400001)(36756003)(2906002)(66476007)(66556008)(66946007)(4326008)(6636002)(316002)(86362001)(8676002)(8936002)(31686004)(44832011)(5660300002)(31696002)(41300700001)(110136005)(478600001)(45980500001)(43740500002)(18886065003);DIR:OUT;SFP:1101
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3O+Ucf2qqJGSSW91Qkgr14czQ6GBJWJvO2HpO8rUiMNTkMargmQLl1vCoMEB?=
+ =?us-ascii?Q?OzFPUVCYaZ5tVz6qVVKYWJYyfx909yhjEfG87rvt35T+B725VqrToF/RlWtw?=
+ =?us-ascii?Q?RRt02UgkVUpkH9aE+Rb/jZc+3vpMA3e9IrihHiMw/q4/BIS/xrZv3aWPYRWL?=
+ =?us-ascii?Q?YuF0d+dDYqNH1FxV8pbAkpZyuW6AWni3T1nhyFB8/WVTDgEhyxKvG2WfUOth?=
+ =?us-ascii?Q?C9fHruQmKrvXebhff5y5AbODQCgLOrvf9alE1HL2WN6KE5rLR8d0XRvlkblW?=
+ =?us-ascii?Q?ljnlyymMFl8+9PCAwz/a4eDSgtHEZIrj+4YVlo0eWXPuJTsuD3A4g6Q3+z2q?=
+ =?us-ascii?Q?HKQjLsA6x/O5wK+qPZckHC4FJEJSTSxrLfAthsK+HpWByqyaX5KB4ZedxyLo?=
+ =?us-ascii?Q?6W7uQuCbgMJrqHHKq7hSYBSXmUxjYH8oXeBLSfdXFUNd+uaqVwAetfbCr4+C?=
+ =?us-ascii?Q?ow7E+P1tfYCANe+3lMedcSMjHenXFbu48c1sHPSoPnoppxScXG7jWCnEHbZC?=
+ =?us-ascii?Q?aWrSZWQb3zCWVjlbzwCfHnvDMPNoaSyOlmE7JbVw59ZSooDj6BJuC6A+aouP?=
+ =?us-ascii?Q?Xg/Fo6y0aW2AdWzO75b99NDy1TEakUKBRHX/2Bsp2MVj8xVyO11d0S9xeezl?=
+ =?us-ascii?Q?EZ3lKj9Ep8H3eUJhggEG4CJY2vQNt+durHmlL5Acb4nUFON4SK/94qQ1MkVu?=
+ =?us-ascii?Q?lUizwzKGYHp1wx18zySMWphJq3ZcEYg+i+rHCmF+vIIwGRykp4pUchsEKAOW?=
+ =?us-ascii?Q?bVvKU9Um+Euk3fnri0TDM7rV1x26GzN4AqyeyaVG92vm5CTQ0BKxi1DO0UfO?=
+ =?us-ascii?Q?siNhp5H2+MyBdOTSKRoh2k/5VY3puGyNdkgS08GerEwI6sJ3ICa04f9ymfSa?=
+ =?us-ascii?Q?79UAEHSNDnaGnIt3chEDTLJyL45LEueyfGMcERgq8q6YiFNukRB7Ah8yKvct?=
+ =?us-ascii?Q?cgdWJ1AEhxFNbOPb/JhEGvDwuVFd8N82hVobnZOGqBujZKWK3wtjiVS/lmus?=
+ =?us-ascii?Q?4JL+wY6y5tYai9ZSRFWdelrc3TRFc3kftF2Fw7e+cGYG3rS4dn0IScq+Elgx?=
+ =?us-ascii?Q?KeINVvTTB9ovJaYBZ6dxktESNOA3HO+HCHYA3uoCctu2GDxDwclBZti4G1fl?=
+ =?us-ascii?Q?9jhqW2ipxzpojLMEQzcs7EmP2RwF9UFnIhhacUpKRw378h8rl5vL0cdRQwPq?=
+ =?us-ascii?Q?+hYKaWCY8n1AqqG/wdPqoE5fvgy/UQGCwOsUotsmyHKhkqiZve/k2GrMTreZ?=
+ =?us-ascii?Q?E5CtZIY0F3WutuMqFdoQd8ZDDsk2SPXUPVKZolLz/2hrpZCbJJe4FoY97ir3?=
+ =?us-ascii?Q?We7GyyJKjt2eNlRj31hsmkbcp0ThC4nGh5EknsvUAlBVas9nXWyivx/o4ST+?=
+ =?us-ascii?Q?PJPX/cwjB0B1uIvxaRo/Gh7k0SuxzBUIkU5qJErbjQWrVnk8QWndDWMslMl4?=
+ =?us-ascii?Q?Nya+pfNvP4u+AHcM6HjX7LlGKV3sBt86N2UjlCz4kIrBoX0xBwsePc8tAEjA?=
+ =?us-ascii?Q?Aduwnf4ShWrhvgALgpc7g6pms8k94tfCcBsCYeuoDAX6SxDBfkOOnm00gn8c?=
+ =?us-ascii?Q?/WtDjD+koCt/dpKyhDbLVaA+sO3EKv/WSHiofZnOaXkt9IXHZq8zUeCWchCt?=
+ =?us-ascii?Q?Ew=3D=3D?=
+X-OriginatorOrg: camlingroup.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d921dd76-a0d3-4a9d-4db7-08db58691880
+X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 13:01:01.0745
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LXcMXdruKkhZEzkLK9W3PEFJ3zMZTqRtdAz/DVUESvcsVHZhN4O3GNXXUtczM+JP095l2AWHbx+GmjEU7ll/I7OKZpen75SQCwkXoeplKPA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP123MB6858
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: camlingroup.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---LxBuwS+otbeaG+3j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hello Hugo,
 
-On Thu, May 18, 2023 at 10:31:35PM -0500, Samuel Holland wrote:
-> Hi Jisheng, DT maintainers,
+A couple of remarks inline.
 
-Sick, thanks for piping up Samuel!
-Both Rob and Krzysztof are not around at the moment, so that probably
-leaves it up to me.. I'm adding Arnd in case he has a take here too.
+W dniu 18.05.2023 o=C2=A015:29, Hugo Villeneuve pisze:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>
+> Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines"=
+)
+> and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> changed the function of the GPIOs pins to act as modem control
+> lines without any possibility of selecting GPIO function.
+>
+> As a consequence, applications that depends on GPIO lines configured
+> by default as GPIO pins no longer work as expected.
+>
+> Also, the change to select modem control lines function was done only
+> for channel A of dual UART variants (752/762). This was not documented
+> in the log message.
+>
+> This new patch allows to specify GPIO or modem control line function
+> in the device tree, and for each of the ports (A or B).
+>
+> This is done by using the new device-tree property named
+> "modem-control-line-ports" (property added in separate patch).
+>
+> Boards that need to have GPIOS configured as modem control lines
+> should add that property to their device tree. Here is a list of
+> boards using the sc16is7xx driver in their device tree and that may
+> need to be modified:
+>     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
+>     mips/boot/dts/ingenic/cu1830-neo.dts
+>     mips/boot/dts/ingenic/cu1000-neo.dts
+>
+> Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines"=
+)
+> Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> ---
+> v1 -> v2: Rebase because original patch did not apply properly
+>           Add git base-commit
+>
+>  drivers/tty/serial/sc16is7xx.c | 42 ++++++++++++++++++++--------------
+>  1 file changed, 25 insertions(+), 17 deletions(-)
+>
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7x=
+x.c
+> index abad091baeea..4e3d2325ef6e 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -236,7 +236,8 @@
+>
+>  /* IOControl register bits (Only 750/760) */
+>  #define SC16IS7XX_IOCONTROL_LATCH_BIT  (1 << 0) /* Enable input latching=
+ */
+> -#define SC16IS7XX_IOCONTROL_MODEM_BIT  (1 << 1) /* Enable GPIO[7:4] as m=
+odem pins */
+> +#define SC16IS7XX_IOCONTROL_MODEM_A_BIT        (1 << 1) /* Enable GPIO[7=
+:4] as modem A pins */
+> +#define SC16IS7XX_IOCONTROL_MODEM_B_BIT        (1 << 2) /* Enable GPIO[3=
+:0] as modem B pins */
+>  #define SC16IS7XX_IOCONTROL_SRESET_BIT (1 << 3) /* Software Reset */
+>
+>  /* EFCR register bits */
+> @@ -306,7 +307,6 @@ struct sc16is7xx_devtype {
+>         char    name[10];
+>         int     nr_gpio;
+>         int     nr_uart;
+> -       int     has_mctrl;
+>  };
+>
+>  #define SC16IS7XX_RECONF_MD            (1 << 0)
+> @@ -447,35 +447,30 @@ static const struct sc16is7xx_devtype sc16is74x_dev=
+type =3D {
+>         .name           =3D "SC16IS74X",
+>         .nr_gpio        =3D 0,
+>         .nr_uart        =3D 1,
+> -       .has_mctrl      =3D 0,
+>  };
+>
+>  static const struct sc16is7xx_devtype sc16is750_devtype =3D {
+>         .name           =3D "SC16IS750",
+> -       .nr_gpio        =3D 4,
+> +       .nr_gpio        =3D 8,
+>         .nr_uart        =3D 1,
+> -       .has_mctrl      =3D 1,
+>  };
+>
+>  static const struct sc16is7xx_devtype sc16is752_devtype =3D {
+>         .name           =3D "SC16IS752",
+> -       .nr_gpio        =3D 0,
+> +       .nr_gpio        =3D 8,
+>         .nr_uart        =3D 2,
+> -       .has_mctrl      =3D 1,
+>  };
+>
+>  static const struct sc16is7xx_devtype sc16is760_devtype =3D {
+>         .name           =3D "SC16IS760",
+> -       .nr_gpio        =3D 4,
+> +       .nr_gpio        =3D 8,
+>         .nr_uart        =3D 1,
+> -       .has_mctrl      =3D 1,
+>  };
+>
+>  static const struct sc16is7xx_devtype sc16is762_devtype =3D {
+>         .name           =3D "SC16IS762",
+> -       .nr_gpio        =3D 0,
+> +       .nr_gpio        =3D 8,
+>         .nr_uart        =3D 2,
+> -       .has_mctrl      =3D 1,
+>  };
+>
+>  static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int r=
+eg)
+> @@ -1456,12 +1451,6 @@ static int sc16is7xx_probe(struct device *dev,
+>                                      SC16IS7XX_EFCR_RXDISABLE_BIT |
+>                                      SC16IS7XX_EFCR_TXDISABLE_BIT);
+>
+> -               /* Use GPIO lines as modem status registers */
+> -               if (devtype->has_mctrl)
+> -                       sc16is7xx_port_write(&s->p[i].port,
+> -                                            SC16IS7XX_IOCONTROL_REG,
+> -                                            SC16IS7XX_IOCONTROL_MODEM_BI=
+T);
+> -
+>                 /* Initialize kthread work structs */
+>                 kthread_init_work(&s->p[i].tx_work, sc16is7xx_tx_proc);
+>                 kthread_init_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
+> @@ -1497,6 +1486,25 @@ static int sc16is7xx_probe(struct device *dev,
+>                                          prop, p, u)
+>                         if (u < devtype->nr_uart)
+>                                 s->p[u].irda_mode =3D true;
+> +
+> +               val =3D 0;
+> +
+> +               of_property_for_each_u32(dev->of_node, "nxp,modem-control=
+-line-ports",
+> +                                        prop, p, u)
+The general idea looks solid to me.
+I think, that with this property set, we should also reduce number of GPIOs=
+ exported by gpiochip.
+> +                       if (u < devtype->nr_uart) {
+> +                               /* Use GPIO lines as modem control lines =
+*/
+> +                               if (u =3D=3D 0)
+> +                                       val |=3D SC16IS7XX_IOCONTROL_MODE=
+M_A_BIT;
+> +                               else if (u =3D=3D 1)
+> +                                       val |=3D SC16IS7XX_IOCONTROL_MODE=
+M_B_BIT;
+> +                       }
+> +
+> +               if (val)
+> +                       regmap_update_bits(
+> +                               s->regmap,
+> +                               SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_=
+SHIFT,
+> +                               SC16IS7XX_IOCONTROL_MODEM_A_BIT |
+> +                               SC16IS7XX_IOCONTROL_MODEM_B_BIT, val);
+I just had a chance to test this on my hardware (with SC16IS760), and somet=
+hing still doesn't work.
+When looking into /sys/kernel/debug/regmap/<device>/registers,
+it seems like the proper bits are set, also taking the regmap shift into ac=
+count.
+For reference - I did my test basing on v6.4-rc2.
 
-> On 5/18/23 10:22, Jisheng Zhang wrote:
-> > Several SoMs and boards are available that feature the Bouffalolab
-> > bl808 SoC. Document the compatible strings.
-> >=20
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> > Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-> > ---
-> >  .../bindings/riscv/bouffalolab.yaml           | 29 +++++++++++++++++++
-> >  1 file changed, 29 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/riscv/bouffalolab=
-=2Eyaml
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/riscv/bouffalolab.yaml b=
-/Documentation/devicetree/bindings/riscv/bouffalolab.yaml
-> > new file mode 100644
-> > index 000000000000..3b25d1a5d04a
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/riscv/bouffalolab.yaml
-> > @@ -0,0 +1,29 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/riscv/bouffalolab.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Bouffalo Lab Technology SoC-based boards
-> > +
-> > +maintainers:
-> > +  - Jisheng Zhang <jszhang@kernel.org>
-> > +
-> > +description:
-> > +  Bouffalo Lab Technology SoC-based boards
-> > +
-> > +properties:
-> > +  $nodename:
-> > +    const: '/'
-> > +  compatible:
-> > +    oneOf:
-> > +      - description: Carrier boards for the Sipeed M1s SoM
-> > +        items:
-> > +          - enum:
-> > +              - sipeed,m1s-dock
-> > +          - const: sipeed,m1s
-> > +          - const: bouffalolab,bl808
->=20
-> As mentioned in the message for patch 5, "The Bouffalolab bl808 SoC
-> contains three riscv CPUs, namely M0, D0 and LP. The D0 is 64bit RISC-V
-> GC compatible, so can run linux."
->=20
-> I have also been running U-Boot and NOMMU Linux on the less powerful,
-> but still quite fast, "M0" core. However, this core needs a different
-> DTB because:
->  1) The CPU is different (T-HEAD E907 instead of C906).
->  2) The interrupt routing is completely different.
->     a. The M0 core contains a CLIC instead of a PLIC.
->     b. The peripherals in the SoC are split between two buses. Those
->        on one bus have their IRQs directly connected to M0, and share
->        a multiplexed IRQ connection to D0; and vice versa for the
->        other bus. So each bus's interrupt-parent needs to be swapped.
->=20
-> Using some preprocessor magic like we did for Allwinner and Renesas, I
-> was able to share most of the SoC and board DTs between the cores[1].
-> However, this still ends up with two DTs for each board. So here are my
-> questions:
->  - Is this acceptable?
+I used a loopback plug and statserial to perform the test.
+Without your patch, when DTR is set, all other pins (DCD, DSR, RI) are set.=
+ With it - they are cleared, according to statserial.
+>         }
+>
+>  #ifdef CONFIG_GPIOLIB
+> --
+> 2.30.2
+>
+>
+--=20
+Pozdrawiam/With kind regards,
+Lech Perczak
 
-I expected it to look worse than it actually turned out to be.
-I don't think Krzysztof in particular is a fan of having conditional
-bits in dts files, but for the shared arm/riscv stuff there was not
-really another sensible option.
+Sr. Software Engineer
+Camlin Technologies Poland Limited Sp. z o.o.
+Strzegomska 54,
+53-611 Wroclaw
+Tel:     (+48) 71 75 000 16
+Email:   lech.perczak@camlingroup.com
+Website: http://www.camlingroup.com
 
->  - Is there precedent for how we should name the two board DTs?
-
-Arnd might have some idea about precedent here, but I like your naming
-well enough.
-
->  - How does this affect the board and SoC compatible strings?
->    - Should there be a separate "bouffalolab,bl808-d0" in addition to
->      "bouffalolab,bl808"?
-
-What ordering were you intending here?
-"pine64,0x64" "bouffalolab,bl808" "bouffalolab,bl808-d0"?
-
-That doesn't really seem correct though, as it does not get less specific
-as you move right.
-
-"pine64,0x64" "bouffalolab,bl808-d0" "bouffalolab,bl808" doesn't seem
-right either though, for the same sort of reason.
-
->    - Is it acceptable to use the same board compatible string for both,
->      since the _board_ part of the DT does not change, only things
->      inside the SoC?
-
-I think you may need to have 2 compatibles per board, depending on which
-cpu. Perhaps even as verbose as:
-"pine61,0x64-d0" "pine64,0x64" "bouffalolab,bl808-d0" "bouffalolab,bl808"
-
-Not exactly straightforward though, is it!
-
-> It would be possible to avoid having two DTs per board by guarding all
-> of the differences behind "#ifdef CONFIG_64BIT", but that seems wrong
-> because you would end up with two totally incompatible DTBs named the
-> same thing, depending on how the DTB was built.
-
-I think having 2 dtbs is fine, and as I mentioned, I've seen Krzysztof
-complain previously about conditional bits like that.
-
-Cheers,
-Conor.
-
---LxBuwS+otbeaG+3j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGdjlgAKCRB4tDGHoIJi
-0tAQAQCdbojzTmY2QrZpKQo0nj8+qxFONs8VYRfCsU2Xg2afPAEAtrBzj/r6BfCS
-68C3HwnUUv5Vx+6SNWmBVEN/782qPAM=
-=iT9e
------END PGP SIGNATURE-----
-
---LxBuwS+otbeaG+3j--
