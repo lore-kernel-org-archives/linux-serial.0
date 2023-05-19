@@ -2,176 +2,184 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE13C77B7A
-	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 03:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82358C77B7F
+	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 03:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbjESDA5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 May 2023 23:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53864 "EHLO
+        id S229577AbjESDbn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 May 2023 23:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjESDA4 (ORCPT
+        with ESMTP id S229504AbjESDbm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 May 2023 23:00:56 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB43E7F;
-        Thu, 18 May 2023 20:00:55 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 854FC32002E8;
-        Thu, 18 May 2023 23:00:53 -0400 (EDT)
+        Thu, 18 May 2023 23:31:42 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC0012F;
+        Thu, 18 May 2023 20:31:41 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 9FAA332007D7;
+        Thu, 18 May 2023 23:31:37 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 18 May 2023 23:00:54 -0400
+  by compute3.internal (MEProxy); Thu, 18 May 2023 23:31:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:content-type:content-type:date
         :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to; s=fm2; t=
-        1684465253; x=1684551653; bh=+qkxtfKU3Ynscb5yTikTTXCK9eZg6WEQh+t
-        MM6/33d8=; b=hNWz0p1gsuo5wONFgBckUAcIho7GfZrE5+H0IqTXKpkLXNmiXg/
-        fBQwxLLRH6UK9gslUDTcoZ60E9fm1OdwRa25dQpyoFX9o1gEhngWhhHI+ad27Gk4
-        4sWeYQBzKuLOweH6p/V+ccb+p/zzXPuQ3+uS6sutSXFVSaPFV78U6ICT+G5g5Z1E
-        LfZ5IJUENUzfJwX+fWANj6+gI3efJEmZ+QXEVuNTRSQXePsXbkIi9DJzRa9MmSMu
-        mup3UfXsSPQSN9R1nlc7Ucs6dZ8Iu+6SpiiS4ylPTggd8jIx8qgj6+Cn1u8G35zS
-        PPL6yZm1pZlR5aOpTcLi8v+ZqLY/zKelrGA==
+        1684467097; x=1684553497; bh=Po/ogvPWUOXjRWtD3eSRZTMYszH7hxYjNm1
+        SSZFz8Ag=; b=A0R0m+TSMqktHrkPrL9VqAT3f4aINfWvUXypjlxWTDx6o1QY+vM
+        WLi8SlvdHxvtXzqUtaIVznbwomt3JX2/k5tde3bKkZDM1WpxLJMtyVvYHPuRlQRy
+        ghISHthfBF+22z4nihxbKYAJ3A22uWF1GmZc5Y1xGCeIWCmirqlIHbZNXWBGKK68
+        67ZuvbAQOC+GSzo1a3dHo3KJhYO9AW0pJz2RKZbkLyMxmj6bN+YdxvjEFCh+e8Ma
+        vxeW39/Hgk7RPC2un7r40jimbb828m4Osdx/Wr4w5fRQOycCHcqt/K+oDgsVI6Cs
+        ABuxm6LL9RAoOXZR9+bqbxlj8FybWFD8Vvw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:content-type:date:date:feedback-id:feedback-id
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1684465253; x=1684551653; bh=+qkxtfKU3Ynscb5yTikTTXCK9eZg6WEQh+t
-        MM6/33d8=; b=y+wOYQT/ANu5AMZI7Fl7sytCChsbyLHXQZskBSHM+zPR31YTDAP
-        wITvMOv3uSzbrFZnBkrBw2Q3XNc24IU0pGzNY2tsNxBuYZ5oBoky2EX9P+m7362E
-        IqeHt7pfYsbIsHB9dOKDsRaseksKJflR/1CW2Lj+hzySt6NY0fOOjZ6FtCAXo26P
-        0AcGHJVLh9raTYsEobXB1kS4ppVZsBC7Zy5cPwWfsgrUzz37epGF8hbfZDXC9krg
-        ZuV4pctGXKK2yjPMk05QS168YGSLyxfI/TojIU9KCAvVoWvE/ggBxObIeyRShKX3
-        CYdqR9LnOGuts8W/dxAP46qq11tuF/Jhdcw==
-X-ME-Sender: <xms:ZOZmZP7okI05FPgBNxXSElrXSmzWnIzfB6J3_X0ASFryZ8KuVCvJcg>
-    <xme:ZOZmZE6EJc66H8piJOvZf61pIt8hLG_7B3Pt-nY73wm4AgJj48phpJntT4D0HqsFZ
-    norrXmOms0tTbb_-g>
-X-ME-Received: <xmr:ZOZmZGfBHw7C4zXn6g9n_7E17Pc_4pyg5aRqvoEznI5IUYWuc0YzK08dQhAsq1sGGHSl_hbKmwi00WwYed1ELMf8I0WQ83ctaKzaImhc_jsMjrDnlpgA_lfutw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeigedgieeiucetufdoteggodetrfdotf
+        1684467097; x=1684553497; bh=Po/ogvPWUOXjRWtD3eSRZTMYszH7hxYjNm1
+        SSZFz8Ag=; b=n+V2uXd6XU9+8SwnC3Wd8UEeF0CsUodCgjU2IRdzaqnaKeCJP2F
+        DrhigMLjcoBlyoLJRKk9cl15JuNzBG5gVqAliuHavCyFiTI6Koh621of5+HHbp8q
+        hPpQEalIl5faa6SokhJcnCDgXOjXgsKdwtE+crYLDhsgLPXH1i8IauDB4nChk0b/
+        mk3QaapXq0bCW63rFVvRlHpsnpgy3/lOxaXOXqCxSVwyDWVp7ggBZpeQ4h6LzXdq
+        poRhGcq3bSUIvmnjXwnNDpreikmpVZ1qRwVW8xiT/gf4i10HWjPidUcJymKdkAhw
+        Y7uBsKLKhHPlK4HfmNhGsOZXdil6WpxsoAQ==
+X-ME-Sender: <xms:mO1mZChzbyEqY4cpb-3pXhlVytmnirLNR3dLFkfAOx1u0m_R8DaztA>
+    <xme:mO1mZDAUwH7bdLlq71zXjVJwhnDPMxz5Edm-U4A9GN-vErXrYsMnw8XU9IakhoeT6
+    JhgOh5FZpoeioQ4CQ>
+X-ME-Received: <xmr:mO1mZKEQjL04REfqRlUFUuleD62wuE_58SbByw2adh39xjhPV2FDEiCHeK09260W_0lDrCKxMEpMpzVe-SzNf4rXA651dKbcVWkcoxPRyX1ue9DpLPstxtUhgg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeeigedgjeduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepkfffgggfvfevfhfhufgjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
     uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpeegteekvefhgefhgfeigeejffejvdeihedvfefgtedvjeeiudet
-    teeihfffgfeugfenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecuvehluh
-    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehs
-    hhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:ZOZmZAJPH212OL9KuUHe8uBw8xWju1lsBQ-I-_q16E0UCK8YQys9NA>
-    <xmx:ZOZmZDI0bGVDsyfwER1gYIxWT5xzG04GIuI93_KbNqNAEpjMkeNerw>
-    <xmx:ZOZmZJzB9WCu14F4hnGLNBPBhf9vD6EocjdorOM-wTnnN-jK_rlFfw>
-    <xmx:ZeZmZFhKjwHAij4VV7saGI05qHbueuiZ4SsiWx94x4hOoWuhPatYtQ>
+    ggtffrrghtthgvrhhnpeekheegueeiteeghfehvefgkeefgefhtefhgfdukeekueffkeei
+    fefhffeliedtfeenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgpdhgihhthh
+    husgdrtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhr
+    ohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:mO1mZLQm48IUIUyPWewYXpHB--oCenY9m4ybvF714-mFENhCmbh_YQ>
+    <xmx:mO1mZPz2sBFSr-pI-JrY2rxhMJhzHaG4nIJpIT4zPCUM22v3m1SYIA>
+    <xmx:mO1mZJ4tdj-Ah7gwWe8PoLLMLFkONa1XyAvHIY5j9IxnSclaG_J0XA>
+    <xmx:me1mZPB365adlT_MO0zbMomtAp81BcTpg90ul8MylYJB2iW2fQfwVg>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 18 May 2023 23:00:50 -0400 (EDT)
-Message-ID: <b5869cb0-1eab-4ab7-6dd7-16b06f91d93f@sholland.org>
-Date:   Thu, 18 May 2023 22:00:50 -0500
+ 18 May 2023 23:31:35 -0400 (EDT)
+Message-ID: <c6e44e14-35b2-da09-5e8c-4d47e7a7a055@sholland.org>
+Date:   Thu, 18 May 2023 22:31:35 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:102.0) Gecko/20100101
  Thunderbird/102.3.3
 Content-Language: en-US
-To:     Jisheng Zhang <jszhang@kernel.org>
+To:     Jisheng Zhang <jszhang@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         Palmer Dabbelt <palmer@rivosinc.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
 References: <20230518152244.2178-1-jszhang@kernel.org>
- <20230518152244.2178-4-jszhang@kernel.org>
+ <20230518152244.2178-7-jszhang@kernel.org>
 From:   Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH v4 03/10] dt-bindings: serial: add documentation for
- Bouffalolab UART Driver
-In-Reply-To: <20230518152244.2178-4-jszhang@kernel.org>
+Subject: Re: [PATCH v4 06/10] dt-bindings: riscv: Add bouffalolab bl808 board
+ compatibles
+In-Reply-To: <20230518152244.2178-7-jszhang@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jisheng,
+Hi Jisheng, DT maintainers,
 
 On 5/18/23 10:22, Jisheng Zhang wrote:
-> Add bindings doc for Bouffalolab UART Driver
+> Several SoMs and boards are available that feature the Bouffalolab
+> bl808 SoC. Document the compatible strings.
 > 
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 > ---
->  .../serial/bouffalolab,bl808-uart.yaml        | 47 +++++++++++++++++++
->  1 file changed, 47 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
+>  .../bindings/riscv/bouffalolab.yaml           | 29 +++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/riscv/bouffalolab.yaml
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
+> diff --git a/Documentation/devicetree/bindings/riscv/bouffalolab.yaml b/Documentation/devicetree/bindings/riscv/bouffalolab.yaml
 > new file mode 100644
-> index 000000000000..0ef858e50efb
+> index 000000000000..3b25d1a5d04a
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
-> @@ -0,0 +1,47 @@
+> +++ b/Documentation/devicetree/bindings/riscv/bouffalolab.yaml
+> @@ -0,0 +1,29 @@
 > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/serial/bouffalolab,bl808-uart.yaml#
+> +$id: http://devicetree.org/schemas/riscv/bouffalolab.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Bouffalolab UART Controller
+> +title: Bouffalo Lab Technology SoC-based boards
 > +
 > +maintainers:
 > +  - Jisheng Zhang <jszhang@kernel.org>
 > +
-> +allOf:
-> +  - $ref: serial.yaml#
+> +description:
+> +  Bouffalo Lab Technology SoC-based boards
 > +
 > +properties:
+> +  $nodename:
+> +    const: '/'
 > +  compatible:
-> +    const: bouffalolab,bl808-uart
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
+> +    oneOf:
+> +      - description: Carrier boards for the Sipeed M1s SoM
+> +        items:
+> +          - enum:
+> +              - sipeed,m1s-dock
+> +          - const: sipeed,m1s
+> +          - const: bouffalolab,bl808
 
-This is not complete. There are separate APB and module (baud) clocks,
-as well as a peripheral reset line. If we are going to keep the binding
-stable, these need to be described up front.
+As mentioned in the message for patch 5, "The Bouffalolab bl808 SoC
+contains three riscv CPUs, namely M0, D0 and LP. The D0 is 64bit RISC-V
+GC compatible, so can run linux."
 
-(I still don't fully understand the clock tree, and so far that has been
-the main blocker for me sending a follow-up series with additional
-bindings for hardware that's otherwise already supported, like the
-Ethernet MAC.)
+I have also been running U-Boot and NOMMU Linux on the less powerful,
+but still quite fast, "M0" core. However, this core needs a different
+DTB because:
+ 1) The CPU is different (T-HEAD E907 instead of C906).
+ 2) The interrupt routing is completely different.
+    a. The M0 core contains a CLIC instead of a PLIC.
+    b. The peripherals in the SoC are split between two buses. Those
+       on one bus have their IRQs directly connected to M0, and share
+       a multiplexed IRQ connection to D0; and vice versa for the
+       other bus. So each bus's interrupt-parent needs to be swapped.
+
+Using some preprocessor magic like we did for Allwinner and Renesas, I
+was able to share most of the SoC and board DTs between the cores[1].
+However, this still ends up with two DTs for each board. So here are my
+questions:
+ - Is this acceptable?
+ - Is there precedent for how we should name the two board DTs?
+ - How does this affect the board and SoC compatible strings?
+   - Should there be a separate "bouffalolab,bl808-d0" in addition to
+     "bouffalolab,bl808"?
+   - Is it acceptable to use the same board compatible string for both,
+     since the _board_ part of the DT does not change, only things
+     inside the SoC?
+
+It would be possible to avoid having two DTs per board by guarding all
+of the differences behind "#ifdef CONFIG_64BIT", but that seems wrong
+because you would end up with two totally incompatible DTBs named the
+same thing, depending on how the DTB was built.
+
+Thoughts?
 
 Regards,
 Samuel
 
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    uart0: serial@30002000 {
-> +        compatible = "bouffalolab,bl808-uart";
-> +        reg = <0x30002000 0x1000>;
-> +        interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&xtal>;
-> +    };
-> +...
+[1]: https://github.com/openbouffalo/u-boot/commit/3ca800850f30
 
