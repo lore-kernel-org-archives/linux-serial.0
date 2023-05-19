@@ -2,124 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9637DC77B75
-	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 05:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2BCC7EE26
+	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 08:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229504AbjESFoh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 May 2023 01:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
+        id S229687AbjESIEb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 May 2023 04:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjESFog (ORCPT
+        with ESMTP id S229492AbjESIEa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 May 2023 01:44:36 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3B0F10C9;
-        Thu, 18 May 2023 22:44:33 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 027F980F7;
-        Fri, 19 May 2023 05:44:33 +0000 (UTC)
-Date:   Fri, 19 May 2023 08:44:31 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH] serial: 8250: omap: convert to modern PM ops
-Message-ID: <20230519054431.GV14287@atomide.com>
-References: <20230517202012.634386-1-arnd@kernel.org>
+        Fri, 19 May 2023 04:04:30 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F9D1716;
+        Fri, 19 May 2023 01:03:52 -0700 (PDT)
+Received: from [192.168.1.141] ([37.4.248.58]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N8GEY-1qDJBS1EiO-014Ene; Fri, 19 May 2023 10:03:06 +0200
+Message-ID: <47df90f9-0348-6333-757e-ddfeb6b8fbad@i2se.com>
+Date:   Fri, 19 May 2023 10:03:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230517202012.634386-1-arnd@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH V3 0/6] ARM: dts: imx6ull: Fix dtbs_check warnings
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
+        linux-imx@nxp.com, "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pm@vger.kernel.org
+References: <20230414091947.7831-1-stefan.wahren@i2se.com>
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20230414091947.7831-1-stefan.wahren@i2se.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:o50LvgBs3SXoordAvhv+x1aO0U3G28hVUe8aqojg5w5tK7KhXtv
+ mpB4Dy+8i1KKdQGAU6+aziMNlZV9e5ZXvm73FD/3yzmCiq4c9ZX8NXbRYKqsOYQbugoqAXd
+ ols6QeeZ5lr6tlqVAeKtNF5v9kvCgsCtDQPT6FUt3IWw2jTBjwiaRgB0LeCJSHLSbYwqlum
+ x9br5GUoK5g13+DDhXaeQ==
+UI-OutboundReport: notjunk:1;M01:P0:9tNi0MwuB1k=;dPML9IMKGd20U4dSjP9SPuVIi3h
+ 9ScdMdp4KMiWhozhbzxUmG0PkdOdPlixH2yUKYLbKUbEM4jNFD8hqg+60GApmnr8w8POfOn9a
+ YtpAZ13gha8PKCD4ZY0S7LgSdl+R4jyRySCKwhqF6B+TBw5hKh6CcIxLznyqQErNSxfDiBZZi
+ ZHsJFVdRtjefVjLYEURXmOzQBkrvVqE3AtO/bAvugZOxs+QgPMNUFzuOwbLsSfDN7Uj2019dD
+ Wk3fdvoWrxlqcV+MWQ1aYSxUzr60YkapFWlmFfnvZ5/2KK+KcHM5Wl/vvyJbenHTttGSnfmEi
+ C7WhmJ17mEalJ6ci27arr2dKwUKpZRaRDaGt5I7ZeE4BC8/W+wkJdFZ23Bvjh2qNR8XAtSyzn
+ Z9yaj2Ta9Qt4GgeHQ7wljUx8yYZW9IcvrNS9PCeBE7viVc9yxXY3Mi3/d8DQD9jUS5jFT1LRL
+ zjGp04cemydApzFHWf1UUCjYKdnKaR6fkxRjOD1b5NB4mvpTW8ORUYiw9x8FY9D5xCEYWPjWO
+ 5yd1tyHZm42tZYa0IM8ZjcFnDb22UW3oTWpLd0RWaucrF/WwjAaWFUULkhcLrmfNP+SKAhQPM
+ QKca0ZlhF8PQOsilbJR1MGFEYhIqKkvNe8ntlo0rb3YdCJeusKylauh9bxSHyOUTHWcXzoDdR
+ DpCkvL+dzMJSKwG2VD4rpeiinQs4VVGaxElRfdxo9A==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Arnd Bergmann <arnd@kernel.org> [230517 20:20]:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The new uart_write() function is only called from suspend/resume code, causing
-> a build warning when those are left out:
-> 
-> drivers/tty/serial/8250/8250_omap.c:169:13: error: 'uart_write' defined but not used [-Werror=unused-function]
-> 
-> Remove the #ifdefs and use the modern pm_ops/pm_sleep_ops and their wrappers
-> to let the compiler see where it's used but still drop the dead code.
+Hi,
 
-This looks good to me as an alternative for Geert's fix. If Geert's
-fix gets applied first, this needs to be rabased.
-
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-
-
-> Fixes: 398cecc24846 ("serial: 8250: omap: Fix imprecise external abort for omap_8250_pm()")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 17 +++++------------
->  1 file changed, 5 insertions(+), 12 deletions(-)
+Am 14.04.23 um 11:19 schrieb Stefan Wahren:
+> This series tries to address some dtbs_check warnings on i.MX6ULL.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 5c093dfcee1d..00b2c35042ee 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1571,7 +1571,6 @@ static int omap8250_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> -#ifdef CONFIG_PM_SLEEP
->  static int omap8250_prepare(struct device *dev)
->  {
->  	struct omap8250_priv *priv = dev_get_drvdata(dev);
-> @@ -1616,12 +1615,7 @@ static int omap8250_resume(struct device *dev)
->  	serial8250_resume_port(priv->line);
->  	return 0;
->  }
-> -#else
-> -#define omap8250_prepare NULL
-> -#define omap8250_complete NULL
-> -#endif
->  
-> -#ifdef CONFIG_PM
->  static int omap8250_lost_context(struct uart_8250_port *up)
->  {
->  	u32 val;
-> @@ -1738,7 +1732,6 @@ static int omap8250_runtime_resume(struct device *dev)
->  	schedule_work(&priv->qos_work);
->  	return 0;
->  }
-> -#endif
->  
->  #ifdef CONFIG_SERIAL_8250_OMAP_TTYO_FIXUP
->  static int __init omap8250_console_fixup(void)
-> @@ -1781,17 +1774,17 @@ console_initcall(omap8250_console_fixup);
->  #endif
->  
->  static const struct dev_pm_ops omap8250_dev_pm_ops = {
-> -	SET_SYSTEM_SLEEP_PM_OPS(omap8250_suspend, omap8250_resume)
-> -	SET_RUNTIME_PM_OPS(omap8250_runtime_suspend,
-> +	SYSTEM_SLEEP_PM_OPS(omap8250_suspend, omap8250_resume)
-> +	RUNTIME_PM_OPS(omap8250_runtime_suspend,
->  			   omap8250_runtime_resume, NULL)
-> -	.prepare        = omap8250_prepare,
-> -	.complete       = omap8250_complete,
-> +	.prepare        = pm_sleep_ptr(omap8250_prepare),
-> +	.complete       = pm_sleep_ptr(omap8250_complete),
->  };
->  
->  static struct platform_driver omap8250_platform_driver = {
->  	.driver = {
->  		.name		= "omap8250",
-> -		.pm		= &omap8250_dev_pm_ops,
-> +		.pm		= pm_ptr(&omap8250_dev_pm_ops),
->  		.of_match_table = omap8250_dt_ids,
->  	},
->  	.probe			= omap8250_probe,
-> -- 
-> 2.39.2
+> Changes in V3:
+> - add Krzysztof's Reviewed-Bys
+> - fix indentation in Patch 6 found by Krzysztof Kozlowski
 > 
+> Changes in V2:
+> - new patch to fix fsl-imx-uart warnings
+> - fixed GPC typo found by Fabio Estevam
+> - keep enum in bindings as suggested by Krzysztof Kozlowski
+> - make imx6ul GPT compatible to imx6sx
+> 
+> Stefan Wahren (6):
+>    dt-bindings: serial: fsl-imx-uart: add missing properties
+>    dt-bindings: crypto: fsl-dcp: add imx6sl and imx6ull compatible
+>    dt-bindings: imx-thermal: add imx6sll and imx6ul compatible
+>    dt-bindings: imxgpt: add imx6ul compatible
+>    ARM: dts: imx: Adjust dma-apbh node name
+>    ARM: dts: imx6ul: Add clock and PGC node to GPC
+> 
+
+currently patch 3, 5 and 6 has been applied. Should i resend the rest of 
+the series?
