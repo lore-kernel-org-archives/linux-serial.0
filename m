@@ -2,169 +2,199 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3485C77B7A
-	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 09:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7654CC77B7A
+	for <linux-serial@archiver.kernel.org>; Fri, 19 May 2023 09:52:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbjESJSJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 19 May 2023 05:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
+        id S231370AbjESJwt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 19 May 2023 05:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbjESJSH (ORCPT
+        with ESMTP id S231417AbjESJwn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 19 May 2023 05:18:07 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2044.outbound.protection.outlook.com [40.107.15.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D8510F3;
-        Fri, 19 May 2023 02:18:01 -0700 (PDT)
+        Fri, 19 May 2023 05:52:43 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2049.outbound.protection.outlook.com [40.107.8.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A2CE6;
+        Fri, 19 May 2023 02:52:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DD57bDQf+W8ASYvI5UHG05/KBbPpLSEqNL7Mo6Zoj8hn4BIwGLtlirZ4Bbd7V9Zm6Q5JX6evylBC8m77dwsW0SRCTD37sJhClx1G0rkIy42SgFqbMg5VcalOAMrnxb+HdQCEXeLtqJ94Y+6LDqTSM0c0u6RiezVyWGF8+CR5SuHlWpXajhvV7+KnbCkplYiNoUSTpOOut2h4D5cLQkkYbYAAcKQ6DPsFC75iXpz7JzFNgWEBntMttwtzJ+JNVFcc7r7wWdTzVeU1HQFV1/zQsWmIV/eH8Go8s9NIXzyensC0r8z8tfgg8LIo2KvELGuC8jDY+oUf7TVkoF0IToMCog==
+ b=QCFj+e+/1ay6YoUBCiUZCwYvRLWbKMvhV0nUe+OT3sgcM7cwqGWzekGRccRCNZyFbmphNBeT1PdLEvPUcPKGVugE7JOZ5hoFME1p7Ixan+dLVMod6ebCxrmeDcf/vgFT0TxxphuKVum8JbvflgofvY+GRvfPG/V6kB/Po/WQPF4j5OD7sJqJ8ZcGzk3uBdEKADKdMSt0bxAkvleo7Vh8w0zPJnBK3Y4r0mVLVoffUAsm83ae4SyIXpiG2hR1Vb4GRRvmpxfZPUf12O9NVXWn+AvvCjtS7UhrxBbu7KKz5UhE2aiuWBbxDscl/SXXb+/0cnRW5XFajvOikHI6XRhoJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tiyYwJq4DOKS6Iim/lJ8vXSeBASz6J5nEgStqIcVcZs=;
- b=GaUQTivnYkTvIQ5ZDrb/kL/SIqE1QjSrlDh3wGWyfQxHrpUeLrLFI2cS7epHUGmZDccTaA5Kk8A7CrRbn/2CXlYQ/6y9y59KXhXgPQ/zLZjDMlgxNSlCrNRPxAIoX72GaZ2vHIP/g3ye9wRRJ+Sn/mKBlXz+IeM1jFjv62YJ14H2S4bAafpnZ5wVYqvBxrLwr5vYF6DNXwDR+M0SgYBM3l4gKTNIopGmDw+W6K2LGcGfrjHIU2UXS0KgSLx77ZFlo9thxTJ2y+Sp+CCvYrIxoutl8/2RgShkacXNWAEt5UVEmL2IQ/CvAY9lmT1cvmJvIwDYcYA83ptShnMH0PHDPA==
+ bh=zrSoyS1Tg/AYlqxA2IF9qrDpTz+AN+p/ar/pPQIlNfI=;
+ b=WHJI5kDPr0wrB+VP9zc3zls+60AF9zo5VTL39p6Ea5xM9/jUYXYuCY+l2JkPtg99B/ZCW6VAe6Xs9oxneYGq+IqMLkvdyhn69t7cHDw5yF6rJif+fdcWXhb//sZb36l7RO6z04d3QHvT7B7bNdDTJHP23U3rzRJsJs+ciorKs/XFbEOIyeGFwBDoLltDmY2dVreA1kMyhGunOIiHY6dqxjjYXkmjzGwFsvQj5ZE8HArKSZxRlZxUYvy4NXeGknsGfCM06qjqD8po5Od0/fXgFr5MgAUT/jCHcx/TfX6Cf08Ti1xeAPIiTFV7bwYA72hm0lb9jRpyCoxfJykLw0hT/w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tiyYwJq4DOKS6Iim/lJ8vXSeBASz6J5nEgStqIcVcZs=;
- b=LnSXj9DTWvbVpT6W2WRtk6jLdI68nTLqzIyKdvRoxxV3QHCHAunzlAZQO8+aPBpRoZwmc652uybrFKg3DUVO2aPtY1DAbAWH4OKo2+sHeEtLuDJxHfjgwgJcLYg/UdKTRTZiY/JV6t6BbbD+k40hQqRUpr15IrlAaaFStV2/KpY=
+ bh=zrSoyS1Tg/AYlqxA2IF9qrDpTz+AN+p/ar/pPQIlNfI=;
+ b=SAtkjP2AhUeLdNKpqRCCubaVq7TilkAGun2aU0BjzEnjYFF/qogFG2J3TqZ9rVCUcR3EHWHsNxGaD3yJ0TGYLad5O16SJWGL6/eHOjnrQcYckXcU+Mh01zvhSDAgL2U4HKmsWZxUPiQ3Sb8aSTnR3CmH7QXa3rgx3y7hutyuMjc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by PAWPR04MB9959.eurprd04.prod.outlook.com (2603:10a6:102:387::20) with
+ by VI1PR04MB6911.eurprd04.prod.outlook.com (2603:10a6:803:12e::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.19; Fri, 19 May
- 2023 09:17:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6411.21; Fri, 19 May
+ 2023 09:52:36 +0000
 Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
  ([fe80::e1cd:e733:d3aa:ea49]) by AS8PR04MB8404.eurprd04.prod.outlook.com
  ([fe80::e1cd:e733:d3aa:ea49%7]) with mapi id 15.20.6411.021; Fri, 19 May 2023
- 09:17:59 +0000
+ 09:52:36 +0000
 From:   Sherry Sun <sherry.sun@nxp.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: make sure to turn off break
- before enabling CTS
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: make sure to turn off break
- before enabling CTS
-Thread-Index: AQHZh99s8RWAVNtMX0y0/1fbxEQUmq9hVVyg
-Date:   Fri, 19 May 2023 09:17:59 +0000
-Message-ID: <AS8PR04MB8404282ABF1BADCB551D66BC927C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
-References: <20230516101138.24179-1-sherry.sun@nxp.com>
-In-Reply-To: <20230516101138.24179-1-sherry.sun@nxp.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR04MB8404:EE_|PAWPR04MB9959:EE_
-x-ms-office365-filtering-correlation-id: b0e4c31d-0fda-4902-79f4-08db5849f08b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5XfwCUaUbqrVs3uaqoGDsJQMVyiZqTYm9HPWIPRfLnqyE0nT3JbGSbyv2SqSRkfbpHZdL0yWxd1zqu755AGQAhpP9cSQiaYah7JE5tu8DAYxa13n3sBlCHqdyuXUwNR60HYwvmlmwDID3WZG20u9AJIbBO2SJQmNtw0f2Qwpgr8C5te0lPJveLaTVuH4n8FXz9oc8q50ejXh8flpTx6ib3jC4XtyMqh3sW8QUR5KAhTneGuFWyHPCxHBN48BiVMxq3gyZstxRuABDup4bRjRS3cCKaItVl/vgmmgZw6f3kHKoy8nc9g5SZqeCHLKG4mmTJjSXfx8vtLqr0Bn+RKmkPeLH4JsBrn9gQyy+PKYdB9Qg/7rWAzF/I/c0gPA6dZBgAy3lk2UMAkYZ0aBgTklEuD/Nrn6inKsTEhLlgWYOKt3lEsTY2/kzbA+tSH7S7Y+M1lmy4lfrHLGDVtnHKe/ElFcFCQ3rWl1/aLs8N1o+YuZv8CArbOVb/sQz9KW6fhVLcyZibhXVJiO8wjjFTb4th5k8MadmKBV4EHg92PRSSkcu4bXJhxfcd68WI3puRj2XHIA+pFXWVTnnsWZIy9Bl9YmlcbthzcFVmCavYXEEN5LyNlzxdNdgY16XVr+SnIz
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(451199021)(86362001)(83380400001)(8936002)(8676002)(2906002)(66446008)(4326008)(66556008)(66946007)(66476007)(76116006)(38070700005)(478600001)(5660300002)(52536014)(41300700001)(54906003)(44832011)(110136005)(64756008)(316002)(38100700002)(122000001)(7696005)(55016003)(6506007)(71200400001)(186003)(9686003)(33656002)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?L3ZQd1lCaVZ6K3pha0lHZ3hzWDRWTmFpMDZjczVRcFlzZUpLa3hSME1xeUZL?=
- =?gb2312?B?YzNKclRuY1dyVE5POTA4V1hOV1laNFZvMWNRcWJrdmtuT0FsQ28xQVRURGdw?=
- =?gb2312?B?TXpVc0xjR2RWREQvUms0UCtXcWx5TG9RQjRpOFdkZ3FKaVR6cDhsdm1zd0p4?=
- =?gb2312?B?M2RUc0pKbVJCVjJ5Z2lHeEZNbVNQY2VobngwVFE1cjhMblF5RUlmOTVCTXI4?=
- =?gb2312?B?VER6VjJsalFvVUhWcHRMSkVEaWNvOU16bnMrSDNsSStSL1EyZkQrT2RrWXJl?=
- =?gb2312?B?d2xvdEY5eU9tUlM1MGNEUGhUWkpXaStLKy83VmZTdTQ5N00wZTZQNVh3YnVX?=
- =?gb2312?B?b1FtejFNMVc3b1V2ZTgyaWFpQ2tqaDQ2MHZYc0wyQjJZbkdhWklsZXR6Z1Z5?=
- =?gb2312?B?TiszejBaZkRNbmNuTXdDTk1OZnVUU2NkL2xmdzVBdFJYRTFQRkQwazFTTWdL?=
- =?gb2312?B?OXFwUkZLTVR2R0NkVXBRbzZJUlBZSTBFU1hzRER3MlhmR0NLV25pdmZUV1RI?=
- =?gb2312?B?OHppRTJKSnl3bzJQU0VMNWNEQTdidGxZamh4MzVoWWdOR29yTWhKT1VFdi9C?=
- =?gb2312?B?QUNQUGZzRGdPNHZ0b2VpUER0RGNraE5rQUErVFNNdTQ2cEhRQ25Hay95VEs2?=
- =?gb2312?B?QjdULzVtYm9PVGFwQks1anVUS2s3WE40RzU1aG9iNC9xcEd3MTFGa1gveU01?=
- =?gb2312?B?aFVESEtHYjVLb2ZsT000WDlia2NpQThUaEdrM3RnRTZQOWVMdllyZ1JJRk94?=
- =?gb2312?B?MjZOZ016TXMwUzM1UFFFZE9uS3hObGYvMFU1MFk2aXQvaklsTjlsMlpjMGlU?=
- =?gb2312?B?OTdETGJWc2ltakM2SjVoQ1pPZTA0RnI5UFgrK08rUU1aT0hQUUd6U1Rmcng2?=
- =?gb2312?B?bnAzbXlRN3l5SlNTd21tb29jM0Y1VnhGN1NVSEFpQXZQU1BSMGNLdndBMUg1?=
- =?gb2312?B?ZkFFVFpZSmxycEgwOThuQmErcUxQOCsrWEk0OVF4UTdjOUs2SXdyOWprZ3Bw?=
- =?gb2312?B?ZzJuNmlVVWZ0alE4NHUxelllbm5wWkJhRTVqOXo2L2VJeUI3bUdRUEhnMUl3?=
- =?gb2312?B?ZUtBa2lCR1ArM2dLYjg3MUdMTUw0Kzk2cld5MzR1OEJYcDVCckZ5dEZSYllE?=
- =?gb2312?B?YnRCMk5HbFlwKytoR1RPblkyaFhXUU9lRlBCMFIzSWFxTVUvVE1lUUlDblBT?=
- =?gb2312?B?R1pKV1lXQTM4VzVEcmNYN1NRTUUyVHVReFB0dW9HVmhYQURzcHY3SFBuY0Zv?=
- =?gb2312?B?YWxuQURHUGI0a2VBZVR6VGJ2c25aZVRyOXBLd0NwREFLTGQ3NHhhUGRHaWI5?=
- =?gb2312?B?cm9pcTRNNXJjcDNkYU1GTzlramlxdVpvMzJGUjhzSEY5YndPK2FMbDhXdFll?=
- =?gb2312?B?bDhUcXRMaGxHeWNMSzF1RE9wU3h6Tm9PUlEwNmZsZndicVphSzkvNWVjMFRG?=
- =?gb2312?B?eHVnZWd4NUpPU1V0ZjMxV1dzQ3pINUlHR3ZKOGNETnBsc0ozbEV3Y0IvcGp1?=
- =?gb2312?B?ZlJmU1F0SGQzeU4xYzE1RXR1cDVKWWJsS2xZNXdZN0J2K3RYRXpoSUcvMkpU?=
- =?gb2312?B?a21kRFNsVHc0YU56ZW1LYWZMRnhyUVJDWkxqcXB2V2ZVcW1mL2o5VU41Q0lF?=
- =?gb2312?B?OCtqSmpjVkZMSkppWGdtbkhoYUJRanJZOHo0TC9ON3pXcGhHb0pIelJGajFa?=
- =?gb2312?B?ZWM3ZGV0RjlyOEM3aUJTWHF4eUpUZytqalNaMXhTVmhRdFZWRmxpUlF0Q1h0?=
- =?gb2312?B?NjRmd2hrK2hNNk5QNGlmVXBla1BwUGRJWGdaUVRDc3pnbjlkYmRBTHREaVJ2?=
- =?gb2312?B?WEJBcm42Y01oNmR6WGdZOWl3M2Y0bFYyMFlnVUdCakNZY1NzK0UwcC9jRWJB?=
- =?gb2312?B?L2p0Zno2SjFCNFkrWjVOOEEvekxGam5idENjYU5GeXZuWnhWS1J3SWp4SGhy?=
- =?gb2312?B?dDdENmp2ams2MHNlbmQ4QlZVblNvZkhwbmQ5bG5sNldkM05XRHZwQzVTV1NF?=
- =?gb2312?B?TkY3bWFuQ0NnS1YzWjVja01sYmpKT0JWdnluOHNIKzNtcDBVeng2QitLSjNy?=
- =?gb2312?B?ZFdWVm1xTzFLUnVGY0tFZ1AzeXlXM1kyS3RUdz09?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] tty: serial: fsl_lpuart: use UARTCTRL_TXINV to send break instead of UARTCTRL_SBK
+Date:   Fri, 19 May 2023 17:47:51 +0800
+Message-Id: <20230519094751.28948-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2P153CA0034.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::21)
+ To AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|VI1PR04MB6911:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9cbd2eaf-7898-482c-a905-08db584ec65f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vpPKKS2p6jx9NseEpA6uCKnufutl/0alXRa6kr4obbPiRB9SWMU0JaqBMbd3RALccLdzHjWh9UpR9zo4R/PWZlMuvikBK2WdIrw8ShFSin8AMWOh3gKgsbHy450qiD9ibfov58hg7OQeZSUY7YpJ1njtIW2vXkSPa/Xte2Z2ZCqqhELp/STLWgad8vuX97hINPHZWbAkk+OTB/Eag6HaO1WY+p3vNA2ABYpg5mh0riwPkLkKpryboHJCf52Gdv4NBOsygfhhlauZnsjJsXMYqLsoc8qsk7wz2C9egWgfKHuBvXv54t/+FNrA0OUuGvarTlAYSuQxI1KdtTvJc4i/pdk3oh7hIrHf8qcj2e0YLPmO/dJmdNVnhC+A5Pe7j1OvF/nVIz92Dr7t4Fan2BpYKBMh8cTdL3lN/7h586YVEQOBUUwPUHNHR5mUJ0v/UDrNRpO0pSGgO9DikmEMxJUFi7Mlda1/oE2+GkKhZB/11naYIuH85PQE0vbb3pnPDo6oWg8RiZ18Y4aXTgcpw+u7igUWtyG+rWDax8TSRokAKw50/YIfsXUwsWjnw/b6mgfxX6Oq3qyV8fTuKYmTu1xUikGyJWbct97DXEiz2uX8tSy+HRHGc+8NZRhLLx8emmax
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(376002)(366004)(136003)(346002)(451199021)(36756003)(86362001)(316002)(66556008)(66946007)(66476007)(4326008)(52116002)(478600001)(6666004)(6486002)(8936002)(8676002)(41300700001)(5660300002)(2906002)(44832011)(38350700002)(38100700002)(2616005)(26005)(186003)(1076003)(6506007)(6512007)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?U5HND9a3cdJu+dAXhEhQs7pgY2oIyTExGDv/UQMNkf5OJ+zLExok9PttlrnA?=
+ =?us-ascii?Q?lH4KV4CaODFy8yTzFNmUmqdgr5K/E7hx4ZvpVQ/IZ6kz5M83exEd8KEBEZb8?=
+ =?us-ascii?Q?mNQQSU9pHiY9hkl67IP70c2NmeQ6RRPahni7BavRpFyXWtXK+06UEo/bIl0u?=
+ =?us-ascii?Q?r5ZbLE+Qn+FYT5M5B+vP53L7A8yezqAylP3PZlDOtzN87o+5J+lQCMiOI2Ty?=
+ =?us-ascii?Q?0osAkvMczTD/Rd557UFgGXvBnukyYjoKEVDGVDsKde4CTk1t2TOXrj8/2Nlk?=
+ =?us-ascii?Q?/bUu36ipl3522+OHlCcF6pT1STuvJ+StaRJiVcxPJo//vb/3TPJQRIryz/bH?=
+ =?us-ascii?Q?/u6KClZvQH1gnRNUIeKgNTN0gddwwQWQhy60DwJRtmgcUNLw4+u2p9TuBrVS?=
+ =?us-ascii?Q?ot6FXwFGNxdzPzgA5vguJLrPA6F3KtB59hTW+IcyzHqZ0G2X1GULbDHf4V5F?=
+ =?us-ascii?Q?beLfJYuaaSQco4Q7DVMEiOO7mg5a9vtP3iF6Ol/3vr7eltJ9288E6lTb/a8i?=
+ =?us-ascii?Q?7lhaYg8lyToi3FZs/G5DtPJY2v5z0U3CSQsYwZ5BZMh2HyP7ko+vAxK6ks9s?=
+ =?us-ascii?Q?xCm08BZCZhN5JfvtjwFI07msxty54Qqdg2iX3PGwq24raWKeRTSkfiNb3nQd?=
+ =?us-ascii?Q?ZjYWlmiSviU77sUz8D/+5aEnlWMwyBdb8adH9IQyF1+vkgowIyh0TjbLZq9M?=
+ =?us-ascii?Q?Af/5wFwy6zxQF/d+GAzd/N43YFKjgOGqO7cqIYlpSV7ul5GUBdSmuMJ9eVWC?=
+ =?us-ascii?Q?NRuDteWyiEk/UdfIRreWUE/V55FxaTxBI5Yw7DTv+HuCrhveqiFHY5/xO1g1?=
+ =?us-ascii?Q?bNUYrmltf0P6tU8eHmiaPDqy3SlMjOdFyxlXkk7HL+1v2BDkmptEatjfQFiQ?=
+ =?us-ascii?Q?HKrrC1IF2Kkg4mXnAJS7cOkcRkFlAz4Rz+45eheEZLE9ChsbVUWNkFohroUr?=
+ =?us-ascii?Q?NYA6cc3vyRJauQhYIA968v+Zq04Pg/P3xYMnndnwt75m/cTbTSoV8mDzyV6o?=
+ =?us-ascii?Q?Uq7paQggI9vgtp6dUrtPcvPMVx55jno93ZnOrHcr/RwNznXDOnhrs1Pj5lex?=
+ =?us-ascii?Q?6ije3DOFVjxi2bgsZ4ilPHGz26cBYJo155g1Gufzgd0TvyVQ+fViTFeHzion?=
+ =?us-ascii?Q?IoE/X+07/YHko7Zv1gBErymIGZLPCbuqGtT8d9vBPdH80zwUmF7EjQ0gFFVA?=
+ =?us-ascii?Q?p+5BIT6Gq3PO+oLTY5pOYDi+QzU1sZb6Ako8Fa1D9yxJkSKSCqSLhDqORgQD?=
+ =?us-ascii?Q?/jKFYuJutQn9ixem+z1sCDDBoqiy5YcO0Cy4Yf85bYupq3Vg7gwZn31+GZ+I?=
+ =?us-ascii?Q?Hfga5SriAX9GVJOb1kYiog/JVfClX+7j0vQPzha4NjVNVOe9SXe2RlrNyVzW?=
+ =?us-ascii?Q?wux260QZIUOpRtlWYqPujnr3sKRz7+crL9Q6m+tjXGnGFDGYQTd/QdLKrVkx?=
+ =?us-ascii?Q?tqmJvBkI87tpCQPHGbQRjz0OOO5/8QUtR4Vqcc9MrWXYfO8GRPV+tgG0Bx60?=
+ =?us-ascii?Q?LXayXOOSExBmBfRqW7xJE7T0ulTknbYrvOZq36qeD3yzvpE23ZaOJaYzE5t0?=
+ =?us-ascii?Q?PzPYBu4nYYfbwK2BFUXzkR8jP1OQSxHk0GMSfEzk?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9cbd2eaf-7898-482c-a905-08db584ec65f
 X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0e4c31d-0fda-4902-79f4-08db5849f08b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2023 09:17:59.4020
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2023 09:52:36.3759
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0Gtmo2MI4gsv8UyhWyfCws+G5GrLLJEfWtUzqhYFW/fBo01je3X4xenSI2eX6tc3cwkX1sSvKrIMHKRuPgztyw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9959
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V9Mx9Ngb+GUCJmyBh7FAok0JsV9pWgswkw/RBJb+qIAmh0PU5f+1hdwv/IiNyY6ZTXA1ywtKAh5OxNmuO7+Yyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6911
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-U29ycnksIHBsZWFzZSBpZ25vcmUgdGhpcyBwYXRjaCwgd2lsbCBzZW5kIGFub3RoZXIgcGF0Y2gg
-dG8gZml4IHRoZSBscHVhcnQgYnJlYWsgaXNzdWUuDQoNCkJlc3QgUmVnYXJkcw0KU2hlcnJ5DQo+
-IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFNoZXJyeSBTdW4NCj4gU2VudDog
-MjAyM8TqNdTCMTbI1SAxODoxNg0KPiBUbzogZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IGpp
-cmlzbGFieUBrZXJuZWwub3JnDQo+IENjOiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBs
-aW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBkbC1saW51eC1pbXgNCj4gPGxpbnV4LWlteEBu
-eHAuY29tPg0KPiBTdWJqZWN0OiBbUEFUQ0hdIHR0eTogc2VyaWFsOiBmc2xfbHB1YXJ0OiBtYWtl
-IHN1cmUgdG8gdHVybiBvZmYgYnJlYWsgYmVmb3JlDQo+IGVuYWJsaW5nIENUUw0KPiANCj4gRHVl
-IHRvIG9uZSBMUFVBUlQgSVAgYnVnIHdoaWNoIHRyZWF0IHRoZSBDVFMgYXMgaGlnaGVyIHByaW9y
-aXR5IHRoYW4gdGhlDQo+IGJyZWFrIHNpZ25hbCwgdGhhdCBjYXVzZSB0aGUgYnJlYWsgc2lnbmFs
-IHNlbmRpbmcgdGhyb3VnaCBVQVJUQ1RSTF9TQksgbWF5DQo+IGltcGFjdGVkIGJ5IHRoZSBDVFMg
-aW5wdXQgaWYgdGhlIEhXIGZsb3cgY29udHJvbCBpcyBlbmFibGVkLg0KPiANCj4gU28gY29tbWl0
-IGM0YzgxZGI1Y2Y4YiAoInR0eTogc2VyaWFsOiBmc2xfbHB1YXJ0OiBkaXNhYmxlIHRoZSBDVFMg
-d2hlbiBzZW5kDQo+IGJyZWFrIHNpZ25hbCIpIHRyeSB0byB3b3JrYXJvdW5kIHRoaXMgSVAgaXNz
-dWUsIGl0IGRpc2FibGVzIENUUyBiZWZvcmUgYXNzZXJ0aW5nDQo+IFNCSyB0byBhdm9pZCBhbnkg
-aW50ZXJmZXJlbmNlIGZyb20gQ1RTLCBhbmQgcmUtZW5hYmxlIGl0IHdoZW4gYnJlYWsgb2ZmLg0K
-PiANCj4gSGVyZSB3ZSBlbmFibGUgQ1RTIGJlZm9yZSB0dXJuaW5nIG9mZiB0aGUgYnJlYWssIHRo
-ZXJlIGlzIHN0aWxsIGEgcmlzayBvZiB0aGUNCj4gYnJlYWsgc2lnbmFsIGJlZW4gaW1wYWN0ZWQg
-YnkgQ1RTIGlucHV0LiBUaGUgY29ycmVjdCBzZXF1ZW5jZSBpcyB0byBkaXNhYmxlDQo+IENUUyBi
-ZWZvcmUgYXNzZXJ0aW5nIFNCSywgYW5kIHJlLWVuYWJsZSBDVFMgYWZ0ZXIgYnJlYWsgb2ZmLCB3
-aGljaCBlbnN1cmVzDQo+IHRoZSBicmVhayBzaWduYWwgd29uJ3QgYmUgaW1wYWN0ZWQgYnkgQ1RT
-LCBzbyBmaXggaXQuDQo+IA0KPiBGaXhlczogYzRjODFkYjVjZjhiICgidHR5OiBzZXJpYWw6IGZz
-bF9scHVhcnQ6IGRpc2FibGUgdGhlIENUUyB3aGVuIHNlbmQgYnJlYWsNCj4gc2lnbmFsIikNCj4g
-U2lnbmVkLW9mZi1ieTogU2hlcnJ5IFN1biA8c2hlcnJ5LnN1bkBueHAuY29tPg0KPiAtLS0NCj4g
-IGRyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgfCA3ICsrKy0tLS0NCj4gIDEgZmlsZSBj
-aGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9scHVhcnQuYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9m
-c2xfbHB1YXJ0LmMNCj4gaW5kZXggMGU1NmZhNjRiNGNlLi5kOWU0NmY3YjgwZTUgMTAwNjQ0DQo+
-IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMNCj4gKysrIGIvZHJpdmVycy90
-dHkvc2VyaWFsL2ZzbF9scHVhcnQuYw0KPiBAQCAtMTU1MCwyMCArMTU1MCwxOSBAQCBzdGF0aWMg
-dm9pZCBscHVhcnQzMl9icmVha19jdGwoc3RydWN0IHVhcnRfcG9ydA0KPiAqcG9ydCwgaW50IGJy
-ZWFrX3N0YXRlKQ0KPiAgCW1vZGVtID0gbHB1YXJ0MzJfcmVhZChwb3J0LCBVQVJUTU9ESVIpOw0K
-PiANCj4gIAlpZiAoYnJlYWtfc3RhdGUgIT0gMCkgew0KPiAtCQl0ZW1wIHw9IFVBUlRDVFJMX1NC
-SzsNCj4gIAkJLyoNCj4gIAkJICogTFBVQVJUIENUUyBoYXMgaGlnaGVyIHByaW9yaXR5IHRoYW4g
-U0JLLCBuZWVkIHRvIGRpc2FibGUNCj4gQ1RTIGJlZm9yZQ0KPiAgCQkgKiBhc3NlcnRpbmcgU0JL
-IHRvIGF2b2lkIGFueSBpbnRlcmZlcmVuY2UgaWYgZmxvdyBjb250cm9sIGlzDQo+IGVuYWJsZWQu
-DQo+ICAJCSAqLw0KPiAgCQlpZiAoY2ZsYWcgJiBDUlRTQ1RTICYmIG1vZGVtICYgVUFSVE1PRElS
-X1RYQ1RTRSkNCj4gIAkJCWxwdWFydDMyX3dyaXRlKHBvcnQsIG1vZGVtICYNCj4gflVBUlRNT0RJ
-Ul9UWENUU0UsIFVBUlRNT0RJUik7DQo+ICsJCWxwdWFydDMyX3dyaXRlKHBvcnQsIHRlbXAgfCBV
-QVJUQ1RSTF9TQkssIFVBUlRDVFJMKTsNCj4gIAl9IGVsc2Ugew0KPiAtCQkvKiBSZS1lbmFibGUg
-dGhlIENUUyB3aGVuIGJyZWFrIG9mZi4gKi8NCj4gKwkJbHB1YXJ0MzJfd3JpdGUocG9ydCwgdGVt
-cCwgVUFSVENUUkwpOw0KPiArCQkvKiBSZS1lbmFibGUgdGhlIENUUyBhZnRlciBicmVhayBvZmYu
-ICovDQo+ICAJCWlmIChjZmxhZyAmIENSVFNDVFMgJiYgIShtb2RlbSAmIFVBUlRNT0RJUl9UWENU
-U0UpKQ0KPiAgCQkJbHB1YXJ0MzJfd3JpdGUocG9ydCwgbW9kZW0gfCBVQVJUTU9ESVJfVFhDVFNF
-LA0KPiBVQVJUTU9ESVIpOw0KPiAgCX0NCj4gLQ0KPiAtCWxwdWFydDMyX3dyaXRlKHBvcnQsIHRl
-bXAsIFVBUlRDVFJMKTsNCj4gIH0NCj4gDQo+ICBzdGF0aWMgdm9pZCBscHVhcnRfc2V0dXBfd2F0
-ZXJtYXJrKHN0cnVjdCBscHVhcnRfcG9ydCAqc3BvcnQpDQo+IC0tDQo+IDIuMTcuMQ0KDQo=
+LPUART IP now has two known bugs, one is that CTS has higher priority
+than the break signal, which causes the break signal sending through
+UARTCTRL_SBK may impacted by the CTS input if the HW flow control is
+enabled. It exists on all platforms we support in this driver.
+So we add a workaround patch for this issue: commit c4c81db5cf8b
+("tty: serial: fsl_lpuart: disable the CTS when send break signal").
+
+Another IP bug is i.MX8QM LPUART may have an additional break character
+being sent after SBK was cleared. It may need to add some delay between
+clearing SBK and re-enabling CTS to ensure that the SBK latch are
+completely cleared.
+
+But we found that during the delay period before CTS is enabled, there
+is still a risk that Bluetooth data in TX FIFO may be sent out during
+this period because of break off and CTS disabled(even if BT sets CTS
+line deasserted, data is still sent to BT).
+
+Due to this risk, we have to drop the CTS-disabling workaround for SBK
+bugs, use TXINV seems to be a better way to replace SBK feature and
+avoid above risk. Also need to disable the transmitter to prevent any
+data from being sent out during break, then invert the TX line to send
+break. Then disable the TXINV when turn off break and re-enable
+transmitter.
+
+Fixes: c4c81db5cf8b ("tty: serial: fsl_lpuart: disable the CTS when send break signal")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 44 +++++++++++++++++----------------
+ 1 file changed, 23 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 0e56fa64b4ce..92a3bd0f4158 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1536,34 +1536,36 @@ static void lpuart_break_ctl(struct uart_port *port, int break_state)
+ 
+ static void lpuart32_break_ctl(struct uart_port *port, int break_state)
+ {
+-	unsigned long temp, modem;
+-	struct tty_struct *tty;
+-	unsigned int cflag = 0;
+-
+-	tty = tty_port_tty_get(&port->state->port);
+-	if (tty) {
+-		cflag = tty->termios.c_cflag;
+-		tty_kref_put(tty);
+-	}
++	unsigned long temp;
+ 
+-	temp = lpuart32_read(port, UARTCTRL) & ~UARTCTRL_SBK;
+-	modem = lpuart32_read(port, UARTMODIR);
++	temp = lpuart32_read(port, UARTCTRL);
+ 
++	/*
++	 * LPUART IP now has two known bugs, one is CTS has higher priority than the
++	 * break signal, which causes the break signal sending through UARTCTRL_SBK
++	 * may impacted by the CTS input if the HW flow control is enabled. It
++	 * exists on all platforms we support in this driver.
++	 * Another bug is i.MX8QM LPUART may have an additional break character
++	 * being sent after SBK was cleared.
++	 * To avoid above two bugs, we use Transmit Data Inversion function to send
++	 * the break signal instead of UARTCTRL_SBK.
++	 */
+ 	if (break_state != 0) {
+-		temp |= UARTCTRL_SBK;
+ 		/*
+-		 * LPUART CTS has higher priority than SBK, need to disable CTS before
+-		 * asserting SBK to avoid any interference if flow control is enabled.
++		 * Disable the transmitter to prevent any data from being sent out
++		 * during break, then invert the TX line to send break.
+ 		 */
+-		if (cflag & CRTSCTS && modem & UARTMODIR_TXCTSE)
+-			lpuart32_write(port, modem & ~UARTMODIR_TXCTSE, UARTMODIR);
++		temp &= ~UARTCTRL_TE;
++		lpuart32_write(port, temp, UARTCTRL);
++		temp |= UARTCTRL_TXINV;
++		lpuart32_write(port, temp, UARTCTRL);
+ 	} else {
+-		/* Re-enable the CTS when break off. */
+-		if (cflag & CRTSCTS && !(modem & UARTMODIR_TXCTSE))
+-			lpuart32_write(port, modem | UARTMODIR_TXCTSE, UARTMODIR);
++		/* Disable the TXINV to turn off break and re-enable transmitter. */
++		temp &= ~UARTCTRL_TXINV;
++		lpuart32_write(port, temp, UARTCTRL);
++		temp |= UARTCTRL_TE;
++		lpuart32_write(port, temp, UARTCTRL);
+ 	}
+-
+-	lpuart32_write(port, temp, UARTCTRL);
+ }
+ 
+ static void lpuart_setup_watermark(struct lpuart_port *sport)
+-- 
+2.17.1
+
