@@ -2,71 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9B6C77B7D
-	for <linux-serial@archiver.kernel.org>; Sat, 20 May 2023 18:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFA1C77B7C
+	for <linux-serial@archiver.kernel.org>; Sun, 21 May 2023 07:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbjETSdk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 20 May 2023 14:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
+        id S229570AbjEUHvU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 21 May 2023 03:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232348AbjETSdc (ORCPT
+        with ESMTP id S229481AbjEUHvS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 20 May 2023 14:33:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2DA171E;
-        Sat, 20 May 2023 11:33:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC0ED616DA;
-        Sat, 20 May 2023 18:31:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 392A3C433D2;
-        Sat, 20 May 2023 18:31:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684607498;
-        bh=X2VGAPCVLCsc6/NzhzGn215Og+8S4PHUAyLBQgeh6rg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=SQxFnCMTRIFMl2jHFKChsQkxaHB5whuykjYiAyX1yqWBU3zjSEsRzDxy7sASFDwlw
-         0elCmQmPAbch11hosz8TvrzlGvl3c3GnPaFY24anwU/ZirJsnyMRPEJXTXUGmxu1iZ
-         kak1eC9qtXGjd2TX/oC7R3Xy+4zAbdV3LOXsk44VX9ARAXLzgEgp0HMiMcouN30v4e
-         4wh7uB5TXR+S44sZt6gxhDpu9FyJ3fHumnHzxcaxue/ow2g7Rh6S0mAVVT58G6HioW
-         +SoD/vtYbqEkuh6cJzl4nfRiWyAjuebOo3I2d0hdviT99PKGS/SdxVInESd0a3ikY7
-         bDN1INMJX6ECg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 270DBC73FE0;
-        Sat, 20 May 2023 18:31:38 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.4-rc3
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <ZGj-S_GkMqxVBlDe@kroah.com>
-References: <ZGj-S_GkMqxVBlDe@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZGj-S_GkMqxVBlDe@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc3
-X-PR-Tracked-Commit-Id: 8fb9ea65c9d1338b0d2bb0a9122dc942cdd32357
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0dd2a6fb1e34d6dcb96806bc6b111388ad324722
-Message-Id: <168460749815.29791.4858353528788159525.pr-tracker-bot@kernel.org>
-Date:   Sat, 20 May 2023 18:31:38 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Sun, 21 May 2023 03:51:18 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FB911A;
+        Sun, 21 May 2023 00:51:16 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id e9e14a558f8ab-3318961b385so6809955ab.1;
+        Sun, 21 May 2023 00:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684655476; x=1687247476;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=x45JB6d8uRh2jZVynsLC/k+HQt3mBQZgQCZkixZARFg=;
+        b=VQ4tV0C9VCY6EIUoCRmK6hTXDcgNrmDtcOU4DRqRZBwe/R+Y1D3vB+HsFZuPuDGYEo
+         UmLwKlXb8D+AI6pxHoCh+uVdASK6VqRAOHEx+5RuEsVMvbJblbHpXjlYz/PLGTBbnLbS
+         bWxDDE84fK0R1ZIV9Odien/s5U3W/SxH7uqzqPRitw14lmD46eNiq4hJDFG1i+n5+pzw
+         wrEtKzxnAw7TmXHUshz0yGZnZTUgbrbcEv8C+VXUqrND4mWZw1lyfd0edIMSdv3M+vvK
+         BllAXALdTFKWzzTQG7qpHs2U0hp2rJBuOwTfSxEMiMUkPnQuHxiCR86g0XsZBHIJXZ+U
+         2CJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684655476; x=1687247476;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=x45JB6d8uRh2jZVynsLC/k+HQt3mBQZgQCZkixZARFg=;
+        b=P3QEpAIwBqEXikCzNewYdSO0EcuQdJCKZJVfefFF6U2JkYLk5X1+Sau+ECE7qcyKdy
+         6qp/X/B56TspWQ4AJqddNSkKxEIUPN+YU0PRNbfUuGU4pxtUnTqZX4nLbDjAjKkzmoxU
+         RoEccE83EroY8PXl7QZRVAUQoGI4USvlkUXRht4z4ftGhbFdHFNnKM7x45XmkSpb4Pce
+         2qMVpsgCBv8U4MSwZygJiovEJloztuUwF/xWoaQZuJqaZeYajqkiUCh+dc6MR9dIskIH
+         Z8faDucIedkIl/IRRgQIP8E67Pz+RiUS/DN5omQ+yZN/XKRiOKrEZIE0rRbRro22DaXE
+         iQLw==
+X-Gm-Message-State: AC+VfDwITHIVEo7q/8U9MRpUauAlNOZFnDwp4u7X2/GlY03GMjek7itj
+        1bjbsWeFAHbvmyWnDypzqBreQEik1EAc3w==
+X-Google-Smtp-Source: ACHHUZ4kO3A4LSMn8r0tJSgqoFhl/AJXddkmZVS+t70JE1+81DFQtxfpjtTR5REcKERu4r+2+Z0Bpg==
+X-Received: by 2002:a92:c24e:0:b0:331:7885:3300 with SMTP id k14-20020a92c24e000000b0033178853300mr9821417ilo.12.1684655475800;
+        Sun, 21 May 2023 00:51:15 -0700 (PDT)
+Received: from james-x399.localdomain (71-33-144-241.hlrn.qwest.net. [71.33.144.241])
+        by smtp.gmail.com with ESMTPSA id bv26-20020a056638449a00b0041627abe120sm424jab.160.2023.05.21.00.51.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 May 2023 00:51:15 -0700 (PDT)
+From:   James Hilliard <james.hilliard1@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     James Hilliard <james.hilliard1@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: Indicate fintek option may also be required for RS232 support
+Date:   Sun, 21 May 2023 01:50:44 -0600
+Message-Id: <20230521075046.3539376-1-james.hilliard1@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sat, 20 May 2023 18:07:23 +0100:
+The current config comment for SERIAL_8250_FINTEK implies that this
+option is only needed when one wants to support RS485. As it turns
+out we also need to enable this option for RS232 support to function
+correctly on some variants.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc3
+For example for variants such as the F71869AD attempting to use
+multiple RS232 ports simultaneously without this option enabled can
+result in data corruption.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0dd2a6fb1e34d6dcb96806bc6b111388ad324722
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+---
+ drivers/tty/serial/8250/Kconfig | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 5313aa31930f..cf33e858b0be 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -71,14 +71,16 @@ config SERIAL_8250_16550A_VARIANTS
+ 	  console, you can say N here.
+ 
+ config SERIAL_8250_FINTEK
+-	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
++	bool "Support for Fintek variants"
+ 	depends on SERIAL_8250
+ 	help
+-	  Selecting this option will add support for the RS485 capabilities
+-	  of the Fintek F81216A LPC to 4 UART.
++	  Selecting this option will add support for the RS232 and RS485
++	  capabilities of the Fintek F81216A LPC to 4 UART as well similar
++	  variants.
+ 
+ 	  If this option is not selected the device will be configured as a
+-	  standard 16550A serial port.
++	  standard 16550A serial port, however the device may not function
++	  correctly without this option enabled.
+ 
+ 	  If unsure, say N.
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.34.1
+
