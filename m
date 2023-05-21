@@ -2,42 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE182C77B73
-	for <linux-serial@archiver.kernel.org>; Sun, 21 May 2023 09:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDA3C77B7C
+	for <linux-serial@archiver.kernel.org>; Sun, 21 May 2023 09:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbjEUJNj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 21 May 2023 05:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
+        id S229545AbjEUJYx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 21 May 2023 05:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjEUJNi (ORCPT
+        with ESMTP id S229511AbjEUJYw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 21 May 2023 05:13:38 -0400
+        Sun, 21 May 2023 05:24:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884AAD2;
-        Sun, 21 May 2023 02:13:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157BDBA;
+        Sun, 21 May 2023 02:24:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CFAD60C86;
-        Sun, 21 May 2023 09:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58AF2C433EF;
-        Sun, 21 May 2023 09:13:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F1E26163B;
+        Sun, 21 May 2023 09:24:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD1CC433D2;
+        Sun, 21 May 2023 09:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1684660416;
-        bh=9KfIOx+itQxU8NyXXIB5Io1Yi152RTWE9ltYXldIDoo=;
+        s=k20201202; t=1684661090;
+        bh=VFUii29FV4EQioWM+zCcaPyRQxlTB11/ZC6sCA8N8UY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OG4Xc+aQ8aqJOU8OR4GfqwPyIMccaLnoo+767S4YjlMeXoPHy8kbmwZ37iAklsDdf
-         u65QOdpTxaJMKy0PuiVwkQdEN062i/k1jUKPbaJaavzAvq2b8HRdZB/Mme3ppwiTsm
-         tkrFODIJsn1zVPem9eaeuqdUmR+tYTB/Y/uRc38TINr5cTC/FDSG0EQeUNgqSth3b9
-         eT/56hnSD7weLsl0GWpyCtGWUzlAtC0RBAg229J2diNuCN7jwY19OazoxLNWTrlT03
-         yLzoZI/TpQtfNNFMizU1agWXUmdmZpxhvyDdd29YEECA8H9nIMv6YGbEWMBACZuMbb
-         8TaLz+5Lvzt4w==
-Date:   Sun, 21 May 2023 17:02:23 +0800
+        b=k9I4iu8tkFEXqV0QmJ6D5PsZZLo5qVH6r6Frzo9prgUXEGs6GzcA2Z9m/FqJLKxx/
+         TgKeGBUxjf23Tpabbe939cTayUaPqJxOk4x3eNuuKcs2uGeOn+6/Q8DVfkpb3p1XAm
+         SvPrndOr0/zwxjtK93EdXBwlt0JsWD8IbOwvWxYMq7cwkS2h8Z2epjSQNP++0iOKdl
+         dNsdkOuMt5SBdjafmY3xTkR5+PhARKrXk/pqHvmlN1u1eDlHUwY4g4AKS6saKm2/XG
+         eIF2oNbqVmWgJmHs7YE38kQSZm5oqMbFz67l87+rdiouLGln0Xwhk/q2KUyzrpmNH0
+         Mw9Z4EnPj6Yhw==
+Date:   Sun, 21 May 2023 17:13:38 +0800
 From:   Jisheng Zhang <jszhang@kernel.org>
 To:     Samuel Holland <samuel@sholland.org>
 Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
         devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        Conor Dooley <conor.dooley@microchip.com>,
         Palmer Dabbelt <palmer@rivosinc.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -49,89 +48,105 @@ Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
         Albert Ou <aou@eecs.berkeley.edu>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v4 01/10] dt-bindings: vendor-prefixes: add bouffalolab
-Message-ID: <ZGneH+ApaQVvv3SW@xhacker>
+Subject: Re: [PATCH v4 03/10] dt-bindings: serial: add documentation for
+ Bouffalolab UART Driver
+Message-ID: <ZGngwijxAKRpzmh7@xhacker>
 References: <20230518152244.2178-1-jszhang@kernel.org>
- <20230518152244.2178-2-jszhang@kernel.org>
- <a45c9193-aa63-650f-dbb3-14b6c3f74eeb@sholland.org>
+ <20230518152244.2178-4-jszhang@kernel.org>
+ <b5869cb0-1eab-4ab7-6dd7-16b06f91d93f@sholland.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <a45c9193-aa63-650f-dbb3-14b6c3f74eeb@sholland.org>
+In-Reply-To: <b5869cb0-1eab-4ab7-6dd7-16b06f91d93f@sholland.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 18, 2023 at 09:53:12PM -0500, Samuel Holland wrote:
+On Thu, May 18, 2023 at 10:00:50PM -0500, Samuel Holland wrote:
 > Hi Jisheng,
-> 
-> Thanks for updating this series!
+
+Hi Samuel,
+
 > 
 > On 5/18/23 10:22, Jisheng Zhang wrote:
-> > In the following commits, we will support bl808 SoC which is from
-> > Bouffalo Lab Technology (Nanjing) Co., Ltd.
+> > Add bindings doc for Bouffalolab UART Driver
 > > 
-> > Add bouffalolab vendor prefix binding.
-> > 
-> > Link: https://en.bouffalolab.com/
 > > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 > > Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 > > ---
-> >  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
+> >  .../serial/bouffalolab,bl808-uart.yaml        | 47 +++++++++++++++++++
+> >  1 file changed, 47 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
 > > 
-> > diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > index 82d39ab0231b..3566346f2f9e 100644
-> > --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > @@ -200,6 +200,8 @@ patternProperties:
-> >      description: BOE Technology Group Co., Ltd.
-> >    "^bosch,.*":
-> >      description: Bosch Sensortec GmbH
-> > +  "^bouffalolab,.*":
-> > +    description: Bouffalo Lab Technology (Nanjing) Co., Ltd.
+> > diff --git a/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml b/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
+> > new file mode 100644
+> > index 000000000000..0ef858e50efb
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/bouffalolab,bl808-uart.yaml
+> > @@ -0,0 +1,47 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +# Copyright (C) 2022 Jisheng Zhang <jszhang@kernel.org>
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/serial/bouffalolab,bl808-uart.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Bouffalolab UART Controller
+> > +
+> > +maintainers:
+> > +  - Jisheng Zhang <jszhang@kernel.org>
+> > +
+> > +allOf:
+> > +  - $ref: serial.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: bouffalolab,bl808-uart
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    maxItems: 1
 > 
-> Have you thought about using the "bflb" abbreviation as the vendor
+> This is not complete. There are separate APB and module (baud) clocks,
+> as well as a peripheral reset line. If we are going to keep the binding
+> stable, these need to be described up front.
 
-I did think about bflb vs bouffalolab. Here is what I thought: I came
-across "marvell" vs "mrvl" sevral years ago, I got an impression
-"marvell" vendor prefix is preferred if I read the discussions
-correctly.
+IIUC, the only requirement is to keep the driver compatible with both
+new dts and old dts. clk tree and reset can be added latter. I have seen
+sevral such examples from other SoCs' mainline progress.
 
-As for Bouffalolab vendor prefix, I have no preference, maybe DT
-maintainers can provide inputs here.
-Rob, Conor, Krzysztof, what's your opinion?
-
-Thanks
-
-> prefix, like you use throughout the driver code? This would save quite
-> some space in the DTB, and seems to be the most common variant seen in
-> the vendor SDK:
 > 
-> bouffalo_sdk$ git grep -i bflb | wc -l
-> 14364
-> bouffalo_sdk$ git grep -i bouffalo | wc -l
-> 1042
-> bouffalo_sdk$ git grep -i bouffalolab | wc -l
-> 179
-> 
-> So that is what we were using for bringing up Linux and U-Boot over at
-> https://github.com/openbouffalo.
-> 
-> On the other hand, "bouffalolab" is certainly accurate as well, so I
-> understand if you prefer it. And we will of course adapt to whatever
-> gets merged, since our goal is upstreaming.
-> 
-> The vendor code drop[1] provided only one example, "bflb-uart,uart0",
-> which is not very helpful. Maybe you have received further information
-> from them?
-> 
-> What do you think?
+> (I still don't fully understand the clock tree, and so far that has been
+> the main blocker for me sending a follow-up series with additional
+> bindings for hardware that's otherwise already supported, like the
+> Ethernet MAC.)
 > 
 > Regards,
 > Samuel
 > 
-> [1]:
-> https://github.com/bouffalolab/bl808_linux/blob/main/linux-5.10.4-808/drivers/tty/serial/bflb_uart.c#L700
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +
+> > +    uart0: serial@30002000 {
+> > +        compatible = "bouffalolab,bl808-uart";
+> > +        reg = <0x30002000 0x1000>;
+> > +        interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
+> > +        clocks = <&xtal>;
+> > +    };
+> > +...
 > 
