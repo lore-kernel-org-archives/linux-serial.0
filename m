@@ -2,113 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D959C7EE23
-	for <linux-serial@archiver.kernel.org>; Mon, 22 May 2023 07:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDF9C7EE26
+	for <linux-serial@archiver.kernel.org>; Mon, 22 May 2023 08:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbjEVHOS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 May 2023 03:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
+        id S232151AbjEVIVK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 May 2023 04:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbjEVHOD (ORCPT
+        with ESMTP id S231727AbjEVIVH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 May 2023 03:14:03 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC90510FA;
-        Mon, 22 May 2023 00:13:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1684739614; x=1716275614;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=w/k9h1UfGfI/AZPgaI1qAV5bL2MNw9A/V2b2Qrn5ntY=;
-  b=vfWcnD9ikzuedszlEx7TnQeBUbCPkMU2onoZ44NcypcHftX6lLMHfJnn
-   datwA8ljFsrDlOXA+blGvfAd7HcLTegkEDzEe3ry2kxVG3rX7w41ZvTch
-   3YvRQ7g4YQguD7qECb4rXgCn7czyDdhAtSsgRtFJQbSL5s27yts+NsSJP
-   f8ZYAxdT1p8n3MYFne8YrA448SeZu2trSaJlhnlhY2Ig47x9yUdpX7xa2
-   y1bH/p050gTq/TN1MXGgyExtDg3hBAGKL2/cj/ti/aalyL4ydtDwKkt2f
-   XD3EJP72OTplCzjSTGd9s8TpFNIgBJUqtdu8PwQxiZpyjXqfiATMqq9TZ
-   g==;
-X-IronPort-AV: E=Sophos;i="6.00,183,1681196400"; 
-   d="asc'?scan'208";a="214867004"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 May 2023 00:13:30 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 22 May 2023 00:13:29 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Mon, 22 May 2023 00:13:26 -0700
-Date:   Mon, 22 May 2023 08:13:04 +0100
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Jisheng Zhang <jszhang@kernel.org>
-CC:     Samuel Holland <samuel@sholland.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
+        Mon, 22 May 2023 04:21:07 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA251B0;
+        Mon, 22 May 2023 01:21:05 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id 992D120011;
+        Mon, 22 May 2023 08:20:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1684743663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ka1Fl6OswEMhixEbbi0TzCh7AW+Ii5FCal5DmvLTqf0=;
+        b=ZU2Luicl+fq4CWB6b6hl6ciqLNk6pTs/nZ8rxMxAmEw2HL6m9VAR54gwKKTMoqd5TrfpIh
+        Hvs8HzalYqJVpl10Y0QTmTMnuXmntSm58H7x3m4QWJJ6XF7XqrMAdQqdJOqp3Wa4TVnMyI
+        OSB/8fXPwhDRb6H6SwVdVt2u4sfhpN3TsRKhGFGJM8fOp0iRvtpm+2KRMAOwoZc4ea32Uo
+        rIWh1NvuOANtys1leoaXB4lUAVmnoXJH1iaVCeW41+5JGIrmwW4ZUiGUFFSf0J8L3SRF9n
+        q4a5vzRljWR+bMlaliCwjhlKyaSdByfx6yIj3mAkaxGch59Zb/RlEjdiw0GauA==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Herve Codina <herve.codina@bootlin.com>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v4 03/10] dt-bindings: serial: add documentation for
- Bouffalolab UART Driver
-Message-ID: <20230522-cedar-undertow-a4f274ef1cec@wendy>
-References: <20230518152244.2178-1-jszhang@kernel.org>
- <20230518152244.2178-4-jszhang@kernel.org>
- <b5869cb0-1eab-4ab7-6dd7-16b06f91d93f@sholland.org>
- <ZGngwijxAKRpzmh7@xhacker>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH 0/2] Fix COMPILE_TEST dependencies for CPM uart, TSA and QMC
+Date:   Mon, 22 May 2023 10:20:46 +0200
+Message-Id: <20230522082048.21216-1-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="1eDfFFL/98DJ7Ge8"
-Content-Disposition: inline
-In-Reply-To: <ZGngwijxAKRpzmh7@xhacker>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---1eDfFFL/98DJ7Ge8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series fixes issues raised by the kernel test robot
+  https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
 
-On Sun, May 21, 2023 at 05:13:38PM +0800, Jisheng Zhang wrote:
-> On Thu, May 18, 2023 at 10:00:50PM -0500, Samuel Holland wrote:
-> > On 5/18/23 10:22, Jisheng Zhang wrote:
+In COMPILE_TEST configurations, TSA and QMC need CONFIG_CPM to be set in
+order to compile and CPM uart needs CONFIG_CPM2.
 
-> > This is not complete. There are separate APB and module (baud) clocks,
-> > as well as a peripheral reset line. If we are going to keep the binding
-> > stable, these need to be described up front.
->=20
-> IIUC, the only requirement is to keep the driver compatible with both
-> new dts and old dts. clk tree and reset can be added latter. I have seen
-> sevral such examples from other SoCs' mainline progress.
+Best regards,
+Hervé
 
-It is generally preferred to add bindings in as complete a state as
-possible. The driver doesn't need to actually make use of all of the
-properties though, and can add the other bits as if/when they are
-required.
+Herve Codina (2):
+  soc: fsl: cpm1: Fix TSA and QMC dependencies in case of COMPILE_TEST
+  serial: cpm_uart: Fix a COMPILE_TEST dependency
 
-Cheers,
-Conor.
+ drivers/soc/fsl/qe/Kconfig | 4 ++--
+ drivers/tty/serial/Kconfig | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---1eDfFFL/98DJ7Ge8
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.40.1
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZGsWAAAKCRB4tDGHoIJi
-0tUZAP4xFzpnPXGNvSX7grsLiurDrx4Hcr8BrIW1/vGAaKftmgEAurntuZJHchju
-rEhU8AQ0jC/jDWmfjG4A+v/JrI1IxQM=
-=em4o
------END PGP SIGNATURE-----
-
---1eDfFFL/98DJ7Ge8--
