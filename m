@@ -2,145 +2,466 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59CDCC7EE26
-	for <linux-serial@archiver.kernel.org>; Mon, 22 May 2023 09:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71400C7EE32
+	for <linux-serial@archiver.kernel.org>; Mon, 22 May 2023 10:55:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbjEVJ0G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 May 2023 05:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
+        id S233020AbjEVKzC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 May 2023 06:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbjEVJ0G (ORCPT
+        with ESMTP id S232738AbjEVKxB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 May 2023 05:26:06 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4370B3
-        for <linux-serial@vger.kernel.org>; Mon, 22 May 2023 02:26:01 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1q11ne-0004q1-HI; Mon, 22 May 2023 11:25:54 +0200
-Message-ID: <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
-Date:   Mon, 22 May 2023 11:25:53 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-Content-Language: en-US, de-DE
-To:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Sergey Organov <sorganov@gmail.com>
-Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        linux-serial@vger.kernel.org,
+        Mon, 22 May 2023 06:53:01 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A257100;
+        Mon, 22 May 2023 03:51:42 -0700 (PDT)
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34MAHSVA008247;
+        Mon, 22 May 2023 10:51:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=/SEcaNC6I1GrhSw2Y7KGUQYtIfCgZ7j9WYsOxm/VjuE=;
+ b=gB/2f0ty6kdge6NOKz/omoMUta51VQM5r7CGh6TYqDOFGpPmi154VCr0j/lD5dk8r7H5
+ rMty4IA9jh9P3jxeAafBLeI65dOVPWZgZ8gAxrjF2TEEu4lBNDFsM5TPAeuUNSNIhYoX
+ QeH/7uf4O4e/4ih0csPfOe4K6cuxU7E2/axxOIEjbORxb1Sn2SS5tgNxcjmO3/PqvvGQ
+ HcBepzg7aWA3X5v1Xn6RnkcdRx8RSRcAHvqAOO3IYd2petH7IcPsVwjhdmfzhGV+gDx/
+ sJWI0cobPzSqdKL4Z6ETNnqZEmQAkQ3qGfwGLLL3MJ4LVc7xLQ/uBg8wD7i0XyYepQ2+ WQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qqh128ney-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 May 2023 10:51:28 +0000
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34MAI1wh010504;
+        Mon, 22 May 2023 10:51:28 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3qqh128ndu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 May 2023 10:51:28 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 34M4iPYH004863;
+        Mon, 22 May 2023 10:51:25 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+        by ppma06fra.de.ibm.com (PPS) with ESMTPS id 3qppa4rryt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 May 2023 10:51:25 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+        by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 34MApMj258262010
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 May 2023 10:51:22 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3F90620040;
+        Mon, 22 May 2023 10:51:22 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D81CA2004B;
+        Mon, 22 May 2023 10:51:21 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Mon, 22 May 2023 10:51:21 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux kernel regressions list <regressions@lists.linux.dev>
-References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
- <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
- <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
- <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
- <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
- <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
- <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com> <87mt3ynsa7.fsf@osv.gnss.ru>
- <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com> <87sfcy8ncu.fsf@osv.gnss.ru>
- <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
-From:   "Linux regression tracking (Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-In-Reply-To: <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
-Content-Type: text/plain; charset=UTF-8
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v5 35/44] tty: serial: handle HAS_IOPORT dependencies
+Date:   Mon, 22 May 2023 12:50:40 +0200
+Message-Id: <20230522105049.1467313-36-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230522105049.1467313-1-schnelle@linux.ibm.com>
+References: <20230522105049.1467313-1-schnelle@linux.ibm.com>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1684747561;217653c7;
-X-HE-SMSGID: 1q11ne-0004q1-HI
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Sd1XWlVgOlkNpLIH7MGNlW3tUJyQiMGY
+X-Proofpoint-GUID: YlbMyG1UHxb1JPgBfW6-PiX5z_eYQye1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-05-22_06,2023-05-22_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 impostorscore=0 phishscore=0 clxscore=1015
+ mlxlogscore=999 bulkscore=0 adultscore=0 malwarescore=0 suspectscore=0
+ lowpriorityscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2304280000 definitions=main-2305220089
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi, Thorsten here, the Linux kernel's regression tracker. Top-posting
-for once, to make this easily accessible to everyone.
+In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+not being declared. We thus need to add HAS_IOPORT as dependency for
+those drivers using them unconditionally. For 8250 based drivers some
+support MMIO only use so fence only the parts requiring I/O ports.
 
-Stefan, was this regression ever solved? It doesn't look like it, but
-maybe I'm missing something.
+Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/tty/Kconfig                  |  4 +--
+ drivers/tty/serial/8250/8250_early.c |  4 +++
+ drivers/tty/serial/8250/8250_pci.c   | 14 +++++++++
+ drivers/tty/serial/8250/8250_port.c  | 44 +++++++++++++++++++++++-----
+ drivers/tty/serial/8250/Kconfig      |  5 ++--
+ drivers/tty/serial/Kconfig           |  2 +-
+ 6 files changed, 60 insertions(+), 13 deletions(-)
 
-If it wasn't solved: what needs to be done to get this rolling again?
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 341abaed4ce2..bdd267dbd5e4 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -222,7 +222,7 @@ config MOXA_INTELLIO
+ 
+ config MOXA_SMARTIO
+ 	tristate "Moxa SmartIO support v. 2.0"
+-	depends on SERIAL_NONSTANDARD && PCI
++	depends on SERIAL_NONSTANDARD && PCI && HAS_IOPORT
+ 	help
+ 	  Say Y here if you have a Moxa SmartIO multiport serial card and/or
+ 	  want to help develop a new version of this driver.
+@@ -303,7 +303,7 @@ config GOLDFISH_TTY_EARLY_CONSOLE
+ 
+ config IPWIRELESS
+ 	tristate "IPWireless 3G UMTS PCMCIA card support"
+-	depends on PCMCIA && NETDEVICES
++	depends on PCMCIA && NETDEVICES && HAS_IOPORT
+ 	select PPP
+ 	help
+ 	  This is a driver for 3G UMTS PCMCIA card from IPWireless company. In
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 0ebde0ab8167..4192b1ae2736 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -48,8 +48,10 @@ static unsigned int serial8250_early_in(struct uart_port *port, int offset)
+ 		return readl(port->membase + offset);
+ 	case UPIO_MEM32BE:
+ 		return ioread32be(port->membase + offset);
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_PORT:
+ 		return inb(port->iobase + offset);
++#endif
+ 	case UPIO_AU:
+ 		return port->serial_in(port, reg_offset);
+ 	default:
+@@ -75,9 +77,11 @@ static void serial8250_early_out(struct uart_port *port, int offset, int value)
+ 	case UPIO_MEM32BE:
+ 		iowrite32be(value, port->membase + offset);
+ 		break;
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_PORT:
+ 		outb(value, port->iobase + offset);
+ 		break;
++#endif
+ 	case UPIO_AU:
+ 		port->serial_out(port, reg_offset, value);
+ 		break;
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index e80c4f6551a1..d0c602952f92 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -847,6 +847,7 @@ static int pci_netmos_init(struct pci_dev *dev)
+ 	return num_serial;
+ }
+ 
++#ifdef CONFIG_HAS_IOPORT
+ /*
+  * These chips are available with optionally one parallel port and up to
+  * two serial ports. Unfortunately they all have the same product id.
+@@ -973,6 +974,7 @@ static void pci_ite887x_exit(struct pci_dev *dev)
+ 	ioport &= 0xffff;
+ 	release_region(ioport, ITE_887x_IOSIZE);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ /*
+  * Oxford Semiconductor Inc.
+@@ -1255,6 +1257,7 @@ static int pci_asix_setup(struct serial_private *priv,
+ #define QOPR_CLOCK_X8		0x0003
+ #define QOPR_CLOCK_RATE_MASK	0x0003
+ 
++#ifdef CONFIG_HAS_IOPORT
+ /* Quatech devices have their own extra interface features */
+ static struct pci_device_id quatech_cards[] = {
+ 	{ PCI_DEVICE_DATA(QUATECH, QSC100,   1) },
+@@ -1474,6 +1477,7 @@ static int pci_quatech_setup(struct serial_private *priv,
+ 		pci_warn(priv->dev, "software control of RS422 features not currently supported.\n");
+ 	return pci_default_setup(priv, board, port, idx);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ static int pci_default_setup(struct serial_private *priv,
+ 		  const struct pciserial_board *board,
+@@ -1753,6 +1757,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
+ 	return pci_default_setup(priv, board, port, idx);
+ }
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static void kt_handle_break(struct uart_port *p)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+@@ -1796,6 +1801,7 @@ static int kt_serial_setup(struct serial_private *priv,
+ 	port->port.handle_break = kt_handle_break;
+ 	return skip_tx_en_setup(priv, board, port, idx);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ static int pci_eg20t_init(struct pci_dev *dev)
+ {
+@@ -1840,6 +1846,7 @@ pci_wch_ch38x_setup(struct serial_private *priv,
+ #define CH384_XINT_ENABLE_REG   0xEB
+ #define CH384_XINT_ENABLE_BIT   0x02
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static int pci_wch_ch38x_init(struct pci_dev *dev)
+ {
+ 	int max_port;
+@@ -1867,6 +1874,7 @@ static void pci_wch_ch38x_exit(struct pci_dev *dev)
+ 	iobase = pci_resource_start(dev, 0);
+ 	outb(0x0, iobase + CH384_XINT_ENABLE_REG);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ 
+ static int
+@@ -2072,6 +2080,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= ce4100_serial_setup,
+ 	},
++#ifdef CONFIG_HAS_IOPORT
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_INTEL,
+ 		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
+@@ -2091,6 +2100,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ite887x_exit,
+ 	},
++#endif
+ 	/*
+ 	 * National Instruments
+ 	 */
+@@ -2212,6 +2222,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.exit		= pci_ni8430_exit,
+ 	},
+ 	/* Quatech */
++#ifdef CONFIG_HAS_IOPORT
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_QUATECH,
+ 		.device		= PCI_ANY_ID,
+@@ -2220,6 +2231,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.init		= pci_quatech_init,
+ 		.setup		= pci_quatech_setup,
+ 	},
++#endif
+ 	/*
+ 	 * Panacom
+ 	 */
+@@ -2590,6 +2602,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
++#ifdef CONFIG_HAS_IOPORT
+ 	/* WCH CH384 8S card (16850 clone) */
+ 	{
+ 		.vendor         = PCIE_VENDOR_ID_WCH,
+@@ -2600,6 +2613,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.exit		= pci_wch_ch38x_exit,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
++#endif
+ 	/*
+ 	 * ASIX devices with FIFO bug
+ 	 */
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index c153ba3a018a..6890ef8a5ede 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -401,6 +401,7 @@ static void au_serial_dl_write(struct uart_8250_port *up, int value)
+ 
+ #endif
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static unsigned int hub6_serial_in(struct uart_port *p, int offset)
+ {
+ 	offset = offset << p->regshift;
+@@ -414,6 +415,7 @@ static void hub6_serial_out(struct uart_port *p, int offset, int value)
+ 	outb(p->hub6 - 1 + offset, p->iobase);
+ 	outb(value, p->iobase + 1);
+ }
++#endif /* CONFIG_HAS_IOPORT */
+ 
+ static unsigned int mem_serial_in(struct uart_port *p, int offset)
+ {
+@@ -463,6 +465,7 @@ static unsigned int mem32be_serial_in(struct uart_port *p, int offset)
+ 	return ioread32be(p->membase + offset);
+ }
+ 
++#ifdef CONFIG_HAS_IOPORT
+ static unsigned int io_serial_in(struct uart_port *p, int offset)
+ {
+ 	offset = offset << p->regshift;
+@@ -474,6 +477,24 @@ static void io_serial_out(struct uart_port *p, int offset, int value)
+ 	offset = offset << p->regshift;
+ 	outb(value, p->iobase + offset);
+ }
++#endif
++static unsigned int no_serial_in(struct uart_port *p, int offset)
++{
++	return (unsigned int)-1;
++}
++
++static void no_serial_out(struct uart_port *p, int offset, int value)
++{
++}
++
++#ifdef CONFIG_HAS_IOPORT
++static inline bool is_upf_fourport(struct uart_port *port)
++{
++	return port->flags & UPF_FOURPORT;
++}
++#else
++#define is_upf_fourport(x)	false
++#endif
+ 
+ static int serial8250_default_handle_irq(struct uart_port *port);
+ 
+@@ -485,10 +506,12 @@ static void set_io_from_upio(struct uart_port *p)
+ 	up->dl_write = default_serial_dl_write;
+ 
+ 	switch (p->iotype) {
++#ifdef CONFIG_HAS_IOPORT
+ 	case UPIO_HUB6:
+ 		p->serial_in = hub6_serial_in;
+ 		p->serial_out = hub6_serial_out;
+ 		break;
++#endif
+ 
+ 	case UPIO_MEM:
+ 		p->serial_in = mem_serial_in;
+@@ -519,10 +542,17 @@ static void set_io_from_upio(struct uart_port *p)
+ 		break;
+ #endif
+ 
+-	default:
++#ifdef CONFIG_HAS_IOPORT
++	case UPIO_PORT:
+ 		p->serial_in = io_serial_in;
+ 		p->serial_out = io_serial_out;
+ 		break;
++#endif
++
++	default:
++		WARN(1, "Unsupported UART type %x\n", p->iotype);
++		p->serial_in = no_serial_in;
++		p->serial_out = no_serial_out;
+ 	}
+ 	/* Remember loaded iotype */
+ 	up->cur_iotype = p->iotype;
+@@ -1380,7 +1410,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	unsigned long irqs;
+ 	int irq;
+ 
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		ICP = (port->iobase & 0xfe0) | 0x1f;
+ 		save_ICP = inb_p(ICP);
+ 		outb_p(0x80, ICP);
+@@ -1399,7 +1429,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	irqs = probe_irq_on();
+ 	serial8250_out_MCR(up, 0);
+ 	udelay(10);
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
+ 	} else {
+ 		serial8250_out_MCR(up,
+@@ -1417,7 +1447,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	serial8250_out_MCR(up, save_mcr);
+ 	serial_out(up, UART_IER, save_ier);
+ 
+-	if (port->flags & UPF_FOURPORT)
++	if (is_upf_fourport(port))
+ 		outb_p(save_ICP, ICP);
+ 
+ 	if (uart_console(port))
+@@ -2382,7 +2412,7 @@ int serial8250_do_startup(struct uart_port *port)
+ 	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	if (up->port.flags & UPF_FOURPORT) {
++	if (is_upf_fourport(&up->port)) {
+ 		if (!up->port.irq)
+ 			up->port.mctrl |= TIOCM_OUT1;
+ 	} else
+@@ -2464,7 +2494,7 @@ int serial8250_do_startup(struct uart_port *port)
+ 	 */
+ 	up->ier = UART_IER_RLSI | UART_IER_RDI;
+ 
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		unsigned int icp;
+ 		/*
+ 		 * Enable interrupts on the AST Fourport board
+@@ -2507,7 +2537,7 @@ void serial8250_do_shutdown(struct uart_port *port)
+ 		serial8250_release_dma(up);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	if (port->flags & UPF_FOURPORT) {
++	if (is_upf_fourport(port)) {
+ 		/* reset interrupts on the AST Fourport board */
+ 		inb((port->iobase & 0xfe0) | 0x1f);
+ 		port->mctrl |= TIOCM_OUT1;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 5313aa31930f..2a43bea7d7c3 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -6,7 +6,6 @@
+ 
+ config SERIAL_8250
+ 	tristate "8250/16550 and compatible serial support"
+-	depends on !S390
+ 	select SERIAL_CORE
+ 	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+@@ -72,7 +71,7 @@ config SERIAL_8250_16550A_VARIANTS
+ 
+ config SERIAL_8250_FINTEK
+ 	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
+-	depends on SERIAL_8250
++	depends on SERIAL_8250 && HAS_IOPORT
+ 	help
+ 	  Selecting this option will add support for the RS485 capabilities
+ 	  of the Fintek F81216A LPC to 4 UART.
+@@ -160,7 +159,7 @@ config SERIAL_8250_HP300
+ 
+ config SERIAL_8250_CS
+ 	tristate "8250/16550 PCMCIA device support"
+-	depends on PCMCIA && SERIAL_8250
++	depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
+ 	help
+ 	  Say Y here to enable support for 16-bit PCMCIA serial devices,
+ 	  including serial port cards, modems, and the modem functions of
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 398e5aac2e77..dc41b3be6800 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -871,7 +871,7 @@ config SERIAL_TXX9_STDSERIAL
+ 
+ config SERIAL_JSM
+ 	tristate "Digi International NEO and Classic PCI Support"
+-	depends on PCI
++	depends on PCI && HAS_IOPORT
+ 	select SERIAL_CORE
+ 	help
+ 	  This is a driver for Digi International's Neo and Classic series
+-- 
+2.39.2
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
-
-#regzbot poke
-
-On 18.04.23 18:16, Stefan Wahren wrote:
-> Hi Sergey,
-> 
-> Am 17.04.23 um 18:50 schrieb Sergey Organov:
->> Hi Stefan,
->>
->> Stefan Wahren <stefan.wahren@i2se.com> writes:
->>
->>> Hi Sergey,
->>>
->>
->> [...]
->>
->>> i had some time today to investigate this a little bit. I thought it
->>> would be a good idea to use debugfs as a ugly quick hack:
->>>
->>
->> [...]
->>
->>> Using this i was able to better compare the behavior with RXTL_DEFAULT
->>> 1 (without overrun errors) and RXTL_DEFAULT 8 (with overrun errors) on
->>> my i.MX6ULL test platform. After doing my usual test scenario (copy
->>> some text lines to console) i got the following results:
->>>
->>> RXTL_DEFAULT 1
->>> 21f0000.serial/stats:total_duration_us: 61
->>> 21f0000.serial/stats:rx_duration_us:    36
->>> 21f0000.serial/stats:tx_duration_us:    48
->>> 21f0000.serial/stats:received:          28
->>> 21f0000.serial/stats:send:              33
->>>
->>> RXTL_DEFAULT 8
->>> 21f0000.serial/stats:total_duration_us: 78
->>> 21f0000.serial/stats:rx_duration_us:    46
->>> 21f0000.serial/stats:tx_duration_us:    47
->>> 21f0000.serial/stats:received:          33
->>> 21f0000.serial/stats:send:              33
->>>
->>> So based on the maximum of received characters on RX interrupt, i
->>> consider the root cause of this issue has already been there because
->>> the amount is near to the maximum of the FIFO (32 chars). So finally
->>> increasing RXTL_DEFAULT makes the situation even worse by adding
->>> enough latency for overrun errors.
->>
->> Yep, looks like an issue.
->>
->> What's the baud rate? 115200? If so, it means that interrupts are
->> apparently blocked in your system for up to about 28/(115200/10)=2.4
->> milliseconds. This is very large number, and it may negatively affect
->> system performance in other places as well, I'm afraid.
-> 
-> i forgot to mention that i also measured the time around
-> printk_safe_(enter|exit)_irqsave in console_emit_next_record() which had
-> a maximum of 24721 µs. But uncommenting these functions doesn't fixed
-> the problem. This seems to be used only by printk.
-> 
-> Best regards
-> 
->>
->> Best regards,
->> -- Sergey Organov
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
