@@ -2,50 +2,50 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 248E3C77B7C
-	for <linux-serial@archiver.kernel.org>; Mon, 22 May 2023 01:44:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2863C77B7C
+	for <linux-serial@archiver.kernel.org>; Mon, 22 May 2023 01:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231395AbjEVBoV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 21 May 2023 21:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
+        id S229691AbjEVBwV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 21 May 2023 21:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbjEVBoU (ORCPT
+        with ESMTP id S229548AbjEVBwU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 21 May 2023 21:44:20 -0400
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5208FAF;
-        Sun, 21 May 2023 18:44:17 -0700 (PDT)
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-253520adb30so3154557a91.1;
-        Sun, 21 May 2023 18:44:17 -0700 (PDT)
+        Sun, 21 May 2023 21:52:20 -0400
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F4FB1;
+        Sun, 21 May 2023 18:52:18 -0700 (PDT)
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-64d24136685so2052720b3a.1;
+        Sun, 21 May 2023 18:52:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684719857; x=1687311857;
+        d=1e100.net; s=20221208; t=1684720338; x=1687312338;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
         bh=dzsOKZMxW7yRiTEidpJQLMi57KDm1uMQSNcCj/FubPo=;
-        b=cdJlsU/QM6Pfd8TINkDu3T8iWLj2aQirtLYqIUcgBbiOSKAd1MTfE1A0jz4c+Bfndg
-         EkCh9SN9xA1oxCN867AhpDS5Bey9ptMEFFKdviHPlyvmfgW2esg3Qa7kRjfu5egEuDqk
-         3rnZKpYt5SmthCka2Z0ELdg/5Cnjdr5BysMK+IzyFKLAHwJTaJF0mnESYMIddzQrLMOh
-         UZzqlTbf5+I6LJcPi3xyQsODj/6x9g9y3lyzAFrGXwN0RNn9+OgkSmBjrzGEmri23Mdn
-         OwSLaUyC97Kzag2bX0qahLdwyEwLiJ34KkGt/aZBBJl8VsI+qBkx4raAevqkQ2E2UpSa
-         +syg==
-X-Gm-Message-State: AC+VfDxYryA2K3npmFQ0+oOTu69P9+XyNJcb6hSFpZ68sTxHP7Br3bEZ
-        LI/xDbSl9s1Yf1bVL8H11g+tbijLJ+g=
-X-Google-Smtp-Source: ACHHUZ48X0aWgF21AuYQIgW6mNDp87ptp96RakBimMR4g4RLNAIylsxfeuWtwBGkyxzyqkliHOD1YQ==
-X-Received: by 2002:a17:90a:1481:b0:253:61f3:d675 with SMTP id k1-20020a17090a148100b0025361f3d675mr8548010pja.30.1684719856444;
-        Sun, 21 May 2023 18:44:16 -0700 (PDT)
+        b=g9jT2AY96Ts8PXyggOdab+KDe5BnaiOJQDIyCUrQw9luiw0Qn2cSoRVF5S7EYuKfEF
+         z+4n2xtBhoeoHz7L4X9aytPQKj0WcfjbTmH2uqSXel4BHdqbT6A0yTUfV1bq7c3u+AjD
+         9b92ViqNQ9w8Ph+qT833pQDmWbMN1eycJFcvqqgBYdaCW3ciBfUkChiBKkx+IzDm9gTi
+         malSJOeTs2jEzsFEv6VUE/gEWM2RN8mF2Ae13zoASsbDgrKOUz2XRK1cKIgpX+pTgmji
+         Odng5oXZlgwC8RWrekibYcOR8EnyVyqJjRXPeStmEYoKpOLpwhNJQ6QDe86ij7fp40+q
+         wxCw==
+X-Gm-Message-State: AC+VfDxA1MqlnV8TRk81zi6TCblMS72r0LhMNB7xslwI6rJIBblZZ5V7
+        8BW/xM1lugO6O7lbguI028acLjcjZxHO5Ay4
+X-Google-Smtp-Source: ACHHUZ6CV+K2WIOiI8hZZ8xudx0h1KzJKRA30rXoMz2+UTOgQ8Lapq9WR6SRzAWQROnw/WirpvwECA==
+X-Received: by 2002:a05:6a20:7286:b0:105:66d3:8572 with SMTP id o6-20020a056a20728600b0010566d38572mr10962334pzk.24.1684720337431;
+        Sun, 21 May 2023 18:52:17 -0700 (PDT)
 Received: from localhost ([116.128.244.169])
-        by smtp.gmail.com with ESMTPSA id a12-20020a17090ad80c00b0024b9e62c1d9sm2970291pjv.41.2023.05.21.18.44.15
+        by smtp.gmail.com with ESMTPSA id f4-20020aa78b04000000b00622e01989cbsm3129591pfd.176.2023.05.21.18.52.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 May 2023 18:44:15 -0700 (PDT)
+        Sun, 21 May 2023 18:52:17 -0700 (PDT)
 From:   Hongyu Xie <xiehongyu1@kylinos.cn>
 To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
+        jirislaby@kernel.org, rdunlap@infradead.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         xy521521@gmail.com, Hongyu Xie <xiehongyu1@kylinos.cn>
 Subject: [RFC PATCH v3 -next] tty: serial: add panic serial helper
-Date:   Mon, 22 May 2023 09:44:12 +0800
-Message-Id: <20230522014413.618742-1-xiehongyu1@kylinos.cn>
+Date:   Mon, 22 May 2023 09:52:10 +0800
+Message-Id: <20230522015210.621170-1-xiehongyu1@kylinos.cn>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
