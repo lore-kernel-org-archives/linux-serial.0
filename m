@@ -2,33 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B00EBC7EE2D
-	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 15:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC4CC7EE23
+	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 19:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236492AbjEWPOM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 May 2023 11:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
+        id S230117AbjEWTo1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 May 2023 15:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237587AbjEWPOB (ORCPT
+        with ESMTP id S238409AbjEWTo0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 May 2023 11:14:01 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75237E72
-        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 08:13:43 -0700 (PDT)
-Received: from [192.168.1.141] ([37.4.248.58]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1M6H7o-1q3fYI1H3Y-006eJT; Tue, 23 May 2023 17:12:34 +0200
-Message-ID: <af86a1d9-cdf5-f72d-3aea-ced37d3e7c2b@i2se.com>
-Date:   Tue, 23 May 2023 17:12:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-To:     Linux regressions mailing list <regressions@lists.linux.dev>
-Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Sergey Organov <sorganov@gmail.com>,
+        Tue, 23 May 2023 15:44:26 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E865D132
+        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 12:44:23 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-4f37b860173so310870e87.2
+        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 12:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684871062; x=1687463062;
+        h=mime-version:user-agent:message-id:date:references:subject:cc:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1Mfj/60mjyD73Y0fwFda1Tha6oubsygP6ts2VrhNkbc=;
+        b=mYOikAlfCj8worvBWIhVLd6IXm/AHFx9xelX9M0uFZAKcUGtiVvLjoTagbJOS0MGTv
+         b4KiXjOhYsZHxLGcUDg54qZrfuRgAvTmcj7aC2/C3lZVJKzwfewXBs/9StTWrd5wVMI9
+         Isy6lf4/KTrF4cz6DTCJ/p73/mVMGf9CehVA493Ao+jKUU46V2rK/MDi0zQRlIwAS9QW
+         9Jo81+hXYHPm7Tqxw7R9292qmhpuYi1LBE0HgDWIzbITFu4K5wF8rZoktD3f9taX90iu
+         VqP1qSrwLPxobYOuQy2k+yAFmedLdmWjcZbX+TGopoanGfiSYMl6n8bbfr4y5hrbkK3w
+         lgfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684871062; x=1687463062;
+        h=mime-version:user-agent:message-id:date:references:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1Mfj/60mjyD73Y0fwFda1Tha6oubsygP6ts2VrhNkbc=;
+        b=XDHWY4gDWPNPUEURghhX7v6yKJ80X8w1HFAtNAgCtQ964Y2uT1myoJ4gaJDK9bPLtf
+         XqnLbTXy2XElrZ2CXDEbIkBU5fU8rZ4ALTbWgEQtKmPmTDwLvnTXBkytIJNsUxeROmvk
+         IDWjefyUIuMEEAho95Hmp/lAbkPbzfSc+cDMTuHLmVbSNThTR1lawqRQSLTldZh91x6m
+         TDieXXnPL8WrA46+qK3RtgBC6+2oyp8SXdctGgAg+gOafXLQAdRHjyDxUBV6tvWY6qBT
+         Kp74IbqSiYl6lJE/mEj2FEtai6pvjYq7jJG+dhfI40qmzY/sWPAyThSIQ/XmI0g9UYfH
+         75Yg==
+X-Gm-Message-State: AC+VfDyTfaF/H96XWVpiUXPPGIsKTXqFiT8T+WXcR1enC87pNtpIYOZz
+        MM/m75JwdO3Br+BWESdpXiI=
+X-Google-Smtp-Source: ACHHUZ5MPAkzkzsCp7ND/Vdo4WvJjlw8QV8CUBLYf0Th5rgBo7prOVhC6h9KOFMXYft75h0WgClnlw==
+X-Received: by 2002:ac2:532b:0:b0:4f3:895f:f3f8 with SMTP id f11-20020ac2532b000000b004f3895ff3f8mr4455650lfh.16.1684871061529;
+        Tue, 23 May 2023 12:44:21 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id t15-20020ac243af000000b004f121c8beddsm1445346lfl.124.2023.05.23.12.44.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 May 2023 12:44:20 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     "Linux regression tracking (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Linux regressions mailing list <regressions@lists.linux.dev>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Stefan Wahren <stefan.wahren@chargebyte.com>,
         linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,73 +65,54 @@ Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
+        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: Regression: serial: imx: overrun errors on debug UART
 References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
- <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
- <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
- <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
- <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
- <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
- <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com> <87mt3ynsa7.fsf@osv.gnss.ru>
- <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com> <87sfcy8ncu.fsf@osv.gnss.ru>
- <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
- <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
-Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:sEbmaW1JDon0+hqyoaTCNWWmbTDHXLIHs3rlX986ChIrl9Lvl2F
- H+h4G+OjM+Ns6kIH+7ZgcpAF+5uHObK0o16nqzs5h/0qHZC4ZZ3eUtrOhOhlu4aO4xqAk4Q
- FCbhMWKAmg92QylpFCSUoAsTolc9hBxhbJ38TBfFJgvWPyzDJS2kNJbdg34roTa1CatPKKM
- epGj5m545mZ4tzv8ryYAA==
-UI-OutboundReport: notjunk:1;M01:P0:GH6w6FREy9M=;6S3n9umgjaGIWcy8cTLMGm960ep
- rrCKJAXIwpvPOdRFqeMJUWw10MBlIW/1NFhJ8bOlb+rELgt29/TUngMNBS+2Z+pOXjryGf0Lj
- hdqNMyg4W/SdgJYzCazCUKrWZqLkjh1V9UHx8AHbn/brvAngnOfKs42XpX0ZgpWJdVGpGn/+r
- Hk45P2yl+Qv9A7CYdYUGDVekuKhN7Fu8AyNrngum5XsyCbkwp+JP6RA4xROJi8LwZs8rUi4wj
- 8LsuCzS6mWVRyBK92uE6/wMPQDFXGiQWpcoTsKOk72wnQhBVPwIOROOgYqGLDDg7XeoVUb0uY
- /WrqyYUGzdRdTF+ksFsjiHC76y/M+jb5csrdT9xxaj5IOlHl0Bog1me5aSREy4XOa/TwewMA6
- sk3aRa6DTGoQb3Br1L1pkiNGCltjZ6mFK8ooQXcqWnGrBQ3c30XswFfvk/R5IyomQ3kihbcxS
- zqRnTGEvvOZpt5zK2Dqv3Z26hAqwp0EDw0FhXJ/rnY26T7RQ+yJHjCJSO5r31Px8sdltHooFK
- nJd9w3HiwgcpRhwdUCDbSdbzxMYCD/gfL3HLtPUoZCYahjGPKgfXEU/4lHHvnbtmgrRft6L4N
- BLRtD8vtUPWDwo514xDfcgy6ihp2gSu9AKZjK6TQCgkglWK3G2TGXehGzpcHI/wwtMcDAPFsT
- hVIx9hVpS+wyyhmBW5RNWXC6h8bfS7gv6xoOx8gNWw==
+        <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
+        <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
+        <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
+        <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
+        <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
+        <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com>
+        <87mt3ynsa7.fsf@osv.gnss.ru>
+        <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com>
+        <87sfcy8ncu.fsf@osv.gnss.ru>
+        <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
+        <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
+Date:   Tue, 23 May 2023 22:44:19 +0300
+Message-ID: <87ttw2vnn0.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Thorsten,
+"Linux regression tracking (Thorsten Leemhuis)"
+<regressions@leemhuis.info> writes:
 
-Am 22.05.23 um 11:25 schrieb Linux regression tracking (Thorsten Leemhuis):
 > Hi, Thorsten here, the Linux kernel's regression tracker. Top-posting
 > for once, to make this easily accessible to everyone.
-> 
+>
 > Stefan, was this regression ever solved? It doesn't look like it, but
 > maybe I'm missing something.
-> 
+>
 > If it wasn't solved: what needs to be done to get this rolling again?
 
-thanks for the reminder. From a user point of view this issue hasn't 
-been fixed so far. For our product we just reverted the commit in a 
-downstream repo.
+Hi Thorsten,
 
- From my understanding there was already an issue there and the 
-optimizing commit by Tomasz just make the situation worse. Unfortunately 
-my time budget to investigate this issue further is exhausted, so i 
-stopped working at this.
+Not Stefan, but as far as I can tell, the problem is that on Stefan's
+build the kernel has rather large periods of interrupts being disabled,
+so any attempt to decrease IRQs frequency from UART by raising FIFO IRQ
+threshold causes "regression" that manifests itself as missing
+characters on receive. I'm not sure if it's tuning FIFO level that is in
+fact a regression in this case.
 
-In case someone can give clear instructions to investigate this further, 
-i will try to look at it in my spare time. But i cannot make any promises.
+Solving this would need to identify the cause of interrupts being
+disabled for prolonged times, and nobody volunteered to investigate this
+further. One suspect, the Linux serial console, has been likely excluded
+already though, as not actually being in use for printk() output.
 
-Best regards
-
-> 
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> --
-> Everything you wanna know about Linux kernel regression tracking:
-> https://linux-regtracking.leemhuis.info/about/#tldr
-> If I did something stupid, please tell me, as explained on that page.
-> 
-> #regzbot poke
-> 
+-- 
+Sergey Organov
