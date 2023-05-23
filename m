@@ -2,142 +2,126 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88542C7EE2A
-	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 09:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2578C7EE23
+	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 09:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235457AbjEWJGH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 May 2023 05:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
+        id S235543AbjEWJNI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 May 2023 05:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236374AbjEWJGF (ORCPT
+        with ESMTP id S229604AbjEWJNH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 May 2023 05:06:05 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 May 2023 02:05:51 PDT
-Received: from anchovy2.45ru.net.au (anchovy2.45ru.net.au [203.30.46.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC03E5C
-        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 02:05:50 -0700 (PDT)
-Received: (qmail 5850 invoked by uid 5089); 23 May 2023 08:59:08 -0000
-Received: by simscan 1.2.0 ppid: 5417, pid: 5422, t: 0.7591s
-         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950 spam: 3.1.4
-Received: from unknown (HELO ?192.168.2.4?) (rtresidd@electromag.com.au@203.59.235.95)
-  by anchovy3.45ru.net.au with ESMTPA; 23 May 2023 08:59:06 -0000
-Message-ID: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au>
-Date:   Tue, 23 May 2023 16:59:06 +0800
+        Tue, 23 May 2023 05:13:07 -0400
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEB8118;
+        Tue, 23 May 2023 02:13:06 -0700 (PDT)
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-96f7bf29550so634954066b.3;
+        Tue, 23 May 2023 02:13:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684833185; x=1687425185;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=e65v/JQ0YakfdpO5WAozFB3zrVj1i6YIZiY4qha6yIU=;
+        b=cherXCFnt1MF3SeL1NDhtsI3G8BZiSMjAyAEDUQaiIiN//oSZwZAR6xeJWVgPnEXwY
+         mmlUL98Cg01OdUCaDi5zFGTu4qCEE0WvBGgKObClHQ7xp20c1lntctiZEIq/Ufg/QsHa
+         ME5RhpqM1BE1zfNaBtENfkxO87yJNwrROJ2P//6rrkjHX9dyUUdC35zGV24BEOx0rOnP
+         e+PXh4mS3FVl8f9/NHv1t8FLfQf4gM7nv7qcrDl3FFUnQPd1R9CCqOVHaqaGpZYCkyBu
+         jJlRzL9lSVKNX5xADR6UZBJnk9C8DupMZV36Vmm9cKNUHdx0DPMWaMapWlTOtAj8qjS9
+         dxJg==
+X-Gm-Message-State: AC+VfDw/iVKpy3+WtYViWQu/oBvDccd3fQruZUDhBYNsKxzSrZj0G3Fy
+        oA+/h7/oQU5ugOOG373vDRaEXWolKyw=
+X-Google-Smtp-Source: ACHHUZ7RCSSHlTvlKn5S49Hw1Z7qGeq8+J1cF4YtJ4wYDQ+mU0uyNA3Z4JuVX1vTGl6Lc5SU2Hiv7Q==
+X-Received: by 2002:a17:907:9408:b0:965:6d21:48bc with SMTP id dk8-20020a170907940800b009656d2148bcmr11601570ejc.75.1684833184311;
+        Tue, 23 May 2023 02:13:04 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id h26-20020a17090634da00b0096f7e7d1566sm4147570ejb.224.2023.05.23.02.13.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 May 2023 02:13:03 -0700 (PDT)
+Message-ID: <012b7c3d-1411-e5e1-662a-33369bfca610@kernel.org>
+Date:   Tue, 23 May 2023 11:13:02 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-To:     linux-serial@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v2 2/2] serial: cpm_uart: Fix a COMPILE_TEST dependency
 Content-Language: en-US
-From:   Richard Tresidder <rtresidd@electromag.com.au>
-Subject: Possible regression in 8250_dw driver
+To:     Herve Codina <herve.codina@bootlin.com>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel test robot <lkp@intel.com>
+References: <20230523085902.75837-1-herve.codina@bootlin.com>
+ <20230523085902.75837-3-herve.codina@bootlin.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230523085902.75837-3-herve.codina@bootlin.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi
-    We seem to be getting corruption of received data from a ublox GPS unit
-To me it looks like a fifo overrun of some sort??
+On 23. 05. 23, 10:59, Herve Codina wrote:
+> In a COMPILE_TEST configuration, the cpm_uart driver uses symbols from
+> the cpm_uart_cpm2.c file. This file is compiled only when CONFIG_CPM2 is
+> set.
+> 
+> Without this dependency, the linker fails with some missing symbols for
+> COMPILE_TEST configuration that needs SERIAL_CPM without enabling CPM2.
+> 
+> This lead to:
+>    depends on CPM2 || CPM1 || (PPC32 && CPM2 && COMPILE_TEST)
+> 
+> This dependency does not make sense anymore and can be simplified
+> removing all the COMPILE_TEST part.
 
-background:
-I'm attempting to use 6.3.3 as a new base for one of our systems.
-Previously it was using 5.1.7 as a base.
-The uart in question is one of the two in the Cyclone V SOC HPS.
-And to muddy the waters the linux console TTYS0 is the other Uart from 
-the same HPS core
-Yet the console appears to be working ok.
-Note all other libs and apps are at the same revision and build, it is 
-only the kernel that is different.
-Both versions of the kernel are also built using the same bitbake bsdk..
+Then it's the same as my revert:
+https://lore.kernel.org/all/20230518055620.29957-1-jirislaby@kernel.org/
 
-Seeing the following with 6.3.3:
+:D
 
-  00000000: 45 58 54 20 43 4F 52 45 20 33 2E 30 31 20 28 31  | EXT CORE 
-3.01 (1
-  00000010: 31 31 31 34 31 29 00 00 00 00 00 00 00 00 30 30  | 
-11141)........00
-  00000020: 30 38 30 30 30 30 00 00 52 4F 4D 20 42 41 53 45  | 
-080000..ROM BASE
-  00000030: 20 32 2E 30 31 20 28 37 35 33 33 31 53 00 00 00  | 2.01 
-(75331S...
-  00000040: 00 00 00 00 00 00 00 00 00 00 00 00 53 42 41 53  | 
-............SBAS
-  00000050: 3B 49 4D 45 53 3B 51 5A 53 53 00 00 00 00 00 00  | 
-;IMES;QZSS......
-  00000060: 00 00 00 00 00 00 00 00 00 00 01 3D 29 00 00 00  | 
-...........=)...
-  00000070: 00 00 00 00 00 00 46 57 56 45 52 3D 54 49 4D 20  | 
-......FWVER=TIM
-  00000080: 31 2E 31 30 00 00 00 00 00 00 00 00 00 00 00 00  | 
-1.10............
-  00000090: 00 00 00 00 50 52 4F 54 56 45 52 3D 32 32 2E 30  | 
-....PROTVER=22.0
-  000000a0: 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
-0...............
-  000000b0: 00 00 4D 4F 44 3D 4C 45 41 2D 4D 38 54 2D 30 00  | 
-..MOD=LEA-M8T-0.
-  000000c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
-................
-  000000d0: 46 49 53 3D 30 78 45 46 34 30 31 35 20 28 31 30  | 
-FIS=0xEF4015 (10
-  000000e0: 30 31 31 31 29 00 00 00 00 00 00 00 00 00 47 50  | 
-0111).........GP
-  000000f0: 53 3B 47 4C 4F 3B 47 41 4C 3B 42 44 00 00 00 00  | 
-S;GLO;GAL;BD....
-  00000100: 00 00                                            | ..
+But nevermind.
 
-But should be seeing this as shown on 5.1.7:
-Excuse the offset (due to this frame also showing the packet id's and 
-lengths)
-But the body of the frame is what we should be seeing.
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
+> Fixes: e3e7b13bffae ("serial: allow COMPILE_TEST for some drivers")
+> ---
+>   drivers/tty/serial/Kconfig             | 2 +-
+>   drivers/tty/serial/cpm_uart/cpm_uart.h | 2 --
+>   2 files changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 625358f44419..de092bc1289e 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -769,7 +769,7 @@ config SERIAL_PMACZILOG_CONSOLE
+>   
+>   config SERIAL_CPM
+>   	tristate "CPM SCC/SMC serial port support"
+> -	depends on CPM2 || CPM1 || (PPC32 && COMPILE_TEST)
+> +	depends on CPM2 || CPM1
+>   	select SERIAL_CORE
+>   	help
+>   	  This driver supports the SCC and SMC serial ports on Motorola
+> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
+> index 0577618e78c0..46c03ed71c31 100644
+> --- a/drivers/tty/serial/cpm_uart/cpm_uart.h
+> +++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
+> @@ -19,8 +19,6 @@ struct gpio_desc;
+>   #include "cpm_uart_cpm2.h"
+>   #elif defined(CONFIG_CPM1)
+>   #include "cpm_uart_cpm1.h"
+> -#elif defined(CONFIG_COMPILE_TEST)
+> -#include "cpm_uart_cpm2.h"
+>   #endif
+>   
+>   #define SERIAL_CPM_MAJOR	204
 
-00000000:  B5 62 0A 04 FA 00 45 58 54 20 43 4F 52 45 20 33  | µb..ú.EXT 
-CORE 3
-00000010:  2E 30 31 20 28 31 31 31 31 34 31 29 00 00 00 00  | .01 
-(111141)....
-00000020:  00 00 00 00 30 30 30 38 30 30 30 30 00 00 52 4F  | 
-....00080000..RO
-00000030:  4D 20 42 41 53 45 20 32 2E 30 31 20 28 37 35 33  | M BASE 
-2.01 (753
-00000040:  33 31 29 00 00 00 00 00 00 00 00 00 46 57 56 45  | 
-31).........FWVE
-00000050:  52 3D 54 49 4D 20 31 2E 31 30 00 00 00 00 00 00  | R=TIM 
-1.10......
-00000060:  00 00 00 00 00 00 00 00 00 00 50 52 4F 54 56 45  | 
-..........PROTVE
-00000070:  52 3D 32 32 2E 30 30 00 00 00 00 00 00 00 00 00  | 
-R=22.00.........
-00000080:  00 00 00 00 00 00 00 00 4D 4F 44 3D 4C 45 41 2D  | 
-........MOD=LEA-
-00000090:  4D 38 54 2D 30 00 00 00 00 00 00 00 00 00 00 00  | 
-M8T-0...........
-000000A0:  00 00 00 00 00 00 46 49 53 3D 30 78 45 46 34 30  | 
-......FIS=0xEF40
-000000B0:  31 35 20 28 31 30 30 31 31 31 29 00 00 00 00 00  | 15 
-(100111).....
-000000C0:  00 00 00 00 47 50 53 3B 47 4C 4F 3B 47 41 4C 3B  | 
-....GPS;GLO;GAL;
-000000D0:  42 44 53 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
-BDS.............
-000000E0:  00 00 53 42 41 53 3B 49 4D 45 53 3B 51 5A 53 53  | 
-..SBAS;IMES;QZSS
-000000F0:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
-................
-00000100:  01 3D                                            | .=.
+-- 
+js
+suse labs
 
-As you can see it looks like the frame thats received on the 6.3.3 
-kernel is mangled?
-This same message is just being requested over and over again from the 
-GPS unit.
-
-The offset where the tears occur looks to be pretty similar between each 
-poll request.
-Usually the 1 at the end of the (75331 is where the first tear occurs.
-
-I'd appreciate some quidance in how to track this down as there appears 
-to have been a reasonable amount of work done to this driver and the 
-serial core between these two versions.
-
-Cheers
-    Richard Tresidder
