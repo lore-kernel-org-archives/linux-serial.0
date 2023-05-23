@@ -2,49 +2,48 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A76C77B75
-	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 07:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D8CC77B75
+	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 07:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232182AbjEWHvX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 May 2023 03:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S231803AbjEWHxa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 May 2023 03:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235469AbjEWHvM (ORCPT
+        with ESMTP id S235804AbjEWHx0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 May 2023 03:51:12 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A48F133;
-        Tue, 23 May 2023 00:50:38 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-96f8d485ef3so533064566b.0;
-        Tue, 23 May 2023 00:50:38 -0700 (PDT)
+        Tue, 23 May 2023 03:53:26 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C361A4;
+        Tue, 23 May 2023 00:53:07 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-94a342f7c4cso1330762566b.0;
+        Tue, 23 May 2023 00:53:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684828110; x=1687420110;
+        d=1e100.net; s=20221208; t=1684828322; x=1687420322;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G/ga9kfQAmCrlcMothWIufyDqrfE6sQdv6qR5XzdMOg=;
-        b=IyIPMLgRJ1DjMYTbFIxo1ovlPQM30aOjLMxUue560Gx/eVdltG8USokBW5FTDofUQY
-         mfTMyJ+hsdsxNayoJZgZlaZK1rYJCIBaQWygpX+rRHt9jKduIb/kjEMFWBsYz1Nw+A9w
-         I9TMYAsmCfZfkkQGym+RL2vkOBWVzKeaoeT+LWFYlaMycfPxv5IcglLrqvxtPfk9Z5Tw
-         9cNr0i94jgyfB5YYTNNAzIJS29ZscF163C2lhAeMnHtnZ2Nh9/0Ofdc2+6Q1zqiPxiZO
-         dVK0T2I1lGURWQin9fFnhvz78c7CdO433sPPLeTlvoTf6vo4bMQ13+GLQOVWUv2wGr77
-         vu+A==
-X-Gm-Message-State: AC+VfDwjntfecvkvSgFuyoxV3tcXR1Qz28/9SqG3/79fWwaLdbP+KWBV
-        3eqCLkO3z+//kYQgb/OTIXM=
-X-Google-Smtp-Source: ACHHUZ5Lkei+0eevntPfv1VfTj6uFljsHPeKK8tvdztEH9quqLFDVH+u77ys6bL04uOufoqRWiCGNw==
-X-Received: by 2002:a17:907:928b:b0:96a:411a:1cc4 with SMTP id bw11-20020a170907928b00b0096a411a1cc4mr11813594ejc.66.1684828109630;
-        Tue, 23 May 2023 00:48:29 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id jy2-20020a170907762200b0096f689848desm4087738ejc.195.2023.05.23.00.48.28
+        bh=nu/cDoOXs5TVBA/QD7O9cdrmYWXrhKeMaEH35tlFdtw=;
+        b=WDwu0fsR00E7lDYF6bdiGMe/mfbJkWG5e1SM0ZdePwpDyVhYxAIZjnf1p9/IkP/LF4
+         kXnc2rQDQCq0Laeo3UvBJGhl6xEq1Ml0qX/F8qQJebCzlC7cv/DN8DzLwYVr0qOUwf6m
+         8mNEpcbCnL//7t+4No/eifhrIf+mcyrCT/gGSbYU/Hxrz4z1aSm3RGMhR6NDliC9L/Ar
+         OTTL9+EJdofMlHF/XXTGaql13hMMrWseZMpuPp3NAXoNQe6qizNst5+oi6qenEk1DrVQ
+         ruxZkbsnUSWENtWDA3TxtIqUWCWaRytpFUOPSyXUcybB2pzMMYKfSQHVuF0ej5kQ5gpA
+         VeZw==
+X-Gm-Message-State: AC+VfDzjaSYCSfb+sV8Q2gZbPyc1+glStBHBAVSMdYTfCUSmjYiQINP1
+        F/ykgztu8y63KtlFixqxdSQ=
+X-Google-Smtp-Source: ACHHUZ4cF4d+RcQ1dnyhjQGJi6YIELHknuY1Ue6me+Xi1cncPggsoYNjnFkzjIFNZaywgQfp4lzdEQ==
+X-Received: by 2002:a17:906:5044:b0:96a:63d4:24c5 with SMTP id e4-20020a170906504400b0096a63d424c5mr12495026ejk.77.1684828321864;
+        Tue, 23 May 2023 00:52:01 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id z25-20020a1709064e1900b0096f6e836fa0sm4033655eju.27.2023.05.23.00.52.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 May 2023 00:48:29 -0700 (PDT)
-Message-ID: <e8c45035-1834-7214-46af-834e879cf3c5@kernel.org>
-Date:   Tue, 23 May 2023 09:48:28 +0200
+        Tue, 23 May 2023 00:52:01 -0700 (PDT)
+Message-ID: <d65bb452-80ca-7644-c38c-1bc0566661f0@kernel.org>
+Date:   Tue, 23 May 2023 09:52:00 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.1
-Subject: Re: [PATCH 0/2] Fix COMPILE_TEST dependencies for CPM uart, TSA and
- QMC
+Subject: Re: [PATCH 2/2] serial: cpm_uart: Fix a COMPILE_TEST dependency
 Content-Language: en-US
 To:     Herve Codina <herve.codina@bootlin.com>,
         Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
@@ -53,41 +52,51 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel test robot <lkp@intel.com>
 References: <20230522082048.21216-1-herve.codina@bootlin.com>
+ <20230522082048.21216-3-herve.codina@bootlin.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230522082048.21216-1-herve.codina@bootlin.com>
+In-Reply-To: <20230522082048.21216-3-herve.codina@bootlin.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 22. 05. 23, 10:20, Herve Codina wrote:
-> This series fixes issues raised by the kernel test robot
->    https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
+> In a COMPILE_TEST configuration, the cpm_uart driver uses symbols from
+> the cpm_uart_cpm2.c file. This file is compiled only when CONFIG_CPM2 is
+> set.
 > 
-> In COMPILE_TEST configurations, TSA and QMC need CONFIG_CPM to be set in
-> order to compile and CPM uart needs CONFIG_CPM2.
-
-Ah, perfect. Greg, please disregard my revert posted at:
-   https://lore.kernel.org/all/20230518055620.29957-1-jirislaby@kernel.org/
-
-and take these instead.
-
-Thanks.
-
-> Best regards,
-> Hervé
+> Without this dependency, the linker fails with some missing symbols for
+> COMPILE_TEST configuration that needs SERIAL_CPM without enabling CPM2.
 > 
-> Herve Codina (2):
->    soc: fsl: cpm1: Fix TSA and QMC dependencies in case of COMPILE_TEST
->    serial: cpm_uart: Fix a COMPILE_TEST dependency
-> 
->   drivers/soc/fsl/qe/Kconfig | 4 ++--
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
+> Fixes: e3e7b13bffae ("serial: allow COMPILE_TEST for some drivers")
+> ---
 >   drivers/tty/serial/Kconfig | 2 +-
->   2 files changed, 3 insertions(+), 3 deletions(-)
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 625358f44419..68a9d9db9144 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -769,7 +769,7 @@ config SERIAL_PMACZILOG_CONSOLE
+>   
+>   config SERIAL_CPM
+>   	tristate "CPM SCC/SMC serial port support"
+> -	depends on CPM2 || CPM1 || (PPC32 && COMPILE_TEST)
+> +	depends on CPM2 || CPM1 || (PPC32 && CPM2 && COMPILE_TEST)
+
+Actually, does this makes sense? I mean, the last part after "||" is now 
+superfluous and doesn't help anything, right?
+
+>   	select SERIAL_CORE
+>   	help
+>   	  This driver supports the SCC and SMC serial ports on Motorola
 
 -- 
 js
