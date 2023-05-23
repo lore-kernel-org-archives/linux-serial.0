@@ -2,154 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEA7C7EE26
-	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 11:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00EBC7EE2D
+	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 15:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234320AbjEWLN5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 May 2023 07:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
+        id S236492AbjEWPOM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 May 2023 11:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbjEWLN4 (ORCPT
+        with ESMTP id S237587AbjEWPOB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 May 2023 07:13:56 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FCA1126
-        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 04:13:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684840434; x=1716376434;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=qMLRIlk0YiD2uRJqz12fYMEUWWT4LAvQ6bC4oIDwIME=;
-  b=hzq/Wc400uj5rb2pZIikkyzuJUjjr4zLUOi5k2m+0sDqWV3ffaS/WJ+w
-   KXdSUac7jfZBm1j8w1IwouswtV6tDxP0A0+KEt1bKftwINpoJtfPsYy3/
-   WQiZMvRy8EQQ7m/Z1w+IFLbqZQPCZ3JDbBr2j0I6tZt9fJ3c5vw4aJRVi
-   I42chSyUHugzimIBwZzdleWaPLoETp625/MG0WDjiBOYdfAFM+C0FEr+8
-   XXJU8AUb5cM9PwSGN3EEg4eAPpWEIpHER0NJvVpmPpo75XbplP4OmUb1l
-   7pr4DV/cwSoyorWcblgbveniGIkFoFtSzP0/JJ0X9XUPWrrb7svtRNPvG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="418915568"
-X-IronPort-AV: E=Sophos;i="6.00,186,1681196400"; 
-   d="scan'208";a="418915568"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 04:13:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10718"; a="654333844"
-X-IronPort-AV: E=Sophos;i="6.00,186,1681196400"; 
-   d="scan'208";a="654333844"
-Received: from oodnolex-mobl1.ccr.corp.intel.com ([10.252.55.104])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2023 04:13:53 -0700
-Date:   Tue, 23 May 2023 14:13:50 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Richard Tresidder <rtresidd@electromag.com.au>
-cc:     linux-serial@vger.kernel.org
-Subject: Re: Possible regression in 8250_dw driver
-In-Reply-To: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au>
-Message-ID: <f9a5a97c-42e5-bd7a-4a42-a79ab2f7cbad@linux.intel.com>
-References: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au>
+        Tue, 23 May 2023 11:14:01 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75237E72
+        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 08:13:43 -0700 (PDT)
+Received: from [192.168.1.141] ([37.4.248.58]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1M6H7o-1q3fYI1H3Y-006eJT; Tue, 23 May 2023 17:12:34 +0200
+Message-ID: <af86a1d9-cdf5-f72d-3aea-ced37d3e7c2b@i2se.com>
+Date:   Tue, 23 May 2023 17:12:32 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1647315239-1684836582=:3565"
-Content-ID: <11467ebe-a996-7fd1-fa85-66478163f4fd@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: Regression: serial: imx: overrun errors on debug UART
+To:     Linux regressions mailing list <regressions@lists.linux.dev>
+Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Sergey Organov <sorganov@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Stefan Wahren <stefan.wahren@chargebyte.com>,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
+ <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
+ <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
+ <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
+ <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
+ <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
+ <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com> <87mt3ynsa7.fsf@osv.gnss.ru>
+ <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com> <87sfcy8ncu.fsf@osv.gnss.ru>
+ <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
+ <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:sEbmaW1JDon0+hqyoaTCNWWmbTDHXLIHs3rlX986ChIrl9Lvl2F
+ H+h4G+OjM+Ns6kIH+7ZgcpAF+5uHObK0o16nqzs5h/0qHZC4ZZ3eUtrOhOhlu4aO4xqAk4Q
+ FCbhMWKAmg92QylpFCSUoAsTolc9hBxhbJ38TBfFJgvWPyzDJS2kNJbdg34roTa1CatPKKM
+ epGj5m545mZ4tzv8ryYAA==
+UI-OutboundReport: notjunk:1;M01:P0:GH6w6FREy9M=;6S3n9umgjaGIWcy8cTLMGm960ep
+ rrCKJAXIwpvPOdRFqeMJUWw10MBlIW/1NFhJ8bOlb+rELgt29/TUngMNBS+2Z+pOXjryGf0Lj
+ hdqNMyg4W/SdgJYzCazCUKrWZqLkjh1V9UHx8AHbn/brvAngnOfKs42XpX0ZgpWJdVGpGn/+r
+ Hk45P2yl+Qv9A7CYdYUGDVekuKhN7Fu8AyNrngum5XsyCbkwp+JP6RA4xROJi8LwZs8rUi4wj
+ 8LsuCzS6mWVRyBK92uE6/wMPQDFXGiQWpcoTsKOk72wnQhBVPwIOROOgYqGLDDg7XeoVUb0uY
+ /WrqyYUGzdRdTF+ksFsjiHC76y/M+jb5csrdT9xxaj5IOlHl0Bog1me5aSREy4XOa/TwewMA6
+ sk3aRa6DTGoQb3Br1L1pkiNGCltjZ6mFK8ooQXcqWnGrBQ3c30XswFfvk/R5IyomQ3kihbcxS
+ zqRnTGEvvOZpt5zK2Dqv3Z26hAqwp0EDw0FhXJ/rnY26T7RQ+yJHjCJSO5r31Px8sdltHooFK
+ nJd9w3HiwgcpRhwdUCDbSdbzxMYCD/gfL3HLtPUoZCYahjGPKgfXEU/4lHHvnbtmgrRft6L4N
+ BLRtD8vtUPWDwo514xDfcgy6ihp2gSu9AKZjK6TQCgkglWK3G2TGXehGzpcHI/wwtMcDAPFsT
+ hVIx9hVpS+wyyhmBW5RNWXC6h8bfS7gv6xoOx8gNWw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Thorsten,
 
---8323329-1647315239-1684836582=:3565
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <4d3a3e30-2528-9052-f8ad-fa11c49c51d@linux.intel.com>
-
-On Tue, 23 May 2023, Richard Tresidder wrote:
-
-> Hi
->    We seem to be getting corruption of received data from a ublox GPS unit
-> To me it looks like a fifo overrun of some sort??
-
-Overruns should be logged (in dmesg or /proc/tty/driver/serial).
-
-> background:
-> I'm attempting to use 6.3.3 as a new base for one of our systems.
-> Previously it was using 5.1.7 as a base.
-> The uart in question is one of the two in the Cyclone V SOC HPS.
-> And to muddy the waters the linux console TTYS0 is the other Uart from the
-> same HPS core
-> Yet the console appears to be working ok.
-
-Maybe some of the DMA related changes triggering some unexpected behavior. 
-
-Console doesn't use DMA so that could explain the difference.
-
-> Note all other libs and apps are at the same revision and build, it is only
-> the kernel that is different.
-> Both versions of the kernel are also built using the same bitbake bsdk..
+Am 22.05.23 um 11:25 schrieb Linux regression tracking (Thorsten Leemhuis):
+> Hi, Thorsten here, the Linux kernel's regression tracker. Top-posting
+> for once, to make this easily accessible to everyone.
 > 
-> Seeing the following with 6.3.3:
+> Stefan, was this regression ever solved? It doesn't look like it, but
+> maybe I'm missing something.
 > 
->  00000000: 45 58 54 20 43 4F 52 45 20 33 2E 30 31 20 28 31  | EXT CORE 3.01 (1
->  00000010: 31 31 31 34 31 29 00 00 00 00 00 00 00 00 30 30  | 11141)........00
->  00000020: 30 38 30 30 30 30 00 00 52 4F 4D 20 42 41 53 45  | 080000..ROM BASE
->  00000030: 20 32 2E 30 31 20 28 37 35 33 33 31 53 00 00 00  | 2.01 (75331S...
->  00000040: 00 00 00 00 00 00 00 00 00 00 00 00 53 42 41 53  | ............SBAS
->  00000050: 3B 49 4D 45 53 3B 51 5A 53 53 00 00 00 00 00 00  | ;IMES;QZSS......
->  00000060: 00 00 00 00 00 00 00 00 00 00 01 3D 29 00 00 00  | ...........=)...
->  00000070: 00 00 00 00 00 00 46 57 56 45 52 3D 54 49 4D 20  | ......FWVER=TIM
->  00000080: 31 2E 31 30 00 00 00 00 00 00 00 00 00 00 00 00  | 1.10............
->  00000090: 00 00 00 00 50 52 4F 54 56 45 52 3D 32 32 2E 30  | ....PROTVER=22.0
->  000000a0: 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 0...............
->  000000b0: 00 00 4D 4F 44 3D 4C 45 41 2D 4D 38 54 2D 30 00  | ..MOD=LEA-M8T-0.
->  000000c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | ................
->  000000d0: 46 49 53 3D 30 78 45 46 34 30 31 35 20 28 31 30  | FIS=0xEF4015 (10
->  000000e0: 30 31 31 31 29 00 00 00 00 00 00 00 00 00 47 50  | 0111).........GP
->  000000f0: 53 3B 47 4C 4F 3B 47 41 4C 3B 42 44 00 00 00 00  | S;GLO;GAL;BD....
->  00000100: 00 00                                            | ..
-> 
-> But should be seeing this as shown on 5.1.7:
-> Excuse the offset (due to this frame also showing the packet id's and lengths)
-> But the body of the frame is what we should be seeing.
-> 
-> 00000000:  B5 62 0A 04 FA 00 45 58 54 20 43 4F 52 45 20 33  | µb..ú.EXT CORE 3
-> 00000010:  2E 30 31 20 28 31 31 31 31 34 31 29 00 00 00 00  | .01 (111141)....
-> 00000020:  00 00 00 00 30 30 30 38 30 30 30 30 00 00 52 4F  | ....00080000..RO
-> 00000030:  4D 20 42 41 53 45 20 32 2E 30 31 20 28 37 35 33  | M BASE 2.01 (753
-> 00000040:  33 31 29 00 00 00 00 00 00 00 00 00 46 57 56 45  | 31).........FWVE
-> 00000050:  52 3D 54 49 4D 20 31 2E 31 30 00 00 00 00 00 00  | R=TIM 1.10......
-> 00000060:  00 00 00 00 00 00 00 00 00 00 50 52 4F 54 56 45  | ..........PROTVE
-> 00000070:  52 3D 32 32 2E 30 30 00 00 00 00 00 00 00 00 00  | R=22.00.........
-> 00000080:  00 00 00 00 00 00 00 00 4D 4F 44 3D 4C 45 41 2D  | ........MOD=LEA-
-> 00000090:  4D 38 54 2D 30 00 00 00 00 00 00 00 00 00 00 00  | M8T-0...........
-> 000000A0:  00 00 00 00 00 00 46 49 53 3D 30 78 45 46 34 30  | ......FIS=0xEF40
-> 000000B0:  31 35 20 28 31 30 30 31 31 31 29 00 00 00 00 00  | 15 (100111).....
-> 000000C0:  00 00 00 00 47 50 53 3B 47 4C 4F 3B 47 41 4C 3B  | ....GPS;GLO;GAL;
-> 000000D0:  42 44 53 00 00 00 00 00 00 00 00 00 00 00 00 00  | BDS.............
-> 000000E0:  00 00 53 42 41 53 3B 49 4D 45 53 3B 51 5A 53 53  | ..SBAS;IMES;QZSS
-> 000000F0:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | ................
-> 00000100:  01 3D                                            | .=.
-> 
-> As you can see it looks like the frame thats received on the 6.3.3 kernel is
-> mangled?
-> This same message is just being requested over and over again from the GPS
-> unit.
-> 
-> The offset where the tears occur looks to be pretty similar between each poll
-> request.
-> Usually the 1 at the end of the (75331 is where the first tear occurs.
-> 
-> I'd appreciate some quidance in how to track this down as there appears to
-> have been a reasonable amount of work done to this driver and the serial core
-> between these two versions.
+> If it wasn't solved: what needs to be done to get this rolling again?
 
-A few ideas:
-- try without dma_rx_complete() calling p->dma->rx_dma(p)
-- revert 90b8596ac46043e4a782d9111f5b285251b13756
-- Try the revert in https://lore.kernel.org/all/316ab583-d217-a332-d161-8225b0cee227@redhat.com/2-0001-Revert-serial-8250-use-THRE-__stop_tx-also-with-DMA.patch
-  (for e8ffbb71f783 and f8d6e9d3ca5c)
+thanks for the reminder. From a user point of view this issue hasn't 
+been fixed so far. For our product we just reverted the commit in a 
+downstream repo.
 
-But finding the culprit with git bisect would be the most helpful here.
+ From my understanding there was already an issue there and the 
+optimizing commit by Tomasz just make the situation worse. Unfortunately 
+my time budget to investigate this issue further is exhausted, so i 
+stopped working at this.
 
+In case someone can give clear instructions to investigate this further, 
+i will try to look at it in my spare time. But i cannot make any promises.
 
--- 
- i.
---8323329-1647315239-1684836582=:3565--
+Best regards
+
+> 
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+> --
+> Everything you wanna know about Linux kernel regression tracking:
+> https://linux-regtracking.leemhuis.info/about/#tldr
+> If I did something stupid, please tell me, as explained on that page.
+> 
+> #regzbot poke
+> 
