@@ -2,105 +2,142 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D09B5C7EE2A
-	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 08:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88542C7EE2A
+	for <linux-serial@archiver.kernel.org>; Tue, 23 May 2023 09:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235600AbjEWI72 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 May 2023 04:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
+        id S235457AbjEWJGH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 May 2023 05:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236142AbjEWI7Y (ORCPT
+        with ESMTP id S236374AbjEWJGF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 May 2023 04:59:24 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A5A132;
-        Tue, 23 May 2023 01:59:13 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 2D8A01C000E;
-        Tue, 23 May 2023 08:59:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1684832352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hB0jH5VbqniXpY2XCqtCh3H0TPVZDlgFAeoWdY16lSQ=;
-        b=Mw816vN8TcnBrfqTuNPEggUvaZItZxQ1MeLicdYfseZoMBoorR4ORd/ARlEOpS1cgZp1hw
-        0sG3pZC4coWfmm8liekXRLcMPfdvp2TMA/Px2we9hfRSHDr1bghzhC/tn9NjJgE60PAy11
-        XMAh/2o5xVgsfDw5ZcTC0FbCxKiDoUKktLDfwLDr4x9e6XXUasE4dwVbtWz2lPF/TF9zPE
-        v9NcBijXdx7na0lNRCsioVYyRD7MOF2zbK8ZKe9m0dm8Vj3A7/jfMU0puanLfbCB8TcGDp
-        LjDauu5pX317pW/k6pO8A4dFBfq7Yi5004JBbTjdlXsWSvQ5wihHsNrzJIvv+Q==
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Herve Codina <herve.codina@bootlin.com>,
-        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 2/2] serial: cpm_uart: Fix a COMPILE_TEST dependency
-Date:   Tue, 23 May 2023 10:59:02 +0200
-Message-Id: <20230523085902.75837-3-herve.codina@bootlin.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230523085902.75837-1-herve.codina@bootlin.com>
-References: <20230523085902.75837-1-herve.codina@bootlin.com>
+        Tue, 23 May 2023 05:06:05 -0400
+X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 May 2023 02:05:51 PDT
+Received: from anchovy2.45ru.net.au (anchovy2.45ru.net.au [203.30.46.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC03E5C
+        for <linux-serial@vger.kernel.org>; Tue, 23 May 2023 02:05:50 -0700 (PDT)
+Received: (qmail 5850 invoked by uid 5089); 23 May 2023 08:59:08 -0000
+Received: by simscan 1.2.0 ppid: 5417, pid: 5422, t: 0.7591s
+         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950 spam: 3.1.4
+Received: from unknown (HELO ?192.168.2.4?) (rtresidd@electromag.com.au@203.59.235.95)
+  by anchovy3.45ru.net.au with ESMTPA; 23 May 2023 08:59:06 -0000
+Message-ID: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au>
+Date:   Tue, 23 May 2023 16:59:06 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+To:     linux-serial@vger.kernel.org
+Content-Language: en-US
+From:   Richard Tresidder <rtresidd@electromag.com.au>
+Subject: Possible regression in 8250_dw driver
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In a COMPILE_TEST configuration, the cpm_uart driver uses symbols from
-the cpm_uart_cpm2.c file. This file is compiled only when CONFIG_CPM2 is
-set.
+Hi
+    We seem to be getting corruption of received data from a ublox GPS unit
+To me it looks like a fifo overrun of some sort??
 
-Without this dependency, the linker fails with some missing symbols for
-COMPILE_TEST configuration that needs SERIAL_CPM without enabling CPM2.
+background:
+I'm attempting to use 6.3.3 as a new base for one of our systems.
+Previously it was using 5.1.7 as a base.
+The uart in question is one of the two in the Cyclone V SOC HPS.
+And to muddy the waters the linux console TTYS0 is the other Uart from 
+the same HPS core
+Yet the console appears to be working ok.
+Note all other libs and apps are at the same revision and build, it is 
+only the kernel that is different.
+Both versions of the kernel are also built using the same bitbake bsdk..
 
-This lead to:
-  depends on CPM2 || CPM1 || (PPC32 && CPM2 && COMPILE_TEST)
+Seeing the following with 6.3.3:
 
-This dependency does not make sense anymore and can be simplified
-removing all the COMPILE_TEST part.
+  00000000: 45 58 54 20 43 4F 52 45 20 33 2E 30 31 20 28 31  | EXT CORE 
+3.01 (1
+  00000010: 31 31 31 34 31 29 00 00 00 00 00 00 00 00 30 30  | 
+11141)........00
+  00000020: 30 38 30 30 30 30 00 00 52 4F 4D 20 42 41 53 45  | 
+080000..ROM BASE
+  00000030: 20 32 2E 30 31 20 28 37 35 33 33 31 53 00 00 00  | 2.01 
+(75331S...
+  00000040: 00 00 00 00 00 00 00 00 00 00 00 00 53 42 41 53  | 
+............SBAS
+  00000050: 3B 49 4D 45 53 3B 51 5A 53 53 00 00 00 00 00 00  | 
+;IMES;QZSS......
+  00000060: 00 00 00 00 00 00 00 00 00 00 01 3D 29 00 00 00  | 
+...........=)...
+  00000070: 00 00 00 00 00 00 46 57 56 45 52 3D 54 49 4D 20  | 
+......FWVER=TIM
+  00000080: 31 2E 31 30 00 00 00 00 00 00 00 00 00 00 00 00  | 
+1.10............
+  00000090: 00 00 00 00 50 52 4F 54 56 45 52 3D 32 32 2E 30  | 
+....PROTVER=22.0
+  000000a0: 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
+0...............
+  000000b0: 00 00 4D 4F 44 3D 4C 45 41 2D 4D 38 54 2D 30 00  | 
+..MOD=LEA-M8T-0.
+  000000c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
+................
+  000000d0: 46 49 53 3D 30 78 45 46 34 30 31 35 20 28 31 30  | 
+FIS=0xEF4015 (10
+  000000e0: 30 31 31 31 29 00 00 00 00 00 00 00 00 00 47 50  | 
+0111).........GP
+  000000f0: 53 3B 47 4C 4F 3B 47 41 4C 3B 42 44 00 00 00 00  | 
+S;GLO;GAL;BD....
+  00000100: 00 00                                            | ..
 
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
-Fixes: e3e7b13bffae ("serial: allow COMPILE_TEST for some drivers")
----
- drivers/tty/serial/Kconfig             | 2 +-
- drivers/tty/serial/cpm_uart/cpm_uart.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+But should be seeing this as shown on 5.1.7:
+Excuse the offset (due to this frame also showing the packet id's and 
+lengths)
+But the body of the frame is what we should be seeing.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 625358f44419..de092bc1289e 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -769,7 +769,7 @@ config SERIAL_PMACZILOG_CONSOLE
- 
- config SERIAL_CPM
- 	tristate "CPM SCC/SMC serial port support"
--	depends on CPM2 || CPM1 || (PPC32 && COMPILE_TEST)
-+	depends on CPM2 || CPM1
- 	select SERIAL_CORE
- 	help
- 	  This driver supports the SCC and SMC serial ports on Motorola 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
-index 0577618e78c0..46c03ed71c31 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart.h
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
-@@ -19,8 +19,6 @@ struct gpio_desc;
- #include "cpm_uart_cpm2.h"
- #elif defined(CONFIG_CPM1)
- #include "cpm_uart_cpm1.h"
--#elif defined(CONFIG_COMPILE_TEST)
--#include "cpm_uart_cpm2.h"
- #endif
- 
- #define SERIAL_CPM_MAJOR	204
--- 
-2.40.1
+00000000:  B5 62 0A 04 FA 00 45 58 54 20 43 4F 52 45 20 33  | µb..ú.EXT 
+CORE 3
+00000010:  2E 30 31 20 28 31 31 31 31 34 31 29 00 00 00 00  | .01 
+(111141)....
+00000020:  00 00 00 00 30 30 30 38 30 30 30 30 00 00 52 4F  | 
+....00080000..RO
+00000030:  4D 20 42 41 53 45 20 32 2E 30 31 20 28 37 35 33  | M BASE 
+2.01 (753
+00000040:  33 31 29 00 00 00 00 00 00 00 00 00 46 57 56 45  | 
+31).........FWVE
+00000050:  52 3D 54 49 4D 20 31 2E 31 30 00 00 00 00 00 00  | R=TIM 
+1.10......
+00000060:  00 00 00 00 00 00 00 00 00 00 50 52 4F 54 56 45  | 
+..........PROTVE
+00000070:  52 3D 32 32 2E 30 30 00 00 00 00 00 00 00 00 00  | 
+R=22.00.........
+00000080:  00 00 00 00 00 00 00 00 4D 4F 44 3D 4C 45 41 2D  | 
+........MOD=LEA-
+00000090:  4D 38 54 2D 30 00 00 00 00 00 00 00 00 00 00 00  | 
+M8T-0...........
+000000A0:  00 00 00 00 00 00 46 49 53 3D 30 78 45 46 34 30  | 
+......FIS=0xEF40
+000000B0:  31 35 20 28 31 30 30 31 31 31 29 00 00 00 00 00  | 15 
+(100111).....
+000000C0:  00 00 00 00 47 50 53 3B 47 4C 4F 3B 47 41 4C 3B  | 
+....GPS;GLO;GAL;
+000000D0:  42 44 53 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
+BDS.............
+000000E0:  00 00 53 42 41 53 3B 49 4D 45 53 3B 51 5A 53 53  | 
+..SBAS;IMES;QZSS
+000000F0:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  | 
+................
+00000100:  01 3D                                            | .=.
 
+As you can see it looks like the frame thats received on the 6.3.3 
+kernel is mangled?
+This same message is just being requested over and over again from the 
+GPS unit.
+
+The offset where the tears occur looks to be pretty similar between each 
+poll request.
+Usually the 1 at the end of the (75331 is where the first tear occurs.
+
+I'd appreciate some quidance in how to track this down as there appears 
+to have been a reasonable amount of work done to this driver and the 
+serial core between these two versions.
+
+Cheers
+    Richard Tresidder
