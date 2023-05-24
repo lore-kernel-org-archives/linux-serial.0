@@ -2,85 +2,185 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5BAC77B7A
-	for <linux-serial@archiver.kernel.org>; Wed, 24 May 2023 14:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B260C77B73
+	for <linux-serial@archiver.kernel.org>; Wed, 24 May 2023 14:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbjEXOBf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 May 2023 10:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
+        id S233605AbjEXOiK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 May 2023 10:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232374AbjEXOBe (ORCPT
+        with ESMTP id S229524AbjEXOiJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 May 2023 10:01:34 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAE99E;
-        Wed, 24 May 2023 07:01:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684936892; x=1716472892;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=JqaNSBpB1Y3By+PIMe1ztMXiAF8ywA/Mfx2FrrbgG6M=;
-  b=GDcbKEEhvrT8qx0grpCTHmzVNKV/UJOfrnDZ8E5mOUgPPy2+VSoIU25K
-   N08II5dCpnBg/S5mJuoevr3cwfpAZ6SLZGr1FaYgdv0uGiZAK/IZ+fs32
-   /KmSnSp1Yv/3grhY6FHMMXuM/XgIlusd04McB4j3ZjnfhpMy8Ylblyrqi
-   qUXJj0QEmxiYa8ttyTq2P/1KS8vflPT5swQ1BPNt2gVUMuFAOg3ozcRxh
-   IG1q2T/B3/cBNh7gW8A1GlFkg3gFfLGzfR9R8DxL1G/UdZTkrGJSo5yDk
-   UCkjB5Q77E0IfqUnvhG0B+onK62mvToYLs0Lpq/b3wW3c4Ah+O23mBnRh
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="381816503"
-X-IronPort-AV: E=Sophos;i="6.00,189,1681196400"; 
-   d="scan'208";a="381816503"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 07:01:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="774262059"
-X-IronPort-AV: E=Sophos;i="6.00,189,1681196400"; 
-   d="scan'208";a="774262059"
-Received: from nwhelanx-mobl.ger.corp.intel.com ([10.252.55.15])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 07:01:17 -0700
-Date:   Wed, 24 May 2023 17:01:15 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250_pci: remove unreachable code for ASIX
- devices
-In-Reply-To: <aee8ff85-5716-424e-3773-33700fd90dc2@linux.intel.com>
-Message-ID: <62142324-dc90-788a-f040-72ef11192e6@linux.intel.com>
-References: <20230510142855.256658-1-jiaqing.zhao@linux.intel.com> <2023051343-cringing-junction-54f7@gregkh> <188db6e4-d1de-6643-f6e1-5cb3807b28ee@linux.intel.com> <2023051533-harmonize-ozone-bc72@gregkh>
- <aee8ff85-5716-424e-3773-33700fd90dc2@linux.intel.com>
+        Wed, 24 May 2023 10:38:09 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B202E5C
+        for <linux-serial@vger.kernel.org>; Wed, 24 May 2023 07:37:33 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q1pbl-0008OG-2v; Wed, 24 May 2023 16:36:57 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q1pbj-002VdH-1t; Wed, 24 May 2023 16:36:55 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q1pbi-007aLK-8B; Wed, 24 May 2023 16:36:54 +0200
+Date:   Wed, 24 May 2023 16:36:54 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     kernel@pengutronix.de,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 2/3] serial: 8250: Clear IIR.RDI in
+ serial8250_clear_fifos()
+Message-ID: <20230524143654.dfkbo22vdpc73nqs@pengutronix.de>
+References: <20230524122754.481816-1-u.kleine-koenig@pengutronix.de>
+ <20230524122754.481816-3-u.kleine-koenig@pengutronix.de>
+ <576799f0-1d18-c9ed-bf12-cb2bed1f8bb@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pzfm22acgqp7xfct"
+Content-Disposition: inline
+In-Reply-To: <576799f0-1d18-c9ed-bf12-cb2bed1f8bb@linux.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 24 May 2023, Jiaqing Zhao wrote:
-> On 2023-05-15 11:49, Greg Kroah-Hartman wrote:
-> > On Mon, May 15, 2023 at 10:36:30AM +0800, Jiaqing Zhao wrote:
-> >> On 2023-05-13 18:28, Greg Kroah-Hartman wrote:
-> >>> Please follow the documented Intel kernel developer requirements before
-> >>> you submit this again, based on the changes that process will require.
-> >>>
-> >>> thanks,
-> >>>
-> >>> greg k-h
-> >> Sorry I am unable to find this "Intel kernel developer requirements". Is
-> >> there any link or contact where I can find this information? Thank you.
-> > 
-> > Contact the Intel Linux developer team and they will point you at them.
-> > This is a company-wide requirement, it is odd that your normal "Here is
-> > how you can contribute to Linux!" training at Intel did not cover it?
-> 
-> I contacted them and there is no reply so far. Could you please tell me if
-> there is any general available docs about this or point out what I'm doing
-> wrong in this patch? Thank you very much.
 
-I've pointed him to the right direction (now that I noticed this has 
-just gone on here).
+--pzfm22acgqp7xfct
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
- i.
+On Wed, May 24, 2023 at 04:02:58PM +0300, Ilpo J=E4rvinen wrote:
+> On Wed, 24 May 2023, Uwe Kleine-K=F6nig wrote:
+>=20
+> > At least on MPC83xx (but I suspect also on other implementations) it can
+> > happen that after irqs are disabled but before the FIFOs are cleared a
+> > character is received. Resetting the FIFO throws away that character,
+> > but doesn't clear the IIR.RDI event that signals that there is read data
+> > available.
+> >=20
+> > Read from RX to clear IIR.RDI and throw away the result.
+> >=20
+> > This fixes a infinite loop after the above described race happened: The
+> > irq handler (here: fsl8250_handle_irq()) triggers, but LSR.DR isn't set,
+> > so RX isn't read and the irq handler returns just to be called again.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> >  drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> >=20
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
+250/8250_port.c
+> > index fe8d79c4ae95..8b47ec000922 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -556,6 +556,18 @@ static void serial8250_clear_fifos(struct uart_825=
+0_port *p)
+> >  		serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO |
+> >  			       UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> >  		serial_out(p, UART_FCR, 0);
+> > +
+> > +		/*
+> > +		 * When doing rs485 on MPC8313 it can happen that in the short
+> > +		 * window when switching from RX to TX there is a character in
+> > +		 * the RX FIFO which isn't processed any more and then discarded
+> > +		 * in here by clearing the FIFO. In that case IIR signals an RX
+> > +		 * timeout once irqs are reenabled (i.e. in
+> > +		 * serial8250_em485_stop_tx()) but LSR shows no pending event.
+> > +		 * The RX timeout event can only be cleared by reading RX. Do
+> > +		 * this here before reenabling the FIFO and irqs.
+> > +		 */
+> > +		serial_port_in(&p->port, UART_RX);
+> >  	}
+> >  }
+>=20
+> This solution has too wide impact, I think.
 
+What is the impact? After the FIFO is reset reading the RX register
+shouldn't matter?
+
+> It should be made driver specific.
+
+I'm not a big fan, the 8250 driver is already very fragmented.
+
+> Can't you read IIR to see if the event indication is there before
+> doing this UART_RX read?
+
+Assuming reading IIR and reading RX take approx the same amount of
+time, I don't see an upside of checking IIR first?!
+
+> Maybe add an UART specific function for fifo clearing/reset.
+
+See above. And with the theory that reading RX doesn't hurt after the
+FIFO was just cleared, adding this to generic code has the upside that
+other variants that might have the same issue get fixed, too.
+
+> I've long wondered this related thing:
+>=20
+> Does anyone have idea why serial8250_clear_and_reinit_fifos() and=20
+> serial8250_clear_fifos() are separate, what is the benefit of not setting=
+=20
+> FCR back to up->fcr? That is that intermediate FCR <=3D 0 really required=
+=20
+> for the FIFO reset sequence or is it just an artifact of how the code is=
+=20
+> structured into those two functions.
+>=20
+> It might make sense to drop serial8250_clear_and_reinit_fifos() and=20
+> change serial8250_clear_fifos() into something like this (depending on=20
+> the answers):
+>=20
+> static void serial8250_clear_fifos(struct uart_8250_port *p, bool disable)
+> {
+>         if (p->capabilities & UART_CAP_FIFO) {
+>                 serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO);
+>                 serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO |
+>                                UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> 	        serial_out(p, UART_FCR, disable ? 0 : p->fcr);
+>         }
+> }
+
+I'd say this should work. Apart from skipping
+
+	serial_out(p, UART_FCR, 0);
+
+it has the side effect of skipping
+
+	serial_out(p, UART_FCR, p->fcr);
+
+if !(p->capabilities & UART_CAP_FIFO). That shouldn't matter though.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--pzfm22acgqp7xfct
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmRuIQUACgkQj4D7WH0S
+/k4VWQf+P1tkqYy6Kd4Q2QHr5P9XwvOucbB+V2hNue5Ve48YBhkid2O3HmpllwXN
+u/XKHDN+XqnRkvmDHnPofbF8lbdGus6i24oxfD2wZyjpgJfWrlV70VIUR2Xq2bxb
+kW70d0A/v7/VLExAfFR3K4hp73fiDYl9z13WS98PYWwCrXlIqJJN8iz65C3UQnXN
+RZpcr6w6vWg0MEHXgy3Ko27eABlzlM+y3uGVn8GYH0VfzH0xnEYWQNWb95wplxWL
+QlU9G4tW8WyCtGKDFGmq5RMr59Zx8mGZsPXMOGXL7wlYVyjmJKxjzIP8Xd05WI+8
+rBIQectfQcd39oiFPwDif3G2rU9Tvw==
+=3en7
+-----END PGP SIGNATURE-----
+
+--pzfm22acgqp7xfct--
