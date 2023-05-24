@@ -2,136 +2,194 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8940FC7EE23
-	for <linux-serial@archiver.kernel.org>; Wed, 24 May 2023 09:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FF6C7EE2C
+	for <linux-serial@archiver.kernel.org>; Wed, 24 May 2023 10:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240500AbjEXJA1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 May 2023 05:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
+        id S229630AbjEXKGj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 May 2023 06:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236330AbjEXJA0 (ORCPT
+        with ESMTP id S229566AbjEXKGj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 May 2023 05:00:26 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F7E8E;
-        Wed, 24 May 2023 02:00:25 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id CE7B25C02B7;
-        Wed, 24 May 2023 05:00:24 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Wed, 24 May 2023 05:00:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-transfer-encoding:content-type:content-type:date
-        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to; s=fm3; t=
-        1684918824; x=1685005224; bh=S7sa8C/IogYZURJrOm0ZDAiU3OBbB8qNXQm
-        tRKL6Fb0=; b=HZKgHz3rqNYJ2Pw2wrGOpbUOIDA/IOAgTV784ojJJtvpSFQIj10
-        8qTDsUtYq8lLue6pSLuU0AKRdGj8vejKNrdfdMfAmpWhh8pG+RzEkpPpBUdEVivD
-        Wig/sXjJbIH4DfPUMxXs4OaxlQNtuj0OfBonnlO0laVhGgx6NqSrRwgP9uQ9O6MU
-        VDKrC24b2sAwDNuQe7GgUT9lsggeJGDTlgVY9rlS7KMTR0GIvSukUYLSWdWOeuaI
-        hlBF0YtAnNGm1EfHiJlwP/75vOdgyNyKMlT8emi99bcEnAF4c8yKL0wKBIkXz7R6
-        ZkJp7/2gMenWnwgulnYpEhTpvRGRV/3JQ9w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:content-type:date:date:feedback-id:feedback-id
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1684918824; x=1685005224; bh=S7sa8C/IogYZURJrOm0ZDAiU3OBbB8qNXQm
-        tRKL6Fb0=; b=p9n89m5rSqqp+mY4RDK1NFs2zf98lBIc8CeA3dU/0VKMZ7Qw86P
-        ksW9Xf+jjGAxJxWXKlY4l/lJ3YNFzPTrtaSSosKEen3k11nXsqzx3NLAlijir1uZ
-        7UvAcnSJKDcr11zux9/uGh52TnjzqgQI9l9Vg6X7Hw5oLzQGATQoSTU3F3jyMP2I
-        NSdyBTtut4qnrnwk4tHRVCl8w02n0qeuXS9coLBsrjRCg5jBVl0T9AuVRSVVWiF6
-        1O0M/6z3+BBNjn/8wDBtyIgD3oeENXAzvR2R0XJa6rVYY+wVIjF6mE3f9kXEXh2H
-        yNC+29I76uPDb66Fob6VAwWbYkDDrgp7Q5A==
-X-ME-Sender: <xms:KNJtZMPPd-OUVctrSMtu6gC_Wj2ea8HS-Scn1-0rMeC0-leHJYPFiA>
-    <xme:KNJtZC_EZmiDOhgUVt0HFihP2Mr2muE4qaHOLCV1md5NfFpNwzPOFtvJJsXEN4ZRQ
-    Dk5XxOyoEdoT1ePjL8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejhedgtdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpefgkeeuleegieeghfduudeltdekfeffjeeuleehleefudettddtgfevueef
-    feeigeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:KNJtZDQauFxY19YxAr7s2-7N5d1NzWWUW0NdVA4pLmUpJ4vUbjkOVQ>
-    <xmx:KNJtZEtMwWa0CTxIzqV9LHZyznmkP0crMbnONb6f240qugw1cG4sdQ>
-    <xmx:KNJtZEeiQAbGIAB1oGeRFC0MSADUaMjEEt8gCtYTdKVOX3a9cmvHYA>
-    <xmx:KNJtZHWbuShUGGLuk0n7ehdbI6bgUuC5auJISleEu21SrAe-0_dUcA>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 0B98CB60086; Wed, 24 May 2023 05:00:24 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-441-ga3ab13cd6d-fm-20230517.001-ga3ab13cd
-Mime-Version: 1.0
-Message-Id: <e312b861-a5cc-43b0-b2b0-7d66f47a3d0b@app.fastmail.com>
-In-Reply-To: <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
-References: <20230516075217.205401-1-ychuang570808@gmail.com>
- <20230516075217.205401-11-ychuang570808@gmail.com>
- <3d4acb20-c80e-fd39-c0d0-e9b1e0309d81@kernel.org>
- <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
-Date:   Wed, 24 May 2023 11:00:02 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Jacky Huang" <ychuang570808@gmail.com>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
-        "Michael Turquette" <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Tomer Maimon" <tmaimon77@gmail.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
-        mjchen@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v11 10/10] tty: serial: Add Nuvoton ma35d1 serial driver support
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Wed, 24 May 2023 06:06:39 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F159ABF
+        for <linux-serial@vger.kernel.org>; Wed, 24 May 2023 03:06:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684922798; x=1716458798;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=4/B4XWs8Re5VDXN1IqRngfi/kvGT82/GWQaZGjRsq1M=;
+  b=FsO0XWqSF2OFV2bhkgY4YK5oiyZNhDbgbZQTQHqDwM8/qaDMxd5jMH5k
+   vq/zzYI+rh7TkNhyaMzEuxe4GCuyogBpgpfIfBZ9nPeFSZZMQx3YhXpkE
+   e54+7unvrgQfqh1lMqwdOmT28PubJCoVivzkFSWLz1g/esiMEJ6bB5UFs
+   287s/JJAJudiSeIZbCTN7JNFjCWxFXAFygMO/OQ+Z3H3HlmKgyUPoSzAK
+   53ro96/ckGRCH6RsA5RZHrxG9fpxsrAzFqfDLs2+qMlzs8iw2I/KWTgS9
+   Q+qRmebc1uTQT7JOELy9BkrhJ3LQtC6WZFhKIVD1qPAP6CND9Ugk9ARqw
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10719"; a="352363977"
+X-IronPort-AV: E=Sophos;i="6.00,188,1681196400"; 
+   d="scan'208";a="352363977"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 03:06:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10719"; a="1034476190"
+X-IronPort-AV: E=Sophos;i="6.00,188,1681196400"; 
+   d="scan'208";a="1034476190"
+Received: from nwhelanx-mobl.ger.corp.intel.com ([10.252.55.15])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 03:06:24 -0700
+Date:   Wed, 24 May 2023 13:06:18 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Richard Tresidder <rtresidd@electromag.com.au>
+cc:     linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: Possible regression in 8250_dw driver
+In-Reply-To: <261812cb-6de4-ec2b-18b0-90b5d9cc83e4@electromag.com.au>
+Message-ID: <8f778157-43fa-f364-d7e0-a022401b28@linux.intel.com>
+References: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au> <f9a5a97c-42e5-bd7a-4a42-a79ab2f7cbad@linux.intel.com> <261812cb-6de4-ec2b-18b0-90b5d9cc83e4@electromag.com.au>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-263369395-1684922785=:1739"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 24, 2023, at 10:34, Jacky Huang wrote:
-> On 2023/5/24 =E4=B8=8B=E5=8D=88 03:42, Jiri Slaby wrote:
->> On 16. 05. 23, 9:52, Jacky Huang wrote:
->>> +static void ma35d1serial_config_port(struct uart_port *port, int fl=
-ags)
->>> +{
->>> +=C2=A0=C2=A0=C2=A0 /*
->>> +=C2=A0=C2=A0=C2=A0=C2=A0 * Driver core for serial ports forces a no=
-n-zero value for port=20
->>> type.
->>> +=C2=A0=C2=A0=C2=A0=C2=A0 * Write an arbitrary value here to accommo=
-date the serial core=20
->>> driver,
->>> +=C2=A0=C2=A0=C2=A0=C2=A0 * as ID part of UAPI is redundant.
->>> +=C2=A0=C2=A0=C2=A0=C2=A0 */
->>> +=C2=A0=C2=A0=C2=A0 port->type =3D 1;
->>
->> So this 1 translates to PORT_8250. Why not to use it directly? Or=20
->> something more saner like PORT_16550A?
->>
-> It's not actually 8250 or 16550A.
-> Can we add the following definition to=20
-> 'include/uapi/linux/serial_core.h' and use PORT_MA35 instead?
->
-> #define PORT_MA35=C2=A0=C2=A0=C2=A0 124
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-This was already in a previous version, until Greg commented
-that it was probably not needed:
+--8323329-263369395-1684922785=:1739
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-https://lore.kernel.org/lkml/20fc81c9-5517-ce1e-639a-3b425cf27759@gmail.=
-com/
+On Wed, 24 May 2023, Richard Tresidder wrote:
+> On 23/05/2023 7:13 pm, Ilpo Järvinen wrote:
+> > On Tue, 23 May 2023, Richard Tresidder wrote:
+> > 
+> > > background:
+> > > I'm attempting to use 6.3.3 as a new base for one of our systems.
+> > > Previously it was using 5.1.7 as a base.
+> > > The uart in question is one of the two in the Cyclone V SOC HPS.
+> > > And to muddy the waters the linux console TTYS0 is the other Uart from the
+> > > same HPS core
+> > > Yet the console appears to be working ok.
+> > Maybe some of the DMA related changes triggering some unexpected behavior.
+> > 
+> > Console doesn't use DMA so that could explain the difference.
+> > 
+> > > Note all other libs and apps are at the same revision and build, it is
+> > > only
+> > > the kernel that is different.
+> > > Both versions of the kernel are also built using the same bitbake bsdk..
+> > > 
+> > > 
+> > > As you can see it looks like the frame thats received on the 6.3.3 kernel
+> > > is
+> > > mangled?
+> > > This same message is just being requested over and over again from the GPS
+> > > unit.
+> > > 
+> > > The offset where the tears occur looks to be pretty similar between each
+> > > poll
+> > > request.
+> > > Usually the 1 at the end of the (75331 is where the first tear occurs.
+> > > 
+> > > I'd appreciate some quidance in how to track this down as there appears to
+> > > have been a reasonable amount of work done to this driver and the serial
+> > > core
+> > > between these two versions.
+> > A few ideas:
+> > - try without dma_rx_complete() calling p->dma->rx_dma(p)
+> > - revert 90b8596ac46043e4a782d9111f5b285251b13756
+> > - Try the revert in
+> > https://lore.kernel.org/all/316ab583-d217-a332-d161-8225b0cee227@redhat.com/2-0001-Revert-serial-8250-use-THRE-__stop_tx-also-with-DMA.patch
+> >    (for e8ffbb71f783 and f8d6e9d3ca5c)
+> > 
+> > But finding the culprit with git bisect would be the most helpful here.
+> > 
+> Bisect wasn't an easy option as I'd applied a pile of patches after the
+> interesting commits for our system to run.
+> I'm not a git master :)
+> 
+> So I just started reverting the patches that had been applied to the 8250
+> folder.
+> Worked backwards from head.
+> 
+> After reverting 57e9af7831dcf211c5c689c2a6f209f4abdf0bce
+> serial: 8250_dma: Fix DMA Rx rearm race
+> 
+> Things started to work again.
+> 
+> I reset everything and then just reverted that individual patch and things
+> work.
+> So that looks like the culprit..
 
-Since leaving port->type at PORT_UNKNOWN doesn't work, and almost
-all other drivers have something in serial_core.h, it's probably
-best to do the same here. Checking the other drivers showed that
-drivers/tty/serial/lantiq.c is currently the only exception, it
-defines PORT_LTQ_ASC locally, which causes a conflict with
-PORT_SPRD.
+Okay, that also worked great, thanks a lot. It gives something concrete to 
+work with to find a fix.
 
-    Arnd
+The commit itself looks very much correct, however, my guess is that when 
+serial8250_rx_dma_flush() does dmaengine_pause() dma_status somehow 
+does not become DMA_PAUSED which leads to not properly flushing DMA Rx 
+transaction. Can you try the following debug patch (if my guess is 
+correct, besides triggering the WARN_ON_ONCE, it also works around the 
+issue):
+
+[PATCH] DEBUG: 8250_dma: Detect DMA_PAUSED vs DMA_IN_PROGRESS inconsistency
+
+Detect DMA state not returning DMA_PAUSED after dmaengine_pause() was
+issued.
+
+Not intended for upstream.
+
+---
+ drivers/tty/serial/8250/8250_dma.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 7fa66501792d..3dedacd9f104 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -38,7 +38,7 @@ static void __dma_tx_complete(void *param)
+ 	spin_unlock_irqrestore(&p->port.lock, flags);
+ }
+ 
+-static void __dma_rx_complete(struct uart_8250_port *p)
++static void __dma_rx_complete(struct uart_8250_port *p, bool paused)
+ {
+ 	struct uart_8250_dma	*dma = p->dma;
+ 	struct tty_port		*tty_port = &p->port.state->port;
+@@ -52,8 +52,12 @@ static void __dma_rx_complete(struct uart_8250_port *p)
+ 	 * anything in such case.
+ 	 */
+ 	dma_status = dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+-	if (dma_status == DMA_IN_PROGRESS)
+-		return;
++	if (dma_status == DMA_IN_PROGRESS) {
++		if (!paused)
++			return;
++
++		WARN_ON_ONCE(paused);
++	}
+ 
+ 	count = dma->rx_size - state.residue;
+ 
+@@ -72,7 +76,7 @@ static void dma_rx_complete(void *param)
+ 
+ 	spin_lock_irqsave(&p->port.lock, flags);
+ 	if (dma->rx_running)
+-		__dma_rx_complete(p);
++		__dma_rx_complete(p, false);
+ 
+ 	/*
+ 	 * Cannot be combined with the previous check because __dma_rx_complete()
+@@ -172,7 +176,7 @@ void serial8250_rx_dma_flush(struct uart_8250_port *p)
+ 
+ 	if (dma->rx_running) {
+ 		dmaengine_pause(dma->rxchan);
+-		__dma_rx_complete(p);
++		__dma_rx_complete(p, true);
+ 		dmaengine_terminate_async(dma->rxchan);
+ 	}
+ }
+
+-- 
+tg: (ac9a78681b92..) debug/dma-paused (depends on: tty-next)
+--8323329-263369395-1684922785=:1739--
