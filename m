@@ -2,79 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F2AC7EE23
-	for <linux-serial@archiver.kernel.org>; Wed, 24 May 2023 08:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8940FC7EE23
+	for <linux-serial@archiver.kernel.org>; Wed, 24 May 2023 09:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240264AbjEXI6g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 May 2023 04:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
+        id S240500AbjEXJA1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 24 May 2023 05:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240510AbjEXI6b (ORCPT
+        with ESMTP id S236330AbjEXJA0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 May 2023 04:58:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD9E19C
-        for <linux-serial@vger.kernel.org>; Wed, 24 May 2023 01:58:26 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q1kK5-0007pd-7c; Wed, 24 May 2023 10:58:21 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q1kK4-002RgD-2B; Wed, 24 May 2023 10:58:20 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q1kK3-007Uyv-D5; Wed, 24 May 2023 10:58:19 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
-Date:   Wed, 24 May 2023 10:58:16 +0200
-Message-Id: <20230524085816.474223-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=982; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=LCB85oBeMDcb5M2YpxazRUmWqysAk0fNBO2hMJN4IEI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkbdGnRXUkZ5wUVpIS7rSiNQn5RxdCsVIO37bdW tpVLdC5JrmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZG3RpwAKCRCPgPtYfRL+ TiVPCACmNTdvkbVpewQC3MZc4vfMGvTJLtE+gtmp/OeF8JJNArf3leQ21AnHmsxhCWj00Ufoklj SFt1mbZCBkQnishAw/6UB2Ymwg90T7ahB8/CcSPTe9C89EUnXqmVrcFVdvB5U6S2QY8yhLG69Iw qbX6Tmy93YZLhmXKV+BYBFfyeopDyf950FS61RKSJk3AitTIlCLVjh6g83g6QjUw0/Bf63wHaX/ /Soj58NjnA1nNpyYsh3uLN8bHk14UxUakfOu7eIf7Vxm1RNjCL3VlQ6LqkVO5pU6Gp1kaY2rzf3 Lollv7qKVY/c01Pf8u++rEvKRqLCQ8jVMb81kKZ7mrDwU8gY
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+        Wed, 24 May 2023 05:00:26 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F7E8E;
+        Wed, 24 May 2023 02:00:25 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id CE7B25C02B7;
+        Wed, 24 May 2023 05:00:24 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Wed, 24 May 2023 05:00:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-transfer-encoding:content-type:content-type:date
+        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to; s=fm3; t=
+        1684918824; x=1685005224; bh=S7sa8C/IogYZURJrOm0ZDAiU3OBbB8qNXQm
+        tRKL6Fb0=; b=HZKgHz3rqNYJ2Pw2wrGOpbUOIDA/IOAgTV784ojJJtvpSFQIj10
+        8qTDsUtYq8lLue6pSLuU0AKRdGj8vejKNrdfdMfAmpWhh8pG+RzEkpPpBUdEVivD
+        Wig/sXjJbIH4DfPUMxXs4OaxlQNtuj0OfBonnlO0laVhGgx6NqSrRwgP9uQ9O6MU
+        VDKrC24b2sAwDNuQe7GgUT9lsggeJGDTlgVY9rlS7KMTR0GIvSukUYLSWdWOeuaI
+        hlBF0YtAnNGm1EfHiJlwP/75vOdgyNyKMlT8emi99bcEnAF4c8yKL0wKBIkXz7R6
+        ZkJp7/2gMenWnwgulnYpEhTpvRGRV/3JQ9w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:content-type:date:date:feedback-id:feedback-id
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1684918824; x=1685005224; bh=S7sa8C/IogYZURJrOm0ZDAiU3OBbB8qNXQm
+        tRKL6Fb0=; b=p9n89m5rSqqp+mY4RDK1NFs2zf98lBIc8CeA3dU/0VKMZ7Qw86P
+        ksW9Xf+jjGAxJxWXKlY4l/lJ3YNFzPTrtaSSosKEen3k11nXsqzx3NLAlijir1uZ
+        7UvAcnSJKDcr11zux9/uGh52TnjzqgQI9l9Vg6X7Hw5oLzQGATQoSTU3F3jyMP2I
+        NSdyBTtut4qnrnwk4tHRVCl8w02n0qeuXS9coLBsrjRCg5jBVl0T9AuVRSVVWiF6
+        1O0M/6z3+BBNjn/8wDBtyIgD3oeENXAzvR2R0XJa6rVYY+wVIjF6mE3f9kXEXh2H
+        yNC+29I76uPDb66Fob6VAwWbYkDDrgp7Q5A==
+X-ME-Sender: <xms:KNJtZMPPd-OUVctrSMtu6gC_Wj2ea8HS-Scn1-0rMeC0-leHJYPFiA>
+    <xme:KNJtZC_EZmiDOhgUVt0HFihP2Mr2muE4qaHOLCV1md5NfFpNwzPOFtvJJsXEN4ZRQ
+    Dk5XxOyoEdoT1ePjL8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeejhedgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpefgkeeuleegieeghfduudeltdekfeffjeeuleehleefudettddtgfevueef
+    feeigeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:KNJtZDQauFxY19YxAr7s2-7N5d1NzWWUW0NdVA4pLmUpJ4vUbjkOVQ>
+    <xmx:KNJtZEtMwWa0CTxIzqV9LHZyznmkP0crMbnONb6f240qugw1cG4sdQ>
+    <xmx:KNJtZEeiQAbGIAB1oGeRFC0MSADUaMjEEt8gCtYTdKVOX3a9cmvHYA>
+    <xmx:KNJtZHWbuShUGGLuk0n7ehdbI6bgUuC5auJISleEu21SrAe-0_dUcA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 0B98CB60086; Wed, 24 May 2023 05:00:24 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-441-ga3ab13cd6d-fm-20230517.001-ga3ab13cd
+Mime-Version: 1.0
+Message-Id: <e312b861-a5cc-43b0-b2b0-7d66f47a3d0b@app.fastmail.com>
+In-Reply-To: <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
+References: <20230516075217.205401-1-ychuang570808@gmail.com>
+ <20230516075217.205401-11-ychuang570808@gmail.com>
+ <3d4acb20-c80e-fd39-c0d0-e9b1e0309d81@kernel.org>
+ <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
+Date:   Wed, 24 May 2023 11:00:02 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jacky Huang" <ychuang570808@gmail.com>,
+        "Jiri Slaby" <jirislaby@kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
+        "Michael Turquette" <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Tomer Maimon" <tmaimon77@gmail.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        "Will Deacon" <will@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
+        mjchen@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v11 10/10] tty: serial: Add Nuvoton ma35d1 serial driver support
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The need to handle the FSL variant of 8250 in a special way is also
-present without console support. So soften the dependency for
-SERIAL_8250_FSL accordingly.
+On Wed, May 24, 2023, at 10:34, Jacky Huang wrote:
+> On 2023/5/24 =E4=B8=8B=E5=8D=88 03:42, Jiri Slaby wrote:
+>> On 16. 05. 23, 9:52, Jacky Huang wrote:
+>>> +static void ma35d1serial_config_port(struct uart_port *port, int fl=
+ags)
+>>> +{
+>>> +=C2=A0=C2=A0=C2=A0 /*
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0 * Driver core for serial ports forces a no=
+n-zero value for port=20
+>>> type.
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0 * Write an arbitrary value here to accommo=
+date the serial core=20
+>>> driver,
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0 * as ID part of UAPI is redundant.
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0 */
+>>> +=C2=A0=C2=A0=C2=A0 port->type =3D 1;
+>>
+>> So this 1 translates to PORT_8250. Why not to use it directly? Or=20
+>> something more saner like PORT_16550A?
+>>
+> It's not actually 8250 or 16550A.
+> Can we add the following definition to=20
+> 'include/uapi/linux/serial_core.h' and use PORT_MA35 instead?
+>
+> #define PORT_MA35=C2=A0=C2=A0=C2=A0 124
 
-This issue was identified by Dominik Andreas Schorpp.
+This was already in a previous version, until Greg commented
+that it was probably not needed:
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/8250/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+https://lore.kernel.org/lkml/20fc81c9-5517-ce1e-639a-3b425cf27759@gmail.=
+com/
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 5313aa31930f..10c09b19c871 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -378,7 +378,7 @@ config SERIAL_8250_BCM2835AUX
- 
- config SERIAL_8250_FSL
- 	bool "Freescale 16550 UART support" if COMPILE_TEST && !(PPC || ARM || ARM64)
--	depends on SERIAL_8250_CONSOLE
-+	depends on SERIAL_8250
- 	default PPC || ARM || ARM64
- 	help
- 	  Selecting this option enables a workaround for a break-detection
+Since leaving port->type at PORT_UNKNOWN doesn't work, and almost
+all other drivers have something in serial_core.h, it's probably
+best to do the same here. Checking the other drivers showed that
+drivers/tty/serial/lantiq.c is currently the only exception, it
+defines PORT_LTQ_ASC locally, which causes a conflict with
+PORT_SPRD.
 
-base-commit: ac9a78681b921877518763ba0e89202254349d1b
--- 
-2.39.2
-
+    Arnd
