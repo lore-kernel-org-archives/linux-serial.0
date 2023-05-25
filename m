@@ -2,105 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0AAC77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 12:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10830C77B7E
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 13:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240948AbjEYMRL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 08:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
+        id S241181AbjEYNTX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 09:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjEYMRK (ORCPT
+        with ESMTP id S231397AbjEYNTW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 08:17:10 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5B1A9;
-        Thu, 25 May 2023 05:17:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685017029; x=1716553029;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=bQ1iL6BsiW9BxzNcM756bUoMHD0bKrBZjPW4yVwoXCU=;
-  b=dgFfOhPQlNaO5yv7W8H9G0lYcOqEgFOV8SIrUHAWz+dqGQtX+WKYGzsf
-   4dydSYz+lEVipxpesrTk43+OLNZPTnYl76sqLSyV8Vjev/I4kRTor0prq
-   Wc2ZSYtN/4lXZBVEWFeKui0RdPaOXYVIBexpK3WuO7kPI6dY+ZEO9Q21Y
-   CEX+Ailz1yv2zjS6+wNIfYU819vGHqc+zjI5NIAQr7YKoHSasO5coonVS
-   c7Y2uEUkmVEuAhjOUkK82OfH6WIvE9UaNpJ5RDfJ45A+YDwp8jAB9ymFe
-   MIL6oBQB7l0X4vIjDkHxivjf9ZCWc01E5bM4jy9mV8I3uUTLoTD6MYXp0
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="357096183"
-X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="357096183"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 05:17:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="1034963147"
-X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
-   d="scan'208";a="1034963147"
-Received: from aghiriba-mobl.ger.corp.intel.com ([10.249.40.17])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 05:17:04 -0700
-Date:   Thu, 25 May 2023 15:17:02 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        jringle@gridpoint.com, tomasz.mon@camlingroup.com,
-        l.perczak@camlintechnologies.com,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-gpio@vger.kernel.org,
+        Thu, 25 May 2023 09:19:22 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9446D99;
+        Thu, 25 May 2023 06:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=BiYBStJNOLDU6CVASAjjdQmOaxZ6ZXmr39+ac65rV2c=; b=xgQlUEJoApDfjNzRhAZ7nyE3w8
+        XU78wFcub24VIs36AQ6Knnp4wy8htPszdMNdCkxvAy89Wj4Jj8gE2EGbhc7e5LSvDhdIkFgn5UcdX
+        sMLInSML3Ay/xFAWVJ8l0j6z+7fp5g2aBp5omZ4Nc7jvjZzLy3oD36O1KX79g4UvQU7M=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:37108 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q2Arp-0007ff-Ub; Thu, 25 May 2023 09:18:58 -0400
+Date:   Thu, 25 May 2023 09:18:57 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     andy.shevchenko@gmail.com
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH v3 10/11] serial: sc16is7xx: add call to get rs485 DT
- flags and properties
-In-Reply-To: <20230525040324.3773741-11-hugo@hugovil.com>
-Message-ID: <986e2042-6c1d-b87a-ef9-d89a61bc8c@linux.intel.com>
-References: <20230525040324.3773741-1-hugo@hugovil.com> <20230525040324.3773741-11-hugo@hugovil.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2137940837-1685017028=:1738"
+Message-Id: <20230525091857.612b591997faa964dfdfe1f6@hugovil.com>
+In-Reply-To: <ZG84rnwh3XTdY-iy@surfacebook>
+References: <20230525040324.3773741-1-hugo@hugovil.com>
+        <20230525040324.3773741-5-hugo@hugovil.com>
+        <ZG84rnwh3XTdY-iy@surfacebook>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v3 04/11] serial: sc16is7xx: add post reset delay
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, 25 May 2023 13:30:06 +0300
+andy.shevchenko@gmail.com wrote:
 
---8323329-2137940837-1685017028=:1738
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 25 May 2023, Hugo Villeneuve wrote:
-
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> Thu, May 25, 2023 at 12:03:17AM -0400, Hugo Villeneuve kirjoitti:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Make sure we wait at least 3us before initiating communication with
+> > the device after reset.
 > 
-> Add call to uart_get_rs485_mode() to probe for RS485 flags and
-> properties from device tree.
+> ...
 > 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> > +	usleep_range(3, 5);
 > 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index c2cfd057ed9a..03d00b144304 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1511,6 +1511,10 @@ static int sc16is7xx_probe(struct device *dev,
->  			goto out_ports;
->  		}
->  
-> +		ret = uart_get_rs485_mode(&s->p[i].port);
-> +		if (ret)
-> +			goto out_ports;
-> +
->  		/* Disable all interrupts */
->  		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
->  		/* Disable TX/RX */
-> 
+> I would put (5, 10) instead to relax a bit the scheduler.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
--- 
- i.
-
---8323329-2137940837-1685017028=:1738--
+Hi,
+Ok, done.
