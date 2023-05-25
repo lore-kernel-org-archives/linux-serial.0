@@ -2,409 +2,232 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 100E1C7EE2E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9F2C77B7A
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240699AbjEYJfL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 05:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60728 "EHLO
+        id S240940AbjEYJkP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 05:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240660AbjEYJem (ORCPT
+        with ESMTP id S233700AbjEYJj3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 05:34:42 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529FEE42;
-        Thu, 25 May 2023 02:34:37 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1685007271;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vZVepLjGQmA8Sd7Dsoz91hGyNnRRVtsxo9tL/VycGyM=;
-        b=uZ3fJDvn3TkdggxynrSMSfRfldyWS4BjQknTKnFLPsovz8j7ATjj9wKY0YrNVgjmstnPDp
-        RpaZS25BsNwZGpaoJ/p7EJJ0uIbBlS2FUZb7JOxDaj01/dymaraJMQq3HMBNo8AdoDtjj9
-        zicPN9Y+n59Eio5tvFDuMNg3FqCmngFYk44jhQfhJmmgYQqabA/sWVdNy5FxqS89PuRfOd
-        aIlGwXIVvB3HqG5QjnSzYqSFoy17PnFrpG0S42MoYhVVriluyO/v7qDu49txvu1bQtu0UR
-        T/hMyr5UmoePZahxw43d/YnRICYxjiOuqkO5KdkecSSs27EigiIE7kgVE4e+xA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1685007271;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vZVepLjGQmA8Sd7Dsoz91hGyNnRRVtsxo9tL/VycGyM=;
-        b=sSWawuGzshyC+A1UZwduoT3u0VBy5TcXDOddQy8qoXvVAcuzGJyKZcT9rD6R+qnYz6FWGe
-        gQLD6b6k+lHbNkAw==
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-mediatek@lists.infradead.org
-Subject: [PATCH tty v1 8/8] serial: 8250: synchronize and annotate UART_IER access
-Date:   Thu, 25 May 2023 11:37:59 +0206
-Message-Id: <20230525093159.223817-9-john.ogness@linutronix.de>
-In-Reply-To: <20230525093159.223817-1-john.ogness@linutronix.de>
-References: <20230525093159.223817-1-john.ogness@linutronix.de>
+        Thu, 25 May 2023 05:39:29 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A884E1AB
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 02:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685007493; x=1716543493;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=VyfzuORKJKvXQVBBnyodKPLxD9U6bTifZe3ZPrii40M=;
+  b=SgDANFPmk5cCd1Sp42yhU+jUeG/qwOLLViD2J066hOxSW1n3kunaUEhV
+   ydt3rj/jPMU8gqVjEnR0MpPvLTQYLjC+W6oDAEm3uCdBGj2x6zlUiU2uo
+   9HV7Edfcr0aQ+Vr+E4Hmjy1wYIr5bpMF1uifPYPb+rpiNpM23VAHZWKnp
+   zuZZMLK+nO+RIAEBkGL95a64BjbKv5i1rF98zVjDqRegFMbfCiXSKXL2H
+   REL4dlgsQ9gPifUuGs7ULzY8EU46foDujhhjhT1wnunAS5fgsOaAZq6aj
+   8mROGECqGJrIRpI1B3JrteAfuhZdUD+zvh7yuhJv7HQvLB9MdRQpRRzK2
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="338415374"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="338415374"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 02:38:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="951388504"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="951388504"
+Received: from aghiriba-mobl.ger.corp.intel.com ([10.249.40.17])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 02:38:11 -0700
+Date:   Thu, 25 May 2023 12:38:09 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Richard Tresidder <rtresidd@electromag.com.au>
+cc:     linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: Possible regression in 8250_dw driver
+In-Reply-To: <def355b6-5573-90ff-a6d0-5174673f1a37@electromag.com.au>
+Message-ID: <9aec3419-f971-6d5-ff8b-dd8566742d3a@linux.intel.com>
+References: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au> <f9a5a97c-42e5-bd7a-4a42-a79ab2f7cbad@linux.intel.com> <261812cb-6de4-ec2b-18b0-90b5d9cc83e4@electromag.com.au> <8f778157-43fa-f364-d7e0-a022401b28@linux.intel.com>
+ <94bb9b7a-d69e-d578-3787-5a6146ec99dc@electromag.com.au> <559021f9-2831-5840-aee8-23918602f3f@linux.intel.com> <def355b6-5573-90ff-a6d0-5174673f1a37@electromag.com.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1921002036-1685007492=:1738"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The UART_IER register is modified twice by each console write
-(serial8250_console_write()) under the port lock. Any driver code that
-accesses UART_IER must do so with the port locked in order to ensure
-consistent values, even when for read accesses.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Add locking, lockdep notation, and/or comments everywhere UART_IER is
-accessed. The added locking is not fixing a real problem because it
-occurs where the console is not active. However, adding the locking
-to these non-critical paths greatly simplifies UART_IER access
-tracking by establishing a general policy that all UART_IER access
-is performed with the port locked.
+--8323329-1921002036-1685007492=:1738
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250.h              |  6 +++
- drivers/tty/serial/8250/8250_aspeed_vuart.c |  3 ++
- drivers/tty/serial/8250/8250_mtk.c          |  9 ++++
- drivers/tty/serial/8250/8250_omap.c         | 14 ++++++
- drivers/tty/serial/8250/8250_port.c         | 53 +++++++++++++++++++++
- 5 files changed, 85 insertions(+)
+On Thu, 25 May 2023, Richard Tresidder wrote:
+> On 25/05/2023 4:43 pm, Ilpo Järvinen wrote:
+> > On Thu, 25 May 2023, Richard Tresidder wrote:
+> > > On 24/05/2023 6:06 pm, Ilpo Järvinen wrote:
+> > > > On Wed, 24 May 2023, Richard Tresidder wrote:
+> > > > > So I just started reverting the patches that had been applied to the
+> > > > > 8250
+> > > > > folder.
+> > > > > Worked backwards from head.
+> > > > > 
+> > > > > After reverting 57e9af7831dcf211c5c689c2a6f209f4abdf0bce
+> > > > > serial: 8250_dma: Fix DMA Rx rearm race
+> > > > > 
+> > > > > Things started to work again.
+> > > > > 
+> > > > > I reset everything and then just reverted that individual patch and
+> > > > > things
+> > > > > work.
+> > > > > So that looks like the culprit..
+> > > > Okay, that also worked great, thanks a lot. It gives something concrete
+> > > > to
+> > > > work with to find a fix.
+> > > > 
+> > > > The commit itself looks very much correct, however, my guess is that
+> > > > when
+> > > > serial8250_rx_dma_flush() does dmaengine_pause() dma_status somehow
+> > > > does not become DMA_PAUSED which leads to not properly flushing DMA Rx
+> > > > transaction. Can you try the following debug patch (if my guess is
+> > > > correct, besides triggering the WARN_ON_ONCE, it also works around the
+> > > > issue):
+> > > > 
+> > > > [PATCH] DEBUG: 8250_dma: Detect DMA_PAUSED vs DMA_IN_PROGRESS
+> > > > inconsistency
+> > > > 
+> > > > Detect DMA state not returning DMA_PAUSED after dmaengine_pause() was
+> > > > issued.
+> > > > 
+> > > > Not intended for upstream.
+> > > Thanks Ilpo
+> > >     I can confirm that the patch below works. Got the WARN_ON_ONCE dump so
+> > > it's
+> > > taking that path.
+> > > I think the problem here is that the pl330 DMA controller thats in these
+> > > SOC's
+> > > doesn't "really" support pause according to the driver.
+> > For this flush usecase, it is enough to support pause + read residue +
+> > terminate which is supported according to the function comment for
+> > pl330_pause().
+> 
+> Yep agree given the 8250 serial code immediately terminates the dma after the
+> pause during the flush anyway..
+> 
+> > > It doesn't look like it can ever set "DMA_PAUSED"
+> > Why not? It pauses the transfer and is even able to allow reading the
+> > transferred byte count.
+> > 
+> > What it is claimed to not be able to do is resume. Note that w/o resume
+> > serial8250_tx_dma() XON/XOFF processing will not work but that's
+> > unrelated to this issue (I'll probably need to do another patch to fix
+> > that on 8250 DMA side).
+> 
+> Yep I just meant it doesn't look capable of reporting DMA_PAUSED
+> Which your patch below probably fixes.
+> and it kind of does a stop without a resume capability so must be terminated
+> after this.
+> Though I'm not sure of the implications of reporting paused without resume
+> capability.
+> Kind of an odd one..
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 5418708f4631..471c6bc5f78f 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -179,6 +179,9 @@ static inline void serial_dl_write(struct uart_8250_port *up, u32 value)
- 
- static inline bool serial8250_set_THRI(struct uart_8250_port *up)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	if (up->ier & UART_IER_THRI)
- 		return false;
- 	up->ier |= UART_IER_THRI;
-@@ -188,6 +191,9 @@ static inline bool serial8250_set_THRI(struct uart_8250_port *up)
- 
- static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	if (!(up->ier & UART_IER_THRI))
- 		return false;
- 	up->ier &= ~UART_IER_THRI;
-diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-index 9d2a7856784f..4a9e71b2dbbc 100644
---- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-+++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-@@ -275,6 +275,9 @@ static void __aspeed_vuart_set_throttle(struct uart_8250_port *up,
- {
- 	unsigned char irqs = UART_IER_RLSI | UART_IER_RDI;
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	up->ier &= ~irqs;
- 	if (!throttle)
- 		up->ier |= irqs;
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index fb1d5ec0940e..aa8e98164d68 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -222,11 +222,17 @@ static void mtk8250_shutdown(struct uart_port *port)
- 
- static void mtk8250_disable_intrs(struct uart_8250_port *up, int mask)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	serial_out(up, UART_IER, serial_in(up, UART_IER) & (~mask));
- }
- 
- static void mtk8250_enable_intrs(struct uart_8250_port *up, int mask)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	serial_out(up, UART_IER, serial_in(up, UART_IER) | mask);
- }
- 
-@@ -235,6 +241,9 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
- 	struct uart_port *port = &up->port;
- 	int lcr = serial_in(up, UART_LCR);
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&port->lock);
-+
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
- 	serial_out(up, MTK_UART_EFR, UART_EFR_ECB);
- 	serial_out(up, UART_LCR, lcr);
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 3225c95fde1d..0498b9b0e4e9 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -533,6 +533,10 @@ static void omap_8250_pm(struct uart_port *port, unsigned int state,
- 	u8 efr;
- 
- 	pm_runtime_get_sync(port->dev);
-+
-+	/* Synchronize UART_IER access against the console. */
-+	spin_lock_irq(&port->lock);
-+
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
- 	efr = serial_in(up, UART_EFR);
- 	serial_out(up, UART_EFR, efr | UART_EFR_ECB);
-@@ -543,6 +547,8 @@ static void omap_8250_pm(struct uart_port *port, unsigned int state,
- 	serial_out(up, UART_EFR, efr);
- 	serial_out(up, UART_LCR, 0);
- 
-+	spin_unlock_irq(&port->lock);
-+
- 	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- }
-@@ -760,8 +766,11 @@ static void omap_8250_shutdown(struct uart_port *port)
- 	if (priv->habit & UART_HAS_EFR2)
- 		serial_out(up, UART_OMAP_EFR2, 0x0);
- 
-+	/* Synchronize UART_IER access against the console. */
-+	spin_lock_irq(&port->lock);
- 	up->ier = 0;
- 	serial_out(up, UART_IER, 0);
-+	spin_unlock_irq(&port->lock);
- 	disable_irq_nosync(up->port.irq);
- 	dev_pm_clear_wake_irq(port->dev);
- 
-@@ -803,6 +812,7 @@ static void omap_8250_unthrottle(struct uart_port *port)
- 
- 	pm_runtime_get_sync(port->dev);
- 
-+	/* Synchronize UART_IER access against the console. */
- 	spin_lock_irqsave(&port->lock, flags);
- 	priv->throttled = false;
- 	if (up->dma)
-@@ -953,6 +963,7 @@ static void __dma_rx_complete(void *param)
- 	struct dma_tx_state     state;
- 	unsigned long flags;
- 
-+	/* Synchronize UART_IER access against the console. */
- 	spin_lock_irqsave(&p->port.lock, flags);
- 
- 	/*
-@@ -1227,6 +1238,9 @@ static u16 omap_8250_handle_rx_dma(struct uart_8250_port *up, u8 iir, u16 status
- static void am654_8250_handle_rx_dma(struct uart_8250_port *up, u8 iir,
- 				     u16 status)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	/*
- 	 * Queue a new transfer if FIFO has data.
- 	 */
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index b3971302d8e5..4b7bbd8b3305 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -539,6 +539,9 @@ EXPORT_SYMBOL_GPL(serial8250_rpm_put);
-  */
- static int serial8250_em485_init(struct uart_8250_port *p)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&p->port.lock);
-+
- 	if (p->em485)
- 		goto deassert_rts;
- 
-@@ -676,6 +679,8 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
- 	serial8250_rpm_get(p);
- 
- 	if (p->capabilities & UART_CAP_SLEEP) {
-+		/* Synchronize UART_IER access against the console. */
-+		spin_lock_irq(&p->port.lock);
- 		if (p->capabilities & UART_CAP_EFR) {
- 			lcr = serial_in(p, UART_LCR);
- 			efr = serial_in(p, UART_EFR);
-@@ -689,6 +694,7 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
- 			serial_out(p, UART_EFR, efr);
- 			serial_out(p, UART_LCR, lcr);
- 		}
-+		spin_unlock_irq(&p->port.lock);
- 	}
- 
- 	serial8250_rpm_put(p);
-@@ -696,6 +702,9 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
- 
- static void serial8250_clear_IER(struct uart_8250_port *up)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	if (up->capabilities & UART_CAP_UUE)
- 		serial_out(up, UART_IER, UART_IER_UUE);
- 	else
-@@ -968,6 +977,9 @@ static void autoconfig_16550a(struct uart_8250_port *up)
- 	unsigned char status1, status2;
- 	unsigned int iersave;
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	up->port.type = PORT_16550A;
- 	up->capabilities |= UART_CAP_FIFO;
- 
-@@ -1151,6 +1163,8 @@ static void autoconfig(struct uart_8250_port *up)
- 	/*
- 	 * We really do need global IRQs disabled here - we're going to
- 	 * be frobbing the chips IRQ enable register to see if it exists.
-+	 *
-+	 * Synchronize UART_IER access against the console.
- 	 */
- 	spin_lock_irqsave(&port->lock, flags);
- 
-@@ -1323,7 +1337,10 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	/* forget possible initially masked and pending IRQ */
- 	probe_irq_off(probe_irq_on());
- 	save_mcr = serial8250_in_MCR(up);
-+	/* Synchronize UART_IER access against the console. */
-+	spin_lock_irq(&port->lock);
- 	save_ier = serial_in(up, UART_IER);
-+	spin_unlock_irq(&port->lock);
- 	serial8250_out_MCR(up, UART_MCR_OUT1 | UART_MCR_OUT2);
- 
- 	irqs = probe_irq_on();
-@@ -1335,7 +1352,10 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 		serial8250_out_MCR(up,
- 			UART_MCR_DTR | UART_MCR_RTS | UART_MCR_OUT2);
- 	}
-+	/* Synchronize UART_IER access against the console. */
-+	spin_lock_irq(&port->lock);
- 	serial_out(up, UART_IER, UART_IER_ALL_INTR);
-+	spin_unlock_irq(&port->lock);
- 	serial_in(up, UART_LSR);
- 	serial_in(up, UART_RX);
- 	serial_in(up, UART_IIR);
-@@ -1345,7 +1365,10 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	irq = probe_irq_off(irqs);
- 
- 	serial8250_out_MCR(up, save_mcr);
-+	/* Synchronize UART_IER access against the console. */
-+	spin_lock_irq(&port->lock);
- 	serial_out(up, UART_IER, save_ier);
-+	spin_unlock_irq(&port->lock);
- 
- 	if (port->flags & UPF_FOURPORT)
- 		outb_p(save_ICP, ICP);
-@@ -1360,6 +1383,9 @@ static void serial8250_stop_rx(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&port->lock);
-+
- 	serial8250_rpm_get(up);
- 
- 	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
-@@ -1379,6 +1405,9 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p)
- {
- 	unsigned char mcr = serial8250_in_MCR(p);
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&p->port.lock);
-+
- 	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
- 		mcr |= UART_MCR_RTS;
- 	else
-@@ -1428,6 +1457,9 @@ static void __stop_tx_rs485(struct uart_8250_port *p, u64 stop_delay)
- {
- 	struct uart_8250_em485 *em485 = p->em485;
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&p->port.lock);
-+
- 	stop_delay += (u64)p->port.rs485.delay_rts_after_send * NSEC_PER_MSEC;
- 
- 	/*
-@@ -1607,6 +1639,9 @@ static void serial8250_start_tx(struct uart_port *port)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct uart_8250_em485 *em485 = up->em485;
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&port->lock);
-+
- 	if (!port->x_char && uart_circ_empty(&port->state->xmit))
- 		return;
- 
-@@ -1634,6 +1669,9 @@ static void serial8250_disable_ms(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&port->lock);
-+
- 	/* no MSR capabilities */
- 	if (up->bugs & UART_BUG_NOMSR)
- 		return;
-@@ -1648,6 +1686,9 @@ static void serial8250_enable_ms(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&port->lock);
-+
- 	/* no MSR capabilities */
- 	if (up->bugs & UART_BUG_NOMSR)
- 		return;
-@@ -2104,6 +2145,14 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 	unsigned int ier;
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
-+	/*
-+	 * Normally the port is locked to synchronize UART_IER access
-+	 * against the console. However, this function is only used by
-+	 * KDB/KGDB, where it may not be possible to acquire the port
-+	 * lock because all other CPUs are quiesced. The quiescence
-+	 * should allow safe lockless usage here.
-+	 */
-+
- 	serial8250_rpm_get(up);
- 	/*
- 	 *	First save the IER then disable the interrupts
-@@ -2439,6 +2488,8 @@ void serial8250_do_shutdown(struct uart_port *port)
- 	serial8250_rpm_get(up);
- 	/*
- 	 * Disable interrupts from this port
-+	 *
-+	 * Synchronize UART_IER access against the console.
- 	 */
- 	spin_lock_irqsave(&port->lock, flags);
- 	up->ier = 0;
-@@ -2738,6 +2789,8 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/*
- 	 * Ok, we're now changing the port state.  Do it with
- 	 * interrupts disabled.
-+	 *
-+	 * Synchronize UART_IER access against the console.
- 	 */
- 	serial8250_rpm_get(up);
- 	spin_lock_irqsave(&port->lock, flags);
+dma_slave_caps has a bool for both pause and resume support (I only found 
+out about the second flag for resume today) so not unheard of it seems.
+
 -- 
-2.30.2
+ i.
 
+
+> I'll check your pl330 patch out tomorrow, and see what else might break.
+>
+> > > I'm not sure of the flow through of that though.
+> > > There is some commenting in the pl330 driver about the pause routine.
+> > Maybe the patch below will help with pl330 DMA status (based on somewhat
+> > limited understanding of all the moving parts):
+> > 
+> > 
+> > [PATCH] dmaengine: pl330: Set DMA_PAUSED when pausing
+> > 
+> > pl330_pause() does not set anything to indicate paused condition which
+> > causes pl330_tx_status() to return DMA_IN_PROGRESS. This breaks 8250
+> > DMA code after the fix in commit 57e9af7831dc ("serial: 8250_dma: Fix
+> > DMA Rx rearm race"). The function comment for pl330_pause() claims
+> > pause is supported but resume is not which is enough for 8250 DMA flush
+> > to work as long as DMA status is reported correctly when appropriate.
+> > 
+> > Add PAUSED state for descriptor and mark BUSY descriptors with PAUSED
+> > in pl330_pause(). Return DMA_PAUSED from pl330_tx_status() when the
+> > descriptor is PAUSED.
+> > 
+> > Fixes: 88987d2c7534 ("dmaengine: pl330: add DMA_PAUSE feature")
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > 
+> > ---
+> >   drivers/dma/pl330.c | 18 ++++++++++++++++--
+> >   1 file changed, 16 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+> > index 0d9257fbdfb0..daad25f2c498 100644
+> > --- a/drivers/dma/pl330.c
+> > +++ b/drivers/dma/pl330.c
+> > @@ -403,6 +403,12 @@ enum desc_status {
+> >   	 * of a channel can be BUSY at any time.
+> >   	 */
+> >   	BUSY,
+> > +	/*
+> > +	 * Pause was called while descriptor was BUSY. Due to hardware
+> > +	 * limitations, only termination is possible for descriptors
+> > +	 * that have been paused.
+> > +	 */
+> > +	PAUSED,
+> >   	/*
+> >   	 * Sitting on the channel work_list but xfer done
+> >   	 * by PL330 core
+> > @@ -2041,7 +2047,7 @@ static inline void fill_queue(struct dma_pl330_chan
+> > *pch)
+> >   	list_for_each_entry(desc, &pch->work_list, node) {
+> >     		/* If already submitted */
+> > -		if (desc->status == BUSY)
+> > +		if (desc->status == BUSY || desc->status == PAUSED)
+> >   			continue;
+> >     		ret = pl330_submit_req(pch->thread, desc);
+> > @@ -2326,6 +2332,7 @@ static int pl330_pause(struct dma_chan *chan)
+> >   {
+> >   	struct dma_pl330_chan *pch = to_pchan(chan);
+> >   	struct pl330_dmac *pl330 = pch->dmac;
+> > +	struct dma_pl330_desc *desc;
+> >   	unsigned long flags;
+> >     	pm_runtime_get_sync(pl330->ddma.dev);
+> > @@ -2335,6 +2342,10 @@ static int pl330_pause(struct dma_chan *chan)
+> >   	_stop(pch->thread);
+> >   	spin_unlock(&pl330->lock);
+> >   +	list_for_each_entry(desc, &pch->work_list, node) {
+> > +		if (desc->status == BUSY)
+> > +			desc->status = PAUSED;
+> > +	}
+> >   	spin_unlock_irqrestore(&pch->lock, flags);
+> >   	pm_runtime_mark_last_busy(pl330->ddma.dev);
+> >   	pm_runtime_put_autosuspend(pl330->ddma.dev);
+> > @@ -2425,7 +2436,7 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t
+> > cookie,
+> >   		else if (running && desc == running)
+> >   			transferred =
+> >   				pl330_get_current_xferred_count(pch, desc);
+> > -		else if (desc->status == BUSY)
+> > +		else if (desc->status == BUSY || desc->status == PAUSED)
+> >   			/*
+> >   			 * Busy but not running means either just enqueued,
+> >   			 * or finished and not yet marked done
+> > @@ -2442,6 +2453,9 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t
+> > cookie,
+> >   			case DONE:
+> >   				ret = DMA_COMPLETE;
+> >   				break;
+> > +			case PAUSED:
+> > +				ret = DMA_PAUSED;
+> > +				break;
+> >   			case PREP:
+> >   			case BUSY:
+> >   				ret = DMA_IN_PROGRESS;
+> > 
+> 
+--8323329-1921002036-1685007492=:1738--
