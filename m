@@ -2,123 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FF3C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 15:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E9BC7EE2F
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 16:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234225AbjEYPbz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 11:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S229543AbjEYQIL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 12:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233087AbjEYPby (ORCPT
+        with ESMTP id S234699AbjEYQH7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 11:31:54 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D430599;
-        Thu, 25 May 2023 08:31:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=EkzddqA17p235kwja0SprO9NNK44EhEHUgSVbdwHCo4=; b=V9sZ9f5qxoG0lmo+ePzz7kr/r+
-        jI7Cg7o38QlwBJo7L33SmqQh1Vs20zOyI/jaukfVWjM2qOUuAKOln/LyrrNN4p+nadgmOHjtkJ9aI
-        ey+IC/lxGqIbazvjzgUwwt4zVJTSpFZ3ZcnLsJi3kGioe7CMsDu/UFz9iqAQgkXdHyUY=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:48052 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q2CwL-0000UV-T4; Thu, 25 May 2023 11:31:46 -0400
-Date:   Thu, 25 May 2023 11:31:45 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     andy.shevchenko@gmail.com
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Message-Id: <20230525113145.35cef67328b63ba4239d2361@hugovil.com>
-In-Reply-To: <ZG9FBgX2useVeuWl@surfacebook>
-References: <20230525040324.3773741-1-hugo@hugovil.com>
-        <20230525040324.3773741-10-hugo@hugovil.com>
-        <ZG9FBgX2useVeuWl@surfacebook>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v3 09/11] serial: sc16is7xx: add I/O register
- translation offset
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 25 May 2023 12:07:59 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01ABDE6B
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 09:07:37 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id e9e14a558f8ab-338816ea761so5319555ab.2
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 09:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1685030855; x=1687622855;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=V9miRu1VdQdNXOCFnd7Ap8lDxsJRIToGRq1hdp3kNIU=;
+        b=WCbCBCp/6pWCecbO7TofThM2e3nM40pk6AstOeeLTVDdW9q230thQnJZ7Dm7ahDTEF
+         fkOSc3fH0M4M4/f+W8ul4womoZ2iEm5AJIAW8J1KQ4xthwEv+uoyzbfkYzOxFk07SV44
+         y34ldp8CnPSi7Ma6gCtXSV+NWxHcZq0E52EFc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685030855; x=1687622855;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=V9miRu1VdQdNXOCFnd7Ap8lDxsJRIToGRq1hdp3kNIU=;
+        b=Sedo/2I8T2Bog0gfrV2chDhP0d7ylYdFb6QOvVY1z5Ypu3kmEO/lMwCihgsXN2iwcC
+         0gVfQQ+4LaclEdw9aL+S58jcfi/EHpu+LL/7cMamKMxUWMXkP+UEc0EMQ+Jr6ZZcqurn
+         UdK7CDRSqYK+DLYXaT8uuiTz35e6zRhV93ro1bVlcnXbeO4fV0M/CeRZ8rSKtffNkKJg
+         MsQP+5/JeDu4igEP6Z3GziZ2OT4ZDXiekXQY2f91tKKZZZ3uij1xOUeEM1qYeoVV5QWY
+         OEgRQerRkIxr+N7swkx9DQuX10RkogsM/lOW5n9QbyulJH7nfCQ27M7Vff7MLBPyZlI1
+         RNaA==
+X-Gm-Message-State: AC+VfDz5e8g9HPgupACS2QMwnPjEEwxttvC/qfoRm1e9Skfyr7tyyAUf
+        rafv5n275AHwe0BZbVRc9yVQf/jDC+HWp9z3hOM=
+X-Google-Smtp-Source: ACHHUZ4reNINvG9G/X29BbXnwaib4xAB/l15yFR7cSuckXMLoATSsLh/P+e9JbZ3rK91o8w8mv0MVg==
+X-Received: by 2002:a92:d9c5:0:b0:33a:9ef4:d32d with SMTP id n5-20020a92d9c5000000b0033a9ef4d32dmr3255033ilq.0.1685030855419;
+        Thu, 25 May 2023 09:07:35 -0700 (PDT)
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com. [209.85.166.178])
+        by smtp.gmail.com with ESMTPSA id o23-20020a056638125700b0041680e474a1sm482091jas.70.2023.05.25.09.07.34
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 May 2023 09:07:34 -0700 (PDT)
+Received: by mail-il1-f178.google.com with SMTP id e9e14a558f8ab-33164ec77ccso191665ab.0
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 09:07:34 -0700 (PDT)
+X-Received: by 2002:a05:6e02:17c5:b0:337:8a1b:b9ee with SMTP id
+ z5-20020a056e0217c500b003378a1bb9eemr1742ilu.14.1685030853923; Thu, 25 May
+ 2023 09:07:33 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230525093159.223817-1-john.ogness@linutronix.de> <20230525093159.223817-5-john.ogness@linutronix.de>
+In-Reply-To: <20230525093159.223817-5-john.ogness@linutronix.de>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 25 May 2023 09:07:22 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UPZOOW-K8XMfnjn-BGaMnr6Ee44FimpB=ZnrOJ6N3ngA@mail.gmail.com>
+Message-ID: <CAD=FV=UPZOOW-K8XMfnjn-BGaMnr6Ee44FimpB=ZnrOJ6N3ngA@mail.gmail.com>
+Subject: Re: [PATCH tty v1 4/8] serial: core: lock port for start_rx() in uart_resume_port()
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 25 May 2023 14:22:46 +0300
-andy.shevchenko@gmail.com wrote:
+Hi,
 
-> Thu, May 25, 2023 at 12:03:23AM -0400, Hugo Villeneuve kirjoitti:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > If the shared GPIO pins on a dual port/channel variant like the
-> > SC16IS752 are configured as GPIOs for port A, and modem control lines
-> > on port A, we need to translate the Linux GPIO offset to an offset
-> > that is compatible with the I/O registers of the SC16IS7XX (IOState,
-> > IODir and IOIntEna).
-> > 
-> > Add a new variable to store that offset and set it when we detect that
-> > special case.
-> 
-> ...
-> 
-> > +/*
-> > + * We may need to translate the Linux GPIO offset to a SC16IS7XX offset.
-> > + * This is needed only for the case where a dual port variant is configured to
-> > + * have only port B as modem status lines.
-> > + *
-> > + * Example for SC16IS752/762 with upper bank (port A) set as GPIOs, and
-> > + * lower bank (port B) set as modem status lines (special case described above):
-> > + *
-> > + * Pin         GPIO pin     Linux GPIO     SC16IS7XX
-> > + * name        function     offset         offset
-> > + * --------------------------------------------------
-> > + * GPIO7/RIA    GPIO7          3              7
-> > + * GPIO6/CDA    GPIO6          2              6
-> > + * GPIO5/DTRA   GPIO5          1              5
-> > + * GPIO4/DSRA   GPIO4          0              4
-> > + * GPIO3/RIB    RIB           N/A            N/A
-> > + * GPIO2/CDB    CDB           N/A            N/A
-> > + * GPIO1/DTRB   DTRB          N/A            N/A
-> > + * GPIO0/DSRB   DSRB          N/A            N/A
-> > + *
-> > + * Example  for SC16IS750/760 with upper bank (7..4) set as modem status lines,
-> 
-> Single space is enough.
+On Thu, May 25, 2023 at 2:34=E2=80=AFAM John Ogness <john.ogness@linutronix=
+.de> wrote:
+>
+> The only user of the start_rx() callback (qcom_geni) directly calls
+> its own stop_rx() callback. Since stop_rx() requires that the
+> port->lock is taken and interrupts are disabled, the start_rx()
+> callback has the same requirement.
+>
+> Fixes: cfab87c2c271 ("serial: core: Introduce callback for start_rx and d=
+o stop_rx in suspend only if this callback implementation is present.")
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  drivers/tty/serial/serial_core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index 37ad53616372..f856c7fae2fd 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2430,8 +2430,11 @@ int uart_resume_port(struct uart_driver *drv, stru=
+ct uart_port *uport)
+>                 if (console_suspend_enabled)
+>                         uart_change_pm(state, UART_PM_STATE_ON);
+>                 uport->ops->set_termios(uport, &termios, NULL);
+> -               if (!console_suspend_enabled && uport->ops->start_rx)
+> +               if (!console_suspend_enabled && uport->ops->start_rx) {
+> +                       spin_lock_irq(&uport->lock);
+>                         uport->ops->start_rx(uport);
+> +                       spin_unlock_irq(&uport->lock);
+> +               }
 
-Fixed.
+Seems right, but shouldn't you also fix the call to stop_rx() that the
+same commit cfab87c2c271 ("serial: core: Introduce callback for
+start_rx and do stop_rx in suspend only if this callback
+implementation is present.") added? That one is also missing the lock,
+right?
 
- 
-> > + * and lower bank (3..0) as GPIOs:
-> > + *
-> > + * Pin         GPIO pin     Linux GPIO     SC16IS7XX
-> > + * name        function     offset         offset
-> > + * --------------------------------------------------
-> > + * GPIO7/RI     RI            N/A            N/A
-> > + * GPIO6/CD     CD            N/A            N/A
-> > + * GPIO5/DTR    DTR           N/A            N/A
-> > + * GPIO4/DSR    DSR           N/A            N/A
-> > + * GPIO3        GPIO3          3              3
-> > + * GPIO2        GPIO2          2              2
-> > + * GPIO1        GPIO1          1              1
-> > + * GPIO0        GPIO0          0              0
-> > + */
-> 
-> Wondering if you can always register 8 pins and use valid mask to define which
-> one are in use?
-
-I will look into it, I think it may be a good idea and could help to simplify things a bit.
-
-Hugo.
+-Doug
