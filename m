@@ -2,35 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5094C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 13:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FBDC7EE29
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 13:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbjEYN0h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 09:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
+        id S241304AbjEYNh4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 09:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235319AbjEYN0g (ORCPT
+        with ESMTP id S241175AbjEYNhz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 09:26:36 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADE8E7;
-        Thu, 25 May 2023 06:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=O+fkr0z/7+sCqRoHFMKwbZJo5J70B+Y4nnwKZDooPGE=; b=H/KcOLrobUmps+UFkAM5r179/p
-        6ztKhXMKtBX1hfVyQtRj3f9RNeUzFnwPTamYK4wQAvMkvOju79Gu6v2JohoCN77KEw56rcl70l7lP
-        KMCA5XoKUj3fZlM2i4eRcbV1Ng5Lm/0WR5S2KZvJjETXXwfVny7aWB6VHv58CS6ulw+A=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:47010 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q2Az6-0007jC-52; Thu, 25 May 2023 09:26:28 -0400
-Date:   Thu, 25 May 2023 09:26:27 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     andy.shevchenko@gmail.com
+        Thu, 25 May 2023 09:37:55 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A226189;
+        Thu, 25 May 2023 06:37:54 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id 6a1803df08f44-623921866bfso4214936d6.1;
+        Thu, 25 May 2023 06:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685021873; x=1687613873;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nsSHALAsMKukrtmUiJgckekRC7Xr3Hckq7yajpTmIdM=;
+        b=Z6WDfgLoM9sg8yoUUmKWkOuatboVl1Lf46DaVTQmR84jCP6kdZCgrzPasEsnsupakm
+         Ojuwgr1RCQOZ+DMDJ5zzt5gOFtRzIAz+aiPTd2/CKEwEFXJJ9riktR+PEkEBzexel91T
+         d5DxajXvriNo69hsCjAgwuRWObVOYmV/BiQ/Dd1XcQks/1xsxxZ+VQDFqSMcoRQOXRVC
+         Ll2v3mWTdFF8ShzxIXV0SJxhtWbXInXB14jlwfPEJE6D/GSIs1jJ/6+q4mg7zsaPlc/U
+         sFfd2caKAyLEqBT7ycT3HRseB6KjOrCWb/U7iroUGbA2hgatKM2eQeGw1ACAXsAonN49
+         etoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685021873; x=1687613873;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nsSHALAsMKukrtmUiJgckekRC7Xr3Hckq7yajpTmIdM=;
+        b=hKoGOkd7piPW9/E+czPtiQ3rKYeMC0W2ogXSzPb5AIXBKHFX2mHLK58NgCwUta4Eps
+         X+MxwMo+mGh9Xs0514ekhHyvYqfmKTKQMIA7Q/s1g3JoISRFEhAD9fPvzZLzL6CJ1N14
+         Gg3H5Z4KjtjYXlFSZE8M3kKh9r38UD7VnamFN6ChSko8RoFpzMMV6J4Gyyz2a4eLHLam
+         k0SdvrVVZpIRrra9Xt2VFlQCWXOHAhWi/pcgo5itoa+w8vmnOQ9JJ1b/3ac75wz6zqYY
+         +zhdIz/V+Wd0bNnq9ALfqfBtRwxDd/rMAlIAQhXXedxr6ivlx8mLwt0ZbG8JEph9Cj8I
+         ICGw==
+X-Gm-Message-State: AC+VfDyUfB2f1m5igs9nxMd53ljJgguXaP6sKSmz/oXd++UKqPg3qHpn
+        5sg+yY3zFyuhbaNwc7k5ybgqU5BSbDbANRQKLKE85yAysow=
+X-Google-Smtp-Source: ACHHUZ63JuzKH6ZAhBoClRi8mKfFsNB3KpcYNMw7K/05YNYZbeuQi36TcaQJUo8i/MRcAef3k7H3JRwtMKtgwk6bCmI=
+X-Received: by 2002:ad4:5d4e:0:b0:5ef:8ae8:9adb with SMTP id
+ jk14-20020ad45d4e000000b005ef8ae89adbmr1336967qvb.37.1685021873493; Thu, 25
+ May 2023 06:37:53 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230525040324.3773741-1-hugo@hugovil.com> <ZG84KCeMIINFVTMh@surfacebook>
+ <20230525092627.edf4f7f9df4b9b1cf7b568a4@hugovil.com>
+In-Reply-To: <20230525092627.edf4f7f9df4b9b1cf7b568a4@hugovil.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 25 May 2023 16:37:17 +0300
+Message-ID: <CAHp75VenvvkC1evsmhSBNT5=V=D92RX1JXnwZWAtsJ2TrADvRA@mail.gmail.com>
+Subject: Re: [PATCH v3 00/11] serial: sc16is7xx: fix GPIO regression and rs485 improvements
+To:     Hugo Villeneuve <hugo@hugovil.com>
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
         jirislaby@kernel.org, jringle@gridpoint.com,
@@ -38,79 +63,54 @@ Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Message-Id: <20230525092627.edf4f7f9df4b9b1cf7b568a4@hugovil.com>
-In-Reply-To: <ZG84KCeMIINFVTMh@surfacebook>
-References: <20230525040324.3773741-1-hugo@hugovil.com>
-        <ZG84KCeMIINFVTMh@surfacebook>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v3 00/11] serial: sc16is7xx: fix GPIO regression and
- rs485 improvements
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 25 May 2023 13:27:52 +0300
-andy.shevchenko@gmail.com wrote:
+On Thu, May 25, 2023 at 4:26=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> =
+wrote:
+> On Thu, 25 May 2023 13:27:52 +0300
+> andy.shevchenko@gmail.com wrote:
+> > Thu, May 25, 2023 at 12:03:13AM -0400, Hugo Villeneuve kirjoitti:
+> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > >
+> > > Hello,
+> > > this patch series mainly fixes a GPIO regression and improve RS485 fl=
+ags and properties
+> > > detection from DT.
+> > >
+> > > It now also includes various small fixes and improvements that were p=
+reviously
+> > > sent as separate patches, but that made testing everything difficult.
+> >
+> > > Patches 1 and 2 are simple comments fix/improvements.
+> >
+> > Usually we put fixes at the beginning of the series, but these patches =
+are
+> > missing Fixed tag. Are they really fixes or can be simply moved to the =
+end of
+> > the series?
+>
+> these are not code fixes, they are comments improvements. I was not aware=
+ that you need to put a Fixes tag for correcting syntax errors in comments,=
+ or adding comments to improve clarity.
+>
+> I often submit such comments patches but was never asked to put a Fixes t=
+ag before. Seems strange to me...
 
-> Thu, May 25, 2023 at 12:03:13AM -0400, Hugo Villeneuve kirjoitti:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > Hello,
-> > this patch series mainly fixes a GPIO regression and improve RS485 flags and properties
-> > detection from DT.
-> > 
-> > It now also includes various small fixes and improvements that were previously
-> > sent as separate patches, but that made testing everything difficult.
-> 
-> > Patches 1 and 2 are simple comments fix/improvements.
-> 
-> Usually we put fixes at the beginning of the series, but these patches are
-> missing Fixed tag. Are they really fixes or can be simply moved to the end of
-> the series?
+In this case there are probably no conflicts, but the usual grouping
+of patches is following
+1) fixes that may be backported;
+2) cleanups / refactoring /etc;
+3) new features.
+4) additional light-weit cleanups, such as whitespace cleaning (it's a
+radical, we probably do not accept pure whitespace cleaning patches,
+but you got the idea).
 
-Hi,
-these are not code fixes, they are comments improvements. I was not aware that you need to put a Fixes tag for correcting syntax errors in comments, or adding comments to improve clarity.
+Seems patches 1 and 2 fall into category 4).
 
-I often submit such comments patches but was never asked to put a Fixes tag before. Seems strange to me...
-
-Hugo.
-
-> > Patch 3 fixes an issue when debugging IOcontrol register. After testing the GPIO
-> > regression patches (patches 6 and 7, tests done by Lech Perczak), it appers that
-> > this patch is also necessary for having the correct IOcontrol register values.
-> > 
-> > Patch 4 introduces a delay after a reset operation to respect datasheet
-> > timing recommandations.
-> > 
-> > Patch 5 fixes an issue with init of first port during probing. This commit
-> > brings some questions and I appreciate if people from the serial subsystem could
-> > comment on my proposed solution.
-> > 
-> > Patch 6 fixes a bug with the output value when first setting the GPIO direction.
-> > 
-> > Patch 7, 8 and 9 fix a GPIO regression by (re)allowing to choose GPIO function for
-> > GPIO pins shared with modem status lines.
-> > 
-> > Patch 10 allows to read common rs485 device-tree flags and properties.
-> > 
-> > Patch 11 add a custom dump function as relying on regmal debugfs is not really
-> > practical for this driver.
-> > 
-> > I have tested the changes on a custom board with two SC16IS752 DUART using a
-> > Variscite IMX8MN NANO SOM.
-> 
-> Other comments are per individual emails.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-> 
+--=20
+With Best Regards,
+Andy Shevchenko
