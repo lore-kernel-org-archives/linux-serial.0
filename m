@@ -2,60 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8627C7EE2F
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F26C77B7E
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240602AbjEYJen (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 05:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        id S240547AbjEYJfI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 05:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240503AbjEYJek (ORCPT
+        with ESMTP id S240605AbjEYJek (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 25 May 2023 05:34:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF70919C;
-        Thu, 25 May 2023 02:34:30 -0700 (PDT)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D0A1B4;
+        Thu, 25 May 2023 02:34:33 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1685007268;
+        s=2020; t=1685007270;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4NGWDH2m9xz3zGie63zl1kcLGjTJ0fX1VflVrGzz2ZQ=;
-        b=Kja8EByGHMg80rkSKT9+A6oAP7Ytw5mSKQu0+uGfVfwe5tVdGCEi5josuEM1SwN606+mom
-        tJOhrFWIt2zJG+DlK5DjPmWfVz6loRqSChpbkp8HXvZab2zEzJXhmgL0k+AWUZunXGh4bK
-        ZB+SftTZW59pKhVFlzUNZNYOpZMdX8zxvpepVbJv55/P+jYmWnd8ln/AejbG3dDoZJevAa
-        J7Qto8rkUPaEA13Qh78iauHtxD9/MNjhQsamwocWO64h7fGgSzp5rGrAHv5Xn4mRXNmpig
-        fi0pD7NC4PYFiEdTiZBJclw3eqzxfLzFQqzujGa99ba9O296DwZrG+8YpmfJ+w==
+        bh=TAVFpLxJcM8gO8l/0bCuwkiWYAOYDDSeRboLXbR9Aek=;
+        b=ykmKrFJzIEPB1IJaAecFMnbuPRNqq8W4v0ilizJRs2eB4zd7ETFHwUxbF6Df2nqmYD3Iq+
+        fVFjwJfAyXYbyQ05LIMuNPGD+V8a3Qfq+DoyY8wFHmCWzMRxEySwmgevQYbQSAebVZ88wu
+        sda0dyy9wmEABP85uFpf+hZ2J1e7hZFZpvTZi6Vacwpz2CIeNzQvnrJDeaJlwwdrf2ERWc
+        qT0fokVrR9JnRGf0lWBhxElkKlDcyksM6NBA/+ksbX+eoOEuwM9K7cf8p0ox724pBIn+Ho
+        qsqu64ECv7iV41bH5ziiJqXDxAN8+hvvf2wTF8cDXJ/PW6fNBRIYGFAvWGKNHw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1685007268;
+        s=2020e; t=1685007270;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4NGWDH2m9xz3zGie63zl1kcLGjTJ0fX1VflVrGzz2ZQ=;
-        b=mmiTP6jCW1+KvC8QM+LWeB5WcVHbyStKgJqzDNEQsZrG0o3PYsrEqd/a7KE5S+4YPNPZjx
-        20P+WWxS57IdbmBQ==
+        bh=TAVFpLxJcM8gO8l/0bCuwkiWYAOYDDSeRboLXbR9Aek=;
+        b=gCBfiyyGHO59EVDJPrbMzAqqpgW3m+JHu7zU/NjqtshBqw/l5TgEsDdTfEc/lNCqnfW0rW
+        3RBdS105E0pyplAw==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-        Matthew Howell <matthew.howell@sealevel.com>,
         Tony Lindgren <tony@atomide.com>,
         Lukas Wunner <lukas@wunner.de>,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org
-Subject: [PATCH tty v1 1/8] serial: 8250: lock port in startup() callbacks
-Date:   Thu, 25 May 2023 11:37:52 +0206
-Message-Id: <20230525093159.223817-2-john.ogness@linutronix.de>
+        linux-serial@vger.kernel.org
+Subject: [PATCH tty v1 5/8] serial: 8250: lock port for rx_dma() callback
+Date:   Thu, 25 May 2023 11:37:56 +0206
+Message-Id: <20230525093159.223817-6-john.ogness@linutronix.de>
 In-Reply-To: <20230525093159.223817-1-john.ogness@linutronix.de>
 References: <20230525093159.223817-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -64,142 +57,71 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-uart_ops startup() callback is called without interrupts
-disabled and without port->lock locked, relatively late during the
-boot process (from the call path of console_on_rootfs()). If the
-device is a console, it was already previously registered and could
-be actively printing messages.
+The rx_dma() callback (omap_8250_rx_dma) accesses UART_IER. This
+register is modified twice by each console write
+(serial8250_console_write()) under the port lock. However, not
+all calls to the rx_dma() callback are under the port lock.
 
-The console printing function serial8250_console_write() modifies
-the interrupt register (UART_IER) under the port->lock with the
-pattern: read, clear, restore.
+Add the missing port locking around rx_dma() callback calls. Add
+lockdep notation to the omap_8250_rx_dma().
 
-Since some startup() callbacks are modifying UART_IER without the
-port->lock locked, it is possible that the value intended to be
-written by the startup() callback will get overwritten and be
-lost.
+Note that this is not fixing a real problem because:
 
-CPU0                           CPU1
-serial8250_console_write       omap_8250_startup
---------------------------     -----------------
-spin_lock(port->lock)
-oldval = read(UART_IER)
-uart_console_write()
-                               write(newval, UART_IER)
-write(oldval, UART_IER)
-spin_unlock(port->lock)
+1. Currently DMA is forced off for 8250_omap consoles.
 
-Add port->lock synchronization to the 8250 startup() callbacks
-where they need to access UART_IER. This avoids racing with
-serial8250_console_write().
+2. The serial devices are resumed before console printing is enabled.
+
+However, adding this locking allows for clean locking semantics
+for the rx_dma() callback so that lockdep can be used to identify
+possible problems in the future. It also simplifies synchronization
+of UART_IER in general by not needing to rely on implementation
+details such as 1 and 2.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/tty/serial/8250/8250_bcm7271.c |  4 ++++
- drivers/tty/serial/8250/8250_exar.c    |  4 ++++
- drivers/tty/serial/8250/8250_omap.c    |  3 +++
- drivers/tty/serial/8250/8250_port.c    | 18 ++++++++++++++++--
- 4 files changed, 27 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index f801b1f5b46c..2b38bcc5112e 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -605,9 +605,13 @@ static int brcmuart_startup(struct uart_port *port)
- 	/*
- 	 * Disable the Receive Data Interrupt because the DMA engine
- 	 * will handle this.
-+	 *
-+	 * Synchronize UART_IER access against the console.
- 	 */
-+	spin_lock_irq(&port->lock);
- 	up->ier &= ~UART_IER_RDI;
- 	serial_port_out(port, UART_IER, up->ier);
-+	spin_unlock_irq(&port->lock);
- 
- 	priv->tx_running = false;
- 	priv->dma.rx_dma = NULL;
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 64770c62bbec..ae66ef9d863c 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -194,8 +194,12 @@ static int xr17v35x_startup(struct uart_port *port)
- 	/*
- 	 * Make sure all interrups are masked until initialization is
- 	 * complete and the FIFOs are cleared
-+	 *
-+	 * Synchronize UART_IER access against the console.
- 	 */
-+	spin_lock_irq(&port->lock);
- 	serial_port_out(port, UART_IER, 0);
-+	spin_unlock_irq(&port->lock);
- 
- 	return serial8250_do_startup(port);
- }
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 5c093dfcee1d..fbca0692aa51 100644
+index c17d98161d5e..3cb9cfa62331 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -710,8 +710,11 @@ static int omap_8250_startup(struct uart_port *port)
- 		up->dma = NULL;
- 	}
+@@ -728,8 +728,11 @@ static int omap_8250_startup(struct uart_port *port)
+ 		priv->wer |= OMAP_UART_TX_WAKEUP_EN;
+ 	serial_out(up, UART_OMAP_WER, priv->wer);
  
-+	/* Synchronize UART_IER access against the console. */
-+	spin_lock_irq(&port->lock);
- 	up->ier = UART_IER_RLSI | UART_IER_RDI;
- 	serial_out(up, UART_IER, up->ier);
-+	spin_unlock_irq(&port->lock);
+-	if (up->dma && !(priv->habit & UART_HAS_EFR2))
++	if (up->dma && !(priv->habit & UART_HAS_EFR2)) {
++		spin_lock_irq(&port->lock);
+ 		up->dma->rx_dma(up);
++		spin_unlock_irq(&port->lock);
++	}
  
- #ifdef CONFIG_PM
- 	up->capabilities |= UART_CAP_RPM;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 0cef9bfd0471..b3971302d8e5 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2149,7 +2149,12 @@ int serial8250_do_startup(struct uart_port *port)
+ 	enable_irq(up->port.irq);
  
- 	serial8250_rpm_get(up);
- 	if (port->type == PORT_16C950) {
--		/* Wake up and initialize UART */
-+		/*
-+		 * Wake up and initialize UART
-+		 *
-+		 * Synchronize UART_IER access against the console.
-+		 */
-+		spin_lock_irqsave(&port->lock, flags);
- 		up->acr = 0;
- 		serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
- 		serial_port_out(port, UART_EFR, UART_EFR_ECB);
-@@ -2159,12 +2164,19 @@ int serial8250_do_startup(struct uart_port *port)
- 		serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
- 		serial_port_out(port, UART_EFR, UART_EFR_ECB);
- 		serial_port_out(port, UART_LCR, 0);
-+		spin_unlock_irqrestore(&port->lock, flags);
- 	}
+@@ -1003,6 +1006,9 @@ static int omap_8250_rx_dma(struct uart_8250_port *p)
+ 	unsigned long			flags;
+ 	u32				reg;
  
- 	if (port->type == PORT_DA830) {
--		/* Reset the port */
-+		/*
-+		 * Reset the port
-+		 *
-+		 * Synchronize UART_IER access against the console.
-+		 */
-+		spin_lock_irqsave(&port->lock, flags);
- 		serial_port_out(port, UART_IER, 0);
- 		serial_port_out(port, UART_DA830_PWREMU_MGMT, 0);
-+		spin_unlock_irqrestore(&port->lock, flags);
- 		mdelay(10);
++	/* Port locked to synchronize UART_IER access against the console. */
++	lockdep_assert_held_once(&p->port.lock);
++
+ 	if (priv->rx_dma_broken)
+ 		return -EINVAL;
  
- 		/* Enable Tx, Rx and free run mode */
-@@ -2275,6 +2287,8 @@ int serial8250_do_startup(struct uart_port *port)
- 		 * this interrupt whenever the transmitter is idle and
- 		 * the interrupt is enabled.  Delays are necessary to
- 		 * allow register changes to become visible.
-+		 *
-+		 * Synchronize UART_IER access against the console.
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
+@@ -1736,8 +1742,11 @@ static int omap8250_runtime_resume(struct device *dev)
+ 	if (up && omap8250_lost_context(up))
+ 		omap8250_restore_regs(up);
  
+-	if (up && up->dma && up->dma->rxchan && !(priv->habit & UART_HAS_EFR2))
++	if (up && up->dma && up->dma->rxchan && !(priv->habit & UART_HAS_EFR2)) {
++		spin_lock_irq(&up->port.lock);
+ 		omap_8250_rx_dma(up);
++		spin_unlock_irq(&up->port.lock);
++	}
+ 
+ 	priv->latency = priv->calc_latency;
+ 	schedule_work(&priv->qos_work);
 -- 
 2.30.2
 
