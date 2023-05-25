@@ -2,33 +2,33 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10830C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 13:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5094C77B7E
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 13:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241181AbjEYNTX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 09:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        id S241202AbjEYN0h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 09:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbjEYNTW (ORCPT
+        with ESMTP id S235319AbjEYN0g (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 09:19:22 -0400
+        Thu, 25 May 2023 09:26:36 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9446D99;
-        Thu, 25 May 2023 06:19:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADE8E7;
+        Thu, 25 May 2023 06:26:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
         ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
         References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=BiYBStJNOLDU6CVASAjjdQmOaxZ6ZXmr39+ac65rV2c=; b=xgQlUEJoApDfjNzRhAZ7nyE3w8
-        XU78wFcub24VIs36AQ6Knnp4wy8htPszdMNdCkxvAy89Wj4Jj8gE2EGbhc7e5LSvDhdIkFgn5UcdX
-        sMLInSML3Ay/xFAWVJ8l0j6z+7fp5g2aBp5omZ4Nc7jvjZzLy3oD36O1KX79g4UvQU7M=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:37108 helo=pettiford)
+        bh=O+fkr0z/7+sCqRoHFMKwbZJo5J70B+Y4nnwKZDooPGE=; b=H/KcOLrobUmps+UFkAM5r179/p
+        6ztKhXMKtBX1hfVyQtRj3f9RNeUzFnwPTamYK4wQAvMkvOju79Gu6v2JohoCN77KEw56rcl70l7lP
+        KMCA5XoKUj3fZlM2i4eRcbV1Ng5Lm/0WR5S2KZvJjETXXwfVny7aWB6VHv58CS6ulw+A=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:47010 helo=pettiford)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1q2Arp-0007ff-Ub; Thu, 25 May 2023 09:18:58 -0400
-Date:   Thu, 25 May 2023 09:18:57 -0400
+        id 1q2Az6-0007jC-52; Thu, 25 May 2023 09:26:28 -0400
+Date:   Thu, 25 May 2023 09:26:27 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     andy.shevchenko@gmail.com
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
@@ -38,38 +38,79 @@ Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Message-Id: <20230525091857.612b591997faa964dfdfe1f6@hugovil.com>
-In-Reply-To: <ZG84rnwh3XTdY-iy@surfacebook>
+Message-Id: <20230525092627.edf4f7f9df4b9b1cf7b568a4@hugovil.com>
+In-Reply-To: <ZG84KCeMIINFVTMh@surfacebook>
 References: <20230525040324.3773741-1-hugo@hugovil.com>
-        <20230525040324.3773741-5-hugo@hugovil.com>
-        <ZG84rnwh3XTdY-iy@surfacebook>
+        <ZG84KCeMIINFVTMh@surfacebook>
 X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v3 04/11] serial: sc16is7xx: add post reset delay
+Subject: Re: [PATCH v3 00/11] serial: sc16is7xx: fix GPIO regression and
+ rs485 improvements
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 25 May 2023 13:30:06 +0300
+On Thu, 25 May 2023 13:27:52 +0300
 andy.shevchenko@gmail.com wrote:
 
-> Thu, May 25, 2023 at 12:03:17AM -0400, Hugo Villeneuve kirjoitti:
+> Thu, May 25, 2023 at 12:03:13AM -0400, Hugo Villeneuve kirjoitti:
 > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > 
-> > Make sure we wait at least 3us before initiating communication with
-> > the device after reset.
+> > Hello,
+> > this patch series mainly fixes a GPIO regression and improve RS485 flags and properties
+> > detection from DT.
+> > 
+> > It now also includes various small fixes and improvements that were previously
+> > sent as separate patches, but that made testing everything difficult.
 > 
-> ...
+> > Patches 1 and 2 are simple comments fix/improvements.
 > 
-> > +	usleep_range(3, 5);
-> 
-> I would put (5, 10) instead to relax a bit the scheduler.
+> Usually we put fixes at the beginning of the series, but these patches are
+> missing Fixed tag. Are they really fixes or can be simply moved to the end of
+> the series?
 
 Hi,
-Ok, done.
+these are not code fixes, they are comments improvements. I was not aware that you need to put a Fixes tag for correcting syntax errors in comments, or adding comments to improve clarity.
+
+I often submit such comments patches but was never asked to put a Fixes tag before. Seems strange to me...
+
+Hugo.
+
+> > Patch 3 fixes an issue when debugging IOcontrol register. After testing the GPIO
+> > regression patches (patches 6 and 7, tests done by Lech Perczak), it appers that
+> > this patch is also necessary for having the correct IOcontrol register values.
+> > 
+> > Patch 4 introduces a delay after a reset operation to respect datasheet
+> > timing recommandations.
+> > 
+> > Patch 5 fixes an issue with init of first port during probing. This commit
+> > brings some questions and I appreciate if people from the serial subsystem could
+> > comment on my proposed solution.
+> > 
+> > Patch 6 fixes a bug with the output value when first setting the GPIO direction.
+> > 
+> > Patch 7, 8 and 9 fix a GPIO regression by (re)allowing to choose GPIO function for
+> > GPIO pins shared with modem status lines.
+> > 
+> > Patch 10 allows to read common rs485 device-tree flags and properties.
+> > 
+> > Patch 11 add a custom dump function as relying on regmal debugfs is not really
+> > practical for this driver.
+> > 
+> > I have tested the changes on a custom board with two SC16IS752 DUART using a
+> > Variscite IMX8MN NANO SOM.
+> 
+> Other comments are per individual emails.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+> 
