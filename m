@@ -2,106 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C48C7EE2F
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 16:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E33C77B7A
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 17:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235827AbjEYQ1n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 12:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
+        id S233104AbjEYRVK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 13:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240568AbjEYQ1P (ORCPT
+        with ESMTP id S230129AbjEYRVJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 12:27:15 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8D8E6E;
-        Thu, 25 May 2023 09:27:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=spc29Cm0a+oO128y4mo0IaM9JJ5/Y6pCdvJ8tr2Dfag=; b=sEI6Kn0a/+TFGY+DqA8SqsqAMN
-        r7wV/N+GHENm2Gx0P3CUwavLtTrdIDeJfvkRnuCSc3HzFZzTQd67RxcBAT3dA7+CfxrwV85NQuG10
-        zRwGHZMZ79ECgzmQGchKlnTlACoWCjc7DnZDP+G0S405EljESD4eSB/MtdNl5raXm245Eg0NWlGEf
-        Hz6I5Yc+uVW2wh1GyuVmvu2tBufkFykrDMWiVbr6lPOV1EJhjKd5789WUng75huN0nTLl4IE+AMb0
-        xJvhIHyFZSAAZIqnh4u87tCrTL07cphpiuPcS3XioCP/E/HEguj6wQubhuKM3Y84R3pHu+rEEvh5q
-        KO5lmlHQ==;
-Received: from [2601:1c2:980:9ec0::2764]
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1q2Dnk-00H5bT-26;
-        Thu, 25 May 2023 16:26:56 +0000
-Message-ID: <dd0e4fac-16ef-5ca6-db8d-21ecf1c0e802@infradead.org>
-Date:   Thu, 25 May 2023 09:26:55 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v2 1/2] soc: fsl: cpm1: Fix TSA and QMC dependencies in
- case of COMPILE_TEST
-Content-Language: en-US
-To:     Herve Codina <herve.codina@bootlin.com>,
-        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel test robot <lkp@intel.com>
-References: <20230523085902.75837-1-herve.codina@bootlin.com>
- <20230523085902.75837-2-herve.codina@bootlin.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20230523085902.75837-2-herve.codina@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
+        Thu, 25 May 2023 13:21:09 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A49195;
+        Thu, 25 May 2023 10:21:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=b9Zte/1jFhBuFVD5ydCZfQdpJv9ttP11KPikJhqUxls=; b=AXPlcTFdx9qZlDVeR7WrLfgkZR
+        8oVfKSuX/aewdBSKXqeOW5wDnFjnzXEBBjxe3iBNWEJIRhEks7aVeUdNTuQ1f8p5GJmNNBpbyYKBs
+        uIhxlpQX3BKTy18j4WJTm8XESWyN0IgKrCbhaWZ3nLuV0jkYWZ8yVdXaizUb7TZWcL+g=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:50040 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q2Edr-0001iA-0O; Thu, 25 May 2023 13:20:54 -0400
+Date:   Thu, 25 May 2023 13:20:46 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Message-Id: <20230525132046.6c48f2fd9235215f01238a04@hugovil.com>
+In-Reply-To: <20230525113145.35cef67328b63ba4239d2361@hugovil.com>
+References: <20230525040324.3773741-1-hugo@hugovil.com>
+        <20230525040324.3773741-10-hugo@hugovil.com>
+        <ZG9FBgX2useVeuWl@surfacebook>
+        <20230525113145.35cef67328b63ba4239d2361@hugovil.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v3 09/11] serial: sc16is7xx: add I/O register
+ translation offset
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, 25 May 2023 11:31:45 -0400
+Hugo Villeneuve <hugo@hugovil.com> wrote:
 
-
-On 5/23/23 01:59, Herve Codina wrote:
-> In order to compile tsa.c and qmc.c, CONFIG_CPM must be set.
+> On Thu, 25 May 2023 14:22:46 +0300
+> andy.shevchenko@gmail.com wrote:
 > 
-> Without this dependency, the linker fails with some missing
-> symbols for COMPILE_TEST configurations that need QMC without
-> enabling CPM.
+> > Thu, May 25, 2023 at 12:03:23AM -0400, Hugo Villeneuve kirjoitti:
+> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > 
+> > > If the shared GPIO pins on a dual port/channel variant like the
+> > > SC16IS752 are configured as GPIOs for port A, and modem control lines
+> > > on port A, we need to translate the Linux GPIO offset to an offset
+> > > that is compatible with the I/O registers of the SC16IS7XX (IOState,
+> > > IODir and IOIntEna).
+> > > 
+> > > Add a new variable to store that offset and set it when we detect that
+> > > special case.
+> > 
+> > ...
+> > 
+> > > +/*
+> > > + * We may need to translate the Linux GPIO offset to a SC16IS7XX offset.
+> > > + * This is needed only for the case where a dual port variant is configured to
+> > > + * have only port B as modem status lines.
+> > > + *
+> > > + * Example for SC16IS752/762 with upper bank (port A) set as GPIOs, and
+> > > + * lower bank (port B) set as modem status lines (special case described above):
+> > > + *
+> > > + * Pin         GPIO pin     Linux GPIO     SC16IS7XX
+> > > + * name        function     offset         offset
+> > > + * --------------------------------------------------
+> > > + * GPIO7/RIA    GPIO7          3              7
+> > > + * GPIO6/CDA    GPIO6          2              6
+> > > + * GPIO5/DTRA   GPIO5          1              5
+> > > + * GPIO4/DSRA   GPIO4          0              4
+> > > + * GPIO3/RIB    RIB           N/A            N/A
+> > > + * GPIO2/CDB    CDB           N/A            N/A
+> > > + * GPIO1/DTRB   DTRB          N/A            N/A
+> > > + * GPIO0/DSRB   DSRB          N/A            N/A
+> > > + *
+> > > + * Example  for SC16IS750/760 with upper bank (7..4) set as modem status lines,
+> > 
+> > Single space is enough.
 > 
-> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Link: https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
-
-Fixes all of my CPM build issues. (with patch 2/2 also applied)
-Thanks.
-
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
-
-> ---
->  drivers/soc/fsl/qe/Kconfig | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Fixed.
 > 
-> diff --git a/drivers/soc/fsl/qe/Kconfig b/drivers/soc/fsl/qe/Kconfig
-> index 7268c2fbcbc1..e0d096607fef 100644
-> --- a/drivers/soc/fsl/qe/Kconfig
-> +++ b/drivers/soc/fsl/qe/Kconfig
-> @@ -36,7 +36,7 @@ config UCC
->  config CPM_TSA
->  	tristate "CPM TSA support"
->  	depends on OF && HAS_IOMEM
-> -	depends on CPM1 || COMPILE_TEST
-> +	depends on CPM1 || (CPM && COMPILE_TEST)
->  	help
->  	  Freescale CPM Time Slot Assigner (TSA)
->  	  controller.
-> @@ -47,7 +47,7 @@ config CPM_TSA
->  config CPM_QMC
->  	tristate "CPM QMC support"
->  	depends on OF && HAS_IOMEM
-> -	depends on CPM1 || (FSL_SOC && COMPILE_TEST)
-> +	depends on CPM1 || (FSL_SOC && CPM && COMPILE_TEST)
->  	depends on CPM_TSA
->  	help
->  	  Freescale CPM QUICC Multichannel Controller
+>  
+> > > + * and lower bank (3..0) as GPIOs:
+> > > + *
+> > > + * Pin         GPIO pin     Linux GPIO     SC16IS7XX
+> > > + * name        function     offset         offset
+> > > + * --------------------------------------------------
+> > > + * GPIO7/RI     RI            N/A            N/A
+> > > + * GPIO6/CD     CD            N/A            N/A
+> > > + * GPIO5/DTR    DTR           N/A            N/A
+> > > + * GPIO4/DSR    DSR           N/A            N/A
+> > > + * GPIO3        GPIO3          3              3
+> > > + * GPIO2        GPIO2          2              2
+> > > + * GPIO1        GPIO1          1              1
+> > > + * GPIO0        GPIO0          0              0
+> > > + */
+> > 
+> > Wondering if you can always register 8 pins and use valid mask to define which
+> > one are in use?
+> 
+> I will look into it, I think it may be a good idea and could help to simplify things a bit.
 
--- 
-~Randy
+Hi,
+finally, this was the way to go. The resulting code/patch is much simpler and elegant this way. Thank you for the suggestion.
+
+I will submit a V4 with all the changes.
+
+Hugo.
