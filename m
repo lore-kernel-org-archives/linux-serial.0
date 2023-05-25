@@ -2,59 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84524C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 10:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B838C7EE31
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 11:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240656AbjEYKaM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 06:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58552 "EHLO
+        id S240832AbjEYLDA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 07:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236595AbjEYKaL (ORCPT
+        with ESMTP id S240901AbjEYLCp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 06:30:11 -0400
-Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C5612E
-        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 03:30:10 -0700 (PDT)
-Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
-        by fgw22.mail.saunalahti.fi (Halon) with ESMTP
-        id 1e35e9cc-fae7-11ed-a9de-005056bdf889;
-        Thu, 25 May 2023 13:30:07 +0300 (EEST)
-From:   andy.shevchenko@gmail.com
-Date:   Thu, 25 May 2023 13:30:06 +0300
+        Thu, 25 May 2023 07:02:45 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D43F19C;
+        Thu, 25 May 2023 04:02:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685012564; x=1716548564;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=JUZRchCrUXgDaPejlQfvti7Go2spVqBqTTI8DzIipZk=;
+  b=YFcitSV7sQazdAoXzqK9xD1Ffcf7t23aP1g8v72mqd5DsqZNP28M8Ee2
+   zrnJ3DT0hh1JNdpKrudd/W1kZjOnNTd+l+dMdexEefIOPYy6rCw74927m
+   VjXeUVqMO42j+BIe79wuu7UKfG0kMIAXvLiizfWonpc5LGv8KSlX2ssQg
+   d569LGDn+dQOJkApEXB52HHoZbFDkUxpqgXnM9TM3g2T7VXHVF0MWWwrP
+   U9s5pS4/jwWF4oNtwDtkQfESSaueSby0l+IzVAKkwIgmfc4bqGnoSsKAV
+   JTvjDsjWWy0ZUcdCwOE4MQCzMamiBIWrJbdXuEPcpW7A5OAa9ONTRCi8/
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="338430744"
+X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
+   d="scan'208";a="338430744"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 04:02:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="951402317"
+X-IronPort-AV: E=Sophos;i="6.00,191,1681196400"; 
+   d="scan'208";a="951402317"
+Received: from aghiriba-mobl.ger.corp.intel.com ([10.249.40.17])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 04:02:21 -0700
+Date:   Thu, 25 May 2023 14:02:19 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        jringle@gridpoint.com, tomasz.mon@camlingroup.com,
+        l.perczak@camlintechnologies.com,
+        linux-serial <linux-serial@vger.kernel.org>,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH v3 04/11] serial: sc16is7xx: add post reset delay
-Message-ID: <ZG84rnwh3XTdY-iy@surfacebook>
-References: <20230525040324.3773741-1-hugo@hugovil.com>
- <20230525040324.3773741-5-hugo@hugovil.com>
+Subject: Re: [PATCH v3 03/11] serial: sc16is7xx: mark IOCONTROL register as
+ volatile
+In-Reply-To: <20230525040324.3773741-4-hugo@hugovil.com>
+Message-ID: <751bc02d-d06f-55cb-cb7a-a39871a0775d@linux.intel.com>
+References: <20230525040324.3773741-1-hugo@hugovil.com> <20230525040324.3773741-4-hugo@hugovil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230525040324.3773741-5-hugo@hugovil.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thu, May 25, 2023 at 12:03:17AM -0400, Hugo Villeneuve kirjoitti:
+On Thu, 25 May 2023, Hugo Villeneuve wrote:
+
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> Make sure we wait at least 3us before initiating communication with
-> the device after reset.
+> Bit SRESET (3) is cleared when a reset operation is completed. Having
+> the IOCONTROL register as non-volatile will always read SRESET as 1.
+> Therefore mark IOCONTROL register as a volatile register.
+> 
+> Fixes: dfeae619d781 ("serial: sc16is7xx")
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-...
-
-> +	usleep_range(3, 5);
-
-I would put (5, 10) instead to relax a bit the scheduler.
+What is the impact of this problem? That is, what doesn't work? I only see 
+writes to SC16IS7XX_IOCONTROL_REG. If there are no concrete problems 
+fixed, don't put Fixes tag.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+ i.
 
-
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 00054bb49780..a7c4da3cfd2b 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -488,6 +488,7 @@ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+>  	case SC16IS7XX_TXLVL_REG:
+>  	case SC16IS7XX_RXLVL_REG:
+>  	case SC16IS7XX_IOSTATE_REG:
+> +	case SC16IS7XX_IOCONTROL_REG:
+>  		return true;
+>  	default:
+>  		break;
+> 
