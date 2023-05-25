@@ -2,136 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 272D3C77B7A
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD92C77B7E
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240414AbjEYJee (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 05:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
+        id S240619AbjEYJel (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 05:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240437AbjEYJeb (ORCPT
+        with ESMTP id S240513AbjEYJeg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 05:34:31 -0400
+        Thu, 25 May 2023 05:34:36 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C087C191;
-        Thu, 25 May 2023 02:34:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0001519D;
+        Thu, 25 May 2023 02:34:30 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1685007268;
+        s=2020; t=1685007269;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tqKiheoiS4yq5jJKO080DEclkNiRCw8ceYhBPpYSW10=;
-        b=re+Hu0Q6naTRkLuq5eU7bi7VBahJ3jr8aBUqXzdjEscO6fFefxJ4TqV6CgzTNijC2fRXEj
-        nu/Rl1HplALQsfWCrafjfKln2JD4fEY/y4CGiBpm+F/utJGJna0zH65rWpmFIigo1OXnQ2
-        JQOwRBFtYZ/Cr/UstwBmiZI5kldN8MsDZ+z2CLqSj4/zsFpK1nFj+ND1YuHsq6f0BVYhVJ
-        0n0mY+Ob923slWcssK+rAXjXd+jb9VnRVIF4La9H/mq8kfbp++g2EkNcoBOP2b3btKuEIc
-        0b6z9UrYO9ES6eAX8JQytY6NFHakxcLgBMMlOVqeDuclJyZOtbsuL46JyufeoA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ja3DzHE65weLmaEmyLLj0yo4U8LIunOOQtWnThWK8is=;
+        b=uFW1cntdseBw4Nlcii3FUzxCE96sV9v1tVE5rbCJukpWARo0YvyDW7fNUPGg0FvNu6s1L4
+        t6We7a+2Z00Cq4YA+JMYTYuZrCzXPGgGyJu+VA6wDf9iXY1rTSJq2gin2OAdXzi4jlhSJJ
+        3e5VGO1cy8G/CiPauZwJFH61Mzyo8Z20iM27bMRS7h9OvjQ2RdwbjGLpOPPL6ZUXBR4I36
+        1Ejn83BGTNE4mxbHsoFkj+NO3zwSvdZ1CAdcexT1vBAsCmHNCuGvOHisxD7cSP9Gs2xDTE
+        1RW8HccAkhT8ktSDbML28YHUcHpu+Y80gH4/AE+K4LHshnnL6lSWW05OlabDBA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1685007268;
+        s=2020e; t=1685007269;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tqKiheoiS4yq5jJKO080DEclkNiRCw8ceYhBPpYSW10=;
-        b=r4IBGzHnpEiWatgryztcx7z8+JEUnFfYdoY3NU/fQz+ApYAmVt2J4BJIgkGCYHlUDFC5l5
-        NYrEmYigRZtQ8iBA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ja3DzHE65weLmaEmyLLj0yo4U8LIunOOQtWnThWK8is=;
+        b=XMnjW0U55afe9vxq3aGUAviz6nfwdyywSmRFA3DlpYPJOAS2TclvYZK+gOQ4tF0Z+gwo/b
+        sCv7GuZAsSdAu5AA==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-        Matthew Howell <matthew.howell@sealevel.com>,
         Tony Lindgren <tony@atomide.com>,
         Lukas Wunner <lukas@wunner.de>,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-serial@vger.kernel.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-mediatek@lists.infradead.org
-Subject: [PATCH tty v1 0/8] synchronize UART_IER access against console write
-Date:   Thu, 25 May 2023 11:37:51 +0206
-Message-Id: <20230525093159.223817-1-john.ogness@linutronix.de>
+        linux-serial@vger.kernel.org
+Subject: [PATCH tty v1 3/8] serial: 8250: lock port for stop_rx() in omap8250_irq()
+Date:   Thu, 25 May 2023 11:37:54 +0206
+Message-Id: <20230525093159.223817-4-john.ogness@linutronix.de>
+In-Reply-To: <20230525093159.223817-1-john.ogness@linutronix.de>
+References: <20230525093159.223817-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+The uarts_ops stop_rx() callback expects that the port->lock is
+taken and interrupts are disabled.
 
-In preparation for making the 8250 serial driver the first driver to
-support the upcoming atomic consoles [0], its console write()
-callback (serial8250_console_write) was evaluated. For this callback
-of the 8250 driver there are two critical writes to the UART_IER
-register: once to disable all interrupts before transmitting a line
-of text, and again after transmit to re-enable the previously enabled
-interrupts. These two writes are performed under a single
-synchronized section protected by the port lock.
+Fixes: 1fe0e1fa3209 ("serial: 8250_omap: Handle optional overrun-throttle-ms property")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_omap.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I then checked all other access to UART_IER in the 8250 driver to see
-if they always occurred under the port lock. If not, it would be
-possible that the console write() callback could overwrite or restore
-incorrect values to UART_IER. This is illustrated in the commit
-message of the first patch.
-
-Indeed several call sites were discovered where UART_IER is accessed
-without the port lock. This series adds the missing locking in order
-to ensure UART_IER access is always synchronized against the console
-write() callback.
-
-For call sites where UART_IER access was already performed under the
-port lock, this series adds code comments and (when appropriate)
-lockdep notation to help catch any future issues that may creep in.
-
-Note that some of the new usage of port lock is not strictly
-necessary, because (for example) the console is disabled before it
-is suspended. However, these are not hot paths and by taking the port
-lock it simplifies the synchronization semantics for UART_IER to
-allow general lockdep usage.
-
-Also note that none of these patches have been tagged for stable. The
-possible stable candidates do include Fixes tags. But since the fixes
-are not based on real-world reports, it probably is not necessary to
-backport them.
-
-John Ogness
-
-[0] https://lore.kernel.org/lkml/20230302195618.156940-1-john.ogness@linutronix.de
-
-John Ogness (8):
-  serial: 8250: lock port in startup() callbacks
-  serial: core: lock port for stop_rx() in uart_suspend_port()
-  serial: 8250: lock port for stop_rx() in omap8250_irq()
-  serial: core: lock port for start_rx() in uart_resume_port()
-  serial: 8250: lock port for rx_dma() callback
-  serial: 8250: lock port for omap8250_restore_regs()
-  serial: 8250: lock port for UART_IER access in omap8250_irq()
-  serial: 8250: synchronize and annotate UART_IER access
-
- drivers/tty/serial/8250/8250.h              |  6 ++
- drivers/tty/serial/8250/8250_aspeed_vuart.c |  3 +
- drivers/tty/serial/8250/8250_bcm7271.c      |  4 ++
- drivers/tty/serial/8250/8250_exar.c         |  4 ++
- drivers/tty/serial/8250/8250_mtk.c          |  9 +++
- drivers/tty/serial/8250/8250_omap.c         | 41 +++++++++++-
- drivers/tty/serial/8250/8250_port.c         | 71 ++++++++++++++++++++-
- drivers/tty/serial/serial_core.c            | 10 ++-
- 8 files changed, 141 insertions(+), 7 deletions(-)
-
-
-base-commit: d5b3d02d0b107345f2a6ecb5b06f98356f5c97ab
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index fbca0692aa51..c17d98161d5e 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -658,7 +658,9 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 
+ 		up->ier = port->serial_in(port, UART_IER);
+ 		if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
++			spin_lock(&port->lock);
+ 			port->ops->stop_rx(port);
++			spin_unlock(&port->lock);
+ 		} else {
+ 			/* Keep restarting the timer until
+ 			 * the input overrun subsides.
 -- 
 2.30.2
 
