@@ -2,122 +2,131 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955B3C7EE2D
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 04:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57175C77B73
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 05:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237626AbjEYEOq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 00:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43770 "EHLO
+        id S230511AbjEYFsw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 01:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232941AbjEYEN6 (ORCPT
+        with ESMTP id S229459AbjEYFsv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 00:13:58 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B8D1BD5;
-        Wed, 24 May 2023 21:09:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=R7BsKuXRvafTncknbatCeztkH8x+NR2fV4WpB9u/hV0=; b=G4JmrcqkeToYptfFrlwtEYjzCO
-        uqvltTFMWAeFa/yeNW2Wn/HlEPed/PTrM+6sORdVE2mPkJcOFy50QBVdnj6KKYqxTsijCY2LsoTT3
-        AxMQsXwxgRt1xv+HbDDq7su9RqX3jfKgbpMlfyJpo0VL57re1E1q7pUg0lXNY9+Lxgc0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57286 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q22I0-0001nr-Nw; Thu, 25 May 2023 00:09:25 -0400
-Date:   Thu, 25 May 2023 00:09:24 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <20230525000924.7946d5df5c163451cd8860f5@hugovil.com>
-In-Reply-To: <20230517194406.4125912-1-hugo@hugovil.com>
-References: <20230517194406.4125912-1-hugo@hugovil.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [RFC PATCH] serial: sc16is7xx: fix broken port 0 uart init
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 25 May 2023 01:48:51 -0400
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870B495;
+        Wed, 24 May 2023 22:48:49 -0700 (PDT)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-510b4e488e4so3693233a12.3;
+        Wed, 24 May 2023 22:48:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1684993728; x=1687585728;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=B8+s/K+5RvHd3mBUPmt+K92bKir5drTiVIL22nfYEIw=;
+        b=KRrFryhheh/ZeXU1dlBJNp3XYdKdEqdTXRk17E4sPW0496eoqAizFBO4HOQhXAXqHQ
+         +I3zGLfTBICtRAOmdfvUVyCJxnDon/VHu03pIbc6+6GP4EgTh4MoKakKf05kq2dbeTkW
+         P5HV2VWSmDLRFnOqfW81XtrsfKH6x3IOylWCTQBGdwAtFGaYrU7QJWKj9h3PinX52pMR
+         bQWRGoW3tw8vBP00HUfyDudiEvaW1zY6HIM3eFL3zWxtW03/yJ6oefit/84CX2mI1HVC
+         g3XFPKkFMENozcdI4nWLwrUbJS5ZKpk/Ga31RyrCVFTXiWOvuuOx3moSWVWXv+AGzOK9
+         4iZg==
+X-Gm-Message-State: AC+VfDxWDAve2N0QUDINa0moiVAyg8UyXsVXU9r4jYooARDqQfyIXb1U
+        GGmKnRhoxxvFUuJ3zU46baU=
+X-Google-Smtp-Source: ACHHUZ78kwCROM6GPOi1V6fq6adO7uQrYlWFOtHDvlX1THAntXJfkj8+8n3Bv+8+Mx+VI4jYcFWVQg==
+X-Received: by 2002:a50:ed1a:0:b0:510:e877:33c with SMTP id j26-20020a50ed1a000000b00510e877033cmr3218941eds.30.1684993727811;
+        Wed, 24 May 2023 22:48:47 -0700 (PDT)
+Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id d6-20020a056402078600b0050d89daaa70sm189740edy.2.2023.05.24.22.48.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 May 2023 22:48:47 -0700 (PDT)
+Message-ID: <75375f8d-e157-a364-3da5-9c8d5b832927@kernel.org>
+Date:   Thu, 25 May 2023 07:48:45 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Jacky Huang <ychuang570808@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
+        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
+References: <20230516075217.205401-1-ychuang570808@gmail.com>
+ <20230516075217.205401-11-ychuang570808@gmail.com>
+ <3d4acb20-c80e-fd39-c0d0-e9b1e0309d81@kernel.org>
+ <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
+ <e312b861-a5cc-43b0-b2b0-7d66f47a3d0b@app.fastmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v11 10/10] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+In-Reply-To: <e312b861-a5cc-43b0-b2b0-7d66f47a3d0b@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 17 May 2023 15:44:07 -0400
-Hugo Villeneuve <hugo@hugovil.com> wrote:
+On 24. 05. 23, 11:00, Arnd Bergmann wrote:
+> On Wed, May 24, 2023, at 10:34, Jacky Huang wrote:
+>> On 2023/5/24 下午 03:42, Jiri Slaby wrote:
+>>> On 16. 05. 23, 9:52, Jacky Huang wrote:
+>>>> +static void ma35d1serial_config_port(struct uart_port *port, int flags)
+>>>> +{
+>>>> +    /*
+>>>> +     * Driver core for serial ports forces a non-zero value for port
+>>>> type.
+>>>> +     * Write an arbitrary value here to accommodate the serial core
+>>>> driver,
+>>>> +     * as ID part of UAPI is redundant.
+>>>> +     */
+>>>> +    port->type = 1;
+>>>
+>>> So this 1 translates to PORT_8250. Why not to use it directly? Or
+>>> something more saner like PORT_16550A?
+>>>
+>> It's not actually 8250 or 16550A.
+>> Can we add the following definition to
+>> 'include/uapi/linux/serial_core.h' and use PORT_MA35 instead?
+>>
+>> #define PORT_MA35    124
+> 
+> This was already in a previous version, until Greg commented
+> that it was probably not needed:
+> 
+> https://lore.kernel.org/lkml/20fc81c9-5517-ce1e-639a-3b425cf27759@gmail.com/
+> 
+> Since leaving port->type at PORT_UNKNOWN doesn't work, and almost
+> all other drivers have something in serial_core.h, it's probably
+> best to do the same here. Checking the other drivers showed that
+> drivers/tty/serial/lantiq.c is currently the only exception, it
+> defines PORT_LTQ_ASC locally, which causes a conflict with
+> PORT_SPRD.
 
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> While experimenting with rs485 configuration on a SC16IS752 dual UART,
-> I found that the sc16is7xx_config_rs485() function was called only for
-> the second port (index 1, channel B), causing initialization problems
-> for the first port.
-> 
-> For the sc16is7xx driver, port->membase and port->mapbase are not set,
-> and their default values are 0. And we set port->iobase to the device
-> index. This means that when the first device is registered using the
-> uart_add_one_port() function, the following values will be in the port
-> structure:
->     port->membase = 0
->     port->mapbase = 0
->     port->iobase  = 0
-> 
-> Therefore, the function uart_configure_port() in serial_core.c will
-> exit early because of the following check:
-> 	/*
-> 	 * If there isn't a port here, don't do anything further.
-> 	 */
-> 	if (!port->iobase && !port->mapbase && !port->membase)
-> 		return;
-> 
-> Typically, I2C and SPI drivers do not set port->membase and
-> port->mapbase. But I found that the max310x driver sets
-> port->membase to ~0 (all ones). By implementing the same change in our
-> driver, uart_configure_port() is now correctly executed.
-> 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
-> 
-> I am not sure if this change is the best long-term solution to this
-> problem, and maybe uart_configure_port() itself could be modified to
-> take into account the fact that some devices have all three *base
-> values set to zero?
-> 
-> Also, many drivers use port->iobase as an index, is it the correct way
-> to use it?
-> 
-> For example, for our driver, there was
-> commit 5da6b1c079e6 ("sc16is7xx: Set iobase to device index") with the
-> following explanation:
->     "Set the .iobase value to the relative index within the device to allow
->     infering the order through sysfs."
-> 
->  drivers/tty/serial/sc16is7xx.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 1a3143331c1f..3e0e63498052 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1432,6 +1432,7 @@ static int sc16is7xx_probe(struct device *dev,
->  		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
->  		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
->  		s->p[i].port.iobase	= i;
-> +		s->p[i].port.membase	= (void __iomem *)~0;
->  		s->p[i].port.iotype	= UPIO_PORT;
->  		s->p[i].port.uartclk	= freq;
->  		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
-> -- 
-> 2.30.2
+Hmm.
 
-This patch is now integrated in the following series:
-https://lkml.org/lkml/2023/5/25/7
- 
+Anyone has an idea what this is really used for in userspace? Can we 
+replace all of them by simply some sort of "PORT_OTHER"?
+
+For example:
+
+xdg-open `echo -n 'https://codesearch.debian.net/search?q=\b('; sed -n 
+'s@#define\s\(\w\+\)\s.*@\1@ p' include/uapi/linux/serial_core.h | tail 
+-20 | sed 's@.* \(.*\)[\x09 ][\x09 ]*.*@\1@'|paste -sd'|' | tr -d '\n'; 
+echo ')\b'`
+
+gives _no_ clue. FTR the above translates here into:
+https://codesearch.debian.net/search?q=\b(PORT_HSCIF|PORT_ASC|PORT_TILEGX|PORT_MEN_Z135|PORT_SC16IS7XX|PORT_MESON|PORT_DIGICOLOR|PORT_SPRD|PORT_CRIS|PORT_STM32|PORT_MVEBU|PORT_PIC32|PORT_MPS2UART|PORT_MTK_BTIF|PORT_RDA|PORT_MLB_USIO|PORT_SIFIVE_V0|PORT_SUNIX|PORT_LINFLEXUART|PORT_SUNPLUS)\b
+
+thanks,
+-- 
+js
+suse labs
+
