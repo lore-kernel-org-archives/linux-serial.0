@@ -2,96 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FCB2C7EE29
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 19:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D182C7EE2C
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 20:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239168AbjEYTuI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 15:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
+        id S241666AbjEYUhp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 16:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235946AbjEYTuD (ORCPT
+        with ESMTP id S233159AbjEYUhn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 15:50:03 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E35095;
-        Thu, 25 May 2023 12:49:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BXuAUuI6O9SQYBQZ05xd3Kxteg3sg/LRhBLPYI5uuRc=; b=s4C/WmJFFzQ1IE4A4s1NkfIrRO
-        tvMFii1XJtYo/bbpGG5hq//WvomUow58EWxLQi2CvvMyw282dRq3jdiBLub03ExRgmC3EQGH8B0FZ
-        qIZV3Iz+/5QaQ1TkiTVxvOs8xzoNp8aWhaG0VOtCNYC5+I/HBfDkqtI7exkmV0q3Asy8=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:54570 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q2Gy2-0003K6-Pr; Thu, 25 May 2023 15:49:47 -0400
-Date:   Thu, 25 May 2023 15:49:46 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     andy.shevchenko@gmail.com
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Message-Id: <20230525154946.98829ff5bda64d7c723ed6ff@hugovil.com>
-In-Reply-To: <ZG9F8xsPqs2ZWfED@surfacebook>
-References: <20230525040324.3773741-1-hugo@hugovil.com>
-        <20230525040324.3773741-12-hugo@hugovil.com>
-        <ZG9F8xsPqs2ZWfED@surfacebook>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v3 11/11] serial: sc16is7xx: add dump registers function
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 25 May 2023 16:37:43 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E31194
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 13:37:38 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id ca18e2360f4ac-77480507360so3325339f.3
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 13:37:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1685047057; x=1687639057;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1q5BIhyHxy2KwWgZBKI5+TSZP/AvpzgkEZSqlGxlLuw=;
+        b=YQx45jR7I72YjpwV14MAmGZja6gOe2yLE7QRjIwAbN56Iel42d42EqRp2D/2GTI0cf
+         02LdJWtayWKy3xQqjjNCScOaTD5b1wbm6gy4IGMOF/J1do4W6t6+MwsJRuZeqEn8yQiB
+         XiCVd7ZitcpJOv54EIaNycDQNHUNQbEemzMSg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685047057; x=1687639057;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1q5BIhyHxy2KwWgZBKI5+TSZP/AvpzgkEZSqlGxlLuw=;
+        b=AAlSxGpCnlEi0hkjjGE/gUaFjaaEl7JrGg+ilDQu/tqwrjhZwrpCRioea7RPvzIwCp
+         OvHSuFxFtlG6MPr3Obt4O/oWt26fuuCPiGssbKahah51vAPAkDuY7D9TjdwM9hPN1szE
+         XahoF8RLRtMbL8Cil9w7SApVJzWxC6PPRmtwnC55hawuaEDwuB+FSTGDuxgct49EGLcb
+         Y99z62z7Q/kuBqAskdXk+B9gWP+r4Yz9nq7qGVBOR/uPQD1yPVRFyoJdrpg2K05KEsj4
+         dAIyyhcCXTdKDOF9IpVe0UdlOyLA3yIJf1PFUZwaALqojFLZls2f2+7f5KNFFivpvlv6
+         p5FQ==
+X-Gm-Message-State: AC+VfDzv7S9GixpjiKgRo8+BOje8jykPwxUw5E+WVdI1StQ1EQzhL7qP
+        s0OXir27ezcNuIzCni6uUmmXgG84AyF1W3vxr9Q=
+X-Google-Smtp-Source: ACHHUZ7cIi+e61FJWpaI+hdgPx3+KMU88/GODe0MakO9bWsssJctA5S3hbzSHPIUx+stwqYHbB63rg==
+X-Received: by 2002:a5e:db08:0:b0:775:5f74:f4ca with SMTP id q8-20020a5edb08000000b007755f74f4camr531384iop.9.1685047056717;
+        Thu, 25 May 2023 13:37:36 -0700 (PDT)
+Received: from mail-il1-f174.google.com (mail-il1-f174.google.com. [209.85.166.174])
+        by smtp.gmail.com with ESMTPSA id p22-20020a027816000000b004189da0d852sm631174jac.167.2023.05.25.13.37.35
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 May 2023 13:37:36 -0700 (PDT)
+Received: by mail-il1-f174.google.com with SMTP id e9e14a558f8ab-338458a9304so11245ab.1
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 13:37:35 -0700 (PDT)
+X-Received: by 2002:a05:6e02:1581:b0:320:9759:bf6b with SMTP id
+ m1-20020a056e02158100b003209759bf6bmr68419ilu.3.1685047055386; Thu, 25 May
+ 2023 13:37:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230525093159.223817-1-john.ogness@linutronix.de> <20230525093159.223817-3-john.ogness@linutronix.de>
+In-Reply-To: <20230525093159.223817-3-john.ogness@linutronix.de>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 25 May 2023 13:37:23 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=U42xgt1PBdpaqtuzHOAjVUdWRyRaE0OpWiiMm-B1qf7g@mail.gmail.com>
+Message-ID: <CAD=FV=U42xgt1PBdpaqtuzHOAjVUdWRyRaE0OpWiiMm-B1qf7g@mail.gmail.com>
+Subject: Re: [PATCH tty v1 2/8] serial: core: lock port for stop_rx() in uart_suspend_port()
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 25 May 2023 14:26:43 +0300
-andy.shevchenko@gmail.com wrote:
-
-> Thu, May 25, 2023 at 12:03:25AM -0400, Hugo Villeneuve kirjoitti:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > With this driver, it is very hard to debug the registers using
-> > the /sys/kernel/debug/regmap interface.
-> > 
-> > The main reason is that bits 0 and 1 of the register address
-> > correspond to the channels bits, so the register address itself starts
-> > at bit 2, so we must 'mentally' shift each register address by 2 bits
-> > to get its offset.
-> > 
-> > Also, only channels 0 and 1 are supported, so combinations of bits
-> > 0 and 1 being 10b and 11b are invalid, and the display of these
-> > registers is useless.
-> > 
-> > For example:
-> > 
-> > cat /sys/kernel/debug/regmap/spi0.0/registers
-> > 04: 10 -> Port 0, register offset 1
-> > 05: 10 -> Port 1, register offset 1
-> > 06: 00 -> Port 2, register offset 1 -> invalid
-> > 07: 00 -> port 3, register offset 1 -> invalid
-> > ...
-> > 
-> > Add a debug module parameter to call a custom dump function for each
-> > port registers after the probe phase to help debug.
-> 
-> Not sure about this. Can we rather create an abstract mapping on regmap?
-> (Something like gpio-pca953x.c has)
-
 Hi,
-maybe we can, but more like they do in the driver max310x.c (single, dual and quad UART versions).
 
-I will look into it, but it will probably be a patch that affects a lot of the code, and that I would like to submit separately after this serie, and so I will probably simply drop this current patch (11/11) since it will not be needed anymore.
+On Thu, May 25, 2023 at 2:35=E2=80=AFAM John Ogness <john.ogness@linutronix=
+.de> wrote:
+>
+> The uarts_ops stop_rx() callback expects that the port->lock is
+> taken and interrupts are disabled.
+>
+> Fixes: c9d2325cdb92 ("serial: core: Do stop_rx in suspend path for consol=
+e if console_suspend is disabled")
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  drivers/tty/serial/serial_core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 
-Hugo.
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
