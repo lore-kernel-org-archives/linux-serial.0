@@ -2,143 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA895C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 04:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC73C77B7A
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 04:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238937AbjEYEGx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 00:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39812 "EHLO
+        id S238292AbjEYEOH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 00:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238226AbjEYEE7 (ORCPT
+        with ESMTP id S238307AbjEYENi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 00:04:59 -0400
+        Thu, 25 May 2023 00:13:38 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE62E65;
-        Wed, 24 May 2023 21:04:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D57119AC;
+        Wed, 24 May 2023 21:09:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wtCZaz+ygLc5odu0jyJWVuukps/nAVPXx7PU+/vrFgM=; b=Qbt1LRs+4mv0pRnwxJYbf2ZAB6
-        2UDi3v8PyYf2TGyY8fXk0bcNmATMeSPqqpDWOeKnKRrd+gunR7FhgZ3OSqpe259puDiO1CUxPvgqJ
-        N6+lJEE6ZXipwALuWFPgoMyCXTVOarP2sSNIay4QSLpWLlQzzciypsfiUEOAl8BOyoUE=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52970 helo=pettiford.lan)
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UviYOKHOAQA1VQzgBo6ztxXR+Aqfge1Zw3705YVK4Fs=; b=rh9UB031sEC44GthodVOJHjCcv
+        LbtT7u/11tHq4jJQ8wcF1InsfFhyMU3Tjxgfohjgx5ZFmeNRFjhXBVQv/z4Es5Fk9mcaG/n+jRSqE
+        VyP/wUZsEK5PMLk+W5Vyro/Uc31vdgZcgjI7FRgvXFGANGZAV3WdLVJEKduQHGUMNFLA=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:59660 helo=pettiford)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1q22DM-0001dB-39; Thu, 25 May 2023 00:04:36 -0400
+        id 1q22H9-0001l4-7o; Thu, 25 May 2023 00:08:31 -0400
+Date:   Thu, 25 May 2023 00:08:30 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hugo@hugovil.com,
-        linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date:   Thu, 25 May 2023 00:03:25 -0400
-Message-Id: <20230525040324.3773741-12-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230525040324.3773741-1-hugo@hugovil.com>
-References: <20230525040324.3773741-1-hugo@hugovil.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <20230525000830.f9afb7683a12c6d109a757cb@hugovil.com>
+In-Reply-To: <20230517141229.3792446-1-hugo@hugovil.com>
+References: <20230517141229.3792446-1-hugo@hugovil.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v3 11/11] serial: sc16is7xx: add dump registers function
+Subject: Re: [PATCH] serial: sc16is7xx: fix syntax error in comments
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, 17 May 2023 10:12:29 -0400
+Hugo Villeneuve <hugo@hugovil.com> wrote:
 
-With this driver, it is very hard to debug the registers using
-the /sys/kernel/debug/regmap interface.
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> 
+> cotroller -> controller
+> 
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index abad091baeea..5bd98e4316f5 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1501,7 +1501,7 @@ static int sc16is7xx_probe(struct device *dev,
+>  
+>  #ifdef CONFIG_GPIOLIB
+>  	if (devtype->nr_gpio) {
+> -		/* Setup GPIO cotroller */
+> +		/* Setup GPIO controller */
+>  		s->gpio.owner		 = THIS_MODULE;
+>  		s->gpio.parent		 = dev;
+>  		s->gpio.label		 = dev_name(dev);
+> -- 
+> 2.30.2
 
-The main reason is that bits 0 and 1 of the register address
-correspond to the channels bits, so the register address itself starts
-at bit 2, so we must 'mentally' shift each register address by 2 bits
-to get its offset.
-
-Also, only channels 0 and 1 are supported, so combinations of bits
-0 and 1 being 10b and 11b are invalid, and the display of these
-registers is useless.
-
-For example:
-
-cat /sys/kernel/debug/regmap/spi0.0/registers
-04: 10 -> Port 0, register offset 1
-05: 10 -> Port 1, register offset 1
-06: 00 -> Port 2, register offset 1 -> invalid
-07: 00 -> port 3, register offset 1 -> invalid
-...
-
-Add a debug module parameter to call a custom dump function for each
-port registers after the probe phase to help debug.
-
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sc16is7xx.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 03d00b144304..693b6cc371f8 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -347,6 +347,10 @@ struct sc16is7xx_port {
- 	struct sc16is7xx_one		p[];
- };
- 
-+static bool debug;
-+module_param(debug, bool, 0644);
-+MODULE_PARM_DESC(debug, "enable/disable debug messages");
-+
- static unsigned long sc16is7xx_lines;
- 
- static struct uart_driver sc16is7xx_uart = {
-@@ -387,6 +391,28 @@ static void sc16is7xx_port_write(struct uart_port *port, u8 reg, u8 val)
- 	regmap_write(s->regmap, (reg << SC16IS7XX_REG_SHIFT) | line, val);
- }
- 
-+static int sc16is7xx_port_dump(struct uart_port *port)
-+{
-+	int i;
-+	unsigned char *buf;
-+	char name[64];
-+	const int regs_count_per_port = 16;
-+
-+	buf = devm_kzalloc(port->dev, regs_count_per_port, GFP_KERNEL);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < regs_count_per_port; i++)
-+		buf[i] = sc16is7xx_port_read(port, i);
-+
-+	snprintf(name, sizeof(name), "sc16is7xx %s%i: dump ",
-+		 sc16is7xx_uart.dev_name, port->line);
-+	print_hex_dump(KERN_ERR, name, DUMP_PREFIX_OFFSET, 16, 1,
-+		       &((u8 *)buf)[0], regs_count_per_port, 1);
-+
-+	return 0;
-+}
-+
- static void sc16is7xx_fifo_read(struct uart_port *port, unsigned int rxlen)
- {
- 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
-@@ -1614,6 +1640,10 @@ static int sc16is7xx_probe(struct device *dev,
- 	}
- #endif
- 
-+	if (debug)
-+		for (i = 0; i < devtype->nr_uart; ++i)
-+			sc16is7xx_port_dump(&s->p[i].port);
-+
- 	/*
- 	 * Setup interrupt. We first try to acquire the IRQ line as level IRQ.
- 	 * If that succeeds, we can allow sharing the interrupt as well.
--- 
-2.30.2
-
+This patch is now integrated in the following series:
+https://lkml.org/lkml/2023/5/25/7
