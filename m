@@ -2,131 +2,183 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57175C77B73
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 05:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88767C77B7E
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 07:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbjEYFsw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 01:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
+        id S239409AbjEYHfD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 03:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjEYFsv (ORCPT
+        with ESMTP id S239200AbjEYHey (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 01:48:51 -0400
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870B495;
-        Wed, 24 May 2023 22:48:49 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-510b4e488e4so3693233a12.3;
-        Wed, 24 May 2023 22:48:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684993728; x=1687585728;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=B8+s/K+5RvHd3mBUPmt+K92bKir5drTiVIL22nfYEIw=;
-        b=KRrFryhheh/ZeXU1dlBJNp3XYdKdEqdTXRk17E4sPW0496eoqAizFBO4HOQhXAXqHQ
-         +I3zGLfTBICtRAOmdfvUVyCJxnDon/VHu03pIbc6+6GP4EgTh4MoKakKf05kq2dbeTkW
-         P5HV2VWSmDLRFnOqfW81XtrsfKH6x3IOylWCTQBGdwAtFGaYrU7QJWKj9h3PinX52pMR
-         bQWRGoW3tw8vBP00HUfyDudiEvaW1zY6HIM3eFL3zWxtW03/yJ6oefit/84CX2mI1HVC
-         g3XFPKkFMENozcdI4nWLwrUbJS5ZKpk/Ga31RyrCVFTXiWOvuuOx3moSWVWXv+AGzOK9
-         4iZg==
-X-Gm-Message-State: AC+VfDxWDAve2N0QUDINa0moiVAyg8UyXsVXU9r4jYooARDqQfyIXb1U
-        GGmKnRhoxxvFUuJ3zU46baU=
-X-Google-Smtp-Source: ACHHUZ78kwCROM6GPOi1V6fq6adO7uQrYlWFOtHDvlX1THAntXJfkj8+8n3Bv+8+Mx+VI4jYcFWVQg==
-X-Received: by 2002:a50:ed1a:0:b0:510:e877:33c with SMTP id j26-20020a50ed1a000000b00510e877033cmr3218941eds.30.1684993727811;
-        Wed, 24 May 2023 22:48:47 -0700 (PDT)
-Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id d6-20020a056402078600b0050d89daaa70sm189740edy.2.2023.05.24.22.48.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 May 2023 22:48:47 -0700 (PDT)
-Message-ID: <75375f8d-e157-a364-3da5-9c8d5b832927@kernel.org>
-Date:   Thu, 25 May 2023 07:48:45 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Jacky Huang <ychuang570808@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        Thu, 25 May 2023 03:34:54 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379A8189
+        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 00:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685000093; x=1716536093;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=iMQHTLRVP7iOL6bxIqX1eJvzadZFQXxU/WGdbz194fE=;
+  b=QCfO/x62IbcXB+3zbN6zfyqbTq83DtarfNSDkJXvFG7Roiq/5F1DGKBL
+   5Y9bLtijxRVmqW4qh8tkIadzUIEs2bqRD5xIoJWi6tti3MRpXDTLNPPrA
+   E8t9U8b9+TfLxNHnesMlEcl6vLsZ1uKWMb1zRmzMIPr12K1o/K/IvFIj9
+   8leXbrA53xex8QZGnvyuQ8xc/+bjXDzouwVgLT16HIns/eQqfJjCA4K4h
+   prRuN80do/hxmQ0kaU1gE2ZY1TVbYDglpgpgPygyVb81ncAWv2QZcgwih
+   Hvu+pbCu/XYPdBHtGNHAHxZlVGc0Nr4Dm2VfEyYUxuIpBJDDP2dN6CikI
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="334163012"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="334163012"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 00:33:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="951354252"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="951354252"
+Received: from aghiriba-mobl.ger.corp.intel.com ([10.249.40.17])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 00:33:40 -0700
+Date:   Thu, 25 May 2023 10:33:33 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+cc:     kernel@pengutronix.de,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
-        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-References: <20230516075217.205401-1-ychuang570808@gmail.com>
- <20230516075217.205401-11-ychuang570808@gmail.com>
- <3d4acb20-c80e-fd39-c0d0-e9b1e0309d81@kernel.org>
- <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
- <e312b861-a5cc-43b0-b2b0-7d66f47a3d0b@app.fastmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v11 10/10] tty: serial: Add Nuvoton ma35d1 serial driver
- support
-In-Reply-To: <e312b861-a5cc-43b0-b2b0-7d66f47a3d0b@app.fastmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 2/3] serial: 8250: Clear IIR.RDI in
+ serial8250_clear_fifos()
+In-Reply-To: <20230524143654.dfkbo22vdpc73nqs@pengutronix.de>
+Message-ID: <33e6bb80-6e31-a9d-9f9c-6af74822e885@linux.intel.com>
+References: <20230524122754.481816-1-u.kleine-koenig@pengutronix.de> <20230524122754.481816-3-u.kleine-koenig@pengutronix.de> <576799f0-1d18-c9ed-bf12-cb2bed1f8bb@linux.intel.com> <20230524143654.dfkbo22vdpc73nqs@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1183645628-1685000022=:1738"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 24. 05. 23, 11:00, Arnd Bergmann wrote:
-> On Wed, May 24, 2023, at 10:34, Jacky Huang wrote:
->> On 2023/5/24 下午 03:42, Jiri Slaby wrote:
->>> On 16. 05. 23, 9:52, Jacky Huang wrote:
->>>> +static void ma35d1serial_config_port(struct uart_port *port, int flags)
->>>> +{
->>>> +    /*
->>>> +     * Driver core for serial ports forces a non-zero value for port
->>>> type.
->>>> +     * Write an arbitrary value here to accommodate the serial core
->>>> driver,
->>>> +     * as ID part of UAPI is redundant.
->>>> +     */
->>>> +    port->type = 1;
->>>
->>> So this 1 translates to PORT_8250. Why not to use it directly? Or
->>> something more saner like PORT_16550A?
->>>
->> It's not actually 8250 or 16550A.
->> Can we add the following definition to
->> 'include/uapi/linux/serial_core.h' and use PORT_MA35 instead?
->>
->> #define PORT_MA35    124
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1183645628-1685000022=:1738
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+
+On Wed, 24 May 2023, Uwe Kleine-K�nig wrote:
+
+> On Wed, May 24, 2023 at 04:02:58PM +0300, Ilpo J�rvinen wrote:
+> > On Wed, 24 May 2023, Uwe Kleine-K�nig wrote:
+> > 
+> > > At least on MPC83xx (but I suspect also on other implementations) it can
+> > > happen that after irqs are disabled but before the FIFOs are cleared a
+> > > character is received. Resetting the FIFO throws away that character,
+> > > but doesn't clear the IIR.RDI event that signals that there is read data
+> > > available.
+> > > 
+> > > Read from RX to clear IIR.RDI and throw away the result.
+> > > 
+> > > This fixes a infinite loop after the above described race happened: The
+> > > irq handler (here: fsl8250_handle_irq()) triggers, but LSR.DR isn't set,
+> > > so RX isn't read and the irq handler returns just to be called again.
+> > > 
+> > > Signed-off-by: Uwe Kleine-K�nig <u.kleine-koenig@pengutronix.de>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
+> > >  1 file changed, 12 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > > index fe8d79c4ae95..8b47ec000922 100644
+> > > --- a/drivers/tty/serial/8250/8250_port.c
+> > > +++ b/drivers/tty/serial/8250/8250_port.c
+> > > @@ -556,6 +556,18 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
+> > >  		serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO |
+> > >  			       UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> > >  		serial_out(p, UART_FCR, 0);
+> > > +
+> > > +		/*
+> > > +		 * When doing rs485 on MPC8313 it can happen that in the short
+> > > +		 * window when switching from RX to TX there is a character in
+> > > +		 * the RX FIFO which isn't processed any more and then discarded
+> > > +		 * in here by clearing the FIFO. In that case IIR signals an RX
+> > > +		 * timeout once irqs are reenabled (i.e. in
+> > > +		 * serial8250_em485_stop_tx()) but LSR shows no pending event.
+> > > +		 * The RX timeout event can only be cleared by reading RX. Do
+> > > +		 * this here before reenabling the FIFO and irqs.
+> > > +		 */
+> > > +		serial_port_in(&p->port, UART_RX);
+> > >  	}
+> > >  }
+> > 
+> > This solution has too wide impact, I think.
 > 
-> This was already in a previous version, until Greg commented
-> that it was probably not needed:
+> What is the impact? After the FIFO is reset reading the RX register
+> shouldn't matter?
 > 
-> https://lore.kernel.org/lkml/20fc81c9-5517-ce1e-639a-3b425cf27759@gmail.com/
+> > It should be made driver specific.
 > 
-> Since leaving port->type at PORT_UNKNOWN doesn't work, and almost
-> all other drivers have something in serial_core.h, it's probably
-> best to do the same here. Checking the other drivers showed that
-> drivers/tty/serial/lantiq.c is currently the only exception, it
-> defines PORT_LTQ_ASC locally, which causes a conflict with
-> PORT_SPRD.
+> I'm not a big fan, the 8250 driver is already very fragmented.
+> 
+> > Can't you read IIR to see if the event indication is there before
+> > doing this UART_RX read?
+> 
+> Assuming reading IIR and reading RX take approx the same amount of
+> time, I don't see an upside of checking IIR first?!
+> 
+> > Maybe add an UART specific function for fifo clearing/reset.
+> 
+> See above. And with the theory that reading RX doesn't hurt after the
+> FIFO was just cleared, adding this to generic code has the upside that
+> other variants that might have the same issue get fixed, too.
 
-Hmm.
+See e.g. 4f4e670342b14f302e17c93bd22fc943bbaaf1de. I guess you could argue 
+since FIFO is not just cleared at that point but also disabled it won't 
+trigger that particular problem but I'd prefer to not depend on that given 
+I'd want moving into the direction where the unnecessary looking FIFO 
+disable does not occur (as was discussed below).
 
-Anyone has an idea what this is really used for in userspace? Can we 
-replace all of them by simply some sort of "PORT_OTHER"?
+> > I've long wondered this related thing:
+> > 
+> > Does anyone have idea why serial8250_clear_and_reinit_fifos() and 
+> > serial8250_clear_fifos() are separate, what is the benefit of not setting 
+> > FCR back to up->fcr? That is that intermediate FCR <= 0 really required 
+> > for the FIFO reset sequence or is it just an artifact of how the code is 
+> > structured into those two functions.
+> > 
+> > It might make sense to drop serial8250_clear_and_reinit_fifos() and 
+> > change serial8250_clear_fifos() into something like this (depending on 
+> > the answers):
+> > 
+> > static void serial8250_clear_fifos(struct uart_8250_port *p, bool disable)
+> > {
+> >         if (p->capabilities & UART_CAP_FIFO) {
+> >                 serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO);
+> >                 serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO |
+> >                                UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> > 	        serial_out(p, UART_FCR, disable ? 0 : p->fcr);
+> >         }
+> > }
+> 
+> I'd say this should work. Apart from skipping
+> 
+> 	serial_out(p, UART_FCR, 0);
+> 
+> it has the side effect of skipping
+> 
+> 	serial_out(p, UART_FCR, p->fcr);
+> 
+> if !(p->capabilities & UART_CAP_FIFO). That shouldn't matter though.
 
-For example:
+Yes, but I'd expect clear fifos to be no-op when FIFO is not enabled so 
+it's better IMHO.
 
-xdg-open `echo -n 'https://codesearch.debian.net/search?q=\b('; sed -n 
-'s@#define\s\(\w\+\)\s.*@\1@ p' include/uapi/linux/serial_core.h | tail 
--20 | sed 's@.* \(.*\)[\x09 ][\x09 ]*.*@\1@'|paste -sd'|' | tr -d '\n'; 
-echo ')\b'`
+Thanks foy your thoughts on this. Maybe I'll spend the time to dig through 
+all the related history about it to see if there's something interesting 
+to find.
 
-gives _no_ clue. FTR the above translates here into:
-https://codesearch.debian.net/search?q=\b(PORT_HSCIF|PORT_ASC|PORT_TILEGX|PORT_MEN_Z135|PORT_SC16IS7XX|PORT_MESON|PORT_DIGICOLOR|PORT_SPRD|PORT_CRIS|PORT_STM32|PORT_MVEBU|PORT_PIC32|PORT_MPS2UART|PORT_MTK_BTIF|PORT_RDA|PORT_MLB_USIO|PORT_SIFIVE_V0|PORT_SUNIX|PORT_LINFLEXUART|PORT_SUNPLUS)\b
 
-thanks,
 -- 
-js
-suse labs
+ i.
 
+--8323329-1183645628-1685000022=:1738--
