@@ -2,116 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E9BC7EE2F
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 16:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C48C7EE2F
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 16:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbjEYQIL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 12:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52202 "EHLO
+        id S235827AbjEYQ1n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 May 2023 12:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234699AbjEYQH7 (ORCPT
+        with ESMTP id S240568AbjEYQ1P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 12:07:59 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01ABDE6B
-        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 09:07:37 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id e9e14a558f8ab-338816ea761so5319555ab.2
-        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 09:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1685030855; x=1687622855;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V9miRu1VdQdNXOCFnd7Ap8lDxsJRIToGRq1hdp3kNIU=;
-        b=WCbCBCp/6pWCecbO7TofThM2e3nM40pk6AstOeeLTVDdW9q230thQnJZ7Dm7ahDTEF
-         fkOSc3fH0M4M4/f+W8ul4womoZ2iEm5AJIAW8J1KQ4xthwEv+uoyzbfkYzOxFk07SV44
-         y34ldp8CnPSi7Ma6gCtXSV+NWxHcZq0E52EFc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685030855; x=1687622855;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=V9miRu1VdQdNXOCFnd7Ap8lDxsJRIToGRq1hdp3kNIU=;
-        b=Sedo/2I8T2Bog0gfrV2chDhP0d7ylYdFb6QOvVY1z5Ypu3kmEO/lMwCihgsXN2iwcC
-         0gVfQQ+4LaclEdw9aL+S58jcfi/EHpu+LL/7cMamKMxUWMXkP+UEc0EMQ+Jr6ZZcqurn
-         UdK7CDRSqYK+DLYXaT8uuiTz35e6zRhV93ro1bVlcnXbeO4fV0M/CeRZ8rSKtffNkKJg
-         MsQP+5/JeDu4igEP6Z3GziZ2OT4ZDXiekXQY2f91tKKZZZ3uij1xOUeEM1qYeoVV5QWY
-         OEgRQerRkIxr+N7swkx9DQuX10RkogsM/lOW5n9QbyulJH7nfCQ27M7Vff7MLBPyZlI1
-         RNaA==
-X-Gm-Message-State: AC+VfDz5e8g9HPgupACS2QMwnPjEEwxttvC/qfoRm1e9Skfyr7tyyAUf
-        rafv5n275AHwe0BZbVRc9yVQf/jDC+HWp9z3hOM=
-X-Google-Smtp-Source: ACHHUZ4reNINvG9G/X29BbXnwaib4xAB/l15yFR7cSuckXMLoATSsLh/P+e9JbZ3rK91o8w8mv0MVg==
-X-Received: by 2002:a92:d9c5:0:b0:33a:9ef4:d32d with SMTP id n5-20020a92d9c5000000b0033a9ef4d32dmr3255033ilq.0.1685030855419;
-        Thu, 25 May 2023 09:07:35 -0700 (PDT)
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com. [209.85.166.178])
-        by smtp.gmail.com with ESMTPSA id o23-20020a056638125700b0041680e474a1sm482091jas.70.2023.05.25.09.07.34
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 May 2023 09:07:34 -0700 (PDT)
-Received: by mail-il1-f178.google.com with SMTP id e9e14a558f8ab-33164ec77ccso191665ab.0
-        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 09:07:34 -0700 (PDT)
-X-Received: by 2002:a05:6e02:17c5:b0:337:8a1b:b9ee with SMTP id
- z5-20020a056e0217c500b003378a1bb9eemr1742ilu.14.1685030853923; Thu, 25 May
- 2023 09:07:33 -0700 (PDT)
+        Thu, 25 May 2023 12:27:15 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8D8E6E;
+        Thu, 25 May 2023 09:27:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=spc29Cm0a+oO128y4mo0IaM9JJ5/Y6pCdvJ8tr2Dfag=; b=sEI6Kn0a/+TFGY+DqA8SqsqAMN
+        r7wV/N+GHENm2Gx0P3CUwavLtTrdIDeJfvkRnuCSc3HzFZzTQd67RxcBAT3dA7+CfxrwV85NQuG10
+        zRwGHZMZ79ECgzmQGchKlnTlACoWCjc7DnZDP+G0S405EljESD4eSB/MtdNl5raXm245Eg0NWlGEf
+        Hz6I5Yc+uVW2wh1GyuVmvu2tBufkFykrDMWiVbr6lPOV1EJhjKd5789WUng75huN0nTLl4IE+AMb0
+        xJvhIHyFZSAAZIqnh4u87tCrTL07cphpiuPcS3XioCP/E/HEguj6wQubhuKM3Y84R3pHu+rEEvh5q
+        KO5lmlHQ==;
+Received: from [2601:1c2:980:9ec0::2764]
+        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1q2Dnk-00H5bT-26;
+        Thu, 25 May 2023 16:26:56 +0000
+Message-ID: <dd0e4fac-16ef-5ca6-db8d-21ecf1c0e802@infradead.org>
+Date:   Thu, 25 May 2023 09:26:55 -0700
 MIME-Version: 1.0
-References: <20230525093159.223817-1-john.ogness@linutronix.de> <20230525093159.223817-5-john.ogness@linutronix.de>
-In-Reply-To: <20230525093159.223817-5-john.ogness@linutronix.de>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 25 May 2023 09:07:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UPZOOW-K8XMfnjn-BGaMnr6Ee44FimpB=ZnrOJ6N3ngA@mail.gmail.com>
-Message-ID: <CAD=FV=UPZOOW-K8XMfnjn-BGaMnr6Ee44FimpB=ZnrOJ6N3ngA@mail.gmail.com>
-Subject: Re: [PATCH tty v1 4/8] serial: core: lock port for start_rx() in uart_resume_port()
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v2 1/2] soc: fsl: cpm1: Fix TSA and QMC dependencies in
+ case of COMPILE_TEST
+Content-Language: en-US
+To:     Herve Codina <herve.codina@bootlin.com>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel test robot <lkp@intel.com>
+References: <20230523085902.75837-1-herve.codina@bootlin.com>
+ <20230523085902.75837-2-herve.codina@bootlin.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20230523085902.75837-2-herve.codina@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-On Thu, May 25, 2023 at 2:34=E2=80=AFAM John Ogness <john.ogness@linutronix=
-.de> wrote:
->
-> The only user of the start_rx() callback (qcom_geni) directly calls
-> its own stop_rx() callback. Since stop_rx() requires that the
-> port->lock is taken and interrupts are disabled, the start_rx()
-> callback has the same requirement.
->
-> Fixes: cfab87c2c271 ("serial: core: Introduce callback for start_rx and d=
-o stop_rx in suspend only if this callback implementation is present.")
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+
+On 5/23/23 01:59, Herve Codina wrote:
+> In order to compile tsa.c and qmc.c, CONFIG_CPM must be set.
+> 
+> Without this dependency, the linker fails with some missing
+> symbols for COMPILE_TEST configurations that need QMC without
+> enabling CPM.
+> 
+> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/oe-kbuild-all/202305160221.9XgweObz-lkp@intel.com/
+
+Fixes all of my CPM build issues. (with patch 2/2 also applied)
+Thanks.
+
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+
 > ---
->  drivers/tty/serial/serial_core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 37ad53616372..f856c7fae2fd 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2430,8 +2430,11 @@ int uart_resume_port(struct uart_driver *drv, stru=
-ct uart_port *uport)
->                 if (console_suspend_enabled)
->                         uart_change_pm(state, UART_PM_STATE_ON);
->                 uport->ops->set_termios(uport, &termios, NULL);
-> -               if (!console_suspend_enabled && uport->ops->start_rx)
-> +               if (!console_suspend_enabled && uport->ops->start_rx) {
-> +                       spin_lock_irq(&uport->lock);
->                         uport->ops->start_rx(uport);
-> +                       spin_unlock_irq(&uport->lock);
-> +               }
+>  drivers/soc/fsl/qe/Kconfig | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/soc/fsl/qe/Kconfig b/drivers/soc/fsl/qe/Kconfig
+> index 7268c2fbcbc1..e0d096607fef 100644
+> --- a/drivers/soc/fsl/qe/Kconfig
+> +++ b/drivers/soc/fsl/qe/Kconfig
+> @@ -36,7 +36,7 @@ config UCC
+>  config CPM_TSA
+>  	tristate "CPM TSA support"
+>  	depends on OF && HAS_IOMEM
+> -	depends on CPM1 || COMPILE_TEST
+> +	depends on CPM1 || (CPM && COMPILE_TEST)
+>  	help
+>  	  Freescale CPM Time Slot Assigner (TSA)
+>  	  controller.
+> @@ -47,7 +47,7 @@ config CPM_TSA
+>  config CPM_QMC
+>  	tristate "CPM QMC support"
+>  	depends on OF && HAS_IOMEM
+> -	depends on CPM1 || (FSL_SOC && COMPILE_TEST)
+> +	depends on CPM1 || (FSL_SOC && CPM && COMPILE_TEST)
+>  	depends on CPM_TSA
+>  	help
+>  	  Freescale CPM QUICC Multichannel Controller
 
-Seems right, but shouldn't you also fix the call to stop_rx() that the
-same commit cfab87c2c271 ("serial: core: Introduce callback for
-start_rx and do stop_rx in suspend only if this callback
-implementation is present.") added? That one is also missing the lock,
-right?
-
--Doug
+-- 
+~Randy
