@@ -2,18 +2,18 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F26C77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA00C77B7A
+	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 09:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240547AbjEYJfI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S240618AbjEYJfI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 25 May 2023 05:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240605AbjEYJek (ORCPT
+        with ESMTP id S240627AbjEYJel (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 05:34:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D0A1B4;
+        Thu, 25 May 2023 05:34:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074271B1;
         Thu, 25 May 2023 02:34:33 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
@@ -22,21 +22,21 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TAVFpLxJcM8gO8l/0bCuwkiWYAOYDDSeRboLXbR9Aek=;
-        b=ykmKrFJzIEPB1IJaAecFMnbuPRNqq8W4v0ilizJRs2eB4zd7ETFHwUxbF6Df2nqmYD3Iq+
-        fVFjwJfAyXYbyQ05LIMuNPGD+V8a3Qfq+DoyY8wFHmCWzMRxEySwmgevQYbQSAebVZ88wu
-        sda0dyy9wmEABP85uFpf+hZ2J1e7hZFZpvTZi6Vacwpz2CIeNzQvnrJDeaJlwwdrf2ERWc
-        qT0fokVrR9JnRGf0lWBhxElkKlDcyksM6NBA/+ksbX+eoOEuwM9K7cf8p0ox724pBIn+Ho
-        qsqu64ECv7iV41bH5ziiJqXDxAN8+hvvf2wTF8cDXJ/PW6fNBRIYGFAvWGKNHw==
+        bh=nPDJHm4lU4uW5PYPRilpSR3PUXlYNGeyc1k5gm2WMrg=;
+        b=Bn9RR6tFw4VHxMRtNu5ITPrZWhJi9VsTk3Ief2f7HcBlEtLMBnVNouWr0IM4OCsP02Dq7Q
+        gdWxPPKFD6kokGHfylzCLf1elFujWvrjGvnJqujbqfHuADfuMLyd6ENik68sarNNrhQFuE
+        c4RkxSMLo7Jg4Ctn+oJapV4snGobAEx0h5zm/6LKkgV48KMBlXtUQ7u4cf07BFSCaEYVjs
+        CLVHT/h0C+zTSycU3IFxqCaSwRZY02Qgl4LpRpu15aLv5QBON8m6QA+BXf3T7MUmdcMh/v
+        tARTQSo+S9rmvPFdJm8rCofDsynBzdEdXV+R9vlJp9w5Fe5d9Bc6DCZitRM3iw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1685007270;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TAVFpLxJcM8gO8l/0bCuwkiWYAOYDDSeRboLXbR9Aek=;
-        b=gCBfiyyGHO59EVDJPrbMzAqqpgW3m+JHu7zU/NjqtshBqw/l5TgEsDdTfEc/lNCqnfW0rW
-        3RBdS105E0pyplAw==
+        bh=nPDJHm4lU4uW5PYPRilpSR3PUXlYNGeyc1k5gm2WMrg=;
+        b=D7c8sfO9B0xWafdKccZQxoeJ+NYAiCmP6zJoGfo+FNhKFSWjUhH4xcqrDjjtHasOyuCFUa
+        o6+70hF7B7N+QMDA==
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -46,9 +46,9 @@ Cc:     Petr Mladek <pmladek@suse.com>,
         Lukas Wunner <lukas@wunner.de>,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         linux-serial@vger.kernel.org
-Subject: [PATCH tty v1 5/8] serial: 8250: lock port for rx_dma() callback
-Date:   Thu, 25 May 2023 11:37:56 +0206
-Message-Id: <20230525093159.223817-6-john.ogness@linutronix.de>
+Subject: [PATCH tty v1 6/8] serial: 8250: lock port for omap8250_restore_regs()
+Date:   Thu, 25 May 2023 11:37:57 +0206
+Message-Id: <20230525093159.223817-7-john.ogness@linutronix.de>
 In-Reply-To: <20230525093159.223817-1-john.ogness@linutronix.de>
 References: <20230525093159.223817-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -57,71 +57,55 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The rx_dma() callback (omap_8250_rx_dma) accesses UART_IER. This
-register is modified twice by each console write
-(serial8250_console_write()) under the port lock. However, not
-all calls to the rx_dma() callback are under the port lock.
+omap8250_restore_regs() accesses UART_IER. This register is
+modified twice by each console write (serial8250_console_write())
+under the port lock. However, not all calls to omap8250_restore_regs()
+are under the port lock.
 
-Add the missing port locking around rx_dma() callback calls. Add
-lockdep notation to the omap_8250_rx_dma().
+Add the missing port locking around omap8250_restore_regs() calls. Add
+lockdep notation to the omap8250_restore_regs().
 
-Note that this is not fixing a real problem because:
-
-1. Currently DMA is forced off for 8250_omap consoles.
-
-2. The serial devices are resumed before console printing is enabled.
+Note that this is not fixing a real problem because the serial devices
+are resumed before console printing is enabled.
 
 However, adding this locking allows for clean locking semantics
-for the rx_dma() callback so that lockdep can be used to identify
+for omap8250_restore_regs() so that lockdep can be used to identify
 possible problems in the future. It also simplifies synchronization
-of UART_IER in general by not needing to rely on implementation
-details such as 1 and 2.
+of UART_IER in general by not needing to rely on such implementation
+details.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- drivers/tty/serial/8250/8250_omap.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index c17d98161d5e..3cb9cfa62331 100644
+index 3cb9cfa62331..34939462fd69 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -728,8 +728,11 @@ static int omap_8250_startup(struct uart_port *port)
- 		priv->wer |= OMAP_UART_TX_WAKEUP_EN;
- 	serial_out(up, UART_OMAP_WER, priv->wer);
- 
--	if (up->dma && !(priv->habit & UART_HAS_EFR2))
-+	if (up->dma && !(priv->habit & UART_HAS_EFR2)) {
-+		spin_lock_irq(&port->lock);
- 		up->dma->rx_dma(up);
-+		spin_unlock_irq(&port->lock);
-+	}
- 
- 	enable_irq(up->port.irq);
- 
-@@ -1003,6 +1006,9 @@ static int omap_8250_rx_dma(struct uart_8250_port *p)
- 	unsigned long			flags;
- 	u32				reg;
+@@ -309,6 +309,9 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+ 	struct uart_8250_dma	*dma = up->dma;
+ 	u8 mcr = serial8250_in_MCR(up);
  
 +	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&p->port.lock);
++	lockdep_assert_held_once(&up->port.lock);
 +
- 	if (priv->rx_dma_broken)
- 		return -EINVAL;
+ 	if (dma && dma->tx_running) {
+ 		/*
+ 		 * TCSANOW requests the change to occur immediately however if
+@@ -1739,8 +1742,11 @@ static int omap8250_runtime_resume(struct device *dev)
+ 	if (priv->line >= 0)
+ 		up = serial8250_get_port(priv->line);
  
-@@ -1736,8 +1742,11 @@ static int omap8250_runtime_resume(struct device *dev)
- 	if (up && omap8250_lost_context(up))
- 		omap8250_restore_regs(up);
- 
--	if (up && up->dma && up->dma->rxchan && !(priv->habit & UART_HAS_EFR2))
-+	if (up && up->dma && up->dma->rxchan && !(priv->habit & UART_HAS_EFR2)) {
+-	if (up && omap8250_lost_context(up))
++	if (up && omap8250_lost_context(up)) {
 +		spin_lock_irq(&up->port.lock);
- 		omap_8250_rx_dma(up);
+ 		omap8250_restore_regs(up);
 +		spin_unlock_irq(&up->port.lock);
 +	}
  
- 	priv->latency = priv->calc_latency;
- 	schedule_work(&priv->qos_work);
+ 	if (up && up->dma && up->dma->rxchan && !(priv->habit & UART_HAS_EFR2)) {
+ 		spin_lock_irq(&up->port.lock);
 -- 
 2.30.2
 
