@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44279C7EE2E
-	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 18:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31272C77B73
+	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 18:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbjEZSfC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 May 2023 14:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
+        id S243280AbjEZSkW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 May 2023 14:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243206AbjEZSek (ORCPT
+        with ESMTP id S243263AbjEZSj7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 May 2023 14:34:40 -0400
-Received: from fgw20-7.mail.saunalahti.fi (fgw20-7.mail.saunalahti.fi [62.142.5.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77754E70
-        for <linux-serial@vger.kernel.org>; Fri, 26 May 2023 11:34:32 -0700 (PDT)
+        Fri, 26 May 2023 14:39:59 -0400
+Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9881B7
+        for <linux-serial@vger.kernel.org>; Fri, 26 May 2023 11:39:34 -0700 (PDT)
 Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
-        by fgw20.mail.saunalahti.fi (Halon) with ESMTP
-        id f3177185-fbf3-11ed-b3cf-005056bd6ce9;
-        Fri, 26 May 2023 21:34:29 +0300 (EEST)
+        by fgw23.mail.saunalahti.fi (Halon) with ESMTP
+        id 728c0da8-fbf4-11ed-b972-005056bdfda7;
+        Fri, 26 May 2023 21:38:03 +0300 (EEST)
 From:   andy.shevchenko@gmail.com
-Date:   Fri, 26 May 2023 21:34:29 +0300
+Date:   Fri, 26 May 2023 21:38:02 +0300
 To:     Hugo Villeneuve <hugo@hugovil.com>
 Cc:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -29,106 +29,40 @@ Cc:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH v3 08/11] serial: sc16is7xx: fix regression with GPIO
- configuration
-Message-ID: <ZHD7taBP0UthlPKp@surfacebook>
+Subject: Re: [PATCH v3 11/11] serial: sc16is7xx: add dump registers function
+Message-ID: <ZHD8iufgUQH8Ssyz@surfacebook>
 References: <20230525040324.3773741-1-hugo@hugovil.com>
- <20230525040324.3773741-9-hugo@hugovil.com>
- <ZG9EWEwb077qyBIi@surfacebook>
- <20230525110255.6ffe0a0c3f88ae03c3fc5f25@hugovil.com>
+ <20230525040324.3773741-12-hugo@hugovil.com>
+ <ZG9F8xsPqs2ZWfED@surfacebook>
+ <20230525154946.98829ff5bda64d7c723ed6ff@hugovil.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230525110255.6ffe0a0c3f88ae03c3fc5f25@hugovil.com>
+In-Reply-To: <20230525154946.98829ff5bda64d7c723ed6ff@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thu, May 25, 2023 at 11:02:55AM -0400, Hugo Villeneuve kirjoitti:
-> On Thu, 25 May 2023 14:19:52 +0300
+Thu, May 25, 2023 at 03:49:46PM -0400, Hugo Villeneuve kirjoitti:
+> On Thu, 25 May 2023 14:26:43 +0300
 > andy.shevchenko@gmail.com wrote:
-> > Thu, May 25, 2023 at 12:03:22AM -0400, Hugo Villeneuve kirjoitti:
+> > Thu, May 25, 2023 at 12:03:25AM -0400, Hugo Villeneuve kirjoitti:
 
 ...
 
-> > I'm wondering if we can avoid adding new ifdefferies...
+> > Not sure about this. Can we rather create an abstract mapping on regmap?
+> > (Something like gpio-pca953x.c has)
 > 
-> I am simply following waht was already done in the existing driver.
+> maybe we can, but more like they do in the driver max310x.c (single, dual and
+> quad UART versions).
 > 
-> Are you suggesting that we need to remove all these #defines? If not, what
-> exactly do you suggest?
+> I will look into it, but it will probably be a patch that affects a lot of
+> the code, and that I would like to submit separately after this serie, and so
+> I will probably simply drop this current patch (11/11) since it will not be
+> needed anymore.
 
-I was wondering and have nothing to suggest here. It seems a burden we have to
-cope with for now.
-
-> > > +	s->gpio_configured = devtype->nr_gpio;
-> > 
-> > The name of the variable is a bit vague WRT its content.
-> > Shouldn't be as simple as the rvalue, i.e. s->nr_gpio?
-> 
-> Maybe the name could be improved (and/or comments).
-> 
-> devtype->nr_gpio is the maximum "theoretical" number of GPIOs supported by
-> the chip.
-> 
-> s->gpio_configured is the number of GPIOs that are configured or requested
-> according to the presence (or not) of the modem-control-line-ports property.
-> 
-> I wanted to avoid using the same name to avoid potential confusion.
-> 
-> Maybe devtype->nr_gpio could be renamed to devtype->nr_gpio_max and
-> s->gpio_configured to s->nr_gpio_requested or s->nr_gpio_configured?
-
-Maybe, but first try the approach with valid mask being involved. It may be
-that we won't need this variable at all.
-
-...
-
-> > > +		of_property_for_each_u32(dev->of_node, "nxp,modem-control-line-ports",
-> > > +					 prop, p, u)
-> > 
-> > The driver so far is agnostic to property provider. Please keep it that way,
-> > i.e. no of_ APIs.
-> 
-> The driver, before my patches, was already using the exact same function
-> of_property_for_each_u32() to process the irda-mode-ports property, so I
-> don't understand your comment.
-
-This is unfortunate. I missed that one, but i don't care about IrDA so much.
-
-> But what do you suggest instead of of_property_for_each_u32()? And do we need
-> to change it also for processing the irda-mode-ports property?
-
-device_property_read_u32_array().
-
-Independently on the IrDA case, this one is more important and would have
-consequences if we avoid agnostic APIs.
-
-...
-
-> > > +			if (u < devtype->nr_uart) {
-> > 
-> > Hmm... What other can it be?
-> 
-> Again, this is similar to the handling of the irda-mode-ports property.
-> 
-> But I am not sure I understand your question/concern?
-> 
-> I think this check is important, because if someone puts the following
-> property in a DT:
-> 
->     nxp,modem-control-line-ports = <0 1>;
-> 
-> but the variant only supports 1 port, then the check is usefull, no?
-
-But you have below checks for u value. Wouldn't be enough?
-
-> > > +				/* Use GPIO lines as modem control lines */
-> > > +				if (u == 0)
-> > > +					val |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
-> > > +				else if (u == 1)
-> > > +					val |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
-> > > +
+Whatever, I commented on this solely because Greg KH is usually against new
+module parameters. If you sell your point to him, fine to me.
 
 -- 
 With Best Regards,
