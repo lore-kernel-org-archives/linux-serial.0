@@ -2,152 +2,76 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C62C7EE23
-	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 10:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6623C77B7A
+	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 18:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231337AbjEZKzM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 May 2023 06:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49456 "EHLO
+        id S242366AbjEZS22 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 May 2023 14:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbjEZKzK (ORCPT
+        with ESMTP id S242328AbjEZS21 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 May 2023 06:55:10 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EA7F7;
-        Fri, 26 May 2023 03:55:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685098509; x=1716634509;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gsACS33QqbMepIsxf09vMS4nFee3rE52HroENxd1Rt4=;
-  b=KlQSrhS7Pu5r4Ojt79iRpGYe7Y+93C9EVAINnOiNy+O3qOSipPyurDnD
-   OEVKdfysKjUT2lqtf6Ocu3YW6QOMLcAmE99SA2hCwUPDnfklc4R5A00wf
-   Y9FpzeFm2Erm7yRCk4ecRHzt+kNrU0tA6vbkouAw/IhL4xLHM/twamHS7
-   uey1CpekNfJM5MSiKNfypeNwwar0vNutsr/sYEGyiDWX28yTlcidaqIe/
-   J8EHDNDcGPmPjfFUVVd+5JKM892cghSZ/3v2PXq31+Vk05DQ80FIuFmo0
-   J6K8GkeeaLrDqD9dn82GNLToCsX2pmTgelRuyA9llVX36JfPGv7ASgO1+
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="353018168"
-X-IronPort-AV: E=Sophos;i="6.00,194,1681196400"; 
-   d="scan'208";a="353018168"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 03:55:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="655599733"
-X-IronPort-AV: E=Sophos;i="6.00,193,1681196400"; 
-   d="scan'208";a="655599733"
-Received: from eandrei-mobl5.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.53.213])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2023 03:55:05 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Robert Baldyga <r.baldyga@samsung.com>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Richard Tresidder <rtresidd@electromag.com.au>,
-        stable@vger.kernel.org
-Subject: [PATCH] dmaengine: pl330: Return DMA_PAUSED when transaction is paused
-Date:   Fri, 26 May 2023 13:54:34 +0300
-Message-Id: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Fri, 26 May 2023 14:28:27 -0400
+Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FACBC
+        for <linux-serial@vger.kernel.org>; Fri, 26 May 2023 11:28:25 -0700 (PDT)
+Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
+        by fgw23.mail.saunalahti.fi (Halon) with ESMTP
+        id 1846e744-fbf3-11ed-b972-005056bdfda7;
+        Fri, 26 May 2023 21:28:23 +0300 (EEST)
+From:   andy.shevchenko@gmail.com
+Date:   Fri, 26 May 2023 21:28:22 +0300
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH v3 07/11] dt-bindings: sc16is7xx: Add property to change
+ GPIO function
+Message-ID: <ZHD6Rps5laEYfut4@surfacebook>
+References: <20230525040324.3773741-1-hugo@hugovil.com>
+ <20230525040324.3773741-8-hugo@hugovil.com>
+ <ZG9CWhiTbLBKjPC9@surfacebook>
+ <20230525103443.d3d31e80221aed1ebceef30e@hugovil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230525103443.d3d31e80221aed1ebceef30e@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-pl330_pause() does not set anything to indicate paused condition which
-causes pl330_tx_status() to return DMA_IN_PROGRESS. This breaks 8250
-DMA flush after the fix in commit 57e9af7831dc ("serial: 8250_dma: Fix
-DMA Rx rearm race"). The function comment for pl330_pause() claims
-pause is supported but resume is not which is enough for 8250 DMA flush
-to work as long as DMA status reports DMA_PAUSED when appropriate.
+Thu, May 25, 2023 at 10:34:43AM -0400, Hugo Villeneuve kirjoitti:
+> On Thu, 25 May 2023 14:11:22 +0300
+> andy.shevchenko@gmail.com wrote:
+> > Thu, May 25, 2023 at 12:03:21AM -0400, Hugo Villeneuve kirjoitti:
 
-Add PAUSED state for descriptor and mark BUSY descriptors with PAUSED
-in pl330_pause(). Return DMA_PAUSED from pl330_tx_status() when the
-descriptor is PAUSED.
+...
 
-Reported-by: Richard Tresidder <rtresidd@electromag.com.au>
-Tested-by: Richard Tresidder <rtresidd@electromag.com.au>
-Fixes: 88987d2c7534 ("dmaengine: pl330: add DMA_PAUSE feature")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/linux-serial/f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au/
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
+> > I'm wondering if we can convert this to YAML first and then add a new
+> > property.
+> 
+> I also thought about it, then decided to focus on simply adding the new
+> property first since I am not an expert in YAML.
+> 
+> I think it would be best to do it after this patch series. Keep in mind that
+> the original intent of this patch series, and this new property, was to fix a
+> regression related to the GPIOs, and I think that converting to YAML would
+> simply delay and add much noise to the discussion at this point.
 
-$ diff -u <(git grep -l -e '\.device_pause' -e '->device_pause') <(git grep -l DMA_PAUSED)
+The patch doesn't have Fixes tag, so it's definitely not a fix. Also new
+property can fix a regression, it's impossible to fix the users' DTBs.
 
-...tells there might a few other drivers which do not properly return
-DMA_PAUSED status despite having a pause function.
+> If someone wants to do it as a separate patch after this, fine. If not, I an
+> willing to give it a go.
 
- drivers/dma/pl330.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+Not a DT maintainer here, I'm fine with either way.
 
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 0d9257fbdfb0..daad25f2c498 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -403,6 +403,12 @@ enum desc_status {
- 	 * of a channel can be BUSY at any time.
- 	 */
- 	BUSY,
-+	/*
-+	 * Pause was called while descriptor was BUSY. Due to hardware
-+	 * limitations, only termination is possible for descriptors
-+	 * that have been paused.
-+	 */
-+	PAUSED,
- 	/*
- 	 * Sitting on the channel work_list but xfer done
- 	 * by PL330 core
-@@ -2041,7 +2047,7 @@ static inline void fill_queue(struct dma_pl330_chan *pch)
- 	list_for_each_entry(desc, &pch->work_list, node) {
- 
- 		/* If already submitted */
--		if (desc->status == BUSY)
-+		if (desc->status == BUSY || desc->status == PAUSED)
- 			continue;
- 
- 		ret = pl330_submit_req(pch->thread, desc);
-@@ -2326,6 +2332,7 @@ static int pl330_pause(struct dma_chan *chan)
- {
- 	struct dma_pl330_chan *pch = to_pchan(chan);
- 	struct pl330_dmac *pl330 = pch->dmac;
-+	struct dma_pl330_desc *desc;
- 	unsigned long flags;
- 
- 	pm_runtime_get_sync(pl330->ddma.dev);
-@@ -2335,6 +2342,10 @@ static int pl330_pause(struct dma_chan *chan)
- 	_stop(pch->thread);
- 	spin_unlock(&pl330->lock);
- 
-+	list_for_each_entry(desc, &pch->work_list, node) {
-+		if (desc->status == BUSY)
-+			desc->status = PAUSED;
-+	}
- 	spin_unlock_irqrestore(&pch->lock, flags);
- 	pm_runtime_mark_last_busy(pl330->ddma.dev);
- 	pm_runtime_put_autosuspend(pl330->ddma.dev);
-@@ -2425,7 +2436,7 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
- 		else if (running && desc == running)
- 			transferred =
- 				pl330_get_current_xferred_count(pch, desc);
--		else if (desc->status == BUSY)
-+		else if (desc->status == BUSY || desc->status == PAUSED)
- 			/*
- 			 * Busy but not running means either just enqueued,
- 			 * or finished and not yet marked done
-@@ -2442,6 +2453,9 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
- 			case DONE:
- 				ret = DMA_COMPLETE;
- 				break;
-+			case PAUSED:
-+				ret = DMA_PAUSED;
-+				break;
- 			case PREP:
- 			case BUSY:
- 				ret = DMA_IN_PROGRESS;
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
