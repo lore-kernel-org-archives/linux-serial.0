@@ -2,81 +2,75 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 629D3C77B7A
-	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 08:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F6AC7EE23
+	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 09:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242377AbjEZIM0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 May 2023 04:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
+        id S242706AbjEZJBB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 May 2023 05:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236852AbjEZIMY (ORCPT
+        with ESMTP id S242877AbjEZJA5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 May 2023 04:12:24 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B403FA3;
-        Fri, 26 May 2023 01:12:23 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1685088741;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZtescR9shMIV5nIat/0FWujD2xSXV22kmNIzHt3OegM=;
-        b=FMzteAYf1g9DD9BOxrgkS9js64tjHnyqvLwGhosq5/gi7xl+mPCKGJuLWI0dKw+zPOZ79Y
-        HqubqKov993BCePmpuiFDCbJ6Cu23wmaBt6TqtPrQT7kgT51qsQlyYmWfK+z05O6hk+0Yo
-        Bd/kdMA1dN3wClL0zLqf7jOwRPIWbvIjkwjLT0aHLEASTHI5Or0E+6ToTYb/5uGeMKbe85
-        lpGTb5rObYXIx4mRpShaF98rdytVm7oVxtA81W7Yv9zW2fHL7dZNwpvI4xvTmxSyZa9dBH
-        +QgszvtlZp43Q+QSrV3PusqCVRahSBe92UcI3a3NfVuUPEQUeGIGeurHxWFBZw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1685088741;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZtescR9shMIV5nIat/0FWujD2xSXV22kmNIzHt3OegM=;
-        b=oI3xy911JXEjOl0PbFStmcA09ktuAtD7/VPEKXTfQ1k6TD+u6dkWEW492IdbA/VmXw/LJ9
-        qONcPQLAXbNW8JCg==
-To:     Doug Anderson <dianders@chromium.org>
+        Fri, 26 May 2023 05:00:57 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF45419D;
+        Fri, 26 May 2023 02:00:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 0F359812F;
+        Fri, 26 May 2023 09:00:52 +0000 (UTC)
+Date:   Fri, 26 May 2023 12:00:50 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     John Ogness <john.ogness@linutronix.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Petr Mladek <pmladek@suse.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         linux-serial@vger.kernel.org
-Subject: Re: [PATCH tty v1 4/8] serial: core: lock port for start_rx() in
- uart_resume_port()
-In-Reply-To: <CAD=FV=WSKaihdow4Bbr6SSuUXL3s1u3it-=0Gkh95q=bwZuqnA@mail.gmail.com>
+Subject: Re: [PATCH tty v1 3/8] serial: 8250: lock port for stop_rx() in
+ omap8250_irq()
+Message-ID: <20230526090050.GD14287@atomide.com>
 References: <20230525093159.223817-1-john.ogness@linutronix.de>
- <20230525093159.223817-5-john.ogness@linutronix.de>
- <CAD=FV=UPZOOW-K8XMfnjn-BGaMnr6Ee44FimpB=ZnrOJ6N3ngA@mail.gmail.com>
- <CAD=FV=WSKaihdow4Bbr6SSuUXL3s1u3it-=0Gkh95q=bwZuqnA@mail.gmail.com>
-Date:   Fri, 26 May 2023 10:15:51 +0206
-Message-ID: <875y8f1pkg.fsf@jogness.linutronix.de>
+ <20230525093159.223817-4-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230525093159.223817-4-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-05-25, Doug Anderson <dianders@chromium.org> wrote:
->> Seems right, but shouldn't you also fix the call to stop_rx() that
->> the same commit cfab87c2c271 ("serial: core: Introduce callback for
->> start_rx and do stop_rx in suspend only if this callback
->> implementation is present.") added? That one is also missing the
->> lock, right?
->
-> Ah, I see. You did that in a separate patch and I wasn't CCed. I guess
-> I would have just put the two in one patch, but I don't feel that
-> strongly.
+* John Ogness <john.ogness@linutronix.de> [230525 09:34]:
+> The uarts_ops stop_rx() callback expects that the port->lock is
+> taken and interrupts are disabled.
+> 
+> Fixes: 1fe0e1fa3209 ("serial: 8250_omap: Handle optional overrun-throttle-ms property")
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-Actually stop_rx() was introduced in a different commit. The commit you
-reference just changed it a bit. My other patch uses a different Fixes
-tag.
+Looks good to me:
 
-Also, I was concerned about packing too much new spin locking in a
-single commit in the hopes it will help with any bisecting issues.
+Reviewed-by: Tony Lindgren <tony@atomide.com>
 
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
-Thanks!
-
-John
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index fbca0692aa51..c17d98161d5e 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -658,7 +658,9 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+>  
+>  		up->ier = port->serial_in(port, UART_IER);
+>  		if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
+> +			spin_lock(&port->lock);
+>  			port->ops->stop_rx(port);
+> +			spin_unlock(&port->lock);
+>  		} else {
+>  			/* Keep restarting the timer until
+>  			 * the input overrun subsides.
+> -- 
+> 2.30.2
+> 
