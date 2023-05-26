@@ -2,93 +2,128 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B5FC77B7E
-	for <linux-serial@archiver.kernel.org>; Thu, 25 May 2023 21:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2872C7EE23
+	for <linux-serial@archiver.kernel.org>; Fri, 26 May 2023 07:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbjEYVCg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 May 2023 17:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
+        id S242203AbjEZHHs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 May 2023 03:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbjEYVCf (ORCPT
+        with ESMTP id S236714AbjEZHHr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 May 2023 17:02:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B6BE7C
-        for <linux-serial@vger.kernel.org>; Thu, 25 May 2023 14:02:06 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q2I5o-0000DH-Pg; Thu, 25 May 2023 23:01:52 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q2I5o-002oFO-1K; Thu, 25 May 2023 23:01:52 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q2I5n-007xfq-7h; Thu, 25 May 2023 23:01:51 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH] serial: Switch i2c drivers back to use .probe()
-Date:   Thu, 25 May 2023 23:01:47 +0200
-Message-Id: <20230525210147.734737-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
+        Fri, 26 May 2023 03:07:47 -0400
+Received: from anchovy1.45ru.net.au (anchovy1.45ru.net.au [203.30.46.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D971B4
+        for <linux-serial@vger.kernel.org>; Fri, 26 May 2023 00:07:39 -0700 (PDT)
+Received: (qmail 7796 invoked by uid 5089); 26 May 2023 07:07:37 -0000
+Received: by simscan 1.2.0 ppid: 7679, pid: 7680, t: 0.7067s
+         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950 spam: 3.1.4
+Received: from unknown (HELO ?192.168.2.4?) (rtresidd@electromag.com.au@203.59.235.95)
+  by anchovy3.45ru.net.au with ESMTPA; 26 May 2023 07:07:36 -0000
+Message-ID: <2d86b525-b9e3-6e8c-3b1a-922fff68b83d@electromag.com.au>
+Date:   Fri, 26 May 2023 15:07:35 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1531; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=787/XD4gNxYarU33pyqDAsFeyMdLutDqihW/mgmF7PA=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkb8y3uz/GQwEXYwitRZMkb2uGTn+24scbpWXlB U1jzsQ3WCqJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZG/MtwAKCRCPgPtYfRL+ TpgLCACcLHd5R8QReT9ANMol0w0IJ1JGY8LlhmQrm4oO10QjJG0wkHYHiTGVCVIO842eSC9mhws fhefQtWvySKgln5HsxP5svK8YY3W/w/Khsk/DjaXU+XKtRn9NtWBRlp//mKsrs07TgvqjeMt18W ljpLXXn4nuqLawKAhqBB6ZeLJS3fwsUkKRgYPFVvGKV7rA4HYGlmZyh/jIPsR0rCzmLLSdWxQIi EMV5Yfzgtlqzmj0cUuCdxCV6m+GDfRAAirZ6Y+jRZ4YEwpHaAwG88RdusNEm4LJlUu1m2zfTslk +yQe0Dx2365O4TpgKQVZKHaA1LQ0LX2mz5kmhn+bqO8RDfxk
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: Possible regression in 8250_dw driver
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial <linux-serial@vger.kernel.org>
+References: <f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au>
+ <f9a5a97c-42e5-bd7a-4a42-a79ab2f7cbad@linux.intel.com>
+ <261812cb-6de4-ec2b-18b0-90b5d9cc83e4@electromag.com.au>
+ <8f778157-43fa-f364-d7e0-a022401b28@linux.intel.com>
+ <94bb9b7a-d69e-d578-3787-5a6146ec99dc@electromag.com.au>
+ <559021f9-2831-5840-aee8-23918602f3f@linux.intel.com>
+ <def355b6-5573-90ff-a6d0-5174673f1a37@electromag.com.au>
+ <9aec3419-f971-6d5-ff8b-dd8566742d3a@linux.intel.com>
+From:   Richard Tresidder <rtresidd@electromag.com.au>
+In-Reply-To: <9aec3419-f971-6d5-ff8b-dd8566742d3a@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-After commit b8a1a4cd5a98 ("i2c: Provide a temporary .probe_new()
-call-back type"), all drivers being converted to .probe_new() and then
-03c835f498b5 ("i2c: Switch .probe() to not take an id parameter")
-convert back to (the new) .probe() to be able to eventually drop
-.probe_new() from struct i2c_driver.
+On 25/05/2023 5:38 pm, Ilpo Järvinen wrote:
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/max310x.c   | 2 +-
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> On Thu, 25 May 2023, Richard Tresidder wrote:
+>> On 25/05/2023 4:43 pm, Ilpo Järvinen wrote:
+>>> On Thu, 25 May 2023, Richard Tresidder wrote:
+>>>> On 24/05/2023 6:06 pm, Ilpo Järvinen wrote:
+>>>>> On Wed, 24 May 2023, Richard Tresidder wrote:
+>>>>>> So I just started reverting the patches that had been applied to the
+>>>>>> 8250
+>>>>>> folder.
+>>>>>> Worked backwards from head.
+>>>>>>
+>>>>>> After reverting 57e9af7831dcf211c5c689c2a6f209f4abdf0bce
+>>>>>> serial: 8250_dma: Fix DMA Rx rearm race
+>>>>>>
+>>>>>> Things started to work again.
+>>>>>>
+>>>>>> I reset everything and then just reverted that individual patch and
+>>>>>> things
+>>>>>> work.
+>>>>>> So that looks like the culprit..
+>>>>> Okay, that also worked great, thanks a lot. It gives something concrete
+>>>>> to
+>>>>> work with to find a fix.
+>>>>>
+>>>>> The commit itself looks very much correct, however, my guess is that
+>>>>> when
+>>>>> serial8250_rx_dma_flush() does dmaengine_pause() dma_status somehow
+>>>>> does not become DMA_PAUSED which leads to not properly flushing DMA Rx
+>>>>> transaction. Can you try the following debug patch (if my guess is
+>>>>> correct, besides triggering the WARN_ON_ONCE, it also works around the
+>>>>> issue):
+>>>>>
+>>>>> [PATCH] DEBUG: 8250_dma: Detect DMA_PAUSED vs DMA_IN_PROGRESS
+>>>>> inconsistency
+>>>>>
+>>>>> Detect DMA state not returning DMA_PAUSED after dmaengine_pause() was
+>>>>> issued.
+>>>>>
+>>>>> Not intended for upstream.
+>>>> Thanks Ilpo
+>>>>      I can confirm that the patch below works. Got the WARN_ON_ONCE dump so
+>>>> it's
+>>>> taking that path.
+>>>> I think the problem here is that the pl330 DMA controller thats in these
+>>>> SOC's
+>>>> doesn't "really" support pause according to the driver.
+>>> For this flush usecase, it is enough to support pause + read residue +
+>>> terminate which is supported according to the function comment for
+>>> pl330_pause().
+>> Yep agree given the 8250 serial code immediately terminates the dma after the
+>> pause during the flush anyway..
+>>
+>>>> It doesn't look like it can ever set "DMA_PAUSED"
+>>> Why not? It pauses the transfer and is even able to allow reading the
+>>> transferred byte count.
+>>>
+>>> What it is claimed to not be able to do is resume. Note that w/o resume
+>>> serial8250_tx_dma() XON/XOFF processing will not work but that's
+>>> unrelated to this issue (I'll probably need to do another patch to fix
+>>> that on 8250 DMA side).
+>> Yep I just meant it doesn't look capable of reporting DMA_PAUSED
+>> Which your patch below probably fixes.
+>> and it kind of does a stop without a resume capability so must be terminated
+>> after this.
+>> Though I'm not sure of the implications of reporting paused without resume
+>> capability.
+>> Kind of an odd one..
+> dma_slave_caps has a bool for both pause and resume support (I only found
+> out about the second flag for resume today) so not unheard of it seems.
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 9fee722058f4..997e39449766 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1636,7 +1636,7 @@ static struct i2c_driver max310x_i2c_driver = {
- 		.of_match_table	= max310x_dt_ids,
- 		.pm		= &max310x_pm_ops,
- 	},
--	.probe_new	= max310x_i2c_probe,
-+	.probe		= max310x_i2c_probe,
- 	.remove		= max310x_i2c_remove,
- };
- #endif
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index abad091baeea..2e7e7c409cf2 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1709,7 +1709,7 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
- 		.name		= SC16IS7XX_NAME,
- 		.of_match_table	= sc16is7xx_dt_ids,
- 	},
--	.probe_new	= sc16is7xx_i2c_probe,
-+	.probe		= sc16is7xx_i2c_probe,
- 	.remove		= sc16is7xx_i2c_remove,
- 	.id_table	= sc16is7xx_i2c_id_table,
- };
+I've just tested the pl330 patch and it looks good.
+No longer get the WARN_ON_ONCE triggered in the 8250_dma driver so it looks like
+Paused is correctly being set now and we're avoiding that path.
+Wonder how many others dma drivers are afflicted in the same manner?
+A quick grep seems to infer a lot more drivers set the pause function then have
+something in them setting the status to DMA_PAUSED so probably good to keep the
+8250 fix in also for the time being.
 
-base-commit: ac9a78681b921877518763ba0e89202254349d1b
--- 
-2.39.2
+Cheers
+    Richard Tresidder
 
