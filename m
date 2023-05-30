@@ -2,325 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC228C7EE2F
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 01:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEA8C7EE23
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 02:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbjE3BJZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 May 2023 21:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        id S230105AbjE3CIG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 May 2023 22:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbjE3BJY (ORCPT
+        with ESMTP id S230028AbjE3CIF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 May 2023 21:09:24 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7232CF;
-        Mon, 29 May 2023 18:09:22 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 98e67ed59e1d1-2568befcf1dso912564a91.0;
-        Mon, 29 May 2023 18:09:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685408962; x=1688000962;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=d1wG3ZzBNrC3Iuv0Sazp7NPX3sgvbpQA8Twr3uxU34s=;
-        b=kXw1U6akBeszmRiZ1MVvqGt5eDQuWhg17xwHKHH1jEX/9yaFkD1SOvWX/DEiaSJ8V9
-         a39ZEYAGgARyRX7UhQmHCk6Ej8CON2madP8nOXK+2PwuqPMl7c39mDtdlgUY2qONvt4O
-         17GOFsEwtbE1glmbzKXvHUnmFP86NdwnWvazFzlNQSlmKMm0RxUAnSXNw3RXzsnw3mma
-         adXNWyoyVDsjz+4PA2AMk3EJ9+cLtETJoBicLQLeaR+5EPBiZN0vSR7ej7T6bl5azXNN
-         gXCpv+CXrKKrWXCo74OPAUXxjC/6Kj8uND/4IW5e5bLShDEOZKg7DeX93UwgYWKlPIGn
-         TYuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685408962; x=1688000962;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d1wG3ZzBNrC3Iuv0Sazp7NPX3sgvbpQA8Twr3uxU34s=;
-        b=GZYbuKS9LvAHhiCTaKE6/o8aWjPJ4ZVYeQPWN+w3FNy51OnH6dS1N9DooT0/CHYKLP
-         5GFrE4auFAOf7AQvn+fI8SyQbq81WTLireYtp1XSw+2LLp5XMUPOfUbJvP07KRS7UKEP
-         5ZZH5F0sQwIDVvsh18PCxvjjYAqbMWR4fvl4Ky1UQZj3ZTh1WwDmdkTRoVvYo9bcbkHn
-         cbFaRO+AceO/UVRW7dLdgwfzfTOZO5iXFNaQfcfXcJXCqbQHi+AsAPIAef7xEAE1Tck2
-         sELSuSGvbW/3fFl24E4Y9lSVDnZlHzMXyXBHQxZPNaq889ygucZvzIGJrQFy7rwoi0X+
-         phxg==
-X-Gm-Message-State: AC+VfDwP5L7KbjyLUTDpSmgzleEelqj8U8lC13QMZqGMvJN+x8pjjLq3
-        9jjxsNYbmbfGkptFUS0S790=
-X-Google-Smtp-Source: ACHHUZ4lRcccoA8lGODePVC271WFd12PsoH9zTA9AafQ4ZPdWcMilHiDIITrvpbD1M0gojDXw1+KCw==
-X-Received: by 2002:a17:90b:3a91:b0:24e:3752:194f with SMTP id om17-20020a17090b3a9100b0024e3752194fmr9899966pjb.21.1685408961878;
-        Mon, 29 May 2023 18:09:21 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id b1-20020a17090a100100b002532eef4fc5sm8271339pja.34.2023.05.29.18.09.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 May 2023 18:09:21 -0700 (PDT)
-Message-ID: <c9493f4d-8056-20a0-6ed2-161fbcc3d34e@gmail.com>
-Date:   Tue, 30 May 2023 09:09:16 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH v11 10/10] tty: serial: Add Nuvoton ma35d1 serial driver
- support
-From:   Jacky Huang <ychuang570808@gmail.com>
-To:     Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, tmaimon77@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, arnd@arndb.de, soc@kernel.org,
-        schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
-References: <20230516075217.205401-1-ychuang570808@gmail.com>
- <20230516075217.205401-11-ychuang570808@gmail.com>
- <3d4acb20-c80e-fd39-c0d0-e9b1e0309d81@kernel.org>
- <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
-Content-Language: en-US
-In-Reply-To: <aaef529f-69dc-8bec-0ae1-959a1ede87e0@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Mon, 29 May 2023 22:08:05 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4EF131;
+        Mon, 29 May 2023 19:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=8b7axy2ugwNnYpSJ0ufdxmI8eLFv3CFyiX/N3qWXuJ8=; b=tfvBCuK4DDooO23JHHoy0i7lZ6
+        rIdQLSmZMncYs7N3rUt8W9Y9e+Vr7JZkGzKEnlZVhaqIMBA6zZQH7YV0CrWQqn0q8Q0DYObTsSkQ5
+        ECmUM8Y9UihOYWqKPkHSLvL1RaGq7Zcn46wQb/a0mAn5cc0C6RBD6lK63y8/dMRPGxIg=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:59646 helo=debian-acer)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q3olR-0002Pe-83; Mon, 29 May 2023 22:07:09 -0400
+Date:   Mon, 29 May 2023 22:07:08 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     andy.shevchenko@gmail.com
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Message-Id: <20230529220708.66f7825fed9ee36b181128cf@hugovil.com>
+In-Reply-To: <ZHUnwNNcU_EnS4bo@surfacebook>
+References: <20230529140711.896830-1-hugo@hugovil.com>
+        <ZHUnwNNcU_EnS4bo@surfacebook>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v4 0/9] serial: sc16is7xx: fix GPIO regression and rs485
+ improvements
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Jiri,
+On Tue, 30 May 2023 01:31:28 +0300
+andy.shevchenko@gmail.com wrote:
 
+> Mon, May 29, 2023 at 10:07:02AM -0400, Hugo Villeneuve kirjoitti:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Hello,
+> > this patch series mainly fixes a GPIO regression and improve RS485 flags and
+> > properties detection from DT.
+> > 
+> > It now also includes various small fixes and improvements that were previously
+> > sent as separate patches, but that made testing everything difficult.
+> > 
+> > Patch 1 fixes an issue when debugging IOcontrol register. After testing the GPIO
+> > regression patches (patches 6 and 7, tests done by Lech Perczak), it appers that
+> > this patch is also necessary for having the correct IOcontrol register values.
+> > 
+> > Patch 2 introduces a delay after a reset operation to respect datasheet
+> > timing recommandations.
+> 
+> These two patches are w/o Fixes tag, they should be moved in the series further
+> as I explained before.
 
-On 2023/5/24 下午 04:34, Jacky Huang wrote:
-> Dear Jiri,
->
-> Thanks for your advice.
->
-> On 2023/5/24 下午 03:42, Jiri Slaby wrote:
->> On 16. 05. 23, 9:52, Jacky Huang wrote:
->>> +static void ma35d1serial_config_port(struct uart_port *port, int 
->>> flags)
->>> +{
->>> +    /*
->>> +     * Driver core for serial ports forces a non-zero value for 
->>> port type.
->>> +     * Write an arbitrary value here to accommodate the serial core 
->>> driver,
->>> +     * as ID part of UAPI is redundant.
->>> +     */
->>> +    port->type = 1;
->>
->> So this 1 translates to PORT_8250. Why not to use it directly? Or 
->> something more saner like PORT_16550A?
->>
-> It's not actually 8250 or 16550A.
-> Can we add the following definition to 
-> 'include/uapi/linux/serial_core.h' and use PORT_MA35 instead?
->
-> #define PORT_MA35    124
->
->
->>> +}
->>> +
->>> +static int ma35d1serial_verify_port(struct uart_port *port, struct 
->>> serial_struct *ser)
->>> +{
->>> +    if (port->type != PORT_UNKNOWN && ser->type != 1)
->>> +        return -EINVAL;
->>> +
->>> +    return 0;
->>> +}
->> ...
->>> +static int __init ma35d1serial_console_setup(struct console *co, 
->>> char *options)
->>> +{
->>> +    struct device_node *np = ma35d1serial_uart_nodes[co->index];
->>> +    struct uart_ma35d1_port *p = &ma35d1serial_ports[co->index];
->>> +    u32 val32[4];
->>> +    struct uart_port *port;
->>> +    int baud = 115200;
->>> +    int bits = 8;
->>> +    int parity = 'n';
->>> +    int flow = 'n';
->>> +
->>> +    /*
->>> +     * Check whether an invalid uart number has been specified, and
->>
->> You dereferenced ma35d1serial_uart_nodes already. Doesn't 
->> console=ttyNVT1000 (or something like that) crash the system?
->>
->
-> I will add the following check before np = 
-> "ma35d1serial_uart_nodes[co->index]".
->
-> if (co->index < 0 || co->index >= MA35_UART_NR)
->     return -EINVAL;
->
->
->>> +     * if so, search for the first available port that does have
->>> +     * console support.
->>
->> The code below doesn't match this comment.
->
-> Yes, I will remove the above comment.
->
->>
->>> +     */
->>> +    if ((co->index < 0) || (co->index >= MA35_UART_NR)) {
->>> +        pr_debug("Console Port%x out of range\n", co->index);
->>> +        return -EINVAL;
->>> +    }
->>> +
->>> +    if (of_property_read_u32_array(np, "reg", val32, 4) != 0)
->>
->> Shouldn't that 4 be ARRAY_SIZE(val32) instead?
->>
->
-> Will be fixed.
->
->>> +        return -EINVAL;
->>
->> One \n here please.
->>
->
-> Okay, I will add it.
->
->>> +    p->port.iobase = val32[1];
->>> +    p->port.membase = ioremap(p->port.iobase, MA35_UART_REG_SIZE);
->>
->> What if this fails?
->>
->
-> I will add a check for the return value.
->
->>> +    p->port.ops = &ma35d1serial_ops;
->>> +    p->port.line = 0;
->>> +    p->port.uartclk = MA35_UART_CONSOLE_CLK;
->>> +
->>> +    port = &ma35d1serial_ports[co->index].port;
->>
->> Isn't this:
->>   port = &p->port;
->> ?
->>
->> Either use port on all above lines or drop the "port" variable 
->> completely and use "p->port" below instead.
->>
->
-> I will remove port variable and use p->port only.
->
->>> +
->>> +    if (options)
->>> +        uart_parse_options(options, &baud, &parity, &bits, &flow);
->>> +
->>> +    return uart_set_options(port, co, baud, parity, bits, flow);
->>> +}
->>> +
->>> +static struct console ma35d1serial_console = {
->>> +    .name    = "ttyNVT",
->>> +    .write   = ma35d1serial_console_write,
->>> +    .device  = uart_console_device,
->>> +    .setup   = ma35d1serial_console_setup,
->>> +    .flags   = CON_PRINTBUFFER | CON_ENABLED,
->>> +    .index   = -1,
->>> +    .data    = &ma35d1serial_reg,
->>
->> I don't see console->data used anywhere in the driver?
->>
->
-> I will remove it.
->
+Your explanation was not clear.
 
-I removed the " .data    = &ma35d1serial_reg", but kernel crashed in 
-'drivers/tty/serial/serial_core.c'.
+Anyway, I moved them in position 7 and 8.
 
-The variable 'p' of  uart_console_device() refer to a NULL, because 
-co->data is NULL.
-As a result, kernel crashed at 'p->tty_driver'.
-
-struct tty_driver *uart_console_device(struct console *co, int *index)
-{
-     struct uart_driver *p = co->data;
-     *index = co->index;
-     return p->tty_driver;
-}
-
-We seem to be unable to remove it.
-If there are no other considerations, I will keep it in the next version.
-
->>> +};
->> ...
->>> +static int ma35d1serial_probe(struct platform_device *pdev)
->>> +{
->>> +    struct resource *res_mem;
->>> +    struct uart_ma35d1_port *up;
->>> +    int ret = 0;
->>> +
->>> +    if (pdev->dev.of_node) {
->>> +        ret = of_alias_get_id(pdev->dev.of_node, "serial");
->>> +        if (ret < 0) {
->>> +            dev_err(&pdev->dev, "failed to get alias/pdev id, errno 
->>> %d\n", ret);
->>> +            return ret;
->>> +        }
->>> +    }
->>> +    up = &ma35d1serial_ports[ret];
->>> +    up->port.line = ret;
->>> +    res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>> +    if (!res_mem)
->>> +        return -ENODEV;
->>> +
->>> +    up->port.iobase = res_mem->start;
->>> +    up->port.membase = ioremap(up->port.iobase, MA35_UART_REG_SIZE);
->>
->> Check this too.
->>
->
-> Okay, sure.
->
->>> +    up->port.ops = &ma35d1serial_ops;
->>> +
->>> +    spin_lock_init(&up->port.lock);
->>> +
->>> +    up->clk = of_clk_get(pdev->dev.of_node, 0);
->>> +    if (IS_ERR(up->clk)) {
->>> +        ret = PTR_ERR(up->clk);
->>> +        dev_err(&pdev->dev, "failed to get core clk: %d\n", ret);
->>> +        goto err_iounmap;
->>> +    }
->>> +
->>> +    ret = clk_prepare_enable(up->clk);
->>> +    if (ret)
->>> +        goto err_iounmap;
->>> +
->>> +    if (up->port.line != 0)
->>> +        up->port.uartclk = clk_get_rate(up->clk);
->>> +
->>> +    ret = platform_get_irq(pdev, 0);
->>> +    if (ret < 0)
->>> +        goto err_clk_disable;
->>> +
->>> +    up->port.irq = ret;
->>> +    up->port.dev = &pdev->dev;
->>> +    up->port.flags = UPF_BOOT_AUTOCONF;
->>> +
->>> +    platform_set_drvdata(pdev, up);
->>> +
->>> +    ret = uart_add_one_port(&ma35d1serial_reg, &up->port);
->>> +    if (ret < 0)
->>> +        goto err_free_irq;
->>> +
->>> +    return 0;
->>> +
->>> +err_free_irq:
->>> +    free_irq(up->port.irq, &up->port);
->>> +
->>> +err_clk_disable:
->>> +    clk_disable_unprepare(up->clk);
->>> +
->>> +err_iounmap:
->>> +    iounmap(up->port.membase);
->>> +    return ret;
->>> +}
->>
->> thanks,
->
-> Best regards,
-> Jacky Huang
->
-
-Best regards,
-Jacky Huang
-
+ 
+> > Patch 3 fixes an issue with init of first port during probing.
+> > 
+> > Patch 4 fixes a bug with the output value when first setting the GPIO direction.
+> > 
+> > Patch 5 is a refactor of GPIO registration code.
+> > 
+> > Patches 6 and 7 fix a GPIO regression by (re)allowing to choose GPIO function
+> > for GPIO pins shared with modem status lines.
+> > 
+> > Patch 8 allows to read common rs485 device-tree flags and properties.
+> > 
+> > Patch 9 improves comments about chip variants.
+> > 
+> > I have tested the changes on a custom board with two SC16IS752 DUART using a
+> > Variscite IMX8MN NANO SOM.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
