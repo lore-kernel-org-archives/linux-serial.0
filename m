@@ -2,102 +2,157 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355D4C77B7A
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 15:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6B8C77B7A
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 15:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbjE3PCv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 11:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
+        id S230165AbjE3PhI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 11:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230486AbjE3PCu (ORCPT
+        with ESMTP id S229524AbjE3PhH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 11:02:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8538EE5;
-        Tue, 30 May 2023 08:02:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C43C63019;
-        Tue, 30 May 2023 15:02:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B48C433D2;
-        Tue, 30 May 2023 15:02:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1685458968;
-        bh=IGu/SIS5nO+4P63qYCwsR2tsSMfXDgOvY5qdgU7R3pY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FeOqiEd67vy+w2qgzA1AOXF48C/qda8KQnb2clUO4Lt0pbwrZxAMAS9XwMJ8jbC/f
-         aS5LzicX0nY3qN76R2qS3RSZ31juaccabl3rwwcM13ROY3MZaTFJbuabKcQt0mdQ/5
-         kUWxnloNP1X8osiJbfc96r3wlc0JRNEwyhmo2ARxM1UDxzikP5JxlqWC2FT98MYBfJ
-         /SWU2bTjugptGZNzFWCjiI73SZycy6wKnoC1Gp4VxVISrbl99blM+ioa/HXJX3btNd
-         RecKa3wrLjBu8t4DOYDYvvfiNoA3TvqxoIDVDwnreoXFZc41EpVRCnTuaA1ymt9i++
-         RoivMOGGNV8rw==
-Date:   Tue, 30 May 2023 08:06:31 -0700
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     Mehul Raninga <quic_mraninga@quicinc.com>
-Cc:     agross@kernel.org, konrad.dybcio@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_vdadhani@quicinc.com,
-        quic_vtanuku@quicinc.com, quic_vnivarth@quicinc.com
-Subject: Re: [PATCH] serial: qcom_geni_serial: Setup serial port after Deep
- sleep
-Message-ID: <20230530150631.7eg6nkre6sva5dcz@ripper>
-References: <20230530111557.10944-1-quic_mraninga@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230530111557.10944-1-quic_mraninga@quicinc.com>
+        Tue, 30 May 2023 11:37:07 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD7CC5;
+        Tue, 30 May 2023 08:37:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=7NYITIz6db6snx2MdjRgFoeMdJ74f0BhIRWjC9Mux08=; b=SQ6vmvCfXmyQcAkV4ntcK4044j
+        HWy6/JadIzeVstvBgVCgievGqOjYv6V3ZcaNoD/VFCwH8iQ5sXzBFciehla1WnBLQkVhaMGXHuR3W
+        HFYfJdyJcWst7NePb+JKsnmYGLHHRe0et5XYn6AY1L+6h2QcNfLwU7TwqnH6/Yfztae0=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:39366 helo=debian-acer)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q41P0-0006ul-6l; Tue, 30 May 2023 11:36:50 -0400
+Date:   Tue, 30 May 2023 11:36:49 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     andy.shevchenko@gmail.com
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Message-Id: <20230530113649.73f28b9f6ba91f17ace1e12f@hugovil.com>
+In-Reply-To: <ZHUpWQafRPHW1RJQ@surfacebook>
+References: <20230529140711.896830-1-hugo@hugovil.com>
+        <20230529140711.896830-8-hugo@hugovil.com>
+        <ZHUpWQafRPHW1RJQ@surfacebook>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v4 7/9] serial: sc16is7xx: fix regression with GPIO
+ configuration
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 30, 2023 at 04:45:57PM +0530, Mehul Raninga wrote:
-> While exiting deep sleep, serial port loses its configuration
-> hence it prints garbage characters on console.
+On Tue, 30 May 2023 01:38:17 +0300
+andy.shevchenko@gmail.com wrote:
 
-Presumably it lost its configuration sometime after suspend, rather than
-while resuming the system?
-
+> Mon, May 29, 2023 at 10:07:09AM -0400, Hugo Villeneuve kirjoitti:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> > changed the function of the GPIOs pins to act as modem control
+> > lines without any possibility of selecting GPIO function.
+> > 
+> > As a consequence, applications that depends on GPIO lines configured
+> > by default as GPIO pins no longer work as expected.
+> > 
+> > Also, the change to select modem control lines function was done only
+> > for channel A of dual UART variants (752/762). This was not documented
+> > in the log message.
+> > 
+> > Allow to specify GPIO or modem control line function in the device
+> > tree, and for each of the ports (A or B).
+> > 
+> > Do so by using the new device-tree property named
+> > "modem-control-line-ports" (property added in separate patch).
+> > 
+> > When registering GPIO chip controller, mask-out GPIO pins declared as
+> > modem control lines according to this new "modem-control-line-ports"
+> > DT property.
+> > 
+> > Boards that need to have GPIOS configured as modem control lines
+> > should add that property to their device tree. Here is a list of
+> > boards using the sc16is7xx driver in their device tree and that may
+> > need to be modified:
+> >     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
+> >     mips/boot/dts/ingenic/cu1830-neo.dts
+> >     mips/boot/dts/ingenic/cu1000-neo.dts
 > 
-> Set serial port configuration while resume from deep sleep.
+> ...
 > 
-
-What happens if you do this unconditionally?
-
-> Signed-off-by: Mehul Raninga <quic_mraninga@quicinc.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 3 +++
->  1 file changed, 3 insertions(+)
+> > Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> > Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
 > 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 8582479f0211..c04b8fec30ba 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -20,6 +20,7 @@
->  #include <linux/serial.h>
->  #include <linux/serial_core.h>
->  #include <linux/slab.h>
-> +#include <linux/suspend.h>
->  #include <linux/tty.h>
->  #include <linux/tty_flip.h>
->  #include <dt-bindings/interconnect/qcom,icc.h>
-> @@ -1737,6 +1738,8 @@ static int qcom_geni_serial_sys_resume(struct device *dev)
->  	if (uart_console(uport)) {
->  		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
->  		geni_icc_set_bw(&port->se);
-> +		if (pm_suspend_via_firmware())
+> Don't forget to refer to the dependency patches form this series.
+> (I forgot how it should be done, IIRC the documentation about stable kernel
+> patches can shed a light on this.)
 
-I'm not familiar with this api, but aren't all our systems implementing
-firmware-assisted suspend?
+Hi,
+I will look into it.
 
-Regards,
-Bjorn
 
-> +			qcom_geni_serial_port_setup(uport);
->  	}
->  	return ret;
->  }
-> -- 
-> 2.17.1
+> ...
 > 
+> > +	switch (mctrl_mask) {
+> > +	case 0:
+> > +		s->gpio_valid_mask = 0xFF;
+> 
+> GENMASK()
+> 
+> > +		break;
+> > +	case SC16IS7XX_IOCONTROL_MODEM_A_BIT:
+> > +		s->gpio_valid_mask = 0x0F;
+> 
+> GENMASK()
+> 
+> > +		break;
+> > +	case SC16IS7XX_IOCONTROL_MODEM_B_BIT:
+> > +		s->gpio_valid_mask = 0xF0;
+> 
+> GENMASK()
+
+Ok done, altough even if in general I like the bit manipulation macros because they make the code easier to read/understand, I find it less obvious by using GENMASK in this case IMMO.
+
+
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> 
+> ...
+> 
+> > +		of_property_for_each_u32(dev->of_node, "nxp,modem-control-line-ports",
+> > +					 prop, p, u) {
+> > +			if (u >= devtype->nr_uart)
+> > +				continue;
+> > +
+> > +			/* Use GPIO lines as modem control lines */
+> > +			if (u == 0)
+> > +				mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
+> > +			else if (u == 1)
+> > +				mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
+> > +		}
+> 
+> Can we use device properties, please?
+
+I have converted this section to use device_property_count_u32() and device_property_read_u32_array(). Is that Ok?
+
+> If you think about backporting to the earlier kernels (w/o properties in use in
+> this driver), perhaps an additional followup for that?
+
+I am not sure what you mean by this?
