@@ -2,81 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0FCC7EE31
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 14:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923CDC77B7A
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 14:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbjE3OjU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 10:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48562 "EHLO
+        id S229936AbjE3Ond (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 10:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232075AbjE3OjT (ORCPT
+        with ESMTP id S229668AbjE3Ond (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 10:39:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139958F;
-        Tue, 30 May 2023 07:39:18 -0700 (PDT)
+        Tue, 30 May 2023 10:43:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46ECD8F;
+        Tue, 30 May 2023 07:43:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99C386167D;
-        Tue, 30 May 2023 14:39:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C03BC433D2;
-        Tue, 30 May 2023 14:39:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C57AE62D95;
+        Tue, 30 May 2023 14:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A84B6C4339B;
+        Tue, 30 May 2023 14:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1685457557;
-        bh=o4tpbU823ZvDH0zikrH1WbEEN9ld+0DC5TSzAlggrDg=;
+        s=korg; t=1685457811;
+        bh=xNs8m24vD/RjSAGjEwvUKepcpTCIxfktl7qmXjLlGKY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TFC4dNFYo6U2/cb0RD/dYedoJi79GLYvB3vEqJn92ZYsZlvchM4SABG7CLX/g1bfX
-         8D27fV7G77wYR5HeLP6H/UZMsRlSrow6OygdI1SM/3f3/DrupT3g8bJKOUfqgJ9DvT
-         NZZgdlqs3/WDB3GCSRKO2kdSQfFd5lMOA3BNGhXY=
-Date:   Tue, 30 May 2023 15:39:14 +0100
+        b=i579FhuWiS1GV+82+X0fTorQKPesAzJcBj2uDCMSY5C9itryHvjwJ9DU6CQOxG+64
+         NIOj5T3Nk0cUd6a/W5EsVmFv0H+mKCjvhi4rs4ceN4eYCq19opGRo8PTs0ILJ940uG
+         HxVut4SuvetGXLIGXRpR6eCuj2mARQ0O2SsJr96M=
+Date:   Tue, 30 May 2023 15:43:28 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jirislaby@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 35/44] tty: serial: handle HAS_IOPORT dependencies
-Message-ID: <2023053050-prodigal-shine-4d1c@gregkh>
-References: <20230522105049.1467313-1-schnelle@linux.ibm.com>
- <20230522105049.1467313-36-schnelle@linux.ibm.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <2023053007-disabled-traffic-9812@gregkh>
+References: <20230525113034.46880-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230522105049.1467313-36-schnelle@linux.ibm.com>
+In-Reply-To: <20230525113034.46880-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 22, 2023 at 12:50:40PM +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them unconditionally. For 8250 based drivers some
-> support MMIO only use so fence only the parts requiring I/O ports.
+On Thu, May 25, 2023 at 02:30:30PM +0300, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
 > 
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> To manage serial controllers, let's set up a struct bus and struct device
+> for the serial core controller as suggested by Greg and Jiri. The serial
+> core controller devices are children of the physical serial port device.
+> The serial core controller device is needed to support multiple different
+> kind of ports connected to single physical serial port device.
+> 
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
+> 
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
+> 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+> Suggested-by: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 > ---
->  drivers/tty/Kconfig                  |  4 +--
->  drivers/tty/serial/8250/8250_early.c |  4 +++
->  drivers/tty/serial/8250/8250_pci.c   | 14 +++++++++
->  drivers/tty/serial/8250/8250_port.c  | 44 +++++++++++++++++++++++-----
->  drivers/tty/serial/8250/Kconfig      |  5 ++--
->  drivers/tty/serial/Kconfig           |  2 +-
->  6 files changed, 60 insertions(+), 13 deletions(-)
 
-This doesn't apply at all to my tree, so I'll just let you take it as
-there must be some merge issues somewhere:
+Thanks for sticking with this, looks good now so I've queued it up in my
+tree.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+greg k-h
