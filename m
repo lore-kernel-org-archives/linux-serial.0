@@ -2,704 +2,242 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE47EC7EE2E
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 09:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838EBC7EE23
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 09:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbjE3JXi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 05:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
+        id S230206AbjE3Jbo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 05:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbjE3JXO (ORCPT
+        with ESMTP id S229922AbjE3JbR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 05:23:14 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAE818D;
-        Tue, 30 May 2023 02:22:15 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1b04782fe07so11582275ad.3;
-        Tue, 30 May 2023 02:22:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685438507; x=1688030507;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zSR5n0JUlKK+/oELL2kD9b6GOMNfivE1uOM0+kQHWyk=;
-        b=Q93dgLfD4FFZ5O6+yrfggAlfVYf56Qr2QaAQfAPoD3xBt4wVuPSp328zO9sTsyuh2o
-         cVXC9S8kvFMg7NJVbgJD9rmH83Q7c2BROpQRE+vc2Mdi/NBixAEIq1c+Z4NJgD8XxgV7
-         KDgtIiKd/nYyQa1BHQYdE+IuPV0+qxWH97mC+aJtfNEDYnz9S90scCyvl2xD7GfDc+1e
-         rah12TMPWgsMpSmApEduA18Wb+YNCR95K4SUSYLWVMuwnNTwtdFQAm3XEBix4Eeh6gG9
-         wRWOEsMDVCF8YCP8JenMfKfp0SQ2OEgt6j4gamVjRem7Zmbo/u3VvQMzGhxGR8Z8R/Wh
-         7HLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685438507; x=1688030507;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zSR5n0JUlKK+/oELL2kD9b6GOMNfivE1uOM0+kQHWyk=;
-        b=PkkQB+oqUVkRgdHk6IpBHnjVScuYKUL3K13dpw+ePrly2CAVjAAtD/4g5nG/RUCHAM
-         /kWAoUL9CbM6x7vAY4s6jhWfby5rPTaLTLgNpUEcP3HihERIvfy8QOUvSWPXshTWWNyj
-         R+easoW3GgJVmQHA8pA7P4hbHdAWD2lVcs1EyjZ8UM+hGUcHOCtxNQPDZzhzpelYqN20
-         dTylzDPCaqjM64YvpyRp5xuvgChs9ql1iDX3kjfaJBPBrBGa8I/LkkFURcYqImNsprNX
-         67ooxKJJbtrOinglOeN6UqddW1CaciN+qKpkk8wEItNI/y1rg9AZ8UGmOWvs0RsYNcMx
-         vCRg==
-X-Gm-Message-State: AC+VfDwO9p38yOcln1EXZKATKE/7Z0Vd8kI/ETfZo3rZQbu+hKnKbIEZ
-        Vig5p3GcRAFp3ETw92amYyY=
-X-Google-Smtp-Source: ACHHUZ6RAXQdHeXaEM57fJ/KSDJBLDuCWMMVAD5mbTCmcw8hZiFTmj6+4IDpSJiPJRJhBSLaLQho5g==
-X-Received: by 2002:a17:902:d34b:b0:1a6:4a64:4d27 with SMTP id l11-20020a170902d34b00b001a64a644d27mr1623806plk.40.1685438506843;
-        Tue, 30 May 2023 02:21:46 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id t8-20020a170902b20800b001aafdf8063dsm9739958plr.157.2023.05.30.02.21.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 May 2023 02:21:46 -0700 (PDT)
-Message-ID: <433951c3-e56d-1fa1-edf3-31102aa1b7b6@gmail.com>
-Date:   Tue, 30 May 2023 17:21:41 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+        Tue, 30 May 2023 05:31:17 -0400
+Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.86.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46C71A8
+        for <linux-serial@vger.kernel.org>; Tue, 30 May 2023 02:30:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
+        s=mimecast20210310; t=1685439046;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CYq5z9W0NccyKEsJKexRxxFs3gJikqqLjDv0pN+hT28=;
+        b=ECnXRD958kQCNcVSpZiT4TL43SMpD5+256J9Y5bnItRre0tcsm/VUMR+bwZef+mdvQrxv5
+        xXQwAO/GJOFdytbFpGvngfPar/knOf2Jsq9hdse4zTofK/3FJqNoW9t4UGZRlLgM8i9QEe
+        UFBm6gOTFP7mGhXYIsdkYYfgqG806UY=
+Received: from GBR01-CWL-obe.outbound.protection.outlook.com
+ (mail-cwlgbr01lp2056.outbound.protection.outlook.com [104.47.20.56]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ uk-mta-19-7QfL-y1KN1WFW7i1tE2nNA-1; Tue, 30 May 2023 10:30:35 +0100
+X-MC-Unique: 7QfL-y1KN1WFW7i1tE2nNA-1
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
+ by LO2P123MB7163.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:328::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.23; Tue, 30 May
+ 2023 09:30:33 +0000
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::6c38:e856:880a:704f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::6c38:e856:880a:704f%7]) with mapi id 15.20.6433.022; Tue, 30 May 2023
+ 09:30:33 +0000
+Message-ID: <c15a90d6-b3c1-e432-9216-c4c1e2c44ce6@camlingroup.com>
+Date:   Tue, 30 May 2023 11:30:07 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
-Subject: Re: [PATCH v12 10/10] tty: serial: Add Nuvoton ma35d1 serial driver
- support
+Subject: Re: [PATCH v4 0/9] serial: sc16is7xx: fix GPIO regression and rs485
+ improvements
+To:     Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com
+CC:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+References: <20230529140711.896830-1-hugo@hugovil.com>
+From:   Lech Perczak <lech.perczak@camlingroup.com>
+In-Reply-To: <20230529140711.896830-1-hugo@hugovil.com>
+X-ClientProxiedBy: LO4P123CA0485.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a8::22) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:400:142::9)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|LO2P123MB7163:EE_
+X-MS-Office365-Filtering-Correlation-Id: 57b1d8c8-2a40-428d-7c8f-08db60f0848d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: fxEnYUYPLBAaHl8t82BSZtcAtJAmM2OoG9mykPb/hm79t8xCFuilPgRWB44afemnRg6K9XZh8R4cVsX8tECoZB/fs2lSo4lHl7qw2bzLTJLtQ+UBxppEGKNPUnFY1l8pZhhKO6r0JfBFYW+70ubTOgyka/4OK8kEX4isUFEw4ybFqE2+UTCcJKmjP90lQLUeNFeY01n1PPXr96IdgpCdOQaYhhWXe3LucAe6wELncV679gJY7e7o4ujA+IoYpN1E6vGQv0VtoHzAQ991SynqTZ1xUymp7qxpzLh/ktAwLJWCjA3e+BovJtT82Zh5DgHr0bRBH3Gc6vq1PLc0KdF5iTjXcECmrfqVkpoPi82/rgqJQC7VKUiFpCNx1DwKZu2iZ7oPr6JG4jCmqlTq916OMhJ6epku8NxPC3enHJ+ojNk2rHtGqSDl1gKwPXy6eQvdbTqw9P4bHJQnP30YPvcxt0/xr6qzbsAmgoDcvTVejvq8+Inrl8Gn4NsS1wZ3kuH7X5sdjZ6hExbDyACVryL4t4O5QLg1asz9MpG6WlzoEINNfhBx6eplXysFT2anlJP0bv9Hh/ytcD/Ub/1yYahIF6YR6sNcAd8TYUqtYv9gHKPRX5JKUxqvIyHC0AYCykOXm9CsMlvjThK71hQHBEoKUQbxBERJrtA6UgFyWt1m2ZvPmlGkOrEbPySu2c5w4/N9NHp3RlGoK0Y1YABaSOpMVw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(376002)(39850400004)(136003)(366004)(346002)(396003)(451199021)(966005)(186003)(2616005)(38100700002)(41300700001)(31686004)(83380400001)(6512007)(6506007)(26005)(6666004)(6486002)(478600001)(66476007)(6636002)(4326008)(66946007)(66556008)(316002)(5660300002)(8676002)(8936002)(44832011)(7416002)(2906002)(86362001)(31696002)(36756003)(43740500002)(45980500001)(18886065003);DIR:OUT;SFP:1101
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qz/bfQia/tou7gc7oA7750IK9GZzXy1OItFycnZ2a95yDihz1dtbVAjAe9yw?=
+ =?us-ascii?Q?2/wY0oL3p3isJZj/x1vw8BoLkZARKtB9d8HNUrpWUkbZwrXDUVE/x4GRhGiO?=
+ =?us-ascii?Q?odORgnDSVqPW7QaPnd8rthngPdaGAd7zaseHmZLYI+x2cPovKoDd/LWkcgmS?=
+ =?us-ascii?Q?GcSLNQH/g3Knl1zB5tGCp5XoGURrj333t4km310rnVhil6+4TILEGuu0+Spm?=
+ =?us-ascii?Q?t4CBDjui5eSmwH5pWdy4MA4yfnJBro1qjBiUgez56Qpp8gqiA2u6Wp/BnVRy?=
+ =?us-ascii?Q?Ilb5gk4L+Ne3lH53Tkfm4vU+yKiABaSIN3qK+iXfPxr5epGgh2MiO3rpNJiA?=
+ =?us-ascii?Q?RW01yJMY6SmyBGYOim/ak0TDF/JzHt7cHMRHouFg2J/cuOQrMFR4bdVuJsJa?=
+ =?us-ascii?Q?vlZNfDUJWZrpSIDhTLYGILap8LBdDKMkeb66AY+KHEAb+LdUlYxcTU5F88aW?=
+ =?us-ascii?Q?Uhr3UxSiWsMxW03l+EYDS1NPBzuWPg/BnJ2xEVSc5NxBBVOlAOUo7Ihnb/tn?=
+ =?us-ascii?Q?TMykh9Y5h97lRYxFMQcKrO8iNS6ASrowfWsXXk6YvOPz/g9n0zZdvicoQKK1?=
+ =?us-ascii?Q?PGmBUPY8I7bUbmZU1AnJ1GhzjHyVID8+zpLEzNfnNdltuTMI0uM66yiDMcEE?=
+ =?us-ascii?Q?bGdDLjbItawiQo+W5GvgRCNA4/HKd5X4jjWSckq1HSk9al+lBJkHSzP5cimG?=
+ =?us-ascii?Q?kFn2zaM0ZGxDj7KFUsHH9DR1DsgAByT7CS4f7QDqAzdUpfdjWVB234u8Z6mM?=
+ =?us-ascii?Q?duAFiXbOT5CzGGnYRMMDGCc9jcwYDstsHq24rZd7n/kWW0z/dj0c1zD4gifr?=
+ =?us-ascii?Q?jjW+piEgd+cA8pwg6YKtVW1OdOzvjrFBj0vMSJveroLwHJSxGdyHS1GGRa2s?=
+ =?us-ascii?Q?55LB8acV7OA6dXb1U0Mp8E9i/VHcCZJnhM1pOnK3P0RmFeBz4+uwnr7KXhKQ?=
+ =?us-ascii?Q?GX446yAmQtFOV4fc43xlX6zcRHdlknJqmHrzCLkUVl6uCEy6VB5v3K62J0d0?=
+ =?us-ascii?Q?mMHbh6iYS72K3m/8c4WV/Ues86BkqrYpLump46RrGnz8zXkgDwzUk7PtvU3y?=
+ =?us-ascii?Q?8Gj5FDD8AT82YsDgsPGhY53Q6KewgDhWjORFEJGU8xc6QFkIpGgw7zL/rWDI?=
+ =?us-ascii?Q?+KMQkJCbUPONk/l0LkAwIQZkjtpB4XaNckzTQdwyY9z2sMceUhGlmHg08klX?=
+ =?us-ascii?Q?OBw+pdpIxL2yedXxRu48Rt6ndBTrhtzzL+QUeOAbOgW1a1tln1fRggC1MXt6?=
+ =?us-ascii?Q?w8qK+ZQ5H95g+uNzTGpWI2apDgncu17beGfxZXhK7hvQp4pvpNzSdxWYMAz4?=
+ =?us-ascii?Q?tYuT970mH6TXcadN0s4rGjeGoU51jwgARrY1vbYxQULw/Ryzcw3/yBEnkX4t?=
+ =?us-ascii?Q?37NFCtAOW0fa4qU8chsqXd59YbTWeJHTOyb+TIpRIhx1tb6iQadswU4r7kOd?=
+ =?us-ascii?Q?nBuxezpfMgkQewrWJyIcVK7HACW8bu+pi4yE1xZmDkvp1iAE+e0DH5fla0VX?=
+ =?us-ascii?Q?0n6TmOWBVaumi4ujKF5n3BfnxQgERIGCzA8qothx/bK5zElhtlW35/nDVjfq?=
+ =?us-ascii?Q?qUYQ+pGv/eZQ5hSgHfFIswtnWd+O0xwiMylbIJoYkwwOohKW7jGlhsw1uZx5?=
+ =?us-ascii?Q?nQ=3D=3D?=
+X-OriginatorOrg: camlingroup.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57b1d8c8-2a40-428d-7c8f-08db60f0848d
+X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2023 09:30:33.7037
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /oynNsH4gvo4OIVcCMObpK69mZytSvdEv8/3aWcXcI7pMjtF4pyZ/lE7+9U4z+yHxhlrlc1VjM+KL0RoIZ/ZzQW+zv/3gTWjQa+645IRHdE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO2P123MB7163
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: camlingroup.com
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, tmaimon77@gmail.com, catalin.marinas@arm.com,
-        will@kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        arnd@arndb.de, soc@kernel.org, schung@nuvoton.com,
-        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>
-References: <20230530074221.1031011-1-ychuang570808@gmail.com>
- <20230530074221.1031011-11-ychuang570808@gmail.com>
- <71b384a8-7f1e-5a1-3768-12ddcd8c2f@linux.intel.com>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <71b384a8-7f1e-5a1-3768-12ddcd8c2f@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Ilpo,
-
-
-On 2023/5/30 下午 04:33, Ilpo Järvinen wrote:
-> On Tue, 30 May 2023, Jacky Huang wrote:
+W dniu 29.05.2023 o=C2=A016:07, Hugo Villeneuve pisze:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 >
->> From: Jacky Huang <ychuang3@nuvoton.com>
->>
->> This adds UART and console driver for Nuvoton ma35d1 Soc.
->> It supports full-duplex communication, FIFO control, and
->> hardware flow control.
->>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>   drivers/tty/serial/Kconfig         |  18 +
->>   drivers/tty/serial/Makefile        |   1 +
->>   drivers/tty/serial/ma35d1_serial.c | 801 +++++++++++++++++++++++++++++
->>   include/uapi/linux/serial_core.h   |   3 +
->>   4 files changed, 823 insertions(+)
->>   create mode 100644 drivers/tty/serial/ma35d1_serial.c
->>
->> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->> index 398e5aac2e77..85ac6fc1ff1d 100644
->> --- a/drivers/tty/serial/Kconfig
->> +++ b/drivers/tty/serial/Kconfig
->> @@ -1555,6 +1555,24 @@ config SERIAL_SUNPLUS_CONSOLE
->>   	  you can alter that using a kernel command line option such as
->>   	  "console=ttySUPx".
->>   
->> +config SERIAL_NUVOTON_MA35D1
->> +	tristate "Nuvoton MA35D1 family UART support"
->> +	depends on ARCH_MA35 || COMPILE_TEST
->> +	select SERIAL_CORE
->> +	help
->> +	  This driver supports Nuvoton MA35D1 family UART ports. If you would
->> +	  like to use them, you must answer Y or M to this option. Note that
->> +	  for use as console, it must be included in kernel and not as a
->> +	  module
->> +
->> +config SERIAL_NUVOTON_MA35D1_CONSOLE
->> +	bool "Console on a Nuvotn MA35D1 family UART port"
->> +	depends on SERIAL_NUVOTON_MA35D1=y
->> +	select SERIAL_CORE_CONSOLE
->> +	help
->> +	  Select this options if you'd like to use the UART port0 of the
->> +	  Nuvoton MA35D1 family as a console.
->> +
->>   endmenu
->>   
->>   config SERIAL_MCTRL_GPIO
->> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
->> index cd9afd9e3018..0e823851c42c 100644
->> --- a/drivers/tty/serial/Makefile
->> +++ b/drivers/tty/serial/Makefile
->> @@ -93,3 +93,4 @@ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
->>   
->>   obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
->>   obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
->> +obj-$(CONFIG_SERIAL_NUVOTON_MA35D1) += ma35d1_serial.o
->> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
->> new file mode 100644
->> index 000000000000..c0a8c1e4ca0e
->> --- /dev/null
->> +++ b/drivers/tty/serial/ma35d1_serial.c
->> @@ -0,0 +1,801 @@
->> +// SPDX-License-Identifier: GPL-2.0+
->> +/*
->> + *  MA35D1 serial driver
->> + *  Copyright (C) 2023 Nuvoton Technology Corp.
->> + */
->> +
->> +#include <linux/bitfield.h>
->> +#include <linux/clk.h>
->> +#include <linux/delay.h>
->> +#include <linux/of.h>
->> +#include <linux/of_platform.h>
->> +#include <linux/serial_core.h>
->> +#include <linux/slab.h>
->> +#include <linux/tty_flip.h>
->> +#include <linux/units.h>
->> +
->> +#define MA35_UART_NR		17
->> +
->> +#define MA35_RBR_REG		0x00
->> +#define MA35_THR_REG		0x00
->> +#define MA35_IER_REG		0x04
->> +#define MA35_FCR_REG		0x08
->> +#define MA35_LCR_REG		0x0C
->> +#define MA35_MCR_REG		0x10
->> +#define MA35_MSR_REG		0x14
->> +#define MA35_FSR_REG		0x18
->> +#define MA35_ISR_REG		0x1C
->> +#define MA35_TOR_REG		0x20
->> +#define MA35_BAUD_REG		0x24
->> +#define MA35_ALTCTL_REG		0x2C
->> +#define MA35_FUN_SEL_REG	0x30
->> +#define MA35_WKCTL_REG		0x40
->> +#define MA35_WKSTS_REG		0x44
->> +
->> +/* MA35_IER_REG - Interrupt Enable Register */
->> +#define MA35_IER_RDA_IEN	BIT(0)  /* RBR Available Interrupt Enable */
->> +#define MA35_IER_THRE_IEN	BIT(1)  /* THR Empty Interrupt Enable */
->> +#define MA35_IER_RLS_IEN	BIT(2)  /* RX Line Status Interrupt Enable */
->> +#define MA35_IER_RTO_IEN	BIT(4)  /* RX Time-out Interrupt Enable */
->> +#define MA35_IER_BUFERR_IEN	BIT(5)  /* Buffer Error Interrupt Enable */
->> +#define MA35_IER_TIME_OUT_EN	BIT(11) /* RX Buffer Time-out Counter Enable */
->> +#define MA35_IER_AUTO_RTS	BIT(12) /* nRTS Auto-flow Control Enable */
->> +#define MA35_IER_AUTO_CTS	BIT(13) /* nCTS Auto-flow Control Enable */
->> +
->> +/* MA35_FCR_REG - FIFO Control Register */
->> +#define MA35_FCR_RFR		BIT(1)  /* RX Field Software Reset */
->> +#define MA35_FCR_TFR		BIT(2)  /* TX Field Software Reset */
->> +#define MA35_FCR_RFITL_MASK	GENMASK(7, 4) /* RX FIFO Interrupt Trigger Level */
->> +#define MA35_FCR_RFITL_1BYTE	FIELD_PREP(MA35_FCR_RFITL_MASK, 0)
->> +#define MA35_FCR_RFITL_4BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 1)
->> +#define MA35_FCR_RFITL_8BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 2)
->> +#define MA35_FCR_RFITL_14BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 3)
->> +#define MA35_FCR_RFITL_30BYTES	FIELD_PREP(MA35_FCR_RFITL_MASK, 4)
->> +#define MA35_FCR_RTSTL_MASK	GENMASK(19, 16) /* nRTS Trigger Level */
->> +#define MA35_FCR_RTSTL_1BYTE	FIELD_PREP(MA35_FCR_RTSTL_MASK, 0)
->> +#define MA35_FCR_RTSTL_4BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 1)
->> +#define MA35_FCR_RTSTL_8BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 2)
->> +#define MA35_FCR_RTSTL_14BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 3)
->> +#define MA35_FCR_RTSTLL_30BYTES	FIELD_PREP(MA35_FCR_RTSTL_MASK, 4)
->> +
->> +/* MA35_LCR_REG - Line Control Register */
->> +#define	MA35_LCR_NSB		BIT(2)  /* Number of “STOP Bit” */
->> +#define MA35_LCR_PBE		BIT(3)  /* Parity Bit Enable */
->> +#define MA35_LCR_EPE		BIT(4)  /* Even Parity Enable */
->> +#define MA35_LCR_SPE		BIT(5)  /* Stick Parity Enable */
->> +#define MA35_LCR_BREAK		BIT(6)  /* Break Control */
->> +#define MA35_LCR_WLS_MASK	GENMASK(1, 0) /* Word Length Selection */
->> +#define MA35_LCR_WLS_5BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 0)
->> +#define MA35_LCR_WLS_6BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 1)
->> +#define MA35_LCR_WLS_7BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 2)
->> +#define MA35_LCR_WLS_8BITS	FIELD_PREP(MA35_LCR_WLS_MASK, 3)
->> +
->> +/* MA35_MCR_REG - Modem Control Register */
->> +#define MA35_MCR_RTS_CTRL	BIT(1)  /* nRTS Signal Control */
->> +#define MA35_MCR_RTSACTLV	BIT(9)  /* nRTS Pin Active Level */
->> +#define MA35_MCR_RTSSTS		BIT(13) /* nRTS Pin Status (Read Only) */
->> +
->> +/* MA35_MSR_REG - Modem Status Register */
->> +#define MA35_MSR_CTSDETF	BIT(0)  /* Detect nCTS State Change Flag */
->> +#define MA35_MSR_CTSSTS		BIT(4)  /* nCTS Pin Status (Read Only) */
->> +#define MA35_MSR_CTSACTLV	BIT(8)  /* nCTS Pin Active Level */
->> +
->> +/* MA35_FSR_REG - FIFO Status Register */
->> +#define MA35_FSR_RX_OVER_IF	BIT(0)  /* RX Overflow Error Interrupt Flag */
->> +#define MA35_FSR_PEF		BIT(4)  /* Parity Error Flag*/
->> +#define MA35_FSR_FEF		BIT(5)  /* Framing Error Flag */
->> +#define MA35_FSR_BIF		BIT(6)  /* Break Interrupt Flag */
->> +#define MA35_FSR_RX_EMPTY	BIT(14) /* Receiver FIFO Empty (Read Only) */
->> +#define MA35_FSR_RX_FULL	BIT(15) /* Receiver FIFO Full (Read Only) */
->> +#define MA35_FSR_TX_EMPTY	BIT(22) /* Transmitter FIFO Empty (Read Only) */
->> +#define MA35_FSR_TX_FULL	BIT(23) /* Transmitter FIFO Full (Read Only) */
->> +#define MA35_FSR_TX_OVER_IF	BIT(24) /* TX Overflow Error Interrupt Flag */
->> +#define MA35_FSR_TE_FLAG	BIT(28) /* Transmitter Empty Flag (Read Only) */
->> +#define MA35_FSR_RXPTR_MSK	GENMASK(13, 8) /* TX FIFO Pointer mask */
->> +#define MA35_FSR_TXPTR_MSK	GENMASK(21, 16) /* RX FIFO Pointer mask */
->> +
->> +/* MA35_ISR_REG - Interrupt Status Register */
->> +#define MA35_ISR_RDA_IF		BIT(0)  /* RBR Available Interrupt Flag */
->> +#define MA35_ISR_THRE_IF	BIT(1)  /* THR Empty Interrupt Flag */
->> +#define MA35_ISR_RLSIF		BIT(2)  /* Receive Line Interrupt Flag */
->> +#define MA35_ISR_MODEMIF	BIT(3)  /* MODEM Interrupt Flag */
->> +#define MA35_ISR_RXTO_IF	BIT(4)  /* RX Time-out Interrupt Flag */
->> +#define MA35_ISR_BUFEIF		BIT(5)  /* Buffer Error Interrupt Flag */
->> +#define MA35_ISR_WK_IF		BIT(6)  /* UART Wake-up Interrupt Flag */
->> +#define MA35_ISR_RDAINT		BIT(8)  /* RBR Available Interrupt Indicator */
->> +#define MA35_ISR_THRE_INT	BIT(9)  /* THR Empty Interrupt Indicator */
->> +#define MA35_ISR_ALL		0xFFFFFFFF
->> +
->> +/* MA35_BAUD_REG - Baud Rate Divider Register */
->> +#define	MA35_BAUD_MODE_MASK	GENMASK(29, 28)
->> +#define MA35_BAUD_MODE0		FIELD_PREP(MA35_BAUD_MODE_MASK, 0)
->> +#define MA35_BAUD_MODE1		FIELD_PREP(MA35_BAUD_MODE_MASK, 2)
->> +#define MA35_BAUD_MODE2		FIELD_PREP(MA35_BAUD_MODE_MASK, 3)
->> +#define	MA35_BAUD_MASK		GENMASK(15, 0)
->> +
->> +/* MA35_ALTCTL_REG - Alternate Control/Status Register */
->> +#define MA35_ALTCTL_RS485AUD	BIT(10) /* RS-485 Auto Direction Function */
->> +
->> +/* MA35_FUN_SEL_REG - Function Select Register */
->> +#define MA35_FUN_SEL_MASK	GENMASK(2, 0)
->> +#define MA35_FUN_SEL_UART	FIELD_PREP(MA35_FUN_SEL_MASK, 0)
->> +#define MA35_FUN_SEL_RS485	FIELD_PREP(MA35_FUN_SEL_MASK, 3)
->> +
->> +/* The constrain for MA35D1 UART baud rate divider */
->> +#define MA35_BAUD_DIV_MAX	0xFFFF
->> +#define MA35_BAUD_DIV_MIN	11
->> +
->> +/* UART FIFO depth */
->> +#define MA35_UART_FIFO_DEPTH	32
->> +/* UART console clock */
->> +#define MA35_UART_CONSOLE_CLK	(24 * HZ_PER_MHZ)
->> +/* UART register ioremap size */
->> +#define MA35_UART_REG_SIZE	0x100
->> +/* Rx Timeout */
->> +#define MA35_UART_RX_TOUT	0x40
->> +
->> +#define MA35_ISR_IF_CHECK	(MA35_ISR_RDA_IF | MA35_ISR_RXTO_IF | \
->> +				 MA35_ISR_THRE_INT | MA35_ISR_BUFEIF)
->> +
->> +static struct uart_driver ma35d1serial_reg;
->> +
->> +struct uart_ma35d1_port {
->> +	struct uart_port port;
->> +	struct clk *clk;
->> +	u16 capabilities; /* port capabilities */
->> +	u8 ier;
->> +	u8 lcr;
->> +	u8 mcr;
->> +	u32 baud_rate;
->> +	u32 console_baud_rate;
->> +	u32 console_line;
->> +	u32 console_int;
->> +};
->> +
->> +static struct uart_ma35d1_port ma35d1serial_ports[MA35_UART_NR];
->> +
->> +static struct uart_ma35d1_port *to_ma35d1_uart_port(struct uart_port *uart)
->> +{
->> +	return container_of(uart, struct uart_ma35d1_port, port);
->> +}
->> +
->> +static u32 serial_in(struct uart_ma35d1_port *p, u32 offset)
->> +{
->> +	return readl_relaxed(p->port.membase + offset);
->> +}
->> +
->> +static void serial_out(struct uart_ma35d1_port *p, u32 offset, u32 value)
->> +{
->> +	writel_relaxed(value, p->port.membase + offset);
->> +}
->> +
->> +static void __stop_tx(struct uart_ma35d1_port *p)
->> +{
->> +	u32 ier;
->> +
->> +	ier = serial_in(p, MA35_IER_REG);
->> +	if (ier & MA35_IER_THRE_IEN)
->> +		serial_out(p, MA35_IER_REG, ier & ~MA35_IER_THRE_IEN);
->> +}
->> +
->> +static void ma35d1serial_stop_tx(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +
->> +	__stop_tx(up);
->> +}
->> +
->> +static void transmit_chars(struct uart_ma35d1_port *up)
->> +{
->> +	u32 count;
->> +	u8 ch;
->> +
->> +	if (uart_tx_stopped(&up->port)) {
->> +		ma35d1serial_stop_tx(&up->port);
->> +		return;
->> +	}
->> +	count = MA35_UART_FIFO_DEPTH - FIELD_GET(MA35_FSR_TXPTR_MSK,
->> +						 serial_in(up, MA35_FSR_REG));
->> +	uart_port_tx_limited(&up->port, ch, count,
->> +			     !(serial_in(up, MA35_FSR_REG) & MA35_FSR_TX_FULL),
->> +			     serial_out(up, MA35_THR_REG, ch),
->> +			     ({}));
->> +}
->> +
->> +static void ma35d1serial_start_tx(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	u32 ier;
->> +
->> +	ier = serial_in(up, MA35_IER_REG);
->> +	serial_out(up, MA35_IER_REG, ier & ~MA35_IER_THRE_IEN);
->> +	transmit_chars(up);
->> +	serial_out(up, MA35_IER_REG, ier | MA35_IER_THRE_IEN);
->> +}
->> +
->> +static void ma35d1serial_stop_rx(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +
->> +	serial_out(up, MA35_IER_REG, serial_in(up, MA35_IER_REG) & ~MA35_IER_RDA_IEN);
->> +}
->> +
->> +static void receive_chars(struct uart_ma35d1_port *up)
->> +{
->> +	u8 ch, flag;
->> +	u32 fsr;
->> +	int max_count = 256;
->> +
->> +	fsr = serial_in(up, MA35_FSR_REG);
->> +	do {
->> +		flag = TTY_NORMAL;
->> +		up->port.icount.rx++;
->> +
->> +		if (unlikely(fsr & (MA35_FSR_BIF | MA35_FSR_FEF |
->> +				    MA35_FSR_PEF | MA35_FSR_RX_OVER_IF))) {
->> +			if (fsr & MA35_FSR_BIF) {
->> +				up->port.icount.brk++;
->> +				if (uart_handle_break(&up->port))
->> +					continue;
->> +			}
->> +			if (fsr & MA35_FSR_FEF)
->> +				up->port.icount.frame++;
->> +			if (fsr & MA35_FSR_PEF)
->> +				up->port.icount.parity++;
->> +			if (fsr & MA35_FSR_RX_OVER_IF)
->> +				up->port.icount.overrun++;
->> +
->> +			serial_out(up, MA35_FSR_REG,
->> +				   fsr & (MA35_FSR_BIF | MA35_FSR_FEF |
->> +					  MA35_FSR_PEF | MA35_FSR_RX_OVER_IF));
->> +			if (fsr & MA35_FSR_BIF)
->> +				flag = TTY_BREAK;
->> +			else if (fsr & MA35_FSR_PEF)
->> +				flag = TTY_PARITY;
->> +			else if (fsr & MA35_FSR_FEF)
->> +				flag = TTY_FRAME;
->> +		}
->> +
->> +		ch = serial_in(up, MA35_RBR_REG);
->> +		if (uart_handle_sysrq_char(&up->port, ch))
->> +			continue;
->> +
->> +		spin_lock(&up->port.lock);
->> +		uart_insert_char(&up->port, fsr, MA35_FSR_RX_OVER_IF, ch, flag);
->> +		spin_unlock(&up->port.lock);
->> +
->> +		fsr = serial_in(up, MA35_FSR_REG);
->> +	} while (!(fsr & MA35_FSR_RX_EMPTY) && (max_count-- > 0));
->> +
->> +	spin_lock(&up->port.lock);
->> +	tty_flip_buffer_push(&up->port.state->port);
->> +	spin_unlock(&up->port.lock);
->> +}
->> +
->> +static irqreturn_t ma35d1serial_interrupt(int irq, void *dev_id)
->> +{
->> +	struct uart_port *port = dev_id;
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	u32 isr, fsr;
->> +
->> +	isr = serial_in(up, MA35_ISR_REG);
->> +	fsr = serial_in(up, MA35_FSR_REG);
->> +
->> +	if (!(isr & MA35_ISR_IF_CHECK))
->> +		return IRQ_NONE;
->> +
->> +	if (isr & (MA35_ISR_RDA_IF | MA35_ISR_RXTO_IF))
->> +		receive_chars(up);
->> +	if (isr & MA35_ISR_THRE_INT)
->> +		transmit_chars(up);
->> +	if (fsr & MA35_FSR_TX_OVER_IF)
->> +		serial_out(up, MA35_FSR_REG, MA35_FSR_TX_OVER_IF);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
->> +static u32 ma35d1serial_tx_empty(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	u32 fsr;
->> +
->> +	fsr = serial_in(up, MA35_FSR_REG);
->> +	return (fsr & (MA35_FSR_TE_FLAG | MA35_FSR_TX_EMPTY)) ==
->> +		(MA35_FSR_TE_FLAG | MA35_FSR_TX_EMPTY) ? TIOCSER_TEMT : 0;
->> +}
->> +
->> +static u32 ma35d1serial_get_mctrl(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	u32 status;
->> +	u32 ret = 0;
->> +
->> +	status = serial_in(up, MA35_MSR_REG);
->> +	if (!(status & MA35_MSR_CTSSTS))
->> +		ret |= TIOCM_CTS;
->> +	return ret;
->> +}
->> +
->> +static void ma35d1serial_set_mctrl(struct uart_port *port, u32 mctrl)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	u32 mcr;
->> +	u32 ier;
->> +
->> +	mcr = serial_in(up, MA35_MCR_REG);
->> +	mcr &= ~MA35_MCR_RTS_CTRL;
->> +
->> +	if (mctrl & TIOCM_RTS)
->> +		mcr |= MA35_MCR_RTSACTLV;
->> +	else
->> +		mcr &= ~MA35_MCR_RTSACTLV;
->> +
->> +	if (up->mcr & UART_MCR_AFE) {
->> +		serial_out(up, MA35_IER_REG, (serial_in(up, MA35_IER_REG) |
->> +					     MA35_IER_AUTO_RTS |
->> +					     MA35_IER_AUTO_CTS));
->> +		up->port.flags |= UPF_HARD_FLOW;
->> +	} else {
->> +		ier = serial_in(up, MA35_IER_REG);
->> +		ier &= ~(MA35_IER_AUTO_RTS | MA35_IER_AUTO_CTS);
->> +		serial_out(up, MA35_IER_REG, ier);
->> +		up->port.flags &= ~UPF_HARD_FLOW;
->> +	}
->> +	serial_out(up, MA35_MSR_REG, (serial_in(up, MA35_MSR_REG) |
->> +				     MA35_MSR_CTSACTLV));
->> +	serial_out(up, MA35_MCR_REG, mcr);
->> +}
->> +
->> +static void ma35d1serial_break_ctl(struct uart_port *port, int break_state)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	unsigned long flags;
->> +	u32 lcr;
->> +
->> +	spin_lock_irqsave(&up->port.lock, flags);
->> +	lcr = serial_in(up, MA35_LCR_REG);
->> +	if (break_state != 0)
->> +		lcr |= MA35_LCR_BREAK;
->> +	else
->> +		lcr &= ~MA35_LCR_BREAK;
->> +	serial_out(up, MA35_LCR_REG, lcr);
->> +	spin_unlock_irqrestore(&up->port.lock, flags);
->> +}
->> +
->> +static int ma35d1serial_startup(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	int retval;
->> +
->> +	/* Reset FIFO */
->> +	serial_out(up, MA35_FCR_REG, MA35_FCR_TFR | MA35_FCR_RFR);
->> +
->> +	/* Clear pending interrupts */
->> +	serial_out(up, MA35_ISR_REG, MA35_ISR_ALL);
->> +
->> +	retval = request_irq(port->irq, ma35d1serial_interrupt, 0,
->> +			     dev_name(port->dev), port);
->> +	if (retval) {
->> +		dev_err(up->port.dev, "request irq failed.\n");
->> +		return retval;
->> +	}
->> +
->> +	serial_out(up, MA35_FCR_REG, serial_in(up, MA35_FCR_REG) |
->> +		   MA35_FCR_RFITL_4BYTES | MA35_FCR_RTSTL_8BYTES);
->> +	serial_out(up, MA35_LCR_REG, MA35_LCR_WLS_8BITS);
->> +	serial_out(up, MA35_TOR_REG, MA35_UART_RX_TOUT);
->> +	serial_out(up, MA35_IER_REG, MA35_IER_RTO_IEN | MA35_IER_RDA_IEN |
->> +		   MA35_IER_TIME_OUT_EN | MA35_IER_BUFERR_IEN);
->> +	return 0;
->> +}
->> +
->> +static void ma35d1serial_shutdown(struct uart_port *port)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +
->> +	serial_out(up, MA35_IER_REG, 0);
->> +	free_irq(port->irq, port);
->> +}
->> +
->> +static void ma35d1serial_set_termios(struct uart_port *port,
->> +				     struct ktermios *termios,
->> +				     const struct ktermios *old)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +	u32 lcr = 0;
->> +	unsigned long flags;
->> +	u32 baud, quot;
->> +
->> +	lcr = UART_LCR_WLEN(tty_get_char_size(termios->c_cflag));
->> +
->> +	if (termios->c_cflag & CSTOPB)
->> +		lcr |= MA35_LCR_NSB;
->> +	if (termios->c_cflag & PARENB)
->> +		lcr |= MA35_LCR_PBE;
->> +	if (!(termios->c_cflag & PARODD))
->> +		lcr |= MA35_LCR_EPE;
->> +	if (termios->c_cflag & CMSPAR)
->> +		lcr |= MA35_LCR_SPE;
->> +
->> +	baud = uart_get_baud_rate(port, termios, old,
->> +				  port->uartclk / MA35_BAUD_DIV_MAX,
->> +				  port->uartclk / MA35_BAUD_DIV_MIN);
->> +
->> +	/* MA35D1 UART baud rate equation: baudrate = UART_CLK / (quot + 2) */
->> +	quot = (port->uartclk / baud) - 2;
->> +
->> +	/*
->> +	 * Ok, we're now changing the port state.  Do it with
->> +	 * interrupts disabled.
->> +	 */
->> +	spin_lock_irqsave(&up->port.lock, flags);
->> +
->> +	up->port.read_status_mask = MA35_FSR_RX_OVER_IF;
->> +	if (termios->c_iflag & INPCK)
->> +		up->port.read_status_mask |= MA35_FSR_FEF | MA35_FSR_PEF;
->> +	if (termios->c_iflag & (BRKINT | PARMRK))
->> +		up->port.read_status_mask |= MA35_FSR_BIF;
->> +
->> +	/* Characteres to ignore */
->> +	up->port.ignore_status_mask = 0;
->> +	if (termios->c_iflag & IGNPAR)
->> +		up->port.ignore_status_mask |= MA35_FSR_FEF | MA35_FSR_PEF;
->> +	if (termios->c_iflag & IGNBRK) {
->> +		up->port.ignore_status_mask |= MA35_FSR_BIF;
->> +		/*
->> +		 * If we're ignoring parity and break indicators,
->> +		 * ignore overruns too (for real raw support).
->> +		 */
->> +		if (termios->c_iflag & IGNPAR)
->> +			up->port.ignore_status_mask |= MA35_FSR_RX_OVER_IF;
->> +	}
->> +	if (termios->c_cflag & CRTSCTS)
->> +		up->mcr |= UART_MCR_AFE;
->> +	else
->> +		up->mcr &= ~UART_MCR_AFE;
->> +
->> +	uart_update_timeout(port, termios->c_cflag, baud);
->> +
->> +	ma35d1serial_set_mctrl(&up->port, up->port.mctrl);
->> +
->> +	serial_out(up, MA35_BAUD_REG, MA35_BAUD_MODE2 | FIELD_PREP(MA35_BAUD_MASK, quot));
->> +
->> +	serial_out(up, MA35_LCR_REG, lcr);
->> +
->> +	spin_unlock_irqrestore(&up->port.lock, flags);
->> +}
->> +
->> +static const char *ma35d1serial_type(struct uart_port *port)
->> +{
->> +	return port->type == PORT_MA35 ? "ma35d1-uart" : NULL;
->> +}
->> +
->> +static void ma35d1serial_config_port(struct uart_port *port, int flags)
->> +{
->> +	if (flags & UART_CONFIG_TYPE)
->> +		port->type = PORT_MA35;
->> +}
->> +
->> +static int ma35d1serial_verify_port(struct uart_port *port, struct serial_struct *ser)
->> +{
->> +	if (port->type != PORT_UNKNOWN && ser->type != PORT_MA35)
->> +		return -EINVAL;
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct uart_ops ma35d1serial_ops = {
->> +	.tx_empty     = ma35d1serial_tx_empty,
->> +	.set_mctrl    = ma35d1serial_set_mctrl,
->> +	.get_mctrl    = ma35d1serial_get_mctrl,
->> +	.stop_tx      = ma35d1serial_stop_tx,
->> +	.start_tx     = ma35d1serial_start_tx,
->> +	.stop_rx      = ma35d1serial_stop_rx,
->> +	.break_ctl    = ma35d1serial_break_ctl,
->> +	.startup      = ma35d1serial_startup,
->> +	.shutdown     = ma35d1serial_shutdown,
->> +	.set_termios  = ma35d1serial_set_termios,
->> +	.type         = ma35d1serial_type,
->> +	.config_port  = ma35d1serial_config_port,
->> +	.verify_port  = ma35d1serial_verify_port,
->> +};
->> +
->> +static const struct of_device_id ma35d1_serial_of_match[] = {
->> +	{ .compatible = "nuvoton,ma35d1-uart" },
->> +	{},
->> +};
->> +MODULE_DEVICE_TABLE(of, ma35d1_serial_of_match);
->> +
->> +#ifdef CONFIG_SERIAL_NUVOTON_MA35D1_CONSOLE
->> +
->> +static struct device_node *ma35d1serial_uart_nodes[MA35_UART_NR];
->> +
->> +static void wait_for_xmitr(struct uart_ma35d1_port *up)
->> +{
->> +	unsigned int tmout;
->> +
->> +	/* Wait up to 10ms for the character(s) to be sent. */
->> +	tmout = 10000;
->> +	while (--tmout) {
->> +		if (serial_in(up, MA35_FSR_REG) & MA35_FSR_TX_EMPTY)
->> +			break;
->> +		udelay(1);
->> +	}
->> +}
->> +
->> +static void ma35d1serial_console_putchar(struct uart_port *port, unsigned char ch)
->> +{
->> +	struct uart_ma35d1_port *up = to_ma35d1_uart_port(port);
->> +
->> +	wait_for_xmitr(up);
->> +	serial_out(up, MA35_THR_REG, ch);
->> +}
->> +
->> +/*
->> + *  Print a string to the serial port trying not to disturb
->> + *  any possible real use of the port...
->> + *
->> + *  The console_lock must be held when we get here.
->> + */
->> +static void ma35d1serial_console_write(struct console *co, const char *s, u32 count)
->> +{
->> +	struct uart_ma35d1_port *up = &ma35d1serial_ports[co->index];
->> +	unsigned long flags;
->> +	u32 ier;
->> +
->> +	spin_lock_irqsave(&up->port.lock, flags);
-> This lacks the oops_in_progress trickery the other drivers do?
+> Hello,
+> this patch series mainly fixes a GPIO regression and improve RS485 flags =
+and
+> properties detection from DT.
 >
-> Although I think there really should be uart_console_write_lock(uart_port
-> *up, unsigned long *flags, bool *locked) and uart_console_write_unlock()
-> helpers in serial core for this task.
+> It now also includes various small fixes and improvements that were previ=
+ously
+> sent as separate patches, but that made testing everything difficult.
 >
+> Patch 1 fixes an issue when debugging IOcontrol register. After testing t=
+he GPIO
+> regression patches (patches 6 and 7, tests done by Lech Perczak), it appe=
+rs that
+> this patch is also necessary for having the correct IOcontrol register va=
+lues.
+>
+> Patch 2 introduces a delay after a reset operation to respect datasheet
+> timing recommandations.
+>
+> Patch 3 fixes an issue with init of first port during probing.
+>
+> Patch 4 fixes a bug with the output value when first setting the GPIO dir=
+ection.
+>
+> Patch 5 is a refactor of GPIO registration code.
+>
+> Patches 6 and 7 fix a GPIO regression by (re)allowing to choose GPIO func=
+tion
+> for GPIO pins shared with modem status lines.
+>
+> Patch 8 allows to read common rs485 device-tree flags and properties.
+>
+> Patch 9 improves comments about chip variants.
+>
+> I have tested the changes on a custom board with two SC16IS752 DUART usin=
+g a
+> Variscite IMX8MN NANO SOM.
+>
+> Thank you.
+>
+> Link: [v1] https://lkml.org/lkml/2023/5/17/967 <https://lkml.org/lkml/202=
+3/5/17/967>
+> [v1] https://lkml.org/lkml/2023/5/17/777 <https://lkml.org/lkml/2023/5/17=
+/777>
+> [v1] https://lkml.org/lkml/2023/5/17/780 <https://lkml.org/lkml/2023/5/17=
+/780>
+> [v1] https://lkml.org/lkml/2023/5/17/785 <https://lkml.org/lkml/2023/5/17=
+/785>
+> [v1] https://lkml.org/lkml/2023/5/17/1311 <https://lkml.org/lkml/2023/5/1=
+7/1311>
+> [v2] https://lkml.org/lkml/2023/5/18/516 <https://lkml.org/lkml/2023/5/18=
+/516>
+> [v3] https://lkml.org/lkml/2023/5/25/7 <https://lkml.org/lkml/2023/5/25/7=
+>
+>
+> Changes for V3:
+> - Integrated all patches into single serie to facilitate debugging and te=
+sts.
+> - Reduce number of exported GPIOs depending on new property
+> nxp,modem-control-line-ports
+> - Added additional example in DT bindings
+>
+> Changes for V4:
+> - Increase reset post delay to relax scheduler.
+> - Put comments patches at the end.
+> - Remove Fixes tag for patch "mark IOCONTROL register as volatile".
+> - Improve commit messages after reviews.
+> - Fix coding style issues after reviews.
+> - Change GPIO registration to always register the maximum number of GPIOs
+> supported by the chip, but maks-out GPIOs declared as modem control lines=
+.
+> - Add patch to refactor GPIO registration.
+> - Remove patch "serial: sc16is7xx: fix syntax error in comments".
+> - Remove patch "add dump registers function"
+>
+> Hugo Villeneuve (9):
+> serial: sc16is7xx: mark IOCONTROL register as volatile
+> serial: sc16is7xx: add post reset delay
+> serial: sc16is7xx: fix broken port 0 uart init
+> serial: sc16is7xx: fix bug when first setting GPIO direction
+> serial: sc16is7xx: refactor GPIO controller registration
+> dt-bindings: sc16is7xx: Add property to change GPIO function
+> serial: sc16is7xx: fix regression with GPIO configuration
+> serial: sc16is7xx: add call to get rs485 DT flags and properties
+> serial: sc16is7xx: improve comments about variants
+>
+> .../bindings/serial/nxp,sc16is7xx.txt | 46 ++++++
+> drivers/tty/serial/sc16is7xx.c | 150 +++++++++++++-----
+> 2 files changed, 156 insertions(+), 40 deletions(-)
+>
+>
+> base-commit: 8b817fded42d8fe3a0eb47b1149d907851a3c942
 
-Okay, I will add the 'oops_in_progress' check to it.
+It would be a lot of sending, to do that for every patch separately, so for=
+ whole series:
+Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
 
+And where applicable - for code patches:
+Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
 
-Best regards,
-Jacky Huang
+I tested whole series at the same time.
+I did my tests on an i.MX6 board with SC16IS760 over SPI, which differs a t=
+iny bit from SC16IS752,
+and everything works as it should.
+Thank you for fixing this!
+
+> --=20
+> 2.30.2
+>
+--=20
+Pozdrawiam/With kind regards,
+Lech Perczak
+
+Sr. Software Engineer
+Camlin Technologies Poland Limited Sp. z o.o.
+Strzegomska 54,
+53-611 Wroclaw
+Tel:     (+48) 71 75 000 16
+Email:   lech.perczak@camlingroup.com
+Website: http://www.camlingroup.com
 
