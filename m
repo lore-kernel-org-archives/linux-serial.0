@@ -2,76 +2,84 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F23C77B73
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 10:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A8CC7EE23
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 11:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbjE3Ksv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 06:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
+        id S229968AbjE3LPp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 07:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbjE3KsU (ORCPT
+        with ESMTP id S229639AbjE3LPo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 06:48:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782DAF3;
-        Tue, 30 May 2023 03:48:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06A7562D99;
-        Tue, 30 May 2023 10:48:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEEA8C433EF;
-        Tue, 30 May 2023 10:48:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1685443697;
-        bh=5BJct49nufUgpK5E0nq6xb69TeZ85NsUtXyny1OILQk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ghnJmwg8gzre1flGL6i+xKaSs738kaFL3FhVf6qRw7S00RAof0EdqzsswjMTmNBPW
-         PtR9VBDBxdtktXObLlvxZb2UlvCfrbAh51gswdZ3WaQOEkn+lxTJVwwrHLRv07Co94
-         DGOUnQTzYz78GGCsXrl2975B0G1WgU6j6//P9j9o=
-Date:   Tue, 30 May 2023 11:48:14 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jiri Slaby <jirislaby@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 33/41] tty: serial: handle HAS_IOPORT dependencies
-Message-ID: <2023053059-self-mangle-30b6@gregkh>
-References: <20230516110038.2413224-1-schnelle@linux.ibm.com>
- <20230516110038.2413224-34-schnelle@linux.ibm.com>
+        Tue, 30 May 2023 07:15:44 -0400
+Received: from fgw20-7.mail.saunalahti.fi (fgw20-7.mail.saunalahti.fi [62.142.5.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AE9A1
+        for <linux-serial@vger.kernel.org>; Tue, 30 May 2023 04:15:42 -0700 (PDT)
+Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
+        by fgw20.mail.saunalahti.fi (Halon) with ESMTP
+        id 4f256f9d-fedb-11ed-b3cf-005056bd6ce9;
+        Tue, 30 May 2023 14:15:40 +0300 (EEST)
+From:   andy.shevchenko@gmail.com
+Date:   Tue, 30 May 2023 14:15:39 +0300
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH v4 0/9] serial: sc16is7xx: fix GPIO regression and rs485
+ improvements
+Message-ID: <ZHXa23WFb9vNG-T2@surfacebook>
+References: <20230529140711.896830-1-hugo@hugovil.com>
+ <ZHUnwNNcU_EnS4bo@surfacebook>
+ <20230529220708.66f7825fed9ee36b181128cf@hugovil.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230516110038.2413224-34-schnelle@linux.ibm.com>
+In-Reply-To: <20230529220708.66f7825fed9ee36b181128cf@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 16, 2023 at 01:00:29PM +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them unconditionally. For 8250 based drivers some
-> support MMIO only use so fence only the parts requiring I/O ports.
+Mon, May 29, 2023 at 10:07:08PM -0400, Hugo Villeneuve kirjoitti:
+> On Tue, 30 May 2023 01:31:28 +0300
+> andy.shevchenko@gmail.com wrote:
+> > Mon, May 29, 2023 at 10:07:02AM -0400, Hugo Villeneuve kirjoitti:
+> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > 
+> > > Hello,
+> > > this patch series mainly fixes a GPIO regression and improve RS485 flags and
+> > > properties detection from DT.
+> > > 
+> > > It now also includes various small fixes and improvements that were previously
+> > > sent as separate patches, but that made testing everything difficult.
+> > > 
+> > > Patch 1 fixes an issue when debugging IOcontrol register. After testing the GPIO
+> > > regression patches (patches 6 and 7, tests done by Lech Perczak), it appers that
+> > > this patch is also necessary for having the correct IOcontrol register values.
+> > > 
+> > > Patch 2 introduces a delay after a reset operation to respect datasheet
+> > > timing recommandations.
+> > 
+> > These two patches are w/o Fixes tag, they should be moved in the series further
+> > as I explained before.
+> 
+> Your explanation was not clear.
 
-Why can't you have dummy inb()/outb() so we don't need these #ifdefs all
-over the place in .c files?  Was that documented somewhere?  We do that
-for other driver/hardware apis, why are these so special they don't
-deserve that?
+Sorry if it feels like this. The documentation should have more clarity
+on the matter.
 
-Otherwise this makes old drivers really messy with these additional
-#ifdefs, something we never wanted to do in .c files.
+> Anyway, I moved them in position 7 and 8.
 
-thanks,
+Thank you, but take also what Greg KH replied to you into consideration.
+He is the maintainer and seems other patches needs some additional work
+in the scope of Fixes / backport (see stable kernel patches flow in the
+kernel documentation, which I also mentioned earlier).
 
-greg k-h
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
