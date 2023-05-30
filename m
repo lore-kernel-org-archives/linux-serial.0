@@ -2,157 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB91C7EE2E
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 16:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 496DBC77B73
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 18:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233046AbjE3Q0P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 12:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
+        id S231203AbjE3Skp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 14:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbjE3QZr (ORCPT
+        with ESMTP id S230255AbjE3Skp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 12:25:47 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D67126;
-        Tue, 30 May 2023 09:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=O5PoVwqtJMunIZl33Ih/EqcDrZE0eTg44KxSraoqv8s=; b=kJL9/C/2vVwuQk8e8PwpNcqULY
-        RhgNu6JGjfFol47lEMXVOsEExbH1bbz6PxTU+IH5R+EVXALfZc5vNtJuHDAc06rVG0yrJ1Qq+CLwf
-        KetyM49pHm51xAzRub+kJ+rZ0desMqIZyW05aXMMsSpe58U92mV9D48+RXrVNDROwzkU=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:53080 helo=debian-acer)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q429u-0007SA-QC; Tue, 30 May 2023 12:25:19 -0400
-Date:   Tue, 30 May 2023 12:25:18 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Message-Id: <20230530122518.fca22556015bcdf8c588d274@hugovil.com>
-In-Reply-To: <2023053058-onlooker-fondue-8c24@gregkh>
-References: <20230529140711.896830-1-hugo@hugovil.com>
-        <20230529140711.896830-8-hugo@hugovil.com>
-        <2023053058-onlooker-fondue-8c24@gregkh>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v4 7/9] serial: sc16is7xx: fix regression with GPIO
- configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Tue, 30 May 2023 14:40:45 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED00DA7
+        for <linux-serial@vger.kernel.org>; Tue, 30 May 2023 11:40:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685472043; x=1717008043;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uxnwfYPjHSEVCOK8xUhZ7G9Y0f1O8DS7xItCY5soSW8=;
+  b=Ms6W5GX9xx/e4rrxWItBhnXNsDgGYE/nAhWYoWvgTlcr37fQyThB0Hzc
+   8YiLdbmb7DdyrPW4eOMsOMaFzBgJ3mYCyJhPVobFErXQ1aoABklkdBbY7
+   gpotUZK/LygEI7fQ1lDb88rOAcAad0dUu5fSDRc6vPGWDIRl1CkmP0IL1
+   Gn7aFXW40EM5MXNzVxLFSzIy9Fkha+yDxzcpQMwPyYQS8wVstvSgg8du/
+   WMIvkmNtC4FURvHij5Z9n+gQjMhZK4SL2BEH3dyW18RtIHBLpWxFy4ZUT
+   FQIrGdf+Ri1oSHKOKwpA42t1N/qwnxBdWlkZ57sQpjrGvRhzGQtCqK/yL
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="353853966"
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="353853966"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2023 11:40:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10726"; a="706543362"
+X-IronPort-AV: E=Sophos;i="6.00,205,1681196400"; 
+   d="scan'208";a="706543362"
+Received: from lkp-server01.sh.intel.com (HELO fb1ced2c09fb) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 30 May 2023 11:40:36 -0700
+Received: from kbuild by fb1ced2c09fb with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1q44Gp-0000k1-2H;
+        Tue, 30 May 2023 18:40:35 +0000
+Date:   Wed, 31 May 2023 02:40:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-testing 13/17] m68k-linux-ld: 8250_fsl.c:undefined
+ reference to `serial8250_modem_status'
+Message-ID: <202305310250.WwdLl25L-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 30 May 2023 11:25:53 +0100
-Greg KH <gregkh@linuxfoundation.org> wrote:
+Hi Uwe,
 
-> On Mon, May 29, 2023 at 10:07:09AM -0400, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > 
-> > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > changed the function of the GPIOs pins to act as modem control
-> > lines without any possibility of selecting GPIO function.
-> > 
-> > As a consequence, applications that depends on GPIO lines configured
-> > by default as GPIO pins no longer work as expected.
-> > 
-> > Also, the change to select modem control lines function was done only
-> > for channel A of dual UART variants (752/762). This was not documented
-> > in the log message.
-> > 
-> > Allow to specify GPIO or modem control line function in the device
-> > tree, and for each of the ports (A or B).
-> > 
-> > Do so by using the new device-tree property named
-> > "modem-control-line-ports" (property added in separate patch).
-> > 
-> > When registering GPIO chip controller, mask-out GPIO pins declared as
-> > modem control lines according to this new "modem-control-line-ports"
-> > DT property.
-> > 
-> > Boards that need to have GPIOS configured as modem control lines
-> > should add that property to their device tree. Here is a list of
-> > boards using the sc16is7xx driver in their device tree and that may
-> > need to be modified:
-> >     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
-> >     mips/boot/dts/ingenic/cu1830-neo.dts
-> >     mips/boot/dts/ingenic/cu1000-neo.dts
-> > 
-> > Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> 
-> So you are marking this as a "bugfix" and yet, it is at the end of a
-> much larger series of patches.  Does this fix require all of them?  If
-> so, it's not really relevant for stable kernels, right?  Or is it?
+FYI, the error/warning was bisected to this commit, please ignore it if it's irrelevant.
 
-Like I said to Andy, I will re-order the patches so that "bugfix" patches are first. See new order below.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   617ece73dd240cb11869a224c879ca685a151a38
+commit: a0807ca158e00af2909f3d34a36c28b57b07ab06 [13/17] serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20230531/202305310250.WwdLl25L-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.3.0
+reproduce (this is a W=1 build):
+        mkdir -p ~/bin
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=a0807ca158e00af2909f3d34a36c28b57b07ab06
+        git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+        git fetch --no-tags tty tty-testing
+        git checkout a0807ca158e00af2909f3d34a36c28b57b07ab06
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=m68k olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-> I'm confused, what should I, as a maintainer, do here?  Take just this
-> one fix for 6.4-final, and the rest for 6.5-rc1?  And add a proper cc:
-> stable@ tag?  Or queue them all up for 6.4-final?  Or all for 6.5-rc1?
-> Or something else?
-> 
-> What would you want to see if you were in my position here to help make
-> your life easier?
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202305310250.WwdLl25L-lkp@intel.com/
 
-From what I understand from https://www.kernel.org/doc/Documentation/process/stable-kernel-rules.rst,
-here is the new proposed patches order as well as what I plan to do in the commit message:
+All errors (new ones prefixed by >>):
 
-2f0f23e598df serial: sc16is7xx: fix broken port 0 uart init
-  I will add tag "Cc: <stable@vger.kernel.org>"
-  This patch is a prerequiste of "fix regression with GPIO configuration".
+   m68k-linux-ld: drivers/tty/serial/8250/8250_fsl.o: in function `fsl8250_handle_irq':
+   8250_fsl.c:(.text+0x92): undefined reference to `serial8250_rx_chars'
+>> m68k-linux-ld: 8250_fsl.c:(.text+0x106): undefined reference to `serial8250_modem_status'
+>> m68k-linux-ld: 8250_fsl.c:(.text+0x11e): undefined reference to `serial8250_tx_chars'
 
-f292951c521e serial: sc16is7xx: mark IOCONTROL register as volatile
-  I will add tag "Cc: <stable@vger.kernel.org>"
-  This patch is a prerequiste of "fix regression with GPIO configuration".
-  This patch has no "Fixes:" tag because it doesn't fix a previous bug, but Lech Perczak reported that it was required for 
-  patch "fix regression with GPIO configuration" to work.
-
-78930d607121 serial: sc16is7xx: refactor GPIO controller registration
-  This patch is a prerequiste of "fix regression with GPIO configuration".
-  It was done separately to ease the review process, but from a stable kernel backport, maybe it would be best to integrate it directly into "fix regression with GPIO configuration"?
-  If not, should I add tag "Cc: <stable@vger.kernel.org>"?
-
-f7ba105873d7 dt-bindings: sc16is7xx: Add property to change GPIO function
-  This patch is a prerequiste of "fix regression with GPIO configuration".
-  I will add tag "Cc: <stable@vger.kernel.org>"
-  Should I add a tag "Fixes: " like I did in patch "fix regression with GPIO configuration"?
-
-f2238e8f69b0 serial: sc16is7xx: fix regression with GPIO configuration
-  I will add tags:
-    Cc: <stable@vger.kernel.org> 2f0f23e5 serial: sc16is7xx: fix broken port 0 uart init
-    Cc: <stable@vger.kernel.org> f292951c serial: sc16is7xx: mark IOCONTROL register as volatile
-    Cc: <stable@vger.kernel.org> 78930d60 serial: sc16is7xx: refactor GPIO controller registration
-    Cc: <stable@vger.kernel.org> f7ba1058 dt-bindings: sc16is7xx: Add property to change GPIO function
-    Cc: <stable@vger.kernel.org>
-
-2d98ab070b70 serial: sc16is7xx: fix bug when first setting GPIO direction
-  This is a standalone bugfix
-  I will add tag "Cc: <stable@vger.kernel.org>"
-
-658e39d9073e serial: sc16is7xx: add call to get rs485 DT flags and properties
-  Enhancement
-
-588aac544e00 serial: sc16is7xx: add post reset delay
-  Enhancement
-
-5bb1b45bca81 serial: sc16is7xx: improve comments about variants
-  Comments enhancements
-
-Please tell me if it makes sense and if some tags are wrong/missing.
-
-Hugo.
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
