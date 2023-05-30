@@ -2,109 +2,73 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A39EC7EE23
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 11:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC94BC77B7A
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 11:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbjE3LQX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 07:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
+        id S230187AbjE3LUT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 07:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbjE3LQT (ORCPT
+        with ESMTP id S229873AbjE3LUT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 07:16:19 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0281E5;
-        Tue, 30 May 2023 04:16:18 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 34UAxIDq006267;
-        Tue, 30 May 2023 11:16:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=itfenvgDHTyxp1L5qxO18pecrhAyNG1011llMvDnQMU=;
- b=YhqObDpAwMPRrc76syfjTfcX/goGEoo00rty5aUl6IiaYQCy/AZ58KF7kRHgXuD+4BWs
- KD6BGE2uXv8C4uKYbKGDSI+jvmgvjvZ2t5XgHm+OwtPlV1bJSmj2yvzsCNqHzUSkeAog
- Plqs9Q7+jb7fFVLE6jsBvDZ3PrIoqC7+npYAhCQap1aGt6O0/s1E4JijddYacgVy3OQn
- 1uYu0HOsW5REg3iJNcBMP02Tgf7cKoAm7ZQG28ZI/xwUbZKUOxYIOslulGVIJMmZ9XVq
- XtB1rpqu16MhuQZmpv4BqrPzE2pMf5IhSZdHLArF9tr7ObfOadrLx1y812VKBGZGYqKt mw== 
-Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3qwa34grdy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 May 2023 11:16:14 +0000
-Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 34UBG9BG007539;
-        Tue, 30 May 2023 11:16:09 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 3quaxka9pc-1;
-        Tue, 30 May 2023 11:16:09 +0000
-Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 34UBG93m007534;
-        Tue, 30 May 2023 11:16:09 GMT
-Received: from hu-maiyas-hyd.qualcomm.com (hu-mraninga-hyd.qualcomm.com [10.213.107.117])
-        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 34UBG9bC007533;
-        Tue, 30 May 2023 11:16:09 +0000
-Received: by hu-maiyas-hyd.qualcomm.com (Postfix, from userid 4325269)
-        id 690C65000AF; Tue, 30 May 2023 16:46:08 +0530 (+0530)
-From:   Mehul Raninga <quic_mraninga@quicinc.com>
-To:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_vdadhani@quicinc.com, quic_vtanuku@quicinc.com,
-        quic_vnivarth@quicinc.com,
-        Mehul Raninga <quic_mraninga@quicinc.com>
-Subject: [PATCH] serial: qcom_geni_serial: Setup serial port after Deep sleep
-Date:   Tue, 30 May 2023 16:45:57 +0530
-Message-Id: <20230530111557.10944-1-quic_mraninga@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 5LvPNkpv05sofZel4uMjGzIOq26WjmVY
-X-Proofpoint-GUID: 5LvPNkpv05sofZel4uMjGzIOq26WjmVY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-05-30_08,2023-05-30_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0 spamscore=0
- suspectscore=0 impostorscore=0 malwarescore=0 priorityscore=1501
- mlxlogscore=999 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2304280000 definitions=main-2305300093
+        Tue, 30 May 2023 07:20:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27441D9;
+        Tue, 30 May 2023 04:20:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE80062917;
+        Tue, 30 May 2023 11:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA15DC433EF;
+        Tue, 30 May 2023 11:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1685445617;
+        bh=cTSrXo17OxJMEg/viqIAtotQJ9pg1/100e11SFoN9t4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tfb+wCjfsdJoZ6gRw3MxwYZbumyEtAymr8i4eN79VquflgTL+VpldR/VlciQwnQP0
+         EGhgFlfw5LLDkGZomJlP9xvFx7NMv/+urT9wyPVOtRyybgpmweUojiawAJvUT5yYNu
+         xINkIOZJJZm2bhwAgOIpOOw+f0wYQYV+FySW6Ees=
+Date:   Tue, 30 May 2023 12:20:14 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH] serial: 8250: omap: convert to modern PM ops
+Message-ID: <2023053059-swapping-dominoes-e9b3@gregkh>
+References: <20230517202012.634386-1-arnd@kernel.org>
+ <20230519054431.GV14287@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230519054431.GV14287@atomide.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-While exiting deep sleep, serial port loses its configuration
-hence it prints garbage characters on console.
+On Fri, May 19, 2023 at 08:44:31AM +0300, Tony Lindgren wrote:
+> * Arnd Bergmann <arnd@kernel.org> [230517 20:20]:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> > 
+> > The new uart_write() function is only called from suspend/resume code, causing
+> > a build warning when those are left out:
+> > 
+> > drivers/tty/serial/8250/8250_omap.c:169:13: error: 'uart_write' defined but not used [-Werror=unused-function]
+> > 
+> > Remove the #ifdefs and use the modern pm_ops/pm_sleep_ops and their wrappers
+> > to let the compiler see where it's used but still drop the dead code.
+> 
+> This looks good to me as an alternative for Geert's fix. If Geert's
+> fix gets applied first, this needs to be rabased.
 
-Set serial port configuration while resume from deep sleep.
+No need for rebase, it applied cleanly.
 
-Signed-off-by: Mehul Raninga <quic_mraninga@quicinc.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 3 +++
- 1 file changed, 3 insertions(+)
+thanks,
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 8582479f0211..c04b8fec30ba 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -20,6 +20,7 @@
- #include <linux/serial.h>
- #include <linux/serial_core.h>
- #include <linux/slab.h>
-+#include <linux/suspend.h>
- #include <linux/tty.h>
- #include <linux/tty_flip.h>
- #include <dt-bindings/interconnect/qcom,icc.h>
-@@ -1737,6 +1738,8 @@ static int qcom_geni_serial_sys_resume(struct device *dev)
- 	if (uart_console(uport)) {
- 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
- 		geni_icc_set_bw(&port->se);
-+		if (pm_suspend_via_firmware())
-+			qcom_geni_serial_port_setup(uport);
- 	}
- 	return ret;
- }
--- 
-2.17.1
-
+greg k-h
