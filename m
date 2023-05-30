@@ -2,96 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EB6C77B73
-	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 10:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 602C5C77B73
+	for <linux-serial@archiver.kernel.org>; Tue, 30 May 2023 10:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbjE3KNi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 May 2023 06:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
+        id S231559AbjE3K2J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 May 2023 06:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbjE3KNf (ORCPT
+        with ESMTP id S231458AbjE3K1q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 May 2023 06:13:35 -0400
-Received: from mail11.truemail.it (mail11.truemail.it [IPv6:2001:4b7e:0:8::81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2B8AB;
-        Tue, 30 May 2023 03:13:30 -0700 (PDT)
-Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        by mail11.truemail.it (Postfix) with ESMTPA id 785E91F842;
-        Tue, 30 May 2023 12:13:25 +0200 (CEST)
-Date:   Tue, 30 May 2023 12:13:20 +0200
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Francesco Dolcini <francesco@dolcini.it>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
+        Tue, 30 May 2023 06:27:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48AED1715;
+        Tue, 30 May 2023 03:25:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0F8B617FE;
+        Tue, 30 May 2023 10:25:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA57C433D2;
+        Tue, 30 May 2023 10:25:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1685442356;
+        bh=pY34Pb2areloIwOCiXV2hlSOd2QQ82VfjCkgmbChUDc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W8EgoMHmK/HHfo1Xv3pxKSQRqKHmc782ZzkCMWd+Dw5mkKvkUC3tJwe+lk4Owt06C
+         8ImUYkftGpz/2VQxbVgLkl0JIb6BdL1nS+C+EYtwMfpCVDtGw45gQ0Z6ikv+fUfWzt
+         6jpfPF7/ZKYRBPDQ9lda/ItNEgYeMrh7L5k6Vwm8=
+Date:   Tue, 30 May 2023 11:25:53 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: Re: DT checker RS485 unevaluated property, 8250 OMAP UART
-Message-ID: <ZHXMMHQ9VevVtqHz@francesco-nb.int.toradex.com>
-References: <ZGefR4mTHHo1iQ7H@francesco-nb.int.toradex.com>
- <0cb182f8-eb53-45d8-3c8b-fb7d16f88d46@ti.com>
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH v4 7/9] serial: sc16is7xx: fix regression with GPIO
+ configuration
+Message-ID: <2023053058-onlooker-fondue-8c24@gregkh>
+References: <20230529140711.896830-1-hugo@hugovil.com>
+ <20230529140711.896830-8-hugo@hugovil.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0cb182f8-eb53-45d8-3c8b-fb7d16f88d46@ti.com>
+In-Reply-To: <20230529140711.896830-8-hugo@hugovil.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, May 27, 2023 at 11:49:17AM +0530, Vignesh Raghavendra wrote:
-> On 19/05/23 9:39 pm, Francesco Dolcini wrote:
-> > Hello,
-> > while writing a new DT file I stumbled across this warning
-> > 
-> > .../arch/arm64/boot/dts/ti/k3-am625-verdin-wifi-dev.dtb: serial@2810000: Unevaluated properties are not allowed ('rs485-rts-active-high' was unexpected)
-> > 	From schema: .../Documentation/devicetree/bindings/serial/8250_omap.yaml
-> > 
-> > The property is currently used in the OMAP serial driver
-> > 
-> > drivers/tty/serial/omap-serial.c
-> > 1511:	if (of_property_read_bool(np, "rs485-rts-active-high")) {
-> > 
+On Mon, May 29, 2023 at 10:07:09AM -0400, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> Would be it possible to update driver to imply rs485-rts-active-high"
-> this by lack of rs485-rts-active-low property in DT instead?
-
-What about backward compatibility? This is what is done in all drivers
-apart omap-serial if I'm not wrong.
-
-> > I would be inclined to send the following patch, do you agree?
-> > 
-> > diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> > index eb3488d8f9ee..e634e98aa994 100644
-> > --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
-> > @@ -70,6 +70,7 @@ properties:
-> >    dsr-gpios: true
-> >    rng-gpios: true
-> >    dcd-gpios: true
-> > +  rs485-rts-active-low: true
+> Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
+> changed the function of the GPIOs pins to act as modem control
+> lines without any possibility of selecting GPIO function.
 > 
-> I believe you mean rs485-rts-active-high here
-whoops, yes of course.
-
+> As a consequence, applications that depends on GPIO lines configured
+> by default as GPIO pins no longer work as expected.
 > 
-> >    rts-gpio: true
-> >    power-domains: true
-> >    clock-frequency: true
-> > 
-> > [1] https://lore.kernel.org/all/ZBItlBhzo+YETcJO@francesco-nb.int.toradex.com/
-> > 
+> Also, the change to select modem control lines function was done only
+> for channel A of dual UART variants (752/762). This was not documented
+> in the log message.
 > 
-> Also, I hope you are using 8250_ompa.c and not omap-serial.c for newer
-> designs. omap-serial.c is mostly there to support legacy SoCs and not to
-> be used with K3 SoCs.
+> Allow to specify GPIO or modem control line function in the device
+> tree, and for each of the ports (A or B).
+> 
+> Do so by using the new device-tree property named
+> "modem-control-line-ports" (property added in separate patch).
+> 
+> When registering GPIO chip controller, mask-out GPIO pins declared as
+> modem control lines according to this new "modem-control-line-ports"
+> DT property.
+> 
+> Boards that need to have GPIOS configured as modem control lines
+> should add that property to their device tree. Here is a list of
+> boards using the sc16is7xx driver in their device tree and that may
+> need to be modified:
+>     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
+>     mips/boot/dts/ingenic/cu1830-neo.dts
+>     mips/boot/dts/ingenic/cu1000-neo.dts
+> 
+> Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
+> Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
 
-Thanks for this head-up. This confused myself, while the issue I
-reported here is real, it does affect only omap-serial.c. In my case I
-am using 8250_omap.c and I can just omit the property from the DTS as
-generally expected!
+So you are marking this as a "bugfix" and yet, it is at the end of a
+much larger series of patches.  Does this fix require all of them?  If
+so, it's not really relevant for stable kernels, right?  Or is it?
 
-Francesco
+I'm confused, what should I, as a maintainer, do here?  Take just this
+one fix for 6.4-final, and the rest for 6.5-rc1?  And add a proper cc:
+stable@ tag?  Or queue them all up for 6.4-final?  Or all for 6.5-rc1?
+Or something else?
 
+What would you want to see if you were in my position here to help make
+your life easier?
 
+thanks,
+
+greg k-h
