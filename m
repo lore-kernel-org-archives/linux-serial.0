@@ -2,223 +2,83 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 607C2C7EE2F
-	for <linux-serial@archiver.kernel.org>; Wed, 31 May 2023 15:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 350D2C77B7A
+	for <linux-serial@archiver.kernel.org>; Wed, 31 May 2023 15:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231501AbjEaPAQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 31 May 2023 11:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59976 "EHLO
+        id S234304AbjEaPRN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 31 May 2023 11:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbjEaPAP (ORCPT
+        with ESMTP id S234428AbjEaPRJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 31 May 2023 11:00:15 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74341C0;
-        Wed, 31 May 2023 08:00:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=t8QJwDf3mZID2T9DPgkl1+dJxRUwSZ5+A++Qcf/Rniw=; b=xX61yxXxpOjNlrMJw13F5RNmue
-        8irpmpzggpyfC9GePxX8T4/eRJUYTw80VsHb7r51qBMFINBS8cr24ZVuWpNYhAcDFZKuu2PqXETVy
-        Iy4oWFmbZq/1uvAnc4kn9gMrXsIS758jUs0XvnNpZXwWWh1PpzBLtsFNV8S0JR0dRKwQ=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:34748 helo=debian-acer)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q4NIy-0001AW-O7; Wed, 31 May 2023 11:00:05 -0400
-Date:   Wed, 31 May 2023 11:00:03 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Lech Perczak <lech.perczak@camlingroup.com>,
-        gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Message-Id: <20230531110003.86b96815986db3bef7b72635@hugovil.com>
-In-Reply-To: <20230531095608.e1b4358549562b8e1bdf5cb4@hugovil.com>
-References: <20230529140711.896830-1-hugo@hugovil.com>
-        <c15a90d6-b3c1-e432-9216-c4c1e2c44ce6@camlingroup.com>
-        <20230530090836.27b8d080d6b6c022b303ac9e@hugovil.com>
-        <c691858d-31af-2892-c0a3-89a37b19af86@camlingroup.com>
-        <20230531095608.e1b4358549562b8e1bdf5cb4@hugovil.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v4 0/9] serial: sc16is7xx: fix GPIO regression and rs485
- improvements
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Wed, 31 May 2023 11:17:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3633811D;
+        Wed, 31 May 2023 08:17:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A5FF63D31;
+        Wed, 31 May 2023 15:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F24C433D2;
+        Wed, 31 May 2023 15:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1685546227;
+        bh=F2oc/tidTrFnHhaHZr881PgbMLURyR5U4/nkSfN9YS8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RcEGyF8FybWmi/JDto/ddTnXqo/tO5zJ7DW2B/NakrvGKANUGraVuszAbwbfDKQ7Q
+         82tu9gTevz0Yu6y6QFHRYgbbPngyHMw3fzUOQ7NQStlTrv4jbx1zaHoYTDrWAkDX8Z
+         +4PE4X3KPwS5aLtKrJEdlT5etaaorkYQCcDOsIGSwRKj43RL8Yxu3kvH6Q1tUxsVKN
+         xcPpGGblXTQdKGUNb881ojltavyXFriN2uKAfM4/YwuEbgTz05W8eisK3jvSVpYVhx
+         unVOhSHeKnniSjj4JdRPKG1qgqnyK2CUmOSmd+NHTKDI18IkZhO8FrszGYeffoxXtP
+         nAHIl41W14dWw==
+Date:   Wed, 31 May 2023 23:05:46 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 04/10] serial: bflb_uart: add Bouffalolab UART Driver
+Message-ID: <ZHdiSjajwbF3cKBK@xhacker>
+References: <20230518152244.2178-1-jszhang@kernel.org>
+ <20230518152244.2178-5-jszhang@kernel.org>
+ <2023053010-gondola-luminous-f5e7@gregkh>
+ <ZHdVNIQpgfCzimRg@xhacker>
+ <2023053119-drab-cartwheel-29af@gregkh>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2023053119-drab-cartwheel-29af@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 31 May 2023 09:56:08 -0400
-Hugo Villeneuve <hugo@hugovil.com> wrote:
+On Wed, May 31, 2023 at 03:34:02PM +0100, Greg Kroah-Hartman wrote:
+> On Wed, May 31, 2023 at 10:09:56PM +0800, Jisheng Zhang wrote:
+> > On Tue, May 30, 2023 at 11:36:00AM +0100, Greg Kroah-Hartman wrote:
+> > > On Thu, May 18, 2023 at 11:22:38PM +0800, Jisheng Zhang wrote:
+> > > > Add the driver for Bouffalolab UART IP which is found in Bouffalolab
+> > > > SoCs such as bl808.
+> > > 
+> > > New uarts are being created that are NOT 8250-like?  Why????
+> > 
+> > Hi,
+> > 
+> > I'm not sure I understand your meaning. I guess you mean writing the new
+> > uart driver following 8250 style. And the latest example is
+> > sunplus-uart.c, it can be used as an example how to write a 8250 style
+> > driver for new non-8250 uart IP. 
+> 
+> No, I mean, "why are hardware designers creating new UARTs in 2023 that
+> are NOT 8250-based"?  Why do they want to constantly reinvent the wheel?
 
-> On Wed, 31 May 2023 12:43:48 +0200
-> Lech Perczak <lech.perczak@camlingroup.com> wrote:
->=20
-> > W dniu 30.05.2023 o=A015:08, Hugo Villeneuve pisze:
-> > > On Tue, 30 May 2023 11:30:07 +0200
-> > > Lech Perczak <lech.perczak@camlingroup.com> wrote:
-> > >
-> > > > W dniu 29.05.2023 o=A016:07, Hugo Villeneuve pisze:
-> > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > >
-> > > > > Hello,
-> > > > > this patch series mainly fixes a GPIO regression and improve RS48=
-5 flags and
-> > > > > properties detection from DT.
-> > > > >
-> > > > > It now also includes various small fixes and improvements that we=
-re previously
-> > > > > sent as separate patches, but that made testing everything diffic=
-ult.
-> > > > >
-> > > > > Patch 1 fixes an issue when debugging IOcontrol register. After t=
-esting the GPIO
-> > > > > regression patches (patches 6 and 7, tests done by Lech Perczak),=
- it appers that
-> > > > > this patch is also necessary for having the correct IOcontrol reg=
-ister values.
-> > > > >
-> > > > > Patch 2 introduces a delay after a reset operation to respect dat=
-asheet
-> > > > > timing recommandations.
-> > > > >
-> > > > > Patch 3 fixes an issue with init of first port during probing.
-> > > > >
-> > > > > Patch 4 fixes a bug with the output value when first setting the =
-GPIO direction.
-> > > > >
-> > > > > Patch 5 is a refactor of GPIO registration code.
-> > > > >
-> > > > > Patches 6 and 7 fix a GPIO regression by (re)allowing to choose G=
-PIO function
-> > > > > for GPIO pins shared with modem status lines.
-> > > > >
-> > > > > Patch 8 allows to read common rs485 device-tree flags and propert=
-ies.
-> > > > >
-> > > > > Patch 9 improves comments about chip variants.
-> > > > >
-> > > > > I have tested the changes on a custom board with two SC16IS752 DU=
-ART using a
-> > > > > Variscite IMX8MN NANO SOM.
-> > > > >
-> > > > > Thank you.
-> > > > >
-> > > > > Link: [v1] https://lkml.org/lkml/2023/5/17/967 <https://lkml.org/=
-lkml/2023/5/17/967> <https://lkml.org/lkml/2023/5/17/967 <https://lkml.org/=
-lkml/2023/5/17/967>>
-> > > > > [v1] https://lkml.org/lkml/2023/5/17/777 <https://lkml.org/lkml/2=
-023/5/17/777> <https://lkml.org/lkml/2023/5/17/777 <https://lkml.org/lkml/2=
-023/5/17/777>>
-> > > > > [v1] https://lkml.org/lkml/2023/5/17/780 <https://lkml.org/lkml/2=
-023/5/17/780> <https://lkml.org/lkml/2023/5/17/780 <https://lkml.org/lkml/2=
-023/5/17/780>>
-> > > > > [v1] https://lkml.org/lkml/2023/5/17/785 <https://lkml.org/lkml/2=
-023/5/17/785> <https://lkml.org/lkml/2023/5/17/785 <https://lkml.org/lkml/2=
-023/5/17/785>>
-> > > > > [v1] https://lkml.org/lkml/2023/5/17/1311 <https://lkml.org/lkml/=
-2023/5/17/1311> <https://lkml.org/lkml/2023/5/17/1311 <https://lkml.org/lkm=
-l/2023/5/17/1311>>
-> > > > > [v2] https://lkml.org/lkml/2023/5/18/516 <https://lkml.org/lkml/2=
-023/5/18/516> <https://lkml.org/lkml/2023/5/18/516 <https://lkml.org/lkml/2=
-023/5/18/516>>
-> > > > > [v3] https://lkml.org/lkml/2023/5/25/7 <https://lkml.org/lkml/202=
-3/5/25/7> <https://lkml.org/lkml/2023/5/25/7 <https://lkml.org/lkml/2023/5/=
-25/7>>
-> > > > >
-> > > > > Changes for V3:
-> > > > > - Integrated all patches into single serie to facilitate debuggin=
-g and tests.
-> > > > > - Reduce number of exported GPIOs depending on new property
-> > > > > nxp,modem-control-line-ports
-> > > > > - Added additional example in DT bindings
-> > > > >
-> > > > > Changes for V4:
-> > > > > - Increase reset post delay to relax scheduler.
-> > > > > - Put comments patches at the end.
-> > > > > - Remove Fixes tag for patch "mark IOCONTROL register as volatile=
-".
-> > > > > - Improve commit messages after reviews.
-> > > > > - Fix coding style issues after reviews.
-> > > > > - Change GPIO registration to always register the maximum number =
-of GPIOs
-> > > > > supported by the chip, but maks-out GPIOs declared as modem contr=
-ol lines.
-> > > > > - Add patch to refactor GPIO registration.
-> > > > > - Remove patch "serial: sc16is7xx: fix syntax error in comments".
-> > > > > - Remove patch "add dump registers function"
-> > > > >
-> > > > > Hugo Villeneuve (9):
-> > > > > serial: sc16is7xx: mark IOCONTROL register as volatile
-> > > > > serial: sc16is7xx: add post reset delay
-> > > > > serial: sc16is7xx: fix broken port 0 uart init
-> > > > > serial: sc16is7xx: fix bug when first setting GPIO direction
-> > > > > serial: sc16is7xx: refactor GPIO controller registration
-> > > > > dt-bindings: sc16is7xx: Add property to change GPIO function
-> > > > > serial: sc16is7xx: fix regression with GPIO configuration
-> > > > > serial: sc16is7xx: add call to get rs485 DT flags and properties
-> > > > > serial: sc16is7xx: improve comments about variants
-> > > > >
-> > > > > .../bindings/serial/nxp,sc16is7xx.txt | 46 ++++++
-> > > > > drivers/tty/serial/sc16is7xx.c | 150 +++++++++++++-----
-> > > > > 2 files changed, 156 insertions(+), 40 deletions(-)
-> > > > >
-> > > > >
-> > > > > base-commit: 8b817fded42d8fe3a0eb47b1149d907851a3c942
-> > > >
-> > > > It would be a lot of sending, to do that for every patch separately=
-, so for whole series:
-> > > > Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-> > > >
-> > > > And where applicable - for code patches:
-> > > > Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
-> > > >
-> > > > I tested whole series at the same time.
-> > > > I did my tests on an i.MX6 board with SC16IS760 over SPI, which dif=
-fers a tiny bit from SC16IS752,
-> > > > and everything works as it should.
-> > > > Thank you for fixing this!
-> > >
-> > > Hi Lech,
-> > > thank for your feedback.
-> > >
-> > > You mentioned before that without the patch "mark IOCONTROL register =
-as volatile", things were not working properly for you. Could you retest by=
- removing this patch and see if things are still working?
-> > >
-> > > Thank you, Hugo.
-> >=20
-> > Hello Hugo,
-> >=20
-> > Just checked - this patch is required, reverting it causes things to fa=
-il, so this patch should be marked as a pre-requisite for the actual fix an=
-d included in backports.
-> > Perhaps using direct write to this register made it work, but it was li=
-kely by accident.
->=20
-> Hi Lech,
-> thank you for the test, I will mark it as such in upcoming series V5.
->=20
-> Hugo.
-
-Since I reworked a bit patch 5/9 in series 5, I removed your "Tested-by" an=
-d "Reviewed-by" tags only for this patch. Please reconfirm these tags when =
-you have tested series 5.
-
-Thank you,
-Hugo.
-
---=20
-Hugo Villeneuve <hugo@hugovil.com>
+haha, to be honest, I dunno the reason either. For me, the HW has been there
+and is linux capable, I want to mainline its support.
