@@ -2,123 +2,137 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B109C7EE23
-	for <linux-serial@archiver.kernel.org>; Wed, 31 May 2023 22:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C516C77B7A
+	for <linux-serial@archiver.kernel.org>; Wed, 31 May 2023 23:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbjEaWY5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 31 May 2023 18:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        id S229469AbjEaX5n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 31 May 2023 19:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbjEaWYq (ORCPT
+        with ESMTP id S229459AbjEaX5m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 31 May 2023 18:24:46 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64009F
-        for <linux-serial@vger.kernel.org>; Wed, 31 May 2023 15:24:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685571884; x=1717107884;
-  h=date:from:to:cc:subject:message-id;
-  bh=5BqGz2niNk4R3wnvmtAWwnyhu3uPpQwHdiSn7mRfj5A=;
-  b=G6wChxCc1vc+asP+JfhNqNDb+p8fyyxNOsrFjNIWLqG/Ure2BeB3ZA5Z
-   RApRVdq8jZpIWcU5bcmb494ek0zv7Vmv/XU8T88uIZIuDbS6C2dk3TsmR
-   gxRhrxFjLQLiNW8cWnjA8yPjERAhM1NdXDXUw2roRVAw0RGZeSNXGeLIL
-   0IlzJNgfzL53Rt7Lr97KghYSLF6v34DVWgjM6pnu2h2biYj65k1Ttz9AN
-   kMTXVxv1INdgEE54gVB93UUU2rKyH5T0XrHjNj4r037M0SnzntXEzIzHM
-   +ROj3WtIFjtUmpR+0V3RY74qnQk7f06cTXlDR5NNCsfILR/DMHLTkCG/n
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="418879866"
-X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
-   d="scan'208";a="418879866"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2023 15:24:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10727"; a="701292184"
-X-IronPort-AV: E=Sophos;i="6.00,207,1681196400"; 
-   d="scan'208";a="701292184"
-Received: from lkp-server01.sh.intel.com (HELO fb1ced2c09fb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 31 May 2023 15:24:43 -0700
-Received: from kbuild by fb1ced2c09fb with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1q4UFG-0001dz-1v;
-        Wed, 31 May 2023 22:24:42 +0000
-Date:   Thu, 01 Jun 2023 06:23:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 84a9582fd203063cd4d301204971ff2cd8327f1a
-Message-ID: <20230531222343.pvgEu%lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Wed, 31 May 2023 19:57:42 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D924E12F;
+        Wed, 31 May 2023 16:57:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Y9DD1VKb4vaExY2foglvuHGof5QOUeerkLNIvVZGDEQ=; b=vvnO4y1/YdmDbe57+wazCVR5zN
+        feiztkittz+w93Cd9Epmz/7MBfMJu4mDj3ODNRMY+8POmBVIzR1QCyqmjnEHxy55+X6oAafyy5pHh
+        B3WpJU43jmEN7Z/B7HfAXfOkRbU1IIM8/Y48BqoMOIh7atKhjC15cM/r+ByMzooqa08Y=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:42554 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q4Vgx-0007Zs-JL; Wed, 31 May 2023 19:57:24 -0400
+Date:   Wed, 31 May 2023 19:57:23 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Message-Id: <20230531195723.462b140ac041b790711c1a7f@hugovil.com>
+In-Reply-To: <CAHp75Vf35rN93sXFBU0nRZQLpUgQHR2caGC8BmHkEgPZqF=dQg@mail.gmail.com>
+References: <20230529140711.896830-1-hugo@hugovil.com>
+        <20230529140711.896830-8-hugo@hugovil.com>
+        <ZHUpWQafRPHW1RJQ@surfacebook>
+        <20230530113649.73f28b9f6ba91f17ace1e12f@hugovil.com>
+        <CAHp75Vf35rN93sXFBU0nRZQLpUgQHR2caGC8BmHkEgPZqF=dQg@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH v4 7/9] serial: sc16is7xx: fix regression with GPIO
+ configuration
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 84a9582fd203063cd4d301204971ff2cd8327f1a  serial: core: Start managing serial controllers to enable runtime PM
+On Wed, 31 May 2023 00:56:57 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-elapsed time: 750m
+> On Tue, May 30, 2023 at 6:36 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > On Tue, 30 May 2023 01:38:17 +0300
+> > andy.shevchenko@gmail.com wrote:
+> > > Mon, May 29, 2023 at 10:07:09AM -0400, Hugo Villeneuve kirjoitti:
+> 
+> ...
+> 
+> > > GENMASK()
+> >
+> > Ok done, altough even if in general I like the bit manipulation macros because they make the code easier to read/understand, I find it less obvious by using GENMASK in this case IMMO.
+> 
+> GENMASK() was introduced to increase code robustness:
+> 1) to make sure the bits mentioned are correct
+> 2) to check the bit boundary.
+> 
+> ...
+> 
+> > > > +           of_property_for_each_u32(dev->of_node, "nxp,modem-control-line-ports",
+> > > > +                                    prop, p, u) {
+> > > > +                   if (u >= devtype->nr_uart)
+> > > > +                           continue;
+> > > > +
+> > > > +                   /* Use GPIO lines as modem control lines */
+> > > > +                   if (u == 0)
+> > > > +                           mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
+> > > > +                   else if (u == 1)
+> > > > +                           mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
+> > > > +           }
+> > >
+> > > Can we use device properties, please?
+> >
+> > I have converted this section to use device_property_count_u32() and device_property_read_u32_array(). Is that Ok?
+> 
+> Yes, thank you!
 
-configs tested: 52
-configs skipped: 2
+Hi Andy,
+now that I am using the device property API, I think I no longer have the need to test for "if (dev->of_node)" before reading the new property "nxp,modem-control-line-ports"?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+If that is the case, I will leave the test "if (dev->of_node)" only for the "irda-mode-ports" property.
 
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                                defconfig   gcc  
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-i011-20230531   clang
-i386                 randconfig-i012-20230531   clang
-i386                 randconfig-i013-20230531   clang
-i386                 randconfig-i014-20230531   clang
-i386                 randconfig-i015-20230531   clang
-i386                 randconfig-i016-20230531   clang
-i386                 randconfig-i091-20230531   gcc  
-i386                 randconfig-i092-20230531   gcc  
-i386                 randconfig-i093-20230531   gcc  
-i386                 randconfig-i094-20230531   gcc  
-i386                 randconfig-i095-20230531   gcc  
-i386                 randconfig-i096-20230531   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-m68k                             allmodconfig   gcc  
-m68k                                defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                               defconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-sh                               allmodconfig   gcc  
-sparc                               defconfig   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64                               rhel-8.3   gcc  
+The pseudo code woulk look like this:
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+	if (dev->of_node) {
+		struct property *prop;
+		const __be32 *p;
+		u32 u;
+
+		of_property_for_each_u32(dev->of_node, "irda-mode-ports",
+					 prop, p, u)
+			if (u < devtype->nr_uart)
+				s->p[u].irda_mode = true;
+	}
+
+        /* Read "nxp,modem-control-line-ports" using device property API. */
+	sc16is7xx_setup_mctrl_ports(dev);
+
+Thank you,
+Hugo.
+
+
+> > > If you think about backporting to the earlier kernels (w/o properties in use in
+> > > this driver), perhaps an additional followup for that?
+> >
+> > I am not sure what you mean by this?
+> 
+> If the device property API was not yet available for this fix being
+> backported to the old enough kernel we have to use old OF stuff. In
+> that case the device property conversion needs to be done in a
+> separate change.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
