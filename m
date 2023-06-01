@@ -2,154 +2,135 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E41FBC77B7A
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 04:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C29EC77B7E
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 09:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbjFAED5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Jun 2023 00:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58302 "EHLO
+        id S232833AbjFAJZV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jun 2023 05:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjFAED4 (ORCPT
+        with ESMTP id S232694AbjFAJZU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Jun 2023 00:03:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC7DB2;
-        Wed, 31 May 2023 21:03:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F2E61646;
-        Thu,  1 Jun 2023 04:03:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 069F9C433D2;
-        Thu,  1 Jun 2023 04:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1685592233;
-        bh=FpUMA+UmpnfCAjI0s1Cjb5HWSEuHsI8wU/Ubh3Bc0Rk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FxKoEm2DV+jtUJJSL8K6aCnFQSKSls4+YREVf9zr9+TC+8tkxYBY5p4jaafJtotuf
-         jWei1nLx3iPbN0UwZMp8seD365yMPBvHmm9t9afAv+HgFcGSNLWStCO+vpisfzLWRg
-         3fE8QvHpkKmHNRh65u0rR7xlupD/7aK76DsS17U1o8xjYCUKKofDr21SOnXg8CHijC
-         xq6AwOXsqyiqVGr7z1qWhDv7LeHezxWnD0QcqmE88FVR4y2AyVxRvHCe3eeNWVnUa9
-         8RXE+Qc+2W5TpQjo+A1yn50EnCmb4dLkFJs10btgRGjF93rUmtdwtorI8Y45a1dkNX
-         cQ8nvI0v/1r/w==
-Date:   Wed, 31 May 2023 21:07:34 -0700
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     "Mehul Raninga (Temp) (QUIC)" <quic_mraninga@quicinc.com>
-Cc:     "agross@kernel.org" <agross@kernel.org>,
-        "konrad.dybcio@linaro.org" <konrad.dybcio@linaro.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Viken Dadhaniya (QUIC)" <quic_vdadhani@quicinc.com>,
-        "Visweswara Tanuku (QUIC)" <quic_vtanuku@quicinc.com>,
-        "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>
-Subject: Re: [PATCH] serial: qcom_geni_serial: Setup serial port after Deep
- sleep
-Message-ID: <20230601040734.qiy3ibrpznrqptui@ripper>
-References: <20230530111557.10944-1-quic_mraninga@quicinc.com>
- <20230530150631.7eg6nkre6sva5dcz@ripper>
- <SJ0PR02MB7742A7386189692ACACC0A3FE3489@SJ0PR02MB7742.namprd02.prod.outlook.com>
+        Thu, 1 Jun 2023 05:25:20 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442E611F;
+        Thu,  1 Jun 2023 02:25:19 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-626190df842so8096216d6.0;
+        Thu, 01 Jun 2023 02:25:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685611518; x=1688203518;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Dzr0sXs/hmoLYt4Nl0MgN1apN4fZADrfHPGpIhvTR6I=;
+        b=fXcUBky3xVq7/nHzFuvrCdhn1kEZ9DUp1DPAvmxeuqp2bl6bXecWRh9wLDfpaaHKxC
+         WXVr1hkYof/ue5l8CLZzFwJmODcpG3vt+lJynLaIcJzL6LMtnpYOsr3R+zCntlud7xcZ
+         N3hEO+sQMxvtpFpKJajYXy8Kw/TgYz8iPuvd5DDxhaAyxm2iFouNlfLWBc3BYwMp7d9H
+         Hd6z8O/VQ0cufGwePwf86fVHUuJkjAfG2FH+v7BlKc4PMi++t3DTegO964/k/JnrdTTv
+         ktSg7ivDKikHn2wESyUSErvqaGd+DU8/uSyY81f5ge+0lU3ILslolBjykCUFEp3a9ndg
+         Kfjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685611518; x=1688203518;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Dzr0sXs/hmoLYt4Nl0MgN1apN4fZADrfHPGpIhvTR6I=;
+        b=hCuvduUD8T9sq6fLVp9MEN1qGe7J08yhyLf3qnjmqFrMhAc3BtPz57paOaBIiaSolf
+         IrW5iX1vHPvovvhrJ/1bPhL3XFasHNgIM08yS6aXo6v944livw+O6WJ5M9PPLNDzf9Ku
+         cfzOz70OJLk48wL4KH22itl5ITGv4vQyKFQK5PU9mB+iLiCkpRl2GhJt+DwhdsNGJbus
+         TSXqivS7x2BXfQ+in+4vnUvNB89tsbjDw3JmQ6JAcU5d2xfHTCzQiE3YVMhwrMePRQoN
+         Pj77IuWgIS/QFL1yRf/9eRZRfbUO2RX2QAFyhl+Bulgh/hu4F9mptMlImumqV7qRNVw4
+         0klA==
+X-Gm-Message-State: AC+VfDy4yNI4s6+oJPOPoSlXgfWtOc+3EjXJK6/uc3r1Kbns67bfK5cJ
+        myWWgXbuNbQwHg3qi8RQX7A6DatZGOVncOTVVdI=
+X-Google-Smtp-Source: ACHHUZ5Ib5cta5bQfcho3pVqSqgpqkYTgu4VQXTg9s5YdPIUDBkI01TFMD70U0ZrMZDdCHYrLFEJgZAHJnaY60MbLsQ=
+X-Received: by 2002:a05:6214:485:b0:625:b72a:142c with SMTP id
+ pt5-20020a056214048500b00625b72a142cmr11229290qvb.14.1685611518304; Thu, 01
+ Jun 2023 02:25:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SJ0PR02MB7742A7386189692ACACC0A3FE3489@SJ0PR02MB7742.namprd02.prod.outlook.com>
+References: <20230529140711.896830-1-hugo@hugovil.com> <20230529140711.896830-8-hugo@hugovil.com>
+ <ZHUpWQafRPHW1RJQ@surfacebook> <20230530113649.73f28b9f6ba91f17ace1e12f@hugovil.com>
+ <CAHp75Vf35rN93sXFBU0nRZQLpUgQHR2caGC8BmHkEgPZqF=dQg@mail.gmail.com> <20230531195723.462b140ac041b790711c1a7f@hugovil.com>
+In-Reply-To: <20230531195723.462b140ac041b790711c1a7f@hugovil.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 1 Jun 2023 12:24:42 +0300
+Message-ID: <CAHp75VcNihyzn3t8C48w1V+WWRk_zj8Br7shTfbHLU09u4OtcA@mail.gmail.com>
+Subject: Re: [PATCH v4 7/9] serial: sc16is7xx: fix regression with GPIO configuration
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 31, 2023 at 01:06:22PM +0000, Mehul Raninga (Temp) (QUIC) wrote:
-> Hello Andersson,
-> Thanks for the review. Kindly find my reply inline below
-> 
-> > -----Original Message-----
-> > From: Bjorn Andersson <andersson@kernel.org>
-> > Sent: Tuesday, May 30, 2023 8:37 PM
-> > To: Mehul Raninga (Temp) (QUIC) <quic_mraninga@quicinc.com>
-> > Cc: agross@kernel.org; konrad.dybcio@linaro.org; gregkh@linuxfoundation.org;
-> > jirislaby@kernel.org; linux-arm-msm@vger.kernel.org; linux-
-> > serial@vger.kernel.org; linux-kernel@vger.kernel.org; Viken Dadhaniya (QUIC)
-> > <quic_vdadhani@quicinc.com>; Visweswara Tanuku (QUIC)
-> > <quic_vtanuku@quicinc.com>; Vijaya Krishna Nivarthi (Temp) (QUIC)
-> > <quic_vnivarth@quicinc.com>
-> > Subject: Re: [PATCH] serial: qcom_geni_serial: Setup serial port after Deep sleep
-> > 
-> > WARNING: This email originated from outside of Qualcomm. Please be wary of
-> > any links or attachments, and do not enable macros.
-> > 
-> > On Tue, May 30, 2023 at 04:45:57PM +0530, Mehul Raninga wrote:
-> > > While exiting deep sleep, serial port loses its configuration hence it
-> > > prints garbage characters on console.
-> > 
-> > Presumably it lost its configuration sometime after suspend, rather than while
-> > resuming the system?
-> 
-> I will reword commit message in V2 as below:
-> Serial port lost its configuration sometime after suspend hence it
-> prints garbage characters on console after resuming.
+On Thu, Jun 1, 2023 at 2:57=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> w=
+rote:
+> On Wed, 31 May 2023 00:56:57 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Tue, May 30, 2023 at 6:36=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.c=
+om> wrote:
+> > > On Tue, 30 May 2023 01:38:17 +0300
+> > > andy.shevchenko@gmail.com wrote:
+> > > > Mon, May 29, 2023 at 10:07:09AM -0400, Hugo Villeneuve kirjoitti:
 
-Please wrap your replies to 72 chars wide
+...
 
-You can probably be more specific than "sometime after suspend" :)
-
-> > 
+> > > > > +           of_property_for_each_u32(dev->of_node, "nxp,modem-con=
+trol-line-ports",
+> > > > > +                                    prop, p, u) {
+> > > > > +                   if (u >=3D devtype->nr_uart)
+> > > > > +                           continue;
+> > > > > +
+> > > > > +                   /* Use GPIO lines as modem control lines */
+> > > > > +                   if (u =3D=3D 0)
+> > > > > +                           mctrl_mask |=3D SC16IS7XX_IOCONTROL_M=
+ODEM_A_BIT;
+> > > > > +                   else if (u =3D=3D 1)
+> > > > > +                           mctrl_mask |=3D SC16IS7XX_IOCONTROL_M=
+ODEM_B_BIT;
+> > > > > +           }
+> > > >
+> > > > Can we use device properties, please?
 > > >
-> > > Set serial port configuration while resume from deep sleep.
-> > >
-> > 
-> > What happens if you do this unconditionally?
-> 
-> pm_suspend_via_firmware returns true indicating system is resuming
-> from deepsleep. In case we are not resuming from deepsleep, this
-> serial port setup is not required.
-> > 
-> > > Signed-off-by: Mehul Raninga <quic_mraninga@quicinc.com>
-> > > ---
-> > >  drivers/tty/serial/qcom_geni_serial.c | 3 +++
-> > >  1 file changed, 3 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/qcom_geni_serial.c
-> > > b/drivers/tty/serial/qcom_geni_serial.c
-> > > index 8582479f0211..c04b8fec30ba 100644
-> > > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > > @@ -20,6 +20,7 @@
-> > >  #include <linux/serial.h>
-> > >  #include <linux/serial_core.h>
-> > >  #include <linux/slab.h>
-> > > +#include <linux/suspend.h>
-> > >  #include <linux/tty.h>
-> > >  #include <linux/tty_flip.h>
-> > >  #include <dt-bindings/interconnect/qcom,icc.h>
-> > > @@ -1737,6 +1738,8 @@ static int qcom_geni_serial_sys_resume(struct
-> > device *dev)
-> > >       if (uart_console(uport)) {
-> > >               geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
-> > >               geni_icc_set_bw(&port->se);
-> > > +             if (pm_suspend_via_firmware())
-> > 
-> > I'm not familiar with this api, but aren't all our systems implementing firmware-
-> > assisted suspend?
-> 
-> Not all the platform supports deep sleep hence to differentiate if
-> resume is from deep sleep suspend or normal suspend, this api is
-> required.
+> > > I have converted this section to use device_property_count_u32() and =
+device_property_read_u32_array(). Is that Ok?
+> >
+> > Yes, thank you!
+>
+> Hi Andy,
+> now that I am using the device property API, I think I no longer have the=
+ need to test for "if (dev->of_node)" before reading the new property "nxp,=
+modem-control-line-ports"?
+>
+> If that is the case, I will leave the test "if (dev->of_node)" only for t=
+he "irda-mode-ports" property.
+>
+> The pseudo code woulk look like this:
+>
+>         if (dev->of_node) {
+>                 struct property *prop;
+>                 const __be32 *p;
+>                 u32 u;
+>
+>                 of_property_for_each_u32(dev->of_node, "irda-mode-ports",
+>                                          prop, p, u)
+>                         if (u < devtype->nr_uart)
+>                                 s->p[u].irda_mode =3D true;
+>         }
+>
+>         /* Read "nxp,modem-control-line-ports" using device property API.=
+ */
+>         sc16is7xx_setup_mctrl_ports(dev);
 
-Can you point me to where this difference in flags is coming from in the
-upstream kernel?
+Looks good to me, thank you for following the advice!
 
-Thanks,
-Bjorn
-
-> > 
-> > Regards,
-> > Bjorn
-> > 
-> > > +                     qcom_geni_serial_port_setup(uport);
-> > >       }
-> > >       return ret;
-> > >  }
-> > > --
-> > > 2.17.1
-> > >
+--=20
+With Best Regards,
+Andy Shevchenko
