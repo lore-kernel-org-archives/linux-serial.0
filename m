@@ -2,29 +2,35 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBC4C7EE23
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 17:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F146C7EE2A
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 18:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbjFAR6Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Jun 2023 13:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S232390AbjFAS3H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jun 2023 14:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbjFAR6X (ORCPT
+        with ESMTP id S232409AbjFAS3E (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Jun 2023 13:58:23 -0400
-X-Greylist: delayed 1804 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 01 Jun 2023 10:58:20 PDT
-Received: from connect.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DFF13D;
-        Thu,  1 Jun 2023 10:58:19 -0700 (PDT)
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by connect.vanmierlo.com (Kerio Connect 9.4.2) with ESMTPA;
-        Thu, 1 Jun 2023 19:28:01 +0200
-MIME-Version: 1.0
-Date:   Thu, 01 Jun 2023 19:28:01 +0200
-From:   m.brock@vanmierlo.com
-To:     Hugo Villeneuve <hugo@hugovil.com>
+        Thu, 1 Jun 2023 14:29:04 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229DBE47;
+        Thu,  1 Jun 2023 11:28:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=AQcVgfW3AF1zATJmxtuE2HxXTPlWoZL81qZFjeP/IXs=; b=d5L7zlnF/YekEEl7dOGnWtNyPB
+        PC8uMiqJm2kA+DBOkGFwx9e8tCYL03larfOOKItCGkhhKojr0c0x6HZIZN5gEqajQX4NTJ9arBqzr
+        ARv5gbuiklV6Z36f643DMS4660Jdshy8HerXvQNxoguhp3qkCliV4yCSFdtdqSNhwx70=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:42688 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q4n1B-0004uN-JV; Thu, 01 Jun 2023 14:27:26 -0400
+Date:   Thu, 1 Jun 2023 14:27:24 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     m.brock@vanmierlo.com
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
         jirislaby@kernel.org, jringle@gridpoint.com,
@@ -33,52 +39,64 @@ Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         stable@vger.kernel.org, Lech Perczak <lech.perczak@camlingroup.com>
+Message-Id: <20230601142724.4fb197fd315e6d360c0d0457@hugovil.com>
+In-Reply-To: <c5c2879e55102a6d517245e6d251290d@vanmierlo.com>
+References: <20230601163113.2785657-1-hugo@hugovil.com>
+        <20230601163113.2785657-4-hugo@hugovil.com>
+        <c5c2879e55102a6d517245e6d251290d@vanmierlo.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
 Subject: Re: [PATCH v5 3/9] serial: sc16is7xx: refactor GPIO controller
  registration
-In-Reply-To: <20230601163113.2785657-4-hugo@hugovil.com>
-References: <20230601163113.2785657-1-hugo@hugovil.com>
- <20230601163113.2785657-4-hugo@hugovil.com>
-Message-ID: <c5c2879e55102a6d517245e6d251290d@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hugo Villeneuve schreef op 2023-06-01 18:31:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Thu, 01 Jun 2023 19:28:01 +0200
+m.brock@vanmierlo.com wrote:
+
+> Hugo Villeneuve schreef op 2023-06-01 18:31:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > In preparation for upcoming patch "fix regression with GPIO
+> > configuration". To facilitate review and make code more modular.
+> > 
+> > Cc: <stable@vger.kernel.org> # 6.1.x
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > ---
+> >  drivers/tty/serial/sc16is7xx.c | 39 ++++++++++++++++++++--------------
+> >  1 file changed, 23 insertions(+), 16 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/sc16is7xx.c 
+> > b/drivers/tty/serial/sc16is7xx.c
+> > index 0c903d44429c..279d7dcb1447 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -1349,6 +1349,26 @@ static int
+> > sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
+> > 
+> >  	return 0;
+> >  }
+> > +
+> > +static int sc16is7xx_setup_gpio_chip(struct device *dev)
 > 
-> In preparation for upcoming patch "fix regression with GPIO
-> configuration". To facilitate review and make code more modular.
+> Only one parameter, but...
 > 
-> Cc: <stable@vger.kernel.org> # 6.1.x
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-> Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 39 ++++++++++++++++++++--------------
->  1 file changed, 23 insertions(+), 16 deletions(-)
+> > +	ret = sc16is7xx_setup_gpio_chip(dev, mctrl_mask);
 > 
-> diff --git a/drivers/tty/serial/sc16is7xx.c 
-> b/drivers/tty/serial/sc16is7xx.c
-> index 0c903d44429c..279d7dcb1447 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1349,6 +1349,26 @@ static int
-> sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
-> 
->  	return 0;
->  }
-> +
-> +static int sc16is7xx_setup_gpio_chip(struct device *dev)
+> called with two.
 
-Only one parameter, but...
+Hi Maarten,
+sorry about that, I will fix this for V6.
 
-> +	ret = sc16is7xx_setup_gpio_chip(dev, mctrl_mask);
+Somehow my automated compile script tested each patch separately, including this one, but the defconfig didn't enable the module sc6is7xx, so the error went unnoticed. I wrongly assumed that "make alldefconfig" enabled all modules, I will instead use "make allyesconfig".
 
-called with two.
-
-Maarten
-
+Hugo.
