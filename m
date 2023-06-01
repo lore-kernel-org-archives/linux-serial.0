@@ -2,135 +2,236 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C29EC77B7E
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 09:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BB6C7EE23
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 10:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232833AbjFAJZV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Jun 2023 05:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S233260AbjFAKGy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jun 2023 06:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbjFAJZU (ORCPT
+        with ESMTP id S232674AbjFAKGd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Jun 2023 05:25:20 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442E611F;
-        Thu,  1 Jun 2023 02:25:19 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id 6a1803df08f44-626190df842so8096216d6.0;
-        Thu, 01 Jun 2023 02:25:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685611518; x=1688203518;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Dzr0sXs/hmoLYt4Nl0MgN1apN4fZADrfHPGpIhvTR6I=;
-        b=fXcUBky3xVq7/nHzFuvrCdhn1kEZ9DUp1DPAvmxeuqp2bl6bXecWRh9wLDfpaaHKxC
-         WXVr1hkYof/ue5l8CLZzFwJmODcpG3vt+lJynLaIcJzL6LMtnpYOsr3R+zCntlud7xcZ
-         N3hEO+sQMxvtpFpKJajYXy8Kw/TgYz8iPuvd5DDxhaAyxm2iFouNlfLWBc3BYwMp7d9H
-         Hd6z8O/VQ0cufGwePwf86fVHUuJkjAfG2FH+v7BlKc4PMi++t3DTegO964/k/JnrdTTv
-         ktSg7ivDKikHn2wESyUSErvqaGd+DU8/uSyY81f5ge+0lU3ILslolBjykCUFEp3a9ndg
-         Kfjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685611518; x=1688203518;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Dzr0sXs/hmoLYt4Nl0MgN1apN4fZADrfHPGpIhvTR6I=;
-        b=hCuvduUD8T9sq6fLVp9MEN1qGe7J08yhyLf3qnjmqFrMhAc3BtPz57paOaBIiaSolf
-         IrW5iX1vHPvovvhrJ/1bPhL3XFasHNgIM08yS6aXo6v944livw+O6WJ5M9PPLNDzf9Ku
-         cfzOz70OJLk48wL4KH22itl5ITGv4vQyKFQK5PU9mB+iLiCkpRl2GhJt+DwhdsNGJbus
-         TSXqivS7x2BXfQ+in+4vnUvNB89tsbjDw3JmQ6JAcU5d2xfHTCzQiE3YVMhwrMePRQoN
-         Pj77IuWgIS/QFL1yRf/9eRZRfbUO2RX2QAFyhl+Bulgh/hu4F9mptMlImumqV7qRNVw4
-         0klA==
-X-Gm-Message-State: AC+VfDy4yNI4s6+oJPOPoSlXgfWtOc+3EjXJK6/uc3r1Kbns67bfK5cJ
-        myWWgXbuNbQwHg3qi8RQX7A6DatZGOVncOTVVdI=
-X-Google-Smtp-Source: ACHHUZ5Ib5cta5bQfcho3pVqSqgpqkYTgu4VQXTg9s5YdPIUDBkI01TFMD70U0ZrMZDdCHYrLFEJgZAHJnaY60MbLsQ=
-X-Received: by 2002:a05:6214:485:b0:625:b72a:142c with SMTP id
- pt5-20020a056214048500b00625b72a142cmr11229290qvb.14.1685611518304; Thu, 01
- Jun 2023 02:25:18 -0700 (PDT)
+        Thu, 1 Jun 2023 06:06:33 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9498B1999;
+        Thu,  1 Jun 2023 03:04:07 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AB17C169C;
+        Thu,  1 Jun 2023 03:04:52 -0700 (PDT)
+Received: from [10.1.26.32] (e122027.cambridge.arm.com [10.1.26.32])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B33E93F663;
+        Thu,  1 Jun 2023 03:04:04 -0700 (PDT)
+Message-ID: <f44b5fb0-2345-df07-abab-c04abd6f8a13@arm.com>
+Date:   Thu, 1 Jun 2023 11:04:02 +0100
 MIME-Version: 1.0
-References: <20230529140711.896830-1-hugo@hugovil.com> <20230529140711.896830-8-hugo@hugovil.com>
- <ZHUpWQafRPHW1RJQ@surfacebook> <20230530113649.73f28b9f6ba91f17ace1e12f@hugovil.com>
- <CAHp75Vf35rN93sXFBU0nRZQLpUgQHR2caGC8BmHkEgPZqF=dQg@mail.gmail.com> <20230531195723.462b140ac041b790711c1a7f@hugovil.com>
-In-Reply-To: <20230531195723.462b140ac041b790711c1a7f@hugovil.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 1 Jun 2023 12:24:42 +0300
-Message-ID: <CAHp75VcNihyzn3t8C48w1V+WWRk_zj8Br7shTfbHLU09u4OtcA@mail.gmail.com>
-Subject: Re: [PATCH v4 7/9] serial: sc16is7xx: fix regression with GPIO configuration
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+From:   Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20230525113034.46880-1-tony@atomide.com>
+X-Mozilla-News-Host: news://nntp.lore.kernel.org
+Content-Language: en-GB
+In-Reply-To: <20230525113034.46880-1-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 1, 2023 at 2:57=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> w=
-rote:
-> On Wed, 31 May 2023 00:56:57 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Tue, May 30, 2023 at 6:36=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.c=
-om> wrote:
-> > > On Tue, 30 May 2023 01:38:17 +0300
-> > > andy.shevchenko@gmail.com wrote:
-> > > > Mon, May 29, 2023 at 10:07:09AM -0400, Hugo Villeneuve kirjoitti:
+Hi,
+
+This has arrived in linux-next and causes boot warnings, see below.
+
+On 25/05/2023 12:30, Tony Lindgren wrote:
+> We want to enable runtime PM for serial port device drivers in a generic
+> way. To do this, we want to have the serial core layer manage the
+> registered physical serial controller devices.
+> 
+> To manage serial controllers, let's set up a struct bus and struct device
+> for the serial core controller as suggested by Greg and Jiri. The serial
+> core controller devices are children of the physical serial port device.
+> The serial core controller device is needed to support multiple different
+> kind of ports connected to single physical serial port device.
+> 
+> Let's also set up a struct device for the serial core port. The serial
+> core port instances are children of the serial core controller device.
+> 
+> With the serial core port device we can now flush pending TX on the
+> runtime PM resume as suggested by Johan.
+> 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+> Suggested-by: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
 ...
 
-> > > > > +           of_property_for_each_u32(dev->of_node, "nxp,modem-con=
-trol-line-ports",
-> > > > > +                                    prop, p, u) {
-> > > > > +                   if (u >=3D devtype->nr_uart)
-> > > > > +                           continue;
-> > > > > +
-> > > > > +                   /* Use GPIO lines as modem control lines */
-> > > > > +                   if (u =3D=3D 0)
-> > > > > +                           mctrl_mask |=3D SC16IS7XX_IOCONTROL_M=
-ODEM_A_BIT;
-> > > > > +                   else if (u =3D=3D 1)
-> > > > > +                           mctrl_mask |=3D SC16IS7XX_IOCONTROL_M=
-ODEM_B_BIT;
-> > > > > +           }
-> > > >
-> > > > Can we use device properties, please?
-> > >
-> > > I have converted this section to use device_property_count_u32() and =
-device_property_read_u32_array(). Is that Ok?
-> >
-> > Yes, thank you!
->
-> Hi Andy,
-> now that I am using the device property API, I think I no longer have the=
- need to test for "if (dev->of_node)" before reading the new property "nxp,=
-modem-control-line-ports"?
->
-> If that is the case, I will leave the test "if (dev->of_node)" only for t=
-he "irda-mode-ports" property.
->
-> The pseudo code woulk look like this:
->
->         if (dev->of_node) {
->                 struct property *prop;
->                 const __be32 *p;
->                 u32 u;
->
->                 of_property_for_each_u32(dev->of_node, "irda-mode-ports",
->                                          prop, p, u)
->                         if (u < devtype->nr_uart)
->                                 s->p[u].irda_mode =3D true;
->         }
->
->         /* Read "nxp,modem-control-line-ports" using device property API.=
- */
->         sc16is7xx_setup_mctrl_ports(dev);
+>  
+>  /**
+> - * uart_remove_one_port - detach a driver defined port structure
+> + * serial_core_remove_one_port - detach a driver defined port structure
+>   * @drv: pointer to the uart low level driver structure for this port
+>   * @uport: uart port structure for this port
+>   *
+> @@ -3153,20 +3170,16 @@ EXPORT_SYMBOL(uart_add_one_port);
+>   *
+>   * This unhooks (and hangs up) the specified port structure from the core
+>   * driver. No further calls will be made to the low-level code for this port.
+> + * Caller must hold port_mutex.
+>   */
+> -void uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+> +static void serial_core_remove_one_port(struct uart_driver *drv,
+> +					struct uart_port *uport)
+>  {
+>  	struct uart_state *state = drv->state + uport->line;
+>  	struct tty_port *port = &state->port;
+>  	struct uart_port *uart_port;
+>  	struct tty_struct *tty;
+>  
+> -	mutex_lock(&port_mutex);
 
-Looks good to me, thank you for following the advice!
+serial_core_remove_one_port() no longer takes port_mutex (caller must
+hold it)...
 
---=20
-With Best Regards,
-Andy Shevchenko
+> -
+> -	/*
+> -	 * Mark the port "dead" - this prevents any opens from
+> -	 * succeeding while we shut down the port.
+> -	 */
+>  	mutex_lock(&port->mutex);
+>  	uart_port = uart_port_check(state);
+>  	if (uart_port != uport)
+> @@ -3177,7 +3190,6 @@ void uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  		mutex_unlock(&port->mutex);
+>  		goto out;
+>  	}
+> -	uport->flags |= UPF_DEAD;
+>  	mutex_unlock(&port->mutex);
+>  
+>  	/*
+> @@ -3209,6 +3221,7 @@ void uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  	 * Indicate that there isn't a port here anymore.
+>  	 */
+>  	uport->type = PORT_UNKNOWN;
+> +	uport->port_dev = NULL;
+>  
+>  	mutex_lock(&port->mutex);
+>  	WARN_ON(atomic_dec_return(&state->refcount) < 0);
+> @@ -3218,7 +3231,6 @@ void uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+>  out:
+>  	mutex_unlock(&port_mutex);
+
+... but it still drops it at the end of the function.
+
+>  }
+> -EXPORT_SYMBOL(uart_remove_one_port);
+
+...
+
+> +/*
+> + * Find a registered serial core controller device if one exists. Returns
+> + * the first device matching the ctrl_id. Caller must hold port_mutex.
+> + */
+> +static struct serial_ctrl_device *serial_core_ctrl_find(struct uart_driver *drv,
+> +							struct device *phys_dev,
+> +							int ctrl_id)
+> +{
+> +	struct uart_state *state;
+> +	int i;
+> +
+> +	lockdep_assert_held(&port_mutex);
+
+This function must be called with port_mutex held, but...
+
+> +
+> +	for (i = 0; i < drv->nr; i++) {
+> +		state = drv->state + i;
+> +		if (!state->uart_port || !state->uart_port->port_dev)
+> +			continue;
+> +
+> +		if (state->uart_port->dev == phys_dev &&
+> +		    state->uart_port->ctrl_id == ctrl_id)
+> +			return serial_core_get_ctrl_dev(state->uart_port->port_dev);
+> +	}
+> +
+> +	return NULL;
+> +}
+
+...
+
+> +/*
+> + * Removes a serial core port device, and the related serial core controller
+> + * device if the last instance.
+> + */
+> +void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port)
+> +{
+> +	struct device *phys_dev = port->dev;
+> +	struct serial_port_device *port_dev = port->port_dev;
+> +	struct serial_ctrl_device *ctrl_dev = serial_core_get_ctrl_dev(port_dev);
+> +	int ctrl_id = port->ctrl_id;
+> +
+> +	mutex_lock(&port_mutex);
+
+We take port_mutex here...
+
+> +
+> +	port->flags |= UPF_DEAD;
+> +
+> +	serial_core_remove_one_port(drv, port);
+> +
+> +	/* Note that struct uart_port *port is no longer valid at this point */
+> +	serial_base_port_device_remove(port_dev);
+
+serial_base_port_device_remove() then drops it...
+
+> +
+> +	/* Drop the serial core controller device if no ports are using it */
+> +	if (!serial_core_ctrl_find(drv, phys_dev, ctrl_id))
+
+serial_core_ctrl_find() complains that it's not held.
+
+> +		serial_base_ctrl_device_remove(ctrl_dev);
+> +
+> +	mutex_unlock(&port_mutex);
+
+And we attempt to unlock it when it's not held.
+
+I haven't studied this change in detail, but I assume the bug is that
+serial_base_port_device_remove() shouldn't be dropping port_mutex. The
+below hack gets my board booting again.
+
+Thanks,
+
+Steve
+
+Hack fix:
+----8<----
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 29bd5ede0b25..044e4853341a 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3234,8 +3234,7 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
+        wait_event(state->remove_wait, !atomic_read(&state->refcount));
+        state->uart_port = NULL;
+        mutex_unlock(&port->mutex);
+-out:
+-       mutex_unlock(&port_mutex);
++out:;
+ }
+ 
+ /**
