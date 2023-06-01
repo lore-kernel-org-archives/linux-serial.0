@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAECC77B7E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD7DC7EE2E
 	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 20:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232249AbjFAUTT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Jun 2023 16:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
+        id S232303AbjFAUTU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jun 2023 16:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231917AbjFAUTF (ORCPT
+        with ESMTP id S232067AbjFAUTN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Jun 2023 16:19:05 -0400
+        Thu, 1 Jun 2023 16:19:13 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528B1199;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8436BD1;
         Thu,  1 Jun 2023 13:19:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Z3WZIzncTr6MCeVd4lJqIf8LqUrhJSqs0YEKHbqWmt4=; b=ewTtSx280ca34pgvpp2dulWLc7
-        tRAP34fe2jcuK/B/hLKKkfJKRb4m1s8wqymlOMzXUOG8HCHapT7XHO8vAxD4DF0Ku9twvAxGjSnjC
-        XP4Bn5aMMAaj7HGCSh96iLiIcI22f4/tBE5ygVg/8EOHXk3fJETPZhNxq3lmbKwak96Y=;
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Vpxb2SEuweBhIUfqr9sMJSgr1YIceBLIzWJb0gIKyDM=; b=BIUmMmAr9GatHdMUUcSz5PzXSd
+        dsfinzY59MdfFVWTE+oEuxHNswWjlwG6DSsTg2Vmricbgb1eJeCzugwycHYrih9V0kTGraFAYXu4/
+        dh3Motr5UdhBFH1k6+PGsRZzOyK8uX7Xuf0skzZWwTmEyz0eZOdhJVQj5YCUWxPqGe3w=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:39204 helo=pettiford.lan)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1q4ol7-000686-K5; Thu, 01 Jun 2023 16:18:58 -0400
+        id 1q4olA-000686-2c; Thu, 01 Jun 2023 16:19:00 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
@@ -37,19 +37,17 @@ Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, hugo@hugovil.com,
         linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Lech Perczak <lech.perczak@camlingroup.com>
-Date:   Thu,  1 Jun 2023 16:18:42 -0400
-Message-Id: <20230601201844.3739926-8-hugo@hugovil.com>
+Date:   Thu,  1 Jun 2023 16:18:44 -0400
+Message-Id: <20230601201844.3739926-10-hugo@hugovil.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230601201844.3739926-1-hugo@hugovil.com>
 References: <20230601201844.3739926-1-hugo@hugovil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v6 7/9] serial: sc16is7xx: add call to get rs485 DT flags and properties
+Subject: [PATCH v6 9/9] serial: sc16is7xx: improve comments about variants
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -58,32 +56,49 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Add call to uart_get_rs485_mode() to probe for RS485 flags and
-properties from device tree.
+Replace 740/750/760 with generic terms like 74x/75x/76x to account for
+variants like 741, 752 and 762.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 2fa09baf28e3..388c1d490853 100644
+index 9b2d58023c55..59338f5ca180 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1544,6 +1544,10 @@ static int sc16is7xx_probe(struct device *dev,
- 			goto out_ports;
- 		}
+@@ -223,7 +223,7 @@
+  * trigger levels. Trigger levels from 4 characters to 60 characters are
+  * available with a granularity of four.
+  *
+- * When the trigger level setting in TLR is zero, the SC16IS740/750/760 uses the
++ * When the trigger level setting in TLR is zero, the SC16IS74x/75x/76x uses the
+  * trigger level setting defined in FCR. If TLR has non-zero trigger level value
+  * the trigger level defined in FCR is discarded. This applies to both transmit
+  * FIFO and receive FIFO trigger level setting.
+@@ -234,7 +234,7 @@
+ #define SC16IS7XX_TLR_TX_TRIGGER(words)	((((words) / 4) & 0x0f) << 0)
+ #define SC16IS7XX_TLR_RX_TRIGGER(words)	((((words) / 4) & 0x0f) << 4)
  
-+		ret = uart_get_rs485_mode(&s->p[i].port);
-+		if (ret)
-+			goto out_ports;
-+
- 		/* Disable all interrupts */
- 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
- 		/* Disable TX/RX */
+-/* IOControl register bits (Only 750/760) */
++/* IOControl register bits (Only 75x/76x) */
+ #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
+ #define SC16IS7XX_IOCONTROL_MODEM_A_BIT	(1 << 1) /* Enable GPIO[7:4] as modem A pins */
+ #define SC16IS7XX_IOCONTROL_MODEM_B_BIT	(1 << 2) /* Enable GPIO[3:0] as modem B pins */
+@@ -249,9 +249,9 @@
+ #define SC16IS7XX_EFCR_RTS_INVERT_BIT	(1 << 5) /* RTS output inversion */
+ #define SC16IS7XX_EFCR_IRDA_MODE_BIT	(1 << 7) /* IrDA mode
+ 						  * 0 = rate upto 115.2 kbit/s
+-						  *   - Only 750/760
++						  *   - Only 75x/76x
+ 						  * 1 = rate upto 1.152 Mbit/s
+-						  *   - Only 760
++						  *   - Only 76x
+ 						  */
+ 
+ /* EFR register bits */
 -- 
 2.30.2
 
