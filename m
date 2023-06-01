@@ -2,169 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3E2C7EE23
-	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 21:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E67C77B7E
+	for <linux-serial@archiver.kernel.org>; Thu,  1 Jun 2023 23:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbjFAVa1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Jun 2023 17:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
+        id S229866AbjFAXON (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jun 2023 19:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbjFAVa0 (ORCPT
+        with ESMTP id S230525AbjFAXOM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Jun 2023 17:30:26 -0400
-Received: from fgw21-7.mail.saunalahti.fi (fgw21-7.mail.saunalahti.fi [62.142.5.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13549195
-        for <linux-serial@vger.kernel.org>; Thu,  1 Jun 2023 14:30:23 -0700 (PDT)
-Received: from localhost (88-113-26-95.elisa-laajakaista.fi [88.113.26.95])
-        by fgw21.mail.saunalahti.fi (Halon) with ESMTP
-        id 7eea1b78-00c3-11ee-abf4-005056bdd08f;
-        Fri, 02 Jun 2023 00:30:15 +0300 (EEST)
-From:   andy.shevchenko@gmail.com
-Date:   Fri, 2 Jun 2023 00:30:14 +0300
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v6 5/9] serial: sc16is7xx: fix regression with GPIO
- configuration
-Message-ID: <ZHkN5kEa6yqHdDeL@surfacebook>
-References: <20230601201844.3739926-1-hugo@hugovil.com>
- <20230601201844.3739926-6-hugo@hugovil.com>
+        Thu, 1 Jun 2023 19:14:12 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214AD13D;
+        Thu,  1 Jun 2023 16:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=hZO2CzatNKqaF+sFsPdBkHEKuGEv+e/Uk5jIqidmBvs=; b=F4YHdv50odrj+Cwax9Xttvns5v
+        NdHeZuM+epXqxo5wyUxuQwThN0e0rk52+7BozYYcTIlYpqh5adWybjy24BkE8zFE/T9jATShrJNvH
+        DRF1ot7SRzJdBDK+wwZRQLO9uWgDMEKzi/oJ2giNXyftfqEF823JYpqHAlpkEeMZnH0+uNu0HI59m
+        SZm+haiguH+ssXV0XWVlX7odihoh6gITM/bIK6ErBRhYN7XGVf8YgH2vpdnYkLMXGuIdnuowak/Rw
+        cZdjNFGAxGwPpxrxxhqwGp9RDQJdedGooHvnWQiOsn5F1WFPUwdeAzfT29EhoOY+mdAhaH1/XkfJk
+        CfKNPDHw==;
+Received: from [2601:1c2:980:9ec0::2764]
+        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1q4rUT-005DAO-0u;
+        Thu, 01 Jun 2023 23:13:57 +0000
+Message-ID: <1868cc20-fd69-f5db-9c49-30d87e74355b@infradead.org>
+Date:   Thu, 1 Jun 2023 16:13:54 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230601201844.3739926-6-hugo@hugovil.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH v1 -next] tty: serial: add panic serial helper
+Content-Language: en-US
+To:     Hongyu Xie <xiehongyu1@kylinos.cn>, linux@armlinux.org.uk,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xy521521@gmail.com
+References: <20230531081737.423737-1-xiehongyu1@kylinos.cn>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20230531081737.423737-1-xiehongyu1@kylinos.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thu, Jun 01, 2023 at 04:18:40PM -0400, Hugo Villeneuve kirjoitti:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> changed the function of the GPIOs pins to act as modem control
-> lines without any possibility of selecting GPIO function.
-> 
-> As a consequence, applications that depends on GPIO lines configured
-> by default as GPIO pins no longer work as expected.
-> 
-> Also, the change to select modem control lines function was done only
-> for channel A of dual UART variants (752/762). This was not documented
-> in the log message.
-> 
-> Allow to specify GPIO or modem control line function in the device
-> tree, and for each of the ports (A or B).
-> 
-> Do so by using the new device-tree property named
-> "modem-control-line-ports" (property added in separate patch).
-> 
-> When registering GPIO chip controller, mask-out GPIO pins declared as
-> modem control lines according to this new "modem-control-line-ports"
-> DT property.
-> 
-> Boards that need to have GPIOS configured as modem control lines
-> should add that property to their device tree. Here is a list of
-> boards using the sc16is7xx driver in their device tree and that may
-> need to be modified:
->     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
->     mips/boot/dts/ingenic/cu1830-neo.dts
->     mips/boot/dts/ingenic/cu1000-neo.dts
+Hi--
 
-Almost good, a few remarks and if addressed as suggested,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+On 5/31/23 01:17, Hongyu Xie wrote:
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 3e3fb377d90d..70d0d2e4b827 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -198,6 +198,31 @@ config SERIAL_KGDB_NMI
+>  
+>  	  If unsure, say N.
+>  
+> +config PANIC_SERIAL_HELPER
+> +	tristate "debug through uart after panic"
 
-Thank you!
+	                        UART
 
-...
-
-> +	if (!s->gpio_valid_mask)
-
-I would use == 0, but it's up to you. Both will work equally.
-
-> +		return 0;
-
-...
-
-> +static int sc16is7xx_setup_mctrl_ports(struct device *dev)
-
-Not sure why int if you always return an unsigned value.
-Otherwise return an error code when it's no defined mask
-and check it in the caller.
-
-> +{
-> +	struct sc16is7xx_port *s = dev_get_drvdata(dev);
-> +	int i;
-> +	int ret;
-> +	int count;
-> +	u32 mctrl_port[2];
-> +	u8 mctrl_mask = 0;
-
-I would return 0 directly in the first two cases and split an assignment closer
-to the first user.
-
-> +	count = device_property_count_u32(dev, "nxp,modem-control-line-ports");
-> +	if (count < 0 || count > ARRAY_SIZE(mctrl_port))
-> +		return mctrl_mask;
-
-		return 0;
-
-> +	ret = device_property_read_u32_array(dev, "nxp,modem-control-line-ports",
-> +					     mctrl_port, count);
-> +	if (ret)
-> +		return mctrl_mask;
-
-		return 0;
-
-
-	mctrl_mask = 0;
-
-> +	for (i = 0; i < count; i++) {
-> +		/* Use GPIO lines as modem control lines */
-> +		if (mctrl_port[i] == 0)
-> +			mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
-> +		else if (mctrl_port[i] == 1)
-> +			mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
-> +	}
-
-> +	if (!mctrl_mask)
-> +		return mctrl_mask;
-
-Maybe positive one?
-
-	if (mctrl_mask)
-		regmap_update_bits(...);
-
-> +	regmap_update_bits(s->regmap,
-> +			   SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
-> +			   SC16IS7XX_IOCONTROL_MODEM_A_BIT |
-> +			   SC16IS7XX_IOCONTROL_MODEM_B_BIT, mctrl_mask);
+> +	depends on PANIC_TIMEOUT=0
+> +	select CONSOLE_POLL
+> +	help
+> +	  This is a debug module that allows you to get all kernel logs
+> +	  after panic.
 > +
-> +	return mctrl_mask;
-> +}
+> +	  Normally you need to attach a USB-to-UART tool or enable kdump
+> +	  before panic happens to get log from kernel after panic. If you
+> +	  didn't do that and kdump is not working, you can't get any log to
+> +	  know what happened before panic. If you have a USB-to-UART tool
+> +	  and the uart port on your computer is working, this module helps
 
-...
+	          UART
 
->  	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
->  	unsigned int val;
-> +	u8 mctrl_mask = 0;
+> +	  you to get all kernel log after panic() is called.
+> +
+> +	  This module uses serial port in poll mode, so it's more stable
+> +	  than other debugging methods.
+> +
+> +	  Read <file:Documentation/dev-tools/panic_serial_helper.rst> for
+> +	  usage.
+> +
+> +	  Say Y if you have an UART port that is working. If unsure, say N.
+> +	  Say M if you want add this as a module driver.
+> +	  The module will be called panic_serial_helper.
 
-This assignment is redundant, so you simply can define it
-
->  	u32 uartclk = 0;
-
-	u8 mctrl_mask;
-
->  	int i, ret;
->  	struct sc16is7xx_port *s;
-
+thanks.
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+~Randy
