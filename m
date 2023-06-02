@@ -2,115 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB17EC77B7A
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 14:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF79C77B7A
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 14:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236301AbjFBOyf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Jun 2023 10:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
+        id S236298AbjFBO5B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Jun 2023 10:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236262AbjFBOyV (ORCPT
+        with ESMTP id S236152AbjFBO45 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Jun 2023 10:54:21 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE75EE62;
-        Fri,  2 Jun 2023 07:54:11 -0700 (PDT)
+        Fri, 2 Jun 2023 10:56:57 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0A6123;
+        Fri,  2 Jun 2023 07:56:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685717651; x=1717253651;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=y53sMR24ZEtw6YFFN78RDscItf1umgQZI1yJzYfS/mw=;
-  b=bakh7aT704hmVD+Z3xH06MmXIoCi5ymcCPhHrbySd5Md7a6CkEqZJ2Xp
-   gl+mFljgWYZJxv45RjnMkE94pRuNBqttzyz9XduHKNZWI3PTrEtpO+ctq
-   GW8vFQUkhqrh8qQJpKWrBZ0fjpGWC45ZpJ5OrJHGqn9tAMa8o/JoOtg1d
-   1BsKIuvnYE4TE+I84U6sHMmBmcYR9ulr8zvGSxwHD1kODzwFytPQt+7pl
-   W3UysjKNFfSgEm1VB8HbBDc0B4fb8iaifZTvpKwKAoYmu4SwdzXKFuQ1T
-   ++xNMLXYZaN3fd1UfRnHSDEfaWL1M+HkYnwQihCeGvfYvzzoZW9Jg/Sxm
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="335500572"
+  t=1685717808; x=1717253808;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Eyv4owJ+a1r3cmbMtjO6sLOlcMuL3iqL/tf7QEiAlrg=;
+  b=H/7uCIvgOl/ktEEs0YFiUQ/mES6Ytk46ABAlh3R7Sic6c06ihEgzbXqE
+   CXTAfukqQNJs/lVjOgy9o24YIcuPdmcuNQQ8m8DPSTzn+P88U081Qlex2
+   2yfZFVK3G8pSGfBC6a4sKruJE1ugrlCm7n9PIrZrc65z9rZ+6iJLNRqBJ
+   jsGZpjt14hPAomHDQ+fDJiIph5kTdqOjDBQc5mClcK+Jgbwm00Cd9xy0t
+   p6JHI1zVgU9EGQIip/WQE3rIAuoArvKKX3u0lgT+zOibHhk+FQ5hgAltj
+   YUKED56TftBi+KFeHMVP/Ljh/w5X0cpbILaZmAGwLCMUS2kfLC7l7Rx4J
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="354736440"
 X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
-   d="scan'208";a="335500572"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 07:53:56 -0700
+   d="scan'208";a="354736440"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 07:56:47 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="658297330"
+X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="852185973"
 X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
-   d="scan'208";a="658297330"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003.jf.intel.com with ESMTP; 02 Jun 2023 07:53:53 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1q56A3-000fU6-1I;
-        Fri, 02 Jun 2023 17:53:51 +0300
-Date:   Fri, 2 Jun 2023 17:53:51 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] serial: core: Fix error handling for
- serial_core_ctrl_device_add()
-Message-ID: <ZHoCf50NnIeseQT8@smile.fi.intel.com>
-References: <20230602070007.59268-1-tony@atomide.com>
+   d="scan'208";a="852185973"
+Received: from rspatil-mobl3.gar.corp.intel.com ([10.251.208.112])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 07:56:46 -0700
+Date:   Fri, 2 Jun 2023 17:56:43 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Bernhard Seibold <mail@bernhard-seibold.de>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] serial: lantiq: add missing interrupt ack
+In-Reply-To: <20230602133029.546-1-mail@bernhard-seibold.de>
+Message-ID: <de21c62d-c8a-ccbd-abbe-45bd1c12847@linux.intel.com>
+References: <20230602133029.546-1-mail@bernhard-seibold.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230602070007.59268-1-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: multipart/mixed; boundary="8323329-304693598-1685717807=:1742"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 02, 2023 at 10:00:05AM +0300, Tony Lindgren wrote:
-> Checking for NULL is incorrect as serial_base_ctrl_add() uses ERR_PTR().
-> 
-> Let's also pass any returned error along, there's no reason to translate
-> all errors to -ENODEV.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Jiri already asked the same question I have had on a glance, and this all
-solved here, so
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+--8323329-304693598-1685717807=:1742
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
+On Fri, 2 Jun 2023, Bernhard Seibold wrote:
+
+> Currently, the error interrupt is never acknowledged, so once active it
+> will stay active indefinitely, causing the handler to be called in an
+> infinite loop.
+> 
+> Fixes: 2f0fc4159a6a ("SERIAL: Lantiq: Add driver for MIPS Lantiq SOCs.")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Bernhard Seibold <mail@bernhard-seibold.de>
 > ---
+>  drivers/tty/serial/lantiq.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Changes since v1:
-> 
-> - Stop translating all errors to -ENODEV
-> 
-> - There's no need to use IS_ERR_OR_NULL() as noted by Jiri
-> 
-> ---
->  drivers/tty/serial/serial_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3342,8 +3342,8 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
->  	ctrl_dev = serial_core_ctrl_find(drv, port->dev, port->ctrl_id);
->  	if (!ctrl_dev) {
->  		new_ctrl_dev = serial_core_ctrl_device_add(port);
-> -		if (!new_ctrl_dev) {
-> -			ret = -ENODEV;
-> +		if (IS_ERR(new_ctrl_dev)) {
-> +			ret = PTR_ERR(new_ctrl_dev);
->  			goto err_unlock;
->  		}
->  		ctrl_dev = new_ctrl_dev;
-> -- 
-> 2.41.0
+> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+> index a58e9277dfad..f1387f1024db 100644
+> --- a/drivers/tty/serial/lantiq.c
+> +++ b/drivers/tty/serial/lantiq.c
+> @@ -250,6 +250,7 @@ lqasc_err_int(int irq, void *_port)
+>  	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
+>  
+>  	spin_lock_irqsave(&ltq_port->lock, flags);
+> +	__raw_writel(ASC_IRNCR_EIR, port->membase + LTQ_ASC_IRNCR);
+>  	/* clear any pending interrupts */
+>  	asc_update_bits(0, ASCWHBSTATE_CLRPE | ASCWHBSTATE_CLRFE |
+>  		ASCWHBSTATE_CLRROE, port->membase + LTQ_ASC_WHBSTATE);
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+This has been there since the beginning, it is a bit odd if nobody has hit 
+this before now.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+ i.
 
-
+--8323329-304693598-1685717807=:1742--
