@@ -2,207 +2,90 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922D5C7EE2A
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 01:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F982C7EE2A
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 02:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233512AbjFBBZ1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 1 Jun 2023 21:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
+        id S230166AbjFBC17 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 1 Jun 2023 22:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232583AbjFBBZZ (ORCPT
+        with ESMTP id S229781AbjFBC16 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 1 Jun 2023 21:25:25 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428D5128;
-        Thu,  1 Jun 2023 18:25:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=P+9xx+lxqjJqqH4Qc1R78OLgrho1+Lwvhwigj9XgAQo=; b=FrNHW+8tenbCqVS+f9KbjiK4YP
-        nXZYdoUv4hnWhq959/PsMspnctRjUFZLwxAP72Nbs73i5uY7e7yxg7eoVapO4l4s3T/1aE0oz8yh/
-        abiuFG61hhOXF3CQLGB//p8bB5hN9TYXbRU1hM87wtz8DGssv2q7fLO8juKlPM+06ihE=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:46512 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q4tXX-0000RT-DK; Thu, 01 Jun 2023 21:25:16 -0400
-Date:   Thu, 1 Jun 2023 21:25:14 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Message-Id: <20230601212514.28914aee77ae9a513904ee6b@hugovil.com>
-In-Reply-To: <20230601204140.3b45c9b97efb36431d058ba7@hugovil.com>
-References: <20230601201844.3739926-1-hugo@hugovil.com>
-        <20230601201844.3739926-6-hugo@hugovil.com>
-        <ZHkN5kEa6yqHdDeL@surfacebook>
-        <20230601204140.3b45c9b97efb36431d058ba7@hugovil.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v6 5/9] serial: sc16is7xx: fix regression with GPIO
- configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 1 Jun 2023 22:27:58 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED1E180
+        for <linux-serial@vger.kernel.org>; Thu,  1 Jun 2023 19:27:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685672877; x=1717208877;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bnQmixq8IosQfwazVE1IkhoN+lw8BUTq9bYtC+8DFVw=;
+  b=MJZTeBDyuL9Oo/IY+5FbI4XXu1l6jjFlny62jFGFRBwU+dMkNM8XZpa2
+   4xSVNnZjNEE82A+tLiUveuXdOywes9JiUo4ZRaNQsWcLQctartrhmw3dX
+   TvAyp15cbyCFaZXchfqN8jh2KHe+f8kFKustI5h2cu+d4ECcLv2kzLODm
+   8Rzig+wfqXLZnOmfmob9ZcSaJrJzFkNO7q2Hpg5UOydw5j33TQnodp24R
+   kkeZ7tokqoG6T1snMIjAR+HOp70Cba5hGnH5bO4o709NIo4s+pjI6MSL1
+   7rWJiyjHaou2Kgy9xXGUmtQBopKWI4kLfJGYrUFRdureg/0Ip2BgtIBDi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="335360370"
+X-IronPort-AV: E=Sophos;i="6.00,211,1681196400"; 
+   d="scan'208";a="335360370"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2023 19:27:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="881872740"
+X-IronPort-AV: E=Sophos;i="6.00,211,1681196400"; 
+   d="scan'208";a="881872740"
+Received: from lkp-server01.sh.intel.com (HELO fb1ced2c09fb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 01 Jun 2023 19:27:55 -0700
+Received: from kbuild by fb1ced2c09fb with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1q4uWB-0002vw-0O;
+        Fri, 02 Jun 2023 02:27:55 +0000
+Date:   Fri, 2 Jun 2023 10:27:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-testing 19/19] legacy_serial.c:undefined reference to
+ `fsl8250_handle_irq'
+Message-ID: <202306021041.qbRZZenE-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 1 Jun 2023 20:41:40 -0400
-Hugo Villeneuve <hugo@hugovil.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3
+commit: 3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3 [19/19] serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20230602/202306021041.qbRZZenE-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.3.0
+reproduce (this is a W=1 build):
+        mkdir -p ~/bin
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3
+        git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+        git fetch --no-tags tty tty-testing
+        git checkout 3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.3.0 ~/bin/make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-> On Fri, 2 Jun 2023 00:30:14 +0300
-> andy.shevchenko@gmail.com wrote:
-> 
-> > Thu, Jun 01, 2023 at 04:18:40PM -0400, Hugo Villeneuve kirjoitti:
-> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > 
-> > > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > > changed the function of the GPIOs pins to act as modem control
-> > > lines without any possibility of selecting GPIO function.
-> > > 
-> > > As a consequence, applications that depends on GPIO lines configured
-> > > by default as GPIO pins no longer work as expected.
-> > > 
-> > > Also, the change to select modem control lines function was done only
-> > > for channel A of dual UART variants (752/762). This was not documented
-> > > in the log message.
-> > > 
-> > > Allow to specify GPIO or modem control line function in the device
-> > > tree, and for each of the ports (A or B).
-> > > 
-> > > Do so by using the new device-tree property named
-> > > "modem-control-line-ports" (property added in separate patch).
-> > > 
-> > > When registering GPIO chip controller, mask-out GPIO pins declared as
-> > > modem control lines according to this new "modem-control-line-ports"
-> > > DT property.
-> > > 
-> > > Boards that need to have GPIOS configured as modem control lines
-> > > should add that property to their device tree. Here is a list of
-> > > boards using the sc16is7xx driver in their device tree and that may
-> > > need to be modified:
-> > >     arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
-> > >     mips/boot/dts/ingenic/cu1830-neo.dts
-> > >     mips/boot/dts/ingenic/cu1000-neo.dts
-> > 
-> > Almost good, a few remarks and if addressed as suggested,
-> > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > 
-> > Thank you!
-> > 
-> > ...
-> > 
-> > > +	if (!s->gpio_valid_mask)
-> > 
-> > I would use == 0, but it's up to you. Both will work equally.
-> 
-> Hi,
-> done.
-> 
-> > > +		return 0;
-> > 
-> > ...
-> > 
-> > > +static int sc16is7xx_setup_mctrl_ports(struct device *dev)
-> > 
-> > Not sure why int if you always return an unsigned value.
-> > Otherwise return an error code when it's no defined mask
-> > and check it in the caller.
-> 
-> Changed return type to u8.
-> 
->  
-> > > +{
-> > > +	struct sc16is7xx_port *s = dev_get_drvdata(dev);
-> > > +	int i;
-> > > +	int ret;
-> > > +	int count;
-> > > +	u32 mctrl_port[2];
-> > > +	u8 mctrl_mask = 0;
-> > 
-> > I would return 0 directly in the first two cases and split an assignment closer
-> > to the first user.
-> > 
-> > > +	count = device_property_count_u32(dev, "nxp,modem-control-line-ports");
-> > > +	if (count < 0 || count > ARRAY_SIZE(mctrl_port))
-> > > +		return mctrl_mask;
-> > 
-> > 		return 0;
-> 
-> Done.
-> 
-> 
-> > > +	ret = device_property_read_u32_array(dev, "nxp,modem-control-line-ports",
-> > > +					     mctrl_port, count);
-> > > +	if (ret)
-> > > +		return mctrl_mask;
-> > 
-> > 		return 0;
-> 
-> Done.
-> 
-> 
-> > 	mctrl_mask = 0;
-> 
-> Done.
-> 
->  
-> > > +	for (i = 0; i < count; i++) {
-> > > +		/* Use GPIO lines as modem control lines */
-> > > +		if (mctrl_port[i] == 0)
-> > > +			mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
-> > > +		else if (mctrl_port[i] == 1)
-> > > +			mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
-> > > +	}
-> > 
-> > > +	if (!mctrl_mask)
-> > > +		return mctrl_mask;
-> > 
-> > Maybe positive one?
-> > 	if (mctrl_mask)
-> > 		regmap_update_bits(...);
-> 
-> I used negative to save on indentation, but it also fits by converting it to positive, so done.
-> 
->  
-> > > +	regmap_update_bits(s->regmap,
-> > > +			   SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
-> > > +			   SC16IS7XX_IOCONTROL_MODEM_A_BIT |
-> > > +			   SC16IS7XX_IOCONTROL_MODEM_B_BIT, mctrl_mask);
-> > > +
-> > > +	return mctrl_mask;
-> > > +}
-> > 
-> > ...
-> > 
-> > >  	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
-> > >  	unsigned int val;
-> > > +	u8 mctrl_mask = 0;
-> > 
-> > This assignment is redundant, so you simply can define it
-> > 
-> > >  	u32 uartclk = 0;
-> > 
-> > 	u8 mctrl_mask;
-> 
-> Done.
-> 
-> I will send a V7 soon with your Reviewed-by tag.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306021041.qbRZZenE-lkp@intel.com/
 
-Hi Andy,
-Greg did not yet respond to my email about the proposed tags, but if the new order of the patches and the stable tags I added seems ok to you, I will resend V7. It will then probably easier for Greg to comment directly on V7 for the stable tags (Cc:).
+All errors (new ones prefixed by >>):
 
-Hugo.
+   powerpc-linux-ld: arch/powerpc/kernel/legacy_serial.o: in function `serial_dev_init':
+>> legacy_serial.c:(.init.text+0x46a): undefined reference to `fsl8250_handle_irq'
+>> powerpc-linux-ld: legacy_serial.c:(.init.text+0x472): undefined reference to `fsl8250_handle_irq'
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
