@@ -2,174 +2,129 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8A6C7EE24
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 09:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3DEC7EE2C
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 09:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234982AbjFBJXu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Jun 2023 05:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
+        id S235130AbjFBJ3F (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Jun 2023 05:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234300AbjFBJXL (ORCPT
+        with ESMTP id S234137AbjFBJ20 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Jun 2023 05:23:11 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475AE173B
-        for <linux-serial@vger.kernel.org>; Fri,  2 Jun 2023 02:21:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685697675; x=1717233675;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=8+SqG5yt48nSQj78H2qmhlBVXKEybP7UrVeQiiI+0js=;
-  b=d7ZhteANJVO6Y8OoGYAp7Tx2YZ4hdjHMyKBGqwzbjmNiKlQ3Mi7Ny+tt
-   1cZYWx3DD05P2LD9Kr5v3tzIMVV4sNMBL52wJV7H1BnN/8PxC72cslrvY
-   Kv7jYbT/7VgynxuyqRtMCJUZCpL6RXlxCKRu7WPhDhkJKE0J0bdZhdFrm
-   7BnvKFvkoADwCRJPX0lT2vQCwakopG+veYvX1K3+q0Jt0Bt46heAtEy1T
-   1fdTW96bMcWSYL46eKWIwnoDyx4oLPO6kg/VIyRtdXkDoOiW05emWOySZ
-   Fiii09RVywDiTyLP191anfOHuKDHK9BQwldnoD0c6JP5I/w150FM26kqx
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="358257098"
-X-IronPort-AV: E=Sophos;i="6.00,212,1681196400"; 
-   d="scan'208";a="358257098"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 02:21:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10728"; a="740767214"
-X-IronPort-AV: E=Sophos;i="6.00,212,1681196400"; 
-   d="scan'208";a="740767214"
-Received: from rspatil-mobl3.gar.corp.intel.com ([10.251.208.112])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 02:21:12 -0700
-Date:   Fri, 2 Jun 2023 12:21:05 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>, kernel@pengutronix.de,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2] serial: 8250: Apply FSL workarounds also without
- SERIAL_8250_CONSOLE
-In-Reply-To: <73474ddb-5183-69c8-3943-bc2c62aa13e9@linux.intel.com>
-Message-ID: <cb975bcf-eb5b-a620-880-d0dbef684669@linux.intel.com>
-References: <20230531083230.2702181-1-u.kleine-koenig@pengutronix.de> <1bdec338-6954-7b2f-e8e3-f19f211c4ce3@linux.intel.com> <20230531100443.jeg4q73fz4yx4pi6@pengutronix.de> <9eab900-9387-4db2-3f24-29d4d1dcb411@linux.intel.com> <20230531104010.k2rgnicltwy6wive@pengutronix.de>
- <20230531175126.vqoqa2flhtbboy2t@pengutronix.de> <73474ddb-5183-69c8-3943-bc2c62aa13e9@linux.intel.com>
+        Fri, 2 Jun 2023 05:28:26 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 718981B9;
+        Fri,  2 Jun 2023 02:27:03 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 8E8B78111;
+        Fri,  2 Jun 2023 09:27:02 +0000 (UTC)
+Date:   Fri, 2 Jun 2023 12:27:01 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <20230602092701.GP14287@atomide.com>
+References: <20230525113034.46880-1-tony@atomide.com>
+ <20230602083335.GA181647@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-639012300-1685697674=:1742"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230602083335.GA181647@google.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi,
 
---8323329-639012300-1685697674=:1742
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 1 Jun 2023, Ilpo Järvinen wrote:
-
-> On Wed, 31 May 2023, Uwe Kleine-König wrote:
+* Chen-Yu Tsai <wenst@chromium.org> [230602 08:33]:
+> This patch, in linux-next since 20230601, unfortunately breaks MediaTek
+> based Chromebooks. The kernel hangs during the probe of the serial ports,
+> which use the 8250_mtk driver. This happens even with the subsequent
+> fixes in next-20230602 and on the mailing list:
 > 
-> > Hello Ilpo,
-> > 
-> > On Wed, May 31, 2023 at 12:40:10PM +0200, Uwe Kleine-König wrote:
-> > > On Wed, May 31, 2023 at 01:09:01PM +0300, Ilpo Järvinen wrote:
-> > > > On Wed, 31 May 2023, Uwe Kleine-König wrote:
-> > > > 
-> > > > > On Wed, May 31, 2023 at 12:47:54PM +0300, Ilpo Järvinen wrote:
-> > > > > > On Wed, 31 May 2023, Uwe Kleine-König wrote:
-> > > > > > 
-> > > > > > > The need to handle the FSL variant of 8250 in a special way is also
-> > > > > > > present without console support. So soften the dependency for
-> > > > > > > SERIAL_8250_FSL accordingly.
-> > > > > > > 
-> > > > > > > This issue was identified by Dominik Andreas Schorpp.
-> > > > > > > 
-> > > > > > > To cope for CONFIG_SERIAL_8250=m + CONFIG_SERIAL_8250_FSL=y, 8250_fsl.o
-> > > > > > > must be put in the same compilation unit as 8250_port.o because the
-> > > > > > > latter defines some functions needed in the former and so 8250_fsl.o
-> > > > > > > must not be built-in if 8250_port.o is available in a module.
-> > > > > > > 
-> > > > > > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > > > > > > ---
-> > > > > > > Hello,
-> > > > > > > 
-> > > > > > > (implicit) v1 was already applied by Greg (a0807ca158e0 in tty-testing)
-> > > > > > > but that didn't handle CONFIG_SERIAL_8250=m + CONFIG_SERIAL_8250_FSL=y
-> > > > > > > correctly which was pointed out by the 0-day bot. (Thanks!)
-> > > > > > 
-> > > > > > That would warrant Reported-by (0-day's reports give you the tag).
-> > > > > 
-> > > > > I'd add this tag if I created a commit that fixes the broken commit.
-> > > > > However I understood that if a v2 patch fixes a v1 that was broken, the
-> > > > > tag is not to be added?! I don't feel strong here however, so if people
-> > > > > agree that the tag should be there, I can add it.
-> > > > > 
-> > > > > > > That wasn't a problem before because SERIAL_8250_CONSOLE depends on
-> > > > > > > SERIAL_8250=y.
-> > > > > > > 
-> > > > > > > Having said that I wonder if there are a few more .o files that should
-> > > > > > > better be used with 8250_base-$(CONFIG_SERIAL_8250_XXX) instead of
-> > > > > > > obj-$(CONFIG_SERIAL_8250_XXX).
-> > > > > > > 
-> > > > > > > Best regards
-> > > > > > > Uwe
-> > > > > > > 
-> > > > > > >  drivers/tty/serial/8250/Kconfig  | 2 +-
-> > > > > > >  drivers/tty/serial/8250/Makefile | 2 +-
-> > > > > > >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > > > > > > 
-> > > > > > > diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> > > > > > > index 5313aa31930f..10c09b19c871 100644
-> > > > > > > --- a/drivers/tty/serial/8250/Kconfig
-> > > > > > > +++ b/drivers/tty/serial/8250/Kconfig
-> > > > > > > @@ -378,7 +378,7 @@ config SERIAL_8250_BCM2835AUX
-> > > > > > >  
-> > > > > > >  config SERIAL_8250_FSL
-> > > > > > >  	bool "Freescale 16550 UART support" if COMPILE_TEST && !(PPC || ARM || ARM64)
-> > > > > > > -	depends on SERIAL_8250_CONSOLE
-> > > > > > > +	depends on SERIAL_8250
-> > > > > > 
-> > > > > > Why this cannot simply be:
-> > > > > > 	depends on SERIAL_8250=y
-> > > > > 
-> > > > > This doesn't work, because then the FSL-workarounds are missing if the
-> > > > > 8250 driver is compiled as a module.
-> > > > 
-> > > > How can 8250 driver be a module and fsl still get enabled?
-> > > 
-> > > It works. With my patch applied:
-> > > 
-> > > 	$ make allmodconfig
-> > > 	$ grep -E 'CONFIG_SERIAL_8250(_FSL)?\>' .config
-> > > 	CONFIG_SERIAL_8250=m
-> > > 	CONFIG_SERIAL_8250_FSL=y
-> > > 
-> > > > What I think (not a Kconfig expert for sure) would happen is that 8250_fsl 
-> > > > won't be enabled at all if CONFIG_SERIAL_8250=m because it depends on 
-> > > > SERIAL_8250=y.
-> > > 
-> > > That's not how it seems to be ...
-> > 
-> > If this convinces you that the patch is fine, an ack would be nice as
-> > gregkh signaled that there is some pending discussion he is waiting to
-> > end before applying this patch.
+>     serial: core: Fix probing serial_base_bus devices
+>     serial: core: Don't drop port_mutex in serial_core_remove_one_port
+>     serial: core: Fix error handling for serial_core_ctrl_device_add()
+
+OK thanks for reporting it.
+
+> Without the fixes, the kernel gives "WARNING: bad unlock balance detected!"
+> With the fixes, it just silently hangs. The last messages seen on the
+> (serial) console are:
 > 
-> Ah, so you want to have SERIAL_8250_FSL=y always when SERIAL_8250 is 
-> there. I can't see another way around it besides the moving you made.
+>     Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+>     printk: console [ttyS0] disabled
+>     mt6577-uart 11002000.serial: using DT '/soc/serial@11002000' for 'rs485-term' GPIO lookup
+>     of_get_named_gpiod_flags: can't parse 'rs485-term-gpios' property of node '/soc/serial@11002000[0]'
+>     of_get_named_gpiod_flags: can't parse 'rs485-term-gpio' property of node '/soc/serial@11002000[0]'
+>     mt6577-uart 11002000.serial: using lookup tables for GPIO lookup
+>     mt6577-uart 11002000.serial: No GPIO consumer rs485-term found
+>     mt6577-uart 11002000.serial: using DT '/soc/serial@11002000' for 'rs485-rx-during-tx' GPIO lookup
+>     of_get_named_gpiod_flags: can't parse 'rs485-rx-during-tx-gpios' property of node '/soc/serial@11002000[0]'
+>     of_get_named_gpiod_flags: can't parse 'rs485-rx-during-tx-gpio' property of node '/soc/serial@11002000[0]'
+>     mt6577-uart 11002000.serial: using lookup tables for GPIO lookup
+>     mt6577-uart 11002000.serial: No GPIO consumer rs485-rx-during-tx found
 > 
-> Acked-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> What can we do to help resolve this?
 
-After some more thinking, it looks make allmodconfig is not going to work
-because of this:
+There may be something blocking serial_ctrl and serial_port from
+probing. That was the issue with the arch_initcall() using drivers.
 
-arch/powerpc/kernel/legacy_serial.c:            port->handle_irq = fsl8250_handle_irq;
+Not sure yet what the issue here might be, but the 8250_mtk should be
+fairly similar use case to the 8250_omap driver that I've tested with.
+But unfortunately I don't think I have any 8250_mtk using devices to
+test with.
 
-obj-$(CONFIG_PPC_UDBG_16550)    += legacy_serial.o udbg_16550.o
+The following hack should allow you to maybe see more info on what goes
+wrong and allows adding some debug printk to serial_base_match() for
+example to see if that gets called for mt6577-uart.
 
-config PPC_UDBG_16550
-        bool
+Hmm maybe early_mtk8250_setup() somehow triggers the issue? Not sure why
+early_serial8250_setup() would cause issues here though.
 
+Regards,
+
+Tony
+
+8< -----------------
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -144,7 +144,7 @@ static void __uart_start(struct tty_struct *tty)
+ 		return;
+ 
+ 	port_dev = port->port_dev;
+-
++#if 0
+ 	/* Increment the runtime PM usage count for the active check below */
+ 	err = pm_runtime_get(&port_dev->dev);
+ 	if (err < 0) {
+@@ -161,6 +161,9 @@ static void __uart_start(struct tty_struct *tty)
+ 		port->ops->start_tx(port);
+ 	pm_runtime_mark_last_busy(&port_dev->dev);
+ 	pm_runtime_put_autosuspend(&port_dev->dev);
++#else
++	port->ops->start_tx(port);
++#endif
+ }
+ 
+ static void uart_start(struct tty_struct *tty)
 -- 
- i.
-
---8323329-639012300-1685697674=:1742--
+2.41.0
