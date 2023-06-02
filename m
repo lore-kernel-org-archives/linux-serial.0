@@ -2,79 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 431EDC7EE29
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 10:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDE6C77B7A
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 12:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235153AbjFBKNg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Jun 2023 06:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
+        id S234971AbjFBM7W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Jun 2023 08:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234416AbjFBKNf (ORCPT
+        with ESMTP id S232201AbjFBM7V (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Jun 2023 06:13:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B85C0;
-        Fri,  2 Jun 2023 03:13:34 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1685700812;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M7GzoTaph3PJwwLQgPyik4Eh+bbnZRkPzskpAeL6aSA=;
-        b=GG3G5mL0bgKlxf6U+FJBDL6Q1lUEIKeL4TxsOPB4fSfBkk/fcfVyWWUUtHTLjysXvihtjX
-        dg/Seh5PS7j7QK8kubfn/HKaB7/ZGg32l+FqXnwtp/F2PYanop+GXVgwZaSB6EkgPisrPn
-        ggoMEaq4XMMOL2r2rylrdWLpFiOqzEBJD+mv+6BjNvwaq7B/HZguez5Q5EooMkyH84lBZv
-        14tq4SpYgp3gpUBXRKME+aWk0wr+c912N7Vn4rkCZf0UoVV8TlTC8NMG7Z6UCJViu5Ts2o
-        knwkQycTe/KoOm1C4W6hDbK2YxTF4GgwTOyOwQ4sVhhYA2FZ8QmEQGHOl0OasA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1685700812;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M7GzoTaph3PJwwLQgPyik4Eh+bbnZRkPzskpAeL6aSA=;
-        b=mZtG4RT88sue4AZKYDqVM5VkrPwnXz/sPSOFAK7alYyAi80FpCRuwryq9FZ70KRmumsdmx
-        VsglgIllqcsaEDDA==
-To:     Chen-Yu Tsai <wenst@chromium.org>, Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        =?utf-8?Q?N=C3=ADcolas_F=2E_R=2E_A=2E_Prado?= 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-In-Reply-To: <20230602083335.GA181647@google.com>
-References: <20230525113034.46880-1-tony@atomide.com>
- <20230602083335.GA181647@google.com>
-Date:   Fri, 02 Jun 2023 12:19:28 +0206
-Message-ID: <87a5xii33r.fsf@jogness.linutronix.de>
+        Fri, 2 Jun 2023 08:59:21 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8577B180;
+        Fri,  2 Jun 2023 05:59:20 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id 6a1803df08f44-6260a2522d9so17539346d6.3;
+        Fri, 02 Jun 2023 05:59:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1685710759; x=1688302759;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=L3QUfce8qvCYzZvATTACM5GanFIR9TxGWV5NW5fx1Uc=;
+        b=doJ3dcsc9mWKT8YTAuerxjrr8h3c0tz3RzYoCZP252gI1cbb59iwC1PrSlqWfd+ZLd
+         wu8X1MayospFP4NQJcezwwmUgbwpTuQVGxppnuJl4g9zaZrnl9FL/3bD62qnXWfvHAER
+         ixdYF0QsoJ3YqMDc2KE0DdS0asKF9/SORqCEvBvXt+4lqaNyWBFNY4HoNt41XyLF+H4i
+         CSQJV/I+2eNuFZF5v0EYw7Gbt4PoFNCG+voH2ApX1j9PL+JbjkBd6YgY8RRN+9ZjnUH8
+         cflzCihvBmxoDXFgZuy+AzNp+9jdvO+NnvPTJKuIiimECms6jUxYo2c7BhOGTZD2OjRe
+         YZeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685710759; x=1688302759;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L3QUfce8qvCYzZvATTACM5GanFIR9TxGWV5NW5fx1Uc=;
+        b=SgLEKQTI8T6eV0Pcnx+aCLx/vKv64Kuar04XI3la5wRJM0V6XrZrTtv20OVhHu2sON
+         jwDbqMKXLqOi/Kog/mhze4V/wWMxWQc0++g5XUVShTyQ624unW6C0e02eDvAOHNG7RuE
+         PP9LdSselQskeA2v42TSTNfaUDcQJfzJU4F93w8dunDi/dzeWCoACU2Bfq9dzZFfaT+O
+         IgqrzmljDh/JUyOeljlZnjqR2lspqoMkzTLINMfhxsMFBtKd6hYpeM7K594BmSWrPscR
+         9eT+HilX5XqdFChbzL+4ELjWBlk/qFidBXvTyNhLcuUDnbolNIPN20ev13TgBry7EPtc
+         MTrw==
+X-Gm-Message-State: AC+VfDylYtfpL6gZCQSZxE0EbVhhi3ZJFEOnPY3KWpRnEuiDOHEsoiTb
+        0uqgK7TzCX6eKHaik/x0yo0YRpgvwa5TLiox9USUK3TAXEvX5g==
+X-Google-Smtp-Source: ACHHUZ56t5eDsg4Bk5FefwJatBcex4lr70jUToJngwCOnFYsrPpb472scmS1PBD5ipf40wgvCRRYtHVogx+HNCtfYi8=
+X-Received: by 2002:ad4:5ae4:0:b0:625:aa1a:9384 with SMTP id
+ c4-20020ad45ae4000000b00625aa1a9384mr15516313qvh.64.1685710759620; Fri, 02
+ Jun 2023 05:59:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20230601201844.3739926-1-hugo@hugovil.com> <20230601201844.3739926-6-hugo@hugovil.com>
+ <ZHkN5kEa6yqHdDeL@surfacebook> <20230601204140.3b45c9b97efb36431d058ba7@hugovil.com>
+ <20230601212514.28914aee77ae9a513904ee6b@hugovil.com>
+In-Reply-To: <20230601212514.28914aee77ae9a513904ee6b@hugovil.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 2 Jun 2023 15:58:43 +0300
+Message-ID: <CAHp75VcLNRQyeo4H-auDvk+CxZ0hz+2pysqP3bBgW-uZB_2vPw@mail.gmail.com>
+Subject: Re: [PATCH v6 5/9] serial: sc16is7xx: fix regression with GPIO configuration
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023-06-02, Chen-Yu Tsai <wenst@chromium.org> wrote:
-> This patch, in linux-next since 20230601, unfortunately breaks
-> MediaTek based Chromebooks. The kernel hangs during the probe of the
-> serial ports, which use the 8250_mtk driver.
+On Fri, Jun 2, 2023 at 4:25=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> w=
+rote:
+> On Thu, 1 Jun 2023 20:41:40 -0400
+> Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > On Fri, 2 Jun 2023 00:30:14 +0300
+> > andy.shevchenko@gmail.com wrote:
+> > > Thu, Jun 01, 2023 at 04:18:40PM -0400, Hugo Villeneuve kirjoitti:
 
-Are you sure it is this patch? Have you bisected it?
+...
 
-Unfortunately next-20230601 also brought in a series that added
-spinlocking to the 8250 driver. That may be the issue here instead.
+> > > Maybe positive one?
+> > >     if (mctrl_mask)
+> > >             regmap_update_bits(...);
+> >
+> > I used negative to save on indentation, but it also fits by converting =
+it to positive, so done.
 
-For 8250 bug reports we really need to bisection.
+I understand, but in this case it is slightly more weird to have
+negative conditional and in either case return the value of the local
+variable.
 
-John Ogness
+...
+
+> Greg did not yet respond to my email about the proposed tags, but if the =
+new order of the patches and the stable tags I added seems ok to you, I wil=
+l resend V7. It will then probably easier for Greg to comment directly on V=
+7 for the stable tags (Cc:).
+
+They look fine to me, but Greg is the maintainer, he decides if it's
+really okay or not.
+
+--=20
+With Best Regards,
+Andy Shevchenko
