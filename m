@@ -2,84 +2,190 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA54C7EE24
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 07:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9338BC7EE2A
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 07:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbjFBHXB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Jun 2023 03:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37950 "EHLO
+        id S233914AbjFBHnq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Jun 2023 03:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234295AbjFBHWv (ORCPT
+        with ESMTP id S234278AbjFBHna (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Jun 2023 03:22:51 -0400
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934571BF;
-        Fri,  2 Jun 2023 00:22:43 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-96fe88cd2fcso238388466b.1;
-        Fri, 02 Jun 2023 00:22:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685690562; x=1688282562;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cvroderYS9TgB2JM1PlwHS0YOttaKTEpx7FpQU4spVI=;
-        b=JY2/i6xFkSKKjvWppwLHx6q4J2uHcshTjcw/lTO0X5vsvo0IM1qeFu7I8oqP/U0Fue
-         UgVIrxV9E9z1x0vXdZVqIolDmXS+zPd3RnYVXDs3QnomkIua6/76fqSaZQOSxIL7hdau
-         j8eUXwfiIJg1YcTz/5ZzSgeSg5F/iEu4URPAeOhLY5NIt6wuPifWQA8i4YJF+dxJUmnj
-         5OJet6VpHPqc5p2nnhB9sygQDXXQfzxiWjd7JbbVlhdKEZ2ZqiMI/NPdOO/aKlZ4X4n6
-         hooLqBJbQCnemWdLaxSr3TX4gC4J32V3nClYRXeHl35d1mJfPCKhahiKPeIGaJYjGPZx
-         O1tQ==
-X-Gm-Message-State: AC+VfDzXzmqAg88Fmm1/LpLajhXOw97QDJ8q+mZ0MC1Brgv536QOb5ZM
-        HCkDCtpamAOuPfhuIYjCoUFaHji/f2Y=
-X-Google-Smtp-Source: ACHHUZ4xp7HLi8GSIxvvkDX8Q2N4j2oKbd61KMy4vtNxsXlAbAOwHmSHe37NYzsznoM8RZH0eFr6Vg==
-X-Received: by 2002:a17:907:2d20:b0:96a:57fe:3bfb with SMTP id gs32-20020a1709072d2000b0096a57fe3bfbmr9664487ejc.26.1685690561764;
-        Fri, 02 Jun 2023 00:22:41 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id qh8-20020a170906eca800b009600ce4fb53sm411639ejb.37.2023.06.02.00.22.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Jun 2023 00:22:41 -0700 (PDT)
-Message-ID: <9fad0236-eb21-aade-16e5-23d71da557c3@kernel.org>
-Date:   Fri, 2 Jun 2023 09:22:39 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.2
-Subject: Re: [PATCH v2 1/1] serial: core: Fix error handling for
- serial_core_ctrl_device_add()
-Content-Language: en-US
-To:     Tony Lindgren <tony@atomide.com>,
+        Fri, 2 Jun 2023 03:43:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF341726
+        for <linux-serial@vger.kernel.org>; Fri,  2 Jun 2023 00:42:49 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q4zQc-0007gF-PU; Fri, 02 Jun 2023 09:42:30 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q4zQR-004XFY-Rv; Fri, 02 Jun 2023 09:42:19 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q4zQR-00AOmZ-8f; Fri, 02 Jun 2023 09:42:19 +0200
+Date:   Fri, 2 Jun 2023 09:42:19 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230602070007.59268-1-tony@atomide.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20230602070007.59268-1-tony@atomide.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linuxppc-dev@lists.ozlabs.org,
+        Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [tty:tty-testing 19/19] legacy_serial.c:undefined reference to
+ `fsl8250_handle_irq'
+Message-ID: <20230602074219.srlgpaaypewd2q5s@pengutronix.de>
+References: <202306021041.qbRZZenE-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ve3roce4gpxozldk"
+Content-Disposition: inline
+In-Reply-To: <202306021041.qbRZZenE-lkp@intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02. 06. 23, 9:00, Tony Lindgren wrote:
-> Checking for NULL is incorrect as serial_base_ctrl_add() uses ERR_PTR().
-> 
-> Let's also pass any returned error along, there's no reason to translate
-> all errors to -ENODEV.
-> 
-> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+--ve3roce4gpxozldk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-thanks,
--- 
-js
-suse labs
+Hello,
 
+On Fri, Jun 02, 2023 at 10:27:52AM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tt=
+y-testing
+> head:   3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3
+> commit: 3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3 [19/19] serial: 8250: Ap=
+ply FSL workarounds also without SERIAL_8250_CONSOLE
+> config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/202=
+30602/202306021041.qbRZZenE-lkp@intel.com/config)
+> compiler: powerpc-linux-gcc (GCC) 12.3.0
+> reproduce (this is a W=3D1 build):
+>         mkdir -p ~/bin
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbi=
+n/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/=
+commit/?id=3D3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3
+>         git remote add tty https://git.kernel.org/pub/scm/linux/kernel/gi=
+t/gregkh/tty.git
+>         git fetch --no-tags tty tty-testing
+>         git checkout 3a3d09a9ee0ef5b417d6bdf8486a4da2bef06dc3
+
+For the new readers, this is about
+
+	https://lore.kernel.org/r/20230531083230.2702181-1-u.kleine-koenig@pengutr=
+onix.de
+
+Greg already dropped it from his tty-testing tree. Thanks and sorry for
+this second breakage. :-\
+
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-12.3.0 ~/bin/ma=
+ke.cross W=3D1 O=3Dbuild_dir ARCH=3Dpowerpc olddefconfig
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-12.3.0 ~/bin/ma=
+ke.cross W=3D1 O=3Dbuild_dir ARCH=3Dpowerpc SHELL=3D/bin/bash
+>=20
+> If you fix the issue, kindly add following tag where applicable
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes: https://lore.kernel.org/oe-kbuild-all/202306021041.qbRZZenE-lkp=
+@intel.com/
+>=20
+> All errors (new ones prefixed by >>):
+>=20
+>    powerpc-linux-ld: arch/powerpc/kernel/legacy_serial.o: in function `se=
+rial_dev_init':
+> >> legacy_serial.c:(.init.text+0x46a): undefined reference to `fsl8250_ha=
+ndle_irq'
+> >> powerpc-linux-ld: legacy_serial.c:(.init.text+0x472): undefined refere=
+nce to `fsl8250_handle_irq'
+
+Urgs, this is ugly. Arch code uses a function from the 8250 driver
+introduced in commit 9deaa53ac7fa ("serial: add irq handler for
+Freescale 16550 errata.").
+
+So the problematic case is SERIAL_8250=3Dm which results in
+fsl8250_handle_irq being in a module.
+
+diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/lega=
+cy_serial.c
+index c9ad12461d44..ad9f15902abb 100644
+--- a/arch/powerpc/kernel/legacy_serial.c
++++ b/arch/powerpc/kernel/legacy_serial.c
+@@ -510,8 +510,12 @@ static void __init fixup_port_irq(int index,
+=20
+ #ifdef CONFIG_SERIAL_8250_FSL
+ 	if (of_device_is_compatible(np, "fsl,ns16550")) {
+-		port->handle_irq =3D fsl8250_handle_irq;
+-		port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
++		if (IS_REACHABLE(CONFIG_SERIAL_8250)) {
++			port->handle_irq =3D fsl8250_handle_irq;
++			port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
++		} else {
++			pr_warn("Not activating fsl workarounds for 8250 port %d\n", index);
++		}
+ 	}
+ #endif
+ }
+
+would work. The warning would trigger in cases where before the port
+just silently used the default irq handler and so the FSL bug isn't
+workarounded[1]. If the warning isn't wanted, it could be simplified to:
+
+#if IS_REACHABLE(CONFIG_SERIAL_8250)
+	if (of_device_is_compatible(np, "fsl,ns16550")) {
+		...
+	}
+#endif
+
+But I wonder if in the presence of
+
+        if (IS_ENABLED(CONFIG_SERIAL_8250_FSL) &&
+            (of_device_is_compatible(np, "fsl,ns16550") ||
+             of_device_is_compatible(np, "fsl,16550-FIFO64"))) {
+                port->handle_irq =3D fsl8250_handle_irq;
+                port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
+        }
+
+in of_platform_serial_setup() the code in
+arch/powerpc/kernel/legacy_serial.c can just be dropped instead?!
+
+Best regards
+Uwe
+
+[1] Of course this won't happen because the help text of SERIAL_8250
+clearly indicates that =3Dm isn't a safe choice in the presence of
+"non-standard serial ports". So the issue is purly theoretic.
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--ve3roce4gpxozldk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmR5nVoACgkQj4D7WH0S
+/k45Owf/RQIZ/tkvEslJTH7fcdK9qycxel/CpGP0wKndii5ft99uuONt4CoX3vVc
+gekWe0d4PQmTPNLmomQ0H6QiHYtI3q/+w+LqsxRubu3woNEQ2zRv5pvBMA5itBam
+K0rWT+8VZ+HcEpR/ZWB9utA1+d6J7fcFcISFcrDDIQDDGsxAiWAhFf6u19deg1w1
+mcUp/NorCRpNwl9ylq/1uyQ3XXeVQ1j8tgDReWvfTS6dVGaYUz9KKFgQpVFV39i3
+f3BbY03AkWojwI/NfHjsnqzr/pwLOzBJiTcMDdqukpp2DR6hcyuJ7DHbsHOELJkw
+YB/4rUr7yMxKmahchJYwjLLZYVw3bA==
+=OxiR
+-----END PGP SIGNATURE-----
+
+--ve3roce4gpxozldk--
