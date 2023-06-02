@@ -2,98 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF79C77B7A
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 14:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE76C77B7A
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Jun 2023 15:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236298AbjFBO5B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Jun 2023 10:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
+        id S236584AbjFBP0n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Jun 2023 11:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236152AbjFBO45 (ORCPT
+        with ESMTP id S235715AbjFBP0m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Jun 2023 10:56:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0A6123;
-        Fri,  2 Jun 2023 07:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685717808; x=1717253808;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Eyv4owJ+a1r3cmbMtjO6sLOlcMuL3iqL/tf7QEiAlrg=;
-  b=H/7uCIvgOl/ktEEs0YFiUQ/mES6Ytk46ABAlh3R7Sic6c06ihEgzbXqE
-   CXTAfukqQNJs/lVjOgy9o24YIcuPdmcuNQQ8m8DPSTzn+P88U081Qlex2
-   2yfZFVK3G8pSGfBC6a4sKruJE1ugrlCm7n9PIrZrc65z9rZ+6iJLNRqBJ
-   jsGZpjt14hPAomHDQ+fDJiIph5kTdqOjDBQc5mClcK+Jgbwm00Cd9xy0t
-   p6JHI1zVgU9EGQIip/WQE3rIAuoArvKKX3u0lgT+zOibHhk+FQ5hgAltj
-   YUKED56TftBi+KFeHMVP/Ljh/w5X0cpbILaZmAGwLCMUS2kfLC7l7Rx4J
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="354736440"
-X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
-   d="scan'208";a="354736440"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 07:56:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10729"; a="852185973"
-X-IronPort-AV: E=Sophos;i="6.00,213,1681196400"; 
-   d="scan'208";a="852185973"
-Received: from rspatil-mobl3.gar.corp.intel.com ([10.251.208.112])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2023 07:56:46 -0700
-Date:   Fri, 2 Jun 2023 17:56:43 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Bernhard Seibold <mail@bernhard-seibold.de>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] serial: lantiq: add missing interrupt ack
-In-Reply-To: <20230602133029.546-1-mail@bernhard-seibold.de>
-Message-ID: <de21c62d-c8a-ccbd-abbe-45bd1c12847@linux.intel.com>
-References: <20230602133029.546-1-mail@bernhard-seibold.de>
+        Fri, 2 Jun 2023 11:26:42 -0400
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F4D1BB;
+        Fri,  2 Jun 2023 08:26:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=vlvSfJ7BB6pGJBxrOhJ5IMJLf95UIyksZ/69U1YnCu4=; b=bKChWXh4jkp3ScQwcUn5nZ+CEx
+        OVkmEl5LRViMYgTLztidHjR/jn72t/IgFwBltYly5wbMs5ruLeb5Fk8lNHwzqFBCnbZPTrfHEfL7J
+        J8ilXzfm69XjobFU+SWs/xoI3luVcwY2LZKai7CQjpKaTF59Byv5pfIDKczayLuqIucg=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:50948 helo=pettiford.lan)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1q56ff-0008Hq-Bd; Fri, 02 Jun 2023 11:26:31 -0400
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hugo@hugovil.com,
+        linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Date:   Fri,  2 Jun 2023 11:26:17 -0400
+Message-Id: <20230602152626.284324-2-hugo@hugovil.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230602152626.284324-1-hugo@hugovil.com>
+References: <20230602152626.284324-1-hugo@hugovil.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-304693598-1685717807=:1742"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: [PATCH v7 1/9] serial: sc16is7xx: fix broken port 0 uart init
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
---8323329-304693598-1685717807=:1742
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+The sc16is7xx_config_rs485() function is called only for the second
+port (index 1, channel B), causing initialization problems for the
+first port.
 
-On Fri, 2 Jun 2023, Bernhard Seibold wrote:
+For the sc16is7xx driver, port->membase and port->mapbase are not set,
+and their default values are 0. And we set port->iobase to the device
+index. This means that when the first device is registered using the
+uart_add_one_port() function, the following values will be in the port
+structure:
+    port->membase = 0
+    port->mapbase = 0
+    port->iobase  = 0
 
-> Currently, the error interrupt is never acknowledged, so once active it
-> will stay active indefinitely, causing the handler to be called in an
-> infinite loop.
-> 
-> Fixes: 2f0fc4159a6a ("SERIAL: Lantiq: Add driver for MIPS Lantiq SOCs.")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Bernhard Seibold <mail@bernhard-seibold.de>
-> ---
->  drivers/tty/serial/lantiq.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-> index a58e9277dfad..f1387f1024db 100644
-> --- a/drivers/tty/serial/lantiq.c
-> +++ b/drivers/tty/serial/lantiq.c
-> @@ -250,6 +250,7 @@ lqasc_err_int(int irq, void *_port)
->  	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
->  
->  	spin_lock_irqsave(&ltq_port->lock, flags);
-> +	__raw_writel(ASC_IRNCR_EIR, port->membase + LTQ_ASC_IRNCR);
->  	/* clear any pending interrupts */
->  	asc_update_bits(0, ASCWHBSTATE_CLRPE | ASCWHBSTATE_CLRFE |
->  		ASCWHBSTATE_CLRROE, port->membase + LTQ_ASC_WHBSTATE);
+Therefore, the function uart_configure_port() in serial_core.c will
+exit early because of the following check:
+	/*
+	 * If there isn't a port here, don't do anything further.
+	 */
+	if (!port->iobase && !port->mapbase && !port->membase)
+		return;
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Typically, I2C and SPI drivers do not set port->membase and
+port->mapbase.
 
-This has been there since the beginning, it is a bit odd if nobody has hit 
-this before now.
+The max310x driver sets port->membase to ~0 (all ones). By
+implementing the same change in this driver, uart_configure_port() is
+now correctly executed for all ports.
 
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc: <stable@vger.kernel.org> # 6.1.x
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Reviewed-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index abad091baeea..faa51a58671f 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1436,6 +1436,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
+ 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+ 		s->p[i].port.iobase	= i;
++		s->p[i].port.membase	= (void __iomem *)~0;
+ 		s->p[i].port.iotype	= UPIO_PORT;
+ 		s->p[i].port.uartclk	= freq;
+ 		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
 -- 
- i.
+2.30.2
 
---8323329-304693598-1685717807=:1742--
