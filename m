@@ -2,97 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0787C77B73
-	for <linux-serial@archiver.kernel.org>; Sun,  4 Jun 2023 11:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E73C5C77B73
+	for <linux-serial@archiver.kernel.org>; Sun,  4 Jun 2023 12:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231288AbjFDL6K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 4 Jun 2023 07:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
+        id S230354AbjFDM4j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 4 Jun 2023 08:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbjFDL6J (ORCPT
+        with ESMTP id S229522AbjFDM4i (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 4 Jun 2023 07:58:09 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE14A4;
-        Sun,  4 Jun 2023 04:58:08 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id d75a77b69052e-3f7f864525fso41959461cf.1;
-        Sun, 04 Jun 2023 04:58:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685879888; x=1688471888;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T18QKAipN8vW8fTZCSkrcFHiXgR2OFXGMISa9G5pUdU=;
-        b=Tf5/QIh10fPABekvmYtfjVYVrCHUeFdeAJhYChgKRxDpBZaBGDVaUTYjZYbelx6gyY
-         /GubRiLI2i04OlgJ7x4oFquj6ehS926hjMqKCij95031EwHkBTfdje0BV2+rwUsVLEun
-         yyXgXWWCPZ8mlTRprYLzr7fGkQcj6SOrF6gj6CEKT9kqynhljWotO9SRlN4dOLRPixJT
-         Dv7AvdmKtTtXU6B3WCtvQ1Iz3MDxG6ghQ6898AmXEYH0LoDY8I41YD3uClKLo8fvpPrK
-         LjRrn1YkteeW/9dnkxipeb0SQgW0QfYeil4VB4wgsY0Ha4GwlOynpmy0xrrY/ahpvGOG
-         HX1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685879888; x=1688471888;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T18QKAipN8vW8fTZCSkrcFHiXgR2OFXGMISa9G5pUdU=;
-        b=URJjoCZZZZRYMX+nEqchjTJROO9rrMKRlH6YSb7/oHk5anQeneQqCMidZ4G3EbDFXc
-         ZalxSwuLcGC1WNEMmRlbF7yqhKpu6IUy81omma+gm4iQhsyGyGOJiMWcOzbhXPJw/ToC
-         0m8bcXm2LP213Hf5cFPuy9KH5h2h5TWJNfieVTFAJ6XTjRjDKahudAFSTUx5iJhfHEdB
-         FeBKfLhMjQZ2cQ5nmqKz5BVK8cDmbKXC9KY+3VMpizw2ayW61OFxelURZBAWnuKG+S73
-         u5VwYG5ZBnuuCnON4U/pZr0PXYsYtg5xD70xDMq4gL65lZuPP9Uaf8wd+ikuKHVd6EIv
-         nlrQ==
-X-Gm-Message-State: AC+VfDxYngUo3KFJVtRU33UHLLBhqiT7Q+J/3e+G9Hqv1Nl/V4TUOg7b
-        7kKeFor1s+7eGql+5NJ24FfjwIIWu3iRuo5qAtU=
-X-Google-Smtp-Source: ACHHUZ6fLvXz6Td/lh8jNS6ZNkXReU+YUmxjbGH4qHdHOUzIZfT7IJkWjTozo2wMAONw1IdmQ7ka+PV9zVx13/qOT+c=
-X-Received: by 2002:a05:622a:291:b0:3f8:698b:34a3 with SMTP id
- z17-20020a05622a029100b003f8698b34a3mr3555140qtw.67.1685879887741; Sun, 04
- Jun 2023 04:58:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230602152626.284324-1-hugo@hugovil.com> <20230602152626.284324-6-hugo@hugovil.com>
- <2023060454-cotton-paramount-e33e@gregkh>
-In-Reply-To: <2023060454-cotton-paramount-e33e@gregkh>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 4 Jun 2023 14:57:31 +0300
-Message-ID: <CAHp75Ve6W-hcB4YAeKukgv-uOEzBY7Tx5Sdf3doTRYKzNPcVGw@mail.gmail.com>
-Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO configuration
+        Sun, 4 Jun 2023 08:56:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002ECA3;
+        Sun,  4 Jun 2023 05:56:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C874612E6;
+        Sun,  4 Jun 2023 12:56:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EA047C433D2;
+        Sun,  4 Jun 2023 12:56:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1685883397;
+        bh=tSS9/K6Ccz2DHeltrRRHIjFPsh19TKM3/bK2aJy3b9c=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=XbArey0fuSpqRsrwgEy2gILYmkSIzV06XtuG7tqtbRrfTGaHn3BSL5G5+JXpr4Gcn
+         Af/U4m7Ifx6kKFHvfE9RS5o+fFfgDFPPeaN4WkUNZgzkKe0KVJS3YR9SZy2WcmbwQM
+         UwysVGuNlniQEfuEKKN5a5meHBmve+LIwp0FMKuF+79u1o7/asSGUgvj7d+k5cuBgL
+         itudFt6BfP4m+vVcz3mXVMDRx+msvO3hW3849DQU0mkoD2DOWdyFu3j6azUKeB/7Hx
+         wwkUCiomfpDS+ChHFs/OiEsHRVMdJMpeI942eVktxyb6NNXuIQF9BYEe/+bRvCXXOD
+         G5ZB6fOu9J1Sw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C84C0E52C02;
+        Sun,  4 Jun 2023 12:56:36 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.4-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <ZHxFm2rPU9WaxXbL@kroah.com>
+References: <ZHxFm2rPU9WaxXbL@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZHxFm2rPU9WaxXbL@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc5
+X-PR-Tracked-Commit-Id: 403e97d6ab2cb6fd0ac1ff968cd7b691771f1613
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 12c2f77b32b5de3f5cc4a9ae2eb2b1f68f86df31
+Message-Id: <168588339670.18655.14209069182389147026.pr-tracker-bot@kernel.org>
+Date:   Sun, 04 Jun 2023 12:56:36 +0000
 To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hugo Villeneuve <hugo@hugovil.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jun 4, 2023 at 10:47=E2=80=AFAM Greg KH <gregkh@linuxfoundation.org=
-> wrote:
-> On Fri, Jun 02, 2023 at 11:26:21AM -0400, Hugo Villeneuve wrote:
+The pull request you sent on Sun, 4 Jun 2023 10:04:43 +0200:
 
-...
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc5
 
-> > +static u8 sc16is7xx_setup_mctrl_ports(struct device *dev)
->
-> This returns what, mctrl?  If so, please document that, it doesn't look
-> obvious.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/12c2f77b32b5de3f5cc4a9ae2eb2b1f68f86df31
 
-Good suggestion. Because I also stumbled over the returned type.
+Thank you!
 
->  And as the kernel test robot reported, you do nothing with the
-> return value so why compute it?
-
-It seems that the entire function and respective call has to be moved
-under #ifdef CONFIG_GPIOLIB.
-
-> And you have a real port here, no need to pass in a "raw" struct device,
-> right?
-
-
---=20
-With Best Regards,
-Andy Shevchenko
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
