@@ -2,91 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D234C77B73
-	for <linux-serial@archiver.kernel.org>; Sun,  4 Jun 2023 08:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0787C77B73
+	for <linux-serial@archiver.kernel.org>; Sun,  4 Jun 2023 11:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230475AbjFDIcr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 4 Jun 2023 04:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S231288AbjFDL6K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 4 Jun 2023 07:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbjFDIcr (ORCPT
+        with ESMTP id S229879AbjFDL6J (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 4 Jun 2023 04:32:47 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E63DA;
-        Sun,  4 Jun 2023 01:32:45 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 5b1f17b1804b1-3f7353993cbso4792675e9.0;
-        Sun, 04 Jun 2023 01:32:45 -0700 (PDT)
+        Sun, 4 Jun 2023 07:58:09 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE14A4;
+        Sun,  4 Jun 2023 04:58:08 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id d75a77b69052e-3f7f864525fso41959461cf.1;
+        Sun, 04 Jun 2023 04:58:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685867564; x=1688459564;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hoNSr+a8hKeak/jlvIJQdpZkUkH6J7s10yAW9PEDstY=;
-        b=pNj3Oyg+/a18FAg4qCfrZlPrEdtNVXSOpymnHw+UFQB5bgOKFCv/+OCZA92njKoeF6
-         +96kOqySqt6TrFNnIgeXgo5N/bcZf+dnoZNu2E4qbTJFp/iJUXK/hVd1d0Pk6eIIXYxS
-         KFBtC3EMnY8eTOgtau+cvFnr+Qwt/YtXNrv0NmoAONZh52YCr4kIoOKQVhXFYeZYzl1N
-         fL1sQZu+nn/zpeh7mN7VzUYxCs4w6krjc1xxC/HvISxOPDu07ShsBhHC+Jcp08WeYXzk
-         qTA+6yGqnm/6ARoYGMlyR8ClohjVk64R6dkh1CekouBdneJmNgb9th4kbzW7qHWIylKu
-         cJfA==
+        d=gmail.com; s=20221208; t=1685879888; x=1688471888;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T18QKAipN8vW8fTZCSkrcFHiXgR2OFXGMISa9G5pUdU=;
+        b=Tf5/QIh10fPABekvmYtfjVYVrCHUeFdeAJhYChgKRxDpBZaBGDVaUTYjZYbelx6gyY
+         /GubRiLI2i04OlgJ7x4oFquj6ehS926hjMqKCij95031EwHkBTfdje0BV2+rwUsVLEun
+         yyXgXWWCPZ8mlTRprYLzr7fGkQcj6SOrF6gj6CEKT9kqynhljWotO9SRlN4dOLRPixJT
+         Dv7AvdmKtTtXU6B3WCtvQ1Iz3MDxG6ghQ6898AmXEYH0LoDY8I41YD3uClKLo8fvpPrK
+         LjRrn1YkteeW/9dnkxipeb0SQgW0QfYeil4VB4wgsY0Ha4GwlOynpmy0xrrY/ahpvGOG
+         HX1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685867564; x=1688459564;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hoNSr+a8hKeak/jlvIJQdpZkUkH6J7s10yAW9PEDstY=;
-        b=e/VH/UonSiCiVfXEKf44VoRcnnD93hkLixr0YMDEp619/Ph02ZjnLX6KRNoT7u4BsJ
-         +F5Z3ktDjFRGaPDcj9c5rkpZXzy5YdaapjcC85QmHzJWbmpOvPiogXBn1llTwDv5rDVV
-         hCyMIlpsXolk0FqdVnZSuM6ql1HgUElaKMNtIDiz+d6YlKy7+syEl6RA3ravrIhXyghh
-         t3CJUCAy/xSAituf3Rn03qkdExFpZr1zU95kJxBZfGU8AvIALbIyxvsvWJ8UeLD8ennN
-         MSgWx1DicQzK+EMtZaMAqd3yXT5xkCOp0EPowJQde+TJk6uDcELMN4J54tfgJ31yd8Qf
-         DExw==
-X-Gm-Message-State: AC+VfDzef6eEUKF3ek/6o7+VlGVqq0BvtGNUicH3qzqQEhQWIh7PMv2R
-        yjSIxIs+UicMQpSPX/0fAvE=
-X-Google-Smtp-Source: ACHHUZ7hlAQTqglbbeUTEkcdqQMatfDQIzDzIU2717+u3LLOMIUrwME1wrk1VRzF4edNoByT7MCRzw==
-X-Received: by 2002:a05:600c:c0c:b0:3f6:11e2:b971 with SMTP id fm12-20020a05600c0c0c00b003f611e2b971mr5155835wmb.20.1685867563427;
-        Sun, 04 Jun 2023 01:32:43 -0700 (PDT)
-Received: from localhost ([2a01:e0a:32f:1f0:ae0b:3bc8:c743:b2d8])
-        by smtp.gmail.com with ESMTPSA id n11-20020a7bcbcb000000b003f60d0eef36sm10762188wmi.48.2023.06.04.01.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jun 2023 01:32:42 -0700 (PDT)
-From:   Raphael Gallais-Pou <rgallaispou@gmail.com>
-To:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: st-asc: fix typo in property name
-Date:   Sun,  4 Jun 2023 10:35:58 +0200
-Message-Id: <20230604083558.16661-1-rgallaispou@gmail.com>
-X-Mailer: git-send-email 2.40.1
+        d=1e100.net; s=20221208; t=1685879888; x=1688471888;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T18QKAipN8vW8fTZCSkrcFHiXgR2OFXGMISa9G5pUdU=;
+        b=URJjoCZZZZRYMX+nEqchjTJROO9rrMKRlH6YSb7/oHk5anQeneQqCMidZ4G3EbDFXc
+         ZalxSwuLcGC1WNEMmRlbF7yqhKpu6IUy81omma+gm4iQhsyGyGOJiMWcOzbhXPJw/ToC
+         0m8bcXm2LP213Hf5cFPuy9KH5h2h5TWJNfieVTFAJ6XTjRjDKahudAFSTUx5iJhfHEdB
+         FeBKfLhMjQZ2cQ5nmqKz5BVK8cDmbKXC9KY+3VMpizw2ayW61OFxelURZBAWnuKG+S73
+         u5VwYG5ZBnuuCnON4U/pZr0PXYsYtg5xD70xDMq4gL65lZuPP9Uaf8wd+ikuKHVd6EIv
+         nlrQ==
+X-Gm-Message-State: AC+VfDxYngUo3KFJVtRU33UHLLBhqiT7Q+J/3e+G9Hqv1Nl/V4TUOg7b
+        7kKeFor1s+7eGql+5NJ24FfjwIIWu3iRuo5qAtU=
+X-Google-Smtp-Source: ACHHUZ6fLvXz6Td/lh8jNS6ZNkXReU+YUmxjbGH4qHdHOUzIZfT7IJkWjTozo2wMAONw1IdmQ7ka+PV9zVx13/qOT+c=
+X-Received: by 2002:a05:622a:291:b0:3f8:698b:34a3 with SMTP id
+ z17-20020a05622a029100b003f8698b34a3mr3555140qtw.67.1685879887741; Sun, 04
+ Jun 2023 04:58:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230602152626.284324-1-hugo@hugovil.com> <20230602152626.284324-6-hugo@hugovil.com>
+ <2023060454-cotton-paramount-e33e@gregkh>
+In-Reply-To: <2023060454-cotton-paramount-e33e@gregkh>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 4 Jun 2023 14:57:31 +0300
+Message-ID: <CAHp75Ve6W-hcB4YAeKukgv-uOEzBY7Tx5Sdf3doTRYKzNPcVGw@mail.gmail.com>
+Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO configuration
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Hugo Villeneuve <hugo@hugovil.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Changes the property name read in the driver according to the YAML.
-According to device-tree documentation, property names should not
-include underscores.
+On Sun, Jun 4, 2023 at 10:47=E2=80=AFAM Greg KH <gregkh@linuxfoundation.org=
+> wrote:
+> On Fri, Jun 02, 2023 at 11:26:21AM -0400, Hugo Villeneuve wrote:
 
-Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
----
- drivers/tty/serial/st-asc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+...
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 5215e6910f68..6ef99a037a9b 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -754,7 +754,7 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
- 
- 	asc_ports[id].hw_flow_control = of_property_read_bool(np,
- 							"uart-has-rtscts");
--	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
-+	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force-m1");
- 	asc_ports[id].port.line = id;
- 	asc_ports[id].rts = NULL;
- 
--- 
-2.40.1
+> > +static u8 sc16is7xx_setup_mctrl_ports(struct device *dev)
+>
+> This returns what, mctrl?  If so, please document that, it doesn't look
+> obvious.
 
+Good suggestion. Because I also stumbled over the returned type.
+
+>  And as the kernel test robot reported, you do nothing with the
+> return value so why compute it?
+
+It seems that the entire function and respective call has to be moved
+under #ifdef CONFIG_GPIOLIB.
+
+> And you have a real port here, no need to pass in a "raw" struct device,
+> right?
+
+
+--=20
+With Best Regards,
+Andy Shevchenko
