@@ -2,156 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D551FC77B73
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 13:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E5FC7EE23
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 13:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233720AbjFENB6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jun 2023 09:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
+        id S233517AbjFENKw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jun 2023 09:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233734AbjFENBq (ORCPT
+        with ESMTP id S233927AbjFENJm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Jun 2023 09:01:46 -0400
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00713103
-        for <linux-serial@vger.kernel.org>; Mon,  5 Jun 2023 06:01:41 -0700 (PDT)
-Received: by mail-vs1-xe31.google.com with SMTP id ada2fe7eead31-43b28754c88so2324359137.1
-        for <linux-serial@vger.kernel.org>; Mon, 05 Jun 2023 06:01:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1685970101; x=1688562101;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cO38/BvQLHAQ87G9qM9lbTJ3ImPZclrAKat+fZGulg8=;
-        b=Pvm80JLLbw9204UFhZpF1p4N3+QTzv9VaQY6S9dISSHHxWvVTn+6Tp9q8CBQIwHNRJ
-         YARczhIEuxIv1KtQTEa4vcAebIMdGhrwywm8IsdbQ+R9Fmi6ivofNqX/RyPSQzp3VX7Q
-         PMSBt1Jw0hL48gQ1WNI755anzsZDG7z93nhVs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685970101; x=1688562101;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cO38/BvQLHAQ87G9qM9lbTJ3ImPZclrAKat+fZGulg8=;
-        b=hID6NAr56473nZxDs7RZZIx7sltxy3QMZZsNYdUI5s0YPPL+dcLdeBdVdr6yWbEPSJ
-         oT5aGMKP3AnVFn9hwzjiRbVVWW9PQ1pYpCbc+qeUC6ZTqBJqmVsBPB+WhTTai2actdGW
-         PZt4FU+w5V2jk2JSprO36s888iN7oOKVtURcr8OSZcG//bQxSJhLkVI/W134BYJ62v2S
-         HskmcJOKyHH9yeTJleIDtaZ8DHyd9J3SGafAIzxkxa37w3sQVWDWLAZXiU2FtElsaAcj
-         ZhEjUQWE9lYAJQw0O9TfHKw1iyU1hs0U8sHPAGcWGMo0OghopdYU68wRrHL2ZX+GWfmG
-         WxJQ==
-X-Gm-Message-State: AC+VfDwGCAWa94c1O5DiPqUNWH+bDIxY9UR3zlHaVgxOcxlVFBFaQaSc
-        ZF17xijvUSPeaFOl7q2MQtX+Ge/bhYVIPmgtDSIy+w==
-X-Google-Smtp-Source: ACHHUZ6YZzW+yZOZuWvTCNoj/dgyh96LyT2DXgLsptRLSpDmYKbQOI/iNYJ3d5WCgu88E0xn8iIVW6pMblwAwmUBM28=
-X-Received: by 2002:a67:bd18:0:b0:43b:2c84:1fca with SMTP id
- y24-20020a67bd18000000b0043b2c841fcamr3134845vsq.5.1685970100956; Mon, 05 Jun
- 2023 06:01:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230525113034.46880-1-tony@atomide.com> <20230602083335.GA181647@google.com>
- <87a5xii33r.fsf@jogness.linutronix.de> <20230603054139.GR14287@atomide.com>
- <20230603063533.GS14287@atomide.com> <20230605061511.GW14287@atomide.com>
- <CAGXv+5Fbx7eTxP0ep6DV+jyronAWxYvu2M-g=MjHGRhjSXUc=w@mail.gmail.com> <20230605122447.GY14287@atomide.com>
-In-Reply-To: <20230605122447.GY14287@atomide.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Mon, 5 Jun 2023 21:01:29 +0800
-Message-ID: <CAGXv+5HwL+R5QpO3pHGQd9qAxu2pCMDjYvdni1HjiC8eEE38mg@mail.gmail.com>
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
+        Mon, 5 Jun 2023 09:09:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F685A6
+        for <linux-serial@vger.kernel.org>; Mon,  5 Jun 2023 06:09:37 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q69xM-0001WI-KH; Mon, 05 Jun 2023 15:09:08 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q69xF-005HiM-PH; Mon, 05 Jun 2023 15:09:01 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q69xF-00BOyL-3v; Mon, 05 Jun 2023 15:09:01 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     kernel@pengutronix.de, Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Rob Herring <robh@kernel.org>, Helge Deller <deller@gmx.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>,
+        Liang He <windhl@126.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/2] powerpc/legacy_serial: Warn about 8250 devices operated without active FSL workarounds
+Date:   Mon,  5 Jun 2023 15:08:56 +0200
+Message-Id: <20230605130857.85543-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230605130857.85543-1-u.kleine-koenig@pengutronix.de>
+References: <20230605130857.85543-1-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1676; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=OtOaPvHV+suEiSPknSI11DIRzLXr23I/hyoeM+NczkQ=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkfd5llrJCU4sjBgMwgCCNdyx9Kyzm5rtUF5+sf RdKQxmUQbeJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZH3eZQAKCRCPgPtYfRL+ Tq7eB/9IStn2Ffu4XF3y20ak+X/QW+d/F/9OSKKrxvbue63tJH1XovgRrOqDXRCPotg42yDFPi5 4QcZBIlNrKxNhMRphq0LBtZVu0j8SpDQkzZ07G1GIst+sSI6e1AFmeg2sy++pKU+ZJE7O8YCwSK ioX/dZcnsbQ8j8ZZJ7oCD+PRUmwuEm7dcCVLFELf4THj/fSde9hLXZJNHCa9cLKr17Nbp/qe0VV W4OAAbiGQkcms4U7LQ6k3E2iYqVa+VAwVo41xada+WXokF676A3FrjUwrsyZhkzHRrVb0b7GmGQ 6ZHbfutMWtjnwG/Uk9lK3rX2n4aVCy7fz7qx/ge5PVsKxKj5
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 5, 2023 at 8:24=E2=80=AFPM Tony Lindgren <tony@atomide.com> wro=
-te:
->
-> * Chen-Yu Tsai <wenst@chromium.org> [230605 11:34]:
-> > On Mon, Jun 5, 2023 at 2:15=E2=80=AFPM Tony Lindgren <tony@atomide.com>=
- wrote:
-> > > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/=
-8250/8250_mtk.c
-> > > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > > @@ -425,11 +439,10 @@ mtk8250_set_termios(struct uart_port *port, str=
-uct ktermios *termios,
-> > >  static int __maybe_unused mtk8250_runtime_suspend(struct device *dev=
-)
-> > >  {
-> > >         struct mtk8250_data *data =3D dev_get_drvdata(dev);
-> > > -       struct uart_8250_port *up =3D serial8250_get_port(data->line)=
-;
-> > >
-> > >         /* wait until UART in idle status */
-> > >         while
-> > > -               (serial_in(up, MTK_UART_DEBUG0));
-> > > +               (mtk8250_read(data, MTK_UART_DEBUG0));
-> >
-> > I believe it still gets stuck here sometimes.
->
-> Hmm so maybe you need to mtk8250_write(data, 0, MTK_UART_RATE_FIX) in
-> probe before pm_runtime_resume_and_get() that enables the baud clock?
-> That's something I changed, so maybe it messes up things.
+If the 8250 driver is built as a module (or built-in without console
+support) the Freescale specific workaround were silently not activated.
+Add a warning in this case.
 
-I think it has something to do with the do_pm() function calling
-the callbacks directly, then also calling runtime PM.
+Currently CONFIG_SERIAL_8250_FSL=y implies that the function
+fsl8250_handle_irq() is built-in and can be used. However with the
+changes of the next commit CONFIG_SERIAL_8250_FSL might be enabled also
+when the 8250 driver is a module and so more care is needed when
+fsl8250_handle_irq() is to be used. The code added here is able to
+handle the new situation already.
 
-> Looking at the 8250_mtk git log, it's runtime PM functions seem to only
-> currently manage the baud clock so register access should be doable
-> without runtime PM resume?
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ arch/powerpc/kernel/legacy_serial.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-Actually it only manages the bus clock. The baud clock is simply the system
-XTAL which is not gateble.
+diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
+index c9ad12461d44..fdbd85aafeb1 100644
+--- a/arch/powerpc/kernel/legacy_serial.c
++++ b/arch/powerpc/kernel/legacy_serial.c
+@@ -508,12 +508,16 @@ static void __init fixup_port_irq(int index,
+ 
+ 	port->irq = virq;
+ 
+-#ifdef CONFIG_SERIAL_8250_FSL
+-	if (of_device_is_compatible(np, "fsl,ns16550")) {
+-		port->handle_irq = fsl8250_handle_irq;
+-		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
++	if (IS_ENABLED(CONFIG_SERIAL_8250) &&
++	    of_device_is_compatible(np, "fsl,ns16550")) {
++		if (IS_REACHABLE(CONFIG_SERIAL_8250)) {
++			port->handle_irq = fsl8250_handle_irq;
++			port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
++		} else {
++			pr_warn_once("Not activating Freescale specific workaround for device %pOFP\n",
++				     np);
++		}
+ 	}
+-#endif
+ }
+ 
+ static void __init fixup_port_pio(int index,
+-- 
+2.39.2
 
-> > With your earlier patch, it could get through registering the port, and
-> > the console would show
-> >
-> >     11002000.serial: ttyS0 at MMIO 0x11002000 (irq =3D 240, base_baud =
-=3D
-> > 1625000) is a ST16650V2
-> >
-> > for the console UART.
->
-> OK
->
-> > Angelo mentioned that we should be using SLEEP_REQ/SLEEP_ACK registers
-> > in the MTK UART hardware.
-> >
-> > I tried reworking it into your patch here, but it causes issues with th=
-e
-> > UART-based Bluetooth on one of my devices. After the UART runtime suspe=
-nds
-> > and resumes, something is off and causes the transfers during Bluetooth
-> > init to become corrupt.
-> >
-> > I'll try some more stuff, but the existing code seems timing dependent.
-> > If I add too many printk statements to the runtime suspend/resume
-> > callbacks, things seem to work. One time I even ended up with broken
-> > UARTs but otherwise booted up the system.
->
-> Well another thing that now changes is that we now runtime suspend the
-> port at the end of the probe. What the 8250_mtk probe was doing earlier
-> it was leaving the port baud clock enabled, but runtime PM disabled
-> until mtk8250_do_pm() I guess.
-
-I guess that's the biggest difference? Since the *bus* clock gets disabled,
-any access will hang. Is it enough to just support runtime PM? Or do I have
-to also have UART_CAP_RPM?
-
-ChenYu
