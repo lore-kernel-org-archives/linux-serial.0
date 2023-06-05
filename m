@@ -2,99 +2,115 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F604C77B73
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 12:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA865C77B73
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 12:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233140AbjFEMJM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jun 2023 08:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
+        id S232803AbjFEMYz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jun 2023 08:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbjFEMJL (ORCPT
+        with ESMTP id S233438AbjFEMYv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Jun 2023 08:09:11 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D33F92;
-        Mon,  5 Jun 2023 05:09:09 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3559ncW7006719;
-        Mon, 5 Jun 2023 14:08:53 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=6wZOLEa3GpVYAhxU6J6dt+YaBwVxP3xhhj2G/143fFg=;
- b=Fogd2R/WBJ4wh35TzPUkP03ulMrCzWoqkt+rnvCmoTVL/6gMqmifu04UxXgNMTcAHHig
- HEm5ReXaYqrlfd6ZInaShg22w6JysJOuF6mnfetSkvXsdM9ivBoHVewJiY401QpWiTX1
- fgJ8comiS5lyiRSvHgfLre/v36q1FyzKCRsPwdZl71e3jCuBAs+5fms4nm1ls3r5zVug
- mvfiYyMdqR+tgb/BYdNa8aI7AFCojuwW2fZGe+AwgOMygk2vUyPvF4yK/huh7b18Uql9
- nzcCn7Pc7X4/imH4tXSbONwK4JGunf+kR7AegxaCye9VbXe9mPkVbcDXd2IVoey2G02f 6A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3r1ddqru9w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 05 Jun 2023 14:08:53 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1B25610002A;
-        Mon,  5 Jun 2023 14:08:51 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1478222788C;
-        Mon,  5 Jun 2023 14:08:51 +0200 (CEST)
-Received: from [10.201.20.56] (10.201.20.56) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Mon, 5 Jun
- 2023 14:08:50 +0200
-Message-ID: <63e2c1bc-4a80-4857-899a-dd87d92c6f7e@foss.st.com>
-Date:   Mon, 5 Jun 2023 14:08:49 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH] serial: st-asc: fix typo in property name
-Content-Language: en-US
-To:     Raphael Gallais-Pou <rgallaispou@gmail.com>,
+        Mon, 5 Jun 2023 08:24:51 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED0AEBD;
+        Mon,  5 Jun 2023 05:24:49 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 31DB880FE;
+        Mon,  5 Jun 2023 12:24:49 +0000 (UTC)
+Date:   Mon, 5 Jun 2023 15:24:47 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20230604083558.16661-1-rgallaispou@gmail.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20230604083558.16661-1-rgallaispou@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.20.56]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
- definitions=2023-06-03_08,2023-06-02_02,2023-05-22_02
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <20230605122447.GY14287@atomide.com>
+References: <20230525113034.46880-1-tony@atomide.com>
+ <20230602083335.GA181647@google.com>
+ <87a5xii33r.fsf@jogness.linutronix.de>
+ <20230603054139.GR14287@atomide.com>
+ <20230603063533.GS14287@atomide.com>
+ <20230605061511.GW14287@atomide.com>
+ <CAGXv+5Fbx7eTxP0ep6DV+jyronAWxYvu2M-g=MjHGRhjSXUc=w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGXv+5Fbx7eTxP0ep6DV+jyronAWxYvu2M-g=MjHGRhjSXUc=w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Raphael
-
-On 6/4/23 10:35, Raphael Gallais-Pou wrote:
-> Changes the property name read in the driver according to the YAML.
-> According to device-tree documentation, property names should not
-> include underscores.
+* Chen-Yu Tsai <wenst@chromium.org> [230605 11:34]:
+> On Mon, Jun 5, 2023 at 2:15 PM Tony Lindgren <tony@atomide.com> wrote:
+> > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> > --- a/drivers/tty/serial/8250/8250_mtk.c
+> > +++ b/drivers/tty/serial/8250/8250_mtk.c
+> > @@ -425,11 +439,10 @@ mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+> >  static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
+> >  {
+> >         struct mtk8250_data *data = dev_get_drvdata(dev);
+> > -       struct uart_8250_port *up = serial8250_get_port(data->line);
+> >
+> >         /* wait until UART in idle status */
+> >         while
+> > -               (serial_in(up, MTK_UART_DEBUG0));
+> > +               (mtk8250_read(data, MTK_UART_DEBUG0));
 > 
-> Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
-> ---
->  drivers/tty/serial/st-asc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> I believe it still gets stuck here sometimes.
+
+Hmm so maybe you need to mtk8250_write(data, 0, MTK_UART_RATE_FIX) in
+probe before pm_runtime_resume_and_get() that enables the baud clock?
+That's something I changed, so maybe it messes up things.
+
+Looking at the 8250_mtk git log, it's runtime PM functions seem to only
+currently manage the baud clock so register access should be doable
+without runtime PM resume?
+
+> With your earlier patch, it could get through registering the port, and
+> the console would show
 > 
-> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> index 5215e6910f68..6ef99a037a9b 100644
-> --- a/drivers/tty/serial/st-asc.c
-> +++ b/drivers/tty/serial/st-asc.c
-> @@ -754,7 +754,7 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
->  
->  	asc_ports[id].hw_flow_control = of_property_read_bool(np,
->  							"uart-has-rtscts");
-> -	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
-> +	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force-m1");
->  	asc_ports[id].port.line = id;
->  	asc_ports[id].rts = NULL;
->  
+>     11002000.serial: ttyS0 at MMIO 0x11002000 (irq = 240, base_baud =
+> 1625000) is a ST16650V2
+> 
+> for the console UART.
 
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+OK
 
-Thanks
-Patrice
+> Angelo mentioned that we should be using SLEEP_REQ/SLEEP_ACK registers
+> in the MTK UART hardware.
+> 
+> I tried reworking it into your patch here, but it causes issues with the
+> UART-based Bluetooth on one of my devices. After the UART runtime suspends
+> and resumes, something is off and causes the transfers during Bluetooth
+> init to become corrupt.
+> 
+> I'll try some more stuff, but the existing code seems timing dependent.
+> If I add too many printk statements to the runtime suspend/resume
+> callbacks, things seem to work. One time I even ended up with broken
+> UARTs but otherwise booted up the system.
+
+Well another thing that now changes is that we now runtime suspend the
+port at the end of the probe. What the 8250_mtk probe was doing earlier
+it was leaving the port baud clock enabled, but runtime PM disabled
+until mtk8250_do_pm() I guess.
+
+Regards,
+
+Tony
