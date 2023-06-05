@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8534AC7EE24
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 04:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF48C7EE2F
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 04:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbjFEEJb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jun 2023 00:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
+        id S232775AbjFEEKG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jun 2023 00:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232710AbjFEEIx (ORCPT
+        with ESMTP id S232856AbjFEEJK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Jun 2023 00:08:53 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EF8E69;
-        Sun,  4 Jun 2023 21:08:22 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id 5614622812f47-39a97058691so1558576b6e.2;
-        Sun, 04 Jun 2023 21:08:22 -0700 (PDT)
+        Mon, 5 Jun 2023 00:09:10 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70536102;
+        Sun,  4 Jun 2023 21:08:29 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1b0218c979cso23995315ad.3;
+        Sun, 04 Jun 2023 21:08:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685938101; x=1688530101;
+        d=gmail.com; s=20221208; t=1685938109; x=1688530109;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=c8OhEt4GIuw43ahn9BPzsd8d+JekOssXjgymx9BYUKc=;
-        b=DTrEL/vrZCR9vUgVwBPQbLOoKsgFyOdwxaNrG1syiFb9DAb6AF7JSpDmZQtrbwwW7J
-         BmZQjHmto4KSysMFE8jxu5ukLy9sclmTCUho4hgYManFg/GDdl/Kebp3LmdDBlh2JxcX
-         FO7Lbb/gCvugOtYBTg2YGXjuG5osLhBM9yfwv6gplDHOi6TmYvErMQUOI5pCGrG0nRiQ
-         Seam1+kPLDgj02Q8BJUvDkINwaTmMyoDYzcA8G33Kf+FV+FETDIX9zNExmrR3UUlDBZ/
-         HAUxUitEHXOSQqJtcMibuHgiwfokoBq7yHqmTQ8tnUNzPYvSHbc+KTeFWl9zmaU1Zl/o
-         VNiA==
+        bh=wh4S3DCs0K/sx0d0emXPkFW/k+nrYsVpD6MXHagOka8=;
+        b=nu8JRGUR0d/RRcAHPtQhg7yazEu5vWVuFrsHrqRxNOlMcJmmuENrOfYMYufJJKStYD
+         BN260/72EY1BngIuKOrBy1kpJ58ZFvYM/VIZa+kBkTcIUSeThTV45zJi9Qu5EkUKWRvU
+         qJnh0Mz7JmMP7h8JnoTmERqcUSl/0TordlBZGlLaUNs7IAntgBAHnjpeCEo750wzlY+i
+         bCREhXTjkFjWsQy2bQEwMxtJmpamlNmjEWlvTsVwMNjE7OOQI+qMJqF6ZYWEN0VZTSrc
+         cenkBDx3NaamKXMdQreB1of9BH4yrMeFA4f942+8ryUHDaVtJIME6hR2tUICRKaCbYEH
+         W1Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685938101; x=1688530101;
+        d=1e100.net; s=20221208; t=1685938109; x=1688530109;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=c8OhEt4GIuw43ahn9BPzsd8d+JekOssXjgymx9BYUKc=;
-        b=TzPcr9j/0cH39+T+J1NC3xo+zF+y8f9XiN9+mV3hnGNC9e+ctGJYB5PWRQFqcuPjWE
-         2xgK+4jYYeUJMAKal7J2l93dNmvu4yAcHkdDf4dBpwNuEtFRPoUeUlZLWC3jegO913ww
-         anE4whMNzqfTrT6CjrxYyRcm9fIaKSpPaITXEPaoD26FHbyIpPdNoR6GVMg/46NxE+Dh
-         0tvlGHITAGr5DPteoPWZ2fvVyYBP/2Rtivb4UHKARD3zDhnC3DJpr3X73gE1yraKyS4T
-         3P1KNJh076kQDpWZgmry1VCWLfDHc7vup2OPmpAuT92CMmgNNI/i3pXzCrv7BAdJhYYd
-         B0kA==
-X-Gm-Message-State: AC+VfDyTLe1XQloIs4MVzqpM8Jq2HnXLlHPdcRydiFB47zJatcRKJgv3
-        78z+Il2BzwaWb+U8RQmABP4=
-X-Google-Smtp-Source: ACHHUZ71XhxqhFGfzLAUN59xLOB39p5jiNSTTfTmH1Ck2LjqTjW4UH5KokMjNYX9KiVxyFW2Hiu9Sg==
-X-Received: by 2002:a05:6808:2b04:b0:398:2f06:329 with SMTP id fe4-20020a0568082b0400b003982f060329mr7793352oib.9.1685938101150;
-        Sun, 04 Jun 2023 21:08:21 -0700 (PDT)
+        bh=wh4S3DCs0K/sx0d0emXPkFW/k+nrYsVpD6MXHagOka8=;
+        b=V41SWb0vZBYo31ZR0/7zbLVDcEUyMX4SI6ROeYAQ3AXS+vc9gWeLFENfQrBna/s05j
+         wvkdQLl/ZDNPbcuH9erbrdrpfXjduDRj9DMMN8LOGYwC5cSRo4WaL1U22FZct5s4f5kr
+         5GKLi0kE0e1osls4KXPPKiPoKO7d0svFndWQaFE0XiaNXoa+OUy0cETverzVHZlzbIBL
+         uY/L6qQ+xHQBYQaoqLJjuXVpdffPI5wdh/UtYNN1DyeqV8d6jlYOi1lGUBa+w8/hs4cn
+         D+grPP51YADOj9vjcJaMD88zKoIOwJ1cb4JMT/RgH4L99qZATzxokrgp0I8GaPycgY5w
+         5PDg==
+X-Gm-Message-State: AC+VfDxLdPqRU/+Ep7RaosTar5RTPRCAMnrM+o8idfJ/sWrFy3elaojJ
+        3UZc4TH+x6/0KMfQA9TaP28=
+X-Google-Smtp-Source: ACHHUZ7Nqq29QNrd6boYjCyTORdXwaZtQLifs3whtmBu1FWKBRU+EL0mrcSUt2yAazslzQry82z0AA==
+X-Received: by 2002:a17:903:2445:b0:19d:1834:92b9 with SMTP id l5-20020a170903244500b0019d183492b9mr4233902pls.56.1685938108832;
+        Sun, 04 Jun 2023 21:08:28 -0700 (PDT)
 Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id b4-20020a170903228400b001b21bcea439sm206164plh.170.2023.06.04.21.08.17
+        by smtp.gmail.com with ESMTPSA id b4-20020a170903228400b001b21bcea439sm206164plh.170.2023.06.04.21.08.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jun 2023 21:08:20 -0700 (PDT)
+        Sun, 04 Jun 2023 21:08:28 -0700 (PDT)
 From:   Jacky Huang <ychuang570808@gmail.com>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
@@ -61,14 +61,15 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-serial@vger.kernel.org, arnd@arndb.de, soc@kernel.org,
         schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v13 07/10] arm64: dts: nuvoton: Add initial ma35d1 device tree
-Date:   Mon,  5 Jun 2023 04:07:46 +0000
-Message-Id: <20230605040749.67964-8-ychuang570808@gmail.com>
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v13 09/10] reset: Add Nuvoton ma35d1 reset driver support
+Date:   Mon,  5 Jun 2023 04:07:48 +0000
+Message-Id: <20230605040749.67964-10-ychuang570808@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230605040749.67964-1-ychuang570808@gmail.com>
 References: <20230605040749.67964-1-ychuang570808@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -76,395 +77,289 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Jacky Huang <ychuang3@nuvoton.com>
 
-Add initial device tree support for Nuvoton ma35d1 SoC, including
-cpu, clock, reset, and serial controllers.
-Add reference boards som-256m and iot-512m.
+This driver supports individual IP reset for the MA35D1. The reset
+control registers are a subset of the system control registers.
 
 Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- arch/arm64/boot/dts/nuvoton/Makefile          |   2 +
- .../boot/dts/nuvoton/ma35d1-iot-512m.dts      |  56 +++++
- .../boot/dts/nuvoton/ma35d1-som-256m.dts      |  56 +++++
- arch/arm64/boot/dts/nuvoton/ma35d1.dtsi       | 234 ++++++++++++++++++
- 4 files changed, 348 insertions(+)
- create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
- create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
- create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
+ drivers/reset/Kconfig        |   6 +
+ drivers/reset/Makefile       |   1 +
+ drivers/reset/reset-ma35d1.c | 235 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 242 insertions(+)
+ create mode 100644 drivers/reset/reset-ma35d1.c
 
-diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
-index a99dab90472a..3bc9787801a5 100644
---- a/arch/arm64/boot/dts/nuvoton/Makefile
-+++ b/arch/arm64/boot/dts/nuvoton/Makefile
-@@ -1,2 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
-+dtb-$(CONFIG_ARCH_MA35) += ma35d1-iot-512m.dtb
-+dtb-$(CONFIG_ARCH_MA35) += ma35d1-som-256m.dtb
- dtb-$(CONFIG_ARCH_NPCM) += nuvoton-npcm845-evb.dtb
-diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
+diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
+index 6aa8f243b30c..07499177a266 100644
+--- a/drivers/reset/Kconfig
++++ b/drivers/reset/Kconfig
+@@ -143,6 +143,12 @@ config RESET_NPCM
+ 	  This enables the reset controller driver for Nuvoton NPCM
+ 	  BMC SoCs.
+ 
++config RESET_NUVOTON_MA35D1
++	bool "Nuvton MA35D1 Reset Driver"
++	default ARCH_MA35 || COMPILE_TEST
++	help
++	  This enables the reset controller driver for Nuvoton MA35D1 SoC.
++
+ config RESET_OXNAS
+ 	bool
+ 
+diff --git a/drivers/reset/Makefile b/drivers/reset/Makefile
+index 7fec5af6c964..411b45ba0da7 100644
+--- a/drivers/reset/Makefile
++++ b/drivers/reset/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_RESET_MCHP_SPARX5) += reset-microchip-sparx5.o
+ obj-$(CONFIG_RESET_MESON) += reset-meson.o
+ obj-$(CONFIG_RESET_MESON_AUDIO_ARB) += reset-meson-audio-arb.o
+ obj-$(CONFIG_RESET_NPCM) += reset-npcm.o
++obj-$(CONFIG_RESET_NUVOTON_MA35D1) += reset-ma35d1.o
+ obj-$(CONFIG_RESET_OXNAS) += reset-oxnas.o
+ obj-$(CONFIG_RESET_PISTACHIO) += reset-pistachio.o
+ obj-$(CONFIG_RESET_POLARFIRE_SOC) += reset-mpfs.o
+diff --git a/drivers/reset/reset-ma35d1.c b/drivers/reset/reset-ma35d1.c
 new file mode 100644
-index 000000000000..b89e2be6abae
+index 000000000000..54e53863c98a
 --- /dev/null
-+++ b/arch/arm64/boot/dts/nuvoton/ma35d1-iot-512m.dts
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/drivers/reset/reset-ma35d1.c
+@@ -0,0 +1,235 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2023 Nuvoton Technology Corp.
-+ * Author: Shan-Chun Hung <schung@nuvoton.com>
-+ *         Jacky huang <ychuang3@nuvoton.com>
++ * Author: Chi-Fang Li <cfli0@nuvoton.com>
 + */
 +
-+/dts-v1/;
-+#include "ma35d1.dtsi"
-+
-+/ {
-+	model = "Nuvoton MA35D1-IoT";
-+	compatible = "nuvoton,ma35d1-iot", "nuvoton,ma35d1";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	mem: memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x00000000 0x80000000 0 0x20000000>; /* 512M DRAM */
-+	};
-+
-+	clk_hxt: clock-hxt {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <24000000>;
-+		clock-output-names = "clk_hxt";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-+&clk {
-+	assigned-clocks = <&clk CAPLL>,
-+			  <&clk DDRPLL>,
-+			  <&clk APLL>,
-+			  <&clk EPLL>,
-+			  <&clk VPLL>;
-+	assigned-clock-rates = <800000000>,
-+			       <266000000>,
-+			       <180000000>,
-+			       <500000000>,
-+			       <102000000>;
-+	nuvoton,pll-mode = "integer",
-+			   "fractional",
-+			   "integer",
-+			   "integer",
-+			   "integer";
-+};
-diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
-new file mode 100644
-index 000000000000..a1ebddecb7f8
---- /dev/null
-+++ b/arch/arm64/boot/dts/nuvoton/ma35d1-som-256m.dts
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2023 Nuvoton Technology Corp.
-+ * Author: Shan-Chun Hung <schung@nuvoton.com>
-+ *         Jacky huang <ychuang3@nuvoton.com>
-+ */
-+
-+/dts-v1/;
-+#include "ma35d1.dtsi"
-+
-+/ {
-+	model = "Nuvoton MA35D1-SOM";
-+	compatible = "nuvoton,ma35d1-som", "nuvoton,ma35d1";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	mem: memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x00000000 0x80000000 0 0x10000000>; /* 256M DRAM */
-+	};
-+
-+	clk_hxt: clock-hxt {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <24000000>;
-+		clock-output-names = "clk_hxt";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-+&clk {
-+	assigned-clocks = <&clk CAPLL>,
-+			  <&clk DDRPLL>,
-+			  <&clk APLL>,
-+			  <&clk EPLL>,
-+			  <&clk VPLL>;
-+	assigned-clock-rates = <800000000>,
-+			       <266000000>,
-+			       <180000000>,
-+			       <500000000>,
-+			       <102000000>;
-+	nuvoton,pll-mode = "integer",
-+			   "fractional",
-+			   "integer",
-+			   "integer",
-+			   "integer";
-+};
-diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
-new file mode 100644
-index 000000000000..781cdae566a0
---- /dev/null
-+++ b/arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
-@@ -0,0 +1,234 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2023 Nuvoton Technology Corp.
-+ * Author: Shan-Chun Hung <schung@nuvoton.com>
-+ *         Jacky huang <ychuang3@nuvoton.com>
-+ */
-+
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
++#include <linux/bits.h>
++#include <linux/container_of.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/reboot.h>
++#include <linux/reset-controller.h>
++#include <linux/spinlock.h>
 +#include <dt-bindings/reset/nuvoton,ma35d1-reset.h>
 +
-+/ {
-+	compatible = "nuvoton,ma35d1";
-+	interrupt-parent = <&gic>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			reg = <0x0 0x0>;
-+			enable-method = "psci";
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			reg = <0x0 0x1>;
-+			enable-method = "psci";
-+			next-level-cache = <&L2_0>;
-+		};
-+
-+		L2_0: l2-cache {
-+			compatible = "cache";
-+			cache-level = <2>;
-+			cache-unified;
-+			cache-size = <0x80000>;
-+		};
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-0.2";
-+		method = "smc";
-+	};
-+
-+	gic: interrupt-controller@50801000 {
-+		compatible = "arm,gic-400";
-+		reg = <0x0 0x50801000 0 0x1000>, /* GICD */
-+		      <0x0 0x50802000 0 0x2000>, /* GICC */
-+		      <0x0 0x50804000 0 0x2000>, /* GICH */
-+		      <0x0 0x50806000 0 0x2000>; /* GICV */
-+		#interrupt-cells = <3>;
-+		interrupt-parent = <&gic>;
-+		interrupt-controller;
-+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
-+			      IRQ_TYPE_LEVEL_HIGH)>;
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
-+			      IRQ_TYPE_LEVEL_LOW)>, /* Physical Secure */
-+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) |
-+			      IRQ_TYPE_LEVEL_LOW)>, /* Physical Non-Secure */
-+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) |
-+			      IRQ_TYPE_LEVEL_LOW)>, /* Virtual */
-+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
-+			      IRQ_TYPE_LEVEL_LOW)>; /* Hypervisor */
-+		interrupt-parent = <&gic>;
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		sys: system-management@40460000 {
-+			compatible = "nuvoton,ma35d1-reset";
-+			reg = <0x0 0x40460000 0x0 0x200>;
-+			#reset-cells = <1>;
-+		};
-+
-+		clk: clock-controller@40460200 {
-+			compatible = "nuvoton,ma35d1-clk";
-+			reg = <0x00000000 0x40460200 0x0 0x100>;
-+			#clock-cells = <1>;
-+			clocks = <&clk_hxt>;
-+		};
-+
-+		uart0: serial@40700000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40700000 0x0 0x100>;
-+			interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART0_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@40710000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40710000 0x0 0x100>;
-+			interrupts = <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART1_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@40720000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40720000 0x0 0x100>;
-+			interrupts = <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART2_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart3: serial@40730000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40730000 0x0 0x100>;
-+			interrupts = <GIC_SPI 62 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART3_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart4: serial@40740000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40740000 0x0 0x100>;
-+			interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART4_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart5: serial@40750000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40750000 0x0 0x100>;
-+			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART5_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart6: serial@40760000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40760000 0x0 0x100>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART6_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart7: serial@40770000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40770000 0x0 0x100>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART7_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart8: serial@40780000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40780000 0x0 0x100>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART8_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart9: serial@40790000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40790000 0x0 0x100>;
-+			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART9_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart10: serial@407a0000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x407a0000 0x0 0x100>;
-+			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART10_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart11: serial@407b0000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x407b0000 0x0 0x100>;
-+			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART11_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart12: serial@407c0000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x407c0000 0x0 0x100>;
-+			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART12_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart13: serial@407d0000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x407d0000 0x0 0x100>;
-+			interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART13_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart14: serial@407e0000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x407e0000 0x0 0x100>;
-+			interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART14_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart15: serial@407f0000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x407f0000 0x0 0x100>;
-+			interrupts = <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART15_GATE>;
-+			status = "disabled";
-+		};
-+
-+		uart16: serial@40880000 {
-+			compatible = "nuvoton,ma35d1-uart";
-+			reg = <0x0 0x40880000 0x0 0x100>;
-+			interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&clk UART16_GATE>;
-+			status = "disabled";
-+		};
-+	};
++struct ma35d1_reset_data {
++	struct reset_controller_dev rcdev;
++	struct notifier_block restart_handler;
++	void __iomem *base;
++	/* protect registers against concurrent read-modify-write */
++	spinlock_t lock;
 +};
++
++static const struct {
++	u32 reg_ofs;
++	u32 bit;
++} ma35d1_reset_map[] = {
++	[MA35D1_RESET_CHIP] =    {0x20, 0},
++	[MA35D1_RESET_CA35CR0] = {0x20, 1},
++	[MA35D1_RESET_CA35CR1] = {0x20, 2},
++	[MA35D1_RESET_CM4] =     {0x20, 3},
++	[MA35D1_RESET_PDMA0] =   {0x20, 4},
++	[MA35D1_RESET_PDMA1] =   {0x20, 5},
++	[MA35D1_RESET_PDMA2] =   {0x20, 6},
++	[MA35D1_RESET_PDMA3] =   {0x20, 7},
++	[MA35D1_RESET_DISP] =    {0x20, 9},
++	[MA35D1_RESET_VCAP0] =   {0x20, 10},
++	[MA35D1_RESET_VCAP1] =   {0x20, 11},
++	[MA35D1_RESET_GFX] =     {0x20, 12},
++	[MA35D1_RESET_VDEC] =    {0x20, 13},
++	[MA35D1_RESET_WHC0] =    {0x20, 14},
++	[MA35D1_RESET_WHC1] =    {0x20, 15},
++	[MA35D1_RESET_GMAC0] =   {0x20, 16},
++	[MA35D1_RESET_GMAC1] =   {0x20, 17},
++	[MA35D1_RESET_HWSEM] =   {0x20, 18},
++	[MA35D1_RESET_EBI] =     {0x20, 19},
++	[MA35D1_RESET_HSUSBH0] = {0x20, 20},
++	[MA35D1_RESET_HSUSBH1] = {0x20, 21},
++	[MA35D1_RESET_HSUSBD] =  {0x20, 22},
++	[MA35D1_RESET_USBHL] =   {0x20, 23},
++	[MA35D1_RESET_SDH0] =    {0x20, 24},
++	[MA35D1_RESET_SDH1] =    {0x20, 25},
++	[MA35D1_RESET_NAND] =    {0x20, 26},
++	[MA35D1_RESET_GPIO] =    {0x20, 27},
++	[MA35D1_RESET_MCTLP] =   {0x20, 28},
++	[MA35D1_RESET_MCTLC] =   {0x20, 29},
++	[MA35D1_RESET_DDRPUB] =  {0x20, 30},
++	[MA35D1_RESET_TMR0] =    {0x24, 2},
++	[MA35D1_RESET_TMR1] =    {0x24, 3},
++	[MA35D1_RESET_TMR2] =    {0x24, 4},
++	[MA35D1_RESET_TMR3] =    {0x24, 5},
++	[MA35D1_RESET_I2C0] =    {0x24, 8},
++	[MA35D1_RESET_I2C1] =    {0x24, 9},
++	[MA35D1_RESET_I2C2] =    {0x24, 10},
++	[MA35D1_RESET_I2C3] =    {0x24, 11},
++	[MA35D1_RESET_QSPI0] =   {0x24, 12},
++	[MA35D1_RESET_SPI0] =    {0x24, 13},
++	[MA35D1_RESET_SPI1] =    {0x24, 14},
++	[MA35D1_RESET_SPI2] =    {0x24, 15},
++	[MA35D1_RESET_UART0] =   {0x24, 16},
++	[MA35D1_RESET_UART1] =   {0x24, 17},
++	[MA35D1_RESET_UART2] =   {0x24, 18},
++	[MA35D1_RESET_UART3] =   {0x24, 19},
++	[MA35D1_RESET_UART4] =   {0x24, 20},
++	[MA35D1_RESET_UART5] =   {0x24, 21},
++	[MA35D1_RESET_UART6] =   {0x24, 22},
++	[MA35D1_RESET_UART7] =   {0x24, 23},
++	[MA35D1_RESET_CANFD0] =  {0x24, 24},
++	[MA35D1_RESET_CANFD1] =  {0x24, 25},
++	[MA35D1_RESET_EADC0] =   {0x24, 28},
++	[MA35D1_RESET_I2S0] =    {0x24, 29},
++	[MA35D1_RESET_SC0] =     {0x28, 0},
++	[MA35D1_RESET_SC1] =     {0x28, 1},
++	[MA35D1_RESET_QSPI1] =   {0x28, 4},
++	[MA35D1_RESET_SPI3] =    {0x28, 6},
++	[MA35D1_RESET_EPWM0] =   {0x28, 16},
++	[MA35D1_RESET_EPWM1] =   {0x28, 17},
++	[MA35D1_RESET_QEI0] =    {0x28, 22},
++	[MA35D1_RESET_QEI1] =    {0x28, 23},
++	[MA35D1_RESET_ECAP0] =   {0x28, 26},
++	[MA35D1_RESET_ECAP1] =   {0x28, 27},
++	[MA35D1_RESET_CANFD2] =  {0x28, 28},
++	[MA35D1_RESET_ADC0] =    {0x28, 31},
++	[MA35D1_RESET_TMR4] =    {0x2C, 0},
++	[MA35D1_RESET_TMR5] =    {0x2C, 1},
++	[MA35D1_RESET_TMR6] =    {0x2C, 2},
++	[MA35D1_RESET_TMR7] =    {0x2C, 3},
++	[MA35D1_RESET_TMR8] =    {0x2C, 4},
++	[MA35D1_RESET_TMR9] =    {0x2C, 5},
++	[MA35D1_RESET_TMR10] =   {0x2C, 6},
++	[MA35D1_RESET_TMR11] =   {0x2C, 7},
++	[MA35D1_RESET_UART8] =   {0x2C, 8},
++	[MA35D1_RESET_UART9] =   {0x2C, 9},
++	[MA35D1_RESET_UART10] =  {0x2C, 10},
++	[MA35D1_RESET_UART11] =  {0x2C, 11},
++	[MA35D1_RESET_UART12] =  {0x2C, 12},
++	[MA35D1_RESET_UART13] =  {0x2C, 13},
++	[MA35D1_RESET_UART14] =  {0x2C, 14},
++	[MA35D1_RESET_UART15] =  {0x2C, 15},
++	[MA35D1_RESET_UART16] =  {0x2C, 16},
++	[MA35D1_RESET_I2S1] =    {0x2C, 17},
++	[MA35D1_RESET_I2C4] =    {0x2C, 18},
++	[MA35D1_RESET_I2C5] =    {0x2C, 19},
++	[MA35D1_RESET_EPWM2] =   {0x2C, 20},
++	[MA35D1_RESET_ECAP2] =   {0x2C, 21},
++	[MA35D1_RESET_QEI2] =    {0x2C, 22},
++	[MA35D1_RESET_CANFD3] =  {0x2C, 23},
++	[MA35D1_RESET_KPI] =     {0x2C, 24},
++	[MA35D1_RESET_GIC] =     {0x2C, 28},
++	[MA35D1_RESET_SSMCC] =   {0x2C, 30},
++	[MA35D1_RESET_SSPCC] =   {0x2C, 31}
++};
++
++static int ma35d1_restart_handler(struct notifier_block *this, unsigned long mode, void *cmd)
++{
++	struct ma35d1_reset_data *data =
++				 container_of(this, struct ma35d1_reset_data, restart_handler);
++	u32 id = MA35D1_RESET_CHIP;
++
++	writel_relaxed(BIT(ma35d1_reset_map[id].bit),
++		       data->base + ma35d1_reset_map[id].reg_ofs);
++	return 0;
++}
++
++static int ma35d1_reset_update(struct reset_controller_dev *rcdev, unsigned long id, bool assert)
++{
++	struct ma35d1_reset_data *data = container_of(rcdev, struct ma35d1_reset_data, rcdev);
++	unsigned long flags;
++	u32 reg;
++
++	if (WARN_ON_ONCE(id >= ARRAY_SIZE(ma35d1_reset_map)))
++		return -EINVAL;
++
++	spin_lock_irqsave(&data->lock, flags);
++	reg = readl_relaxed(data->base + ma35d1_reset_map[id].reg_ofs);
++	if (assert)
++		reg |= BIT(ma35d1_reset_map[id].bit);
++	else
++		reg &= ~(BIT(ma35d1_reset_map[id].bit));
++	writel_relaxed(reg, data->base + ma35d1_reset_map[id].reg_ofs);
++	spin_unlock_irqrestore(&data->lock, flags);
++
++	return 0;
++}
++
++static int ma35d1_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
++{
++	return ma35d1_reset_update(rcdev, id, true);
++}
++
++static int ma35d1_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
++{
++	return ma35d1_reset_update(rcdev, id, false);
++}
++
++static int ma35d1_reset_status(struct reset_controller_dev *rcdev, unsigned long id)
++{
++	struct ma35d1_reset_data *data = container_of(rcdev, struct ma35d1_reset_data, rcdev);
++	u32 reg;
++
++	if (WARN_ON_ONCE(id >= ARRAY_SIZE(ma35d1_reset_map)))
++		return -EINVAL;
++
++	reg = readl_relaxed(data->base + ma35d1_reset_map[id].reg_ofs);
++	return !!(reg & BIT(ma35d1_reset_map[id].bit));
++}
++
++static const struct reset_control_ops ma35d1_reset_ops = {
++	.assert = ma35d1_reset_assert,
++	.deassert = ma35d1_reset_deassert,
++	.status = ma35d1_reset_status,
++};
++
++static const struct of_device_id ma35d1_reset_dt_ids[] = {
++	{ .compatible = "nuvoton,ma35d1-reset" },
++	{ },
++};
++
++static int ma35d1_reset_probe(struct platform_device *pdev)
++{
++	struct ma35d1_reset_data *reset_data;
++	struct device *dev = &pdev->dev;
++	int err;
++
++	if (!pdev->dev.of_node) {
++		dev_err(&pdev->dev, "Device tree node not found\n");
++		return -EINVAL;
++	}
++
++	reset_data = devm_kzalloc(dev, sizeof(*reset_data), GFP_KERNEL);
++	if (!reset_data)
++		return -ENOMEM;
++
++	reset_data->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(reset_data->base))
++		return PTR_ERR(reset_data->base);
++
++	reset_data->rcdev.owner = THIS_MODULE;
++	reset_data->rcdev.nr_resets = MA35D1_RESET_COUNT;
++	reset_data->rcdev.ops = &ma35d1_reset_ops;
++	reset_data->rcdev.of_node = dev->of_node;
++	reset_data->restart_handler.notifier_call = ma35d1_restart_handler;
++	reset_data->restart_handler.priority = 192;
++	spin_lock_init(&reset_data->lock);
++
++	err = register_restart_handler(&reset_data->restart_handler);
++	if (err)
++		dev_warn(&pdev->dev, "failed to register restart handler\n");
++
++	return devm_reset_controller_register(dev, &reset_data->rcdev);
++}
++
++static struct platform_driver ma35d1_reset_driver = {
++	.probe = ma35d1_reset_probe,
++	.driver = {
++		.name = "ma35d1-reset",
++		.of_match_table	= ma35d1_reset_dt_ids,
++	},
++};
++
++builtin_platform_driver(ma35d1_reset_driver);
 -- 
 2.34.1
 
