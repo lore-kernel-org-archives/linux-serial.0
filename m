@@ -2,265 +2,142 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33619C7EE2A
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 11:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90670C7EE2D
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 12:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbjFELeZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jun 2023 07:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
+        id S232694AbjFEMBC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jun 2023 08:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbjFELeY (ORCPT
+        with ESMTP id S232654AbjFEMA6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Jun 2023 07:34:24 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED969E
-        for <linux-serial@vger.kernel.org>; Mon,  5 Jun 2023 04:34:22 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id a1e0cc1a2514c-783f7e82f2aso1023564241.1
-        for <linux-serial@vger.kernel.org>; Mon, 05 Jun 2023 04:34:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1685964861; x=1688556861;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LJdL4VkR29ugHjJ0HNgiBAKMzVnr+Rqw/yJUI27DCh8=;
-        b=ihefJeawzq1ba5J+Z+/a7Y64U3S0NsqLGOcE7NThRkDvJdvEYDj4FPxzesJ0tmifc8
-         HJdYDm5j0huFTYjBXUmyav0pA0qUGlrQ+T4iV/imFQCkaOm3sxgVSuEngjweANjzErP0
-         OHjjxg8O8cu3leRnxQ1749QLe72mwhyycBLuA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685964861; x=1688556861;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LJdL4VkR29ugHjJ0HNgiBAKMzVnr+Rqw/yJUI27DCh8=;
-        b=AuUcl6nCLZWE72QoTWKH3/jiX6rrNW+Xt52Xqbwt+5gjFuV9HPCBOdIba5DkGap/Kl
-         f6X8JmobEQaqaGVj9wYuq/QshzeJRqdlRohEE5orULh3pmmV8kiHpe7pGy89rwu9KZ2B
-         3SF7JOM3QHeP9CsvQmMEWselFl9N0HZiyTKeqwjTZmpwDIxu9x+UFFcQOnBYLiKxVnJQ
-         izfOBaNiaGz4A0jMmy+N/FvbBFuzL+ILtW755OBO/1ZwRapejxem3w8Vi6Ms0Otk1fTX
-         /zujCh2r2vd8sQPo0kCl0PSoz8XFxObzpHFNT16+wS70qEPIBZzZOjWJl+Y98qzsw9lx
-         58XQ==
-X-Gm-Message-State: AC+VfDyyGm6W2vR3SuH3SQmklfIUcC8AHehRW3r1eiCjtmjYo29TjF1c
-        TEZNUguKqhskvMJVuCfr5nyLPFARnzJe+fLwPnMX3Q==
-X-Google-Smtp-Source: ACHHUZ49/IwlrFEfmpxaOyF8JC+0bPRmojnDSDJVaGgnrnvtesB7m1brUpWGPmailAmLhyP097J0bYC1CjDJkP3zHAY=
-X-Received: by 2002:a1f:60d4:0:b0:463:c9b3:9e12 with SMTP id
- u203-20020a1f60d4000000b00463c9b39e12mr1025388vkb.6.1685964861559; Mon, 05
- Jun 2023 04:34:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230525113034.46880-1-tony@atomide.com> <20230602083335.GA181647@google.com>
- <87a5xii33r.fsf@jogness.linutronix.de> <20230603054139.GR14287@atomide.com>
- <20230603063533.GS14287@atomide.com> <20230605061511.GW14287@atomide.com>
-In-Reply-To: <20230605061511.GW14287@atomide.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Mon, 5 Jun 2023 19:34:10 +0800
-Message-ID: <CAGXv+5Fbx7eTxP0ep6DV+jyronAWxYvu2M-g=MjHGRhjSXUc=w@mail.gmail.com>
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 5 Jun 2023 08:00:58 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916A59C;
+        Mon,  5 Jun 2023 05:00:56 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.west.internal (Postfix) with ESMTP id 40ACF3200033;
+        Mon,  5 Jun 2023 08:00:51 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Mon, 05 Jun 2023 08:00:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1685966450; x=1686052850; bh=Hm
+        VO2n4IR8EcYgz8xGvcBL19JXs9b2aJi2zXvALeGqw=; b=qPRm0DEOWNwBbWbSV7
+        R3fFsfnApOpWs4BP6e2ti0iTW4UseDz2ibxGtQczcBcRIzwnvwosPwFpwQR+9yJa
+        KG6a4m6SILkmbLYNpwuh0POLLd5WfW/26AkRtLpWAQWEQbA/ty93fhak1p3ZYiuZ
+        aQ7coOO5wsOZAX1rwQFCKJeJJzXqOibfL9acQzmrC2hrNjygbSfWqWSm9l7lwrYb
+        q9UjaOOgZ1sZ+Q6ztyyyBmtMjQdtbkh5mLmUDPe4cTOyAboW02vZKP7ea+LewzeG
+        2VDxjz/tPinxy08idrN13QAvD6e9vWvpiuEcv6vjEbKWjtRdeVOEOKLi1PuP6UrQ
+        g9eA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1685966450; x=1686052850; bh=HmVO2n4IR8EcY
+        gz8xGvcBL19JXs9b2aJi2zXvALeGqw=; b=Ezxuf5w7NHnh3cjOECvD07RFsaRSX
+        CBo3D0SoTQSIZH50UOUESaFMsY2y9G32BpwUT+NJ6aYBGzNI0gD4h5izXHgDBU0M
+        RQ+TDfMnNr7hJNYRw45C2cyv3YuDkh+hYtJhVEt/PfJ5tRqa+HyeTyUqDNCNxKX5
+        IIgUjTus/A1I0XAPCVCThcdrsVbshhVGp+D5/7stlAGSW+u1H5WqrpjY3Lt9s4vk
+        yGoPeyH1pbvwvkyv0xKdMyLBNjLHlptsCGiGNPZgQNcH3uWw/+2/JO87WFE4kknw
+        opj+MK3SCTNDvpJLH7uHOFKgZBAO4c30a/v3ApEKjf4Hs/U2lqAl6EdCg==
+X-ME-Sender: <xms:cM59ZCxm-m4GBlzfGsV7tXYPXvGtj5btFRwqR49VqJNh7oxqmPXm3Q>
+    <xme:cM59ZOQk79ghw6O2w0Ow-C3_YIsA2UMJvxTQicexI6UzKVHvF5i7qaLuE2Az27E8G
+    e7A3zU2F3PgVCpXXo4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelledggeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepleejueevuefggefhleefgeevvefgudeltedtheejfefgueffhfeuveevieff
+    veegnecuffhomhgrihhnpehnuhhvohhtohhnrdgtohhmpdhgihhthhhusgdrtghomhdpkh
+    gvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
+    lhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:cM59ZEXlh-ra-hFBuH_D6pVXUVOzlpU2Dz3qWX9w3k-0Mav_6hpk6A>
+    <xmx:cM59ZIgIWGpSFe-CDi8FCfLULaQdC8ZWKkL3JEmXn98EN-u3EL_MFQ>
+    <xmx:cM59ZECWyWhBeG-boOu4qd6lbYfng27SubxZfeEt9oX1hOUO43KWqg>
+    <xmx:cs59ZM5tdKx_GY7gJ1wgGVrDMMlWDk0JiaSafi-Z8hVzz8Rz5t9ajQ>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id A8E17B60086; Mon,  5 Jun 2023 08:00:48 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-447-ge2460e13b3-fm-20230525.001-ge2460e13
+Mime-Version: 1.0
+Message-Id: <9dc45c49-02aa-4e63-a176-97e3536f14f4@app.fastmail.com>
+In-Reply-To: <20230605040749.67964-1-ychuang570808@gmail.com>
+References: <20230605040749.67964-1-ychuang570808@gmail.com>
+Date:   Mon, 05 Jun 2023 14:00:28 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Jacky Huang" <ychuang570808@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
+        "Michael Turquette" <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>,
+        "Tomer Maimon" <tmaimon77@gmail.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        "Will Deacon" <will@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
+        mjchen@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v13 00/10] Introduce Nuvoton ma35d1 SoC
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Mon, Jun 5, 2023, at 06:07, Jacky Huang wrote:
+> From: Jacky Huang <ychuang3@nuvoton.com>
+>
+> This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+> initial device tree, clock driver, reset driver, and serial driver.
+>
+> This patchset cover letter is based from the initial support for Nuvoton
+> ma35d1 to keep tracking the version history.
+>
+> This patchset had been applied to Linux kernel 6.4.0-rc5
+> and tested on the Nuvoton ma35d1 SOM evaluation board.
+>
+> (ma35d1 information: 
+> https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+> MA35D1 porting on linux-5.10.y can be found at: 
+> https://github.com/OpenNuvoton/MPU-Family
+>
+> v13:
+>   - Modify serial driver
+>     - Added a check for oops_in_progress in ma35d1serial_console_write to
+>       determine whether to perform the spin_lock.
+>     - Rebased drivers/tty/serial/Kconfig and recreate the patch
+>     - Rebased MAINTAINERS and recreate the patch
 
-On Mon, Jun 5, 2023 at 2:15=E2=80=AFPM Tony Lindgren <tony@atomide.com> wro=
-te:
->
-> * Tony Lindgren <tony@atomide.com> [230603 06:35]:
-> > * Tony Lindgren <tony@atomide.com> [230603 05:41]:
-> > > I don't think 8250_mtk needs to do register access before and after t=
-he
-> > > serial port registration, but if it does, then adding custom read/wri=
-te
-> > > functions can be done that do not rely on initialized port like
-> > > serial_out().
-> >
-> > Oh but mtk8250_runtime_suspend() calls serial_in(up, MTK_UART_DEBUG0), =
-so
-> > yeah if that gets called before registration is complete it causes a NU=
-LL
-> > pointer exception. If the serial_ctrl and serial_port devices do runtim=
-e
-> > suspend before port registration completes, things will fail.
-> >
-> > Sounds like doing pm_runtime_resume_and_get() in mtk8250_probe() might
-> > fix the issue. Still seems that adding a custom read function for
-> > mtk8250_runtime_suspend() to use instead of calling serial_in() should
-> > not be needed.
->
-> Looking at this again, if serial8250_register_8250_port() fails, then
-> mtk8250_runtime_suspend() would again try to access uninitialized port.
->
-> Here's a better untested version of the patch to try.
->
-> Regards,
->
-> Tony
->
-> 8< ---------------------------
-> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250=
-/8250_mtk.c
-> --- a/drivers/tty/serial/8250/8250_mtk.c
-> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> @@ -57,6 +57,8 @@
->  #define MTK_UART_XON1          40      /* I/O: Xon character 1 */
->  #define MTK_UART_XOFF1         42      /* I/O: Xoff character 1 */
->
-> +#define MTK_UART_REGSHIFT      2
-> +
->  #ifdef CONFIG_SERIAL_8250_DMA
->  enum dma_rx_status {
->         DMA_RX_START =3D 0,
-> @@ -69,6 +71,7 @@ struct mtk8250_data {
->         int                     line;
->         unsigned int            rx_pos;
->         unsigned int            clk_count;
-> +       void __iomem            *membase;
->         struct clk              *uart_clk;
->         struct clk              *bus_clk;
->         struct uart_8250_dma    *dma;
-> @@ -187,6 +190,17 @@ static void mtk8250_dma_enable(struct uart_8250_port=
- *up)
->  }
->  #endif
->
-> +/* Read and write for register access before and after port registration=
- */
-> +static u32 __maybe_unused mtk8250_read(struct mtk8250_data *data, u32 re=
-g)
-> +{
-> +       return readl(data->membase + (reg << MTK_UART_REGSHIFT));
-> +}
-> +
-> +static void mtk8250_write(struct mtk8250_data *data, u32 reg, u32 val)
-> +{
-> +       writel(val, data->membase + (reg << MTK_UART_REGSHIFT));
-> +}
-> +
->  static int mtk8250_startup(struct uart_port *port)
->  {
->  #ifdef CONFIG_SERIAL_8250_DMA
-> @@ -425,11 +439,10 @@ mtk8250_set_termios(struct uart_port *port, struct =
-ktermios *termios,
->  static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
->  {
->         struct mtk8250_data *data =3D dev_get_drvdata(dev);
-> -       struct uart_8250_port *up =3D serial8250_get_port(data->line);
->
->         /* wait until UART in idle status */
->         while
-> -               (serial_in(up, MTK_UART_DEBUG0));
-> +               (mtk8250_read(data, MTK_UART_DEBUG0));
+Hi Jacky,
 
-I believe it still gets stuck here sometimes.
+This is looking good to me, thanks for getting it this far.
+I see all patches aside from the last one have been reviewed by
+at least one person. The clock driver is still missing an Ack
+from the clk maintainers, but I see that you have addressed
+Stephen's concerns from an earlier review round, so I expect
+this to be fine.
+Stephen, let me know if you have any final concerns about this driver.
 
-With your earlier patch, it could get through registering the port, and
-the console would show
+The serial port driver was still getting some last changes, so
+I only picked up the binding but not the driver here. If Greg
+and Jiri are happy with this version, I'd prefer to just add
+this with their Ack as well, otherwise please send only that
+patch for any follow-up revisions. If you can finish this
+before the linux-6.5 merge window, I'd add it on top of the
+other patches, otherwise it should just go through Greg's
+tree.
 
-    11002000.serial: ttyS0 at MMIO 0x11002000 (irq =3D 240, base_baud =3D
-1625000) is a ST16650V2
+If anything else should come up, let's handle this as patches on
+top of the branch I have now pushed in [1], no need to resend
+these.
 
-for the console UART.
+      Arnd
 
-Angelo mentioned that we should be using SLEEP_REQ/SLEEP_ACK registers
-in the MTK UART hardware.
-
-I tried reworking it into your patch here, but it causes issues with the
-UART-based Bluetooth on one of my devices. After the UART runtime suspends
-and resumes, something is off and causes the transfers during Bluetooth
-init to become corrupt.
-
-I'll try some more stuff, but the existing code seems timing dependent.
-If I add too many printk statements to the runtime suspend/resume
-callbacks, things seem to work. One time I even ended up with broken
-UARTs but otherwise booted up the system.
-
-ChenYu
-
->
->         if (data->clk_count =3D=3D 0U) {
->                 dev_dbg(dev, "%s clock count is 0\n", __func__);
-> @@ -553,6 +566,7 @@ static int mtk8250_probe(struct platform_device *pdev=
-)
->         if (!data)
->                 return -ENOMEM;
->
-> +       data->membase =3D uart.port.membase;
->         data->clk_count =3D 0;
->
->         if (pdev->dev.of_node) {
-> @@ -570,7 +584,7 @@ static int mtk8250_probe(struct platform_device *pdev=
-)
->         uart.port.flags =3D UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
->         uart.port.dev =3D &pdev->dev;
->         uart.port.iotype =3D UPIO_MEM32;
-> -       uart.port.regshift =3D 2;
-> +       uart.port.regshift =3D MTK_UART_REGSHIFT;
->         uart.port.private_data =3D data;
->         uart.port.shutdown =3D mtk8250_shutdown;
->         uart.port.startup =3D mtk8250_startup;
-> @@ -581,27 +595,30 @@ static int mtk8250_probe(struct platform_device *pd=
-ev)
->                 uart.dma =3D data->dma;
->  #endif
->
-> -       /* Disable Rate Fix function */
-> -       writel(0x0, uart.port.membase +
-> -                       (MTK_UART_RATE_FIX << uart.port.regshift));
-> -
->         platform_set_drvdata(pdev, data);
->
->         pm_runtime_enable(&pdev->dev);
-> -       err =3D mtk8250_runtime_resume(&pdev->dev);
-> +       err =3D pm_runtime_resume_and_get(&pdev->dev);
->         if (err)
->                 goto err_pm_disable;
->
-> +       /* Disable Rate Fix function */
-> +       mtk8250_write(data, 0, MTK_UART_RATE_FIX);
-> +
->         data->line =3D serial8250_register_8250_port(&uart);
->         if (data->line < 0) {
->                 err =3D data->line;
-> -               goto err_pm_disable;
-> +               goto err_pm_put;
->         }
->
->         data->rx_wakeup_irq =3D platform_get_irq_optional(pdev, 1);
->
-> +       pm_runtime_put_sync(&pdev->dev);
-> +
->         return 0;
->
-> +err_pm_put:
-> +       pm_runtime_put_sync(&pdev->dev);
->  err_pm_disable:
->         pm_runtime_disable(&pdev->dev);
->
-> @@ -694,7 +711,7 @@ static int __init early_mtk8250_setup(struct earlycon=
-_device *device,
->                 return -ENODEV;
->
->         device->port.iotype =3D UPIO_MEM32;
-> -       device->port.regshift =3D 2;
-> +       device->port.regshift =3D MTK_UART_REGSHIFT;
->
->         return early_serial8250_setup(device, NULL);
->  }
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=nuvoton/ma35d1
