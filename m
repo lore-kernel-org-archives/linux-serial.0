@@ -2,142 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90670C7EE2D
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 12:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F604C77B73
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 12:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232694AbjFEMBC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jun 2023 08:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        id S233140AbjFEMJM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jun 2023 08:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232654AbjFEMA6 (ORCPT
+        with ESMTP id S229815AbjFEMJL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Jun 2023 08:00:58 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916A59C;
-        Mon,  5 Jun 2023 05:00:56 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id 40ACF3200033;
-        Mon,  5 Jun 2023 08:00:51 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Mon, 05 Jun 2023 08:00:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1685966450; x=1686052850; bh=Hm
-        VO2n4IR8EcYgz8xGvcBL19JXs9b2aJi2zXvALeGqw=; b=qPRm0DEOWNwBbWbSV7
-        R3fFsfnApOpWs4BP6e2ti0iTW4UseDz2ibxGtQczcBcRIzwnvwosPwFpwQR+9yJa
-        KG6a4m6SILkmbLYNpwuh0POLLd5WfW/26AkRtLpWAQWEQbA/ty93fhak1p3ZYiuZ
-        aQ7coOO5wsOZAX1rwQFCKJeJJzXqOibfL9acQzmrC2hrNjygbSfWqWSm9l7lwrYb
-        q9UjaOOgZ1sZ+Q6ztyyyBmtMjQdtbkh5mLmUDPe4cTOyAboW02vZKP7ea+LewzeG
-        2VDxjz/tPinxy08idrN13QAvD6e9vWvpiuEcv6vjEbKWjtRdeVOEOKLi1PuP6UrQ
-        g9eA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1685966450; x=1686052850; bh=HmVO2n4IR8EcY
-        gz8xGvcBL19JXs9b2aJi2zXvALeGqw=; b=Ezxuf5w7NHnh3cjOECvD07RFsaRSX
-        CBo3D0SoTQSIZH50UOUESaFMsY2y9G32BpwUT+NJ6aYBGzNI0gD4h5izXHgDBU0M
-        RQ+TDfMnNr7hJNYRw45C2cyv3YuDkh+hYtJhVEt/PfJ5tRqa+HyeTyUqDNCNxKX5
-        IIgUjTus/A1I0XAPCVCThcdrsVbshhVGp+D5/7stlAGSW+u1H5WqrpjY3Lt9s4vk
-        yGoPeyH1pbvwvkyv0xKdMyLBNjLHlptsCGiGNPZgQNcH3uWw/+2/JO87WFE4kknw
-        opj+MK3SCTNDvpJLH7uHOFKgZBAO4c30a/v3ApEKjf4Hs/U2lqAl6EdCg==
-X-ME-Sender: <xms:cM59ZCxm-m4GBlzfGsV7tXYPXvGtj5btFRwqR49VqJNh7oxqmPXm3Q>
-    <xme:cM59ZOQk79ghw6O2w0Ow-C3_YIsA2UMJvxTQicexI6UzKVHvF5i7qaLuE2Az27E8G
-    e7A3zU2F3PgVCpXXo4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfeelledggeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepleejueevuefggefhleefgeevvefgudeltedtheejfefgueffhfeuveevieff
-    veegnecuffhomhgrihhnpehnuhhvohhtohhnrdgtohhmpdhgihhthhhusgdrtghomhdpkh
-    gvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
-    lhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:cM59ZEXlh-ra-hFBuH_D6pVXUVOzlpU2Dz3qWX9w3k-0Mav_6hpk6A>
-    <xmx:cM59ZIgIWGpSFe-CDi8FCfLULaQdC8ZWKkL3JEmXn98EN-u3EL_MFQ>
-    <xmx:cM59ZECWyWhBeG-boOu4qd6lbYfng27SubxZfeEt9oX1hOUO43KWqg>
-    <xmx:cs59ZM5tdKx_GY7gJ1wgGVrDMMlWDk0JiaSafi-Z8hVzz8Rz5t9ajQ>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id A8E17B60086; Mon,  5 Jun 2023 08:00:48 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-447-ge2460e13b3-fm-20230525.001-ge2460e13
-Mime-Version: 1.0
-Message-Id: <9dc45c49-02aa-4e63-a176-97e3536f14f4@app.fastmail.com>
-In-Reply-To: <20230605040749.67964-1-ychuang570808@gmail.com>
-References: <20230605040749.67964-1-ychuang570808@gmail.com>
-Date:   Mon, 05 Jun 2023 14:00:28 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Jacky Huang" <ychuang570808@gmail.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
-        "Michael Turquette" <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        "Tomer Maimon" <tmaimon77@gmail.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
-        mjchen@nuvoton.com, "Jacky Huang" <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v13 00/10] Introduce Nuvoton ma35d1 SoC
-Content-Type: text/plain
+        Mon, 5 Jun 2023 08:09:11 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D33F92;
+        Mon,  5 Jun 2023 05:09:09 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3559ncW7006719;
+        Mon, 5 Jun 2023 14:08:53 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=6wZOLEa3GpVYAhxU6J6dt+YaBwVxP3xhhj2G/143fFg=;
+ b=Fogd2R/WBJ4wh35TzPUkP03ulMrCzWoqkt+rnvCmoTVL/6gMqmifu04UxXgNMTcAHHig
+ HEm5ReXaYqrlfd6ZInaShg22w6JysJOuF6mnfetSkvXsdM9ivBoHVewJiY401QpWiTX1
+ fgJ8comiS5lyiRSvHgfLre/v36q1FyzKCRsPwdZl71e3jCuBAs+5fms4nm1ls3r5zVug
+ mvfiYyMdqR+tgb/BYdNa8aI7AFCojuwW2fZGe+AwgOMygk2vUyPvF4yK/huh7b18Uql9
+ nzcCn7Pc7X4/imH4tXSbONwK4JGunf+kR7AegxaCye9VbXe9mPkVbcDXd2IVoey2G02f 6A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3r1ddqru9w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 05 Jun 2023 14:08:53 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1B25610002A;
+        Mon,  5 Jun 2023 14:08:51 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1478222788C;
+        Mon,  5 Jun 2023 14:08:51 +0200 (CEST)
+Received: from [10.201.20.56] (10.201.20.56) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Mon, 5 Jun
+ 2023 14:08:50 +0200
+Message-ID: <63e2c1bc-4a80-4857-899a-dd87d92c6f7e@foss.st.com>
+Date:   Mon, 5 Jun 2023 14:08:49 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH] serial: st-asc: fix typo in property name
+Content-Language: en-US
+To:     Raphael Gallais-Pou <rgallaispou@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20230604083558.16661-1-rgallaispou@gmail.com>
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20230604083558.16661-1-rgallaispou@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.20.56]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.957,Hydra:6.0.573,FMLib:17.11.176.26
+ definitions=2023-06-03_08,2023-06-02_02,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 5, 2023, at 06:07, Jacky Huang wrote:
-> From: Jacky Huang <ychuang3@nuvoton.com>
->
-> This patchset adds initial support for the Nuvoton ma35d1 SoC, including
-> initial device tree, clock driver, reset driver, and serial driver.
->
-> This patchset cover letter is based from the initial support for Nuvoton
-> ma35d1 to keep tracking the version history.
->
-> This patchset had been applied to Linux kernel 6.4.0-rc5
-> and tested on the Nuvoton ma35d1 SOM evaluation board.
->
-> (ma35d1 information: 
-> https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
-> MA35D1 porting on linux-5.10.y can be found at: 
-> https://github.com/OpenNuvoton/MPU-Family
->
-> v13:
->   - Modify serial driver
->     - Added a check for oops_in_progress in ma35d1serial_console_write to
->       determine whether to perform the spin_lock.
->     - Rebased drivers/tty/serial/Kconfig and recreate the patch
->     - Rebased MAINTAINERS and recreate the patch
+Hi Raphael
 
-Hi Jacky,
+On 6/4/23 10:35, Raphael Gallais-Pou wrote:
+> Changes the property name read in the driver according to the YAML.
+> According to device-tree documentation, property names should not
+> include underscores.
+> 
+> Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
+> ---
+>  drivers/tty/serial/st-asc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index 5215e6910f68..6ef99a037a9b 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -754,7 +754,7 @@ static struct asc_port *asc_of_get_asc_port(struct platform_device *pdev)
+>  
+>  	asc_ports[id].hw_flow_control = of_property_read_bool(np,
+>  							"uart-has-rtscts");
+> -	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force_m1");
+> +	asc_ports[id].force_m1 =  of_property_read_bool(np, "st,force-m1");
+>  	asc_ports[id].port.line = id;
+>  	asc_ports[id].rts = NULL;
+>  
 
-This is looking good to me, thanks for getting it this far.
-I see all patches aside from the last one have been reviewed by
-at least one person. The clock driver is still missing an Ack
-from the clk maintainers, but I see that you have addressed
-Stephen's concerns from an earlier review round, so I expect
-this to be fine.
-Stephen, let me know if you have any final concerns about this driver.
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 
-The serial port driver was still getting some last changes, so
-I only picked up the binding but not the driver here. If Greg
-and Jiri are happy with this version, I'd prefer to just add
-this with their Ack as well, otherwise please send only that
-patch for any follow-up revisions. If you can finish this
-before the linux-6.5 merge window, I'd add it on top of the
-other patches, otherwise it should just go through Greg's
-tree.
-
-If anything else should come up, let's handle this as patches on
-top of the branch I have now pushed in [1], no need to resend
-these.
-
-      Arnd
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=nuvoton/ma35d1
+Thanks
+Patrice
