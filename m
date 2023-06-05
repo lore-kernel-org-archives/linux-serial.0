@@ -2,31 +2,31 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E973C7EE2A
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 13:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE4AC7EE2D
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Jun 2023 13:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233927AbjFENKy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Jun 2023 09:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        id S233878AbjFENKx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Jun 2023 09:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233930AbjFENJn (ORCPT
+        with ESMTP id S233932AbjFENJn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 5 Jun 2023 09:09:43 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26E8FD
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6BEF2
         for <linux-serial@vger.kernel.org>; Mon,  5 Jun 2023 06:09:37 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1q69xM-0001WH-KH; Mon, 05 Jun 2023 15:09:08 +0200
+        id 1q69xM-0001WK-KH; Mon, 05 Jun 2023 15:09:08 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1q69xF-005HiL-NM; Mon, 05 Jun 2023 15:09:01 +0200
+        id 1q69xG-005HiR-1R; Mon, 05 Jun 2023 15:09:02 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1q69xE-00BOyI-UI; Mon, 05 Jun 2023 15:09:00 +0200
+        id 1q69xF-00BOyO-A8; Mon, 05 Jun 2023 15:09:01 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -44,13 +44,15 @@ Cc:     kernel@pengutronix.de, Jiri Slaby <jirislaby@kernel.org>,
         Matthew Gerlach <matthew.gerlach@linux.intel.com>,
         Liang He <windhl@126.com>, linuxppc-dev@lists.ozlabs.org,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/2] serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
-Date:   Mon,  5 Jun 2023 15:08:55 +0200
-Message-Id: <20230605130857.85543-1-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v3 2/2] serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
+Date:   Mon,  5 Jun 2023 15:08:57 +0200
+Message-Id: <20230605130857.85543-3-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230605130857.85543-1-u.kleine-koenig@pengutronix.de>
+References: <20230605130857.85543-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1598; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=efED1NBBshJCjtXaXpvTEIOYQwFkMPcUlShlRdzjsnY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkfd5jaEVvCEZommSXyTG8Eotcw/vYwgq1ooqwJ +LAQzQ3pFmJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZH3eYwAKCRCPgPtYfRL+ TmwrCACC5YJ4ou0Bm0/ZORk01u+NPrk7NEQRTwKiRveCNvUqIgkJq5nkbm4JH/fUBh8nt6j8Sog y5Fm+vyV2+4B8hY4dmrRXD3GYbJzpbmBklsuWSiLE8xJvmXJAWyfcn3JiOaiwQwdtyAETBCaqTJ DIK4OX5t9hevZ1Zy0hQbvhL+rIn28McI95kOHiwXlm0AiH0uNzfomg+thLKcIhPfkWaYbiLShxo X5oKuhC2OvdjB6E++At3yQPVM0/InkgF/Uw1Q/vaFgQOL8cgn4V+wIDz5aIXX1J22l+vJGh+mFT kyuN8lADoLdvK3avgRsPKqAn0R5Fsn7Drbm1zUPU/eCfDxTa
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2668; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=/iY8DOYiUKQ3IjFvzh5hTbIR5kmRBK3gTLZzDTO0E0I=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkfd5m2spn9NPH1ET1qFwBJUJEoEBvhKes6ITC9 xXnMdPTWfCJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZH3eZgAKCRCPgPtYfRL+ TjiGCACtnb4oAf0+eyz+aIlLtpyep/naQvxVEmicNKRgK1bmBVd4+2E6Yc/lmqMU7uaePjbMqBZ L2qV7RUsNv9+StMaJjMetKfojPzQxDdbGdT2UsI8yccvFVd4W7nUhyd0YSjCCLfUI9pV+8vCr6o ab5XpL0kwljGEcxaZvnqw2cor/Y1noxqLZe5MjBiLqHrdyLudS/8hOiBrwjaWJR125arBX2FW0o uhvumK87tOCraxhuwX9WxiwYgWfO2Qygqnwmkua2zyK0rF/lHJ0n04IYoT2znMZBntuRShFvbK6 R4OnYXRPdqUGChAau9SPD8yj2LxbZDjtR/7PJdUNxpDpafRQ
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -61,44 +63,61 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+The need to handle the FSL variant of 8250 in a special way is also
+present without console support. So soften the dependency for
+SERIAL_8250_FSL accordingly. Note that with the 8250 driver compiled as
+a module, some devices still might not make use of the needed
+workarounds. That affects the ports instantiated in
+arch/powerpc/kernel/legacy_serial.c.
 
-this is v3 of the series that now also copes for
-arch/powerpc/kernel/legacy_serial.c using fsl8250_handle_irq().
+This issue was identified by Dominik Andreas Schorpp.
 
-For kernel configurations that already before were correctly using the
-Freescale workarounds, this is the case with this series applied, too.
-So in all cases the situation doesn't get worse. The upside is that even
-with the 8250 driver compiled as a module (or built-in but without
-console support) the workarounds are now applied for all devices but for
-the ones instantiated in arch/powerpc/kernel/legacy_serial.c. (And even
-for these there might not be a problem as they might benefit from
-enabling the workarounds in drivers/tty/serial/8250/8250_of.c. Not sure
-though.)
+To cope for CONFIG_SERIAL_8250=m + CONFIG_SERIAL_8250_FSL=y, 8250_fsl.o
+must be put in the same compilation unit as 8250_port.o because the
+latter defines some functions needed in the former and so 8250_fsl.o
+must not be built-in if 8250_port.o is available in a module.
 
-Patch #1 is new here. Patch #2 only changed lightly: I restored
-alphabetic order in drivers/tty/serial/8250/Kconfig.
+Acked-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20230531083230.2702181-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/tty/serial/8250/Kconfig  | 2 +-
+ drivers/tty/serial/8250/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-As patch #1 is needed for patch #2 to not introduce a build failure,
-both patches should be taken together. I suggest to add them to Greg's
-serial tree, but the changes pending there should not conflict with this
-series such that taking them both via powerpc works, too.
-
-Best regards
-Uwe
-
-Uwe Kleine-König (2):
-  powerpc/legacy_serial: Warn about 8250 devices operated without active
-    FSL workarounds
-  serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
-
- arch/powerpc/kernel/legacy_serial.c | 14 +++++++++-----
- drivers/tty/serial/8250/Kconfig     |  2 +-
- drivers/tty/serial/8250/Makefile    |  2 +-
- 3 files changed, 11 insertions(+), 7 deletions(-)
-
-
-base-commit: ac9a78681b921877518763ba0e89202254349d1b
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 5313aa31930f..10c09b19c871 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -378,7 +378,7 @@ config SERIAL_8250_BCM2835AUX
+ 
+ config SERIAL_8250_FSL
+ 	bool "Freescale 16550 UART support" if COMPILE_TEST && !(PPC || ARM || ARM64)
+-	depends on SERIAL_8250_CONSOLE
++	depends on SERIAL_8250
+ 	default PPC || ARM || ARM64
+ 	help
+ 	  Selecting this option enables a workaround for a break-detection
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 4fc2fc1f41b6..8824ba5295b6 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
+ 8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
+ 8250_base-$(CONFIG_SERIAL_8250_DWLIB)	+= 8250_dwlib.o
+ 8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
++8250_base-$(CONFIG_SERIAL_8250_FSL)	+= 8250_fsl.o
+ 8250_base-$(CONFIG_SERIAL_8250_PCILIB)	+= 8250_pcilib.o
+ obj-$(CONFIG_SERIAL_8250_PARISC)	+= 8250_parisc.o
+ obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
+@@ -28,7 +29,6 @@ obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
+ obj-$(CONFIG_SERIAL_8250_EXAR_ST16C554)	+= 8250_exar_st16c554.o
+ obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
+ obj-$(CONFIG_SERIAL_8250_PCI1XXXX)	+= 8250_pci1xxxx.o
+-obj-$(CONFIG_SERIAL_8250_FSL)		+= 8250_fsl.o
+ obj-$(CONFIG_SERIAL_8250_MEN_MCB)	+= 8250_men_mcb.o
+ obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
+ obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
 -- 
 2.39.2
 
