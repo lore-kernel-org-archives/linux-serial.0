@@ -2,236 +2,212 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE4FC77B7A
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Jun 2023 09:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4427BC7EE24
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Jun 2023 09:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235300AbjFFJRO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Jun 2023 05:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58366 "EHLO
+        id S236905AbjFFJUM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Jun 2023 05:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235933AbjFFJRN (ORCPT
+        with ESMTP id S237522AbjFFJUE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Jun 2023 05:17:13 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE2D100
-        for <linux-serial@vger.kernel.org>; Tue,  6 Jun 2023 02:17:03 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id ada2fe7eead31-439494cbfedso1416505137.3
-        for <linux-serial@vger.kernel.org>; Tue, 06 Jun 2023 02:17:03 -0700 (PDT)
+        Tue, 6 Jun 2023 05:20:04 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B6610FA
+        for <linux-serial@vger.kernel.org>; Tue,  6 Jun 2023 02:19:45 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id 3f1490d57ef6-ba8374001abso6540798276.2
+        for <linux-serial@vger.kernel.org>; Tue, 06 Jun 2023 02:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1686043022; x=1688635022;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Khb/i5f1eJZ0J6xeiDfa7TucSC94mz6ND/CCe3oa97c=;
-        b=MfAG+IuBokCFoq6NH0TfQ3LdRjyZ4XQHnhklH/9QDPZAO+l05Tgr5r4mdDo/GRSe/W
-         tTqsoN/TLZw5KbHQWjvZh4f06ku1WTxTK5RA4jDeJg4iRl3GgI206Ry/4rVkCBQTt1Zy
-         bNTbtrtrKfP6ajPOKPQ2ZFN4Fv/e59vfvCT+Q=
+        d=chromium.org; s=google; t=1686043171; x=1688635171;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rGevTo0TxQWBjnNLZAtO8QaXWz49rHiQrkaKxeAJxbo=;
+        b=X+lnGIqfj9O8lA2Ca9TiRtWIfHxjljaEh5reYjc1R1UKjZBJnVs/FhQpyes/Wowwgo
+         iD8E/pSCYtA5ixJ//GPlCZo/kwNsFF2fg0wHuQ8YDEN4c2T7r72aGFKFlJi2e0BVu3uj
+         90Hv//yDdkM67yzIxz3u5hZGP3mXT9m7UR1NI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686043022; x=1688635022;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Khb/i5f1eJZ0J6xeiDfa7TucSC94mz6ND/CCe3oa97c=;
-        b=AD0cwroxfhv/NWFT9lqTO9raV2zpMgOje5lwpgVmsqteFYYdDUKQ7kWhvSchmch8Lp
-         cfnbGvYUX0ZLc8XE8/LDl2h1DkZJVfjZhmyqmaFddA8zekoLmjnV/rnT/PVd0NE3iX2W
-         +ti8VxJhVMyno+2WgGRufeF0yMk8CZJ8xd7o+tzvHAjHiGj1XOIZz8gE5s/vCeIP/cKq
-         GxaSF3ZAb/ghoqTEpkobvkv7kQibImyO19kv6in58o3pxF0KPgdd039FVBu5jrW7WG+t
-         5G1nMTFo5ryCujIRlaR77/dBqRTtwJ37fDT3c4m+Fq1fVDz1y4PIczOMJ0ZgzxmNuTnI
-         YwpQ==
-X-Gm-Message-State: AC+VfDzuglTcVOGz8pzVmE5eppIs7MnT+vZD9JrY/3v7xf8YKYwedjaM
-        Vt53blqqluMgsTmrbt1VRR6JwhBpZuZKrxQ6Aa1oVw==
-X-Google-Smtp-Source: ACHHUZ4Q5xZF3lkjNlUB6Gn9V6AQgQZ2sq3mqzhEAjK9Sn0NJJMwCpu52xY+BZ6AAOUkIEC/8Il2gpm8IN/ybT89ztU=
-X-Received: by 2002:a05:6102:2d6:b0:434:7757:f025 with SMTP id
- h22-20020a05610202d600b004347757f025mr947556vsh.0.1686043022440; Tue, 06 Jun
- 2023 02:17:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230525113034.46880-1-tony@atomide.com> <20230602083335.GA181647@google.com>
- <87a5xii33r.fsf@jogness.linutronix.de> <20230603054139.GR14287@atomide.com>
- <20230603063533.GS14287@atomide.com> <20230605061511.GW14287@atomide.com>
- <CAGXv+5Fbx7eTxP0ep6DV+jyronAWxYvu2M-g=MjHGRhjSXUc=w@mail.gmail.com>
- <20230605122447.GY14287@atomide.com> <CAGXv+5HwL+R5QpO3pHGQd9qAxu2pCMDjYvdni1HjiC8eEE38mg@mail.gmail.com>
- <20230605131803.GA14287@atomide.com>
-In-Reply-To: <20230605131803.GA14287@atomide.com>
+        d=1e100.net; s=20221208; t=1686043171; x=1688635171;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rGevTo0TxQWBjnNLZAtO8QaXWz49rHiQrkaKxeAJxbo=;
+        b=fZwYkuL4Gcs6vcFy1ZyI7+NiRWMd4DJl/UqiQjkxMejL04X01NJRMqCieo9BKDcXVz
+         paNtP2JGqHmFPtRSNho1pyzWh1tyM0MTL7clJ1smkgpZVcUh9HnK19xbR1dHivqq9qGH
+         zyUbrDH64MAFxF+2H5xTjd9HFztz2yvMSNWHaJ/bz3xun8L7GcP4wNvIuZo6Elqmk485
+         0B7Js/RTvddTQ3Z/V4txRzodn2EN9uLjTH3Y9f7Ys5P1pwFKNdpdSc3ZCT7DJfY8DAIA
+         nC1pPmK6FFM/qVGFKYBas1WGQhwpsGl3/TcyZEw0eorIJNzeNEuchOCSwH6cioQlKU+j
+         bTqg==
+X-Gm-Message-State: AC+VfDxN6omS2SQQlAozhI11xlJtJJIpljefBdGuMgo3WRfuYEL9jiMc
+        bUW42+1RhGSRPe667aDBhf8Yaw==
+X-Google-Smtp-Source: ACHHUZ4ez/f43PgkvQz1Dr5YiS0CAYETU8SAy+uBG0YWdxWZmyH1Z+Gm2DTDz5LknyDaTYNXfOE6qA==
+X-Received: by 2002:a5b:6cb:0:b0:b9e:8a8b:b073 with SMTP id r11-20020a5b06cb000000b00b9e8a8bb073mr1351788ybq.39.1686043171422;
+        Tue, 06 Jun 2023 02:19:31 -0700 (PDT)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:62f6:f76c:5e28:6293])
+        by smtp.gmail.com with ESMTPSA id h8-20020a170902f54800b001993a1fce7bsm8042854plf.196.2023.06.06.02.19.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Jun 2023 02:19:31 -0700 (PDT)
 From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Tue, 6 Jun 2023 17:16:50 +0800
-Message-ID: <CAGXv+5GR9TEaNrj4B21H2iukS2kWW=rtoWkoVnWewVsrbcG0Hw@mail.gmail.com>
-Subject: Re: [PATCH v12 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>,
+        John Ogness <john.ogness@linutronix.de>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
-        linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>
+Subject: [PATCH] serial: 8250_mtk: Simplify clock sequencing and runtime PM
+Date:   Tue,  6 Jun 2023 17:17:45 +0800
+Message-ID: <20230606091747.2031168-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.41.0.rc0.172.g3f132b7071-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 5, 2023 at 9:18=E2=80=AFPM Tony Lindgren <tony@atomide.com> wro=
-te:
->
-> * Chen-Yu Tsai <wenst@chromium.org> [230605 13:01]:
-> > On Mon, Jun 5, 2023 at 8:24=E2=80=AFPM Tony Lindgren <tony@atomide.com>=
- wrote:
-> > >
-> > > * Chen-Yu Tsai <wenst@chromium.org> [230605 11:34]:
-> > > > On Mon, Jun 5, 2023 at 2:15=E2=80=AFPM Tony Lindgren <tony@atomide.=
-com> wrote:
-> > > > > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/ser=
-ial/8250/8250_mtk.c
-> > > > > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > > > > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > > > > @@ -425,11 +439,10 @@ mtk8250_set_termios(struct uart_port *port,=
- struct ktermios *termios,
-> > > > >  static int __maybe_unused mtk8250_runtime_suspend(struct device =
-*dev)
-> > > > >  {
-> > > > >         struct mtk8250_data *data =3D dev_get_drvdata(dev);
-> > > > > -       struct uart_8250_port *up =3D serial8250_get_port(data->l=
-ine);
-> > > > >
-> > > > >         /* wait until UART in idle status */
-> > > > >         while
-> > > > > -               (serial_in(up, MTK_UART_DEBUG0));
-> > > > > +               (mtk8250_read(data, MTK_UART_DEBUG0));
-> > > >
-> > > > I believe it still gets stuck here sometimes.
-> > >
-> > > Hmm so maybe you need to mtk8250_write(data, 0, MTK_UART_RATE_FIX) in
-> > > probe before pm_runtime_resume_and_get() that enables the baud clock?
-> > > That's something I changed, so maybe it messes up things.
-> >
-> > I think it has something to do with the do_pm() function calling
-> > the callbacks directly, then also calling runtime PM.
->
-> Yeah I'm not following really what's going on there.. So then I guess the
-> call for mtk8250_write(data, 0, MTK_UART_RATE_FIX) should be after the
-> pm_runtime_resume_and_get() call.
->
-> > > Looking at the 8250_mtk git log, it's runtime PM functions seem to on=
-ly
-> > > currently manage the baud clock so register access should be doable
-> > > without runtime PM resume?
-> >
-> > Actually it only manages the bus clock. The baud clock is simply the sy=
-stem
-> > XTAL which is not gateble.
->
-> OK
->
-> > > > With your earlier patch, it could get through registering the port,=
- and
-> > > > the console would show
-> > > >
-> > > >     11002000.serial: ttyS0 at MMIO 0x11002000 (irq =3D 240, base_ba=
-ud =3D
-> > > > 1625000) is a ST16650V2
-> > > >
-> > > > for the console UART.
-> > >
-> > > OK
-> > >
-> > > > Angelo mentioned that we should be using SLEEP_REQ/SLEEP_ACK regist=
-ers
-> > > > in the MTK UART hardware.
-> > > >
-> > > > I tried reworking it into your patch here, but it causes issues wit=
-h the
-> > > > UART-based Bluetooth on one of my devices. After the UART runtime s=
-uspends
-> > > > and resumes, something is off and causes the transfers during Bluet=
-ooth
-> > > > init to become corrupt.
-> > > >
-> > > > I'll try some more stuff, but the existing code seems timing depend=
-ent.
-> > > > If I add too many printk statements to the runtime suspend/resume
-> > > > callbacks, things seem to work. One time I even ended up with broke=
-n
-> > > > UARTs but otherwise booted up the system.
-> > >
-> > > Well another thing that now changes is that we now runtime suspend th=
-e
-> > > port at the end of the probe. What the 8250_mtk probe was doing earli=
-er
-> > > it was leaving the port baud clock enabled, but runtime PM disabled
-> > > until mtk8250_do_pm() I guess.
-> >
-> > I guess that's the biggest difference? Since the *bus* clock gets disab=
-led,
-> > any access will hang. Is it enough to just support runtime PM? Or do I =
-have
-> > to also have UART_CAP_RPM?
->
-> Maybe try changing pm_runtime_put_sync() at the end of the probe to just
-> pm_runtime_put_noidle()? Then the driver should be back to where it was
-> with clocks enabled but runtime PM suspended.
->
-> I don't think you need UART_CAP_RPM right now unless 8250_mtk adds suppor=
-t
-> for autosuspend. That stuff will get replaced by the serial_core generic
-> PM patch from Andy. I think in it's current form 8250_mtk just gets enabl=
-ed
-> when the port is opened, and disabled when the port is closed. And gets
-> disabled for system suspend.
+The 8250_mtk driver's runtime PM support has some issues:
 
-I ended up following 8250_dw's design, which seemed less convoluted.
-The original code was waaay too convoluted.
+- The bus clock is enabled (through runtime PM callback) later than a
+  register write
+- runtime PM resume callback directly called in probe, but no
+  pm_runtime_set_active() call is present
+- UART PM function calls the callbacks directly, _and_ calls runtime
+  PM API
+- runtime PM callbacks try to do reference counting, adding yet another
+  count between runtime PM and clocks
 
-BTW, the Bluetooth breakage seems like a different problem. It works
-on v6.4-rc5, but breaks somewhere between that and next, before the
-runtime PM series. This particular device has a Qualcomm WiFi/BT chip
-with the Bluetooth part going through UART. The btqca reports a bunch
-of frame reassembly errors during and after initialization:
+This fragile setup worked in a way, but broke recently with runtime PM
+support added to the serial core. The system would hang when the UART
+console was probed and brought up.
 
-Bluetooth: hci0: setting up ROME/QCA6390
-Bluetooth: hci0: Frame reassembly failed (-84)
-Bluetooth: hci0: QCA Product ID   :0x00000008
-Bluetooth: hci0: QCA SOC Version  :0x00000044
-Bluetooth: hci0: QCA ROM Version  :0x00000302
-Bluetooth: hci0: QCA Patch Version:0x00000111
-Bluetooth: hci0: QCA controller version 0x00440302
-Bluetooth: hci0: QCA Downloading qca/rampatch_00440302.bin
-Bluetooth: hci0: Frame reassembly failed (-84)
-Bluetooth: hci0: QCA Downloading qca/nvm_00440302_i2s.bin
-Bluetooth: hci0: QCA setup on UART is completed
-Bluetooth: hci0: Opcode 0x1002 failed: -110
-Bluetooth: hci0: command 0x1002 tx timeout
-Bluetooth: hci0: crash the soc to collect controller dump
-Bluetooth: hci0: QCA collecting dump of size:196608
-Bluetooth: hci0: Frame reassembly failed (-84)
-...
-Bluetooth: hci0: Frame reassembly failed (-84)
-Bluetooth: Received HCI_IBS_WAKE_ACK in tx state 0
-Bluetooth: hci0: Frame reassembly failed (-84)
-...
-Bluetooth: hci0: Frame reassembly failed (-84)
-Bluetooth: hci0: Frame reassembly failed (-90)
-Bluetooth: hci0: Frame reassembly failed (-84)
-...
-Bluetooth: hci0: Frame reassembly failed (-84)
-Bluetooth: hci0: Injecting HCI hardware error event
+Tony provided some potential fixes [1][2], though they were still a bit
+complicated. The 8250_dw driver, which the 8250_mtk driver might have
+been based on, has a similar structure but simpler runtime PM usage.
 
-However on a different device that has a Realtek WiFi/BT chip,
-it doesn't seem to run into errors.
+Simplify clock sequencing and runtime PM support in the 8250_mtk driver.
+Specifically, the clock is acquired enabled and assumed to be active,
+unless toggled through runtime PM suspend/resume. Reference counting is
+removed and left to the runtime PM core. The serial pm function now
+only calls the runtime PM API.
 
-Just putting it out there in case anyone else runs into it.
+[1] https://lore.kernel.org/linux-serial/20230602092701.GP14287@atomide.com/
+[2] https://lore.kernel.org/linux-serial/20230605061511.GW14287@atomide.com/
 
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Suggested-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+---
+ drivers/tty/serial/8250/8250_mtk.c | 50 ++++++------------------------
+ 1 file changed, 10 insertions(+), 40 deletions(-)
 
-Thank you for your help on this.
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index aa8e98164d68..74da5676ce67 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -431,12 +431,7 @@ static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
+ 	while
+ 		(serial_in(up, MTK_UART_DEBUG0));
+ 
+-	if (data->clk_count == 0U) {
+-		dev_dbg(dev, "%s clock count is 0\n", __func__);
+-	} else {
+-		clk_disable_unprepare(data->bus_clk);
+-		data->clk_count--;
+-	}
++	clk_disable_unprepare(data->bus_clk);
+ 
+ 	return 0;
+ }
+@@ -444,19 +439,8 @@ static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
+ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
+ {
+ 	struct mtk8250_data *data = dev_get_drvdata(dev);
+-	int err;
+ 
+-	if (data->clk_count > 0U) {
+-		dev_dbg(dev, "%s clock count is %d\n", __func__,
+-			data->clk_count);
+-	} else {
+-		err = clk_prepare_enable(data->bus_clk);
+-		if (err) {
+-			dev_warn(dev, "Can't enable bus clock\n");
+-			return err;
+-		}
+-		data->clk_count++;
+-	}
++	clk_prepare_enable(data->bus_clk);
+ 
+ 	return 0;
+ }
+@@ -465,14 +449,12 @@ static void
+ mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+ {
+ 	if (!state)
+-		if (!mtk8250_runtime_resume(port->dev))
+-			pm_runtime_get_sync(port->dev);
++		pm_runtime_get_sync(port->dev);
+ 
+ 	serial8250_do_pm(port, state, old);
+ 
+ 	if (state)
+-		if (!pm_runtime_put_sync_suspend(port->dev))
+-			mtk8250_runtime_suspend(port->dev);
++		pm_runtime_put_sync_suspend(port->dev);
+ }
+ 
+ #ifdef CONFIG_SERIAL_8250_DMA
+@@ -504,7 +486,7 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
+ 		return 0;
+ 	}
+ 
+-	data->bus_clk = devm_clk_get(&pdev->dev, "bus");
++	data->bus_clk = devm_clk_get_enabled(&pdev->dev, "bus");
+ 	if (IS_ERR(data->bus_clk))
+ 		return PTR_ERR(data->bus_clk);
+ 
+@@ -587,25 +569,16 @@ static int mtk8250_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+-	pm_runtime_enable(&pdev->dev);
+-	err = mtk8250_runtime_resume(&pdev->dev);
+-	if (err)
+-		goto err_pm_disable;
+-
+ 	data->line = serial8250_register_8250_port(&uart);
+-	if (data->line < 0) {
+-		err = data->line;
+-		goto err_pm_disable;
+-	}
++	if (data->line < 0)
++		return data->line;
+ 
+ 	data->rx_wakeup_irq = platform_get_irq_optional(pdev, 1);
+ 
+-	return 0;
+-
+-err_pm_disable:
+-	pm_runtime_disable(&pdev->dev);
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
+ 
+-	return err;
++	return 0;
+ }
+ 
+ static int mtk8250_remove(struct platform_device *pdev)
+@@ -619,9 +592,6 @@ static int mtk8250_remove(struct platform_device *pdev)
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_put_noidle(&pdev->dev);
+ 
+-	if (!pm_runtime_status_suspended(&pdev->dev))
+-		mtk8250_runtime_suspend(&pdev->dev);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.41.0.rc0.172.g3f132b7071-goog
 
-ChenYu
