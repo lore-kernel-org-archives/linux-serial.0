@@ -2,35 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9E4C7EE29
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Jun 2023 14:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78460C77B7A
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Jun 2023 14:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240782AbjFGOxD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Jun 2023 10:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
+        id S239616AbjFGO6G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Jun 2023 10:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240162AbjFGOxC (ORCPT
+        with ESMTP id S238959AbjFGO6F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Jun 2023 10:53:02 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5522219BC;
-        Wed,  7 Jun 2023 07:53:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=roFvECUbc6N6VAVII+7bKbq9kRXHhpLc/txbGSzYYCc=; b=xUWTEBxSBf1g8JzGgRcqmbv/zw
-        PCH8Wxjd5bYNTI0WNhgKMgGXInBOB6OJTBJWDVxz5W1tySlFIbRNwWfg/xL7//UCU3d5uLEItYs5R
-        ohIwvXmuWRgeQwpguhK6qi7Oky430FziuSCUUoIo0gCStfSm0lyqogHGJJj5Sw61+f60=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57980 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1q6uWo-000694-17; Wed, 07 Jun 2023 10:52:50 -0400
-Date:   Wed, 7 Jun 2023 10:52:49 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+        Wed, 7 Jun 2023 10:58:05 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997FD1FDE
+        for <linux-serial@vger.kernel.org>; Wed,  7 Jun 2023 07:57:52 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-976a0a1a92bso927033266b.1
+        for <linux-serial@vger.kernel.org>; Wed, 07 Jun 2023 07:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1686149871; x=1688741871;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hS+/6RkZ6WW8ubE3QAHP0j2dfS40b4EPse0M4avR6Ps=;
+        b=uV34140YlRXfCTyvwQmF0ygN2KzxxQAFx2aKnrDWJIZ7CcMOMYL6YWxlEG3vPUgamo
+         hMKRHuN1w4Xql1XHnJiEM2DV/bubLnxKoX02FpX1gbunk0Gc98ivSkq/LWkuRfMiFWVo
+         rU3JnOgO7pjAT6kOjUQWNFW+0UkV3bC1HfBysfaEVx8GuGG5ek1UH1Ik3hZzuEj1XiqS
+         ahcwY1J3Sy87DnKEAhnw/zXUK8eicOeo9hkwHBWdixscavmlQGIyufb6HmNWWQmxxWzR
+         6JZqWXU0ksGpk6YsMvtRyBOSaXIVX+ob29+odYTk3OmTXvb4xW0aR7QlM3nZjgVFhMOb
+         s+vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686149871; x=1688741871;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hS+/6RkZ6WW8ubE3QAHP0j2dfS40b4EPse0M4avR6Ps=;
+        b=RG0+apVu5lesk4gWTzWa06Be+EPbzk03kuTrVWJta+AuFQ+NakA1llkPCXPz8OrZXo
+         TVUTmtpaNbRDgw0glXlaJ9lPdSTDdG07W1XmKTsT4hZ9w1KiSIZOYsQdHEql8qKT38In
+         1S0NXf3QxoZsqDET05ihcVgNkv6fdsfPvIbQaPSuK8C29Lmd/DPPfAg83yYr8fC6Ut2E
+         av5QhMWX0JxIYe21/H5gZ0L7tUhMdmpugU+D6fHtYdnKdv4Pv1uyUMUm5KPuMVzjqErE
+         CWwRAoXpV/RFzX3ICkoMrBLdVhoogo4UBUepn0deoqyprqctEahsmfGc+cl79nayUwNh
+         MN+A==
+X-Gm-Message-State: AC+VfDyV8ngzT5KCKUlaK4gogArpwQoxmcYpG33sDB+xlInJ/rrYRAWh
+        XBpM5ALBYTMmzqagGWN2E18dHQ==
+X-Google-Smtp-Source: ACHHUZ6q2knYhzj9DI2ztt8RiTkF5mX6pVfy2XZ+pCrakzMPlEg0MFdLvQw8wj2+ZzCvBPEnLNnVAg==
+X-Received: by 2002:a17:907:7da6:b0:96a:ee54:9f19 with SMTP id oz38-20020a1709077da600b0096aee549f19mr5777366ejc.48.1686149870940;
+        Wed, 07 Jun 2023 07:57:50 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id rk22-20020a170907215600b00977eda0ea29sm3171344ejb.14.2023.06.07.07.57.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Jun 2023 07:57:50 -0700 (PDT)
+Message-ID: <881d6357-7190-7ef1-22a3-63a9b8533b4f@linaro.org>
+Date:   Wed, 7 Jun 2023 16:57:48 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v8 05/10] dt-bindings: sc16is7xx: Add property to change
+ GPIO function
+Content-Language: en-US
+To:     Hugo Villeneuve <hugo@hugovil.com>
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
         jirislaby@kernel.org, jringle@gridpoint.com,
@@ -41,107 +69,104 @@ Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
         Lech Perczak <lech.perczak@camlingroup.com>
-Message-Id: <20230607105249.6dc95ed226e3578a3c9116aa@hugovil.com>
-In-Reply-To: <a6301c0e-b774-8963-8eb1-8e0948b1468c@linaro.org>
 References: <20230607140525.833982-1-hugo@hugovil.com>
-        <20230607140525.833982-6-hugo@hugovil.com>
-        <f5cfc81d-d8ae-d270-f29a-c2b45b07a651@linaro.org>
-        <20230607104100.0186b1afc872e583cb9466b8@hugovil.com>
-        <a6301c0e-b774-8963-8eb1-8e0948b1468c@linaro.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+ <20230607140525.833982-6-hugo@hugovil.com>
+ <f5cfc81d-d8ae-d270-f29a-c2b45b07a651@linaro.org>
+ <20230607104100.0186b1afc872e583cb9466b8@hugovil.com>
+ <a6301c0e-b774-8963-8eb1-8e0948b1468c@linaro.org>
+ <20230607105249.6dc95ed226e3578a3c9116aa@hugovil.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230607105249.6dc95ed226e3578a3c9116aa@hugovil.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v8 05/10] dt-bindings: sc16is7xx: Add property to change
- GPIO function
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 7 Jun 2023 16:46:56 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+On 07/06/2023 16:52, Hugo Villeneuve wrote:
+> On Wed, 7 Jun 2023 16:46:56 +0200
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+> 
+>> On 07/06/2023 16:41, Hugo Villeneuve wrote:
+>>> On Wed, 7 Jun 2023 16:30:26 +0200
+>>> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+>>>
+>>>> On 07/06/2023 16:05, Hugo Villeneuve wrote:
+>>>>> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>>>>>
+>>>>> Some variants in this series of UART controllers have GPIO pins that
+>>>>> are shared between GPIO and modem control lines.
+>>>>>
+>>>>> The pin mux mode (GPIO or modem control lines) can be set for each
+>>>>> ports (channels) supported by the variant.
+>>>>>
+>>>>> This adds a property to the device tree to set the GPIO pin mux to
+>>>>> modem control lines on selected ports if needed.
+>>>>>
+>>>>> Cc: <stable@vger.kernel.org> # 6.1.x
+>>>>> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>>>>> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+>>>>> Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+>>>>> ---
+>>>>>  .../bindings/serial/nxp,sc16is7xx.txt         | 46 +++++++++++++++++++
+>>>>>  1 file changed, 46 insertions(+)
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>>>> index 0fa8e3e43bf8..1a7e4bff0456 100644
+>>>>> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>>>> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>>>> @@ -23,6 +23,9 @@ Optional properties:
+>>>>>      1 = active low.
+>>>>>  - irda-mode-ports: An array that lists the indices of the port that
+>>>>>  		   should operate in IrDA mode.
+>>>>> +- nxp,modem-control-line-ports: An array that lists the indices of the port that
+>>>>> +				should have shared GPIO lines configured as
+>>>>> +				modem control lines.
+>>>>>  
+>>>>>  Example:
+>>>>>          sc16is750: sc16is750@51 {
+>>>>> @@ -35,6 +38,26 @@ Example:
+>>>>>                  #gpio-cells = <2>;
+>>>>>          };
+>>>>>  
+>>>>> +	sc16is752: sc16is752@53 {
+>>>>
+>>>> Since you keep sending new versions, fix the names. nNode names should
+>>>> be generic. See also explanation and list of examples in DT specification:
+>>>> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
+>>>
+>>> Hi,
+>>> by the way, I do not "keep sending new versions" just for the fun of
+>>> it...
+>>
+>> Sure, I know. So when the next version is necessary to send, fix also this.
+>>
+>>>
+>>> Even after reading your link, I cannot see what is wrong with that
+>>> name.
+>>
+>> They are not generic. They are specific.
+> 
+> What do you mean by "They"? My patch adds only a new property...
 
-> On 07/06/2023 16:41, Hugo Villeneuve wrote:
-> > On Wed, 7 Jun 2023 16:30:26 +0200
-> > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> > 
-> >> On 07/06/2023 16:05, Hugo Villeneuve wrote:
-> >>> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >>>
-> >>> Some variants in this series of UART controllers have GPIO pins that
-> >>> are shared between GPIO and modem control lines.
-> >>>
-> >>> The pin mux mode (GPIO or modem control lines) can be set for each
-> >>> ports (channels) supported by the variant.
-> >>>
-> >>> This adds a property to the device tree to set the GPIO pin mux to
-> >>> modem control lines on selected ports if needed.
-> >>>
-> >>> Cc: <stable@vger.kernel.org> # 6.1.x
-> >>> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >>> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> >>> Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-> >>> ---
-> >>>  .../bindings/serial/nxp,sc16is7xx.txt         | 46 +++++++++++++++++++
-> >>>  1 file changed, 46 insertions(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> >>> index 0fa8e3e43bf8..1a7e4bff0456 100644
-> >>> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> >>> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
-> >>> @@ -23,6 +23,9 @@ Optional properties:
-> >>>      1 = active low.
-> >>>  - irda-mode-ports: An array that lists the indices of the port that
-> >>>  		   should operate in IrDA mode.
-> >>> +- nxp,modem-control-line-ports: An array that lists the indices of the port that
-> >>> +				should have shared GPIO lines configured as
-> >>> +				modem control lines.
-> >>>  
-> >>>  Example:
-> >>>          sc16is750: sc16is750@51 {
-> >>> @@ -35,6 +38,26 @@ Example:
-> >>>                  #gpio-cells = <2>;
-> >>>          };
-> >>>  
-> >>> +	sc16is752: sc16is752@53 {
-> >>
-> >> Since you keep sending new versions, fix the names. nNode names should
-> >> be generic. See also explanation and list of examples in DT specification:
-> >> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
-> > 
-> > Hi,
-> > by the way, I do not "keep sending new versions" just for the fun of
-> > it...
-> 
-> Sure, I know. So when the next version is necessary to send, fix also this.
-> 
-> >
-> > Even after reading your link, I cannot see what is wrong with that
-> > name.
-> 
-> They are not generic. They are specific.
+Your patch adds multiple new examples. My comment was at appropriate
+place to fix, although only the first place. I did not refer to
+unrelated pieces or other parts of the code. Specifically - I wrote
+nothing about property.
 
-What do you mean by "They"? My patch adds only a new property...
+> 
+> This patch will not fix old names, but a future patch could do it.
 
-This patch will not fix old names, but a future patch could do it.
+No worries, I asked for new code.
 
-And what do you mean by "They are not generic. They are specific". Of
-course the property is specific, because it relates to something very
-specific to this chip?
+> 
+> And what do you mean by "They are not generic. They are specific". Of
+> course the property is specific, because it relates to something very
+> specific to this chip?
+
+Again, I did not comment under a property. I did not refer to any property.
 
 
-> > You are the first one since V1 to think it is inappropriate.
-> > 
-> > Please suggest what the name should be.
-> 
-> Depends what this is. I know nothing about this device, so I cannot
-> suggest you. Therefore I gave you link with ideas to choose from.
-> 
-> Best regards,
-> Krzysztof
-> 
-> 
+Best regards,
+Krzysztof
+
