@@ -2,317 +2,171 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D4C1C7EE29
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Jun 2023 14:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D55DDC7EE25
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Jun 2023 14:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241030AbjFGOHc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Jun 2023 10:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
+        id S240984AbjFGOJX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Jun 2023 10:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241033AbjFGOHN (ORCPT
+        with ESMTP id S234318AbjFGOJV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Jun 2023 10:07:13 -0400
+        Wed, 7 Jun 2023 10:09:21 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275F81BF8;
-        Wed,  7 Jun 2023 07:06:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292F81BF1;
+        Wed,  7 Jun 2023 07:08:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=50p/zLaeMpKRWmAB6TSo0KVng1B728/hNk2tudhv+As=; b=IAY/E7e23qeM3CII6ORjATKc0M
-        hpx1APb8hpjceyDyFBdNDsb0lmeDIboY7KT38TGbte9yJowwNBCrlG+TTafI9jSoaJiWU6I3aIb1Y
-        kmz8sCnlJ/MrFf6W5Q/Sv95GCdYbaAs0OqQumdtZ31CHzdeNuxX9eZ1vLhb73q7YqjeA=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57832 helo=pettiford.lan)
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=rkWjMt2GNbfEvT17R5tH+mVMzIISMovCHFDUfGIB0Q0=; b=cGUk3O6ZxNQwpJgwqnWwggUeTk
+        9GJroCwjndZbfuvkGkexFcMpvCyq1TErIJs7Bd7PLSLHH6/vCTLHZ5PU9BaOTqHnGVxXENnSPa1NN
+        xzrU1kfKCZ1WBCaHvlJIc3opEzWfk2arBxiIq9Hcu0duPhdGhXh9FrSFXZ2hBF8/ZG84=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:37910 helo=pettiford)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1q6tnA-0005dF-PD; Wed, 07 Jun 2023 10:05:41 -0400
+        id 1q6tpO-0005jo-UK; Wed, 07 Jun 2023 10:08:00 -0400
+Date:   Wed, 7 Jun 2023 10:07:58 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
         jirislaby@kernel.org, jringle@gridpoint.com,
-        jesse.sung@canonical.com, isaac.true@canonical.com,
-        l.perczak@camlintechnologies.com, tomasz.mon@camlingroup.com
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hugo@hugovil.com,
-        linux-gpio@vger.kernel.org,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         stable@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed,  7 Jun 2023 10:05:20 -0400
-Message-Id: <20230607140525.833982-7-hugo@hugovil.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230607140525.833982-1-hugo@hugovil.com>
-References: <20230607140525.833982-1-hugo@hugovil.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-Id: <20230607100758.705c82abae71de6a675cbe96@hugovil.com>
+In-Reply-To: <20230604191613.ea95fa9a1bc508525fe3bbd5@hugovil.com>
+References: <20230602152626.284324-1-hugo@hugovil.com>
+        <20230602152626.284324-6-hugo@hugovil.com>
+        <2023060454-cotton-paramount-e33e@gregkh>
+        <20230604134344.73dc3cbb57d335d4a0b4b33a@hugovil.com>
+        <2023060406-scarcity-clear-cc56@gregkh>
+        <20230604191613.ea95fa9a1bc508525fe3bbd5@hugovil.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v8 06/10] serial: sc16is7xx: fix regression with GPIO configuration
+Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO
+ configuration
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Sun, 4 Jun 2023 19:16:13 -0400
+Hugo Villeneuve <hugo@hugovil.com> wrote:
 
-Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-changed the function of the GPIOs pins to act as modem control
-lines without any possibility of selecting GPIO function.
+> On Sun, 4 Jun 2023 20:29:58 +0200
+> Greg KH <gregkh@linuxfoundation.org> wrote:
+> 
+> > On Sun, Jun 04, 2023 at 01:43:44PM -0400, Hugo Villeneuve wrote:
+> > > Here is what I suggest to silence the warning:
+> > > 
+> > > 	mctrl_mask = sc16is7xx_setup_mctrl_ports(dev);
+> > > 
+> > > #ifdef CONFIG_GPIOLIB
+> > > 	ret = sc16is7xx_setup_gpio_chip(dev, mctrl_mask);
+> > > 	if (ret)
+> > > 		goto out_thread;
+> > > #else
+> > > 	(void) mctrl_mask;
+> > > #endif
+> > 
+> > Eeek,  no, please no...
+> > 
+> > First off, please don't put #ifdef in .c files if at all possible.
+> 
+> Hi Greg,
+> Andy also made a similar comment, but couldn't suggest a valid
+> alternative when I asked him what to do about that.
+> 
+> Just as a sidenote, I didn't add those #ifdef, they were already
+> present in the driver in multiple places.
+> 
+> What would be your suggestion to get rid of those #ifdef, simply delete
+> them all?
+> 
+> If you suggest me what to do, I will be happy to submit a
+> future patch after this series is finalized to clean that aspect.
 
-As a consequence, applications that depends on GPIO lines configured
-by default as GPIO pins no longer work as expected.
+Hi Greg,
+altough I just send a new V8, I am still curious to hear your point of
+view about those #ifdef...
 
-Also, the change to select modem control lines function was done only
-for channel A of dual UART variants (752/762). This was not documented
-in the log message.
+Hugo.
 
-Allow to specify GPIO or modem control line function in the device
-tree, and for each of the ports (A or B).
 
-Do so by using the new device-tree property named
-"modem-control-line-ports" (property added in separate patch).
-
-When registering GPIO chip controller, mask-out GPIO pins declared as
-modem control lines according to this new "modem-control-line-ports"
-DT property.
-
-Boards that need to have GPIOS configured as modem control lines
-should add that property to their device tree. Here is a list of
-boards using the sc16is7xx driver in their device tree and that may
-need to be modified:
-    arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts
-    mips/boot/dts/ingenic/cu1830-neo.dts
-    mips/boot/dts/ingenic/cu1000-neo.dts
-
-Fixes: 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-Fixes: 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-Cc: <stable@vger.kernel.org> # 6.1.x: 95982fad dt-bindings: sc16is7xx: Add property to change GPIO function
-Cc: <stable@vger.kernel.org> # 6.1.x: 1584d572 serial: sc16is7xx: refactor GPIO controller registration
-Cc: <stable@vger.kernel.org> # 6.1.x: ac2caa5a serial: sc16is7xx: remove obsolete out_thread label
-Cc: <stable@vger.kernel.org> # 6.1.x: d90961ad serial: sc16is7xx: mark IOCONTROL register as volatile
-Cc: <stable@vger.kernel.org> # 6.1.x: 6dae3bad serial: sc16is7xx: fix broken port 0 uart init
-Cc: <stable@vger.kernel.org> # 6.1.x
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/tty/serial/sc16is7xx.c | 104 +++++++++++++++++++++++++++------
- 1 file changed, 85 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index f5b4d2d18a71..11edbebe8fa2 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -236,7 +236,8 @@
- 
- /* IOControl register bits (Only 750/760) */
- #define SC16IS7XX_IOCONTROL_LATCH_BIT	(1 << 0) /* Enable input latching */
--#define SC16IS7XX_IOCONTROL_MODEM_BIT	(1 << 1) /* Enable GPIO[7:4] as modem pins */
-+#define SC16IS7XX_IOCONTROL_MODEM_A_BIT	(1 << 1) /* Enable GPIO[7:4] as modem A pins */
-+#define SC16IS7XX_IOCONTROL_MODEM_B_BIT	(1 << 2) /* Enable GPIO[3:0] as modem B pins */
- #define SC16IS7XX_IOCONTROL_SRESET_BIT	(1 << 3) /* Software Reset */
- 
- /* EFCR register bits */
-@@ -301,12 +302,12 @@
- /* Misc definitions */
- #define SC16IS7XX_FIFO_SIZE		(64)
- #define SC16IS7XX_REG_SHIFT		2
-+#define SC16IS7XX_GPIOS_PER_BANK	4
- 
- struct sc16is7xx_devtype {
- 	char	name[10];
- 	int	nr_gpio;
- 	int	nr_uart;
--	int	has_mctrl;
- };
- 
- #define SC16IS7XX_RECONF_MD		(1 << 0)
-@@ -337,7 +338,9 @@ struct sc16is7xx_port {
- 	struct clk			*clk;
- #ifdef CONFIG_GPIOLIB
- 	struct gpio_chip		gpio;
-+	unsigned long			gpio_valid_mask;
- #endif
-+	u8				mctrl_mask;
- 	unsigned char			buf[SC16IS7XX_FIFO_SIZE];
- 	struct kthread_worker		kworker;
- 	struct task_struct		*kworker_task;
-@@ -448,35 +451,30 @@ static const struct sc16is7xx_devtype sc16is74x_devtype = {
- 	.name		= "SC16IS74X",
- 	.nr_gpio	= 0,
- 	.nr_uart	= 1,
--	.has_mctrl	= 0,
- };
- 
- static const struct sc16is7xx_devtype sc16is750_devtype = {
- 	.name		= "SC16IS750",
--	.nr_gpio	= 4,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 1,
--	.has_mctrl	= 1,
- };
- 
- static const struct sc16is7xx_devtype sc16is752_devtype = {
- 	.name		= "SC16IS752",
--	.nr_gpio	= 0,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 2,
--	.has_mctrl	= 1,
- };
- 
- static const struct sc16is7xx_devtype sc16is760_devtype = {
- 	.name		= "SC16IS760",
--	.nr_gpio	= 4,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 1,
--	.has_mctrl	= 1,
- };
- 
- static const struct sc16is7xx_devtype sc16is762_devtype = {
- 	.name		= "SC16IS762",
--	.nr_gpio	= 0,
-+	.nr_gpio	= 8,
- 	.nr_uart	= 2,
--	.has_mctrl	= 1,
- };
- 
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
-@@ -1351,14 +1349,43 @@ static int sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
- 	return 0;
- }
- 
-+static int sc16is7xx_gpio_init_valid_mask(struct gpio_chip *chip,
-+					  unsigned long *valid_mask,
-+					  unsigned int ngpios)
-+{
-+	struct sc16is7xx_port *s = gpiochip_get_data(chip);
-+
-+	*valid_mask = s->gpio_valid_mask;
-+
-+	return 0;
-+}
-+
- static int sc16is7xx_setup_gpio_chip(struct sc16is7xx_port *s)
- {
- 	if (!s->devtype->nr_gpio)
- 		return 0;
- 
-+	switch (s->mctrl_mask) {
-+	case 0:
-+		s->gpio_valid_mask = GENMASK(7, 0);
-+		break;
-+	case SC16IS7XX_IOCONTROL_MODEM_A_BIT:
-+		s->gpio_valid_mask = GENMASK(3, 0);
-+		break;
-+	case SC16IS7XX_IOCONTROL_MODEM_B_BIT:
-+		s->gpio_valid_mask = GENMASK(7, 4);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (s->gpio_valid_mask == 0)
-+		return 0;
-+
- 	s->gpio.owner		 = THIS_MODULE;
- 	s->gpio.parent		 = s->dev;
- 	s->gpio.label		 = dev_name(s->dev);
-+	s->gpio.init_valid_mask	 = sc16is7xx_gpio_init_valid_mask;
- 	s->gpio.direction_input	 = sc16is7xx_gpio_direction_input;
- 	s->gpio.get		 = sc16is7xx_gpio_get;
- 	s->gpio.direction_output = sc16is7xx_gpio_direction_output;
-@@ -1371,6 +1398,47 @@ static int sc16is7xx_setup_gpio_chip(struct sc16is7xx_port *s)
- }
- #endif
- 
-+/*
-+ * Configure ports designated to operate as modem control lines.
-+ */
-+static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s)
-+{
-+	int i;
-+	int ret;
-+	int count;
-+	u32 mctrl_port[2];
-+
-+	count = device_property_count_u32(s->dev,
-+					  "nxp,modem-control-line-ports");
-+	if (count < 0 || count > ARRAY_SIZE(mctrl_port))
-+		return 0;
-+
-+	ret = device_property_read_u32_array(s->dev,
-+					     "nxp,modem-control-line-ports",
-+					     mctrl_port, count);
-+	if (ret)
-+		return ret;
-+
-+	s->mctrl_mask = 0;
-+
-+	for (i = 0; i < count; i++) {
-+		/* Use GPIO lines as modem control lines */
-+		if (mctrl_port[i] == 0)
-+			s->mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_A_BIT;
-+		else if (mctrl_port[i] == 1)
-+			s->mctrl_mask |= SC16IS7XX_IOCONTROL_MODEM_B_BIT;
-+	}
-+
-+	if (s->mctrl_mask)
-+		regmap_update_bits(
-+			s->regmap,
-+			SC16IS7XX_IOCONTROL_REG << SC16IS7XX_REG_SHIFT,
-+			SC16IS7XX_IOCONTROL_MODEM_A_BIT |
-+			SC16IS7XX_IOCONTROL_MODEM_B_BIT, s->mctrl_mask);
-+
-+	return 0;
-+}
-+
- static const struct serial_rs485 sc16is7xx_rs485_supported = {
- 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND,
- 	.delay_rts_before_send = 1,
-@@ -1479,12 +1547,6 @@ static int sc16is7xx_probe(struct device *dev,
- 				     SC16IS7XX_EFCR_RXDISABLE_BIT |
- 				     SC16IS7XX_EFCR_TXDISABLE_BIT);
- 
--		/* Use GPIO lines as modem status registers */
--		if (devtype->has_mctrl)
--			sc16is7xx_port_write(&s->p[i].port,
--					     SC16IS7XX_IOCONTROL_REG,
--					     SC16IS7XX_IOCONTROL_MODEM_BIT);
--
- 		/* Initialize kthread work structs */
- 		kthread_init_work(&s->p[i].tx_work, sc16is7xx_tx_proc);
- 		kthread_init_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
-@@ -1522,6 +1584,10 @@ static int sc16is7xx_probe(struct device *dev,
- 				s->p[u].irda_mode = true;
- 	}
- 
-+	ret = sc16is7xx_setup_mctrl_ports(s);
-+	if (ret)
-+		goto out_ports;
-+
- #ifdef CONFIG_GPIOLIB
- 	ret = sc16is7xx_setup_gpio_chip(s);
- 	if (ret)
-@@ -1548,7 +1614,7 @@ static int sc16is7xx_probe(struct device *dev,
- 		return 0;
- 
- #ifdef CONFIG_GPIOLIB
--	if (devtype->nr_gpio)
-+	if (s->gpio_valid_mask)
- 		gpiochip_remove(&s->gpio);
- #endif
- 
-@@ -1572,7 +1638,7 @@ static void sc16is7xx_remove(struct device *dev)
- 	int i;
- 
- #ifdef CONFIG_GPIOLIB
--	if (s->devtype->nr_gpio)
-+	if (s->gpio_valid_mask)
- 		gpiochip_remove(&s->gpio);
- #endif
- 
--- 
-2.30.2
-
+> > Secondly, that (void) craziness is just that.  Rework this to not be an
+> > issue some other way please.
+> > 
+> > > I could also store (define new variable) mctrl_mask directly inside struct sc16is7xx_port...
+> > 
+> > Sure, that sounds best.
+> 
+> Ok, I will do that.
+> 
+> 
+> > > > And you have a real port here, no need to pass in a "raw" struct device,
+> > > > right?
+> > > 
+> > > The function operates globally on both ports (or nr_uart), not just a single port. That is why I pass the "raw" struct device, in order to extract the 
+> > > struct sc16is7xx_port from it:
+> > > 
+> > >     struct sc16is7xx_port *s = dev_get_drvdata(dev);
+> > > 
+> > > Inside the function, I also need the "raw" struc device. If we pass a struct sc16is7xx_port to the function, then I can get the "raw" struc device with this:
+> > > 
+> > > static u8 sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s)
+> > > {
+> > > 	struct device *dev = &s->p[0].port.dev;
+> > > 
+> > > But I find this more obfuscated and hard to understand than to simply pass a "raw" struct device...
+> > 
+> > You should never need a "raw" struct device for stuff (if so, something
+> > is really odd).  Except for error messages, but that's not really a big
+> > deal, right?
+> 
+> > Don't pass around struct device in a driver, use the real types as you
+> > know you have it and it saves odd casting around and it just doesn't
+> > look safe at all to do so.
+> 
+> If you look at the patch, you will see that I need "struct device *dev"
+> at two places in the sc16is7xx_setup_mctrl_ports() function to read the
+> device properties:
+> 
+> ...
+> +static u8 sc16is7xx_setup_mctrl_ports(struct device *dev)
+> ...
+> +	count = device_property_count_u32(dev,...
+> ...
+> +	ret = device_property_read_u32_array(dev,
+> ...
+> 
+> I do not understand why this is odd?
+> 
+> 
+> > And if you have that crazy s->p.... stuff in multiple places, the
+> > perhaps you might want to rethink the structure somehow?  Or at the very
+> > least, write an inline function to get it when needed.
+> 
+> I am not sure what you mean by that, since again that "crazy" stuff is
+> already used everywhere in this driver?
+> 
+> 
+> > Also, meta comment, you might want to use some \n characters in your
+> > emails, your lines are really long :)
+> 
+> Strange, I use sylpheed as a mail client, and the option "Wrap lines at
+> 72 characters" is enabled by default, but somehow you must also check
+> the box "Wrap on input" for it to work, not very intuitive :) Thanks for
+> pointing that to me.
+> 
+> Hugo.
