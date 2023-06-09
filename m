@@ -2,208 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 350E7C7EE43
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 12:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC358C7EE29
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 13:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240149AbjFIMgS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jun 2023 08:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
+        id S230191AbjFINkM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jun 2023 09:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbjFIMgR (ORCPT
+        with ESMTP id S231960AbjFINkJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jun 2023 08:36:17 -0400
-X-Greylist: delayed 4195 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 09 Jun 2023 05:36:15 PDT
-Received: from mx02-sz.bfs.de (mx01-sz.bfs.de [194.94.69.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC2018C;
-        Fri,  9 Jun 2023 05:36:15 -0700 (PDT)
-Received: from SRVEX01-MUC.bfs.intern (unknown [10.161.90.31])
-        by mx02-sz.bfs.de (Postfix) with ESMTPS id D93582035C;
-        Fri,  9 Jun 2023 10:57:14 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bfs.de; s=dkim201901;
-        t=1686301034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MQL6Xx7tBCSJf4MPKoKnpIlIJILrgf9XX+dLjaTtw4c=;
-        b=Sr5UmuMUh1u2zY3oY4r+zC7ZXH+xVGLoYr30Y8ctLEWaupUXos8aN2M7p11/6rcs1nM+n9
-        x3LFAmIvl/Xlr1xwT8K50mUcHAOzFod0qnDceplCNOEFCbM/Xl+zIjQxyh+yA8SvwKIPYY
-        DDpAnvRIyIjBXEeauBv+dUANrhxlFJrkSUja5wTbTNmfhClty2ieSoZo7UEl5WZrbML9os
-        VL4Z21GwnHJASLXa5HHawZ/bS7YVEtZBnQNssypPUMhamEl8kHC8/l62fQBqihB2ll3IX/
-        X29mOmfV3N4zYsfGnf71N++3Vx0XcFsWFDaZ3MQvaAo1MKD3tm+nSbQum8os0A==
-Authentication-Results: mx02-sz.bfs.de;
-        none
-Received: from SRVEX01-MUC.bfs.intern (10.161.90.31) by SRVEX01-MUC.bfs.intern
- (10.161.90.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.23; Fri, 9 Jun
- 2023 10:57:14 +0200
-Received: from SRVEX01-MUC.bfs.intern ([fe80::e8ba:5ab1:557f:4aad]) by
- SRVEX01-MUC.bfs.intern ([fe80::e8ba:5ab1:557f:4aad%5]) with mapi id
- 15.01.2507.023; Fri, 9 Jun 2023 10:57:14 +0200
-From:   Walter Harms <wharms@bfs.de>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thomas Abraham <thomas.abraham@linaro.org>,
-        "Kukjin Kim" <kgene.kim@samsung.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-samsung-soc@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: AW: [PATCH 2/2] tty: serial: samsung_tty: Fix a memory leak in
- s3c24xx_serial_getclk() when iterating clk
-Thread-Topic: [PATCH 2/2] tty: serial: samsung_tty: Fix a memory leak in
- s3c24xx_serial_getclk() when iterating clk
-Thread-Index: AQHZmo1JZHtkpWXz3Ey2tC0FGDzZt6+CJSbA
-Date:   Fri, 9 Jun 2023 08:57:14 +0000
-Message-ID: <f31523d7270d4a1f82d96b7891ed13e6@bfs.de>
-References: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>,<93bf8f574310256fcea50e5c5a62b5c37e20bb14.1686285892.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <93bf8f574310256fcea50e5c5a62b5c37e20bb14.1686285892.git.christophe.jaillet@wanadoo.fr>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.177.128.48]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 9 Jun 2023 09:40:09 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A153589
+        for <linux-serial@vger.kernel.org>; Fri,  9 Jun 2023 06:40:08 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q7cL4-00015d-Ra; Fri, 09 Jun 2023 15:39:38 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q7cL2-006DQJ-Qu; Fri, 09 Jun 2023 15:39:36 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1q7cL2-00CbLD-4K; Fri, 09 Jun 2023 15:39:36 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Helge Deller <deller@gmx.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        James Hilliard <james.hilliard1@gmail.com>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH v4 2/2] serial: 8250: Apply FSL workarounds also without SERIAL_8250_CONSOLE
+Date:   Fri,  9 Jun 2023 15:39:32 +0200
+Message-Id: <20230609133932.786117-3-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230609133932.786117-1-u.kleine-koenig@pengutronix.de>
+References: <20230609133932.786117-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-X-Spamd-Result: default: False [-18.00 / 7.00];
-        WHITELIST_LOCAL_IP(-15.00)[10.161.90.31];
-        BAYES_HAM(-3.00)[99.98%];
-        MIME_GOOD(-0.10)[text/plain];
-        RCVD_NO_TLS_LAST(0.10)[];
-        MIME_TRACE(0.00)[0:+];
-        RCVD_COUNT_TWO(0.00)[2];
-        FROM_EQ_ENVFROM(0.00)[];
-        NEURAL_HAM(-0.00)[-1.000];
-        FREEMAIL_TO(0.00)[wanadoo.fr,linaro.org,samsung.com,linuxfoundation.org,kernel.org];
-        MID_RHS_MATCH_FROM(0.00)[];
-        RCPT_COUNT_TWELVE(0.00)[12];
-        FREEMAIL_ENVRCPT(0.00)[wanadoo.fr];
-        HAS_XOIP(0.00)[];
-        TO_DN_EQ_ADDR_SOME(0.00)[];
-        DKIM_SIGNED(0.00)[bfs.de:s=dkim201901];
-        FROM_HAS_DN(0.00)[];
-        TO_MATCH_ENVRCPT_ALL(0.00)[];
-        TO_DN_SOME(0.00)[];
-        ARC_NA(0.00)[]
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2680; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=zB+nREgR0ioXCxDriGCn0uNP6oRfU37lV4x5/oeQRjY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBkgyuQzE4icrvDwcYxjDRmAz7VThTpOhibkaKy6 A4ADQdh51uJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZIMrkAAKCRCPgPtYfRL+ TlHyB/985ClvRZpO1/y6Zl5lPwWj9BtW+ksfgSKb4pUlTpvQ0ckxlpeGBDDHp7sGriIenr8/PgX a0ZbnoZH+dMVaaI0aY3oErMFsC1yM35DnhaEm/0+EptMWyETlN6FgW5tgYIONVj9johm+0KBfJr Y/2ASo6bEMXrJpki+R886L2DLVaakLY6No0nq5LqZ+SYE7M6nmEd1LVCMxPZ2DYW1b+u24qs8Gw x+HqUMHjhLki8/EfBt+qb+uv+EWT6U2tFZsmht954IEHLKAcAU+Ln/D/9tAqIywmydtiOGioKOj CTVa+T9fUStKa3b1jrHi7C8+5gv1ND/YZmaXupvyse1Aw5l3
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The need to handle the FSL variant of 8250 in a special way is also
+present without console support. So soften the dependency for
+SERIAL_8250_FSL from SERIAL_8250_CONSOLE to SERIAL_8250. To handle
+SERIAL_8250=m, the FSL code can be modular, too, thus SERIAL_8250_FSL
+becomes tristate.
 
-while we are here ....
+Compiling 8250_fsl as a module requires adding a module license so this
+is added, too. While add it also add a appropriate module description.
 
-perhaps INT_MAX from kernel.h ?
+As then SERIAL_OF_PLATFORM=y + SERIAL_8250_FSL=m is a valid combination
+(if COMPILE_TEST is enabled on a platform that is neither PPC, ARM nor
+ARM64), the check in 8250_of.c must be weakened a bit.
 
-int   deviation =3D (1 << 30) - 1;
-
-the part before looks a bit strange
-
-if (ourport->info->has_divslot) {
-                        unsigned long div =3D rate / req_baud;
-
-                        /* The UDIVSLOT register on the newer UARTs allows =
-us to
-                         * get a divisor adjustment of 1/16th on the baud c=
-lock.
-                         *
-                         * We don't keep the UDIVSLOT value (the 16ths we
-                         * calculated by not multiplying the baud by 16) as=
- it
-                         * is easy enough to recalculate.
-                         */
-
-                        quot =3D div / 16;
-                        baud =3D rate / div;
-because
-   baud=3Drate/rate/req_baud =3D req_baud
-can this be simplyfied ? (or is the numeric required  ?)
-
-
-Homebrew abs()  kernel.h has a abs() can we use it here ?
-
-            if (calc_deviation < 0)
-                        calc_deviation =3D -calc_deviation;
-
-to the patch:
-
-+                       /*
-+                        * If we find a better clk, release the previous on=
-e, if
-+                        * any.
-+                        */
-+                       if (!IS_ERR(*best_clk))
-+                               clk_put(*best_clk);
-
-the intentions are good. *best_clk is user supplied (and should be NULL)
-filled & released in the next round but IMHO must be valid (is clk).
-so no need to check. (ntl clk_put seems to handle NULL and ERR )
-   if (!clk || WARN_ON_ONCE(IS_ERR(clk)))
-                return;
-
-JM2C
- wh
-________________________________________
-Von: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Gesendet: Freitag, 9. Juni 2023 06:45:39
-An: Krzysztof Kozlowski; Alim Akhtar; Greg Kroah-Hartman; Jiri Slaby; Thoma=
-s Abraham; Kukjin Kim
-Cc: linux-kernel@vger.kernel.org; kernel-janitors@vger.kernel.org; Christop=
-he JAILLET; linux-arm-kernel@lists.infradead.org; linux-samsung-soc@vger.ke=
-rnel.org; linux-serial@vger.kernel.org
-Betreff: [PATCH 2/2] tty: serial: samsung_tty: Fix a memory leak in s3c24xx=
-_serial_getclk() when iterating clk
-
-When the best clk is searched, we iterate over all possible clk.
-
-If we find a better match, the previous one, if any, needs to be freed.
-If a better match has already been found, we still need to free the new
-one, otherwise it leaks.
-
-Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup"=
-)
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
-This patch is speculative. Review with care.
+ drivers/tty/serial/8250/8250_fsl.c | 3 +++
+ drivers/tty/serial/8250/8250_of.c  | 2 +-
+ drivers/tty/serial/8250/Kconfig    | 6 +++---
+ 3 files changed, 7 insertions(+), 4 deletions(-)
 
-I think that some clk_put() are also missing somewhere else in the driver
-but won't be able to investigate further.
----
- drivers/tty/serial/samsung_tty.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_=
-tty.c
-index dd751e7010e3..c07877dd25fa 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -1488,10 +1488,18 @@ static unsigned int s3c24xx_serial_getclk(struct s3=
-c24xx_uart_port *ourport,
-                        calc_deviation =3D -calc_deviation;
-
-                if (calc_deviation < deviation) {
-+                       /*
-+                        * If we find a better clk, release the previous on=
-e, if
-+                        * any.
-+                        */
-+                       if (!IS_ERR(*best_clk))
-+                               clk_put(*best_clk);
-                        *best_clk =3D clk;
-                        best_quot =3D quot;
-                        *clk_num =3D cnt;
-                        deviation =3D calc_deviation;
-+               } else {
-+                       clk_put(clk);
-                }
-        }
-
---
-2.34.1
+diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
+index 00f46b9a8b09..6af4e1c1210a 100644
+--- a/drivers/tty/serial/8250/8250_fsl.c
++++ b/drivers/tty/serial/8250/8250_fsl.c
+@@ -184,3 +184,6 @@ static struct platform_driver fsl8250_platform_driver = {
+ 
+ module_platform_driver(fsl8250_platform_driver);
+ #endif
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Handling of Freescale specific 8250 variants");
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index c9f6bd7a7038..51329625c48a 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -177,7 +177,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		break;
+ 	}
+ 
+-	if (IS_ENABLED(CONFIG_SERIAL_8250_FSL) &&
++	if (IS_REACHABLE(CONFIG_SERIAL_8250_FSL) &&
+ 	    (of_device_is_compatible(np, "fsl,ns16550") ||
+ 	     of_device_is_compatible(np, "fsl,16550-FIFO64"))) {
+ 		port->handle_irq = fsl8250_handle_irq;
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index cf33e858b0be..ee17cf5c44c6 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -379,9 +379,9 @@ config SERIAL_8250_BCM2835AUX
+ 	  If unsure, say N.
+ 
+ config SERIAL_8250_FSL
+-	bool "Freescale 16550 UART support" if COMPILE_TEST && !(PPC || ARM || ARM64)
+-	depends on SERIAL_8250_CONSOLE
+-	default PPC || ARM || ARM64
++	tristate "Freescale 16550 UART support" if COMPILE_TEST && !(PPC || ARM || ARM64)
++	depends on SERIAL_8250
++	default SERIAL_8250 if PPC || ARM || ARM64
+ 	help
+ 	  Selecting this option enables a workaround for a break-detection
+ 	  erratum for Freescale 16550 UARTs in the 8250 driver. It also
+-- 
+2.39.2
 
