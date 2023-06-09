@@ -2,93 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43042C7EE29
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 00:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9712BC7EE25
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 04:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbjFIAde (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Jun 2023 20:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
+        id S234568AbjFIEpu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jun 2023 00:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231580AbjFIAdd (ORCPT
+        with ESMTP id S230521AbjFIEpt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Jun 2023 20:33:33 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922DE30C8;
-        Thu,  8 Jun 2023 17:33:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=07+hV5uSDDJLUm8XLuemkRmQ1/NA1t2O44DKghOBv+g=; b=IMvII713AqfhBro+1bWtv24I/j
-        +na2Q4M5jPhrGex1+xBgwJL0Ky/SKldSBfpsGtbFPiBBFnb9l9+AsqffLboMQR8d0K5iDdoWwDseN
-        gbqCEQytGNAcbJHkCh1mxMQ1cD+5qAOTVF09eFFTAZqj2Fg1MbsYZpd2VNEo//BquYL8hnIf9/2zB
-        b49wKBH8ee/SdPPRUIUSHNUJBkdqBrL7SNx78waCio4SJeHUJ+kol/yEIl8/Pa9UvjlbMmxaFU2Tx
-        mcMdMjwbFnejubjsdY34HDFghHtqnVZ+bfB9ME/YuyMr+QuPwJq9J+oiBdAXcD/ASdhluTmjTHidJ
-        nIgwzJ1Q==;
-Received: from [2601:1c2:980:9ec0::2764] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1q7Q4I-00B4uV-2L;
-        Fri, 09 Jun 2023 00:33:30 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
+        Fri, 9 Jun 2023 00:45:49 -0400
+Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5585230E8
+        for <linux-serial@vger.kernel.org>; Thu,  8 Jun 2023 21:45:45 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id 7U0KqPBjCDGHG7U0Kq4YGn; Fri, 09 Jun 2023 06:45:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+        s=t20230301; t=1686285943;
+        bh=UkPuf1cEggfUhF63kQO/8xolTLGbzwLNxFq6qhE7R0c=;
+        h=From:To:Cc:Subject:Date;
+        b=ID8zcjZT9VNLSLnTBfTRFr7XdAJhLgGQQTZmuTkb8ZRx1I4puHUr3FQjEy9dizrt1
+         +7adlgaC23iIECotO7NMgpk6j7KCOEfm3jRftQprT2A53sWY5bt3RaOketL6bUfAD5
+         VOxq1Q2AFB7OXRMufd0PVN3LlKc8Txd1YBW/wQFCGRaf4qVdgn5ZhNXIF/jJ+50DOs
+         ghNrWe8JWisDPa66b89R+/ZFNK6uBEpAARxgn5xwkfxV0+Ap9z+ileXfnpMkWSPSOs
+         x8NPJdeXGHRNnDwW6n8G+sRF44HeyZkdQwJDEnTF16cnPXLuz922jTX7m+hoJxBYOs
+         Cc0p82GxdZrEQ==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Fri, 09 Jun 2023 06:45:43 +0200
+X-ME-IP: 86.243.2.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] powerpc/legacy_serial: check CONFIG_SERIAL_8250_CONSOLE
-Date:   Thu,  8 Jun 2023 17:33:28 -0700
-Message-Id: <20230609003328.15008-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.40.1
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kukjin Kim <kgene.kim@samsung.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH 1/2] tty: serial: samsung_tty: Fix a memory leak in s3c24xx_serial_getclk() in case of error
+Date:   Fri,  9 Jun 2023 06:45:38 +0200
+Message-Id: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When SERIAL_8250_CONSOLE is not set but PPC_UDBG_16550=y,
-the legacy_serial code references fsl8250_handle_irq, which is
-only built when SERIAL_8250_CONSOLE is set.
+If clk_get_rate() fails, the clk that has just been allocated needs to be
+freed.
 
-Be consistent in referencing the used CONFIG_SERIAL_8250*
-symbols so that the build errors do not happen.
-
-Prevents these build errors:
-
-powerpc-linux-ld: arch/powerpc/kernel/legacy_serial.o: in function `serial_dev_init':
-legacy_serial.c:(.init.text+0x2aa): undefined reference to `fsl8250_handle_irq'
-powerpc-linux-ld: legacy_serial.c:(.init.text+0x2b2): undefined reference to `fsl8250_handle_irq'
-
-Fixes: 66eff0ef528b ("powerpc/legacy_serial: Warn about 8250 devices operated without active FSL workarounds")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: linuxppc-dev@lists.ozlabs.org
+Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- arch/powerpc/kernel/legacy_serial.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff -- a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
---- a/arch/powerpc/kernel/legacy_serial.c
-+++ b/arch/powerpc/kernel/legacy_serial.c
-@@ -508,9 +508,9 @@ static void __init fixup_port_irq(int in
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 2a7520ad3abd..dd751e7010e3 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -1459,8 +1459,10 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+ 			continue;
  
- 	port->irq = virq;
+ 		rate = clk_get_rate(clk);
+-		if (!rate)
++		if (!rate) {
++			clk_put(clk);
+ 			continue;
++		}
  
--	if (IS_ENABLED(CONFIG_SERIAL_8250) &&
-+	if (IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE) &&
- 	    of_device_is_compatible(np, "fsl,ns16550")) {
--		if (IS_REACHABLE(CONFIG_SERIAL_8250)) {
-+		if (IS_REACHABLE(CONFIG_SERIAL_8250_CONSOLE)) {
- 			port->handle_irq = fsl8250_handle_irq;
- 			port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
- 		} else {
+ 		if (ourport->info->has_divslot) {
+ 			unsigned long div = rate / req_baud;
+-- 
+2.34.1
+
