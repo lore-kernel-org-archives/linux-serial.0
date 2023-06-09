@@ -2,171 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D47DC7EE2E
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 08:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 001A0C7EE43
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 11:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239823AbjFIIJS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Jun 2023 04:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
+        id S240110AbjFILw0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Jun 2023 07:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239866AbjFIIJH (ORCPT
+        with ESMTP id S239518AbjFILwN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Jun 2023 04:09:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371C43C33
-        for <linux-serial@vger.kernel.org>; Fri,  9 Jun 2023 01:08:30 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q7XAK-0006kw-V8; Fri, 09 Jun 2023 10:08:13 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q7XAH-0069Zi-QX; Fri, 09 Jun 2023 10:08:09 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1q7XAG-00CXLI-Ow; Fri, 09 Jun 2023 10:08:08 +0200
-Date:   Fri, 9 Jun 2023 10:08:08 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] powerpc/legacy_serial: check CONFIG_SERIAL_8250_CONSOLE
-Message-ID: <20230609080808.cuujwvy55s2vvn4m@pengutronix.de>
-References: <20230609003328.15008-1-rdunlap@infradead.org>
+        Fri, 9 Jun 2023 07:52:13 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8CF3AA7
+        for <linux-serial@vger.kernel.org>; Fri,  9 Jun 2023 04:51:43 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-977d02931d1so255589766b.0
+        for <linux-serial@vger.kernel.org>; Fri, 09 Jun 2023 04:51:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1686311502; x=1688903502;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8T0wN2xyHqkgu/5OvE+DJyHc6IdgUb7ALA/gkh9SISw=;
+        b=R6Y0oCxUhD2vEYpqllcsJqc1+F/482gIVAuE9WtvwhqwEP9I17G+luiaYk3DpqYZ2t
+         FQPUR3S0cpdiCiLkOLlMRLZ3r1oCUnxRQnFCB4EIPupbl63b2ly7Hg/R7WcPIB5fgnQK
+         zl+gZrt6jPopzygQE0iBq80u3eehgDL0vlldGIXRouKSCBscddlkVmLctx4KK+K8Xu7D
+         urK9ed1G9yQ0qDI5lpoK71WDo7EnUh2vYQ7U5er1+hTQyB4hQSsOv1ueiEJ39d7R8t2x
+         D34opUNIU0bAr2tnBqezuIoTE3lE1q8AR0B7R8locsSBVe0i/s/9dEwI+lQKdZxOeBIw
+         VoqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686311502; x=1688903502;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8T0wN2xyHqkgu/5OvE+DJyHc6IdgUb7ALA/gkh9SISw=;
+        b=ZKw6rRPcBfAt692Siy8jqvVe5NBXJNaiPursh8VxW8vtfrriQDTc6tOa99gZf94vA4
+         93cFM0yBvSRAvGfvMwgInNYHBSzU/e8g9Y+Mf1eFdseY9mttHDRRqm1uRE7AF8u0IuwC
+         QeVXDBlLZc66AX8zy35ZnLjkzUgDmgrTikvUR7WpWBgelJPygy+TwgJeFlqXeclnk/5T
+         lO5lQohos8yZCMOhFNgNNspYK1vKbPxNIRHAYQ0ZmYzBVA8M09tWZ5TLPv9d9RhMlg4/
+         Flxuk8GpsGdzsCU7g+sLsGKoyLUDBv+p7pTY9GR+ZGp1z3CIFNwORJPMwr6zGlaUl2+G
+         i5+A==
+X-Gm-Message-State: AC+VfDxkj4zupQu9dIN4NIQoyumS5X70DLXW+iFcQNdsHnf6+O4iV3cu
+        MFncufi0jxloh55mJrcsmxdSTA==
+X-Google-Smtp-Source: ACHHUZ4ZX0E/X/YKvqntJSvw3Tv9/5A0eEJHzdaINnGFUFFPTZjJm0mPy2wbX2mDTVvwXuPdfsrBOQ==
+X-Received: by 2002:a17:906:fe03:b0:974:1eb9:f750 with SMTP id wy3-20020a170906fe0300b009741eb9f750mr1421632ejb.36.1686311502112;
+        Fri, 09 Jun 2023 04:51:42 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id r2-20020a170906548200b0096f5b48fe43sm1193972ejo.47.2023.06.09.04.51.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Jun 2023 04:51:41 -0700 (PDT)
+Message-ID: <56eff2be-710e-cf3a-0dc0-d0f1d21c8825@linaro.org>
+Date:   Fri, 9 Jun 2023 13:51:39 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ndc6ya4l57czhno4"
-Content-Disposition: inline
-In-Reply-To: <20230609003328.15008-1-rdunlap@infradead.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: Fix a memory leak in
+ s3c24xx_serial_getclk() in case of error
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kukjin Kim <kgene.kim@samsung.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
+References: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
---ndc6ya4l57czhno4
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Randy,
-
-On Thu, Jun 08, 2023 at 05:33:28PM -0700, Randy Dunlap wrote:
-> When SERIAL_8250_CONSOLE is not set but PPC_UDBG_16550=3Dy,
-> the legacy_serial code references fsl8250_handle_irq, which is
-> only built when SERIAL_8250_CONSOLE is set.
->=20
-> Be consistent in referencing the used CONFIG_SERIAL_8250*
-> symbols so that the build errors do not happen.
->=20
-> Prevents these build errors:
->=20
-> powerpc-linux-ld: arch/powerpc/kernel/legacy_serial.o: in function `seria=
-l_dev_init':
-> legacy_serial.c:(.init.text+0x2aa): undefined reference to `fsl8250_handl=
-e_irq'
-> powerpc-linux-ld: legacy_serial.c:(.init.text+0x2b2): undefined reference=
- to `fsl8250_handle_irq'
->=20
-> Fixes: 66eff0ef528b ("powerpc/legacy_serial: Warn about 8250 devices oper=
-ated without active FSL workarounds")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-serial@vger.kernel.org
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Nicholas Piggin <npiggin@gmail.com>
-> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-> Cc: linuxppc-dev@lists.ozlabs.org
+On 09/06/2023 06:45, Christophe JAILLET wrote:
+> If clk_get_rate() fails, the clk that has just been allocated needs to be
+> freed.
+> 
+> Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
->  arch/powerpc/kernel/legacy_serial.c |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff -- a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legac=
-y_serial.c
-> --- a/arch/powerpc/kernel/legacy_serial.c
-> +++ b/arch/powerpc/kernel/legacy_serial.c
-> @@ -508,9 +508,9 @@ static void __init fixup_port_irq(int in
-> =20
->  	port->irq =3D virq;
-> =20
-> -	if (IS_ENABLED(CONFIG_SERIAL_8250) &&
-> +	if (IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE) &&
->  	    of_device_is_compatible(np, "fsl,ns16550")) {
-> -		if (IS_REACHABLE(CONFIG_SERIAL_8250)) {
-> +		if (IS_REACHABLE(CONFIG_SERIAL_8250_CONSOLE)) {
->  			port->handle_irq =3D fsl8250_handle_irq;
->  			port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
->  		} else {
 
-Argh, indeed there is a problem. Your patch however defeats the idea of
-66eff0ef528b[1] which is still valid. And with your patch the else
-branch that starts at the end of the above hunk is never taken.
 
-With the feedback I got on
-https://lore.kernel.org/linux-serial/20230605130857.85543-3-u.kleine-koenig=
-@pengutronix.de
-the probable outcome is that CONFIG_SERIAL_8250_FSL becomes tristate and
-so the fix that is more future proof and keeps the warning, looks as
-follows:
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/lega=
-cy_serial.c
-index fdbd85aafeb1..6ee65741dbd5 100644
---- a/arch/powerpc/kernel/legacy_serial.c
-+++ b/arch/powerpc/kernel/legacy_serial.c
-@@ -510,7 +510,7 @@ static void __init fixup_port_irq(int index,
-=20
- 	if (IS_ENABLED(CONFIG_SERIAL_8250) &&
- 	    of_device_is_compatible(np, "fsl,ns16550")) {
--		if (IS_REACHABLE(CONFIG_SERIAL_8250)) {
-+		if (IS_REACHABLE(CONFIG_SERIAL_8250_FSL)) {
- 			port->handle_irq =3D fsl8250_handle_irq;
- 			port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
- 		} else {
+Best regards,
+Krzysztof
 
-This should to the right thing now (while CONFIG_SERIAL_8250_FSL is
-still bool and only on if CONFIG_SERIAL_8250 is =3Dy) and also once
-CONFIG_SERIAL_8250_FSL can be =3Dm (which would make fsl8250_handle_irq
-not available for powerpc platform code).
-
-But given that I screwed this up several times now, I will think about
-this some more and do some more tests before submitting that as a proper
-patch.
-
-Best regards
-Uwe
-
-[1] Warn if the 8250 device is used but the required FSL workarounds are
-not.
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ndc6ya4l57czhno4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmSC3ecACgkQj4D7WH0S
-/k5T9Af/fgeBpi2x/JEzkhLoSz3doP+2Pv+/pfLZFelOSp4kIlGd8qnJoxVmGXwS
-jTAcJ+jpz9fheIA1Obhl0K38LuODmGg8ZFankSMEUvUNDjcalTXb7mQpT/qmVX41
-kDWGHNpNnbgnAKA56gg/IGt/0PVzLeFi8NuBXqS/jv52hNySnXOjIaRVC2ZE36EM
-kAd7pGtf8SGNo4+o9V/JIbMWnoXZuS4Qvo+MPJcfFE5IHlk4wHmYCxtuUAH56SuM
-06Rs0YdxYgN2yoc/fch7XjD7fnYuM7TgnYPn0uZSG6+brec3SKVml3VopzggGSHZ
-lORWQ0Mp14HXFfYDMD9zdAF1EIj5kg==
-=igw/
------END PGP SIGNATURE-----
-
---ndc6ya4l57czhno4--
