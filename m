@@ -2,84 +2,93 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37855C7EE23
-	for <linux-serial@archiver.kernel.org>; Thu,  8 Jun 2023 15:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43042C7EE29
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Jun 2023 00:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbjFHP5c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Jun 2023 11:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
+        id S229581AbjFIAde (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 8 Jun 2023 20:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237546AbjFHP5N (ORCPT
+        with ESMTP id S231580AbjFIAdd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Jun 2023 11:57:13 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE9A2715
-        for <linux-serial@vger.kernel.org>; Thu,  8 Jun 2023 08:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1686239821; x=1717775821;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=SWxITp+aPgQ25DUcGbtB/s3kauHP7K7UncRcEWQ8+hU=;
-  b=Vn58WASKyS0H3kqlUbOZBA9uYVKekpjflztDXqgltrwHItWXgQxJdzi4
-   BpO+WKilyOLhnGMAgdEnz8NAl4l9FV43AlFd26PLkLSnsRHlhXQVnwdct
-   U8HgWBWAjeFq47RbZmOJKmc4b5FuC8hhyDswdMeEGHpg1i2CcaDa/sET2
-   WVjmWvdSoUbA+aB+Lh2JqWAn3X/MQuQsZh9SuFGax4dzTFX6e887Z2UBo
-   KCCTdDRS1164xPeth1EexcZCES6LHUwz6322vCAwS67d7hwvcOxRSNW+N
-   BEDwhOMBfTypZrApsDv7n6D1C/6AlRKS+ZgbZIrpNOWqsgU8JPbX0TmIW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="443715960"
-X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="443715960"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 08:57:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10735"; a="854396325"
-X-IronPort-AV: E=Sophos;i="6.00,227,1681196400"; 
-   d="scan'208";a="854396325"
-Received: from dteodorx-mobl1.ger.corp.intel.com (HELO skhalil-mobl.ger.corp.intel.com) ([10.252.47.142])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2023 08:56:59 -0700
-Date:   Thu, 8 Jun 2023 18:56:53 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Robert Hodaszi <robert.hodaszi@digi.com>
-cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>, sherry.sun@nxp.com
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: reduce RX watermark to 0 on
- LS1028A
-In-Reply-To: <94cae2c3-13c3-7c72-04d9-640a8ff1e7f7@digi.com>
-Message-ID: <a050e754-e15e-5cde-e838-f4a79885f7a3@linux.intel.com>
-References: <20230608111927.1808525-1-robert.hodaszi@digi.com> <2023060858-groove-riddance-0c09@gregkh> <94cae2c3-13c3-7c72-04d9-640a8ff1e7f7@digi.com>
+        Thu, 8 Jun 2023 20:33:33 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922DE30C8;
+        Thu,  8 Jun 2023 17:33:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=07+hV5uSDDJLUm8XLuemkRmQ1/NA1t2O44DKghOBv+g=; b=IMvII713AqfhBro+1bWtv24I/j
+        +na2Q4M5jPhrGex1+xBgwJL0Ky/SKldSBfpsGtbFPiBBFnb9l9+AsqffLboMQR8d0K5iDdoWwDseN
+        gbqCEQytGNAcbJHkCh1mxMQ1cD+5qAOTVF09eFFTAZqj2Fg1MbsYZpd2VNEo//BquYL8hnIf9/2zB
+        b49wKBH8ee/SdPPRUIUSHNUJBkdqBrL7SNx78waCio4SJeHUJ+kol/yEIl8/Pa9UvjlbMmxaFU2Tx
+        mcMdMjwbFnejubjsdY34HDFghHtqnVZ+bfB9ME/YuyMr+QuPwJq9J+oiBdAXcD/ASdhluTmjTHidJ
+        nIgwzJ1Q==;
+Received: from [2601:1c2:980:9ec0::2764] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1q7Q4I-00B4uV-2L;
+        Fri, 09 Jun 2023 00:33:30 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc/legacy_serial: check CONFIG_SERIAL_8250_CONSOLE
+Date:   Thu,  8 Jun 2023 17:33:28 -0700
+Message-Id: <20230609003328.15008-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 8 Jun 2023, Robert Hodaszi wrote:
+When SERIAL_8250_CONSOLE is not set but PPC_UDBG_16550=y,
+the legacy_serial code references fsl8250_handle_irq, which is
+only built when SERIAL_8250_CONSOLE is set.
 
-> On 2023. 06. 08. 13:52, Greg KH wrote:
-> > What commit id does this fix?  Should it go to stable releases?
-> >
-> > thanks,
-> >
-> > greg k-h
-> Basically this one caused the issue on my unit:
-> 
->     9ad9df8447547febe9dd09b040f4528a09e495f0
-> 
-> Check this discussion for more info:
-> 
->     https://www.spinics.net/lists/linux-serial/msg54555.html
-> 
-> Yes, I think, it should go to stable.
+Be consistent in referencing the used CONFIG_SERIAL_8250*
+symbols so that the build errors do not happen.
 
-Please provide a new version of the patch with Fixes + Link tags then
-(for Link tag, prefer to use lore archive links).
+Prevents these build errors:
 
-You can find out the correct format of those tags from the information 
-under Documentation/process/.
+powerpc-linux-ld: arch/powerpc/kernel/legacy_serial.o: in function `serial_dev_init':
+legacy_serial.c:(.init.text+0x2aa): undefined reference to `fsl8250_handle_irq'
+powerpc-linux-ld: legacy_serial.c:(.init.text+0x2b2): undefined reference to `fsl8250_handle_irq'
 
--- 
- i.
+Fixes: 66eff0ef528b ("powerpc/legacy_serial: Warn about 8250 devices operated without active FSL workarounds")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: linuxppc-dev@lists.ozlabs.org
+---
+ arch/powerpc/kernel/legacy_serial.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff -- a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
+--- a/arch/powerpc/kernel/legacy_serial.c
++++ b/arch/powerpc/kernel/legacy_serial.c
+@@ -508,9 +508,9 @@ static void __init fixup_port_irq(int in
+ 
+ 	port->irq = virq;
+ 
+-	if (IS_ENABLED(CONFIG_SERIAL_8250) &&
++	if (IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE) &&
+ 	    of_device_is_compatible(np, "fsl,ns16550")) {
+-		if (IS_REACHABLE(CONFIG_SERIAL_8250)) {
++		if (IS_REACHABLE(CONFIG_SERIAL_8250_CONSOLE)) {
+ 			port->handle_irq = fsl8250_handle_irq;
+ 			port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
+ 		} else {
