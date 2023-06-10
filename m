@@ -2,91 +2,68 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D22C7EE43
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jun 2023 15:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F78C7EE29
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jun 2023 16:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235741AbjFJP7t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 10 Jun 2023 11:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
+        id S232242AbjFJQNa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 10 Jun 2023 12:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235721AbjFJP7q (ORCPT
+        with ESMTP id S230054AbjFJQND (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 10 Jun 2023 11:59:46 -0400
-Received: from smtp.smtpout.orange.fr (smtp-14.smtpout.orange.fr [80.12.242.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004F09B
-        for <linux-serial@vger.kernel.org>; Sat, 10 Jun 2023 08:59:45 -0700 (PDT)
-Received: from pop-os.home ([86.243.2.178])
-        by smtp.orange.fr with ESMTPA
-        id 80zwqFULNV4eY810CqBQ6F; Sat, 10 Jun 2023 17:59:44 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-        s=t20230301; t=1686412784;
-        bh=x5Q7JFOBqrMC6o8LYzgUOOfoq0P2ZHbeu6tRAx/Ruf8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=YY/e99CuaAkuIPwh6/SwneGP1bgOzZ4odMId2zpnEkjSh3cZgft7aYxVRg6Wnj3Qr
-         hoAVzpPPXUhZ4doPh2Nf4+hQUrE01Ce/6zSCNAiKs8HMFrxxsP3bZWmqwx9+378vXp
-         fRqwQHcYiJ3v+WlDVbhROmisSkW5xwLzjf5w0F8enIwvJjpm5mvRPzCwUnYZC6pAav
-         FUMjzRH6n00FqPIoVyf67rr1tF0+nIXXxSnP2kCXbLHlUpcBKCl02JWpzHU+EsMhkD
-         jwVgmjma1/1IKVYO1C+ZbRdUX2XhcVVRqisluDxYBfB83SJvP8Atgi95U5FstO/v/5
-         LYkv4i5LVGZHw==
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 10 Jun 2023 17:59:44 +0200
-X-ME-IP: 86.243.2.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sat, 10 Jun 2023 12:13:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB473C35;
+        Sat, 10 Jun 2023 09:12:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2AA261589;
+        Sat, 10 Jun 2023 16:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74633C433B0;
+        Sat, 10 Jun 2023 16:12:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1686413537;
+        bh=4mTrXdsYhf7nyFQ3z8yqygjtfuJD0iIWFZWiQEbc7UE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LwkMm9ovQ/+6/kPjFcx3NPsBl9PTGtracFGk3tVhBqLzEvPZob/VOC3T93g7QJXCM
+         ARp8n8MGPJ6/12Vr9RurQtZoF+/9J/O+5zBu2ITlt4XU/Vm9tb9JJq/3dpEQRKUKE1
+         MIELvj38ok+e0w0j+4b+y4CgMETmDUJE8GCc1wl8A5v3G0r8EqJk2EgFiiVKHf4A0s
+         Yu0vvsILq5anE4DoLEVudpvZsK1WeDoVVXcwbYmAxHE9UQHsowtm9Iayh9cWQHF1xm
+         1Kss0Rtkg7rOCi/eni6CtNpY/jOxcktd9FnC1dV7OAg3qOIN2LMIz1hVZnNINa9+wM
+         uk4QdCwWHE+9w==
+Date:   Sat, 10 Jun 2023 18:12:13 +0200
+From:   Andi Shyti <andi.shyti@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Alim Akhtar <alim.akhtar@samsung.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Walter Harms <wharms@bfs.de>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v2 3/3] tty: serial: samsung_tty: Use abs() to simplify some code
-Date:   Sat, 10 Jun 2023 17:59:27 +0200
-Message-Id: <7bd165e82ed3675d4ddee343ab373031e995a126.1686412569.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <e4baf6039368f52e5a5453982ddcb9a330fc689e.1686412569.git.christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH v2 3/3] tty: serial: samsung_tty: Use abs() to simplify
+ some code
+Message-ID: <20230610161213.4zk2uodjb7j2x7st@intel.intel>
 References: <e4baf6039368f52e5a5453982ddcb9a330fc689e.1686412569.git.christophe.jaillet@wanadoo.fr>
+ <7bd165e82ed3675d4ddee343ab373031e995a126.1686412569.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7bd165e82ed3675d4ddee343ab373031e995a126.1686412569.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use abs() instead of hand-writing it.
+Hi Christophe,
 
-Suggested-by: Walter Harms <wharms@bfs.de>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-v2: new patch
----
- drivers/tty/serial/samsung_tty.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+On Sat, Jun 10, 2023 at 05:59:27PM +0200, Christophe JAILLET wrote:
+> Use abs() instead of hand-writing it.
+> 
+> Suggested-by: Walter Harms <wharms@bfs.de>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 0b37019820b4..b29e9dfd81a6 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -24,6 +24,7 @@
- #include <linux/dmaengine.h>
- #include <linux/dma-mapping.h>
- #include <linux/slab.h>
-+#include <linux/math.h>
- #include <linux/module.h>
- #include <linux/ioport.h>
- #include <linux/io.h>
-@@ -1485,9 +1486,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
- 		}
- 		quot--;
- 
--		calc_deviation = req_baud - baud;
--		if (calc_deviation < 0)
--			calc_deviation = -calc_deviation;
-+		calc_deviation = abs(req_baud - baud);
- 
- 		if (calc_deviation < deviation) {
- 			/*
--- 
-2.34.1
+Reviewed-by: Andi Shyti <andi.shyti@kernel.org> 
 
+Andi
