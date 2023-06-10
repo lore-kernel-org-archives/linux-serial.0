@@ -2,80 +2,98 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F15C7EE37
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jun 2023 14:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79801C7EE29
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jun 2023 15:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233646AbjFJOyf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 10 Jun 2023 10:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
+        id S235637AbjFJP7k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 10 Jun 2023 11:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233265AbjFJOye (ORCPT
+        with ESMTP id S234801AbjFJP7j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 10 Jun 2023 10:54:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABDFD30F5;
-        Sat, 10 Jun 2023 07:54:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39A6060C37;
-        Sat, 10 Jun 2023 14:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AFFC433D2;
-        Sat, 10 Jun 2023 14:54:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1686408872;
-        bh=o/oW4QHzS8ShkvYeDjTwiWPMk3A48v9hrujGZrubDgs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dHgc7ihKIEwioWyTwsCsVT9J3rPPBbV+8DW/4v9GXRigSegCYmbPmnHjUbPhwkHxq
-         OQhjLAJDUkx9ByRAEWFVp5v4EsVYCy76a3RNCu8flVOJuIz9+FEjytFggeoQHYXu9W
-         YnhQlpmLZ0OrXhxkfSTXXI4/c8sc3ALNm7nXUiHhrXA77MO22tJYjaP0hUQ39KSM7V
-         rsRKyDAag1caTY9eaMCIOqVaHJOa8orLQI6pcJj7npyuGpBVC0+c5+Y/7WiNyk5rbN
-         KEawwiMQPozzhYtwDIkQL9CBZKo5uHWB9U5qU8oArc7r6UtxJl1pjGXjoPc1qME2ud
-         alo8c2FPvr/AQ==
-Date:   Sat, 10 Jun 2023 16:54:29 +0200
-From:   Andi Shyti <andi.shyti@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sat, 10 Jun 2023 11:59:39 -0400
+Received: from smtp.smtpout.orange.fr (smtp-13.smtpout.orange.fr [80.12.242.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E5730D0
+        for <linux-serial@vger.kernel.org>; Sat, 10 Jun 2023 08:59:35 -0700 (PDT)
+Received: from pop-os.home ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id 80zwqFULNV4eY80zwqBQ53; Sat, 10 Jun 2023 17:59:31 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+        s=t20230301; t=1686412773;
+        bh=eYz8VPeFQqWxDk20aGLkAdXUCS+n+oiCg0u8zmpFgg4=;
+        h=From:To:Cc:Subject:Date;
+        b=E8Qj0/JL7wXord7afU38rc3n79/MyJkTu9RoEy31bYmwu28ifvGXbl5BpuaZT3Hm0
+         ZMu2c2rh3BL9b0I7vv//Wxp/IycEhvrXU3HngRiLoVYhfdRS4UVqqggKwIuRjECb5M
+         qExQpuOlxDeBnqha/k40ziJRbOn48aiXSx7qVz2fbXtvyyoexduy+oNBO0ul4uohHk
+         GjAmEjtarIYSttr0kx2ITF2IR0sD8m6dSLaRYOfnLG8QsnVTIvb9dr/HQlBc7jUk76
+         vQEsrGwPow6A664QSjFgWUM5neBLeI39ZPl8k4qd4Z5cg1XuHQL5wRewPvRtwYw0Vd
+         8+NFaD1kuUBjA==
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 10 Jun 2023 17:59:31 +0200
+X-ME-IP: 86.243.2.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Alim Akhtar <alim.akhtar@samsung.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Thomas Abraham <thomas.abraham@linaro.org>,
-        Kukjin Kim <kgene.kim@samsung.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Kukjin Kim <kgene.kim@samsung.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Andi Shyti <andi.shyti@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: Fix a memory leak in
- s3c24xx_serial_getclk() in case of error
-Message-ID: <20230610145429.uvmxxgxc5tc6x5b5@intel.intel>
-References: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>
- <20230610102607.7nonyh5xhuhpyy6e@intel.intel>
- <58d3f250-499d-5a18-6798-f9833cc2dbbd@wanadoo.fr>
+Subject: [PATCH v2 1/3] tty: serial: samsung_tty: Fix a memory leak in s3c24xx_serial_getclk() in case of error
+Date:   Sat, 10 Jun 2023 17:59:25 +0200
+Message-Id: <e4baf6039368f52e5a5453982ddcb9a330fc689e.1686412569.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <58d3f250-499d-5a18-6798-f9833cc2dbbd@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Jun 10, 2023 at 04:07:51PM +0200, Christophe JAILLET wrote:
-> Le 10/06/2023 à 12:26, Andi Shyti a écrit :
-> > > @@ -1459,8 +1459,10 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
-> > >   			continue;
-> > >   		rate = clk_get_rate(clk);
-> > > -		if (!rate)
-> > > +		if (!rate) {
-> > > +			clk_put(clk);
-> > >   			continue;
-> > 
-> > could you also print an error here?
-> > 
-> 
-> Is:
-> 	dev_err(ourport->port.dev,
-> 		"Failed to get clock rate for %s.\n", clkname);
+If clk_get_rate() fails, the clk that has just been allocated needs to be
+freed.
 
-Fantastic! Thanks!
+Cc: <stable@vger.kernel.org> # v3.3+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Andi Shyti <andi.shyti@kernel.org>
+Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+v2: Add an error message    [Andi Shyti]
+    Add Cc: stable          [Andi Shyti]
+    Add R-b tags
 
-Andi
+v1: https://lore.kernel.org/all/e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr/
+
+Slightly unsure if Krzysztof's R-b should be kept or not.
+v2 is not the same as v1, but the change looks small.
+Sorry if I did wrong.
+---
+ drivers/tty/serial/samsung_tty.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 2a7520ad3abd..a92a23e1964e 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -1459,8 +1459,12 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+ 			continue;
+ 
+ 		rate = clk_get_rate(clk);
+-		if (!rate)
++		if (!rate) {
++			dev_err(ourport->port.dev,
++				"Failed to get clock rate for %s.\n", clkname);
++			clk_put(clk);
+ 			continue;
++		}
+ 
+ 		if (ourport->info->has_divslot) {
+ 			unsigned long div = rate / req_baud;
+-- 
+2.34.1
+
