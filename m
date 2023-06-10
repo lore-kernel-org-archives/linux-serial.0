@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A12BC77B7A
-	for <linux-serial@archiver.kernel.org>; Sat, 10 Jun 2023 10:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66526C77B7A
+	for <linux-serial@archiver.kernel.org>; Sat, 10 Jun 2023 10:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232366AbjFJK0N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 10 Jun 2023 06:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S231240AbjFJKkF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 10 Jun 2023 06:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbjFJK0M (ORCPT
+        with ESMTP id S229750AbjFJKkE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 10 Jun 2023 06:26:12 -0400
+        Sat, 10 Jun 2023 06:40:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB52535B8;
-        Sat, 10 Jun 2023 03:26:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B06335B6;
+        Sat, 10 Jun 2023 03:40:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50764614C5;
-        Sat, 10 Jun 2023 10:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1093CC433EF;
-        Sat, 10 Jun 2023 10:26:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFC2860A24;
+        Sat, 10 Jun 2023 10:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03EEC433D2;
+        Sat, 10 Jun 2023 10:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1686392770;
-        bh=nB2v+wNogxRDFx75EaOLKTain6XzdZBKWNiyoeWgOIs=;
+        s=k20201202; t=1686393602;
+        bh=r8AP7uSarwpq7WnXRU2o6hNIb1YSsBuKkaXUnHKOXCM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vP47NAeTyrivQK0aPC01L0Hwn7icb59q+K63RFEmpZW0VO0b+KuMG78tzbpI0LouS
-         cyGW+ugiDwxj+ycMJ7R/hkdSezmSOrteVfbmB5CykaMLFCu/1zpGXL9STy9bEDoVnf
-         kyX3rlSwC+RwtXg6zqd4otB55WCR0vypSLu9ppLObkCluxnks+ZjmCeXKQDUPdD2FD
-         gxLiqyqldCTWNu2Cmy/dHYUjXvJ/GTrwQnXcDibBECZCwubxHrg3LEu66QVm72y2Lc
-         zosGGGQIBjgpXvwkHJpwhjdxxdCG/Q7OS37zVUeRE52mhaDIhQ9FYn6FUqFRntAQZb
-         3ONSsWM9C0n7w==
-Date:   Sat, 10 Jun 2023 12:26:07 +0200
+        b=XtToDoekY0U7TcT2sl67IYf4iNg7zioYwonvnwVxParKKBjYD+3tVoUX/9ye+Haqw
+         fCJy68rXb+Y3kOEGB11QqOgtfGHBoxk5QkPz/SL9ek7Ns8//zR5qdRBdS6rblhrC1V
+         seZ8rg21oVANEilNrCEaZZm4Yodgy7WNk+RLrfroKJg7y24700zchPVIc2wjji9ZL+
+         9MlARA1OK2+PgjlrFm4bTlirXEV/vXkpIgHfYZ9awo7Zg2tpS4UIseBazGlsngxq06
+         c7aKp2KYrhNzBXkrSE2VHu8j8+xTPfInEs4Nk3zAgkp4fk6iS7zZ2EQXTdrm9Rmhuy
+         8UFnd67i8oHbA==
+Date:   Sat, 10 Jun 2023 12:39:58 +0200
 From:   Andi Shyti <andi.shyti@kernel.org>
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
@@ -44,60 +44,67 @@ Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: Fix a memory leak in
- s3c24xx_serial_getclk() in case of error
-Message-ID: <20230610102607.7nonyh5xhuhpyy6e@intel.intel>
+Subject: Re: [PATCH 2/2] tty: serial: samsung_tty: Fix a memory leak in
+ s3c24xx_serial_getclk() when iterating clk
+Message-ID: <20230610103958.jwfe45zm52ehiovn@intel.intel>
 References: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>
+ <93bf8f574310256fcea50e5c5a62b5c37e20bb14.1686285892.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e4359d5ef206f5b349c1d15a515a1205e78dda55.1686285892.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <93bf8f574310256fcea50e5c5a62b5c37e20bb14.1686285892.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Christophe,
 
-On Fri, Jun 09, 2023 at 06:45:38AM +0200, Christophe JAILLET wrote:
-> If clk_get_rate() fails, the clk that has just been allocated needs to be
-> freed.
+On Fri, Jun 09, 2023 at 06:45:39AM +0200, Christophe JAILLET wrote:
+> When the best clk is searched, we iterate over all possible clk.
+> 
+> If we find a better match, the previous one, if any, needs to be freed.
+> If a better match has already been found, we still need to free the new
+> one, otherwise it leaks.
 > 
 > Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
 > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-
-As this is a fix, can you cc the stable kernel
-
-Cc: <stable@vger.kernel.org> # v3.3+
-
 > ---
->  drivers/tty/serial/samsung_tty.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> This patch is speculative. Review with care.
+> 
+> I think that some clk_put() are also missing somewhere else in the driver
+> but won't be able to investigate further.
+> ---
+>  drivers/tty/serial/samsung_tty.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
 > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 2a7520ad3abd..dd751e7010e3 100644
+> index dd751e7010e3..c07877dd25fa 100644
 > --- a/drivers/tty/serial/samsung_tty.c
 > +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -1459,8 +1459,10 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
->  			continue;
+> @@ -1488,10 +1488,18 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+>  			calc_deviation = -calc_deviation;
 >  
->  		rate = clk_get_rate(clk);
-> -		if (!rate)
-> +		if (!rate) {
-> +			clk_put(clk);
->  			continue;
+>  		if (calc_deviation < deviation) {
+> +			/*
+> +			 * If we find a better clk, release the previous one, if
+> +			 * any.
+> +			 */
+> +			if (!IS_ERR(*best_clk))
 
-could you also print an error here?
-
-In any case:
-
-Reviewed-by: Andi Shyti <andi.shyti@kernel.org> 
+what is the case when *best_clk has an error in it?
 
 Andi
 
-> +		}
+> +				clk_put(*best_clk);
+>  			*best_clk = clk;
+>  			best_quot = quot;
+>  			*clk_num = cnt;
+>  			deviation = calc_deviation;
+> +		} else {
+> +			clk_put(clk);
+>  		}
+>  	}
 >  
->  		if (ourport->info->has_divslot) {
->  			unsigned long div = rate / req_baud;
 > -- 
 > 2.34.1
 > 
