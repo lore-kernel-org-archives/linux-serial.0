@@ -2,62 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBE1C7EE23
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Jun 2023 05:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AFEC7EE37
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Jun 2023 05:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbjFLFNM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Jun 2023 01:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
+        id S234901AbjFLF1K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Jun 2023 01:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjFLFNL (ORCPT
+        with ESMTP id S233784AbjFLF1I (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Jun 2023 01:13:11 -0400
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDD5FB;
-        Sun, 11 Jun 2023 22:13:10 -0700 (PDT)
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-9788554a8c9so694996966b.2;
-        Sun, 11 Jun 2023 22:13:09 -0700 (PDT)
+        Mon, 12 Jun 2023 01:27:08 -0400
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1E09B;
+        Sun, 11 Jun 2023 22:27:07 -0700 (PDT)
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5149c51fd5bso6815775a12.0;
+        Sun, 11 Jun 2023 22:27:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686546788; x=1689138788;
+        d=1e100.net; s=20221208; t=1686547626; x=1689139626;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R/kWdHQ/ZksQh1sHAU7xUcJLGSlV/yI789RhpZXKfRE=;
-        b=I0hv7Y3x3lI8M8nD9Kho2cAa8R77wpfqJqhIk5AJMqb3LrbNx5Pe4/KynmFyEdgQDq
-         uIP9thrWTQaM/0Kn7XF9s+NtmBeBiuUeXHjAKQbhDvbVxWwD15zf9BdbP66wWoQKoY/2
-         kJoX5NUdgYjtuAuijcryB68Y5QD2YLqzaNpiz5qsdFthVhO01tE1qipGEQn5WV1UAi7L
-         AlY4Al5L+dkziJdnykDfln2iAdepVbBHgYy6V0MX0yBiFbGt2Clqe8E99iyb3obme6cF
-         os+zJQDU4BZlXJgYvdgJ+wuM2hXoB/PZOg8zfl5HQtYnPw/h3KXBjOs5U1JKdUMwAWgw
-         d6hQ==
-X-Gm-Message-State: AC+VfDxDvhHqpNfPEqgyUFvRYji/zIOK4JznsN5iQ03hZ54LVLG9fM25
-        0CAMQRtSD+He0/SmoZZUfUI=
-X-Google-Smtp-Source: ACHHUZ5c17qY5AyhpjBNaSKA+UiVrfEBjtFC1aShHzbmMUc0ji2I5r6GGQz2+rH2btH2xcInHkbe1A==
-X-Received: by 2002:a17:907:7285:b0:953:517a:8f1a with SMTP id dt5-20020a170907728500b00953517a8f1amr9576993ejc.58.1686546787978;
-        Sun, 11 Jun 2023 22:13:07 -0700 (PDT)
+        bh=B3t4qSSoxQIBSIIXeZdppBB0nlvRyy5H65Udz3iU4Dw=;
+        b=YuZmd8VzsYjjh42s98ZyZbmJm9UVMs/CqdPPZaTibo0pcqMgQSwOjRz/RvruUvDnWF
+         KTgoCay5hXVtu2lj20SZcCs/kJ9a6a+tF0CvNkHwZV3boi8fA9oa7Tn9Xs4mNIqFgOV0
+         UVf2qW8C7bkcI4IeFRyBM9N7qdDWGIlNg0MhQGPdE4RyrBiJuT9MR4x8/18ILN3/bHSX
+         3vNLcUvqmDnMIQ21fZW07DYOAXLMAMHw05EsG4DChfT5I2BABs2NRQ2TNomRIAMTrCwT
+         tekQLcAf1ugTbQDWeN6siki6/W/B28BoK3wx1IQyUEWzH7z+uHG4oKpSXBu45g+qpf4E
+         A0CA==
+X-Gm-Message-State: AC+VfDybQnTgbbCCDvXhAj5TO8ZejFSn3Wbqsg+4bGgbnCVU8viaxT+r
+        br/aguusSMxL4NgV7vRrBnMiLTGQyRk=
+X-Google-Smtp-Source: ACHHUZ5uVMbqfnul1WYNGtgKFJKIhcCu3N8VzyHGBB1j+b6/TkuHzJwaEXs5S9gkFWx2PFFVdmAh+A==
+X-Received: by 2002:aa7:cb59:0:b0:514:56b4:35a7 with SMTP id w25-20020aa7cb59000000b0051456b435a7mr4966606edt.36.1686547626183;
+        Sun, 11 Jun 2023 22:27:06 -0700 (PDT)
 Received: from [192.168.1.58] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id w12-20020a17090633cc00b00965f31ff894sm4587641eja.137.2023.06.11.22.13.07
+        by smtp.gmail.com with ESMTPSA id ay16-20020a056402203000b0050bce352dc5sm4640947edb.85.2023.06.11.22.27.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Jun 2023 22:13:07 -0700 (PDT)
-Message-ID: <69054d03-39e5-8c42-a9a9-8934ab4bf6c9@kernel.org>
-Date:   Mon, 12 Jun 2023 07:13:06 +0200
+        Sun, 11 Jun 2023 22:27:05 -0700 (PDT)
+Message-ID: <3725cc72-b6e5-848a-13b6-b3162e38be7b@kernel.org>
+Date:   Mon, 12 Jun 2023 07:27:04 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.2
-Subject: Re: [PATCH v2 3/3] tty: serial: samsung_tty: Use abs() to simplify
- some code
+Subject: Re: [PATCH v2 2/3] tty: serial: samsung_tty: Fix a memory leak in
+ s3c24xx_serial_getclk() when iterating clk
 Content-Language: en-US
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Alim Akhtar <alim.akhtar@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kukjin Kim <kgene.kim@samsung.com>,
+        Thomas Abraham <thomas.abraham@linaro.org>
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Walter Harms <wharms@bfs.de>,
+        stable@vger.kernel.org, Andi Shyti <andi.shyti@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org
 References: <e4baf6039368f52e5a5453982ddcb9a330fc689e.1686412569.git.christophe.jaillet@wanadoo.fr>
- <7bd165e82ed3675d4ddee343ab373031e995a126.1686412569.git.christophe.jaillet@wanadoo.fr>
+ <cf3e0053d2fc7391b2d906a86cd01a5ef15fb9dc.1686412569.git.christophe.jaillet@wanadoo.fr>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <7bd165e82ed3675d4ddee343ab373031e995a126.1686412569.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <cf3e0053d2fc7391b2d906a86cd01a5ef15fb9dc.1686412569.git.christophe.jaillet@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -65,38 +67,19 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 10. 06. 23, 17:59, Christophe JAILLET wrote:
-> Use abs() instead of hand-writing it.
+> When the best clk is searched, we iterate over all possible clk.
 > 
-> Suggested-by: Walter Harms <wharms@bfs.de>
+> If we find a better match, the previous one, if any, needs to be freed.
+> If a better match has already been found, we still need to free the new
+> one, otherwise it leaks.
+> 
+> Cc: <stable@vger.kernel.org> # v3.3+
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Andi Shyti <andi.shyti@kernel.org>
+> Fixes: 5f5a7a5578c5 ("serial: samsung: switch to clkdev based clock lookup")
 > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> v2: new patch
-> ---
->   drivers/tty/serial/samsung_tty.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 0b37019820b4..b29e9dfd81a6 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -24,6 +24,7 @@
->   #include <linux/dmaengine.h>
->   #include <linux/dma-mapping.h>
->   #include <linux/slab.h>
-> +#include <linux/math.h>
->   #include <linux/module.h>
->   #include <linux/ioport.h>
->   #include <linux/io.h>
-> @@ -1485,9 +1486,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
->   		}
->   		quot--;
->   
-> -		calc_deviation = req_baud - baud;
-> -		if (calc_deviation < 0)
-> -			calc_deviation = -calc_deviation;
-> +		calc_deviation = abs(req_baud - baud);
 
-Does this work provided req_baud and baud are unsigned?
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
 thanks,
 -- 
