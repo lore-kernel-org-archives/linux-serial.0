@@ -2,107 +2,218 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C1EC7EE23
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Jun 2023 09:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07613C77B7A
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Jun 2023 02:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231769AbjFKJRn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Jun 2023 05:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
+        id S233871AbjFLCyE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Jun 2023 22:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230453AbjFKJRm (ORCPT
+        with ESMTP id S229476AbjFLCyE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Jun 2023 05:17:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A453173B;
-        Sun, 11 Jun 2023 02:17:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 932DE60DB4;
-        Sun, 11 Jun 2023 09:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D07DC433D2;
-        Sun, 11 Jun 2023 09:17:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1686475060;
-        bh=3SpJa0wEuM4DqYfKRvFSbCsku+l47Q/G9TnUQ9payQs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MrBrpQBBpGfKZU1sgq0SnkLHZBe+tLk9orV4App7/aY8sCXYnfERFk6vxyakecPIl
-         TtiH00RYsRQ+ZXuinClirAjzlBnXrCWifSC/G6SEvSsBSDFJ6mhh5hDKyyc2EgkEv3
-         YS+o6cEVDvTfygDg/Fn+oWOioLMyCQCe+A7wAlSDsfN/ZiAjOJdBJa97zR2QEz1jAr
-         9UZGisJPROyHmGFTH96craL8sEBQ3sAXEzvU7gHMGsy6LzPl3QCX5pLLj5fIhH0V1A
-         r8FI06QnMo9/WoUPPKseRMxqV0RQAMWJCJg6M5d3fOxqAJUbByTtUZ9tNHLBdEaiwM
-         XEbfJF64DqhwA==
-Date:   Sun, 11 Jun 2023 11:17:36 +0200
-From:   Andi Shyti <andi.shyti@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v1 2/2] serial: sh-sci: Switch to use dev_err_probe_ptr()
-Message-ID: <20230611091736.ezwj4ap5mlza42vp@intel.intel>
-References: <20220214143248.502-1-andriy.shevchenko@linux.intel.com>
- <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+        Sun, 11 Jun 2023 22:54:04 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11626BF;
+        Sun, 11 Jun 2023 19:54:02 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id d2e1a72fcca58-65299178ac5so4270697b3a.1;
+        Sun, 11 Jun 2023 19:54:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686538441; x=1689130441;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SJ4E1TgPuKj4e6/UbDNdpEAQ2dguYdZ7sp49HDGjVLI=;
+        b=XtbMv+TYZ2FCIG+gAx6eT3GNWYeuNplC2pPNxGhm9EH9ap2kumPpsKtqD1kPX+XAgX
+         4DWnK/wX4PxZNW6Mbi9J26d0wzkkj83dIcOfFTIH/qjHfD1s99JWV7y8PsCwbfeW2Yf9
+         jReHN1bOYow/ky/pr6wcF76qoReaqOfWXJFhodWVcN9XN9TkZ6nN5F/h4evPjVDzoVjU
+         AWoN+SkrGbtWh8uOWS6e2lhQ25VchunRJ6P5ELxJvabIzdRbATRsjh9WhVZyDoddLeX3
+         NHAh3194LeKCNkEtQBNtdenoA4Lf2BGp/LtIyqjf8mA4niY+i7yrx/HS28aojBX0YC1S
+         NHcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686538441; x=1689130441;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SJ4E1TgPuKj4e6/UbDNdpEAQ2dguYdZ7sp49HDGjVLI=;
+        b=EAoBPJbYNIze1heXXu2B/5vBy1/U3nrW+Y1YccH+HN0Y9gGGVB5K3/A8iIzJjywToz
+         hwz+VmOb8uEUgp6cfsoAgfDppl0f+qnuaKJ5D4KTlgMRptvoeot4kKkMcPgE9MTF1SQp
+         RxYgmr+iMivKqDPaVcTO4joqPnEZw8mAVZ63uyAP/pnqLL4pcDK47Rscc8lf/XAwy8af
+         iQBd1IbNjNaE3wXkUl5jtGPpYJeP8j5B+cJEFgaHoCzESDFCMRujuVbG/rGNwtVJHJwk
+         Rwr6D/bfnMQzgz2ZyCc7Ddk32TNBj9M+C0J/3s9n+6hckLkk2AggxW4ugJGbMdkT3fvE
+         IeLA==
+X-Gm-Message-State: AC+VfDyWi6jpt2he7n5PC/A+JQoethsX23fm7nnpOQQWCUSB1DtLWqey
+        m4FgVGSPw4k5BzgCNWqSeVg=
+X-Google-Smtp-Source: ACHHUZ5Mvcf8OPknIRnZQm3CgeiEWpRcROv0fp6QqNJv5Eu/nEMOEz9silQMOUqDgNY/o+eGRaeiLA==
+X-Received: by 2002:a05:6a20:244d:b0:10c:dd4f:faa9 with SMTP id t13-20020a056a20244d00b0010cdd4ffaa9mr9762483pzc.14.1686538441367;
+        Sun, 11 Jun 2023 19:54:01 -0700 (PDT)
+Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id i21-20020aa78d95000000b0064d34ace753sm5931403pfr.114.2023.06.11.19.53.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Jun 2023 19:54:00 -0700 (PDT)
+From:   Jacky Huang <ychuang570808@gmail.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, tmaimon77@gmail.com, catalin.marinas@arm.com,
+        will@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, arnd@arndb.de, soc@kernel.org,
+        schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+Subject: [PATCH v14 0/1] Introduce Nuvoton ma35d1 SoC
+Date:   Mon, 12 Jun 2023 02:53:54 +0000
+Message-Id: <20230612025355.547871-1-ychuang570808@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+From: Jacky Huang <ychuang3@nuvoton.com>
 
-On Mon, Feb 14, 2022 at 04:32:48PM +0200, Andy Shevchenko wrote:
-> Instead of
-> 	return ERR_PTR(dev_err_probe(...));
-> call
-> 	return dev_err_probe_ptr(...);
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/tty/serial/sh-sci.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index b610b27893a8..0fce09c13847 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3199,8 +3199,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
->  
->  	rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
->  	if (IS_ERR(rstc))
-> -		return ERR_PTR(dev_err_probe(&pdev->dev, PTR_ERR(rstc),
-> -					     "failed to get reset ctrl\n"));
-> +		return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+initial device tree, clock driver, reset driver, and serial driver.
 
-I think this is a great idea. Like Geert, however, I believe that
-this could be more effective as a vararg function. Furthermore,
-wouldn't it be easier if the PTR_ERR conversion was carried out
-directly within dev_err_probe_ptr?
+This patchset cover letter is based from the initial support for Nuvoton
+ma35d1 to keep tracking the version history.
 
-Wouldn't this approach be more compact and convenient?
+This patchset had been applied to Linux kernel 6.4.0-rc6
+and tested on the Nuvoton ma35d1 SOM evaluation board.
 
-	return dev_err_probe_ptr(&pdev->dev, rstc,
-				 "failed to get reset ctrl\n");
+(ma35d1 information: https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+MA35D1 porting on linux-5.10.y can be found at: https://github.com/OpenNuvoton/MPU-Family
 
+v14:
+  - Removed patches PATCH v13 1/10 ~ 9/10 as they were applied
+  - Modify serial driver
+    - Fixed coding style issues
 
-Now, things start to get a bit more complicated as we will have
-four different combinations of dev_err_probes. They could either
-take a pointer with an error or an error integer, and they could
-either return an error or a pointer with an error. All four cases
-are utilized.
+v13:
+  - Modify serial driver
+    - Added a check for oops_in_progress in ma35d1serial_console_write to
+      determine whether to perform the spin_lock.
+    - Rebased drivers/tty/serial/Kconfig and recreate the patch
+    - Rebased MAINTAINERS and recreate the patch
 
-Please include me in your next batch of patches as I am also
-working on something similar in the background.
+v12:
+  - Modify serial driver
+    - Added PORT_MA35 to include/uapi/linux/serial_core.h, and apply to
+      the port->type of ma35d1 serial driver
+    - Added check for the return value of ioremap()
+    - Fixed several coding issues
+  - Rebase MAINTAINERS and recreate the patch
 
-Thanks,
-Andi
+v11:
+  - Rebase on top of 2023.05.24
+  - Modify serial driver
+    - Fixed several coding style issues
+    - Fixed ma35d1serial_set_mctrl()
+    - Added the 'MA35_' prefix to all register and bit field definitions.
+    - Used 'ttyNVT' instead of 'ttyS'
+  - Modify clock driver
+    - Added 'source nuvoton/Kconfig' to drivers/clk/Kconfig
+    - Fixed several coding issues
+    - Removed unnecessary inline specifier
+  - Modify reset driver
+    - Fixed typo and added comments
+  - Modify ma35d1.dtsi l2-cache node
+    - Added cache-unified and cache-size properties
 
->  
->  	ret = reset_control_deassert(rstc);
->  	if (ret) {
-> -- 
-> 2.34.1
-> 
+v10:
+  - Change from using ARCH_NUVOTON to using ARCH_MA35. The following patch files
+    have been modified:
+    - patch 1 arch/arm64/Kconfig.platforms
+    - patch 2 arch/arm64/configs/defconfig
+    - patch 7 arch/arm64/boot/dts/nuvoton/Makefile
+    - patch 8 drivers/clk/Makefile
+              drivers/clk/nuvoton/Kconfig
+              drivers/clk/nuvoton/Makefile
+    - patch 9 drivers/reset/Kconfig
+    - patch 10 drivers/tty/serial/Kconfig
+
+v9:
+  - Combine MAINTAINERS patch into patch 5 'dt-bindings: arm: Add initial bindings
+    for Nuvoton platform'
+  - Modify clock driver
+    - Use the helper function for 64-bit division
+    - Fixed minor issues
+  - Modify reset driver
+    - Refine coding style and add required header files
+    - Add spin_lock protection
+  - Add error return handling to the serial driver probe function
+
+v8:
+  - Remove '0005-dt-bindings-mfd-syscon-Add-nuvoton-ma35d1-sys-compat.patch' as it was applied.
+  - Modify MAINTAINERS NUVOTON MA35 and NPCM path settings
+  - Remove 'syscon' from dtsi 'sys' node and modify the corresponding yaml
+  - Modify clock driver
+    - Remove the header file and move definitions into .c files.
+    - Use parent_data instead of parent name.
+  - Modify serial driver
+  - Modify reset driver
+    - Modify reset register/offset lookup table to be indexed by reset id
+    - Combined reset and reboot structure
+
+v7:
+  - Fixed dts system-management node and compatible driver
+  - move 'nuvoton,npcm-gcr.yaml' from 'binding/arm/nuvoton' to 'binding/soc/nuvoton'
+  - In ma35d1.dtsi, create the soc node for ma35d1 SoC
+  - Modify the issues found in serial driver
+  - Modify the issues found in clock driver
+  - Modify the IDs of reset driver to be contiguous numbers and use lookup table
+    to find register offset and bit position.
+  - Modify MAINTAINERS NUVOTON NPCM path as npcm directory name to nuvoton
+
+v6:
+  - Combine nuvoton,ma35d1-clk.yaml and nuvoton,ma35d1-clk.h into one patch
+  - Combine nuvoton,ma35d1-reset.yaml and nuvoton,ma35d1-reset.h into one patch
+  - rename Documentation/devicetree/bindings/arm/npcm directory as nuvoton
+  - Remove patch for adding include/linux/mfd/ma35d1-sys.h as it's not required
+  - Update dtsi & dts files and move board-specific nodes to dts
+  - Modify reset driver
+  - Modify serial driver, fix coding style issues
+  - Modify clock driver, rewrite the PLL calculation functions
+
+v5:
+  - Add ARCH_NUVOTON to arm64 Kconfig
+  - Add ARCH_NUVOTON to defconfig
+  - Add the clock driver
+  - Add the reset driver
+  - Add the serial driver
+  - Add us to the maintainer
+
+v4:
+  - patch 4/5 is a resend
+  - Fixed dt_binding_check errors of nuvoton,ma35d1-clk.yaml
+  - Modify ma35d1.dtsi
+    1. Add a node hxt_24m
+    2. Fixed the base address of gic node
+    3. Add clocks and clock-names to clock node
+  - Fixed borad binding mistakes of nuvoton.yaml
+
+v3:
+  - added patch 4/5 and 5/5
+  - introduce CONFIG_ARCH_NUVOTON option
+  - add initial bindings for Nuvoton Platform boards
+  - fixed coding style problem of nuvoton,ma35d1-clk.h
+  - added CAPLL to clock-controller node
+  - modify the chosen node of ma35d1-evb.dts
+  - modify clock yaml "clk-pll-mode" to "nuvoton,clk-pll-mode"
+
+v2:
+  - fixed dt_binding_check failed of nuvoton,ma35d1-clk.yaml
+
+Jacky Huang (1):
+  tty: serial: Add Nuvoton ma35d1 serial driver support
+
+ drivers/tty/serial/Kconfig         |  18 +
+ drivers/tty/serial/Makefile        |   1 +
+ drivers/tty/serial/ma35d1_serial.c | 817 +++++++++++++++++++++++++++++
+ include/uapi/linux/serial_core.h   |   3 +
+ 4 files changed, 839 insertions(+)
+ create mode 100644 drivers/tty/serial/ma35d1_serial.c
+
+-- 
+2.34.1
+
