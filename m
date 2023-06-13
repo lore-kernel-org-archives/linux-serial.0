@@ -2,56 +2,56 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2CB4C7EE29
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jun 2023 10:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6DAC7EE2E
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jun 2023 11:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242052AbjFMK6l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Jun 2023 06:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44092 "EHLO
+        id S239863AbjFMLDU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Jun 2023 07:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239026AbjFMK6j (ORCPT
+        with ESMTP id S241892AbjFMLDT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Jun 2023 06:58:39 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA17310D4;
-        Tue, 13 Jun 2023 03:58:38 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-662f0feafb2so3927995b3a.1;
-        Tue, 13 Jun 2023 03:58:38 -0700 (PDT)
+        Tue, 13 Jun 2023 07:03:19 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D3C10D8;
+        Tue, 13 Jun 2023 04:03:17 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d9443c01a7336-1b3af7e3925so19758265ad.3;
+        Tue, 13 Jun 2023 04:03:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686653918; x=1689245918;
+        d=gmail.com; s=20221208; t=1686654197; x=1689246197;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=g816wKmTzjGrsMqAUO96nczc9ajLi9Tce0NGl/fCFGM=;
-        b=Nu8qTTKGvJQqvV1LFAeRfPJhXuBfvDyjaBCqv6/J8ihQx4ErFwpT+047weYG2+iFYa
-         lHUm9xjeseq1+ysAJl/Y8C0Vl11j3LrsdANbT9H4oHxCpUhBNggO2orPCLMQgy9/VuKg
-         6+gt+nIuugGRZjCmr+fJNT+UmzsOk0YQ2ZpRWZE/ZtbM+6SnH82QRO81oaSRSKXkNzYC
-         7Wc0u4omCGYmr12liRAxIqVvNpV9Fm53sn1hSUpaYV/t25MPsE2SqZj1bruTYodjVou+
-         l/hINNGMkv6ba6ui+DaBcZXCYlXHJPzfON9UDqdSZ2nBjnS+4dAGuh+61my3+yK6QBN/
-         mPxw==
+        bh=9/V6eBeQnAmuvDoaAFDPt7SClZ1v7wsV/h5UJhyaPqU=;
+        b=BWLUpzQWNs6DVuyX36vOIj88sUq+ThabI0PcNUhco5A6msRuOGGwEvhbxFMIzjNmOi
+         RV5N9UpF2HsW7L6uu9TfhIfHZfLqMfBLnzXMvHtclte31xxIif1kLRXfhep7cf7E/KDt
+         Rt06FQYTAM/Q3Hh2GErzY25OFBLcZ/H7Ob/KNGwhTxcZMN6N5SRGHh1MAfoLBcFeyCTD
+         r5EZsk9vpPqp/r3N7Vw9ShgN8rrKAtakg8rumCEyDIvamkoIxWJSj6H/L+d7i5SzyJiw
+         Pr7qJJdiytYrGqqWq+mKAXtoyg+Kyz8dUPgG8UaXuc3JlZ1PZRNTB3Bp9GcR4W6zRhoX
+         J4/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686653918; x=1689245918;
+        d=1e100.net; s=20221208; t=1686654197; x=1689246197;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=g816wKmTzjGrsMqAUO96nczc9ajLi9Tce0NGl/fCFGM=;
-        b=fG4BiZ1m0igxTxRtyEbQoqOmIx5q6URIJXpHzqX/8afv6LG8YGWwE6EpGUeftmEbHH
-         G05JQvl9jfGcODS7HmQbb25S75HyueOueVsVb90ifangYOjbh9TBDQaQlhWevuSWcNMn
-         1eG6RXlCYkd7YdxruTihd1FseujHL5oNGVn0iCu1SSPGoyW0+2emdYBspBzOslueNCdf
-         RwxrwPadQlfdTFfk6wJfje3dvDhQY47acTd6Q4TQCP9sPxBEjGd0tsjl9o1sf4FXCFYb
-         MCTuh68NAhRgqrV8JQf+gUe30WY1YcfqPH6tEVfXNFr8ruVND4OcKy9yBqAw5NjnfUgi
-         ylXQ==
-X-Gm-Message-State: AC+VfDzyuR+V7M7fVRa4FOmdpAfVp7YCf11Q8h4Cl6qC/a8+MK1Vbsaq
-        A/NUscQuL1a16UrkhQ3u3VPzszvSi4I=
-X-Google-Smtp-Source: ACHHUZ7I0b/NZGw98SSO8yJUQN29EI2VL52PVwFx8ph3ohep3LgKkFRLoYXYQg4146/Vf2KJ3gceJQ==
-X-Received: by 2002:a05:6a20:3c8d:b0:101:1e75:78e with SMTP id b13-20020a056a203c8d00b001011e75078emr17197706pzj.14.1686653918142;
-        Tue, 13 Jun 2023 03:58:38 -0700 (PDT)
+        bh=9/V6eBeQnAmuvDoaAFDPt7SClZ1v7wsV/h5UJhyaPqU=;
+        b=aXrmIRhMd/ll2V0W+hGYCbzTLm+nMemVRAF2+L6VXVFghlJDSvTEDrbc1uaw7nGtZR
+         7aXeXaae8ykPUGNbM6Ek4NzcrHZg6xU1CoB7ZvHr0j0uCk0McGBQo5dX2y/Ka4GgcG3O
+         vGw2+CFvzFMGepwt8Roy9GLTH5dvVBGBgbmJPZ5gbjS4HK0REdmFxMLhpzNS3GtpJiV6
+         u1s9eTIzBK2bqsfUyy/uCCRptgLU08oy22+7gkVyAOWr/4EG6TTulJoN8+O2a3iTxTqO
+         hLOM4t0TF4Dbn+o9goBSmO9s2p9AFsHGMOq7AHbjLb+7zTgZt5W0vvCV/IWUAXTUq2an
+         cBQw==
+X-Gm-Message-State: AC+VfDyRYWfROEciDJsNK3KruJGTVG5xNiP0PKnCCsrvqizn8VUu293L
+        ljUQL/noady+2FQmRLsblwk=
+X-Google-Smtp-Source: ACHHUZ5GM4WjEbyTgWCo/Km2adsaMHvYGz62PNvK5V5tCldsltLQQRbQSPoISoqOliZgSJGlM1zfkA==
+X-Received: by 2002:a17:902:9888:b0:1b1:bf4c:868a with SMTP id s8-20020a170902988800b001b1bf4c868amr8012570plp.42.1686654197321;
+        Tue, 13 Jun 2023 04:03:17 -0700 (PDT)
 Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id s15-20020a65644f000000b00543bfe33fedsm8349191pgv.20.2023.06.13.03.58.34
+        by smtp.gmail.com with ESMTPSA id v3-20020a170902d68300b001b243a5a5e1sm3335009ply.298.2023.06.13.04.03.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Jun 2023 03:58:37 -0700 (PDT)
-Message-ID: <f8eb6114-8248-8886-b301-c2886e50e016@gmail.com>
-Date:   Tue, 13 Jun 2023 18:58:32 +0800
+        Tue, 13 Jun 2023 04:03:16 -0700 (PDT)
+Message-ID: <0e40cbe6-0e88-b300-3507-5fa92eadb46d@gmail.com>
+Date:   Tue, 13 Jun 2023 19:03:11 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.11.0
@@ -70,9 +70,9 @@ Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         Jacky Huang <ychuang3@nuvoton.com>
 References: <20230612025355.547871-1-ychuang570808@gmail.com>
  <20230612025355.547871-2-ychuang570808@gmail.com>
- <2023061338-lunchbox-snorkel-e6a9@gregkh>
+ <2023061325-distant-gaffe-8871@gregkh>
 From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <2023061338-lunchbox-snorkel-e6a9@gregkh>
+In-Reply-To: <2023061325-distant-gaffe-8871@gregkh>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -82,41 +82,27 @@ X-Mailing-List: linux-serial@vger.kernel.org
 Dear Greg,
 
 
-On 2023/6/13 下午 06:28, Greg KH wrote:
+On 2023/6/13 下午 06:29, Greg KH wrote:
 > On Mon, Jun 12, 2023 at 02:53:55AM +0000, Jacky Huang wrote:
 >> From: Jacky Huang <ychuang3@nuvoton.com>
 >>
 >> This adds UART and console driver for Nuvoton ma35d1 Soc.
 >> It supports full-duplex communication, FIFO control, and
 >> hardware flow control.
-> You get a full 72 columns for your changelog :)
+> You don't specify here what your tty device name is going to be, why?
 >
->> --- a/include/uapi/linux/serial_core.h
->> +++ b/include/uapi/linux/serial_core.h
->> @@ -279,4 +279,7 @@
->>   /* Sunplus UART */
->>   #define PORT_SUNPLUS	123
->>   
->> +/* Nuvoton MA35 SoC */
->> +#define PORT_MA35	124
->> +
-> Why is this change needed?  What userspace code is going to rely on it?
+> It's not written anywhere, is that intentional?
+>
+> Same for your tty major/minor, what numbers are you using that might
+> also be in use by a different device in the system?
 >
 > thanks,
 >
 > greg k-h
 
-Because the serial driver requires a port->type, and almost all serial
-drivers defined their port type here. We follow the practice of most serial
-drivers here.
-If we don't do it this way, we would have to directly assign a value to
-port->type. However, such modifications were questioned in the past,
-which is why we changed it back to defining the port type in serial_core.h.
-
+I will add description about the tty name to the log.
+In practical testing, we specified in the u-boot parameters
+to use ttyNVT0 for the console, and it worked fine.
 
 Best regards,
 Jacky Huang
-
-
-
-
