@@ -2,168 +2,185 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A279EB64D9
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Jun 2023 15:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8989EB64D7
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Jun 2023 22:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242204AbjFMPo7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Jun 2023 11:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S229543AbjFMW4p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Jun 2023 18:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242956AbjFMPou (ORCPT
+        with ESMTP id S241437AbjFMW4c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Jun 2023 11:44:50 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7E8127;
-        Tue, 13 Jun 2023 08:44:48 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id DC23D320095F;
-        Tue, 13 Jun 2023 11:44:44 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Tue, 13 Jun 2023 11:44:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-transfer-encoding:content-type:content-type:date
-        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
-        1686671084; x=1686757484; bh=k3ek7V5og/jAxqAHyIbXVs/nCJAhWpzv8iS
-        ulQtMJ8I=; b=i25fvbZ43tfLcBg7k45NhbybIbPtwaulSRLXfJ66DaQlcXJSABL
-        r7eWKY6K7m3XIJQVWFNglIOCiR9bsRX9/GUBj+llF3lM4N56JijzFcD/7mtFcYxg
-        jAt+m4f2D+CqV0xv9u4LcPsKnNvhpd70vvUhTYrhhRIbiraMVxw3ukhuJi5PZkVE
-        Xjjb4yN+c85byOxnXUG5Q8Rqu8Iwy9b78K6Z89+wSUsCk0/rNIKw2r9rMHphg1r0
-        gmi7QX0lAUcdZQoXwReWV1+NvicsoCA3N06Aopffw60nVcoYMEOFX6UlweNfKjLA
-        zTl39n/blZJsjuVcTnAwuqrYbas4Y/7uA+g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:content-type:date:date:feedback-id:feedback-id
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1686671084; x=1686757484; bh=k3ek7V5og/jAxqAHyIbXVs/nCJAhWpzv8iS
-        ulQtMJ8I=; b=I418A2xfI25DMobOpjWKbzVLIpNs13e84N9THqgblB4uJe3UNPJ
-        ih+TfVqdy9Sa/0gyf8o2OXq0VNUWTVNeTuOchjzVlOzisJkG20nnAGnJppJImi57
-        sBxTAnFDc4MC9ajdW2o+gDKy4F9DxR/GN2BnXJGEwta1cKAXd/LTJzQMhJsmJDqK
-        Irk+LFRV9clRB+VuQsEL//zTaW+eFH/jYv3UEeXRDJxLbQmpQnZMx9RdIwkI9ahp
-        q8AiV1X1qBpYGuiD5XfkX7NSp5LqgQq22FNku+iXkxQyiA18pF3afy4HOlyOxq2z
-        wGSYHVweeJK3UMkv/jOnniMHGgvVDLDnEsQ==
-X-ME-Sender: <xms:646IZEQzojVj5xZjcSvl6kRZkc_i_T5KgclETuTg-EEPBeZl_cHTow>
-    <xme:646IZBwIxRJtRLn34PPoxxcKjrU6URojpDzo8zyFfG7ViBZjpKctAn9X_zLDnednf
-    __SVRxl913P2JQX9ks>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedujedgkeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
-    htthgvrhhnpeegfeejhedvledvffeijeeijeeivddvhfeliedvleevheejleetgedukedt
-    gfejveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:646IZB30Xby_fi7Q1Cyc62rhVyrzNKv3joyg5-E4yn_CXgD5twq9rw>
-    <xmx:646IZIBq8hLvqjiSIOzuW2K-nymv4Y2wjgB-rWKyns3AQPkjqyl5eA>
-    <xmx:646IZNgcKkc1a-FvHHfcIUjJ9Ku8idAh1sA7PODwY98JPj7j0a9gkQ>
-    <xmx:7I6IZGbFSWPsPn9v0o3AjgvqkUPiiqhmRBjUzzXViqSGxhzbhCc7xg>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 7A948B60086; Tue, 13 Jun 2023 11:44:43 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-492-g08e3be04ba-fm-20230607.003-g08e3be04
-Mime-Version: 1.0
-Message-Id: <35e768ad-7f15-48a4-9c38-09570026cf71@app.fastmail.com>
-In-Reply-To: <2023061356-matchbook-footwear-d142@gregkh>
-References: <20230612025355.547871-1-ychuang570808@gmail.com>
- <20230612025355.547871-2-ychuang570808@gmail.com>
- <2023061338-lunchbox-snorkel-e6a9@gregkh>
- <f8eb6114-8248-8886-b301-c2886e50e016@gmail.com>
- <2023061356-matchbook-footwear-d142@gregkh>
-Date:   Tue, 13 Jun 2023 17:44:23 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jacky Huang" <ychuang570808@gmail.com>
-Cc:     "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
-        "Michael Turquette" <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        "Tomer Maimon" <tmaimon77@gmail.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        soc@kernel.org, schung@nuvoton.com, mjchen@nuvoton.com,
-        "Jacky Huang" <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v14 1/1] tty: serial: Add Nuvoton ma35d1 serial driver support
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Tue, 13 Jun 2023 18:56:32 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E011498
+        for <linux-serial@vger.kernel.org>; Tue, 13 Jun 2023 15:56:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686696991; x=1718232991;
+  h=date:from:to:cc:subject:message-id;
+  bh=qAMlqqAvSkHVNvOWenUBBEj0CkbKOWB/CGPRSjuJd0U=;
+  b=WMFJ3hmMHdQNMm1cpwIA+mpleus33HlTPueRaFGAC6hSvIgcIR4JIax0
+   1gAV7qq8Hop43LDK0jo2pYflwYa0N6Oqsjq2NWDLa3yOZ6PKMeU3lcsxx
+   81TEov1+ynOytSMm5h8sAaFNg24tHTnZbDURA3KqmFW3667aOgeQ1N/Ej
+   T1HtnlGdo0vvchx2GnDBG7qjCKHd1rXLAVkstOe0bcpJOOij3keDamIhr
+   2w915/g0LB2tvlgbicLPkgm4t+ZoYVGUi1B5OHPJK7Ya7ryz9H8sqX8qL
+   HxH02ncn1Cnx5H8sNNwGjN+roRkqeYlkoCVQZzuR7ii/mgMThuiWikL5q
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="338102650"
+X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
+   d="scan'208";a="338102650"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2023 15:56:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10740"; a="744860797"
+X-IronPort-AV: E=Sophos;i="6.00,241,1681196400"; 
+   d="scan'208";a="744860797"
+Received: from lkp-server01.sh.intel.com (HELO 211f47bdb1cb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 13 Jun 2023 15:56:29 -0700
+Received: from kbuild by 211f47bdb1cb with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1q9Cw8-0001u4-2s;
+        Tue, 13 Jun 2023 22:56:28 +0000
+Date:   Wed, 14 Jun 2023 06:56:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ a82c3df955f8c1c726e4976527aa6ae924a67dd9
+Message-ID: <202306140615.cRizLVMI-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 13, 2023, at 16:49, Greg KH wrote:
-> On Tue, Jun 13, 2023 at 06:58:32PM +0800, Jacky Huang wrote:
->>=20
->> On 2023/6/13 =E4=B8=8B=E5=8D=88 06:28, Greg KH wrote:
->> > On Mon, Jun 12, 2023 at 02:53:55AM +0000, Jacky Huang wrote:
->> > > From: Jacky Huang <ychuang3@nuvoton.com>
->> > >=20
->> > > This adds UART and console driver for Nuvoton ma35d1 Soc.
->> > > It supports full-duplex communication, FIFO control, and
->> > > hardware flow control.
->> > You get a full 72 columns for your changelog :)
->> >=20
->> > > --- a/include/uapi/linux/serial_core.h
->> > > +++ b/include/uapi/linux/serial_core.h
->> > > @@ -279,4 +279,7 @@
->> > >   /* Sunplus UART */
->> > >   #define PORT_SUNPLUS	123
->> > > +/* Nuvoton MA35 SoC */
->> > > +#define PORT_MA35	124
->> > > +
->> > Why is this change needed?  What userspace code is going to rely on=
- it?
->> >=20
->> > thanks,
->> >=20
->> > greg k-h
->>=20
->> Because the serial driver requires a port->type, and almost all serial
->> drivers defined their port type here. We follow the practice of most =
-serial
->> drivers here.
->> If we don't do it this way, we would have to directly assign a value =
-to
->> port->type. However, such modifications were questioned in the past,
->> which is why we changed it back to defining the port type in serial_c=
-ore.h.
->
-> I really really want to get rid of this list, as it's a UAPI that no o=
-ne
-> uses.  So please don't use it, it doesn't help anything, and while the
-> serial driver might require it, it doesn't actually do anything with
-> that field, right?  So why don't we just set all of the values to the
-> same one?
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: a82c3df955f8c1c726e4976527aa6ae924a67dd9  tty: serial: fsl_lpuart: reduce RX watermark to 0 on LS1028A
 
-I don't see how Jacky can come up with a patch to do this correctly
-without more specific guidance to what exactly you are looking for,
-after the last 123 people that added support for a new port got
-that merged.
+elapsed time: 721m
 
-I checked debian codesearch and found only three obscure packages that
-accidentally include this header instead of including linux/serial.h,
-a couple of lists of all kernel headers, and none that include it on
-purpose. I agree that this header should really not exist in uapi,
-but the question is what exactly to do about it.
+configs tested: 113
+configs skipped: 5
 
-Possible changes would be:
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-- add a special value PORT_* constant other than PORT_UNKNOWN that
-  can be used by serial drivers instead of a unique value, and
-  ensure that the serial core can handle drivers using it.
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r004-20230612   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                  randconfig-r001-20230612   gcc  
+arc                  randconfig-r015-20230612   gcc  
+arc                  randconfig-r043-20230612   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm                  randconfig-r046-20230612   clang
+arm64                            allyesconfig   gcc  
+arm64        buildonly-randconfig-r001-20230612   clang
+arm64                               defconfig   gcc  
+arm64                randconfig-r036-20230612   clang
+csky                                defconfig   gcc  
+csky                 randconfig-r023-20230612   gcc  
+csky                 randconfig-r034-20230612   gcc  
+hexagon              randconfig-r025-20230612   clang
+hexagon              randconfig-r031-20230612   clang
+hexagon              randconfig-r041-20230612   clang
+hexagon              randconfig-r045-20230612   clang
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-r006-20230612   clang
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-i001-20230612   clang
+i386                 randconfig-i002-20230612   clang
+i386                 randconfig-i003-20230612   clang
+i386                 randconfig-i004-20230612   clang
+i386                 randconfig-i005-20230612   clang
+i386                 randconfig-i006-20230612   clang
+i386                 randconfig-i011-20230612   gcc  
+i386                 randconfig-i012-20230612   gcc  
+i386                 randconfig-i013-20230612   gcc  
+i386                 randconfig-i014-20230612   gcc  
+i386                 randconfig-i015-20230612   gcc  
+i386                 randconfig-i016-20230612   gcc  
+i386                 randconfig-r012-20230612   gcc  
+i386                 randconfig-r014-20230612   gcc  
+i386                 randconfig-r021-20230612   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch            randconfig-r002-20230612   gcc  
+loongarch            randconfig-r005-20230612   gcc  
+loongarch            randconfig-r024-20230612   gcc  
+m68k                             allmodconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k         buildonly-randconfig-r004-20230612   gcc  
+m68k                                defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                 randconfig-r011-20230612   clang
+nios2        buildonly-randconfig-r001-20230612   gcc  
+nios2        buildonly-randconfig-r005-20230612   gcc  
+nios2                               defconfig   gcc  
+nios2                randconfig-r006-20230612   gcc  
+nios2                randconfig-r032-20230612   gcc  
+openrisc             randconfig-r013-20230612   gcc  
+parisc                           allyesconfig   gcc  
+parisc       buildonly-randconfig-r003-20230612   gcc  
+parisc                              defconfig   gcc  
+parisc               randconfig-r022-20230612   gcc  
+parisc               randconfig-r035-20230612   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc      buildonly-randconfig-r002-20230612   gcc  
+powerpc              randconfig-r024-20230612   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv        buildonly-randconfig-r005-20230612   gcc  
+riscv                               defconfig   gcc  
+riscv                randconfig-r006-20230612   clang
+riscv                randconfig-r023-20230612   gcc  
+riscv                randconfig-r033-20230612   clang
+riscv                randconfig-r042-20230612   gcc  
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r003-20230612   clang
+s390                 randconfig-r016-20230612   gcc  
+s390                 randconfig-r044-20230612   gcc  
+sh                               allmodconfig   gcc  
+sh           buildonly-randconfig-r003-20230612   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc                randconfig-r026-20230612   gcc  
+sparc64      buildonly-randconfig-r006-20230612   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   clang
+um                           x86_64_defconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-a001-20230612   clang
+x86_64               randconfig-a002-20230612   clang
+x86_64               randconfig-a003-20230612   clang
+x86_64               randconfig-a004-20230612   clang
+x86_64               randconfig-a005-20230612   clang
+x86_64               randconfig-a006-20230612   clang
+x86_64               randconfig-a011-20230612   gcc  
+x86_64               randconfig-a012-20230612   gcc  
+x86_64               randconfig-a013-20230612   gcc  
+x86_64               randconfig-a014-20230612   gcc  
+x86_64               randconfig-a015-20230612   gcc  
+x86_64               randconfig-a016-20230612   gcc  
+x86_64               randconfig-r005-20230612   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
 
-- move all values used by the 8250 driver from serial_core.h
-  to serial.h, as this driver actually uses the constants.
-
-- Move the remaining contents of uapi/linux/serial.h into the=20
-  non-uapi version.
-
-- Change all drivers that only reference a single PORT_*
-  value to use the generic one.
-
-       Arnd
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
