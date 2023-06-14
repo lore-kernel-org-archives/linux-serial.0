@@ -2,65 +2,151 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E610BEB64DB
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jun 2023 04:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893EDEB64DA
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jun 2023 04:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233663AbjFNEqL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Jun 2023 00:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
+        id S234248AbjFNE6D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Jun 2023 00:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbjFNEqK (ORCPT
+        with ESMTP id S233929AbjFNE6C (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Jun 2023 00:46:10 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0A4DC5;
-        Tue, 13 Jun 2023 21:46:09 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id C231780F9;
-        Wed, 14 Jun 2023 04:46:08 +0000 (UTC)
-Date:   Wed, 14 Jun 2023 07:46:07 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Dan Carpenter <dan.carpenter@linaro.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] serial: core: don't kfree device managed data
-Message-ID: <20230614044607.GF14287@atomide.com>
-References: <ZH7tsTmWY5b/4m+6@moroto>
- <ZH8xwKuI9WqRUu5H@smile.fi.intel.com>
- <c1a2467b-7a30-4eaa-9206-3b47d3ae64e6@kadam.mountain>
- <ZH9I1DCyfa8tEzIz@smile.fi.intel.com>
- <dbd168c0-1ef2-4270-b6e2-3a489cdf6a14@kadam.mountain>
- <20230606161840.GL56720@atomide.com>
+        Wed, 14 Jun 2023 00:58:02 -0400
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FEB122;
+        Tue, 13 Jun 2023 21:58:01 -0700 (PDT)
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5183101690cso7278085a12.0;
+        Tue, 13 Jun 2023 21:58:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686718680; x=1689310680;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dVqjech6rehqYVc76kP00nVY02sE+W+4Mbw+HMfqJs0=;
+        b=Thcyv3QWdwJGWETB8lfAa9kBrJ2ZtyTVrc5Z3F2XFS3cUpRlDwhB2OHvV7SiHvJEVY
+         7MchZaXrA6LAjxrbNxHVkiwkjtHIRvacz1T+B/oZG/cho15ieM7JB/Ir0ltE7kfxZ4/r
+         UTSX61aGJVkEiuQZXLsg3t0qB/iCf+dZy9IywZgDUMQYeWEdFZImf2Fw7wgaQxeEB9IM
+         bs8OuoS37p3cxajagnkHE8U44ivtj0TLB7n8Rv5cRF1LeyAUByf2xlvUIsZB3Y/WfJuZ
+         YPcKhi010xcvAx3rryM7uBeKbDfqCBkYmOgffWAzWnleDIJzaiJbTTHbAVyukdnjMiVh
+         BAxQ==
+X-Gm-Message-State: AC+VfDxr90wYI4swRG3UP4ukMr8J01MofnjS9BPcPY2/SoIZonD/yuwI
+        D4QzHFRf/dNmHRYqtDGqwcw=
+X-Google-Smtp-Source: ACHHUZ66MPHDLCxi4nWcCRjbBaPXVXW2hh68IAC/e+uTnvNGyZwoL0gPajf4l9a7mqMeV31MsL6ocQ==
+X-Received: by 2002:a17:907:7e9a:b0:977:d468:827 with SMTP id qb26-20020a1709077e9a00b00977d4680827mr453941ejc.17.1686718679529;
+        Tue, 13 Jun 2023 21:57:59 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id ha19-20020a170906a89300b0097d77a5f033sm5974327ejb.24.2023.06.13.21.57.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Jun 2023 21:57:58 -0700 (PDT)
+Message-ID: <11b0f59e-7cca-1b50-9c34-f38e6b6fc0f9@kernel.org>
+Date:   Wed, 14 Jun 2023 06:57:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230606161840.GL56720@atomide.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH v14 1/1] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jacky Huang <ychuang570808@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        soc@kernel.org, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230612025355.547871-1-ychuang570808@gmail.com>
+ <20230612025355.547871-2-ychuang570808@gmail.com>
+ <2023061338-lunchbox-snorkel-e6a9@gregkh>
+ <f8eb6114-8248-8886-b301-c2886e50e016@gmail.com>
+ <2023061356-matchbook-footwear-d142@gregkh>
+ <35e768ad-7f15-48a4-9c38-09570026cf71@app.fastmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <35e768ad-7f15-48a4-9c38-09570026cf71@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Dan,
-
-* Tony Lindgren <tony@atomide.com> [230606 19:18]:
-> * Dan Carpenter <dan.carpenter@linaro.org> [230606 15:01]:
-> > On Tue, Jun 06, 2023 at 05:55:16PM +0300, Andy Shevchenko wrote:
-> > > 
-> > > I'm okay with the above, but it seems at the same time we need to limit the
-> > > messages:
-> > > 
-> > > 	dev_err_once(port->dev, "uart_add_one_port() called before arch_initcall()?\n");
-> > > 
-> > 
-> > Yeah.  I would prefer if that was only printed as a debug message.
-> > -EPROBE_DEFER is supposed to be a normal part of the process.
+On 13. 06. 23, 17:44, Arnd Bergmann wrote:
+> On Tue, Jun 13, 2023, at 16:49, Greg KH wrote:
+>> On Tue, Jun 13, 2023 at 06:58:32PM +0800, Jacky Huang wrote:
+>>>
+>>> On 2023/6/13 下午 06:28, Greg KH wrote:
+>>>> On Mon, Jun 12, 2023 at 02:53:55AM +0000, Jacky Huang wrote:
+>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>>>
+>>>>> This adds UART and console driver for Nuvoton ma35d1 Soc.
+>>>>> It supports full-duplex communication, FIFO control, and
+>>>>> hardware flow control.
+>>>> You get a full 72 columns for your changelog :)
+>>>>
+>>>>> --- a/include/uapi/linux/serial_core.h
+>>>>> +++ b/include/uapi/linux/serial_core.h
+>>>>> @@ -279,4 +279,7 @@
+>>>>>    /* Sunplus UART */
+>>>>>    #define PORT_SUNPLUS	123
+>>>>> +/* Nuvoton MA35 SoC */
+>>>>> +#define PORT_MA35	124
+>>>>> +
+>>>> Why is this change needed?  What userspace code is going to rely on it?
+>>>>
+>>>> thanks,
+>>>>
+>>>> greg k-h
+>>>
+>>> Because the serial driver requires a port->type, and almost all serial
+>>> drivers defined their port type here. We follow the practice of most serial
+>>> drivers here.
+>>> If we don't do it this way, we would have to directly assign a value to
+>>> port->type. However, such modifications were questioned in the past,
+>>> which is why we changed it back to defining the port type in serial_core.h.
+>>
+>> I really really want to get rid of this list, as it's a UAPI that no one
+>> uses.  So please don't use it, it doesn't help anything, and while the
+>> serial driver might require it, it doesn't actually do anything with
+>> that field, right?  So why don't we just set all of the values to the
+>> same one?
 > 
-> Debug here should do the trick yeah.
+> I don't see how Jacky can come up with a patch to do this correctly
+> without more specific guidance to what exactly you are looking for,
+> after the last 123 people that added support for a new port got
+> that merged.
+> 
+> I checked debian codesearch and found only three obscure packages that
+> accidentally include this header instead of including linux/serial.h,
+> a couple of lists of all kernel headers, and none that include it on
+> purpose. I agree that this header should really not exist in uapi,
+> but the question is what exactly to do about it.
+> 
+> Possible changes would be:
+> 
+> - add a special value PORT_* constant other than PORT_UNKNOWN that
+>    can be used by serial drivers instead of a unique value, and
+>    ensure that the serial core can handle drivers using it.
+> 
+> - move all values used by the 8250 driver from serial_core.h
+>    to serial.h, as this driver actually uses the constants.
+> 
+> - Move the remaining contents of uapi/linux/serial.h into the
+>    non-uapi version.
+> 
+> - Change all drivers that only reference a single PORT_*
+>    value to use the generic one.
 
-Just wondering.. Are you going to send this fix or do you want me to type
-it up?
+Hmm, we are looping :).
 
-Regards,
+https://lore.kernel.org/all/75375f8d-e157-a364-3da5-9c8d5b832927@kernel.org/
 
-Tony
+regards,
+-- 
+js
+suse labs
+
