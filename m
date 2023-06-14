@@ -2,84 +2,87 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8953EEB64D8
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Jun 2023 15:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2C4EB64D8
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Jun 2023 16:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244235AbjFNPcs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Jun 2023 11:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37530 "EHLO
+        id S232203AbjFNQNy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Jun 2023 12:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245118AbjFNPcm (ORCPT
+        with ESMTP id S232050AbjFNQNx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Jun 2023 11:32:42 -0400
-Received: from zg8tndyumtaxlji0oc4xnzya.icoremail.net (zg8tndyumtaxlji0oc4xnzya.icoremail.net [46.101.248.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE1AD2125;
-        Wed, 14 Jun 2023 08:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id; bh=s6WgjVWLfkpxN651qFEtAa7EbFB9eDZZ7A04NJW3HN8=; b=Q
-        DUODjVOcTIOAcKh7GrLfPj8D93IroXBQ23ZFlVTQEl6iRMh0Cogb8m+8kLbWVsEc
-        XSc1M/p0XwjiHwuxUND+VkbddnctkXDuY7gbXwJjkQtbf5tRkbSdU7nv/j2Tfqmy
-        4Kfbxvmw6ibnqfEE+HUtJU/EiJL6XXAWdwKWM2Hl7U=
-Received: from ubuntu.localdomain (unknown [10.230.35.76])
-        by app1 (Coremail) with SMTP id XAUFCgB35T2L3Ylkkl_sAA--.37414S2;
-        Wed, 14 Jun 2023 23:32:28 +0800 (CST)
-From:   Chenyuan Mi <cymi20@fudan.edu.cn>
-To:     ilpo.jarvinen@linux.intel.com
-Cc:     andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org,
+        Wed, 14 Jun 2023 12:13:53 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E5A1FE2;
+        Wed, 14 Jun 2023 09:13:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686759232; x=1718295232;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=o5uQWnqbwzaqb8LixYVI9Hou4OwCL2loJHaPencrplE=;
+  b=fngjgK4Vop4JInyKacVRtrHgFifJbBM565hlxZzIHAw/fqMm4s3qOARw
+   tJp8TBtMdu2PvmlHMQWkU6yaqClGFQGWuD9uX7CZvILeH4Pubmlu6OaMM
+   cU0Wr9YN2kjRrVZQaWczSK3R3Uy9oie6gQ/r3otKNFYOwgK5C+Gihm2/e
+   UvbfHuzUvKrk9dj7x4JechCKkh1J/ce2q0tARK5Pkji6PJ2+QS8PFfv13
+   fUTTbqDEzlAhT+F3ArQ9vPJefG1aC7KE/kteBmXPLi/M2MUKt3t8/ys1X
+   nite7Kp50nflWwjus9oL5PwjjZSa9VpVQLgJkJhcyfuWq/h6vDLQObSze
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="358658082"
+X-IronPort-AV: E=Sophos;i="6.00,243,1681196400"; 
+   d="scan'208";a="358658082"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2023 09:08:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10741"; a="662449589"
+X-IronPort-AV: E=Sophos;i="6.00,243,1681196400"; 
+   d="scan'208";a="662449589"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003.jf.intel.com with ESMTP; 14 Jun 2023 09:08:50 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1q9T3A-003jgN-1P;
+        Wed, 14 Jun 2023 19:08:48 +0300
+Date:   Wed, 14 Jun 2023 19:08:48 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Chenyuan Mi <cymi20@fudan.edu.cn>
+Cc:     ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chenyuan Mi <cymi20@fudan.edu.cn>
-Subject: [PATCH] serial: 8250_lpss: Fix missing check for return value of pci_get_slot()
-Date:   Wed, 14 Jun 2023 08:32:26 -0700
-Message-Id: <20230614153226.117768-1-cymi20@fudan.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: XAUFCgB35T2L3Ylkkl_sAA--.37414S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XF47uFWrJF4DGrWUCr1rZwb_yoWfArgEka
-        4kAwnxZwnI9F1qkrn3Grn8ArWSk3WjvF1xX3Z2vr98JryDArWUZrWjqa9rXr9rWwsxJF95
-        Awn7Kr1Sqr1DZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbskFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
-        rcIFxwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
-        IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
-        6r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2
-        IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E
-        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
-        IFyTuYvjfUOlksUUUUU
-X-CM-SenderInfo: isqsiiisuqikmt6i3vldqovvfxof0/
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_lpss: Fix missing check for return value of
+ pci_get_slot()
+Message-ID: <ZInmEJJjLEwCiOBU@smile.fi.intel.com>
+References: <20230614153226.117768-1-cymi20@fudan.edu.cn>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230614153226.117768-1-cymi20@fudan.edu.cn>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pci_get_slot() function may return NULL, which may
-cause null pointer deference, and most other callsites of
-pci_get_slot() do Null check. Add Null check for return
-value of pci_get_slot().
+On Wed, Jun 14, 2023 at 08:32:26AM -0700, Chenyuan Mi wrote:
+> The pci_get_slot() function may return NULL, which may
+> cause null pointer deference, and most other callsites of
+> pci_get_slot() do Null check. Add Null check for return
+> value of pci_get_slot().
+> 
+> Found by our static analysis tool.
 
-Found by our static analysis tool.
+...
 
-Signed-off-by: Chenyuan Mi <cymi20@fudan.edu.cn>
----
- drivers/tty/serial/8250/8250_lpss.c | 2 ++
- 1 file changed, 2 insertions(+)
+>  	dma_dev = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
+> +	if (!dma_dev)
+> +		return -ENODEV;
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 0e43bdfb7459..05af5865ee1b 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -137,6 +137,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 	}
- 
- 	dma_dev = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-+	if (!dma_dev)
-+		return -ENODEV;
- 
- 	param->dma_dev = &dma_dev->dev;
- 	param->m_master = 0;
+This adds (almost) a dead code. The function 0 must be present in accordance
+with the PCI specification (even earliest version of it state that).
+If pci_get_slot() returns a NULL, in this case it means that something, much
+bigger issue, happens and this check won't help us to do anything anyway.
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
