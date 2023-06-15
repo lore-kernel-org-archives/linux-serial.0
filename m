@@ -2,452 +2,172 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FABEEB64D9
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 10:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D915EB64DB
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 10:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245688AbjFOKRp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 06:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
+        id S245753AbjFOKqL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Jun 2023 06:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343514AbjFOKRo (ORCPT
+        with ESMTP id S245751AbjFOKqJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 06:17:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797C5271E;
-        Thu, 15 Jun 2023 03:17:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 091AA629D0;
-        Thu, 15 Jun 2023 10:17:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EABF5C433C8;
-        Thu, 15 Jun 2023 10:17:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1686824261;
-        bh=hQdQb3K0zOzRAI12T6bqOiAqIhrQnkzx9T1sWotlFdE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vP+zPqy3Emd+Sfm+5jR1FrX2Zl5OpVkhRpotopb61/EIrZmAN/4gMKyoR8O2vM2BQ
-         3Te8K6kSpxtoR4Q3ui6bhZ1s9vaGP3KFgTRBsHRt1eE+7SuXORFonsXZXjRnD+SOpC
-         nlzRdA/B2vVV4Jswtfy6xLuO9NWKq/Y5xv98CTtE=
-Date:   Thu, 15 Jun 2023 12:17:38 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hongyu Xie <xiehongyu1@kylinos.cn>
-Cc:     linux@armlinux.org.uk, jirislaby@kernel.org, corbet@lwn.net,
-        rdunlap@infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xy521521@gmail.com,
-        oe-kbuild-all@lists.linux.dev, lkp@intel.com, bagasdotme@gmail.com
-Subject: Re: [RESEND PATCH v4 -next] tty: serial: add panic serial helper
-Message-ID: <2023061502-submerge-preachy-4413@gregkh>
-References: <20230614025512.27746-1-xiehongyu1@kylinos.cn>
+        Thu, 15 Jun 2023 06:46:09 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B74F2130;
+        Thu, 15 Jun 2023 03:46:07 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-66615629689so2019241b3a.2;
+        Thu, 15 Jun 2023 03:46:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686825966; x=1689417966;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1ceGenVHiIhT8J4bTA/hroU5FeyMJg9le+aNbGkYaWs=;
+        b=cqkhwrEoP1Xx4HkeZu5R/+cfyAHIBHX6TaK8vAygzYjfEBnkTuPEyjb7EDM2+5xUCT
+         tewXBd4oev5wmuT8BpIT0dibvzMotcXJ3131B8zrQno0tEE/vGwiuLIcI6HPPZMh1f8E
+         KTtKk5yZe6X//wDWP7iOVG9QVMslFP/Yn/GCf5kt6ckER0YQaPn40jem+PupxfpQnk9/
+         T4RkO5Af8COpzQ4O9kqrMaxtTwr3TjBWZl61GSbaqB8dworaBA4xPEAXXzYXPGIsMVC7
+         W91xGTuaoxrWPwMcH4eOYo/DARMWkrOkcBnRkEfc4isFwxEzNOuXwy61yXgND3kppN0C
+         fXAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686825966; x=1689417966;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1ceGenVHiIhT8J4bTA/hroU5FeyMJg9le+aNbGkYaWs=;
+        b=XOy5gPgS1gYpD01yxXSBvdFPoKpC/qtahXz57hngaXZ6z1tq0onDAvieYPLJQqit3T
+         pEmVmzR0EfCo4yll1fEq6/VE6xiCCeBlf+CyXiwLVqQmJYrC3CM9P29GPNz/a96jTOYM
+         MbvTqFpnYbcb4dHTAnt4f9Y0lQwFt2Icd+zHyjWevRB2pd59w7Jh/FObwZogtCVwrj4O
+         2iHg54bkIg3vnVvDHT1MKs5BpxTqBEVxnVUT1CEikXMFyON5WrAIVHG+EEBvDhVyw1/q
+         HNYV+69PtxuiPz2QDNfNyrVgyKXu1A7zIEXr13lCqiwbgpKzc2scs3bhQGEb1MCUM572
+         SJNQ==
+X-Gm-Message-State: AC+VfDyKIq7gS/DSjEHh0rHxa3aefKpLDGmslJ4H8gddsj4kkxwmFjxJ
+        IW17nviYpUtX+1TNryq23AA=
+X-Google-Smtp-Source: ACHHUZ5KeIs+4puHmWbUL4V38X9p8iuVjK6/GwQTDrX/TdnxlKj0c4p7Y6LS7F2orDmZvyOSppxlKg==
+X-Received: by 2002:a05:6a20:2e13:b0:11e:7273:7edd with SMTP id be19-20020a056a202e1300b0011e72737eddmr693906pzb.23.1686825966256;
+        Thu, 15 Jun 2023 03:46:06 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id p3-20020a62ab03000000b00646e7d2b5a7sm1136778pff.112.2023.06.15.03.46.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Jun 2023 03:46:05 -0700 (PDT)
+Message-ID: <4fd20e8d-49fd-be07-e4e5-0860fdb07125@gmail.com>
+Date:   Thu, 15 Jun 2023 18:46:01 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230614025512.27746-1-xiehongyu1@kylinos.cn>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v14 1/1] tty: serial: Add Nuvoton ma35d1 serial driver
+ support
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        soc@kernel.org, schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230612025355.547871-1-ychuang570808@gmail.com>
+ <20230612025355.547871-2-ychuang570808@gmail.com>
+ <2023061338-lunchbox-snorkel-e6a9@gregkh>
+ <f8eb6114-8248-8886-b301-c2886e50e016@gmail.com>
+ <2023061356-matchbook-footwear-d142@gregkh>
+ <35e768ad-7f15-48a4-9c38-09570026cf71@app.fastmail.com>
+ <2023061555-enlighten-worshiper-c92d@gregkh>
+Content-Language: en-US
+From:   Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <2023061555-enlighten-worshiper-c92d@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 14, 2023 at 10:55:12AM +0800, Hongyu Xie wrote:
-> It was inspired by kgdboc.
-> 
-> This is a debug module that allows you to get all kernel logs
-> after panic.
-> 
-> Normally you need to attach a USB-to-UART tool or enable kdump
-> before panic happens to get log from kernel after panic. If you
-> didn't do that and kdump is not working, you can't get any log to
-> know what happened before panic. If you have a USB-to-UART tool
-> and the UART port on your computer is working. This module helps
-> you to get all kernel log after panic() is called.
-> 
-> To use this, see Documentation/dev-tools/panic_serial_helper.rst.
-> 
-> Tested on an arm64 device.
-> 
-> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-> ---
-
-Why  is this a RESEND?  What's wrong with the previous version?
 
 
+On 2023/6/15 下午 06:19, Greg Kroah-Hartman wrote:
+> On Tue, Jun 13, 2023 at 05:44:23PM +0200, Arnd Bergmann wrote:
+>> On Tue, Jun 13, 2023, at 16:49, Greg KH wrote:
+>>> On Tue, Jun 13, 2023 at 06:58:32PM +0800, Jacky Huang wrote:
+>>>> On 2023/6/13 下午 06:28, Greg KH wrote:
+>>>>> On Mon, Jun 12, 2023 at 02:53:55AM +0000, Jacky Huang wrote:
+>>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>>>>
+>>>>>> This adds UART and console driver for Nuvoton ma35d1 Soc.
+>>>>>> It supports full-duplex communication, FIFO control, and
+>>>>>> hardware flow control.
+>>>>> You get a full 72 columns for your changelog :)
+>>>>>
+>>>>>> --- a/include/uapi/linux/serial_core.h
+>>>>>> +++ b/include/uapi/linux/serial_core.h
+>>>>>> @@ -279,4 +279,7 @@
+>>>>>>    /* Sunplus UART */
+>>>>>>    #define PORT_SUNPLUS	123
+>>>>>> +/* Nuvoton MA35 SoC */
+>>>>>> +#define PORT_MA35	124
+>>>>>> +
+>>>>> Why is this change needed?  What userspace code is going to rely on it?
+>>>>>
+>>>>> thanks,
+>>>>>
+>>>>> greg k-h
+>>>> Because the serial driver requires a port->type, and almost all serial
+>>>> drivers defined their port type here. We follow the practice of most serial
+>>>> drivers here.
+>>>> If we don't do it this way, we would have to directly assign a value to
+>>>> port->type. However, such modifications were questioned in the past,
+>>>> which is why we changed it back to defining the port type in serial_core.h.
+>>> I really really want to get rid of this list, as it's a UAPI that no one
+>>> uses.  So please don't use it, it doesn't help anything, and while the
+>>> serial driver might require it, it doesn't actually do anything with
+>>> that field, right?  So why don't we just set all of the values to the
+>>> same one?
+>> I don't see how Jacky can come up with a patch to do this correctly
+>> without more specific guidance to what exactly you are looking for,
+>> after the last 123 people that added support for a new port got
+>> that merged.
+> I keep complaining about this, when I notice it.  Just use the "default"
+> port type in the serial driver and don't add a new type here and it
+> should just work, right?
+>
+>> I checked debian codesearch and found only three obscure packages that
+>> accidentally include this header instead of including linux/serial.h,
+>> a couple of lists of all kernel headers, and none that include it on
+>> purpose. I agree that this header should really not exist in uapi,
+>> but the question is what exactly to do about it.
+>>
+>> Possible changes would be:
+>>
+>> - add a special value PORT_* constant other than PORT_UNKNOWN that
+>>    can be used by serial drivers instead of a unique value, and
+>>    ensure that the serial core can handle drivers using it.
+> Why do we need a special constant?
+>
+>> - move all values used by the 8250 driver from serial_core.h
+>>    to serial.h, as this driver actually uses the constants.
+> Makes sense.
+>
+>> - Move the remaining contents of uapi/linux/serial.h into the
+>>    non-uapi version.
+>>
+>> - Change all drivers that only reference a single PORT_*
+>>    value to use the generic one.
+> I think this is the best thing to do.
+>
+> thanks,
+>
+> greg k-h
 
-> 
-> v4: fix some syntax problems in Documentation.
-> 
-> v3: fix problems in Documentation reported by
-> kernel test robot <lkp@intel.com>.
-> 
-> v2: replace uart with UART for consistency.
-> 
->  Documentation/dev-tools/index.rst             |   1 +
->  .../dev-tools/panic_serial_helper.rst         | 138 ++++
->  MAINTAINERS                                   |   5 +
->  drivers/tty/serial/Kconfig                    |  25 +
->  drivers/tty/serial/Makefile                   |   1 +
->  drivers/tty/serial/panic_serial_helper.c      | 619 ++++++++++++++++++
->  include/linux/panic.h                         |   1 +
->  kernel/panic.c                                |  12 +
->  8 files changed, 802 insertions(+)
->  create mode 100644 Documentation/dev-tools/panic_serial_helper.rst
->  create mode 100644 drivers/tty/serial/panic_serial_helper.c
-> 
-> diff --git a/Documentation/dev-tools/index.rst b/Documentation/dev-tools/index.rst
-> index 6b0663075dc0..0655528e5a83 100644
-> --- a/Documentation/dev-tools/index.rst
-> +++ b/Documentation/dev-tools/index.rst
-> @@ -34,6 +34,7 @@ Documentation/dev-tools/testing-overview.rst
->     kselftest
->     kunit/index
->     ktap
-> +   panic_serial_helper
->  
->  
->  .. only::  subproject and html
-> diff --git a/Documentation/dev-tools/panic_serial_helper.rst b/Documentation/dev-tools/panic_serial_helper.rst
-> new file mode 100644
-> index 000000000000..d3c177f56bc4
-> --- /dev/null
-> +++ b/Documentation/dev-tools/panic_serial_helper.rst
-> @@ -0,0 +1,138 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +========================================================
-> +Using panic serial helper to get kernel logs after panic
-> +========================================================
-> +
-> +:Author: Hongyu Xie <xiehongyu1@kylinos.cn>
-> +
-> +What is this?
-> +=============
-> +
-> +A debug module inspired by kgdboc that allows you to get all kernel logs
-> +after panic.
-> +
-> +Why do you need it?
-> +===================
-> +
-> +There are many debugging methods to know what was going on before panic.
-> +
-> +The firs is Kdump. When it is enabled, you can get a core image after
-> +panic. Then use GDB or Crash to debug that core image to know what happened
-> +before panic (see ``Documentation/admin-guide/kdump/kdump.rst`` for Kdump
-> +documentation).
-> +
-> +Another way is to connect the UART side of a USB-to-UART tool to the
-> +debugging UART port (normally a 3 pin slot on the motherborad or a RS232
-> +port on the back panel of your PC) before panic happens. Then connect the
-> +USB side of a USB-to-UART tool to another PC. You can read all the kernel
-> +logs coming from that UART port through apps like minicom on another PC.
-> +So when panic happens you'll know what was going on.
-> +
-> +What if Kdump hasn't been enabled? And people don't always connect an
-> +USB-to-UART device while he/she is using the PC. When panic occurs, it's
-> +too late to connect the USB-to-UART device.
-> +
-> +For both situations, you can use panic_serial_helper module to get all
-> +necessary kernel logs once it is loaded.
-> +
-> +How to use it?
-> +==============
-> +
-> +Prerequisites
-> +--------------
-> +
-> +1. Same as kgdboc, the UART driver must implement two callbacks in the
-> +   struct uart_ops. See Documentation/dev-tools/kgdb.rst for details.
-> +
-> +2. Your PC has an UART port and it's working.
-> +
-> +How
-> +--------------
-> +
-> +First you need to enable ``CONFIG_PANIC_SERIAL_HELPER`` in your
-> +config. To enable it go to
-> +:menuselection:`Device Drivers-->Character devices-->Enable TTY (TTY [=y])-->Serial drivers`
-> +and select :menuselection:`debug through UART after panic`.
-> +
-> +Then build and deploy the kernel as usual.
-> +
-> +When the panic occurs, you need to do the following:
-> +
-> +1. connect the UART side of an USB-to-UART tool to any UART
-> +   port on your device (PC, server, Laptop, etc...).
-> +   Connect the USB side of that tool to another PC. Open
-> +   minicom (or other app) on that PC, and set "/dev/ttyUSB0"(or
-> +   "/dev/ttyUSB1 if there is already another USB-to-UART tool
-> +   connected to your device) with "115200 8N1".
-> +
-> +   It automatically selects the port where you first press the
-> +   "Enter" key (some keyboard labeled this with "Return").
-> +
-> +2. Press Enter and the help menu will appear::
-> +
-> +    help:
-> +
-> +        -a      show all kernel msg
-> +
-> +        -3      show S3 msg
-> +
-> +        -4      show S4 msg
-> +
-> +        -filter-[string]        show msg containing [string]
-> +
-> +        -q-     quit
-> +
-> +see ``Help menu options`` for details.
-> +
-> +3. Select one of above options and happy hacking!
-> +
-> +Help menu options
-> +-----------------
-> +Available options:
-> +
-> + - a
-> +
-> +   Show all the messages starting from ``Booting Linux on ...``
-> +
-> + - 3
-> +
-> +   If STR happened before panic, this will show messages starting from
-> +   ``PM: suspend entry...``
-> +
-> + - 4
-> +
-> +   If STD happened before panic, this will show messages starting from
-> +   ``PM: hibernation entry...``
-> +
-> + - filter-[string]
-> +
-> +   Provide case-ignored filter matching. For example, if you'd like to see
-> +   message lines that contain ``CPU`` or ``cpu``, you can pass either
-> +   ``filter-CPU`` or ``filter-cpu``. The corresponding output would be
-> +   like::
-> +
-> +     <6>[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x701f6633
-> +     <6>[    0.000000] Detected PIPT I-cache on CPU0
-> +     <6>[    0.000000] CPU features: detected: Kernel page table isolation (K
-> +
-> +     ...
-> +
-> +     <6>[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000
-> +     <6>[    0.002411] smp: Bringing up secondary CPUs ...
-> +     <6>[    0.039105] Detected PIPT I-cache on CPU1
-> +
-> +     ...
-> +
-> +     <4>[    6.432129] CPU: 3 PID: 392 Comm: (crub_all) Tainted: G        W
-> +     <4>[    6.560279] CPU: 2 PID: 478 Comm: (ostnamed) Tainted: G        W
-> +
-> +     ...
-> +
-> +     <4>[  225.297828] CPU: 4 PID: 0 Comm: swapper/4 Tainted: G        W
-> +     <2>[  225.297909] SMP: stopping secondary CPUs
-> +     <0>[  225.297919] CPU features: 0x000000,02000800,0400421b
-> +
-> + - q
-> +
-> +   Return to help menu.
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 74aeae10a151..73fcae8c2f39 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -15972,6 +15972,11 @@ L:	platform-driver-x86@vger.kernel.org
->  S:	Maintained
->  F:	drivers/platform/x86/panasonic-laptop.c
->  
-> +PANIC SERIAL CONSOLE
-> +M:	Hongyu Xie <xiehongyu1@kylinos.cn>
-> +F:	drivers/tty/serial/panic_serial_helper.c
-> +F:	drivers/tty/serial/panic_serial_helper.h
-> +
->  PARALLAX PING IIO SENSOR DRIVER
->  M:	Andreas Klinger <ak@it-klinger.de>
->  L:	linux-iio@vger.kernel.org
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 3e3fb377d90d..796441b58498 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -198,6 +198,31 @@ config SERIAL_KGDB_NMI
->  
->  	  If unsure, say N.
->  
-> +config PANIC_SERIAL_HELPER
-> +	tristate "debug through UART after panic"
-> +	depends on PANIC_TIMEOUT=0
-> +	select CONSOLE_POLL
-> +	help
-> +	  This is a debug module that allows you to get all kernel logs
-> +	  after panic.
-> +
-> +	  Normally you need to attach a USB-to-UART tool or enable kdump
-> +	  before panic happens to get log from kernel after panic. If you
-> +	  didn't do that and kdump is not working, you can't get any log to
-> +	  know what happened before panic. If you have a USB-to-UART tool
-> +	  and the UART port on your computer is working, this module helps
-> +	  you to get all kernel log after panic() is called.
-> +
-> +	  This module uses serial port in poll mode, so it's more stable
-> +	  than other debugging methods.
-> +
-> +	  Read <file:Documentation/dev-tools/panic_serial_helper.rst> for
-> +	  usage.
-> +
-> +	  Say Y if you have a working UART port and you want to gather
-> +	  kernel logs. To compile this as module (which will be called
-> +	  panic_serial_helper), say M. If unsure, say N.
-> +
->  config SERIAL_MESON
->  	tristate "Meson serial port support"
->  	depends on ARCH_MESON || COMPILE_TEST
-> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-> index 531ec3a19dae..d7f6fdc8913c 100644
-> --- a/drivers/tty/serial/Makefile
-> +++ b/drivers/tty/serial/Makefile
-> @@ -93,3 +93,4 @@ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
->  
->  obj-$(CONFIG_SERIAL_KGDB_NMI) += kgdb_nmi.o
->  obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
-> +obj-$(CONFIG_PANIC_SERIAL_HELPER) += panic_serial_helper.o
-> diff --git a/drivers/tty/serial/panic_serial_helper.c b/drivers/tty/serial/panic_serial_helper.c
-> new file mode 100644
-> index 000000000000..1d3d57bc6340
-> --- /dev/null
-> +++ b/drivers/tty/serial/panic_serial_helper.c
-> @@ -0,0 +1,619 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * panic_serial_helper.c Debug through UART when panic.
-> + *
-> + * Copyright (C) 2023 Xie Hongyu <xiehongyu1@kylinos.cn>
-> + *
-> + * Inspired by kgdboc.
-> + *
-> + */
-> +
-> +#define MODULE_NAME "panic_serial_helper"
-> +#define pr_fmt(fmt) MODULE_NAME ": " fmt
+I will remove the definition of PORT_MA35 without modifying serial_core.h.
 
-KBUILD_NAME is all you need, right?
-
-> +
-> +#include <linux/kmsg_dump.h>
-> +#include <linux/bsearch.h>
-> +#include <linux/slab.h>
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/tty_driver.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/string.h>
-> +
-> +#define S3_ENTRY "PM: suspend entry"
-> +#define S3_EXIT "PM: suspend exit"
-> +#define S4_ENTRY "PM: hibernation entry"
-> +#define S4_EXIT "PM: hibernation exit"
-
-Why are these needed?  Why not just use strings where they are used as
-you are only using these once.
-
-> +
-> +/* list to store msg lines */
-> +static LIST_HEAD(psh_list);
-
-That's going to get HUGE, right?  How much memory does this module take
-up?
-
-> +
-> +/* msg line prototype */
-> +struct dmesg_lines {
-> +	struct list_head entry;
-> +	char *buf;
-> +	int size;
-
-size of what?
-
-> +};
-> +
-> +/* panic serial helper status*/
-
-Odd formatting :(
-
-> +enum PSHS {
-> +	PSHS_INIT,
-> +	PSHS_WAIT_HELP_INPUT,
-> +};
-
-What do these mean?
-
-> +
-> +/* panic serial helper msg type */
-> +enum PSHM_TYPE {
-> +	PSHM_TYPE_ALL,
-> +	PSHM_TYPE_S3,
-> +	PSHM_TYPE_S4,
-> +	PSHM_TYPE_STRINGS,
-> +	PSHM_TYPE_QUIT,
-
-Why do you have message types?
-
-But most importantly, why all of this at all?  Why not just tie into the
-pstore infrastructure?  Wouldn't that handle the majority of this for
-you?
-
-> +};
-> +
-> +/* whether UART is dumping msg */
-> +static bool dumping_msg;
-> +
-> +/* to filter msg */
-> +static char filter[256] = {0};
-> +
-> +struct psh_buf {
-> +#define PSH_BUF_SIZE 256
-> +	char buf[PSH_BUF_SIZE];
-> +	int cur;
-> +};
-> +
-> +static const char psh_tty_types[][32] = {
-> +	{"ttyAMA"},
-> +	{"ttyS"},
-> +	{"ttyPS"},
-> +	{"ttyLP"},
-> +	{"ttyARC"},
-> +	{"ttyAL"},
-> +	{"ttyUL"},
-
-Sorry, but hard-coded tty port names are not going to go well.  Why did
-you pick this tiny subset of valid tty names?
+However, we still need to assign a value to port->type. So, can we follow
+the approach used in the LiteUART driver and directly assign port->type = 1?
 
 
-> +};
-> +
-> +#define TTY_OPS "115200n8n"
-
-Why this default?
-
-
-> +
-> +struct psh_serial_dev {
-> +	struct list_head entry;
-> +	struct tty_driver *drv;
-> +	struct psh_buf buf;
-> +	enum PSHS psh_status;
-> +	enum PSHM_TYPE psh_msg_type;
-> +	int line;
-> +};
-> +
-> +struct psh_serial_dev *psh_dev;
-> +
-> +/* char handler prototype */
-> +struct c_handler {
-> +	char c;
-> +	int (*handler)(struct psh_serial_dev *dev, void *d);
-
-Why do you need a handler when you only have one handler?
-
-Anyway, please look at pstore and tie into that if you really want
-something like this.
-
-thanks,
-
-greg k-h
+Best regards,
+Jacky Huang
