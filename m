@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56966EB64DD
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 18:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1885CEB64DA
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 18:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236243AbjFOS3r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 14:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S238912AbjFOS3w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Jun 2023 14:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbjFOS3n (ORCPT
+        with ESMTP id S229767AbjFOS3s (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 14:29:43 -0400
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5812A7;
-        Thu, 15 Jun 2023 11:29:42 -0700 (PDT)
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-30e3caa6aa7so8061301f8f.1;
-        Thu, 15 Jun 2023 11:29:42 -0700 (PDT)
+        Thu, 15 Jun 2023 14:29:48 -0400
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9A3199D;
+        Thu, 15 Jun 2023 11:29:47 -0700 (PDT)
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-311167ba376so797604f8f.1;
+        Thu, 15 Jun 2023 11:29:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686853781; x=1689445781;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c8i3hO6Asw9z4pBJsjq1JNXvz4oP43/hziP/VGcJWDw=;
-        b=NMaDZHnDQ3Z7ZmSAQTNabAZvQhaN6MlPLivFhypaF4Osrc9bPn8oStXT7dDFcwREbH
-         spKHCOcDlCUls045W042NqKFqb0IXj88a5cWvjTuTFcPPEhJMj/MbrJY3aKstPJGGW7c
-         ckz9ld2O1pSW5l0PqqcQnOieFPPbVmfQi8xhNLA90yDIPwTrcAXX5OIUw5AIgpNj84dq
-         iPDOTe8j0bkzbF7i7D4gtgaNjB2Ark+pgNSMDCxSe6udXwKYvlcENirEIeeOsZ1dGDdd
-         tJlIWm7Yfu+f4njbfV8ban3J9jteDFQMuhMZSYlqjS/vE2L+tl6l6fdJnRz3jLhYF6LY
-         3crQ==
-X-Gm-Message-State: AC+VfDxbjV+17RjI7JOn2IDkWmJNass3LA/ZHoHvSIopw7PZnT0RHSLR
-        tqBV17pOKBLO02o52iUuT3c=
-X-Google-Smtp-Source: ACHHUZ5bNKCVo0ONW/4FCdjDRxW3DorS7WwJat8TD6mIj0BzMMV2c0ZYkNZEQqcZAdMqee8pptpPRQ==
-X-Received: by 2002:adf:f810:0:b0:30f:d32c:ed8e with SMTP id s16-20020adff810000000b0030fd32ced8emr4950226wrp.45.1686853781021;
-        Thu, 15 Jun 2023 11:29:41 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1686853786; x=1689445786;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+CTYF5ruN+Zlst0kqVClfG2q0zNldhioydCFUBAjqvk=;
+        b=S054bT1lrM/PWsRaNvvPbZPVtKFjamZSjJcfWmZ84rdy5x9CazvAlGFjDhxxQkD5Yl
+         qxGHB9nCJKRxxjgNZ/CSIs8x+5oAMVU96kYb2GG0kcCQakFj2Eff1xS/7BQoTOnAJOQg
+         Hs9cTTaZ+oZoXQoPgyA8VhFqG3y3sr5lcjyz9kmwTz9zIZZW37dB9K4hFfW3bKTDZegS
+         UzGqQxxui1Gcp+2tPJhQhJ0TcwUprzuZhLvMTxvx5ZW04ByEPFuwbK2lSl7zxGQuknek
+         h902l07yY7u4wFLJ+yBhVYV+ek7XboQPME1m4QPPZ6gTw9I8Mbfv947+udFmcBGGyLff
+         jvcw==
+X-Gm-Message-State: AC+VfDwzhLbqvtSgdbIjOpvi5Rz7pVzfQYV5/FzKljFqvy8E1UH+le5c
+        hnNOTERBBx+mQQ693y24x2A=
+X-Google-Smtp-Source: ACHHUZ5vOqyhP1OdkXL8MuvOVzixmo0+GdlGzvK4fRijspT6ebuOU5lRkUpf2TtIYL8e5FP59PQNaQ==
+X-Received: by 2002:a5d:6408:0:b0:30f:a938:6d5d with SMTP id z8-20020a5d6408000000b0030fa9386d5dmr10449466wru.56.1686853785730;
+        Thu, 15 Jun 2023 11:29:45 -0700 (PDT)
 Received: from ryzen.lan (cpc87451-finc19-2-0-cust61.4-2.cable.virginm.net. [82.11.51.62])
-        by smtp.gmail.com with ESMTPSA id c3-20020adffb03000000b0030ab5ebefa8sm21525887wrr.46.2023.06.15.11.29.39
+        by smtp.gmail.com with ESMTPSA id c3-20020adffb03000000b0030ab5ebefa8sm21525887wrr.46.2023.06.15.11.29.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 11:29:40 -0700 (PDT)
+        Thu, 15 Jun 2023 11:29:45 -0700 (PDT)
 From:   Lucas Tanure <tanure@linux.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -53,67 +53,37 @@ Cc:     Nick <nick@khadas.com>, Artem <art@khadas.com>,
         linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         Lucas Tanure <tanure@linux.com>
-Subject: [PATCH 0/6] Add Amlogic A311D2 and Khadas Vim4 Board Support
-Date:   Thu, 15 Jun 2023 19:29:32 +0100
-Message-ID: <20230615182938.18487-1-tanure@linux.com>
+Subject: [PATCH 4/6] dt-bindings: serial: amlogic, meson-uart: support T7
+Date:   Thu, 15 Jun 2023 19:29:36 +0100
+Message-ID: <20230615182938.18487-5-tanure@linux.com>
 X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230615182938.18487-1-tanure@linux.com>
+References: <20230615182938.18487-1-tanure@linux.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Khadas VIM4 uses the Amlogic A311D2 SoC, based on the Amlogic
-Meson T7 SoC family. This chip is not the same as A311D used in Vim3
-board.
+Add serial bindings support menson T7 SoC family.
 
-Work based on Khadas 5.4 branch:
-https://github.com/khadas/linux/tree/khadas-vims-5.4.y
+Signed-off-by: Lucas Tanure <tanure@linux.com>
+---
+ Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Board Features:
-- 8GB LPDDR4X 2016MHz
-- 32GB eMMC 5.1 storage
-- 32MB SPI flash
-- 10/100/1000 Base-T Ethernet
-- AP6275S Wireless (802.11 a/b/g/n/ac/ax, BT5.1)
-- HDMI 2.1 video
-- HDMI Input
-- 1x USB 2.0 + 1x USB 3.0 ports
-- 1x USB-C (power) with USB 2.0 OTG
-- 3x LED's (1x red, 1x blue, 1x white)
-- 3x buttons (power, function, reset)
-- M2 socket with PCIe, USB, ADC & I2C
-- 40pin GPIO Header
-- 1x micro SD card slot
-
-Lucas Tanure (6):
-  dt-bindings: arm: amlogic: add Amlogic T7 based Khadas VIM4 bindings
-  dt-bindings: clock: Bindings for Meson T7 clock controller
-  clk: meson: t7: add peripheral clock controller
-  dt-bindings: serial: amlogic, meson-uart: support T7
-  tty: serial: meson: Added T7 SOC compatibility
-  arm64: dts: meson-t7-a311d2-khadas-vim4: add initial device-tree
-
- .../devicetree/bindings/arm/amlogic.yaml      |    7 +
- .../bindings/clock/amlogic,mesont7.yaml       |   69 +
- .../bindings/serial/amlogic,meson-uart.yaml   |    1 +
- arch/arm64/boot/dts/amlogic/Makefile          |    1 +
- .../amlogic/meson-t7-a311d2-khadas-vim4.dts   |  112 +
- arch/arm64/boot/dts/amlogic/meson-t7.dtsi     |  202 +
- drivers/clk/meson/Kconfig                     |   17 +
- drivers/clk/meson/Makefile                    |    1 +
- drivers/clk/meson/t7.c                        | 8014 +++++++++++++++++
- drivers/clk/meson/t7.h                        |  235 +
- drivers/tty/serial/meson_uart.c               |    4 +
- include/dt-bindings/clock/mesont7-clkc.h      |  487 +
- 12 files changed, 9150 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/amlogic,mesont7.yaml
- create mode 100644 arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
- create mode 100644 arch/arm64/boot/dts/amlogic/meson-t7.dtsi
- create mode 100644 drivers/clk/meson/t7.c
- create mode 100644 drivers/clk/meson/t7.h
- create mode 100644 include/dt-bindings/clock/mesont7-clkc.h
-
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index 01ec45b3b406..01b01f8840ea 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -46,6 +46,7 @@ properties:
+           - amlogic,meson8b-uart
+           - amlogic,meson-gx-uart
+           - amlogic,meson-s4-uart
++          - amlogic,meson-t7-uart
+       - description: Everything-Else power domain UART controller on G12A SoCs
+         items:
+           - const: amlogic,meson-g12a-uart
 --
 2.41.0
 
