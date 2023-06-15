@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF813EB64D9
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 21:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3370EEB64DB
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 21:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236818AbjFOV1c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 17:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
+        id S230427AbjFOVlY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Jun 2023 17:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236206AbjFOV1c (ORCPT
+        with ESMTP id S229603AbjFOVlX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 17:27:32 -0400
+        Thu, 15 Jun 2023 17:41:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1AE1BC;
-        Thu, 15 Jun 2023 14:27:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE142965;
+        Thu, 15 Jun 2023 14:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 048A66269D;
-        Thu, 15 Jun 2023 21:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD0EEC433C0;
-        Thu, 15 Jun 2023 21:27:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B69E862555;
+        Thu, 15 Jun 2023 21:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680E7C433C0;
+        Thu, 15 Jun 2023 21:41:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1686864449;
-        bh=ALGANjzm6/J+O+DAq+1CLu+C6MVxXzveFqp/gcnBs/0=;
+        s=k20201202; t=1686865281;
+        bh=ibe6xPHLBcLxNFtNb0w+96phSH7k0kf3L48cjxxfkFY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=shOWV/ZcIlSXzE3GxkELJnE1r3QTlb56qQvnvWK3GZJ3qLqZaCQpbRnPQvLV6tWgA
-         V144WtpDzS7XV1Aj19kI2BV0p37sj54S4LGmGPNd3YBeGowkuAUVKDUAm4u2jnvVYz
-         QWCTQQVC7IL4gq+7+Q/bKh5zU7PEnBVbN1t7UWQLwhDUFLANmi3pQ/fGoFWL4DEoNy
-         D00iydhaofJWU+M9JqpmSMsp8FI+uCWnrGsyejxk1/oHardkMktIJjZyxBuBkneNMM
-         XUdz5MrUUWwHGR4NrpaGGqX6UBMjGaqMJjV/IsoGY4QXqFMdTg9uXPeCkfW6erA7Me
-         Y2tadsYFpJ67w==
-Date:   Thu, 15 Jun 2023 22:27:23 +0100
+        b=e0DsSRYxVNw3RC4s5aTpwUo2nJhvKNEZFmLXH8b19eVJW1k1Fz/32x2WVOgdlpXT8
+         7W7sj3rYFGLbD3ifXl2/PZiKoBx0fOZCS29Q7ds/I5AQx/WK3i0AlyWXzMJlZK+8MI
+         E253E+5ha7pGNabPZBUziP65gTxRuc6M4isf5tK7IVWsP35m0RwPBQ60Am5EPaAsJT
+         K6nKGrTmS67N0psBqQiAD+P73QjAOL+uPbb4nMqbtTVKuFgeD16+lXMBfodLNMSyf+
+         GpLVohdnxH9869f5DU4RO29+WX/2OvWocx4sfmYLUKKoo5WkagcTdvyVvag8/5UZ0T
+         AZXLnUchr4b0Q==
+Date:   Thu, 15 Jun 2023 22:41:14 +0100
 From:   Conor Dooley <conor@kernel.org>
 To:     Lucas Tanure <tanure@linux.com>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -49,73 +49,155 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/6] dt-bindings: arm: amlogic: add Amlogic T7 based
- Khadas VIM4 bindings
-Message-ID: <20230615-fog-curdle-9f65083bf566@spud>
+Subject: Re: [PATCH 2/6] dt-bindings: clock: Bindings for Meson T7 clock
+ controller
+Message-ID: <20230615-capable-implicit-90a8f0265616@spud>
 References: <20230615182938.18487-1-tanure@linux.com>
- <20230615182938.18487-2-tanure@linux.com>
+ <20230615182938.18487-3-tanure@linux.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jXKfiALBf1VGTDyb"
+        protocol="application/pgp-signature"; boundary="NRQ6YkLfrJJ+BPCc"
 Content-Disposition: inline
-In-Reply-To: <20230615182938.18487-2-tanure@linux.com>
+In-Reply-To: <20230615182938.18487-3-tanure@linux.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---jXKfiALBf1VGTDyb
+--NRQ6YkLfrJJ+BPCc
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 15, 2023 at 07:29:33PM +0100, Lucas Tanure wrote:
-> Add bindings for the Khadas Vim4 board.
->=20
-> Signed-off-by: Lucas Tanure <tanure@linux.com>
+Hey Lucas,
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+On Thu, Jun 15, 2023 at 07:29:34PM +0100, Lucas Tanure wrote:
+> Add documentation for T7 the clock controller.
+
+Other than the bot's complaint, few comments for ya.
+
+> Signed-off-by: Lucas Tanure <tanure@linux.com>
+> ---
+>  .../bindings/clock/amlogic,mesont7.yaml       |  69 +++
+>  include/dt-bindings/clock/mesont7-clkc.h      | 487 ++++++++++++++++++
+>  2 files changed, 556 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/amlogic,meson=
+t7.yaml
+>  create mode 100644 include/dt-bindings/clock/mesont7-clkc.h
+>=20
+> diff --git a/Documentation/devicetree/bindings/clock/amlogic,mesont7.yaml=
+ b/Documentation/devicetree/bindings/clock/amlogic,mesont7.yaml
+> new file mode 100644
+> index 000000000000..18e7cca0c0e1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/amlogic,mesont7.yaml
+
+The filename should match the compatible - please test the bindings,
+dt_binding_check will complain.
+
+> @@ -0,0 +1,69 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/amlogic,mesont7-clk.yaml#
+
+and this should match the filename
+
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Amlogic Meson T7 Clock Controller
+> +
+> +maintainers:
+> +  - Lucas Tanure <tanure@linux.com>
+> +
+> +description: |
+> +  The Amlogic Meson T7 clock controller generates and supplies clock to
+> +  various peripherals within the SoC.
+> +
+> +  This binding uses common clock bindings
+> +  [1] Documentation/devicetree/bindings/clock/clock-bindings.txt
+
+This doesn't add anything as you're adding a yaml binding. I'd drop it
+(and the | from description: since you would no longer have formatting
+to preserve).
+
+> +
+> +properties:
+> +  compatible:
+> +    const: amlogic,t7-clkc
+> +
+> +  reg:
+> +    items:
+> +      - description: basic registers
+
+What does "basic registers" mean? I think you should be more specific in
+your description.
+
+> +      - description: pll registers
+> +      - description: cpu_clk registers
+> +
+> +  reg-names:
+> +    items:
+> +      - const: basic
+> +      - const: pll
+> +      - const: cpu_clk
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    const: xtal
+> +
+> +  '#clock-cells':
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - clocks
+> +  - clock-names
+> +  - '#clock-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  # Clock controller node:
+> +  - |
+> +    clkc: clock-controller {
+
+The comment above and the node name here can be dropped.
+You do however need to change "clock-controller" to
+"clock-controller@<addr>".
+
+> +        compatible =3D "amlogic,t7-clkc";
+> +        #clock-cells =3D <1>;
+> +        reg =3D <0x0 0x0000 0x00 0x49c>,
+> +              <0x0 0x8000 0x00 0x320>,
+> +              <0x0 0xe040 0x00 0x0bc>;
+
+Drop the 0x0 stuff from here.
+
+> +        reg-names =3D "basic", "pll", "cpu_clk";
+> +        clocks =3D <&xtal>;
+> +        clock-names =3D "xtal";
+> +        status =3D "okay";
+
+status can be dropped, okay is the default.
 
 Cheers,
 Conor.
 
-> ---
->  Documentation/devicetree/bindings/arm/amlogic.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documen=
-tation/devicetree/bindings/arm/amlogic.yaml
-> index 274ee0890312..1091abbae6a2 100644
-> --- a/Documentation/devicetree/bindings/arm/amlogic.yaml
-> +++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
-> @@ -159,6 +159,13 @@ properties:
->            - const: amlogic,a311d
->            - const: amlogic,g12b
->=20
-> +      - description: Boards with the Amlogic Meson t7 A311D2 SoC
-> +        items:
-> +          - enum:
-> +              - khadas,vim4
-> +          - const: amlogic,a311d2
-> +          - const: amlogic,t7
-> +
->        - description: Boards using the BPI-CM4 module with Amlogic Meson =
-G12B A311D SoC
->          items:
->            - enum:
-> --
-> 2.41.0
->=20
 
---jXKfiALBf1VGTDyb
+--NRQ6YkLfrJJ+BPCc
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHQEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZIuCOwAKCRB4tDGHoIJi
-0oe6APdQWustpL6f/fQEXNP9dbgFp0Q3nqdvycHAzuRC4hksAQDpX2HgkB20oGAq
-YkU3TZJpHvsHbqasoWfjpTuPk/ClDQ==
-=WcwD
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZIuFegAKCRB4tDGHoIJi
+0mUxAP9ShdlKESvS50Rnxb4CiIV85tEhZyQW1e3NkPLeyyz/4AD+K7Z6X+DakiwB
+ZfTy2FkoldmsKqtK8Hiebfh+jTUmbwM=
+=WfiC
 -----END PGP SIGNATURE-----
 
---jXKfiALBf1VGTDyb--
+--NRQ6YkLfrJJ+BPCc--
