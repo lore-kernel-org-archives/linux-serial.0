@@ -2,76 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D915EB64DB
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 10:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CFFEB64DC
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 14:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245753AbjFOKqL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 06:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
+        id S1344847AbjFOOCX (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Jun 2023 10:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245751AbjFOKqJ (ORCPT
+        with ESMTP id S1344834AbjFOOCU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 06:46:09 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B74F2130;
-        Thu, 15 Jun 2023 03:46:07 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-66615629689so2019241b3a.2;
-        Thu, 15 Jun 2023 03:46:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1686825966; x=1689417966;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1ceGenVHiIhT8J4bTA/hroU5FeyMJg9le+aNbGkYaWs=;
-        b=cqkhwrEoP1Xx4HkeZu5R/+cfyAHIBHX6TaK8vAygzYjfEBnkTuPEyjb7EDM2+5xUCT
-         tewXBd4oev5wmuT8BpIT0dibvzMotcXJ3131B8zrQno0tEE/vGwiuLIcI6HPPZMh1f8E
-         KTtKk5yZe6X//wDWP7iOVG9QVMslFP/Yn/GCf5kt6ckER0YQaPn40jem+PupxfpQnk9/
-         T4RkO5Af8COpzQ4O9kqrMaxtTwr3TjBWZl61GSbaqB8dworaBA4xPEAXXzYXPGIsMVC7
-         W91xGTuaoxrWPwMcH4eOYo/DARMWkrOkcBnRkEfc4isFwxEzNOuXwy61yXgND3kppN0C
-         fXAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686825966; x=1689417966;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1ceGenVHiIhT8J4bTA/hroU5FeyMJg9le+aNbGkYaWs=;
-        b=XOy5gPgS1gYpD01yxXSBvdFPoKpC/qtahXz57hngaXZ6z1tq0onDAvieYPLJQqit3T
-         pEmVmzR0EfCo4yll1fEq6/VE6xiCCeBlf+CyXiwLVqQmJYrC3CM9P29GPNz/a96jTOYM
-         MbvTqFpnYbcb4dHTAnt4f9Y0lQwFt2Icd+zHyjWevRB2pd59w7Jh/FObwZogtCVwrj4O
-         2iHg54bkIg3vnVvDHT1MKs5BpxTqBEVxnVUT1CEikXMFyON5WrAIVHG+EEBvDhVyw1/q
-         HNYV+69PtxuiPz2QDNfNyrVgyKXu1A7zIEXr13lCqiwbgpKzc2scs3bhQGEb1MCUM572
-         SJNQ==
-X-Gm-Message-State: AC+VfDyKIq7gS/DSjEHh0rHxa3aefKpLDGmslJ4H8gddsj4kkxwmFjxJ
-        IW17nviYpUtX+1TNryq23AA=
-X-Google-Smtp-Source: ACHHUZ5KeIs+4puHmWbUL4V38X9p8iuVjK6/GwQTDrX/TdnxlKj0c4p7Y6LS7F2orDmZvyOSppxlKg==
-X-Received: by 2002:a05:6a20:2e13:b0:11e:7273:7edd with SMTP id be19-20020a056a202e1300b0011e72737eddmr693906pzb.23.1686825966256;
-        Thu, 15 Jun 2023 03:46:06 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id p3-20020a62ab03000000b00646e7d2b5a7sm1136778pff.112.2023.06.15.03.46.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Jun 2023 03:46:05 -0700 (PDT)
-Message-ID: <4fd20e8d-49fd-be07-e4e5-0860fdb07125@gmail.com>
-Date:   Thu, 15 Jun 2023 18:46:01 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v14 1/1] tty: serial: Add Nuvoton ma35d1 serial driver
- support
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        soc@kernel.org, schung@nuvoton.com, mjchen@nuvoton.com,
-        Jacky Huang <ychuang3@nuvoton.com>
+        Thu, 15 Jun 2023 10:02:20 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB2E1FCC;
+        Thu, 15 Jun 2023 07:02:19 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3A0905C00D8;
+        Thu, 15 Jun 2023 10:02:17 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 15 Jun 2023 10:02:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1686837737; x=1686924137; bh=eY
+        CsNbwSpZasMtX08Ox/O4cr7nckW5aMGHyiTHaMEvU=; b=vOzobmNPGCa6Mb+YMn
+        asY4+o4H7LWFlBlorgzjotB25hUrMvqvukGFrvIOFTYkNkmBCFfkfYb7X6imkzfn
+        sML3mf0MEl+OOFAzv6L0+9AuUaTQic/O3l7J/Um+a/XK/7TQ3dK9jE23HkDJV3Vs
+        tDR4Cptq7Fgq6dS47eJsrpRHBCMYlX0sI0Td+Q7oFfoVuMaf0cMmk4mZGTrOZpYO
+        0rMG2r1EEBy5j9jm1bkbitkBDqQTPnwcL4WNXUNHHbhTVXFMjTwseb2LBCgUEp/1
+        +s+r4qww3/aMPqDMeUtP5In77D7fY0JN1JnDwlhLQ//7UetfJyigloRfTgfH3qFG
+        V+Fg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1686837737; x=1686924137; bh=eYCsNbwSpZasM
+        tX08Ox/O4cr7nckW5aMGHyiTHaMEvU=; b=RSjrdEsgeakMj9X0uhMrA2PN8j4Rw
+        pWXc64Yh1QUJkZeWJkSnJ0wQsjdXWC/3XpGIHvmkTcOdt0VT+5p3Xd6K+WSijJZD
+        P9QRahEgKUIIR6zj5ENb/as3xq4x6AqDJw4/GMYKH7b+N/YNAtxKum1MSPXLflPG
+        m+HlPmtoy7O2mEY7LLNS57KYNliFt1xshKmL9IOluY5EiwB7aXhrahSgQhyPoY5q
+        6VwOrvtNtqhDyTOc2qBbMDmGt9vkhZgEglyYMXiiMxdFV2KpT+lH4lAnZz1lUxWM
+        W0mHLLlOQST/9FfJJb2bpnMmrnrSx7xM+VZOqpQpE1UAmfOmbdFqxZq5A==
+X-ME-Sender: <xms:5xmLZKCYyHW13ObS6w0LD32bRjVKIvAyUoxIfkLUbwHtvZxyxzeB4A>
+    <xme:5xmLZEjY_hphZXlP1bRPz0opQcFXjc-eW38HI_E3PzOCKDizjqRXwR1xD4qSwCSeq
+    VcGMqtko0gNCR47e-Y>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedvvddgieejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:5xmLZNkekz6_0Xug5GdmBYkGf7aRRh9mTOIPN1FfLVJMFhxt3vwz8Q>
+    <xmx:5xmLZIyESrV9s75tfwvOAsFrQB5NyxdP7_8qsaRcPkjS3Q4Pnc6FtA>
+    <xmx:5xmLZPT7I_mIrWmX-DvFqlb4-GewBZkZk_6P1avaIqcMyNV5RSAH8w>
+    <xmx:6RmLZALLJEV_J5Zlse85sRbLxpAvhdWEEI0sUeczWEi-Hx4Bd32Kig>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 6F440B60089; Thu, 15 Jun 2023 10:02:15 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-496-g8c46984af0-fm-20230615.001-g8c46984a
+Mime-Version: 1.0
+Message-Id: <502240f7-2cac-4fe6-9e27-f9861db3666d@app.fastmail.com>
+In-Reply-To: <2023061555-enlighten-worshiper-c92d@gregkh>
 References: <20230612025355.547871-1-ychuang570808@gmail.com>
  <20230612025355.547871-2-ychuang570808@gmail.com>
  <2023061338-lunchbox-snorkel-e6a9@gregkh>
@@ -79,58 +74,37 @@ References: <20230612025355.547871-1-ychuang570808@gmail.com>
  <2023061356-matchbook-footwear-d142@gregkh>
  <35e768ad-7f15-48a4-9c38-09570026cf71@app.fastmail.com>
  <2023061555-enlighten-worshiper-c92d@gregkh>
-Content-Language: en-US
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <2023061555-enlighten-worshiper-c92d@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Date:   Thu, 15 Jun 2023 16:01:55 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     "Jacky Huang" <ychuang570808@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
+        "Michael Turquette" <mturquette@baylibre.com>,
+        "Stephen Boyd" <sboyd@kernel.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Jiri Slaby" <jirislaby@kernel.org>,
+        "Tomer Maimon" <tmaimon77@gmail.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        "Will Deacon" <will@kernel.org>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        soc@kernel.org, schung@nuvoton.com, mjchen@nuvoton.com,
+        "Jacky Huang" <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v14 1/1] tty: serial: Add Nuvoton ma35d1 serial driver support
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 2023/6/15 下午 06:19, Greg Kroah-Hartman wrote:
+On Thu, Jun 15, 2023, at 12:19, Greg Kroah-Hartman wrote:
 > On Tue, Jun 13, 2023 at 05:44:23PM +0200, Arnd Bergmann wrote:
 >> On Tue, Jun 13, 2023, at 16:49, Greg KH wrote:
->>> On Tue, Jun 13, 2023 at 06:58:32PM +0800, Jacky Huang wrote:
->>>> On 2023/6/13 下午 06:28, Greg KH wrote:
->>>>> On Mon, Jun 12, 2023 at 02:53:55AM +0000, Jacky Huang wrote:
->>>>>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>>>>
->>>>>> This adds UART and console driver for Nuvoton ma35d1 Soc.
->>>>>> It supports full-duplex communication, FIFO control, and
->>>>>> hardware flow control.
->>>>> You get a full 72 columns for your changelog :)
->>>>>
->>>>>> --- a/include/uapi/linux/serial_core.h
->>>>>> +++ b/include/uapi/linux/serial_core.h
->>>>>> @@ -279,4 +279,7 @@
->>>>>>    /* Sunplus UART */
->>>>>>    #define PORT_SUNPLUS	123
->>>>>> +/* Nuvoton MA35 SoC */
->>>>>> +#define PORT_MA35	124
->>>>>> +
->>>>> Why is this change needed?  What userspace code is going to rely on it?
->>>>>
->>>>> thanks,
->>>>>
->>>>> greg k-h
->>>> Because the serial driver requires a port->type, and almost all serial
->>>> drivers defined their port type here. We follow the practice of most serial
->>>> drivers here.
->>>> If we don't do it this way, we would have to directly assign a value to
->>>> port->type. However, such modifications were questioned in the past,
->>>> which is why we changed it back to defining the port type in serial_core.h.
->>> I really really want to get rid of this list, as it's a UAPI that no one
->>> uses.  So please don't use it, it doesn't help anything, and while the
->>> serial driver might require it, it doesn't actually do anything with
->>> that field, right?  So why don't we just set all of the values to the
->>> same one?
 >> I don't see how Jacky can come up with a patch to do this correctly
 >> without more specific guidance to what exactly you are looking for,
 >> after the last 123 people that added support for a new port got
 >> that merged.
+>
 > I keep complaining about this, when I notice it.  Just use the "default"
 > port type in the serial driver and don't add a new type here and it
 > should just work, right?
@@ -140,34 +114,32 @@ On 2023/6/15 下午 06:19, Greg Kroah-Hartman wrote:
 >> a couple of lists of all kernel headers, and none that include it on
 >> purpose. I agree that this header should really not exist in uapi,
 >> but the question is what exactly to do about it.
->>
+>> 
 >> Possible changes would be:
->>
+>> 
 >> - add a special value PORT_* constant other than PORT_UNKNOWN that
->>    can be used by serial drivers instead of a unique value, and
->>    ensure that the serial core can handle drivers using it.
+>>   can be used by serial drivers instead of a unique value, and
+>>   ensure that the serial core can handle drivers using it.
+>
 > Why do we need a special constant?
->
->> - move all values used by the 8250 driver from serial_core.h
->>    to serial.h, as this driver actually uses the constants.
-> Makes sense.
->
->> - Move the remaining contents of uapi/linux/serial.h into the
->>    non-uapi version.
->>
->> - Change all drivers that only reference a single PORT_*
->>    value to use the generic one.
-> I think this is the best thing to do.
->
-> thanks,
->
-> greg k-h
 
-I will remove the definition of PORT_MA35 without modifying serial_core.h.
+The "default" value is 0, which translates to PORT_UNKNOWN, and the
+serial core code prevents this from working. I think Jacky tried
+to use this the last one or two times you commented on it, and
+it did not work.
 
-However, we still need to assign a value to port->type. So, can we follow
-the approach used in the LiteUART driver and directly assign port->type = 1?
+Setting it to a plain '1' as Jacky suggested in his reply is the
+same as PORT_8250, which may or may not be a good choice here.
 
+Since the number is exported to userspace in serial_struct,
+it might be better to pick a new constant such as
 
-Best regards,
-Jacky Huang
+#define PORT_SERIAL_GENERIC (-1)
+
+in order to be less ambiguous. It's a signed integer, so -1
+would work here this would clearly be a special value, or
+another option might be to use 255 as something that is
+slightly less special but still recognizable as something
+that may have a special meaning.
+
+      Arnd
