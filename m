@@ -2,128 +2,94 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AA1EB64DA
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 16:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 203DDEB64DC
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Jun 2023 18:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231382AbjFOQME (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 12:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        id S236688AbjFOS3r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Jun 2023 14:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbjFOQMD (ORCPT
+        with ESMTP id S234048AbjFOS3o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 12:12:03 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A27219B5;
-        Thu, 15 Jun 2023 09:12:02 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id 454455C00E0;
-        Thu, 15 Jun 2023 12:11:59 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Thu, 15 Jun 2023 12:11:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1686845519; x=1686931919; bh=lH
-        VIyGJZwQS/ccpsXhg4DiZBGnwWrcAVNBqEwRIBymY=; b=qx9b2YnF22o7BTBU6c
-        wPvv52FoKIQi6NZwVUQiXnBjYmPIdS6sUykEGDFA3Z2gZ7YZKqo44XZAmTBqfwQL
-        Op3nd3Nm9Hw45SMphvKjSLFXSD4gMFJbkRH6U3djb0/9YNByRtoMlxFzxDQoEoV5
-        PTMNoCgcpdJpCbmAlA6nTfRBUB0prkTGG1T1TPy37dlARa9bILaO2mgwTMk94/o7
-        m8areMmDxQRhUQH9WIXqnKfLqbEUR7OcQvcLd11I2Rdj5h0afp80iC6eQZnmAu9z
-        F69XMrnr9NiGpMWaaqumUr321hIq1yaQQcOu3R10kzTV34sAwRe0AUkbl3qlApER
-        X8EA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1686845519; x=1686931919; bh=lHVIyGJZwQS/c
-        cpsXhg4DiZBGnwWrcAVNBqEwRIBymY=; b=KwNQpUWnShH4M58lpUU6/3m+GZkTH
-        nlIe1cv/fTjc2oAdYcp8ODnc0Abrq07vQ/3Yu7CFE88TlGFY7+gak50SAM/5Zs6f
-        13aicZmcf/fah/KbUd8uLgaYz1iy8vZAY6Ko8EflGnHxu7bbIt5mf213D8OfWs54
-        CClTnHm5YLJjrUEmHXK/kbyfR7XuxkWrEcG2ugwnUDPXmNdPG7e6zns6Vbv0ogeM
-        QVzHc8pWMCY7FoCxDagWn/jPj9HxRH/InGH6m+ly6yvnLQWNlqpnEyOVOM50Q3Hj
-        DQGDblBFEkLh4OOFA6XE84QZuV75jZc+zvr9YmihYpgz76KUENuAMpWTA==
-X-ME-Sender: <xms:TTiLZJibKNQYeR_IndCVQSaXNK4rEwjSpLSiyGTR-SRtW9G_PmaEeA>
-    <xme:TTiLZODrKlnHdCNH_Qj7ervH9FZEIWa57w-jQISwUrfbYSCcEV9mvsgtNNmZrTE4Y
-    0GpquwDfGXEpfQfTH0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgedvvddgleegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:TTiLZJEGEjHlTBV_JloqUdTfC34Uo9uvwZ-QvDMULff8IugVXdnBIw>
-    <xmx:TTiLZOR9Iiclb7POQIIYA0OWA7C1rMGKxYKVCCG7YAATMJFjN2VQzA>
-    <xmx:TTiLZGw2PqlP9s94FpC254UO9Vb-YMMm6knqeVTXswTDtZsDdnRjBQ>
-    <xmx:TziLZHoqNn-s_2B_cpw36QAVcMDGTJU73T1qjGgkgc42xHqwL1xaIw>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 6F379B60089; Thu, 15 Jun 2023 12:11:57 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-496-g8c46984af0-fm-20230615.001-g8c46984a
-Mime-Version: 1.0
-Message-Id: <9fecce53-fc7d-4783-9e05-509b1b418589@app.fastmail.com>
-In-Reply-To: <2023061500-tipper-tightwad-8843@gregkh>
-References: <20230612025355.547871-1-ychuang570808@gmail.com>
- <20230612025355.547871-2-ychuang570808@gmail.com>
- <2023061338-lunchbox-snorkel-e6a9@gregkh>
- <f8eb6114-8248-8886-b301-c2886e50e016@gmail.com>
- <2023061356-matchbook-footwear-d142@gregkh>
- <35e768ad-7f15-48a4-9c38-09570026cf71@app.fastmail.com>
- <2023061555-enlighten-worshiper-c92d@gregkh>
- <502240f7-2cac-4fe6-9e27-f9861db3666d@app.fastmail.com>
- <2023061500-tipper-tightwad-8843@gregkh>
-Date:   Thu, 15 Jun 2023 18:11:36 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     "Jacky Huang" <ychuang570808@gmail.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, "Lee Jones" <lee@kernel.org>,
-        "Michael Turquette" <mturquette@baylibre.com>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        "Tomer Maimon" <tmaimon77@gmail.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thu, 15 Jun 2023 14:29:44 -0400
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD79D10F7;
+        Thu, 15 Jun 2023 11:29:43 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3111cb3dda1so166128f8f.0;
+        Thu, 15 Jun 2023 11:29:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686853782; x=1689445782;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5lrjdhAQll3ozbKk3iq4lsIPgqd1B5L8UK1g627bZ2E=;
+        b=EoKBbrbEPEkyJ/1brXTdkMWBrkGhHZwCFquTXrkEE97vqzpSFAAHCn2szP3G5DvAz5
+         vw3FF4HHQiOpNxK+xI19j01YS8cDViVtYTir9hRLlNC8PNjUzyI+jUhv9qRhOjjoMTC2
+         6vSS3MzbmC5+rCMx347+TOKWe8kobXR5xrf5KeAILQuAUfkYQSHdvk1ZR2sG9+h7kVX6
+         ssHQ1Y2XFzqGhFPl88v3R90a8SPQxQ1gHUXuarHewG+qu7j2Ffs0BRnkXwiwLomff7Am
+         Tl9CZlL4/yrzWpnVhsSGzoorW2h+fdf/7M7Cumi93bpF1kVSHPcHoXd3dPvYDDAgSuSw
+         IsIg==
+X-Gm-Message-State: AC+VfDxOdElDsREeV/eFT0HRQm2UPScD52HSp5CWGht0LWtkCb0D25va
+        iYwuU0VymbqODtFQHdUlRys=
+X-Google-Smtp-Source: ACHHUZ7r+9ZYNEqFLrWEjTH7jRPfEPnVtyW0dG2pYyt3SbaAiUU94hflUBEFZtkXrTda0ZhMeKhdLQ==
+X-Received: by 2002:a5d:6b8c:0:b0:30a:c35d:25d3 with SMTP id n12-20020a5d6b8c000000b0030ac35d25d3mr14887733wrx.52.1686853782041;
+        Thu, 15 Jun 2023 11:29:42 -0700 (PDT)
+Received: from ryzen.lan (cpc87451-finc19-2-0-cust61.4-2.cable.virginm.net. [82.11.51.62])
+        by smtp.gmail.com with ESMTPSA id c3-20020adffb03000000b0030ab5ebefa8sm21525887wrr.46.2023.06.15.11.29.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jun 2023 11:29:41 -0700 (PDT)
+From:   Lucas Tanure <tanure@linux.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Nick <nick@khadas.com>, Artem <art@khadas.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        soc@kernel.org, schung@nuvoton.com, mjchen@nuvoton.com,
-        "Jacky Huang" <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v14 1/1] tty: serial: Add Nuvoton ma35d1 serial driver support
-Content-Type: text/plain
+        Lucas Tanure <tanure@linux.com>
+Subject: [PATCH 1/6] dt-bindings: arm: amlogic: add Amlogic T7 based Khadas VIM4 bindings
+Date:   Thu, 15 Jun 2023 19:29:33 +0100
+Message-ID: <20230615182938.18487-2-tanure@linux.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230615182938.18487-1-tanure@linux.com>
+References: <20230615182938.18487-1-tanure@linux.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 15, 2023, at 17:00, Greg Kroah-Hartman wrote:
-> On Thu, Jun 15, 2023 at 04:01:55PM +0200, Arnd Bergmann wrote:
->> Since the number is exported to userspace in serial_struct,
->> it might be better to pick a new constant such as
->> 
->> #define PORT_SERIAL_GENERIC (-1)
->> 
->> in order to be less ambiguous. It's a signed integer, so -1
->> would work here this would clearly be a special value, or
->> another option might be to use 255 as something that is
->> slightly less special but still recognizable as something
->> that may have a special meaning.
->
-> A new constant would be good, 255 is nice, and then we can move everyone
-> to use it unless they can specifically show a reason why it will not
-> work for them.
->
-> I think originally this was used to do device-specific ioctls, right?
-> That shouldn't be happening anymore, hopefully...
+Add bindings for the Khadas Vim4 board.
 
-The only thing I could find is that you can use TIOCSSERIAL to set
-the type between the supported types within a driver, which changes
-the behavior in some cases, e.g. the exact size and layout of the
-register file or its capabilities.
+Signed-off-by: Lucas Tanure <tanure@linux.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-We may need a proper audit of TIOCSSERIAL anyway, I suspect there
-are worse things you can do with other settings.
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 274ee0890312..1091abbae6a2 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -159,6 +159,13 @@ properties:
+           - const: amlogic,a311d
+           - const: amlogic,g12b
 
-       Arnd
++      - description: Boards with the Amlogic Meson t7 A311D2 SoC
++        items:
++          - enum:
++              - khadas,vim4
++          - const: amlogic,a311d2
++          - const: amlogic,t7
++
+       - description: Boards using the BPI-CM4 module with Amlogic Meson G12B A311D SoC
+         items:
+           - enum:
+--
+2.41.0
+
