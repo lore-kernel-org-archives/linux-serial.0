@@ -2,103 +2,153 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A09D5EB64D7
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Jun 2023 06:20:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC61EB64D7
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Jun 2023 10:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243101AbjFPGUE convert rfc822-to-8bit (ORCPT
+        id S1345419AbjFPK47 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Jun 2023 02:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
+        Fri, 16 Jun 2023 06:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243365AbjFPGT4 (ORCPT
+        with ESMTP id S1345494AbjFPK4n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Jun 2023 02:19:56 -0400
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCF8269D;
-        Thu, 15 Jun 2023 23:19:55 -0700 (PDT)
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1b50e309602so3267675ad.0;
-        Thu, 15 Jun 2023 23:19:55 -0700 (PDT)
+        Fri, 16 Jun 2023 06:56:43 -0400
+Received: from mail-ed1-x564.google.com (mail-ed1-x564.google.com [IPv6:2a00:1450:4864:20::564])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAABB3C26
+        for <linux-serial@vger.kernel.org>; Fri, 16 Jun 2023 03:48:41 -0700 (PDT)
+Received: by mail-ed1-x564.google.com with SMTP id 4fb4d7f45d1cf-5183101690cso3560090a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 16 Jun 2023 03:48:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=flowbird.group; s=google; t=1686912520; x=1689504520;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=C6sTC5pGl6XNZzwmeNOE7S97A8pGrSyNQTyHwRNfok4=;
+        b=H7e4PJE/COEkCn7uTaLOPIHdqIsgSCthKaI8FdezrQFFKELM6pfMfr8Z1F7eOuAaq2
+         j+CERzJ+3Dfjmjk8LJXwQWZxJZdhNekRWlMPyhuXq6SxKVj9kxnwtQAACMxogox2fwtl
+         +zOwbQ69G9kgDuAmbLT799Zd2rEJkbUzA/OH47llA4lm2qMkO3OeBFVyQ+fVMnmdg0Q5
+         1OFRxpPxdq0usTLnqSpFpmCaowj8HSi7qsWRcmpcP9RE3q8aCedi1ERnzBEgpFiNXFVG
+         8dSCBxqjzWbyGY2pWEbkqmlUNgqaBDoU+4nb0IKgIgIHRUoHK+66fS6ByPeTSv98yN0G
+         YXwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686896394; x=1689488394;
-        h=content-transfer-encoding:fcc:content-language:user-agent
-         :mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=o/pa9zy1PtKHGNvngP6qHVNDaGkPbLnoGxIcEw3KeKA=;
-        b=Z2Bug4JWMXvF64S7RfrmEdjxXc5PZ0sUkoGVF+WEH0+gf4S+M7U3QNBodcJkHNZu/C
-         bgF+6Y3IU9thurUxPeOafqvTK22jTCT86MHP9Fi18jD0rulRIUGLy4KFOqdUKgZkF7MJ
-         JJ6UaQIrl7HyLgBZMB28y1IK+qgu4h+h0120+r53OvNnRM9gasllgV0osb/hysMOJ4pS
-         fS78ulpsOTej137BGd9tS651cir9HkVoeKZC55CE/V287ZodcM3IEaqF8LVdyBmCZWRR
-         0TdufDeIhjPMO7FtPmyXb+4eZ1Wvq47wJm2paLySeXJKMfSl5aPg87iIXN+YPDSj3LPl
-         EELg==
-X-Gm-Message-State: AC+VfDxx6av/4MH+5XHWW21adQiQw4KTobn3rCW2ErSWWLGvA0gGLWhG
-        JLluBIQq29mn6Uhavaftz34=
-X-Google-Smtp-Source: ACHHUZ6wr9ey9/YwC8SQsIxnhTKv+OU8p5VbqgUn+kt7WC8pvZ5LGXWOmxB5kAy5cZs1l4GQ2Voh9A==
-X-Received: by 2002:a17:902:ead2:b0:1b0:5304:5b48 with SMTP id p18-20020a170902ead200b001b053045b48mr1089927pld.0.1686896394472;
-        Thu, 15 Jun 2023 23:19:54 -0700 (PDT)
-Received: from localhost ([2408:8453:744:15bc:1d2e:7d4e:2024:8394])
-        by smtp.gmail.com with ESMTPSA id t13-20020a1709027fcd00b001b3df3ae3f8sm349306plb.281.2023.06.15.23.19.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 23:19:54 -0700 (PDT)
-From:   Hongyu Xie <xiehongyu1@kylinos.cn>
-To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, corbet@lwn.net
-Cc:     rdunlap@infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xy521521@gmail.com,
-        oe-kbuild-all@lists.linux.dev, lkp@intel.com, bagasdotme@gmail.com,
-        Hongyu Xie <xiehongyu1@kylinos.cn>
-Subject: Re: [RESEND PATCH v4 -next] tty: serial: add panic serial helper
-Date:   Fri, 16 Jun 2023 14:19:50 +0800
-Message-Id: <32e022c7-f041-3bf2-2f68-3ed2119c951d@kylinos.cn>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <2023061606-hunk-overdraft-8d04@gregkh>
-References: <20230614025512.27746-1-xiehongyu1@kylinos.cn> <2023061502-submerge-preachy-4413@gregkh> <fbfbbad5-2418-5c1a-87f1-dc2ca20204aa@kylinos.cn> <2023061606-hunk-overdraft-8d04@gregkh>
+        d=1e100.net; s=20221208; t=1686912520; x=1689504520;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=C6sTC5pGl6XNZzwmeNOE7S97A8pGrSyNQTyHwRNfok4=;
+        b=JjsqxMRQrUXK7euMMf2SwaP7GjR1KdiaKRYwl/A9PATUAYLfUzZ0sDvJcoJ8RbI1Rs
+         Bzd3xRDOH9OZk3JFZzw9uTRkLLG8b1iL6SG5Lkui6nK7YsOA2TRH/fXhB4C0bX3iOpOK
+         gIHz6iIihP8vbUHqgnbY3YeogSoO2jUatFBtnyGZoXuMYDgoKJ2W5LhwXvVb2++iOJXx
+         Rf4noqsBUmj8li7QtGhSnXiomEPxxhNYUDm2L2uJWXrV4/HSJjEOHaggzcSW7fUOoufN
+         NQlJx72tmQpilwTCpXF29/Nfozh1fcU8qTEl0rZpKTxc+126NaDhDu9YUYT41/j28II+
+         OKSw==
+X-Gm-Message-State: AC+VfDzbFL3vwm0lofWDxGn9bXFG0xQxr+n29liWjusPKVbTPa5iObfd
+        K0raikq3K18T5JYdSGBl5zKRJCWeY2edyuhmj+AcnB0cWtPKVYaDdL42IBDmPpeqxrfONle9tKJ
+        apPcsSB5+Zo0MrK2wy/oQRM00Yrvjnl38Re1UXQCpJjDQrwIdUlMpDWzVEeMff+Esxt4nCpcjtr
+        h6xWR7KpwPSLWhXd0hjkdTaFqwvf3keX2XX0E=
+X-Google-Smtp-Source: ACHHUZ60gXe4Q/+sJTSC6YdsfA/nL9NJtZAhb8u35HcJ9uttZCHSH+pIn9G6B+2RlR6ILarkqm4H1xKm/r3r
+X-Received: by 2002:a17:907:d11:b0:96f:9cea:a34d with SMTP id gn17-20020a1709070d1100b0096f9ceaa34dmr7697675ejc.21.1686912519734;
+        Fri, 16 Jun 2023 03:48:39 -0700 (PDT)
+Received: from mta1.parkeon.com ([185.149.63.251])
+        by smtp-relay.gmail.com with ESMTPS id cs20-20020a170906dc9400b0098634569b96sm1092294ejc.288.2023.06.16.03.48.39
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Fri, 16 Jun 2023 03:48:39 -0700 (PDT)
+X-Relaying-Domain: flowbird.group
+Received: from [172.16.12.142] (port=33732 helo=FR-BES-DKT15120.home)
+        by mta1.parkeon.com with esmtp (Exim 4.71)
+        (envelope-from <martin.fuzzey@flowbird.group>)
+        id 1qA72r-0000gy-MC; Fri, 16 Jun 2023 12:51:09 +0200
+From:   Martin Fuzzey <martin.fuzzey@flowbird.group>
+To:     linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: imx: fix rs485 rx after tx
+Date:   Fri, 16 Jun 2023 12:47:23 +0200
+Message-Id: <20230616104838.2729694-1-martin.fuzzey@flowbird.group>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Thunderbird/102.11.0
-Content-Language: en-US
-X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; DSN=0; uuencode=0; attachmentreminder=0; deliveryformat=1
-X-Identity-Key: id1
-Fcc:    imap://xiehongyu1%40kylinos.cn@imap.kylinos.cn/Sent
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-在 2023/6/16 14:03, Greg KH 写道:
-> On Fri, Jun 16, 2023 at 10:31:15AM +0800, Hongyu Xie wrote:
->> 在 2023/6/15 18:17, Greg KH 写道:
->>> On Wed, Jun 14, 2023 at 10:55:12AM +0800, Hongyu Xie wrote:
->>>> It was inspired by kgdboc.
->>>>
->>>> This is a debug module that allows you to get all kernel logs
->>>> after panic.
->>>>
->>>> Normally you need to attach a USB-to-UART tool or enable kdump
->>>> before panic happens to get log from kernel after panic. If you
->>>> didn't do that and kdump is not working, you can't get any log to
->>>> know what happened before panic. If you have a USB-to-UART tool
->>>> and the UART port on your computer is working. This module helps
->>>> you to get all kernel log after panic() is called.
->>>>
->>>> To use this, see Documentation/dev-tools/panic_serial_helper.rst.
->>>>
->>>> Tested on an arm64 device.
->>>>
->>>> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
->>>> ---
->>>
->>> Why  is this a RESEND?  What's wrong with the previous version?
->> Nobody review v4 for over a week.
-> 
-> That's fine, but you need to say _why_ this is being resent, otherwise
-> we have no idea, and this just moves to the bottom of our review queue.
-"Nobody review v4 for over a week." was the reason. I should resubmit 
-the same patch or ping instead of using "RESEND", is that what you mean?
+Since commit 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal
+active high") RS485 reception no longer works after a transmission.
 
-> 
-> thanks,
-> 
-> greg k-h
-thanks,
+The following scenario shows the problem:
+	1) Open a port in RS485 mode
+	2) Receive data from remote (OK)
+	3) Transmit data to remote (OK)
+	4) Receive data from remote (Nothing received)
 
-Hongyu Xie
+In RS485 mode, imx_uart_start_tx() calls imx_uart_stop_rx() and, when the
+transmission is complete, imx_uart_stop_tx() calls imx_uart_start_rx().
+
+Since the above commit imx_uart_stop_rx() now sets the loopback bit but
+imx_uart_start_rx() does not clear it causing the hardware to remain in
+loopback mode and not receive external data.
+
+Fix this by moving the existing loopback disable code to a helper function
+and calling it from imx_uart_start_rx() too.
+
+Fixes: 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal active high")
+Cc: stable@vger.kernel.org
+Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
+---
+ drivers/tty/serial/imx.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index c5e17569c3ad..3fe8ff241522 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -369,6 +369,16 @@ static void imx_uart_soft_reset(struct imx_port *sport)
+ 	sport->idle_counter = 0;
+ }
+ 
++static void imx_uart_disable_loopback_rs485(struct imx_port *sport)
++{
++	unsigned int uts;
++
++	/* See SER_RS485_ENABLED/UTS_LOOP comment in imx_uart_probe() */
++	uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
++	uts &= ~UTS_LOOP;
++	imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
++}
++
+ /* called with port.lock taken and irqs off */
+ static void imx_uart_start_rx(struct uart_port *port)
+ {
+@@ -390,6 +400,7 @@ static void imx_uart_start_rx(struct uart_port *port)
+ 	/* Write UCR2 first as it includes RXEN */
+ 	imx_uart_writel(sport, ucr2, UCR2);
+ 	imx_uart_writel(sport, ucr1, UCR1);
++	imx_uart_disable_loopback_rs485(sport);
+ }
+ 
+ /* called with port.lock taken and irqs off */
+@@ -1422,7 +1433,7 @@ static int imx_uart_startup(struct uart_port *port)
+ 	int retval;
+ 	unsigned long flags;
+ 	int dma_is_inited = 0;
+-	u32 ucr1, ucr2, ucr3, ucr4, uts;
++	u32 ucr1, ucr2, ucr3, ucr4;
+ 
+ 	retval = clk_prepare_enable(sport->clk_per);
+ 	if (retval)
+@@ -1521,10 +1532,7 @@ static int imx_uart_startup(struct uart_port *port)
+ 		imx_uart_writel(sport, ucr2, UCR2);
+ 	}
+ 
+-	/* See SER_RS485_ENABLED/UTS_LOOP comment in imx_uart_probe() */
+-	uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
+-	uts &= ~UTS_LOOP;
+-	imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
++	imx_uart_disable_loopback_rs485(sport);
+ 
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+-- 
+2.25.1
+
