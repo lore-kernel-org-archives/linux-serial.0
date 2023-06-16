@@ -2,435 +2,216 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841ADEB64DC
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Jun 2023 00:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C12EB64D9
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Jun 2023 00:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239668AbjFPAB2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 20:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S232087AbjFPAFB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Jun 2023 20:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231195AbjFPAB1 (ORCPT
+        with ESMTP id S231841AbjFPAFA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 20:01:27 -0400
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [IPv6:2001:470:ea4a:1:5054:ff:fec7:86e4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AAB271F;
-        Thu, 15 Jun 2023 17:01:25 -0700 (PDT)
-Date:   Fri, 16 Jun 2023 08:01:18 +0800
-From:   Yixun Lan <dlan@gentoo.org>
-To:     Lucas Tanure <tanure@linux.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick <nick@khadas.com>, Artem <art@khadas.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 6/6] arm64: dts: meson-t7-a311d2-khadas-vim4: add initial
- device-tree
-Message-ID: <ZIumTthAmBLBxpXn@ofant>
-References: <20230615182938.18487-1-tanure@linux.com>
- <20230615182938.18487-7-tanure@linux.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230615182938.18487-7-tanure@linux.com>
+        Thu, 15 Jun 2023 20:05:00 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD7A2719
+        for <linux-serial@vger.kernel.org>; Thu, 15 Jun 2023 17:04:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1686873898; x=1718409898;
+  h=date:from:to:cc:subject:message-id;
+  bh=Z2A+OqRzDrIdeWndxV8CKE4JWP8xRdBVhethK4a32K8=;
+  b=lGRxghBw5njbEIrlZsFYLYaLViL1qtPf8DoD5UiZV4hJouwiDgAUjQ8C
+   2uT/k8uS7CxpXftOSbqcZKcruVYrBDKVXFWTCyY0RoToSDPe3lZhuM6xt
+   Br6+zWyjr1BeOElp2CNJdmOfcr6gE9HGBiQybYCbDoyyJcJcpKi709Dwg
+   i59toRLeBoqYfsWQBvyxPaUBGTMJJDtf3QYqX/tg9UESlc9QMLkpoZ8TN
+   hlP8/mOLRYEyai6DmUIqrXW/wvvWwja8DKAQJRxOYxJama172XGJpIJdn
+   VQrzhttjF5k7KzkGvdKAj0MMQD1egpO86RZyOXarG00U5v4p+XgzbCKkk
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="425002438"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="425002438"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2023 17:04:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10742"; a="689997226"
+X-IronPort-AV: E=Sophos;i="6.00,245,1681196400"; 
+   d="scan'208";a="689997226"
+Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2023 17:04:57 -0700
+Received: from kbuild by 783282924a45 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1q9wxU-0000XV-2T;
+        Fri, 16 Jun 2023 00:04:56 +0000
+Date:   Fri, 16 Jun 2023 08:04:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ e8cc334847dbd204ed4f500b3e3fa899b3766b62
+Message-ID: <202306160835.mvs3bOUV-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Lucas:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: e8cc334847dbd204ed4f500b3e3fa899b3766b62  selftests: tty: add selftest for tty timestamp updates
 
-On 19:29 Thu 15 Jun     , Lucas Tanure wrote:
-> The Khadas VIM4 uses the Amlogic A311D2 SoC, based on the Amlogic T7 SoC
-> family, on a board with the same form factor as the VIM3 models.
-I'd like to see little bit more verbose messages here, like
-which functionality/driver added here - cpu, gic, timer, uart?
+elapsed time: 720m
 
-so, it's capable of booting into a serial console?
+configs tested: 145
+configs skipped: 5
 
-> 
-> - 8GB LPDDR4X 2016MHz
-> - 32GB eMMC 5.1 storage
-> - 32MB SPI flash
-> - 10/100/1000 Base-T Ethernet
-> - AP6275S Wireless (802.11 a/b/g/n/ac/ax, BT5.1)
-> - HDMI 2.1 video
-> - HDMI Input
-> - 1x USB 2.0 + 1x USB 3.0 ports
-> - 1x USB-C (power) with USB 2.0 OTG
-> - 3x LED's (1x red, 1x blue, 1x white)
-> - 3x buttons (power, function, reset)
-> - M2 socket with PCIe, USB, ADC & I2C
-> - 40pin GPIO Header
-> - 1x micro SD card slot
-> 
-> Signed-off-by: Lucas Tanure <tanure@linux.com>
-> ---
->  arch/arm64/boot/dts/amlogic/Makefile          |   1 +
->  .../amlogic/meson-t7-a311d2-khadas-vim4.dts   | 112 ++++++++++
->  arch/arm64/boot/dts/amlogic/meson-t7.dtsi     | 202 ++++++++++++++++++
->  3 files changed, 315 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
->  create mode 100644 arch/arm64/boot/dts/amlogic/meson-t7.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
-> index cd1c5b04890a..1c5846bd1ca0 100644
-> --- a/arch/arm64/boot/dts/amlogic/Makefile
-> +++ b/arch/arm64/boot/dts/amlogic/Makefile
-> @@ -74,3 +74,4 @@ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-odroid-hc4.dtb
->  dtb-$(CONFIG_ARCH_MESON) += meson-sm1-sei610.dtb
->  dtb-$(CONFIG_ARCH_MESON) += meson-sm1-x96-air-gbit.dtb
->  dtb-$(CONFIG_ARCH_MESON) += meson-sm1-x96-air.dtb
-> +dtb-$(CONFIG_ARCH_MESON) += meson-t7-a311d2-khadas-vim4.dtb
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts b/arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
-> new file mode 100644
-> index 000000000000..46e175536edf
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
-> @@ -0,0 +1,112 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2022 Wesion, Inc. All rights reserved.
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "meson-t7.dtsi"
-> +
-> +/ {
-> +	model = "Khadas VIM4";
-> +
-> +	aliases {
-> +		serial0 = &uart_A;
-> +	};
-> +
-> +	reserved-memory {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		/* 3 MiB reserved for ARM Trusted Firmware (BL31) */
-> +		secmon_reserved: secmon@5000000 {
-> +			reg = <0x0 0x05000000 0x0 0x300000>;
-> +			no-map;
-> +		};
-> +
-> +		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
-> +		secmon_reserved_bl32: secmon@5300000 {
-> +			reg = <0x0 0x05300000 0x0 0x2000000>;
-> +			no-map;
-> +		};
-> +	};
-> +
-> +	xtal: xtal-clk {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <24000000>;
-> +		clock-output-names = "xtal";
-> +		#clock-cells = <0>;
-> +	};
-> +
-> +	vddcpu_a: regulator-vddcpu-a {
-> +		/*
-> +		 * MP8756GD Regulator.
-> +		 */
-> +		compatible = "pwm-regulator";
-> +
-> +		regulator-name = "VDDCPU_A";
-> +		regulator-min-microvolt = <689000>;
-> +		regulator-max-microvolt = <1049000>;
-> +
-> +		regulator-boot-on;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vddcpu_b: regulator-vddcpu-a {
-> +		/*
-> +		 * MP8756GD Regulator.
-> +		 */
-> +		compatible = "pwm-regulator";
-> +
-> +		regulator-name = "VDDCPU_B";
-> +		regulator-min-microvolt = <689000>;
-> +		regulator-max-microvolt = <1049000>;
-> +
-> +		regulator-boot-on;
-> +		regulator-always-on;
-> +	};
-> +};
-> +
-> +&clkc{
-> +	clocks = <&xtal>;
-> +	clock-names = "xtal";
-> +	status = "okay";
-> +};
-> +
-> +&uart_A {
-> +	status = "okay";
-> +};
-> +
-> +&cpu0 {
-> +	cpu-supply = <&vddcpu_a>;
-> +};
-> +
-> +&cpu1 {
-> +	cpu-supply = <&vddcpu_a>;
-> +};
-> +
-> +&cpu2 {
-> +	cpu-supply = <&vddcpu_a>;
-> +};
-> +
-> +&cpu3 {
-> +	cpu-supply = <&vddcpu_a>;
-> +};
-> +
-> +&cpu100 {
-> +	cpu-supply = <&vddcpu_b>;
-> +};
-> +
-> +&cpu101 {
-> +	cpu-supply = <&vddcpu_b>;
-> +};
-> +
-> +&cpu102 {
-> +	cpu-supply = <&vddcpu_b>;
-> +};
-> +
-> +&cpu103 {
-> +	cpu-supply = <&vddcpu_b>;
-> +};
-> +
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-t7.dtsi b/arch/arm64/boot/dts/amlogic/meson-t7.dtsi
-> new file mode 100644
-> index 000000000000..453b3d9cb9d8
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/amlogic/meson-t7.dtsi
-> @@ -0,0 +1,202 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
-> + */
-> +
-> +#include <dt-bindings/clock/mesont7-clkc.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +/ {
-> +	compatible = "amlogic,t7";
-> +	interrupt-parent = <&gic>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	cpus {
-> +		#address-cells = <0x2>;
-> +		#size-cells = <0x0>;
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu100>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu101>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu102>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu103>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu1>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu2>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu3>;
-> +				};
-> +			};
-> +		};
-> +
-> +		cpu100: cpu@100 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x0 0x100>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <632>;
-> +			dynamic-power-coefficient = <110>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu101: cpu@101{
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x0 0x101>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <632>;
-> +			dynamic-power-coefficient = <110>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu102: cpu@102 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x0 0x102>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <632>;
-> +			dynamic-power-coefficient = <110>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu103: cpu@103 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x0 0x103>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <632>;
-> +			dynamic-power-coefficient = <110>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x0 0x0>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <1024>;
-> +			dynamic-power-coefficient = <550>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu1: cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x0 0x1>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <1024>;
-> +			dynamic-power-coefficient = <550>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu2: cpu@2 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x0 0x2>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <1024>;
-> +			dynamic-power-coefficient = <550>;
-> +			#cooling-cells = <2>;
-> +		};
-> +
-> +		cpu3: cpu@3 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x0 0x3>;
-> +			enable-method = "psci";
-> +			capacity-dmips-mhz = <1024>;
-> +			dynamic-power-coefficient = <550>;
-> +			#cooling-cells = <2>;
-> +		};
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupts = <GIC_PPI 13 0xff08>,
-> +			     <GIC_PPI 14 0xff08>,
-> +			     <GIC_PPI 11 0xff08>,
-> +			     <GIC_PPI 10 0xff08>;
-> +	};
-> +
-> +	gic: interrupt-controller@fff01000 {
-> +		compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
-> +		#interrupt-cells = <3>;
-> +		#address-cells = <0>;
-> +		interrupt-controller;
-> +		reg = <0x0 0xfff01000 0 0x1000>,
-> +		      <0x0 0xfff02000 0 0x0100>;
-> +		interrupts = <GIC_PPI 9 0xf04>;
-> +	};
-> +
-> +	psci {
-> +		compatible = "arm,psci-0.2";
-can you double check if it is actual version 0.2?
-most recent Amlogic SoC should support psci-1.0
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> +		method = "smc";
-> +	};
-> +
-> +	sm: secure-monitor {
-> +		compatible = "amlogic,meson-gxbb-sm";
-> +	};
-> +
-> +	soc {
-> +		compatible = "simple-bus";
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		apb4: apb4@fe000000 {
-> +			compatible = "simple-bus";
-> +			reg = <0x0 0xfe000000 0x0 0x480000>;
-> +			#address-cells = <2>;
-> +			#size-cells = <2>;
-> +			ranges = <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
-> +
-> +			clkc: clock-controller {
-> +				compatible = "amlogic,t7-clkc";
-> +				#clock-cells = <1>;
-> +				reg = <0x0 0x0 0x0 0x49c>,
-> +				      <0x0 0x8000 0x0 0x320>,
-> +				      <0x0 0xe040 0x0 0xbc>;
-> +				reg-names = "basic",
-> +					    "pll",
-> +					    "cpu_clk";
-> +			};
-> +
-> +			ao-secure@140 {
-> +				compatible = "amlogic,meson-gx-ao-secure", "syscon";
-> +				reg=<0x0 0x10220 0x0 0x140>;
-> +				amlogic,has-chip-id;
-> +			};
-> +		};
-> +
-> +		uart_A: serial@fe078000 {
-> +			compatible = "amlogic,meson-t7-uart";
-> +			reg = <0x0 0xfe078000 0x0 0x18>;
-> +			interrupts = <0 168 1>;
-> +			status = "disabled";
-> +			clocks = <&xtal>, <&clkc CLKID_UART_A>, <&xtal>;
-> +			clock-names = "xtal", "pclk", "baud";
-> +			fifo-size = < 64 >;
-> +			pinctrl-names = "default";
-> +		};
-I believe there are more uart ports, it's worth the effort to add them all in one run,
-which sounds more consistent to me, anyway you could also choose to add them
-in later patch series, no problem..
-
-> +	};
-> +};
-> +
-> --
-> 2.41.0
-> 
-> 
-> _______________________________________________
-> linux-amlogic mailing list
-> linux-amlogic@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-amlogic
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha        buildonly-randconfig-r004-20230614   gcc  
+alpha        buildonly-randconfig-r004-20230615   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r023-20230615   gcc  
+alpha                randconfig-r025-20230615   gcc  
+alpha                randconfig-r026-20230615   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                  randconfig-r043-20230615   gcc  
+arc                           tb10x_defconfig   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                         axm55xx_defconfig   gcc  
+arm                                 defconfig   gcc  
+arm                          gemini_defconfig   gcc  
+arm                         nhk8815_defconfig   gcc  
+arm                  randconfig-r046-20230615   gcc  
+arm                         s5pv210_defconfig   clang
+arm64                            allyesconfig   gcc  
+arm64        buildonly-randconfig-r005-20230614   clang
+arm64                               defconfig   gcc  
+arm64                randconfig-r034-20230615   gcc  
+csky                                defconfig   gcc  
+csky                 randconfig-r014-20230615   gcc  
+hexagon              randconfig-r003-20230615   clang
+hexagon              randconfig-r015-20230615   clang
+hexagon              randconfig-r041-20230615   clang
+hexagon              randconfig-r045-20230615   clang
+i386                             allyesconfig   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-i001-20230614   clang
+i386                 randconfig-i002-20230614   clang
+i386                 randconfig-i003-20230614   clang
+i386                 randconfig-i004-20230614   clang
+i386                 randconfig-i005-20230614   clang
+i386                 randconfig-i006-20230614   clang
+i386                 randconfig-i011-20230614   gcc  
+i386                 randconfig-i011-20230615   clang
+i386                 randconfig-i012-20230614   gcc  
+i386                 randconfig-i012-20230615   clang
+i386                 randconfig-i013-20230614   gcc  
+i386                 randconfig-i013-20230615   clang
+i386                 randconfig-i014-20230614   gcc  
+i386                 randconfig-i014-20230615   clang
+i386                 randconfig-i015-20230614   gcc  
+i386                 randconfig-i015-20230615   clang
+i386                 randconfig-i016-20230614   gcc  
+i386                 randconfig-i016-20230615   clang
+i386                 randconfig-r024-20230615   clang
+i386                 randconfig-r036-20230615   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                 randconfig-r012-20230615   gcc  
+m68k                 randconfig-r013-20230614   gcc  
+m68k                 randconfig-r033-20230615   gcc  
+m68k                           virt_defconfig   gcc  
+microblaze           randconfig-r001-20230615   gcc  
+microblaze           randconfig-r011-20230615   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips         buildonly-randconfig-r002-20230614   gcc  
+mips                 randconfig-r006-20230615   clang
+mips                 randconfig-r022-20230615   gcc  
+mips                 randconfig-r024-20230615   gcc  
+nios2                               defconfig   gcc  
+openrisc             randconfig-r012-20230614   gcc  
+openrisc             randconfig-r013-20230615   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc               randconfig-r025-20230615   gcc  
+parisc               randconfig-r036-20230615   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc      buildonly-randconfig-r003-20230614   gcc  
+powerpc                      makalu_defconfig   gcc  
+powerpc              randconfig-r011-20230614   gcc  
+powerpc              randconfig-r035-20230615   gcc  
+powerpc                      walnut_defconfig   clang
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                randconfig-r033-20230615   gcc  
+riscv                randconfig-r042-20230615   clang
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390         buildonly-randconfig-r001-20230614   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r014-20230614   gcc  
+s390                 randconfig-r021-20230615   clang
+s390                 randconfig-r026-20230615   clang
+s390                 randconfig-r044-20230615   clang
+sh                               allmodconfig   gcc  
+sh           buildonly-randconfig-r001-20230615   gcc  
+sh                         ecovec24_defconfig   gcc  
+sh                          kfr2r09_defconfig   gcc  
+sh                   randconfig-r016-20230614   gcc  
+sh                   randconfig-r031-20230615   gcc  
+sh                   randconfig-r032-20230615   gcc  
+sparc                            allyesconfig   gcc  
+sparc        buildonly-randconfig-r003-20230615   gcc  
+sparc                               defconfig   gcc  
+sparc                randconfig-r005-20230615   gcc  
+sparc64      buildonly-randconfig-r005-20230615   gcc  
+sparc64              randconfig-r016-20230615   gcc  
+sparc64              randconfig-r021-20230615   gcc  
+sparc64              randconfig-r032-20230615   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   clang
+x86_64                           allyesconfig   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-a001-20230614   clang
+x86_64               randconfig-a001-20230615   gcc  
+x86_64               randconfig-a002-20230614   clang
+x86_64               randconfig-a002-20230615   gcc  
+x86_64               randconfig-a003-20230614   clang
+x86_64               randconfig-a003-20230615   gcc  
+x86_64               randconfig-a004-20230614   clang
+x86_64               randconfig-a004-20230615   gcc  
+x86_64               randconfig-a005-20230614   clang
+x86_64               randconfig-a005-20230615   gcc  
+x86_64               randconfig-a006-20230614   clang
+x86_64               randconfig-a006-20230615   gcc  
+x86_64               randconfig-a011-20230615   clang
+x86_64               randconfig-a012-20230615   clang
+x86_64               randconfig-a013-20230615   clang
+x86_64               randconfig-a014-20230615   clang
+x86_64               randconfig-a015-20230615   clang
+x86_64               randconfig-a016-20230615   clang
+x86_64               randconfig-r022-20230615   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa       buildonly-randconfig-r006-20230614   gcc  
+xtensa               randconfig-r002-20230615   gcc  
+xtensa               randconfig-r015-20230614   gcc  
+xtensa               randconfig-r031-20230615   gcc  
 
 -- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
