@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7375FEB64D9
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Jun 2023 02:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF84EB64D7
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Jun 2023 05:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240254AbjFPCbY convert rfc822-to-8bit (ORCPT
+        id S241407AbjFPF4K convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Jun 2023 22:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48490 "EHLO
+        Fri, 16 Jun 2023 01:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233851AbjFPCbX (ORCPT
+        with ESMTP id S241506AbjFPF4F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Jun 2023 22:31:23 -0400
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01D326B8;
-        Thu, 15 Jun 2023 19:31:20 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-6b2a4cb5776so237774a34.0;
-        Thu, 15 Jun 2023 19:31:20 -0700 (PDT)
+        Fri, 16 Jun 2023 01:56:05 -0400
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484BE35A3;
+        Thu, 15 Jun 2023 22:55:07 -0700 (PDT)
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1b3c1730fc9so2550845ad.0;
+        Thu, 15 Jun 2023 22:55:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686882680; x=1689474680;
+        d=1e100.net; s=20221208; t=1686894879; x=1689486879;
         h=content-transfer-encoding:fcc:content-language:user-agent
          :mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jpsq4bwehtOkuTWQGOFc+nOFdLmRRIsUd3/WKvmiaqg=;
-        b=XN0hohCZeqVm4tz95m0dVsNrOXYr7ZXGiS1rvTqXX/h5/FgQIWw3SVKxiSr9+orwo9
-         5o8rWes4K9OW9J6AR0ZipIMGlQKKq6e1i/ETu6x4KpQNA2v0AsO8w23UK+q8G5k6itsB
-         PZHx9M6lpqNvaE2s7+aps+JXLAAIiTtIFHYhwFq2yaclREKP1seNK8TbarOTs6iv+zK+
-         6Ml2V8LiGGoOJ5hSvLcXhufcXGePVJp66FqqWEiVA5wSXq7/kQM6f3Kikpn1QvxOjoVM
-         CngWpIm/7sVByB36DclfQVY49BCVEpb6PdJZtI+4PPlO0+MX38XUeOfxzYabG7z9QKOF
-         K6GQ==
-X-Gm-Message-State: AC+VfDwuPGWoHu1dYvRwwFo2Hy0satOb7EoIFSzhPlL22bqGZLG+TFnf
-        HzN0Icx1sh6sGEfbAuBtiB0OyNn4yb2gpjefw7Ksww==
-X-Google-Smtp-Source: ACHHUZ7DaCZUOyyuiHifPwy9rqrAzMBh0jUHJqCHK6jLrDWZtA8AY6bI6VXfs0NHZV9Rlc+59IfXRg==
-X-Received: by 2002:a05:6359:60f:b0:121:7740:94e9 with SMTP id eh15-20020a056359060f00b00121774094e9mr548797rwb.5.1686882679954;
-        Thu, 15 Jun 2023 19:31:19 -0700 (PDT)
-Received: from localhost ([2408:8453:618:7ae:a9b9:1bdc:9a23:2334])
-        by smtp.gmail.com with ESMTPSA id z24-20020a63c058000000b0051ba9d772f9sm13479528pgi.59.2023.06.15.19.31.18
+        bh=zIMo/fLw73fsOD8BQxcb2psKOzd8OUTA6Kfipb8yO6c=;
+        b=CxqZWdJIBlMwAuqy8sRTURNwaDmxCjmQiahRrvh7hizNbc6fsr8r0Yi8M1uM9ELWzI
+         inuWSSmLDtA/EwzFBELxTix6LxZSos8uf5Fa7IbgShU8MjRcX6H5AN/MkfN50a8lADkh
+         bDOAiXswtzvIJuaTjs51fY5j05LuqJvP+NBgkpi2j0uTr6zjvha9h4ZWmY96keygqMAs
+         se5Uf963YLHggf1P9Tr97xPa9TB4WYhf0zpx5dkhajT6RASJ6k8Qqq88nWgigluMUa0l
+         68ERaVurBPhXzGTov8urY75W0syDAnEa15LayExqJcm4lhS7P5EGYzOvHF7jexTi7Grm
+         IpEQ==
+X-Gm-Message-State: AC+VfDw1DC7J4huTKUI/Mr4KgdaXFkIpqPn4LnIdkjz+snNoAgYQwZIM
+        WE0+d4WRM36UNsPptL3GNR8=
+X-Google-Smtp-Source: ACHHUZ5c92bjTx35/rMUS2/H4Ga8GvbUYTxaqDUTRbBlLAk5hWTtBjqswtmI9AjOOeVxbEwzgAiugw==
+X-Received: by 2002:a17:902:ec8d:b0:1b3:8aea:cac8 with SMTP id x13-20020a170902ec8d00b001b38aeacac8mr868750plg.49.1686894878786;
+        Thu, 15 Jun 2023 22:54:38 -0700 (PDT)
+Received: from localhost ([2408:8453:744:15bc:516a:db79:5a16:2946])
+        by smtp.gmail.com with ESMTPSA id jo23-20020a170903055700b001993a1fce7bsm14908514plb.196.2023.06.15.22.54.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jun 2023 19:31:19 -0700 (PDT)
+        Thu, 15 Jun 2023 22:54:38 -0700 (PDT)
 From:   Hongyu Xie <xiehongyu1@kylinos.cn>
 To:     linux@armlinux.org.uk, gregkh@linuxfoundation.org,
         jirislaby@kernel.org, corbet@lwn.net
@@ -47,8 +47,8 @@ Cc:     rdunlap@infradead.org, linux-serial@vger.kernel.org,
         oe-kbuild-all@lists.linux.dev, lkp@intel.com, bagasdotme@gmail.com,
         Hongyu Xie <xiehongyu1@kylinos.cn>
 Subject: Re: [RESEND PATCH v4 -next] tty: serial: add panic serial helper
-Date:   Fri, 16 Jun 2023 10:31:15 +0800
-Message-Id: <fbfbbad5-2418-5c1a-87f1-dc2ca20204aa@kylinos.cn>
+Date:   Fri, 16 Jun 2023 13:54:33 +0800
+Message-Id: <cb984493-5353-db4b-a46b-37e6cb6e0ee9@kylinos.cn>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <2023061502-submerge-preachy-4413@gregkh>
 References: <20230614025512.27746-1-xiehongyu1@kylinos.cn> <2023061502-submerge-preachy-4413@gregkh>
@@ -86,7 +86,7 @@ X-Mailing-List: linux-serial@vger.kernel.org
 >> ---
 > 
 > Why  is this a RESEND?  What's wrong with the previous version?
-Nobody review v4 for over a week.
+> 
 > 
 > 
 >>
@@ -346,7 +346,6 @@ Nobody review v4 for over a week.
 >> +#define pr_fmt(fmt) MODULE_NAME ": " fmt
 > 
 > KBUILD_NAME is all you need, right?
-What is wrong with MODULE_NAME? Over 80 module file use MODULE_NAME.
 > 
 >> +
 >> +#include <linux/kmsg_dump.h>
@@ -365,7 +364,6 @@ What is wrong with MODULE_NAME? Over 80 module file use MODULE_NAME.
 > 
 > Why are these needed?  Why not just use strings where they are used as
 > you are only using these once.
-It's shorter in a line.
 > 
 >> +
 >> +/* list to store msg lines */
@@ -373,9 +371,6 @@ It's shorter in a line.
 > 
 > That's going to get HUGE, right?  How much memory does this module take
 > up?
-Let's say n is the number of msg lines from while(kmsg_dump_get_line).
-Memory consumption: n * sizeof(struct dmesg_lines) + total sum of the 
-size of each kmsg_dump_get_line call.
 > 
 >> +
 >> +/* msg line prototype */
@@ -385,9 +380,6 @@ size of each kmsg_dump_get_line call.
 >> +	int size;
 > 
 > size of what?
-bool kmsg_dump_get_line(struct kmsg_dump_iter *iter, bool syslog, char 
-*line, size_t size, size_t *len).
-size = *len here.
 > 
 >> +};
 >> +
@@ -401,7 +393,6 @@ size = *len here.
 >> +};
 > 
 > What do these mean?
-Indicates the status of this module.
 > 
 >> +
 >> +/* panic serial helper msg type */
@@ -413,16 +404,10 @@ Indicates the status of this module.
 >> +	PSHM_TYPE_QUIT,
 > 
 > Why do you have message types?
-To choose the msg type you need.
 > 
 > But most importantly, why all of this at all?  Why not just tie into the
 > pstore infrastructure?  Wouldn't that handle the majority of this for
 > you?
-pstore infrastructure needs a backend, ram, efi, mtd, etc. Which needs a 
-_panic_write implementation. Some of the implementation works in a 
-interrupt context. What if panic happens in a none interrupt context? 
-And what if _panic_write fails? This module use UART in poll mode and 
-it's reliable.
 > 
 >> +};
 >> +
@@ -449,8 +434,10 @@ it's reliable.
 > 
 > Sorry, but hard-coded tty port names are not going to go well.  Why did
 > you pick this tiny subset of valid tty names?
-tty_find_polling_driver use the name to find a tty driver. What's wrong 
-with it? kgdboc does the same thing.
+Because these are the ones that implement poll_get_char and 
+poll_put_char, not all tty drivers implement these two callback.
+So, if there is a new tty driver with these two callback, all I have to 
+do is adding the name of the new tty driver in this array.
 > 
 > 
 >> +};
@@ -458,7 +445,6 @@ with it? kgdboc does the same thing.
 >> +#define TTY_OPS "115200n8n"
 > 
 > Why this default?
-For convenience. So you don't have to try every baud rate when it happens.
 > 
 > 
 >> +
@@ -479,16 +465,13 @@ For convenience. So you don't have to try every baud rate when it happens.
 >> +	int (*handler)(struct psh_serial_dev *dev, void *d);
 > 
 > Why do you need a handler when you only have one handler?
-There are two, one for '\b', one for '\r'. And maybe more in the future.
 > 
 > Anyway, please look at pstore and tie into that if you really want
 > something like this.
-Like I said above.
 > 
 > thanks,
 > 
 > greg k-h
 thanks,
 
-Hongyu xie
-
+Hongyu Xie
