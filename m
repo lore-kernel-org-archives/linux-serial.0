@@ -2,60 +2,41 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A419AEB64DA
-	for <linux-serial@archiver.kernel.org>; Sun, 18 Jun 2023 17:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D11EB64D8
+	for <linux-serial@archiver.kernel.org>; Sun, 18 Jun 2023 19:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbjFRRoz convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 18 Jun 2023 13:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
+        id S229515AbjFRTPv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 18 Jun 2023 15:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbjFRRot (ORCPT
+        with ESMTP id S229456AbjFRTPu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 18 Jun 2023 13:44:49 -0400
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCA0E50;
-        Sun, 18 Jun 2023 10:44:48 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-5701eaf0d04so30726837b3.2;
-        Sun, 18 Jun 2023 10:44:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687110287; x=1689702287;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=y9KdNjinEz6R6TTGochCLoYBY6M9YCjI05gTuZN0owo=;
-        b=K4xWJFsWWR10wQk/m/23ozUX1d9agijoGl1/1kUZdqdCSGUMRQiWQUuBDef8gXRami
-         iL+bbnSTfC2cCGwk2110bDFy18lPfmxu1GoKGAIxv3Oq0ZagFP8iJ4yNEe2Udc3q+oME
-         MWRX4+NgwbVPcQ3Dnd2FuNJlGPlz6iFBn/8gWsFer3P0D/rPjoEzxfMEcbtL3Z7spNO8
-         m2+CJx9duPAwlUBmiMcCQjar0oECOTwE9RmMnn7jMUgDLKDkDbRD+DeE8B8qM61f9jWu
-         egMUOGLm9UULpWLqGkKan1WIAEe2EOZsVkquNrWafMX+B6olz0isKNdBP5QWbGFnkY1Z
-         tynA==
-X-Gm-Message-State: AC+VfDwRUO5GoN62ZOEFwB9gy1EiYS5hOgsB5rOtoSYo++VKKEBdBdBi
-        vdXyJjG2WBjq+qcnn6cXdnUXrkOS4A1uoKGg894=
-X-Google-Smtp-Source: ACHHUZ6Qkyha88Bx2a76NX3xEYiBjP/3Dw6ESHoYD3XPwpzyUzonQvls6jCOYJsugNGDbgYHtNgDRg==
-X-Received: by 2002:a0d:c6c5:0:b0:56f:ee38:786a with SMTP id i188-20020a0dc6c5000000b0056fee38786amr6764626ywd.24.1687110286888;
-        Sun, 18 Jun 2023 10:44:46 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id o125-20020a815a83000000b00545a08184cesm6274821ywb.94.2023.06.18.10.44.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Jun 2023 10:44:45 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-bb167972cffso2875788276.1;
-        Sun, 18 Jun 2023 10:44:45 -0700 (PDT)
-X-Received: by 2002:a25:aa72:0:b0:bc9:51a1:5a86 with SMTP id
- s105-20020a25aa72000000b00bc951a15a86mr4340442ybi.64.1687110285167; Sun, 18
- Jun 2023 10:44:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230615182938.18487-1-tanure@linux.com> <20230615182938.18487-7-tanure@linux.com>
- <ZIumTthAmBLBxpXn@ofant> <CAJX_Q+14r0knLHLg0=G_kA=JhVvhZD1VRK=xuKkvTzwg820coA@mail.gmail.com>
-In-Reply-To: <CAJX_Q+14r0knLHLg0=G_kA=JhVvhZD1VRK=xuKkvTzwg820coA@mail.gmail.com>
-Reply-To: tanure@linux.com
-From:   Lucas Tanure <tanure@linux.com>
-Date:   Sun, 18 Jun 2023 18:44:33 +0100
-X-Gmail-Original-Message-ID: <CAJX_Q+2oVhE5zcYZPcFY_7AbGQBOkNoY0_1n6dBOiz40GFZ=bg@mail.gmail.com>
-Message-ID: <CAJX_Q+2oVhE5zcYZPcFY_7AbGQBOkNoY0_1n6dBOiz40GFZ=bg@mail.gmail.com>
-Subject: Re: [PATCH 6/6] arm64: dts: meson-t7-a311d2-khadas-vim4: add initial device-tree
-To:     Yixun Lan <dlan@gentoo.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sun, 18 Jun 2023 15:15:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4391B6;
+        Sun, 18 Jun 2023 12:15:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA2960DCF;
+        Sun, 18 Jun 2023 19:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80BE7C433C8;
+        Sun, 18 Jun 2023 19:15:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1687115748;
+        bh=1O2hpd2p0ZnWkUw7q8Y9HtFfDVuFZLuKIBpyIFN1XIc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NcqmPzxU6IqT/PhcVtgmGU+sz/k4DnglYnNpsFIOhs0DXQazEgcB48h8C4azKmREa
+         hdDLUjKL/zWuvDxxDx8ktEvgGGji4KEE83M67HCUT1ofj32lVzLjLUdBkWWUBomz/o
+         JAKfMnM60aoyFj0sGYhkwvqRyeorNLK56KKcbXj5yxxjGI7gGMyiP1QeaUL0fryzkl
+         pyej3ndHeOGRYMpyfd8hGirgQWp4IdKvYq83Nze8K9pKAd4osCHxmUKF4bjEVCeX2J
+         VxA48zjWo6cl9JZcI2G4W4/Ob3c7wEBiUpcBkz4Y6ix76DqFhEweDA+zwo8zXcJksA
+         bspkFOg4HRKGg==
+Date:   Sun, 18 Jun 2023 20:15:42 +0100
+From:   Conor Dooley <conor@kernel.org>
+To:     Lucas Tanure <tanure@linux.com>
+Cc:     Yixun Lan <dlan@gentoo.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Conor Dooley <conor+dt@kernel.org>,
         Neil Armstrong <neil.armstrong@linaro.org>,
@@ -68,414 +49,91 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Subject: Re: [PATCH 5/6] tty: serial: meson: Added T7 SOC compatibility
+Message-ID: <20230618-pavestone-atrophy-017a464a1dbb@spud>
+References: <20230615182938.18487-1-tanure@linux.com>
+ <20230615182938.18487-6-tanure@linux.com>
+ <ZIufK7uK0ZrsVTZ3@ofant>
+ <CAJX_Q+3_UME4xigEU+_dXrdLi+YkL0+TC-Y552LBcuTii4=V5w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="CrX7CiUT711LxfDS"
+Content-Disposition: inline
+In-Reply-To: <CAJX_Q+3_UME4xigEU+_dXrdLi+YkL0+TC-Y552LBcuTii4=V5w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jun 18, 2023 at 6:41 PM Lucas Tanure <tanure@linux.com> wrote:
->
-> On Fri, Jun 16, 2023 at 1:01 AM Yixun Lan <dlan@gentoo.org> wrote:
+
+--CrX7CiUT711LxfDS
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Jun 18, 2023 at 06:40:12PM +0100, Lucas Tanure wrote:
+> On Fri, Jun 16, 2023 at 12:31=E2=80=AFAM Yixun Lan <dlan@gentoo.org> wrot=
+e:
 > >
 > > Hi Lucas:
 > >
 > > On 19:29 Thu 15 Jun     , Lucas Tanure wrote:
-> > > The Khadas VIM4 uses the Amlogic A311D2 SoC, based on the Amlogic T7 SoC
-> > > family, on a board with the same form factor as the VIM3 models.
-> > I'd like to see little bit more verbose messages here, like
-> > which functionality/driver added here - cpu, gic, timer, uart?
-> Ok, I add this information in the next version.
-> Its adding CPU, GIC, and UART.
->
-> >
-> > so, it's capable of booting into a serial console?
-> yes
->
-> >
-> > >
-> > > - 8GB LPDDR4X 2016MHz
-> > > - 32GB eMMC 5.1 storage
-> > > - 32MB SPI flash
-> > > - 10/100/1000 Base-T Ethernet
-> > > - AP6275S Wireless (802.11 a/b/g/n/ac/ax, BT5.1)
-> > > - HDMI 2.1 video
-> > > - HDMI Input
-> > > - 1x USB 2.0 + 1x USB 3.0 ports
-> > > - 1x USB-C (power) with USB 2.0 OTG
-> > > - 3x LED's (1x red, 1x blue, 1x white)
-> > > - 3x buttons (power, function, reset)
-> > > - M2 socket with PCIe, USB, ADC & I2C
-> > > - 40pin GPIO Header
-> > > - 1x micro SD card slot
+> > > Make UART driver compatible with T7 SOC UART.
 > > >
 > > > Signed-off-by: Lucas Tanure <tanure@linux.com>
 > > > ---
-> > >  arch/arm64/boot/dts/amlogic/Makefile          |   1 +
-> > >  .../amlogic/meson-t7-a311d2-khadas-vim4.dts   | 112 ++++++++++
-> > >  arch/arm64/boot/dts/amlogic/meson-t7.dtsi     | 202 ++++++++++++++++++
-> > >  3 files changed, 315 insertions(+)
-> > >  create mode 100644 arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
-> > >  create mode 100644 arch/arm64/boot/dts/amlogic/meson-t7.dtsi
+> > >  drivers/tty/serial/meson_uart.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
 > > >
-> > > diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
-> > > index cd1c5b04890a..1c5846bd1ca0 100644
-> > > --- a/arch/arm64/boot/dts/amlogic/Makefile
-> > > +++ b/arch/arm64/boot/dts/amlogic/Makefile
-> > > @@ -74,3 +74,4 @@ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-odroid-hc4.dtb
-> > >  dtb-$(CONFIG_ARCH_MESON) += meson-sm1-sei610.dtb
-> > >  dtb-$(CONFIG_ARCH_MESON) += meson-sm1-x96-air-gbit.dtb
-> > >  dtb-$(CONFIG_ARCH_MESON) += meson-sm1-x96-air.dtb
-> > > +dtb-$(CONFIG_ARCH_MESON) += meson-t7-a311d2-khadas-vim4.dtb
-> > > diff --git a/arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts b/arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
-> > > new file mode 100644
-> > > index 000000000000..46e175536edf
-> > > --- /dev/null
-> > > +++ b/arch/arm64/boot/dts/amlogic/meson-t7-a311d2-khadas-vim4.dts
-> > > @@ -0,0 +1,112 @@
-> > > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> > > +/*
-> > > + * Copyright (c) 2022 Wesion, Inc. All rights reserved.
-> > > + */
-> > > +
-> > > +/dts-v1/;
-> > > +
-> > > +#include "meson-t7.dtsi"
-> > > +
-> > > +/ {
-> > > +     model = "Khadas VIM4";
-> > > +
-> > > +     aliases {
-> > > +             serial0 = &uart_A;
-> > > +     };
-> > > +
-> > > +     reserved-memory {
-> > > +             #address-cells = <2>;
-> > > +             #size-cells = <2>;
-> > > +             ranges;
-> > > +
-> > > +             /* 3 MiB reserved for ARM Trusted Firmware (BL31) */
-> > > +             secmon_reserved: secmon@5000000 {
-> > > +                     reg = <0x0 0x05000000 0x0 0x300000>;
-> > > +                     no-map;
-> > > +             };
-> > > +
-> > > +             /* 32 MiB reserved for ARM Trusted Firmware (BL32) */
-> > > +             secmon_reserved_bl32: secmon@5300000 {
-> > > +                     reg = <0x0 0x05300000 0x0 0x2000000>;
-> > > +                     no-map;
-> > > +             };
-> > > +     };
-> > > +
-> > > +     xtal: xtal-clk {
-> > > +             compatible = "fixed-clock";
-> > > +             clock-frequency = <24000000>;
-> > > +             clock-output-names = "xtal";
-> > > +             #clock-cells = <0>;
-> > > +     };
-> > > +
-> > > +     vddcpu_a: regulator-vddcpu-a {
-> > > +             /*
-> > > +              * MP8756GD Regulator.
-> > > +              */
-> > > +             compatible = "pwm-regulator";
-> > > +
-> > > +             regulator-name = "VDDCPU_A";
-> > > +             regulator-min-microvolt = <689000>;
-> > > +             regulator-max-microvolt = <1049000>;
-> > > +
-> > > +             regulator-boot-on;
-> > > +             regulator-always-on;
-> > > +     };
-> > > +
-> > > +     vddcpu_b: regulator-vddcpu-a {
-> > > +             /*
-> > > +              * MP8756GD Regulator.
-> > > +              */
-> > > +             compatible = "pwm-regulator";
-> > > +
-> > > +             regulator-name = "VDDCPU_B";
-> > > +             regulator-min-microvolt = <689000>;
-> > > +             regulator-max-microvolt = <1049000>;
-> > > +
-> > > +             regulator-boot-on;
-> > > +             regulator-always-on;
-> > > +     };
-> > > +};
-> > > +
-> > > +&clkc{
-> > > +     clocks = <&xtal>;
-> > > +     clock-names = "xtal";
-> > > +     status = "okay";
-> > > +};
-> > > +
-> > > +&uart_A {
-> > > +     status = "okay";
-> > > +};
-> > > +
-> > > +&cpu0 {
-> > > +     cpu-supply = <&vddcpu_a>;
-> > > +};
-> > > +
-> > > +&cpu1 {
-> > > +     cpu-supply = <&vddcpu_a>;
-> > > +};
-> > > +
-> > > +&cpu2 {
-> > > +     cpu-supply = <&vddcpu_a>;
-> > > +};
-> > > +
-> > > +&cpu3 {
-> > > +     cpu-supply = <&vddcpu_a>;
-> > > +};
-> > > +
-> > > +&cpu100 {
-> > > +     cpu-supply = <&vddcpu_b>;
-> > > +};
-> > > +
-> > > +&cpu101 {
-> > > +     cpu-supply = <&vddcpu_b>;
-> > > +};
-> > > +
-> > > +&cpu102 {
-> > > +     cpu-supply = <&vddcpu_b>;
-> > > +};
-> > > +
-> > > +&cpu103 {
-> > > +     cpu-supply = <&vddcpu_b>;
-> > > +};
-> > > +
-> > > diff --git a/arch/arm64/boot/dts/amlogic/meson-t7.dtsi b/arch/arm64/boot/dts/amlogic/meson-t7.dtsi
-> > > new file mode 100644
-> > > index 000000000000..453b3d9cb9d8
-> > > --- /dev/null
-> > > +++ b/arch/arm64/boot/dts/amlogic/meson-t7.dtsi
-> > > @@ -0,0 +1,202 @@
-> > > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> > > +/*
-> > > + * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
-> > > + */
-> > > +
-> > > +#include <dt-bindings/clock/mesont7-clkc.h>
-> > > +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> > > +
-> > > +/ {
-> > > +     compatible = "amlogic,t7";
-> > > +     interrupt-parent = <&gic>;
-> > > +     #address-cells = <2>;
-> > > +     #size-cells = <2>;
-> > > +
-> > > +     cpus {
-> > > +             #address-cells = <0x2>;
-> > > +             #size-cells = <0x0>;
-> > > +
-> > > +             cpu-map {
-> > > +                     cluster0 {
-> > > +                             core0 {
-> > > +                                     cpu = <&cpu100>;
-> > > +                             };
-> > > +                             core1 {
-> > > +                                     cpu = <&cpu101>;
-> > > +                             };
-> > > +                             core2 {
-> > > +                                     cpu = <&cpu102>;
-> > > +                             };
-> > > +                             core3 {
-> > > +                                     cpu = <&cpu103>;
-> > > +                             };
-> > > +                     };
-> > > +
-> > > +                     cluster1 {
-> > > +                             core0 {
-> > > +                                     cpu = <&cpu0>;
-> > > +                             };
-> > > +                             core1 {
-> > > +                                     cpu = <&cpu1>;
-> > > +                             };
-> > > +                             core2 {
-> > > +                                     cpu = <&cpu2>;
-> > > +                             };
-> > > +                             core3 {
-> > > +                                     cpu = <&cpu3>;
-> > > +                             };
-> > > +                     };
-> > > +             };
-> > > +
-> > > +             cpu100: cpu@100 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a53";
-> > > +                     reg = <0x0 0x100>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <632>;
-> > > +                     dynamic-power-coefficient = <110>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu101: cpu@101{
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a53";
-> > > +                     reg = <0x0 0x101>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <632>;
-> > > +                     dynamic-power-coefficient = <110>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu102: cpu@102 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a53";
-> > > +                     reg = <0x0 0x102>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <632>;
-> > > +                     dynamic-power-coefficient = <110>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu103: cpu@103 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a53";
-> > > +                     reg = <0x0 0x103>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <632>;
-> > > +                     dynamic-power-coefficient = <110>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu0: cpu@0 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a73";
-> > > +                     reg = <0x0 0x0>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <1024>;
-> > > +                     dynamic-power-coefficient = <550>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu1: cpu@1 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a73";
-> > > +                     reg = <0x0 0x1>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <1024>;
-> > > +                     dynamic-power-coefficient = <550>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu2: cpu@2 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a73";
-> > > +                     reg = <0x0 0x2>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <1024>;
-> > > +                     dynamic-power-coefficient = <550>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +
-> > > +             cpu3: cpu@3 {
-> > > +                     device_type = "cpu";
-> > > +                     compatible = "arm,cortex-a73";
-> > > +                     reg = <0x0 0x3>;
-> > > +                     enable-method = "psci";
-> > > +                     capacity-dmips-mhz = <1024>;
-> > > +                     dynamic-power-coefficient = <550>;
-> > > +                     #cooling-cells = <2>;
-> > > +             };
-> > > +     };
-> > > +
-> > > +     timer {
-> > > +             compatible = "arm,armv8-timer";
-> > > +             interrupts = <GIC_PPI 13 0xff08>,
-> > > +                          <GIC_PPI 14 0xff08>,
-> > > +                          <GIC_PPI 11 0xff08>,
-> > > +                          <GIC_PPI 10 0xff08>;
-> > > +     };
-> > > +
-> > > +     gic: interrupt-controller@fff01000 {
-> > > +             compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
-> > > +             #interrupt-cells = <3>;
-> > > +             #address-cells = <0>;
-> > > +             interrupt-controller;
-> > > +             reg = <0x0 0xfff01000 0 0x1000>,
-> > > +                   <0x0 0xfff02000 0 0x0100>;
-> > > +             interrupts = <GIC_PPI 9 0xf04>;
-> > > +     };
-> > > +
-> > > +     psci {
-> > > +             compatible = "arm,psci-0.2";
-> > can you double check if it is actual version 0.2?
-> > most recent Amlogic SoC should support psci-1.0
+> > > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/mes=
+on_uart.c
+> > > index 2501db5a7aaf..0208f9a6ba7e 100644
+> > > --- a/drivers/tty/serial/meson_uart.c
+> > > +++ b/drivers/tty/serial/meson_uart.c
+> > > @@ -796,6 +796,10 @@ static const struct of_device_id meson_uart_dt_m=
+atch[] =3D {
+> > >               .compatible =3D "amlogic,meson-s4-uart",
+> > >               .data =3D (void *)&meson_g12a_uart_data,
+> > >       },
+> > > +     {
+> > > +             .compatible =3D "amlogic,meson-t7-uart",
+> > > +             .data =3D (void *)&meson_g12a_uart_data,
+> > I think you are trying to follow previous s4 scheme - to introduce a new
+> > compatible string, while I think it's not necessary or even wrong, this=
+ will just
+> > make the dt_match_list longer but without obvious benefits..
 > >
-> > > +             method = "smc";
-> > > +     };
-> > > +
-> > > +     sm: secure-monitor {
-> > > +             compatible = "amlogic,meson-gxbb-sm";
-> > > +     };
-> > > +
-> > > +     soc {
-> > > +             compatible = "simple-bus";
-> > > +             #address-cells = <2>;
-> > > +             #size-cells = <2>;
-> > > +             ranges;
-> > > +
-> > > +             apb4: apb4@fe000000 {
-> > > +                     compatible = "simple-bus";
-> > > +                     reg = <0x0 0xfe000000 0x0 0x480000>;
-> > > +                     #address-cells = <2>;
-> > > +                     #size-cells = <2>;
-> > > +                     ranges = <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
-> > > +
-> > > +                     clkc: clock-controller {
-> > > +                             compatible = "amlogic,t7-clkc";
-> > > +                             #clock-cells = <1>;
-> > > +                             reg = <0x0 0x0 0x0 0x49c>,
-> > > +                                   <0x0 0x8000 0x0 0x320>,
-> > > +                                   <0x0 0xe040 0x0 0xbc>;
-> > > +                             reg-names = "basic",
-> > > +                                         "pll",
-> > > +                                         "cpu_clk";
-> > > +                     };
-> > > +
-> > > +                     ao-secure@140 {
-> > > +                             compatible = "amlogic,meson-gx-ao-secure", "syscon";
-> > > +                             reg=<0x0 0x10220 0x0 0x140>;
-> > > +                             amlogic,has-chip-id;
-> > > +                     };
-> > > +             };
-> > > +
-> > > +             uart_A: serial@fe078000 {
-> > > +                     compatible = "amlogic,meson-t7-uart";
-> > > +                     reg = <0x0 0xfe078000 0x0 0x18>;
-> > > +                     interrupts = <0 168 1>;
-> > > +                     status = "disabled";
-> > > +                     clocks = <&xtal>, <&clkc CLKID_UART_A>, <&xtal>;
-> > > +                     clock-names = "xtal", "pclk", "baud";
-> > > +                     fifo-size = < 64 >;
-> > > +                     pinctrl-names = "default";
-> > > +             };
-> > I believe there are more uart ports, it's worth the effort to add them all in one run,
-> > which sounds more consistent to me, anyway you could also choose to add them
-> > in later patch series, no problem..
->
-> Yeah, I prefer to add those uarts later, when I can propper test them.
->
+> > as Conor already raised this question in previous dt-binding patch[4/6],
+> > how about just using 'amlogic,meson-g12a-uart' which is the first compa=
+tible
+> > introduced.
 > >
-> > > +     };
-> > > +};
-> > > +
-> > > --
-> > > 2.41.0
-> > >
-> > >
-> > > _______________________________________________
-> > > linux-amlogic mailing list
-> > > linux-amlogic@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-amlogic
-> >
-> > --
-> > Yixun Lan (dlan)
-> > Gentoo Linux Developer
-> > GPG Key ID AABEFD55
-The datasheet I have doesn't mention the version of PSCI supported, so
-I can't check.
-But It continues to work ( serial log ) when using the 1.0 version.
+> > if people agree, we could also drop 'amlogic,meson-s4-uart' since it us=
+e same
+> > compatible data as gl12a, anyway it should be separated into another pa=
+tch..
+
+> Yes, I am dropping this patch and using s4 and g12a compatible lines.
+
+If you drop the "amlogic,meson-s4-uart" from here it will break
+backwards compatibility, because the binding permits
+"amlogic,meson-s4-uart" in isolation. Please do not make that change.
+
+When you introduce the new compatible for the t7, it can fall back to
+the s4 (or g12a), doesn't really matter, but the existing one for the s4
+should not be touched.
+
+Cheers,
+Conor.
+
+--CrX7CiUT711LxfDS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZI9X3gAKCRB4tDGHoIJi
+0qfqAQClhHK7sWjkb2YXNJ8lYDgSgt3RJ0S64L/6Faq3siZA9gD+LFwCuKva6h98
+86uGxsdPFwp5DjlE3ksYwSFHxWRUOQk=
+=YyUX
+-----END PGP SIGNATURE-----
+
+--CrX7CiUT711LxfDS--
