@@ -2,73 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D14EB64DB
-	for <linux-serial@archiver.kernel.org>; Sat, 17 Jun 2023 18:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21062EB64DA
+	for <linux-serial@archiver.kernel.org>; Sun, 18 Jun 2023 17:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346477AbjFQSo3 (ORCPT
+        id S229500AbjFRRh4 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 17 Jun 2023 14:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
+        Sun, 18 Jun 2023 13:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346485AbjFQSo2 (ORCPT
+        with ESMTP id S229499AbjFRRhz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 17 Jun 2023 14:44:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE511BC9;
-        Sat, 17 Jun 2023 11:44:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F379C612B3;
-        Sat, 17 Jun 2023 18:44:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 670FCC433C0;
-        Sat, 17 Jun 2023 18:44:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1687027466;
-        bh=P0k4knBHGUY/wlxBwP+qX4c+Hx3kOSTKg3D+Dkp5we0=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=C2YlgCahbEX+L8RX0JuTmPwUPs2FimFZ84PfnmFEMbisD3gNSWlwEarwQhMO7LNs+
-         9AeGc0r6HH9FUn2FNHVBxdRvX0hNltUwuUMD2KiVfn5WonAeTjEGhe8IShDjhFDrcN
-         uNKDXcymGwT8PFZ46Rv9BZJGw0oiF4pjVJbKwXlU1NY8KMFcBVMSU5JIcm5GsraIwO
-         RUPYbTOTNAnivXMpRRaoVUYDQ6DAIBcL6d+b6NMkf4dgFCEUySA8TSfi7lZEL457ra
-         /3eon5jaXLd6GfQAFqd7c0Xw//4fDH4GghpZOwYMH9MEGTlKhydnugXL55vaPj8Aq6
-         M/XYGTX2VyTLw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50CFAC1614E;
-        Sat, 17 Jun 2023 18:44:26 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.4-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <ZI25AEWr36a7coy5@kroah.com>
-References: <ZI25AEWr36a7coy5@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZI25AEWr36a7coy5@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc7
-X-PR-Tracked-Commit-Id: a82c3df955f8c1c726e4976527aa6ae924a67dd9
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3c0eb44233122d076ca5c1ddf57807c82ecfb991
-Message-Id: <168702746632.26928.10762846037591565013.pr-tracker-bot@kernel.org>
-Date:   Sat, 17 Jun 2023 18:44:26 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Sun, 18 Jun 2023 13:37:55 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545F61BF;
+        Sun, 18 Jun 2023 10:37:54 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-bd77424c886so3059419276.0;
+        Sun, 18 Jun 2023 10:37:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687109873; x=1689701873;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AjyowO3olSkVxM1P/M6uTj58+6YqzrML2c9g+1elEw8=;
+        b=gzLUHlk2PIqmTF8HPM5y3rAwCM2IrId/Dar99HLwNoNSGg1sduntnn2KWffoU/6HSv
+         ytV2Uz7CGONa5lZ5pFB4lKp0AQxt1sHF7QrdbhF78X36FPaq+OktxOAJwI4ADLVLGQ2o
+         t95TVir6XWt5V1PQ6hA7WJ4re7Lk+5TAWxM/mqkHVvaCYq1Ogah3C9VZxzYVAgrx987Z
+         yyykM20c7X9/Qjcj71cbkuMWJLvbs+HOjTvz/Lg/kXqeTXCA+5CxmV8QXC8T/KYhgKCt
+         4gL1nTAa0TKfLHEymtv5KraqkZ3pIoIkePCl+4v5QBwGwLBZ73PsyN1l95TY3M/Hcl/B
+         mDxw==
+X-Gm-Message-State: AC+VfDxNVH2072uNnpmLZWKZw0iglfkfK9kh6LX5QW1MBBFeiQStp7qY
+        HniPyqdJFSRfv/momwugLNJ5NrgUcsgwZuuyKJc=
+X-Google-Smtp-Source: ACHHUZ4TPXAFltd7BI78ccjVwowAz7OL2JP3i3y2P7xTKi6A51SY3VJD3P/Ovyas9IyxHsU2Y9HBgA==
+X-Received: by 2002:a25:d657:0:b0:bdd:85d:a5d6 with SMTP id n84-20020a25d657000000b00bdd085da5d6mr4135351ybg.31.1687109872969;
+        Sun, 18 Jun 2023 10:37:52 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id c14-20020a25c00e000000b00be45a29d440sm859068ybf.12.2023.06.18.10.37.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 18 Jun 2023 10:37:52 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-bd77424c886so3059394276.0;
+        Sun, 18 Jun 2023 10:37:51 -0700 (PDT)
+X-Received: by 2002:a25:ad1e:0:b0:bcb:3280:57fc with SMTP id
+ y30-20020a25ad1e000000b00bcb328057fcmr5010633ybi.53.1687109871675; Sun, 18
+ Jun 2023 10:37:51 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230615182938.18487-1-tanure@linux.com> <20230615182938.18487-5-tanure@linux.com>
+ <20230615-mushroom-numeric-3a4c03f2204b@spud>
+In-Reply-To: <20230615-mushroom-numeric-3a4c03f2204b@spud>
+Reply-To: tanure@linux.com
+From:   Lucas Tanure <tanure@linux.com>
+Date:   Sun, 18 Jun 2023 18:37:40 +0100
+X-Gmail-Original-Message-ID: <CAJX_Q+2ND=GJEEXdLLpEWoecN5gtZm-1i92pAgi+eQocSRUVqw@mail.gmail.com>
+Message-ID: <CAJX_Q+2ND=GJEEXdLLpEWoecN5gtZm-1i92pAgi+eQocSRUVqw@mail.gmail.com>
+Subject: Re: [PATCH 4/6] dt-bindings: serial: amlogic, meson-uart: support T7
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick <nick@khadas.com>, Artem <art@khadas.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sat, 17 Jun 2023 15:45:36 +0200:
+On Thu, Jun 15, 2023 at 10:25 PM Conor Dooley <conor@kernel.org> wrote:
+>
+> On Thu, Jun 15, 2023 at 07:29:36PM +0100, Lucas Tanure wrote:
+> > Add serial bindings support menson T7 SoC family.
+> >
+> > Signed-off-by: Lucas Tanure <tanure@linux.com>
+> > ---
+> >  Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+> > index 01ec45b3b406..01b01f8840ea 100644
+> > --- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+> > @@ -46,6 +46,7 @@ properties:
+> >            - amlogic,meson8b-uart
+> >            - amlogic,meson-gx-uart
+> >            - amlogic,meson-s4-uart
+> > +          - amlogic,meson-t7-uart
+>
+> | diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> | index 2501db5a7aaf..0208f9a6ba7e 100644
+> | --- a/drivers/tty/serial/meson_uart.c
+> | +++ b/drivers/tty/serial/meson_uart.c
+> | @@ -796,6 +796,10 @@ static const struct of_device_id meson_uart_dt_match[] = {
+> |                 .compatible = "amlogic,meson-s4-uart",
+> |                 .data = (void *)&meson_g12a_uart_data,
+> |         },
+> | +       {
+> | +               .compatible = "amlogic,meson-t7-uart",
+> | +               .data = (void *)&meson_g12a_uart_data,
+> | +       },
+> |         { /* sentinel */ },
+> |  };
+> |  MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
+>
+> You're adding another element to this enum, but the driver change
+> implies compatibility with the s4 uart. Should you not set this up with
+> fallback compatibles?
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.4-rc7
+I will drop this patch and use the s4 and g12a compatible strings.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3c0eb44233122d076ca5c1ddf57807c82ecfb991
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+>
+> Cheers,
+> Conor.
+>
+> >        - description: Everything-Else power domain UART controller on G12A SoCs
+> >          items:
+> >            - const: amlogic,meson-g12a-uart
+> > --
+> > 2.41.0
+> >
