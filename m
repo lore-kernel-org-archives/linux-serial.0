@@ -2,126 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C51EB64DB
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 08:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3474EB64D9
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 09:45:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbjFSIZp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Jun 2023 04:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        id S230395AbjFSJpe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Jun 2023 05:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbjFSIZn (ORCPT
+        with ESMTP id S231229AbjFSJpd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Jun 2023 04:25:43 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054DCFA;
-        Mon, 19 Jun 2023 01:25:42 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-666ed230c81so2068951b3a.0;
-        Mon, 19 Jun 2023 01:25:42 -0700 (PDT)
+        Mon, 19 Jun 2023 05:45:33 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EF21A3
+        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 02:45:24 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id 38308e7fff4ca-2b466073e19so26863431fa.1
+        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 02:45:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687163141; x=1689755141;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=linaro.org; s=google; t=1687167922; x=1689759922;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=vRAMSb3QLjF2Pifd9MJCuo7PLicH63ZOqCju9kt2DRc=;
-        b=g9vkRqXznPmnyw096XgVwqzl/mWuQjez8CHkXq0G3sgqxo5UrY+QhcNKe7Aq9h4lGq
-         LvAZYej2HJTgizPJk5Ei3J4ZtYVQx4uGPnZRikXhTKqAqQFUurbYfWeJJeZZbBns5yfW
-         rasG1e0w2wRllONuQYPZ9xWB4z0mAoNgKLh/BHFENVI6DW5n+FNZdtx8885jr3Ltp1et
-         rHVFeV/phZ7Ak2jEhgwIxCOCJ1b3R6m7DHs/YjnTg8DdjsvOWtPDWyN25xJtt45HlQrU
-         yUUKjk5s5hvEqy7ibBXGvm1RWtPXQ0QVLyjHEH/Knr6JMS4vvk84b8YDwIXXnMGpBS5O
-         s2ww==
+        bh=3lOpQQ0uvTWgPqy3NfFpsxoyopGZCSNNgUhalRviPMo=;
+        b=Kk+QBVI7yTg74fnBrF7IkaShnYdyhhgUWKaQuSqM02qfCIfPGmcKgTm3BPWYTvPkZx
+         pTfT2WbuSrVHbOymL2SAdviQSj5ESxfCVBBiEYwpjMQ2ysE148PohBLIi1zkIx6xCsbm
+         NTCYivjNTEyd3BI+HgBLv0HuHXqEFyEhsgfhfnDNvkhsZ29Hxp3K6KxSQanCoxG1tcc5
+         jv45Mno/+m5QKxa2wJHJSpAba+NKB60PQjJ2MtBWmLXS3moACvI/WQwl5mt9DsAYCPTo
+         gHALTsAGPFtD5iKvLW+WUIdEQp01iGtPX06qJcbidyYZyUiCLo+XfOFC9JbEVshgR4pZ
+         JsWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687163141; x=1689755141;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20221208; t=1687167922; x=1689759922;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vRAMSb3QLjF2Pifd9MJCuo7PLicH63ZOqCju9kt2DRc=;
-        b=U1DySPDBEQr3k4Y1Y55Hr75cx2r74dcUdjlt38sus0n2jleh+ieU/QKnyF9r0/bWE/
-         WcvcP6aJvNOQ9zzefdYXJ/grqm8QPs9In86RngSUB/RXkOw5B+7wNIZRxm6S5fy5UfCy
-         movTX1TZ9X6eGGuaftM62rZyUvWLpvVtH/bEUVm7kMcP9BSJcgTquOxfBFIftu9j5r5n
-         1e/OTSzNMcp/yPF9Yd592azXE0gKlv3UiMytTx10OfVQ7F2z7IqpKoCnieTR5Qg4ozY8
-         2rl2febR9l/Il7PsDQTOliOglYXUVdZgAGRw0cnnKNn1u7RvXpxgJa8bvMc0/MPUOTNf
-         ALFQ==
-X-Gm-Message-State: AC+VfDx21AT6pCWzHUu+6QU/vGz4KeuqZ9aHZVwNumZmX6T/socuAtdX
-        ib18O9ztB1TmW4DUdEZlkdo=
-X-Google-Smtp-Source: ACHHUZ68kJjz2ljXB0Yz5H2UWJkK6ZZQS9rxmZ3ddDF9ffIAXIG/lVIosS4Jf8SsHVunlrF9VeARAA==
-X-Received: by 2002:a05:6a00:21ce:b0:666:64fb:b129 with SMTP id t14-20020a056a0021ce00b0066664fbb129mr13429469pfj.27.1687163141133;
-        Mon, 19 Jun 2023 01:25:41 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id a7-20020aa78647000000b0066642f95bc5sm8075178pfo.35.2023.06.19.01.25.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Jun 2023 01:25:40 -0700 (PDT)
-Message-ID: <f7594eb2-9c89-14bf-56a2-990bcd0c7abe@gmail.com>
-Date:   Mon, 19 Jun 2023 16:25:36 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v15 2/2] clk: nuvoton: Add clock driver for ma35d1 clock
- controller
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, Lee Jones <lee@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        bh=3lOpQQ0uvTWgPqy3NfFpsxoyopGZCSNNgUhalRviPMo=;
+        b=gvdarbwGCnRqVa04RbkJr+XlMHbD3pfYTRVzQfqxICwV388cHzfH3YAhn2aah6SuHc
+         GYUbdwfoCdeL9CQfseluVZpCmE3/qgicx63utM0V2HKF+AUhm+R0p92wRYh4Ep2LbDod
+         MGvoKmAMZJjKTpDstNPJ/V2eHDo99VjQOQmp1y10ZnvN0LSYtgMZtrAdeXpR2KpRE+j1
+         ahIDC7A4RcMCfvF/A+LuvgIwV8ZqR0zhtbTiasvvISNKkvNDBOxYZN7kiP0Ci3WTFboT
+         ABhHZrbyPOr44u4AffKNCIl9at/GZbCG60vcRu173N1mkVOnkrLYlwepA74G8Rj4Qke6
+         b8wQ==
+X-Gm-Message-State: AC+VfDwQkD0nfp2XNuJpElnhMTdyyrTL646U8eqo3ALGK9OSLwmKyPqQ
+        gZdrZLO9vMEoS0Z3QsVsev3llA==
+X-Google-Smtp-Source: ACHHUZ5jSXfwChpHxsmYJaI2b4+nyll3e5wFqnVJMUlgcrfp2CP0jhwUV9PhBQ5RcAiCfixTsO9H0w==
+X-Received: by 2002:ac2:5b05:0:b0:4f8:424a:6804 with SMTP id v5-20020ac25b05000000b004f8424a6804mr5541064lfn.28.1687167922197;
+        Mon, 19 Jun 2023 02:45:22 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id o25-20020a1c7519000000b003f427687ba7sm10170599wmc.41.2023.06.19.02.45.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Jun 2023 02:45:20 -0700 (PDT)
+Date:   Mon, 19 Jun 2023 12:45:17 +0300
+From:   Dan Carpenter <dan.carpenter@linaro.org>
+To:     Elen Song <elen.song@atmel.com>
+Cc:     Richard Genoud <richard.genoud@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, soc@kernel.org, schung@nuvoton.com,
-        mjchen@nuvoton.com, Jacky Huang <ychuang3@nuvoton.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20230619033041.233921-1-ychuang570808@gmail.com>
- <f3f9bd5c-b4bd-461c-a6e1-b310cdaa0595@app.fastmail.com>
-From:   Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <f3f9bd5c-b4bd-461c-a6e1-b310cdaa0595@app.fastmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@atmel.com>,
+        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH] serial: atmel: don't enable IRQs prematurely
+Message-ID: <cb7c39a9-c004-4673-92e1-be4e34b85368@moroto.mountain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The atmel_complete_tx_dma() function disables IRQs at the start
+of the function by calling spin_lock_irqsave(&port->lock, flags);
+There is no need to disable them a second time using the
+spin_lock_irq() function and, in fact, doing so is a bug because
+it will enable IRQs prematurely when we call spin_unlock_irq().
 
+Just use spin_lock/unlock() instead without disabling or enabling
+IRQs.
 
-On 2023/6/19 下午 04:12, Arnd Bergmann wrote:
-> On Mon, Jun 19, 2023, at 05:30, Jacky Huang wrote:
->> From: Jacky Huang <ychuang3@nuvoton.com>
->>
->> The clock controller generates clocks for the whole chip, including
->> system clocks and all peripheral clocks. This driver support ma35d1
->> clock gating, divider, and individual PLL configuration.
->>
->> There are 6 PLLs in ma35d1 SoC:
->>    - CA-PLL for the two Cortex-A35 CPU clock
->>    - SYS-PLL for system bus, which comes from the companion MCU
->>      and cannot be programmed by clock controller.
->>    - DDR-PLL for DDR
->>    - EPLL for GMAC and GFX, Display, and VDEC IPs.
->>    - VPLL for video output pixel clock
->>    - APLL for SDHC, I2S audio, and other IPs.
->> CA-PLL has only one operation mode.
->> DDR-PLL, EPLL, VPLL, and APLL are advanced PLLs which have 3
->> operation modes: integer mode, fraction mode, and spread specturm mode.
->>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Hi Jacky,
->
-> Since I have already picked up the previous version of this patch,
-> please send a diff against the version I merged please.
->
->       Arnd
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+---
+ drivers/tty/serial/atmel_serial.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Dear Arnd,
-
-I got it. Thank you.
-I will send a diff version based on the previous patch.
-
-
-Best regards,
-Jacky Huang
-
-
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 6e9192f122aa..3467a875641a 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -868,11 +868,11 @@ static void atmel_complete_tx_dma(void *arg)
+ 		dmaengine_terminate_all(chan);
+ 	uart_xmit_advance(port, atmel_port->tx_len);
+ 
+-	spin_lock_irq(&atmel_port->lock_tx);
++	spin_lock(&atmel_port->lock_tx);
+ 	async_tx_ack(atmel_port->desc_tx);
+ 	atmel_port->cookie_tx = -EINVAL;
+ 	atmel_port->desc_tx = NULL;
+-	spin_unlock_irq(&atmel_port->lock_tx);
++	spin_unlock(&atmel_port->lock_tx);
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+-- 
+2.39.2
 
