@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF4DEB64DB
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 03:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA9FEB64DB
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 03:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbjFSDYJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 18 Jun 2023 23:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60028 "EHLO
+        id S229733AbjFSDa4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 18 Jun 2023 23:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbjFSDXt (ORCPT
+        with ESMTP id S229584AbjFSDaz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 18 Jun 2023 23:23:49 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B90E51;
-        Sun, 18 Jun 2023 20:23:44 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1b50e309602so25207465ad.0;
-        Sun, 18 Jun 2023 20:23:44 -0700 (PDT)
+        Sun, 18 Jun 2023 23:30:55 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34341AF;
+        Sun, 18 Jun 2023 20:30:51 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-25e8b2931f2so2347229a91.2;
+        Sun, 18 Jun 2023 20:30:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687145024; x=1689737024;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
+        d=gmail.com; s=20221208; t=1687145450; x=1689737450;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
         bh=uAzDvlgk5DWc2Ag5GcBWEz31n+jrRz+01Rx6/Hat2LM=;
-        b=cMuO3aGTfeXK3ISxMyhj9I3CM1dFzUxBpFihUkuLPaNveXuMkWStWnZKTEKRLUPAbF
-         4h3xqVFE2hfM/4T+39eq+SoRDwV/H9RBpSoe9Qfi2LqSux0y1rWI7bC/8KrQSQSQno7P
-         EE2Z6eWrBb30mnRZUfcCYBlBi/nWR90pNufqhNGdm83q9LlJ6JsyQ5YUgJTq14SgomVn
-         8OhnhXqsh5saKmM0NTrz0WZHHsDczviuWNLvrr+ob/4ssYLZA9JTOvButiekm0/psnM4
-         xS3dtPVavUOPjvJ+j2T4S+Z7+GF2V618h3Rw04a4/wfkn2rRoYXs7sno4qK1IVAu9I2L
-         vjdg==
+        b=T9vOuMuqqNhTkXI5rJz3VkpSiDNfYpbAea0HH5KhScn4WeVJtN74ApchwyN98j54/i
+         MHgOO8jJE3H7gP2/4EcsW0LB1Rdvso2C/of4xOPGNAdKirxIeAG1ssbD045kJsVmQoOB
+         smc5mXeKIkKFXU0Pb/MQ9LgTpb2GlEyQdhMkiTTsZqqXsGKv1o+RMHZvp8G8kb2JxdpR
+         b5HS8LJjqKpFNe49FA2mEjKVV+KkqGwKmzt0fjRENdfCJ469qusmKm34LFb/69wzcRiY
+         ItzNgG6sDzdoOiL+JF9q/mxqaUX9PHJMV2ItryEqLVGBTzynqUWGP2R08odpO2FB6bYX
+         im0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687145024; x=1689737024;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
+        d=1e100.net; s=20221208; t=1687145450; x=1689737450;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
         bh=uAzDvlgk5DWc2Ag5GcBWEz31n+jrRz+01Rx6/Hat2LM=;
-        b=RSPhMR3CzpP77rMJg3pVFUItP8qW2Y7NHVoX0jMlOCnX17ooIVmQvF8lHGGrEy7s+j
-         A1TONQYuSpt++CulIpR9j1mvFFwyLtAUbhTXTplrCaACQVpkHSdNokn0Y+spRY67Lv1E
-         t4tT7nxcALtheRvhe0nHMRM94Ov4b7x/LN3zOAelyEUeJE6LYX2S9512M8oCdhrQIdsp
-         /QTYJvLI7Yk8bqnt8kc3+rdj1NzMsmMG8xSPS0GgGGUYE/0QMUxOm5Ww2OdrzAssh490
-         FHXb0/vy5ujR0zxlp/J0ESo5gSz8mzIva0y90iS0uMgpT5in0XIEjJJPzLATjO/zGQsZ
-         kYuQ==
-X-Gm-Message-State: AC+VfDyi9jUKQxVtMdZsmpRBDuHCGGYH6Nb9/U+lZdbWHnQkem/LYjLj
-        +vOxJ/Q3AHT2a03hSGMs7H4=
-X-Google-Smtp-Source: ACHHUZ7fbTXsZz9htVc92iDYYqxb9Sko0mBybbCo+U+oHBbk4lgQSGNnCGZElJI7NT2HvmqdIQETlQ==
-X-Received: by 2002:a17:903:550:b0:1af:adc6:3bc0 with SMTP id jo16-20020a170903055000b001afadc63bc0mr7304326plb.5.1687145024036;
-        Sun, 18 Jun 2023 20:23:44 -0700 (PDT)
+        b=Nf/tNExzSx6tQWWkavEqjLVfqXUlYb8PsNYQKJrqh1uTgo3EH1/TnhoWt7NFsx6Uzg
+         tMbNcsRxRXM9QQsEgbopkuF4r6HTiBvms4UkkCYk2WsGTwfLl1EHQU0ug7VH0RQZD3TI
+         niczE000iwzkyqfChtjEOtSZt67Lk2wvxuqxSWzAX50QOlIbo9ZaVnaB9aa7EzNQyOLv
+         nNG4GUVnsAnbVtL6NrixZUlJjmZCuJ881Js6r35eui6gAzccpDs02Ln4SiA2xxB4m/IF
+         kOjbSsSEd1hzzljA38Iy/ukQyRy358ZJ74lJuLN0VC3MdCGDI0V9+K8zjiQm+sSnIADP
+         OnsQ==
+X-Gm-Message-State: AC+VfDztjQypxD3TcBO2ncG45R2hE7Ixv+V6ik9pgJGudwnPkKuQL1Bv
+        f8b33sV0zuRsBya7h8ZHjPw=
+X-Google-Smtp-Source: ACHHUZ6/Ent+lmGLC1hVrfSQ2MrjBSRwjeIxariJ3UI8Va/t3/nIQgZmhQvIPOkLXfDsCNpYDB52mw==
+X-Received: by 2002:a17:90a:550:b0:258:b651:4f80 with SMTP id h16-20020a17090a055000b00258b6514f80mr8261022pjf.36.1687145450266;
+        Sun, 18 Jun 2023 20:30:50 -0700 (PDT)
 Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id a7-20020a170902ecc700b001a4fecf79e4sm19329817plh.49.2023.06.18.20.23.40
+        by smtp.gmail.com with ESMTPSA id j10-20020a17090a2a8a00b0025e2358f146sm5033967pjd.13.2023.06.18.20.30.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Jun 2023 20:23:43 -0700 (PDT)
+        Sun, 18 Jun 2023 20:30:49 -0700 (PDT)
 From:   Jacky Huang <ychuang570808@gmail.com>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
@@ -62,12 +61,10 @@ Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
         schung@nuvoton.com, mjchen@nuvoton.com,
         Jacky Huang <ychuang3@nuvoton.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] clk: nuvoton: Add clock driver for ma35d1 clock controller
-Date:   Mon, 19 Jun 2023 03:23:30 +0000
-Message-Id: <20230619032330.233796-3-ychuang570808@gmail.com>
+Subject: [PATCH v15 2/2] clk: nuvoton: Add clock driver for ma35d1 clock controller
+Date:   Mon, 19 Jun 2023 03:30:41 +0000
+Message-Id: <20230619033041.233921-1-ychuang570808@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230619032330.233796-1-ychuang570808@gmail.com>
-References: <20230619032330.233796-1-ychuang570808@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
