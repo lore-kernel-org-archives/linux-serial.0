@@ -2,94 +2,80 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67B1EB64DD
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 11:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D23EB64D9
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 13:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbjFSLrm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Jun 2023 07:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
+        id S231201AbjFSNmY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Jun 2023 09:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbjFSLrk (ORCPT
+        with ESMTP id S231981AbjFSNmW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Jun 2023 07:47:40 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9FE199
-        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 04:47:27 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id 5b1f17b1804b1-3f909853509so13298515e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 04:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687175246; x=1689767246;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JWlJYwdCUfBlFGZKizl0GxiNXteMsT9gcqvTsOApU/E=;
-        b=K0yglfGatPbUta8mAHvIga/XRv1NIT5KcaFCvQrQNd/DzfjIcQlCKKMBp/y5CiWzOC
-         ERZ2X6vf2klvxBer3CXn1Zy15a5c+RF8wJOpRm1ismrnGpHf1L5v/hsBCYRTgAggpIid
-         /9Wf7nQrCIiSXfJr40vd9C4JszeiThmzCELA5sNENfi7NAEvjMlhiJRBY8KapAr9Whcs
-         6o2zowGQOTz1qmP8CyhTav8Is7zpBMZNuQEkrIF6iRbk+CNxTFOa2hheIpIEdhnpF9BL
-         ZoROaXbnJSemqpiFasuVDiewUHedO+5B7Rl75ltY3Jyh5QmsdkiM58eVGzg4lfn6j/Ew
-         kNgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687175246; x=1689767246;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JWlJYwdCUfBlFGZKizl0GxiNXteMsT9gcqvTsOApU/E=;
-        b=ji3rZcYmp2bt1G0OZkusiTqix2nzN/m6S3nkQjlQJZm2b+6YACVAGPKPGSrG/saBGz
-         SvRGd+Vkw8NlRWGVQscgC8zjquktl1GsugvG+w2tr6wVkb5le61KPCss2IQ6tJLj55AX
-         PwHNDj+jYzZKxYwp4j5NnnrNgR0iiCtkJot+1ivNMLoE6vHN6QL6X+P/UNF5s05kLWdh
-         PhElxqsk0rqz57ygc6PBJypXtQOm6sZJmS3nCtyTGU9/PofHBD8p69zm2P3xL1cvCV8X
-         PTpTzUadT9D2rSHJ1yBW1uy+FYeeROm0UpC+x21sPN/HCBNOEWubaumQw/C08javNfPr
-         a2Zw==
-X-Gm-Message-State: AC+VfDyI5elb7dec6hp/EsoZW1/WNATK1wGE5a7721xBnz7vh/iMIW5n
-        QD2v8lq0zOAVcKYsD6/y64c/6g==
-X-Google-Smtp-Source: ACHHUZ6yF5Wg+ySHnIbIm3GmKwvUQW1PgUhZnWqi3kkg14VfkIrwyMlupDh3Dc8Cu4G10HmONT74ZQ==
-X-Received: by 2002:adf:d092:0:b0:307:7f38:37f with SMTP id y18-20020adfd092000000b003077f38037fmr5678278wrh.66.1687175246001;
-        Mon, 19 Jun 2023 04:47:26 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id k6-20020adfd846000000b003111025ec67sm13562580wrl.25.2023.06.19.04.47.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jun 2023 04:47:23 -0700 (PDT)
-Date:   Mon, 19 Jun 2023 14:47:20 +0300
-From:   Dan Carpenter <dan.carpenter@linaro.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Elen Song <elen.song@atmel.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@atmel.com>,
-        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] serial: atmel: don't enable IRQs prematurely
-Message-ID: <0be8c2ad-499a-4cf1-af98-920af542c5b9@kadam.mountain>
-References: <cb7c39a9-c004-4673-92e1-be4e34b85368@moroto.mountain>
- <d87d9f00-8d85-6220-43d3-51ef8e793193@kernel.org>
- <c0c661bb-2584-46cd-9c72-8f1d9ccbaee4@kadam.mountain>
+        Mon, 19 Jun 2023 09:42:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE09E76;
+        Mon, 19 Jun 2023 06:42:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6E4960C59;
+        Mon, 19 Jun 2023 13:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C05C433C8;
+        Mon, 19 Jun 2023 13:42:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1687182136;
+        bh=H06KR5Dhyi+0NKm+83jJG1aT37gPgMa/GVwV3K/qHVc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LvLKBRsqCgmQekJjsNrLEXt6AAMToofLQR4nqNCa1ipGoeXkpk26w4AgxV1wylgh9
+         4ziWSXGc9WagpbqeRqae1f3PCFfn2HLusBF+0DXz7cwK9jdWNibrnAUAepdDEI4EfB
+         Zzk6wQ7NBt7deGBZWd4YLx029vkPItn1zVCh24SU=
+Date:   Mon, 19 Jun 2023 15:42:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2] Revert "8250: add support for ASIX devices with a
+ FIFO bug"
+Message-ID: <2023061950-unrigged-dosage-59e2@gregkh>
+References: <20230619100818.778176-1-jiaqing.zhao@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c0c661bb-2584-46cd-9c72-8f1d9ccbaee4@kadam.mountain>
+In-Reply-To: <20230619100818.778176-1-jiaqing.zhao@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 19, 2023 at 02:44:11PM +0300, Dan Carpenter wrote:
-> On Mon, Jun 19, 2023 at 01:01:49PM +0200, Jiri Slaby wrote:
-> > On 19. 06. 23, 11:45, Dan Carpenter wrote:
-> > > The atmel_complete_tx_dma() function disables IRQs at the start
-> > > of the function by calling spin_lock_irqsave(&port->lock, flags);
-> > > There is no need to disable them a second time using the
-> > > spin_lock_irq() function and, in fact, doing so is a bug because
-> > > it will enable IRQs prematurely when we call spin_unlock_irq().
-> > > 
-> > > Just use spin_lock/unlock() instead without disabling or enabling
-> > > IRQs.
+On Mon, Jun 19, 2023 at 10:08:19AM +0000, Jiaqing Zhao wrote:
+> Commit eb26dfe8aa7e ("8250: add support for ASIX devices with a FIFO
+> bug") merged on Jul 13, 2012 adds a quirk for PCI_VENDOR_ID_ASIX
+> (0x9710). But that ID is the same as PCI_VENDOR_ID_NETMOS defined in
+> 1f8b061050c7 ("[PATCH] Netmos parallel/serial/combo support") merged
+> on Mar 28, 2005. In pci_serial_quirks array, the NetMos entry always
+> takes precedence over the ASIX entry even since it was initially
+> merged, code in that commit is always unreachable.
+> 
+> In my tests adding the FIFO workaround to pci_netmos_init() makes no
+> difference, and the vendor driver also does not have such workaround.
+> Given that the code was never used for over a decade, it's safe to
+> revert it.
+> 
+> Also, the real PCI_VENDOR_ID_ASIX should be 0x125b, which is used on
+> their newer AX99100 PCIe serial controllers released on 2016. The FIFO
+> workaround should not be intended for these newer controllers, and it
+> was never implemented in vendor driver.
+> 
+> This reverts commit eb26dfe8aa7eeb5a5aa0b7574550125f8aa4c3b3.
+> 
+> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Maybe I should add a "a second time".
+Fails to apply to my tree :(
 
-"Just use spin_lock/unlock() instead without disabling or enabling
-IRQs a second time."
+Can you rebase this against the tty-next branch of my tty.git tree on
+kernel.org?
 
-regards,
-dan carpenter
+thanks,
 
+greg k-h
