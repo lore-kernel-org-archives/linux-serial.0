@@ -2,118 +2,121 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D936EB64DB
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 16:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 574E6EB64D7
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 16:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233202AbjFTQQ5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Jun 2023 12:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
+        id S231818AbjFTQgy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Jun 2023 12:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbjFTQQ4 (ORCPT
+        with ESMTP id S232384AbjFTQgo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Jun 2023 12:16:56 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B40695;
-        Tue, 20 Jun 2023 09:16:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=AeL+ePUG2U+gtbaPVRNCeIftvITy04qZEoWPXivPMGM=; b=gSvQNHy5jmJwaB8fkE8RCWcVzk
-        awSwFgQ72MtyCwUP4Dt2Rs+U5WnsTVmsOT6G9l2RkOoIIRZO4rtnEuCKa3EhPMJ3GrVLAWZp/pasI
-        xk8m3QGZP1vUmPW1ovtBts1TiQchVrP/l2gkZjUpwaoUipbyRHWM8eroglEx3wWmT4Vk=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:49610 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qBe29-0001IH-PZ; Tue, 20 Jun 2023 12:16:46 -0400
-Date:   Tue, 20 Jun 2023 12:16:45 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Message-Id: <20230620121645.512b31a872306b43a276bbac@hugovil.com>
-In-Reply-To: <CAHp75VcieuYqxWrO7rknx2ROYz=rnWnKV6s9eXZ5Zd1BKc6YMg@mail.gmail.com>
-References: <20230602152626.284324-1-hugo@hugovil.com>
-        <20230602152626.284324-6-hugo@hugovil.com>
-        <2023060454-cotton-paramount-e33e@gregkh>
-        <CAHp75Ve6W-hcB4YAeKukgv-uOEzBY7Tx5Sdf3doTRYKzNPcVGw@mail.gmail.com>
-        <20230604134459.3c3844012e9714fa2a61e642@hugovil.com>
-        <CAHp75VeWFPBmsD8zsSAaQGNNXtfgLtQuM9AMGfLPk-6p0VW=Pg@mail.gmail.com>
-        <20230620100846.d58436efc061fb91074fa7e5@hugovil.com>
-        <CAHp75VcWSVgA8LFLo0-b5TfKWdHb2GfLpXV-V3PZvthTv1Xc4A@mail.gmail.com>
-        <20230620113312.882d8f0c7d5603b1c93f33fb@hugovil.com>
-        <CAHp75VfGm6=ULW6kMjsg2OgB1z1T0YdmzvCTa3DFXXX-q_RnfA@mail.gmail.com>
-        <20230620114209.fb5272ad8cf5c5e2895d68b1@hugovil.com>
-        <CAHp75VcieuYqxWrO7rknx2ROYz=rnWnKV6s9eXZ5Zd1BKc6YMg@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO
- configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Tue, 20 Jun 2023 12:36:44 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570741FC4
+        for <linux-serial@vger.kernel.org>; Tue, 20 Jun 2023 09:36:21 -0700 (PDT)
+Received: from [192.168.1.141] ([37.4.248.63]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1Mv3I0-1ptqNK0mzw-00r2Uk; Tue, 20 Jun 2023 18:30:06 +0200
+Message-ID: <ce8ab025-cdc9-b3fc-7628-0ea2018d4561@i2se.com>
+Date:   Tue, 20 Jun 2023 18:30:04 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: Regression: serial: imx: overrun errors on debug UART
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+Cc:     Sergey Organov <sorganov@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Stefan Wahren <stefan.wahren@chargebyte.com>,
+        linux-serial@vger.kernel.org,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
+ <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com> <87mt3ynsa7.fsf@osv.gnss.ru>
+ <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com> <87sfcy8ncu.fsf@osv.gnss.ru>
+ <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
+ <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
+ <87ttw2vnn0.fsf@osv.gnss.ru> <d1b6209d-a174-406a-cc81-86b391940c0c@i2se.com>
+ <3853881c-976f-dadc-b64b-4ffd8cc88cf0@leemhuis.info>
+ <2023062046-jersey-facecloth-7a5d@gregkh>
+Content-Language: en-US
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <2023062046-jersey-facecloth-7a5d@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:Hvg1nnR0gyMueJiif3E6u1lqHozMUmRuFvcyxVqpIgO5/1Nb8pt
+ OCkvLOL6vuotxFRGWzrjdjpQfdZKf6rqPjaQHy7wBn6Aq35wObVlER9YchE3/UCwtAYID2h
+ z7RivhmDWvhwV4MdpBnLLgDOh7y2foHhtLVd3saNe1vYUbqpwuH8brvS6PvDJkDoZNYj4LW
+ Nr/yM20REJIhwK0ziYyMA==
+UI-OutboundReport: notjunk:1;M01:P0:4s+PmxfMN8c=;2u5KYq3BHp89e3zSgDJOl6MFjdD
+ iH3m18tcIk33FJ0QkXg+6lsGx3aq79mPRMTZMTzEbTZFSLe91vJaW1zwjDmi2pYWbdOoabrrA
+ PATAPvJgDYyVYOyoy3+WSSX9no+qT7Vaohg4CyQaCORuZLgdtOLhn9+2CU1CldQwmAIvwfug8
+ aJsURs6l6fQtMTF3op434hn/WFjAMZH+QhJskC3XmNs84aKL/lWytNB+v+g6mAlgwIxJ16LQO
+ 1HOWF0U/uTODIb96BJd5cNorKVdxXQeg6g9QQKKFb+p5bnYQDuvJNWQMY1FuJBUOntLTdudy9
+ YxggwHzbbajQAd49AZ42L1KZ6rhMq2jTpmrwb+ErZUJiHDO7nzcCT+qRmKeSQZPiQZsPEhjcM
+ OV0IFQCE+YQOYjez0Ot1C2DPRQKPx3FVBfjtR8JRChcY5fM6K4zTp/gWTSQM4sOirmrbUogPA
+ odYXvISIeHlgAv81GrOcjJgJebS+tTFjzTCICjgGwedYotwYYiBDUzFFcs+rVnF567RYl2GW4
+ Ra05GTxF/3E5rkRp31LwpLiHHq5lird4NKLWTpWqxNuMCymtmU7AvEBE7+SjOZzOqvHoVPBwR
+ vdsi/YuqszGfaxBn+RImOMJUaT2YKlQScOKBwXJ2qUgF/DgkOZ4O84QR4qmXYRLzJuPzdUSqX
+ ngQUJsKXAdHWq2CvHS6PL2bEbr8bTxLaiK+oOenI1w==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 20 Jun 2023 18:45:51 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Hi Greg,
 
-> On Tue, Jun 20, 2023 at 6:42 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > On Tue, 20 Jun 2023 18:35:48 +0300
-> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Tue, Jun 20, 2023 at 6:33 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > On Tue, 20 Jun 2023 18:18:12 +0300
-> > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > On Tue, Jun 20, 2023 at 5:08 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > On Sun, 4 Jun 2023 22:31:04 +0300
-> > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Am 20.06.23 um 16:59 schrieb Greg Kroah-Hartman:
+> On Tue, Jun 20, 2023 at 04:47:10PM +0200, Linux regression tracking (Thorsten Leemhuis) wrote:
+>> On 24.05.23 15:07, Stefan Wahren wrote:
+>>>
+>>> Am 23.05.23 um 21:44 schrieb Sergey Organov:
+>>>> "Linux regression tracking (Thorsten Leemhuis)"
+>>>> <regressions@leemhuis.info> writes:
+>>>>
+>>>> Solving this would need to identify the cause of interrupts being
+>>>> disabled for prolonged times, and nobody volunteered to investigate this
+>>>> further. One suspect, the Linux serial console, has been likely excluded
+>>>> already though, as not actually being in use for printk() output.
+>>>>
+>>>
+>>> I don't think that we can exclude the serial console as a whole, i never
+>>> made such a observation. But at least we can exclude kernel logging on
+>>> the debug UART.
+>>
+>> Stefan, just wondering: was this ever addressed upstream? I assume it's
+>> not, just wanted to be sure.
+>>
+>> I'm a bit unsure what to do with this and consider asking Greg for
+>> advice, as he applied the patch. On one hand it's *IMHO* clearly a
+>> regression (but for the record,  some people involved in the discussion
+>> claim it's not). OTOH the culprit was applied more than a year ago now,
+>> so reverting it might cause more trouble than it's worth at this point,
+>> as that could lead to regressions for other users.
 > 
-> ...
+> I'll be glad to revert this, but for some reason I thought that someone
+> was working on a "real fix" here.  Stefan, is that not the case?
+
+i can only repeat the statements from 23.5.:
+
+Unfortunately my time budget to investigate this issue further is 
+exhausted, so i stopped working at this.
+
+In case someone can give clear instructions to investigate this further, 
+i will try to look at it in my spare time. But i cannot make any promises.
+
+I'm not aware that some else is working on this.
+
+Best regards
+
 > 
-> > > > > > did you have a chance to look at V8 (sent two weks ago) which fixed all
-> > > > > > of what we discussed?
-> > > > >
-> > > > > The patch 6 already has my tag, anything specific you want me to do?
-> > > >
-> > > > Hi Andy,
-> > > > I forgot to remove your "Reviewed-by: Andy..." tag before sending V8
-> > > > since there were some changes involved in patch 6 and I wanted you to
-> > > > review them. Can you confirm if the changes are correct?
-> > > >
-> > > > I also added a new patch "remove obsolete out_thread label". It has no
-> > > > real impact on the code generation itself, but maybe you can review and
-> > > > confirm if tags are ok or not, based on commit message and also
-> > > > additional commit message.
-> > >
-> > > Both are fine to me.
-> >
-> > Hi,
-> > Ok, thank you for reviewing this.
-> >
-> > I guess now we are good to go with this series if the stable tags and
-> > patches order are good after Greg's review?
+> thanks,
 > 
-> Taking into account that we are at rc7, and even with Fixes tags in
-> your series I think Greg might take this after v6.5-0rc1 is out. It's
-> up to him how to proceed with that. Note, he usually has thousands of
-> patches in backlog, you might need to respin it after the above
-> mentioned rc1.
-
-Ok, understood.
-
-Let's wait then.
-
-Thank you.
-Hugo.
+> greg k-h
