@@ -2,200 +2,240 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A64FEB64D9
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Jun 2023 16:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 979EAEB64DC
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 01:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbjFSQDf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Jun 2023 12:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S229803AbjFTBvm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Jun 2023 21:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbjFSQDd (ORCPT
+        with ESMTP id S229729AbjFTBvl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Jun 2023 12:03:33 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4674E68;
-        Mon, 19 Jun 2023 09:03:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687190609; x=1718726609;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=h7R8HBuzzEs6Hikj6bj72UCviUGxwSr0eoDQcJhOvao=;
-  b=BX2PhV1dsTorbwbFdSo7P8vCN8uAoxCWLPf83wvk+oiWKzR2gFeqeaEW
-   l8JKvhHDqavJYVtsuqliI8oFDHyu0AXqePk/R4RDkHfinD49eaA5SHEGR
-   aAu91a4Uu0Z6k8tk9Lmv71Nyyj3d0du0BxnRsvuLs/kNdt+WU68Dqb6RE
-   IcBmRLEpZyhxh3QEsZgPxokBFYH0hCxhQsFWlbsldWqhI42jCFUZm8brj
-   jfpIZhKHt41c78Gq4XWpPwIODHYFnu6IKQUlMhM2++8fPDi9LuELO4Jyn
-   icfZo2us/A1xnu2sZ35FzZQPQFVM8QoT0VaXh5Fva5Bit9vZn3+/SYzsZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="349389888"
-X-IronPort-AV: E=Sophos;i="6.00,255,1681196400"; 
-   d="scan'208";a="349389888"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 09:03:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="960467372"
-X-IronPort-AV: E=Sophos;i="6.00,255,1681196400"; 
-   d="scan'208";a="960467372"
-Received: from unknown (HELO jiaqingz-acrn-container.sh.intel.com) ([10.239.138.235])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 09:03:27 -0700
-From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v3] Revert "8250: add support for ASIX devices with a FIFO bug"
-Date:   Mon, 19 Jun 2023 15:57:44 +0000
-Message-Id: <20230619155743.827859-1-jiaqing.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
+        Mon, 19 Jun 2023 21:51:41 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DE6E42;
+        Mon, 19 Jun 2023 18:51:30 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-666eef03ebdso1267097b3a.1;
+        Mon, 19 Jun 2023 18:51:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1687225890; x=1689817890;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PB+zWJazs4L4JdPzcmpzNhJsuWHk7uSora7gwTZHuyg=;
+        b=g8EcvQ06uO57p0yCA4k4Mh8wO7kNGVK4ExX2mde0ypkrss4LQamM4eWw4p4qyzdtN0
+         10trrf3y0ds4Zm/R7HtfigCHHVHIsudY7TWRKuGNmhysDO/Xvra7lpXnR5tC+fBv6YoB
+         J5+3Bj/xbA2gzOMmv1iuiPHd7sIo61jRMj3PSRJuNwAqH9rtZodkOs1KK1QW2z4YgAhB
+         TiDOuVlROkGHEwOOiFupvL3aqcas6FzpognB6MkKmkVXnR/lQvfAgN9yJ/PNio0BUkxv
+         xV2k3FEMPnwsstASDHeYF9f8OKyFRBW4KIwP3UcLtrZCIcPzP7QXgWc8+ynkBtFhHrUC
+         3TAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687225890; x=1689817890;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PB+zWJazs4L4JdPzcmpzNhJsuWHk7uSora7gwTZHuyg=;
+        b=jJwD41iE1ZlAeg3ZLImi4+ZYzS+8B6RkiCIZkrslzyDnSq2/m0mu0lqMuJaxcZI7AY
+         iLtiSy0Xag3+2WZj8J0VwsUvlBuMPghK26O4dcCDc7DC6YN0c40VPOykx5HR5grIAzBy
+         wtI0dhbC7eQ7JMWlXhsoD6azCUfAeiVTHGYRED8n/8hnoKTgEZnHhGWGrVj21+nGHApY
+         Gh7AZ5wuamexB4JK3JL91y7ttmqXD+n3orKYMXe2JDfFLQjfWs/NLqI1unMNTt1z0g4S
+         qRANRNimjxywir6lq3fFW6epCwIM41IFFFyKRmxEv9acBShpB7FRoSzRCy3cT5UmBb53
+         FeMA==
+X-Gm-Message-State: AC+VfDwKmN+kbuRSrXaq1KzEgq0yGG20ESZt2CQM1CQ/qJsBfWTes54N
+        IImEoroaO4Cg7Xv9jRwynhI=
+X-Google-Smtp-Source: ACHHUZ4+OMn7xe6jKDHH6vjIJoMvBjztdfYRDG/gXLNs8Uk0OkSEJ8+Oi+c8LGIuXXrNIiTwqjB0fQ==
+X-Received: by 2002:a05:6a00:21d4:b0:668:9bf9:fa70 with SMTP id t20-20020a056a0021d400b006689bf9fa70mr224508pfj.34.1687225889683;
+        Mon, 19 Jun 2023 18:51:29 -0700 (PDT)
+Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id g2-20020aa78742000000b0064f46570bb7sm240457pfo.167.2023.06.19.18.51.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Jun 2023 18:51:29 -0700 (PDT)
+From:   Jacky Huang <ychuang570808@gmail.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, tmaimon77@gmail.com, catalin.marinas@arm.com,
+        will@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, arnd@arndb.de, soc@kernel.org,
+        schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+Subject: [PATCH v16 0/1] Introduce Nuvoton ma35d1 SoC
+Date:   Tue, 20 Jun 2023 01:51:19 +0000
+Message-Id: <20230620015120.234041-1-ychuang570808@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit eb26dfe8aa7e ("8250: add support for ASIX devices with a FIFO
-bug") merged on Jul 13, 2012 adds a quirk for PCI_VENDOR_ID_ASIX
-(0x9710). But that ID is the same as PCI_VENDOR_ID_NETMOS defined in
-1f8b061050c7 ("[PATCH] Netmos parallel/serial/combo support") merged
-on Mar 28, 2005. In pci_serial_quirks array, the NetMos entry always
-takes precedence over the ASIX entry even since it was initially
-merged, code in that commit is always unreachable.
+From: Jacky Huang <ychuang3@nuvoton.com>
 
-In my tests, adding the FIFO workaround to pci_netmos_init() makes no
-difference, and the vendor driver also does not have such workaround.
-Given that the code was never used for over a decade, it's safe to
-revert it.
+This patchset adds initial support for the Nuvoton ma35d1 SoC, including
+initial device tree, clock driver, reset driver, and serial driver.
 
-Also, the real PCI_VENDOR_ID_ASIX should be 0x125b, which is used on
-their newer AX99100 PCIe serial controllers released on 2016. The FIFO
-workaround should not be intended for these newer controllers, and it
-was never implemented in vendor driver.
+This patchset cover letter is based from the initial support for Nuvoton
+ma35d1 to keep tracking the version history.
 
-This reverts commit eb26dfe8aa7eeb5a5aa0b7574550125f8aa4c3b3.
+This patchset had been applied to Linux kernel 6.4.0-rc6
+and tested on the Nuvoton ma35d1 SOM evaluation board.
 
-Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+(ma35d1 information: https://www.nuvoton.com/products/microprocessors/arm-cortex-a35-mpus/)
+MA35D1 porting on linux-5.10.y can be found at: https://github.com/OpenNuvoton/MPU-Family
+
+v16:
+  - Removed the patch [PATCH v15 1/2] for the ma35d1 serial driver
+    since it has already been added to tty-testing.
+  - Updated the patch for the ma35d1 clock driver.
+    There are no modifications to the driver itself compared to the
+    previous version. Since the ma35d1 clock driver was picked at v13,
+    we should submit modifications based on that version instead of
+    sending a complete update to replace it. Create a new patch based
+    on the following patch.
+	[v13,08/10] clk: nuvoton: Add clock driver for ma35d1 clock controller
+        https://git.kernel.org/soc/soc/c/691521a367cf
+
+v15:
+  - Modified the serial driver
+    - Instead of adding a new port type PORT_MA35 to serial_core.h,
+      now using port->type = 1.
+    - Updated Kconfig descriptions.
+    - Added a description about the name ttyNVT to the patch log.
+  - Modified the clock driver
+    - Added clk-ma35d1.h for external functions.
+    - Updated all parent strings as clk_parent_data.
+
+v14:
+  - Removed patches PATCH v13 1/10 ~ 9/10 as they were applied
+  - Modify serial driver
+    - Fixed coding style issues
+
+v13:
+  - Modify serial driver
+    - Added a check for oops_in_progress in ma35d1serial_console_write to
+      determine whether to perform the spin_lock.
+    - Rebased drivers/tty/serial/Kconfig and recreate the patch
+    - Rebased MAINTAINERS and recreate the patch
+
+v12:
+  - Modify serial driver
+    - Added PORT_MA35 to include/uapi/linux/serial_core.h, and apply to
+      the port->type of ma35d1 serial driver
+    - Added check for the return value of ioremap()
+    - Fixed several coding issues
+  - Rebase MAINTAINERS and recreate the patch
+
+v11:
+  - Rebase on top of 2023.05.24
+  - Modify serial driver
+    - Fixed several coding style issues
+    - Fixed ma35d1serial_set_mctrl()
+    - Added the 'MA35_' prefix to all register and bit field definitions.
+    - Used 'ttyNVT' instead of 'ttyS'
+  - Modify clock driver
+    - Added 'source nuvoton/Kconfig' to drivers/clk/Kconfig
+    - Fixed several coding issues
+    - Removed unnecessary inline specifier
+  - Modify reset driver
+    - Fixed typo and added comments
+  - Modify ma35d1.dtsi l2-cache node
+    - Added cache-unified and cache-size properties
+
+v10:
+  - Change from using ARCH_NUVOTON to using ARCH_MA35. The following patch files
+    have been modified:
+    - patch 1 arch/arm64/Kconfig.platforms
+    - patch 2 arch/arm64/configs/defconfig
+    - patch 7 arch/arm64/boot/dts/nuvoton/Makefile
+    - patch 8 drivers/clk/Makefile
+              drivers/clk/nuvoton/Kconfig
+              drivers/clk/nuvoton/Makefile
+    - patch 9 drivers/reset/Kconfig
+    - patch 10 drivers/tty/serial/Kconfig
+
+v9:
+  - Combine MAINTAINERS patch into patch 5 'dt-bindings: arm: Add initial bindings
+    for Nuvoton platform'
+  - Modify clock driver
+    - Use the helper function for 64-bit division
+    - Fixed minor issues
+  - Modify reset driver
+    - Refine coding style and add required header files
+    - Add spin_lock protection
+  - Add error return handling to the serial driver probe function
+
+v8:
+  - Remove '0005-dt-bindings-mfd-syscon-Add-nuvoton-ma35d1-sys-compat.patch' as it was applied.
+  - Modify MAINTAINERS NUVOTON MA35 and NPCM path settings
+  - Remove 'syscon' from dtsi 'sys' node and modify the corresponding yaml
+  - Modify clock driver
+    - Remove the header file and move definitions into .c files.
+    - Use parent_data instead of parent name.
+  - Modify serial driver
+  - Modify reset driver
+    - Modify reset register/offset lookup table to be indexed by reset id
+    - Combined reset and reboot structure
+
+v7:
+  - Fixed dts system-management node and compatible driver
+  - move 'nuvoton,npcm-gcr.yaml' from 'binding/arm/nuvoton' to 'binding/soc/nuvoton'
+  - In ma35d1.dtsi, create the soc node for ma35d1 SoC
+  - Modify the issues found in serial driver
+  - Modify the issues found in clock driver
+  - Modify the IDs of reset driver to be contiguous numbers and use lookup table
+    to find register offset and bit position.
+  - Modify MAINTAINERS NUVOTON NPCM path as npcm directory name to nuvoton
+
+v6:
+  - Combine nuvoton,ma35d1-clk.yaml and nuvoton,ma35d1-clk.h into one patch
+  - Combine nuvoton,ma35d1-reset.yaml and nuvoton,ma35d1-reset.h into one patch
+  - rename Documentation/devicetree/bindings/arm/npcm directory as nuvoton
+  - Remove patch for adding include/linux/mfd/ma35d1-sys.h as it's not required
+  - Update dtsi & dts files and move board-specific nodes to dts
+  - Modify reset driver
+  - Modify serial driver, fix coding style issues
+  - Modify clock driver, rewrite the PLL calculation functions
+
+v5:
+  - Add ARCH_NUVOTON to arm64 Kconfig
+  - Add ARCH_NUVOTON to defconfig
+  - Add the clock driver
+  - Add the reset driver
+  - Add the serial driver
+  - Add us to the maintainer
+
+v4:
+  - patch 4/5 is a resend
+  - Fixed dt_binding_check errors of nuvoton,ma35d1-clk.yaml
+  - Modify ma35d1.dtsi
+    1. Add a node hxt_24m
+    2. Fixed the base address of gic node
+    3. Add clocks and clock-names to clock node
+  - Fixed board binding mistakes of nuvoton.yaml
+
 v3:
-* Rebase against tty-next branch of tty.git
+  - added patch 4/5 and 5/5
+  - introduce CONFIG_ARCH_NUVOTON option
+  - add initial bindings for Nuvoton Platform boards
+  - fixed coding style problem of nuvoton,ma35d1-clk.h
+  - added CAPLL to clock-controller node
+  - modify the chosen node of ma35d1-evb.dts
+  - modify clock yaml "clk-pll-mode" to "nuvoton,clk-pll-mode"
+
 v2:
-* Got a Reviewed-By
-* Update commit message
-* Renamed from "serial: 8250_pci: remove unreachable code for ASIX
-  devices"
+  - fixed dt_binding_check failed of nuvoton,ma35d1-clk.yaml
 
- drivers/tty/serial/8250/8250.h      |  1 -
- drivers/tty/serial/8250/8250_pci.c  | 19 -------------------
- drivers/tty/serial/8250/8250_port.c | 11 +++--------
- include/linux/serial_8250.h         |  1 -
- 4 files changed, 3 insertions(+), 29 deletions(-)
+Jacky Huang (1):
+  clk: nuvoton: Use clk_parent_data instead and add a header file
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 471c6bc5f78f..1aa3e55c8b47 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -91,7 +91,6 @@ struct serial8250_config {
- #define UART_BUG_TXEN	BIT(1)	/* UART has buggy TX IIR status */
- #define UART_BUG_NOMSR	BIT(2)	/* UART has buggy MSR status bits (Au1x00) */
- #define UART_BUG_THRE	BIT(3)	/* UART has buggy THRE reassertion */
--#define UART_BUG_PARITY	BIT(4)	/* UART mishandles parity if FIFO enabled */
- #define UART_BUG_TXRACE	BIT(5)	/* UART Tx fails to set remote DR */
- 
- 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index e80c4f6551a1..d2d547b5da95 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1232,14 +1232,6 @@ static int pci_oxsemi_tornado_setup(struct serial_private *priv,
- 	return pci_default_setup(priv, board, up, idx);
- }
- 
--static int pci_asix_setup(struct serial_private *priv,
--		  const struct pciserial_board *board,
--		  struct uart_8250_port *port, int idx)
--{
--	port->bugs |= UART_BUG_PARITY;
--	return pci_default_setup(priv, board, port, idx);
--}
--
- #define QPCR_TEST_FOR1		0x3F
- #define QPCR_TEST_GET1		0x00
- #define QPCR_TEST_FOR2		0x40
-@@ -1955,7 +1947,6 @@ pci_moxa_setup(struct serial_private *priv,
- #define PCI_DEVICE_ID_WCH_CH355_4S	0x7173
- #define PCI_VENDOR_ID_AGESTAR		0x5372
- #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
--#define PCI_VENDOR_ID_ASIX		0x9710
- #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
- #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
- 
-@@ -2600,16 +2591,6 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
- 		.exit		= pci_wch_ch38x_exit,
- 		.setup          = pci_wch_ch38x_setup,
- 	},
--	/*
--	 * ASIX devices with FIFO bug
--	 */
--	{
--		.vendor		= PCI_VENDOR_ID_ASIX,
--		.device		= PCI_ANY_ID,
--		.subvendor	= PCI_ANY_ID,
--		.subdevice	= PCI_ANY_ID,
--		.setup		= pci_asix_setup,
--	},
- 	/*
- 	 * Broadcom TruManage (NetXtreme)
- 	 */
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index dfb51a854e77..16aeb1420137 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2632,11 +2632,8 @@ static unsigned char serial8250_compute_lcr(struct uart_8250_port *up,
- 
- 	if (c_cflag & CSTOPB)
- 		cval |= UART_LCR_STOP;
--	if (c_cflag & PARENB) {
-+	if (c_cflag & PARENB)
- 		cval |= UART_LCR_PARITY;
--		if (up->bugs & UART_BUG_PARITY)
--			up->fifo_bug = true;
--	}
- 	if (!(c_cflag & PARODD))
- 		cval |= UART_LCR_EPAR;
- 	if (c_cflag & CMSPAR)
-@@ -2799,8 +2796,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	up->lcr = cval;					/* Save computed LCR */
- 
- 	if (up->capabilities & UART_CAP_FIFO && port->fifosize > 1) {
--		/* NOTE: If fifo_bug is not set, a user can set RX_trigger. */
--		if ((baud < 2400 && !up->dma) || up->fifo_bug) {
-+		if (baud < 2400 && !up->dma) {
- 			up->fcr &= ~UART_FCR_TRIGGER_MASK;
- 			up->fcr |= UART_FCR_TRIGGER_1;
- 		}
-@@ -3131,8 +3127,7 @@ static int do_set_rxtrig(struct tty_port *port, unsigned char bytes)
- 	struct uart_8250_port *up = up_to_u8250p(uport);
- 	int rxtrig;
- 
--	if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1 ||
--	    up->fifo_bug)
-+	if (!(up->capabilities & UART_CAP_FIFO) || uport->fifosize <= 1)
- 		return -EINVAL;
- 
- 	rxtrig = bytes_to_fcr_rxtrig(up, bytes);
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index eb44420b39ec..be65de65fe61 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -127,7 +127,6 @@ struct uart_8250_port {
- 	struct list_head	list;		/* ports on this IRQ */
- 	u32			capabilities;	/* port capabilities */
- 	u16			bugs;		/* port bugs */
--	bool			fifo_bug;	/* min RX trigger if enabled */
- 	unsigned int		tx_loadsz;	/* transmit fifo load size */
- 	unsigned char		acr;
- 	unsigned char		fcr;
+ drivers/clk/nuvoton/clk-ma35d1-divider.c |   7 +-
+ drivers/clk/nuvoton/clk-ma35d1-pll.c     |   5 +-
+ drivers/clk/nuvoton/clk-ma35d1.c         | 737 +++++++++++++----------
+ drivers/clk/nuvoton/clk-ma35d1.h         |  18 +
+ 4 files changed, 447 insertions(+), 320 deletions(-)
+ create mode 100644 drivers/clk/nuvoton/clk-ma35d1.h
+
 -- 
-2.39.2
+2.34.1
 
