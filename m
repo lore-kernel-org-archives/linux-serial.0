@@ -2,131 +2,106 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3AAEB64D7
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 15:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1289AEB64D8
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 15:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbjFTPeY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Jun 2023 11:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
+        id S232790AbjFTPg2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Jun 2023 11:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbjFTPeX (ORCPT
+        with ESMTP id S232118AbjFTPg1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Jun 2023 11:34:23 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2919099
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jun 2023 08:34:22 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2b474dac685so39306311fa.3
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jun 2023 08:34:22 -0700 (PDT)
+        Tue, 20 Jun 2023 11:36:27 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A1D186;
+        Tue, 20 Jun 2023 08:36:26 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-51a4044b7a1so5994672a12.2;
+        Tue, 20 Jun 2023 08:36:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1687275258; x=1689867258;
-        h=mime-version:user-agent:message-id:in-reply-to:date:references
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=G/KBk4MEJMYZgClXUS8ICwIAOz/V2ZoCxcaeujLubZ8=;
-        b=XEwC7+ND5zwQ2LAeNDFA9tSf473qVu4kRiNFkwTSZ78Z8fi7a1MitrGcUHVA7piiFJ
-         ZK0YdpO1D0qIWmJBUKd+C0TPiCIk1ZDxUqRUGt/ZSReinozj0faLE4L9lagNQKsaLE0h
-         9B47vMvqJ7KjpV8BLDdIX3Y+8Nc2KbqAqraX+1/EZyVvLqh7P8lt2z9v34HIr3+096Ft
-         fyAO9Nj3ZZxIRQaPIlL0WgOw17fxrBYoOLSxO/+nlrAxLbwniupaaPZujv2eMkhlNsVW
-         vzxBD+nRreoMR1SrH0YqON/VYhT4yFHXSpFxfaNLxdZnRNAsSf/SJj9J9/gNRlQ5f6Bj
-         b2hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687275258; x=1689867258;
-        h=mime-version:user-agent:message-id:in-reply-to:date:references
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1687275384; x=1689867384;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=G/KBk4MEJMYZgClXUS8ICwIAOz/V2ZoCxcaeujLubZ8=;
-        b=PdLSWW2tgXZD/ftIT1whpH3cUP8mfuDoxvVdO0FDWfg8Kkv/omdjUJl2HR3gAG0dc3
-         m0uoHpJIgGUQuE9tdpwYbd2fS246W2vFGANV1Gr+zpeMeiMqHmIiT1ItIzmFGVJOFW5l
-         C3E4UzhgnfXnf8L2PXKu0OvlL6UmdkSDw7eY5d0PWYdEq7BHcUu7mp+dj9+uI8Nb8QF2
-         fIgKlF0K3McDqhiyTFgaTmD9F+uepvNuasInzGrrBYlN6BLTAM5X/kqazc9HVVhdrj+l
-         2vpDUP4JoDvkQHV9gqo6JrrXBGgOq4zmNC811bFiaS0jg/zl57hW7PA+zyJYWrv0m6ri
-         dKqg==
-X-Gm-Message-State: AC+VfDx05072MCUXLEzLWTrxo2JssneZGhhqxj/hXp1FyhIkvD0Ju+xy
-        +X1ulNQ0l3S+jNP4CdPSKRI=
-X-Google-Smtp-Source: ACHHUZ7yts7ERKqH2CeYz0vMGC3lU/Ml5zeYPU3j2KIJz+Ew7NtmPYqSfUlZqMiOxe87w/iN5TICjw==
-X-Received: by 2002:a2e:9648:0:b0:2b5:7ecc:bb0d with SMTP id z8-20020a2e9648000000b002b57eccbb0dmr1506671ljh.47.1687275257882;
-        Tue, 20 Jun 2023 08:34:17 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id h9-20020a2e9009000000b002b326e7e76csm453125ljg.64.2023.06.20.08.34.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jun 2023 08:34:17 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux regressions mailing list <regressions@lists.linux.dev>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        linux-serial@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-References: <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
-        <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com>
-        <87mt3ynsa7.fsf@osv.gnss.ru>
-        <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com>
-        <87sfcy8ncu.fsf@osv.gnss.ru>
-        <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
-        <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
-        <87ttw2vnn0.fsf@osv.gnss.ru>
-        <d1b6209d-a174-406a-cc81-86b391940c0c@i2se.com>
-        <3853881c-976f-dadc-b64b-4ffd8cc88cf0@leemhuis.info>
-        <2023062046-jersey-facecloth-7a5d@gregkh>
-Date:   Tue, 20 Jun 2023 18:34:16 +0300
-In-Reply-To: <2023062046-jersey-facecloth-7a5d@gregkh> (Greg Kroah-Hartman's
-        message of "Tue, 20 Jun 2023 16:59:18 +0200")
-Message-ID: <87r0q6407b.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        bh=WuHhq1Zy5qUmJ5a4jIXN+p9JZTXV2dJnQP66DH/WzqU=;
+        b=Y7rB4XOdGd7XzJAe+O4Yu0w0erIIAm6VX3FxbUzfG6JP2Xo0/2WsYGt6YrXuZafX0g
+         rcBqVx3d4+ak0FtfECwfp908EyaIuARUmyoaxbVCH9Q8BR7Hgz4JAuTXtL56jbGYjA1l
+         +sLM2eTqBWltuvthM9yiydyJyW9yLy8boO1WO8O1Gy63oxFerXY+GDKwtRDqHmzP7lbG
+         9eEXUhjbQWYjE5hq+kTz7NKCC9t6hGrVF3asmYr3V5FuP9F9aii2AcERzkTtiBS89mv7
+         y5frx3u6tRJ+ZXiK3aF3J6pm8ggDIwmvLVeY8ZYRK9bAVnEjcbPTdU4KOYw5LNKBU08R
+         KrZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687275384; x=1689867384;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WuHhq1Zy5qUmJ5a4jIXN+p9JZTXV2dJnQP66DH/WzqU=;
+        b=D81E3l0M5grKtoG4ONpDzQQKMhmeuB/iL0b/oQhCAZ5OEIrRlog/D3Q5SctO+mNeEY
+         X0G9rXw6X1yZHpfSpAeT4FLR1XIa4Pq/Hhx4tBk/+nZyKSNSPoUmYkR7tHzCN6F1zExl
+         Cuw8uGfV6qsDX/PJQGKQWfIvK0+XO1KCkdMxlgB65SUlzZIwLo0JjZb7Qx9LrUjiwJmT
+         6JDvqAob8/39zFPvn4DMyQIFVvnA/3mhGXqsEFniVbbDRdlpgiCOLkYtRZEez/VHoCYk
+         4MwXVY6YfYnwabQz8wa3PFIFSHmdLpheOXUQxKgACU+8ywnu2dfaCd+lgC7ww47s4hPJ
+         BQLg==
+X-Gm-Message-State: AC+VfDxSNKsyIRuB4oXlqh+CI+dnl5iF3PYQ1yXAvHjj0ixQ8mXdkwQJ
+        mmSwWrhTgWjan0j3uzpWg/N3dQS2xqwjcntCw4c=
+X-Google-Smtp-Source: ACHHUZ7UFay18KbgM1QiR5c87EH5SB+paPab33Pc4k7BArUBr5Wv8HVAYADtzt+o5XtU4YpvpgW7MrD6uS7HK92R0NA=
+X-Received: by 2002:a17:906:eecd:b0:973:da59:7c91 with SMTP id
+ wu13-20020a170906eecd00b00973da597c91mr11921423ejb.51.1687275384433; Tue, 20
+ Jun 2023 08:36:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20230602152626.284324-1-hugo@hugovil.com> <20230602152626.284324-6-hugo@hugovil.com>
+ <2023060454-cotton-paramount-e33e@gregkh> <CAHp75Ve6W-hcB4YAeKukgv-uOEzBY7Tx5Sdf3doTRYKzNPcVGw@mail.gmail.com>
+ <20230604134459.3c3844012e9714fa2a61e642@hugovil.com> <CAHp75VeWFPBmsD8zsSAaQGNNXtfgLtQuM9AMGfLPk-6p0VW=Pg@mail.gmail.com>
+ <20230620100846.d58436efc061fb91074fa7e5@hugovil.com> <CAHp75VcWSVgA8LFLo0-b5TfKWdHb2GfLpXV-V3PZvthTv1Xc4A@mail.gmail.com>
+ <20230620113312.882d8f0c7d5603b1c93f33fb@hugovil.com>
+In-Reply-To: <20230620113312.882d8f0c7d5603b1c93f33fb@hugovil.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 20 Jun 2023 18:35:48 +0300
+Message-ID: <CAHp75VfGm6=ULW6kMjsg2OgB1z1T0YdmzvCTa3DFXXX-q_RnfA@mail.gmail.com>
+Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO configuration
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jirislaby@kernel.org, jringle@gridpoint.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+On Tue, Jun 20, 2023 at 6:33=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> =
+wrote:
+> On Tue, 20 Jun 2023 18:18:12 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Jun 20, 2023 at 5:08=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.c=
+om> wrote:
+> > > On Sun, 4 Jun 2023 22:31:04 +0300
+> > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> On Tue, Jun 20, 2023 at 04:47:10PM +0200, Linux regression tracking (Thorsten Leemhuis) wrote:
->> On 24.05.23 15:07, Stefan Wahren wrote:
->> > 
->> > Am 23.05.23 um 21:44 schrieb Sergey Organov:
->> >> "Linux regression tracking (Thorsten Leemhuis)"
->> >> <regressions@leemhuis.info> writes:
->> >>
->> >> Solving this would need to identify the cause of interrupts being
->> >> disabled for prolonged times, and nobody volunteered to investigate this
->> >> further. One suspect, the Linux serial console, has been likely excluded
->> >> already though, as not actually being in use for printk() output.
->> >>
->> > 
->> > I don't think that we can exclude the serial console as a whole, i never
->> > made such a observation. But at least we can exclude kernel logging on
->> > the debug UART.
->> 
->> Stefan, just wondering: was this ever addressed upstream? I assume it's
->> not, just wanted to be sure.
->> 
->> I'm a bit unsure what to do with this and consider asking Greg for
->> advice, as he applied the patch. On one hand it's *IMHO* clearly a
->> regression (but for the record,  some people involved in the discussion
->> claim it's not). OTOH the culprit was applied more than a year ago now,
->> so reverting it might cause more trouble than it's worth at this point,
->> as that could lead to regressions for other users.
+...
+
+> > > did you have a chance to look at V8 (sent two weks ago) which fixed a=
+ll
+> > > of what we discussed?
+> >
+> > The patch 6 already has my tag, anything specific you want me to do?
 >
-> I'll be glad to revert this, but for some reason I thought that someone
-> was working on a "real fix" here.  Stefan, is that not the case?
+> Hi Andy,
+> I forgot to remove your "Reviewed-by: Andy..." tag before sending V8
+> since there were some changes involved in patch 6 and I wanted you to
+> review them. Can you confirm if the changes are correct?
+>
+> I also added a new patch "remove obsolete out_thread label". It has no
+> real impact on the code generation itself, but maybe you can review and
+> confirm if tags are ok or not, based on commit message and also
+> additional commit message.
 
-As far as I understand, the "real fix" is to be where interrupts are
-being disabled for prolonged times in given specific kernel build, and
-nobody is looking for that place.
+Both are fine to me.
 
-In other words, I'm one who thinks the commit in question is not a
-regression per se, so I'm not sure it should be reverted.
-
-Thanks,
-Sergey Organov
+--=20
+With Best Regards,
+Andy Shevchenko
