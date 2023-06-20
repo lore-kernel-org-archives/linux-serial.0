@@ -2,206 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9808EB64D7
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 04:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835ECEB64D7
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 04:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbjFTEY4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Jun 2023 00:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
+        id S230121AbjFTEuO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Jun 2023 00:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbjFTEYz (ORCPT
+        with ESMTP id S229967AbjFTEuJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Jun 2023 00:24:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4066F10C8
-        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 21:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687235094; x=1718771094;
-  h=date:from:to:cc:subject:message-id;
-  bh=/E+2RZSHlBSeaSVHYv+cek7/AVD8NkoBQlx+bSJLc1I=;
-  b=A7qFQfJmSzO8ST4b7LU7GSeGt54F/SvtAfcBEfQIE4TytcHgthdlS8XN
-   EAm+/1TzOA8pbHgBGEyxbifyBu0mdANyERKqk+8/pe1AA6L/yPPr/M9Uu
-   aGFCdSOg21S3NDtR5Yx9NjsYVnMzWa2M9Hrbj78R887QPLzfPaZU5y6Fr
-   ulm4xhkHTbHhEKoDbAhC+WnlxBY2V2TkjC5SLxm91FCBKhXuRaBB6KZ5D
-   Pquhh++/22vVGaNUBK41aeRghXrWLfRVx0mzWkZeDnT7pRNmvoM+keiAS
-   +weP+V4A7Gkzms7ZUXia1hoAO5snRo4BpxGN12DIJLDF4k/wsv6KjQQuF
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="359764106"
-X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
-   d="scan'208";a="359764106"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2023 21:24:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10746"; a="838065647"
-X-IronPort-AV: E=Sophos;i="6.00,256,1681196400"; 
-   d="scan'208";a="838065647"
-Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 19 Jun 2023 21:24:52 -0700
-Received: from kbuild by 783282924a45 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qBSvE-0005TW-07;
-        Tue, 20 Jun 2023 04:24:52 +0000
-Date:   Tue, 20 Jun 2023 12:24:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 930cbf92db0184e327293d5e7089be0b08d46371
-Message-ID: <202306201235.rlVjI6QO-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+        Tue, 20 Jun 2023 00:50:09 -0400
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF7A1703;
+        Mon, 19 Jun 2023 21:50:05 -0700 (PDT)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-519c0ad1223so5192299a12.0;
+        Mon, 19 Jun 2023 21:50:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687236604; x=1689828604;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HXrEnEf5nkr5AbcNKuHq2ICQiTDBVe4q2pTx0g+a6jM=;
+        b=SqRAs+dwwPvEWb/4/P5idGnp+jrP6QNVkQJ0KoNY4IQMemkJf7IhDx5TcxQZ4gwOfC
+         aQM6l92sEK7Iw6psCed8CS7E5FzfHFyCdz9TZVxCrRlr3VS8zJuHXXRwI51sh1ypb23p
+         H1iUU1IEQOQ3uzNXgzXOQyOL4qCFZfzVHZwa8f22gI1P+qGUVdEPOoI1IgpqeVmIx8pr
+         fIRTD4qBmsu2sQP2ELzCupl61DBaOrmkXMiz5FY+DC2Wiaf4t+2cJ4G+PI95At7Zqhke
+         FVoN2Cv/Me9W/3eLp7AAmsh9okbDlLT8MrV08bCQQpQGV3MxlOuNB3x42tmLOV47z02a
+         yJXg==
+X-Gm-Message-State: AC+VfDzFD02O/TQThrNm+s+CNC6w8UEol4MWMNIRZLLiagV470a0ZVkT
+        f3sw52UDubqkdYMA85Un7M8=
+X-Google-Smtp-Source: ACHHUZ5Mib/isIUgNNckhfTMVbDjnhcs0pitiRJRPJKaFYDUTHuICaA5xJxHkAH7SyCyhpEBuBkhyg==
+X-Received: by 2002:a17:906:6a1e:b0:989:15b1:9989 with SMTP id qw30-20020a1709066a1e00b0098915b19989mr1017063ejc.68.1687236603783;
+        Mon, 19 Jun 2023 21:50:03 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id a7-20020a17090680c700b009786c8249d6sm610631ejx.175.2023.06.19.21.50.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Jun 2023 21:50:03 -0700 (PDT)
+Message-ID: <0876fda2-80ca-20f9-397d-6990e3f40e98@kernel.org>
+Date:   Tue, 20 Jun 2023 06:50:02 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH] serial: atmel: don't enable IRQs prematurely
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@linaro.org>
+Cc:     Elen Song <elen.song@atmel.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@atmel.com>,
+        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <cb7c39a9-c004-4673-92e1-be4e34b85368@moroto.mountain>
+ <d87d9f00-8d85-6220-43d3-51ef8e793193@kernel.org>
+ <c0c661bb-2584-46cd-9c72-8f1d9ccbaee4@kadam.mountain>
+ <0be8c2ad-499a-4cf1-af98-920af542c5b9@kadam.mountain>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <0be8c2ad-499a-4cf1-af98-920af542c5b9@kadam.mountain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 930cbf92db0184e327293d5e7089be0b08d46371  tty: serial: Add Nuvoton ma35d1 serial driver support
+On 19. 06. 23, 13:47, Dan Carpenter wrote:
+> On Mon, Jun 19, 2023 at 02:44:11PM +0300, Dan Carpenter wrote:
+>> On Mon, Jun 19, 2023 at 01:01:49PM +0200, Jiri Slaby wrote:
+>>> On 19. 06. 23, 11:45, Dan Carpenter wrote:
+>>>> The atmel_complete_tx_dma() function disables IRQs at the start
+>>>> of the function by calling spin_lock_irqsave(&port->lock, flags);
+>>>> There is no need to disable them a second time using the
+>>>> spin_lock_irq() function and, in fact, doing so is a bug because
+>>>> it will enable IRQs prematurely when we call spin_unlock_irq().
+>>>>
+>>>> Just use spin_lock/unlock() instead without disabling or enabling
+>>>> IRQs.
+> 
+> Maybe I should add a "a second time".
+> 
+> "Just use spin_lock/unlock() instead without disabling or enabling
+> IRQs a second time."
 
-elapsed time: 728m
+No, I'm just stupid and I apparently fail to understand written text at 
+times.
 
-configs tested: 135
-configs skipped: 10
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-alpha                randconfig-r004-20230619   gcc  
-alpha                randconfig-r015-20230619   gcc  
-alpha                randconfig-r034-20230619   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r001-20230619   gcc  
-arc                  randconfig-r043-20230619   gcc  
-arc                  randconfig-r043-20230620   gcc  
-arc                    vdk_hs38_smp_defconfig   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                          gemini_defconfig   gcc  
-arm                           imxrt_defconfig   gcc  
-arm                  randconfig-r003-20230619   clang
-arm                  randconfig-r031-20230619   clang
-arm                  randconfig-r046-20230619   gcc  
-arm64                            allyesconfig   gcc  
-arm64                               defconfig   gcc  
-csky                                defconfig   gcc  
-hexagon              randconfig-r006-20230619   clang
-hexagon              randconfig-r035-20230619   clang
-hexagon              randconfig-r041-20230619   clang
-hexagon              randconfig-r045-20230619   clang
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-r004-20230619   gcc  
-i386         buildonly-randconfig-r005-20230619   gcc  
-i386         buildonly-randconfig-r006-20230619   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                 randconfig-i001-20230619   gcc  
-i386                 randconfig-i002-20230619   gcc  
-i386                 randconfig-i003-20230619   gcc  
-i386                 randconfig-i004-20230619   gcc  
-i386                 randconfig-i005-20230619   gcc  
-i386                 randconfig-i006-20230619   gcc  
-i386                 randconfig-i011-20230619   clang
-i386                 randconfig-i012-20230619   clang
-i386                 randconfig-i013-20230619   clang
-i386                 randconfig-i014-20230619   clang
-i386                 randconfig-i015-20230619   clang
-i386                 randconfig-i016-20230619   clang
-i386                 randconfig-r032-20230619   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch            randconfig-r034-20230619   gcc  
-m68k                             allmodconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                 randconfig-r006-20230619   gcc  
-m68k                 randconfig-r021-20230619   gcc  
-microblaze           randconfig-r011-20230619   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-mips                  cavium_octeon_defconfig   clang
-mips                            gpr_defconfig   gcc  
-mips                        maltaup_defconfig   clang
-mips                 randconfig-r013-20230619   gcc  
-mips                 randconfig-r016-20230619   gcc  
-mips                           rs90_defconfig   clang
-nios2                               defconfig   gcc  
-nios2                randconfig-r015-20230619   gcc  
-nios2                randconfig-r033-20230619   gcc  
-openrisc             randconfig-r033-20230619   gcc  
-openrisc             randconfig-r036-20230619   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                      bamboo_defconfig   gcc  
-powerpc                       eiger_defconfig   gcc  
-powerpc              randconfig-r003-20230619   gcc  
-powerpc              randconfig-r005-20230619   gcc  
-powerpc              randconfig-r013-20230619   clang
-powerpc                     taishan_defconfig   gcc  
-powerpc                      tqm8xx_defconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r042-20230619   clang
-riscv                randconfig-r042-20230620   gcc  
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r044-20230619   clang
-s390                 randconfig-r044-20230620   gcc  
-sh                               allmodconfig   gcc  
-sh                        dreamcast_defconfig   gcc  
-sh                         ecovec24_defconfig   gcc  
-sh                         microdev_defconfig   gcc  
-sh                          r7785rp_defconfig   gcc  
-sh                   randconfig-r011-20230619   gcc  
-sh                   randconfig-r021-20230619   gcc  
-sh                   randconfig-r025-20230619   gcc  
-sh                   randconfig-r026-20230619   gcc  
-sh                   randconfig-r032-20230619   gcc  
-sh                          rsk7264_defconfig   gcc  
-sh                   secureedge5410_defconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r035-20230619   gcc  
-um                             i386_defconfig   gcc  
-um                   randconfig-r005-20230619   clang
-um                   randconfig-r016-20230619   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64       buildonly-randconfig-r001-20230619   gcc  
-x86_64       buildonly-randconfig-r002-20230619   gcc  
-x86_64       buildonly-randconfig-r003-20230619   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64               randconfig-a001-20230619   gcc  
-x86_64               randconfig-a002-20230619   gcc  
-x86_64               randconfig-a003-20230619   gcc  
-x86_64               randconfig-a004-20230619   gcc  
-x86_64               randconfig-a005-20230619   gcc  
-x86_64               randconfig-a006-20230619   gcc  
-x86_64               randconfig-a011-20230619   clang
-x86_64               randconfig-a012-20230619   clang
-x86_64               randconfig-a013-20230619   clang
-x86_64               randconfig-a014-20230619   clang
-x86_64               randconfig-a015-20230619   clang
-x86_64               randconfig-a016-20230619   clang
-x86_64               randconfig-r014-20230619   clang
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa               randconfig-r012-20230619   gcc  
-xtensa               randconfig-r024-20230619   gcc  
-xtensa               randconfig-r025-20230619   gcc  
-
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+js
+suse labs
+
