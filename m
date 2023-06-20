@@ -2,95 +2,95 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835ECEB64D7
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 04:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CE9EB64D7
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 06:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbjFTEuO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Jun 2023 00:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
+        id S231142AbjFTGWL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Jun 2023 02:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbjFTEuJ (ORCPT
+        with ESMTP id S231144AbjFTGWK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Jun 2023 00:50:09 -0400
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF7A1703;
-        Mon, 19 Jun 2023 21:50:05 -0700 (PDT)
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-519c0ad1223so5192299a12.0;
-        Mon, 19 Jun 2023 21:50:05 -0700 (PDT)
+        Tue, 20 Jun 2023 02:22:10 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B78CE71
+        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 23:22:08 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id 2adb3069b0e04-4f871c93a5fso2385857e87.2
+        for <linux-serial@vger.kernel.org>; Mon, 19 Jun 2023 23:22:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687242126; x=1689834126;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AwAquEkYgwoswA9z2TgQn8FMUm7MKaXdx5J6DQ1NGzo=;
+        b=Y8YshSWVjxeOtHCCkz6SLzX5DyIyn9e0fvp52/I53DFQcoxqXz6OJ59jIhmqIzBB/8
+         ixI585CL9xnliL7wrWLioyl7CyBreQ6ped1kUtaAvnDUagp24W3xcr+Ssp3kzOO1PQbg
+         hoZ2QXAVLlNCAe6on5FlhMPasg6VJC3VopO8uweT84KfkyvhqXWx8QwrOcQfnhY/E1qT
+         CeGEsuLsNWSCVa5JxXIpYAUoTdMRaXKczR6SDsufP0FEDSGngsDfZef6xLzJ3Rhfp1MZ
+         ugRX0dQz+MntmaS/P5HoNVWES7yZ3bBDkKCBDw6/RaveC5O/F/d85yuoxbZUqy7EVLLu
+         0dwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687236604; x=1689828604;
+        d=1e100.net; s=20221208; t=1687242126; x=1689834126;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HXrEnEf5nkr5AbcNKuHq2ICQiTDBVe4q2pTx0g+a6jM=;
-        b=SqRAs+dwwPvEWb/4/P5idGnp+jrP6QNVkQJ0KoNY4IQMemkJf7IhDx5TcxQZ4gwOfC
-         aQM6l92sEK7Iw6psCed8CS7E5FzfHFyCdz9TZVxCrRlr3VS8zJuHXXRwI51sh1ypb23p
-         H1iUU1IEQOQ3uzNXgzXOQyOL4qCFZfzVHZwa8f22gI1P+qGUVdEPOoI1IgpqeVmIx8pr
-         fIRTD4qBmsu2sQP2ELzCupl61DBaOrmkXMiz5FY+DC2Wiaf4t+2cJ4G+PI95At7Zqhke
-         FVoN2Cv/Me9W/3eLp7AAmsh9okbDlLT8MrV08bCQQpQGV3MxlOuNB3x42tmLOV47z02a
-         yJXg==
-X-Gm-Message-State: AC+VfDzFD02O/TQThrNm+s+CNC6w8UEol4MWMNIRZLLiagV470a0ZVkT
-        f3sw52UDubqkdYMA85Un7M8=
-X-Google-Smtp-Source: ACHHUZ5Mib/isIUgNNckhfTMVbDjnhcs0pitiRJRPJKaFYDUTHuICaA5xJxHkAH7SyCyhpEBuBkhyg==
-X-Received: by 2002:a17:906:6a1e:b0:989:15b1:9989 with SMTP id qw30-20020a1709066a1e00b0098915b19989mr1017063ejc.68.1687236603783;
-        Mon, 19 Jun 2023 21:50:03 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id a7-20020a17090680c700b009786c8249d6sm610631ejx.175.2023.06.19.21.50.02
+        bh=AwAquEkYgwoswA9z2TgQn8FMUm7MKaXdx5J6DQ1NGzo=;
+        b=Cy2X9Hl+GMb0UYd9xzxQj+0R+80fq5gjC6OEapftY4UVzFImlYwFJ+mQSVuTQkQjex
+         PDGw0b77l01vN6PTSWEkw0S/EG3Zv0NF+lp+h5yWZiC8YUDHO2qeIsPbxnOY2Cw8TyM7
+         rhNspwU1ICKPeANjPJUKPHirQLWQ2IzEuNWLTJpJ5wDrqgJmVhYpYxCctDor642ER4iP
+         7+UqD2CJVa7qKKC1DyLvfpj/GeZzgUWWaSDL0vYHPdqPlgrYcbp9oWOQe18lstfyaV/g
+         /3mJjkroYd1m3j1MAg+QK2Jhb1KsaFmImLQgTMTJaV0SayQX/BvERo0ciRcoOp/cLxeI
+         Gi2A==
+X-Gm-Message-State: AC+VfDyJpfEiXdwsBz/k6einbz1oUlufbJKmq3bFNneXF1tx11lbSPBh
+        GjEUOzjx5HCwZhIdBKah1+1CqA==
+X-Google-Smtp-Source: ACHHUZ5zNk8Xk5sFXaqOzp04ZFZ429dXR2gmbQ5/aSYy5CkG5CHLLNfR/ziCfbQZ5pP2BUSy79Emdg==
+X-Received: by 2002:a05:6512:1cd:b0:4f6:5653:4470 with SMTP id f13-20020a05651201cd00b004f656534470mr6619790lfp.55.1687242126546;
+        Mon, 19 Jun 2023 23:22:06 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id 9-20020a05600c240900b003f93c450657sm1424502wmp.38.2023.06.19.23.22.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Jun 2023 21:50:03 -0700 (PDT)
-Message-ID: <0876fda2-80ca-20f9-397d-6990e3f40e98@kernel.org>
-Date:   Tue, 20 Jun 2023 06:50:02 +0200
+        Mon, 19 Jun 2023 23:22:06 -0700 (PDT)
+Message-ID: <e847c114-224b-fb69-e2b1-7881b8f8ec90@linaro.org>
+Date:   Tue, 20 Jun 2023 08:22:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [PATCH] serial: atmel: don't enable IRQs prematurely
+Subject: Re: [PATCH v16 1/1] clk: nuvoton: Use clk_parent_data instead and add
+ a header file
 Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@linaro.org>
-Cc:     Elen Song <elen.song@atmel.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@atmel.com>,
-        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <cb7c39a9-c004-4673-92e1-be4e34b85368@moroto.mountain>
- <d87d9f00-8d85-6220-43d3-51ef8e793193@kernel.org>
- <c0c661bb-2584-46cd-9c72-8f1d9ccbaee4@kadam.mountain>
- <0be8c2ad-499a-4cf1-af98-920af542c5b9@kadam.mountain>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <0be8c2ad-499a-4cf1-af98-920af542c5b9@kadam.mountain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Jacky Huang <ychuang570808@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        tmaimon77@gmail.com, catalin.marinas@arm.com, will@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, arnd@arndb.de, soc@kernel.org,
+        schung@nuvoton.com, mjchen@nuvoton.com,
+        Jacky Huang <ychuang3@nuvoton.com>
+References: <20230620015120.234041-1-ychuang570808@gmail.com>
+ <20230620015120.234041-2-ychuang570808@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230620015120.234041-2-ychuang570808@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 19. 06. 23, 13:47, Dan Carpenter wrote:
-> On Mon, Jun 19, 2023 at 02:44:11PM +0300, Dan Carpenter wrote:
->> On Mon, Jun 19, 2023 at 01:01:49PM +0200, Jiri Slaby wrote:
->>> On 19. 06. 23, 11:45, Dan Carpenter wrote:
->>>> The atmel_complete_tx_dma() function disables IRQs at the start
->>>> of the function by calling spin_lock_irqsave(&port->lock, flags);
->>>> There is no need to disable them a second time using the
->>>> spin_lock_irq() function and, in fact, doing so is a bug because
->>>> it will enable IRQs prematurely when we call spin_unlock_irq().
->>>>
->>>> Just use spin_lock/unlock() instead without disabling or enabling
->>>> IRQs.
+On 20/06/2023 03:51, Jacky Huang wrote:
+> From: Jacky Huang <ychuang3@nuvoton.com>
 > 
-> Maybe I should add a "a second time".
-> 
-> "Just use spin_lock/unlock() instead without disabling or enabling
-> IRQs a second time."
+> 1. Update all parent clock string arrays with clk_parent_data structure,
+>    and replace the usage of clk_hw_register_mux() with
+>    clk_hw_register_mux_parent_data().
+> 2. Introduce the header file clk-ma35d1.h to include shared external
+>    functions.
 
-No, I'm just stupid and I apparently fail to understand written text at 
-times.
+These are two things thus commits.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+This is not v16. It's your first version of this patch.
 
-thanks,
--- 
-js
-suse labs
+Best regards,
+Krzysztof
 
