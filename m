@@ -2,148 +2,124 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD0BEB64D7
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Jun 2023 19:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70536EB64D7
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Jun 2023 04:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229478AbjFTT2M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Jun 2023 15:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        id S229861AbjFUEmc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Jun 2023 00:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230155AbjFTT2J (ORCPT
+        with ESMTP id S229732AbjFUEma (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Jun 2023 15:28:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D96170A
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jun 2023 12:28:07 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qBh16-0007iO-Ts; Tue, 20 Jun 2023 21:27:52 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qBh13-008rwD-Jh; Tue, 20 Jun 2023 21:27:49 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1qBh12-00G0aA-Ph; Tue, 20 Jun 2023 21:27:48 +0200
-Date:   Tue, 20 Jun 2023 21:27:48 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux regressions mailing list <regressions@lists.linux.dev>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sergey Organov <sorganov@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-Message-ID: <20230620192748.ey4oah22resbblej@pengutronix.de>
-References: <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com>
- <87mt3ynsa7.fsf@osv.gnss.ru>
- <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com>
- <87sfcy8ncu.fsf@osv.gnss.ru>
- <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
- <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
- <87ttw2vnn0.fsf@osv.gnss.ru>
- <d1b6209d-a174-406a-cc81-86b391940c0c@i2se.com>
- <3853881c-976f-dadc-b64b-4ffd8cc88cf0@leemhuis.info>
- <2023062046-jersey-facecloth-7a5d@gregkh>
+        Wed, 21 Jun 2023 00:42:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAF71BE3;
+        Tue, 20 Jun 2023 21:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1687322524; x=1718858524;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+Oyatk6UJM7WoUbA4Egxw1w1lf2ZrfcTPtl1VcnDick=;
+  b=LzYaxyiWCi9gWah9Oa3T9MyU08DrZQaa1/T72kPAEaKmgFtnRE+nRbz3
+   p6+GvAaH9vAs5xaYheP/ktGt0Yt1P6MlI1ZMWsJjDLhB92HzfEzMD7b3t
+   EQA6DNF1LTPMNttpRe/WYYgsk7mxD4uqz6ZMfkn4OpzK62TM5MHmrPtTk
+   WxCV4kYVgv6xXjhR3yCdgz/HBNgIAi2Io4xWia3CUEYpbB6Am2FtVqdrP
+   b7Fng2xADcWDV3LCzQyAky6rVngp0DerZcOU8jsSVAhQzoRgace1lu37s
+   VK7YLZ+XCUdijpuIxN5VfZ+P2vydxzI9a8tPjlpvf/PT7PmBYdixH3gdd
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10747"; a="349798498"
+X-IronPort-AV: E=Sophos;i="6.00,259,1681196400"; 
+   d="scan'208";a="349798498"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2023 21:42:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10747"; a="714304953"
+X-IronPort-AV: E=Sophos;i="6.00,259,1681196400"; 
+   d="scan'208";a="714304953"
+Received: from lkp-server01.sh.intel.com (HELO 783282924a45) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 20 Jun 2023 21:41:57 -0700
+Received: from kbuild by 783282924a45 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qBpfI-0006Yp-0P;
+        Wed, 21 Jun 2023 04:41:56 +0000
+Date:   Wed, 21 Jun 2023 12:41:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Lucas Tanure <tanure@linux.com>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        Nick <nick@khadas.com>, Artem <art@khadas.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        Lucas Tanure <tanure@linux.com>
+Subject: Re: [PATCH 3/6] clk: meson: t7: add peripheral clock controller
+Message-ID: <202306211239.HA6GmDhb-lkp@intel.com>
+References: <20230615182938.18487-4-tanure@linux.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="p7ndb543epv2snzz"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023062046-jersey-facecloth-7a5d@gregkh>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20230615182938.18487-4-tanure@linux.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Lucas,
 
---p7ndb543epv2snzz
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+kernel test robot noticed the following build warnings:
 
-Hello Greg,
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on clk/clk-next tty/tty-testing tty/tty-next tty/tty-linus krzk/for-next krzk-dt/for-next krzk-mem-ctrl/for-next linus/master v6.4-rc7 next-20230620]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-On Tue, Jun 20, 2023 at 04:59:18PM +0200, Greg Kroah-Hartman wrote:
-> On Tue, Jun 20, 2023 at 04:47:10PM +0200, Linux regression tracking (Thor=
-sten Leemhuis) wrote:
-> > On 24.05.23 15:07, Stefan Wahren wrote:
-> > >=20
-> > > Am 23.05.23 um 21:44 schrieb Sergey Organov:
-> > >> "Linux regression tracking (Thorsten Leemhuis)"
-> > >> <regressions@leemhuis.info> writes:
-> > >>
-> > >> Solving this would need to identify the cause of interrupts being
-> > >> disabled for prolonged times, and nobody volunteered to investigate =
-this
-> > >> further. One suspect, the Linux serial console, has been likely excl=
-uded
-> > >> already though, as not actually being in use for printk() output.
-> > >>
-> > >=20
-> > > I don't think that we can exclude the serial console as a whole, i ne=
-ver
-> > > made such a observation. But at least we can exclude kernel logging on
-> > > the debug UART.
-> >=20
-> > Stefan, just wondering: was this ever addressed upstream? I assume it's
-> > not, just wanted to be sure.
-> >=20
-> > I'm a bit unsure what to do with this and consider asking Greg for
-> > advice, as he applied the patch. On one hand it's *IMHO* clearly a
-> > regression (but for the record,  some people involved in the discussion
-> > claim it's not). OTOH the culprit was applied more than a year ago now,
-> > so reverting it might cause more trouble than it's worth at this point,
-> > as that could lead to regressions for other users.
->=20
-> I'll be glad to revert this, but for some reason I thought that someone
-> was working on a "real fix" here.  Stefan, is that not the case?
+url:    https://github.com/intel-lab-lkp/linux/commits/Lucas-Tanure/dt-bindings-arm-amlogic-add-Amlogic-T7-based-Khadas-VIM4-bindings/20230616-023038
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20230615182938.18487-4-tanure%40linux.com
+patch subject: [PATCH 3/6] clk: meson: t7: add peripheral clock controller
+config: arm64-randconfig-r001-20230620 (https://download.01.org/0day-ci/archive/20230621/202306211239.HA6GmDhb-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project.git f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce: (https://download.01.org/0day-ci/archive/20230621/202306211239.HA6GmDhb-lkp@intel.com/reproduce)
 
-Sergey Organov already said something similar, but not very explicit:
-With the current understanding reverting said commit is wrong. It is
-expected that the commit increases irq latency for imx-serial a bit for
-the benefit of less interrupts and so serves the overall system
-performance. That this poses a problem only means that on the reporter's
-machine there is already an issue that results in a longer period with
-disabled irqs. While reverting the imx-serial commit would (maybe) solve
-that, the actual problem is the other issue that disables preemption for
-a longer timespan.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202306211239.HA6GmDhb-lkp@intel.com/
 
-So TL;DR: Please don't revert the imx-serial patch.
+All warnings (new ones prefixed by >>):
 
-Best regards
-Uwe
+   drivers/clk/meson/t7.c:7084:23: warning: initializer overrides prior initialization of this subobject [-Winitializer-overrides]
+                   [CLKID_VID_PLL]                 = &t7_vid_pll.hw,
+                                                     ^~~~~~~~~~~~~~
+   drivers/clk/meson/t7.c:7082:23: note: previous initialization is here
+                   [CLKID_VID_PLL]                 = &t7_vid_pll_div.hw,
+                                                     ^~~~~~~~~~~~~~~~~~
+   drivers/clk/meson/t7.c:7946:29: warning: variable 'mclk_data' set but not used [-Wunused-but-set-variable]
+           struct meson_clk_pll_data *mclk_data;
+                                      ^
+>> drivers/clk/meson/t7.c:93:29: warning: unused variable 'meson_pll_clk_no_ops' [-Wunused-const-variable]
+   static const struct clk_ops meson_pll_clk_no_ops = {};
+                               ^
+>> drivers/clk/meson/t7.c:689:37: warning: unused variable 't7_a73_dyn_clk_sel' [-Wunused-const-variable]
+   static const struct clk_parent_data t7_a73_dyn_clk_sel[] = {
+                                       ^
+   4 warnings generated.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---p7ndb543epv2snzz
-Content-Type: application/pgp-signature; name="signature.asc"
+vim +/meson_pll_clk_no_ops +93 drivers/clk/meson/t7.c
 
------BEGIN PGP SIGNATURE-----
+    92	
+  > 93	static const struct clk_ops meson_pll_clk_no_ops = {};
+    94	
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmSR/bMACgkQj4D7WH0S
-/k5YIwgAuQA48Ld7vFvNx3Y1GDSgESgTnPmvaZi1JR7BZ8ABuUwK862AXXl6v8oL
-fBAmnSy4V4s6xDmhZunaHbZND79F5CiVKi8p4iDtcGco1xp1YBuC+4J5TtwBapM1
-Jk1KCuUdn8fg/BMSosFX4PDbDfAU4vv8JgCZ+BoBBi4nJO6U8uE4xFg76KrksOQP
-UexDt0jDTUcUpb+/klifoa/Q+vTqUjy9T53tCuuaqEjtBOooIdtuaRdfk11oF4vF
-7LANlcuZXbxxMA+njP+RK+wc9x7751v6OuJa8Ahtnf7xCyZZXfeSq/FRGcjE0BMV
-3RnXcUlgK7tL+A1NRee7sHxATHIMuA==
-=xnrl
------END PGP SIGNATURE-----
-
---p7ndb543epv2snzz--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
