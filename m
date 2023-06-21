@@ -2,123 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B570AEB64D7
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Jun 2023 06:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305D0EB64D8
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Jun 2023 08:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbjFUGYL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Jun 2023 02:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S231131AbjFUITj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Jun 2023 04:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbjFUGYK (ORCPT
+        with ESMTP id S231359AbjFUITd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Jun 2023 02:24:10 -0400
-X-Greylist: delayed 50006 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 20 Jun 2023 23:24:09 PDT
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25249B4
-        for <linux-serial@vger.kernel.org>; Tue, 20 Jun 2023 23:24:08 -0700 (PDT)
-Received: from [192.168.1.141] ([37.4.248.63]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MacjC-1peBC32RsQ-00c8CR; Wed, 21 Jun 2023 08:23:41 +0200
-Message-ID: <85d374a9-37c7-5980-3151-1ee32d35a550@i2se.com>
-Date:   Wed, 21 Jun 2023 08:23:37 +0200
+        Wed, 21 Jun 2023 04:19:33 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A116C1710;
+        Wed, 21 Jun 2023 01:19:31 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id ffacd0b85a97d-3111cb3dda1so6478064f8f.0;
+        Wed, 21 Jun 2023 01:19:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1687335570; x=1689927570;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sEBXGDM0wjJ/zM8cN1Vi9lb6f9acCG4RqU8UZ86rmj4=;
+        b=DTyci+4wUuLtfGbgE84wRwhEvOziU1Wao2FJmFloY6rnODeSkLN5XpfMkCmEia3T45
+         Huz4875RZiZXk6xlpTQL5pZ/IjiavW3OcKqBBxK9pNIFlMs1X0Cc5HInru0s8XVOC8Da
+         QjBKMmmen2d04TAX+/XA+k3toFdYiOGJ2csXHNd/gB8MdAilb0ZkM/AhoUwfFoUIhP1G
+         K/d5HY8WbOyKmSiS9WzMOdkUZ4rQUMaUXHPPSDGqUlZlPz90VslKGMpDZbkW0DcgZ2JJ
+         wcorw47MEUvhxNOy0BM/iTY4SvIt/yC+5LfZcf5a90LMm7zvqX6xqegMMab8MZZtbpDa
+         h+SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687335570; x=1689927570;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sEBXGDM0wjJ/zM8cN1Vi9lb6f9acCG4RqU8UZ86rmj4=;
+        b=F7u1b6AGoGmco/Bo09J6jy73zYrGxuCfmR5awHCWSRHrSOplXbFZnWD6ZNs1JeprzJ
+         3JIt86onSdpdPwNB/7W+4ZZwI4K5kYpcPIrfv7Q6a54GKAtCsK2l0V1ia9Hng83MKP6w
+         YalFC5+HQ79Bk2F7L4frbhAA+0luhaeobwWlSLrFI8abMBgaCgbjbFHYG82/c4+jMgD5
+         FuPAmj+oIvevoDmtZcRMknD47PAzSxcLqk/IMckWHpqcpqSpAANd8KOTRq+4TDmycaqi
+         MUT4CD2pZH/zMDNduwfHShgsdHq0kQIr3Kg4Ic6BZ5++Lo8aGUrdufF3ewOuF4L4sL/O
+         snsA==
+X-Gm-Message-State: AC+VfDxmmcpeDU01+0FNcfxQHQ+CvMLW2RL8B5KnuKrwrDSutIZWL8G4
+        pEh5ZDed1exOpGSMyqGn0c0=
+X-Google-Smtp-Source: ACHHUZ5M7BXTEHiWE9RuAyvQEp+84nCPb4jokhVEDDaF7XfuotRquJtFamXQJlG0K906hxelDMnyVA==
+X-Received: by 2002:a5d:4bc1:0:b0:310:ee6d:aa64 with SMTP id l1-20020a5d4bc1000000b00310ee6daa64mr13443808wrt.11.1687335569832;
+        Wed, 21 Jun 2023 01:19:29 -0700 (PDT)
+Received: from [192.168.2.41] ([46.227.18.67])
+        by smtp.gmail.com with ESMTPSA id f4-20020a5d58e4000000b00311299df211sm3814367wrd.77.2023.06.21.01.19.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Jun 2023 01:19:29 -0700 (PDT)
+Message-ID: <c1133b79-d106-197d-640b-09c2024393ea@gmail.com>
+Date:   Wed, 21 Jun 2023 10:19:28 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: Regression: serial: imx: overrun errors on debug UART
-To:     Linux regressions mailing list <regressions@lists.linux.dev>,
-        Sergey Organov <sorganov@gmail.com>
-Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Stefan Wahren <stefan.wahren@chargebyte.com>,
-        linux-serial@vger.kernel.org,
+ Thunderbird/102.12.0
+Subject: Re: [PATCH] serial: atmel: don't enable IRQs prematurely
+Content-Language: fr
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Dan Carpenter <dan.carpenter@linaro.org>
+Cc:     Elen Song <elen.song@atmel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <2c29454b-9369-4360-8eb4-c151f59460cb@i2se.com>
- <d660e3cf-5686-d989-3b59-efe83ec9d590@linux.intel.com>
- <CAOMZO5A+GujiQY-UT3Q-8o0AKujJb_4kY+5L4x1e07ovGfo31w@mail.gmail.com>
- <9e22f237-f3ee-0415-9e6b-89a137769b8f@i2se.com>
- <5d59dec6-9f6f-7b20-1221-f57c94b29cca@i2se.com>
- <20230325151100.mskydt3hwbnspqp4@pengutronix.de>
- <cb16ddb7-f22f-d637-8670-bccc77add0af@i2se.com> <87mt3ynsa7.fsf@osv.gnss.ru>
- <d5009984-d2eb-0343-5bb4-df8a7f526121@i2se.com> <87sfcy8ncu.fsf@osv.gnss.ru>
- <534ac8db-ae8f-1ea3-9aa9-2105db7f7a52@i2se.com>
- <203ce87f-2898-eb10-2f8c-f237859d75e6@leemhuis.info>
- <87ttw2vnn0.fsf@osv.gnss.ru> <d1b6209d-a174-406a-cc81-86b391940c0c@i2se.com>
- <3853881c-976f-dadc-b64b-4ffd8cc88cf0@leemhuis.info>
-Content-Language: en-US
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <3853881c-976f-dadc-b64b-4ffd8cc88cf0@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:i6JjwkvxW/zbBPIQIrQuc/udIDRD7ls3eBSxT6F18PKPPIydutd
- lhO0SZ8zyswwg9clYBgPkNr3NFG3zbTf+vpOO08xuSnZ4xx2gM6JlaMXXaN4GmfadtSydQh
- puoyqcZd2jONSOf14Gtbt9x6e0E8IuD7BBRElYkTG4MXoyUPKeDNyVtvwApoXYZG/jvUWUT
- X4q7ogtPZ2vP5nB8pS9OQ==
-UI-OutboundReport: notjunk:1;M01:P0:s5fngwyW5Xc=;VqpgxXUTsZQEYsdtXNvH4ARVqEx
- lbMHRL2w9Nn0F91TK5jGXY6bcKwzUbPwQk3psyzTNTKFAGdvbcGC9jRSrGew13q2nfaMiBYrM
- 65zShde8//TvNIPkzW0qlKcjoqO+K8KU8lD9ZfaEGtKlt+1uhz63xmGdVpXnfCH4EDCI++C4n
- qQCwl7PfIhoKRG61zdPoGP2omfBiwEOTe7SglQB3iYbO7QXyKCzF9BxHC7GFUBDuv8harda41
- vQsEuz3l6itgBv9Nx1UfI6GwW0PA0161jFzQKQQ0HU1pFIjgbWtulw9QWhJkF/xJS+4rlUeGM
- Q/Z2VrW7bVkfhabxAvG5+9vH4L0jChzafMEE77HvAu0lgVOdJCYXVUt2NJKZBH/Uxy71Axk2j
- LFHiz9rgZz99zv5jhT3RXWCQZqAgBlvANQ+lZjW39smgh8SwLYssCj2aWnoa0l13/oqDGb+8+
- 8UGcnZevyzPwgFcr1kR8gXt4i/1jACLY2WqYKbBOYH6vCXjiAXfvmchc+8zmASl9auzWIgTTJ
- XQlnSlyEMGq9LoIC1uW3A+WD4hfcEXb7nG7VDZthDJ9JsN56h3DvnQPryVwHVmlfkfcezhd5k
- HUZSG/+DJXWRi6ZwfxW4Tf9VjUasA8jr/oGDg9iNa2LUpexx253kI/757IYo3iHw0ABSgTjFk
- MnWTyBkTsX+k+cbPVclpDsiYIE4LG71/CnyIExAyCw==
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@atmel.com>,
+        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <cb7c39a9-c004-4673-92e1-be4e34b85368@moroto.mountain>
+ <d87d9f00-8d85-6220-43d3-51ef8e793193@kernel.org>
+ <c0c661bb-2584-46cd-9c72-8f1d9ccbaee4@kadam.mountain>
+ <0be8c2ad-499a-4cf1-af98-920af542c5b9@kadam.mountain>
+ <0876fda2-80ca-20f9-397d-6990e3f40e98@kernel.org>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <0876fda2-80ca-20f9-397d-6990e3f40e98@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Thorsten,
-
-Am 20.06.23 um 16:47 schrieb Linux regression tracking (Thorsten Leemhuis):
-> On 24.05.23 15:07, Stefan Wahren wrote:
+Le 20/06/2023 à 06:50, Jiri Slaby a écrit :
+> On 19. 06. 23, 13:47, Dan Carpenter wrote:
+>> On Mon, Jun 19, 2023 at 02:44:11PM +0300, Dan Carpenter wrote:
+>>> On Mon, Jun 19, 2023 at 01:01:49PM +0200, Jiri Slaby wrote:
+>>>> On 19. 06. 23, 11:45, Dan Carpenter wrote:
+>>>>> The atmel_complete_tx_dma() function disables IRQs at the start
+>>>>> of the function by calling spin_lock_irqsave(&port->lock, flags);
+>>>>> There is no need to disable them a second time using the
+>>>>> spin_lock_irq() function and, in fact, doing so is a bug because
+>>>>> it will enable IRQs prematurely when we call spin_unlock_irq().
+>>>>>
+>>>>> Just use spin_lock/unlock() instead without disabling or enabling
+>>>>> IRQs.
 >>
->> Am 23.05.23 um 21:44 schrieb Sergey Organov:
->>> "Linux regression tracking (Thorsten Leemhuis)"
->>> <regressions@leemhuis.info> writes:
->>>
->>> Solving this would need to identify the cause of interrupts being
->>> disabled for prolonged times, and nobody volunteered to investigate this
->>> further. One suspect, the Linux serial console, has been likely excluded
->>> already though, as not actually being in use for printk() output.
->>>
+>> Maybe I should add a "a second time".
 >>
->> I don't think that we can exclude the serial console as a whole, i never
->> made such a observation. But at least we can exclude kernel logging on
->> the debug UART.
+>> "Just use spin_lock/unlock() instead without disabling or enabling
+>> IRQs a second time."
 > 
-> Stefan, just wondering: was this ever addressed upstream? I assume it's
-> not, just wanted to be sure.
+> No, I'm just stupid and I apparently fail to understand written text at
+> times.
 > 
-> I'm a bit unsure what to do with this and consider asking Greg for
-> advice, as he applied the patch. On one hand it's *IMHO* clearly a
-> regression (but for the record,  some people involved in the discussion
-> claim it's not). OTOH the culprit was applied more than a year ago now,
-> so reverting it might cause more trouble than it's worth at this point,
-> as that could lead to regressions for other users.
-
-thanks for tracking this issue, but in my opinion the discussion goes in 
-circles. So i don't see a point in reanimating this again.
-
-Articles like [1] suggests me this is a general issue.
-
-Best regards
-
-[1] - https://www.phoronix.com/news/Printk-Threaded-Atomic-v1
-
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 > 
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> --
-> Everything you wanna know about Linux kernel regression tracking:
-> https://linux-regtracking.leemhuis.info/about/#tldr
-> If I did something stupid, please tell me, as explained on that page.
-> 
-> #regzbot poke
+> thanks,
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
+
+Thanks !
