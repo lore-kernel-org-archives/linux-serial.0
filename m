@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A96B2EB64DC
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Jun 2023 10:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99393EB64D7
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Jun 2023 10:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231819AbjFUKQf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Jun 2023 06:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
+        id S231452AbjFUKQh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Jun 2023 06:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbjFUKQa (ORCPT
+        with ESMTP id S231294AbjFUKQe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Jun 2023 06:16:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5936519B6;
-        Wed, 21 Jun 2023 03:16:20 -0700 (PDT)
+        Wed, 21 Jun 2023 06:16:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE48110F0;
+        Wed, 21 Jun 2023 03:16:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE374614F7;
-        Wed, 21 Jun 2023 10:16:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4068DC433C9;
-        Wed, 21 Jun 2023 10:16:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E875C614FD;
+        Wed, 21 Jun 2023 10:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AAD9C433C0;
+        Wed, 21 Jun 2023 10:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1687342579;
-        bh=fI73SiBO6xUlZ6yV48DEr6cjU7NZbUlp7BYYrDl0vJg=;
+        s=k20201202; t=1687342582;
+        bh=zHSBUMeolRXKfp/Yo8BVUgIz5T+GFyJ1SF9F8vHu5rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tb4AeXeCjM4ZKM2XUG2d8z1OEeVQ1xnZlhY05Q0tcBoMi34DP3HWvrQjdJT5daLrP
-         o5ffbra6/Fu1YC+4/12840hYNfZCBTp/8nqI4VOUwnAcgFLn0lwEXbIJ6rAOTdTPpg
-         3oA2tpJ0C1ebFLaR+sdaupVtXzKreRTk82ZyUrdHLstb1zsY5skriBYwaTFyRHyQk5
-         X5ajMTk3OJIxe70WpKOONlkcpE6dMSEFjaJJ6yCmClIS4fwsql3PIM6aIC64eT2bRa
-         CtNXkMZoIgDY1osi7JPNAU0XW7l/Y33aHHDZAO9R2HVhHDr9IYuXr6iYCT+gOwI1bL
-         mIHw+sZhLFnsA==
+        b=kUYS/39wW7sKEek9iEIIAK6FKAd6KmceDePeyBw/4UMyJ4lZiqtFejDQl8pxKiI0+
+         G4dXkys30iWiJA5kwxqr0g8zFF877MdTsLWMKxDvOSmAQiWLQSZauO068wwSO7ZFYq
+         bRT2gwy0zFsD1Z2yW1TDStKZYGLSJocvQdYwsC8zVLHLzvbg7NaPmLhy8Lg01Z3wbA
+         Rxb/Iki/3Cg4t/RZKn1ZK0fgR02O/ZXhaFO3A/bnfkLdoSsGxik7SqWyDyRJP1j/82
+         82ZRXEr27Z/GSAYObiQMu/7SgszTwTYeRKdM/PatpBPO7HxQE5YhNTrvPpBls505En
+         zn29bQsuQkV0w==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 3/6] tty_audit: invert the condition in tty_audit_log()
-Date:   Wed, 21 Jun 2023 12:16:08 +0200
-Message-ID: <20230621101611.10580-4-jirislaby@kernel.org>
+Subject: [PATCH 5/6] tty_audit: make tty pointers in exposed functions const
+Date:   Wed, 21 Jun 2023 12:16:10 +0200
+Message-ID: <20230621101611.10580-6-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230621101611.10580-1-jirislaby@kernel.org>
 References: <20230621101611.10580-1-jirislaby@kernel.org>
@@ -49,52 +49,64 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-If we cannot obtain an audit buffer in tty_audit_log(), simply return
-from the function. Apart this is mostly preferred in the kernel, it
-allows to merge the split audit string while still keeping it readable.
+Both tty_audit_add_data() and tty_audit_tiocsti() need only to read from
+the tty struct, so make the tty parameters of them both const. This
+aids the compiler a bit.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/tty_audit.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tty/tty.h       | 11 ++++++-----
+ drivers/tty/tty_audit.c |  5 +++--
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/tty/tty.h b/drivers/tty/tty.h
+index 1e0d80e98d26..89769a1f1f97 100644
+--- a/drivers/tty/tty.h
++++ b/drivers/tty/tty.h
+@@ -99,14 +99,15 @@ extern int tty_ldisc_autoload;
+ 
+ /* tty_audit.c */
+ #ifdef CONFIG_AUDIT
+-void tty_audit_add_data(struct tty_struct *tty, const void *data, size_t size);
+-void tty_audit_tiocsti(struct tty_struct *tty, char ch);
++void tty_audit_add_data(const struct tty_struct *tty, const void *data,
++			size_t size);
++void tty_audit_tiocsti(const struct tty_struct *tty, char ch);
+ #else
+-static inline void tty_audit_add_data(struct tty_struct *tty, const void *data,
+-				      size_t size)
++static inline void tty_audit_add_data(const struct tty_struct *tty,
++				      const void *data, size_t size)
+ {
+ }
+-static inline void tty_audit_tiocsti(struct tty_struct *tty, char ch)
++static inline void tty_audit_tiocsti(const struct tty_struct *tty, char ch)
+ {
+ }
+ #endif
 diff --git a/drivers/tty/tty_audit.c b/drivers/tty/tty_audit.c
-index 43f34465b9df..c6c27acad2ad 100644
+index 6cf8b63368ee..5cbe28ac1763 100644
 --- a/drivers/tty/tty_audit.c
 +++ b/drivers/tty/tty_audit.c
-@@ -66,20 +66,20 @@ static void tty_audit_log(const char *description, dev_t dev,
- 	uid_t uid = from_kuid(&init_user_ns, task_uid(current));
- 	uid_t loginuid = from_kuid(&init_user_ns, audit_get_loginuid(current));
- 	unsigned int sessionid = audit_get_sessionid(current);
-+	char name[TASK_COMM_LEN];
- 
- 	ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_TTY);
--	if (ab) {
--		char name[TASK_COMM_LEN];
--
--		audit_log_format(ab, "%s pid=%u uid=%u auid=%u ses=%u major=%d"
--				 " minor=%d comm=", description, pid, uid,
--				 loginuid, sessionid, MAJOR(dev), MINOR(dev));
--		get_task_comm(name, current);
--		audit_log_untrustedstring(ab, name);
--		audit_log_format(ab, " data=");
--		audit_log_n_hex(ab, data, size);
--		audit_log_end(ab);
--	}
-+	if (!ab)
-+		return;
-+
-+	audit_log_format(ab, "%s pid=%u uid=%u auid=%u ses=%u major=%d minor=%d comm=",
-+			 description, pid, uid, loginuid, sessionid,
-+			 MAJOR(dev), MINOR(dev));
-+	get_task_comm(name, current);
-+	audit_log_untrustedstring(ab, name);
-+	audit_log_format(ab, " data=");
-+	audit_log_n_hex(ab, data, size);
-+	audit_log_end(ab);
- }
- 
+@@ -134,7 +134,7 @@ void tty_audit_fork(struct signal_struct *sig)
  /*
+  *	tty_audit_tiocsti	-	Log TIOCSTI
+  */
+-void tty_audit_tiocsti(struct tty_struct *tty, char ch)
++void tty_audit_tiocsti(const struct tty_struct *tty, char ch)
+ {
+ 	dev_t dev;
+ 
+@@ -199,7 +199,8 @@ static struct tty_audit_buf *tty_audit_buf_get(void)
+  *
+  *	Audit @data of @size from @tty, if necessary.
+  */
+-void tty_audit_add_data(struct tty_struct *tty, const void *data, size_t size)
++void tty_audit_add_data(const struct tty_struct *tty, const void *data,
++			size_t size)
+ {
+ 	struct tty_audit_buf *buf;
+ 	unsigned int audit_tty;
 -- 
 2.41.0
 
