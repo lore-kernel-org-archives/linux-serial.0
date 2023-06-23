@@ -2,236 +2,225 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60755EB64DD
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jun 2023 18:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4368FC001E0
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Jun 2023 20:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbjFWSho (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jun 2023 14:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48776 "EHLO
+        id S231887AbjFWUbm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Jun 2023 16:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbjFWShm (ORCPT
+        with ESMTP id S229451AbjFWUbi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jun 2023 14:37:42 -0400
-X-Greylist: delayed 1074 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Jun 2023 11:37:07 PDT
-Received: from mx0a-00010702.pphosted.com (mx0a-00010702.pphosted.com [148.163.156.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2872954;
-        Fri, 23 Jun 2023 11:37:06 -0700 (PDT)
-Received: from pps.filterd (m0239462.ppops.net [127.0.0.1])
-        by mx0b-00010702.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 35N8IXAo009767;
-        Fri, 23 Jun 2023 13:18:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ni.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=PPS11062020;
- bh=Gd7HDZlbX6/DJyjK7WKVElCMRj1HSxaZ7XAAZ/FhIcA=;
- b=YRDb6+alcmvrdl+pvgI7pBwZUJ/fyIE0Pzinh6vAf9Alv63yyROqkYBt2vFIkdMR+XRA
- qo3Q6J07xUSgxOcwj323C8OolONS3on107l/+ll+X4jCBCIaTTRNGpnJzCPkSICl6MH4
- RHmxxlRoY3+K2nkQXkwa4twEZ1S+9nSeoKxrJGx5SKG/3TvrNj3soC9Jt75F6ZoBhff/
- rFA8QZLli7r7oNMhA3DG/EWazRfreIeJFeL6HEwZOKtu5OrwZJX+3wXWUYVM87lo8yiy
- KU9iaIxflgTM2oyivF7/yUthW1eBtmKrXT2MN1CTeYo6nN9qUCY4tm2sT3Pxk6GGXF8f LA== 
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
-        by mx0b-00010702.pphosted.com (PPS) with ESMTPS id 3r98wdab8w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 23 Jun 2023 13:18:54 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T6aHm2nCsIEvT4gQ+HDI8K7yy85FZpoco+MUOyv9l55B8rKI7mlPiFuiTgJ+oagdaMnPpki+xGcMOn07B3xfQ19XDFA2/CCuPsmeOIJKbGb4gLbLgc63XwSX0km9Z9GgoplvOXLuF2XWWmDsQcwInKaqGMHSyB9Pm6HdXSwLaJgsfDCg7dn2ax3/F2+wqZpOkPIpcDatCGNeFI9hpiZE4pQ6hTlKnUdZmDBrm300Cceq81L/cYHonXbaMnDvbKl591OPrfkEmkqwEDjwAUNcVQOumiiCZPSAUU2gjJjeFrS5Scokk3Tqd2/HbD/k3g5uLkU2sILHodm1JvcTJ72huA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Gd7HDZlbX6/DJyjK7WKVElCMRj1HSxaZ7XAAZ/FhIcA=;
- b=luH7vv9ZJdT8Ls51usW9oAdSp6LFe4ytC5vX8333+Y0BKOzfJY4qdnWzU2FR+ZNvtib/QaA2gUkfAgsiUCdckCsSHdBbiwAsuBqRsfs0fMuBwkS6rtnYlgydWlCuziKPlxZAuqbwTml/KK4SzirwRRZT+Hj83ByX9678uwIcuMMxB31qBmJoD0dt458j0Wdqb8kJg4Ej9mI18n4nVBmZWl3Nw2QE6sRJEdl1uLwywsUPvYsJFchziIChxYI+6idthXaa8XFeakVh2lNr/fR9gUt7dzfYFAHg5lO61jwO58HT8wKs/E+AY918Fl6Qc9rIUCHoZAC1jsQ0riWbjoiHAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=ni.com; dmarc=pass action=none header.from=ni.com; dkim=pass
- header.d=ni.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=nio365.onmicrosoft.com; s=selector2-nio365-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gd7HDZlbX6/DJyjK7WKVElCMRj1HSxaZ7XAAZ/FhIcA=;
- b=cxAK6L7cdcxHTLYPxUDKVypnTEQfhGVqBWHJoZ9YTRLGhZEvDs4rWwn7cxZCVWxtLDnc0KGTWbSqlbmvkxhnQdl13gCnsxDlQVfSjtB4CFStGrcKMWeM0Xn51IZSN64++Lx64HpeBsRPA8xcvIjtA4kb/e/dICzIWebPts8RBsM=
-Received: from SN6PR04MB4973.namprd04.prod.outlook.com (2603:10b6:805:91::30)
- by CO6PR04MB7492.namprd04.prod.outlook.com (2603:10b6:303:a3::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.26; Fri, 23 Jun
- 2023 18:18:52 +0000
-Received: from SN6PR04MB4973.namprd04.prod.outlook.com
- ([fe80::4e3a:2e07:9d5f:2ca]) by SN6PR04MB4973.namprd04.prod.outlook.com
- ([fe80::4e3a:2e07:9d5f:2ca%2]) with mapi id 15.20.6521.023; Fri, 23 Jun 2023
- 18:18:52 +0000
-Message-ID: <30fb1e3e-c130-b738-3a09-da525ae97de1@ni.com>
-Date:   Fri, 23 Jun 2023 13:18:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v4 tty-next 2/2] serial: 8250: add driver for NI UARTs
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Gratian Crisan <gratian.crisan@ni.com>,
-        Jason Smith <jason.smith@ni.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-References: <20230505213850.829639-1-brenda.streiff@ni.com>
- <20230505213850.829639-3-brenda.streiff@ni.com>
- <4585cc23-aa14-7916-11e5-3d3de3153d80@linux.intel.com>
-From:   Brenda Streiff <brenda.streiff@ni.com>
-In-Reply-To: <4585cc23-aa14-7916-11e5-3d3de3153d80@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SN7P220CA0025.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:806:123::30) To SN6PR04MB4973.namprd04.prod.outlook.com
- (2603:10b6:805:91::30)
+        Fri, 23 Jun 2023 16:31:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9622112;
+        Fri, 23 Jun 2023 13:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1687552296; x=1719088296;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=k09nEHCiSzbJsqqSNMTaSxW8jtMKfqLZrahLVUHWd9A=;
+  b=cIB4HII1991xayeKfBVY8uQfzaGu2JvLWmpYq2Rz73SETXIum2cd8ECy
+   SuuoDw1tXjVffAcr91e3vhPvi5jILKqDYVb5oadMi8bqGeLrky9wTmrsz
+   qTi8H9AW/OJcC4I9qt2343tw+CjZj/gfVJBCj88TAEicfIdQ0ZaYfFwLs
+   26TW0SSgEXwi4shStxrZ2IB08bgRxOoeWuMezKLa945Ibk7uYv25FafjP
+   /Unr6MPZRaLLIPOwGu9/AIFS+ojOg7hM26Cu/cjv4PJYHEnbvdajx9Xpw
+   YvniVclikzVMVIwoEIDZzJrS7Dgplgvfp0zZ5Y54y3VIvpmzlt5Cf8IBL
+   A==;
+X-IronPort-AV: E=Sophos;i="6.01,153,1684825200"; 
+   d="scan'208";a="158361729"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jun 2023 13:31:34 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Fri, 23 Jun 2023 13:31:29 -0700
+Received: from che-lt-i67070.amer.actel.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Fri, 23 Jun 2023 13:30:59 -0700
+From:   Varshini Rajendran <varshini.rajendran@microchip.com>
+To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <vkoul@kernel.org>, <tglx@linutronix.de>, <maz@kernel.org>,
+        <lee@kernel.org>, <ulf.hansson@linaro.org>,
+        <tudor.ambarus@linaro.org>, <miquel.raynal@bootlin.com>,
+        <richard@nod.at>, <vigneshr@ti.com>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <linus.walleij@linaro.org>,
+        <p.zabel@pengutronix.de>, <olivia@selenic.com>,
+        <a.zummo@towertech.it>, <radu_nicolae.pirea@upb.ro>,
+        <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>,
+        <wim@linux-watchdog.org>, <linux@roeck-us.net>, <arnd@arndb.de>,
+        <olof@lixom.net>, <soc@kernel.org>, <linux@armlinux.org.uk>,
+        <sre@kernel.org>, <jerry.ray@microchip.com>,
+        <horatiu.vultur@microchip.com>, <durai.manickamkr@microchip.com>,
+        <varshini.rajendran@microchip.com>, <andrew@lunn.ch>,
+        <alain.volmat@foss.st.com>, <neil.armstrong@linaro.org>,
+        <mihai.sain@microchip.com>, <eugen.hristev@collabora.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <linux-mtd@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-usb@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <linux-pm@vger.kernel.org>
+CC:     <Hari.PrasathGE@microchip.com>, <cristian.birsan@microchip.com>,
+        <balamanikandan.gunasundar@microchip.com>,
+        <manikandan.m@microchip.com>, <dharma.b@microchip.com>,
+        <nayabbasha.sayed@microchip.com>, <balakrishnan.s@microchip.com>
+Subject: [PATCH v2 00/45] Add support for sam9x7 SoC family
+Date:   Sat, 24 Jun 2023 02:00:11 +0530
+Message-ID: <20230623203056.689705-1-varshini.rajendran@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR04MB4973:EE_|CO6PR04MB7492:EE_
-X-MS-Office365-Filtering-Correlation-Id: 408ebd07-4b53-4bec-4040-08db74164c3a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U/iawYQsKHFFLKrU/KQqJMmaFY7VoivnWeD6DRDWQunqnYjH9+Dv5W1fWJmeleNYtrGuE9LWIZ5yFmfghfevjSk4nWRv9P2BFJ/B5SGGKEXdZb6SEOC3YspcEE6dg3+G93/cDT2peyiwjrF5Cn/2IO1T4ttxtzj+7JUGipkf7ZQP26+QZELSBAd7Ewmz7TY4puiI/Q6x7z3iegJaqSnUiiOHkDkLezqWgZmIwe5OpF+PpqXb3dCQVhvnxd5O67xD4u/kxNZURTIbAC/4aoR37MfiiVAUaagqyvmccbOb+/gC2b1DRgrw1SRiqERaL0QujFwr2DzFmf69jGKTRw3OPRGzJ86gFbRgI0k25DOid5rIcQmyP4WQoqP9ZGpTx2pnq+1l8aeeR3sIDqT9t05ZcLvJ7BwVtiHUZ9ttxkloUhpzgljIPL9b1ocjRec7OYr+ysAXS6vypnMrn8vG6Zy5JqNes1XbYwrVo+HkJ88VIRJ36xJQxwOSTIs50PbgOskUjvT8ehN7paQwkEX5Wy6wAla3BDup0ee7jahBhsHbZPUtpM2Yz53o6GvR7Q7oLHLV2eaav5q91NQA6F1EbNPrhrkkpvb0jSeW5oZVlSDFWWzhgCdOSgx3xzDTJskDra1a5PwLflwiyEOsF8W4ds8Dq7xha6ecsCJfW/n8d5LY8ZwpmR3A4rxlW3tR421Tl7SN
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR04MB4973.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(366004)(346002)(136003)(451199021)(6506007)(44832011)(53546011)(5660300002)(31696002)(86362001)(31686004)(66574015)(2616005)(316002)(186003)(54906003)(2906002)(6512007)(26005)(478600001)(6916009)(4326008)(6666004)(66946007)(66556008)(66476007)(41300700001)(8936002)(6486002)(8676002)(966005)(36756003)(66899021)(38100700002)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?amJpa08wd1dMM0h4c3BBTVlyWWhNSVZsaHRYcXdOYW9sZkJOeXFhVTVsK2lJ?=
- =?utf-8?B?dDhqYkdHTnlhY0hNaWkyalA1cWhMbnZrRWxQUExCcDRlaG1jQ0VkajUyTTFq?=
- =?utf-8?B?TStzZTVYMjh5cFBwUXFNbngvZW14VlM3Rk9raGhZTU9DZVo4VmVyZXFaWW1O?=
- =?utf-8?B?MEJOd2tncVp6ZEhUdm5CUzJKemEwcXRnU3Nsd2gyb0pyWkJVbytGbTU3TitK?=
- =?utf-8?B?SGw2blFGV3g3SExrS2FSeTQ1aWxRL1hsZ2VIVWI4Smt6TjJ4RCsvaTV5ODNi?=
- =?utf-8?B?TVl5d0JLRGFqNzFUWjc0WXpFSUFmVlI2QWNVTGR4K0E0SUFISVdMa3ZYUk16?=
- =?utf-8?B?QWtTbGorMzA2TVkyT2JrZktQZEgxTmp2QmI2R2UwTGQ2QnFRQllrUlp3UXRr?=
- =?utf-8?B?aVgvUTFkb25DNUNsWGpEdjc2bnhuQ2UrY2lxb0QxdWJDTnorMzJiLzBlZzJH?=
- =?utf-8?B?UmFFNVNEYnFOaDJIMkpTZWxEVmN5QkJ4VEtmTXAvR1d1UGptOGRjV1dNVDhU?=
- =?utf-8?B?eGlVNGVXeCs1QWU2TmJPMDVGSXdaM0h5UG9Vc0tUQ0dGZnI2N2hHbGl5TTJY?=
- =?utf-8?B?WXRRWnd2SzhZRFRvYWRraXNVVjl1RHpaSG9vOXlScmhMcnJqaHkrVlJsdGF1?=
- =?utf-8?B?SU1iQVMzZXByL1pYaUt5Q3A0akovRTBJcXVNMlhZZk5MeEQrTCtYNGo5RzdW?=
- =?utf-8?B?cVZaaDcwZzhaQlExU1pETTFhS2NrdmpYbUxyOWZTWVI3Zy9PdW5WZXVtalJC?=
- =?utf-8?B?dysvOUZIVWd2RXhpR1NlVS9lMkxYNmhpbC93aDhzZytHbExkSkwvbk5MQ3Zm?=
- =?utf-8?B?OGgvclFBeUJQWGdMcmJtamRuSDBtSEdrSVdVeU9MNEFyNHN1Y3ZlQlE1WjFZ?=
- =?utf-8?B?Q3ljY3JFNkd4Y2huVzI3VnBlL1h5d29Kc0R6RGhVQmNVSHE5VjVNZTFkQUlQ?=
- =?utf-8?B?bm5KSUlYSzZtSkpzenZpcXYvL2c2OC9ONXljeUROQkx4YXZNWjNUUDNQRnhQ?=
- =?utf-8?B?SlNDRGxhOXlEREd3UEtta0lhNlFpS0c0VDVVbzI2dlBLa0grazRoZ01zNi8r?=
- =?utf-8?B?cHVIR0FHUW5jQTZzSXVHR0tYTGVrbkdvRW1sVW5vMGlsYm1VdjZXOGZJQTNN?=
- =?utf-8?B?RjhhY2M4d0IyWUJNK1JVZWNJTVVJbXB2Qm5PVU5rMXhKQ2gxZlAxZWM2WE9m?=
- =?utf-8?B?Q2t1ZlRCQnMvOEY5VWZZYW9vSENGQjlVUUpuUW42K3JhdTVYQmVFZEZqZGNw?=
- =?utf-8?B?LzZ6Z200RVdRNEw5NXA4a0sxYXF6SFFlWXE5a2loY0pGVU5Vcy9xS3VlK0kr?=
- =?utf-8?B?djQzTVFXVkNDMUt3VEtUN2U2S0pJUUQrcmErdEhYUFZnVkdlY2JqVTRQMFU5?=
- =?utf-8?B?VnRzV1EveWxJYVY0SjUwNEg3THRmaVc4bGFnbGF6WUVMVnl5MjdqQjI5c3Bl?=
- =?utf-8?B?STA4eE4zU3ZTNGNCa0hreEpaRUxuSVI2OEU2cTZxMW93cWlZNGk5aVdjbk9p?=
- =?utf-8?B?UStDTTNoWFZGTnpISmhHNHdQZ3hNbGtyYTh4VVVpV3dZc05yUFY3U2luVzF3?=
- =?utf-8?B?S2kvL3dTWG4weGhkZGtrR0c1L0p3MWlMMzlaaHFNVFl2WTlmWFFSUWozUmN3?=
- =?utf-8?B?bXJWK2VIR3c4UCtCQ1g3dWtZT0JNRVpYVlRVZ3RobXgxYlpDdWVzOXlCdHFm?=
- =?utf-8?B?VlpXT1dzM3VxVG9YYUpheWxpT2paR2N5dmpicm9zTkgweDJFTEtzV01sa0x1?=
- =?utf-8?B?OHg2VlNhY2plbkZRMGZaVmtZL2REeUdKTEpGemtaVk90Q3RBTmMyRXU1bFZQ?=
- =?utf-8?B?Um9wU0Roa0hWUkRTYjI5ek5veTVxSlpncmZqRjQ1UDd2WXZscHg3bmdoNk1z?=
- =?utf-8?B?SVZjMldoSVQ5TmZ6aGQ4YXVpcjFKMGNWS1liZ1RCT2ZnOTAwRXNka3pCTzdB?=
- =?utf-8?B?S0NzcFpTVjdkNlVLazhVODdPb0JSMUpzTFNBNzlwRmlLY1h3RDNCbWtHVito?=
- =?utf-8?B?QURySVF5d3N5Ykx0bTlOMXhDOURBVkk1TXRSczlGWkM4M0tGTVNaWTRYaHRM?=
- =?utf-8?B?YUhSYnFLSjFOLzg0ZlFhZUxteFAwYzBtcnpFM0srUUZQTnUwb3ZHbTcwWFBG?=
- =?utf-8?B?Y3NHWXJUandEaXZsTzBhdlBDQWM1TmVmT1JMZUJoZGFZZVBlcHBQdVNHZ1lz?=
- =?utf-8?B?RUE9PQ==?=
-X-OriginatorOrg: ni.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 408ebd07-4b53-4bec-4040-08db74164c3a
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR04MB4973.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2023 18:18:52.1197
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 87ba1f9a-44cd-43a6-b008-6fdb45a5204e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: erteAXWWGuoRdNG0wLxi5kXxcqyMUkuUBEtsKiOQLw9bsYN0w4QExWyd18MhzCtxy9j5ti+I27GXqSd3XA4YNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR04MB7492
-X-Proofpoint-ORIG-GUID: sEWu-TwM41a7cnRSIksqXoYP-IMhSwJk
-X-Proofpoint-GUID: sEWu-TwM41a7cnRSIksqXoYP-IMhSwJk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-06-23_10,2023-06-22_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=30 clxscore=1011
- impostorscore=0 malwarescore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 phishscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=30 reason=mlx scancount=1
- engine=8.12.0-2305260000 definitions=main-2306230163
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Apologies for the delay in response. I have your other requested
-changes in a pending v5 patchset, but answering this question took
-some digging (and I got bounced between projects in the intervening
-time)
+This patch series adds support for the new SoC family - sam9x7.
+ - The device tree, configs and drivers are added
+ - Clock driver for sam9x7 is added
+ - Support for basic peripherals is added
+ - Target board SAM9X75 Curiosity is added
 
-On 5/8/23 03:01, Ilpo Järvinen wrote:
-> On Fri, 5 May 2023, Brenda Streiff wrote:
+ Changes in v2:
+ --------------
 
->> +static const struct serial_rs485 ni16550_rs485_supported = {
->> +	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
->> +	/*
->> +	 * delay_rts_* and RX_DURING_TX are not supported.
->> +	 *
->> +	 * RTS_{ON,AFTER}_SEND are supported, but ignored; the transceiver
->> +	 * is connected in only one way and we don't need userspace to tell
->> +	 * us, but want to retain compatibility with applications that do.
-> 
-> This is a bit odd statement. If application wants to specify those flags,
-> they will be ignored (cleared) by serial core without triggering an error
-> even when driver does not claim to support them.
-> 
-> Or are you saying some application sets these flags and fails if it
-> doesn't get the same flags back? 
+ - Added sam9x7 specific compatibles in DT with fallbacks
+ - Documented all the newly added DT compatible strings
+ - Added device tree for the target board sam9x75 curiosity and
+   documented the same in the DT bindings documentation
+ - Removed the dt nodes that are not supported at the moment
+ - Removed the configs added by previous version that are not supported
+   at the moment
+ - Fixed all the corrections in the commit message
+ - Changed all the instances of copyright year to 2023
+ - Added sam9x7 flag in PIT64B configuration
+ - Moved macro definitions to header file
+ - Added another divider in mck characteristics in the pmc driver
+ - Fixed the memory leak in the pmc driver
+ - Dropped patches that are no longer needed
+ - Picked up Acked-by and Reviewed-by tags
 
-Yes, this is the case.
 
-There's an unfortunate amount of historical baggage on our side here.
+Hari Prasath (1):
+  irqchip/atmel-aic5: Add support for sam9x7 aic
 
-The hardware supports four modes:
-   Wire Mode              | Tx enabled?        | Rx enabled?
-   -----------------------|--------------------|------------------------
-   NI16650_PCR_RS422      | Always             | Always
-   NI16650_PCR_ECHO_RS485 | If DTR asserted    | Always
-   NI16650_PCR_DTR_RS485  | If DTR asserted    | Disabled when TX enabled
-   NI16650_PCR_AUTO_RS485 | If data in TX FIFO | Disabled when TX enabled
+Varshini Rajendran (44):
+  dt-bindings: microchip: atmel,at91rm9200-tcb: add sam9x60, sam9x7
+    compatible
+  dt-bindings: usb: ehci: Add atmel at91sam9g45-ehci compatible
+  dt-bindings: usb: generic-ehci: Document clock-names property
+  dt-bindings: net: cdns,macb: add documentation for sam9x7 ethernet
+    interface
+  ARM: at91: pm: add support for sam9x7 SoC family
+  ARM: at91: pm: add sam9x7 SoC init config
+  ARM: at91: add support in SoC driver for new sam9x7
+  clk: at91: clk-sam9x60-pll: re-factor to support individual core freq
+    outputs
+  clk: at91: sam9x7: add support for HW PLL freq dividers
+  clk: at91: sama7g5: move mux table macros to header file
+  dt-bindings: clk: at91: add bindings for SAM9X7's clock controller
+  dt-bindings: reset: atmel,at91sam9260-reset: add sam9x7 binding
+  dt-bindings: atmel-sysreg: add bindings for sam9x7
+  dt-bindings: crypto: add bindings for sam9x7 in Atmel AES
+  dt-bindings: crypto: add bindings for sam9x7 in Atmel SHA
+  dt-bindings: crypto: add bindings for sam9x7 in Atmel TDES
+  dt-bindings: dmaengine: at_xdmac: add compatible with microchip,sam9x7
+  dt-bindings: i2c: at91: Add SAM9X7 compatible string
+  dt-bindings: mfd: at91: Add SAM9X7 compatible string
+  dt-bindings: atmel-gpbr: add microchip,sam9x7-gpbr
+  dt-bindings: atmel-matrix: add microchip,sam9x7-matrix
+  dt-bindings: atmel-smc: add microchip,sam9x7-smc
+  dt-bindings: atmel-ssc: add microchip,sam9x7-ssc
+  dt-bindings: sdhci-of-at91: add microchip,sam9x7-sdhci
+  dt-bindings: atmel-nand: add microchip,sam9x7-pmecc
+  dt-bindings: pinctrl: at91: add bindings for SAM9X7
+  dt-bindings: rng: atmel,at91-trng: document sam9x7 TRNG
+  dt-bindings: rtc: at91rm9200: add sam9x7 compatible
+  dt-bindings: rtt: at91rm9260: add sam9x7 compatible
+  dt-bindings: serial: atmel,at91-usart: add compatible for sam9x7
+  dt-bindings: atmel-classd: add sam9x7 compatible
+  spi: dt-bindings: atmel,at91rm9200-spi: add sam9x7 compatible
+  dt-bindings: usb: atmel: Update DT bindings documentation for sam9x7
+  dt-bindings: watchdog: sama5d4-wdt: add compatible for sam9x7-wdt
+  dt-bindings: irqchip/atmel-aic5: Add support for sam9x7 aic
+  clk: at91: sam9x7: add sam9x7 pmc driver
+  power: reset: at91-poweroff: lookup for proper pmc dt node for sam9x7
+  power: reset: at91-reset: add reset support for sam9x7 SoC
+  power: reset: at91-reset: add sdhwc support for sam9x7 SoC
+  ARM: at91: Kconfig: add config flag for SAM9X7 SoC
+  ARM: configs: at91: enable config flags for sam9x7 SoC family
+  ARM: dts: at91: sam9x7: add device tree for SoC
+  dt-bindings: arm: add sam9x75 curiosity board
+  ARM: dts: at91: sam9x75_curiosity: add device tree for sam9x75
+    curiosity board
 
-These four hardware modes map directly to "wire mode" settings in higher
-level NI software APIs, such as NI-VISA's VI_ATTR_ASRL_WIRE_MODE
-property [1] on other operating systems, and our drivers for those OSes
-just present those settings directly in their ABI. Linux already had
-support for RS485, but when the driver was first authored for Linux [2]
-(and then kept out-of-tree for a decade), it was done so with an
-(erroneous) understanding of the RS485 flags:
+ .../devicetree/bindings/arm/atmel-at91.yaml   |    6 +
+ .../devicetree/bindings/arm/atmel-sysregs.txt |    7 +-
+ .../devicetree/bindings/clock/at91-clock.txt  |    7 +-
+ .../crypto/atmel,at91sam9g46-aes.yaml         |    5 +-
+ .../crypto/atmel,at91sam9g46-sha.yaml         |    5 +-
+ .../crypto/atmel,at91sam9g46-tdes.yaml        |    5 +-
+ .../devicetree/bindings/dma/atmel-xdma.txt    |    4 +-
+ .../bindings/i2c/atmel,at91sam-i2c.yaml       |    3 +
+ .../interrupt-controller/atmel,aic.txt        |    2 +-
+ .../devicetree/bindings/mfd/atmel-flexcom.txt |    2 +-
+ .../devicetree/bindings/mfd/atmel-gpbr.txt    |    1 +
+ .../devicetree/bindings/mfd/atmel-matrix.txt  |    1 +
+ .../devicetree/bindings/mfd/atmel-smc.txt     |    1 +
+ .../devicetree/bindings/misc/atmel-ssc.txt    |    1 +
+ .../devicetree/bindings/mmc/sdhci-atmel.txt   |    4 +-
+ .../devicetree/bindings/mtd/atmel-nand.txt    |    1 +
+ .../devicetree/bindings/net/cdns,macb.yaml    |    1 +
+ .../bindings/pinctrl/atmel,at91-pinctrl.txt   |    3 +-
+ .../reset/atmel,at91sam9260-reset.yaml        |    1 +
+ .../bindings/rng/atmel,at91-trng.yaml         |    1 +
+ .../bindings/rtc/atmel,at91rm9200-rtc.yaml    |    1 +
+ .../bindings/rtc/atmel,at91sam9260-rtt.yaml   |    1 +
+ .../bindings/serial/atmel,at91-usart.yaml     |    3 +
+ .../soc/microchip/atmel,at91rm9200-tcb.yaml   |    2 +
+ .../bindings/sound/atmel,sama5d2-classd.yaml  |    5 +-
+ .../bindings/spi/atmel,at91rm9200-spi.yaml    |    1 +
+ .../devicetree/bindings/usb/atmel-usb.txt     |    9 +-
+ .../devicetree/bindings/usb/generic-ehci.yaml |    5 +
+ .../bindings/watchdog/atmel,sama5d4-wdt.yaml  |    1 +
+ arch/arm/boot/dts/Makefile                    |    2 +
+ arch/arm/boot/dts/at91-sam9x75_curiosity.dts  |  336 +++++
+ arch/arm/boot/dts/sam9x7.dtsi                 | 1237 +++++++++++++++++
+ arch/arm/configs/at91_dt_defconfig            |    1 +
+ arch/arm/mach-at91/Kconfig                    |   23 +-
+ arch/arm/mach-at91/Makefile                   |    1 +
+ arch/arm/mach-at91/generic.h                  |    2 +
+ arch/arm/mach-at91/pm.c                       |   35 +
+ arch/arm/mach-at91/sam9x7.c                   |   34 +
+ drivers/clk/at91/Makefile                     |    1 +
+ drivers/clk/at91/clk-sam9x60-pll.c            |   50 +-
+ drivers/clk/at91/pmc.h                        |   18 +
+ drivers/clk/at91/sam9x60.c                    |    7 +
+ drivers/clk/at91/sam9x7.c                     |  942 +++++++++++++
+ drivers/clk/at91/sama7g5.c                    |   42 +-
+ drivers/irqchip/irq-atmel-aic5.c              |   10 +
+ drivers/power/reset/Kconfig                   |    4 +-
+ drivers/power/reset/at91-sama5d2_shdwc.c      |    1 +
+ drivers/soc/atmel/soc.c                       |   23 +
+ drivers/soc/atmel/soc.h                       |    9 +
+ 49 files changed, 2806 insertions(+), 61 deletions(-)
+ create mode 100644 arch/arm/boot/dts/at91-sam9x75_curiosity.dts
+ create mode 100644 arch/arm/boot/dts/sam9x7.dtsi
+ create mode 100644 arch/arm/mach-at91/sam9x7.c
+ create mode 100644 drivers/clk/at91/sam9x7.c
 
-   Wire Mode                struct serial_rs485::flags
-   -----------------------  --------------------
-   NI16650_PCR_RS422:       0
-   NI16650_PCR_ECHO_RS485:  SER_RS485_ENABLED|SER_RS485_RX_DURING_TX
-   NI16650_PCR_DTR_RS485:   SER_RS485_ENABLED
-   NI16650_PCR_AUTO_RS485:  SER_RS485_ENABLED|SER_RS485_RTS_ON_SEND
+-- 
+2.25.1
 
-The "RS485 serial_rs485 sanitization" patchset [3] ended up breaking us
-and forced us to reevaluate it, because now some of those states were
-invalid (a driver cannot now simultaneously support not having
-RTS_ON_SEND at the same time as supporting having RTS_ON_SEND).
-
-Ultimately we made the decision that we only care about the RS422 and
-AUTO_RS485 modes, but now we have a slightly different problem, in that
-there's a bunch of userspace middleware that is still coded to expect
-all four modes; so if we remove support for the SER_RS485_RTS_ON_SEND
-flag, even though we don't need it, we end up with:
-- middleware sets SER_RS485_ENABLED|SER_RS485_RTS_ON_SEND
-- kernel coerces this into SER_RS485_ENABLED
-- middleware reads back the value, sees the flags are different, and
-   assumes that the mode isn't properly supported and errors.
-
-So we need to "support" SER_RS485_RTS_ON_SEND, even though we don't
-require the presence or absence of the flag to direct any hardware
-configuration change, in order to avoid this coercion happening.
-
-Ideally we would have a userspace more tolerant of the kernel now
-coercing flags differently than it used to, but unfortunately we're
-stuck dealing with it for a while.
-
-If there's a better way you'd prefer this be handled, let me know.
-We're trying to walk the line between "the driver needs to present
-the ABI correctly to userspace" and "our userspace relied on it having
-been incorrectly implemented in the past".
-
-[1] https://www.ni.com/docs/en-US/bundle/ni-visa/page/ni-visa/vi_attr_asrl_wire_mode.html
-[2] https://github.com/ni/linux/blob/nilrt_pub/14.0/3.10/drivers/tty/serial/8250/8250_ni16550.c#L96
-[3] https://lore.kernel.org/all/20220606100433.13793-1-ilpo.jarvinen@linux.intel.com/
