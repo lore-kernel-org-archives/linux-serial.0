@@ -2,61 +2,60 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F815C001DE
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 08:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8320AC001B0
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 08:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232996AbjFXI0j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Jun 2023 04:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35388 "EHLO
+        id S233043AbjFXI1D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Jun 2023 04:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbjFXI0G (ORCPT
+        with ESMTP id S232970AbjFXI0O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Jun 2023 04:26:06 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC8A3A80
-        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:24:32 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-51d80d81d6eso213792a12.1
-        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:24:32 -0700 (PDT)
+        Sat, 24 Jun 2023 04:26:14 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B2C2951
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:24:41 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-9875c2d949eso192366866b.0
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:24:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687595048; x=1690187048;
+        d=linaro.org; s=google; t=1687595053; x=1690187053;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=jNp0SuVUZqVVXCRqHhi3K5MkR/+Yy6bkXmBLVP0jnFg=;
-        b=jhYOBsx3HADGCmeOqC6OjCZWNkO5/KTJfDVpw9J6lmEYmzL5HiXwDoc239Cv1lfpAf
-         jZ1XFPIoeL3qlalJCxA0FhaGi7vzgisq9Z8HOrSMSOCtij2l1Vf8wC622ZWBSEI6w9Bv
-         tb/zKAvq6RYZE0HuVOvxnBDwjvM9Co7tSVBLYpcHDPpAVMhQKB/QyiaZKtzCg35YId42
-         690WWPFxeJmJW8HpMj1yM1JCQEfATMKKorKORK21ugqiPL/Y7AYQYIQA3iuYHH2rG9hn
-         wKyxDMr3m+KLB5VpzAfFpv9YauEKhIHvu67lLHXen5m4ofDu7Y0eX56xxmPGhBa8yEhc
-         WSyw==
+        bh=gUb+krGwN/aq//L4Czp4P4ZaV1gvYMjmNFcm0YMeIks=;
+        b=eYA3UJqMnYNFBT5YZIdndLK6CYo10TAEJUhO1rkDE5wRgXG7Ro1wa+qDplNjiUeBFI
+         nBfpUZwFUh5v9V0WrZrJeifCf1f/b6uFDUFZoPQm9zNraIfrLhlrbVS80/F2KZEqy4bP
+         7hXfD0f97dggnTdpI+BcBXGROELwxH6n+nxaqPqwOd5nSUDFjPdenNs2GXZVqoCsfhQv
+         5/Sak6C33KxreCsmFuTYXzOnBrOxrQzvQIcDIM/M2Ps1qpkZI93NLRAvWZzSKar82V1/
+         ccuWAs8GicSYXSdAi7pIE82U6LX24WK5SjWwFbkXh6T0cFvSd7CU0QGDwwXBNlDsqGUb
+         tV8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687595048; x=1690187048;
+        d=1e100.net; s=20221208; t=1687595053; x=1690187053;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jNp0SuVUZqVVXCRqHhi3K5MkR/+Yy6bkXmBLVP0jnFg=;
-        b=W27fAO/N+xNIUsktLKpqoRnYlFjjdF1WXBE2Ew3PE6fzPhKcn+QtPbcIN5WaZdhesr
-         qXtxXe7K/obflfy/5AhHByq/lDEd0EpL5aoNwgvFGEYtiVqQB639N+FtUzKx84FO+lPU
-         Z78MfZah3c98P4WbXxcNLwABSuO1DWej8gbGlOSI6aGqB/FLE7OH0G1X9P3BptDM1wNG
-         /HJsVA/rIKZJX0XU3eIP+/ePFFz1d+DTpToKIfkXQ6sNSnnHqbWVqny9Cd+iYBh15CTu
-         I5dtlmSZKSP9/3F6PaztVO9ADa6rbrRggsls06QoUK9U93CGERxRx53cI9OaMRQNND16
-         Wb2w==
-X-Gm-Message-State: AC+VfDzdCB+0+dQi/v6ry9G26TBAXVJbGwZZ4cRWHD1iM46PYH9Styob
-        TVNjIAwaQTJ90HhMbhcoFWrSag==
-X-Google-Smtp-Source: ACHHUZ4gGdNTR0CSjAVHFIlEksa5SJdwiZGS08Kq1pYOdg+zg0I6klkaiPnVTZufYDi7QamMvR/5Yg==
-X-Received: by 2002:a17:907:9706:b0:988:bad4:e403 with SMTP id jg6-20020a170907970600b00988bad4e403mr14932362ejc.55.1687595047903;
-        Sat, 24 Jun 2023 01:24:07 -0700 (PDT)
+        bh=gUb+krGwN/aq//L4Czp4P4ZaV1gvYMjmNFcm0YMeIks=;
+        b=EjmtwI35kAFByP25z9sGL9ElUuDadvPOnpkvQbAYUZrEYdlrpFJrDl5fGGSbHKJ5RS
+         IHEapqwjUFZnCF34BWj6znpaBOr1jLB3LkBCDbRv5tdQzRjRBNauN9jcM1MIh2smhJhC
+         5OvHmDNaKMcVzWvOQJiLII3RzKW2QDUAogU3r88HtKxZ4/JrLKrFCXSi3pu30bhnn2iR
+         +M/99i/p5iKgB4Fig28eU5zKFh5+xajMTP0JxWfa/aex05qr1WieIjuy8JNYCn5bkPbK
+         XiUQFPmE6+BV0NBm9niQWBGy6dcDx29K3gIVy8vYjaFb8hhm4n9jU+/mEJPUn2J4CSdP
+         diVA==
+X-Gm-Message-State: AC+VfDx5YMrmg99CGy+xBkUp/uWRT+JHJIwve1HYi4Fvw3sx78NA8QSa
+        a4ZrM3S/Vsc62gdvZpg5I2rnpg==
+X-Google-Smtp-Source: ACHHUZ633G3vozqxhYSlb2/G6s1lR3tDI248WrtY+qSGpfA/pYjsCnzPQDLjOoJSYY1d4qs/oFcuJA==
+X-Received: by 2002:a17:906:da84:b0:988:f307:aea7 with SMTP id xh4-20020a170906da8400b00988f307aea7mr14027159ejb.7.1687595052667;
+        Sat, 24 Jun 2023 01:24:12 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id qp7-20020a170907206700b0098d0c01d9aasm621791ejb.87.2023.06.24.01.24.02
+        by smtp.gmail.com with ESMTPSA id c15-20020a170906528f00b0098866a94f14sm610407ejm.125.2023.06.24.01.24.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Jun 2023 01:24:07 -0700 (PDT)
-Message-ID: <f1a8a04b-4620-5bea-1542-0e425a95182e@linaro.org>
-Date:   Sat, 24 Jun 2023 10:24:01 +0200
+        Sat, 24 Jun 2023 01:24:12 -0700 (PDT)
+Message-ID: <8f231d42-1022-0595-2dc6-24817a7495b4@linaro.org>
+Date:   Sat, 24 Jun 2023 10:24:06 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [PATCH v2 21/45] dt-bindings: atmel-matrix: add
- microchip,sam9x7-matrix
+Subject: Re: [PATCH v2 22/45] dt-bindings: atmel-smc: add microchip,sam9x7-smc
 Content-Language: en-US
 To:     Varshini Rajendran <varshini.rajendran@microchip.com>,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -93,9 +92,9 @@ Cc:     Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
         manikandan.m@microchip.com, dharma.b@microchip.com,
         nayabbasha.sayed@microchip.com, balakrishnan.s@microchip.com
 References: <20230623203056.689705-1-varshini.rajendran@microchip.com>
- <20230623203056.689705-22-varshini.rajendran@microchip.com>
+ <20230623203056.689705-23-varshini.rajendran@microchip.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230623203056.689705-22-varshini.rajendran@microchip.com>
+In-Reply-To: <20230623203056.689705-23-varshini.rajendran@microchip.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -103,22 +102,22 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 23/06/2023 22:30, Varshini Rajendran wrote:
-> Add microchip,sam9x7-matrix to DT bindings documentation.
+> Add microchip,sam9x7-smc to DT bindings documentation.
 > 
 > Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 > ---
->  Documentation/devicetree/bindings/mfd/atmel-matrix.txt | 1 +
+>  Documentation/devicetree/bindings/mfd/atmel-smc.txt | 1 +
 >  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/atmel-matrix.txt b/Documentation/devicetree/bindings/mfd/atmel-matrix.txt
-> index 89d05c64fb01..75378839fc7f 100644
-> --- a/Documentation/devicetree/bindings/mfd/atmel-matrix.txt
-> +++ b/Documentation/devicetree/bindings/mfd/atmel-matrix.txt
-> @@ -14,6 +14,7 @@ Required properties:
->  			"atmel,at91sam9x5-matrix", "syscon"
->  			"atmel,sama5d3-matrix", "syscon"
->  			"microchip,sam9x60-matrix", "syscon"
-> +			"microchip,sam9x7-matrix", "syscon"
+> diff --git a/Documentation/devicetree/bindings/mfd/atmel-smc.txt b/Documentation/devicetree/bindings/mfd/atmel-smc.txt
+> index 5696d9fcb5dc..1eb2606820a5 100644
+> --- a/Documentation/devicetree/bindings/mfd/atmel-smc.txt
+> +++ b/Documentation/devicetree/bindings/mfd/atmel-smc.txt
+> @@ -10,6 +10,7 @@ Required properties:
+>  			"atmel,sama5d3-smc", "syscon"
+>  			"atmel,sama5d2-smc", "syscon"
+>  			"microchip,sam9x60-smc", "syscon"
+> +			"microchip,sam9x7-smc", "syscon"
 
 That's not what your DTS is saying. NAK.
 
