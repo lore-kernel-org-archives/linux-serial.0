@@ -2,96 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5588AEB64DA
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 06:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEA2C04A6A
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 07:53:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbjFXGCJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Jun 2023 02:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        id S231940AbjFXHxU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Jun 2023 03:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230464AbjFXGCI (ORCPT
+        with ESMTP id S230464AbjFXHxR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Jun 2023 02:02:08 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53D126B3
-        for <linux-serial@vger.kernel.org>; Fri, 23 Jun 2023 23:02:04 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id 46e09a7af769-6b5d4b359d3so1301747a34.2
-        for <linux-serial@vger.kernel.org>; Fri, 23 Jun 2023 23:02:04 -0700 (PDT)
+        Sat, 24 Jun 2023 03:53:17 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A562735
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 00:53:14 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-51bde6a8c20so1520244a12.0
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 00:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1687586524; x=1690178524;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=csp/Ru/rsPdrsyLLiC9Gguj9U+Fgh5fKjxfjDtdRMQc=;
-        b=gS9kbMULFiG5NJj1EiFPcDYOOAup9/tIYjoErj5QPwPUKfxlRIHemxYeuuGkT5IQ7O
-         c7q1PnCnFxwmLm5wqs6wVNDP5EQtrHa797c31u61Sgb85CyTExELo6fgumeVKtazTkyK
-         Z0tONjwKKfwuqUa0VYa6gAf1NOYJjIRLgduxS9PxrqNq74VKXp1RulJr+WnM3zLjPrG5
-         Zo0uawG94qyB46FVOaEEYDmgx1l4uSMAuNQUM1KfWD+PiwXcUnlLfyYnt00jtZp34JhC
-         q175zRHArEOYlIBtL9cu4uFsnh1rrh3BGoc9HuBWEuyyP94jOMRtugS15V/YXnhSUlNG
-         xi3Q==
+        d=linaro.org; s=google; t=1687593192; x=1690185192;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hr9nrGlYrxN00jEwRxs6PYBUQxgnGyvMLv6d+S+IyFk=;
+        b=LQEc0yoJm0GslpUZYCjcHtwoTCvu+59CHRYP/sGpmh7IIEWYyKbcmwOTWkHIAk5amo
+         GW/7Gpe870PqzwscCvwhvS2tRdD4lIO92N5a+9t0YvyTUExmCh3G/ey+cNZCCGzcBTPJ
+         6yPMwkjqsKsodsXDqWTZBNezjTKe+7X8fdEpM8mYCN9NPvWn/peXOWQ5kyvKsBiKcO44
+         1nn5gapVl7Ro8gQLfw1L+9piaUTX+p6FPVZZ1/ijnscvD92eH3mJCbstLfuZt0gY2UUX
+         +QldvphwJQ8glfg3JyKVOgSk3y2EQry5UIdVnMeV03t88wxPGoe0khhNc6S3VhqB4zja
+         Bt8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687586524; x=1690178524;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=csp/Ru/rsPdrsyLLiC9Gguj9U+Fgh5fKjxfjDtdRMQc=;
-        b=bMm+5N8Q0YXkbN2hi1jWggzsWagihnBEvvscM2S3tIq0LiIlGaLY1iX8sC8NDzeX84
-         sLy1Tjkz/tgR6A2OfPcAEBJmyJmjTgiokJBlXtdMEbG2Wwle7BPu3scFU9vqrYgJbmgr
-         fKUi9CkJLpQL8qnYjrNqTJeUcjDEhcyTsJd+EoNbSKC8maujlTpeQh7YY2wmRqZN+dDL
-         veob9Xs2jm27YlJK+FhI0lZs3YAcg2/rqnsUQycfAe9TfE0vcQMTVgDQg586xl7SSZyi
-         GXqWvOKpja6KoAYFPoRiJRYyoDs4/IUDi4Oz0hcVadK92kbuEonDoeZnXtIW01vuXQRr
-         JWuw==
-X-Gm-Message-State: AC+VfDx19d7FAKutvOUIXHJL3MbjH1m9dNhaNhIdCzjsIijMKHj5Vp2u
-        zH/HGlWyqbtZx12LY9MZcxdFGg==
-X-Google-Smtp-Source: ACHHUZ4VWeUnMU1s0UNjPDk6IpqAzSQZeQ6tdhcnWHwHrt+4vWuGVhE3lrk990AA40VrSim2Lx43JA==
-X-Received: by 2002:a05:6359:622:b0:132:ddc3:ebf5 with SMTP id eh34-20020a056359062200b00132ddc3ebf5mr3656158rwb.28.1687586524069;
-        Fri, 23 Jun 2023 23:02:04 -0700 (PDT)
-Received: from sw06.internal.sifive.com ([64.62.193.194])
-        by smtp.gmail.com with ESMTPSA id u4-20020a634544000000b0052c9d1533b6sm571594pgk.56.2023.06.23.23.02.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jun 2023 23:02:03 -0700 (PDT)
-From:   Samuel Holland <samuel.holland@sifive.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Samuel Holland <samuel.holland@sifive.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] serial: sifive: Fix sifive_serial_console_setup() section
-Date:   Fri, 23 Jun 2023 23:01:59 -0700
-Message-Id: <20230624060159.3401369-1-samuel.holland@sifive.com>
-X-Mailer: git-send-email 2.40.1
+        d=1e100.net; s=20221208; t=1687593192; x=1690185192;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hr9nrGlYrxN00jEwRxs6PYBUQxgnGyvMLv6d+S+IyFk=;
+        b=c7ZPaK7Ke3Xew9wb3Vvs4DPIfi6GC9YBQUMXdSVOWFhVd/7UU0GhEvLjCM1CHUFRM7
+         oDv+xSX/0ujAGcl7+Wciai9Fz0YSBTZdXIkU0YFvsxESh5zF3AZ2tmz+Fj5CLQykZKT9
+         mYJGcqEURWaLENB5hAbHYobhKfIc0yZjhHVCAQCHMWy7o0XOuGW7OJvf94cTZutYZ445
+         8GUq7mls3yAChXpSUdB/4if0+KRvwQ5laRHm4rwBaHJ8Y8+rxGsElzPYG8WofY84SIZA
+         GOv1TkAMClPenWnB0wllhmFfIy+VrjLT5MmoT580GOhFIoOiRAuPY8ycn+amF+de6OwV
+         uB0g==
+X-Gm-Message-State: AC+VfDxsCEp9NR1AFqHSajyPnV2AHr1QjpUt3Yv3iYXLh0KEXWFt27jB
+        rFt6omfQGWy+gqpqqUSRxok82A==
+X-Google-Smtp-Source: ACHHUZ522CJYVOfO8kVotsUuEt+wtHkNFHrIi0PS6ACNcKvYFOPHzOCYWLySAcxpXgHfsNodLNJqrA==
+X-Received: by 2002:a50:ef12:0:b0:51a:f6de:bb81 with SMTP id m18-20020a50ef12000000b0051af6debb81mr10804337eds.28.1687593192613;
+        Sat, 24 Jun 2023 00:53:12 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id m5-20020aa7d345000000b0051495ce23absm404938edr.10.2023.06.24.00.53.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 24 Jun 2023 00:53:12 -0700 (PDT)
+Message-ID: <074048a2-5153-e013-3562-b5cad2ba0954@linaro.org>
+Date:   Sat, 24 Jun 2023 09:53:05 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v2 01/45] dt-bindings: microchip: atmel,at91rm9200-tcb:
+ add sam9x60, sam9x7 compatible
+Content-Language: en-US
+To:     Varshini Rajendran <varshini.rajendran@microchip.com>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
+        tglx@linutronix.de, maz@kernel.org, lee@kernel.org,
+        ulf.hansson@linaro.org, tudor.ambarus@linaro.org,
+        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linus.walleij@linaro.org, p.zabel@pengutronix.de,
+        olivia@selenic.com, a.zummo@towertech.it,
+        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+        gregkh@linuxfoundation.org, lgirdwood@gmail.com,
+        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, sre@kernel.org, jerry.ray@microchip.com,
+        horatiu.vultur@microchip.com, durai.manickamkr@microchip.com,
+        andrew@lunn.ch, alain.volmat@foss.st.com,
+        neil.armstrong@linaro.org, mihai.sain@microchip.com,
+        eugen.hristev@collabora.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Cc:     Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
+        balamanikandan.gunasundar@microchip.com,
+        manikandan.m@microchip.com, dharma.b@microchip.com,
+        nayabbasha.sayed@microchip.com, balakrishnan.s@microchip.com
+References: <20230623203056.689705-1-varshini.rajendran@microchip.com>
+ <20230623203056.689705-2-varshini.rajendran@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230623203056.689705-2-varshini.rajendran@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This function is called indirectly from the platform driver probe
-function. Even if the driver is built in, it may be probed after
-free_initmem() due to deferral or unbinding/binding via sysfs.
-Thus the function cannot be marked as __init.
+On 23/06/2023 22:30, Varshini Rajendran wrote:
+> Add sam9x60, sam9x7 compatible string support in the schema file.
+> 
+> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+> ---
+>  .../devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml | 
 
-Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
-Signed-off-by: Samuel Holland <samuel.holland@sifive.com>
----
 
- drivers/tty/serial/sifive.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index 1f565a216e74..a19db49327e2 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -811,7 +811,7 @@ static void sifive_serial_console_write(struct console *co, const char *s,
- 	local_irq_restore(flags);
- }
- 
--static int __init sifive_serial_console_setup(struct console *co, char *options)
-+static int sifive_serial_console_setup(struct console *co, char *options)
- {
- 	struct sifive_serial_port *ssp;
- 	int baud = SIFIVE_DEFAULT_BAUD_RATE;
--- 
-2.40.1
+Best regards,
+Krzysztof
 
