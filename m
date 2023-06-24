@@ -2,122 +2,65 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7240DC04A6A
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 09:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF3AEB64DA
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 21:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbjFXJUH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Jun 2023 05:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
+        id S229493AbjFXVJO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Jun 2023 17:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbjFXJUB (ORCPT
+        with ESMTP id S229449AbjFXVJN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Jun 2023 05:20:01 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BE61FD2
-        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 02:19:58 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9889952ed18so185874566b.3
-        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 02:19:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687598396; x=1690190396;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KfAcGT4J8pUoMJBGxBaLszgHGiS6c9l8JOpUoHeAAOA=;
-        b=yQVzjTKSXVmVV9dLLVhjlfW4hSkCHaHSkFp8XKDuppCzQpGHvyVttjnWT3sZWadL6G
-         Aptg8K8aHU9euO2VsKWw8w5GNb7iZUmQN6s980dsKNw8bDt/Gg0mjyG+1qbTOWHueIrY
-         /Q6bxSUkrx10KI9Bk3ImA6gPyy5RwRLI1IVUQjGo73WdFwY+k9WU2qYNImsGMRH4LVBY
-         NGoLGDAz09o/yosqduTlRt/bCpwDw40AnKJvyTtb5EsV6kYLtwXhkQO6myiWdEiHilCp
-         eezk0kHCVcUBB/e4mc1VfkMXxJnPCuve2SWX/BdtYwhjQIOCgvko85iNcFXLb/8ecU/N
-         rm6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687598396; x=1690190396;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KfAcGT4J8pUoMJBGxBaLszgHGiS6c9l8JOpUoHeAAOA=;
-        b=ZZnMnO2P0+h5ZQARfZzJOfmedILL92AVtOsz1GEfPcGdJoUX3sJCW/QsK9LxbXmuSg
-         a2TCuaanccnQEQK3AySLQhYvozXG5oZXoJhcBVVH1Jw+fHRcUOR3yfi5XHLKDu4PZVyx
-         SYyOE5O2A5xmc8U+qybRDxOQxII8XqIzqOPRdA1HCBjfhZyO+cWa1DUC5wpa3XLKWZYG
-         zeuiVRweEQvWu8zqiqYx3ig12VrTDPeljXNUYaq9tfDC9G7FKv4B20ztIJjaDakEVc0S
-         tx75RH/9dF/AN5q42E643Ld85DScuYhFzoqEMRZmdKK/YaxEWrBUqtdDNuApcxp0PO8u
-         4mzw==
-X-Gm-Message-State: AC+VfDxYDL8nFKQ7ppvBt72HZ9zrSkkfjAVtDyW0T01an1VJBdKgzi9j
-        SdicphKiHzKVSbxK510XaZq+dQ==
-X-Google-Smtp-Source: ACHHUZ5fG8f481PX14S7vktzFZQMA1l6HoKP1yysFPHfBvGgcLJOb2TMBp2polua7/w5jYwHHssrXQ==
-X-Received: by 2002:a17:907:987:b0:987:6372:c31f with SMTP id bf7-20020a170907098700b009876372c31fmr16230436ejc.37.1687598396633;
-        Sat, 24 Jun 2023 02:19:56 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id p13-20020a1709060e8d00b00989065149d0sm663324ejf.86.2023.06.24.02.19.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Jun 2023 02:19:55 -0700 (PDT)
-Message-ID: <ca3b6a75-2811-6013-28cc-9f6a7854b469@linaro.org>
-Date:   Sat, 24 Jun 2023 11:19:49 +0200
+        Sat, 24 Jun 2023 17:09:13 -0400
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 24 Jun 2023 14:09:11 PDT
+Received: from mail.unseenlabs.fr (mail.unseenlabs.fr [51.91.207.241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADA01715
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 14:09:11 -0700 (PDT)
+Received: from localhost.localdomain (130.93.94.147) by S1014830.EX1014830.lan
+ (51.91.207.241) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.30; Sat, 24 Jun
+ 2023 23:04:00 +0200
+From:   Julien Malik <julien.malik@unseenlabs.fr>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>,
+        Julien Malik <julien.malik@unseenlabs.fr>
+Subject: [PATCH] serial: xilinx_uartps: unset STOPBRK when setting STARTBRK
+Date:   Sat, 24 Jun 2023 23:03:23 +0200
+Message-ID: <20230624210323.88455-1-julien.malik@unseenlabs.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH v2 01/45] dt-bindings: microchip: atmel,at91rm9200-tcb:
- add sam9x60, sam9x7 compatible
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Varshini Rajendran <varshini.rajendran@microchip.com>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org,
-        tglx@linutronix.de, maz@kernel.org, lee@kernel.org,
-        ulf.hansson@linaro.org, tudor.ambarus@linaro.org,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linus.walleij@linaro.org, p.zabel@pengutronix.de,
-        olivia@selenic.com, a.zummo@towertech.it,
-        radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
-        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
-        linux@armlinux.org.uk, sre@kernel.org, jerry.ray@microchip.com,
-        horatiu.vultur@microchip.com, durai.manickamkr@microchip.com,
-        andrew@lunn.ch, alain.volmat@foss.st.com,
-        neil.armstrong@linaro.org, mihai.sain@microchip.com,
-        eugen.hristev@collabora.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Cc:     Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
-        balamanikandan.gunasundar@microchip.com,
-        manikandan.m@microchip.com, dharma.b@microchip.com,
-        nayabbasha.sayed@microchip.com, balakrishnan.s@microchip.com
-References: <20230623203056.689705-1-varshini.rajendran@microchip.com>
- <20230623203056.689705-2-varshini.rajendran@microchip.com>
- <074048a2-5153-e013-3562-b5cad2ba0954@linaro.org>
-In-Reply-To: <074048a2-5153-e013-3562-b5cad2ba0954@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [130.93.94.147]
+X-ClientProxiedBy: S1014830.EX1014830.lan (51.91.207.241) To
+ S1014830.EX1014830.lan (51.91.207.241)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 24/06/2023 09:53, Krzysztof Kozlowski wrote:
-> On 23/06/2023 22:30, Varshini Rajendran wrote:
->> Add sam9x60, sam9x7 compatible string support in the schema file.
->>
->> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
->> ---
->>  .../devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.yaml | 
-> 
-> 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Zynq UG585 states, in chapter B.33, for XUARTPS_CR_STARTBRK:
+It can only be set if STPBRK (Stop transmitter break) is not high
 
-Un-acked. Actually NAK.
+This fixes tcsendbreak, which otherwise does not actually break.
 
-This does not match your DTS. Please test your patches before sending.
+Signed-Off-By: Julien Malik <julien.malik@unseenlabs.fr>
+---
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 8e521c69a959..2e69fceaa792 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -657,7 +657,7 @@ static void cdns_uart_break_ctl(struct uart_port *port, int ctl)
+ 	status = readl(port->membase + CDNS_UART_CR);
+ 
+ 	if (ctl == -1)
+-		writel(CDNS_UART_CR_STARTBRK | status,
++		writel(CDNS_UART_CR_STARTBRK | (~CDNS_UART_CR_STOPBRK & status),
+ 				port->membase + CDNS_UART_CR);
+ 	else {
+ 		if ((status & CDNS_UART_CR_STOPBRK) == 0)
+-- 
+2.25.1
 
