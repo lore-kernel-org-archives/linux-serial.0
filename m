@@ -2,128 +2,96 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC54C04A94
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Jun 2023 23:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5588AEB64DA
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 06:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232112AbjFWXnW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Jun 2023 19:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        id S230491AbjFXGCJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Jun 2023 02:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbjFWXnS (ORCPT
+        with ESMTP id S230464AbjFXGCI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Jun 2023 19:43:18 -0400
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EF02703;
-        Fri, 23 Jun 2023 16:43:17 -0700 (PDT)
-Received: by mail-io1-f46.google.com with SMTP id ca18e2360f4ac-78333585d28so32790139f.1;
-        Fri, 23 Jun 2023 16:43:17 -0700 (PDT)
+        Sat, 24 Jun 2023 02:02:08 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53D126B3
+        for <linux-serial@vger.kernel.org>; Fri, 23 Jun 2023 23:02:04 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id 46e09a7af769-6b5d4b359d3so1301747a34.2
+        for <linux-serial@vger.kernel.org>; Fri, 23 Jun 2023 23:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1687586524; x=1690178524;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=csp/Ru/rsPdrsyLLiC9Gguj9U+Fgh5fKjxfjDtdRMQc=;
+        b=gS9kbMULFiG5NJj1EiFPcDYOOAup9/tIYjoErj5QPwPUKfxlRIHemxYeuuGkT5IQ7O
+         c7q1PnCnFxwmLm5wqs6wVNDP5EQtrHa797c31u61Sgb85CyTExELo6fgumeVKtazTkyK
+         Z0tONjwKKfwuqUa0VYa6gAf1NOYJjIRLgduxS9PxrqNq74VKXp1RulJr+WnM3zLjPrG5
+         Zo0uawG94qyB46FVOaEEYDmgx1l4uSMAuNQUM1KfWD+PiwXcUnlLfyYnt00jtZp34JhC
+         q175zRHArEOYlIBtL9cu4uFsnh1rrh3BGoc9HuBWEuyyP94jOMRtugS15V/YXnhSUlNG
+         xi3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687563796; x=1690155796;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=fTiyezCl+ncjMsIOOS0sUB9bYyrGCDjIJOvndxohyZs=;
-        b=JsAIoLHPQR83cIFWCg7WWq9dOFpHwbGPHK2yoY125gC8xVqx2+ttlxJX+sxoETmQlV
-         0nzPjnhz39qU6o87QsXUo3XE8rc8xVe1tCFq0v/HUv/SqKNKfCrP1E1R7lgXcGuOx6y2
-         Ye3G6ypunxQdjQzz2ukdGGZuVQNU006TpPpL8MAHc+uIiGpnV85+2gp/WvADNQ/2sRCU
-         AoLsbcQUu6qTlfBlobD2G6x4CJs0P6/7LAU5AFlr+R6jVOZVLv1PoQKKkeOqS1a/I5G5
-         iHh6o5EBG3JC2u0sVTRVWCc72uLnf7/POT8WGjwChV0ytJvnTeM9K3NQ4zI7JypbiFa8
-         xFfg==
-X-Gm-Message-State: AC+VfDw5DExrdMCkSqQcgXx602OXDOFT2Gsg8bbCY0m4jzAMeRS+bMz2
-        HjkFdCKixSxi9ODyQ8CMJA==
-X-Google-Smtp-Source: ACHHUZ704nUo/Qe+1L5BBq/vh9K03eeZluxsw6d51akGW3mbLVGxB1UGHdSEiXEdc5xMZV7l5fDOHg==
-X-Received: by 2002:a5d:9483:0:b0:760:e308:107e with SMTP id v3-20020a5d9483000000b00760e308107emr15001057ioj.0.1687563796356;
-        Fri, 23 Jun 2023 16:43:16 -0700 (PDT)
-Received: from robh_at_kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id r27-20020a02c85b000000b0041407c67451sm72416jao.165.2023.06.23.16.43.10
+        d=1e100.net; s=20221208; t=1687586524; x=1690178524;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=csp/Ru/rsPdrsyLLiC9Gguj9U+Fgh5fKjxfjDtdRMQc=;
+        b=bMm+5N8Q0YXkbN2hi1jWggzsWagihnBEvvscM2S3tIq0LiIlGaLY1iX8sC8NDzeX84
+         sLy1Tjkz/tgR6A2OfPcAEBJmyJmjTgiokJBlXtdMEbG2Wwle7BPu3scFU9vqrYgJbmgr
+         fKUi9CkJLpQL8qnYjrNqTJeUcjDEhcyTsJd+EoNbSKC8maujlTpeQh7YY2wmRqZN+dDL
+         veob9Xs2jm27YlJK+FhI0lZs3YAcg2/rqnsUQycfAe9TfE0vcQMTVgDQg586xl7SSZyi
+         GXqWvOKpja6KoAYFPoRiJRYyoDs4/IUDi4Oz0hcVadK92kbuEonDoeZnXtIW01vuXQRr
+         JWuw==
+X-Gm-Message-State: AC+VfDx19d7FAKutvOUIXHJL3MbjH1m9dNhaNhIdCzjsIijMKHj5Vp2u
+        zH/HGlWyqbtZx12LY9MZcxdFGg==
+X-Google-Smtp-Source: ACHHUZ4VWeUnMU1s0UNjPDk6IpqAzSQZeQ6tdhcnWHwHrt+4vWuGVhE3lrk990AA40VrSim2Lx43JA==
+X-Received: by 2002:a05:6359:622:b0:132:ddc3:ebf5 with SMTP id eh34-20020a056359062200b00132ddc3ebf5mr3656158rwb.28.1687586524069;
+        Fri, 23 Jun 2023 23:02:04 -0700 (PDT)
+Received: from sw06.internal.sifive.com ([64.62.193.194])
+        by smtp.gmail.com with ESMTPSA id u4-20020a634544000000b0052c9d1533b6sm571594pgk.56.2023.06.23.23.02.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jun 2023 16:43:15 -0700 (PDT)
-Received: (nullmailer pid 1606691 invoked by uid 1000);
-        Fri, 23 Jun 2023 23:43:09 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Fri, 23 Jun 2023 23:02:03 -0700 (PDT)
+From:   Samuel Holland <samuel.holland@sifive.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Samuel Holland <samuel.holland@sifive.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH] serial: sifive: Fix sifive_serial_console_setup() section
+Date:   Fri, 23 Jun 2023 23:01:59 -0700
+Message-Id: <20230624060159.3401369-1-samuel.holland@sifive.com>
+X-Mailer: git-send-email 2.40.1
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Varshini Rajendran <varshini.rajendran@microchip.com>
-Cc:     ulf.hansson@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        edumazet@google.com, broonie@kernel.org, arnd@arndb.de,
-        maz@kernel.org, lgirdwood@gmail.com, alexandre.belloni@bootlin.com,
-        alain.volmat@foss.st.com, p.zabel@pengutronix.de,
-        mihai.sain@microchip.com, soc@kernel.org,
-        linux-mtd@lists.infradead.org, cristian.birsan@microchip.com,
-        jerry.ray@microchip.com, tudor.ambarus@linaro.org,
-        miquel.raynal@bootlin.com, richard@nod.at,
-        gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        balamanikandan.gunasundar@microchip.com, lee@kernel.org,
-        olivia@selenic.com, sboyd@kernel.org, mturquette@baylibre.com,
-        kuba@kernel.org, Hari.PrasathGE@microchip.com,
-        linux-kernel@vger.kernel.org, balakrishnan.s@microchip.com,
-        alsa-devel@alsa-project.org, durai.manickamkr@microchip.com,
-        sre@kernel.org, vkoul@kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org, andrew@lunn.ch,
-        devicetree@vger.kernel.org, nayabbasha.sayed@microchip.com,
-        linux-gpio@vger.kernel.org, nicolas.ferre@microchip.com,
-        davem@davemloft.net, pabeni@redhat.com,
-        linux-arm-kernel@lists.infradead.org, linux@roeck-us.net,
-        wim@linux-watchdog.org, tglx@linutronix.de,
-        horatiu.vultur@microchip.com, radu_nicolae.pirea@upb.ro,
-        dharma.b@microchip.com, a.zummo@towertech.it,
-        linux-mmc@vger.kernel.org, richard.genoud@gmail.com,
-        claudiu.beznea@microchip.com, linus.walleij@linaro.org,
-        conor+dt@kernel.org, herbert@gondor.apana.org.au,
-        eugen.hristev@collabora.com, dmaengine@vger.kernel.org,
-        netdev@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux@armlinux.org.uk, linux-watchdog@vger.kernel.org,
-        linux-pm@vger.kernel.org, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-crypto@vger.kernel.org,
-        neil.armstrong@linaro.org, vigneshr@ti.com,
-        manikandan.m@microchip.com, linux-clk@vger.kernel.org,
-        olof@lixom.net
-In-Reply-To: <20230623203056.689705-32-varshini.rajendran@microchip.com>
-References: <20230623203056.689705-1-varshini.rajendran@microchip.com>
- <20230623203056.689705-32-varshini.rajendran@microchip.com>
-Message-Id: <168756378936.1606652.14221929175769628362.robh@kernel.org>
-Subject: Re: [PATCH v2 31/45] dt-bindings: atmel-classd: add sam9x7
- compatible
-Date:   Fri, 23 Jun 2023 17:43:09 -0600
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This function is called indirectly from the platform driver probe
+function. Even if the driver is built in, it may be probed after
+free_initmem() due to deferral or unbinding/binding via sysfs.
+Thus the function cannot be marked as __init.
 
-On Sat, 24 Jun 2023 02:00:42 +0530, Varshini Rajendran wrote:
-> Add sam9x7 compatible to DT bindings documentation.
-> 
-> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-> ---
->  .../devicetree/bindings/sound/atmel,sama5d2-classd.yaml      | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
+Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
+Signed-off-by: Samuel Holland <samuel.holland@sifive.com>
+---
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+ drivers/tty/serial/sifive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/sound/atmel,sama5d2-classd.example.dtb: sound@fc048000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['atmel,sama5d2-classd'] is too short
-	from schema $id: http://devicetree.org/schemas/sound/atmel,sama5d2-classd.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230623203056.689705-32-varshini.rajendran@microchip.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index 1f565a216e74..a19db49327e2 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -811,7 +811,7 @@ static void sifive_serial_console_write(struct console *co, const char *s,
+ 	local_irq_restore(flags);
+ }
+ 
+-static int __init sifive_serial_console_setup(struct console *co, char *options)
++static int sifive_serial_console_setup(struct console *co, char *options)
+ {
+ 	struct sifive_serial_port *ssp;
+ 	int baud = SIFIVE_DEFAULT_BAUD_RATE;
+-- 
+2.40.1
 
