@@ -2,60 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943BBC001B1
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 08:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F149C04A6A
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Jun 2023 08:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbjFXIJV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Jun 2023 04:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
+        id S232577AbjFXIM3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Jun 2023 04:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232760AbjFXIJT (ORCPT
+        with ESMTP id S232086AbjFXIM2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Jun 2023 04:09:19 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A570270D
-        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:09:15 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-51a3e6a952aso1510797a12.3
-        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:09:15 -0700 (PDT)
+        Sat, 24 Jun 2023 04:12:28 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2A7DC
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:12:26 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-51d80d81d6eso206378a12.1
+        for <linux-serial@vger.kernel.org>; Sat, 24 Jun 2023 01:12:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687594154; x=1690186154;
+        d=linaro.org; s=google; t=1687594345; x=1690186345;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=FrxEKayi9Ds4WqdpCvHi8XbtwLnXpM6Lh+pSjtNNoSE=;
-        b=RFdbcGr759xG442r0gPy3b3305LjWwFoAyktcFZ899PSQeEF6hfntmDA0vlS0cgvFG
-         ox+hvodZsAIxheWINUcqWmBdAVUdLNTgEiBv+j+02pkZ+peZ9p5YmqzNwGosK5zDnjsl
-         BLtwgifUNJIic/pZuhkJGfeZh7cXmlqqE7KO+DpxT2BRXrEqUsNrcBFwgsuFrYVol/2H
-         Q3I6Qbd1emY/xCKF3pFfjTySVrBVrI13QbkuQthOBjzCGLL1ymopfw3tCVOUR+wzRLuS
-         D0FE3/S7KQ68SFlkXdPne+beGWelAuxdjkLgp1xRKoQU8ZZdNzYmb0lkDzKHQgL6SS9d
-         biWg==
+        bh=jgWfgLnDBYXfvDGmBGK93+dUC4prG/sfhkKHOWCy+iE=;
+        b=BcN0ZET2/vhS6m5PtcAFTcmo5biBSuvnTU+o+doo7zX+3gXeZTeFZKeOqNp0xWPPDW
+         kDfKGGyPXG4O12ifWz1/qzeiNJrNiqW+iNEGHi1SadOQ3S9IU/oRfOO33qen8bcDfSvu
+         8DZ89+qcFQ8t903wSSbJW6eoHNSbWtKIYSnMwpXkyOxHSVl1Yf0oue4VUNbyOsE4l7rG
+         zu2hDWoTCeh8BZ3zC4QWRN4TljlLcXOdJB45uGFqcNGxnRcIR2U9ey83S6Nn3MQNCIk7
+         BQB6GMqUxU0qGumADilEvZvX832T+7pOOWNtu8XGxpwVav5Y9KmizF53mGroaDK458Kb
+         MR4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687594154; x=1690186154;
+        d=1e100.net; s=20221208; t=1687594345; x=1690186345;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FrxEKayi9Ds4WqdpCvHi8XbtwLnXpM6Lh+pSjtNNoSE=;
-        b=fWFMcLAALoqHv/h5gcGh9QhByIfTMSP/LsnwcN5SYIURwCW9P3xioWZ7sgbSIr3Kg1
-         mw9t2nntcSMXuRL3tZlnTysdGpW9s6scubgdRRkYtTBK8vQhHHUQCN8kq0lKUB4H8Sgb
-         IBz6lyeTuIxnKzS2FotM2BmWLcj9C9LP2+lDshQjhrC3GdaUh1vHP8wboW1wzgCFRMN8
-         +CUb8xwCObKL3L750eBtgUTY2IPShOFbu0f21fNvSwmjlcd6p/Ir6BNJmjhZwllKx7Ws
-         nISzbC3e136tv1NQNbCkOkF1/Jh+t5uxtjobjynRG3TwSDn4Km6VX3d1tfm6QtGrRIm6
-         ZNHw==
-X-Gm-Message-State: AC+VfDwDRVovRM4XrDIYhXbgYVYf9nEqAtb+0j/RJkXc/29jxKtXsAbr
-        Wzd6MMldvsF6q+AmqH1yYpfnvg==
-X-Google-Smtp-Source: ACHHUZ5pHm0w6pBzV6Tc7DEQEPXbl5rK4CCeKTEtwldM7kE+Zb+I+b3utK/UKpTx2HYJC+QsfjFV2Q==
-X-Received: by 2002:a05:6402:1248:b0:519:6f47:d1c9 with SMTP id l8-20020a056402124800b005196f47d1c9mr16636743edw.30.1687594153811;
-        Sat, 24 Jun 2023 01:09:13 -0700 (PDT)
+        bh=jgWfgLnDBYXfvDGmBGK93+dUC4prG/sfhkKHOWCy+iE=;
+        b=eFXvpb1AlENpbAzDX2zYDJ83vUgDbgD16TVFTilH0X++M/hLRUhml89XJnJhGJEo8p
+         ejQcKACki+DZ5Rv3or03cCIjlBI2no1ATQKAkwt13OPDu9o0iQ4QkrQwTqKQ8vsVy8PX
+         7wjp+vRemv8G97oje082F41eKIWUc5cOiJOl7/ASBhWC4Q6WMViqyL7cFkkCqbstr4HP
+         xIYdzLT6PGD0iQM8JALh6OdwIPAW1ccY6KYvCfotkqNl0W5HQODMtUZLkpVxRA+vf9Fa
+         B4jNUzCUkVFskYhOOIsSrxDmG9/lH6r6PbBk+gaMHLQugI4hmOhCZAYAygy16eRQscfQ
+         GO8w==
+X-Gm-Message-State: AC+VfDyEFPc+ghiZ2nXpX9u+6SY6yvcYJNu79i0PeKErp5Dpks7pA0l4
+        K5Kl2YEMZqiJw/zNx6sGX3Dsqw==
+X-Google-Smtp-Source: ACHHUZ5Rew0XhfwsYlFMUaLNmLSeNdfJi5OvwMCRiF/HMRv0s1S3Hjzr6jtGZts9Zub1Ru8qB3Xfiw==
+X-Received: by 2002:a05:6402:1389:b0:51a:441f:75d7 with SMTP id b9-20020a056402138900b0051a441f75d7mr14078910edv.6.1687594340214;
+        Sat, 24 Jun 2023 01:12:20 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id u10-20020a056402064a00b00514b3dd8638sm406148edx.67.2023.06.24.01.09.08
+        by smtp.gmail.com with ESMTPSA id q18-20020a056402033200b0051be83f75e6sm408661edw.95.2023.06.24.01.12.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Jun 2023 01:09:13 -0700 (PDT)
-Message-ID: <717e4a53-c0a8-0b60-4502-a819cf2089a6@linaro.org>
-Date:   Sat, 24 Jun 2023 10:09:07 +0200
+        Sat, 24 Jun 2023 01:12:19 -0700 (PDT)
+Message-ID: <796a0cf2-2411-26e4-5b53-53d560936b7a@linaro.org>
+Date:   Sat, 24 Jun 2023 10:12:12 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [PATCH v2 43/45] ARM: dts: at91: sam9x7: add device tree for SoC
+Subject: Re: [PATCH v2 45/45] ARM: dts: at91: sam9x75_curiosity: add device
+ tree for sam9x75 curiosity board
 Content-Language: en-US
 To:     Varshini Rajendran <varshini.rajendran@microchip.com>,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
@@ -92,9 +93,9 @@ Cc:     Hari.PrasathGE@microchip.com, cristian.birsan@microchip.com,
         manikandan.m@microchip.com, dharma.b@microchip.com,
         nayabbasha.sayed@microchip.com, balakrishnan.s@microchip.com
 References: <20230623203056.689705-1-varshini.rajendran@microchip.com>
- <20230623203056.689705-44-varshini.rajendran@microchip.com>
+ <20230623203056.689705-46-varshini.rajendran@microchip.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230623203056.689705-44-varshini.rajendran@microchip.com>
+In-Reply-To: <20230623203056.689705-46-varshini.rajendran@microchip.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -102,317 +103,217 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 23/06/2023 22:30, Varshini Rajendran wrote:
-> Add device tree file for SAM9X7 SoC family.
+> Add device tree file for sam9x75 curiosity board.
 > 
-> Co-developed-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 > Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 > ---
->  arch/arm/boot/dts/sam9x7.dtsi | 1237 +++++++++++++++++++++++++++++++++
->  1 file changed, 1237 insertions(+)
->  create mode 100644 arch/arm/boot/dts/sam9x7.dtsi
+>  arch/arm/boot/dts/Makefile                   |   2 +
+>  arch/arm/boot/dts/at91-sam9x75_curiosity.dts | 336 +++++++++++++++++++
+>  2 files changed, 338 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/at91-sam9x75_curiosity.dts
 > 
-> diff --git a/arch/arm/boot/dts/sam9x7.dtsi b/arch/arm/boot/dts/sam9x7.dtsi
+> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> index 59829fc90315..31f357f8e947 100644
+> --- a/arch/arm/boot/dts/Makefile
+> +++ b/arch/arm/boot/dts/Makefile
+> @@ -53,6 +53,8 @@ dtb-$(CONFIG_SOC_AT91SAM9) += \
+>  dtb-$(CONFIG_SOC_SAM9X60) += \
+>  	at91-sam9x60_curiosity.dtb \
+>  	at91-sam9x60ek.dtb
+> +dtb-$(CONFIG_SOC_SAM9X7) += \
+> +	at91-sam9x75_curiosity.dtb
+>  dtb-$(CONFIG_SOC_SAM_V7) += \
+>  	at91-kizbox2-2.dtb \
+>  	at91-kizbox3-hs.dtb \
+> diff --git a/arch/arm/boot/dts/at91-sam9x75_curiosity.dts b/arch/arm/boot/dts/at91-sam9x75_curiosity.dts
 > new file mode 100644
-> index 000000000000..535a55f13dd0
+> index 000000000000..56d3af549201
 > --- /dev/null
-> +++ b/arch/arm/boot/dts/sam9x7.dtsi
-> @@ -0,0 +1,1237 @@
+> +++ b/arch/arm/boot/dts/at91-sam9x75_curiosity.dts
+> @@ -0,0 +1,336 @@
 > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 > +/*
-> + * sam9x7.dtsi - Device Tree Include file for Microchip SAM9X7 SoC family
+> + * at91-sam9x75_curiosity.dts - Device Tree file for Microchip SAM9X75 Curiosity board
 > + *
 > + * Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries
 > + *
 > + * Author: Varshini Rajendran <varshini.rajendran@microchip.com>
 > + */
-> +
-> +#include <dt-bindings/clock/at91.h>
-> +#include <dt-bindings/dma/at91.h>
-> +#include <dt-bindings/gpio/gpio.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/mfd/atmel-flexcom.h>
-> +#include <dt-bindings/pinctrl/at91.h>
+> +/dts-v1/;
+> +#include "sam9x7.dtsi"
+> +#include <dt-bindings/input/input.h>
 > +
 > +/ {
-> +	#address-cells = <1>;
-> +	#size-cells = <1>;
-> +	model = "Microchip SAM9X7 SoC";
-> +	compatible = "microchip,sam9x7";
-> +	interrupt-parent = <&aic>;
+> +	model = "Microchip SAM9X75 Curiosity";
+> +	compatible = "microchip,sam9x75-curiosity", "microchip,sam9x7", "atmel,at91sam9";
 > +
 > +	aliases {
-> +		serial0 = &dbgu;
-
-serial alias is rarely property of SoC. Do you claim that absolutely all
-boards must use this serial and they cannot use anything else?
-
-> +		gpio0 = &pioA;
-> +		gpio1 = &pioB;
-> +		gpio2 = &pioC;
-> +		gpio3 = &pioD;
-
-GPIOs are discussible but sometimes we keep them in SoC DTSI.
-
+> +		i2c0 = &i2c6;
+> +		i2c1 = &i2c7;
 > +	};
 > +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu@0 {
-> +			compatible = "arm,arm926ej-s";
-> +			device_type = "cpu";
-> +			reg = <0>;
-> +		};
+> +	chosen {
+> +		stdout-path = "serial0:115200n8";
 > +	};
 > +
 > +	clocks {
-> +		slow_xtal: clock-slowxtal {
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
+> +		clock-slowxtal {
+> +			clock-frequency = <32768>;
 > +		};
 > +
-> +		main_xtal: clock-mainxtal {
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
+> +		clock-mainxtal {
+> +			clock-frequency = <24000000>;
 > +		};
 > +	};
 > +
-> +	sram: sram@300000 {
-> +		compatible = "mmio-sram";
-> +		reg = <0x300000 0x10000>;
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges = <0 0x300000 0x10000>;
+> +	gpio-keys {
+> +		compatible = "gpio-keys";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pinctrl_key_gpio_default>;
+> +		status = "okay";
+
+Why? Did you disable it?
+
+> +
+> +		button-user {
+> +			label = "USER";
+> +			gpios = <&pioC 9 GPIO_ACTIVE_LOW>;
+> +			linux,code = <KEY_PROG1>;
+> +			wakeup-source;
+> +		};
 > +	};
 > +
-> +	ahb {
-> +		compatible = "simple-bus";
+> +	leds {
+> +		compatible = "gpio-leds";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pinctrl_led_gpio_default>;
+> +		status = "okay";
+
+Why? Did you disable it?
+
+> +
+> +		led-0 {
+> +			label = "red";
+> +			gpios = <&pioC 19 GPIO_ACTIVE_HIGH>;
+> +		};
+> +
+> +		led-1 {
+> +			label = "green";
+> +			gpios = <&pioC 21 GPIO_ACTIVE_HIGH>;
+> +		};
+> +
+> +		led-2 {
+> +			label = "blue";
+> +			gpios = <&pioC 20 GPIO_ACTIVE_HIGH>;
+> +			linux,default-trigger = "heartbeat";
+> +		};
+> +	};
+> +
+> +	memory@20000000 {
+> +		device_type = "memory";
+> +		reg = <0x20000000 0x10000000>;
+> +	};
+> +};
+> +
+> +&dbgu {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pinctrl_dbgu>;
+> +	status = "okay";
+> +};
+> +
+> +&dma0 {
+> +	status = "okay";
+> +};
+> +
+> +&ehci0 {
+> +	status = "okay";
+> +};
+> +
+> +&flx6 {
+> +	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_TWI>;
+> +	status = "okay";
+> +
+> +	i2c6: i2c@600 {
 > +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges;
-> +
-> +		usb0: gadget@500000 {
-> +			compatible = "microchip,sam9x7-udc", "microchip,sam9x60-udc";
-> +			reg = <0x500000 0x100000>,
-> +			      <0xf803c000 0x400>;
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			interrupts = <23 IRQ_TYPE_LEVEL_HIGH 2>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 23>, <&pmc PMC_TYPE_CORE PMC_UTMI>;
-> +			clock-names = "pclk", "hclk";
-> +			assigned-clocks = <&pmc PMC_TYPE_CORE PMC_UTMI>;
-> +			assigned-clock-rates = <480000000>;
-> +			status = "disabled";
-> +		};
-> +
-> +		ohci0: usb@600000 {
-> +			compatible = "microchip,sam9x7-ohci", "atmel,at91rm9200-ohci", "usb-ohci";
-> +			reg = <0x600000 0x100000>;
-> +			interrupts = <22 IRQ_TYPE_LEVEL_HIGH 2>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 22>, <&pmc PMC_TYPE_PERIPHERAL 22>, <&pmc PMC_TYPE_SYSTEM 6>;
-> +			clock-names = "ohci_clk", "hclk", "uhpck";
-> +			status = "disabled";
-> +		};
-> +
-> +		ehci0: usb@700000 {
-> +			compatible = "microchip,sam9x7-ehci", "atmel,at91sam9g45-ehci", "usb-ehci";
-> +			reg = <0x700000 0x100000>;
-> +			interrupts = <22 IRQ_TYPE_LEVEL_HIGH 2>;
-> +			clocks = <&pmc PMC_TYPE_CORE PMC_UTMI>, <&pmc PMC_TYPE_PERIPHERAL 22>;
-> +			clock-names = "usb_clk", "ehci_clk";
-> +			assigned-clocks = <&pmc PMC_TYPE_CORE PMC_UTMI>;
-> +			assigned-clock-rates = <480000000>;
-> +			status = "disabled";
-> +		};
-> +
-> +		sdmmc0: sdio-host@80000000 {
+> +		#size-cells = <0>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pinctrl_flx6_default>;
+> +		i2c-analog-filter;
+> +		i2c-digital-filter;
+> +		i2c-digital-filter-width-ns = <35>;
+> +		status = "okay";
 
-It does not look like you tested the DTS against bindings. Please run
-`make dtbs_check` (see
-Documentation/devicetree/bindings/writing-schema.rst or
-https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sources-with-the-devicetree-schema/
-for instructions).
+Did you disable it? If so this should be overridden by label...
 
-> +			compatible = "microchip,sam9x7-sdhci", "microchip,sam9x60-sdhci";
 
-So none of your DTS and bindings patches were tested... Limited review
-follows as there is little sense to use reviewers time if you can use
-machine.
-
-> +			reg = <0x80000000 0x300>;
-> +			interrupts = <12 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 12>, <&pmc PMC_TYPE_GCK 12>;
-> +			clock-names = "hclock", "multclk";
-> +			assigned-clocks = <&pmc PMC_TYPE_GCK 12>;
-> +			assigned-clock-rates = <100000000>;
-> +			status = "disabled";
-> +		};
 > +
-> +		sdmmc1: sdio-host@90000000 {
+> +		mcp16502@5b {
 
-It does not look like you tested the DTS against bindings. Please run
-`make dtbs_check` (see
-Documentation/devicetree/bindings/writing-schema.rst or
-https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sources-with-the-devicetree-schema/
-for instructions).
+Node names should be generic. See also explanation and list of examples
+in DT specification:
+https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
 
-> +			compatible = "microchip,sam9x7-sdhci", "microchip,sam9x60-sdhci";
-> +			reg = <0x90000000 0x300>;
-> +			interrupts = <26 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 26>, <&pmc PMC_TYPE_GCK 26>;
-> +			clock-names = "hclock", "multclk";
-> +			assigned-clocks = <&pmc PMC_TYPE_GCK 26>;
-> +			assigned-clock-rates = <100000000>;
-> +			status = "disabled";
-> +		};
+> +			compatible = "microchip,mcp16502";
+> +			reg = <0x5b>;
+> +			status = "okay";
+
+Srsly, drop.
+
 > +
-> +		apb {
-> +			compatible = "simple-bus";
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges;
-> +
-> +			flx4: flexcom@f0000000 {
-> +				compatible = "microchip,sam9x7-flexcom", "atmel,sama5d2-flexcom";
-> +				reg = <0xf0000000 0x200>;
-> +				clocks = <&pmc PMC_TYPE_PERIPHERAL 13>;
-> +				#address-cells = <1>;
-> +				#size-cells = <1>;
-> +				ranges = <0x0 0xf0000000 0x800>;
-> +				status = "disabled";
-> +
-> +				uart4: serial@200 {
-> +					compatible = "microchip,sam9x7-usart", "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
-
-Please run scripts/checkpatch.pl and fix reported warnings. Some
-warnings can be ignored, but the code here looks like it needs a fix.
-Feel free to get in touch if the warning is not clear.
-
-> +					reg = <0x200 0x200>;
-> +					interrupts = <13 IRQ_TYPE_LEVEL_HIGH 7>;
-> +					dmas = <&dma0
-> +						(AT91_XDMAC_DT_ME
+> +			regulators {
+> +				vdd_3v3: VDD_IO {
+> +					regulator-name = "VDD_IO";
+> +					regulator-min-microvolt = <3000000>;
+> +					regulator-max-microvolt = <3600000>;
 
 ...
 
+> +&flx7 {
+> +	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_TWI>;
+> +	status = "okay";
+> +
+> +	i2c7: i2c@600 {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pinctrl_flx7_default>;
+> +		i2c-analog-filter;
+> +		i2c-digital-filter;
+> +		i2c-digital-filter-width-ns = <35>;
+> +		status = "okay";
 
-> +
-> +			dbgu: serial@fffff200 {
-> +				compatible = "microchip,sam9x7-dbgu", "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+Empty bus. Keep disabled. Anyway overrides should be done via label, not
+by duplicating children.
 
-I wonder if we can make the line longer...
+> +	};
+> +};
+> +
+> +&ohci0 {
+> +	num-ports = <3>;
+> +	atmel,vbus-gpio = <0
+> +			   &pioC 27 GPIO_ACTIVE_HIGH
+> +			   &pioB 18 GPIO_ACTIVE_HIGH>;
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pinctrl_usb_default>;
+> +	status = "okay";
+> +};
+> +
+> +&pinctrl {
+> +
+> +	dbgu {
+> +		pinctrl_dbgu: dbgu-0 {
+> +			atmel,pins = <AT91_PIOA 26 AT91_PERIPH_A AT91_PINCTRL_PULL_UP
+> +				      AT91_PIOA 27 AT91_PERIPH_A AT91_PINCTRL_NONE>;
+> +		};
+> +	};
+> +
+> +	flexcom {
+> +		pinctrl_flx6_default: flx6_twi {
 
-> +				reg = <0xfffff200 0x200>;
-> +				interrupts = <47 IRQ_TYPE_LEVEL_HIGH 7>;
-> +				dmas = <&dma0
-> +					(AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1) |
-> +					 AT91_XDMAC_DT_PERID(28))>,
-> +				       <&dma0
-> +					(AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1) |
-> +					 AT91_XDMAC_DT_PERID(29))>;
-> +				dma-names = "tx", "rx";
-> +				clocks = <&pmc PMC_TYPE_PERIPHERAL 47>;
-> +				clock-names = "usart";
-> +				status = "disabled";
-> +			};
-> +
-> +			pinctrl: pinctrl@fffff400 {
-> +				#address-cells = <1>;
-> +				#size-cells = <1>;
-> +				compatible = "microchip,sam9x7-pinctrl", "microchip,sam9x60-pinctrl", "atmel,at91sam9x5-pinctrl", "simple-mfd";
-> +				ranges = <0xfffff400 0xfffff400 0x800>;
-> +
-> +				/* mux-mask corresponding to sam9x7 SoC in TFBGA228L package */
-> +				atmel,mux-mask = <
-> +						 /*  A		B	   C	      D	  */
-> +						 0xffffffff 0xffffefc0 0xc0ffd000 0x00000000	/* pioA */
-> +						 0x07ffffff 0x0805fe7f 0x01ff9f80 0x06078000	/* pioB */
-> +						 0xffffffff 0x07dfffff 0xfa3fffff 0x00000000	/* pioC */
-> +						 0x00003fff 0x00003fe0 0x0000003f 0x00000000	/* pioD */
-> +						 >;
-> +
-> +				pioA: gpio@fffff400 {
-> +					compatible = "microchip,sam9x7-gpio", "microchip,sam9x60-gpio", "atmel,at91sam9x5-gpio", "atmel,at91rm9200-gpio";
-> +					reg = <0xfffff400 0x200>;
-> +					interrupts = <2 IRQ_TYPE_LEVEL_HIGH 1>;
-> +					#gpio-cells = <2>;
-> +					gpio-controller;
-> +					interrupt-controller;
-> +					#interrupt-cells = <2>;
-> +					clocks = <&pmc PMC_TYPE_PERIPHERAL 2>;
-> +				};
-> +
-> +				pioB: gpio@fffff600 {
-> +					compatible = "microchip,sam9x7-gpio", "microchip,sam9x60-gpio", "atmel,at91sam9x5-gpio", "atmel,at91rm9200-gpio";
-> +					reg = <0xfffff600 0x200>;
-> +					interrupts = <3 IRQ_TYPE_LEVEL_HIGH 1>;
-> +					#gpio-cells = <2>;
-> +					gpio-controller;
-> +					#gpio-lines = <26>;
-> +					interrupt-controller;
-> +					#interrupt-cells = <2>;
-> +					clocks = <&pmc PMC_TYPE_PERIPHERAL 3>;
-> +				};
-> +
-> +				pioC: gpio@fffff800 {
-> +					compatible = "microchip,sam9x7-gpio", "microchip,sam9x60-gpio", "atmel,at91sam9x5-gpio", "atmel,at91rm9200-gpio";
-> +					reg = <0xfffff800 0x200>;
-> +					interrupts = <4 IRQ_TYPE_LEVEL_HIGH 1>;
-> +					#gpio-cells = <2>;
-> +					gpio-controller;
-> +					interrupt-controller;
-> +					#interrupt-cells = <2>;
-> +					clocks = <&pmc PMC_TYPE_PERIPHERAL 4>;
-> +				};
-> +
-> +				pioD: gpio@fffffa00 {
-> +					compatible = "microchip,sam9x7-gpio", "microchip,sam9x60-gpio", "atmel,at91sam9x5-gpio", "atmel,at91rm9200-gpio";
-> +					reg = <0xfffffa00 0x200>;
-> +					interrupts = <44 IRQ_TYPE_LEVEL_HIGH 1>;
-> +					#gpio-cells = <2>;
-> +					gpio-controller;
-> +					#gpio-lines = <22>;
-> +					interrupt-controller;
-> +					#interrupt-cells = <2>;
-> +					clocks = <&pmc PMC_TYPE_PERIPHERAL 44>;
-> +				};
-> +			};
-> +
-> +			pmc: pmc@fffffc00 {
-> +				compatible = "microchip,sam9x7-pmc", "syscon";
-> +				reg = <0xfffffc00 0x200>;
-> +				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
-> +				#clock-cells = <2>;
-> +				clocks = <&clk32k 1>, <&clk32k 0>, <&main_xtal>;
-> +				clock-names = "td_slck", "md_slck", "main_xtal";
-> +			};
-> +
-> +			reset_controller: rstc@fffffe00 {
+No underscors in node names.
 
-reset-controller
+This applies everywhere.
 
-> +				compatible = "microchip,sam9x7-rstc", "microchip,sam9x60-rstc";
-> +				reg = <0xfffffe00 0x10>;
-> +				clocks = <&clk32k 0>;
-> +			};
-> +
-> +			shutdown_controller: shdwc@fffffe10 {
-
-Usually power-management or reset-controller or something like this.
-
-
-
-> +				compatible = "microchip,sam9x7-shdwc", "microchip,sam9x60-shdwc";
-> +				reg = <0xfffffe10 0x10>;
-> +				clocks = <&clk32k 0>;
-> +				#address-cells = <1>;
-> +				#size-cells = <0>;
-> +				atmel,wakeup-rtc-timer;
-> +				atmel,wakeup-rtt-timer;
-> +				status = "disabled";
 
 
 Best regards,
