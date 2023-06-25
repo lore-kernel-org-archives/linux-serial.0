@@ -2,144 +2,92 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF7FC001B0
-	for <linux-serial@archiver.kernel.org>; Sun, 25 Jun 2023 09:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1D8EB64DC
+	for <linux-serial@archiver.kernel.org>; Sun, 25 Jun 2023 10:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbjFYJzb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 25 Jun 2023 05:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        id S231552AbjFYKNx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 25 Jun 2023 06:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232048AbjFYJzX (ORCPT
+        with ESMTP id S231429AbjFYKNv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 25 Jun 2023 05:55:23 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2051.outbound.protection.outlook.com [40.107.22.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8E710C8;
-        Sun, 25 Jun 2023 02:55:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IvlavjtQzggXEUrxJM9CSYZRI1sCHBmb4jixUZnY/96nVWv+dgQTtjSrRn6eLxeJUu7fHonYs0qOYeeXt1+i1EQ9vQFcqCutsIz14KnfKxUKUhwZ3JcNpsiIo5OTkoUlq0ZQKbcPlOhujgUA8Fts113f688nYmEzmWoPlCueEYoosZ3M68y5TtDZe3nMVDc9uGxKc8q91FOY4iWISDW5oA7vmv+zPeiI16SilExSVJc1sOYvIeOb7FR4ctD8VTKeMo4Ne398m2MiOqzd0kkpyL+Hq0UCsocVORPYvLv14JGgeghE/GAz+09MJCSb5xvaGuanC4B/LuBeBn/DNzvE8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=O6RjJEMGbO31IIcRVItQpnF1/zDX5vSfrAJfbPWL+Xw=;
- b=FGXz3D9Eindnc8GoBa4cxR5ecrQuvejkxxcAKRrch4Z+eLnRVi8j26NGupEiRVwBBFS4oUuinQXwtc2vduhL+9UmFP42fxZwUecN+rw+m9KboRukAw7MKAYStU71oaWnlULk+p5UK5unlH9H9CekVU9c4QsZw/gqTWbZvbJ83Vk+NAEB9f/ce//kb0NE4n1ynB96pu6Ql5dArYFaC/d3LqQlDKucSxesDcmyOSfQGhdBf02cTOlBZHVjF/1F7gLr9LmlbBSh0pd2WORYMJEo0bO7LZuyTJ2nC0c38Ja/SzAl02I1+qyC9GmT1fcO4TMTglZItDeLD8oTDxdbEthFZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O6RjJEMGbO31IIcRVItQpnF1/zDX5vSfrAJfbPWL+Xw=;
- b=pBV65s6wapRER3JYT1ZsuQWH3W4nRv43YHkUb05QrCia5sEUaMrPAtlX3AFQW9DzJqhoz67ZBya//ldnrWy7385TmmNorJsewVz+Hx5k5zh+BAiLX3sM0/Svj39QiRSk5OpZwhRO1QBMstRZC44Ks5A/cTJ2J61TrirLQv7Xm60=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by PAXPR04MB8816.eurprd04.prod.outlook.com (2603:10a6:102:20f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.26; Sun, 25 Jun
- 2023 09:55:01 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::ef9f:1e01:e8a:6a4a]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::ef9f:1e01:e8a:6a4a%3]) with mapi id 15.20.6521.026; Sun, 25 Jun 2023
- 09:55:01 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        festevam@gmail.com, shenwei.wang@nxp.com,
-        gregkh@linuxfoundation.org
+        Sun, 25 Jun 2023 06:13:51 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF601B7
+        for <linux-serial@vger.kernel.org>; Sun, 25 Jun 2023 03:13:50 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-98bcc533490so266062266b.0
+        for <linux-serial@vger.kernel.org>; Sun, 25 Jun 2023 03:13:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687688029; x=1690280029;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=syq8wmqi5sxbhlG4LN2N7LL4Y7J7QS2HpSjUCteE4Go=;
+        b=cj3kWNllURT0OTH7YF0bMiyfeZtq66AVLq2miBl6vvw6h4OEYAlcRcVTlbWXgAPAXv
+         0C8xmW1ClUaBTaP0AfCgGu6A6ObdzuJucwt/nedD8JngLILtbQ9RUTYj9SaaPzvDK7rU
+         ozv7fVHFxeQGEFfT97L6uZd3JlrNjL/uUDvmbHbOd8dp7Hq9iJy/0qraVRXrISitKmao
+         FxhFF8Qx7JMCJH/3KFZBm6aoTunGqtEScQ3v1/WxYJ37RL1svytm5okfJTTkkatO5zPT
+         zSqOShQlndDpr4v5ETkxX5BX97gCeAI8TNDw0LKj01WGkhSD+4xcgaFpO4Gtdo2koskg
+         vSHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687688029; x=1690280029;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=syq8wmqi5sxbhlG4LN2N7LL4Y7J7QS2HpSjUCteE4Go=;
+        b=k/x31OBWQ5tW4T9kq+vAVDFnm9ZC2P8x8MsJmlJA3oFqOJKtiBTb/6jv3H/qK+hb+e
+         nrPrt2gesu09VCYr23PEeqBUY5lJ7AFuNmLd3r8EtotUBnwwOyPoVHfzIr73onP38XEZ
+         GCEIuKY33AJ03U/LxUigjr+wxdn+xdvn+/hnNGk8Djal0LSBy3Syt3DOJO/0BV5OHDU/
+         rN3nT1mpjaPiZv7M1+aXmQR6rxEyZUKGK0HA1hJ+ejaBM1oTpouWoQdtOEgDBzFCZqPS
+         RZ0w9POw6kEJLyf9aYREDosw7E9bKMXW9COaTDYdxF5qXxOjKvJj3vDiUVoMHJRWNFRa
+         4+jg==
+X-Gm-Message-State: AC+VfDxonB3dJsK6yCqeZ88jPueL3c4Ui5Ko9ZMs8DCuV8mAZMcr72sx
+        KXAwXwqoXtE+fMhWiSSi4ROpMg==
+X-Google-Smtp-Source: ACHHUZ6ue7nK+iXT+Gmb02ASDhOsmXu9P1FKk9ZoHujhTYqVKduxYzP5wOr0r58/UwUeL3oIS/UWxA==
+X-Received: by 2002:a17:907:6095:b0:989:1cc5:24a with SMTP id ht21-20020a170907609500b009891cc5024amr14860344ejc.13.1687688028779;
+        Sun, 25 Jun 2023 03:13:48 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id u12-20020a170906068c00b0098856d1470csm1903726ejb.75.2023.06.25.03.13.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 25 Jun 2023 03:13:47 -0700 (PDT)
+Message-ID: <41d0313b-f791-b274-d5a2-fd40b4be0fea@linaro.org>
+Date:   Sun, 25 Jun 2023 12:13:45 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 2/4] arm64: dts: imx8ulp: remove "fsl,imx7ulp-lpuart"
+ compatible for i.MX8ULP
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        shenwei.wang@nxp.com, gregkh@linuxfoundation.org
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kernel@pengutronix.de, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH 4/4] dt-bindings: serial: fsl-lpuart: add imx8ulp compatible string
-Date:   Sun, 25 Jun 2023 17:48:57 +0800
-Message-Id: <20230625094857.29644-5-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230625094857.29644-1-sherry.sun@nxp.com>
 References: <20230625094857.29644-1-sherry.sun@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0126.apcprd02.prod.outlook.com
- (2603:1096:4:188::11) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|PAXPR04MB8816:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6a8ebd61-6d64-4cbf-a791-08db75623dea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZRvkmBxDvASXuA0eWDih3vspR50rA+UcuQFrGzfu8F0fvY5oIVKjziPUeTRwkrxewi/LIY6wE4sZMi1LDacztKPm9r8jxGkiemUTW3SMy4PlAUbZOE3xVi86Q0k2fAS8YfCO/iQ79ClHvzdopHVcxKHdd5PpgiKCyEoGKCqP5qzpPXSZyCu/op5cZbbqbiCoey1bxSmYUIQDo7/NTu1wU7iYZ2xnDUClCamOOHGebA7Spl8uC1IIOY+s3OMJ1DYcr6cSyLGaZnGQv6Cz4y9HXJF/gX3VwF8X8cFULZzswtAdfXL27S2jrNtRobUjrL8KjVTh4JXLDu+IgeFwXZny9IRTBybbaJVuuJBS7Hjlo6ETLBjZU3QPpdq8UJT3/6w773o75pNwnrnXIwrMUTDvo6/dGEWOSNgOTEs77Z62Pr//Znvhkf8kja3lGvtv+oEG6xz3XKqGCktoiaa06xXjhqfF7194HenmGODk8Q6WiDZeK0eEphc2ThBgvf1xFSbYV7liBfhIGMd91mxOzU67sMVwOg2ACJyGB79e9rUTcliA+GQe3SotQQGCV/jA9uxW6S6e7lPYU9p1gXrjq48Q0MsDT+t5/8D3uSldpdqn/vx+a6WaNIEYhRmZ0OTw+uNuzuut4RELl1Nnt+tl0PWyLw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(366004)(136003)(396003)(376002)(451199021)(26005)(36756003)(5660300002)(7416002)(44832011)(66476007)(8936002)(8676002)(41300700001)(86362001)(316002)(66556008)(4326008)(38350700002)(38100700002)(66946007)(6506007)(1076003)(4744005)(6512007)(2906002)(6486002)(186003)(52116002)(6666004)(83380400001)(478600001)(2616005)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?B8Dpvua05TDrteIyUarBt0hi5OZjN9Q0J+FoBG9ADCLNRWe14Q3EnCy+D47/?=
- =?us-ascii?Q?uH1Jg6bh3jitooxcJpZrvyFmUO0wROgvtdb5AaAEbzL3snGbhxcJRmbptZ+l?=
- =?us-ascii?Q?MHvojkCW/XlL9XVmOv9imtPDDs/2N4MxvgomwN8ZemZnKQSdkcKIlDUN5FgC?=
- =?us-ascii?Q?pnY0dreKYVScZ17Dmh1FUsR3PLKSuxxOfWyX2HMPS7lL2WHTGeTgv5bIZJn5?=
- =?us-ascii?Q?EjMh6x/+lKp3BjH8n7EeY7PTUexrYsMujzPyXWlrK1X6HADSXJokpl5FWuXF?=
- =?us-ascii?Q?8aBb5EiSDa6wAQhD3N0d9oNHMjTD2aoZ4bRp0dmpZL92UrkwNs7BRs8arNgv?=
- =?us-ascii?Q?ooB06GGhSLbX0qPZkEa5PGPUQSNk7QDuKsNJQF7nniwRjnvJ/YmIIe3o4PSq?=
- =?us-ascii?Q?efcdVWzSCxc/XGyF/v9vVgN14PGN328byuSJxMw8GFAWerAGWkYKRGXj5qCm?=
- =?us-ascii?Q?61aoJznKh4vOA7wQvCb8s3IQm8AWtAOtm1k2QQ4l6MKdGzMigDlecdn5e8nL?=
- =?us-ascii?Q?hwDBlQqx+e6YF0F5T6ogy/q1xRFblIFsz0SI4DGp2BnqUPeLvIPJwVJ5a7+r?=
- =?us-ascii?Q?b4a9Ad++dx960vH3wHC0lhnsbddbrLTnPi8OV3GWmd5a6yhCKF1S+EtUQgqC?=
- =?us-ascii?Q?C8bjP5Jm3f6bIXfz/fe1A9CBNmnn1ybpLialVilAmB9myzPdmd5TJyf6Mryt?=
- =?us-ascii?Q?DynbSD5m5FMjKOYCRznzISp8UI81ANiV2I4W4xhZ8x++hO+SWnZBMR9w/Ac7?=
- =?us-ascii?Q?+YcLO+NL9yVRJoAE27rMuI16DVSj4gSCI22o7X0dW8Qijpbm/VoOT3nBr4DZ?=
- =?us-ascii?Q?68qSo3shEERXpgvxKknJlTB45CgKa0kyPun6YAYF6vGSSNMs38vMZdhS+XPO?=
- =?us-ascii?Q?+jdkn204fEPS+RoUuV4pHmpJrU0H0EyAPiRUK8oyUXPVjAS2oN2VOa3jSPey?=
- =?us-ascii?Q?5BCz35Q5pusjk4N/pqxX9Ubx0pNKQHUat2tj0RQA1MatdyebnOpeUaSSBQQx?=
- =?us-ascii?Q?K2zWUXwt/zvByLqAKeveu9Vz40VNEeqnqnKY9QYmfFbzTCF4408NAuSx7JHJ?=
- =?us-ascii?Q?3A76gVWAY4JG+yMflktsElCH7Y1PrAsATZeu7Ng//W6EVqTDecAQ1TOLWfwz?=
- =?us-ascii?Q?ZUwIswXs6E1J2j8Al73zd7cEXoXAvDWgJFDXpU5OMjzt4fObvGxMuXqUeOSv?=
- =?us-ascii?Q?v8pBxBrzJcTJ/uFPP3tcNY4gyLWUE+eOqh7MI9fiv0oWh+fxZODtWQXbGOxw?=
- =?us-ascii?Q?gkuQud2oJ5p6IJio0+wAapZPl03kr0GA3CwybwiPJtHX+QFQkSDVQ1LB4ISc?=
- =?us-ascii?Q?T+7sJXaLVV4hyPNma3cf1wPF31q8KTVZuT8gpMPKGqWCyJaS+YMPs8Ee8MHm?=
- =?us-ascii?Q?V28RFgHMjfd7UA73hwJDRMHIQn8FQ7/m8gRCjOsWV6l+OY+hsH0Wtg8SUbz7?=
- =?us-ascii?Q?EQZPaoZsuCWihK4XS+alwp+ymxovEGOFxvhKCN716WZUAXz/UiBzQxSeOtY/?=
- =?us-ascii?Q?LnJLLcIzys/ulrdiVEasCOnGC31rvwfiWyz/oRBvxik/P9gpMPTyXlJhoO2b?=
- =?us-ascii?Q?NtfcYx31vKxyb4ByMqCJKJMySiwVgwQ2ou5TtQTI?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a8ebd61-6d64-4cbf-a791-08db75623dea
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2023 09:55:01.1928
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YSspO0mV34hy0KZht3FDfy+kMs5Zk6BDZ5JEl5ukDQDRusK1/HxwbJPvZxRKj49ZHL6cUgQ5E8FZRorQ91v6VQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8816
+ <20230625094857.29644-3-sherry.sun@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230625094857.29644-3-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-LPUART driver adds a new compatible string for imx8ulp, and imx93 is
-much more compatible with imx8ulp than imx7ulp, so correct the
-dt-binding here.
+On 25/06/2023 11:48, Sherry Sun wrote:
+> i.MX8ULP has specific "fsl,imx8ulp-lpuart" compatible in lpuart driver,
+> "fsl,imx7ulp-lpuart" compatible is no longer needed, and i.MX8ULP is not
+> fully compatible with i.MX7ULP, for example, i.MX8ulp can support
+> EOP(end-of-packet) function while i.MX7ulp doesn't, so remove
+> "fsl,imx7ulp-lpuart" compatible.
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+That's not how compatibility works. Your commit msg says that new device
+comes with new features, but your code says they are incompatible. These
+are two different things.
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-index 93062403276b..5599be95400b 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -21,13 +21,12 @@ properties:
-           - fsl,ls1021a-lpuart
-           - fsl,ls1028a-lpuart
-           - fsl,imx7ulp-lpuart
-+          - fsl,imx8ulp-lpuart
-           - fsl,imx8qxp-lpuart
-           - fsl,imxrt1050-lpuart
-       - items:
--          - enum:
--              - fsl,imx93-lpuart
--              - fsl,imx8ulp-lpuart
--          - const: fsl,imx7ulp-lpuart
-+          - const: fsl,imx93-lpuart
-+          - const: fsl,imx8ulp-lpuart
-       - items:
-           - enum:
-               - fsl,imx8qm-lpuart
--- 
-2.17.1
+Either drop the patch or provide correct rationale.
+
+Best regards,
+Krzysztof
 
