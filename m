@@ -2,62 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E87D6EB64DD
-	for <linux-serial@archiver.kernel.org>; Sun, 25 Jun 2023 15:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4B6EB64DC
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Jun 2023 02:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbjFYPkj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 25 Jun 2023 11:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
+        id S230023AbjFZCC1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 25 Jun 2023 22:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbjFYPkh (ORCPT
+        with ESMTP id S229962AbjFZCC0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 25 Jun 2023 11:40:37 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C72C4
-        for <linux-serial@vger.kernel.org>; Sun, 25 Jun 2023 08:40:35 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-51d9a925e9aso113677a12.0
-        for <linux-serial@vger.kernel.org>; Sun, 25 Jun 2023 08:40:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1687707633; x=1690299633;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MTQp0n2oXhJA5Ac6MISqa3fJgp7uxeLkw3KpR5ufcr4=;
-        b=Cd7SgRQi+l52dqC1OE/wwuXDAiJ2UhbVd/Rk9e8oWDT/tQ2l5Y+RBse4O6Q+9/k1Vq
-         GxgNDGaCbftz40WMfeIn3HFp5gmmsgbU55++OwSx7GF6WdTmg4FpE+x2+oWcfstFTDoJ
-         yNg9+bbXiKdiki/1OxgFJ8agJJvlKuz1mpF1nAbYlQKbgcja6Dk/wjBhO6k8NSOfMf3W
-         rgWPQDyHhJiCT/Hv0cjqDfAsWVGi5sZlXil1aw26LWyk3nyn/AioIvZ5ND3qX+/YGOil
-         lFUQi0QJRvYrTLSyp91wOopkX05fZcMHphVkkObo9KaXaaTsCcQO/b1W5uJ4NSJFw0Dy
-         yc/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1687707633; x=1690299633;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MTQp0n2oXhJA5Ac6MISqa3fJgp7uxeLkw3KpR5ufcr4=;
-        b=hJjMSJC8abxa/rBQDlqfv1+vfj6M1HGmmJ+I5jTp/zuS/R1OBYermZPX+tATUtFNqk
-         FsiT4+i1CE8Q1hko4R6WvnzYWIMGVOHG+4mrjRyUdYXs44TYBDKC8Pk4U2AhsoYxVBNe
-         yLlNwsAVBq/o3Bwm91/vXG3PRIXie1d8/zRgG3vHg5D/ce711H8P4wckRbRxEykU6DTE
-         Q1FI30ye+TLQO97Q0MtV8whK1jYU8RuXw5jOcg7aSILQvXQlkVOCOXTE6JoEfK9dKQVx
-         PujTQGYiOC7m58OhiHKNjVe+nZHc/ExdvvGMzcm5bxSPjkBsKteOR6sYHMplqyIcJu4D
-         kBjw==
-X-Gm-Message-State: AC+VfDyAXXePf30tZ3R3VmAF3PPTCnFHbFxoO9t4f8KpndXEALOxavJv
-        YV/NSqtCkR6+yuJS//PXTD1NRg==
-X-Google-Smtp-Source: ACHHUZ4//9aqSdHBFWBy31jPAOHqRPxQmt9OrkOsKtISKlC0LX1C6VDQqpf8tmcL9kDEKcIid6gu3Q==
-X-Received: by 2002:a17:906:c359:b0:98d:63c5:d135 with SMTP id ci25-20020a170906c35900b0098d63c5d135mr6987800ejb.54.1687707633619;
-        Sun, 25 Jun 2023 08:40:33 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id gr11-20020a170906e2cb00b009884035279bsm2209333ejb.33.2023.06.25.08.40.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 25 Jun 2023 08:40:32 -0700 (PDT)
-Message-ID: <731db330-4a0f-2427-a0ab-318f2d8be73b@linaro.org>
-Date:   Sun, 25 Jun 2023 17:40:30 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH 4/4] dt-bindings: serial: fsl-lpuart: add imx8ulp
- compatible string
-To:     Sherry Sun <sherry.sun@nxp.com>,
+        Sun, 25 Jun 2023 22:02:26 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2085.outbound.protection.outlook.com [40.107.104.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5632A1A6;
+        Sun, 25 Jun 2023 19:02:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=byOcBfkiXbuF+aoGzsIObH5IPDXNFNusRldrWSt93iZe0G2zIsqnK1cE3Y095TeIxhTPX5u5ljsnC5eHfRQhYw7+v0dCWwcb/ezfP0R1Ryu2qlDjkDPHd3rEZHAPwo2bj/jx0Hb+H2TOKlwc5R7imTQGwRoGfdFld6+KMmtkpDDawwk2+GWwKFErUlDBbRq0RBRgVewC+jAaMM5sJ1mSbV7Xmvo8JngScn7GEpYlTnDmhId2/GwCDbA+qqwFzouRG0FMv5Y6gtop5IkwZFKyp/8oCyyXlWJBN/GHVHCw83W5Iw9B72klSwo/4mfouHwE8p08RNay5eaKFOJtaglY7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Us/4CdGOR6owdudnc6F0LbukH6St+BYBq0i/5PelKtw=;
+ b=MkNXcid7/ZuWlZ9MXoEldB3Icj/ZCaetaTf3WUXo1YR4nanPsLA64fsTRkBjHymkL5KuFpYUbGlbMeoiJPD/pxQEpoILSgqs1w3H03J6wwrbXBb/luuVAY5j6zYiTKPRKCtnQfSf0mixRA8eZCYRj6P25pzraaaP+y+6f8xHF61AWo/slmu8mZboCIOchJSb2dS2fV0MDK3EnPFw+UrBsiFyRYkzhbKLem3jxPNG77l9avSGRZamkKPd081dB7RcntGXhMyZiZIh/INI4uFZmEib6QNrSH87FYUspzDBY9WXD/xpUOCud6XySHiuxLNjN5cuJTLFHdfdbViYYuIvmQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Us/4CdGOR6owdudnc6F0LbukH6St+BYBq0i/5PelKtw=;
+ b=UyQrjSizsGaPJjeFu+g35OiJOAJWoS6DGhkoqKuYLx75Q5KJl27SGgVI3Q+iv/j097rmbGd4cg3AccXOsCdviy9JFcHoU/L2aV9I8h/PlshHKrpaU7BK1bhCXl/W28PHiTrQCG7uGS+67vCwY5GrS2LJ+dN+oKMdDpaLBw2oqXw=
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by VE1PR04MB7454.eurprd04.prod.outlook.com (2603:10a6:800:1a8::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.24; Mon, 26 Jun
+ 2023 02:02:17 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::ef9f:1e01:e8a:6a4a]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::ef9f:1e01:e8a:6a4a%3]) with mapi id 15.20.6521.026; Mon, 26 Jun 2023
+ 02:02:17 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "krzysztof.kozlowski+dt@linaro.org" 
         <krzysztof.kozlowski+dt@linaro.org>,
@@ -67,62 +49,124 @@ To:     Sherry Sun <sherry.sun@nxp.com>,
         "festevam@gmail.com" <festevam@gmail.com>,
         Shenwei Wang <shenwei.wang@nxp.com>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
         "kernel@pengutronix.de" <kernel@pengutronix.de>,
         "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH 4/4] dt-bindings: serial: fsl-lpuart: add imx8ulp
+ compatible string
+Thread-Topic: [PATCH 4/4] dt-bindings: serial: fsl-lpuart: add imx8ulp
+ compatible string
+Thread-Index: AQHZp0sbmRUgGoZupUyaQLK7zLF8TK+bTeyAgAAqn6CAAC+cAIAArTvw
+Date:   Mon, 26 Jun 2023 02:02:17 +0000
+Message-ID: <AS8PR04MB8404E78E7DB663FC639CD0749226A@AS8PR04MB8404.eurprd04.prod.outlook.com>
 References: <20230625094857.29644-1-sherry.sun@nxp.com>
  <20230625094857.29644-5-sherry.sun@nxp.com>
  <d990a281-b4a3-1e26-1fdf-dfd35ab9cd24@linaro.org>
  <AS8PR04MB84042EF903689014CC0C33809221A@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <731db330-4a0f-2427-a0ab-318f2d8be73b@linaro.org>
+In-Reply-To: <731db330-4a0f-2427-a0ab-318f2d8be73b@linaro.org>
+Accept-Language: zh-CN, en-US
 Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <AS8PR04MB84042EF903689014CC0C33809221A@AS8PR04MB8404.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AS8PR04MB8404:EE_|VE1PR04MB7454:EE_
+x-ms-office365-filtering-correlation-id: ec70fff1-35a0-44c2-2c0d-08db75e95e45
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Tw8v1f1dib4n3hUM5KhKbRNXvOqB6a0iyhCZEk7JX6vanLq59Q9DOqbJ8bZRtk6zbttwUXxcjvMpb6CYegHfd2Ca9SGZysic4DcZDovXJIELA78VYke563wm3MZAzfRN8L+H4ASSZBRIRuGUJz/g5lAvQayRpRvaPE+zzPlHsUkRdQEJfjFGJVqeDivqGtC2MP6gWNueV7G0wF8FdDOF0pIfSVRLAQqG1LgNzDN+f0xrjeJKiZ+L00hxG39ThCwyLJloTWiZeJ58KrjNhfVoeUXMROwYhY2CJ+o9lvfTzYeuSFSE6KtxT2ix2oT/bVV6GBpKmNcnBxqEIqdsAsoPIjBfHyARCeMPnFLChnC7B+l0hHHRxPX35Qm8IGrCVFzl+Drv0kCp/AEk/vC0li3NIWiQ+8WkpbmmI4O9HOxl7ZoiZQKfsKS9HZbV7iI84HvSdbedhkenu/l2e59m+5pdg6UlWvYpTLesLcu6yCb+ODt6hoc06nFZrdGIGfB9hwAU0b/mgpCYe+pmpui5MQ98s9o5Kk8PxgBt1zEn4hfXUCBiGApKJFa9weLTZpAmqE8vYk232FQ7jrKfquakAVA5eaLVIl+3MaAHwDLEsadCwul6myBMZIWV0xPv/IIEBiJmmb74ZOuLOc4/YMCauB+qjQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(346002)(396003)(376002)(136003)(451199021)(26005)(33656002)(52536014)(5660300002)(44832011)(7416002)(66476007)(86362001)(8936002)(8676002)(41300700001)(66446008)(4326008)(64756008)(38070700005)(66556008)(38100700002)(122000001)(55016003)(76116006)(66946007)(316002)(6506007)(53546011)(2906002)(9686003)(186003)(71200400001)(478600001)(7696005)(54906003)(110136005)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Y1RGSytvUHZWZlhrVmtLOFphRzFTQzhDbnNCaXpGcC9UTlNmSitWVjBHbmF6?=
+ =?utf-8?B?dVRzbTN5eHhxWHo1eHZqMEMxRkJuSWVnNmYyUnE1azZwMi93ZlBRaVpUYTBa?=
+ =?utf-8?B?a1pJSTk2MnhqdTNucnZUQVN5SXRNSUFudFU1c2FScnFvUG0vRXJ6MGxXblg5?=
+ =?utf-8?B?OFRKa01FaTlKS0dId01XbDRHN0kyRzcxc3lRS1pEVkJ3MDZJWmJ0QU1GNVFB?=
+ =?utf-8?B?Q09xczZvaHpPaW5OWWVOSWdqMXExSWg0Zll3bU8xZkQvdFVnWUhjQVVoNGth?=
+ =?utf-8?B?YVE0THcyZ1l3Zml3WFljK1VXL2M2MTcweHVZVlk0T1d6WmpNL1BqZjVXeUFo?=
+ =?utf-8?B?Myt1d2pMVGVtZVNLYW9EUUhoTzBiUWk5YlhTSGR1NG1lZ1BnN2ZCN3RaWlpR?=
+ =?utf-8?B?YUxqQXE0YUtxUWdIblZMZTU4SzlmbjZvUTlDNEI2T3R0RVRHbzJRQUNMVlE3?=
+ =?utf-8?B?dy9EcldhRFY2ZGt6NkVYMnhKNkk3VFVpYS9EWjl4Ukl6L2krK3hYZUV6dmdu?=
+ =?utf-8?B?Y2h2bmhiK25zWVkreG1Oc3JzVUcwS09NREh1dFhkVURHeXUvUlBncTZFSkZY?=
+ =?utf-8?B?Z1ZVQStNSUxCL2JXNXlDWVNHNVZTVDZVaDM1NHZBekdqc3BBM0RxL2FXY3dC?=
+ =?utf-8?B?VHFBQnhtc1Z2TnQ4elZqVzM2UEtLL3VURXliWWZ0czlwZWNiS3NqUVlEZkEx?=
+ =?utf-8?B?S2R0TkYzUlprRUN2N09zRXliTlNpRVlLK0FtWVpvU29MdkVKZENtS2ZvazRo?=
+ =?utf-8?B?TjRuelI0WmVlSFh1WWhsWFJuTVpJU1JwcGFuTFFEMURHNXFuTDRtYlFyUFZP?=
+ =?utf-8?B?bDVra2VyaC9UeVlvd0x1dlBYZ0dEYkhUbGExVjc5Rm5BVElESzQ0T3E0Y3NV?=
+ =?utf-8?B?aG1NN0ZqSnBKQWplblFLb1kzWXJJRDQ3elFqRjNhQ1ptSk0yekppNHkwbzhS?=
+ =?utf-8?B?aUlQeFY0eEYveVk1QTFpQ0dyckswSzdJR0R4czQraFNvRFA2bkZyNUdxRlU3?=
+ =?utf-8?B?YzBlS1BDZEZINFhBMVlKem1xaUwxY1phL2Ziamw0U25xSHZaRWtHaFU3a2pi?=
+ =?utf-8?B?cStzNGtpcFJyQXN3bFpaK0Z6MjJhN3c3aFlUY1h1ajlXaGRmeHFqY1VTOTQz?=
+ =?utf-8?B?RERZVThPcjl2UEVnamREeDJWcUdwa2cyLzVFRUhteVd1eWtJVTFmckJtVVBz?=
+ =?utf-8?B?cGRCUFRpUHVsTkt4dTVXSGdRcE9kaWxBWUZJUldmK1FoUExPMndKeWVXUnFG?=
+ =?utf-8?B?VUFNbmtDZVlrSG1CMmhiWE4zRjV5K2VVU2dBRlE3WjI1NW15TmxUalljdlk5?=
+ =?utf-8?B?MVlqZUt0UEJQb25jUGh3T1lyUWcxbkRLNWF6V0xsVnd6NHFTS3RTcXdkV1p4?=
+ =?utf-8?B?Y1duK0szNG9hcm9qc3F6RkJMMVpYZ3JEK0J0UHJ0SjV2bUxlZWt6ZWc0TEFE?=
+ =?utf-8?B?TlhZSnArc29IV2l5am5KNGE3TGxTNVBBZmlqNzg5a2x3NExHOU9iNFczS0Rv?=
+ =?utf-8?B?R1hKcEdRYm0rMGNpU21pU2txWkdPeU9GY1dCcDN6YkN0OFRQaGNGaURqMjdB?=
+ =?utf-8?B?cnlqWEJrUFpHRHRUVzNIWEZyQkNCVU42M09OU0hmQXBJaHBFZS9hSThaM0FR?=
+ =?utf-8?B?ZEUxS280ZTZuZytJbXZUNE51YlpyN0dVeHNKL0IzM1VEYkgyc0JPcXROcXR2?=
+ =?utf-8?B?Y1kzZmRNdWlRY1RzRUZUVGRCN2VMNC9WcDJQRng3Z3BEdDdjNTZtSXc4U3Bo?=
+ =?utf-8?B?NXBOZHRENzk0ejhYSCtOT2pvMVVYaE9ZL2dkV0ZKT2lxM1hhV1Q3akRIblBv?=
+ =?utf-8?B?OE5zZVpEOVRIN0t6NGJDQXJHRnZSeVRGWVBURlpnWHBmalBrQzNaK3RidUpF?=
+ =?utf-8?B?R25xeE9xaW9WaXRLeHJRaXpldll2VUJIRHRmSktTZ2RSZytYR3hvM0VnSmFj?=
+ =?utf-8?B?bkVob1F5WmVOMTZTUS9RTmhycTl0YmFQeURvL2JKc2lSY3dvaEFDNllKbjk2?=
+ =?utf-8?B?VEp3ays3QzArWXloNkROWE5rNlBMR2JnYjRQdk1rSGdVVXJpMjhyTlBVWUhk?=
+ =?utf-8?B?ZEl4TDNiWVFnN2syRlZEZjRjMHA4UWpmUFpsSXJsMWdmTHAwNkc0WFl0Vk1L?=
+ =?utf-8?Q?iLBw=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec70fff1-35a0-44c2-2c0d-08db75e95e45
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2023 02:02:17.2295
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UTmIEBlPgGg6gOiZifpVh/Wh88SwVyGbhDNQBrLEEVsNHyKMs+cRlktFK5DmuIwWFRoN0OBfvL1qf3F0TQ2+qw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7454
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25/06/2023 15:12, Sherry Sun wrote:
-> 
-> 
->> -----Original Message-----
->> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> Sent: 2023年6月25日 18:18
->> To: Sherry Sun <sherry.sun@nxp.com>; robh+dt@kernel.org;
->> krzysztof.kozlowski+dt@linaro.org; conor+dt@kernel.org;
->> shawnguo@kernel.org; s.hauer@pengutronix.de; festevam@gmail.com;
->> Shenwei Wang <shenwei.wang@nxp.com>; gregkh@linuxfoundation.org
->> Cc: devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
->> kernel@pengutronix.de; linux-serial@vger.kernel.org; linux-
->> kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>
->> Subject: Re: [PATCH 4/4] dt-bindings: serial: fsl-lpuart: add imx8ulp
->> compatible string
->>
->> On 25/06/2023 11:48, Sherry Sun wrote:
->>> LPUART driver adds a new compatible string for imx8ulp, and imx93 is
->>
->> What driver adds or not, is not really correct argument for compatibility.
->> There are plenty of compatible devices which have both device ID entries in
->> the driver. Why would you drop their compatibility between each other? It
->> does not work like that... Provide clear rationale for this.
-> 
-> Hi Krzysztof, 
-> We take imx7ulp lpuart as the basic version IP, then imx8ulp adds some improved features based on the imx7ulp lpuart IP.
-> Actually imx8ulp can also work with the imx7ulp version, we can say it is compatible with imx7ulp, but we need to enable those new features by default on imx8ulp, so we added the imx8ulp-lpuart compatible in lpuart driver. So for this case, maybe compatible = "fsl,imx8ulp-lpuart", "fsl,imx7ulp-lpuart" is correct for imx8ulp platform, right?
-> 
-> Then we have the imx93 family with the same lpuart version as imx8ulp, so how should we handle the compatible string for imx93 platform? Maybe compatible = "fsl,imx93-lpuart", "fsl,imx8ulp-lpuart", "fsl,imx7ulp-lpuart"? But three compatible strings looks too long for me, so I want to drop imx7ulp-lpuart and take imx8ulp-lpuart as the basic compatible string for imx93 and later others imx9 series, I am not sure if it is suitable, some suggestions here will be appreciate, thanks!
-> 
-
-Wrap your responses.
-
-So write that the reason of this change is because looks too long for
-you and we will judge that rationale. Three compatibles is still fine.
-
-Best regards,
-Krzysztof
-
+DQo+ID4+DQo+ID4+IE9uIDI1LzA2LzIwMjMgMTE6NDgsIFNoZXJyeSBTdW4gd3JvdGU6DQo+ID4+
+PiBMUFVBUlQgZHJpdmVyIGFkZHMgYSBuZXcgY29tcGF0aWJsZSBzdHJpbmcgZm9yIGlteDh1bHAs
+IGFuZCBpbXg5MyBpcw0KPiA+Pg0KPiA+PiBXaGF0IGRyaXZlciBhZGRzIG9yIG5vdCwgaXMgbm90
+IHJlYWxseSBjb3JyZWN0IGFyZ3VtZW50IGZvciBjb21wYXRpYmlsaXR5Lg0KPiA+PiBUaGVyZSBh
+cmUgcGxlbnR5IG9mIGNvbXBhdGlibGUgZGV2aWNlcyB3aGljaCBoYXZlIGJvdGggZGV2aWNlIElE
+DQo+ID4+IGVudHJpZXMgaW4gdGhlIGRyaXZlci4gV2h5IHdvdWxkIHlvdSBkcm9wIHRoZWlyIGNv
+bXBhdGliaWxpdHkgYmV0d2Vlbg0KPiA+PiBlYWNoIG90aGVyPyBJdCBkb2VzIG5vdCB3b3JrIGxp
+a2UgdGhhdC4uLiBQcm92aWRlIGNsZWFyIHJhdGlvbmFsZSBmb3IgdGhpcy4NCj4gPg0KPiA+IEhp
+IEtyenlzenRvZiwNCj4gPiBXZSB0YWtlIGlteDd1bHAgbHB1YXJ0IGFzIHRoZSBiYXNpYyB2ZXJz
+aW9uIElQLCB0aGVuIGlteDh1bHAgYWRkcyBzb21lDQo+IGltcHJvdmVkIGZlYXR1cmVzIGJhc2Vk
+IG9uIHRoZSBpbXg3dWxwIGxwdWFydCBJUC4NCj4gPiBBY3R1YWxseSBpbXg4dWxwIGNhbiBhbHNv
+IHdvcmsgd2l0aCB0aGUgaW14N3VscCB2ZXJzaW9uLCB3ZSBjYW4gc2F5IGl0IGlzDQo+IGNvbXBh
+dGlibGUgd2l0aCBpbXg3dWxwLCBidXQgd2UgbmVlZCB0byBlbmFibGUgdGhvc2UgbmV3IGZlYXR1
+cmVzIGJ5DQo+IGRlZmF1bHQgb24gaW14OHVscCwgc28gd2UgYWRkZWQgdGhlIGlteDh1bHAtbHB1
+YXJ0IGNvbXBhdGlibGUgaW4gbHB1YXJ0DQo+IGRyaXZlci4gU28gZm9yIHRoaXMgY2FzZSwgbWF5
+YmUgY29tcGF0aWJsZSA9ICJmc2wsaW14OHVscC1scHVhcnQiLA0KPiAiZnNsLGlteDd1bHAtbHB1
+YXJ0IiBpcyBjb3JyZWN0IGZvciBpbXg4dWxwIHBsYXRmb3JtLCByaWdodD8NCj4gPg0KPiA+IFRo
+ZW4gd2UgaGF2ZSB0aGUgaW14OTMgZmFtaWx5IHdpdGggdGhlIHNhbWUgbHB1YXJ0IHZlcnNpb24g
+YXMgaW14OHVscCwgc28NCj4gaG93IHNob3VsZCB3ZSBoYW5kbGUgdGhlIGNvbXBhdGlibGUgc3Ry
+aW5nIGZvciBpbXg5MyBwbGF0Zm9ybT8gTWF5YmUNCj4gY29tcGF0aWJsZSA9ICJmc2wsaW14OTMt
+bHB1YXJ0IiwgImZzbCxpbXg4dWxwLWxwdWFydCIsICJmc2wsaW14N3VscC1scHVhcnQiPw0KPiBC
+dXQgdGhyZWUgY29tcGF0aWJsZSBzdHJpbmdzIGxvb2tzIHRvbyBsb25nIGZvciBtZSwgc28gSSB3
+YW50IHRvIGRyb3ANCj4gaW14N3VscC1scHVhcnQgYW5kIHRha2UgaW14OHVscC1scHVhcnQgYXMg
+dGhlIGJhc2ljIGNvbXBhdGlibGUgc3RyaW5nIGZvcg0KPiBpbXg5MyBhbmQgbGF0ZXIgb3RoZXJz
+IGlteDkgc2VyaWVzLCBJIGFtIG5vdCBzdXJlIGlmIGl0IGlzIHN1aXRhYmxlLCBzb21lDQo+IHN1
+Z2dlc3Rpb25zIGhlcmUgd2lsbCBiZSBhcHByZWNpYXRlLCB0aGFua3MhDQo+ID4NCj4gDQo+IFdy
+YXAgeW91ciByZXNwb25zZXMuDQo+IA0KPiBTbyB3cml0ZSB0aGF0IHRoZSByZWFzb24gb2YgdGhp
+cyBjaGFuZ2UgaXMgYmVjYXVzZSBsb29rcyB0b28gbG9uZyBmb3IgeW91IGFuZA0KPiB3ZSB3aWxs
+IGp1ZGdlIHRoYXQgcmF0aW9uYWxlLiBUaHJlZSBjb21wYXRpYmxlcyBpcyBzdGlsbCBmaW5lLg0K
+PiANCkhpIEtyenlzenRvZiwNCkdvdCBpdCwgdGhhbmtzIGZvciB5b3VyIHN1Z2dlc3Rpb24sIEkg
+d2lsbCB1c2UgdGhyZWUgY29tcGF0aWJsZXMgZm9yIGlteDkzLg0KDQpCZXN0IFJlZ2FyZHMNClNo
+ZXJyeQ0K
