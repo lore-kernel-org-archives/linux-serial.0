@@ -2,149 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9377EEB64DA
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Jun 2023 11:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBBFEB64D7
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Jun 2023 15:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbjFZLuN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Jun 2023 07:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
+        id S229501AbjFZPq4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 26 Jun 2023 11:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbjFZLuL (ORCPT
+        with ESMTP id S229601AbjFZPqz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Jun 2023 07:50:11 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331411AD;
-        Mon, 26 Jun 2023 04:50:06 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1qDkjJ-0007Jh-Nv; Mon, 26 Jun 2023 13:50:01 +0200
-Message-ID: <6bc3a7cb-4c3b-62e2-75f7-820f3a589029@leemhuis.info>
-Date:   Mon, 26 Jun 2023 13:50:01 +0200
+        Mon, 26 Jun 2023 11:46:55 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2284DAA
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jun 2023 08:46:54 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3fa99b57a38so9244465e9.0
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jun 2023 08:46:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687794412; x=1690386412;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kuyd+JwwqaO421Phj2bcif4AP94MQRTvv+PwrSFLFR4=;
+        b=Fpd1/uc/n1/Ajw2dWe2J7i7v9Gm9dFqHeILW7ruQxvPPhmF450sMKmpPGRpfGyKGyT
+         J3V7+0U0F2rQVmpfK/SDhupwA2yxKg0/orp3c93+JPDFFG9drtlrLPJxh2av9hxHriHe
+         qln1XYis3OYB6Rpqd/m6MmaI/GXec/COr3JhIgUJwq/8SgYO7B1k2Q4mcZ6Nz6Avt8Ip
+         a2Xv5ER6QCzMfWY51qNs+No/lB3XXzQb7kvsvVHO6msN7FyvAx4pim2HmjBMd93gmCPy
+         RIghya+k2XIcyhGMC8tM53o/kRI2I81WwQCgVFcTZDBrPF9RFULR3czc023oTPmOdCMJ
+         U1Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687794412; x=1690386412;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kuyd+JwwqaO421Phj2bcif4AP94MQRTvv+PwrSFLFR4=;
+        b=VRtfLFJCrImB8+81d6gtTFgkdNy253ctAxCb7y950JhV+Kuzzw8pD9mmo7NfDI2Fdc
+         ItMolXBPS5MAlwG1KRjXSrxcHnh5t8m7k+hHVQvIocljEccz1bj+S0FDWBXoJwBTeRlH
+         +thbVhX+G7vs1M9SnO8ZfyKqCUgtkXSkc+G51tDUnPqW9CdCeyf9d5SG6T2XpLqecrWc
+         G0XXCiR2Y3iM7cKmPl1mQT5feFTwP+64554aKMCkAMJvHGfgou4DDMwyxKZdSmqnNEwm
+         MAHOlWfkx61m1Czf8aSI8fUlnUy3RYO+dSgAC7rik2sa1M/FzaisObLJ5bv63TiSmbhf
+         unAQ==
+X-Gm-Message-State: AC+VfDyX4mb82eYGyRQFRqx9gJRoHuQG/CtCeBMzArHTuE8EcHgOguPT
+        D6gYJidcufz8HZt4t7NOTsob5g==
+X-Google-Smtp-Source: ACHHUZ4IciPsQ27k+EaZUw+CnlYv/gil5R552nx9wEUsptp1MsH241H58P77k7otlXySwpStb8DMDA==
+X-Received: by 2002:a1c:f70a:0:b0:3f7:34dc:ed0d with SMTP id v10-20020a1cf70a000000b003f734dced0dmr20350694wmh.25.1687794412614;
+        Mon, 26 Jun 2023 08:46:52 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id u12-20020adfdd4c000000b0030903d44dbcsm7765005wrm.33.2023.06.26.08.46.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Jun 2023 08:46:52 -0700 (PDT)
+Message-ID: <989b42c2-8b5f-5eb5-d61b-dc3f29b374b2@linaro.org>
+Date:   Mon, 26 Jun 2023 17:46:50 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-Subject: Re: [PATCH] dmaengine: pl330: Return DMA_PAUSED when transaction is
- paused
-Content-Language: en-US, de-DE
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Robert Baldyga <r.baldyga@samsung.com>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Richard Tresidder <rtresidd@electromag.com.au>,
-        stable@vger.kernel.org
-References: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
-From:   "Linux regression tracking (Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-In-Reply-To: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH V2 3/3] dt-bindings: serial: fsl-lpuart: add imx8ulp
+ compatible string
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        shenwei.wang@nxp.com, gregkh@linuxfoundation.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kernel@pengutronix.de, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com
+References: <20230626044848.4417-1-sherry.sun@nxp.com>
+ <20230626044848.4417-4-sherry.sun@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230626044848.4417-4-sherry.sun@nxp.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1687780206;e6f7ebd4;
-X-HE-SMSGID: 1qDkjJ-0007Jh-Nv
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 26.05.23 12:54, Ilpo Järvinen wrote:
-> pl330_pause() does not set anything to indicate paused condition which
-> causes pl330_tx_status() to return DMA_IN_PROGRESS. This breaks 8250
-> DMA flush after the fix in commit 57e9af7831dc ("serial: 8250_dma: Fix
-> DMA Rx rearm race"). The function comment for pl330_pause() claims
-> pause is supported but resume is not which is enough for 8250 DMA flush
-> to work as long as DMA status reports DMA_PAUSED when appropriate.
+On 26/06/2023 06:48, Sherry Sun wrote:
+> Add imx8ulp compatible string in lpuart dt-binding, also correct the
+> imx93 compatible here, imx93/imx8ulp add some new features based on
+> imx7ulp lpuart, so need to add "fsl,imx8ulp-lpuart" for imx93 to enable
+> those new features.
 > 
-> Add PAUSED state for descriptor and mark BUSY descriptors with PAUSED
-> in pl330_pause(). Return DMA_PAUSED from pl330_tx_status() when the
-> descriptor is PAUSED.
-> 
-> Reported-by: Richard Tresidder <rtresidd@electromag.com.au>
-> Tested-by: Richard Tresidder <rtresidd@electromag.com.au>
-> Fixes: 88987d2c7534 ("dmaengine: pl330: add DMA_PAUSE feature")
-> Cc: stable@vger.kernel.org
-> Link: https://lore.kernel.org/linux-serial/f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au/
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-Ilpo, Vinod, Philipp: what happened to this? It seems this fix for a
-regression didn't make any progress since it was posted. Or am I missing
-something?
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
-
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 > ---
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 > 
-> $ diff -u <(git grep -l -e '\.device_pause' -e '->device_pause') <(git grep -l DMA_PAUSED)
-> 
-> ...tells there might a few other drivers which do not properly return
-> DMA_PAUSED status despite having a pause function.
-> 
->  drivers/dma/pl330.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-> index 0d9257fbdfb0..daad25f2c498 100644
-> --- a/drivers/dma/pl330.c
-> +++ b/drivers/dma/pl330.c
-> @@ -403,6 +403,12 @@ enum desc_status {
->  	 * of a channel can be BUSY at any time.
->  	 */
->  	BUSY,
-> +	/*
-> +	 * Pause was called while descriptor was BUSY. Due to hardware
-> +	 * limitations, only termination is possible for descriptors
-> +	 * that have been paused.
-> +	 */
-> +	PAUSED,
->  	/*
->  	 * Sitting on the channel work_list but xfer done
->  	 * by PL330 core
-> @@ -2041,7 +2047,7 @@ static inline void fill_queue(struct dma_pl330_chan *pch)
->  	list_for_each_entry(desc, &pch->work_list, node) {
->  
->  		/* If already submitted */
-> -		if (desc->status == BUSY)
-> +		if (desc->status == BUSY || desc->status == PAUSED)
->  			continue;
->  
->  		ret = pl330_submit_req(pch->thread, desc);
-> @@ -2326,6 +2332,7 @@ static int pl330_pause(struct dma_chan *chan)
->  {
->  	struct dma_pl330_chan *pch = to_pchan(chan);
->  	struct pl330_dmac *pl330 = pch->dmac;
-> +	struct dma_pl330_desc *desc;
->  	unsigned long flags;
->  
->  	pm_runtime_get_sync(pl330->ddma.dev);
-> @@ -2335,6 +2342,10 @@ static int pl330_pause(struct dma_chan *chan)
->  	_stop(pch->thread);
->  	spin_unlock(&pl330->lock);
->  
-> +	list_for_each_entry(desc, &pch->work_list, node) {
-> +		if (desc->status == BUSY)
-> +			desc->status = PAUSED;
-> +	}
->  	spin_unlock_irqrestore(&pch->lock, flags);
->  	pm_runtime_mark_last_busy(pl330->ddma.dev);
->  	pm_runtime_put_autosuspend(pl330->ddma.dev);
-> @@ -2425,7 +2436,7 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
->  		else if (running && desc == running)
->  			transferred =
->  				pl330_get_current_xferred_count(pch, desc);
-> -		else if (desc->status == BUSY)
-> +		else if (desc->status == BUSY || desc->status == PAUSED)
->  			/*
->  			 * Busy but not running means either just enqueued,
->  			 * or finished and not yet marked done
-> @@ -2442,6 +2453,9 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
->  			case DONE:
->  				ret = DMA_COMPLETE;
->  				break;
-> +			case PAUSED:
-> +				ret = DMA_PAUSED;
-> +				break;
->  			case PREP:
->  			case BUSY:
->  				ret = DMA_IN_PROGRESS;
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> index 93062403276b..272bfbb1cdfc 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> @@ -21,12 +21,15 @@ properties:
+>            - fsl,ls1021a-lpuart
+>            - fsl,ls1028a-lpuart
+>            - fsl,imx7ulp-lpuart
+> +          - fsl,imx8ulp-lpuart
+
+I don't understand this. Commit msg also does not explain this.
+
+>            - fsl,imx8qxp-lpuart
+>            - fsl,imxrt1050-lpuart
+>        - items:
+> -          - enum:
+> -              - fsl,imx93-lpuart
+> -              - fsl,imx8ulp-lpuart
+
+This could have stayed as enum with one entry which would make your diff
+more readable.
+
+> +          - const: fsl,imx8ulp-lpuart
+> +          - const: fsl,imx7ulp-lpuart
+
+
+Best regards,
+Krzysztof
+
