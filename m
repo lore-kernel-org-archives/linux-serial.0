@@ -2,142 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EA5EB64D9
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Jun 2023 02:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB11EB64D9
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Jun 2023 06:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230170AbjF0C7f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Jun 2023 22:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S230073AbjF0GN7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 27 Jun 2023 02:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbjF0C70 (ORCPT
+        with ESMTP id S230003AbjF0GN6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Jun 2023 22:59:26 -0400
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2069.outbound.protection.outlook.com [40.107.247.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087D11FDA;
-        Mon, 26 Jun 2023 19:59:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q9aFYo2Tgpk0Ku6IMbAhQfmw5yUrmTmeS7OQBXPtGiWsaobEmHUDjYLounZh1z4EKLqTqQp/qfwIdnNmZVy8Edo3hguhdHZCwvvjM66xIkZ41gkpN1IZSbGeo9dKPbf1bZ0cTA7EcYro8PcPywo9/bkBwA+ttaTrC+oB+yKmCu65BwXxJVlOu0yERhAk7qz5KZGE+bYVM5U72wVUH010NKg7fP34Mvxd8hInUEFOtGYeB158O8NjbInoLInKIRKGFLJoba6CQKsmWinGvrd1BhYoIPrgF7aTSvWNm3QulcAHzWCX9aEccPu8/BCI2P3JMRK4OldotMWorTEdR7c2Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sjjZyKG9jF42LCNNSk1Iz4aHlrkNNT7pgyf6RHLVTw8=;
- b=bd8Wrzse/7Ee/jScV3scVCWPtuBNetZ3RQmANtGYYaZ0TQrOYYGP/LlR2W5fcNGA2qGUZ2R8X+HXZ11444sPh5B6BOlEeklit51ZSQlCZf2GRPseamfK707FuxPMrAEXzmKGfn0HDSMXVBwvtmJNzjKiSPbOLcCgQ75vRDcEdMXwRUJHraVGmHG1vmENLtGqJCWn7j0B+vnWtsX9i9405cX6BV8c60ppDC5ZBH8WX/PVnwcLyRJ2MDZLXwOmH39T1o7NeN9GUQqdiuGgOFi+M7F3gSFlVfu/ZZPOQDSlBn0KDwa+5yQMEK7TpPeNyV2EoGzssqNtcmoUkuFh3v9JEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sjjZyKG9jF42LCNNSk1Iz4aHlrkNNT7pgyf6RHLVTw8=;
- b=BzBlOwTeMjuwjBgy2XvG4o6D8BVeMTj8EjEU1qKIOfPXemuHuRWzOvaX7lt5VrgeJcRkuPuSlCa8sc2mbGGyMJtd/tdJjFH6omQJcR51+1nPZ8HaRwU7l8BTwG3elP25PnMTAWKj+CRqDeh8foYNxiuVK4194iHf+uEsdYfRtKE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS8PR04MB8946.eurprd04.prod.outlook.com (2603:10a6:20b:42d::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6521.26; Tue, 27 Jun
- 2023 02:59:14 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::ef9f:1e01:e8a:6a4a]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::ef9f:1e01:e8a:6a4a%3]) with mapi id 15.20.6521.026; Tue, 27 Jun 2023
- 02:59:14 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        festevam@gmail.com, shenwei.wang@nxp.com,
-        gregkh@linuxfoundation.org
+        Tue, 27 Jun 2023 02:13:58 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC4E1BFB
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jun 2023 23:13:56 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-3fa96fd79feso21092575e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 26 Jun 2023 23:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687846435; x=1690438435;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vfwpHbbsGCKJMLfgMJV+HTBNlG4lMxS4KT5GYcIwgWs=;
+        b=Cxdr9MjnhD1y1tv8kdfCCAoMYPwwgY5GRYKaZEqGT4GJaMZxYENg1sFqosTDfhfr0w
+         GbbxDgQ+SBRVC9l/lx7HMh4gXokQIKMsn05xJBsK9yWZHzLHavYwYs29yaB7pY3AvjtK
+         889XEItirMacODDaVk5FoFi0R6R6WRrYAvAWxbG7JJ8+mLXKIH78BLXAllE51iAllpCW
+         cPUdjw8eL144xNVQKiO5DP/WACSQOMznscsPRJmf1KJkeEnIQz5FpIIggyE/qtzJS23M
+         S1sHeYIE+zTPsesPD7wl/lGwsnJVmTthCpYXIxKLMXVgdmfyFHZ6DE0mhBu+aYrNzC2r
+         +IHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687846435; x=1690438435;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vfwpHbbsGCKJMLfgMJV+HTBNlG4lMxS4KT5GYcIwgWs=;
+        b=J+Ecuwdq+nYWghoCd/i9n0e5vQr0hrZw5JdUz/MBb8QkzjjYU2spcBvFyamaFcJY5l
+         vrkogpZHP7bliwoNP5L4FyQzPGdJS/PtvD/aSwEK7WnXwuNvPDcBJ76kKzaEIWvyFiXS
+         Ps8t9f9zLFl4yCdPqBbBpUNekonf0Hnppy3dQySlJOVOC8oTMPIokqzp3YGRDMONu6CF
+         DBfSv39TQS8mh/vQYNr+JTj2nMk9jjMOrfMH8Shi9OWnZWwE5WXH6NdUWpJAOsXqriIH
+         bYdfxImogjwzTQ0vklS0iIqz/bLEyDCOAI9EqvXgafPT7aM10pFzOcC0zpGjEWi9DpV2
+         aA/A==
+X-Gm-Message-State: AC+VfDyMuSkCA+eDsAxAcgjzysPu1YI20CPZPhqsg7E5UoJbr2qxIUKF
+        oS7KmHy3s01aqR66XEWCEOdO/w==
+X-Google-Smtp-Source: ACHHUZ4VrZ3ppTufd3kRre67uS4/bLfAKihSZysTXpHw/VwowyjL5lnfxd4qusi+NuogkMTgLgY0xw==
+X-Received: by 2002:a05:600c:3644:b0:3fb:a2b6:8dfd with SMTP id y4-20020a05600c364400b003fba2b68dfdmr751079wmq.32.1687846434949;
+        Mon, 26 Jun 2023 23:13:54 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id s7-20020adfeb07000000b0030ae901bc54sm9284680wrn.62.2023.06.26.23.13.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Jun 2023 23:13:54 -0700 (PDT)
+Message-ID: <a5731e43-4e9d-2571-9156-c1f97696df8c@linaro.org>
+Date:   Tue, 27 Jun 2023 08:13:52 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH V3 3/3] dt-bindings: serial: fsl-lpuart: correct
+ imx93-lpuart dt-binding item
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        shenwei.wang@nxp.com, gregkh@linuxfoundation.org
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kernel@pengutronix.de, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH V3 3/3] dt-bindings: serial: fsl-lpuart: correct imx93-lpuart dt-binding item
-Date:   Tue, 27 Jun 2023 10:53:32 +0800
-Message-Id: <20230627025332.11133-4-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230627025332.11133-1-sherry.sun@nxp.com>
 References: <20230627025332.11133-1-sherry.sun@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0013.apcprd02.prod.outlook.com
- (2603:1096:4:194::21) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|AS8PR04MB8946:EE_
-X-MS-Office365-Filtering-Correlation-Id: 49413eb5-82ce-4f02-13a2-08db76ba7d91
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EDibyijYC6kAmrydapusHiUWp4zlJ+UiUrRNbBdIHKUcFWIlIomLZ6FNeG4lpCShtSBtKmaVut/lueCaHXnb85teSFS4MpHzilrhJ+zyeka+TIU/Q/Bj4u2Jndhie222mfkGpt+w0UGqzpEPF48pJvSYHPnPWtDHyV/JHDvOqS5jsWXQ08OiBAaVxz1u5dqvtZ5G+49/CwecjlYWuiraCcWd9aw6nNvpYmD/p4i8kc5GoYG6PSUKKPt7K1UngV5V1HiAYRJrANmMn3tzgH2BU5ZefGTKJZHdVGVu4cE5p/nuivx+Bc5FKTQSMJyMuPtfN9AI/9L6Y80eyfxFwIazVMC0OoSLYRcy4Q7qvu8Of9z/8qOEu4W/dOHxQXaTW0pnRN6CWO1SmMM5eFKHk33na2Y42z2x+5CQFTjzVrazQGRF8aE76j540FE/LuOoEBF57GADJKJigSi08nqbOwrYIADue0WYELn9HID3LBrw+Zkmxzr5pEfElLCUh/Z0CHUyqsnEGw0OerRIfRdxMvwI89I/9jfIevLm5r3o9RU7h0sLh4z7BtkX4HOTDS/BZgoVBB2DoYVIqVZj/bPN7L08q0kNBVHVscZs9ALWj9fEwpH+Lvp2PMV1CfNEJXnieR9g
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199021)(316002)(66556008)(66946007)(66476007)(478600001)(4326008)(36756003)(8936002)(8676002)(5660300002)(7416002)(44832011)(1076003)(86362001)(41300700001)(6486002)(2906002)(52116002)(4744005)(26005)(186003)(6506007)(6512007)(38100700002)(83380400001)(38350700002)(6666004)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zCDxZEDwXYyt5Kn29keIRasHYaLLfDj/uRyWzktVT09cpT1A9J6RMmU31/f0?=
- =?us-ascii?Q?fRjGKOhzpKtUUuF6YpUtazARUqpgjPXMuTmWo3AeHiaTaDW/XEKla/e2719B?=
- =?us-ascii?Q?nZSb2TUjX60xbAf0v5Xv6ZR6hOYWAyeg7BoRKeUNm+KGOs9Tqf/cmZSyMRiD?=
- =?us-ascii?Q?nom/NDX+Sh9CbZa1YSPUz9dgMcRsKTlfqReb6uJigFCO1Usvdi5yhkEmMM1P?=
- =?us-ascii?Q?tSIsioc7jGB0nm0AFLrlWFvlTrCv9V8bURMxpXxQ/y7GFWBg/CId/OHmdjZS?=
- =?us-ascii?Q?5WZsqBlaKVCUAsM1YDs0oDVn7QZhao7RtlD73yWuqfzA5Y6C3bqFGf921x/N?=
- =?us-ascii?Q?2PhQlkp9Yq8z/ruIKffsn4VLNjqvvSkv+5qZDIzkgXL/KHqqXJ2rc1gtsnkR?=
- =?us-ascii?Q?quLKGt9gATh0+dcJTW2k2DlaDuCVAnOZsAaGAR/F+L2For8RBXyPGHWAb4GO?=
- =?us-ascii?Q?iDWnIl4Z8gbRR383OfdGYDaSKOcl1DJ4AhpgVLz5SBsSbaOCAbcE2anAYVav?=
- =?us-ascii?Q?RjarV8MH08wjaBLm27ziQPRoNNVaLlAosqibfCcBpzWwNZDVxN6tDhg6R7SR?=
- =?us-ascii?Q?7sXc3s3LW6UEP4D/PeNRqY1LzR95nRfiRDRW+eLEvuE9CXjoYv9dypQ3BvmK?=
- =?us-ascii?Q?kemAIRhwaBTI1JjaO+gcqM3Q0GSyk5uqjaqeFxOARM1MD9eqMaf9AQGDwu9U?=
- =?us-ascii?Q?CT++XrONUrZgKxkZ+7eUyBZHHMrr+SYVU1I8iNCbHj/D1j7qAxMg7WnGLSD1?=
- =?us-ascii?Q?rH2jr9BSHvTOdT5xxSr4rnHJCMKNa2JlfA9g3LDJRXLSfdxDjbZUjdMz7vTY?=
- =?us-ascii?Q?EekYb2y2G22l1bxm+1/rv7EuINuTZg3VgOPl6dCErIY53YQHn9WQdKzdHcNI?=
- =?us-ascii?Q?bgRJ0PVC8jWl4Ty9Xjj3NyBTJTk5+BnOQXP4x0QvM4qgsOWap1v1z/pYWy7C?=
- =?us-ascii?Q?O/DWVxc5DRiMvJi25x2qxmBu1XpAn6uhnKUXVTF15dODCgYKFkBjL/OGmHKj?=
- =?us-ascii?Q?VTi+BsR+phWoXl2OTlebLvuRv+PwCMBuuVGImgBdjeU+R9q4ASHx/ZLKK+ni?=
- =?us-ascii?Q?Pj7L2bFUbiYvT2LI7TCTJjexcYC/wEEBDx9dpdeFCUmDd7W0DZEhal1n/+j5?=
- =?us-ascii?Q?elvY/VOKjjUOSL4xlFpAR1srcf2tCySP+fyz6vP3VwYX9Xaaav+T95lQMsXk?=
- =?us-ascii?Q?DJoQJVNvWC5BRrzHCKtIYjP1Bnxdf/TfpSS+K5eQ8K+p8errv9AzbqQjpAwB?=
- =?us-ascii?Q?O1nd1VggG89gf5Q/SJ7ZrE0p/l4YlGrD3+SOvC30DEcsbfka6Tw5f0nIGcQZ?=
- =?us-ascii?Q?4xy3hOJRH8HTvjnmHxYP8UvfRyviAhvmBbjzamzc080n6G0bzBq69DB2S0An?=
- =?us-ascii?Q?6HuWnGWHYrnLF+Yk+WQRpipqAvW8BEFPZFa26rnE/TEQgMdvgMDb6aHi0lj4?=
- =?us-ascii?Q?1yI6rcmu0g5JOgv4paeSXHSUHlmwvoYVpjtP7KCD7za6GHJCZRAG3lhWOqFM?=
- =?us-ascii?Q?5XJ2Q6egxZ/Gyn3N/9a4mSUYn3Q1+ZZjuZ+KXPmUXjVyHbdpIB8glHN9vx7o?=
- =?us-ascii?Q?li0wiVLTSt1SP0gI5bBx5h31Huw38mtWE6ac0l7N?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49413eb5-82ce-4f02-13a2-08db76ba7d91
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2023 02:59:14.8737
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nombEiwIiRb/gCpMC66mngkALV4RqZeCx4J1BMh9x6EltxHOrvEEToJ8y2fxTKt5S/QRm5L7clZ/JEtc0iRFiA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8946
+ <20230627025332.11133-4-sherry.sun@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230627025332.11133-4-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Correct the fsl,imx93-lpuart dt-binding item, imx93/imx8ulp add some new
-features based on imx7ulp lpuart, so need to add "fsl,imx8ulp-lpuart"
-for imx93 to enable those new features.
+On 27/06/2023 04:53, Sherry Sun wrote:
+> Correct the fsl,imx93-lpuart dt-binding item, imx93/imx8ulp add some new
+> features based on imx7ulp lpuart, so need to add "fsl,imx8ulp-lpuart"
+> for imx93 to enable those new features.
+> 
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
 ---
- Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-index 93062403276b..3a5b59f5d3e3 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -25,9 +25,13 @@ properties:
-           - fsl,imxrt1050-lpuart
-       - items:
-           - enum:
--              - fsl,imx93-lpuart
-               - fsl,imx8ulp-lpuart
-           - const: fsl,imx7ulp-lpuart
-+      - items:
-+          - enum:
-+              - fsl,imx93-lpuart
-+          - const: fsl,imx8ulp-lpuart
-+          - const: fsl,imx7ulp-lpuart
-       - items:
-           - enum:
-               - fsl,imx8qm-lpuart
--- 
-2.17.1
+This is an automated instruction, just in case, because many review tags
+are being ignored. If you do not know the process, here is a short
+explanation:
+
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions, under or above your Signed-off-by tag. Tools like b4 can help
+here. However, there's no need to repost patches *only* to add the tags.
+The upstream maintainer will do that for acks received on the version
+they apply.
+
+https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
+
+Best regards,
+Krzysztof
 
