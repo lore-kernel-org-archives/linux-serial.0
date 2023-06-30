@@ -2,98 +2,110 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487D6EB64D9
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Jun 2023 13:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0F6EB64D9
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jun 2023 00:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbjF2NNo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Jun 2023 09:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
+        id S230229AbjF3ApS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Jun 2023 20:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbjF2NNn (ORCPT
+        with ESMTP id S229742AbjF3ApQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Jun 2023 09:13:43 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976062116;
-        Thu, 29 Jun 2023 06:13:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1688044421; x=1719580421;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ybmdUv2+ejnKmER1jcJZx9b+/IRmHl5y7rWMPhxbP+E=;
-  b=TeEw6bSQJuCLZvcikwNsWh3YdG/t8sIdhTUhSrZDOLSBRfvvy8QfqSKO
-   FpFyGWDMI6cdwZ7i4ZKNq+7L8+erJ3UZcJKyspx1zuRHQhnehvSodjhdV
-   c7fVZtX21aOpiej2R/AI68vSsd+5WZOrfNXRlYkXk+5ge6Zyo2OmafEJO
-   Pj7S31flhOcRaTCI77rw1BRlQ2fnU/cFPqOQascst14l0sEaQ2kM3ZgJA
-   V4oKKVACvMsG6/njNgP98UF65qPbQoQApOes3Gz8LZX6+5lqXYAdiIJIc
-   Ty3wRBN3KKVDOAZz/S437J79ULyHhotzvIL5lqOc26KYBZRQv2t30jPE5
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10756"; a="365565384"
-X-IronPort-AV: E=Sophos;i="6.01,168,1684825200"; 
-   d="scan'208";a="365565384"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2023 06:06:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10756"; a="807293763"
-X-IronPort-AV: E=Sophos;i="6.01,168,1684825200"; 
-   d="scan'208";a="807293763"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by FMSMGA003.fm.intel.com with ESMTP; 29 Jun 2023 06:06:50 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qErMG-000rXO-1I;
-        Thu, 29 Jun 2023 16:06:48 +0300
-Date:   Thu, 29 Jun 2023 16:06:48 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ruihong Luo <colorsu1922@gmail.com>
+        Thu, 29 Jun 2023 20:45:16 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A6E110;
+        Thu, 29 Jun 2023 17:45:15 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-6689430d803so868157b3a.0;
+        Thu, 29 Jun 2023 17:45:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1688085915; x=1690677915;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gS76Agew+AFD2zmlX7au8D9T4ETaBDOuwZWs80WLt0A=;
+        b=k/IG2FldiYn7BTYy4VbCLoO4o/I454g7fHLPapqNgnb3Iq6oEcRF5RPWfEKPrcoioa
+         zqt6z/ne+9U/wKX9V1ilVQSp+TH2nnsHa6Xnl3NOPORD7IPpFgk+1NV7brS8kG91GGYX
+         EW9SoyG0R+qwwLndO3/YE0sH1AWZAM/g0CXy9p9neLQUCW2RWp4TXBWvWExKa1pZlA/f
+         EEBhBx0ANwxZH4pf/0cTiiawL91VHg5eLENHT6kMPZ6FbfG9ni5kBBNIOTWZsaa9960a
+         L6ZlD9RnXrfh9qPx/SsVuSnJCL3+1ulj7Sd/zH3JjG8jvuUX4KolBv6etc8+Nanc09Vx
+         mEGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688085915; x=1690677915;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gS76Agew+AFD2zmlX7au8D9T4ETaBDOuwZWs80WLt0A=;
+        b=aiOLYEbGGDuA71OvNUUDsWHn9j0Vjsp6GUdJFUPpAn31n2wLV6dJETwQphZOUw49Jj
+         5YUjpHSQZIYudJITOVRHODeBUHHO9KCEdhEaa2gfPdlZFqm+/qBqYQI6qwZ3XTR3u7oQ
+         /YKDW6gmaYuAuj3s8/v6axzMLGEoEWc0JOdAmEAW8yOVZqJEpfbnkFIOh6Qojp7lYLo1
+         PuMR3Xi1Qj+y4GX5PiXMQaEV0bl16vJiPY+3qGmVBIfSsQhhSfLRc4CiYFljyNhyEUtO
+         77tSr1kJJ17kgGBCzJrNPmbd8JJSMpuHUphPm2xvFpNhQgX/S3jngLjeDuuxc1YMP8fI
+         8PHw==
+X-Gm-Message-State: AC+VfDxHzSIPnDjuhlSatLSiATrSEslwz4ltxaq/5A0CxoUxHQ9hLOGd
+        UIUQJIh31otN5HrXjc8Jhug=
+X-Google-Smtp-Source: ACHHUZ76EwTQl/a9hBE2O3g6/fJ45PdJdwO4k2n+AqjcehRvtheafg/LKZrnDQNw0wJ5lHowR/x1HQ==
+X-Received: by 2002:a05:6a20:8f0c:b0:117:a2f3:3c93 with SMTP id b12-20020a056a208f0c00b00117a2f33c93mr1382663pzk.2.1688085914744;
+        Thu, 29 Jun 2023 17:45:14 -0700 (PDT)
+Received: from localhost.localdomain ([43.224.245.252])
+        by smtp.gmail.com with ESMTPSA id e16-20020a17090301d000b001b69303db65sm9675106plh.26.2023.06.29.17.45.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Jun 2023 17:45:14 -0700 (PDT)
+From:   Ruihong Luo <colorsu1922@gmail.com>
+To:     andriy.shevchenko@linux.intel.com
 Cc:     gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
         jirislaby@kernel.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, luoruihong@xiaomi.com,
-        weipengliang@xiaomi.com, wengjinfei@xiaomi.com
-Subject: Re: [PATCH v2] serial: 8250: Preserve original value of DLF register
-Message-ID: <ZJ2B6I+ShqyJJJ+o@smile.fi.intel.com>
-References: <ZJ1lq8mVU8NbZRcV@smile.fi.intel.com>
- <20230629123529.62232-1-luoruihong@xiaomi.com>
+        weipengliang@xiaomi.com, wengjinfei@xiaomi.com,
+        Ruihong Luo <colorsu1922@gmail.com>
+Subject: [PATCH v3] serial: 8250_dw: Preserve original value of DLF register
+Date:   Fri, 30 Jun 2023 08:38:08 +0800
+Message-Id: <20230630003806.66112-1-colorsu1922@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230629123529.62232-1-luoruihong@xiaomi.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 29, 2023 at 08:35:30PM +0800, Ruihong Luo wrote:
-> This commit is aimed at preserving the original value of the
+Preserve the original value of the Divisor Latch Fraction (DLF) register.
+When the DLF register is modified without preservation, it can disrupt
+the baudrate settings established by firmware or bootloader, leading to
+data corruption and the generation of unreadable or distorted characters.
 
-Preserve the original value...
+Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
+Signed-off-by: Ruihong Luo <colorsu1922@gmail.com>
+---
+v3:
+- modify the commit message
+- use personal email to sign
+ drivers/tty/serial/8250/8250_dwlib.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-> DLF(Divisor Latch Fraction Register). When the DLF register is
-
-Divisor Latch Fraction (DLF) register...
-
-> modified without preservation, it can disrupt the baudrate settings
-> established by firmware or bootloader , leading to data corruption
-
-...bootloader, leading...
-
-> and the generation of unreadable or distorted characters.
-
-> Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
-> Signed-off-by: Ruihong Luo <luoruihong@xiaomi.com>
-> ---
-> v2:
-> - add a tag
-
-It's a v3 and still some comments are not (yet) addressed:
-1) your from header in email != SoB;
-2) do not use In-reply-to email header for the new patch versions;
-3) the commit message should be amended as I pointed out above again.
-
-It will go nowhere if you continue ignoring reviewers' comments.
-
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 75f32f054ebb..d30957722da8 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -244,7 +244,7 @@ void dw8250_setup_port(struct uart_port *p)
+ 	struct dw8250_port_data *pd = p->private_data;
+ 	struct dw8250_data *data = to_dw8250_data(pd);
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+-	u32 reg;
++	u32 reg, orig;
+ 
+ 	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
+ 	if (pd->hw_rs485_support) {
+@@ -270,9 +270,11 @@ void dw8250_setup_port(struct uart_port *p)
+ 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+ 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+ 
++	/* Preserve value written by firmware or bootloader  */
++	orig = dw8250_readl_ext(p, DW_UART_DLF);
+ 	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
+ 	reg = dw8250_readl_ext(p, DW_UART_DLF);
+-	dw8250_writel_ext(p, DW_UART_DLF, 0);
++	dw8250_writel_ext(p, DW_UART_DLF, orig);
+ 
+ 	if (reg) {
+ 		pd->dlf_size = fls(reg);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.2
 
