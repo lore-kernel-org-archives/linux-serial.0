@@ -2,110 +2,291 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0F6EB64D9
-	for <linux-serial@archiver.kernel.org>; Fri, 30 Jun 2023 00:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCFFEB64D7
+	for <linux-serial@archiver.kernel.org>; Fri, 30 Jun 2023 13:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbjF3ApS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Jun 2023 20:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
+        id S232168AbjF3N6x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 30 Jun 2023 09:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbjF3ApQ (ORCPT
+        with ESMTP id S229546AbjF3N6w (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Jun 2023 20:45:16 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A6E110;
-        Thu, 29 Jun 2023 17:45:15 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-6689430d803so868157b3a.0;
-        Thu, 29 Jun 2023 17:45:15 -0700 (PDT)
+        Fri, 30 Jun 2023 09:58:52 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB792118;
+        Fri, 30 Jun 2023 06:58:48 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-3090d3e9c92so2280445f8f.2;
+        Fri, 30 Jun 2023 06:58:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1688085915; x=1690677915;
+        d=gmail.com; s=20221208; t=1688133527; x=1690725527;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gS76Agew+AFD2zmlX7au8D9T4ETaBDOuwZWs80WLt0A=;
-        b=k/IG2FldiYn7BTYy4VbCLoO4o/I454g7fHLPapqNgnb3Iq6oEcRF5RPWfEKPrcoioa
-         zqt6z/ne+9U/wKX9V1ilVQSp+TH2nnsHa6Xnl3NOPORD7IPpFgk+1NV7brS8kG91GGYX
-         EW9SoyG0R+qwwLndO3/YE0sH1AWZAM/g0CXy9p9neLQUCW2RWp4TXBWvWExKa1pZlA/f
-         EEBhBx0ANwxZH4pf/0cTiiawL91VHg5eLENHT6kMPZ6FbfG9ni5kBBNIOTWZsaa9960a
-         L6ZlD9RnXrfh9qPx/SsVuSnJCL3+1ulj7Sd/zH3JjG8jvuUX4KolBv6etc8+Nanc09Vx
-         mEGQ==
+        bh=c5+VmZboCGtXD2h7I6RPQX0D+BsuFZkuK+SwH65LkZo=;
+        b=SSjGPXScNJKwxC3/hOijYSRYNtfnn2Uf6P5ymjz41IWxhmk7v8Nx+x0XBUbbafnaYm
+         8f9bBsVY6/JlwQooOx8a0WPXU8OWwDxN/cfMck3vWr+CstlH2swJHchbMC+m7hjyzk0j
+         ff0BkN2VtwbPKOoI9NBK77oW+iePZ7sZut57D8jKfyzT2qKDf6WPwiCXi6wM4hWgtjoK
+         yIq9DJH4QUJvnnoWl5S/lw82k+r7wIsTS3WZtuLjN1xlOsQp22qCqg6a6889b8wgnJwU
+         03dorAlp5u1fBqKiUgceBmkf9IHCd7VjpjHfwq7bpNaGOs3GnlAYgZC+bpqBl0iZm9CC
+         deYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688085915; x=1690677915;
+        d=1e100.net; s=20221208; t=1688133527; x=1690725527;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=gS76Agew+AFD2zmlX7au8D9T4ETaBDOuwZWs80WLt0A=;
-        b=aiOLYEbGGDuA71OvNUUDsWHn9j0Vjsp6GUdJFUPpAn31n2wLV6dJETwQphZOUw49Jj
-         5YUjpHSQZIYudJITOVRHODeBUHHO9KCEdhEaa2gfPdlZFqm+/qBqYQI6qwZ3XTR3u7oQ
-         /YKDW6gmaYuAuj3s8/v6axzMLGEoEWc0JOdAmEAW8yOVZqJEpfbnkFIOh6Qojp7lYLo1
-         PuMR3Xi1Qj+y4GX5PiXMQaEV0bl16vJiPY+3qGmVBIfSsQhhSfLRc4CiYFljyNhyEUtO
-         77tSr1kJJ17kgGBCzJrNPmbd8JJSMpuHUphPm2xvFpNhQgX/S3jngLjeDuuxc1YMP8fI
-         8PHw==
-X-Gm-Message-State: AC+VfDxHzSIPnDjuhlSatLSiATrSEslwz4ltxaq/5A0CxoUxHQ9hLOGd
-        UIUQJIh31otN5HrXjc8Jhug=
-X-Google-Smtp-Source: ACHHUZ76EwTQl/a9hBE2O3g6/fJ45PdJdwO4k2n+AqjcehRvtheafg/LKZrnDQNw0wJ5lHowR/x1HQ==
-X-Received: by 2002:a05:6a20:8f0c:b0:117:a2f3:3c93 with SMTP id b12-20020a056a208f0c00b00117a2f33c93mr1382663pzk.2.1688085914744;
-        Thu, 29 Jun 2023 17:45:14 -0700 (PDT)
-Received: from localhost.localdomain ([43.224.245.252])
-        by smtp.gmail.com with ESMTPSA id e16-20020a17090301d000b001b69303db65sm9675106plh.26.2023.06.29.17.45.11
+        bh=c5+VmZboCGtXD2h7I6RPQX0D+BsuFZkuK+SwH65LkZo=;
+        b=UTqkv7bYgDpMjjsJRQeMrjOMBe5wLpT6PhatpNuavZoJX6zHXJH8TfM50Ii1JSC4GT
+         mAaOICLyCwpw3D7Ed2fISDVhgfzKkfz473e0VcbgzwsXU7C6cbw5u//sDi/8J/YSX1R2
+         qUu5s6UQEg0xJalZhnG2XYzFZsTRvrMfIgtRr+fZUStXm583f+SbM8vdnNlYaKyOwpCf
+         lPOor3SY6nRfdEagTd0PoAiC0ZPM732IE4DOqjEWVW5s8gIVUYIp+QRlpQwppFofgJH7
+         9jWd9/7E7ZS50VJk9iVWnWvWGiSDiEu97uRd9jr/jBdh+75NJib8cNuE/PcFig943dP9
+         UURw==
+X-Gm-Message-State: ABy/qLZe7vTJaVYc250HnwwkVmfQ1P8Og1RCc9aO7bF/kSUt6zoSyjsf
+        e36ZiD5SDIGasDTxzKnf4LtDLPEcEuI=
+X-Google-Smtp-Source: APBJJlHOUc2EoCB2i+DAHpJZEzY9OnAN1I7UyH5LcaJCG/FCJAOfKlzA6hCLCkBo76RVCCemaDboZg==
+X-Received: by 2002:a5d:58c3:0:b0:314:748:d59d with SMTP id o3-20020a5d58c3000000b003140748d59dmr2727282wrf.27.1688133527072;
+        Fri, 30 Jun 2023 06:58:47 -0700 (PDT)
+Received: from localhost (p200300e41f305300f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f30:5300:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id q10-20020adfdfca000000b003141e629cb6sm2538560wrn.101.2023.06.30.06.58.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jun 2023 17:45:14 -0700 (PDT)
-From:   Ruihong Luo <colorsu1922@gmail.com>
-To:     andriy.shevchenko@linux.intel.com
-Cc:     gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com,
-        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, luoruihong@xiaomi.com,
-        weipengliang@xiaomi.com, wengjinfei@xiaomi.com,
-        Ruihong Luo <colorsu1922@gmail.com>
-Subject: [PATCH v3] serial: 8250_dw: Preserve original value of DLF register
-Date:   Fri, 30 Jun 2023 08:38:08 +0800
-Message-Id: <20230630003806.66112-1-colorsu1922@gmail.com>
-X-Mailer: git-send-email 2.39.2
+        Fri, 30 Jun 2023 06:58:46 -0700 (PDT)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Cc:     Jon Hunter <jonathanh@nvidia.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: tegra-hsuart: Convert to json-schema
+Date:   Fri, 30 Jun 2023 15:58:43 +0200
+Message-ID: <20230630135843.1092770-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Preserve the original value of the Divisor Latch Fraction (DLF) register.
-When the DLF register is modified without preservation, it can disrupt
-the baudrate settings established by firmware or bootloader, leading to
-data corruption and the generation of unreadable or distorted characters.
+From: Thierry Reding <treding@nvidia.com>
 
-Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
-Signed-off-by: Ruihong Luo <colorsu1922@gmail.com>
+Convert the Tegra High-Speed UART bindings from the free-form text
+format to json-schema.
+
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
-v3:
-- modify the commit message
-- use personal email to sign
- drivers/tty/serial/8250/8250_dwlib.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../bindings/serial/nvidia,tegra20-hsuart.txt |  73 -----------
+ .../serial/nvidia,tegra20-hsuart.yaml         | 124 ++++++++++++++++++
+ 2 files changed, 124 insertions(+), 73 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
 
-diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-index 75f32f054ebb..d30957722da8 100644
---- a/drivers/tty/serial/8250/8250_dwlib.c
-+++ b/drivers/tty/serial/8250/8250_dwlib.c
-@@ -244,7 +244,7 @@ void dw8250_setup_port(struct uart_port *p)
- 	struct dw8250_port_data *pd = p->private_data;
- 	struct dw8250_data *data = to_dw8250_data(pd);
- 	struct uart_8250_port *up = up_to_u8250p(p);
--	u32 reg;
-+	u32 reg, orig;
- 
- 	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
- 	if (pd->hw_rs485_support) {
-@@ -270,9 +270,11 @@ void dw8250_setup_port(struct uart_port *p)
- 	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
- 		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
- 
-+	/* Preserve value written by firmware or bootloader  */
-+	orig = dw8250_readl_ext(p, DW_UART_DLF);
- 	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
- 	reg = dw8250_readl_ext(p, DW_UART_DLF);
--	dw8250_writel_ext(p, DW_UART_DLF, 0);
-+	dw8250_writel_ext(p, DW_UART_DLF, orig);
- 
- 	if (reg) {
- 		pd->dlf_size = fls(reg);
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+deleted file mode 100644
+index f709304036c2..000000000000
+--- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
++++ /dev/null
+@@ -1,73 +0,0 @@
+-NVIDIA Tegra20/Tegra30 high speed (DMA based) UART controller driver.
+-
+-Required properties:
+-- compatible : should be,
+-  "nvidia,tegra20-hsuart" for Tegra20,
+-  "nvidia,tegra30-hsuart" for Tegra30,
+-  "nvidia,tegra186-hsuart" for Tegra186,
+-  "nvidia,tegra194-hsuart" for Tegra194.
+-
+-- reg: Should contain UART controller registers location and length.
+-- interrupts: Should contain UART controller interrupts.
+-- clocks: Must contain one entry, for the module clock.
+-  See ../clocks/clock-bindings.txt for details.
+-- resets : Must contain an entry for each entry in reset-names.
+-  See ../reset/reset.txt for details.
+-- reset-names : Must include the following entries:
+-  - serial
+-- dmas : Must contain an entry for each entry in dma-names.
+-  See ../dma/dma.txt for details.
+-- dma-names : Must include the following entries:
+-  - rx
+-  - tx
+-
+-Optional properties:
+-- nvidia,enable-modem-interrupt: Enable modem interrupts. Should be enable
+-		only if all 8 lines of UART controller are pinmuxed.
+-- nvidia,adjust-baud-rates: List of entries providing percentage of baud rate
+-  adjustment within a range.
+-  Each entry contains sets of 3 values. Range low/high and adjusted rate.
+-  <range_low range_high adjusted_rate>
+-  When baud rate set on controller falls within the range mentioned in this
+-  field, baud rate will be adjusted by percentage mentioned here.
+-  Ex: <9600 115200 200>
+-  Increase baud rate by 2% when set baud rate falls within range 9600 to 115200
+-
+-Baud Rate tolerance:
+-  Standard UART devices are expected to have tolerance for baud rate error by
+-  -4 to +4 %. All Tegra devices till Tegra210 had this support. However,
+-  Tegra186 chip has a known hardware issue. UART Rx baud rate tolerance level
+-  is 0% to +4% in 1-stop config. Otherwise, the received data will have
+-  corruption/invalid framing errors. Parker errata suggests adjusting baud
+-  rate to be higher than the deviations observed in Tx.
+-
+-  Tx deviation of connected device can be captured over scope (or noted from
+-  its spec) for valid range and Tegra baud rate has to be set above actual
+-  Tx baud rate observed. To do this we use nvidia,adjust-baud-rates
+-
+-  As an example, consider there is deviation observed in Tx for baud rates as
+-  listed below.
+-  0 to 9600 has 1% deviation
+-  9600 to 115200 2% deviation
+-  This slight deviation is expcted and Tegra UART is expected to handle it. Due
+-  to the issue stated above, baud rate on Tegra UART should be set equal to or
+-  above deviation observed for avoiding frame errors.
+-  Property should be set like this
+-  nvidia,adjust-baud-rates = <0 9600 100>,
+-  			     <9600 115200 200>;
+-
+-Example:
+-
+-serial@70006000 {
+-	compatible = "nvidia,tegra30-hsuart", "nvidia,tegra20-hsuart";
+-	reg = <0x70006000 0x40>;
+-	reg-shift = <2>;
+-	interrupts = <0 36 0x04>;
+-	nvidia,enable-modem-interrupt;
+-	clocks = <&tegra_car 6>;
+-	resets = <&tegra_car 6>;
+-	reset-names = "serial";
+-	dmas = <&apbdma 8>, <&apbdma 8>;
+-	dma-names = "rx", "tx";
+-	nvidia,adjust-baud-rates = <1000000 4000000 136>; /* 1.36% shift */
+-};
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
+new file mode 100644
+index 000000000000..247ee33f8a01
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
+@@ -0,0 +1,124 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/nvidia,tegra20-hsuart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NVIDIA Tegra20/Tegra30 high speed (DMA based) UART controller driver
++
++maintainers:
++  - Thierry Reding <thierry.reding@gmail.com>
++  - Jon Hunter <jonathanh@nvidia.com>
++
++properties:
++  compatible:
++    oneOf:
++      - const: nvidia,tegra20-hsuart
++      - const: nvidia,tegra30-hsuart
++      - items:
++          - const: nvidia,tegra124-hsuart
++          - const: nvidia,tegra30-hsuart
++      - const: nvidia,tegra186-hsuart
++      - const: nvidia,tegra194-hsuart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: module clock
++
++  resets:
++    items:
++      - description: module reset
++
++  reset-names:
++    items:
++      - const: serial
++
++  dmas:
++    items:
++      - description: DMA channel used for reception
++      - description: DMA channel used for transmission
++
++  dma-names:
++    items:
++      - const: rx
++      - const: tx
++
++  nvidia,enable-modem-interrupt:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: Enable modem interrupts. Should be enable only if all 8 lines of UART controller
++      are pinmuxed.
++
++  nvidia,adjust-baud-rates:
++    $ref: /schemas/types.yaml#/definitions/uint32-matrix
++    description: |
++      List of entries providing percentage of baud rate adjustment within a range. Each entry
++      contains a set of 3 values: range low/high and adjusted rate. When the baud rate set on the
++      controller falls within the range mentioned in this field, the baud rate will be adjusted by
++      percentage mentioned here.
++
++      Example: <9600 115200 200>
++
++      Increase baud rate by 2% when set baud rate falls within range 9600 to 115200.
++
++      Standard UART devices are expected to have tolerance for baud rate error by -4 to +4 %. All
++      Tegra devices till Tegra210 had this support. However, Tegra186 chip has a known hardware
++      issue. UART RX baud rate tolerance level is 0% to +4% in 1-stop config. Otherwise, the
++      received data will have corruption/invalid framing errors. Parker errata suggests adjusting
++      baud rate to be higher than the deviations observed in TX.
++
++      TX deviation of connected device can be captured over scope (or noted from its spec) for
++      valid range and Tegra baud rate has to be set above actual TX baud rate observed. To do this
++      we use nvidia,adjust-baud-rates.
++
++      As an example, consider there is deviation observed in TX for baud rates as listed below. 0
++      to 9600 has 1% deviation 9600 to 115200 2% deviation. This slight deviation is expcted and
++      Tegra UART is expected to handle it. Due to the issue stated above, baud rate on Tegra UART
++      should be set equal to or above deviation observed for avoiding frame errors. Property
++      should be set like this:
++
++        nvidia,adjust-baud-rates = <0 9600 100>,
++                                   <9600 115200 200>;
++    items:
++      items:
++        - description: range lower bound
++        - description: range upper bound
++        - description: adjustment (in permyriad, i.e. 0.01%)
++
++allOf:
++  - $ref: serial.yaml
++
++unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - resets
++  - reset-names
++  - dmas
++  - dma-names
++
++examples:
++  - |
++    #include <dt-bindings/clock/tegra30-car.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@70006000 {
++        compatible = "nvidia,tegra30-hsuart";
++        reg = <0x70006000 0x40>;
++        interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
++        nvidia,enable-modem-interrupt;
++        clocks = <&tegra_car TEGRA30_CLK_UARTA>;
++        resets = <&tegra_car 6>;
++        reset-names = "serial";
++        dmas = <&apbdma 8>, <&apbdma 8>;
++        dma-names = "rx", "tx";
++        nvidia,adjust-baud-rates = <1000000 4000000 136>; /* 1.36% shift */
++    };
 -- 
-2.39.2
+2.41.0
 
