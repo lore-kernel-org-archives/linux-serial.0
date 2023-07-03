@@ -2,136 +2,282 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 560C1EB64DC
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 14:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A09C001B1
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 14:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbjGCOlY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jul 2023 10:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
+        id S230072AbjGCOux (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Jul 2023 10:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231215AbjGCOlX (ORCPT
+        with ESMTP id S229930AbjGCOuw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jul 2023 10:41:23 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0F5E7C
-        for <linux-serial@vger.kernel.org>; Mon,  3 Jul 2023 07:41:18 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-99364ae9596so150667166b.1
-        for <linux-serial@vger.kernel.org>; Mon, 03 Jul 2023 07:41:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1688395277; x=1690987277;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KsxT2CXzmHNRKMKyTxxMYK1jnDo5PSeQbIe7Vn7ruhs=;
-        b=ibuP6poiRv2NCpv0GANe5BUUMAtho2Sim6bzfVUn+CrFEk0BeMJH5r82Rsm/lrHb4B
-         FZ6udm9GNduaB5PVVVvfx085xYtTTDg2yvhr1xAElZaSw/DNo+jVEX9j72mskdOTx1+L
-         1gkkzTEkGsY+VhnT/EgfPPoAG692VJYniEIMJV3O5lPX0aBxe9Zii4MJZoJZbLLQJq+T
-         zDQlamtXX523PrGN0SNns51BDHWiqG5wBA0qk8M0uOXFfOph57kVHiQKKzOLLBpH4ats
-         3p6worsobf8sD/soHqHA9k+YonV6arMhM/smOcC69I92l0dLRjdLL65JOwv29W2G5BmN
-         +RRA==
+        Mon, 3 Jul 2023 10:50:52 -0400
+Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361AEB2;
+        Mon,  3 Jul 2023 07:50:51 -0700 (PDT)
+Received: by mail-io1-f43.google.com with SMTP id ca18e2360f4ac-777a6ebb542so177606939f.0;
+        Mon, 03 Jul 2023 07:50:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688395277; x=1690987277;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KsxT2CXzmHNRKMKyTxxMYK1jnDo5PSeQbIe7Vn7ruhs=;
-        b=hwDMin2W2iXdnmB8CCMwYncDoMRARq54icCuXr2ejKD5iR7cMKB2NAlYQCYiAwbOye
-         zFaU5WsD03O4vunoVsLKtNk5xMgU03IypwjJVYL6TNir08dj5VeWndN/qf9zz1xOTyxQ
-         2WUrKFnFfLC48wzX9fgfF9DUB4ZJOhiYRVijWf44EXQrdOj5Q3GCbEv/F0CmP+h2wm2g
-         RAYy/JU6wORTcRe14Ahj9HKaXaNlgBOi2EE0nD1IKwhvwYGLc1F4an9K+gTp74jbrAhS
-         tIjujGdCTDtprI2PMmI7HQo4cNAKXxY4v4GqdkSSS0t+4txGznc4Wu+jG6uvlX4ekNfC
-         iKdw==
-X-Gm-Message-State: ABy/qLYTH3pOdgM9CY05ppoSyceB9hnLi3n0nQL2BZYrwmfoCBhCFHkC
-        6qHbBzlHCEGOpSepmsA9bslIpQ==
-X-Google-Smtp-Source: APBJJlGk9ekQfg4hjV5s18OXGN4VoU+I+0II8jd3rHixUG8SYz65UZyLq9XhnjMqiiDFTkFoY/5w9w==
-X-Received: by 2002:a17:906:2dc5:b0:992:58fc:bcb8 with SMTP id h5-20020a1709062dc500b0099258fcbcb8mr6529593eji.56.1688395277328;
-        Mon, 03 Jul 2023 07:41:17 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id l16-20020a1709065a9000b0098d93142ce1sm11957949ejq.109.2023.07.03.07.41.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Jul 2023 07:41:16 -0700 (PDT)
-Message-ID: <30070c0d-df8c-2ab4-bc54-7801b6b7d49b@linaro.org>
-Date:   Mon, 3 Jul 2023 16:41:15 +0200
+        d=1e100.net; s=20221208; t=1688395850; x=1690987850;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=WvT8W6UUHkGl/2v0glhXnZWU1jmjMKb3Iaxvw5iaZ20=;
+        b=GDUslPD8lZD0uacPShUVESsZLYrA0uQrsOMcQKhWpyFBZVESG0+VBhpw0O+8f1esPy
+         IvERPd947NceLtnK+5tKCPa4uRcnPOLw1rh0BY7bZ/YAnsnMGAHVW+q84eBDllmU6rx6
+         4TJLFk3Zenf6w30sU98Mf6fnbYGBTLZzoOGiuQh2Y/1/wRL+cH6Svej9Sj0dgrLOQu9s
+         BBWiWQVlBQAdMUxNMr5n0baE/tKY5kW7iv10VjMp+eHkUzrgohUsvrgsEUB4gi7fQXY4
+         W0PFbcupzJ1xTeCSjuq9H50RWMnH+LZ/dKKkUJKPq/r4oplUeYspYiq/npLlV2MDhW3T
+         o0lw==
+X-Gm-Message-State: AC+VfDzSKnk/ehQbNq7uWPe1Ko5xNulujQTA5LpFYlP0gh2/oIjvmgOc
+        5zNWTbUwp9PetiKxo9Nbmw==
+X-Google-Smtp-Source: ACHHUZ4yimfAO+VPw11yaXvO6DKjxZchQyRUEhLA7m2uETW5Mx7B0bC/E0dg1HZJq9nCv5g88ZFF/Q==
+X-Received: by 2002:a05:6602:200c:b0:786:2d04:7b14 with SMTP id y12-20020a056602200c00b007862d047b14mr9761365iod.16.1688395850295;
+        Mon, 03 Jul 2023 07:50:50 -0700 (PDT)
+Received: from robh_at_kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id v14-20020a02b90e000000b0042b0a6d899fsm2909181jan.60.2023.07.03.07.50.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Jul 2023 07:50:49 -0700 (PDT)
+Received: (nullmailer pid 3733418 invoked by uid 1000);
+        Mon, 03 Jul 2023 14:50:47 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH 2/5] dt-bindings: serial: geni-qcom: Allow no qup-core icc
- path
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+From:   Rob Herring <robh@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-i2c@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andi Shyti <andi.shyti@kernel.org>
-Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
-        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org
+        Bjorn Andersson <andersson@kernel.org>
+In-Reply-To: <20230703-topic-8250_qup_icc-v1-2-fea39aa07525@linaro.org>
 References: <20230703-topic-8250_qup_icc-v1-0-fea39aa07525@linaro.org>
  <20230703-topic-8250_qup_icc-v1-2-fea39aa07525@linaro.org>
- <b8d3e99b-157e-4f7d-1f5e-a702acd8e819@linaro.org>
- <d3d6af2b-4feb-1545-5576-a811941a47e1@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <d3d6af2b-4feb-1545-5576-a811941a47e1@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Message-Id: <168839584680.3733361.16157756581298354084.robh@kernel.org>
+Subject: Re: [PATCH 2/5] dt-bindings: serial: geni-qcom: Allow no qup-core
+ icc path
+Date:   Mon, 03 Jul 2023 08:50:47 -0600
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03/07/2023 16:38, Konrad Dybcio wrote:
-> On 3.07.2023 16:01, Krzysztof Kozlowski wrote:
->> On 03/07/2023 15:31, Konrad Dybcio wrote:
->>> Some SoCs (like SM8150 and SM8250) don't seem to provide a qup-core path.
->>> Allow such case.
->>>
->>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>> ---
->>>  .../bindings/serial/qcom,serial-geni-qcom.yaml     | 26 +++++++++++++++-------
->>>  1 file changed, 18 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>> index dd33794b3534..a0acba57bc06 100644
->>> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>> @@ -25,14 +25,6 @@ properties:
->>>    clock-names:
->>>      const: se
->>>  
->>> -  interconnects:
->>> -    maxItems: 2
->>> -
->>> -  interconnect-names:
->>> -    items:
->>> -      - const: qup-core
->>> -      - const: qup-config
->>
->> Instead please keep the definition of the fields in top-level properties
->> with the widest constraints, e.g.
->> interconnects:
->>   minItems: 1
->>   maxItems: 2
->>
->> interconnect-names:
->>   minItems: 1
->>   items:
->>    - const: qup-core
->>    - const: qup-config
-> Sadly the issue here is that the qup-config path exists, but qup-core
-> doesn't.
 
-Ah, right, then:
-interconnect-names:
-  oneOf:
-    - items:
-      ....
-    - items:
-      ...
+On Mon, 03 Jul 2023 15:31:11 +0200, Konrad Dybcio wrote:
+> Some SoCs (like SM8150 and SM8250) don't seem to provide a qup-core path.
+> Allow such case.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  .../bindings/serial/qcom,serial-geni-qcom.yaml     | 26 +++++++++++++++-------
+>  1 file changed, 18 insertions(+), 8 deletions(-)
+> 
 
-Best regards,
-Krzysztof
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: geniqup@8c0000: serial@a88000: More than one condition true in oneOf schema:
+	{'$filename': '/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml',
+	 '$id': 'http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#',
+	 '$schema': 'http://devicetree.org/meta-schemas/core.yaml#',
+	 'allOf': [{'$ref': '/schemas/serial/serial.yaml#'},
+	           {'oneOf': [{'required': ['interrupts']},
+	                      {'required': ['interrupts-extended']}]}],
+	 'oneOf': [{'patternProperties': {'pinctrl-[0-9]+': True},
+	            'properties': {'$nodename': True,
+	                           'bootph-all': True,
+	                           'bootph-pre-ram': True,
+	                           'bootph-pre-sram': True,
+	                           'bootph-some-ram': True,
+	                           'bootph-verify': True,
+	                           'interconnect-names': {'items': [{'const': 'qup-config'}],
+	                                                  'maxItems': 1,
+	                                                  'minItems': 1,
+	                                                  'type': 'array'},
+	                           'interconnects': {'maxItems': 1,
+	                                             'minItems': 1},
+	                           'phandle': True,
+	                           'pinctrl-names': True,
+	                           'secure-status': True,
+	                           'status': True}},
+	           {'patternProperties': {'pinctrl-[0-9]+': True},
+	            'properties': {'$nodename': True,
+	                           'bootph-all': True,
+	                           'bootph-pre-ram': True,
+	                           'bootph-pre-sram': True,
+	                           'bootph-some-ram': True,
+	                           'bootph-verify': True,
+	                           'interconnect-names': {'items': [{'const': 'qup-core'},
+	                                                            {'const': 'qup-config'}],
+	                                                  'maxItems': 2,
+	                                                  'minItems': 2,
+	                                                  'type': 'array'},
+	                           'interconnects': {'maxItems': 2,
+	                                             'minItems': 2},
+	                           'phandle': True,
+	                           'pinctrl-names': True,
+	                           'secure-status': True,
+	                           'status': True}}],
+	 'properties': {'$nodename': True,
+	                'assigned-clock-parents': True,
+	                'assigned-clock-rates': True,
+	                'assigned-clocks': True,
+	                'bootph-all': True,
+	                'bootph-pre-ram': True,
+	                'bootph-pre-sram': True,
+	                'bootph-some-ram': True,
+	                'bootph-verify': True,
+	                'clock-names': {'items': [{'const': 'se'}],
+	                                'maxItems': 1,
+	                                'minItems': 1,
+	                                'type': 'array'},
+	                'clocks': {'maxItems': 1, 'minItems': 1},
+	                'compatible': {'items': [{'enum': ['qcom,geni-uart',
+	                                                   'qcom,geni-debug-uart']}],
+	                               'maxItems': 1,
+	                               'minItems': 1,
+	                               'type': 'array'},
+	                'interrupt-parent': True,
+	                'interrupts': {'maxItems': 2,
+	                               'minItems': 1,
+	                               'type': 'array'},
+	                'interrupts-extended': {'maxItems': 2,
+	                                        'minItems': 1,
+	                                        'type': 'array'},
+	                'operating-points-v2': True,
+	                'phandle': True,
+	                'pinctrl-0': True,
+	                'pinctrl-1': True,
+	                'pinctrl-names': {'items': [{'const': 'default'},
+	                                            {'const': 'sleep'}],
+	                                  'maxItems': 2,
+	                                  'minItems': 1,
+	                                  'type': 'array'},
+	                'power-domains': {'maxItems': 1, 'minItems': 1},
+	                'reg': {'maxItems': 1, 'minItems': 1},
+	                'secure-status': True,
+	                'status': True},
+	 'required': ['compatible', 'clocks', 'clock-names', 'reg'],
+	 'select': {'properties': {'compatible': {'contains': {'enum': ['qcom,geni-debug-uart',
+	                                                                'qcom,geni-uart']}}},
+	            'required': ['compatible']},
+	 'title': 'Qualcomm Geni based QUP UART interface',
+	 'type': 'object',
+	 'unevaluatedProperties': False}
+	from schema $id: http://devicetree.org/schemas/soc/qcom/qcom,geni-se.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: serial@a88000: More than one condition true in oneOf schema:
+	{'$filename': '/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml',
+	 '$id': 'http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#',
+	 '$schema': 'http://devicetree.org/meta-schemas/core.yaml#',
+	 'allOf': [{'$ref': '/schemas/serial/serial.yaml#'},
+	           {'oneOf': [{'required': ['interrupts']},
+	                      {'required': ['interrupts-extended']}]}],
+	 'oneOf': [{'patternProperties': {'pinctrl-[0-9]+': True},
+	            'properties': {'$nodename': True,
+	                           'bootph-all': True,
+	                           'bootph-pre-ram': True,
+	                           'bootph-pre-sram': True,
+	                           'bootph-some-ram': True,
+	                           'bootph-verify': True,
+	                           'interconnect-names': {'items': [{'const': 'qup-config'}],
+	                                                  'maxItems': 1,
+	                                                  'minItems': 1,
+	                                                  'type': 'array'},
+	                           'interconnects': {'maxItems': 1,
+	                                             'minItems': 1},
+	                           'phandle': True,
+	                           'pinctrl-names': True,
+	                           'secure-status': True,
+	                           'status': True}},
+	           {'patternProperties': {'pinctrl-[0-9]+': True},
+	            'properties': {'$nodename': True,
+	                           'bootph-all': True,
+	                           'bootph-pre-ram': True,
+	                           'bootph-pre-sram': True,
+	                           'bootph-some-ram': True,
+	                           'bootph-verify': True,
+	                           'interconnect-names': {'items': [{'const': 'qup-core'},
+	                                                            {'const': 'qup-config'}],
+	                                                  'maxItems': 2,
+	                                                  'minItems': 2,
+	                                                  'type': 'array'},
+	                           'interconnects': {'maxItems': 2,
+	                                             'minItems': 2},
+	                           'phandle': True,
+	                           'pinctrl-names': True,
+	                           'secure-status': True,
+	                           'status': True}}],
+	 'properties': {'$nodename': True,
+	                'assigned-clock-parents': True,
+	                'assigned-clock-rates': True,
+	                'assigned-clocks': True,
+	                'bootph-all': True,
+	                'bootph-pre-ram': True,
+	                'bootph-pre-sram': True,
+	                'bootph-some-ram': True,
+	                'bootph-verify': True,
+	                'clock-names': {'items': [{'const': 'se'}],
+	                                'maxItems': 1,
+	                                'minItems': 1,
+	                                'type': 'array'},
+	                'clocks': {'maxItems': 1, 'minItems': 1},
+	                'compatible': {'items': [{'enum': ['qcom,geni-uart',
+	                                                   'qcom,geni-debug-uart']}],
+	                               'maxItems': 1,
+	                               'minItems': 1,
+	                               'type': 'array'},
+	                'interrupt-parent': True,
+	                'interrupts': {'maxItems': 2,
+	                               'minItems': 1,
+	                               'type': 'array'},
+	                'interrupts-extended': {'maxItems': 2,
+	                                        'minItems': 1,
+	                                        'type': 'array'},
+	                'operating-points-v2': True,
+	                'phandle': True,
+	                'pinctrl-0': True,
+	                'pinctrl-1': True,
+	                'pinctrl-names': {'items': [{'const': 'default'},
+	                                            {'const': 'sleep'}],
+	                                  'maxItems': 2,
+	                                  'minItems': 1,
+	                                  'type': 'array'},
+	                'power-domains': {'maxItems': 1, 'minItems': 1},
+	                'reg': {'maxItems': 1, 'minItems': 1},
+	                'secure-status': True,
+	                'status': True},
+	 'required': ['compatible', 'clocks', 'clock-names', 'reg'],
+	 'select': {'properties': {'compatible': {'contains': {'enum': ['qcom,geni-debug-uart',
+	                                                                'qcom,geni-uart']}}},
+	            'required': ['compatible']},
+	 'title': 'Qualcomm Geni based QUP UART interface',
+	 'type': 'object',
+	 'unevaluatedProperties': False}
+	from schema $id: http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230703-topic-8250_qup_icc-v1-2-fea39aa07525@linaro.org
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
