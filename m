@@ -2,193 +2,100 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDABC001DB
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 14:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E90FC0015E
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 14:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbjGCOu5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jul 2023 10:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37122 "EHLO
+        id S231455AbjGCOzN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Jul 2023 10:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbjGCOu4 (ORCPT
+        with ESMTP id S229436AbjGCOzN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jul 2023 10:50:56 -0400
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B08B2;
-        Mon,  3 Jul 2023 07:50:53 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id ca18e2360f4ac-78625caa702so176890139f.1;
-        Mon, 03 Jul 2023 07:50:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688395853; x=1690987853;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=6oClqgtuEJ5kxas9fDkwmwd/7VCwke8lenSscKAAvr8=;
-        b=GlpxQvaQj1XDczx1FAtMD16oZ12IyVHA99viXEk74jCDvtnE1zeC4OW+nfvE0xApy5
-         k2+rdhoIwNMMeDebR5/QFy51beXhqXTzbHxuDWsChxUpUT4CgvvljZMri+sahQ30SUmb
-         t7o+AtwsUFmgyHJatopYSefRbp4lne03XrB0gMJv6ftQlU98RKqqx1i8ZU8JMxEqfw+A
-         FNF293XwioupRHlNex0sGVsRVqACx9M7No2zbvAd9GRQUcZBw0oKxbpqaShoa2h155Qs
-         4qYbJ94ktoYszDGUI6P2LKdMjbSIoFwDZIlg3bLrWg8KBVcMGsLYeB9Gg4jcdWjTsYRB
-         /5qg==
-X-Gm-Message-State: AC+VfDyKpz+0V7gwdq0ZXWVFk2nawXn54s7sddNTGnWAV0XRpJhGIq9c
-        KOxLunW+qSJVOkWiZUtsL1lPic5vzA==
-X-Google-Smtp-Source: ACHHUZ5YdfEkLDyk8nhQAw2w5UexpOXgzHRtjJA78rJ89+yRFKE71e4m4sXqlabBZ5NbW4D3Yb0fbg==
-X-Received: by 2002:a5e:c64c:0:b0:784:314f:8d5b with SMTP id s12-20020a5ec64c000000b00784314f8d5bmr10668475ioo.11.1688395853161;
-        Mon, 03 Jul 2023 07:50:53 -0700 (PDT)
-Received: from robh_at_kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id x14-20020a02ac8e000000b0042b060ad00esm2845518jan.90.2023.07.03.07.50.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Jul 2023 07:50:52 -0700 (PDT)
-Received: (nullmailer pid 3733421 invoked by uid 1000);
-        Mon, 03 Jul 2023 14:50:47 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
+        Mon, 3 Jul 2023 10:55:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACC610E;
+        Mon,  3 Jul 2023 07:55:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 160A460F8F;
+        Mon,  3 Jul 2023 14:55:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B906C433C8;
+        Mon,  3 Jul 2023 14:55:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1688396111;
+        bh=YCM3/zDzW27xq1LWWr7kRRA3cqdQUNKm0dJzlI83bZ8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T8TDGJAToqfT6T+brq5xpRoFRa3rQJHZAWQY463u+y4RNKw92hF0pISOkmAN1YBwl
+         mbvtvPUdBU17/uvhHbQwwfFqCiq/skmvFySB3wGopYD0ZVf4KfDLglu90ZM7SMjHeW
+         YzkhUwTQxxZgZFeJj7f89KJaVfXhU1NBTNzVWU/lffPOEhr0eLALyjGFLEaUbz+2Ej
+         IxPf6bjvyN7U5K8OaOilBHWKXuBpQU7hj1UDihwJxcig689oQzm98bRZYinPDwxNc+
+         DNkMseV1vXkvH3m2/pVPrZUSd8qsbRhl3qPXozNL6JVefl/Yla+09LNup7nD7FVND8
+         yAy7llnFb0Z7Q==
+Date:   Mon, 3 Jul 2023 07:58:55 -0700
+From:   Bjorn Andersson <andersson@kernel.org>
 To:     Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Bjorn Andersson <andersson@kernel.org>,
-        linux-serial@vger.kernel.org,
+Cc:     Andy Gross <agross@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-i2c@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
         Andi Shyti <andi.shyti@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-arm-msm@vger.kernel.org
-In-Reply-To: <20230703-topic-8250_qup_icc-v1-3-fea39aa07525@linaro.org>
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH 0/5] Add interconnects to QUPs on SM8250
+Message-ID: <sd2ultz22evkl4at4aq54qybhcvtchgxcgdwldmn6s4ia66szr@4abuxln7b3bu>
 References: <20230703-topic-8250_qup_icc-v1-0-fea39aa07525@linaro.org>
- <20230703-topic-8250_qup_icc-v1-3-fea39aa07525@linaro.org>
-Message-Id: <168839584767.3733402.17418126780770305815.robh@kernel.org>
-Subject: Re: [PATCH 3/5] dt-bindings: i2c: qcom,i2c-geni: Allow no qup-core
- icc path
-Date:   Mon, 03 Jul 2023 08:50:47 -0600
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230703-topic-8250_qup_icc-v1-0-fea39aa07525@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-On Mon, 03 Jul 2023 15:31:12 +0200, Konrad Dybcio wrote:
-> Some SoCs (like SM8150 and SM8250) don't seem to provide a qup-core path.
-> Allow such case.
+On Mon, Jul 03, 2023 at 03:31:09PM +0200, Konrad Dybcio wrote:
+> SM8250 (like SM8150 but unlike all other QUP-equipped SoCs) doesn't
+> provide a qup-core path. Adjust the bindings and drivers as necessary,
+> and then describe the icc paths in the device tree. This makes it possible
+> for interconnect sync_state succeed so long as you don't use UFS.
 > 
+
+The "qup-core" path is a vote between two nodes on the QUP0 BCM, to
+provide a frequency vote on the QUP core(s). Both SM8150 and SM8250 has
+this BCM, but as you point out it's not exposed through the interconnect
+provider.
+
+I don't know why this is, but I think it would be preferable to amend
+the provider.
+
+Regards,
+Bjorn
+
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  .../bindings/i2c/qcom,i2c-geni-qcom.yaml           | 27 +++++++++++++++-------
->  1 file changed, 19 insertions(+), 8 deletions(-)
+> Konrad Dybcio (5):
+>       dt-bindings: spi: spi-geni-qcom: Allow no qup-core icc path
+>       dt-bindings: serial: geni-qcom: Allow no qup-core icc path
+>       dt-bindings: i2c: qcom,i2c-geni: Allow no qup-core icc path
+>       soc: qcom: geni-se: Allow any combination of icc paths
+>       arm64: dts: qcom: sm8250: Add interconnects and power-domains to QUPs
 > 
-
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: geniqup@8c0000: i2c@a94000: More than one condition true in oneOf schema:
-	{'oneOf': [{'patternProperties': {'pinctrl-[0-9]+': True},
-	            'properties': {'$nodename': True,
-	                           'bootph-all': True,
-	                           'bootph-pre-ram': True,
-	                           'bootph-pre-sram': True,
-	                           'bootph-some-ram': True,
-	                           'bootph-verify': True,
-	                           'interconnect-names': {'items': [{'const': 'qup-config'},
-	                                                            {'const': 'qup-memory'}],
-	                                                  'maxItems': 2,
-	                                                  'minItems': 2,
-	                                                  'type': 'array'},
-	                           'interconnects': {'maxItems': 2,
-	                                             'minItems': 2},
-	                           'phandle': True,
-	                           'pinctrl-names': True,
-	                           'secure-status': True,
-	                           'status': True}},
-	           {'patternProperties': {'pinctrl-[0-9]+': True},
-	            'properties': {'$nodename': True,
-	                           'bootph-all': True,
-	                           'bootph-pre-ram': True,
-	                           'bootph-pre-sram': True,
-	                           'bootph-some-ram': True,
-	                           'bootph-verify': True,
-	                           'interconnect-names': {'items': [{'const': 'qup-core'},
-	                                                            {'const': 'qup-config'},
-	                                                            {'const': 'qup-memory'}],
-	                                                  'maxItems': 3,
-	                                                  'minItems': 3,
-	                                                  'type': 'array'},
-	                           'interconnects': {'maxItems': 3,
-	                                             'minItems': 3},
-	                           'phandle': True,
-	                           'pinctrl-names': True,
-	                           'secure-status': True,
-	                           'status': True}}],
-	 'properties': {'clock-names': {'items': [{'const': 'se'}],
-	                                'maxItems': 1,
-	                                'minItems': 1,
-	                                'type': 'array'},
-	                'clocks': {'maxItems': 1, 'minItems': 1}}}
-	from schema $id: http://devicetree.org/schemas/soc/qcom/qcom,geni-se.yaml#
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.example.dtb: i2c@a94000: More than one condition true in oneOf schema:
-	{'oneOf': [{'patternProperties': {'pinctrl-[0-9]+': True},
-	            'properties': {'$nodename': True,
-	                           'bootph-all': True,
-	                           'bootph-pre-ram': True,
-	                           'bootph-pre-sram': True,
-	                           'bootph-some-ram': True,
-	                           'bootph-verify': True,
-	                           'interconnect-names': {'items': [{'const': 'qup-config'},
-	                                                            {'const': 'qup-memory'}],
-	                                                  'maxItems': 2,
-	                                                  'minItems': 2,
-	                                                  'type': 'array'},
-	                           'interconnects': {'maxItems': 2,
-	                                             'minItems': 2},
-	                           'phandle': True,
-	                           'pinctrl-names': True,
-	                           'secure-status': True,
-	                           'status': True}},
-	           {'patternProperties': {'pinctrl-[0-9]+': True},
-	            'properties': {'$nodename': True,
-	                           'bootph-all': True,
-	                           'bootph-pre-ram': True,
-	                           'bootph-pre-sram': True,
-	                           'bootph-some-ram': True,
-	                           'bootph-verify': True,
-	                           'interconnect-names': {'items': [{'const': 'qup-core'},
-	                                                            {'const': 'qup-config'},
-	                                                            {'const': 'qup-memory'}],
-	                                                  'maxItems': 3,
-	                                                  'minItems': 3,
-	                                                  'type': 'array'},
-	                           'interconnects': {'maxItems': 3,
-	                                             'minItems': 3},
-	                           'phandle': True,
-	                           'pinctrl-names': True,
-	                           'secure-status': True,
-	                           'status': True}}],
-	 'properties': {'clock-names': {'items': [{'const': 'se'}],
-	                                'maxItems': 1,
-	                                'minItems': 1,
-	                                'type': 'array'},
-	                'clocks': {'maxItems': 1, 'minItems': 1}}}
-	from schema $id: http://devicetree.org/schemas/i2c/qcom,i2c-geni-qcom.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230703-topic-8250_qup_icc-v1-3-fea39aa07525@linaro.org
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+>  .../bindings/i2c/qcom,i2c-geni-qcom.yaml           |  27 ++--
+>  .../bindings/serial/qcom,serial-geni-qcom.yaml     |  26 ++--
+>  .../bindings/spi/qcom,spi-geni-qcom.yaml           |  15 ++-
+>  arch/arm64/boot/dts/qcom/sm8250.dtsi               | 150 +++++++++++++++++++++
+>  drivers/soc/qcom/qcom-geni-se.c                    |   9 +-
+>  5 files changed, 204 insertions(+), 23 deletions(-)
+> ---
+> base-commit: 296d53d8f84ce50ffaee7d575487058c8d437335
+> change-id: 20230703-topic-8250_qup_icc-61768a34c7ec
+> 
+> Best regards,
+> -- 
+> Konrad Dybcio <konrad.dybcio@linaro.org>
+> 
