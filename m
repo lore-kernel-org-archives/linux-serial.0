@@ -2,61 +2,61 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C259DEB64DC
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 13:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BA8EB64DD
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 14:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230007AbjGCN70 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jul 2023 09:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        id S229981AbjGCOBg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Jul 2023 10:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjGCN7X (ORCPT
+        with ESMTP id S230093AbjGCOBe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jul 2023 09:59:23 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C243E5C
-        for <linux-serial@vger.kernel.org>; Mon,  3 Jul 2023 06:59:22 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-991f956fb5aso422323566b.0
-        for <linux-serial@vger.kernel.org>; Mon, 03 Jul 2023 06:59:22 -0700 (PDT)
+        Mon, 3 Jul 2023 10:01:34 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA9EE58
+        for <linux-serial@vger.kernel.org>; Mon,  3 Jul 2023 07:01:32 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-992acf67388so418104866b.1
+        for <linux-serial@vger.kernel.org>; Mon, 03 Jul 2023 07:01:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1688392760; x=1690984760;
+        d=linaro.org; s=google; t=1688392891; x=1690984891;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=X80ysD/F6wvgJKG8ztSCHOsfQgFC0oL2m6OimzpJAHE=;
-        b=xTlawRSml3QjxxqYZhVn+T6lwHkX+LmDoaoGwDF4hdysxEQOSi8mjnnsbImPtglyjv
-         +ueYNV2paUwXBQ/3g83aN6gYENvfk733tRTvOo0wmNGy7lqUwIRKTvCmRzjxq0In0lW2
-         yaNlNGu2TD8uPiYRncw7dSXirI/BcZc/aIq81+eCdTP1Ve5oz30koqDmcvX1NnpVJ2z2
-         FD50Py6puVy3JN6WomELAUvSb4oGicviRNggW+lOCIV8fWgQWZIZJ3SL2vKYR8GzAE0o
-         aguWBV3nO+LXRycWErSpsSmQXimW/FUnKhiBQIJ4G5w+FRI1cS5L1stPC3bdnhFdlE3n
-         GaVQ==
+        bh=bUE0bM1sDOp6MPisSkuzWwyMeYVq/1zyln32/5b5tEg=;
+        b=goLuj1TOEgVpZvK/5+2sS9RbaP8Vko8GqbFUpvx+9CNLm5m7aWbqVKk8i2+bacp9iR
+         zmlDeblmjKWvbhlun/ruzo6OjjPbTh1D8wrFiuNhGZ75PLbvRFs5ziFdtprny1vU8gfk
+         FSCDb8Mwj6ebLUC9O9IfvsW3HSK4eS8FAC46L4pSNCHWPKXVVPBIiI082EgAXUOvjm8G
+         YUaYzwMv199gha9I8AIUAAEPBrRfYWox/rbBdI0QZvE47O7qI7XG8tlyieFZ55RTMfRR
+         yJiV+h1h6epUYz16WyI8/oHjDTY5y0NBB3AfhVxH2KtU7WRchJEhmFCajAo90Py6ckkP
+         o0QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688392760; x=1690984760;
+        d=1e100.net; s=20221208; t=1688392891; x=1690984891;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=X80ysD/F6wvgJKG8ztSCHOsfQgFC0oL2m6OimzpJAHE=;
-        b=VqL25ZWVy4DGIPoL0Ecnp/mhWUNpI+EDUNDKpEAqACfUfznGYJI4uY7VN+ubfWrQCK
-         IYdb+VC0EKmTtNsahRP6s95C1JckLy0sVjGVBYo74nrU5dmFVYs38CP5WBE/gCSBwf3v
-         9L8RItmBsQIAD6YxE2LV/bXAnKhYg76r+pI5lXbQ4JUFeOYR4OWzVgM3S4rFJLKgyTq5
-         D0JC7Ja6YMuT7NbRuK1BjeLHmdTMZ6qa49ZS7OfUMsVnr3rHlQXmU1oM2dK6cLBs7TVk
-         qqWoeJtN37LoIc87rWzbN7Q0udKHiGtF5zhqHHrCZ2DuwQ6X4tF0Oq/L08VRCX6330nE
-         9LdQ==
-X-Gm-Message-State: ABy/qLaIXK+UVimT+cEKWTcdtM7WNUVZ3c8hajTkc1NKxcfwj+OGLjg4
-        fFTOKRhWTU6sp+e1nhxfMm2ZDg==
-X-Google-Smtp-Source: APBJJlHWOpmp0L5iU4aJ3V1Luyx61WADzk04WlLGpK/8sKUeSlzfLcnuvKA4rHqVN4V/eGDHm6iOWQ==
-X-Received: by 2002:a17:907:76ab:b0:992:d013:1132 with SMTP id jw11-20020a17090776ab00b00992d0131132mr5768360ejc.1.1688392760602;
-        Mon, 03 Jul 2023 06:59:20 -0700 (PDT)
+        bh=bUE0bM1sDOp6MPisSkuzWwyMeYVq/1zyln32/5b5tEg=;
+        b=LLGZX9tlcnoFJ4RYOnjO2jxvVcHcqRnMRwSZLYPNwkJRiuzuqQsu7vcZxNz8TM8y+I
+         BwtbubDYj0ohFMYUUrOp4fWxjGGYTXZ4XQCHNnZ5DbCVpgyUrgJpXtJ+rR9sOT6SYAU6
+         2gxBUrGEv4aCNycY6GNV0vOm3RgVWU7tlg7CMAMxvAeWPn2d/iNS8hmKsDHJFbfE8ReZ
+         ro3JvjOAnOLNbkhR+WSqzPjs3AqGoTsKiNab0oKmVMo5oojopysf/t9o+6ToFzLTFuO8
+         L5PqqqMclEBS4YMDDonifz+lQszIHkDoGRIFvW25DuHiIgiyOd/yVxsRTMUgdWDZgF9S
+         zUBA==
+X-Gm-Message-State: ABy/qLZ1r+Tah5jTwHQgBz9wwRpxuHqJxG2cobNyuMj0fhQJp+pCWV8h
+        tDxRa9PS7ULJeKruDwP7R45GvQ==
+X-Google-Smtp-Source: APBJJlHGvFqx6TD6S61lpdBhdysquQ6+RTWy0Shfl3va7Ffm35xODQYP4aNmlAMNal/uiDV7boqIqQ==
+X-Received: by 2002:a17:906:738d:b0:98e:1f6a:5259 with SMTP id f13-20020a170906738d00b0098e1f6a5259mr6504086ejl.75.1688392891158;
+        Mon, 03 Jul 2023 07:01:31 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.219.26])
-        by smtp.gmail.com with ESMTPSA id p11-20020a1709060e8b00b00993159ce075sm3726148ejf.210.2023.07.03.06.59.18
+        by smtp.gmail.com with ESMTPSA id n14-20020a170906118e00b0098ce63e36e9sm12221218eja.16.2023.07.03.07.01.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Jul 2023 06:59:20 -0700 (PDT)
-Message-ID: <14253982-da00-ceaa-4fe9-c2561258b014@linaro.org>
-Date:   Mon, 3 Jul 2023 15:59:18 +0200
+        Mon, 03 Jul 2023 07:01:30 -0700 (PDT)
+Message-ID: <b8d3e99b-157e-4f7d-1f5e-a702acd8e819@linaro.org>
+Date:   Mon, 3 Jul 2023 16:01:28 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [PATCH 1/5] dt-bindings: spi: spi-geni-qcom: Allow no qup-core
- icc path
+Subject: Re: [PATCH 2/5] dt-bindings: serial: geni-qcom: Allow no qup-core icc
+ path
 Content-Language: en-US
 To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
         Andy Gross <agross@kernel.org>,
@@ -72,9 +72,9 @@ Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org
 References: <20230703-topic-8250_qup_icc-v1-0-fea39aa07525@linaro.org>
- <20230703-topic-8250_qup_icc-v1-1-fea39aa07525@linaro.org>
+ <20230703-topic-8250_qup_icc-v1-2-fea39aa07525@linaro.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230703-topic-8250_qup_icc-v1-1-fea39aa07525@linaro.org>
+In-Reply-To: <20230703-topic-8250_qup_icc-v1-2-fea39aa07525@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -87,12 +87,38 @@ On 03/07/2023 15:31, Konrad Dybcio wrote:
 > 
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  .../devicetree/bindings/spi/qcom,spi-geni-qcom.yaml       | 15 ++++++++++-----
->  1 file changed, 10 insertions(+), 5 deletions(-)
+>  .../bindings/serial/qcom,serial-geni-qcom.yaml     | 26 +++++++++++++++-------
+>  1 file changed, 18 insertions(+), 8 deletions(-)
 > 
+> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+> index dd33794b3534..a0acba57bc06 100644
+> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+> @@ -25,14 +25,6 @@ properties:
+>    clock-names:
+>      const: se
+>  
+> -  interconnects:
+> -    maxItems: 2
+> -
+> -  interconnect-names:
+> -    items:
+> -      - const: qup-core
+> -      - const: qup-config
 
+Instead please keep the definition of the fields in top-level properties
+with the widest constraints, e.g.
+interconnects:
+  minItems: 1
+  maxItems: 2
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+interconnect-names:
+  minItems: 1
+  items:
+   - const: qup-core
+   - const: qup-config
+
+If there was allOf:if:then per variant, this could be further customized.
 
 Best regards,
 Krzysztof
