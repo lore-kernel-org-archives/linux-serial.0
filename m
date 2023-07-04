@@ -2,66 +2,65 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA1CCEB64D9
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jul 2023 17:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E3BEB64D9
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jul 2023 17:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbjGDRG5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jul 2023 13:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59592 "EHLO
+        id S231869AbjGDRIz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jul 2023 13:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbjGDRG5 (ORCPT
+        with ESMTP id S231305AbjGDRIy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jul 2023 13:06:57 -0400
-Received: from mx1.sberdevices.ru (mx1.sberdevices.ru [37.18.73.165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCE6F3;
-        Tue,  4 Jul 2023 10:06:53 -0700 (PDT)
-Received: from p-infra-ksmg-sc-msk01 (localhost [127.0.0.1])
-        by mx1.sberdevices.ru (Postfix) with ESMTP id 41973100069;
-        Tue,  4 Jul 2023 20:06:50 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 41973100069
+        Tue, 4 Jul 2023 13:08:54 -0400
+Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9FAF3;
+        Tue,  4 Jul 2023 10:08:51 -0700 (PDT)
+Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
+        by mx1.sberdevices.ru (Postfix) with ESMTP id 40067120055;
+        Tue,  4 Jul 2023 20:08:49 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 40067120055
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1688490410;
-        bh=Kj5SHJysIdNGJdD2fi+fM7iUhKUvecSpfKn9WYA3O54=;
+        s=mail; t=1688490529;
+        bh=8d0OwtdWSpRCoapxDUbREP4MhLA/RupKH+dbf1QT6zs=;
         h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:From;
-        b=QHBsysnSPG2kC3hM1ks9ioj1+0zTNB6q0zwL3I52kYWUiRyJVaG80jFYY0/R1Qje1
-         KIH8STSgvylpAtSxiz81/io1nS+nkCqrLafUInm80Gj3rHeEsv4ZRCHMA5MOVkVyQo
-         b3Fb7FTsT5Vtl3h7/yA3r0GubVl7oD8UN4fBaSmY9wantekEnTsiW6fNdWq4XHGAZV
-         yS9WzNfcWQ56ipN36zXMulESPBRWIFgiPOZkMHE2AUxelppZLCVmJRuF/PpmZKoj/d
-         IZSVU6e/oWDTFrsWfV9y/A/+1ymfiGFTOYUwJoRajZHWvSFFYQ9QFIEObnzL2O3GIi
-         p9SQQfn7Mk+7Q==
+        b=laDdvl0kA1WTKVR9c4wPGtqTYKqxsfWD/f5pLKXJwwySJe2000Slfm7gy0nTas0EN
+         JtvD0aWJG8YojgZ+YoPEhiveOSaa0+RnmFpOsIRnmESvG0v6vm0t5u0+fEyPeLFWF2
+         6nLnICI+wRxr5N2FwKYzMQ0Q/Jzd6P9Zf4H+e61TpYfAbIfRg3t7dDDr830TYVoWDT
+         c7HnZDtVhAfLk8rp2IFr861gPY8ULAVoAyFsqdgL1ztHdzVA371iIQQgIqjkhEGM7Q
+         DozFUaEV7RQg9zJTCDLu3bcNt0joGFJY+NbkFVLMS4uMRl7io2w6mwEXdnLuT5Q7DK
+         wEHHDjz27hYIQ==
 Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mx1.sberdevices.ru (Postfix) with ESMTPS;
-        Tue,  4 Jul 2023 20:06:50 +0300 (MSK)
+        Tue,  4 Jul 2023 20:08:49 +0300 (MSK)
 Received: from localhost (100.64.160.123) by p-i-exch-sc-m01.sberdevices.ru
  (172.16.192.107) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Tue, 4 Jul
- 2023 20:06:38 +0300
-Date:   Tue, 4 Jul 2023 20:06:49 +0300
+ 2023 20:08:37 +0300
+Date:   Tue, 4 Jul 2023 20:08:43 +0300
 From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
-To:     <neil.armstrong@linaro.org>
+To:     Conor Dooley <conor@kernel.org>
 CC:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-        <jbrunet@baylibre.com>, <jirislaby@kernel.org>,
-        <khilman@baylibre.com>, <martin.blumenstingl@googlemail.com>,
-        <kelvin.zhang@amlogic.com>, <xianwei.zhao@amlogic.com>,
-        <kernel@sberdevices.ru>, <rockosov@gmail.com>,
-        <linux-amlogic@lists.infradead.org>,
+        <neil.armstrong@linaro.org>, <jbrunet@baylibre.com>,
+        <jirislaby@kernel.org>, <khilman@baylibre.com>,
+        <martin.blumenstingl@googlemail.com>, <kelvin.zhang@amlogic.com>,
+        <xianwei.zhao@amlogic.com>, <kernel@sberdevices.ru>,
+        <rockosov@gmail.com>, <linux-amlogic@lists.infradead.org>,
         <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v1 2/5] tty: serial: meson: redesign the module to
- platform_driver
-Message-ID: <20230704170649.d3v2lvoevdyhtxns@CAB-WSD-L081021>
+Subject: Re: [PATCH v1 5/5] arm64: dts: meson: a1: change uart compatible
+ string
+Message-ID: <20230704170843.wksxekltre2ob4en@CAB-WSD-L081021>
 References: <20230704135936.14697-1-ddrokosov@sberdevices.ru>
- <20230704135936.14697-3-ddrokosov@sberdevices.ru>
- <7b06b8cd-f4c9-7636-0f73-48b2f695d7ba@linaro.org>
- <20230704151920.ryjab2kcux5avwfi@CAB-WSD-L081021>
+ <20230704135936.14697-6-ddrokosov@sberdevices.ru>
+ <20230704-cannabis-cannon-19397cd806bc@spud>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230704151920.ryjab2kcux5avwfi@CAB-WSD-L081021>
+In-Reply-To: <20230704-cannabis-cannon-19397cd806bc@spud>
 User-Agent: NeoMutt/20220415
 X-Originating-IP: [100.64.160.123]
 X-ClientProxiedBy: p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) To
@@ -75,152 +74,66 @@ X-KSMG-AntiSpam-Rate: 0
 X-KSMG-AntiSpam-Status: not_detected
 X-KSMG-AntiSpam-Method: none
 X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 520 520 ccb018a655251011855942a2571029252d3d69a2, {Tracking_uf_ne_domains}, {Track_E25351}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;p-i-exch-sc-m01.sberdevices.ru:7.1.1,5.0.1;127.0.0.199:7.1.2;sberdevices.ru:7.1.1,5.0.1;elixir.bootlin.com:7.1.1;100.64.160.123:7.1.2, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
+X-KSMG-AntiSpam-Info: LuaCore: 520 520 ccb018a655251011855942a2571029252d3d69a2, {Track_E25351}, {Tracking_from_domain_doesnt_match_to}, 100.64.160.123:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;sberdevices.ru:5.0.1,7.1.1;p-i-exch-sc-m01.sberdevices.ru:5.0.1,7.1.1, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
 X-MS-Exchange-Organization-SCL: -1
 X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiPhishing: Clean, bases: 2023/07/04 13:59:00
-X-KSMG-LinksScanning: Clean, bases: 2023/07/04 13:58:00
+X-KSMG-AntiPhishing: Clean
+X-KSMG-LinksScanning: Clean
 X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/07/04 05:54:00 #21559896
 X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 04, 2023 at 06:19:20PM +0300, Dmitry Rokosov wrote:
-> On Tue, Jul 04, 2023 at 04:46:40PM +0200, neil.armstrong@linaro.org wrote:
-> > On 04/07/2023 15:59, Dmitry Rokosov wrote:
-> > > Actually, the meson_uart module is already a platform_driver, but it is
-> > > currently registered manually and the uart core registration is run
-> > > outside the probe() scope, which results in some restrictions. For
-> > > instance, it is not possible to communicate with the OF subsystem
-> > > because it requires an initialized device object.
-> > > 
-> > > To address this issue, apply module_platform_driver() instead of direct
-> > > module init/exit routines. Additionally, move uart_register_driver() to
-> > > the driver probe(), and destroy manual console registration because it's
-> > > already run in the uart_register_driver() flow.
-> > > 
-> > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> > > ---
-> > >   drivers/tty/serial/meson_uart.c | 46 +++++++--------------------------
-> > >   1 file changed, 10 insertions(+), 36 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> > > index 169f028956ae..87c0eb5f2dba 100644
-> > > --- a/drivers/tty/serial/meson_uart.c
-> > > +++ b/drivers/tty/serial/meson_uart.c
-> > > @@ -621,12 +621,6 @@ static struct console meson_serial_console = {
-> > >   	.data		= &meson_uart_driver,
-> > >   };
-> > > -static int __init meson_serial_console_init(void)
-> > > -{
-> > > -	register_console(&meson_serial_console);
-> > > -	return 0;
-> > > -}
-> > > -
-> > >   static void meson_serial_early_console_write(struct console *co,
-> > >   					     const char *s,
-> > >   					     u_int count)
-> > > @@ -652,9 +646,6 @@ OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
-> > >   #define MESON_SERIAL_CONSOLE	(&meson_serial_console)
-> > >   #else
-> > > -static int __init meson_serial_console_init(void) {
-> > > -	return 0;
-> > > -}
-> > >   #define MESON_SERIAL_CONSOLE	NULL
-> > >   #endif
-> > > @@ -738,6 +729,13 @@ static int meson_uart_probe(struct platform_device *pdev)
-> > >   	if (ret)
-> > >   		return ret;
-> > > +	if (!meson_uart_driver.state) {
-> > > +		ret = uart_register_driver(&meson_uart_driver);
-> > > +		if (ret)
-> > > +			return dev_err_probe(&pdev->dev, ret,
-> > > +				      "failed to register meson-uart driver\n");
-> > > +	}
-> > 
-> > PL010 protects this in a mutex, and I think you should do the same otherwise
-> > if multiple uart probes at the same it will do weird stuff.
-> > 
+On Tue, Jul 04, 2023 at 06:02:58PM +0100, Conor Dooley wrote:
+> On Tue, Jul 04, 2023 at 04:59:36PM +0300, Dmitry Rokosov wrote:
+> > In the current implementation, the meson-a1 configuration incorporates a
+> > unique compatibility tag "amlogic,meson-a1-uart' within the meson-uart
+> > driver due to its usage of the new console device name "ttyS".
+> > Consequently, the previous compatibility tag designated for the
+> > 'amlogic,meson-gx-uart' configuration has become obsolete and is no
+> > longer relevant to the current setup.
 > 
-> Looks like that not all drivers protect this location with a specialized
-> mutex object. Firstly, I think it's important to verify parallel probe()
-> calling and implementing mutex protection at the platform core level.
-> For example, I've faced with the same problem during regmap mutex based
-> protection.
+> I don't really see why you would remove the gx-uart to be honest, and
+> not use it as a fallback. Neil's platform though, so his call :)
 > 
 
-Upon examining the core logic in drivers/base/dd.c, I have observed that
-driver_probe_device() is consistently executed under the device_lock().
-This lock is already based on a mutex, thus ensuring parallel execution
-protection:
-https://elixir.bootlin.com/linux/latest/source/include/linux/device.h#L835
+Because of amlogic,meson-gx-uart has legacy devname, we do not want to
+use it in the A1.
 
-> > > +
-> > >   	port->iotype = UPIO_MEM;
-> > >   	port->mapbase = res_mem->start;
-> > >   	port->mapsize = resource_size(res_mem);
-> > > @@ -776,6 +774,8 @@ static int meson_uart_remove(struct platform_device *pdev)
-> > >   	uart_remove_one_port(&meson_uart_driver, port);
-> > >   	meson_ports[pdev->id] = NULL;
-> > > +	uart_unregister_driver(&meson_uart_driver);
-> > > +
 > > 
-> > This is dangerous, it will remove the driver even if some uart are still attached to it.
+> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> > ---
+> >  arch/arm64/boot/dts/amlogic/meson-a1.dtsi | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > > 
-> > You should probably do like in pl010_remove() and remove only if the last one is removed.
+> > diff --git a/arch/arm64/boot/dts/amlogic/meson-a1.dtsi b/arch/arm64/boot/dts/amlogic/meson-a1.dtsi
+> > index c5567031ba12..6273b9c862b3 100644
+> > --- a/arch/arm64/boot/dts/amlogic/meson-a1.dtsi
+> > +++ b/arch/arm64/boot/dts/amlogic/meson-a1.dtsi
+> > @@ -344,7 +344,7 @@ mux {
+> >  			};
+> >  
+> >  			uart_AO: serial@1c00 {
+> > -				compatible = "amlogic,meson-gx-uart",
+> > +				compatible = "amlogic,meson-a1-uart",
+> >  					     "amlogic,meson-ao-uart";
+> >  				reg = <0x0 0x1c00 0x0 0x18>;
+> >  				interrupts = <GIC_SPI 25 IRQ_TYPE_EDGE_RISING>;
+> > @@ -354,7 +354,7 @@ uart_AO: serial@1c00 {
+> >  			};
+> >  
+> >  			uart_AO_B: serial@2000 {
+> > -				compatible = "amlogic,meson-gx-uart",
+> > +				compatible = "amlogic,meson-a1-uart",
+> >  					     "amlogic,meson-ao-uart";
+> >  				reg = <0x0 0x2000 0x0 0x18>;
+> >  				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+> > -- 
+> > 2.36.0
 > > 
-> 
-> Indeed... multiple ports can be registered...
-> 
-> > >   	return 0;
-> > >   }
-> > > @@ -809,33 +809,7 @@ static  struct platform_driver meson_uart_platform_driver = {
-> > >   	},
-> > >   };
-> > > -static int __init meson_uart_init(void)
-> > > -{
-> > > -	int ret;
-> > > -
-> > > -	ret = meson_serial_console_init();
-> > > -	if (ret)
-> > > -		return ret;
-> > > -	
-> > > -	ret = uart_register_driver(&meson_uart_driver);
-> > > -	if (ret)
-> > > -		return ret;
-> > > -
-> > > -	ret = platform_driver_register(&meson_uart_platform_driver);
-> > > -	if (ret)
-> > > -		uart_unregister_driver(&meson_uart_driver);
-> > > -
-> > > -	return ret;
-> > > -}
-> > > -
-> > > -static void __exit meson_uart_exit(void)
-> > > -{
-> > > -	platform_driver_unregister(&meson_uart_platform_driver);
-> > > -	uart_unregister_driver(&meson_uart_driver);
-> > > -}
-> > > -
-> > > -module_init(meson_uart_init);
-> > > -module_exit(meson_uart_exit);
-> > > +module_platform_driver(meson_uart_platform_driver);
-> > 
-> > Only pl010 uses this scheme, and I don't know why... if it works then it's ok for me.
-> 
-> From my point of view, the "scheme" is using uart driver registration
-> from the probe() routine. Many drivers are based on such approach:
-> samsung-tty, timbuart, sprd, max3100, etc. Some of them are platform
-> drivers as well.
-> 
-> > >   MODULE_AUTHOR("Carlo Caione <carlo@caione.org>");
-> > >   MODULE_DESCRIPTION("Amlogic Meson serial port driver");
-> > 
-> 
-> -- 
-> Thank you,
-> Dmitry
+
+
 
 -- 
 Thank you,
