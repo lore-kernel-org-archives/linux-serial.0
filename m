@@ -2,175 +2,220 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF291EB64DD
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jul 2023 15:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A435EB64D9
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jul 2023 15:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbjGDPZB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jul 2023 11:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
+        id S231639AbjGDPaD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jul 2023 11:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbjGDPY7 (ORCPT
+        with ESMTP id S231552AbjGDPaD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jul 2023 11:24:59 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2094.outbound.protection.outlook.com [40.107.113.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B43BBD;
-        Tue,  4 Jul 2023 08:24:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kToyjDPhndQZ0k2zq3SOZQS1cEzJ4tlGAKjypgmLnLyPk+qYr8GpFIM/eSJPf/wjCOxLBk32X7Yk3hn5Ch6mFchiI72+5zto8v/Jd+Sk4MrlrCvXw9kANPZpNj9gbbLG2lEai10cgi5kg2TML7H1sZ+VvlMLXcqvVn2IUn5Bsy/ryLB2OI3dCASym6TYXAbM9cp9+gciDfZCh/t7ypMPcRbEjL8Y8AKbhQDKFqo5MxqrSdtqSXZlGRDP6oRPYTjpKV1cYFaM9eK/YlUO9OK3cMXr/XMCRJfcLqKP42ubVExKP4199mxgXYcWlc+hCpgM6ObjCb1v5w870UGdkbWTAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bTwQO5nWkA6G97bhkXhEZY8UIyQbQ7PM/9DS+tWMKxk=;
- b=fO9XFSiKjHDviTq97gu7QUX794qZLEhF3+pCO0f0ZM44GzabBqAoMqhfmkyM6Hnw2SATcwn7L5+iqXZONAZFW8uwNU8TTQ80UVO+EFpPaUGmY+S22PX/YizbD+r2Ko5SUdCQGedcNJacAFxNOU9BbDcSNPkwqXN9t0h7stmi6WSBHq7OzWnRY/qgO6+7c9qiNwnXYhMIsN2PUnykdnDxUxhh3WAod7Ld9l1mcPiRoY8KNMmx8R5XeTfx24AernoBMrN231UKfPcWQKlYw6QtOA6sj4JLNbqvTaJAdk7mKId06ouK80d+q9Zo1/XRmD2o68xrvKCFSI61C7CFrlPx1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bTwQO5nWkA6G97bhkXhEZY8UIyQbQ7PM/9DS+tWMKxk=;
- b=dFa3/go4WLpnhPV6rUCfIvw3/V6k50uH3/FSoKdbjoJe8Fw687soVvibZfj2usfbHXRqy2zrjZV+6+ikZ4PUsjXy3hA1+eN7VXfvg3SC/BktaBaFF6dJTzpkrazZFJ6oe2HgS9q4IWJzZOVB8a6RSfbd9V/HrAUNm50N668jskw=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYCPR01MB5583.jpnprd01.prod.outlook.com (2603:1096:400:40::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.24; Tue, 4 Jul
- 2023 15:24:54 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::fc77:6148:d6a:c72b]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::fc77:6148:d6a:c72b%4]) with mapi id 15.20.6565.016; Tue, 4 Jul 2023
- 15:24:49 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Dan Carpenter <dan.carpenter@linaro.org>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [bug report] tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx support
-Thread-Topic: [bug report] tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx
- support
-Thread-Index: AQHZrno6nRI6qiRCQECzIqqYtUuqXa+pudHQ
-Date:   Tue, 4 Jul 2023 15:24:49 +0000
-Message-ID: <OS0PR01MB5922C5F6705FA3AD8E2FBA17862EA@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <427f194e-d8b6-41de-a1f9-6bec4a9ef057@moroto.mountain>
-In-Reply-To: <427f194e-d8b6-41de-a1f9-6bec4a9ef057@moroto.mountain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS0PR01MB5922:EE_|TYCPR01MB5583:EE_
-x-ms-office365-filtering-correlation-id: 5433fb99-db3f-4b64-8d53-08db7ca2cebf
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Q/r/iywPfu51U8f5LCpxSUI9eQP0iZqti6JIjlcoLKpXnVyXyx2dwAXaSPqf1kP7EX6otHn7oJoDccyHqeCqvTIcNtnwHfI1Z+HjcH2HWS2EL2secrko8ImzOsyDMfn+11EJy6AaqwQ5IGGmlKY2jJ+ChIrtzGjf4xqmy1zBTR+t8W9oz89juWgZDVZe8A20xgjtoTJcMVueXK0w6mCfjuddgTb7uZwUN41JYZIi4I64I4nqN1XXsVFLT6/r5IooohL5kaGBX5j1Y3U89S7PNVI+7rtIV6UGYs7ue0lbDCtV11tgosO+CKXnbqY28jscmUQSnD6FRNXIFWdofUxegtkwh4/BXk7tCXKF2A+cF8y4E3B9yaEV2XYjokhOXLejfiRgbWE0tqiU78tOXCWZwwOmbHmNGkBd2iQFWL70Dt9RmBHe+Dq5sfQr/8oUBMBjSdViWJb7PksDZVdIH3aeQvo+bq1jANdmD06mNzeUne8OWmamH4cWLSV1rm5CP2t9b3ZnfrCbKDDeZ7j3coSQZI3QUOI42dhRr/Pg+XQlwJ5TaPeWOzIfoo1fpiAeeYMFQG8WD6I3iojBsBTDIQJerRIsRIDDD33YB85wpjKocAlIl75wnInyWhp1VGVdqfBN
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(366004)(346002)(396003)(451199021)(6506007)(53546011)(76116006)(66476007)(64756008)(316002)(38070700005)(38100700002)(122000001)(55016003)(4326008)(66446008)(66946007)(66556008)(6916009)(83380400001)(186003)(9686003)(478600001)(54906003)(2906002)(8936002)(8676002)(52536014)(5660300002)(71200400001)(86362001)(33656002)(7696005)(41300700001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ppmSwAoK4sA4UN+LoyEeKbPGamlfIdeIfdoOJitsMR6HnibqoxhIPP4dBu/k?=
- =?us-ascii?Q?mqql/GTwE1eGs6lZUWg/d09daQ0aQNbAshXKWOlUCB+/FG/YoFQAfGaX7LS2?=
- =?us-ascii?Q?bSUlBWg+Fsef4zlKcnj/HM9no5xobviqPHiXa2dsWw+rEPdk4oWhVJrEY1KW?=
- =?us-ascii?Q?Ds3Mmid5FYRqN/vaBj9/fE3+xKcASi3fSdW+kXYQzjY0P0f2FJrcp/W1JiAH?=
- =?us-ascii?Q?+yzRoCPoKvJepgpYhao+e0e+uhO5A5ukTjkCoHQm9mhGTtA84Csb+EawZxV8?=
- =?us-ascii?Q?GiTO/rgJ6nAEYOAiaNsucajT4CB+aJ/6jPG4+DblIrWS05Jty11tcPngjhEg?=
- =?us-ascii?Q?EA5oDv6b51w7bbi+ASq6TTRJWJ0IplwksAh8VWukCVfEgTgecuf+km83+kw3?=
- =?us-ascii?Q?jm9417WzT0Mm/z/paaUxMTzx4iUEhNIS2Zjt0wYnoNAhgZ2BHwXYcZhYgBx7?=
- =?us-ascii?Q?p8GQaRsPU6Lhcs63BgG8amLwHHlou8g+iVvH8Jbwn0QH/6D9dUn+CfG38Y/T?=
- =?us-ascii?Q?GinKpLkyLcRgbFx9LrR7pom3MjFpNDWUtNGWZWhl4/8eduCqwcO7kqK3Mm7p?=
- =?us-ascii?Q?aDapshh+umV+jOQTFRy3hEsTf1iu6n8aPBCkqIxD9L+vCzl89Qg8KuCEjmdv?=
- =?us-ascii?Q?pwjAWtVADJrdc0zwq4d9+NzOGrna4h5IggaBrqzrxwDJbzF8wc+ETX7QQ56F?=
- =?us-ascii?Q?hrL5vBI+ea1wWGDPfIrE+ZEo2mawSxZjJ39o/+hO95I3RexEavWH7mruhJGw?=
- =?us-ascii?Q?moGh0y5pKIT+3dagmf8v/jBnq8jEZCtC9FJvaeyl974qYx1AxWoFpJiGU+1i?=
- =?us-ascii?Q?Xar9cvnUQe0I5cD5fklz9hvLpdWxSzTkD53Qiqu9/R3+3SVH9zcTPGli1qG2?=
- =?us-ascii?Q?g1ngaMq2ukrkk0/fVE95U0OF6k2ee35TZXKKhPNiSu4IpZ2JpTY3hX+FAvzp?=
- =?us-ascii?Q?HD9xbGw7WyHJ47+TkW7lzoLkd6Mz7G64uYZUgUdzlvMmuBtpR9VzUFgwyS+r?=
- =?us-ascii?Q?YnPH3AgDNvLFlePgHBfSvouYEfDUuqy1aQMop1/oiuAHTyb0e+F7MK3n6tYa?=
- =?us-ascii?Q?/1BTwab71KOOU7rszDcewa6VYyr2Yw0rPx4DE+meCxWmPfoEer5+RgAqAYFn?=
- =?us-ascii?Q?uo+1TpVBfHvyGSyC+0qn7JpeBlvNqsJcPKaTxL+8r86HISg+Hh9saahgiYDQ?=
- =?us-ascii?Q?8D3g4uIHcnhdDDCyRH5EQucWpKy/LeeSO2jsIOuh5ryBiNo3p3BOEPKZQjq3?=
- =?us-ascii?Q?R+TCRujVMWG1eOGHrJBZBGx625NYncTbgIPXEfJ3jg7Him61mFYWP4EEht6E?=
- =?us-ascii?Q?IV7z4vmwzABy2b6IYf/8XO0DNu9BgSTiOjwdsKmRmMflID1FGO0bS1Vb6rTa?=
- =?us-ascii?Q?78lJfXZgkdWj0CS2vOQ1oTJPzwekxnUZ+QWyKm0SxOEkEaSyuAOpaUei60cR?=
- =?us-ascii?Q?JMlNwaKappQEkZfSu6RmRj+LfLAtnTYW3p/yJtp53nZWVNmq38VOW6kJvIet?=
- =?us-ascii?Q?Go1Xa+/YSFg0SGUbjHq30hDXDpo+svWj1xNYl+23RkB1ceq670HSRoW3rCW5?=
- =?us-ascii?Q?sgC4nBIc3t5PA/IrnNs=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 4 Jul 2023 11:30:03 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA00F10D3
+        for <linux-serial@vger.kernel.org>; Tue,  4 Jul 2023 08:30:00 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3fbc54cab6fso50227935e9.0
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jul 2023 08:30:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1688484599; x=1691076599;
+        h=content-transfer-encoding:in-reply-to:subject:organization
+         :references:cc:to:content-language:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8ynbcJpeU+uOp5aDWGQw4MCSYV+ykdJvVEaL7KRlmDM=;
+        b=okbEAiMobw70dEQ9YQUu8p7gIEwn+TS+8HiC5hvDjABEOp3K3pLC/rzFH1fxYizw6r
+         4L14Aolw+kBjUG0Hlp/MsbCu7QDBJQFZ7Q/f3pBMyRn+oaP/YEpWfUx12dW/CS2OmdVw
+         xKi71X9aF+17koXZvn4djzuiHJLimBIysjCj3vSgDwXJ/758YVuhFI16zrdCesJDypGt
+         BS88ByzU7K6dMC9Ge8ZxuA5Qq22Ha4BAWC3W77/zzSss+nEiritxJDONwwftnBXrA2Xf
+         f/wgdZjMQCrlANcL9qxofg2z7fqF8VSNrIKXF7Nui9q33hfHR59pVOwx7B4t2qbcHEJ+
+         BJOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688484599; x=1691076599;
+        h=content-transfer-encoding:in-reply-to:subject:organization
+         :references:cc:to:content-language:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=8ynbcJpeU+uOp5aDWGQw4MCSYV+ykdJvVEaL7KRlmDM=;
+        b=DzvCDO6y/mSxzINkfg22AE4JFm8Jbq0HI0vqoWk4EWp+o5BOHO49A/1n0jf0uT3/G1
+         mXgnHFQu0PBJ72ig2KmCmVEtpQECuoB9PjbHi8ROuXdx8/RZuj+zO/2VPEP18JnSLuku
+         NIKjw38E0aSxR+oRFRqskJ0MJorfJUVzvAtDLxp0snsKYWvq6w5GR46926/oo9tfLLdc
+         SSqzeZKABFTI/CJu8N6+RbCXiHxAuGAKC9prN2g8kk7YTKHdKdhqphpUICd7QJAPs/cf
+         BhOeT+M5VcRZjfOJxbNO867dXlhh4yazzTbwt+RuuXqeLpVcT67V8MWJwo4ZKDA/N6Ip
+         MaxA==
+X-Gm-Message-State: AC+VfDzmsuRzqDG0jfzt48zUFjXXjcdAmTKlM7ZeFiNy+kxjIFP5OQVu
+        mI21H6Bo/4AEmhhX42rmTWl/1g==
+X-Google-Smtp-Source: ACHHUZ7CV2i82Fmv/g2TNPHCLm7tSs1nu0guu4BlXrgefmCPTT88vaGI/sJHbu2V0IMyvtTbtFRx/w==
+X-Received: by 2002:a05:600c:b54:b0:3f5:ffe3:46a7 with SMTP id k20-20020a05600c0b5400b003f5ffe346a7mr10718494wmr.9.1688484599064;
+        Tue, 04 Jul 2023 08:29:59 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:106:cd85:84ae:7b? ([2a01:e0a:982:cbb0:106:cd85:84ae:7b])
+        by smtp.gmail.com with ESMTPSA id d1-20020a5d6dc1000000b00304adbeeabbsm28635375wrz.99.2023.07.04.08.29.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jul 2023 08:29:58 -0700 (PDT)
+Message-ID: <9fde3632-2419-d36b-9c54-337155bb482e@linaro.org>
+Date:   Tue, 4 Jul 2023 17:29:57 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5433fb99-db3f-4b64-8d53-08db7ca2cebf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2023 15:24:49.8181
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oZ+RmvjLomP+Kt4rR/UTW+rYkBk8894PFDtCADGpf+iE4iZPFk9x/0MhklEZMU2HLku15XSeVEoe2btQ+VTRRHRU3sRS2j4qe0OIBHY2c6Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB5583
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+From:   neil.armstrong@linaro.org
+Reply-To: neil.armstrong@linaro.org
+Content-Language: en-US
+To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+        jbrunet@baylibre.com, jirislaby@kernel.org, khilman@baylibre.com,
+        martin.blumenstingl@googlemail.com, kelvin.zhang@amlogic.com,
+        xianwei.zhao@amlogic.com, kernel@sberdevices.ru,
+        rockosov@gmail.com, linux-amlogic@lists.infradead.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20230704135936.14697-1-ddrokosov@sberdevices.ru>
+ <20230704135936.14697-4-ddrokosov@sberdevices.ru>
+ <eb0dab5b-2fc7-728c-c6e0-43d2db422ed5@linaro.org>
+ <20230704145933.y3o3fhjj6q7df44d@CAB-WSD-L081021>
+Organization: Linaro Developer Services
+Subject: Re: [PATCH v1 3/5] tty: serial: meson: apply ttyS devname instead of
+ ttyAML for new SoCs
+In-Reply-To: <20230704145933.y3o3fhjj6q7df44d@CAB-WSD-L081021>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Dan Carpenter,
+Hi.
 
-Thanks for the feedback.
+On 04/07/2023 16:59, Dmitry Rokosov wrote:
+> Hello Neil,
+> 
+> Thank you for quick feedback!
+> 
+> On Tue, Jul 04, 2023 at 04:42:39PM +0200, neil.armstrong@linaro.org wrote:
+>> On 04/07/2023 15:59, Dmitry Rokosov wrote:
+>>> It is worth noting that the devname ttyS is a widely recognized tty name
+>>> and is commonly used by many uart device drivers. Given the established
+>>> usage and compatibility concerns, it may not be feasible to change the
+>>> devname for older SoCs. However, for new definitions, it is acceptable
+>>> and even recommended to use a new devname to help ensure clarity and
+>>> avoid any potential conflicts on lower or upper software levels. In
+>>> addition, modify the meson_uart_dt match data for g12a, a1, and s4 to
+>>> their appropriate values to ensure proper devname values and
+>>> functionality.
+>>
+>> I'm not confident about modifying a global struct from a probe,
+>> I think you should add a separate meson_uart_driver/meson_serial_console couple
+>> with ttyS instead of ttyAML, refer to the right uart_driver in meson_uart_data
+>> and in probe() register it and pass it to uart_add_one_port().
+> 
+> Could you provide some insight into why you believe this solution may
+> not be acceptable? It appears that the meson_uart_driver and
+> meson_serial_console are not labeled with __init, which means it stay in
+> memory forever.
+Yes but nothing forbids registering a g12a and an a1 uart on the same system,
+but you modify the meson_uart_driver/meson_serial_console struct.
+This could cause some issues.
 
-> -----Original Message-----
-> From: Dan Carpenter <dan.carpenter@linaro.org>
-> Sent: Tuesday, July 4, 2023 2:20 PM
-> To: Biju Das <biju.das.jz@bp.renesas.com>
-> Cc: linux-serial@vger.kernel.org; linux-renesas-soc@vger.kernel.org
-> Subject: [bug report] tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx
-> support
->=20
-> Hello Biju Das,
->=20
-> The patch 8749061be196: "tty: serial: sh-sci: Add RZ/G2L SCIFA DMA tx
-> support" from Apr 12, 2023, leads to the following Smatch static checker
-> warning:
->=20
-> 	drivers/tty/serial/sh-sci.c:593 sci_start_tx()
-> 	warn: sleeping in atomic context
->=20
-> drivers/tty/serial/sh-sci.c
->     573 static void sci_start_tx(struct uart_port *port)
->     574 {
->     575         struct sci_port *s =3D to_sci_port(port);
->     576         unsigned short ctrl;
->     577
->     578 #ifdef CONFIG_SERIAL_SH_SCI_DMA
->     579         if (port->type =3D=3D PORT_SCIFA || port->type =3D=3D
-> PORT_SCIFB) {
->     580                 u16 new, scr =3D serial_port_in(port, SCSCR);
->     581                 if (s->chan_tx)
->     582                         new =3D scr | SCSCR_TDRQE;
->     583                 else
->     584                         new =3D scr & ~SCSCR_TDRQE;
->     585                 if (new !=3D scr)
->     586                         serial_port_out(port, SCSCR, new);
->     587         }
->     588
->     589         if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit)
-> &&
->     590             dma_submit_error(s->cookie_tx)) {
->     591                 if (s->cfg->regtype =3D=3D SCIx_RZ_SCIFA_REGTYPE)
->     592                         /* Switch irq from SCIF to DMA */
-> --> 593                         disable_irq(s->irqs[SCIx_TXI_IRQ]);
->=20
-> disable_irq() is a might_sleep() function so it can't be called while
-> holding a spinlock, but the sci_dma_tx_work_fn() function is holding a
-> spinlock when it calls sci_start_tx().
+In practice this will never happen, but since we don't control the DT passed
+to the system we must make sure we take in account any scenario.
 
-Ok, will change disable_irq->disable_irq_nosync, so that it can be called f=
-rom atomic context.
+> 
+> To clarify, are you suggesting a solution that involves segregating the
+> meson_uart_driver and meson_serial_console objects for each scenario and
+> subsequently declaring pointers to both objects within the
+> meson_uart_data? I want to make sure that I have accurately grasped the
+> essence of your proposed approach.
 
-Cheers,
-Biju                 =20
+Not both, only the appropriate one.
 
->=20
->     594
->     595                 s->cookie_tx =3D 0;
->     596                 schedule_work(&s->work_tx);
->     597         }
->     598 #endif
+So either we make sure ttyAML and ttyS at exclusive at runtime, in this case we can
+modify the global meson_uart_driver/meson_serial_console, or you add
+a second set of uart_driver/console structs to handle this improbable case.
+
+Neil
+> 
+>>>
+>>> For more information please refer to IRC discussion at [1].
+>>>
+>>> Links:
+>>>       [1]: https://libera.irclog.whitequark.org/linux-amlogic/2023-07-03
+>>>
+>>> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+>>> ---
+>>>    drivers/tty/serial/meson_uart.c | 33 +++++++++++++++++++++++++++++++--
+>>>    1 file changed, 31 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+>>> index 87c0eb5f2dba..361f9326b527 100644
+>>> --- a/drivers/tty/serial/meson_uart.c
+>>> +++ b/drivers/tty/serial/meson_uart.c
+>>> @@ -82,6 +82,7 @@ static struct uart_driver meson_uart_driver;
+>>>    static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+>>>    struct meson_uart_data {
+>>> +	const char *dev_name;
+>>>    	bool has_xtal_div2;
+>>>    };
+>>> @@ -683,6 +684,7 @@ static int meson_uart_probe_clocks(struct platform_device *pdev,
+>>>    static int meson_uart_probe(struct platform_device *pdev)
+>>>    {
+>>> +	const struct meson_uart_data *priv_data;
+>>>    	struct resource *res_mem;
+>>>    	struct uart_port *port;
+>>>    	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+>>> @@ -729,6 +731,18 @@ static int meson_uart_probe(struct platform_device *pdev)
+>>>    	if (ret)
+>>>    		return ret;
+>>> +	priv_data = device_get_match_data(&pdev->dev);
+>>> +
+>>> +	if (priv_data) {
+>>> +		struct console *cons = meson_uart_driver.cons;
+>>> +
+>>> +		meson_uart_driver.dev_name = priv_data->dev_name;
+>>> +
+>>> +		if (cons)
+>>> +			strscpy(cons->name, priv_data->dev_name,
+>>> +				sizeof(cons->name));
+>>> +	}
+>>> +
+>>>    	if (!meson_uart_driver.state) {
+>>>    		ret = uart_register_driver(&meson_uart_driver);
+>>>    		if (ret)
+>>> @@ -748,7 +762,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>>>    	port->x_char = 0;
+>>>    	port->ops = &meson_uart_ops;
+>>>    	port->fifosize = fifosize;
+>>> -	port->private_data = (void *)device_get_match_data(&pdev->dev);
+>>> +	port->private_data = (void *)priv_data;
+>>>    	meson_ports[pdev->id] = port;
+>>>    	platform_set_drvdata(pdev, port);
+>>> @@ -780,6 +794,17 @@ static int meson_uart_remove(struct platform_device *pdev)
+>>>    }
+>>>    static struct meson_uart_data meson_g12a_uart_data = {
+>>> +	.dev_name = "ttyAML",
+>>> +	.has_xtal_div2 = true,
+>>> +};
+>>> +
+>>> +static struct meson_uart_data meson_a1_uart_data = {
+>>> +	.dev_name = "ttyS",
+>>> +	.has_xtal_div2 = false,
+>>> +};
+>>> +
+>>> +static struct meson_uart_data meson_s4_uart_data = {
+>>> +	.dev_name = "ttyS",
+>>>    	.has_xtal_div2 = true,
+>>>    };
+>>> @@ -794,7 +819,11 @@ static const struct of_device_id meson_uart_dt_match[] = {
+>>>    	},
+>>>    	{
+>>>    		.compatible = "amlogic,meson-s4-uart",
+>>> -		.data = (void *)&meson_g12a_uart_data,
+>>> +		.data = (void *)&meson_s4_uart_data,
+>>> +	},
+>>> +	{
+>>> +		.compatible = "amlogic,meson-a1-uart",
+>>> +		.data = (void *)&meson_a1_uart_data,
+>>>    	},
+>>>    	{ /* sentinel */ },
+>>>    };
+>>
+> 
+
