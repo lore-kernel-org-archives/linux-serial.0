@@ -2,72 +2,117 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72405C001DD
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jul 2023 20:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4149DC001B3
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jul 2023 07:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbjGCUag (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jul 2023 16:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        id S231152AbjGDH0y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jul 2023 03:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231334AbjGCUag (ORCPT
+        with ESMTP id S231147AbjGDH0y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jul 2023 16:30:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F4710C7;
-        Mon,  3 Jul 2023 13:30:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99FAD6106F;
-        Mon,  3 Jul 2023 20:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 682EAC433CC;
-        Mon,  3 Jul 2023 20:30:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1688416221;
-        bh=Yu87ABCTOAiCzSI7ggSVNIsaQtGGImKHQ61zl5G4IAw=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=le7TsRn9YZDVxfoJZo9xMmkCJ3BLpl8al8TGoGJxuj3hZMX4RKpxIQVNTeVe7VcaY
-         0MwJx4YVtQu5yOIfnYlUxrk/kb+wh2Cnyks6DFj4TfS8jHXsDmtksw5vyfh/hKs/wR
-         YzO39QnJTHfYpaU/OPba00RStOCVNzQpEjNqS9JFkypIVETQ4CGMEgjtIDGXGNwb4J
-         6C3qYYokWnz2HsrOofhXyPkCbvGLl+FdGpzL88/KEprXNcbmM2MlwtlW6rTwIa3vgm
-         uwZ9UILE2gN85/+ipzRq82dksoEP85EY8i7uYtFdc9u3XXJYc/MibyUmW6WxjQnV2C
-         W+qzOv4U6r98w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56485C4167B;
-        Mon,  3 Jul 2023 20:30:21 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver updates for 6.5-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <ZKKedy5AEsA58TWd@kroah.com>
-References: <ZKKedy5AEsA58TWd@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZKKedy5AEsA58TWd@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.5-rc1
-X-PR-Tracked-Commit-Id: e534755c9412be07f579acd2947401a9f87a33c8
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 868a9fd9480785952336e5f119e1f75877c423a8
-Message-Id: <168841622134.1331.13026446918767637323.pr-tracker-bot@kernel.org>
-Date:   Mon, 03 Jul 2023 20:30:21 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Tue, 4 Jul 2023 03:26:54 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A48DE49
+        for <linux-serial@vger.kernel.org>; Tue,  4 Jul 2023 00:26:51 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-9891c73e0fbso950944766b.1
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jul 2023 00:26:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1688455609; x=1691047609;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ko8q2mnYLI83it45ln5vyRLkSD2JXittgz6nDfh2LUk=;
+        b=Eyn5UqvQRnDHzH93YBxpvy/QxhUhyh7uMIOjZKwG76mk8DnNGhTzZkMIeHEdiws/Uk
+         d5IRrBR+TQLGEQNZhhvMmDiTCge0qwfi0a2/tDAllN95wfQ1B2uQaiISr/WaKUBdKIjm
+         neIclPd+NIQU70MCKW6TxpKd20MchEFhy6DCtSR3cXZWaCDlU1l6vBeuTW98/9o3XPql
+         kB0bnQN1Suq00BeaNBGTg0b3+/wzGktGKvXuaMjmfMICDMBNeRHX3J2ufa6/rVqBcaiP
+         XjboSaTxEkRiqPJHlR1N90SmD1ZxGuJ6UU1AGUcYe2IMjknggDSJ+UVhEZXjn8G67iCE
+         ZvjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688455609; x=1691047609;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ko8q2mnYLI83it45ln5vyRLkSD2JXittgz6nDfh2LUk=;
+        b=CHs0opYWJm1EJZ/VbusAotv4NaPF5zj6xf0z9Ol7tn2I0MzUc9szHyLWMJq9FfJR0L
+         NFIacd6Y3qoclnjnOEdKRMxqNxRPTZxamrHewn4oKQJsFexm2+nkpOt4heszO74acxxX
+         bfEholaxLZ5kAqJfs9308vyaSseOB9wBZ0onlYz30KX4pumzYAfOCyEI3HT5cEY4R0Zx
+         6vnbjNwG8UQlxNHCA8/RrpZRZUJvidETbdPyzCOv6dINgwVBDH1nt+6T6Ef4u8/oXXym
+         cGhxFtWUipVwNsnILeUTBwgCgzYXp0/D2lSbaZGetaJ5TyjF+JNBYtyVjJk8q/y+S8pF
+         l88Q==
+X-Gm-Message-State: AC+VfDxzPjLZKzIo3/s0tLZpq+AsB49ZxqYMQ+xFP44EZ4EHc3W3PS7e
+        7hDlezArOD0BlK2l74Ud0NA5VQ==
+X-Google-Smtp-Source: ACHHUZ5hASxtVh21+e43yIjhBs+XizAcCCJiOECAnwwb2VER0djao+3pyeJbY77gN3U5XdE0Z7jP7A==
+X-Received: by 2002:a17:907:720c:b0:988:565f:bf46 with SMTP id dr12-20020a170907720c00b00988565fbf46mr12681627ejc.32.1688455609366;
+        Tue, 04 Jul 2023 00:26:49 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id kd9-20020a17090798c900b00992d70cc8acsm5841233ejc.112.2023.07.04.00.26.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jul 2023 00:26:48 -0700 (PDT)
+Message-ID: <1fc32a13-489f-8d23-47b8-166ba4c39db3@linaro.org>
+Date:   Tue, 4 Jul 2023 09:26:45 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH v2 1/4] dt-bindings: interconnect: qcom,rpmh: Add SM8250
+ QUP virt
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Sibi Sankar <sibis@codeaurora.org>
+Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20230703-topic-8250_qup_icc-v2-0-9ba0a9460be2@linaro.org>
+ <20230703-topic-8250_qup_icc-v2-1-9ba0a9460be2@linaro.org>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230703-topic-8250_qup_icc-v2-1-9ba0a9460be2@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Mon, 3 Jul 2023 12:09:59 +0200:
+On 03/07/2023 22:15, Konrad Dybcio wrote:
+> Document the QUP virtual bus on SM8250.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.5-rc1
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/868a9fd9480785952336e5f119e1f75877c423a8
+> +
+> +allOf:
+> +  - $ref: qcom,rpmh-common.yaml#
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            enum:
+> +              - qcom,sm8250-qup-virt
+> +    then:
+> +      required:
+> +        - reg
+> +
+>  
+If there is going to be new version - drop stray blank line here.
 
-Thank you!
+In any case:
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
+
