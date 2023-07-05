@@ -2,85 +2,267 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CC8C001B0
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 17:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E662C00528
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 17:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231550AbjGERaf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 13:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
+        id S232799AbjGERcG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jul 2023 13:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbjGERa2 (ORCPT
+        with ESMTP id S232394AbjGERcE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 13:30:28 -0400
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C763B1990;
-        Wed,  5 Jul 2023 10:29:53 -0700 (PDT)
-Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3458a08310aso30399195ab.3;
-        Wed, 05 Jul 2023 10:29:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688578182; x=1691170182;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iIkUXGDF7cJQPtOQc9W5fAR7XWPQ7kmXvuiGky/kf/E=;
-        b=f2my/2YKgJaR1dukc6pRJqjxfiN5z4IMIQT5FAmOMULjU8r7XKVHx270MIsaqpouP9
-         kl4NmUWyA/4veZwiihSMRjkIM6fbiKCo5gtMGeVENXHCY9vYpKYqasOH7DiCx++thRd/
-         Ae3D83kWyUp53/tfAkpp7OEuLHFutE2jWpjvjgGQdiprl0Qv/D4a4yIvaeU+nKqTmjNM
-         wmX3dmrA2oVQYoUKBpuEWUff/B3whSCR0+pF1xwqXGo8R6hgZN2tSPSb+VE0UNmsvA9C
-         0iO/rQDEZ1qcdHsoqAFcqOQ/qUSLYbpWbRgabPFoyGadGBDc00nndQWeT7GByS6dURnz
-         MMTw==
-X-Gm-Message-State: ABy/qLZKww/E6ZpztlHGmA/v7uuJFFSxLCqJnbY897lm2Jn+Ly9jjDam
-        XxC/UcNwCZBwO3iEcxUnUg==
-X-Google-Smtp-Source: APBJJlH/RKzl6RmIwgaz7MNvEOPO2bJWlFdhCsyZsPelPTyeiXiKVK1JEI8aYF+QS3zYaGTK9aDZfw==
-X-Received: by 2002:a92:d349:0:b0:345:8abb:5b2e with SMTP id a9-20020a92d349000000b003458abb5b2emr16366870ilh.20.1688578182075;
-        Wed, 05 Jul 2023 10:29:42 -0700 (PDT)
-Received: from robh_at_kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id m7-20020a92cac7000000b00345d5fd85afsm4662693ilq.70.2023.07.05.10.29.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jul 2023 10:29:41 -0700 (PDT)
-Received: (nullmailer pid 1138244 invoked by uid 1000);
-        Wed, 05 Jul 2023 17:29:39 -0000
-Date:   Wed, 5 Jul 2023 11:29:39 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-serial@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
-        Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: serial: tegra-hsuart: Convert to
- json-schema
-Message-ID: <168857817923.1138059.11910851731139358305.robh@kernel.org>
-References: <20230705151802.2512186-1-thierry.reding@gmail.com>
+        Wed, 5 Jul 2023 13:32:04 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5431BEF;
+        Wed,  5 Jul 2023 10:31:23 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 365ELHiM007736;
+        Wed, 5 Jul 2023 19:29:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=oxvOgEF9cvRzCwfkDelwx7si1C+N2VuboXigLVR2SWA=;
+ b=xvOY8m0QodXwBZhsM5T5ELcmsFzBcK0qMv6Qs6hI88hnRwBkFB/ysw0DZwZNS/iobXNl
+ I0cYXFRnIZz7I/iEDI3bpcPn+zk0PitWpNNMHMe0z06nqOKI3FuLJP+y5wWrLgSLg7HH
+ vfyeYlPA0S1CbOrphhlesXe6Lq0BftoFErxYR1F0L7yKWHqkK4+67PQghl8QfA1lyrIr
+ JCnNAxreYxI5KIMus4YvhsJQHutLzJY9o/98Z2fqQyGMNquLhuUjHd2+wU+ouZea00Qi
+ 5Cp9uxFBXQMIASgwij832gWHVXXvMJU4x5pqoJyREDktLaQBWkv3VHl/9R9P+8Os4giD mQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rna75h45d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jul 2023 19:29:48 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4F782100057;
+        Wed,  5 Jul 2023 19:29:48 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4659024C434;
+        Wed,  5 Jul 2023 19:29:48 +0200 (CEST)
+Received: from localhost (10.201.21.121) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 5 Jul
+ 2023 19:29:47 +0200
+From:   Gatien Chevallier <gatien.chevallier@foss.st.com>
+To:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <alexandre.torgue@foss.st.com>,
+        <vkoul@kernel.org>, <jic23@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
+        <catalin.marinas@arm.com>, <arnd@kernel.org>,
+        <richardcochran@gmail.com>
+CC:     <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
+        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Gatien Chevallier <gatien.chevallier@foss.st.com>
+Subject: [PATCH 08/10] bus: etzpc: introduce ETZPC firewall controller driver
+Date:   Wed, 5 Jul 2023 19:27:57 +0200
+Message-ID: <20230705172759.1610753-9-gatien.chevallier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230705172759.1610753-1-gatien.chevallier@foss.st.com>
+References: <20230705172759.1610753-1-gatien.chevallier@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230705151802.2512186-1-thierry.reding@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.201.21.121]
+X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-05_09,2023-07-05_01,2023-05-22_02
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+ETZPC is a peripheral and memory firewall controller that filter accesses
+based on Arm TrustZone secure state and Arm CPU privilege execution level.
+It handles MCU isolation as well.
 
-On Wed, 05 Jul 2023 17:18:02 +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
-> 
-> Convert the Tegra High-Speed UART bindings from the free-form text
-> format to json-schema.
-> 
-> While at it, also fix fix the example to reflect the correct compatible
-> string for Tegra30 chips.
-> 
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
-> Changes in v2:
-> - add note about the corrected example to commit message
-> - collate all single entry compatibles into an enum
-> 
->  .../bindings/serial/nvidia,tegra20-hsuart.txt |  73 ----------
->  .../serial/nvidia,tegra20-hsuart.yaml         | 125 ++++++++++++++++++
->  2 files changed, 125 insertions(+), 73 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
-> 
+Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+---
+ MAINTAINERS               |   1 +
+ drivers/bus/Makefile      |   2 +-
+ drivers/bus/stm32_etzpc.c | 137 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 139 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/bus/stm32_etzpc.c
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1ea2f9f60b43..51f5bced7b9b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20126,6 +20126,7 @@ F:	drivers/media/i2c/st-mipid02.c
+ ST STM32 FIREWALL
+ M:	Gatien Chevallier <gatien.chevallier@foss.st.com>
+ S:	Maintained
++F:	drivers/bus/stm32_etzpc.c
+ F:	drivers/bus/stm32_firewall.c
+ F:	drivers/bus/stm32_rifsc.c
+ 
+diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
+index e50d18e1d141..cddd4984d6af 100644
+--- a/drivers/bus/Makefile
++++ b/drivers/bus/Makefile
+@@ -26,7 +26,7 @@ obj-$(CONFIG_OMAP_INTERCONNECT)	+= omap_l3_smx.o omap_l3_noc.o
+ obj-$(CONFIG_OMAP_OCP2SCP)	+= omap-ocp2scp.o
+ obj-$(CONFIG_QCOM_EBI2)		+= qcom-ebi2.o
+ obj-$(CONFIG_QCOM_SSC_BLOCK_BUS)	+= qcom-ssc-block-bus.o
+-obj-$(CONFIG_STM32_FIREWALL)	+= stm32_firewall.o stm32_rifsc.o
++obj-$(CONFIG_STM32_FIREWALL)	+= stm32_firewall.o stm32_rifsc.o stm32_etzpc.o
+ obj-$(CONFIG_SUN50I_DE2_BUS)	+= sun50i-de2.o
+ obj-$(CONFIG_SUNXI_RSB)		+= sunxi-rsb.o
+ obj-$(CONFIG_OF)		+= simple-pm-bus.o
+diff --git a/drivers/bus/stm32_etzpc.c b/drivers/bus/stm32_etzpc.c
+new file mode 100644
+index 000000000000..2ef5ab738f87
+--- /dev/null
++++ b/drivers/bus/stm32_etzpc.c
+@@ -0,0 +1,137 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
++ */
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/types.h>
++
++#include "stm32_firewall.h"
++
++/*
++ * ETZPC registers
++ */
++#define ETZPC_DECPROT			0x10
++#define ETZPC_HWCFGR			0x3F0
++
++/*
++ * HWCFGR register
++ */
++#define ETZPC_HWCFGR_NUM_TZMA		GENMASK(7, 0)
++#define ETZPC_HWCFGR_NUM_PER_SEC	GENMASK(15, 8)
++#define ETZPC_HWCFGR_NUM_AHB_SEC	GENMASK(23, 16)
++#define ETZPC_HWCFGR_CHUNKS1N4		GENMASK(31, 24)
++
++/*
++ * ETZPC miscellaneous
++ */
++#define ETZPC_PROT_MASK			GENMASK(1, 0)
++#define ETZPC_PROT_A7NS			0x3
++#define ETZPC_DECPROT_SHIFT		1
++
++#define IDS_PER_DECPROT_REGS		16
++
++static int stm32_etzpc_grant_access(struct stm32_firewall_controller *ctrl, u32 firewall_id)
++{
++	u32 offset, reg_offset, sec_val;
++
++	if (firewall_id >= ctrl->max_entries) {
++		dev_err(ctrl->dev, "Invalid sys bus ID %u", firewall_id);
++		return -EINVAL;
++	}
++
++	/* Check access configuration, 16 peripherals per register */
++	reg_offset = ETZPC_DECPROT + 0x4 * (firewall_id / IDS_PER_DECPROT_REGS);
++	offset = (firewall_id % IDS_PER_DECPROT_REGS) << ETZPC_DECPROT_SHIFT;
++
++	/* Verify peripheral is non-secure and attributed to cortex A7 */
++	sec_val = (readl(ctrl->mmio + reg_offset) >> offset) & ETZPC_PROT_MASK;
++	if (sec_val != ETZPC_PROT_A7NS) {
++		dev_dbg(ctrl->dev, "Invalid bus configuration: reg_offset %#x, value %d\n",
++			reg_offset, sec_val);
++		return -EACCES;
++	}
++
++	return 0;
++}
++
++static void stm32_etzpc_release_access(struct stm32_firewall_controller *ctrl __maybe_unused,
++				       u32 firewall_id __maybe_unused)
++{
++}
++
++static int stm32_etzpc_probe(struct platform_device *pdev)
++{
++	struct stm32_firewall_controller *etzpc_controller;
++	struct device_node *np = pdev->dev.of_node;
++	u32 nb_per, nb_master;
++	struct resource *res;
++	void __iomem *mmio;
++	int rc;
++
++	etzpc_controller = devm_kzalloc(&pdev->dev, sizeof(*etzpc_controller), GFP_KERNEL);
++	if (!etzpc_controller)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	mmio = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(mmio))
++		return PTR_ERR(mmio);
++
++	etzpc_controller->dev = &pdev->dev;
++	etzpc_controller->mmio = mmio;
++	etzpc_controller->type = STM32_PERIPHERAL_FIREWALL | STM32_MEMORY_FIREWALL;
++	etzpc_controller->grant_access = stm32_etzpc_grant_access;
++	etzpc_controller->release_access = stm32_etzpc_release_access;
++
++	/* Get number of etzpc entries*/
++	nb_per = FIELD_GET(ETZPC_HWCFGR_NUM_PER_SEC,
++			   readl(etzpc_controller->mmio + ETZPC_HWCFGR));
++	nb_master = FIELD_GET(ETZPC_HWCFGR_NUM_AHB_SEC,
++			      readl(etzpc_controller->mmio + ETZPC_HWCFGR));
++	etzpc_controller->max_entries = nb_per + nb_master;
++
++	platform_set_drvdata(pdev, etzpc_controller);
++
++	rc = stm32_firewall_controller_register(etzpc_controller);
++	if (rc) {
++		dev_err(etzpc_controller->dev, "Couldn't register as a firewall controller: %d",
++			rc);
++		return rc;
++	}
++
++	stm32_firewall_populate_bus(etzpc_controller);
++
++	/* Populate all allowed nodes */
++	return of_platform_populate(np, NULL, NULL, &pdev->dev);
++}
++
++static const struct of_device_id stm32_etzpc_of_match[] = {
++	{ .compatible = "st,stm32-etzpc" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, stm32_etzpc_of_match);
++
++static struct platform_driver stm32_etzpc_driver = {
++	.probe  = stm32_etzpc_probe,
++	.driver = {
++		.name = "stm32-etzpc",
++		.of_match_table = stm32_etzpc_of_match,
++	},
++};
++
++static int __init stm32_etzpc_init(void)
++{
++	return platform_driver_register(&stm32_etzpc_driver);
++}
++arch_initcall(stm32_etzpc_init);
+-- 
+2.25.1
 
