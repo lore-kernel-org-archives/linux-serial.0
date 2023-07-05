@@ -2,193 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EF5C001E0
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 17:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CC8C001B0
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 17:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbjGER3n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 13:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        id S231550AbjGERaf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jul 2023 13:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232128AbjGER3a (ORCPT
+        with ESMTP id S231799AbjGERa2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 13:29:30 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBF01995;
-        Wed,  5 Jul 2023 10:29:14 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 365F7wr6011031;
-        Wed, 5 Jul 2023 19:28:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=0cp0phFAXBpBnqUWpQvooHZl0xVcG7c1RiTscXT/M+o=;
- b=oykazVaiSgS7Ds6UFk9nS1pYtqiKZbjUXBkbNDpPe3Lrqf1OzDClGBQ/fhX2ODBc3dcI
- pcW7HhsM3J3slbVHYCNBzGOnmhTWXqUT6CgFV3NZSVHpTfVEq6PDhyuBSfoOZzyoij5Z
- fGIwAOFLVViLIkZeTIdykx1WjcC+xlce8eXsw8jRHeK+cbbK79oL7yuzRXHhViNpf8NC
- aog7j73knzF+bE0M06Nn6R2svhLS8DZNwo6fB4oNPWw6bfqXrmZr50/MIdQxYAJw/aH+
- hFO2BRk6Fvp/BkXo+ZeGpI0UZJY1qwX0YBKq0F8Qey263oZpmBwRYH2Lx+AZ/E3UBMio YA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3rn7wp29a4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jul 2023 19:28:32 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A822010005E;
-        Wed,  5 Jul 2023 19:28:30 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9AE9524C432;
-        Wed,  5 Jul 2023 19:28:30 +0200 (CEST)
-Received: from localhost (10.201.21.121) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 5 Jul
- 2023 19:28:30 +0200
-From:   Gatien Chevallier <gatien.chevallier@foss.st.com>
-To:     <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <alexandre.torgue@foss.st.com>,
-        <vkoul@kernel.org>, <jic23@kernel.org>,
-        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
-        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
-        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
-        <catalin.marinas@arm.com>, <arnd@kernel.org>,
-        <richardcochran@gmail.com>
-CC:     <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-media@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Oleksii Moisieiev <oleksii_moisieiev@epam.com>
-Subject: [IGNORE][PATCH 01/10] dt-bindings: Document common device controller bindings
-Date:   Wed, 5 Jul 2023 19:27:50 +0200
-Message-ID: <20230705172759.1610753-2-gatien.chevallier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230705172759.1610753-1-gatien.chevallier@foss.st.com>
-References: <20230705172759.1610753-1-gatien.chevallier@foss.st.com>
+        Wed, 5 Jul 2023 13:30:28 -0400
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C763B1990;
+        Wed,  5 Jul 2023 10:29:53 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3458a08310aso30399195ab.3;
+        Wed, 05 Jul 2023 10:29:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688578182; x=1691170182;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iIkUXGDF7cJQPtOQc9W5fAR7XWPQ7kmXvuiGky/kf/E=;
+        b=f2my/2YKgJaR1dukc6pRJqjxfiN5z4IMIQT5FAmOMULjU8r7XKVHx270MIsaqpouP9
+         kl4NmUWyA/4veZwiihSMRjkIM6fbiKCo5gtMGeVENXHCY9vYpKYqasOH7DiCx++thRd/
+         Ae3D83kWyUp53/tfAkpp7OEuLHFutE2jWpjvjgGQdiprl0Qv/D4a4yIvaeU+nKqTmjNM
+         wmX3dmrA2oVQYoUKBpuEWUff/B3whSCR0+pF1xwqXGo8R6hgZN2tSPSb+VE0UNmsvA9C
+         0iO/rQDEZ1qcdHsoqAFcqOQ/qUSLYbpWbRgabPFoyGadGBDc00nndQWeT7GByS6dURnz
+         MMTw==
+X-Gm-Message-State: ABy/qLZKww/E6ZpztlHGmA/v7uuJFFSxLCqJnbY897lm2Jn+Ly9jjDam
+        XxC/UcNwCZBwO3iEcxUnUg==
+X-Google-Smtp-Source: APBJJlH/RKzl6RmIwgaz7MNvEOPO2bJWlFdhCsyZsPelPTyeiXiKVK1JEI8aYF+QS3zYaGTK9aDZfw==
+X-Received: by 2002:a92:d349:0:b0:345:8abb:5b2e with SMTP id a9-20020a92d349000000b003458abb5b2emr16366870ilh.20.1688578182075;
+        Wed, 05 Jul 2023 10:29:42 -0700 (PDT)
+Received: from robh_at_kernel.org ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id m7-20020a92cac7000000b00345d5fd85afsm4662693ilq.70.2023.07.05.10.29.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jul 2023 10:29:41 -0700 (PDT)
+Received: (nullmailer pid 1138244 invoked by uid 1000);
+        Wed, 05 Jul 2023 17:29:39 -0000
+Date:   Wed, 5 Jul 2023 11:29:39 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-serial@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: serial: tegra-hsuart: Convert to
+ json-schema
+Message-ID: <168857817923.1138059.11910851731139358305.robh@kernel.org>
+References: <20230705151802.2512186-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.201.21.121]
-X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-07-05_09,2023-07-05_01,2023-05-22_02
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230705151802.2512186-1-thierry.reding@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
 
-Introducing of the common device controller bindings for the controller
-provider and consumer devices. Those bindings are intended to allow
-divided system on chip into muliple domains, that can be used to
-configure hardware permissions.
+On Wed, 05 Jul 2023 17:18:02 +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
+> 
+> Convert the Tegra High-Speed UART bindings from the free-form text
+> format to json-schema.
+> 
+> While at it, also fix fix the example to reflect the correct compatible
+> string for Tegra30 chips.
+> 
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> ---
+> Changes in v2:
+> - add note about the corrected example to commit message
+> - collate all single entry compatibles into an enum
+> 
+>  .../bindings/serial/nvidia,tegra20-hsuart.txt |  73 ----------
+>  .../serial/nvidia,tegra20-hsuart.yaml         | 125 ++++++++++++++++++
+>  2 files changed, 125 insertions(+), 73 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
+> 
 
-Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
----
-
-Depends-on: https://lore.kernel.org/lkml/c869d2751125181a55bc8a88c96e3a892b42f37a.1668070216.git.oleksii_moisieiev@epam.com/
-
- .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
- 1 file changed, 84 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
-
-diff --git a/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml b/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
-new file mode 100644
-index 000000000000..90a7c38c833c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
-@@ -0,0 +1,84 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/feature-controllers/feature-domain-controller.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Generic Domain Controller bindings
-+
-+maintainers:
-+  - Oleksii Moisieiev <oleksii_moisieiev@epam.com>
-+
-+description: |+
-+  Common Feature Domains Controller bindings properties
-+
-+  Domain controllers allow to divided system on chip into multiple feature
-+  domains that can be used to select by who hardware blocks could be accessed.
-+  A feature domain could be a cluster of CPUs (or coprocessors), a range of
-+  addresses or a group of hardware blocks.
-+
-+  This device tree bindings can be used to bind feature domain consumer devices
-+  with their feature domains provided by feature-domains controllers.
-+  Feature omain controller provider can be represened by any node in the
-+  device tree and can provide one or more configuration parameters, needed to
-+  control parameters of the consumer device. A consumer node can refer to the
-+  provider by phandle and a set of phandle arguments, specified by
-+  '#feature-domain-cells' property in the device controller provider node.
-+
-+  Device controllers are typically used to set the permissions of the hardware
-+  block. The contents of the feature-domains configuration properties are
-+  defined by the binding for the individual feature-domains controller device.
-+
-+  Each node can be a consumer for the several providers. The first
-+  configuration of 'feature-domains' or the one named 'default' is applied
-+  before probing the device itself.
-+
-+# always select the core schema
-+select: true
-+
-+properties:
-+  '#feature-domain-cells':
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of cells in a feature-domains controller specifier;
-+      Can be any value as specified by device tree binding documentation
-+      of a particular provider.
-+
-+  feature-domain-controller:
-+    description:
-+      Indicates that the node is feature-domain-controller provider.
-+
-+  feature-domain-names:
-+    $ref: '/schemas/types.yaml#/definitions/string-array'
-+    description:
-+      A list of feature-domains names, sorted in the same order as
-+      feature-domains entries. Consumer drivers will use feature-domain-names
-+      to match with existing feature-domains entries.
-+
-+  feature-domains:
-+    $ref: "/schemas/types.yaml#/definitions/phandle-array"
-+    description:
-+      A list of feature-domains controller specifiers, as defined by the
-+      bindings of the feature-domain-controller provider.
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    ctrl0: ctrl@100 {
-+        feature-domain-controller;
-+        reg = <0x100 0x10>;
-+        #feature-domain-cells = <2>;
-+    };
-+
-+    ctrl1: ctrl@110 {
-+        feature-domain-controller;
-+        reg = <0x110 0x10>;
-+        #feature-domain-cells = <3>;
-+    };
-+
-+    foo@0 {
-+        reg = <0x0 0x1>;
-+        feature-domains = <&ctrl0 1 2>, <&ctrl1 3 4 5>;
-+        feature-domain-names = "default", "unbind";
-+    };
--- 
-2.25.1
+Reviewed-by: Rob Herring <robh@kernel.org>
 
