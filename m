@@ -2,120 +2,158 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2283DEB64DD
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 21:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7056EB64DA
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 23:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbjGEVKj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 17:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        id S230158AbjGEXQK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jul 2023 19:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbjGEVKi (ORCPT
+        with ESMTP id S229793AbjGEXQJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 17:10:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0124319A6;
-        Wed,  5 Jul 2023 14:10:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9221A6173D;
-        Wed,  5 Jul 2023 21:10:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CBA8C433C7;
-        Wed,  5 Jul 2023 21:10:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1688591433;
-        bh=n2jgw51oOqSn4DZGTFd2enJxejq0SGh6zPoLj4QBa2A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r4YRd/P4b0xBGtl+HKyhU0UwFhwL1znKUu3F9E/nnPxXcYaDmYZo2z1Nee7kETmLx
-         lGb4g3mmhsHL5MqjFkUdAPbHJx3Vu1KEL7DPyec0LVnxz1zWd0gjZ5J1S8Q17n3r+C
-         zE9O2UqHY2qkWg1Tud8EzTY3sjFHZveAJE73dGQY7tug9JNpqnAeQ2bhK3ab7TZBKI
-         8+QgfmFjLOjzsbMdrPvxU0Xd5i0hVTch+cCiezXQz87sYjjxA9jurKoJiBpj+M/vmx
-         uAac8ugCdS/BiumCWdgDAvpq+AWbs+EmJMTUZXQQAvU5o8EDIaRETl9iMIuNLhm4wa
-         0opmVGwVy9bYw==
-Date:   Wed, 5 Jul 2023 22:10:27 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        neil.armstrong@linaro.org, jbrunet@baylibre.com,
-        jirislaby@kernel.org, khilman@baylibre.com,
-        martin.blumenstingl@googlemail.com, kelvin.zhang@amlogic.com,
-        xianwei.zhao@amlogic.com, kernel@sberdevices.ru,
-        rockosov@gmail.com, linux-amlogic@lists.infradead.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 6/7] dt-bindings: serial: amlogic,meson-uart: support
- Amlogic A1
-Message-ID: <20230705-broadly-hyphen-de6a1eb0058b@spud>
-References: <20230705181833.16137-1-ddrokosov@sberdevices.ru>
- <20230705181833.16137-7-ddrokosov@sberdevices.ru>
+        Wed, 5 Jul 2023 19:16:09 -0400
+Received: from mail-pf1-f205.google.com (mail-pf1-f205.google.com [209.85.210.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B11D171A
+        for <linux-serial@vger.kernel.org>; Wed,  5 Jul 2023 16:16:07 -0700 (PDT)
+Received: by mail-pf1-f205.google.com with SMTP id d2e1a72fcca58-66881827473so206135b3a.2
+        for <linux-serial@vger.kernel.org>; Wed, 05 Jul 2023 16:16:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688598967; x=1691190967;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XPZrTMhPOVSDzXqq2LiTwwbAu0oIwjDmxkMqyLNS5/U=;
+        b=FQgqOb/ROXcnNshZakGdicSgKUZknM54jJS0O2cjKzJO7B2aVveqHGUfEQtQyMW55a
+         RpHt7CMCipmtCM0FINBn2Ac61CvC8Z29u8OLetYw+lC/QMPp7NB2BNptQyR+YvM4NZSK
+         vdmpOJgsTZ9hvVZ8ic3PecoudSe2haVQP4POSFLJo5wCTfgEs8U363PSVAqXp8KR+JOy
+         H4E6X/9oBt/cZGv2nUv2F/5Z5fT/udSDfXRUgBLMcmDL0WS/Z38paXd8Rt0dY/dHLBHB
+         wwqd9LQc3SjxuWA488PDoN8rMAowBDysuLk8pT8fBTeNpUqMHMMzbG/aBvAkDNjlqGfX
+         yu9g==
+X-Gm-Message-State: ABy/qLZM3KfDIME3gKRVmiz1JmlN60B1hPQTgF8lMZ2qb41CyTujtC5H
+        dJTgJyfO+AVbCYfKhqWelevQymGfxnn4l3zhCJcwyOglgaL/
+X-Google-Smtp-Source: APBJJlGkFGKZrNGNxSCynuRZQ5e8wgK1BjuycfRNtlk/cd5+YOZoBMSbm5ZU7tsQdza/OYA4ZfwmHfjEbCciuLKF/BpV0BLmFsGH
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="NUg9anPJgPseBrgZ"
-Content-Disposition: inline
-In-Reply-To: <20230705181833.16137-7-ddrokosov@sberdevices.ru>
+X-Received: by 2002:a05:6a00:1889:b0:682:5980:a0e0 with SMTP id
+ x9-20020a056a00188900b006825980a0e0mr428479pfh.5.1688598967363; Wed, 05 Jul
+ 2023 16:16:07 -0700 (PDT)
+Date:   Wed, 05 Jul 2023 16:16:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009e2dd805ffc595a3@google.com>
+Subject: [syzbot] [serial?] general protection fault in serial8250_tx_chars
+From:   syzbot <syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello,
 
---NUg9anPJgPseBrgZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+syzbot found the following issue on:
 
-On Wed, Jul 05, 2023 at 09:18:32PM +0300, Dmitry Rokosov wrote:
-> Introduce meson uart serial bindings for A1 SoC family.
->=20
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+HEAD commit:    6cd06ab12d1a gup: make the stack expansion warning a bit m..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13fdf29ca80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9b64180aaf312512
+dashboard link: https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Looks like there's a missing Ack here from Rob:
-https://lore.kernel.org/all/168858360022.1592604.9922710628917242811.robh@k=
-ernel.org/
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Cheers,
-Conor.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/6b9ac6b68fe1/disk-6cd06ab1.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/694d14350cd9/vmlinux-6cd06ab1.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/0344e65f0f1c/bzImage-6cd06ab1.xz
 
-> ---
->  .../devicetree/bindings/serial/amlogic,meson-uart.yaml          | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.=
-yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-> index 01ec45b3b406..f1ae8c4934d9 100644
-> --- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-> @@ -33,6 +33,7 @@ properties:
->                - amlogic,meson8b-uart
->                - amlogic,meson-gx-uart
->                - amlogic,meson-s4-uart
-> +              - amlogic,meson-a1-uart
->            - const: amlogic,meson-ao-uart
->        - description: Always-on power domain UART controller on G12A SoCs
->          items:
-> @@ -46,6 +47,7 @@ properties:
->            - amlogic,meson8b-uart
->            - amlogic,meson-gx-uart
->            - amlogic,meson-s4-uart
-> +          - amlogic,meson-a1-uart
->        - description: Everything-Else power domain UART controller on G12=
-A SoCs
->          items:
->            - const: amlogic,meson-g12a-uart
-> --=20
-> 2.36.0
->=20
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com
 
---NUg9anPJgPseBrgZ
-Content-Type: application/pgp-signature; name="signature.asc"
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 PID: 12722 Comm: kworker/1:25 Not tainted 6.4.0-syzkaller-11479-g6cd06ab12d1a #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
+Workqueue: pm pm_runtime_work
+RIP: 0010:serial8250_tx_chars+0x299/0x8b0 drivers/tty/serial/8250/8250_port.c:1813
+Code: 5d 36 26 fd 48 8b 2b 48 8b 44 24 20 42 0f b6 04 38 84 c0 0f 85 8f 02 00 00 48 8b 04 24 48 63 00 48 01 c5 48 89 e8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 91 02 00 00 0f b6 6d 00 48 8b 44 24 60
+RSP: 0018:ffffc9000abdf8d0 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff88801f1c0fd0 RCX: 1ffffffff246560f
+RDX: 1ffffffff2465659 RSI: 0000000000000000 RDI: ffffffff9232b2d0
+RBP: 0000000000000000 R08: ffffffff84be7c90 R09: fffff5200157bf14
+R10: dffffc0000000000 R11: fffff5200157bf14 R12: 0000000000000010
+R13: ffffffff9232b120 R14: ffffffff9232b020 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020404030 CR3: 000000000d130000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __start_tx+0x312/0x450 drivers/tty/serial/8250/8250_port.c:1547
+ serial_port_runtime_resume+0x1ec/0x2a0 drivers/tty/serial/serial_port.c:40
+ __rpm_callback+0x2b9/0x7a0 drivers/base/power/runtime.c:392
+ rpm_callback drivers/base/power/runtime.c:446 [inline]
+ rpm_resume+0x10b1/0x1af0 drivers/base/power/runtime.c:912
+ pm_runtime_work+0x147/0x210 drivers/base/power/runtime.c:977
+ process_one_work+0x92c/0x12c0 kernel/workqueue.c:2597
+ worker_thread+0xa63/0x1210 kernel/workqueue.c:2748
+ kthread+0x2b8/0x350 kernel/kthread.c:389
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:serial8250_tx_chars+0x299/0x8b0 drivers/tty/serial/8250/8250_port.c:1813
+Code: 5d 36 26 fd 48 8b 2b 48 8b 44 24 20 42 0f b6 04 38 84 c0 0f 85 8f 02 00 00 48 8b 04 24 48 63 00 48 01 c5 48 89 e8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 91 02 00 00 0f b6 6d 00 48 8b 44 24 60
+RSP: 0018:ffffc9000abdf8d0 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff88801f1c0fd0 RCX: 1ffffffff246560f
+RDX: 1ffffffff2465659 RSI: 0000000000000000 RDI: ffffffff9232b2d0
+RBP: 0000000000000000 R08: ffffffff84be7c90 R09: fffff5200157bf14
+R10: dffffc0000000000 R11: fffff5200157bf14 R12: 0000000000000010
+R13: ffffffff9232b120 R14: ffffffff9232b020 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020404030 CR3: 000000000d130000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	5d                   	pop    %rbp
+   1:	36 26 fd             	ss es std
+   4:	48 8b 2b             	mov    (%rbx),%rbp
+   7:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+   c:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax
+  11:	84 c0                	test   %al,%al
+  13:	0f 85 8f 02 00 00    	jne    0x2a8
+  19:	48 8b 04 24          	mov    (%rsp),%rax
+  1d:	48 63 00             	movslq (%rax),%rax
+  20:	48 01 c5             	add    %rax,%rbp
+  23:	48 89 e8             	mov    %rbp,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax <-- trapping instruction
+  2f:	84 c0                	test   %al,%al
+  31:	0f 85 91 02 00 00    	jne    0x2c8
+  37:	0f b6 6d 00          	movzbl 0x0(%rbp),%ebp
+  3b:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
 
------BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZKXcQwAKCRB4tDGHoIJi
-0kUgAQDA95EfCnFuUU2bDSw86Ab1mLQG0Nbq74Hh2Ss1+NO5ZgD/Uk4aj8bCi0rC
-8PY85RrvoNH02RyBYPrxMpLdfi1bUgE=
-=igVN
------END PGP SIGNATURE-----
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
---NUg9anPJgPseBrgZ--
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the bug is already fixed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to change bug's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the bug is a duplicate of another bug, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
