@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D2AEB64DA
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 18:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC58CC0015E
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 18:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbjGESci (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 14:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S232276AbjGESdM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jul 2023 14:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjGESch (ORCPT
+        with ESMTP id S229645AbjGEScl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 14:32:37 -0400
-Received: from mx1.sberdevices.ru (mx1.sberdevices.ru [37.18.73.165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292D811D;
-        Wed,  5 Jul 2023 11:32:35 -0700 (PDT)
-Received: from p-infra-ksmg-sc-msk01 (localhost [127.0.0.1])
-        by mx1.sberdevices.ru (Postfix) with ESMTP id 114A810008A;
-        Wed,  5 Jul 2023 21:18:49 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 114A810008A
+        Wed, 5 Jul 2023 14:32:41 -0400
+Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A472212A;
+        Wed,  5 Jul 2023 11:32:39 -0700 (PDT)
+Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
+        by mx1.sberdevices.ru (Postfix) with ESMTP id 1B56B120071;
+        Wed,  5 Jul 2023 21:18:46 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru 1B56B120071
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1688581129;
-        bh=SVqe3A4FxeAdixEi7Nd7L65hAuANY8HEBhEw2Kj2u+8=;
+        s=mail; t=1688581126;
+        bh=OllYyhrUJ08P7wMySV5F6J3h9lBYzlt948FsMshI588=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:From;
-        b=WHiJoQEoJApoLtBEzj03EJrI6awNmuGRtUyYBEpNbNn8VKD5kj3Uz+MydQTEb32Je
-         BFnt8YM5M778FzibKRA8ii/F2Qcdq+5/Ost7LLg7T6HBkCmpkXJG9MJQHF91/7dSCE
-         4FKS4cFcggNYWG1+DziLfxB8GIBF3+Q+pPFT3O6rSYh9h1bayvtgqF5ziAALyJDLFl
-         2v0289b8q44/EYA4drx8anDifV5LQ8oXtU+qpevAYFXFzHAC3PqbtVs2/7iDWaZA+u
-         wPKhXNm3w0rj1XqnEH3gMeMWItpaFjj+XcO21UkQB/W1JyMjpO8L+Nl3k8FjOf/OXj
-         2uxHbPLnwAfgA==
+        b=RRT2fsKX+4aBYJHk8wqotSPoX9ajwXxJA/z27vHSCg28qI07e4Q3QdC+DOQsO05aN
+         hJWNJT7JyoITSJ4W8TewnamvRVio5cwFyBtd18QTd78qZ5fZhUBEEPsYgKhtXQg98R
+         OZw41A7gm/a+8r4ZRMiv9smll3uwcpCj1Ie7W53Iw2TT61UHCyXv3r/TwcUnxVFy1q
+         2Ph9Dk5ZSBXyn8IKTK+VrA0kzGN/DHf2PDOzX7PZgnh9ChFI3TM/XrqFDeXeteaBgG
+         JRv1YXTsqR/howZcb0PHfXCf6xOMtL6UOi+pBpy7VFI7u/MnMz3eiCoUisXrcj0O8+
+         OxJznG/mrlH+w==
 Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mx1.sberdevices.ru (Postfix) with ESMTPS;
-        Wed,  5 Jul 2023 21:18:48 +0300 (MSK)
+        Wed,  5 Jul 2023 21:18:45 +0300 (MSK)
 Received: from localhost.localdomain (100.64.160.123) by
  p-i-exch-sc-m01.sberdevices.ru (172.16.192.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.30; Wed, 5 Jul 2023 21:18:46 +0300
+ 15.2.1118.30; Wed, 5 Jul 2023 21:18:43 +0300
 From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
 To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
@@ -51,9 +51,9 @@ CC:     <kelvin.zhang@amlogic.com>, <xianwei.zhao@amlogic.com>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Subject: [PATCH v2 7/7] arm64: dts: meson: a1: change uart compatible string
-Date:   Wed, 5 Jul 2023 21:18:33 +0300
-Message-ID: <20230705181833.16137-8-ddrokosov@sberdevices.ru>
+Subject: [PATCH v2 4/7] tty: serial: meson: introduce separate uart_data for S4 SoC family
+Date:   Wed, 5 Jul 2023 21:18:30 +0300
+Message-ID: <20230705181833.16137-5-ddrokosov@sberdevices.ru>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20230705181833.16137-1-ddrokosov@sberdevices.ru>
 References: <20230705181833.16137-1-ddrokosov@sberdevices.ru>
@@ -72,7 +72,7 @@ X-KSMG-AntiSpam-Rate: 0
 X-KSMG-AntiSpam-Status: not_detected
 X-KSMG-AntiSpam-Method: none
 X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Info: LuaCore: 520 520 ccb018a655251011855942a2571029252d3d69a2, {Tracking_from_domain_doesnt_match_to}, 127.0.0.199:7.1.2;100.64.160.123:7.1.2;sberdevices.ru:5.0.1,7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;p-i-exch-sc-m01.sberdevices.ru:5.0.1,7.1.1, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
+X-KSMG-AntiSpam-Info: LuaCore: 520 520 ccb018a655251011855942a2571029252d3d69a2, {Tracking_from_domain_doesnt_match_to}, 100.64.160.123:7.1.2;p-i-exch-sc-m01.sberdevices.ru:7.1.1,5.0.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;sberdevices.ru:7.1.1,5.0.1;127.0.0.199:7.1.2, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
 X-MS-Exchange-Organization-SCL: -1
 X-KSMG-AntiSpam-Interceptor-Info: scan successful
 X-KSMG-AntiPhishing: Clean
@@ -83,40 +83,41 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In the current implementation, the meson-a1 configuration incorporates a
-unique compatibility tag "amlogic,meson-a1-uart' within the meson-uart
-driver due to its usage of the new console device name "ttyS".
-Consequently, the previous compatibility tag designated for the
-'amlogic,meson-gx-uart' configuration has become obsolete and is no
-longer relevant to the current setup.
+In order to use the correct devname value for the S4 SoC family, it
+is imperative that we implement separate uart_data. Unlike the legacy
+g12a architecture, the S4 architecture should employ the use of 'ttyS'
+devname.
 
 Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 ---
- arch/arm64/boot/dts/amlogic/meson-a1.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/meson_uart.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-a1.dtsi b/arch/arm64/boot/dts/amlogic/meson-a1.dtsi
-index c5567031ba12..6273b9c862b3 100644
---- a/arch/arm64/boot/dts/amlogic/meson-a1.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-a1.dtsi
-@@ -344,7 +344,7 @@ mux {
- 			};
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index ad0748a10db7..6a63184b8091 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -818,6 +818,11 @@ static struct meson_uart_data meson_g12a_uart_data = {
+ 	.has_xtal_div2 = true,
+ };
  
- 			uart_AO: serial@1c00 {
--				compatible = "amlogic,meson-gx-uart",
-+				compatible = "amlogic,meson-a1-uart",
- 					     "amlogic,meson-ao-uart";
- 				reg = <0x0 0x1c00 0x0 0x18>;
- 				interrupts = <GIC_SPI 25 IRQ_TYPE_EDGE_RISING>;
-@@ -354,7 +354,7 @@ uart_AO: serial@1c00 {
- 			};
- 
- 			uart_AO_B: serial@2000 {
--				compatible = "amlogic,meson-gx-uart",
-+				compatible = "amlogic,meson-a1-uart",
- 					     "amlogic,meson-ao-uart";
- 				reg = <0x0 0x2000 0x0 0x18>;
- 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
++static struct meson_uart_data meson_s4_uart_data = {
++	.uart_driver = &MESON_UART_DRIVER(ttyS),
++	.has_xtal_div2 = true,
++};
++
+ static const struct of_device_id meson_uart_dt_match[] = {
+ 	{ .compatible = "amlogic,meson6-uart" },
+ 	{ .compatible = "amlogic,meson8-uart" },
+@@ -829,7 +834,7 @@ static const struct of_device_id meson_uart_dt_match[] = {
+ 	},
+ 	{
+ 		.compatible = "amlogic,meson-s4-uart",
+-		.data = (void *)&meson_g12a_uart_data,
++		.data = (void *)&meson_s4_uart_data,
+ 	},
+ 	{ /* sentinel */ },
+ };
 -- 
 2.36.0
 
