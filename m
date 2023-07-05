@@ -2,168 +2,136 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E32CC001DE
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 07:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55155EB64DD
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 09:46:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232314AbjGEHc0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 03:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
+        id S231154AbjGEJqo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jul 2023 05:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbjGEHcZ (ORCPT
+        with ESMTP id S230466AbjGEJqn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 03:32:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003E310C3;
-        Wed,  5 Jul 2023 00:32:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 5 Jul 2023 05:46:43 -0400
+Received: from mx1.sberdevices.ru (mx2.sberdevices.ru [45.89.224.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6D91712;
+        Wed,  5 Jul 2023 02:46:41 -0700 (PDT)
+Received: from p-infra-ksmg-sc-msk02 (localhost [127.0.0.1])
+        by mx1.sberdevices.ru (Postfix) with ESMTP id E1B8A12005A;
+        Wed,  5 Jul 2023 12:46:38 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx1.sberdevices.ru E1B8A12005A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1688550398;
+        bh=ruyM7/967PkR3Obij04ndcyWIoQTBHGsMkxNaYWC+H8=;
+        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:From;
+        b=hvznwnH+YYIysXV3qrXto4v2qRPeYETSTSzrMHyOGWOCKJFMAX/mrax4QZbCcN1Bu
+         /YlE8EjMnnsGSZhrJURP3J8nbe3/O1aVMnM9JWcC3aHEJ4JZgqAQFpFhfJrYljWhpj
+         rFeB3CbdyoosyYwDVZ1pIv9IyYoahec68KEwN4t8l/ckPNE2uC2MfSMMUm7PTlMvMW
+         o3TYbFObVrXMOwofIkAPk4P+j2vCelBmktG6wj+EiSWcB+jkvZ/zen7JMAuzOSVQIU
+         P1m8Y+DlxhEPlWKqadgE18u9LRjVvvoVuNGIl6KqfxkkJVmWj3zVuyeHy9dVTUIcxK
+         C2Ni5Op61thdA==
+Received: from p-i-exch-sc-m01.sberdevices.ru (p-i-exch-sc-m01.sberdevices.ru [172.16.192.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91CC461459;
-        Wed,  5 Jul 2023 07:32:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B20C433C8;
-        Wed,  5 Jul 2023 07:32:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1688542334;
-        bh=rrKS9XlbWXtXv9/M+AGV0hoVPd4VwC9NnkejaVVNV/s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PebVrMnxOd9dYXNZ9uEZx40XeASe4nHkgzQwy6WsR4jV1HuOvzMR+ZEGb6xxZ1oZT
-         p7el+iseuVSvWgraRwCdSnkns/vJu0mecsLNlmhfiLgIQRvUD7ff/TXoSQa/fQZDSN
-         A5R8NP0hAPxSu6j2HWUy1j/Yv8rOewaCaC0+6IFE5xvEpztYPqCoevRyadmjy3412D
-         7eLTsKKGSYdxhOoyG1UWfLTDRvWuuuEnKd1Ug4xvkxxl73C6E07i5RbiFXUxOsGmAD
-         A5KAdpNxnsrEgPBAFK1zx2ykBOiWT4Z2PtBDamrCcd4s765Or75qhXPRgGg0kjC5bh
-         /2hSsvRTvxPlw==
-Date:   Wed, 5 Jul 2023 13:02:10 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org,
-        Robert Baldyga <r.baldyga@samsung.com>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Richard Tresidder <rtresidd@electromag.com.au>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] dmaengine: pl330: Return DMA_PAUSED when transaction is
- paused
-Message-ID: <ZKUceu9iJuAAeYYT@matsya>
-References: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
+        by mx1.sberdevices.ru (Postfix) with ESMTPS;
+        Wed,  5 Jul 2023 12:46:38 +0300 (MSK)
+Received: from localhost (100.64.160.123) by p-i-exch-sc-m01.sberdevices.ru
+ (172.16.192.107) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Wed, 5 Jul
+ 2023 12:46:37 +0300
+Date:   Wed, 5 Jul 2023 12:46:38 +0300
+From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
+To:     Conor Dooley <conor@kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <neil.armstrong@linaro.org>, <jbrunet@baylibre.com>,
+        <jirislaby@kernel.org>, <khilman@baylibre.com>,
+        <martin.blumenstingl@googlemail.com>, <kelvin.zhang@amlogic.com>,
+        <xianwei.zhao@amlogic.com>, <kernel@sberdevices.ru>,
+        <rockosov@gmail.com>, <linux-amlogic@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v1 5/5] arm64: dts: meson: a1: change uart compatible
+ string
+Message-ID: <20230705094638.mosz6wk76ztd5xf5@CAB-WSD-L081021>
+References: <20230704135936.14697-1-ddrokosov@sberdevices.ru>
+ <20230704135936.14697-6-ddrokosov@sberdevices.ru>
+ <20230704-cannabis-cannon-19397cd806bc@spud>
+ <20230704170843.wksxekltre2ob4en@CAB-WSD-L081021>
+ <20230704-staff-smilingly-401b99e28edd@spud>
+ <20230704171900.ulnnpkuzvtbbqa3d@CAB-WSD-L081021>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20230704171900.ulnnpkuzvtbbqa3d@CAB-WSD-L081021>
+User-Agent: NeoMutt/20220415
+X-Originating-IP: [100.64.160.123]
+X-ClientProxiedBy: p-i-exch-sc-m02.sberdevices.ru (172.16.192.103) To
+ p-i-exch-sc-m01.sberdevices.ru (172.16.192.107)
+X-KSMG-Rule-ID: 10
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Lua-Profiles: 178440 [Jul 05 2023]
+X-KSMG-AntiSpam-Version: 5.9.59.0
+X-KSMG-AntiSpam-Envelope-From: DDRokosov@sberdevices.ru
+X-KSMG-AntiSpam-Rate: 0
+X-KSMG-AntiSpam-Status: not_detected
+X-KSMG-AntiSpam-Method: none
+X-KSMG-AntiSpam-Auth: dkim=none
+X-KSMG-AntiSpam-Info: LuaCore: 520 520 ccb018a655251011855942a2571029252d3d69a2, {Track_E25351}, {Tracking_from_domain_doesnt_match_to}, 100.64.160.123:7.1.2;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;sberdevices.ru:7.1.1,5.0.1;p-i-exch-sc-m01.sberdevices.ru:7.1.1,5.0.1, FromAlignment: s, {Tracking_white_helo}, ApMailHostAddress: 100.64.160.123
+X-MS-Exchange-Organization-SCL: -1
+X-KSMG-AntiSpam-Interceptor-Info: scan successful
+X-KSMG-AntiPhishing: Clean
+X-KSMG-LinksScanning: Clean
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.0.1.6960, bases: 2023/07/05 05:28:00 #21565829
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 26-05-23, 13:54, Ilpo Järvinen wrote:
-> pl330_pause() does not set anything to indicate paused condition which
-> causes pl330_tx_status() to return DMA_IN_PROGRESS. This breaks 8250
-> DMA flush after the fix in commit 57e9af7831dc ("serial: 8250_dma: Fix
-> DMA Rx rearm race"). The function comment for pl330_pause() claims
-> pause is supported but resume is not which is enough for 8250 DMA flush
-> to work as long as DMA status reports DMA_PAUSED when appropriate.
-> 
-> Add PAUSED state for descriptor and mark BUSY descriptors with PAUSED
-> in pl330_pause(). Return DMA_PAUSED from pl330_tx_status() when the
-> descriptor is PAUSED.
+Conor,
 
-Have you noticed the comment in the code which reads:
+On Tue, Jul 04, 2023 at 08:19:00PM +0300, Dmitry Rokosov wrote:
+> On Tue, Jul 04, 2023 at 06:10:46PM +0100, Conor Dooley wrote:
+> > On Tue, Jul 04, 2023 at 08:08:43PM +0300, Dmitry Rokosov wrote:
+> > > On Tue, Jul 04, 2023 at 06:02:58PM +0100, Conor Dooley wrote:
+> > > > On Tue, Jul 04, 2023 at 04:59:36PM +0300, Dmitry Rokosov wrote:
+> > > > > In the current implementation, the meson-a1 configuration incorporates a
+> > > > > unique compatibility tag "amlogic,meson-a1-uart' within the meson-uart
+> > > > > driver due to its usage of the new console device name "ttyS".
+> > > > > Consequently, the previous compatibility tag designated for the
+> > > > > 'amlogic,meson-gx-uart' configuration has become obsolete and is no
+> > > > > longer relevant to the current setup.
+> > > > 
+> > > > I don't really see why you would remove the gx-uart to be honest, and
+> > > > not use it as a fallback. Neil's platform though, so his call :)
+> > > > 
+> > > 
+> > > Because of amlogic,meson-gx-uart has legacy devname, we do not want to
+> > > use it in the A1.
+> > 
+> > Which I did read in your commit message, fallback being the operative
+> > word here.
+> 
+> Although it is difficult for me to envision a situation where we would
+> require this fallback, but gx-uart fallback will function from a kernel
+> perspective (without taking into account bootloader setup or userspace
+> daemon script). I don't have any objections to stay gx-uart as a
+> fallback, will do it in the v2.
 
-/*
- * We don't support DMA_RESUME command because of hardware
- * limitations, so after pausing the channel we cannot restore
- * it to active state. We have to terminate channel and setup
- * DMA transfer again. This pause feature was implemented to
- * allow safely read residue before channel termination.
- */
+Unfortunately, it's not possible based on schema rules. During dtbs check
+I've got the such error:
 
-So driver just stops when in pause.
+arch/arm64/boot/dts/amlogic/meson-a1-ad401.dtb: serial@1c00: compatible: 'oneOf' conditional failed, one must be fixed:
+	['amlogic,meson-a1-uart', 'amlogic,meson-ao-uart', 'amlogic,meson-gx-uart'] is too long
+	'amlogic,meson-g12a-uart' was expected
+	'amlogic,meson-gx-uart' was expected
+	'amlogic,meson-ao-uart' was expected
+	From schema: Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
 
-Now the commit 57e9af7831dc returns when in progress state, so am not
-sure how returning Paused would help here?
-
-> 
-> Reported-by: Richard Tresidder <rtresidd@electromag.com.au>
-> Tested-by: Richard Tresidder <rtresidd@electromag.com.au>
-> Fixes: 88987d2c7534 ("dmaengine: pl330: add DMA_PAUSE feature")
-> Cc: stable@vger.kernel.org
-> Link: https://lore.kernel.org/linux-serial/f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au/
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
-> 
-> $ diff -u <(git grep -l -e '\.device_pause' -e '->device_pause') <(git grep -l DMA_PAUSED)
-> 
-> ...tells there might a few other drivers which do not properly return
-> DMA_PAUSED status despite having a pause function.
-> 
->  drivers/dma/pl330.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-> index 0d9257fbdfb0..daad25f2c498 100644
-> --- a/drivers/dma/pl330.c
-> +++ b/drivers/dma/pl330.c
-> @@ -403,6 +403,12 @@ enum desc_status {
->  	 * of a channel can be BUSY at any time.
->  	 */
->  	BUSY,
-> +	/*
-> +	 * Pause was called while descriptor was BUSY. Due to hardware
-> +	 * limitations, only termination is possible for descriptors
-> +	 * that have been paused.
-> +	 */
-> +	PAUSED,
->  	/*
->  	 * Sitting on the channel work_list but xfer done
->  	 * by PL330 core
-> @@ -2041,7 +2047,7 @@ static inline void fill_queue(struct dma_pl330_chan *pch)
->  	list_for_each_entry(desc, &pch->work_list, node) {
->  
->  		/* If already submitted */
-> -		if (desc->status == BUSY)
-> +		if (desc->status == BUSY || desc->status == PAUSED)
->  			continue;
->  
->  		ret = pl330_submit_req(pch->thread, desc);
-> @@ -2326,6 +2332,7 @@ static int pl330_pause(struct dma_chan *chan)
->  {
->  	struct dma_pl330_chan *pch = to_pchan(chan);
->  	struct pl330_dmac *pl330 = pch->dmac;
-> +	struct dma_pl330_desc *desc;
->  	unsigned long flags;
->  
->  	pm_runtime_get_sync(pl330->ddma.dev);
-> @@ -2335,6 +2342,10 @@ static int pl330_pause(struct dma_chan *chan)
->  	_stop(pch->thread);
->  	spin_unlock(&pl330->lock);
->  
-> +	list_for_each_entry(desc, &pch->work_list, node) {
-> +		if (desc->status == BUSY)
-> +			desc->status = PAUSED;
-> +	}
->  	spin_unlock_irqrestore(&pch->lock, flags);
->  	pm_runtime_mark_last_busy(pl330->ddma.dev);
->  	pm_runtime_put_autosuspend(pl330->ddma.dev);
-> @@ -2425,7 +2436,7 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
->  		else if (running && desc == running)
->  			transferred =
->  				pl330_get_current_xferred_count(pch, desc);
-> -		else if (desc->status == BUSY)
-> +		else if (desc->status == BUSY || desc->status == PAUSED)
->  			/*
->  			 * Busy but not running means either just enqueued,
->  			 * or finished and not yet marked done
-> @@ -2442,6 +2453,9 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
->  			case DONE:
->  				ret = DMA_COMPLETE;
->  				break;
-> +			case PAUSED:
-> +				ret = DMA_PAUSED;
-> +				break;
->  			case PREP:
->  			case BUSY:
->  				ret = DMA_IN_PROGRESS;
-> -- 
-> 2.30.2
+Of course, we can change dt bindings schema, but is it really needed? As
+I said before, it's difficult to imagine the situation, when gx-uart
+fallback will be helpful.
 
 -- 
-~Vinod
+Thank you,
+Dmitry
