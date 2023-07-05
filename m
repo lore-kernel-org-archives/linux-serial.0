@@ -2,122 +2,139 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C9EEB64DD
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jul 2023 19:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6FDC0015E
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 01:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbjGDTOU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jul 2023 15:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        id S229901AbjGEB5Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jul 2023 21:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231409AbjGDTOT (ORCPT
+        with ESMTP id S229469AbjGEB5Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jul 2023 15:14:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42E610D5;
-        Tue,  4 Jul 2023 12:14:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28D3661348;
-        Tue,  4 Jul 2023 19:14:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFEA2C433C8;
-        Tue,  4 Jul 2023 19:14:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1688498057;
-        bh=774aSqho5oCbt5eD+KXB3aukhvZSsdRso4l6bcpL69k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hcoONUGGc2ahSTNq9xiKhhd8ppl7hhbCGCWSPF8Z8G2rZY/zePt28kCq42/Jonmto
-         qdigjrE3jEVWuHtHZ84YUpVx/tDbRSvseCVFe1MSBfHXRKe5B/d8OXLx+9Z4emvbYa
-         srhWBskW4AlkHH7hXb7qz02gHISop8/bZOrq+T6BXYApZkJmvUiakSRnctjPMiqXKo
-         PwkOXDorzAISgnf0C06+utAnzQeqIMXt7fjlDowk5+lKl5RskGdr++J3KLXtVftqgF
-         Wf4np0rT2pT+H13phzgUK4ByKb4WZhse8qT3uUI1kCFKvxjqKcPl7/YyUNdYH2CwD0
-         OnV4/Mg/qIkZQ==
-Date:   Tue, 4 Jul 2023 20:14:11 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        neil.armstrong@linaro.org, jbrunet@baylibre.com,
-        jirislaby@kernel.org, khilman@baylibre.com,
-        martin.blumenstingl@googlemail.com, kelvin.zhang@amlogic.com,
-        xianwei.zhao@amlogic.com, kernel@sberdevices.ru,
-        rockosov@gmail.com, linux-amlogic@lists.infradead.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v1 3/5] tty: serial: meson: apply ttyS devname instead of
- ttyAML for new SoCs
-Message-ID: <20230704-goofiness-maximum-a964d2fd0dcd@spud>
-References: <20230704135936.14697-1-ddrokosov@sberdevices.ru>
- <20230704135936.14697-4-ddrokosov@sberdevices.ru>
- <20230704-pogo-zeppelin-5fa281f5c9e6@spud>
- <20230704171326.tyforkt7z23zmgqa@CAB-WSD-L081021>
+        Tue, 4 Jul 2023 21:57:24 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2041.outbound.protection.outlook.com [40.107.8.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E89F11F;
+        Tue,  4 Jul 2023 18:57:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e0VBbxMj+1ULJBBbuzbfaKH0bj8fAnKQ46Ti2zLoQtQ0ykviDYfoxB/Q3gefIDbFvRIYwdwMayhblTB3eY32zXkZa8eJZqThtvP1jhSUBaDYGubOqjyVt6s4fA2BrRiflIVGBacQpE5AOg7iSyJJMJQnnFpfQxPHV9f5wxC1HzVCzNCrQmBMTgOnuUzA3oJjm99Lghm/ujV5YKDuDlJNIFJIN0W/qCidJriT8bcwuRVlDN6lISJhwMc8BEVUG9J0R0RXWEP/KBPQQkpw2j/l6cR+W9F/BKv3ceYIAE2RYl6+C7JMkV88ZQc+sdK5gqAG1XQ1kPJP0rPtVnqTqEfO/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FcdVx7gAyEz1LrQATZ8baLIehwlBo8S5APAWjB9xZ0Y=;
+ b=mhkJQqRNjFuB2c31deyzD72gHAbYST51fJBMn0sHbqp6YfwR4LW5V9h207ondoa7l9NFGOrVMgUxksYnsEIkz4KnzTynOjLAai7OeyzVffh3SH8Sy8jk7VSEsrohh40i8QjbdEBLIrZgtiPSkRZVeKp54CYOYaQ5GXff5svzia7TE9zPQSBIhyDBmKNBvnSaEcyjuLSuWLldCeoD7id3gVOb1mAdWhyoZ5wnaMjGeXBCWRei0iTLGJH75CsdJKPxhreu035GJI6G3IhH3vgjVU8yzKkxEiBnoy2gkR1/nxcIb1rIvXWz5Du2UzRtgs6Dkd01dTXfTy6dy0iuTGoDNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FcdVx7gAyEz1LrQATZ8baLIehwlBo8S5APAWjB9xZ0Y=;
+ b=hGzUbwnrcDZmvKl+ytRYO9dmKmdhrfr/SqtJ6RmeSYA1bXjCQQ6zGciKtHn3dSCSlBDNNOADTH5HsBKk+CNi3b0qsUc1z7bJMM1CVeTskkASzS8I7zrqfjDdSmOguoLws9dcjoKySLMp+wZ82NEK7ncJQGnXwrUnIqa92ODZogg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by PAXPR04MB8845.eurprd04.prod.outlook.com (2603:10a6:102:20c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.24; Wed, 5 Jul
+ 2023 01:57:20 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::ef9f:1e01:e8a:6a4a]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::ef9f:1e01:e8a:6a4a%3]) with mapi id 15.20.6565.016; Wed, 5 Jul 2023
+ 01:57:20 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        festevam@gmail.com, shenwei.wang@nxp.com,
+        gregkh@linuxfoundation.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kernel@pengutronix.de, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com
+Subject: [PATCH V4 0/3] correct the lpuart compatible for imx8dxl and imx93
+Date:   Wed,  5 Jul 2023 09:55:59 +0800
+Message-Id: <20230705015602.29569-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0012.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::24)
+ To AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Tecr9VZAi6Q825ui"
-Content-Disposition: inline
-In-Reply-To: <20230704171326.tyforkt7z23zmgqa@CAB-WSD-L081021>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|PAXPR04MB8845:EE_
+X-MS-Office365-Filtering-Correlation-Id: d6cb6b04-bb2e-4d2c-15e9-08db7cfb2ae3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s3sF/Y7g08DNQUjdt1aR5LQVK0xb8gt/U7V9El909eJKGPCf6UDzWN/6M1Z8RwJlimTeCaM3xxO6bRjhVI7kMC5XzpzNGfuBtGkfBZ+ZCbkeoeavdHSAVx5lHtmE2Q0qZZQW/AeTwmUPoMOvmo4YDFrfVF/fU9Aga/3LxYP8xai+71D8qF+wjpbCBrGpYTtctPGr2KG4Y96aA0Axb6WCPfyj//qiYppJ4FilkzkHavByRmv6ARrRsn5Xi33w6zRMYvpWzJSFobGAoV86Y0OwzjGbOXzetRykz+vASrZXHiEzL2vsank/tBtsZsjHv1egWjQXfHH9EdosRkuGPAsNBo8aQ+h1zloGBhibdG3q2egQScJ1PBZXc3dy9SOhzMmlv8RUl8epKNCcyViDNj8bXDIIDDU5FbeCMpATjG2I/KHBVm+Uwy2k9mHUwbizehZXXCN81EZTxWxh/taDcZKh6EQlojoQMx1qH/PmpBCc0YMDpyFmnKSMLSoz7LNThy7H1C1DYbkBp/IuKLJl6pUXaSPccjDvGgKnLDEmWTbVPzxCIJ+wsrlqFNWa+Rj12wcjSaWYkmPfcZ1wd/5xbYfeKWKYwd2U2TEsWoESIQcV5DkIECzwL+XatzecH9VMT9JhTK+pI+bxOY83ZhJFa4K02C3JXyqMFhoGjBFRuj9K/fq4pzR/neL9lMco2x1x0KWd
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(366004)(396003)(376002)(39860400002)(451199021)(6512007)(1076003)(6506007)(66476007)(316002)(4326008)(38100700002)(66946007)(38350700002)(66556008)(2616005)(83380400001)(186003)(26005)(478600001)(2906002)(4744005)(8936002)(8676002)(52116002)(44832011)(36756003)(5660300002)(7416002)(86362001)(6486002)(41300700001)(6666004)(32563001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SV2dCAORVpgXTm9TJjE1uKXc6iYMX2JhbsoKWAfB/BH0g2Bc99qeDnuaO6HZ?=
+ =?us-ascii?Q?fAR0to7gcqXwUDOYGFymTJhMn20UpSyRxHrFnIJqgrHVSqW9uqA6OQVQrwVn?=
+ =?us-ascii?Q?ZOh8R1pPJK6WAy87ez+5PPUpjgtNZkopkDUJwJWsv3WB2LRMxxoJ/2ne9pxn?=
+ =?us-ascii?Q?CY8IIsxMu6YGYKBHyQlYNWQ1zwBfNp/8fnDmzsWnfUycQK1AJXKC7bCipDjT?=
+ =?us-ascii?Q?rNDvZar/CGb9i7O81/yN0E4O5y2BiS4FT9GXybKQ+7We694x4a9LgqngSACV?=
+ =?us-ascii?Q?FL7SPrbLhpr5ANS4jpApX1HBDwooDtRCDs330AUMYVKjNNvVEw/cCaAsBsaq?=
+ =?us-ascii?Q?v4ZgBZ2FZcOp7GY1ZdGPWOqDPLiMbjrwv3+GosAZ8KMRV2Z1vN8Bqq4ik4+a?=
+ =?us-ascii?Q?3fuxITvqv7tnMAjcU3LMY+VlD6eC1DwE38QRFSR1WGN46u5fnHS4ZeUC8qrZ?=
+ =?us-ascii?Q?tIOAFGFVZClFI2WsGHVXOkTWYfXwz10dUAs7IkUg75GWAhy0+5VZDZt6BTel?=
+ =?us-ascii?Q?9uFPkEE9Z7ZMIgu3CWJc7lRzL5fUQ4pCIm/4f2nHWQEKD5GZu7eZsDm6tRIx?=
+ =?us-ascii?Q?MAX3rpgneXyFyzk3psqXzUbI1oMz97R1tsy6TAriG4NQTk3wHhY/tiw44ZSt?=
+ =?us-ascii?Q?Z70oGsESJ90OEI4X7L8lHcmD7OOqtT6RHef5FnRK4Uzkw0yL0yNT8PPO4vO6?=
+ =?us-ascii?Q?+fCt7lHyaHk1/WfYN/u8NTQqt21h7Gir+VWbITD+kh+MjbOlDe+3ZKVAiEu3?=
+ =?us-ascii?Q?/bsZiejFPU97JXkcU0HQiCAw08engo59vxxq1kBcy+7yYkKPYMqDGopjAuXE?=
+ =?us-ascii?Q?wS/jt29bxy8r7rMrdObVytQq1zBnOkIKyIycD4JMs6kMWI1KwXxSwgQnjURR?=
+ =?us-ascii?Q?wDQCv5tfnrWFFSZG70+oE3DATGjs7btHajEvY0dsybFZ6F8NAGp3MbHJrE2B?=
+ =?us-ascii?Q?oG9s2yJDFOqjK5mlIeTxCfAi6uwD2v063hjBoqbPDHUoJjlINo58An/hLF/F?=
+ =?us-ascii?Q?jQD7epM4Qe+kLjnLhwfm0NU14tuyPeEEicjV5KC4kyx01oApjzP/3m+mQN86?=
+ =?us-ascii?Q?pALoiRetwwt45STVK9AZ5n9heK+Ii6fibNxKxdzkkUIDHZ+3UWNn0n4cZcxo?=
+ =?us-ascii?Q?leOEqLbsBZu5bsVA6/40uy5vOPsmb0muEMVJNVjElm31YrSteRe9rXkKTvBH?=
+ =?us-ascii?Q?yselowAt/6FbhjS8/46Wj9UZN7NhgFKPwPl/xUwDsttV/xtB5zWMUC7EhsDX?=
+ =?us-ascii?Q?tRsZMD2M6fCx0YnzeCsecvOZ6Yw4z439LMxvO+AtP9mxUAvxjKNt3wRDfZYd?=
+ =?us-ascii?Q?Cq7xrRNRvCAzfGTlk9o17BjLvyXIvhdfTILSs10oYIbS8szoJFD/7zqoiLiY?=
+ =?us-ascii?Q?IJtnMvdUST/Q8CozCcHnGlTfgC/Xnn9oxtBT/MOYujnEFTiSPCyTzc3wjNOQ?=
+ =?us-ascii?Q?cm1DwbPgPh2JiZqtHkR9iKQarLuFXF3++ruXs9eU3ncwGxsadvsfbPOInhv6?=
+ =?us-ascii?Q?XotT/C9rlODXNqcJ8eIxuU5bCllO27nMb4KP66j1YBnvkUf+HedRSQ4nWUS4?=
+ =?us-ascii?Q?qnbZjfsnXTjhU1kSEUcPe7lelsBqzKa7Qt7s/a/0?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6cb6b04-bb2e-4d2c-15e9-08db7cfb2ae3
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2023 01:57:20.4531
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oC/6iEHp66MZN2FLX1W2SKBIcKXAYGSqmwtcIHxZTuXT3s07a2ueI/NmkdQDOIOQtATb622tAU/X7TyPp3KzhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8845
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patch set corrects the lpuart compatible for imx8dxl and imx93 platforms,
+also correct the corresponding fsl-lpuart dt-binding doc. 
 
---Tecr9VZAi6Q825ui
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+---
+Changes in V4
+1. add Reviewed-by tag for patch#3
 
-On Tue, Jul 04, 2023 at 08:13:26PM +0300, Dmitry Rokosov wrote:
-> On Tue, Jul 04, 2023 at 05:57:15PM +0100, Conor Dooley wrote:
-> > On Tue, Jul 04, 2023 at 04:59:34PM +0300, Dmitry Rokosov wrote:
-> > > It is worth noting that the devname ttyS is a widely recognized tty n=
-ame
-> > > and is commonly used by many uart device drivers. Given the establish=
-ed
-> > > usage and compatibility concerns, it may not be feasible to change the
-> > > devname for older SoCs. However, for new definitions, it is acceptable
-> > > and even recommended to use a new devname to help ensure clarity and
-> > > avoid any potential conflicts on lower or upper software levels.
-> >=20
-> > > In
-> > > addition, modify the meson_uart_dt match data for g12a, a1, and s4 to
-> > > their appropriate values to ensure proper devname values and
-> > > functionality.
-> >=20
-> > IMO, this is a separate change that should be in another patch, had to
-> > go looking through a several of unrelated $subject patches to understand
-> > how the binding patch was going to work.
->=20
-> I apologize, but I'm having difficulty understanding your suggestion.
-> Are you recommending that a distinct binding patch for meson-uart-a1 be
-> sent as part of a separate patch series? From my perspective, isolating
-> the binding patch may not provide all the necessary context as it is
-> reliant on a separate 'compatible' declaration within the meson-uart
-> driver. However, this declaration is interconnected with the devname
-> support patchset. Therefore, it seems that all of these patches are
-> linked together.
+Changes in V3
+1. remove the redundant fsl,imx8ulp-lpuart entry in patch#3
+2. change const to enum for better readability in patch#3
 
-Maybe it is just a case of how the commit message was written, where the
-SoCs responsible for the changes appear only "in addition". At the
-moment, it seemed like an unrelated addition that was sneaking into the
-commit to me, who was trying to find the code change that made the DT
-side of things valid,
+Changes in V2
+1. drop the imx8ulp dts changes in last version patch set
+2. add both "fsl,imx8ulp-lpuart" and "fsl,imx7ulp-lpuart" for imx93
+3. correct the dt-bindings for imx93 lpuart compatible
+---
 
-Re-phrasing the commit message to explain that the a1 is the reason for
-this change, rather than mentioning the SoCs as an apparent afterthought
-would make sense to me here. As would splitting reworking the code to
-support devname stuff in one commit & adding the new match for the a1 in
-another. Whatever works for you.
+Sherry Sun (3):
+  arm64: dts: imx8dxl: remove "fsl,imx7ulp-lpuart" compatible for
+    imx8dxl
+  arm64: dts: imx93: add "fsl,imx8ulp-lpuart" compatible for imx93
+  dt-bindings: serial: fsl-lpuart: correct imx93-lpuart dt-binding item
 
---Tecr9VZAi6Q825ui
-Content-Type: application/pgp-signature; name="signature.asc"
+ .../devicetree/bindings/serial/fsl-lpuart.yaml   |  6 +++++-
+ .../boot/dts/freescale/imx8dxl-ss-adma.dtsi      |  8 ++++----
+ arch/arm64/boot/dts/freescale/imx93.dtsi         | 16 ++++++++--------
+ 3 files changed, 17 insertions(+), 13 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+-- 
+2.17.1
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZKRvgwAKCRB4tDGHoIJi
-0hkeAP9Lzm0lKzEJQ3nWw1mwEopF3oZdVmvGVOFiRIQgcx/mqAEAvkAFRCWE9JpX
-UsLys1kHTzKs1mYt4FxBmbpH8kN20g4=
-=7yrx
------END PGP SIGNATURE-----
-
---Tecr9VZAi6Q825ui--
