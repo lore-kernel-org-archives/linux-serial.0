@@ -2,299 +2,296 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A960EB64DD
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 15:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7420DC001DE
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 16:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232230AbjGEPSK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 11:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
+        id S232198AbjGEQIt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jul 2023 12:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbjGEPSJ (ORCPT
+        with ESMTP id S231950AbjGEQIr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 11:18:09 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ECA170B;
-        Wed,  5 Jul 2023 08:18:08 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-3112f5ab0b1so7571175f8f.0;
-        Wed, 05 Jul 2023 08:18:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1688570286; x=1691162286;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+rTM9zb9WY9Xvxel2SErjkaPh55ugzzbgIcOlX7MHw4=;
-        b=mk5aUeNMCsmeJqqc1eyESY1lW11bAcprGyGXPdJ33glrCXnGnXxdzoySWpxUhodgQf
-         7sA5wQPfmkta4s3zKgI+x9ku06bB9EivUCza+knU78/Up78E9pRezBrUs35kjucJhZOO
-         AFCP6DY74N5crn4bCU9rUUmMNu/eAJ6RNqFXpy3RRxfUpsVPCXQ5ee01uG7/rnupPO5k
-         sSt0E5uw59Pflsdlj+UPETEI9aqHthGRLqwZ7cY+EW62nD/HGrb24qNynBmVK0uGUipS
-         MspkLc3Ozf2XfL6JdvuE+6nP9pRM4lt1A1b4czD6/UwEcOCo8c0FiXhJyaFPW0xs9rmV
-         OPbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688570286; x=1691162286;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+rTM9zb9WY9Xvxel2SErjkaPh55ugzzbgIcOlX7MHw4=;
-        b=LEhQ+hkU61SRNv2ja21mMLnpXb0g9CZrLBeGtSqYQU9+CuTwzQiXdONuaIZNSZ4m5M
-         Z2qYBzOWlAF042WUMNCDFVvzIkAofMIreexKeJOaI7yO1l16eOhw806FiSOKHMYHC/kZ
-         vid6vwPWHJ6nYwq92ZQPJefmnnE4xvAi25it9v9ufI+ooPHq9liqXW6KMmKm6mNYNR8C
-         Jc/TvPbaI1s1jOkBsbbKZoqXzhFVBbakTLmfvdwqzlZRmt37lZkBR4zjiXxZY4e6Bqk8
-         l+15IANXUITreuC2jY92/gGCJ8vCcFLgk6lXSgd9oK5/19WjwFi7Jm/3iwReg2qPu45g
-         jMVQ==
-X-Gm-Message-State: ABy/qLaaTDUJ4sYnwN+kmZPTEEOfTlxPaOK5hPE2xQtL9teZpBmH9/f6
-        1FJ1TyyFXoUazMnmB9TwcOQ=
-X-Google-Smtp-Source: APBJJlEchMqCocnXvYS1zea7yJILbF0CxML3vQJxCuE0v67B8tiU5h9lvjNzB+voY7Zz9TrzqiSVTA==
-X-Received: by 2002:adf:e604:0:b0:314:311d:1b9 with SMTP id p4-20020adfe604000000b00314311d01b9mr10159765wrm.47.1688570286000;
-        Wed, 05 Jul 2023 08:18:06 -0700 (PDT)
-Received: from localhost (p200300e41f4b7100f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f4b:7100:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id f3-20020a5d58e3000000b00314329f7d8asm10030876wrd.29.2023.07.05.08.18.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jul 2023 08:18:05 -0700 (PDT)
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>
-Cc:     Jon Hunter <jonathanh@nvidia.com>, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: serial: tegra-hsuart: Convert to json-schema
-Date:   Wed,  5 Jul 2023 17:18:02 +0200
-Message-ID: <20230705151802.2512186-1-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.41.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 5 Jul 2023 12:08:47 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AED112A;
+        Wed,  5 Jul 2023 09:08:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1688573326; x=1720109326;
+  h=date:from:to:cc:subject:message-id;
+  bh=xKhVmKHnF1tZ/nQOsvw0DFwNyW4SSJnj5G7sLZBwAY8=;
+  b=Caot2TkJWlacmPA1rC/KRRT3YQJThLqEEeyw0vvrH7ZdSNV0m0JhQdkd
+   VaxrPIjS7OOWX0FsWSBaiKYytQpKPXlvbYHIaf4t7Q8/6helgT4n1gzmJ
+   W7tIWjw2aUevKmi7Uq2AkwZrDdhUFTftIRvsu8VCAmgGEJrt8M3GeuFlO
+   29rMYjb1CKK959qdr4UoD8GP/uOwmRgDPTz87Qg8F7jD9eRikfMFMqW8a
+   jI56hNL6TS1UuH6KLRtMNqGjwNLRW+jljoF2LlpU9MfNUMpzbhgXvEfEE
+   KtQTWxkeY3Pl7hoEzb7xiRK4I+zJVVSGaKdDY8IN9Mle8B6Ay4bAUtG+3
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10762"; a="449747158"
+X-IronPort-AV: E=Sophos;i="6.01,183,1684825200"; 
+   d="scan'208";a="449747158"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2023 09:08:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10762"; a="832600455"
+X-IronPort-AV: E=Sophos;i="6.01,183,1684825200"; 
+   d="scan'208";a="832600455"
+Received: from lkp-server01.sh.intel.com (HELO c544d7fc5005) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 05 Jul 2023 09:08:01 -0700
+Received: from kbuild by c544d7fc5005 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qH52u-0000iI-1h;
+        Wed, 05 Jul 2023 16:08:00 +0000
+Date:   Thu, 06 Jul 2023 00:07:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Linux Memory Management List <linux-mm@kvack.org>,
+        intel-gfx@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-bluetooth@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-trace-kernel@vger.kernel.org
+Subject: [linux-next:master] BUILD REGRESSION
+ e1f6a8eaf1c271a0158114a03e3605f4fba059ad
+Message-ID: <202307060015.uSSLonkv-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: e1f6a8eaf1c271a0158114a03e3605f4fba059ad  Add linux-next specific files for 20230705
 
-Convert the Tegra High-Speed UART bindings from the free-form text
-format to json-schema.
+Error/Warning reports:
 
-While at it, also fix fix the example to reflect the correct compatible
-string for Tegra30 chips.
+https://lore.kernel.org/oe-kbuild-all/202306122223.HHER4zOo-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202306260401.qZlYQpV2-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202306291857.nyJjYwqk-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202306301756.x8dgyYnL-lkp@intel.com
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
-Changes in v2:
-- add note about the corrected example to commit message
-- collate all single entry compatibles into an enum
+Error/Warning: (recently discovered and may have been fixed)
 
- .../bindings/serial/nvidia,tegra20-hsuart.txt |  73 ----------
- .../serial/nvidia,tegra20-hsuart.yaml         | 125 ++++++++++++++++++
- 2 files changed, 125 insertions(+), 73 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
+arch/parisc/kernel/pdt.c:67:6: warning: no previous prototype for 'arch_report_meminfo' [-Wmissing-prototypes]
+arch/riscv/kernel/crash_core.c:12:57: warning: format specifies type 'unsigned long' but the argument has type 'int' [-Wformat]
+arch/riscv/kernel/crash_core.c:14:57: error: use of undeclared identifier 'VMEMMAP_START'
+arch/riscv/kernel/crash_core.c:15:55: error: use of undeclared identifier 'VMEMMAP_END'; did you mean 'MEMREMAP_ENC'?
+arch/riscv/kernel/crash_core.c:8:20: error: use of undeclared identifier 'VA_BITS'
+drivers/bluetooth/btmtk.c:386:44: error: 'struct hci_dev' has no member named 'dump'
+drivers/char/mem.c:164:25: error: implicit declaration of function 'unxlate_dev_mem_ptr'; did you mean 'xlate_dev_mem_ptr'? [-Werror=implicit-function-declaration]
+drivers/gpu/drm/i915/soc/intel_gmch.c:41:13: error: variable 'mchbar_addr' set but not used [-Werror=unused-but-set-variable]
+drivers/mfd/max77541.c:176:18: warning: cast to smaller integer type 'enum max7754x_ids' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+lib/kunit/executor_test.c:138:4: warning: cast from 'void (*)(const void *)' to 'kunit_action_t *' (aka 'void (*)(void *)') converts to incompatible function type [-Wcast-function-type-strict]
+lib/kunit/test.c:775:38: warning: cast from 'void (*)(const void *)' to 'kunit_action_t *' (aka 'void (*)(void *)') converts to incompatible function type [-Wcast-function-type-strict]
 
-diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-deleted file mode 100644
-index f709304036c2..000000000000
---- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-+++ /dev/null
-@@ -1,73 +0,0 @@
--NVIDIA Tegra20/Tegra30 high speed (DMA based) UART controller driver.
--
--Required properties:
--- compatible : should be,
--  "nvidia,tegra20-hsuart" for Tegra20,
--  "nvidia,tegra30-hsuart" for Tegra30,
--  "nvidia,tegra186-hsuart" for Tegra186,
--  "nvidia,tegra194-hsuart" for Tegra194.
--
--- reg: Should contain UART controller registers location and length.
--- interrupts: Should contain UART controller interrupts.
--- clocks: Must contain one entry, for the module clock.
--  See ../clocks/clock-bindings.txt for details.
--- resets : Must contain an entry for each entry in reset-names.
--  See ../reset/reset.txt for details.
--- reset-names : Must include the following entries:
--  - serial
--- dmas : Must contain an entry for each entry in dma-names.
--  See ../dma/dma.txt for details.
--- dma-names : Must include the following entries:
--  - rx
--  - tx
--
--Optional properties:
--- nvidia,enable-modem-interrupt: Enable modem interrupts. Should be enable
--		only if all 8 lines of UART controller are pinmuxed.
--- nvidia,adjust-baud-rates: List of entries providing percentage of baud rate
--  adjustment within a range.
--  Each entry contains sets of 3 values. Range low/high and adjusted rate.
--  <range_low range_high adjusted_rate>
--  When baud rate set on controller falls within the range mentioned in this
--  field, baud rate will be adjusted by percentage mentioned here.
--  Ex: <9600 115200 200>
--  Increase baud rate by 2% when set baud rate falls within range 9600 to 115200
--
--Baud Rate tolerance:
--  Standard UART devices are expected to have tolerance for baud rate error by
--  -4 to +4 %. All Tegra devices till Tegra210 had this support. However,
--  Tegra186 chip has a known hardware issue. UART Rx baud rate tolerance level
--  is 0% to +4% in 1-stop config. Otherwise, the received data will have
--  corruption/invalid framing errors. Parker errata suggests adjusting baud
--  rate to be higher than the deviations observed in Tx.
--
--  Tx deviation of connected device can be captured over scope (or noted from
--  its spec) for valid range and Tegra baud rate has to be set above actual
--  Tx baud rate observed. To do this we use nvidia,adjust-baud-rates
--
--  As an example, consider there is deviation observed in Tx for baud rates as
--  listed below.
--  0 to 9600 has 1% deviation
--  9600 to 115200 2% deviation
--  This slight deviation is expcted and Tegra UART is expected to handle it. Due
--  to the issue stated above, baud rate on Tegra UART should be set equal to or
--  above deviation observed for avoiding frame errors.
--  Property should be set like this
--  nvidia,adjust-baud-rates = <0 9600 100>,
--  			     <9600 115200 200>;
--
--Example:
--
--serial@70006000 {
--	compatible = "nvidia,tegra30-hsuart", "nvidia,tegra20-hsuart";
--	reg = <0x70006000 0x40>;
--	reg-shift = <2>;
--	interrupts = <0 36 0x04>;
--	nvidia,enable-modem-interrupt;
--	clocks = <&tegra_car 6>;
--	resets = <&tegra_car 6>;
--	reset-names = "serial";
--	dmas = <&apbdma 8>, <&apbdma 8>;
--	dma-names = "rx", "tx";
--	nvidia,adjust-baud-rates = <1000000 4000000 136>; /* 1.36% shift */
--};
-diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
-new file mode 100644
-index 000000000000..04d55fecf47c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.yaml
-@@ -0,0 +1,125 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/nvidia,tegra20-hsuart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NVIDIA Tegra20/Tegra30 high speed (DMA based) UART controller driver
-+
-+maintainers:
-+  - Thierry Reding <thierry.reding@gmail.com>
-+  - Jon Hunter <jonathanh@nvidia.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - nvidia,tegra20-hsuart
-+          - nvidia,tegra30-hsuart
-+          - nvidia,tegra186-hsuart
-+          - nvidia,tegra194-hsuart
-+      - items:
-+          - const: nvidia,tegra124-hsuart
-+          - const: nvidia,tegra30-hsuart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: module clock
-+
-+  resets:
-+    items:
-+      - description: module reset
-+
-+  reset-names:
-+    items:
-+      - const: serial
-+
-+  dmas:
-+    items:
-+      - description: DMA channel used for reception
-+      - description: DMA channel used for transmission
-+
-+  dma-names:
-+    items:
-+      - const: rx
-+      - const: tx
-+
-+  nvidia,enable-modem-interrupt:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: Enable modem interrupts. Should be enable only if all 8 lines of UART controller
-+      are pinmuxed.
-+
-+  nvidia,adjust-baud-rates:
-+    $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+    description: |
-+      List of entries providing percentage of baud rate adjustment within a range. Each entry
-+      contains a set of 3 values: range low/high and adjusted rate. When the baud rate set on the
-+      controller falls within the range mentioned in this field, the baud rate will be adjusted by
-+      percentage mentioned here.
-+
-+      Example: <9600 115200 200>
-+
-+      Increase baud rate by 2% when set baud rate falls within range 9600 to 115200.
-+
-+      Standard UART devices are expected to have tolerance for baud rate error by -4 to +4 %. All
-+      Tegra devices till Tegra210 had this support. However, Tegra186 chip has a known hardware
-+      issue. UART RX baud rate tolerance level is 0% to +4% in 1-stop config. Otherwise, the
-+      received data will have corruption/invalid framing errors. Parker errata suggests adjusting
-+      baud rate to be higher than the deviations observed in TX.
-+
-+      TX deviation of connected device can be captured over scope (or noted from its spec) for
-+      valid range and Tegra baud rate has to be set above actual TX baud rate observed. To do this
-+      we use nvidia,adjust-baud-rates.
-+
-+      As an example, consider there is deviation observed in TX for baud rates as listed below. 0
-+      to 9600 has 1% deviation 9600 to 115200 2% deviation. This slight deviation is expcted and
-+      Tegra UART is expected to handle it. Due to the issue stated above, baud rate on Tegra UART
-+      should be set equal to or above deviation observed for avoiding frame errors. Property
-+      should be set like this:
-+
-+        nvidia,adjust-baud-rates = <0 9600 100>,
-+                                   <9600 115200 200>;
-+    items:
-+      items:
-+        - description: range lower bound
-+        - description: range upper bound
-+        - description: adjustment (in permyriad, i.e. 0.01%)
-+
-+allOf:
-+  - $ref: serial.yaml
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - resets
-+  - reset-names
-+  - dmas
-+  - dma-names
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/tegra30-car.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    serial@70006000 {
-+        compatible = "nvidia,tegra30-hsuart";
-+        reg = <0x70006000 0x40>;
-+        interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
-+        nvidia,enable-modem-interrupt;
-+        clocks = <&tegra_car TEGRA30_CLK_UARTA>;
-+        resets = <&tegra_car 6>;
-+        reset-names = "serial";
-+        dmas = <&apbdma 8>, <&apbdma 8>;
-+        dma-names = "rx", "tx";
-+        nvidia,adjust-baud-rates = <1000000 4000000 136>; /* 1.36% shift */
-+    };
+Unverified Error/Warning (likely false positive, please contact us if interested):
+
+drivers/tty/serial/fsl_lpuart.c:1314 lpuart_timer_func() error: uninitialized symbol 'flags'.
+kernel/trace/trace_functions_graph.c:1012 print_graph_return() warn: bitwise AND condition is false here
+kernel/trace/trace_functions_graph.c:726 print_graph_entry_leaf() warn: bitwise AND condition is false here
+{standard input}: Error: local label `"2" (instance number 9 of a fb label)' is not defined
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- arc-randconfig-r026-20230705
+|   `-- drivers-bluetooth-btmtk.c:error:struct-hci_dev-has-no-member-named-dump
+|-- csky-randconfig-m041-20230705
+|   `-- drivers-tty-serial-fsl_lpuart.c-lpuart_timer_func()-error:uninitialized-symbol-flags-.
+|-- i386-buildonly-randconfig-r004-20230705
+|   `-- drivers-gpu-drm-i915-soc-intel_gmch.c:error:variable-mchbar_addr-set-but-not-used
+|-- i386-randconfig-m021-20230705
+|   |-- kernel-trace-trace_functions_graph.c-print_graph_entry_leaf()-warn:bitwise-AND-condition-is-false-here
+|   `-- kernel-trace-trace_functions_graph.c-print_graph_return()-warn:bitwise-AND-condition-is-false-here
+|-- loongarch-randconfig-r091-20230703
+|   `-- drivers-bluetooth-btmtk.c:error:struct-hci_dev-has-no-member-named-dump
+|-- microblaze-randconfig-r001-20230705
+|   `-- drivers-bluetooth-btmtk.c:error:struct-hci_dev-has-no-member-named-dump
+|-- parisc-randconfig-r081-20230703
+|   `-- arch-parisc-kernel-pdt.c:warning:no-previous-prototype-for-arch_report_meminfo
+|-- sh-allmodconfig
+|   |-- drivers-char-mem.c:error:implicit-declaration-of-function-unxlate_dev_mem_ptr
+|   `-- standard-input:Error:local-label-(instance-number-of-a-fb-label)-is-not-defined
+`-- sh-randconfig-r004-20230705
+    |-- drivers-bluetooth-btmtk.c:error:struct-hci_dev-has-no-member-named-dump
+    `-- drivers-char-mem.c:error:implicit-declaration-of-function-unxlate_dev_mem_ptr
+clang_recent_errors
+|-- arm64-randconfig-r023-20230705
+|   |-- drivers-mfd-max77541.c:warning:cast-to-smaller-integer-type-enum-max7754x_ids-from-const-void
+|   `-- lib-kunit-test.c:warning:cast-from-void-(-)(const-void-)-to-kunit_action_t-(aka-void-(-)(void-)-)-converts-to-incompatible-function-type
+|-- arm64-randconfig-r024-20230705
+|   `-- lib-kunit-test.c:warning:cast-from-void-(-)(const-void-)-to-kunit_action_t-(aka-void-(-)(void-)-)-converts-to-incompatible-function-type
+|-- powerpc-randconfig-r011-20230705
+|   `-- lib-kunit-test.c:warning:cast-from-void-(-)(const-void-)-to-kunit_action_t-(aka-void-(-)(void-)-)-converts-to-incompatible-function-type
+|-- powerpc-randconfig-r025-20230705
+|   `-- clang:error:unsupported-option-fsanitize-thread-for-target-powerpc-unknown-linux-gnu
+|-- riscv-randconfig-r042-20230705
+|   |-- arch-riscv-kernel-crash_core.c:error:use-of-undeclared-identifier-VA_BITS
+|   |-- arch-riscv-kernel-crash_core.c:error:use-of-undeclared-identifier-VMEMMAP_END
+|   |-- arch-riscv-kernel-crash_core.c:error:use-of-undeclared-identifier-VMEMMAP_START
+|   |-- arch-riscv-kernel-crash_core.c:warning:format-specifies-type-unsigned-long-but-the-argument-has-type-int
+|   |-- lib-kunit-executor_test.c:warning:cast-from-void-(-)(const-void-)-to-kunit_action_t-(aka-void-(-)(void-)-)-converts-to-incompatible-function-type
+|   `-- lib-kunit-test.c:warning:cast-from-void-(-)(const-void-)-to-kunit_action_t-(aka-void-(-)(void-)-)-converts-to-incompatible-function-type
+|-- s390-randconfig-r014-20230705
+|   `-- lib-kunit-test.c:warning:cast-from-void-(-)(const-void-)-to-kunit_action_t-(aka-void-(-)(void-)-)-converts-to-incompatible-function-type
+|-- s390-randconfig-r021-20230705
+|   `-- drivers-mfd-max77541.c:warning:cast-to-smaller-integer-type-enum-max7754x_ids-from-const-void
+|-- x86_64-randconfig-r024-20230705
+|   `-- drivers-mfd-max77541.c:warning:cast-to-smaller-integer-type-enum-max7754x_ids-from-const-void
+|-- x86_64-randconfig-x002-20230705
+|   `-- drivers-mfd-max77541.c:warning:cast-to-smaller-integer-type-enum-max7754x_ids-from-const-void
+|-- x86_64-randconfig-x003-20230705
+|   `-- drivers-mfd-max77541.c:warning:cast-to-smaller-integer-type-enum-max7754x_ids-from-const-void
+`-- x86_64-randconfig-x005-20230705
+    `-- drivers-mfd-max77541.c:warning:cast-to-smaller-integer-type-enum-max7754x_ids-from-const-void
+
+elapsed time: 734m
+
+configs tested: 142
+configs skipped: 7
+
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r003-20230705   gcc  
+alpha                randconfig-r036-20230705   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                     nsimosci_hs_defconfig   gcc  
+arc                  randconfig-r011-20230705   gcc  
+arc                  randconfig-r026-20230705   gcc  
+arc                  randconfig-r043-20230705   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                         assabet_defconfig   gcc  
+arm                                 defconfig   gcc  
+arm                            dove_defconfig   clang
+arm                          gemini_defconfig   gcc  
+arm                          pxa910_defconfig   gcc  
+arm                  randconfig-r046-20230705   gcc  
+arm                          sp7021_defconfig   clang
+arm                         wpcm450_defconfig   gcc  
+arm64                            alldefconfig   gcc  
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                randconfig-r023-20230705   clang
+arm64                randconfig-r024-20230705   clang
+arm64                randconfig-r035-20230705   gcc  
+csky                                defconfig   gcc  
+hexagon              randconfig-r041-20230705   clang
+hexagon              randconfig-r045-20230705   clang
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-r004-20230705   gcc  
+i386         buildonly-randconfig-r005-20230705   gcc  
+i386         buildonly-randconfig-r006-20230705   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-i001-20230705   gcc  
+i386                 randconfig-i002-20230705   gcc  
+i386                 randconfig-i003-20230705   gcc  
+i386                 randconfig-i004-20230705   gcc  
+i386                 randconfig-i005-20230705   gcc  
+i386                 randconfig-i006-20230705   gcc  
+i386                 randconfig-i011-20230705   clang
+i386                 randconfig-i012-20230705   clang
+i386                 randconfig-i013-20230705   clang
+i386                 randconfig-i014-20230705   clang
+i386                 randconfig-i015-20230705   clang
+i386                 randconfig-i016-20230705   clang
+i386                 randconfig-r015-20230705   clang
+i386                 randconfig-r031-20230705   gcc  
+i386                 randconfig-r032-20230705   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch            randconfig-r006-20230705   gcc  
+loongarch            randconfig-r012-20230705   gcc  
+loongarch            randconfig-r014-20230705   gcc  
+m68k                             allmodconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                            q40_defconfig   gcc  
+m68k                 randconfig-r033-20230705   gcc  
+m68k                          sun3x_defconfig   gcc  
+microblaze           randconfig-r001-20230705   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                  cavium_octeon_defconfig   clang
+mips                           jazz_defconfig   gcc  
+mips                 randconfig-r005-20230705   clang
+nios2                               defconfig   gcc  
+nios2                randconfig-r021-20230705   gcc  
+openrisc             randconfig-r022-20230705   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                      mgcoge_defconfig   gcc  
+powerpc                 mpc832x_rdb_defconfig   clang
+powerpc                  mpc866_ads_defconfig   clang
+powerpc                    mvme5100_defconfig   clang
+powerpc                      pasemi_defconfig   gcc  
+powerpc              randconfig-r011-20230705   clang
+powerpc              randconfig-r025-20230705   clang
+powerpc                     taishan_defconfig   gcc  
+powerpc                        warp_defconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv             nommu_k210_sdcard_defconfig   gcc  
+riscv                randconfig-r042-20230705   clang
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r014-20230705   clang
+s390                 randconfig-r021-20230705   clang
+s390                 randconfig-r044-20230705   clang
+sh                               allmodconfig   gcc  
+sh                         microdev_defconfig   gcc  
+sh                   randconfig-r004-20230705   gcc  
+sh                           se7343_defconfig   gcc  
+sh                           se7750_defconfig   gcc  
+sh                           sh2007_defconfig   gcc  
+sh                  sh7785lcr_32bit_defconfig   gcc  
+sh                          urquell_defconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc                randconfig-r016-20230705   gcc  
+sparc64              randconfig-r012-20230705   gcc  
+sparc64              randconfig-r015-20230705   gcc  
+sparc64              randconfig-r026-20230705   gcc  
+sparc64              randconfig-r034-20230705   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                   randconfig-r016-20230705   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64       buildonly-randconfig-r001-20230705   gcc  
+x86_64       buildonly-randconfig-r002-20230705   gcc  
+x86_64       buildonly-randconfig-r003-20230705   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-r024-20230705   clang
+x86_64               randconfig-x001-20230705   clang
+x86_64               randconfig-x002-20230705   clang
+x86_64               randconfig-x003-20230705   clang
+x86_64               randconfig-x004-20230705   clang
+x86_64               randconfig-x005-20230705   clang
+x86_64               randconfig-x006-20230705   clang
+x86_64               randconfig-x011-20230705   gcc  
+x86_64               randconfig-x012-20230705   gcc  
+x86_64               randconfig-x013-20230705   gcc  
+x86_64               randconfig-x014-20230705   gcc  
+x86_64               randconfig-x015-20230705   gcc  
+x86_64               randconfig-x016-20230705   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa               randconfig-r013-20230705   gcc  
+
 -- 
-2.41.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
