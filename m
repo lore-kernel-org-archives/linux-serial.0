@@ -2,89 +2,71 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDD5EB64DC
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Jul 2023 17:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E28F9EB64D9
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Jul 2023 22:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbjGFR5X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 Jul 2023 13:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
+        id S230079AbjGFWLR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Jul 2023 18:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjGFR5X (ORCPT
+        with ESMTP id S229452AbjGFWLQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 Jul 2023 13:57:23 -0400
-Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE37BA;
-        Thu,  6 Jul 2023 10:57:22 -0700 (PDT)
-Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-3461163c0b6so3635235ab.2;
-        Thu, 06 Jul 2023 10:57:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688666241; x=1691258241;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PV1zMg54RJPWlDZe+X9hD1kl6IZTlt7E6/xw4ZsYjnI=;
-        b=Y68xvb6unAPDTVfBAedmxUhzOTjOQxsVL7bfWK1uCky+SMSKbdIQF9lUDtLkPYnXgW
-         CDopWkpIGPEB+H3kgOyL6eYcWIedc2n8hLMENFSnhmnFhRLnpmAIpUlLz/SZFB3PR8Wb
-         LdYaVldyZB5peVmfywKCFnTuvojkCtInD/+A5gAexnG/PClltu/fQhjkGju+Z3Dy6ute
-         v3X/rhSy5ugAZeIyiSdYwe9oVOI60jY+pXH0AzYETrWNwp9EbKP7mQVDuMROBNzp1YH0
-         sGlcqfWQwIPMwG83AWG4cetiReh8XQQhwuCy5RM9BBLb13xk9rzucv5VA/bWWgFmt7dB
-         80cg==
-X-Gm-Message-State: ABy/qLbKq3m0eo7OXXjioZhRlUNr+HZMHOi5KEDPqz3G0XJjHyycenc4
-        iMBVynDk3mTZbxhZdGLrjA==
-X-Google-Smtp-Source: APBJJlFwswbERMy55C04zEpNuMZqN7dDP8aAwJZViP81idcmehEyswZ9IkHk4oBuVoBzoxTREvItGQ==
-X-Received: by 2002:a92:dc09:0:b0:345:db54:47ee with SMTP id t9-20020a92dc09000000b00345db5447eemr3137644iln.10.1688666241586;
-        Thu, 06 Jul 2023 10:57:21 -0700 (PDT)
-Received: from robh_at_kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id n13-20020a02a90d000000b0041fb2506011sm647956jam.172.2023.07.06.10.57.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jul 2023 10:57:20 -0700 (PDT)
-Received: (nullmailer pid 64315 invoked by uid 1000);
-        Thu, 06 Jul 2023 17:57:18 -0000
-Date:   Thu, 6 Jul 2023 11:57:18 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Cc:     jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        conor+dt@kernel.org, jirislaby@kernel.org,
-        gregkh@linuxfoundation.org, krzysztof.kozlowski+dt@linaro.org,
-        xianwei.zhao@amlogic.com, linux-kernel@vger.kernel.org,
-        neil.armstrong@linaro.org, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, kelvin.zhang@amlogic.com,
-        rockosov@gmail.com, khilman@baylibre.com,
-        devicetree@vger.kernel.org, kernel@sberdevices.ru
-Subject: Re: [PATCH v2 6/7] dt-bindings: serial: amlogic,meson-uart: support
- Amlogic A1
-Message-ID: <168866621271.63404.12853551833647005497.robh@kernel.org>
-References: <20230705181833.16137-1-ddrokosov@sberdevices.ru>
- <20230705181833.16137-7-ddrokosov@sberdevices.ru>
+        Thu, 6 Jul 2023 18:11:16 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DEC1725;
+        Thu,  6 Jul 2023 15:11:14 -0700 (PDT)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 5AE3C862AE;
+        Fri,  7 Jul 2023 00:11:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1688681472;
+        bh=0EIkI2jUI4DFcoRWiE7tteNt5GIFvY9v+UbpdSJnVDs=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=il+Bf/oB+qrKGRQGAOOh8OKqT4gYPlcuD3JqNBo5FJuxZcYAtRxtbXrs+QgHXE9jU
+         RKLfszdUe4tvYLquFv7btSnPW6O2WqTejIxax0MLqWlkXWL3M0+k0seG78m34OmXrE
+         jvrwPgn7Hlq+OuHrgi/99ghLKGypxirQV3Kgp1TFaKE8LnUaLWm8vvqx76c6dndWjw
+         8Fuc9aZf0F0U2cIGyjmMWy3ZTPLvue3XNZS9OMJjnoDiAGyB7CANzNMRhWupl0nmLE
+         RrbMMta24Ep8b8JQrvo0zwyk4ZFmN5Nyy13059mLzsR7Kuti6wFiyKIlDryDVEsdvG
+         pqnw/ApBFyuhg==
+Message-ID: <64358ffc-449d-b676-6ac6-a2f273c3129d@denx.de>
+Date:   Fri, 7 Jul 2023 00:11:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230705181833.16137-7-ddrokosov@sberdevices.ru>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH] tty: serial: imx: fix rs485 rx after tx
+Content-Language: en-US
+From:   Marek Vasut <marex@denx.de>
+To:     Martin Fuzzey <martin.fuzzey@flowbird.group>,
+        linux-serial@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <20230616104838.2729694-1-martin.fuzzey@flowbird.group>
+ <b7e978c9-43cc-2d9a-f3f8-4bfe143895ca@denx.de>
+In-Reply-To: <b7e978c9-43cc-2d9a-f3f8-4bfe143895ca@denx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-On Wed, 05 Jul 2023 21:18:32 +0300, Dmitry Rokosov wrote:
-> Introduce meson uart serial bindings for A1 SoC family.
+On 6/16/23 13:16, Marek Vasut wrote:
+> On 6/16/23 12:47, Martin Fuzzey wrote:
+>> Since commit 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal
+>> active high") RS485 reception no longer works after a transmission.
 > 
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> ---
->  .../devicetree/bindings/serial/amlogic,meson-uart.yaml          | 2 ++
->  1 file changed, 2 insertions(+)
+> This RS485 is just a gift that keeps on giving, sigh.
 > 
+> I'll dig into this in a few days as time permits.
 
+Alas, time did not permit until now, but yes, this makes sense.
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+Thanks
 
-If a tag was not added on purpose, please state why and what changed.
-
-Missing tags:
-
-Acked-by: Rob Herring <robh@kernel.org>
-
-
-
+And sorry for the delayed reply.
