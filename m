@@ -2,158 +2,230 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7056EB64DA
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jul 2023 23:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94309C00528
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Jul 2023 06:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbjGEXQK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jul 2023 19:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        id S233608AbjGFG2i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Jul 2023 02:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbjGEXQJ (ORCPT
+        with ESMTP id S233386AbjGFG2g (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jul 2023 19:16:09 -0400
-Received: from mail-pf1-f205.google.com (mail-pf1-f205.google.com [209.85.210.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B11D171A
-        for <linux-serial@vger.kernel.org>; Wed,  5 Jul 2023 16:16:07 -0700 (PDT)
-Received: by mail-pf1-f205.google.com with SMTP id d2e1a72fcca58-66881827473so206135b3a.2
-        for <linux-serial@vger.kernel.org>; Wed, 05 Jul 2023 16:16:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688598967; x=1691190967;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+        Thu, 6 Jul 2023 02:28:36 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4784319B2
+        for <linux-serial@vger.kernel.org>; Wed,  5 Jul 2023 23:28:32 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-992acf67388so31788266b.1
+        for <linux-serial@vger.kernel.org>; Wed, 05 Jul 2023 23:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1688624911; x=1691216911;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=XPZrTMhPOVSDzXqq2LiTwwbAu0oIwjDmxkMqyLNS5/U=;
-        b=FQgqOb/ROXcnNshZakGdicSgKUZknM54jJS0O2cjKzJO7B2aVveqHGUfEQtQyMW55a
-         RpHt7CMCipmtCM0FINBn2Ac61CvC8Z29u8OLetYw+lC/QMPp7NB2BNptQyR+YvM4NZSK
-         vdmpOJgsTZ9hvVZ8ic3PecoudSe2haVQP4POSFLJo5wCTfgEs8U363PSVAqXp8KR+JOy
-         H4E6X/9oBt/cZGv2nUv2F/5Z5fT/udSDfXRUgBLMcmDL0WS/Z38paXd8Rt0dY/dHLBHB
-         wwqd9LQc3SjxuWA488PDoN8rMAowBDysuLk8pT8fBTeNpUqMHMMzbG/aBvAkDNjlqGfX
-         yu9g==
-X-Gm-Message-State: ABy/qLZM3KfDIME3gKRVmiz1JmlN60B1hPQTgF8lMZ2qb41CyTujtC5H
-        dJTgJyfO+AVbCYfKhqWelevQymGfxnn4l3zhCJcwyOglgaL/
-X-Google-Smtp-Source: APBJJlGkFGKZrNGNxSCynuRZQ5e8wgK1BjuycfRNtlk/cd5+YOZoBMSbm5ZU7tsQdza/OYA4ZfwmHfjEbCciuLKF/BpV0BLmFsGH
+        bh=Pqu4vTxoeW2yTwRCEetSQZvh47NKMtjn0RrXMB1JAGg=;
+        b=dRSL6aukgIkfv+NlQasUhI0WW8PrgXzou5v2QVss3xqfKaQ4M1Yt2cin2pOZmhQd17
+         mLGsmRk6KQ96V2gbe6flKfOcIDP8C6aJ94MYdy2hTnRpIigR7o/uS07D4CETNP/87UAG
+         Te3mFVnmowcotJ+p+kvuGY85+Df/k9sYz1L9gl3LDrpMcUkuBaCO8WTequflxZTiDoTT
+         JMZMZqgL5RQtdtgjCToseEau/xKW62TMq6KzpDrpxszgG+HHnYaK/7KRjWMGum9WC1ss
+         tpYb7Y62RIr5F4RyB4vq3Q8QtCd9PUd2GSuCjupyh7ZdQj3zgjJEZ/rUnmhwmkQP56L0
+         GcnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688624911; x=1691216911;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Pqu4vTxoeW2yTwRCEetSQZvh47NKMtjn0RrXMB1JAGg=;
+        b=AJp/d3DLYfLr13j98OQeX8mzFltc5LztOY+tlK/6FVuSWP/OfMVnj+Ha556NXYGsde
+         o4JBRm24ogBB/knhh8mFaIYqbt10eupdMri7mcIAiolXQNwvBD/n5wNTWbc9KSi3e9Qd
+         Vyib9jKZ7+FvUPQUdVs9K78eBcWgbMcDEzV1fxnK85w61EJZi0qwFWdggr0Ev3uwzFz+
+         hLFe8FtcAXTh9NPi9oyxjXG5jm9feolZY2QRvHmAIsuc6X6FT7OrILvAMWRDbum5X1L0
+         rDbdNCxtY7eoKa7C6z5FgDVTKefmbk3mq0gAaKnCbMjdxzAy4PeRki9vledk/M59STr1
+         VShA==
+X-Gm-Message-State: ABy/qLYJ6bLjJELj3pkqsItu6uGhn5DBxho7qcIHWERRpPj/dVXBJlAy
+        LO+yW1dT6P/Vb9z53XVekjG5/g==
+X-Google-Smtp-Source: APBJJlEu2RGF4uBuUPfkX4wlSxPa3Cu2L5C0YRWwOysyPz8/vFYVscoSMwhTBIDQpkpak+dxq034Sw==
+X-Received: by 2002:a17:906:10cf:b0:991:8328:50e3 with SMTP id v15-20020a17090610cf00b00991832850e3mr696668ejv.9.1688624910680;
+        Wed, 05 Jul 2023 23:28:30 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.219.26])
+        by smtp.gmail.com with ESMTPSA id lf20-20020a170906ae5400b009920e9a3a73sm372590ejb.115.2023.07.05.23.28.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jul 2023 23:28:30 -0700 (PDT)
+Message-ID: <e871ad32-dfa4-067d-4f2c-207ffd42aafd@linaro.org>
+Date:   Thu, 6 Jul 2023 08:28:25 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6a00:1889:b0:682:5980:a0e0 with SMTP id
- x9-20020a056a00188900b006825980a0e0mr428479pfh.5.1688598967363; Wed, 05 Jul
- 2023 16:16:07 -0700 (PDT)
-Date:   Wed, 05 Jul 2023 16:16:07 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009e2dd805ffc595a3@google.com>
-Subject: [syzbot] [serial?] general protection fault in serial8250_tx_chars
-From:   syzbot <syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 02/10] dt-bindings: bus: add device tree bindings for
+ RIFSC
+Content-Language: en-US
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>,
+        Oleksii_Moisieiev@epam.com, gregkh@linuxfoundation.org,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, alexandre.torgue@foss.st.com,
+        vkoul@kernel.org, jic23@kernel.org, olivier.moysan@foss.st.com,
+        arnaud.pouliquen@foss.st.com, mchehab@kernel.org,
+        fabrice.gasnier@foss.st.com, andi.shyti@kernel.org,
+        ulf.hansson@linaro.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hugues.fruchet@foss.st.com, lee@kernel.org,
+        will@kernel.org, catalin.marinas@arm.com, arnd@kernel.org,
+        richardcochran@gmail.com
+Cc:     linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+References: <20230705172759.1610753-1-gatien.chevallier@foss.st.com>
+ <20230705172759.1610753-3-gatien.chevallier@foss.st.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230705172759.1610753-3-gatien.chevallier@foss.st.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On 05/07/2023 19:27, Gatien Chevallier wrote:
+> Document RIFSC (RIF security controller). RIFSC is a firewall controller
+> composed of different kinds of hardware resources.
+> 
+> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
 
-syzbot found the following issue on:
+A nit, subject: drop second/last, redundant "device tree bindings for".
+The "dt-bindings" prefix is already stating that these are bindings. 4
+words of your 6 word subject is meaningless...
 
-HEAD commit:    6cd06ab12d1a gup: make the stack expansion warning a bit m..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13fdf29ca80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9b64180aaf312512
-dashboard link: https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
+> ---
+>  .../bindings/bus/st,stm32-rifsc.yaml          | 101 ++++++++++++++++++
+>  1 file changed, 101 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/bus/st,stm32-rifsc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/bus/st,stm32-rifsc.yaml b/Documentation/devicetree/bindings/bus/st,stm32-rifsc.yaml
+> new file mode 100644
+> index 000000000000..68d585ed369c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/bus/st,stm32-rifsc.yaml
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Filename like compatible, unless you know list of compatibles will
+grow... but then add them.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/6b9ac6b68fe1/disk-6cd06ab1.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/694d14350cd9/vmlinux-6cd06ab1.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/0344e65f0f1c/bzImage-6cd06ab1.xz
+> @@ -0,0 +1,101 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/bus/st,stm32-rifsc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: STM32 Resource isolation framework security controller bindings
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com
+Drop bindings
 
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 12722 Comm: kworker/1:25 Not tainted 6.4.0-syzkaller-11479-g6cd06ab12d1a #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/27/2023
-Workqueue: pm pm_runtime_work
-RIP: 0010:serial8250_tx_chars+0x299/0x8b0 drivers/tty/serial/8250/8250_port.c:1813
-Code: 5d 36 26 fd 48 8b 2b 48 8b 44 24 20 42 0f b6 04 38 84 c0 0f 85 8f 02 00 00 48 8b 04 24 48 63 00 48 01 c5 48 89 e8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 91 02 00 00 0f b6 6d 00 48 8b 44 24 60
-RSP: 0018:ffffc9000abdf8d0 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffff88801f1c0fd0 RCX: 1ffffffff246560f
-RDX: 1ffffffff2465659 RSI: 0000000000000000 RDI: ffffffff9232b2d0
-RBP: 0000000000000000 R08: ffffffff84be7c90 R09: fffff5200157bf14
-R10: dffffc0000000000 R11: fffff5200157bf14 R12: 0000000000000010
-R13: ffffffff9232b120 R14: ffffffff9232b020 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020404030 CR3: 000000000d130000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __start_tx+0x312/0x450 drivers/tty/serial/8250/8250_port.c:1547
- serial_port_runtime_resume+0x1ec/0x2a0 drivers/tty/serial/serial_port.c:40
- __rpm_callback+0x2b9/0x7a0 drivers/base/power/runtime.c:392
- rpm_callback drivers/base/power/runtime.c:446 [inline]
- rpm_resume+0x10b1/0x1af0 drivers/base/power/runtime.c:912
- pm_runtime_work+0x147/0x210 drivers/base/power/runtime.c:977
- process_one_work+0x92c/0x12c0 kernel/workqueue.c:2597
- worker_thread+0xa63/0x1210 kernel/workqueue.c:2748
- kthread+0x2b8/0x350 kernel/kthread.c:389
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:serial8250_tx_chars+0x299/0x8b0 drivers/tty/serial/8250/8250_port.c:1813
-Code: 5d 36 26 fd 48 8b 2b 48 8b 44 24 20 42 0f b6 04 38 84 c0 0f 85 8f 02 00 00 48 8b 04 24 48 63 00 48 01 c5 48 89 e8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 91 02 00 00 0f b6 6d 00 48 8b 44 24 60
-RSP: 0018:ffffc9000abdf8d0 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: ffff88801f1c0fd0 RCX: 1ffffffff246560f
-RDX: 1ffffffff2465659 RSI: 0000000000000000 RDI: ffffffff9232b2d0
-RBP: 0000000000000000 R08: ffffffff84be7c90 R09: fffff5200157bf14
-R10: dffffc0000000000 R11: fffff5200157bf14 R12: 0000000000000010
-R13: ffffffff9232b120 R14: ffffffff9232b020 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020404030 CR3: 000000000d130000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	5d                   	pop    %rbp
-   1:	36 26 fd             	ss es std
-   4:	48 8b 2b             	mov    (%rbx),%rbp
-   7:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
-   c:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax
-  11:	84 c0                	test   %al,%al
-  13:	0f 85 8f 02 00 00    	jne    0x2a8
-  19:	48 8b 04 24          	mov    (%rsp),%rax
-  1d:	48 63 00             	movslq (%rax),%rax
-  20:	48 01 c5             	add    %rax,%rbp
-  23:	48 89 e8             	mov    %rbp,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax <-- trapping instruction
-  2f:	84 c0                	test   %al,%al
-  31:	0f 85 91 02 00 00    	jne    0x2c8
-  37:	0f b6 6d 00          	movzbl 0x0(%rbp),%ebp
-  3b:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+> +
+> +maintainers:
+> +  - Gatien Chevallier <gatien.chevallier@foss.st.com>
+> +
+> +description: |
+> +  Resource isolation framework (RIF) is a comprehensive set of hardware blocks
+> +  designed to enforce and manage isolation of STM32 hardware resources like
+> +  memory and peripherals.
+> +
+> +  The RIFSC (RIF security controller) is composed of three sets of registers,
+> +  each managing a specific set of hardware resources:
+> +    - RISC registers associated with RISUP logic (resource isolation device unit
+> +      for peripherals), assign all non-RIF aware peripherals to zero, one or
+> +      any security domains (secure, privilege, compartment).
+> +    - RIMC registers: associated with RIMU logic (resource isolation master
+> +      unit), assign all non RIF-aware bus master to one security domain by
+> +      setting secure, privileged and compartment information on the system bus.
+> +      Alternatively, the RISUP logic controlling the device port access to a
+> +      peripheral can assign target bus attributes to this peripheral master port
+> +      (supported attribute: CID).
+> +    - RISC registers associated with RISAL logic (resource isolation device unit
+> +      for address space - Lite version), assign address space subregions to one
+> +      security domains (secure, privilege, compartment).
+> +
+> +properties:
+> +  compatible:
+> +    const: st,stm32mp25-rifsc
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 1
+> +
+> +  "#feature-domain-cells":
+> +    const: 1
+> +
+> +  ranges: true
+> +
+> +  feature-domain-controller: true
+> +
+> +patternProperties:
+> +  "^.*@[0-9a-f]+$":
+> +    description: Peripherals
+> +    type: object
+> +    properties:
+> +      feature-domains:
+> +        minItems: 1
+> +        maxItems: 2
+> +        description:
+> +          The first argument must always be a phandle that references to the
+> +          firewall controller of the peripheral. The second can contain the
+> +          platform specific firewall ID of the peripheral.
 
+It does not make much sense to me to have hierarchy parent-child and via
+phandle at the same time. You express the similar relationship twice.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#address-cells"
+> +  - "#size-cells"
+> +  - feature-domain-controller
+> +  - "#feature-domain-cells"
+> +  - ranges
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    // In this example, the usart2 device refers to rifsc as its domain
+> +    // controller.
+> +    // Access rights are verified before creating devices.
+> +
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    rifsc: rifsc-bus@42080000 {
+> +        compatible = "st,stm32mp25-rifsc";
+> +        reg = <0x42080000 0x1000>;
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        ranges;
+> +        feature-domain-controller;
+> +        #feature-domain-cells = <1>;
+> +
+> +        usart2: serial@400e0000 {
+> +            compatible = "st,stm32h7-uart";
+> +            reg = <0x400e0000 0x400>;
+> +            interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
+> +            clocks = <&ck_flexgen_08>;
+> +            feature-domains = <&rifsc 32>;
+> +            status = "disabled";
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+No status in the examples.
 
-If the bug is already fixed, let syzbot know by replying with:
-#syz fix: exact-commit-title
+> +        };
+> +    };
 
-If you want to change bug's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
+Best regards,
+Krzysztof
 
-If the bug is a duplicate of another bug, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
