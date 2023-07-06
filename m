@@ -2,64 +2,63 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA7FEB64DD
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Jul 2023 07:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96824EB64DD
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Jul 2023 07:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbjGFHAB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 Jul 2023 03:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
+        id S233647AbjGFHIz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Jul 2023 03:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231835AbjGFG77 (ORCPT
+        with ESMTP id S233559AbjGFHIy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 Jul 2023 02:59:59 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B65130
-        for <linux-serial@vger.kernel.org>; Wed,  5 Jul 2023 23:59:57 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-4fb77f21c63so354226e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 05 Jul 2023 23:59:57 -0700 (PDT)
+        Thu, 6 Jul 2023 03:08:54 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413231732
+        for <linux-serial@vger.kernel.org>; Thu,  6 Jul 2023 00:08:52 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-4fb7dc16ff0so369873e87.2
+        for <linux-serial@vger.kernel.org>; Thu, 06 Jul 2023 00:08:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1688626796; x=1691218796;
-        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
-         :content-language:subject:reply-to:from:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=ekCygdP574MvHjOEcOXc7gCddg3fyvdxIoCepPcTFCQ=;
-        b=giQdojI1VDIYHQKpiPkPYNZPgbveNNf5P9cKjKO3yo4PktUIwPs5/nySuYYV7lqkeL
-         5A4ELiPNYIuY/z6vW9ihSmwxniYQ9qphy9TOALeAmDxe8AtjXHZwmhnAoJfrVSCgqd9d
-         9HSkPSUdNvWugDG/EqJpsigc7QUgS6XAewvnsuf+WqxAr+adB8J3QSPl0LzytcH0k5TR
-         fYvSMaMxKb+7LVjCrcKxPBy04zlviMztD4PnmBs5firNH+o6u8bKiW7e4l+tzt7Oh0V5
-         R7NyO2S879cNjJJ2CMe1RexDpHj9hpTt9Au8tbVXwWqXZaoErLEKcNFsXJMSa13Dx20Q
-         yyyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1688626796; x=1691218796;
-        h=content-transfer-encoding:in-reply-to:organization:references:cc:to
-         :content-language:subject:reply-to:from:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=linaro.org; s=google; t=1688627330; x=1691219330;
+        h=content-transfer-encoding:in-reply-to:subject:organization
+         :references:cc:to:content-language:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ekCygdP574MvHjOEcOXc7gCddg3fyvdxIoCepPcTFCQ=;
-        b=fNdcBNPvXLbUh4jJI5glnRalnbmsqoWGkDGSqI5Fr/pD53yeO05MB3Y/Y5ohDrOd7f
-         3g1pK7JtSpINf5JtCVE/ac+LfVd203RtCOg6j3C1aGYEqYsY3w9JpU5ebswFZBNK17/r
-         4msUA15k6FiFu70NswQ6BoDZgC4m+IssT09HXJgA7W4Ca2WuFZjOoa7n4n5KKhL8EF7K
-         8o2KwW+c+RY8aIWT8Hg3WdHRcUw77yuPd7nFCFuDeDE9yOrRDt3mPATbG/+E6k3B/gg3
-         OVra3Pe91M+fSEkq6mZFIagKgZaToKXg50nkIf89R6sz6FouYbfQz+QgGPhkGYMOVsf1
-         K/6Q==
-X-Gm-Message-State: ABy/qLacnpNSH7HMqKhmFaufvaU048qTjYCc7SAAfDkTzj7vR1dkkCdd
-        Ai5lR2qBH6IiGKOaOwfWTMOS0A==
-X-Google-Smtp-Source: APBJJlEsz6Fhpg12b102ApIe1RIyCXh4cNJ1O9HJo8CHhGB8sIkBqYMirtS3Gcv3aAz1DsYthrYKkw==
-X-Received: by 2002:a05:6512:3703:b0:4f8:7697:5207 with SMTP id z3-20020a056512370300b004f876975207mr641642lfr.23.1688626795843;
-        Wed, 05 Jul 2023 23:59:55 -0700 (PDT)
+        bh=JfUnFpPoxbpXv4hVJaj/V4G1uyk5fRMTk74kU76zNRE=;
+        b=opLG3C30StFnwtw2D97WUC/wpqBCKDqOkpxCn2ZjWHH1DI9CqWF2MkuNRXM0D4sHq1
+         14hRCu53BXAkqA6ujinqHTgRvfUnJ69sE+ruRVmkyAB3kBn8PbFyaj8w6OAMP0ziR7OK
+         HH0Ucda7K92gzF9wbeMHlu1HA0Mv/C2PVhA7FfFwZNZqDlpcKCkSIOvWW7thEFf7kX2X
+         wBHXTi39sIeF2srEeWeejyXvkseNNrBwtBqs5txl7ZPFS7a6QNhggsrLVTqU9HR4XRkH
+         W+ePmuSWpPtVKH35Ljoi+0DKfB9DaVOwXnfwNCMqN8HaCQJAqqMwkaMhh/kX2ZYH99/c
+         rZXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688627330; x=1691219330;
+        h=content-transfer-encoding:in-reply-to:subject:organization
+         :references:cc:to:content-language:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=JfUnFpPoxbpXv4hVJaj/V4G1uyk5fRMTk74kU76zNRE=;
+        b=W3V9Ez5dt7YKjfVQUpIOx1RwbvjB9ds1HIe5tEINqAgdz/C+NXNOi75vtcrZubHwG+
+         nVKjQUjxrkMw58TfAUuHYDjhsCNHd5G3n0I0SJE2FLH/+fkaW8yxrcCsXjxwHMy/whTp
+         CrALZmX1vtsUjo+z91+uu0Lqd5T4sPnzHJpQvK0ir3Y/x5RCClWZP63UKIyJMiTqoWU9
+         Go3cKQgxLZAYiMQtQj1VKZflMtdxneap6Vj0t3HPnJkjIEGgcmVQB3pJe+W9QPBzSlaa
+         Ee4kbhTXjiY3enkxSxuEdKgGXufn80g0WhogG3GbVJWMJuHtHb101qIEqPi354OxiwsI
+         eWTg==
+X-Gm-Message-State: ABy/qLYsxASsOf4FqA2eiV9nIrcRDWsoYwnWqhCpZGoVxVt4BhRglLjJ
+        BT68jmoK8zICbnPd1ldA3YkHzA==
+X-Google-Smtp-Source: APBJJlEpQZSUA4W58M9O4l4VjBT094yF6YRPsfEHrtX798/vAbVQPcSOV3yudV2XWJ0JAbY/LXpa1Q==
+X-Received: by 2002:ac2:4f06:0:b0:4f6:2a02:fc1a with SMTP id k6-20020ac24f06000000b004f62a02fc1amr1013870lfr.17.1688627330440;
+        Thu, 06 Jul 2023 00:08:50 -0700 (PDT)
 Received: from ?IPV6:2a01:e0a:982:cbb0:15d1:2748:ead4:bdff? ([2a01:e0a:982:cbb0:15d1:2748:ead4:bdff])
-        by smtp.gmail.com with ESMTPSA id f12-20020a7bcd0c000000b003fbd9e390e1sm4147027wmj.47.2023.07.05.23.59.54
+        by smtp.gmail.com with ESMTPSA id l25-20020a7bc459000000b003fbe0da2a06sm1155369wmi.28.2023.07.06.00.08.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jul 2023 23:59:55 -0700 (PDT)
-Message-ID: <60927fc6-2819-a01a-6ea8-f1af301b1bad@linaro.org>
-Date:   Thu, 6 Jul 2023 08:59:54 +0200
+        Thu, 06 Jul 2023 00:08:49 -0700 (PDT)
+Message-ID: <606ed182-14b8-4c8f-37d3-21971ec71f38@linaro.org>
+Date:   Thu, 6 Jul 2023 09:08:48 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
 From:   neil.armstrong@linaro.org
 Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v2 2/7] tty: serial: meson: redesign the module to
- platform_driver
 Content-Language: en-US
 To:     Dmitry Rokosov <ddrokosov@sberdevices.ru>,
         gregkh@linuxfoundation.org, robh+dt@kernel.org,
@@ -72,121 +71,226 @@ Cc:     kelvin.zhang@amlogic.com, xianwei.zhao@amlogic.com,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 References: <20230705181833.16137-1-ddrokosov@sberdevices.ru>
- <20230705181833.16137-3-ddrokosov@sberdevices.ru>
+ <20230705181833.16137-4-ddrokosov@sberdevices.ru>
 Organization: Linaro Developer Services
-In-Reply-To: <20230705181833.16137-3-ddrokosov@sberdevices.ru>
+Subject: Re: [PATCH v2 3/7] tty: serial: meson: apply ttyS devname instead of
+ ttyAML for new SoCs
+In-Reply-To: <20230705181833.16137-4-ddrokosov@sberdevices.ru>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi,
+
 On 05/07/2023 20:18, Dmitry Rokosov wrote:
-> Actually, the meson_uart module is already a platform_driver, but it is
-> currently registered manually and the uart core registration is run
-> outside the probe() scope, which results in some restrictions. For
-> instance, it is not possible to communicate with the OF subsystem
-> because it requires an initialized device object.
+> It is worth noting that the devname ttyS is a widely recognized tty name
+> and is commonly used by many uart device drivers. Given the established
+> usage and compatibility concerns, it may not be feasible to change the
+> devname for older SoCs. However, for new definitions, it is acceptable
+> and even recommended to use a new devname to help ensure clarity and
+> avoid any potential conflicts on lower or upper software levels.
 > 
-> To address this issue, apply module_platform_driver() instead of direct
-> module init/exit routines. Additionally, move uart_register_driver() to
-> the driver probe(), and destroy manual console registration because it's
-> already run in the uart_register_driver() flow.
+> For more information please refer to IRC discussion at [1].
+> 
+> Links:
+>      [1]: https://libera.irclog.whitequark.org/linux-amlogic/2023-07-03
 > 
 > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 > ---
->   drivers/tty/serial/meson_uart.c | 51 ++++++++++-----------------------
->   1 file changed, 15 insertions(+), 36 deletions(-)
+>   drivers/tty/serial/meson_uart.c | 82 ++++++++++++++++++++++-----------
+>   1 file changed, 56 insertions(+), 26 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index bca54f3d92a1..dcf994a11a21 100644
+> index dcf994a11a21..ad0748a10db7 100644
 > --- a/drivers/tty/serial/meson_uart.c
 > +++ b/drivers/tty/serial/meson_uart.c
-> @@ -621,12 +621,6 @@ static struct console meson_serial_console = {
->   	.data		= &meson_uart_driver,
+> @@ -72,16 +72,22 @@
+>   
+>   #define AML_UART_PORT_NUM		12
+>   #define AML_UART_PORT_OFFSET		6
+> -#define AML_UART_DEV_NAME		"ttyAML"
+>   
+>   #define AML_UART_POLL_USEC		5
+>   #define AML_UART_TIMEOUT_USEC		10000
+>   
+> -static struct uart_driver meson_uart_driver;
+> +#define MESON_UART_DRIVER(_devname) meson_uart_driver_##_devname
+> +
+> +#define MESON_UART_DRIVER_DECLARE(_devname) \
+> +	static struct uart_driver MESON_UART_DRIVER(_devname)
+> +
+> +MESON_UART_DRIVER_DECLARE(ttyAML);
+> +MESON_UART_DRIVER_DECLARE(ttyS);
+
+Not sure those macros are useful:
+MESON_UART_DRIVER_DECLARE(ttyAML)
+vs
+static struct uart_driver meson_uart_driver_ttyAML
+
+I prefer the second...
+
+>   
+>   static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+>   
+>   struct meson_uart_data {
+> +	struct uart_driver *uart_driver;
+>   	bool has_xtal_div2;
 >   };
 >   
-> -static int __init meson_serial_console_init(void)
-> -{
-> -	register_console(&meson_serial_console);
-> -	return 0;
-> -}
-> -
+> @@ -611,15 +617,21 @@ static int meson_serial_console_setup(struct console *co, char *options)
+>   	return uart_set_options(port, co, baud, parity, bits, flow);
+>   }
+
+I think the uart_driver meson_uart_driver_ttyXXX should be declared here instead or..
+
+>   
+> -static struct console meson_serial_console = {
+> -	.name		= AML_UART_DEV_NAME,
+> -	.write		= meson_serial_console_write,
+> -	.device		= uart_console_device,
+> -	.setup		= meson_serial_console_setup,
+> -	.flags		= CON_PRINTBUFFER,
+> -	.index		= -1,
+> -	.data		= &meson_uart_driver,
+> -};
+> +#define MESON_SERIAL_CONSOLE(_devname) meson_serial_console_##_devname
+> +
+> +#define MESON_SERIAL_CONSOLE_DEFINE(_devname)				\
+> +	static struct console MESON_SERIAL_CONSOLE(_devname) = {	\
+> +		.name		= __stringify(_devname),		\
+> +		.write		= meson_serial_console_write,		\
+> +		.device		= uart_console_device,			\
+> +		.setup		= meson_serial_console_setup,		\
+> +		.flags		= CON_PRINTBUFFER,			\
+> +		.index		= -1,					\
+> +		.data		= &MESON_UART_DRIVER(_devname),		\
+> +	}
+
+... you could even declare the meson_uart_driver_ttyXXX in this macro instead.
+
+> +
+> +MESON_SERIAL_CONSOLE_DEFINE(ttyAML);
+> +MESON_SERIAL_CONSOLE_DEFINE(ttyS);
+>   
 >   static void meson_serial_early_console_write(struct console *co,
 >   					     const char *s,
->   					     u_int count)
-> @@ -652,9 +646,6 @@ OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+> @@ -644,18 +656,22 @@ meson_serial_early_console_setup(struct earlycon_device *device, const char *opt
+>   OF_EARLYCON_DECLARE(meson, "amlogic,meson-ao-uart",
+>   		    meson_serial_early_console_setup);
 >   
->   #define MESON_SERIAL_CONSOLE	(&meson_serial_console)
+> -#define MESON_SERIAL_CONSOLE	(&meson_serial_console)
+> +#define MESON_SERIAL_CONSOLE_PTR(_devname) (&MESON_SERIAL_CONSOLE(_devname))
 >   #else
-> -static int __init meson_serial_console_init(void) {
-> -	return 0;
-> -}
->   #define MESON_SERIAL_CONSOLE	NULL
+> -#define MESON_SERIAL_CONSOLE	NULL
+> +#define MESON_SERIAL_CONSOLE_PTR(_devname)	(NULL)
 >   #endif
 >   
-> @@ -738,6 +729,13 @@ static int meson_uart_probe(struct platform_device *pdev)
->   	if (ret)
->   		return ret;
->   
-> +	if (!meson_uart_driver.state) {
-> +		ret = uart_register_driver(&meson_uart_driver);
-> +		if (ret)
-> +			return dev_err_probe(&pdev->dev, ret,
-> +					     "can't register uart driver\n");
+> -static struct uart_driver meson_uart_driver = {
+> -	.owner		= THIS_MODULE,
+> -	.driver_name	= "meson_uart",
+> -	.dev_name	= AML_UART_DEV_NAME,
+> -	.nr		= AML_UART_PORT_NUM,
+> -	.cons		= MESON_SERIAL_CONSOLE,
+> -};
+> +#define MESON_UART_DRIVER_DEFINE(_devname)  \
+> +	static struct uart_driver MESON_UART_DRIVER(_devname) = {	\
+> +		.owner		= THIS_MODULE,				\
+> +		.driver_name	= "meson_uart",				\
+> +		.dev_name	= __stringify(_devname),		\
+> +		.nr		= AML_UART_PORT_NUM,			\
+> +		.cons		= MESON_SERIAL_CONSOLE_PTR(_devname),	\
 > +	}
 > +
->   	port->iotype = UPIO_MEM;
->   	port->mapbase = res_mem->start;
->   	port->mapsize = resource_size(res_mem);
-> @@ -776,6 +774,13 @@ static int meson_uart_remove(struct platform_device *pdev)
->   	uart_remove_one_port(&meson_uart_driver, port);
->   	meson_ports[pdev->id] = NULL;
+> +MESON_UART_DRIVER_DEFINE(ttyAML);
+> +MESON_UART_DRIVER_DEFINE(ttyS);
+
+Those macros are fine, but drop the MESON_UART_DRIVER & MESON_SERIAL_CONSOLE macros and drop the _DEFINE in those macros.
+
 >   
-> +	for (int id = 0; id < AML_UART_PORT_NUM; id++)
-> +		if (meson_ports[id])
-> +			return 0;
-> +
-> +	/* No more available uart ports, unregister uart driver */
-> +	uart_unregister_driver(&meson_uart_driver);
-> +
+>   static int meson_uart_probe_clocks(struct platform_device *pdev,
+>   				   struct uart_port *port)
+> @@ -681,8 +697,16 @@ static int meson_uart_probe_clocks(struct platform_device *pdev,
 >   	return 0;
 >   }
 >   
-> @@ -809,33 +814,7 @@ static  struct platform_driver meson_uart_platform_driver = {
->   	},
->   };
->   
-> -static int __init meson_uart_init(void)
-> -{
-> -	int ret;
-> -
-> -	ret = meson_serial_console_init();
-> -	if (ret)
-> -		return ret;
-> -	
-> -	ret = uart_register_driver(&meson_uart_driver);
-> -	if (ret)
-> -		return ret;
-> -
-> -	ret = platform_driver_register(&meson_uart_platform_driver);
-> -	if (ret)
-> -		uart_unregister_driver(&meson_uart_driver);
-> -
-> -	return ret;
-> -}
-> -
-> -static void __exit meson_uart_exit(void)
-> -{
-> -	platform_driver_unregister(&meson_uart_platform_driver);
-> -	uart_unregister_driver(&meson_uart_driver);
-> -}
-> -
-> -module_init(meson_uart_init);
-> -module_exit(meson_uart_exit);
-> +module_platform_driver(meson_uart_platform_driver);
->   
->   MODULE_AUTHOR("Carlo Caione <carlo@caione.org>");
->   MODULE_DESCRIPTION("Amlogic Meson serial port driver");
+> +static struct uart_driver *meson_uart_current(const struct meson_uart_data *pd)
+> +{
+> +	return (pd && pd->uart_driver) ?
+> +		pd->uart_driver : &MESON_UART_DRIVER(ttyAML);
 
-Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+I'll definitely prefer if you use the real variable name everywhere and in the 2 following patches
+
+> +}
+> +
+>   static int meson_uart_probe(struct platform_device *pdev)
+>   {
+> +	const struct meson_uart_data *priv_data;
+> +	struct uart_driver *uart_driver;
+>   	struct resource *res_mem;
+>   	struct uart_port *port;
+>   	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+> @@ -729,8 +753,12 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	if (ret)
+>   		return ret;
+>   
+> -	if (!meson_uart_driver.state) {
+> -		ret = uart_register_driver(&meson_uart_driver);
+> +	priv_data = device_get_match_data(&pdev->dev);
+> +
+> +	uart_driver = meson_uart_current(priv_data);
+> +
+> +	if (!uart_driver->state) {
+> +		ret = uart_register_driver(uart_driver);
+>   		if (ret)
+>   			return dev_err_probe(&pdev->dev, ret,
+>   					     "can't register uart driver\n");
+> @@ -748,7 +776,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	port->x_char = 0;
+>   	port->ops = &meson_uart_ops;
+>   	port->fifosize = fifosize;
+> -	port->private_data = (void *)device_get_match_data(&pdev->dev);
+> +	port->private_data = (void *)priv_data;
+>   
+>   	meson_ports[pdev->id] = port;
+>   	platform_set_drvdata(pdev, port);
+> @@ -759,7 +787,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   		meson_uart_release_port(port);
+>   	}
+>   
+> -	ret = uart_add_one_port(&meson_uart_driver, port);
+> +	ret = uart_add_one_port(uart_driver, port);
+>   	if (ret)
+>   		meson_ports[pdev->id] = NULL;
+>   
+> @@ -768,10 +796,12 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   
+>   static int meson_uart_remove(struct platform_device *pdev)
+>   {
+> +	struct uart_driver *uart_driver;
+>   	struct uart_port *port;
+>   
+>   	port = platform_get_drvdata(pdev);
+> -	uart_remove_one_port(&meson_uart_driver, port);
+> +	uart_driver = meson_uart_current(port->private_data);
+> +	uart_remove_one_port(uart_driver, port);
+>   	meson_ports[pdev->id] = NULL;
+>   
+>   	for (int id = 0; id < AML_UART_PORT_NUM; id++)
+> @@ -779,7 +809,7 @@ static int meson_uart_remove(struct platform_device *pdev)
+>   			return 0;
+>   
+>   	/* No more available uart ports, unregister uart driver */
+> -	uart_unregister_driver(&meson_uart_driver);
+> +	uart_unregister_driver(uart_driver);
+>   
+>   	return 0;
+>   }
+
+Anyway this looks much better :-)
+
+Thanks,
+Neil
+
+
