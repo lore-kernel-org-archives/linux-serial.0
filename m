@@ -2,78 +2,64 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5FD5EB64D9
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Jul 2023 10:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4027CEB64DA
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Jul 2023 13:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231637AbjGJKHP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Jul 2023 06:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
+        id S231986AbjGJNaT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Jul 2023 09:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbjGJKG4 (ORCPT
+        with ESMTP id S229870AbjGJNaS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Jul 2023 06:06:56 -0400
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B3F4215;
-        Mon, 10 Jul 2023 03:03:46 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vn109gM_1688983371;
-Received: from 30.97.48.56(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0Vn109gM_1688983371)
-          by smtp.aliyun-inc.com;
-          Mon, 10 Jul 2023 18:02:53 +0800
-Message-ID: <6f5ca23d-4f23-4030-2196-35026e936145@linux.alibaba.com>
-Date:   Mon, 10 Jul 2023 18:03:12 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.12.0
-Subject: Re: [PATCH 2/2] serial: sprd: Fix DMA buffer leak issue
-To:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
+        Mon, 10 Jul 2023 09:30:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF26C4;
+        Mon, 10 Jul 2023 06:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C5C760F55;
+        Mon, 10 Jul 2023 13:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AA40C433C8;
+        Mon, 10 Jul 2023 13:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1688995816;
+        bh=fPtGNhRYmqCZsKEXFsgJHykQ1nGWwBfMuEqwsNgrA84=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dAAJFvFQF+uiP+FZRTMnYWv0aXjbbxP1TjpAEmH6i+JurN44KV2i2U2sfidXaqdQe
+         dbkrQSlpg3JESpaUsgtxNhAXe3kBMeXCq4wzP4vqOYR4JvjEpGtPajfUrkVrTG8n+K
+         JBTo+fAC7vGlUgL7/a5a2QQDTnYMllItKdKK7NQM=
+Date:   Mon, 10 Jul 2023 15:30:13 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Chunyan Zhang <zhang.lyra@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20230710080348.4137875-1-chunyan.zhang@unisoc.com>
- <20230710080348.4137875-2-chunyan.zhang@unisoc.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20230710080348.4137875-2-chunyan.zhang@unisoc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Orson Zhai <orsonzhai@gmail.com>
+Subject: Re: [PATCH 2/2] serial: sprd: Fix DMA buffer leak issue
+Message-ID: <2023071047-dragster-shortly-981a@gregkh>
+References: <20230710080348.4137875-2-chunyan.zhang@unisoc.com>
+ <69d56da8-9530-e729-d527-89879d2bab06@web.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <69d56da8-9530-e729-d527-89879d2bab06@web.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On 7/10/2023 4:03 PM, Chunyan Zhang wrote:
-> Release DMA buffer when _probe() returns fail to avoid memory leak.
+On Mon, Jul 10, 2023 at 01:36:07PM +0200, Markus Elfring wrote:
+> > Release DMA buffer when _probe() returns fail to avoid memory leak.
 > 
-> Fixes: f4487db58eb7 ("serial: sprd: Add DMA mode support")
-> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> I would appreciate if this change description can be improved another bit.
 
-LGTM.
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Again, I would appreciate it if you do not provide reviews for any
+kernel subsystems in which I am a maintainer of.
 
-> ---
->   drivers/tty/serial/sprd_serial.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> index 942808517393..e1f11382fc39 100644
-> --- a/drivers/tty/serial/sprd_serial.c
-> +++ b/drivers/tty/serial/sprd_serial.c
-> @@ -1203,7 +1203,7 @@ static int sprd_probe(struct platform_device *pdev)
->   		ret = uart_register_driver(&sprd_uart_driver);
->   		if (ret < 0) {
->   			pr_err("Failed to register SPRD-UART driver\n");
-> -			return ret;
-> +			goto free_rx_buf;
->   		}
->   	}
->   	sprd_ports_num++;
-> @@ -1222,6 +1222,8 @@ static int sprd_probe(struct platform_device *pdev)
->   	sprd_port[index] = NULL;
->   	sprd_ports_num--;
->   	uart_unregister_driver(&sprd_uart_driver); > +free_rx_buf:
-> +	sprd_rx_free_buf(sport);
->   	return ret;
->   }
->   
+Please stop, it is not helpful at all.
+
+greg k-h
