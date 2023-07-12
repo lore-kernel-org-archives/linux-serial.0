@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74528C001DF
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1099CEB64DA
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbjGLIXe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 04:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
+        id S232399AbjGLIYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 04:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbjGLIWr (ORCPT
+        with ESMTP id S232892AbjGLIXR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 04:22:47 -0400
+        Wed, 12 Jul 2023 04:23:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33564487;
-        Wed, 12 Jul 2023 01:18:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9326E268C;
+        Wed, 12 Jul 2023 01:19:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5D576168A;
-        Wed, 12 Jul 2023 08:18:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42503C433CA;
-        Wed, 12 Jul 2023 08:18:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD93861708;
+        Wed, 12 Jul 2023 08:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD0EC433C7;
+        Wed, 12 Jul 2023 08:18:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689149896;
-        bh=AnR6U7SNoPqjubiusL5iLkGLY4N6OAzOKEM7mQdl/ck=;
+        s=k20201202; t=1689149911;
+        bh=aEbQE/95bLmaIJXD58eaBIN7aIIW9TD36vMUZ0da4Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJXJcRTDyCjTcjykoHcORmeLIiu1SQyvAzuB4QGFcbkFmsOKaBWT14DIkRTZcBYOe
-         OiNGq/2iwCvqCI2myJFdd3YiGV3kBEEuhSgqiNS6/BhYPjL+bCig/mYx7ORJXW6pHB
-         AhU7nG5PSdR2szqpsUcTX6oYPS2Qzkg3vyDZ0/+eN3YE4pjaK8zM9jE2fUi9+SDXZG
-         DPrzJ4mG+T00swI5yaVrhe4fBSzGqtPcUfjmyXA3N4m0ly6+I2lXoscsUF0we18lgn
-         oZMVOx7woNKa0INW/EyaVe1kcW6de4PuI00eo6unr/MZ1M8ObVXhHmhjJNjWQmeXXW
-         66eUkeFC0umhw==
+        b=bgNauHljB8hl+pCWp/zUNsk0i0/72wyCOEOkux4CCU/8y+D5Ii2xIPdxbL19YAOLi
+         Xj+t2svognh/QreTszJCzcw+fd2Oa0Ylja49QFEQDCK+iAIBNm0Qh7ZxI/1ErTrg8y
+         xk64/BYbvrpns99RSskGsMz/Fk3YbGx3+hJtQ0fGDFBwqtEdT6EjgLkTsn4gqCg/kJ
+         PR32J3FPBQRspkqyxeifoLYbuF51QOilRwvbG2EMMMbBOQFeNS9tlhyUmeR7es1MNd
+         i2y+MLaMV+j/O1Arj6rCg0obhlVdmW+sDYOsSbq4EnkA8Ph7qbNcLVjEgtk4KSZ+6L
+         00kDU+3kImj2w==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 01/10] tty: sysrq: rename and re-type i in sysrq_handle_loglevel()
-Date:   Wed, 12 Jul 2023 10:18:02 +0200
-Message-ID: <20230712081811.29004-2-jirislaby@kernel.org>
+Subject: [PATCH 07/10] serial: pass state to __uart_start() directly
+Date:   Wed, 12 Jul 2023 10:18:08 +0200
+Message-ID: <20230712081811.29004-8-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230712081811.29004-1-jirislaby@kernel.org>
 References: <20230712081811.29004-1-jirislaby@kernel.org>
@@ -49,38 +49,56 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-'i' is a too generic name for something which carries a 'loglevel'. Name
-it as such and make it 'u8', the same as key will become in the next
-patches.
-
-Note that we are not stripping any high bits away, 'key' is given only
-8bit values.
+__uart_start() does not need a tty struct. It works only with
+uart_state. So pass the latter directly.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/sysrq.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/tty/serial/serial_core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index e1df63a88aac..13465e4cca9b 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -100,12 +100,11 @@ __setup("sysrq_always_enabled", sysrq_always_enabled_setup);
- 
- static void sysrq_handle_loglevel(int key)
- {
--	int i;
-+	u8 loglevel = key - '0';
- 
--	i = key - '0';
- 	console_loglevel = CONSOLE_LOGLEVEL_DEFAULT;
--	pr_info("Loglevel set to %d\n", i);
--	console_loglevel = i;
-+	pr_info("Loglevel set to %u\n", loglevel);
-+	console_loglevel = loglevel;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index bef507cb804c..306ea1a560e6 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -133,9 +133,8 @@ static void uart_stop(struct tty_struct *tty)
+ 	uart_port_unlock(port, flags);
  }
- static const struct sysrq_key_op sysrq_loglevel_op = {
- 	.handler	= sysrq_handle_loglevel,
+ 
+-static void __uart_start(struct tty_struct *tty)
++static void __uart_start(struct uart_state *state)
+ {
+-	struct uart_state *state = tty->driver_data;
+ 	struct uart_port *port = state->uart_port;
+ 	struct serial_port_device *port_dev;
+ 	int err;
+@@ -170,7 +169,7 @@ static void uart_start(struct tty_struct *tty)
+ 	unsigned long flags;
+ 
+ 	port = uart_port_lock(state, flags);
+-	__uart_start(tty);
++	__uart_start(state);
+ 	uart_port_unlock(port, flags);
+ }
+ 
+@@ -239,7 +238,7 @@ static void uart_change_line_settings(struct tty_struct *tty, struct uart_state
+ 		if (!old_hw_stopped)
+ 			uport->ops->stop_tx(uport);
+ 		else
+-			__uart_start(tty);
++			__uart_start(state);
+ 	}
+ 	spin_unlock_irq(&uport->lock);
+ }
+@@ -619,7 +618,7 @@ static int uart_write(struct tty_struct *tty,
+ 		ret += c;
+ 	}
+ 
+-	__uart_start(tty);
++	__uart_start(state);
+ 	uart_port_unlock(port, flags);
+ 	return ret;
+ }
 -- 
 2.41.0
 
