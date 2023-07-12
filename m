@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1099CEB64DA
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B56BEB64DD
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232399AbjGLIYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 04:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
+        id S232498AbjGLIYW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 04:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232892AbjGLIXR (ORCPT
+        with ESMTP id S232959AbjGLIXW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 04:23:17 -0400
+        Wed, 12 Jul 2023 04:23:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9326E268C;
-        Wed, 12 Jul 2023 01:19:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEB42D79;
+        Wed, 12 Jul 2023 01:19:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD93861708;
-        Wed, 12 Jul 2023 08:18:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD0EC433C7;
-        Wed, 12 Jul 2023 08:18:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 475B2616F5;
+        Wed, 12 Jul 2023 08:18:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E66BC433C7;
+        Wed, 12 Jul 2023 08:18:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689149911;
-        bh=aEbQE/95bLmaIJXD58eaBIN7aIIW9TD36vMUZ0da4Ks=;
+        s=k20201202; t=1689149906;
+        bh=V1/NAcLOoOa408WI8W7uk/rZlfmxwm9QHIbOEt5OwRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bgNauHljB8hl+pCWp/zUNsk0i0/72wyCOEOkux4CCU/8y+D5Ii2xIPdxbL19YAOLi
-         Xj+t2svognh/QreTszJCzcw+fd2Oa0Ylja49QFEQDCK+iAIBNm0Qh7ZxI/1ErTrg8y
-         xk64/BYbvrpns99RSskGsMz/Fk3YbGx3+hJtQ0fGDFBwqtEdT6EjgLkTsn4gqCg/kJ
-         PR32J3FPBQRspkqyxeifoLYbuF51QOilRwvbG2EMMMbBOQFeNS9tlhyUmeR7es1MNd
-         i2y+MLaMV+j/O1Arj6rCg0obhlVdmW+sDYOsSbq4EnkA8Ph7qbNcLVjEgtk4KSZ+6L
-         00kDU+3kImj2w==
+        b=orYkW1njU+RHfilaABGyP3E8fD2KCKvgMlwDZ/xaDUL61kCYDr5IJGu1yuTGgcUdS
+         c8FS53v7/jFz+7J3sBg7e6wAJuRIF7Bs9PWsN0jH29ZRH+CpUUjiSUvgFFLhZo33Iw
+         JL9mfrVzDgQ0LQJvxBwyIvdZHR65ES/qNNn1k65UmLGrqFanhSybws+xGmS0NtRZOS
+         0csZKoT1L6PP2ybXfrD77GiEdpNoK0HgnKPc8PWv8SaIpmstBhyalJV9Kp8PIrDktX
+         RX8AqE5I5FNNdzu3qcniAlfryHJ8VQ8j7GDn10CfL4IPRw42kEfPJcqfyX8B4poB+G
+         hReKvcMeHEFWw==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 07/10] serial: pass state to __uart_start() directly
-Date:   Wed, 12 Jul 2023 10:18:08 +0200
-Message-ID: <20230712081811.29004-8-jirislaby@kernel.org>
+Subject: [PATCH 04/10] tty: sysrq: use switch in sysrq_key_table_key2index()
+Date:   Wed, 12 Jul 2023 10:18:05 +0200
+Message-ID: <20230712081811.29004-5-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230712081811.29004-1-jirislaby@kernel.org>
 References: <20230712081811.29004-1-jirislaby@kernel.org>
@@ -49,56 +49,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-__uart_start() does not need a tty struct. It works only with
-uart_state. So pass the latter directly.
+Using switch with range cases makes the code more aligned and readable.
+Expand also that 36 as explicit addition of 10 + 26 to make the source
+of the constant more obvious.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/tty/sysrq.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index bef507cb804c..306ea1a560e6 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -133,9 +133,8 @@ static void uart_stop(struct tty_struct *tty)
- 	uart_port_unlock(port, flags);
- }
- 
--static void __uart_start(struct tty_struct *tty)
-+static void __uart_start(struct uart_state *state)
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index ccf429ba348e..23198e3f1461 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -532,17 +532,16 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
+ /* key2index calculation, -1 on invalid index */
+ static int sysrq_key_table_key2index(u8 key)
  {
--	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port = state->uart_port;
- 	struct serial_port_device *port_dev;
- 	int err;
-@@ -170,7 +169,7 @@ static void uart_start(struct tty_struct *tty)
- 	unsigned long flags;
- 
- 	port = uart_port_lock(state, flags);
--	__uart_start(tty);
-+	__uart_start(state);
- 	uart_port_unlock(port, flags);
+-	int retval;
+-
+-	if ((key >= '0') && (key <= '9'))
+-		retval = key - '0';
+-	else if ((key >= 'a') && (key <= 'z'))
+-		retval = key + 10 - 'a';
+-	else if ((key >= 'A') && (key <= 'Z'))
+-		retval = key + 36 - 'A';
+-	else
+-		retval = -1;
+-	return retval;
++	switch (key) {
++	case '0' ... '9':
++		return key - '0';
++	case 'a' ... 'z':
++		return key - 'a' + 10;
++	case 'A' ... 'Z':
++		return key - 'A' + 10 + 26;
++	default:
++		return -1;
++	}
  }
  
-@@ -239,7 +238,7 @@ static void uart_change_line_settings(struct tty_struct *tty, struct uart_state
- 		if (!old_hw_stopped)
- 			uport->ops->stop_tx(uport);
- 		else
--			__uart_start(tty);
-+			__uart_start(state);
- 	}
- 	spin_unlock_irq(&uport->lock);
- }
-@@ -619,7 +618,7 @@ static int uart_write(struct tty_struct *tty,
- 		ret += c;
- 	}
- 
--	__uart_start(tty);
-+	__uart_start(state);
- 	uart_port_unlock(port, flags);
- 	return ret;
- }
+ /*
 -- 
 2.41.0
 
