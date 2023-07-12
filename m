@@ -2,184 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C10E5C001B0
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 06:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46650EB64D9
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbjGLGmj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 02:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
+        id S232262AbjGLIWV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 04:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjGLGm3 (ORCPT
+        with ESMTP id S232274AbjGLIVr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 02:42:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B761510F2;
-        Tue, 11 Jul 2023 23:42:26 -0700 (PDT)
+        Wed, 12 Jul 2023 04:21:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914D13C21;
+        Wed, 12 Jul 2023 01:18:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56293616E6;
-        Wed, 12 Jul 2023 06:42:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B492EC433C9;
-        Wed, 12 Jul 2023 06:42:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FD20616E4;
+        Wed, 12 Jul 2023 08:18:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAA0C433C8;
+        Wed, 12 Jul 2023 08:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689144145;
-        bh=GFYfNtNLbJlEVMFARX9D95/viTg0poYGqyqRS7iGZIk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oZ1wldekR0t0ek/LvRcS1k1M6WxZ0PEZQy+pRkKD2d9FDyitlyTDs4DdqG4CjWdNE
-         RDH3g544uw/QjV9wX7idZAZon2ChoBszPFrVha5kDrjP2qLZi+tv+NDMfWY3Zn0KB2
-         z55/WUxClIGQaafrymmtXI0Z1KPc1t3AA7XU8NLdB92BarOUBb57/iQT9lA8K+bWrZ
-         arJoaU8xzshPCqBuNx5xgYFh0lBNeG6SUDf2SBh/qVNajhSK8R93bgHiQrW0szZf8J
-         6sh84rH8HuO1xFG/xRM+JCiU0oqARbORsVzZS5hCQC+jr6JLZ2kKyh+BFs94dA9Lo1
-         rzHUC51jE30+w==
+        s=k20201202; t=1689149894;
+        bh=3pd36JdQslSBuIdGK+JvW/2KCTKLnAcqamIBhPP6FLM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ns3KqQauxv1YnV/xwsyT+OI7iv+X1Z3qJLvXOTvPaQ+IyZIFxXcBjT11BbE7jR/XH
+         DEGGIAC78UFdackxoPCn7r4QTV+ts/mkVPl/9PL+krDDXH929nRP+KCu7Qz4bcIDCW
+         6WxoFXxqkBS+t34PBUu+U097kWP1g2KsaPjXxGmRbwbCX5XUtSKEsXdA6dYj1Bjub8
+         agWPC6sglAHOVqpe1oomM3MrSn48IFiut6TH4P1Cv/8aiPDBLtMrMaCkYOhPvAo4rK
+         Oci6gzGKuURvW5eMNiO3zJBRSIEoFNcRXVpVqaGA4Br/W+QHlyfGGnaFbEUyCiPaPb
+         P72nHu9egvgGQ==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 4/4] n_tty: make many tty parameters const
-Date:   Wed, 12 Jul 2023 08:42:16 +0200
-Message-ID: <20230712064216.12150-5-jirislaby@kernel.org>
+Subject: [PATCH 00/10] tty: u8 conversion preparation
+Date:   Wed, 12 Jul 2023 10:18:01 +0200
+Message-ID: <20230712081811.29004-1-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230712064216.12150-1-jirislaby@kernel.org>
-References: <20230712064216.12150-1-jirislaby@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In many n_tty functions, the 'tty' parameter is used to either obtain
-'ldata', or test the tty flags. So mark 'tty' in them const to make
-obvious that it is only read.
+This is another round of preparations for conversions of chars and flags
+to u8. This series converts sysrq handlers and serial_core + serial
+drivers. The tty proper will be posted separately later.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
----
- drivers/tty/n_tty.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+Jiri Slaby (SUSE) (10):
+  tty: sysrq: rename and re-type i in sysrq_handle_loglevel()
+  tty: sysrq: switch sysrq handlers from int to u8
+  tty: sysrq: switch the rest of keys to u8
+  tty: sysrq: use switch in sysrq_key_table_key2index()
+  serial: convert uart sysrq handling to u8
+  serial: make uart_insert_char() accept u8s
+  serial: pass state to __uart_start() directly
+  serial: arc_uart: simplify flags handling in arc_serial_rx_chars()
+  serial: omap-serial: remove flag from serial_omap_rdi()
+  serial: drivers: switch ch and flag to u8
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index bab7005ef520..0043cc84b91a 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -164,7 +164,8 @@ static void zero_buffer(const struct tty_struct *tty, u8 *buffer, size_t size)
- 		memset(buffer, 0, size);
- }
- 
--static void tty_copy(struct tty_struct *tty, void *to, size_t tail, size_t n)
-+static void tty_copy(const struct tty_struct *tty, void *to, size_t tail,
-+		     size_t n)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t size = N_TTY_BUF_SIZE - tail;
-@@ -195,7 +196,7 @@ static void tty_copy(struct tty_struct *tty, void *to, size_t tail, size_t n)
-  *  * n_tty_read()/consumer path:
-  *	holds non-exclusive %termios_rwsem
-  */
--static void n_tty_kick_worker(struct tty_struct *tty)
-+static void n_tty_kick_worker(const struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
-@@ -215,9 +216,9 @@ static void n_tty_kick_worker(struct tty_struct *tty)
- 	}
- }
- 
--static ssize_t chars_in_buffer(struct tty_struct *tty)
-+static ssize_t chars_in_buffer(const struct tty_struct *tty)
- {
--	struct n_tty_data *ldata = tty->disc_data;
-+	const struct n_tty_data *ldata = tty->disc_data;
- 	ssize_t n = 0;
- 
- 	if (!ldata->icanon)
-@@ -393,7 +394,7 @@ static inline int is_utf8_continuation(unsigned char c)
-  * Returns: true if the utf8 character @c is a multibyte continuation character
-  * and the terminal is in unicode mode.
-  */
--static inline int is_continuation(unsigned char c, struct tty_struct *tty)
-+static inline int is_continuation(unsigned char c, const struct tty_struct *tty)
- {
- 	return I_IUTF8(tty) && is_utf8_continuation(c);
- }
-@@ -913,7 +914,7 @@ static void echo_char_raw(unsigned char c, struct n_tty_data *ldata)
-  * This variant tags control characters to be echoed as "^X" (where X is the
-  * letter representing the control char).
-  */
--static void echo_char(unsigned char c, struct tty_struct *tty)
-+static void echo_char(unsigned char c, const struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
-@@ -951,7 +952,7 @@ static inline void finish_erasing(struct n_tty_data *ldata)
-  * Locking: n_tty_receive_buf()/producer path:
-  *	caller holds non-exclusive %termios_rwsem
-  */
--static void eraser(unsigned char c, struct tty_struct *tty)
-+static void eraser(unsigned char c, const struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	enum { ERASE, WERASE, KILL } kill_type;
-@@ -1167,7 +1168,7 @@ static void n_tty_receive_break(struct tty_struct *tty)
-  * Called from the receive_buf path so single threaded. Does not need locking
-  * as num_overrun and overrun_time are function private.
-  */
--static void n_tty_receive_overrun(struct tty_struct *tty)
-+static void n_tty_receive_overrun(const struct tty_struct *tty)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
-@@ -1191,7 +1192,8 @@ static void n_tty_receive_overrun(struct tty_struct *tty)
-  * Locking: n_tty_receive_buf()/producer path:
-  * 	caller holds non-exclusive %termios_rwsem
-  */
--static void n_tty_receive_parity_error(struct tty_struct *tty, unsigned char c)
-+static void n_tty_receive_parity_error(const struct tty_struct *tty,
-+				       unsigned char c)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 
-@@ -1498,8 +1500,8 @@ static void n_tty_lookahead_flow_ctrl(struct tty_struct *tty, const unsigned cha
- }
- 
- static void
--n_tty_receive_buf_real_raw(struct tty_struct *tty, const unsigned char *cp,
--			   int count)
-+n_tty_receive_buf_real_raw(const struct tty_struct *tty,
-+			   const unsigned char *cp, int count)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
- 	size_t n, head;
-@@ -1900,9 +1902,9 @@ static int n_tty_open(struct tty_struct *tty)
- 	return 0;
- }
- 
--static inline int input_available_p(struct tty_struct *tty, int poll)
-+static inline int input_available_p(const struct tty_struct *tty, int poll)
- {
--	struct n_tty_data *ldata = tty->disc_data;
-+	const struct n_tty_data *ldata = tty->disc_data;
- 	int amt = poll && !TIME_CHAR(tty) && MIN_CHAR(tty) ? MIN_CHAR(tty) : 1;
- 
- 	if (ldata->icanon && !L_EXTPROC(tty))
-@@ -1929,7 +1931,7 @@ static inline int input_available_p(struct tty_struct *tty, int poll)
-  *		caller holds non-exclusive %termios_rwsem;
-  *		read_tail published
-  */
--static bool copy_from_read_buf(struct tty_struct *tty,
-+static bool copy_from_read_buf(const struct tty_struct *tty,
- 				      unsigned char **kbp,
- 				      size_t *nr)
- 
-@@ -1984,7 +1986,7 @@ static bool copy_from_read_buf(struct tty_struct *tty,
-  *	caller holds non-exclusive %termios_rwsem;
-  *	read_tail published
-  */
--static bool canon_copy_from_read_buf(struct tty_struct *tty,
-+static bool canon_copy_from_read_buf(const struct tty_struct *tty,
- 				     unsigned char **kbp,
- 				     size_t *nr)
- {
+ arch/alpha/kernel/setup.c            |  2 +-
+ arch/loongarch/kernel/sysrq.c        |  2 +-
+ arch/mips/kernel/sysrq.c             |  2 +-
+ arch/powerpc/xmon/xmon.c             |  2 +-
+ arch/sparc/kernel/process_64.c       |  4 +-
+ drivers/gpu/drm/drm_fb_helper.c      |  2 +-
+ drivers/tty/serial/21285.c           |  3 +-
+ drivers/tty/serial/8250/8250_port.c  |  3 +-
+ drivers/tty/serial/altera_jtaguart.c |  2 +-
+ drivers/tty/serial/altera_uart.c     |  2 +-
+ drivers/tty/serial/amba-pl010.c      |  3 +-
+ drivers/tty/serial/amba-pl011.c      |  3 +-
+ drivers/tty/serial/apbuart.c         |  3 +-
+ drivers/tty/serial/arc_uart.c        | 29 +++++-----
+ drivers/tty/serial/atmel_serial.c    |  2 +-
+ drivers/tty/serial/clps711x.c        |  3 +-
+ drivers/tty/serial/digicolor-usart.c |  3 +-
+ drivers/tty/serial/dz.c              |  2 +-
+ drivers/tty/serial/ip22zilog.c       |  2 +-
+ drivers/tty/serial/max3100.c         |  3 +-
+ drivers/tty/serial/max310x.c         |  3 +-
+ drivers/tty/serial/mcf.c             |  2 +-
+ drivers/tty/serial/milbeaut_usio.c   |  3 +-
+ drivers/tty/serial/mxs-auart.c       |  3 +-
+ drivers/tty/serial/omap-serial.c     |  8 +--
+ drivers/tty/serial/pxa.c             |  2 +-
+ drivers/tty/serial/rp2.c             |  4 +-
+ drivers/tty/serial/sa1100.c          |  3 +-
+ drivers/tty/serial/samsung_tty.c     |  3 +-
+ drivers/tty/serial/sb1250-duart.c    |  3 +-
+ drivers/tty/serial/sc16is7xx.c       |  3 +-
+ drivers/tty/serial/sccnxp.c          |  3 +-
+ drivers/tty/serial/serial-tegra.c    |  7 +--
+ drivers/tty/serial/serial_core.c     | 15 +++--
+ drivers/tty/serial/serial_txx9.c     |  3 +-
+ drivers/tty/serial/sifive.c          |  2 +-
+ drivers/tty/serial/sprd_serial.c     |  5 +-
+ drivers/tty/serial/st-asc.c          |  2 +-
+ drivers/tty/serial/stm32-usart.c     |  5 +-
+ drivers/tty/serial/sunplus-uart.c    |  2 +-
+ drivers/tty/serial/zs.c              |  3 +-
+ drivers/tty/sysrq.c                  | 84 ++++++++++++++--------------
+ include/linux/serial_core.h          | 18 +++---
+ include/linux/sysrq.h                | 18 +++---
+ kernel/debug/debug_core.c            |  2 +-
+ kernel/power/poweroff.c              |  2 +-
+ kernel/rcu/tree_stall.h              |  2 +-
+ 47 files changed, 142 insertions(+), 145 deletions(-)
+
 -- 
 2.41.0
 
