@@ -2,696 +2,422 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3FB9EB64DA
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956E3EB64D9
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbjGLIY1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 04:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51696 "EHLO
+        id S232016AbjGLIhJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 04:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233005AbjGLIX3 (ORCPT
+        with ESMTP id S232049AbjGLIgm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 04:23:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A06D468B;
-        Wed, 12 Jul 2023 01:19:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 12 Jul 2023 04:36:42 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108E31998;
+        Wed, 12 Jul 2023 01:34:58 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7AB1616EE;
-        Wed, 12 Jul 2023 08:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A89DC433C9;
-        Wed, 12 Jul 2023 08:18:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689149922;
-        bh=EEDkBWFl67zoqQz2m6m34DP9qxoyKZS78gow73gj2zc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SBF0x1hW+EqtxMgDJotZlaE7TYgUP4QUnvaTk6LGsdNKkf49nWqf38q0oasOEQ186
-         Biv+sn1PUjSeWrcXEgK7/s7HDv+ua6wyOIs0K9USQi/rBgiQyfXVKgOriwikvBr0xY
-         TX+Dou/Gmyglh8oPn4KgIQWI5gSbEsdoZ+YYRYlyIHfNJo6eOOgiSFhlPIVPiESAVS
-         X+dg1kFT7cpUJydcFKG+GuRy+jHcg3wKGNWuShfzGA3YLyc8/MFJSrRYZKeBNArKle
-         iauNkyYWGYMwVQU05W/LfreQDcErM7Ly4hG+AJGA11lyEvSn3UnXpSuYNIdktexTji
-         f4YKALgGKUVPA==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Subject: [PATCH 10/10] serial: drivers: switch ch and flag to u8
-Date:   Wed, 12 Jul 2023 10:18:11 +0200
-Message-ID: <20230712081811.29004-11-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230712081811.29004-1-jirislaby@kernel.org>
-References: <20230712081811.29004-1-jirislaby@kernel.org>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8ED58219D5;
+        Wed, 12 Jul 2023 08:34:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1689150896; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8/pKI7gVFEeZPwEFW6VvNz8KJp6dtZ1RDiphY45+VwE=;
+        b=wQtRH8gZJkOomXEyhFhfa9Pq0VymceBbdIrt5I1iy2sROs3LYYxBbFWVIXliqhUgWm3IqK
+        nvELgzDpX0dSu+/D2jJ84LSMkBUfe0cbCPQicl6JRSG6T1QuRXwNDvIziCc/K0WfSQaAEa
+        ueNUn/os+spp186ErWw0mc6UW3h9OnI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1689150896;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8/pKI7gVFEeZPwEFW6VvNz8KJp6dtZ1RDiphY45+VwE=;
+        b=WJwwhFnWq7h+BadeWFII2Tdb6HaaHsLRG4UE5kTqBdQljGl1mcvyTXYkz/H3Jp+Lg51Ipk
+        IvShjVO2znF8czBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DCD3E13336;
+        Wed, 12 Jul 2023 08:34:55 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xetTNK9lrmRGSwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 12 Jul 2023 08:34:55 +0000
+Message-ID: <8f2710e3-2d6b-086f-f403-c8864593988b@suse.de>
+Date:   Wed, 12 Jul 2023 10:34:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 02/10] tty: sysrq: switch sysrq handlers from int to u8
+Content-Language: en-US
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Richard Henderson <richard.henderson@linaro.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Zqiang <qiang.zhang1211@gmail.com>
+References: <20230712081811.29004-1-jirislaby@kernel.org>
+ <20230712081811.29004-3-jirislaby@kernel.org>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20230712081811.29004-3-jirislaby@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------P8CS0SO3HdqJaaaGGI64PTQe"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Now that the serial layer explicitly expects 'u8' for flags and
-characters, propagate this type to drivers' (RX) routines.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------P8CS0SO3HdqJaaaGGI64PTQe
+Content-Type: multipart/mixed; boundary="------------kwdsZQottQfODXMNUoqWwLah";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, Huacai Chen <chenhuacai@kernel.org>,
+ WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ "David S. Miller" <davem@davemloft.net>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Jason Wessel <jason.wessel@windriver.com>,
+ Daniel Thompson <daniel.thompson@linaro.org>,
+ Douglas Anderson <dianders@chromium.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <len.brown@intel.com>,
+ Pavel Machek <pavel@ucw.cz>, "Paul E. McKenney" <paulmck@kernel.org>,
+ Frederic Weisbecker <frederic@kernel.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Joel Fernandes <joel@joelfernandes.org>,
+ Josh Triplett <josh@joshtriplett.org>, Boqun Feng <boqun.feng@gmail.com>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Lai Jiangshan <jiangshanlai@gmail.com>, Zqiang <qiang.zhang1211@gmail.com>
+Message-ID: <8f2710e3-2d6b-086f-f403-c8864593988b@suse.de>
+Subject: Re: [PATCH 02/10] tty: sysrq: switch sysrq handlers from int to u8
+References: <20230712081811.29004-1-jirislaby@kernel.org>
+ <20230712081811.29004-3-jirislaby@kernel.org>
+In-Reply-To: <20230712081811.29004-3-jirislaby@kernel.org>
 
-Note that amba-pl011's, clps711x's and st-asc's 'ch' are left unchanged
-because 'ch' contains not only a character, but whole status.
+--------------kwdsZQottQfODXMNUoqWwLah
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Tobias Klauser <tklauser@distanz.ch>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Vineet Gupta <vgupta@kernel.org>
-Cc: Richard Genoud <richard.genoud@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: Alexander Shiyan <shc_work@mail.ru>
-Cc: Baruch Siach <baruch@tkos.co.il>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Taichi Sugaya <sugaya.taichi@socionext.com>
-Cc: Takao Orito <orito.takao@socionext.com>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Kevin Cernekee <cernekee@gmail.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>
-Cc: Laxman Dewangan <ldewangan@nvidia.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Orson Zhai <orsonzhai@gmail.com>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Hammer Hsieh <hammerh0314@gmail.com>
----
- drivers/tty/serial/21285.c           | 3 ++-
- drivers/tty/serial/8250/8250_port.c  | 3 +--
- drivers/tty/serial/altera_jtaguart.c | 2 +-
- drivers/tty/serial/altera_uart.c     | 2 +-
- drivers/tty/serial/amba-pl010.c      | 3 ++-
- drivers/tty/serial/amba-pl011.c      | 3 ++-
- drivers/tty/serial/apbuart.c         | 3 ++-
- drivers/tty/serial/arc_uart.c        | 2 +-
- drivers/tty/serial/atmel_serial.c    | 2 +-
- drivers/tty/serial/clps711x.c        | 3 ++-
- drivers/tty/serial/digicolor-usart.c | 3 +--
- drivers/tty/serial/dz.c              | 2 +-
- drivers/tty/serial/ip22zilog.c       | 2 +-
- drivers/tty/serial/max3100.c         | 3 ++-
- drivers/tty/serial/max310x.c         | 3 ++-
- drivers/tty/serial/mcf.c             | 2 +-
- drivers/tty/serial/milbeaut_usio.c   | 3 +--
- drivers/tty/serial/mxs-auart.c       | 3 +--
- drivers/tty/serial/omap-serial.c     | 4 ++--
- drivers/tty/serial/pxa.c             | 2 +-
- drivers/tty/serial/rp2.c             | 4 ++--
- drivers/tty/serial/sa1100.c          | 3 ++-
- drivers/tty/serial/samsung_tty.c     | 3 ++-
- drivers/tty/serial/sb1250-duart.c    | 3 ++-
- drivers/tty/serial/sc16is7xx.c       | 3 ++-
- drivers/tty/serial/sccnxp.c          | 3 +--
- drivers/tty/serial/serial-tegra.c    | 7 +++----
- drivers/tty/serial/serial_txx9.c     | 3 +--
- drivers/tty/serial/sifive.c          | 2 +-
- drivers/tty/serial/sprd_serial.c     | 5 +++--
- drivers/tty/serial/st-asc.c          | 2 +-
- drivers/tty/serial/stm32-usart.c     | 5 ++---
- drivers/tty/serial/sunplus-uart.c    | 2 +-
- drivers/tty/serial/zs.c              | 3 ++-
- 34 files changed, 53 insertions(+), 48 deletions(-)
+DQoNCkFtIDEyLjA3LjIzIHVtIDEwOjE4IHNjaHJpZWIgSmlyaSBTbGFieSAoU1VTRSk6DQo+
+IFRoZSBwYXNzZWQgcGFyYW1ldGVyIHRvIHN5c3JxIGhhbmRsZXJzIGlzIGEga2V5IChhIGNo
+YXJhY3RlcikuIFNvIGNoYW5nZQ0KPiB0aGUgdHlwZSBmcm9tICdpbnQnIHRvICd1OCcuIExl
+dCBpdCBzcGVjaWZpY2FsbHkgYmUgJ3U4JyBmb3IgdHdvDQo+IHJlYXNvbnM6DQo+ICogdW5z
+aWduZWQ6IHVuc2lnbmVkIHZhbHVlcyBjb21lIGZyb20gdGhlIHVwcGVyIGxheWVycyAoZGV2
+aWNlcykgYW5kIHRoZQ0KPiAgICB0dHkgbGF5ZXIgYXNzdW1lcyB1bnNpZ25lZCBvbiBtb3N0
+IHBsYWNlcywgYW5kDQo+ICogOC1iaXQ6IGFzIHRoYXQgd2hhdCdzIHN1cHBvc2VkIHRvIGJl
+IG9uZSBkYXkgaW4gYWxsIHRoZSBsYXllcnMgYnVpbHQNCj4gICAgb24gdGhlIHRvcCBvZiB0
+dHkuIChDdXJyZW50bHksIHdlIHVzZSBtb3N0bHkgJ3Vuc2lnbmVkIGNoYXInIGFuZA0KPiAg
+ICBzb21ld2hlcmUgc3RpbGwgb25seSAnY2hhcicuIChCdXQgdGhhdCBhbHNvIHRyYW5zbGF0
+ZXMgdG8gdGhlIGZvcm1lcg0KPiAgICB0aGFua3MgdG8gLWZ1bnNpZ25lZC1jaGFyLikpDQo+
+IA0KPiBTaWduZWQtb2ZmLWJ5OiBKaXJpIFNsYWJ5IChTVVNFKSA8amlyaXNsYWJ5QGtlcm5l
+bC5vcmc+DQo+IENjOiBSaWNoYXJkIEhlbmRlcnNvbiA8cmljaGFyZC5oZW5kZXJzb25AbGlu
+YXJvLm9yZz4NCj4gQ2M6IEl2YW4gS29rc2hheXNreSA8aW5rQGp1cmFzc2ljLnBhcmsubXN1
+LnJ1Pg0KPiBDYzogTWF0dCBUdXJuZXIgPG1hdHRzdDg4QGdtYWlsLmNvbT4NCj4gQ2M6IEh1
+YWNhaSBDaGVuIDxjaGVuaHVhY2FpQGtlcm5lbC5vcmc+DQo+IENjOiBXQU5HIFh1ZXJ1aSA8
+a2VybmVsQHhlbjBuLm5hbWU+DQo+IENjOiBUaG9tYXMgQm9nZW5kb2VyZmVyIDx0c2JvZ2Vu
+ZEBhbHBoYS5mcmFua2VuLmRlPg0KPiBDYzogTWljaGFlbCBFbGxlcm1hbiA8bXBlQGVsbGVy
+bWFuLmlkLmF1Pg0KPiBDYzogTmljaG9sYXMgUGlnZ2luIDxucGlnZ2luQGdtYWlsLmNvbT4N
+Cj4gQ2M6IENocmlzdG9waGUgTGVyb3kgPGNocmlzdG9waGUubGVyb3lAY3Nncm91cC5ldT4N
+Cj4gQ2M6ICJEYXZpZCBTLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KPiBDYzog
+TWFhcnRlbiBMYW5raG9yc3QgPG1hYXJ0ZW4ubGFua2hvcnN0QGxpbnV4LmludGVsLmNvbT4N
+Cj4gQ2M6IE1heGltZSBSaXBhcmQgPG1yaXBhcmRAa2VybmVsLm9yZz4NCj4gQ2M6IFRob21h
+cyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPg0KPiBDYzogRGF2aWQgQWlybGll
+IDxhaXJsaWVkQGdtYWlsLmNvbT4NCj4gQ2M6IERhbmllbCBWZXR0ZXIgPGRhbmllbEBmZnds
+bC5jaD4NCj4gQ2M6IEphc29uIFdlc3NlbCA8amFzb24ud2Vzc2VsQHdpbmRyaXZlci5jb20+
+DQo+IENjOiBEYW5pZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPg0K
+PiBDYzogRG91Z2xhcyBBbmRlcnNvbiA8ZGlhbmRlcnNAY2hyb21pdW0ub3JnPg0KPiBDYzog
+IlJhZmFlbCBKLiBXeXNvY2tpIiA8cmFmYWVsQGtlcm5lbC5vcmc+DQo+IENjOiBMZW4gQnJv
+d24gPGxlbi5icm93bkBpbnRlbC5jb20+DQo+IENjOiBQYXZlbCBNYWNoZWsgPHBhdmVsQHVj
+dy5jej4NCj4gQ2M6ICJQYXVsIEUuIE1jS2VubmV5IiA8cGF1bG1ja0BrZXJuZWwub3JnPg0K
+PiBDYzogRnJlZGVyaWMgV2Vpc2JlY2tlciA8ZnJlZGVyaWNAa2VybmVsLm9yZz4NCj4gQ2M6
+IE5lZXJhaiBVcGFkaHlheSA8cXVpY19uZWVyYWp1QHF1aWNpbmMuY29tPg0KPiBDYzogSm9l
+bCBGZXJuYW5kZXMgPGpvZWxAam9lbGZlcm5hbmRlcy5vcmc+DQo+IENjOiBKb3NoIFRyaXBs
+ZXR0IDxqb3NoQGpvc2h0cmlwbGV0dC5vcmc+DQo+IENjOiBCb3F1biBGZW5nIDxib3F1bi5m
+ZW5nQGdtYWlsLmNvbT4NCj4gQ2M6IFN0ZXZlbiBSb3N0ZWR0IDxyb3N0ZWR0QGdvb2RtaXMu
+b3JnPg0KPiBDYzogTWF0aGlldSBEZXNub3llcnMgPG1hdGhpZXUuZGVzbm95ZXJzQGVmZmlj
+aW9zLmNvbT4NCj4gQ2M6IExhaSBKaWFuZ3NoYW4gPGppYW5nc2hhbmxhaUBnbWFpbC5jb20+
+DQo+IENjOiBacWlhbmcgPHFpYW5nLnpoYW5nMTIxMUBnbWFpbC5jb20+DQoNCkFja2VkLWJ5
+OiBUaG9tYXMgWmltbWVybWFubiA8dHppbW1lcm1hbm5Ac3VzZS5kZT4gIyBEUk0NCg0KPiAt
+LS0NCj4gICBhcmNoL2FscGhhL2tlcm5lbC9zZXR1cC5jICAgICAgIHwgIDIgKy0NCj4gICBh
+cmNoL2xvb25nYXJjaC9rZXJuZWwvc3lzcnEuYyAgIHwgIDIgKy0NCj4gICBhcmNoL21pcHMv
+a2VybmVsL3N5c3JxLmMgICAgICAgIHwgIDIgKy0NCj4gICBhcmNoL3Bvd2VycGMveG1vbi94
+bW9uLmMgICAgICAgIHwgIDIgKy0NCj4gICBhcmNoL3NwYXJjL2tlcm5lbC9wcm9jZXNzXzY0
+LmMgIHwgIDQgKystLQ0KPiAgIGRyaXZlcnMvZ3B1L2RybS9kcm1fZmJfaGVscGVyLmMgfCAg
+MiArLQ0KPiAgIGRyaXZlcnMvdHR5L3N5c3JxLmMgICAgICAgICAgICAgfCA0MCArKysrKysr
+KysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0NCj4gICBpbmNsdWRlL2xpbnV4L3N5c3JxLmgg
+ICAgICAgICAgIHwgIDIgKy0NCj4gICBrZXJuZWwvZGVidWcvZGVidWdfY29yZS5jICAgICAg
+IHwgIDIgKy0NCj4gICBrZXJuZWwvcG93ZXIvcG93ZXJvZmYuYyAgICAgICAgIHwgIDIgKy0N
+Cj4gICBrZXJuZWwvcmN1L3RyZWVfc3RhbGwuaCAgICAgICAgIHwgIDIgKy0NCj4gICAxMSBm
+aWxlcyBjaGFuZ2VkLCAzMSBpbnNlcnRpb25zKCspLCAzMSBkZWxldGlvbnMoLSkNCj4gDQo+
+IGRpZmYgLS1naXQgYS9hcmNoL2FscGhhL2tlcm5lbC9zZXR1cC5jIGIvYXJjaC9hbHBoYS9r
+ZXJuZWwvc2V0dXAuYw0KPiBpbmRleCBiNjUwZmYxY2IwMjIuLjkxZmIzNzE0ZWJjMiAxMDA2
+NDQNCj4gLS0tIGEvYXJjaC9hbHBoYS9rZXJuZWwvc2V0dXAuYw0KPiArKysgYi9hcmNoL2Fs
+cGhhL2tlcm5lbC9zZXR1cC5jDQo+IEBAIC00MjIsNyArNDIyLDcgQEAgcmVnaXN0ZXJfY3B1
+cyh2b2lkKQ0KPiAgIGFyY2hfaW5pdGNhbGwocmVnaXN0ZXJfY3B1cyk7DQo+ICAgDQo+ICAg
+I2lmZGVmIENPTkZJR19NQUdJQ19TWVNSUQ0KPiAtc3RhdGljIHZvaWQgc3lzcnFfcmVib290
+X2hhbmRsZXIoaW50IHVudXNlZCkNCj4gK3N0YXRpYyB2b2lkIHN5c3JxX3JlYm9vdF9oYW5k
+bGVyKHU4IHVudXNlZCkNCj4gICB7DQo+ICAgCW1hY2hpbmVfaGFsdCgpOw0KPiAgIH0NCj4g
+ZGlmZiAtLWdpdCBhL2FyY2gvbG9vbmdhcmNoL2tlcm5lbC9zeXNycS5jIGIvYXJjaC9sb29u
+Z2FyY2gva2VybmVsL3N5c3JxLmMNCj4gaW5kZXggMzY2YmFlZjcyZDI5Li5lNjYzYzEwZmEz
+OWMgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvbG9vbmdhcmNoL2tlcm5lbC9zeXNycS5jDQo+ICsr
+KyBiL2FyY2gvbG9vbmdhcmNoL2tlcm5lbC9zeXNycS5jDQo+IEBAIC00Myw3ICs0Myw3IEBA
+IHN0YXRpYyB2b2lkIHN5c3JxX3RsYmR1bXBfb3RoZXJjcHVzKHN0cnVjdCB3b3JrX3N0cnVj
+dCAqZHVtbXkpDQo+ICAgc3RhdGljIERFQ0xBUkVfV09SSyhzeXNycV90bGJkdW1wLCBzeXNy
+cV90bGJkdW1wX290aGVyY3B1cyk7DQo+ICAgI2VuZGlmDQo+ICAgDQo+IC1zdGF0aWMgdm9p
+ZCBzeXNycV9oYW5kbGVfdGxiZHVtcChpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFf
+aGFuZGxlX3RsYmR1bXAodTgga2V5KQ0KPiAgIHsNCj4gICAJc3lzcnFfdGxiZHVtcF9zaW5n
+bGUoTlVMTCk7DQo+ICAgI2lmZGVmIENPTkZJR19TTVANCj4gZGlmZiAtLWdpdCBhL2FyY2gv
+bWlwcy9rZXJuZWwvc3lzcnEuYyBiL2FyY2gvbWlwcy9rZXJuZWwvc3lzcnEuYw0KPiBpbmRl
+eCA5YzFhMjAxOTExM2IuLjJlOTgwNDlmZTc4MyAxMDA2NDQNCj4gLS0tIGEvYXJjaC9taXBz
+L2tlcm5lbC9zeXNycS5jDQo+ICsrKyBiL2FyY2gvbWlwcy9rZXJuZWwvc3lzcnEuYw0KPiBA
+QCAtNDQsNyArNDQsNyBAQCBzdGF0aWMgdm9pZCBzeXNycV90bGJkdW1wX290aGVyY3B1cyhz
+dHJ1Y3Qgd29ya19zdHJ1Y3QgKmR1bW15KQ0KPiAgIHN0YXRpYyBERUNMQVJFX1dPUksoc3lz
+cnFfdGxiZHVtcCwgc3lzcnFfdGxiZHVtcF9vdGhlcmNwdXMpOw0KPiAgICNlbmRpZg0KPiAg
+IA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3RsYmR1bXAoaW50IGtleSkNCj4gK3N0
+YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV90bGJkdW1wKHU4IGtleSkNCj4gICB7DQo+ICAgCXN5
+c3JxX3RsYmR1bXBfc2luZ2xlKE5VTEwpOw0KPiAgICNpZmRlZiBDT05GSUdfU01QDQo+IGRp
+ZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMveG1vbi94bW9uLmMgYi9hcmNoL3Bvd2VycGMveG1v
+bi94bW9uLmMNCj4gaW5kZXggZWUxNzI3MGQzNWQwLi4zYjZmNTI0Yzc5MGUgMTAwNjQ0DQo+
+IC0tLSBhL2FyY2gvcG93ZXJwYy94bW9uL3htb24uYw0KPiArKysgYi9hcmNoL3Bvd2VycGMv
+eG1vbi94bW9uLmMNCj4gQEAgLTM5OTEsNyArMzk5MSw3IEBAIHN0YXRpYyB2b2lkIHhtb25f
+aW5pdChpbnQgZW5hYmxlKQ0KPiAgIH0NCj4gICANCj4gICAjaWZkZWYgQ09ORklHX01BR0lD
+X1NZU1JRDQo+IC1zdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVfeG1vbihpbnQga2V5KQ0KPiAr
+c3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3htb24odTgga2V5KQ0KPiAgIHsNCj4gICAJaWYg
+KHhtb25faXNfbG9ja2VkX2Rvd24oKSkgew0KPiAgIAkJY2xlYXJfYWxsX2JwdCgpOw0KPiBk
+aWZmIC0tZ2l0IGEvYXJjaC9zcGFyYy9rZXJuZWwvcHJvY2Vzc182NC5jIGIvYXJjaC9zcGFy
+Yy9rZXJuZWwvcHJvY2Vzc182NC5jDQo+IGluZGV4IGI1MWQ4ZmIwZWNkYy4uNGRlZTg4YWY0
+MDNmIDEwMDY0NA0KPiAtLS0gYS9hcmNoL3NwYXJjL2tlcm5lbC9wcm9jZXNzXzY0LmMNCj4g
+KysrIGIvYXJjaC9zcGFyYy9rZXJuZWwvcHJvY2Vzc182NC5jDQo+IEBAIC0yOTUsNyArMjk1
+LDcgQEAgdm9pZCBhcmNoX3RyaWdnZXJfY3B1bWFza19iYWNrdHJhY2UoY29uc3QgY3B1bWFz
+a190ICptYXNrLCBib29sIGV4Y2x1ZGVfc2VsZikNCj4gICANCj4gICAjaWZkZWYgQ09ORklH
+X01BR0lDX1NZU1JRDQo+ICAgDQo+IC1zdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVfZ2xvYnJl
+ZyhpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX2dsb2JyZWcodTgga2V5
+KQ0KPiAgIHsNCj4gICAJdHJpZ2dlcl9hbGxfY3B1X2JhY2t0cmFjZSgpOw0KPiAgIH0NCj4g
+QEAgLTM3MCw3ICszNzAsNyBAQCBzdGF0aWMgdm9pZCBwbXVfc25hcHNob3RfYWxsX2NwdXMo
+dm9pZCkNCj4gICAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmZ2xvYmFsX2NwdV9zbmFwc2hv
+dF9sb2NrLCBmbGFncyk7DQo+ICAgfQ0KPiAgIA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFu
+ZGxlX2dsb2JwbXUoaW50IGtleSkNCj4gK3N0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV9nbG9i
+cG11KHU4IGtleSkNCj4gICB7DQo+ICAgCXBtdV9zbmFwc2hvdF9hbGxfY3B1cygpOw0KPiAg
+IH0NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9kcm1fZmJfaGVscGVyLmMgYi9k
+cml2ZXJzL2dwdS9kcm0vZHJtX2ZiX2hlbHBlci5jDQo+IGluZGV4IDYxYTVkNDUwY2MyMC4u
+ZDYxMjEzM2UyY2Y3IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vZHJtX2ZiX2hl
+bHBlci5jDQo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9kcm1fZmJfaGVscGVyLmMNCj4gQEAg
+LTMwMSw3ICszMDEsNyBAQCBzdGF0aWMgdm9pZCBkcm1fZmJfaGVscGVyX3Jlc3RvcmVfd29y
+a19mbihzdHJ1Y3Qgd29ya19zdHJ1Y3QgKmlnbm9yZWQpDQo+ICAgDQo+ICAgc3RhdGljIERF
+Q0xBUkVfV09SSyhkcm1fZmJfaGVscGVyX3Jlc3RvcmVfd29yaywgZHJtX2ZiX2hlbHBlcl9y
+ZXN0b3JlX3dvcmtfZm4pOw0KPiAgIA0KPiAtc3RhdGljIHZvaWQgZHJtX2ZiX2hlbHBlcl9z
+eXNycShpbnQgZHVtbXkxKQ0KPiArc3RhdGljIHZvaWQgZHJtX2ZiX2hlbHBlcl9zeXNycSh1
+OCBkdW1teTEpDQo+ICAgew0KPiAgIAlzY2hlZHVsZV93b3JrKCZkcm1fZmJfaGVscGVyX3Jl
+c3RvcmVfd29yayk7DQo+ICAgfQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc3lzcnEu
+YyBiL2RyaXZlcnMvdHR5L3N5c3JxLmMNCj4gaW5kZXggMTM0NjVlNGNjYTliLi4xMjcxYTgy
+YzA4ODcgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvdHR5L3N5c3JxLmMNCj4gKysrIGIvZHJp
+dmVycy90dHkvc3lzcnEuYw0KPiBAQCAtOTgsNyArOTgsNyBAQCBzdGF0aWMgaW50IF9faW5p
+dCBzeXNycV9hbHdheXNfZW5hYmxlZF9zZXR1cChjaGFyICpzdHIpDQo+ICAgX19zZXR1cCgi
+c3lzcnFfYWx3YXlzX2VuYWJsZWQiLCBzeXNycV9hbHdheXNfZW5hYmxlZF9zZXR1cCk7DQo+
+ICAgDQo+ICAgDQo+IC1zdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVfbG9nbGV2ZWwoaW50IGtl
+eSkNCj4gK3N0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV9sb2dsZXZlbCh1OCBrZXkpDQo+ICAg
+ew0KPiAgIAl1OCBsb2dsZXZlbCA9IGtleSAtICcwJzsNCj4gICANCj4gQEAgLTExNCw3ICsx
+MTQsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHN5c3JxX2tleV9vcCBzeXNycV9sb2dsZXZl
+bF9vcCA9IHsNCj4gICB9Ow0KPiAgIA0KPiAgICNpZmRlZiBDT05GSUdfVlQNCj4gLXN0YXRp
+YyB2b2lkIHN5c3JxX2hhbmRsZV9TQUsoaW50IGtleSkNCj4gK3N0YXRpYyB2b2lkIHN5c3Jx
+X2hhbmRsZV9TQUsodTgga2V5KQ0KPiAgIHsNCj4gICAJc3RydWN0IHdvcmtfc3RydWN0ICpT
+QUtfd29yayA9ICZ2Y19jb25zW2ZnX2NvbnNvbGVdLlNBS193b3JrOw0KPiAgIA0KPiBAQCAt
+MTMxLDcgKzEzMSw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgc3lzcnFfa2V5X29wIHN5c3Jx
+X1NBS19vcCA9IHsNCj4gICAjZW5kaWYNCj4gICANCj4gICAjaWZkZWYgQ09ORklHX1ZUDQo+
+IC1zdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVfdW5yYXcoaW50IGtleSkNCj4gK3N0YXRpYyB2
+b2lkIHN5c3JxX2hhbmRsZV91bnJhdyh1OCBrZXkpDQo+ICAgew0KPiAgIAl2dF9yZXNldF91
+bmljb2RlKGZnX2NvbnNvbGUpOw0KPiAgIH0NCj4gQEAgLTE0Niw3ICsxNDYsNyBAQCBzdGF0
+aWMgY29uc3Qgc3RydWN0IHN5c3JxX2tleV9vcCBzeXNycV91bnJhd19vcCA9IHsNCj4gICAj
+ZGVmaW5lIHN5c3JxX3VucmF3X29wICgqKGNvbnN0IHN0cnVjdCBzeXNycV9rZXlfb3AgKilO
+VUxMKQ0KPiAgICNlbmRpZiAvKiBDT05GSUdfVlQgKi8NCj4gICANCj4gLXN0YXRpYyB2b2lk
+IHN5c3JxX2hhbmRsZV9jcmFzaChpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfaGFu
+ZGxlX2NyYXNoKHU4IGtleSkNCj4gICB7DQo+ICAgCS8qIHJlbGVhc2UgdGhlIFJDVSByZWFk
+IGxvY2sgYmVmb3JlIGNyYXNoaW5nICovDQo+ICAgCXJjdV9yZWFkX3VubG9jaygpOw0KPiBA
+QCAtMTYwLDcgKzE2MCw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgc3lzcnFfa2V5X29wIHN5
+c3JxX2NyYXNoX29wID0gew0KPiAgIAkuZW5hYmxlX21hc2sJPSBTWVNSUV9FTkFCTEVfRFVN
+UCwNCj4gICB9Ow0KPiAgIA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3JlYm9vdChp
+bnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3JlYm9vdCh1OCBrZXkpDQo+
+ICAgew0KPiAgIAlsb2NrZGVwX29mZigpOw0KPiAgIAlsb2NhbF9pcnFfZW5hYmxlKCk7DQo+
+IEBAIC0xNzUsNyArMTc1LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzeXNycV9rZXlfb3Ag
+c3lzcnFfcmVib290X29wID0gew0KPiAgIA0KPiAgIGNvbnN0IHN0cnVjdCBzeXNycV9rZXlf
+b3AgKl9fc3lzcnFfcmVib290X29wID0gJnN5c3JxX3JlYm9vdF9vcDsNCj4gICANCj4gLXN0
+YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV9zeW5jKGludCBrZXkpDQo+ICtzdGF0aWMgdm9pZCBz
+eXNycV9oYW5kbGVfc3luYyh1OCBrZXkpDQo+ICAgew0KPiAgIAllbWVyZ2VuY3lfc3luYygp
+Ow0KPiAgIH0NCj4gQEAgLTE4Niw3ICsxODYsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHN5
+c3JxX2tleV9vcCBzeXNycV9zeW5jX29wID0gew0KPiAgIAkuZW5hYmxlX21hc2sJPSBTWVNS
+UV9FTkFCTEVfU1lOQywNCj4gICB9Ow0KPiAgIA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFu
+ZGxlX3Nob3dfdGltZXJzKGludCBrZXkpDQo+ICtzdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVf
+c2hvd190aW1lcnModTgga2V5KQ0KPiAgIHsNCj4gICAJc3lzcnFfdGltZXJfbGlzdF9zaG93
+KCk7DQo+ICAgfQ0KPiBAQCAtMTk3LDcgKzE5Nyw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qg
+c3lzcnFfa2V5X29wIHN5c3JxX3Nob3dfdGltZXJzX29wID0gew0KPiAgIAkuYWN0aW9uX21z
+Zwk9ICJTaG93IGNsb2NrZXZlbnQgZGV2aWNlcyAmIHBlbmRpbmcgaHJ0aW1lcnMgKG5vIG90
+aGVycykiLA0KPiAgIH07DQo+ICAgDQo+IC1zdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVfbW91
+bnRybyhpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX21vdW50cm8odTgg
+a2V5KQ0KPiAgIHsNCj4gICAJZW1lcmdlbmN5X3JlbW91bnQoKTsNCj4gICB9DQo+IEBAIC0y
+MDksNyArMjA5LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzeXNycV9rZXlfb3Agc3lzcnFf
+bW91bnRyb19vcCA9IHsNCj4gICB9Ow0KPiAgIA0KPiAgICNpZmRlZiBDT05GSUdfTE9DS0RF
+UA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3Nob3dsb2NrcyhpbnQga2V5KQ0KPiAr
+c3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3Nob3dsb2Nrcyh1OCBrZXkpDQo+ICAgew0KPiAg
+IAlkZWJ1Z19zaG93X2FsbF9sb2NrcygpOw0KPiAgIH0NCj4gQEAgLTI0OSw3ICsyNDksNyBA
+QCBzdGF0aWMgdm9pZCBzeXNycV9zaG93cmVnc19vdGhlcmNwdXMoc3RydWN0IHdvcmtfc3Ry
+dWN0ICpkdW1teSkNCj4gICANCj4gICBzdGF0aWMgREVDTEFSRV9XT1JLKHN5c3JxX3Nob3dh
+bGxjcHVzLCBzeXNycV9zaG93cmVnc19vdGhlcmNwdXMpOw0KPiAgIA0KPiAtc3RhdGljIHZv
+aWQgc3lzcnFfaGFuZGxlX3Nob3dhbGxjcHVzKGludCBrZXkpDQo+ICtzdGF0aWMgdm9pZCBz
+eXNycV9oYW5kbGVfc2hvd2FsbGNwdXModTgga2V5KQ0KPiAgIHsNCj4gICAJLyoNCj4gICAJ
+ICogRmFsbCBiYWNrIHRvIHRoZSB3b3JrcXVldWUgYmFzZWQgcHJpbnRpbmcgaWYgdGhlDQo+
+IEBAIC0yODIsNyArMjgyLDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzeXNycV9rZXlfb3Ag
+c3lzcnFfc2hvd2FsbGNwdXNfb3AgPSB7DQo+ICAgI2RlZmluZSBzeXNycV9zaG93YWxsY3B1
+c19vcCAoKihjb25zdCBzdHJ1Y3Qgc3lzcnFfa2V5X29wICopTlVMTCkNCj4gICAjZW5kaWYN
+Cj4gICANCj4gLXN0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV9zaG93cmVncyhpbnQga2V5KQ0K
+PiArc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3Nob3dyZWdzKHU4IGtleSkNCj4gICB7DQo+
+ICAgCXN0cnVjdCBwdF9yZWdzICpyZWdzID0gTlVMTDsNCj4gICANCj4gQEAgLTI5OSw3ICsy
+OTksNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHN5c3JxX2tleV9vcCBzeXNycV9zaG93cmVn
+c19vcCA9IHsNCj4gICAJLmVuYWJsZV9tYXNrCT0gU1lTUlFfRU5BQkxFX0RVTVAsDQo+ICAg
+fTsNCj4gICANCj4gLXN0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV9zaG93c3RhdGUoaW50IGtl
+eSkNCj4gK3N0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV9zaG93c3RhdGUodTgga2V5KQ0KPiAg
+IHsNCj4gICAJc2hvd19zdGF0ZSgpOw0KPiAgIAlzaG93X2FsbF93b3JrcXVldWVzKCk7DQo+
+IEBAIC0zMTEsNyArMzExLDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzeXNycV9rZXlfb3Ag
+c3lzcnFfc2hvd3N0YXRlX29wID0gew0KPiAgIAkuZW5hYmxlX21hc2sJPSBTWVNSUV9FTkFC
+TEVfRFVNUCwNCj4gICB9Ow0KPiAgIA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3No
+b3dzdGF0ZV9ibG9ja2VkKGludCBrZXkpDQo+ICtzdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVf
+c2hvd3N0YXRlX2Jsb2NrZWQodTgga2V5KQ0KPiAgIHsNCj4gICAJc2hvd19zdGF0ZV9maWx0
+ZXIoVEFTS19VTklOVEVSUlVQVElCTEUpOw0KPiAgIH0NCj4gQEAgLTMyNSw3ICszMjUsNyBA
+QCBzdGF0aWMgY29uc3Qgc3RydWN0IHN5c3JxX2tleV9vcCBzeXNycV9zaG93c3RhdGVfYmxv
+Y2tlZF9vcCA9IHsNCj4gICAjaWZkZWYgQ09ORklHX1RSQUNJTkcNCj4gICAjaW5jbHVkZSA8
+bGludXgvZnRyYWNlLmg+DQo+ICAgDQo+IC1zdGF0aWMgdm9pZCBzeXNycV9mdHJhY2VfZHVt
+cChpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfZnRyYWNlX2R1bXAodTgga2V5KQ0K
+PiAgIHsNCj4gICAJZnRyYWNlX2R1bXAoRFVNUF9BTEwpOw0KPiAgIH0NCj4gQEAgLTMzOSw3
+ICszMzksNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHN5c3JxX2tleV9vcCBzeXNycV9mdHJh
+Y2VfZHVtcF9vcCA9IHsNCj4gICAjZGVmaW5lIHN5c3JxX2Z0cmFjZV9kdW1wX29wICgqKGNv
+bnN0IHN0cnVjdCBzeXNycV9rZXlfb3AgKilOVUxMKQ0KPiAgICNlbmRpZg0KPiAgIA0KPiAt
+c3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3Nob3dtZW0oaW50IGtleSkNCj4gK3N0YXRpYyB2
+b2lkIHN5c3JxX2hhbmRsZV9zaG93bWVtKHU4IGtleSkNCj4gICB7DQo+ICAgCXNob3dfbWVt
+KCk7DQo+ICAgfQ0KPiBAQCAtMzY5LDcgKzM2OSw3IEBAIHN0YXRpYyB2b2lkIHNlbmRfc2ln
+X2FsbChpbnQgc2lnKQ0KPiAgIAlyZWFkX3VubG9jaygmdGFza2xpc3RfbG9jayk7DQo+ICAg
+fQ0KPiAgIA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3Rlcm0oaW50IGtleSkNCj4g
+K3N0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV90ZXJtKHU4IGtleSkNCj4gICB7DQo+ICAgCXNl
+bmRfc2lnX2FsbChTSUdURVJNKTsNCj4gICAJY29uc29sZV9sb2dsZXZlbCA9IENPTlNPTEVf
+TE9HTEVWRUxfREVCVUc7DQo+IEBAIC00MDAsNyArNDAwLDcgQEAgc3RhdGljIHZvaWQgbW9v
+bV9jYWxsYmFjayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKmlnbm9yZWQpDQo+ICAgDQo+ICAgc3Rh
+dGljIERFQ0xBUkVfV09SSyhtb29tX3dvcmssIG1vb21fY2FsbGJhY2spOw0KPiAgIA0KPiAt
+c3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX21vb20oaW50IGtleSkNCj4gK3N0YXRpYyB2b2lk
+IHN5c3JxX2hhbmRsZV9tb29tKHU4IGtleSkNCj4gICB7DQo+ICAgCXNjaGVkdWxlX3dvcmso
+Jm1vb21fd29yayk7DQo+ICAgfQ0KPiBAQCAtNDEyLDcgKzQxMiw3IEBAIHN0YXRpYyBjb25z
+dCBzdHJ1Y3Qgc3lzcnFfa2V5X29wIHN5c3JxX21vb21fb3AgPSB7DQo+ICAgfTsNCj4gICAN
+Cj4gICAjaWZkZWYgQ09ORklHX0JMT0NLDQo+IC1zdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVf
+dGhhdyhpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3RoYXcodTgga2V5
+KQ0KPiAgIHsNCj4gICAJZW1lcmdlbmN5X3RoYXdfYWxsKCk7DQo+ICAgfQ0KPiBAQCAtNDI2
+LDcgKzQyNiw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgc3lzcnFfa2V5X29wIHN5c3JxX3Ro
+YXdfb3AgPSB7DQo+ICAgI2RlZmluZSBzeXNycV90aGF3X29wICgqKGNvbnN0IHN0cnVjdCBz
+eXNycV9rZXlfb3AgKilOVUxMKQ0KPiAgICNlbmRpZg0KPiAgIA0KPiAtc3RhdGljIHZvaWQg
+c3lzcnFfaGFuZGxlX2tpbGwoaW50IGtleSkNCj4gK3N0YXRpYyB2b2lkIHN5c3JxX2hhbmRs
+ZV9raWxsKHU4IGtleSkNCj4gICB7DQo+ICAgCXNlbmRfc2lnX2FsbChTSUdLSUxMKTsNCj4g
+ICAJY29uc29sZV9sb2dsZXZlbCA9IENPTlNPTEVfTE9HTEVWRUxfREVCVUc7DQo+IEBAIC00
+MzgsNyArNDM4LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzeXNycV9rZXlfb3Agc3lzcnFf
+a2lsbF9vcCA9IHsNCj4gICAJLmVuYWJsZV9tYXNrCT0gU1lTUlFfRU5BQkxFX1NJR05BTCwN
+Cj4gICB9Ow0KPiAgIA0KPiAtc3RhdGljIHZvaWQgc3lzcnFfaGFuZGxlX3VucnQoaW50IGtl
+eSkNCj4gK3N0YXRpYyB2b2lkIHN5c3JxX2hhbmRsZV91bnJ0KHU4IGtleSkNCj4gICB7DQo+
+ICAgCW5vcm1hbGl6ZV9ydF90YXNrcygpOw0KPiAgIH0NCj4gZGlmZiAtLWdpdCBhL2luY2x1
+ZGUvbGludXgvc3lzcnEuaCBiL2luY2x1ZGUvbGludXgvc3lzcnEuaA0KPiBpbmRleCAzYTU4
+MmVjN2EyZjEuLmJiOGQwNzgxNGIwZSAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9z
+eXNycS5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvc3lzcnEuaA0KPiBAQCAtMzAsNyArMzAs
+NyBAQA0KPiAgICNkZWZpbmUgU1lTUlFfRU5BQkxFX1JUTklDRQkweDAxMDANCj4gICANCj4g
+ICBzdHJ1Y3Qgc3lzcnFfa2V5X29wIHsNCj4gLQl2b2lkICgqIGNvbnN0IGhhbmRsZXIpKGlu
+dCk7DQo+ICsJdm9pZCAoKiBjb25zdCBoYW5kbGVyKSh1OCk7DQo+ICAgCWNvbnN0IGNoYXIg
+KiBjb25zdCBoZWxwX21zZzsNCj4gICAJY29uc3QgY2hhciAqIGNvbnN0IGFjdGlvbl9tc2c7
+DQo+ICAgCWNvbnN0IGludCBlbmFibGVfbWFzazsNCj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9k
+ZWJ1Zy9kZWJ1Z19jb3JlLmMgYi9rZXJuZWwvZGVidWcvZGVidWdfY29yZS5jDQo+IGluZGV4
+IGQ1ZTljY2RlM2FiOC4uNjIxMDM3YTBhYTg3IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvZGVi
+dWcvZGVidWdfY29yZS5jDQo+ICsrKyBiL2tlcm5lbC9kZWJ1Zy9kZWJ1Z19jb3JlLmMNCj4g
+QEAgLTk2OCw3ICs5NjgsNyBAQCBzdGF0aWMgaW50IF9faW5pdCBvcHRfa2dkYl9jb24oY2hh
+ciAqc3RyKQ0KPiAgIGVhcmx5X3BhcmFtKCJrZ2RiY29uIiwgb3B0X2tnZGJfY29uKTsNCj4g
+ICANCj4gICAjaWZkZWYgQ09ORklHX01BR0lDX1NZU1JRDQo+IC1zdGF0aWMgdm9pZCBzeXNy
+cV9oYW5kbGVfZGJnKGludCBrZXkpDQo+ICtzdGF0aWMgdm9pZCBzeXNycV9oYW5kbGVfZGJn
+KHU4IGtleSkNCj4gICB7DQo+ICAgCWlmICghZGJnX2lvX29wcykgew0KPiAgIAkJcHJfY3Jp
+dCgiRVJST1I6IE5vIEtHREIgSS9PIG1vZHVsZSBhdmFpbGFibGVcbiIpOw0KPiBkaWZmIC0t
+Z2l0IGEva2VybmVsL3Bvd2VyL3Bvd2Vyb2ZmLmMgYi9rZXJuZWwvcG93ZXIvcG93ZXJvZmYu
+Yw0KPiBpbmRleCA1NjJhYTBlNDUwZWQuLjFmMzA2ZjE1ODY5NiAxMDA2NDQNCj4gLS0tIGEv
+a2VybmVsL3Bvd2VyL3Bvd2Vyb2ZmLmMNCj4gKysrIGIva2VybmVsL3Bvd2VyL3Bvd2Vyb2Zm
+LmMNCj4gQEAgLTIzLDcgKzIzLDcgQEAgc3RhdGljIHZvaWQgZG9fcG93ZXJvZmYoc3RydWN0
+IHdvcmtfc3RydWN0ICpkdW1teSkNCj4gICANCj4gICBzdGF0aWMgREVDTEFSRV9XT1JLKHBv
+d2Vyb2ZmX3dvcmssIGRvX3Bvd2Vyb2ZmKTsNCj4gICANCj4gLXN0YXRpYyB2b2lkIGhhbmRs
+ZV9wb3dlcm9mZihpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgaGFuZGxlX3Bvd2Vyb2ZmKHU4
+IGtleSkNCj4gICB7DQo+ICAgCS8qIHJ1biBzeXNycSBwb3dlcm9mZiBvbiBib290IGNwdSAq
+Lw0KPiAgIAlzY2hlZHVsZV93b3JrX29uKGNwdW1hc2tfZmlyc3QoY3B1X29ubGluZV9tYXNr
+KSwgJnBvd2Vyb2ZmX3dvcmspOw0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL3JjdS90cmVlX3N0
+YWxsLmggYi9rZXJuZWwvcmN1L3RyZWVfc3RhbGwuaA0KPiBpbmRleCBiMTBiODM0OWJiMmEu
+LjZmMDZkYzEyOTA0YSAxMDA2NDQNCj4gLS0tIGEva2VybmVsL3JjdS90cmVlX3N0YWxsLmgN
+Cj4gKysrIGIva2VybmVsL3JjdS90cmVlX3N0YWxsLmgNCj4gQEAgLTEwMzUsNyArMTAzNSw3
+IEBAIHN0YXRpYyBib29sIHN5c3JxX3JjdTsNCj4gICBtb2R1bGVfcGFyYW0oc3lzcnFfcmN1
+LCBib29sLCAwNDQ0KTsNCj4gICANCj4gICAvKiBEdW1wIGdyYWNlLXBlcmlvZC1yZXF1ZXN0
+IGluZm9ybWF0aW9uIGR1ZSB0byBjb21tYW5kZWVyZWQgc3lzcnEuICovDQo+IC1zdGF0aWMg
+dm9pZCBzeXNycV9zaG93X3JjdShpbnQga2V5KQ0KPiArc3RhdGljIHZvaWQgc3lzcnFfc2hv
+d19yY3UodTgga2V5KQ0KPiAgIHsNCj4gICAJc2hvd19yY3VfZ3Bfa3RocmVhZHMoKTsNCj4g
+ICB9DQoNCi0tIA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9w
+ZXINClNVU0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0KRnJhbmtlbnN0cmFz
+c2UgMTQ2LCA5MDQ2MSBOdWVybmJlcmcsIEdlcm1hbnkNCkdGOiBJdm8gVG90ZXYsIEFuZHJl
+dyBNeWVycywgQW5kcmV3IE1jRG9uYWxkLCBCb3VkaWVuIE1vZXJtYW4NCkhSQiAzNjgwOSAo
+QUcgTnVlcm5iZXJnKQ0K
 
-diff --git a/drivers/tty/serial/21285.c b/drivers/tty/serial/21285.c
-index 185462fd959c..d756fcc884cb 100644
---- a/drivers/tty/serial/21285.c
-+++ b/drivers/tty/serial/21285.c
-@@ -117,7 +117,8 @@ static void serial21285_stop_rx(struct uart_port *port)
- static irqreturn_t serial21285_rx_chars(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
--	unsigned int status, ch, flag, rxs, max_count = 256;
-+	unsigned int status, rxs, max_count = 256;
-+	u8 ch, flag;
- 
- 	status = *CSR_UARTFLG;
- 	while (!(status & 0x10) && max_count--) {
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 16aeb1420137..0533e75adca9 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1706,8 +1706,7 @@ static void serial8250_enable_ms(struct uart_port *port)
- void serial8250_read_char(struct uart_8250_port *up, u16 lsr)
- {
- 	struct uart_port *port = &up->port;
--	unsigned char ch;
--	char flag = TTY_NORMAL;
-+	u8 ch, flag = TTY_NORMAL;
- 
- 	if (likely(lsr & UART_LSR_DR))
- 		ch = serial_in(up, UART_RX);
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index 9f843d1cee40..6203ca1de769 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -110,8 +110,8 @@ static void altera_jtaguart_set_termios(struct uart_port *port,
- 
- static void altera_jtaguart_rx_chars(struct uart_port *port)
- {
--	unsigned char ch;
- 	unsigned long status;
-+	u8 ch;
- 
- 	while ((status = readl(port->membase + ALTERA_JTAGUART_DATA_REG)) &
- 	       ALTERA_JTAGUART_DATA_RVALID_MSK) {
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index 9ce3d24af536..a9c41942190c 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -201,8 +201,8 @@ static void altera_uart_set_termios(struct uart_port *port,
- 
- static void altera_uart_rx_chars(struct uart_port *port)
- {
--	unsigned char ch, flag;
- 	unsigned short status;
-+	u8 ch, flag;
- 
- 	while ((status = altera_uart_readl(port, ALTERA_UART_STATUS_REG)) &
- 	       ALTERA_UART_STATUS_RRDY_MSK) {
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index a98fae2ca422..b5a7404cbacb 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -112,7 +112,8 @@ static void pl010_enable_ms(struct uart_port *port)
- 
- static void pl010_rx_chars(struct uart_port *port)
- {
--	unsigned int status, ch, flag, rsr, max_count = 256;
-+	unsigned int status, rsr, max_count = 256;
-+	u8 ch, flag;
- 
- 	status = readb(port->membase + UART01x_FR);
- 	while (UART_RX_DATA(status) && max_count--) {
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index c5c3f4674459..8bddc7470bcc 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -307,9 +307,10 @@ static void pl011_write(unsigned int val, const struct uart_amba_port *uap,
-  */
- static int pl011_fifo_to_tty(struct uart_amba_port *uap)
- {
--	unsigned int ch, flag, fifotaken;
-+	unsigned int ch, fifotaken;
- 	int sysrq;
- 	u16 status;
-+	u8 flag;
- 
- 	for (fifotaken = 0; fifotaken != 256; fifotaken++) {
- 		status = pl011_read(uap, REG_FR);
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index 915ee4b0d594..372db052573d 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -70,8 +70,9 @@ static void apbuart_stop_rx(struct uart_port *port)
- 
- static void apbuart_rx_chars(struct uart_port *port)
- {
--	unsigned int status, ch, rsr, flag;
-+	unsigned int status, rsr;
- 	unsigned int max_chars = port->fifosize;
-+	u8 ch, flag;
- 
- 	status = UART_GET_STATUS(port);
- 
-diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
-index 835903488acb..ad4ae19b6ce3 100644
---- a/drivers/tty/serial/arc_uart.c
-+++ b/drivers/tty/serial/arc_uart.c
-@@ -205,7 +205,7 @@ static void arc_serial_rx_chars(struct uart_port *port, unsigned int status)
- 	 * controller, which is indeed the Rx-FIFO.
- 	 */
- 	do {
--		unsigned int ch, flg = TTY_NORMAL;
-+		u8 ch, flg = TTY_NORMAL;
- 
- 		/*
- 		 * This could be an Rx Intr for err (no data),
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 3467a875641a..ec54436969dc 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1516,8 +1516,8 @@ static void atmel_rx_from_ring(struct uart_port *port)
- {
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	struct circ_buf *ring = &atmel_port->rx_ring;
--	unsigned int flg;
- 	unsigned int status;
-+	u8 flg;
- 
- 	while (ring->head != ring->tail) {
- 		struct atmel_uart_char c;
-diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
-index e49bc4019b50..be8b8788d2e2 100644
---- a/drivers/tty/serial/clps711x.c
-+++ b/drivers/tty/serial/clps711x.c
-@@ -92,8 +92,9 @@ static irqreturn_t uart_clps711x_int_rx(int irq, void *dev_id)
- {
- 	struct uart_port *port = dev_id;
- 	struct clps711x_port *s = dev_get_drvdata(port->dev);
--	unsigned int status, flg;
-+	unsigned int status;
- 	u16 ch;
-+	u8 flg;
- 
- 	for (;;) {
- 		u32 sysflg = 0;
-diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-index ed197705f7ee..128b5479e813 100644
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -136,8 +136,7 @@ static void digicolor_uart_rx(struct uart_port *port)
- 	spin_lock_irqsave(&port->lock, flags);
- 
- 	while (1) {
--		u8 status, ch;
--		unsigned int ch_flag;
-+		u8 status, ch, ch_flag;
- 
- 		if (digicolor_uart_rx_empty(port))
- 			break;
-diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-index 6b7ed7f2f3ca..667f52e83277 100644
---- a/drivers/tty/serial/dz.c
-+++ b/drivers/tty/serial/dz.c
-@@ -181,8 +181,8 @@ static inline void dz_receive_chars(struct dz_mux *mux)
- 	struct dz_port *dport = &mux->dport[0];
- 	struct uart_icount *icount;
- 	int lines_rx[DZ_NB_PORT] = { [0 ... DZ_NB_PORT - 1] = 0 };
--	unsigned char ch, flag;
- 	u16 status;
-+	u8 ch, flag;
- 	int i;
- 
- 	while ((status = dz_in(dport, DZ_RBUF)) & DZ_DVAL) {
-diff --git a/drivers/tty/serial/ip22zilog.c b/drivers/tty/serial/ip22zilog.c
-index b1f27e168135..845ff706bc59 100644
---- a/drivers/tty/serial/ip22zilog.c
-+++ b/drivers/tty/serial/ip22zilog.c
-@@ -248,8 +248,8 @@ static void ip22zilog_maybe_update_regs(struct uart_ip22zilog_port *up,
- static bool ip22zilog_receive_chars(struct uart_ip22zilog_port *up,
- 						  struct zilog_channel *channel)
- {
--	unsigned char ch, flag;
- 	unsigned int r1;
-+	u8 ch, flag;
- 	bool push = up->port.state != NULL;
- 
- 	for (;;) {
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 86dcbff8faa3..5efb2b593be3 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -215,8 +215,9 @@ static int max3100_sr(struct max3100_port *s, u16 tx, u16 *rx)
- 
- static int max3100_handlerx(struct max3100_port *s, u16 rx)
- {
--	unsigned int ch, flg, status = 0;
-+	unsigned int status = 0;
- 	int ret = 0, cts;
-+	u8 ch, flg;
- 
- 	if (rx & MAX3100_R && s->rx_enabled) {
- 		dev_dbg(&s->spi->dev, "%s\n", __func__);
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 997e39449766..416d553b73a7 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -669,7 +669,8 @@ static void max310x_batch_read(struct uart_port *port, u8 *rxbuf, unsigned int l
- static void max310x_handle_rx(struct uart_port *port, unsigned int rxlen)
- {
- 	struct max310x_one *one = to_max310x_port(port);
--	unsigned int sts, ch, flag, i;
-+	unsigned int sts, i;
-+	u8 ch, flag;
- 
- 	if (port->read_status_mask == MAX310X_LSR_RXOVR_BIT) {
- 		/* We are just reading, happily ignoring any error conditions.
-diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-index 3239babe12a4..1666ce012e5e 100644
---- a/drivers/tty/serial/mcf.c
-+++ b/drivers/tty/serial/mcf.c
-@@ -281,7 +281,7 @@ static void mcf_set_termios(struct uart_port *port, struct ktermios *termios,
- static void mcf_rx_chars(struct mcf_uart *pp)
- {
- 	struct uart_port *port = &pp->port;
--	unsigned char status, ch, flag;
-+	u8 status, ch, flag;
- 
- 	while ((status = readb(port->membase + MCFUART_USR)) & MCFUART_USR_RXREADY) {
- 		ch = readb(port->membase + MCFUART_URB);
-diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
-index 44988a2941b8..70a910085e93 100644
---- a/drivers/tty/serial/milbeaut_usio.c
-+++ b/drivers/tty/serial/milbeaut_usio.c
-@@ -148,8 +148,7 @@ static void mlb_usio_enable_ms(struct uart_port *port)
- static void mlb_usio_rx_chars(struct uart_port *port)
- {
- 	struct tty_port *ttyport = &port->state->port;
--	unsigned long flag = 0;
--	char ch = 0;
-+	u8 flag = 0, ch = 0;
- 	u8 status;
- 	int max_count = 2;
- 
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index a368f4293967..2ef10997df18 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -616,9 +616,8 @@ static void mxs_auart_tx_chars(struct mxs_auart_port *s)
- 
- static void mxs_auart_rx_char(struct mxs_auart_port *s)
- {
--	int flag;
- 	u32 stat;
--	u8 c;
-+	u8 c, flag;
- 
- 	c = mxs_read(s, REG_DATA);
- 	stat = mxs_read(s, REG_STAT);
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 16ab7ea07fa3..2c11870fa894 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -442,7 +442,7 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
- 
- static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
- {
--	unsigned int flag;
-+	u8 flag;
- 
- 	/*
- 	 * Read one data character out to avoid stalling the receiver according
-@@ -498,7 +498,7 @@ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
- 
- static void serial_omap_rdi(struct uart_omap_port *up, unsigned int lsr)
- {
--	unsigned char ch = 0;
-+	u8 ch;
- 
- 	if (!(lsr & UART_LSR_DR))
- 		return;
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 444fa4b654ac..73c60f5ea027 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -90,7 +90,7 @@ static void serial_pxa_stop_rx(struct uart_port *port)
- 
- static inline void receive_chars(struct uart_pxa_port *up, int *status)
- {
--	unsigned int ch, flag;
-+	u8 ch, flag;
- 	int max_count = 256;
- 
- 	do {
-diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
-index 749b873a5d99..de220ac8ca54 100644
---- a/drivers/tty/serial/rp2.c
-+++ b/drivers/tty/serial/rp2.c
-@@ -401,14 +401,14 @@ static void rp2_rx_chars(struct rp2_uart_port *up)
- 
- 	for (; bytes != 0; bytes--) {
- 		u32 byte = readw(up->base + RP2_DATA_BYTE) | RP2_DUMMY_READ;
--		char ch = byte & 0xff;
-+		u8 ch = byte & 0xff;
- 
- 		if (likely(!(byte & RP2_DATA_BYTE_EXCEPTION_MASK))) {
- 			if (!uart_handle_sysrq_char(&up->port, ch))
- 				uart_insert_char(&up->port, byte, 0, ch,
- 						 TTY_NORMAL);
- 		} else {
--			char flag = TTY_NORMAL;
-+			u8 flag = TTY_NORMAL;
- 
- 			if (byte & RP2_DATA_BYTE_BREAK_m)
- 				flag = TTY_BREAK;
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index 55107bbc00ce..ad011f1e2f4d 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -180,7 +180,8 @@ static void sa1100_enable_ms(struct uart_port *port)
- static void
- sa1100_rx_chars(struct sa1100_port *sport)
- {
--	unsigned int status, ch, flg;
-+	unsigned int status;
-+	u8 ch, flg;
- 
- 	status = UTSR1_TO_SM(UART_GET_UTSR1(sport)) |
- 		 UTSR0_TO_SM(UART_GET_UTSR0(sport));
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index b29e9dfd81a6..aa4a184f4a6c 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -759,9 +759,10 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
- static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
- {
- 	struct uart_port *port = &ourport->port;
--	unsigned int ufcon, ch, flag, ufstat, uerstat;
-+	unsigned int ufcon, ufstat, uerstat;
- 	unsigned int fifocnt = 0;
- 	int max_count = port->fifosize;
-+	u8 ch, flag;
- 
- 	while (max_count-- > 0) {
- 		/*
-diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
-index b6de0dc51f29..f3cd69346482 100644
---- a/drivers/tty/serial/sb1250-duart.c
-+++ b/drivers/tty/serial/sb1250-duart.c
-@@ -331,8 +331,9 @@ static void sbd_receive_chars(struct sbd_port *sport)
- {
- 	struct uart_port *uport = &sport->port;
- 	struct uart_icount *icount;
--	unsigned int status, ch, flag;
-+	unsigned int status;
- 	int count;
-+	u8 ch, flag;
- 
- 	for (count = 16; count; count--) {
- 		status = read_sbdchn(sport, R_DUART_STATUS);
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 2e7e7c409cf2..cfffc730ba34 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -578,8 +578,9 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
- 				unsigned int iir)
- {
- 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
--	unsigned int lsr = 0, ch, flag, bytes_read, i;
-+	unsigned int lsr = 0, bytes_read, i;
- 	bool read_lsr = (iir == SC16IS7XX_IIR_RLSE_SRC) ? true : false;
-+	u8 ch, flag;
- 
- 	if (unlikely(rxlen >= sizeof(s->buf))) {
- 		dev_warn_ratelimited(port->dev,
-diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
-index 4f2fc5f7bb19..31ee46eba580 100644
---- a/drivers/tty/serial/sccnxp.c
-+++ b/drivers/tty/serial/sccnxp.c
-@@ -383,8 +383,7 @@ static void sccnxp_set_bit(struct uart_port *port, int sig, int state)
- 
- static void sccnxp_handle_rx(struct uart_port *port)
- {
--	u8 sr;
--	unsigned int ch, flag;
-+	u8 sr, ch, flag;
- 
- 	for (;;) {
- 		sr = sccnxp_port_read(port, SCCNXP_SR_REG);
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 1cf08b33456c..813ae97159c4 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -434,10 +434,10 @@ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
- 	return 0;
- }
- 
--static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
-+static u8 tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
- 			unsigned long lsr)
- {
--	char flag = TTY_NORMAL;
-+	u8 flag = TTY_NORMAL;
- 
- 	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
- 		if (lsr & UART_LSR_OE) {
-@@ -642,9 +642,8 @@ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
- 		struct tty_port *port)
- {
- 	do {
--		char flag = TTY_NORMAL;
- 		unsigned long lsr = 0;
--		unsigned char ch;
-+		u8 ch, flag = TTY_NORMAL;
- 
- 		lsr = tegra_uart_read(tup, UART_LSR);
- 		if (!(lsr & UART_LSR_DR))
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index eab387b01e36..be08fb6f749c 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -246,11 +246,10 @@ static void serial_txx9_initialize(struct uart_port *up)
- static inline void
- receive_chars(struct uart_port *up, unsigned int *status)
- {
--	unsigned char ch;
- 	unsigned int disr = *status;
- 	int max_count = 256;
--	char flag;
- 	unsigned int next_ignore_status_mask;
-+	u8 ch, flag;
- 
- 	do {
- 		ch = sio_in(up, TXX9_SIRFIFO);
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index 1f565a216e74..c00080f12cab 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -402,9 +402,9 @@ static char __ssp_receive_char(struct sifive_serial_port *ssp, char *is_empty)
-  */
- static void __ssp_receive_chars(struct sifive_serial_port *ssp)
- {
--	unsigned char ch;
- 	char is_empty;
- 	int c;
-+	u8 ch;
- 
- 	for (c = SIFIVE_RX_FIFO_DEPTH; c > 0; --c) {
- 		ch = __ssp_receive_char(ssp, &is_empty);
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index b58f51296ace..8f6fd1cd91d7 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -558,7 +558,7 @@ static void sprd_break_ctl(struct uart_port *port, int break_state)
- }
- 
- static int handle_lsr_errors(struct uart_port *port,
--			     unsigned int *flag,
-+			     u8 *flag,
- 			     unsigned int *lsr)
- {
- 	int ret = 0;
-@@ -594,7 +594,8 @@ static inline void sprd_rx(struct uart_port *port)
- 	struct sprd_uart_port *sp = container_of(port, struct sprd_uart_port,
- 						 port);
- 	struct tty_port *tty = &port->state->port;
--	unsigned int ch, flag, lsr, max_count = SPRD_TIMEOUT;
-+	unsigned int lsr, max_count = SPRD_TIMEOUT;
-+	u8 ch, flag;
- 
- 	if (sp->rx_dma.enable) {
- 		sprd_uart_dma_irq(port);
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index aa471c9c24d9..387bc69bb1fe 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -250,7 +250,7 @@ static void asc_receive_chars(struct uart_port *port)
- 	struct tty_port *tport = &port->state->port;
- 	unsigned long status, mode;
- 	unsigned long c = 0;
--	char flag;
-+	u8 flag;
- 	bool ignore_pe = false;
- 
- 	/*
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index e9e11a259621..be47cd343cf6 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -321,7 +321,7 @@ static bool stm32_usart_pending_rx_pio(struct uart_port *port, u32 *sr)
- 	return false;
- }
- 
--static unsigned long stm32_usart_get_char_pio(struct uart_port *port)
-+static u8 stm32_usart_get_char_pio(struct uart_port *port)
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-@@ -338,10 +338,9 @@ static unsigned int stm32_usart_receive_chars_pio(struct uart_port *port)
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
--	unsigned long c;
- 	unsigned int size = 0;
- 	u32 sr;
--	char flag;
-+	u8 c, flag;
- 
- 	while (stm32_usart_pending_rx_pio(port, &sr)) {
- 		sr |= USART_SR_DUMMY_RX;
-diff --git a/drivers/tty/serial/sunplus-uart.c b/drivers/tty/serial/sunplus-uart.c
-index 727942c43c45..3aacd5eb414c 100644
---- a/drivers/tty/serial/sunplus-uart.c
-+++ b/drivers/tty/serial/sunplus-uart.c
-@@ -231,7 +231,7 @@ static void transmit_chars(struct uart_port *port)
- static void receive_chars(struct uart_port *port)
- {
- 	unsigned int lsr = readl(port->membase + SUP_UART_LSR);
--	unsigned int ch, flag;
-+	u8 ch, flag;
- 
- 	do {
- 		ch = readl(port->membase + SUP_UART_DATA);
-diff --git a/drivers/tty/serial/zs.c b/drivers/tty/serial/zs.c
-index 730c648e32ff..65ca4da6e368 100644
---- a/drivers/tty/serial/zs.c
-+++ b/drivers/tty/serial/zs.c
-@@ -539,8 +539,9 @@ static void zs_receive_chars(struct zs_port *zport)
- 	struct uart_port *uport = &zport->port;
- 	struct zs_scc *scc = zport->scc;
- 	struct uart_icount *icount;
--	unsigned int avail, status, ch, flag;
-+	unsigned int avail, status;
- 	int count;
-+	u8 ch, flag;
- 
- 	for (count = 16; count; count--) {
- 		spin_lock(&scc->zlock);
--- 
-2.41.0
+--------------kwdsZQottQfODXMNUoqWwLah--
 
+--------------P8CS0SO3HdqJaaaGGI64PTQe
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmSuZa4FAwAAAAAACgkQlh/E3EQov+DH
+jxAAkdbwGPcRQJeF9umGHMQY/MPtgz2o6OAUs88cvG83WBHgM6bUYvFmO5Q610M/RGiQJXrVPPiD
+h+aM4awox5Wzt2F6IQCVU0xQB0qJ+yk9sZgBkh0E/26n+mdRaxqaVsPn69kI6JMb5mY+QxLMzvZq
+4GVD9D3XES5kO5MwEHk1/oEfBPr+GIzcXB7h1prf3mYtuCowXiVP0yh7X7I5yLdTSeKbBxQoCNhm
+3JiTQ85IQtJZUUf9lVwck2MNBr8Ra+0dS2a4XDCYRyiWjcl4NvvMm94zI5j2GcagLVxx5MrWIuPa
+N3400qHiptqr2ZT03WXjVwwFSfyD2JQvY4V+hKDkZcdHQfQkmDLVrWf4Rka1Nw+xtUhevZfIQrEv
+N7Q7hsubGCA+Zz2FIHG4/2jA1pDSQHBRsvJC8QA08beb5g97McShJ0OevDS72Fb91ky64D/Nq9jz
+5xFMQf7gc3kUY6FSwosecQr7zfI3Tv5uX9jglW7HjY4/S43LIIp7cBYk0jjnN02BaQ9uWLSUnfyj
+PT9ua6ylacyxNTwUH20rc+vSh0MC3oOdRWRTJC4HFTh3OnEim2rYXQyOl30GlSjYyAMudoWX9AHg
+Wph1uKrhQyOFqm/TBpsqv5auxBqpgIJnENTQXCQU4p1teB/UsGBBL06MlAwl1NFNdxsnfnz1tC5a
+Y04=
+=OJ/H
+-----END PGP SIGNATURE-----
+
+--------------P8CS0SO3HdqJaaaGGI64PTQe--
