@@ -2,44 +2,45 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DF8EB64D9
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0613C001DD
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 08:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbjGLIXd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 04:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
+        id S229931AbjGLIXe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 04:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232240AbjGLIWU (ORCPT
+        with ESMTP id S232314AbjGLIWX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 04:22:20 -0400
+        Wed, 12 Jul 2023 04:22:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDC4421D;
-        Wed, 12 Jul 2023 01:18:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178B94228;
+        Wed, 12 Jul 2023 01:18:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9C81616DA;
-        Wed, 12 Jul 2023 08:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DA18C433C8;
-        Wed, 12 Jul 2023 08:18:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E4EA6170C;
+        Wed, 12 Jul 2023 08:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF8BC433CA;
+        Wed, 12 Jul 2023 08:18:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689149908;
-        bh=Ci3nRAs35p4iqwTNouGnDja3Fdyihy2hLFK9/UOdi0E=;
+        s=k20201202; t=1689149913;
+        bh=XZREM9dFS9eFEHKaYWll8W+f8NiG+samOrQfIYNIBMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ve2HDbqBkJFugEVGTp+DU5ufx78fAZlMogYPKGzPvJjLqRROjjYSV4dNQp14fW5Ey
-         q41aHA34c47yw2I9AETg9HSxeWTxIlFoKSduMosTEZ4t3BhLDGUvcSWl4h2TkK1Bqt
-         TPiSKWBg8IUo0cNJq1HRnyuWVpqcxHSrCwUrPh/U6vGq0tlMdpO1JZJO7m5zBt9ClJ
-         o7y+9Ya8s33VRnQm6o7h/hPoA7dBu498JzV90Gq1GJhFi91H1a9tfSU/XLCfUWPzk3
-         K5LrYxz6N70sbLUpb74Vvb74J4Z4nWQor3eWjMFUaPya/ocIiWlsM3xYTc/kxo/xBv
-         npPGxaEpoiDmg==
+        b=U6aiLMSO7gbLvJ0LltqlGjeqxKQ8Gk+DOFVChVi6j20z3cYmwxXz3BBKf4HO5VorU
+         fPz+uoQTUA6x8ZnhVzbP8cRAVk5RMw6yE7G8+Eq3bNUgxEMg3AD+L1b3duzqY5S+qx
+         oEO5nnvQRtirI+4fnNk06YddQffnIqbrVpz2CRuq4ZpRFYS6WbKUDfKcFEAXAwTwBm
+         KIb28rEXRW/YovyxzwBSDChGJ5/p6YQJHOneY5AQhROVlG0x1yKQl13AN/ExhlA+fL
+         AIAKfX9EyBx2jORDXcEuhDG0cXV9JOFVA3wUR24T0uKGzLfgzTyjvAmoeDUj5vixeY
+         qpUFtI+GRUryg==
 From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 05/10] serial: convert uart sysrq handling to u8
-Date:   Wed, 12 Jul 2023 10:18:06 +0200
-Message-ID: <20230712081811.29004-6-jirislaby@kernel.org>
+        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH 08/10] serial: arc_uart: simplify flags handling in arc_serial_rx_chars()
+Date:   Wed, 12 Jul 2023 10:18:09 +0200
+Message-ID: <20230712081811.29004-9-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230712081811.29004-1-jirislaby@kernel.org>
 References: <20230712081811.29004-1-jirislaby@kernel.org>
@@ -49,103 +50,78 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Propagate u8 from the sysrq code further up to serial's
-uart_handle_sysrq_char() and friends.
+* move the declaration of flg (with the initializer) to the loop, so
+  there is no need to reset it to TTY_NORMAL by an 'else' branch.
+* use TTY_NORMAL as initializer above, not a magic zero constant
+* remove the outer 'if' from this construct:
+  if (S & (A | B)) {
+    if (S & A)
+      X;
+    if (S & B)
+      Y;
+  }
+* drop unlikely() as I doubt it has any benefits here. If it does,
+  provide numbers.
+
+All four make the code easier to read.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Vineet Gupta <vgupta@kernel.org>
 ---
- drivers/tty/serial/serial_core.c |  4 ++--
- include/linux/serial_core.h      | 16 ++++++++--------
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/tty/serial/arc_uart.c | 29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 831d033611e6..7e37db9adbd4 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3505,7 +3505,7 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
- EXPORT_SYMBOL_GPL(uart_insert_char);
+diff --git a/drivers/tty/serial/arc_uart.c b/drivers/tty/serial/arc_uart.c
+index 4b2512eef577..835903488acb 100644
+--- a/drivers/tty/serial/arc_uart.c
++++ b/drivers/tty/serial/arc_uart.c
+@@ -195,8 +195,6 @@ static void arc_serial_start_tx(struct uart_port *port)
  
- #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
--static const char sysrq_toggle_seq[] = CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE;
-+static const u8 sysrq_toggle_seq[] = CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE;
- 
- static void uart_sysrq_on(struct work_struct *w)
+ static void arc_serial_rx_chars(struct uart_port *port, unsigned int status)
  {
-@@ -3528,7 +3528,7 @@ static DECLARE_WORK(sysrq_enable_work, uart_sysrq_on);
-  * Returns: %false if @ch is out of enabling sequence and should be
-  * handled some other way, %true if @ch was consumed.
-  */
--bool uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch)
-+bool uart_try_toggle_sysrq(struct uart_port *port, u8 ch)
- {
- 	int sysrq_toggle_seq_len = strlen(sysrq_toggle_seq);
+-	unsigned int ch, flg = 0;
+-
+ 	/*
+ 	 * UART has 4 deep RX-FIFO. Driver's recongnition of this fact
+ 	 * is very subtle. Here's how ...
+@@ -207,24 +205,23 @@ static void arc_serial_rx_chars(struct uart_port *port, unsigned int status)
+ 	 * controller, which is indeed the Rx-FIFO.
+ 	 */
+ 	do {
++		unsigned int ch, flg = TTY_NORMAL;
++
+ 		/*
+ 		 * This could be an Rx Intr for err (no data),
+ 		 * so check err and clear that Intr first
+ 		 */
+-		if (unlikely(status & (RXOERR | RXFERR))) {
+-			if (status & RXOERR) {
+-				port->icount.overrun++;
+-				flg = TTY_OVERRUN;
+-				UART_CLR_STATUS(port, RXOERR);
+-			}
+-
+-			if (status & RXFERR) {
+-				port->icount.frame++;
+-				flg = TTY_FRAME;
+-				UART_CLR_STATUS(port, RXFERR);
+-			}
+-		} else
+-			flg = TTY_NORMAL;
++		if (status & RXOERR) {
++			port->icount.overrun++;
++			flg = TTY_OVERRUN;
++			UART_CLR_STATUS(port, RXOERR);
++		}
++
++		if (status & RXFERR) {
++			port->icount.frame++;
++			flg = TTY_FRAME;
++			UART_CLR_STATUS(port, RXFERR);
++		}
  
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 6d58c57acdaa..14dd85ee849e 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -569,7 +569,7 @@ struct uart_port {
- 	struct serial_port_device *port_dev;		/* serial core port device */
- 
- 	unsigned long		sysrq;			/* sysrq timeout */
--	unsigned int		sysrq_ch;		/* char for sysrq */
-+	u8			sysrq_ch;		/* char for sysrq */
- 	unsigned char		has_sysrq;
- 	unsigned char		sysrq_seq;		/* index in sysrq_toggle_seq */
- 
-@@ -910,9 +910,9 @@ void uart_xchar_out(struct uart_port *uport, int offset);
- #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
- #define SYSRQ_TIMEOUT	(HZ * 5)
- 
--bool uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch);
-+bool uart_try_toggle_sysrq(struct uart_port *port, u8 ch);
- 
--static inline int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
-+static inline int uart_handle_sysrq_char(struct uart_port *port, u8 ch)
- {
- 	if (!port->sysrq)
- 		return 0;
-@@ -931,7 +931,7 @@ static inline int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch
- 	return 0;
- }
- 
--static inline int uart_prepare_sysrq_char(struct uart_port *port, unsigned int ch)
-+static inline int uart_prepare_sysrq_char(struct uart_port *port, u8 ch)
- {
- 	if (!port->sysrq)
- 		return 0;
-@@ -952,7 +952,7 @@ static inline int uart_prepare_sysrq_char(struct uart_port *port, unsigned int c
- 
- static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
- {
--	int sysrq_ch;
-+	u8 sysrq_ch;
- 
- 	if (!port->has_sysrq) {
- 		spin_unlock(&port->lock);
-@@ -971,7 +971,7 @@ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
- static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port,
- 		unsigned long flags)
- {
--	int sysrq_ch;
-+	u8 sysrq_ch;
- 
- 	if (!port->has_sysrq) {
- 		spin_unlock_irqrestore(&port->lock, flags);
-@@ -987,11 +987,11 @@ static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port
- 		handle_sysrq(sysrq_ch);
- }
- #else	/* CONFIG_MAGIC_SYSRQ_SERIAL */
--static inline int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
-+static inline int uart_handle_sysrq_char(struct uart_port *port, u8 ch)
- {
- 	return 0;
- }
--static inline int uart_prepare_sysrq_char(struct uart_port *port, unsigned int ch)
-+static inline int uart_prepare_sysrq_char(struct uart_port *port, u8 ch)
- {
- 	return 0;
- }
+ 		if (status & RXEMPTY)
+ 			continue;
 -- 
 2.41.0
 
