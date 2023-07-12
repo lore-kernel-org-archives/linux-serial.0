@@ -2,181 +2,132 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E18EB64DC
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 01:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF111EB64DC
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 03:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbjGLBjC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Jul 2023 21:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        id S231200AbjGLDMI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 11 Jul 2023 23:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbjGLBjB (ORCPT
+        with ESMTP id S230474AbjGLDMG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Jul 2023 21:39:01 -0400
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3794C195;
-        Tue, 11 Jul 2023 18:38:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VnAhBvS_1689125932;
-Received: from 30.97.48.48(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VnAhBvS_1689125932)
-          by smtp.aliyun-inc.com;
-          Wed, 12 Jul 2023 09:38:53 +0800
-Message-ID: <dcc75737-35b8-eb44-559c-9d9697195879@linux.alibaba.com>
-Date:   Wed, 12 Jul 2023 09:39:13 +0800
+        Tue, 11 Jul 2023 23:12:06 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C22C1709;
+        Tue, 11 Jul 2023 20:12:04 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-51e6113437cso2436915a12.2;
+        Tue, 11 Jul 2023 20:12:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689131523; x=1691723523;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=1X3rocWR9NzmQmqjmOM0ugmoajYZ3hSwDhfHwSLSQ3Q=;
+        b=gQGYGgLTZE4hIV/zsGR9mAw57f5zWDw80SpAUvdmQR+K8UYWILPzN7IAN3M6ZULyw/
+         NeWp+eDPQrfDx8W5jIneQ4l0maWD/4vgSgmQrfPEZi1YOpTWFw5w7xBDGTWhJxMzMozu
+         vdK0RHbQr3/iR2HmYSaMrR/S3pN7g2RSGww0hVHEK6rWi1kzvv5Uu7Ls/sSb64fLUUo0
+         YEyIJcxoyxTVbxED8+Sxnk0zA+R/4JdOrwAwNfbYqzKgK/gXT3I2ueua06kKkuJerKSJ
+         4zBAAiVzo9kIm/sRvcwFnv98SQ1n5Dzo7kuj0V3Vxx/tYwC1ZxHEHRlYqBmHeg3CJ8Xk
+         lAQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689131523; x=1691723523;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1X3rocWR9NzmQmqjmOM0ugmoajYZ3hSwDhfHwSLSQ3Q=;
+        b=hZelMMDmx8wxEh69K/7YFQgUoLRqD75MXiZlX58IFQ+TBKjt2GTizjJKYYLDu56ZMM
+         SIBZTcbY4X0Df9JoWSkIcJoLmZzMbHKOAEcLysDyTEC6slnBqZsyYuFs5QTDATFMK2z9
+         zZIurPzC/gJyoresXbfNczuI/hamHYt9dBLU1XBrl+34lX7mEFgHe8XYrJ4OprTJks2T
+         AGUj4fHFtfPNbnJZ0J2knuXvdk6SS9CREtUGwoVH4IWcYfIelXlKv/nIZZ+cOR74RQsC
+         cT8bgLuMg4pAMHN1SIZbLJJ7oCq2Tsq/u6wSDbHvv+B4am/QXQAoiJenB48GsFwF2he3
+         CmEQ==
+X-Gm-Message-State: ABy/qLZdVcyT/cdcqPU6wN1tWhMH7XWcC/xwRdGxfzqMz7L+RAYuQ0LB
+        yjv9W7+/2O0zLsZ/Y56WdKVZRPJD/TBjoEfnnoglMzvLeGg=
+X-Google-Smtp-Source: APBJJlFOibZl9aL1Dpq+SinnDJNzTDJUaEkYNCn6AgwkhLnpQUPdWFcpmLRHK8MDsHhUwm7VQm8d3az4DbMwGyBHYS4=
+X-Received: by 2002:a50:fc1a:0:b0:51d:92bf:e6ae with SMTP id
+ i26-20020a50fc1a000000b0051d92bfe6aemr15563303edr.18.1689131522838; Tue, 11
+ Jul 2023 20:12:02 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
+References: <20230710080348.4137875-1-chunyan.zhang@unisoc.com>
+ <fb86f01a-81b3-62c5-050f-f44e591bf272@linux.alibaba.com> <CAAfSe-ttuTvOE-BbnNk5LiAqhZHcPEe9XSeunCxkpG4-95Tcjg@mail.gmail.com>
+ <dcc75737-35b8-eb44-559c-9d9697195879@linux.alibaba.com>
+In-Reply-To: <dcc75737-35b8-eb44-559c-9d9697195879@linux.alibaba.com>
+From:   Chunyan Zhang <zhang.lyra@gmail.com>
+Date:   Wed, 12 Jul 2023 11:11:25 +0800
+Message-ID: <CAAfSe-vNv=58k2b31xDqLmzSonWTsb5QJcXEyE3CoX81ND57mQ@mail.gmail.com>
 Subject: Re: [PATCH 1/2] serial: sprd: Assign sprd_port after initialized to
  avoid wrong access
-To:     Chunyan Zhang <zhang.lyra@gmail.com>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
 Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
         LKML <linux-kernel@vger.kernel.org>
-References: <20230710080348.4137875-1-chunyan.zhang@unisoc.com>
- <fb86f01a-81b3-62c5-050f-f44e591bf272@linux.alibaba.com>
- <CAAfSe-ttuTvOE-BbnNk5LiAqhZHcPEe9XSeunCxkpG4-95Tcjg@mail.gmail.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <CAAfSe-ttuTvOE-BbnNk5LiAqhZHcPEe9XSeunCxkpG4-95Tcjg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, 12 Jul 2023 at 09:39, Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+>
+>
+>
+> On 7/11/2023 10:57 AM, Chunyan Zhang wrote:
+> > On Mon, 10 Jul 2023 at 17:57, Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+> >>
+> >>
+> >>
+> >> On 7/10/2023 4:03 PM, Chunyan Zhang wrote:
+> >>> The global pointer 'sprd_port' maybe not zero when sprd_probe returns
+> >>> fail, that is a risk for sprd_port to be accessed afterward, and will
+> >>> lead unexpected errors.
+> >>>
+> >>> For example:
+> >>>
+> >>> There're two UART ports, UART1 is used for console and configured in kernel
+> >>> command line, i.e. "console=";
+> >>>
+> >>> The UART1 probe fail and the memory allocated to sprd_port[1] was released,
+> >>> but sprd_port[1] was not set to NULL;
+> >>
+> >> IMO, we should just set sprd_port[1] to be NULL, which seems simpler?
+> >
+> > This patch just does like this indeed, in the label of 'clean_port'.
+> > Adding a local variable instead of using global pointer (sprd_port[])
+> > to store the virtual address allocated for sprd_port can avoid
+> > overmany goto labels.
+> >
+> >>
+> >>>
+> >>> In UART2 probe, the same virtual address was allocated to sprd_port[2],
+> >>> and UART2 probe process finally will go into sprd_console_setup() to
+> >>> register UART1 as console since it is configured as preferred console
+> >>> (filled to console_cmdline[]), but the console parameters (sprd_port[1])
+> >>> actually belongs to UART2.
+> >>
+> >> I'm confusing why the console parameters belongs to UART2? Since the
+> >> console_cmdline[] will specify the serial index, that belongs to UART1.
+> >
+> > The same virtual address stored in sprd_port[1] was reallocated to
+> > sprd_port[2] after the UART1 probe returned failure.
+> >
+>
+> After more thinking, I understood your case. :)
+>
+> But I see a nit in this patch, you added a 'clean_port' label to clear
+> the resource for the fail-probe-port instead of sprd_remove(), however
+> sprd_remove() will call sprd_rx_free_buf() to free the DMA buffer
+> originally. I know the 2nd patch will add it back, but patch 1 is not
+> git-bisect safe, right?
 
+Actually it doesn't make git-bisect unsafe, the driver can work with a
+memory leak issue which has been there and fixed in another patch.
+But I can add back sprd_remove() to keep the unrelated code logic the same.
 
-On 7/11/2023 10:57 AM, Chunyan Zhang wrote:
-> On Mon, 10 Jul 2023 at 17:57, Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
->>
->>
->>
->> On 7/10/2023 4:03 PM, Chunyan Zhang wrote:
->>> The global pointer 'sprd_port' maybe not zero when sprd_probe returns
->>> fail, that is a risk for sprd_port to be accessed afterward, and will
->>> lead unexpected errors.
->>>
->>> For example:
->>>
->>> There're two UART ports, UART1 is used for console and configured in kernel
->>> command line, i.e. "console=";
->>>
->>> The UART1 probe fail and the memory allocated to sprd_port[1] was released,
->>> but sprd_port[1] was not set to NULL;
->>
->> IMO, we should just set sprd_port[1] to be NULL, which seems simpler?
-> 
-> This patch just does like this indeed, in the label of 'clean_port'.
-> Adding a local variable instead of using global pointer (sprd_port[])
-> to store the virtual address allocated for sprd_port can avoid
-> overmany goto labels.
-> 
->>
->>>
->>> In UART2 probe, the same virtual address was allocated to sprd_port[2],
->>> and UART2 probe process finally will go into sprd_console_setup() to
->>> register UART1 as console since it is configured as preferred console
->>> (filled to console_cmdline[]), but the console parameters (sprd_port[1])
->>> actually belongs to UART2.
->>
->> I'm confusing why the console parameters belongs to UART2? Since the
->> console_cmdline[] will specify the serial index, that belongs to UART1.
-> 
-> The same virtual address stored in sprd_port[1] was reallocated to
-> sprd_port[2] after the UART1 probe returned failure.
-> 
+Thanks for the review,
+Chunyan
 
-After more thinking, I understood your case. :)
-
-But I see a nit in this patch, you added a 'clean_port' label to clear 
-the resource for the fail-probe-port instead of sprd_remove(), however 
-sprd_remove() will call sprd_rx_free_buf() to free the DMA buffer 
-originally. I know the 2nd patch will add it back, but patch 1 is not 
-git-bisect safe, right?
-
-So I think you should also add sprd_rx_free_buf() under the 'clean_port' 
-label in patch 1, then patch 2 moves the sprd_rx_free_buf() to the 
-correct place.
-
->> Please correct me if I miss something.
->>
->>> So move the sprd_port[] assignment to where the port already initialized
->>> can avoid the above issue.
->>>
->>> Fixes: b7396a38fb28 ("tty/serial: Add Spreadtrum sc9836-uart driver support")
->>> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
->>> ---
->>>    drivers/tty/serial/sprd_serial.c | 24 ++++++++++++++++--------
->>>    1 file changed, 16 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
->>> index b58f51296ace..942808517393 100644
->>> --- a/drivers/tty/serial/sprd_serial.c
->>> +++ b/drivers/tty/serial/sprd_serial.c
->>> @@ -1106,7 +1106,7 @@ static bool sprd_uart_is_console(struct uart_port *uport)
->>>    static int sprd_clk_init(struct uart_port *uport)
->>>    {
->>>        struct clk *clk_uart, *clk_parent;
->>> -     struct sprd_uart_port *u = sprd_port[uport->line];
->>> +     struct sprd_uart_port *u = container_of(uport, struct sprd_uart_port, port);
->>>
->>>        clk_uart = devm_clk_get(uport->dev, "uart");
->>>        if (IS_ERR(clk_uart)) {
->>> @@ -1149,22 +1149,22 @@ static int sprd_probe(struct platform_device *pdev)
->>>    {
->>>        struct resource *res;
->>>        struct uart_port *up;
->>> +     struct sprd_uart_port *sport;
->>>        int irq;
->>>        int index;
->>>        int ret;
->>>
->>>        index = of_alias_get_id(pdev->dev.of_node, "serial");
->>> -     if (index < 0 || index >= ARRAY_SIZE(sprd_port)) {
->>> +     if (index < 0 || index >= UART_NR_MAX) {
->>>                dev_err(&pdev->dev, "got a wrong serial alias id %d\n", index);
->>>                return -EINVAL;
->>>        }
->>>
->>> -     sprd_port[index] = devm_kzalloc(&pdev->dev, sizeof(*sprd_port[index]),
->>> -                                     GFP_KERNEL);
->>> -     if (!sprd_port[index])
->>> +     sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
->>> +     if (!sport)
->>>                return -ENOMEM;
->>>
->>> -     up = &sprd_port[index]->port;
->>> +     up = &sport->port;
->>>        up->dev = &pdev->dev;
->>>        up->line = index;
->>>        up->type = PORT_SPRD;
->>> @@ -1195,7 +1195,7 @@ static int sprd_probe(struct platform_device *pdev)
->>>         * Allocate one dma buffer to prepare for receive transfer, in case
->>>         * memory allocation failure at runtime.
->>>         */
->>> -     ret = sprd_rx_alloc_buf(sprd_port[index]);
->>> +     ret = sprd_rx_alloc_buf(sport);
->>>        if (ret)
->>>                return ret;
->>>
->>> @@ -1208,12 +1208,20 @@ static int sprd_probe(struct platform_device *pdev)
->>>        }
->>>        sprd_ports_num++;
->>>
->>> +     sprd_port[index] = sport;
->>> +
->>>        ret = uart_add_one_port(&sprd_uart_driver, up);
->>>        if (ret)
->>> -             sprd_remove(pdev);
->>> +             goto clean_port;
->>>
->>>        platform_set_drvdata(pdev, up);
->>>
->>> +     return 0;
->>> +
->>> +clean_port:
->>> +     sprd_port[index] = NULL;
->>> +     sprd_ports_num--;
->>> +     uart_unregister_driver(&sprd_uart_driver);
->>>        return ret;
->>>    }
->>>
+>
+> So I think you should also add sprd_rx_free_buf() under the 'clean_port'
+> label in patch 1, then patch 2 moves the sprd_rx_free_buf() to the
+> correct place.
+>
