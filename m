@@ -2,471 +2,207 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1224EB64D9
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 13:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEB2EB64D9
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jul 2023 14:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbjGLNh2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 09:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55568 "EHLO
+        id S233361AbjGLOQV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 10:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbjGLNh2 (ORCPT
+        with ESMTP id S232118AbjGLOQQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 09:37:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8FC19A6;
-        Wed, 12 Jul 2023 06:37:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B919616E0;
-        Wed, 12 Jul 2023 13:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE71CC433C8;
-        Wed, 12 Jul 2023 13:37:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689169045;
-        bh=saktDQrJAcRzBucPd3n2ys4LMtxAgDU0KwhhhQBghb0=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=MN15Df0bnq9YQ4diu5vzZ8Y/D0fHGWd02t+RGMGxS4xut8NkvGOfym177sV11l4D9
-         O8M30a2HMfFkE7P7+WpzaGlfslPgW9vlJbrqHLdkTH/j9vKBkbImKbFsRY21xjr6+b
-         3jPduJKs8U74gdLZzUABEGhIpXrvyC650smWQIwrGtii3q4DhVOojnayT3R7y24xb5
-         EuFOeGl/WJrkjmIbSMYMyvZ0kG9KLZ0ZXwbMT4BHA1XYyx76BaNN/A8UpJlpvXY0Xb
-         z6UfCKqT7qKmTR53rBLPCvLlat+VvoMyeMeJh09319zeA0a70EDfTzzh3usNkoqYaU
-         dMNp7Y0te+raA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 834A7CE0123; Wed, 12 Jul 2023 06:37:24 -0700 (PDT)
-Date:   Wed, 12 Jul 2023 06:37:24 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Zqiang <qiang.zhang1211@gmail.com>
-Subject: Re: [PATCH 02/10] tty: sysrq: switch sysrq handlers from int to u8
-Message-ID: <a9ad0406-67fb-48d0-9d89-f7338be9ce43@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20230712081811.29004-1-jirislaby@kernel.org>
- <20230712081811.29004-3-jirislaby@kernel.org>
+        Wed, 12 Jul 2023 10:16:16 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637951BDF;
+        Wed, 12 Jul 2023 07:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689171373; x=1720707373;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=Os8ND3nqigTu76dQVguaSEK1X3J11jRaSqtTnbGNiqI=;
+  b=Rh4CsPGHXqHyUgpOoJcdlKbZRZX7w+Ir0YseszgrE//K1wNbau3QaWmz
+   MFfgV+ErjhofDuWFwLG/K4M5Z5tIzossSXW0QB4NnvXkgTyUPkkoNM10w
+   H37wB27OIhEZxCmJAYpo3G9O7s2/EFOL6M39nPfw2L8TOLy5r27bbWSSO
+   8MPK9vthRnQlifdXnXTMT4UEA3LUzO1XuZMfN0ErERoUthI3cZobm0kkU
+   SXyzNym3HyabcglBcB2xmUuRI4BtmVFIsqCfQJCHi4FE3/3TCeP4VFul+
+   y2HN4XirneXXPpYfhuDR1oreYkxv7RRf4zD/y+wSdbAlkjzMASbUUkKAt
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="354807596"
+X-IronPort-AV: E=Sophos;i="6.01,199,1684825200"; 
+   d="scan'208";a="354807596"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 07:16:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10769"; a="791640967"
+X-IronPort-AV: E=Sophos;i="6.01,199,1684825200"; 
+   d="scan'208";a="791640967"
+Received: from agermosh-mobl1.amr.corp.intel.com ([10.252.43.42])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2023 07:16:09 -0700
+Date:   Wed, 12 Jul 2023 17:16:03 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Vinod Koul <vkoul@kernel.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Robert Baldyga <r.baldyga@samsung.com>,
+        dmaengine@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Richard Tresidder <rtresidd@electromag.com.au>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] dmaengine: pl330: Return DMA_PAUSED when transaction is
+ paused
+In-Reply-To: <ZKUceu9iJuAAeYYT@matsya>
+Message-ID: <f99696c-df19-2e6d-d48c-b3f2c3481e22@linux.intel.com>
+References: <20230526105434.14959-1-ilpo.jarvinen@linux.intel.com> <ZKUceu9iJuAAeYYT@matsya>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230712081811.29004-3-jirislaby@kernel.org>
+Content-Type: multipart/mixed; BOUNDARY="8323329-329618449-1689166921=:1670"
+Content-ID: <6466d25e-fcdb-cadb-f4f8-49c884fcba48@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 12, 2023 at 10:18:03AM +0200, Jiri Slaby (SUSE) wrote:
-> The passed parameter to sysrq handlers is a key (a character). So change
-> the type from 'int' to 'u8'. Let it specifically be 'u8' for two
-> reasons:
-> * unsigned: unsigned values come from the upper layers (devices) and the
->   tty layer assumes unsigned on most places, and
-> * 8-bit: as that what's supposed to be one day in all the layers built
->   on the top of tty. (Currently, we use mostly 'unsigned char' and
->   somewhere still only 'char'. (But that also translates to the former
->   thanks to -funsigned-char.))
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: Huacai Chen <chenhuacai@kernel.org>
-> Cc: WANG Xuerui <kernel@xen0n.name>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Nicholas Piggin <npiggin@gmail.com>
-> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: David Airlie <airlied@gmail.com>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Jason Wessel <jason.wessel@windriver.com>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Len Brown <len.brown@intel.com>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Frederic Weisbecker <frederic@kernel.org>
-> Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> Cc: Joel Fernandes <joel@joelfernandes.org>
-> Cc: Josh Triplett <josh@joshtriplett.org>
-> Cc: Boqun Feng <boqun.feng@gmail.com>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-> Cc: Zqiang <qiang.zhang1211@gmail.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-From an RCU perspective:
+--8323329-329618449-1689166921=:1670
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <44d86a3c-f85c-567d-6dd2-de905c6fb7c0@linux.intel.com>
 
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
+On Wed, 5 Jul 2023, Vinod Koul wrote:
 
-> ---
->  arch/alpha/kernel/setup.c       |  2 +-
->  arch/loongarch/kernel/sysrq.c   |  2 +-
->  arch/mips/kernel/sysrq.c        |  2 +-
->  arch/powerpc/xmon/xmon.c        |  2 +-
->  arch/sparc/kernel/process_64.c  |  4 ++--
->  drivers/gpu/drm/drm_fb_helper.c |  2 +-
->  drivers/tty/sysrq.c             | 40 ++++++++++++++++-----------------
->  include/linux/sysrq.h           |  2 +-
->  kernel/debug/debug_core.c       |  2 +-
->  kernel/power/poweroff.c         |  2 +-
->  kernel/rcu/tree_stall.h         |  2 +-
->  11 files changed, 31 insertions(+), 31 deletions(-)
+> On 26-05-23, 13:54, Ilpo Järvinen wrote:
+> > pl330_pause() does not set anything to indicate paused condition which
+> > causes pl330_tx_status() to return DMA_IN_PROGRESS. This breaks 8250
+> > DMA flush after the fix in commit 57e9af7831dc ("serial: 8250_dma: Fix
+> > DMA Rx rearm race"). The function comment for pl330_pause() claims
+> > pause is supported but resume is not which is enough for 8250 DMA flush
+> > to work as long as DMA status reports DMA_PAUSED when appropriate.
+> > 
+> > Add PAUSED state for descriptor and mark BUSY descriptors with PAUSED
+> > in pl330_pause(). Return DMA_PAUSED from pl330_tx_status() when the
+> > descriptor is PAUSED.
 > 
-> diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-> index b650ff1cb022..91fb3714ebc2 100644
-> --- a/arch/alpha/kernel/setup.c
-> +++ b/arch/alpha/kernel/setup.c
-> @@ -422,7 +422,7 @@ register_cpus(void)
->  arch_initcall(register_cpus);
->  
->  #ifdef CONFIG_MAGIC_SYSRQ
-> -static void sysrq_reboot_handler(int unused)
-> +static void sysrq_reboot_handler(u8 unused)
->  {
->  	machine_halt();
->  }
-> diff --git a/arch/loongarch/kernel/sysrq.c b/arch/loongarch/kernel/sysrq.c
-> index 366baef72d29..e663c10fa39c 100644
-> --- a/arch/loongarch/kernel/sysrq.c
-> +++ b/arch/loongarch/kernel/sysrq.c
-> @@ -43,7 +43,7 @@ static void sysrq_tlbdump_othercpus(struct work_struct *dummy)
->  static DECLARE_WORK(sysrq_tlbdump, sysrq_tlbdump_othercpus);
->  #endif
->  
-> -static void sysrq_handle_tlbdump(int key)
-> +static void sysrq_handle_tlbdump(u8 key)
->  {
->  	sysrq_tlbdump_single(NULL);
->  #ifdef CONFIG_SMP
-> diff --git a/arch/mips/kernel/sysrq.c b/arch/mips/kernel/sysrq.c
-> index 9c1a2019113b..2e98049fe783 100644
-> --- a/arch/mips/kernel/sysrq.c
-> +++ b/arch/mips/kernel/sysrq.c
-> @@ -44,7 +44,7 @@ static void sysrq_tlbdump_othercpus(struct work_struct *dummy)
->  static DECLARE_WORK(sysrq_tlbdump, sysrq_tlbdump_othercpus);
->  #endif
->  
-> -static void sysrq_handle_tlbdump(int key)
-> +static void sysrq_handle_tlbdump(u8 key)
->  {
->  	sysrq_tlbdump_single(NULL);
->  #ifdef CONFIG_SMP
-> diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
-> index ee17270d35d0..3b6f524c790e 100644
-> --- a/arch/powerpc/xmon/xmon.c
-> +++ b/arch/powerpc/xmon/xmon.c
-> @@ -3991,7 +3991,7 @@ static void xmon_init(int enable)
->  }
->  
->  #ifdef CONFIG_MAGIC_SYSRQ
-> -static void sysrq_handle_xmon(int key)
-> +static void sysrq_handle_xmon(u8 key)
->  {
->  	if (xmon_is_locked_down()) {
->  		clear_all_bpt();
-> diff --git a/arch/sparc/kernel/process_64.c b/arch/sparc/kernel/process_64.c
-> index b51d8fb0ecdc..4dee88af403f 100644
-> --- a/arch/sparc/kernel/process_64.c
-> +++ b/arch/sparc/kernel/process_64.c
-> @@ -295,7 +295,7 @@ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, bool exclude_self)
->  
->  #ifdef CONFIG_MAGIC_SYSRQ
->  
-> -static void sysrq_handle_globreg(int key)
-> +static void sysrq_handle_globreg(u8 key)
->  {
->  	trigger_all_cpu_backtrace();
->  }
-> @@ -370,7 +370,7 @@ static void pmu_snapshot_all_cpus(void)
->  	spin_unlock_irqrestore(&global_cpu_snapshot_lock, flags);
->  }
->  
-> -static void sysrq_handle_globpmu(int key)
-> +static void sysrq_handle_globpmu(u8 key)
->  {
->  	pmu_snapshot_all_cpus();
->  }
-> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
-> index 61a5d450cc20..d612133e2cf7 100644
-> --- a/drivers/gpu/drm/drm_fb_helper.c
-> +++ b/drivers/gpu/drm/drm_fb_helper.c
-> @@ -301,7 +301,7 @@ static void drm_fb_helper_restore_work_fn(struct work_struct *ignored)
->  
->  static DECLARE_WORK(drm_fb_helper_restore_work, drm_fb_helper_restore_work_fn);
->  
-> -static void drm_fb_helper_sysrq(int dummy1)
-> +static void drm_fb_helper_sysrq(u8 dummy1)
->  {
->  	schedule_work(&drm_fb_helper_restore_work);
->  }
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 13465e4cca9b..1271a82c0887 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -98,7 +98,7 @@ static int __init sysrq_always_enabled_setup(char *str)
->  __setup("sysrq_always_enabled", sysrq_always_enabled_setup);
->  
->  
-> -static void sysrq_handle_loglevel(int key)
-> +static void sysrq_handle_loglevel(u8 key)
->  {
->  	u8 loglevel = key - '0';
->  
-> @@ -114,7 +114,7 @@ static const struct sysrq_key_op sysrq_loglevel_op = {
->  };
->  
->  #ifdef CONFIG_VT
-> -static void sysrq_handle_SAK(int key)
-> +static void sysrq_handle_SAK(u8 key)
->  {
->  	struct work_struct *SAK_work = &vc_cons[fg_console].SAK_work;
->  
-> @@ -131,7 +131,7 @@ static const struct sysrq_key_op sysrq_SAK_op = {
->  #endif
->  
->  #ifdef CONFIG_VT
-> -static void sysrq_handle_unraw(int key)
-> +static void sysrq_handle_unraw(u8 key)
->  {
->  	vt_reset_unicode(fg_console);
->  }
-> @@ -146,7 +146,7 @@ static const struct sysrq_key_op sysrq_unraw_op = {
->  #define sysrq_unraw_op (*(const struct sysrq_key_op *)NULL)
->  #endif /* CONFIG_VT */
->  
-> -static void sysrq_handle_crash(int key)
-> +static void sysrq_handle_crash(u8 key)
->  {
->  	/* release the RCU read lock before crashing */
->  	rcu_read_unlock();
-> @@ -160,7 +160,7 @@ static const struct sysrq_key_op sysrq_crash_op = {
->  	.enable_mask	= SYSRQ_ENABLE_DUMP,
->  };
->  
-> -static void sysrq_handle_reboot(int key)
-> +static void sysrq_handle_reboot(u8 key)
->  {
->  	lockdep_off();
->  	local_irq_enable();
-> @@ -175,7 +175,7 @@ static const struct sysrq_key_op sysrq_reboot_op = {
->  
->  const struct sysrq_key_op *__sysrq_reboot_op = &sysrq_reboot_op;
->  
-> -static void sysrq_handle_sync(int key)
-> +static void sysrq_handle_sync(u8 key)
->  {
->  	emergency_sync();
->  }
-> @@ -186,7 +186,7 @@ static const struct sysrq_key_op sysrq_sync_op = {
->  	.enable_mask	= SYSRQ_ENABLE_SYNC,
->  };
->  
-> -static void sysrq_handle_show_timers(int key)
-> +static void sysrq_handle_show_timers(u8 key)
->  {
->  	sysrq_timer_list_show();
->  }
-> @@ -197,7 +197,7 @@ static const struct sysrq_key_op sysrq_show_timers_op = {
->  	.action_msg	= "Show clockevent devices & pending hrtimers (no others)",
->  };
->  
-> -static void sysrq_handle_mountro(int key)
-> +static void sysrq_handle_mountro(u8 key)
->  {
->  	emergency_remount();
->  }
-> @@ -209,7 +209,7 @@ static const struct sysrq_key_op sysrq_mountro_op = {
->  };
->  
->  #ifdef CONFIG_LOCKDEP
-> -static void sysrq_handle_showlocks(int key)
-> +static void sysrq_handle_showlocks(u8 key)
->  {
->  	debug_show_all_locks();
->  }
-> @@ -249,7 +249,7 @@ static void sysrq_showregs_othercpus(struct work_struct *dummy)
->  
->  static DECLARE_WORK(sysrq_showallcpus, sysrq_showregs_othercpus);
->  
-> -static void sysrq_handle_showallcpus(int key)
-> +static void sysrq_handle_showallcpus(u8 key)
->  {
->  	/*
->  	 * Fall back to the workqueue based printing if the
-> @@ -282,7 +282,7 @@ static const struct sysrq_key_op sysrq_showallcpus_op = {
->  #define sysrq_showallcpus_op (*(const struct sysrq_key_op *)NULL)
->  #endif
->  
-> -static void sysrq_handle_showregs(int key)
-> +static void sysrq_handle_showregs(u8 key)
->  {
->  	struct pt_regs *regs = NULL;
->  
-> @@ -299,7 +299,7 @@ static const struct sysrq_key_op sysrq_showregs_op = {
->  	.enable_mask	= SYSRQ_ENABLE_DUMP,
->  };
->  
-> -static void sysrq_handle_showstate(int key)
-> +static void sysrq_handle_showstate(u8 key)
->  {
->  	show_state();
->  	show_all_workqueues();
-> @@ -311,7 +311,7 @@ static const struct sysrq_key_op sysrq_showstate_op = {
->  	.enable_mask	= SYSRQ_ENABLE_DUMP,
->  };
->  
-> -static void sysrq_handle_showstate_blocked(int key)
-> +static void sysrq_handle_showstate_blocked(u8 key)
->  {
->  	show_state_filter(TASK_UNINTERRUPTIBLE);
->  }
-> @@ -325,7 +325,7 @@ static const struct sysrq_key_op sysrq_showstate_blocked_op = {
->  #ifdef CONFIG_TRACING
->  #include <linux/ftrace.h>
->  
-> -static void sysrq_ftrace_dump(int key)
-> +static void sysrq_ftrace_dump(u8 key)
->  {
->  	ftrace_dump(DUMP_ALL);
->  }
-> @@ -339,7 +339,7 @@ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
->  #define sysrq_ftrace_dump_op (*(const struct sysrq_key_op *)NULL)
->  #endif
->  
-> -static void sysrq_handle_showmem(int key)
-> +static void sysrq_handle_showmem(u8 key)
->  {
->  	show_mem();
->  }
-> @@ -369,7 +369,7 @@ static void send_sig_all(int sig)
->  	read_unlock(&tasklist_lock);
->  }
->  
-> -static void sysrq_handle_term(int key)
-> +static void sysrq_handle_term(u8 key)
->  {
->  	send_sig_all(SIGTERM);
->  	console_loglevel = CONSOLE_LOGLEVEL_DEBUG;
-> @@ -400,7 +400,7 @@ static void moom_callback(struct work_struct *ignored)
->  
->  static DECLARE_WORK(moom_work, moom_callback);
->  
-> -static void sysrq_handle_moom(int key)
-> +static void sysrq_handle_moom(u8 key)
->  {
->  	schedule_work(&moom_work);
->  }
-> @@ -412,7 +412,7 @@ static const struct sysrq_key_op sysrq_moom_op = {
->  };
->  
->  #ifdef CONFIG_BLOCK
-> -static void sysrq_handle_thaw(int key)
-> +static void sysrq_handle_thaw(u8 key)
->  {
->  	emergency_thaw_all();
->  }
-> @@ -426,7 +426,7 @@ static const struct sysrq_key_op sysrq_thaw_op = {
->  #define sysrq_thaw_op (*(const struct sysrq_key_op *)NULL)
->  #endif
->  
-> -static void sysrq_handle_kill(int key)
-> +static void sysrq_handle_kill(u8 key)
->  {
->  	send_sig_all(SIGKILL);
->  	console_loglevel = CONSOLE_LOGLEVEL_DEBUG;
-> @@ -438,7 +438,7 @@ static const struct sysrq_key_op sysrq_kill_op = {
->  	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
->  };
->  
-> -static void sysrq_handle_unrt(int key)
-> +static void sysrq_handle_unrt(u8 key)
->  {
->  	normalize_rt_tasks();
->  }
-> diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
-> index 3a582ec7a2f1..bb8d07814b0e 100644
-> --- a/include/linux/sysrq.h
-> +++ b/include/linux/sysrq.h
-> @@ -30,7 +30,7 @@
->  #define SYSRQ_ENABLE_RTNICE	0x0100
->  
->  struct sysrq_key_op {
-> -	void (* const handler)(int);
-> +	void (* const handler)(u8);
->  	const char * const help_msg;
->  	const char * const action_msg;
->  	const int enable_mask;
-> diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
-> index d5e9ccde3ab8..621037a0aa87 100644
-> --- a/kernel/debug/debug_core.c
-> +++ b/kernel/debug/debug_core.c
-> @@ -968,7 +968,7 @@ static int __init opt_kgdb_con(char *str)
->  early_param("kgdbcon", opt_kgdb_con);
->  
->  #ifdef CONFIG_MAGIC_SYSRQ
-> -static void sysrq_handle_dbg(int key)
-> +static void sysrq_handle_dbg(u8 key)
->  {
->  	if (!dbg_io_ops) {
->  		pr_crit("ERROR: No KGDB I/O module available\n");
-> diff --git a/kernel/power/poweroff.c b/kernel/power/poweroff.c
-> index 562aa0e450ed..1f306f158696 100644
-> --- a/kernel/power/poweroff.c
-> +++ b/kernel/power/poweroff.c
-> @@ -23,7 +23,7 @@ static void do_poweroff(struct work_struct *dummy)
->  
->  static DECLARE_WORK(poweroff_work, do_poweroff);
->  
-> -static void handle_poweroff(int key)
-> +static void handle_poweroff(u8 key)
->  {
->  	/* run sysrq poweroff on boot cpu */
->  	schedule_work_on(cpumask_first(cpu_online_mask), &poweroff_work);
-> diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
-> index b10b8349bb2a..6f06dc12904a 100644
-> --- a/kernel/rcu/tree_stall.h
-> +++ b/kernel/rcu/tree_stall.h
-> @@ -1035,7 +1035,7 @@ static bool sysrq_rcu;
->  module_param(sysrq_rcu, bool, 0444);
->  
->  /* Dump grace-period-request information due to commandeered sysrq. */
-> -static void sysrq_show_rcu(int key)
-> +static void sysrq_show_rcu(u8 key)
->  {
->  	show_rcu_gp_kthreads();
->  }
-> -- 
-> 2.41.0
+> Have you noticed the comment in the code which reads:
 > 
+> /*
+>  * We don't support DMA_RESUME command because of hardware
+>  * limitations, so after pausing the channel we cannot restore
+>  * it to active state. We have to terminate channel and setup
+>  * DMA transfer again. This pause feature was implemented to
+>  * allow safely read residue before channel termination.
+>  */
+
+I'm aware of this limitation (and comment) but it's not causing a problem 
+here since serial8250_rx_dma_flush() does not need to call resume, it 
+requires only supporting pause + reading the state/status.
+
+> So driver just stops when in pause.
+
+It not only stops but keeps claiming it's still not stopped which causes 
+the problem in 8250 code because 8250 DMA code assumes DMA side returns 
+the correct status.
+
+> Now the commit 57e9af7831dc returns when in progress state, so am not
+> sure how returning Paused would help here?
+
+In serial8250_rx_dma_flush() 8250 DMA code does this:
+		dmaengine_pause(dma->rxchan);
+                __dma_rx_complete(p);
+                dmaengine_terminate_async(dma->rxchan);
+
+As you can see, __dma_rx_complete() would not take that return when called 
+from serial8250_rx_dma_flush() if correct DMA_* status would be returned.
+
+The return in __dma_rx_complete() is meant for other paths (as shown in 
+57e9af7831dc's changelog) but is now currently taken also when called 
+from serial8250_rx_dma_flush() because pl330 keeps returning 
+DMA_IN_PROGRESS instead of DMA_PAUSED. Thus, I created this fix.
+
+-- 
+ i.
+
+
+> > Reported-by: Richard Tresidder <rtresidd@electromag.com.au>
+> > Tested-by: Richard Tresidder <rtresidd@electromag.com.au>
+> > Fixes: 88987d2c7534 ("dmaengine: pl330: add DMA_PAUSE feature")
+> > Cc: stable@vger.kernel.org
+> > Link: https://lore.kernel.org/linux-serial/f8a86ecd-64b1-573f-c2fa-59f541083f1a@electromag.com.au/
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > ---
+> > 
+> > $ diff -u <(git grep -l -e '\.device_pause' -e '->device_pause') <(git grep -l DMA_PAUSED)
+> > 
+> > ...tells there might a few other drivers which do not properly return
+> > DMA_PAUSED status despite having a pause function.
+> > 
+> >  drivers/dma/pl330.c | 18 ++++++++++++++++--
+> >  1 file changed, 16 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+> > index 0d9257fbdfb0..daad25f2c498 100644
+> > --- a/drivers/dma/pl330.c
+> > +++ b/drivers/dma/pl330.c
+> > @@ -403,6 +403,12 @@ enum desc_status {
+> >  	 * of a channel can be BUSY at any time.
+> >  	 */
+> >  	BUSY,
+> > +	/*
+> > +	 * Pause was called while descriptor was BUSY. Due to hardware
+> > +	 * limitations, only termination is possible for descriptors
+> > +	 * that have been paused.
+> > +	 */
+> > +	PAUSED,
+> >  	/*
+> >  	 * Sitting on the channel work_list but xfer done
+> >  	 * by PL330 core
+> > @@ -2041,7 +2047,7 @@ static inline void fill_queue(struct dma_pl330_chan *pch)
+> >  	list_for_each_entry(desc, &pch->work_list, node) {
+> >  
+> >  		/* If already submitted */
+> > -		if (desc->status == BUSY)
+> > +		if (desc->status == BUSY || desc->status == PAUSED)
+> >  			continue;
+> >  
+> >  		ret = pl330_submit_req(pch->thread, desc);
+> > @@ -2326,6 +2332,7 @@ static int pl330_pause(struct dma_chan *chan)
+> >  {
+> >  	struct dma_pl330_chan *pch = to_pchan(chan);
+> >  	struct pl330_dmac *pl330 = pch->dmac;
+> > +	struct dma_pl330_desc *desc;
+> >  	unsigned long flags;
+> >  
+> >  	pm_runtime_get_sync(pl330->ddma.dev);
+> > @@ -2335,6 +2342,10 @@ static int pl330_pause(struct dma_chan *chan)
+> >  	_stop(pch->thread);
+> >  	spin_unlock(&pl330->lock);
+> >  
+> > +	list_for_each_entry(desc, &pch->work_list, node) {
+> > +		if (desc->status == BUSY)
+> > +			desc->status = PAUSED;
+> > +	}
+> >  	spin_unlock_irqrestore(&pch->lock, flags);
+> >  	pm_runtime_mark_last_busy(pl330->ddma.dev);
+> >  	pm_runtime_put_autosuspend(pl330->ddma.dev);
+> > @@ -2425,7 +2436,7 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
+> >  		else if (running && desc == running)
+> >  			transferred =
+> >  				pl330_get_current_xferred_count(pch, desc);
+> > -		else if (desc->status == BUSY)
+> > +		else if (desc->status == BUSY || desc->status == PAUSED)
+> >  			/*
+> >  			 * Busy but not running means either just enqueued,
+> >  			 * or finished and not yet marked done
+> > @@ -2442,6 +2453,9 @@ pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
+> >  			case DONE:
+> >  				ret = DMA_COMPLETE;
+> >  				break;
+> > +			case PAUSED:
+> > +				ret = DMA_PAUSED;
+> > +				break;
+> >  			case PREP:
+> >  			case BUSY:
+> >  				ret = DMA_IN_PROGRESS;
+> > -- 
+> > 2.30.2
+> 
+> 
+--8323329-329618449-1689166921=:1670--
