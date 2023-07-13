@@ -2,83 +2,159 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC358EB64DA
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Jul 2023 01:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BA8EB64DA
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Jul 2023 02:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232817AbjGMBF2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 21:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
+        id S232130AbjGMCp7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 22:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231836AbjGMBF1 (ORCPT
+        with ESMTP id S229646AbjGMCp6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 21:05:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7BE9E;
-        Wed, 12 Jul 2023 18:05:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33E12619BD;
-        Thu, 13 Jul 2023 01:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F2D6C433C7;
-        Thu, 13 Jul 2023 01:05:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689210325;
-        bh=JEUoxjasu4MEtpBfYEyLKlXhktabrDJ3YVSK42TmZNQ=;
+        Wed, 12 Jul 2023 22:45:58 -0400
+Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1ACD19BA;
+        Wed, 12 Jul 2023 19:45:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1689216351; bh=gqz1bgvL/lc4UJv2uVXgCnOHv0QDm6yYBsD26lwdwp8=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=TmW4P7ENPxcCFiajRH4RFW+is7jtcftlGP1uqxBYokYrsMrUxAU1kEJU37lc+0DPS
-         myemZ/8bBdMVucjEO9Cr27LCMdDgycU+gjBlR48nErxt9/xOGQWP2iHA+dLOl2GdgR
-         noRGfjfHPF4Aj+VktAZSddw3HYJZTHOWQhqpgYraIuJUQT6LfMZk+4RJWPA+3PbW0U
-         YU6rOYBtFOY2uNNQAOt/1kDXGFR7L4xZAu/tEErer9XfZkpDWnEjnGwD+rW+dkeKL3
-         ZvSEDKLXa6/N+invb6MZOsQOO6Jl2DUNKNRhhU3KxNSP2yaY3UygCj9rYETy32qZr8
-         nBr2HVcpWmU2A==
-Message-ID: <2b7bf9b6-c676-c1fb-28c9-b46c7d99459a@kernel.org>
-Date:   Wed, 12 Jul 2023 17:58:42 -0700
+        b=BzBBi+C00IuSe07iaacQw/Rel7MGQmTVUDl8U2srpx3+vUC2lgT4eXwe7XZnMj9cH
+         wvOU3eM42Q0ppZyhciwLdOt9zeGR7iuQDV2cI0lCPWNU4Oa2iQ/GL0BNMYnqujb/2z
+         pQMdRBzje3qDwknM47V5k+8tOn/ug4Xo0MfAtvgY=
+Received: from [100.100.34.13] (unknown [220.248.53.61])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 9684C600DA;
+        Thu, 13 Jul 2023 10:45:50 +0800 (CST)
+Message-ID: <0797812f-20cd-9961-7a46-d8e6fefee788@xen0n.name>
+Date:   Thu, 13 Jul 2023 10:45:50 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH 08/10] serial: arc_uart: simplify flags handling in
- arc_serial_rx_chars()
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH 02/10] tty: sysrq: switch sysrq handlers from int to u8
 To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
         gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vineet Gupta <vgupta@kernel.org>
+        Richard Henderson <richard.henderson@linaro.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Zqiang <qiang.zhang1211@gmail.com>
 References: <20230712081811.29004-1-jirislaby@kernel.org>
- <20230712081811.29004-9-jirislaby@kernel.org>
-From:   Vineet Gupta <vgupta@kernel.org>
-In-Reply-To: <20230712081811.29004-9-jirislaby@kernel.org>
+ <20230712081811.29004-3-jirislaby@kernel.org>
+Content-Language: en-US
+From:   WANG Xuerui <kernel@xen0n.name>
+In-Reply-To: <20230712081811.29004-3-jirislaby@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 2023/7/12 16:18, Jiri Slaby (SUSE) wrote:
+> The passed parameter to sysrq handlers is a key (a character). So change
+> the type from 'int' to 'u8'. Let it specifically be 'u8' for two
+> reasons:
+> * unsigned: unsigned values come from the upper layers (devices) and the
+>    tty layer assumes unsigned on most places, and
+> * 8-bit: as that what's supposed to be one day in all the layers built
+>    on the top of tty. (Currently, we use mostly 'unsigned char' and
+>    somewhere still only 'char'. (But that also translates to the former
+>    thanks to -funsigned-char.))
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: Huacai Chen <chenhuacai@kernel.org>
+> Cc: WANG Xuerui <kernel@xen0n.name>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Nicholas Piggin <npiggin@gmail.com>
+> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: David Airlie <airlied@gmail.com>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Jason Wessel <jason.wessel@windriver.com>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Len Brown <len.brown@intel.com>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Frederic Weisbecker <frederic@kernel.org>
+> Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> Cc: Joel Fernandes <joel@joelfernandes.org>
+> Cc: Josh Triplett <josh@joshtriplett.org>
+> Cc: Boqun Feng <boqun.feng@gmail.com>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Cc: Lai Jiangshan <jiangshanlai@gmail.com>
+> Cc: Zqiang <qiang.zhang1211@gmail.com>
+> ---
+>   arch/alpha/kernel/setup.c       |  2 +-
+>   arch/loongarch/kernel/sysrq.c   |  2 +-
+>   arch/mips/kernel/sysrq.c        |  2 +-
+>   arch/powerpc/xmon/xmon.c        |  2 +-
+>   arch/sparc/kernel/process_64.c  |  4 ++--
+>   drivers/gpu/drm/drm_fb_helper.c |  2 +-
+>   drivers/tty/sysrq.c             | 40 ++++++++++++++++-----------------
+>   include/linux/sysrq.h           |  2 +-
+>   kernel/debug/debug_core.c       |  2 +-
+>   kernel/power/poweroff.c         |  2 +-
+>   kernel/rcu/tree_stall.h         |  2 +-
+>   11 files changed, 31 insertions(+), 31 deletions(-)
+> 
+> [snip]
+> diff --git a/arch/loongarch/kernel/sysrq.c b/arch/loongarch/kernel/sysrq.c
+> index 366baef72d29..e663c10fa39c 100644
+> --- a/arch/loongarch/kernel/sysrq.c
+> +++ b/arch/loongarch/kernel/sysrq.c
+> @@ -43,7 +43,7 @@ static void sysrq_tlbdump_othercpus(struct work_struct *dummy)
+>   static DECLARE_WORK(sysrq_tlbdump, sysrq_tlbdump_othercpus);
+>   #endif
+>   
+> -static void sysrq_handle_tlbdump(int key)
+> +static void sysrq_handle_tlbdump(u8 key)
+>   {
+>   	sysrq_tlbdump_single(NULL);
+>   #ifdef CONFIG_SMP
+> [snip]
 
+Acked-by: WANG Xuerui <git@xen0n.name> # loongarch
 
-On 7/12/23 01:18, Jiri Slaby (SUSE) wrote:
-> * move the declaration of flg (with the initializer) to the loop, so
->    there is no need to reset it to TTY_NORMAL by an 'else' branch.
-> * use TTY_NORMAL as initializer above, not a magic zero constant
-> * remove the outer 'if' from this construct:
->    if (S & (A | B)) {
->      if (S & A)
->        X;
->      if (S & B)
->        Y;
->    }
-> * drop unlikely() as I doubt it has any benefits here. If it does,
->    provide numbers.
->
-> All four make the code easier to read.
->
-> Signed-off-by: Jiri Slaby (SUSE)<jirislaby@kernel.org>
-> Cc: Vineet Gupta<vgupta@kernel.org>
+Thanks!
 
-Thanks for the cleanup.
+-- 
+WANG "xen0n" Xuerui
 
-Acked-by: Vineet Gupta <vgupta@kernel.org>
+Linux/LoongArch mailing list: https://lore.kernel.org/loongarch/
 
-Th,
--Vineet
