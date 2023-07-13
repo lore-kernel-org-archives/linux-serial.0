@@ -2,159 +2,156 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BA8EB64DA
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Jul 2023 02:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC03EB64DA
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Jul 2023 03:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbjGMCp7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jul 2023 22:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
+        id S233505AbjGMDUC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jul 2023 23:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjGMCp6 (ORCPT
+        with ESMTP id S233507AbjGMDT6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jul 2023 22:45:58 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1ACD19BA;
-        Wed, 12 Jul 2023 19:45:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1689216351; bh=gqz1bgvL/lc4UJv2uVXgCnOHv0QDm6yYBsD26lwdwp8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BzBBi+C00IuSe07iaacQw/Rel7MGQmTVUDl8U2srpx3+vUC2lgT4eXwe7XZnMj9cH
-         wvOU3eM42Q0ppZyhciwLdOt9zeGR7iuQDV2cI0lCPWNU4Oa2iQ/GL0BNMYnqujb/2z
-         pQMdRBzje3qDwknM47V5k+8tOn/ug4Xo0MfAtvgY=
-Received: from [100.100.34.13] (unknown [220.248.53.61])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 9684C600DA;
-        Thu, 13 Jul 2023 10:45:50 +0800 (CST)
-Message-ID: <0797812f-20cd-9961-7a46-d8e6fefee788@xen0n.name>
-Date:   Thu, 13 Jul 2023 10:45:50 +0800
+        Wed, 12 Jul 2023 23:19:58 -0400
+Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01271FDE;
+        Wed, 12 Jul 2023 20:19:54 -0700 (PDT)
+Received: from dlp.unisoc.com ([10.29.3.86])
+        by SHSQR01.spreadtrum.com with ESMTP id 36D3JIv5061613;
+        Thu, 13 Jul 2023 11:19:18 +0800 (+08)
+        (envelope-from Chunyan.Zhang@unisoc.com)
+Received: from SHDLP.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
+        by dlp.unisoc.com (SkyGuard) with ESMTPS id 4R1fvB4D1dz2M4K4c;
+        Thu, 13 Jul 2023 11:18:14 +0800 (CST)
+Received: from ubt.spreadtrum.com (10.0.73.70) by BJMBX02.spreadtrum.com
+ (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Thu, 13 Jul
+ 2023 11:19:16 +0800
+From:   Chunyan Zhang <chunyan.zhang@unisoc.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-serial@vger.kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH V2 1/2] serial: sprd: Assign sprd_port after initialized to avoid wrong access
+Date:   Thu, 13 Jul 2023 11:19:03 +0800
+Message-ID: <20230713031904.12106-1-chunyan.zhang@unisoc.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.13.0
-Subject: Re: [PATCH 02/10] tty: sysrq: switch sysrq handlers from int to u8
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Zqiang <qiang.zhang1211@gmail.com>
-References: <20230712081811.29004-1-jirislaby@kernel.org>
- <20230712081811.29004-3-jirislaby@kernel.org>
-Content-Language: en-US
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <20230712081811.29004-3-jirislaby@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.0.73.70]
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX02.spreadtrum.com (10.0.64.8)
+X-MAIL: SHSQR01.spreadtrum.com 36D3JIv5061613
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2023/7/12 16:18, Jiri Slaby (SUSE) wrote:
-> The passed parameter to sysrq handlers is a key (a character). So change
-> the type from 'int' to 'u8'. Let it specifically be 'u8' for two
-> reasons:
-> * unsigned: unsigned values come from the upper layers (devices) and the
->    tty layer assumes unsigned on most places, and
-> * 8-bit: as that what's supposed to be one day in all the layers built
->    on the top of tty. (Currently, we use mostly 'unsigned char' and
->    somewhere still only 'char'. (But that also translates to the former
->    thanks to -funsigned-char.))
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: Huacai Chen <chenhuacai@kernel.org>
-> Cc: WANG Xuerui <kernel@xen0n.name>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Nicholas Piggin <npiggin@gmail.com>
-> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: David Airlie <airlied@gmail.com>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Jason Wessel <jason.wessel@windriver.com>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Len Brown <len.brown@intel.com>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Frederic Weisbecker <frederic@kernel.org>
-> Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> Cc: Joel Fernandes <joel@joelfernandes.org>
-> Cc: Josh Triplett <josh@joshtriplett.org>
-> Cc: Boqun Feng <boqun.feng@gmail.com>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-> Cc: Zqiang <qiang.zhang1211@gmail.com>
-> ---
->   arch/alpha/kernel/setup.c       |  2 +-
->   arch/loongarch/kernel/sysrq.c   |  2 +-
->   arch/mips/kernel/sysrq.c        |  2 +-
->   arch/powerpc/xmon/xmon.c        |  2 +-
->   arch/sparc/kernel/process_64.c  |  4 ++--
->   drivers/gpu/drm/drm_fb_helper.c |  2 +-
->   drivers/tty/sysrq.c             | 40 ++++++++++++++++-----------------
->   include/linux/sysrq.h           |  2 +-
->   kernel/debug/debug_core.c       |  2 +-
->   kernel/power/poweroff.c         |  2 +-
->   kernel/rcu/tree_stall.h         |  2 +-
->   11 files changed, 31 insertions(+), 31 deletions(-)
-> 
-> [snip]
-> diff --git a/arch/loongarch/kernel/sysrq.c b/arch/loongarch/kernel/sysrq.c
-> index 366baef72d29..e663c10fa39c 100644
-> --- a/arch/loongarch/kernel/sysrq.c
-> +++ b/arch/loongarch/kernel/sysrq.c
-> @@ -43,7 +43,7 @@ static void sysrq_tlbdump_othercpus(struct work_struct *dummy)
->   static DECLARE_WORK(sysrq_tlbdump, sysrq_tlbdump_othercpus);
->   #endif
->   
-> -static void sysrq_handle_tlbdump(int key)
-> +static void sysrq_handle_tlbdump(u8 key)
->   {
->   	sysrq_tlbdump_single(NULL);
->   #ifdef CONFIG_SMP
-> [snip]
+The global pointer 'sprd_port' may not zero when sprd_probe returns
+failure, that is a risk for sprd_port to be accessed afterward, and
+may lead to unexpected errors.
 
-Acked-by: WANG Xuerui <git@xen0n.name> # loongarch
+For example:
 
-Thanks!
+There are two UART ports, UART1 is used for console and configured in
+kernel command line, i.e. "console=";
 
+The UART1 probe failed and the memory allocated to sprd_port[1] was
+released, but sprd_port[1] was not set to NULL;
+
+In UART2 probe, the same virtual address was allocated to sprd_port[2],
+and UART2 probe process finally will go into sprd_console_setup() to
+register UART1 as console since it is configured as preferred console
+(filled to console_cmdline[]), but the console parameters (sprd_port[1])
+belong to UART2.
+
+So move the sprd_port[] assignment to where the port already initialized
+can avoid the above issue.
+
+Fixes: b7396a38fb28 ("tty/serial: Add Spreadtrum sc9836-uart driver support")
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+---
+V2:
+- Leave sprd_remove() to keep the unrelated code logic the same.
+---
+ drivers/tty/serial/sprd_serial.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index b58f51296ace..11de338a6122 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -1106,7 +1106,7 @@ static bool sprd_uart_is_console(struct uart_port *uport)
+ static int sprd_clk_init(struct uart_port *uport)
+ {
+ 	struct clk *clk_uart, *clk_parent;
+-	struct sprd_uart_port *u = sprd_port[uport->line];
++	struct sprd_uart_port *u = container_of(uport, struct sprd_uart_port, port);
+ 
+ 	clk_uart = devm_clk_get(uport->dev, "uart");
+ 	if (IS_ERR(clk_uart)) {
+@@ -1149,22 +1149,22 @@ static int sprd_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+ 	struct uart_port *up;
++	struct sprd_uart_port *sport;
+ 	int irq;
+ 	int index;
+ 	int ret;
+ 
+ 	index = of_alias_get_id(pdev->dev.of_node, "serial");
+-	if (index < 0 || index >= ARRAY_SIZE(sprd_port)) {
++	if (index < 0 || index >= UART_NR_MAX) {
+ 		dev_err(&pdev->dev, "got a wrong serial alias id %d\n", index);
+ 		return -EINVAL;
+ 	}
+ 
+-	sprd_port[index] = devm_kzalloc(&pdev->dev, sizeof(*sprd_port[index]),
+-					GFP_KERNEL);
+-	if (!sprd_port[index])
++	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
++	if (!sport)
+ 		return -ENOMEM;
+ 
+-	up = &sprd_port[index]->port;
++	up = &sport->port;
+ 	up->dev = &pdev->dev;
+ 	up->line = index;
+ 	up->type = PORT_SPRD;
+@@ -1195,7 +1195,7 @@ static int sprd_probe(struct platform_device *pdev)
+ 	 * Allocate one dma buffer to prepare for receive transfer, in case
+ 	 * memory allocation failure at runtime.
+ 	 */
+-	ret = sprd_rx_alloc_buf(sprd_port[index]);
++	ret = sprd_rx_alloc_buf(sport);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1208,12 +1208,21 @@ static int sprd_probe(struct platform_device *pdev)
+ 	}
+ 	sprd_ports_num++;
+ 
++	sprd_port[index] = sport;
++
+ 	ret = uart_add_one_port(&sprd_uart_driver, up);
+ 	if (ret)
+-		sprd_remove(pdev);
++		goto clean_port;
+ 
+ 	platform_set_drvdata(pdev, up);
+ 
++	return 0;
++
++clean_port:
++	sprd_port[index] = NULL;
++	sprd_ports_num--;
++	uart_unregister_driver(&sprd_uart_driver);
++	sprd_remove(pdev);
+ 	return ret;
+ }
+ 
 -- 
-WANG "xen0n" Xuerui
-
-Linux/LoongArch mailing list: https://lore.kernel.org/loongarch/
+2.41.0
 
