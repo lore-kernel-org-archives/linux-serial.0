@@ -2,188 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FF6C0015E
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Jul 2023 15:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6436C0015E
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Jul 2023 16:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232503AbjGMPB3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Jul 2023 11:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
+        id S232862AbjGMQvf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Jul 2023 12:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbjGMPB1 (ORCPT
+        with ESMTP id S231284AbjGMQve (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Jul 2023 11:01:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02EA19A6;
-        Thu, 13 Jul 2023 08:01:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 535D661896;
-        Thu, 13 Jul 2023 15:01:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DCB8C433CC;
-        Thu, 13 Jul 2023 15:01:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689260484;
-        bh=itZ0gFAo0LPJQtM5BSI/nzA/wdukNr9OD7PReC0Np54=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cG30JVJEIUEkPn3C65YZHI39Nb4WEytx5K66voqeVZGqjDdzygPXioa/isoY4l57C
-         VQui/052L5avKzgGwK1yxKAoEAMn+Q6QqtbrflKfbEqcTKOB+4QO2vjKvRIWhZVvmU
-         wNB5Jg4xKXSkQ0Qm+90dGBGxSO7hN0pbnBrQZhou9fmJyrfdWyaTdoquDrePfBNbYx
-         BxnHpruVNN+M+in/ThPyx6hHIu6nukrxKWjt9nUPh0HBUhJXb/MhzCNi11HKBgnAei
-         qDGnwFeIrFGVJvzuN/EmF33pXpUgJFWciInL9kTHtunGKBv0aa/JdhXlsB62o1l7Oj
-         SeQwiSL3no9gw==
-Received: from johan by xi.lan with local (Exim 4.96)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1qJxor-0007vm-0j;
-        Thu, 13 Jul 2023 17:01:25 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Tony Lindgren <tony@atomide.com>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 2/3] PM / wakeirq: drop unused enable helpers
-Date:   Thu, 13 Jul 2023 16:57:40 +0200
-Message-ID: <20230713145741.30390-3-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230713145741.30390-1-johan+linaro@kernel.org>
-References: <20230713145741.30390-1-johan+linaro@kernel.org>
+        Thu, 13 Jul 2023 12:51:34 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C085426B1;
+        Thu, 13 Jul 2023 09:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689267093; x=1720803093;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NeS/7wjO+6YFPllvD48mAowelFtPp+/XWfqr/d+lNKo=;
+  b=c85mKgIW4g3dx848npadeA2rLCPK6a2WMVaEFtT9OnqcSIXzkzJkCaX5
+   nRWWRTMu7w7vKcXxqU5IcvmKnIjyTIpG6nJ23/wAAiAZg6jCW4RwZeCca
+   eybJorvtmykbjEBjlSbjsv4mOXckr1N8HkJa8sLJj3loy2lC2r9XLvAX5
+   fRMukRajpHmQOf4/o0YlLIEN5ko9IuofAGur1DVGvxx5ohYmyEoiClI3l
+   60jCzuehGD6FYPeiiYL3vPHl2gM0RpK49E3TsHQH+mcimPWTl7F5wIbwy
+   G3xzBtujtwJH8whKaedXDsX/2zlzfIQ5K4ieg9bG8osXkAz1/eS0w5ABw
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="345567996"
+X-IronPort-AV: E=Sophos;i="6.01,203,1684825200"; 
+   d="scan'208";a="345567996"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2023 09:51:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="896090246"
+X-IronPort-AV: E=Sophos;i="6.01,203,1684825200"; 
+   d="scan'208";a="896090246"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga005.jf.intel.com with ESMTP; 13 Jul 2023 09:51:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qJzX8-002RQl-2q;
+        Thu, 13 Jul 2023 19:51:14 +0300
+Date:   Thu, 13 Jul 2023 19:51:14 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ruihong Luo <colorsu1922@gmail.com>
+Cc:     ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, stable@vger.kernel.org,
+        luoruihong@xiaomi.com, weipengliang@xiaomi.com,
+        wengjinfei@xiaomi.com
+Subject: Re: [PATCH v4] serial: 8250_dw: Preserve original value of DLF
+ register
+Message-ID: <ZLArgoe3TXF27gsE@smile.fi.intel.com>
+References: <20230713004235.35904-1-colorsu1922@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230713004235.35904-1-colorsu1922@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Drop the wake-irq enable and disable helpers which have not been used
-since commit bed570307ed7 ("PM / wakeirq: Fix dedicated wakeirq for
-drivers not using autosuspend").
+On Thu, Jul 13, 2023 at 08:42:36AM +0800, Ruihong Luo wrote:
+> Preserve the original value of the Divisor Latch Fraction (DLF) register.
+> When the DLF register is modified without preservation, it can disrupt
+> the baudrate settings established by firmware or bootloader, leading to
+> data corruption and the generation of unreadable or distorted characters.
 
-Note that these functions are essentially just leftovers from the first
-iteration of the wake-irq implementation where device drivers were
-supposed to call these functions themselves instead of PM core (as
-is also indicated by the bogus kernel doc comments).
+You forgot to add my tag. Why? Do you think the name of variable warrants this?
+Whatever,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/base/power/wakeirq.c | 49 ------------------------------------
- include/linux/pm_wakeirq.h   | 10 --------
- 2 files changed, 59 deletions(-)
+Next time if you don't pick up somebody's tag, care to explain in the changelog
+why.
 
-diff --git a/drivers/base/power/wakeirq.c b/drivers/base/power/wakeirq.c
-index afd094dec5ca..42171f766dcb 100644
---- a/drivers/base/power/wakeirq.c
-+++ b/drivers/base/power/wakeirq.c
-@@ -194,7 +194,6 @@ static int __dev_pm_set_dedicated_wake_irq(struct device *dev, int irq, unsigned
- 	return err;
- }
- 
--
- /**
-  * dev_pm_set_dedicated_wake_irq - Request a dedicated wake-up interrupt
-  * @dev: Device entry
-@@ -206,11 +205,6 @@ static int __dev_pm_set_dedicated_wake_irq(struct device *dev, int irq, unsigned
-  * Sets up a threaded interrupt handler for a device that has
-  * a dedicated wake-up interrupt in addition to the device IO
-  * interrupt.
-- *
-- * The interrupt starts disabled, and needs to be managed for
-- * the device by the bus code or the device driver using
-- * dev_pm_enable_wake_irq*() and dev_pm_disable_wake_irq*()
-- * functions.
-  */
- int dev_pm_set_dedicated_wake_irq(struct device *dev, int irq)
- {
-@@ -232,11 +226,6 @@ EXPORT_SYMBOL_GPL(dev_pm_set_dedicated_wake_irq);
-  * the status of WAKE_IRQ_DEDICATED_REVERSE to tell rpm_suspend()
-  * to enable dedicated wake-up interrupt after running the runtime suspend
-  * callback for @dev.
-- *
-- * The interrupt starts disabled, and needs to be managed for
-- * the device by the bus code or the device driver using
-- * dev_pm_enable_wake_irq*() and dev_pm_disable_wake_irq*()
-- * functions.
-  */
- int dev_pm_set_dedicated_wake_irq_reverse(struct device *dev, int irq)
- {
-@@ -244,44 +233,6 @@ int dev_pm_set_dedicated_wake_irq_reverse(struct device *dev, int irq)
- }
- EXPORT_SYMBOL_GPL(dev_pm_set_dedicated_wake_irq_reverse);
- 
--/**
-- * dev_pm_enable_wake_irq - Enable device wake-up interrupt
-- * @dev: Device
-- *
-- * Optionally called from the bus code or the device driver for
-- * runtime_resume() to override the PM runtime core managed wake-up
-- * interrupt handling to enable the wake-up interrupt.
-- *
-- * Note that for runtime_suspend()) the wake-up interrupts
-- * should be unconditionally enabled unlike for suspend()
-- * that is conditional.
-- */
--void dev_pm_enable_wake_irq(struct device *dev)
--{
--	struct wake_irq *wirq = dev->power.wakeirq;
--
--	if (wirq && (wirq->status & WAKE_IRQ_DEDICATED_ALLOCATED))
--		enable_irq(wirq->irq);
--}
--EXPORT_SYMBOL_GPL(dev_pm_enable_wake_irq);
--
--/**
-- * dev_pm_disable_wake_irq - Disable device wake-up interrupt
-- * @dev: Device
-- *
-- * Optionally called from the bus code or the device driver for
-- * runtime_suspend() to override the PM runtime core managed wake-up
-- * interrupt handling to disable the wake-up interrupt.
-- */
--void dev_pm_disable_wake_irq(struct device *dev)
--{
--	struct wake_irq *wirq = dev->power.wakeirq;
--
--	if (wirq && (wirq->status & WAKE_IRQ_DEDICATED_ALLOCATED))
--		disable_irq_nosync(wirq->irq);
--}
--EXPORT_SYMBOL_GPL(dev_pm_disable_wake_irq);
--
- /**
-  * dev_pm_enable_wake_irq_check - Checks and enables wake-up interrupt
-  * @dev: Device
-diff --git a/include/linux/pm_wakeirq.h b/include/linux/pm_wakeirq.h
-index dd42d16945d0..d9642c6cf852 100644
---- a/include/linux/pm_wakeirq.h
-+++ b/include/linux/pm_wakeirq.h
-@@ -10,8 +10,6 @@ extern int dev_pm_set_wake_irq(struct device *dev, int irq);
- extern int dev_pm_set_dedicated_wake_irq(struct device *dev, int irq);
- extern int dev_pm_set_dedicated_wake_irq_reverse(struct device *dev, int irq);
- extern void dev_pm_clear_wake_irq(struct device *dev);
--extern void dev_pm_enable_wake_irq(struct device *dev);
--extern void dev_pm_disable_wake_irq(struct device *dev);
- 
- #else	/* !CONFIG_PM */
- 
-@@ -34,13 +32,5 @@ static inline void dev_pm_clear_wake_irq(struct device *dev)
- {
- }
- 
--static inline void dev_pm_enable_wake_irq(struct device *dev)
--{
--}
--
--static inline void dev_pm_disable_wake_irq(struct device *dev)
--{
--}
--
- #endif	/* CONFIG_PM */
- #endif	/* _LINUX_PM_WAKEIRQ_H */
+> Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
+> Signed-off-by: Ruihong Luo <colorsu1922@gmail.com>
+
 -- 
-2.41.0
+With Best Regards,
+Andy Shevchenko
+
 
