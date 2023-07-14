@@ -2,82 +2,127 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91691EB64DA
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 11:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8F9C001DD
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 12:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235338AbjGNLtA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jul 2023 07:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S235191AbjGNMHu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jul 2023 08:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234892AbjGNLtA (ORCPT
+        with ESMTP id S230101AbjGNMHt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jul 2023 07:49:00 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36752D49;
-        Fri, 14 Jul 2023 04:48:59 -0700 (PDT)
+        Fri, 14 Jul 2023 08:07:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AED7212B;
+        Fri, 14 Jul 2023 05:07:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689335339; x=1720871339;
+  t=1689336468; x=1720872468;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=qtEgTm9tngU+qYi53Kkv3Oxf3bJUI65XM2fvQNzEnfw=;
-  b=csgssygYSg62Ua6qOmh+GmglGfm4OVL2+i0Ep65spEG2IPW+m35DkkAw
-   KYiXxEtwj79lme8Ma7TvJjzpG7deUbwJI9CuF2Y251whnEaQFPm5N/95p
-   phnEWkVGzRBX7HKhvIYfIxBN5yU3iaTHYaNLZf5lVTflQyeDpNpER9Xoy
-   NsLwWtTBS039CWitwLhezVK/H1hjb4tf0ZDwCByOCAtNsY9MnM22QUOew
-   oTbeIJiWXNkculVP3TPkvYtyQCIH9EcJSbWRLJJJS2v1lgxnacFibUbYn
-   sOiylBC+OifQ3G/zyZDl7jaayrYsS4u7NIBjYKkpR1LSPBKM/GjawCDdu
+   references:mime-version:content-id;
+  bh=/htYl69qlNj31QSX3mVg5JuWkegOCtKSr3VzQLqpegg=;
+  b=IxfPROnrLQk9jqvbh2JGJ8sAIn0p6o/FwmYdKsvg9LLmHzi7c2aH/fuV
+   3r2oV4xTrObClI4urRlEIZNafbgSdWUhuvvjgGjvrup19vTjrvVvNDYgX
+   B7rAJdOoAbSZqDJyPWDt0d9GoZda6LhMjwatb5l0wUPNZbiXnpvj9D84/
+   ldvC6TU5x7E/n3VFW1MwfjMAaHrSO6m22Iwk4unlF4VT7M4UBvqqxWBtb
+   YeJoHj0lGn133RF9nUKRE+3IUxuAGo8VBDjZPt37mePAe34dT+D+YLSlz
+   ucdWvTAeIf5cg8nlVcgjgJEZ2kvpKV2HgZlQ4YE2WaQN9p65VvLMclLnj
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="345049878"
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="362926043"
 X-IronPort-AV: E=Sophos;i="6.01,205,1684825200"; 
-   d="scan'208";a="345049878"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 04:48:59 -0700
+   d="scan'208";a="362926043"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 05:07:48 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="1053025722"
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="846433196"
 X-IronPort-AV: E=Sophos;i="6.01,205,1684825200"; 
-   d="scan'208";a="1053025722"
+   d="scan'208";a="846433196"
 Received: from rchauhax-mobl1.gar.corp.intel.com ([10.249.35.123])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 04:48:56 -0700
-Date:   Fri, 14 Jul 2023 14:48:54 +0300 (EEST)
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 05:07:44 -0700
+Date:   Fri, 14 Jul 2023 15:07:42 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     liubin001@208suo.com
-cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Fwd: [PATCH] tty:Insert clk_put before return (clk) to release
- memory
-In-Reply-To: <57adb092639743f2619c4765379b3ec7@208suo.com>
-Message-ID: <619ba12e-aa3e-6bc9-5326-ade76c18a6d8@linux.intel.com>
-References: <tencent_EF85BF6D0EE7D05E10D527FD335467508106@qq.com> <57adb092639743f2619c4765379b3ec7@208suo.com>
+To:     Ruihong Luo <colorsu1922@gmail.com>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        stable@vger.kernel.org, luoruihong@xiaomi.com,
+        weipengliang@xiaomi.com, wengjinfei@xiaomi.com
+Subject: Re: [PATCH v4] serial: 8250_dw: Preserve original value of DLF
+ register
+In-Reply-To: <20230713004235.35904-1-colorsu1922@gmail.com>
+Message-ID: <5fac4a28-ff70-d6e6-dcee-8cb45916789@linux.intel.com>
+References: <20230713004235.35904-1-colorsu1922@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; BOUNDARY="8323329-16913354-1689336427=:1695"
+Content-ID: <93c61472-25c0-bc4d-bf2c-23a581131bc@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 14 Jul 2023, liubin001@208suo.com wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> 
-> tty/serial:Insert clk_put before return (clk) to release memory
-> Signed-off-by: Liu Bin <liubin001@08suo.com>
-> ---
->  drivers/tty/serial/bcm63xx_uart.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/bcm63xx_uart.c
-> b/drivers/tty/serial/bcm63xx_uart.c
-> index 55e82d0bf92d..7353b683952d 100644
-> --- a/drivers/tty/serial/bcm63xx_uart.c
-> +++ b/drivers/tty/serial/bcm63xx_uart.c
-> @@ -851,6 +851,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
->          clk = of_clk_get(pdev->dev.of_node, 0);
-> 
->      if (IS_ERR(clk))
-> +        clk_put(clk);
->          return -ENODEV;
+--8323329-16913354-1689336427=:1695
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <6b473574-4ff8-9b19-862f-115f12225a5@linux.intel.com>
 
-Braces missing... Didn't checkpatch complain about this?
+On Thu, 13 Jul 2023, Ruihong Luo wrote:
+
+> Preserve the original value of the Divisor Latch Fraction (DLF) register.
+> When the DLF register is modified without preservation, it can disrupt
+> the baudrate settings established by firmware or bootloader, leading to
+> data corruption and the generation of unreadable or distorted characters.
+> 
+> Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
+
+You forgot to add:
+
+Cc: stable@vger.kernel.org
+
+> Signed-off-by: Ruihong Luo <colorsu1922@gmail.com>
+
+Other than that,
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
 
+> ---
+> v4:
+> * Use the old_dlf to hold the DLF register value
+> 
+>  drivers/tty/serial/8250/8250_dwlib.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+> index 75f32f054ebb..84843e204a5e 100644
+> --- a/drivers/tty/serial/8250/8250_dwlib.c
+> +++ b/drivers/tty/serial/8250/8250_dwlib.c
+> @@ -244,7 +244,7 @@ void dw8250_setup_port(struct uart_port *p)
+>  	struct dw8250_port_data *pd = p->private_data;
+>  	struct dw8250_data *data = to_dw8250_data(pd);
+>  	struct uart_8250_port *up = up_to_u8250p(p);
+> -	u32 reg;
+> +	u32 reg, old_dlf;
+>  
+>  	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
+>  	if (pd->hw_rs485_support) {
+> @@ -270,9 +270,11 @@ void dw8250_setup_port(struct uart_port *p)
+>  	dev_dbg(p->dev, "Designware UART version %c.%c%c\n",
+>  		(reg >> 24) & 0xff, (reg >> 16) & 0xff, (reg >> 8) & 0xff);
+>  
+> +	/* Preserve value written by firmware or bootloader  */
+> +	old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
+>  	dw8250_writel_ext(p, DW_UART_DLF, ~0U);
+>  	reg = dw8250_readl_ext(p, DW_UART_DLF);
+> -	dw8250_writel_ext(p, DW_UART_DLF, 0);
+> +	dw8250_writel_ext(p, DW_UART_DLF, old_dlf);
+>  
+>  	if (reg) {
+>  		pd->dlf_size = fls(reg);
+> 
+--8323329-16913354-1689336427=:1695--
