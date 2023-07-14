@@ -2,91 +2,108 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A35FAEB64DA
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 08:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AF5C0015E
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 09:46:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235187AbjGNIJP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jul 2023 04:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
+        id S235521AbjGNJqJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jul 2023 05:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234939AbjGNIIw (ORCPT
+        with ESMTP id S235919AbjGNJqD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jul 2023 04:08:52 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4864D46B6;
-        Fri, 14 Jul 2023 01:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689321990; x=1720857990;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fkEz5ngu5Jx0yxp4LTMvoYpwTKcv6182sEOb+9SRMDc=;
-  b=oJ5rrXQeMX7aUpi15rx0ixnvmLEjJoIk6kCwYR60N7KRnPFZkCYM6Ja8
-   RvH/9N5yRb55b3IqJ1bGCBuOvS8ohxqlrpvVelzd/U6Nk+KLbR10ThMWj
-   ETvRpCz6093gquQI0cBhlm1jUvXkzsCaughntPJuKvD3bc0upqEf7szSM
-   If1MuViNl9wmv6UjEW4h1T/NeD6kmAnfPCiTMbzAon5PsfypWtdbHgTLw
-   rEZG/c3+dHa9x3zzYXt8iTe0Ddo24pUs+nH+YWYrMdBPtfCFMfkZHQSa2
-   8ZHeQHWV4G9pcWwzZF9DDrvl/F39f6zm8J7XknHIlTJS1Wkr4z7Bs7jQh
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="345014317"
-X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="345014317"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 01:06:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="812338488"
-X-IronPort-AV: E=Sophos;i="6.01,204,1684825200"; 
-   d="scan'208";a="812338488"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by FMSMGA003.fm.intel.com with ESMTP; 14 Jul 2023 01:05:58 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qKDoL-002bC8-1D;
-        Fri, 14 Jul 2023 11:05:57 +0300
-Date:   Fri, 14 Jul 2023 11:05:57 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     luoruihong <colorsu1922@gmail.com>
-Cc:     ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, luoruihong@xiaomi.com,
-        weipengliang@xiaomi.com, wengjinfei@xiaomi.com
-Subject: Re:
-Message-ID: <ZLEB5fxhJ/GDVX4W@smile.fi.intel.com>
-References: <64b09dbb.630a0220.e80b9.e2ed@mx.google.com>
+        Fri, 14 Jul 2023 05:46:03 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B3930F9;
+        Fri, 14 Jul 2023 02:45:54 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-31438512cafso1715934f8f.2;
+        Fri, 14 Jul 2023 02:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1689327953; x=1691919953;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GhHyeq8MCFgNA8Hcp4N9hDnUifGjHf0k8KsJt5oJLss=;
+        b=mq5YTBczOtAj2Fmv7zdTHZSP29BONdxt8WAXSWRe4WSaA8un71MGSiXj1d8jsN9J4H
+         u+QNYHPbiEthBM3vRPnjM4ui6zN0+he5yM8eIJmkHjr0Pq2lXRgXrv1XD52KM0PqdCCx
+         KasOIgpsgT30QQ6ZfsB1sR8AqyhNeNkZzazH9Gwtnr5c8MSLIkfnRm3e1VJPPJ+E6E/n
+         KoJ7TFpq8TntBy4yuxD6/wam5cOAxd1hYTdm6f8toNJJq1GwlWFVhOkmzZLTZ+a6G232
+         HVNXMaxAEfG8BteidGs6BOTMOpKL/mKwM3Ipwv26vahblGdKfq8guT0IEFzfCENVux9t
+         26MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689327953; x=1691919953;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GhHyeq8MCFgNA8Hcp4N9hDnUifGjHf0k8KsJt5oJLss=;
+        b=bVDGFkeJfn5gdx19VRYiUDZdaiIThbwFo7mj/na1KpGBrIovuLAza4VQRThsjoLlmB
+         10BG5ylBkFi8hLiDPT2/Comjxb/8KP3eSo8f/kiqGhphaBc7fAHCW16XTNXs2do01Te6
+         1U95OwF829TP1JCb2SZNH6Gm1rzps0I3BhtqFP/O/SmNzSiwfY0cKJdsEY1tjdwf1hYY
+         BAg9fIHebuE0qwW4ulLHtyKRVLwVt+yVmcuSKDMdgkLWPyHR3n2rKvtTiR3301c/rDrI
+         oBQwOCXvM4T25fmycMFR4ZPlE8W/rkxJD/zKja/jDZfr5eWWip3O+f5M0+87zWYqMiBL
+         EcBw==
+X-Gm-Message-State: ABy/qLaB7PV4V1JzPNZt2rzNTrEuIcZwVoRa3gCJwFkPETz/RMhFI9qc
+        4deWxO9uD1zDo4T7Txecy/M=
+X-Google-Smtp-Source: APBJJlEBxgS1V39uLRGz2VYRmg94Pffn5d7V+hpe2aBIFy1dvQRHq7BriGcxTq9dr9/L0POm0Z0oxg==
+X-Received: by 2002:adf:fc4f:0:b0:314:2c7a:d100 with SMTP id e15-20020adffc4f000000b003142c7ad100mr4220676wrs.42.1689327952386;
+        Fri, 14 Jul 2023 02:45:52 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
+        by smtp.gmail.com with ESMTPSA id o14-20020a5d684e000000b003145559a691sm10340340wrw.41.2023.07.14.02.45.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jul 2023 02:45:51 -0700 (PDT)
+Message-ID: <e2ff9174-c282-8c19-27d3-4d6681e7df16@gmail.com>
+Date:   Fri, 14 Jul 2023 11:45:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <64b09dbb.630a0220.e80b9.e2ed@mx.google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH 10/10] serial: drivers: switch ch and flag to u8
+Content-Language: fr-FR
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Hammer Hsieh <hammerh0314@gmail.com>
+References: <20230712081811.29004-1-jirislaby@kernel.org>
+ <20230712081811.29004-11-jirislaby@kernel.org>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <20230712081811.29004-11-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 14, 2023 at 08:58:29AM +0800, luoruihong wrote:
-> On Thu, Jul 13, 2023 at 07:51:14PM +0300, Andy Shevchenko wrote:
-> > On Thu, Jul 13, 2023 at 08:42:36AM +0800, Ruihong Luo wrote:
-> > > Preserve the original value of the Divisor Latch Fraction (DLF) register.
-> > > When the DLF register is modified without preservation, it can disrupt
-> > > the baudrate settings established by firmware or bootloader, leading to
-> > > data corruption and the generation of unreadable or distorted characters.
-> >
-> > You forgot to add my tag. Why? Do you think the name of variable warrants this?
-> > Whatever,
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> >
-> > Next time if you don't pick up somebody's tag, care to explain in the changelog
-> > why.
-> >
-> > > Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
-> > > Signed-off-by: Ruihong Luo <colorsu1922@gmail.com>
-> 
-> I'm sorry, I didn't know about this rule. Thank you for helping me add
-> the missing tags back and for all your previous kind assistance.
+Le 12/07/2023 à 10:18, Jiri Slaby (SUSE) a écrit :
+>   drivers/tty/serial/atmel_serial.c    | 2 +-
 
-For now no need to do anything, just wait for Ilpo's and/or Greg's answer(s),
+Acked-by: Richard GENOUD <richard.genoud@gmail.com>
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks !
