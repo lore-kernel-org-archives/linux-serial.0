@@ -2,96 +2,86 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E73BDEB64DA
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 12:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 973FCEB64DA
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 13:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235589AbjGNMbx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jul 2023 08:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
+        id S235176AbjGNNEF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jul 2023 09:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235444AbjGNMbw (ORCPT
+        with ESMTP id S229704AbjGNNEE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jul 2023 08:31:52 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3660A3595;
-        Fri, 14 Jul 2023 05:31:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689337877; x=1720873877;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=K3KESkrbsB4Xp58w394q7+mIoO/BSEM9uPhS7IO3sdU=;
-  b=TM/QMTB4uejikkKE1qwG1GzApz2OX+U/tgUHyAJpREW8+z/gTmWRICV4
-   Zbbpx4TdElBlzPpMaW687ntc/1tdi2ogX5SuptxIspVM0lfC2DHxN3I3S
-   vZvkSHYI/cdoVsQjaApltwro/98hFvTwvNRgbsJAJ4P8GACftfGif3WKK
-   W1mBKV6PM4AzENrNfXhqqkUI2u8SaEj3+BviYWl4VTmPSBT9iY3gFiAQz
-   s5qKhSK2naHmrqG+b7SUZ4WA3bICjFKRqZmmvRM+vaTJiACA9irnLCBfw
-   f98vt+un2P7lRVJhXfU795kfdU14FoiTIJKDr2ZLlaRCrBE+yUkowfwzs
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="369011665"
-X-IronPort-AV: E=Sophos;i="6.01,205,1684825200"; 
-   d="scan'208";a="369011665"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 05:31:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="787839238"
-X-IronPort-AV: E=Sophos;i="6.01,205,1684825200"; 
-   d="scan'208";a="787839238"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Jul 2023 05:31:13 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qKHx2-002eud-0a;
-        Fri, 14 Jul 2023 15:31:12 +0300
-Date:   Fri, 14 Jul 2023 15:31:11 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Ruihong Luo <colorsu1922@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 14 Jul 2023 09:04:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308AD30CA;
+        Fri, 14 Jul 2023 06:04:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE8D461D11;
+        Fri, 14 Jul 2023 13:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A416C433C8;
+        Fri, 14 Jul 2023 13:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1689339843;
+        bh=BknjWnKCtvrJ0CaxUt4ptagyWk8YX48GKd/9fEAJ7JU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GYn5D6G2rlXhkg6EtehiBiofi0CHsC3R3ZgqqiiObvyMK+L+JI/s1boBPYZmHn5Hx
+         LXGAj95v2RxQn2xRcKnC2RS+Y6z3pflHw9IcNMnCOnWpr3Fx5S16lzCf7T1rpeQaJY
+         fJ98o5wIjf3mG2lTj07BkfJdPIrRyIYEACeiTIQbBDVGYeuKlC/9JeG8A3O1/dRJmT
+         StpVxBG+wYK48dB5GpLgJO4T+ch2wnKZUl5omXqD9LpZTII4DSkvDhvpd/tOzy2qPu
+         UBDiMlQSRoMhXRNBSvvFs8rh7viw82a8JxhwE/+6qohzGYh9io19FJGs/xRsRPxHdR
+         SDX35RDG13Ucg==
+Received: from johan by xi.lan with local (Exim 4.96)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1qKISq-0003nm-2J;
+        Fri, 14 Jul 2023 15:04:04 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        stable@vger.kernel.org, luoruihong@xiaomi.com,
-        weipengliang@xiaomi.com, wengjinfei@xiaomi.com
-Subject: Re: [PATCH v4] serial: 8250_dw: Preserve original value of DLF
- register
-Message-ID: <ZLFAD8lblUA6/cVd@smile.fi.intel.com>
-References: <20230713004235.35904-1-colorsu1922@gmail.com>
- <5fac4a28-ff70-d6e6-dcee-8cb45916789@linux.intel.com>
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 2/2] serial: qcom-geni: clean up clock-rate debug printk
+Date:   Fri, 14 Jul 2023 15:02:14 +0200
+Message-ID: <20230714130214.14552-3-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230714130214.14552-1-johan+linaro@kernel.org>
+References: <20230714130214.14552-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5fac4a28-ff70-d6e6-dcee-8cb45916789@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 14, 2023 at 03:07:42PM +0300, Ilpo Järvinen wrote:
-> On Thu, 13 Jul 2023, Ruihong Luo wrote:
-> 
-> > Preserve the original value of the Divisor Latch Fraction (DLF) register.
-> > When the DLF register is modified without preservation, it can disrupt
-> > the baudrate settings established by firmware or bootloader, leading to
-> > data corruption and the generation of unreadable or distorted characters.
-> > 
-> > Fixes: 701c5e73b296 ("serial: 8250_dw: add fractional divisor support")
+Make the clock-rate debug printk more readable by using an equal sign
+instead of a dash as separator between names and values and adding some
+spaces:
 
-> You forgot to add:
-> 
-> Cc: stable@vger.kernel.org
+	qcom_geni_serial 988000.serial: desired_rate = 1843200, clk_rate = 7372800, clk_div = 4
 
-It's there. Just not in the commit message. It's fine.
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > Signed-off-by: Ruihong Luo <colorsu1922@gmail.com>
-> 
-> Other than that,
-> 
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 8be896dbaa88..753ac68d03a6 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1246,7 +1246,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 		goto out_restart_rx;
+ 	}
+ 
+-	dev_dbg(port->se.dev, "desired_rate-%u, clk_rate-%lu, clk_div-%u\n",
++	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u\n",
+ 			baud * sampling_rate, clk_rate, clk_div);
+ 
+ 	uport->uartclk = clk_rate;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.41.0
 
