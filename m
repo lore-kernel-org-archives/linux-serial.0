@@ -2,40 +2,40 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1346C001DD
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 13:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94007C001E0
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 13:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235611AbjGNNEF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jul 2023 09:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
+        id S235835AbjGNNEG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jul 2023 09:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234881AbjGNNEF (ORCPT
+        with ESMTP id S235147AbjGNNEF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 14 Jul 2023 09:04:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC9830CB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9E630D7;
         Fri, 14 Jul 2023 06:04:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D1761D10;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9BDD61D12;
         Fri, 14 Jul 2023 13:04:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D3D8C433C9;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20175C433C7;
         Fri, 14 Jul 2023 13:04:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1689339843;
-        bh=n56OIv7wYjOjFumwVnFoUoyIEuQPLS8u1Ruo4hGD9LM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=msQVqeY3TLfufw2NEY7pyhHzHiNIT0Id16NVjLACYwvWqZmWT1RDrkTYmPDZO3Lor
-         bUBU6jNWB22Abm6zcLaDc70I9ctjUK2SuRL5SWhN+sFocbufLvscgmSwwo/jf5EwLB
-         +x3lqLDYWL/vUlmUPzPu9+TT+z18qo4Hx/onwHzYeWcMsHJ2aEtZStsHNLFGIU6kQv
-         x2eebLwVadZPlv7UWK1dJL3ZMO2UrNf6upiYM1YLlT5FoE/NxWn2fH2OlR47tXH9ej
-         0jrz4giBo+6fi30wM58uvHE5P0kQLUP1Jp1unLiyTi8baaXUCr75dZJ3MX/gdDexhb
-         8vTVjixyYBIww==
+        bh=inXxnXQ/Z52rcwIHwMcs8kHBBJmTFZPs88JABaXwQzU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZV1mcBUvMyyudY7N7L9HDkThtT3bK+m2/nWhHZsHRebVsD6nKnfE8aRg+WkHelmip
+         x71jGE68/bf3QbDXrSAMMa0W4Q6ujyLqP3f36Pk7gHj59K647rcy5iuFgwm2POPPoc
+         QGnrMpQ+kiQXon+BYABG4/nMQKIyq09R7usgTgD1oDb7F68RE1iPRvZhgXULFju+X3
+         9ymUW2LnFmN5qBGCWTJJHbUgmPvw9PBm9Z21TtFVTs2CP1u/CrW3i6D6AEo3/hSTHX
+         TZN4gXtnQTcluVbyjfKszvDmz5kZA5SMMk/XASSHFDBAdiEf+EhviZ5EPYk4UiYOcp
+         o+G3jvpm2EqBA==
 Received: from johan by xi.lan with local (Exim 4.96)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1qKISq-0003nk-21;
+        id 1qKISq-0003ni-1b;
         Fri, 14 Jul 2023 15:04:04 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -45,69 +45,33 @@ Cc:     Andy Gross <agross@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH 1/2] serial: qcom-geni: fix opp vote on shutdown
-Date:   Fri, 14 Jul 2023 15:02:13 +0200
-Message-ID: <20230714130214.14552-2-johan+linaro@kernel.org>
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 0/2] serial: qcom-geni: fix opp vote on shutdown
+Date:   Fri, 14 Jul 2023 15:02:12 +0200
+Message-ID: <20230714130214.14552-1-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230714130214.14552-1-johan+linaro@kernel.org>
-References: <20230714130214.14552-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The operating-performance-point vote needs to be dropped when shutting
-down the port to avoid wasting power by keeping resources like power
-domains in an unnecessarily high performance state (e.g. when a UART
-connected Bluetooth controller is not in use).
+This series fixes the missing opp vote removal when closing a serial
+port, which, for example, can lead to wasted power when a UART connected
+Bluetooth controller is not in use.
 
-Fixes: a5819b548af0 ("tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state")
-Cc: stable@vger.kernel.org      # 5.9
-Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Included is also a clean up of a related debug printk.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index b825b05e6137..8be896dbaa88 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -126,6 +126,7 @@ struct qcom_geni_serial_port {
- 	dma_addr_t rx_dma_addr;
- 	bool setup;
- 	unsigned int baud;
-+	unsigned long clk_rate;
- 	void *rx_buf;
- 	u32 loopback;
- 	bool brk;
-@@ -1249,6 +1250,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 			baud * sampling_rate, clk_rate, clk_div);
- 
- 	uport->uartclk = clk_rate;
-+	port->clk_rate = clk_rate;
- 	dev_pm_opp_set_rate(uport->dev, clk_rate);
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
-@@ -1513,10 +1515,13 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 
- 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
- 		geni_icc_enable(&port->se);
-+		if (port->clk_rate)
-+			dev_pm_opp_set_rate(uport->dev, port->clk_rate);
- 		geni_se_resources_on(&port->se);
- 	} else if (new_state == UART_PM_STATE_OFF &&
- 			old_state == UART_PM_STATE_ON) {
- 		geni_se_resources_off(&port->se);
-+		dev_pm_opp_set_rate(uport->dev, 0);
- 		geni_icc_disable(&port->se);
- 	}
- }
+Johan
+
+
+Johan Hovold (2):
+  serial: qcom-geni: fix opp vote on shutdown
+  serial: qcom-geni: clean up clock-rate debug printk
+
+ drivers/tty/serial/qcom_geni_serial.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
 -- 
 2.41.0
 
