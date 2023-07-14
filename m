@@ -2,108 +2,82 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AF5C0015E
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 09:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91691EB64DA
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jul 2023 11:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235521AbjGNJqJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jul 2023 05:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
+        id S235338AbjGNLtA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jul 2023 07:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235919AbjGNJqD (ORCPT
+        with ESMTP id S234892AbjGNLtA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jul 2023 05:46:03 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B3930F9;
-        Fri, 14 Jul 2023 02:45:54 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-31438512cafso1715934f8f.2;
-        Fri, 14 Jul 2023 02:45:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1689327953; x=1691919953;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GhHyeq8MCFgNA8Hcp4N9hDnUifGjHf0k8KsJt5oJLss=;
-        b=mq5YTBczOtAj2Fmv7zdTHZSP29BONdxt8WAXSWRe4WSaA8un71MGSiXj1d8jsN9J4H
-         u+QNYHPbiEthBM3vRPnjM4ui6zN0+he5yM8eIJmkHjr0Pq2lXRgXrv1XD52KM0PqdCCx
-         KasOIgpsgT30QQ6ZfsB1sR8AqyhNeNkZzazH9Gwtnr5c8MSLIkfnRm3e1VJPPJ+E6E/n
-         KoJ7TFpq8TntBy4yuxD6/wam5cOAxd1hYTdm6f8toNJJq1GwlWFVhOkmzZLTZ+a6G232
-         HVNXMaxAEfG8BteidGs6BOTMOpKL/mKwM3Ipwv26vahblGdKfq8guT0IEFzfCENVux9t
-         26MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689327953; x=1691919953;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GhHyeq8MCFgNA8Hcp4N9hDnUifGjHf0k8KsJt5oJLss=;
-        b=bVDGFkeJfn5gdx19VRYiUDZdaiIThbwFo7mj/na1KpGBrIovuLAza4VQRThsjoLlmB
-         10BG5ylBkFi8hLiDPT2/Comjxb/8KP3eSo8f/kiqGhphaBc7fAHCW16XTNXs2do01Te6
-         1U95OwF829TP1JCb2SZNH6Gm1rzps0I3BhtqFP/O/SmNzSiwfY0cKJdsEY1tjdwf1hYY
-         BAg9fIHebuE0qwW4ulLHtyKRVLwVt+yVmcuSKDMdgkLWPyHR3n2rKvtTiR3301c/rDrI
-         oBQwOCXvM4T25fmycMFR4ZPlE8W/rkxJD/zKja/jDZfr5eWWip3O+f5M0+87zWYqMiBL
-         EcBw==
-X-Gm-Message-State: ABy/qLaB7PV4V1JzPNZt2rzNTrEuIcZwVoRa3gCJwFkPETz/RMhFI9qc
-        4deWxO9uD1zDo4T7Txecy/M=
-X-Google-Smtp-Source: APBJJlEBxgS1V39uLRGz2VYRmg94Pffn5d7V+hpe2aBIFy1dvQRHq7BriGcxTq9dr9/L0POm0Z0oxg==
-X-Received: by 2002:adf:fc4f:0:b0:314:2c7a:d100 with SMTP id e15-20020adffc4f000000b003142c7ad100mr4220676wrs.42.1689327952386;
-        Fri, 14 Jul 2023 02:45:52 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
-        by smtp.gmail.com with ESMTPSA id o14-20020a5d684e000000b003145559a691sm10340340wrw.41.2023.07.14.02.45.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jul 2023 02:45:51 -0700 (PDT)
-Message-ID: <e2ff9174-c282-8c19-27d3-4d6681e7df16@gmail.com>
-Date:   Fri, 14 Jul 2023 11:45:49 +0200
+        Fri, 14 Jul 2023 07:49:00 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36752D49;
+        Fri, 14 Jul 2023 04:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689335339; x=1720871339;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=qtEgTm9tngU+qYi53Kkv3Oxf3bJUI65XM2fvQNzEnfw=;
+  b=csgssygYSg62Ua6qOmh+GmglGfm4OVL2+i0Ep65spEG2IPW+m35DkkAw
+   KYiXxEtwj79lme8Ma7TvJjzpG7deUbwJI9CuF2Y251whnEaQFPm5N/95p
+   phnEWkVGzRBX7HKhvIYfIxBN5yU3iaTHYaNLZf5lVTflQyeDpNpER9Xoy
+   NsLwWtTBS039CWitwLhezVK/H1hjb4tf0ZDwCByOCAtNsY9MnM22QUOew
+   oTbeIJiWXNkculVP3TPkvYtyQCIH9EcJSbWRLJJJS2v1lgxnacFibUbYn
+   sOiylBC+OifQ3G/zyZDl7jaayrYsS4u7NIBjYKkpR1LSPBKM/GjawCDdu
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="345049878"
+X-IronPort-AV: E=Sophos;i="6.01,205,1684825200"; 
+   d="scan'208";a="345049878"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 04:48:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10770"; a="1053025722"
+X-IronPort-AV: E=Sophos;i="6.01,205,1684825200"; 
+   d="scan'208";a="1053025722"
+Received: from rchauhax-mobl1.gar.corp.intel.com ([10.249.35.123])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2023 04:48:56 -0700
+Date:   Fri, 14 Jul 2023 14:48:54 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     liubin001@208suo.com
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Fwd: [PATCH] tty:Insert clk_put before return (clk) to release
+ memory
+In-Reply-To: <57adb092639743f2619c4765379b3ec7@208suo.com>
+Message-ID: <619ba12e-aa3e-6bc9-5326-ade76c18a6d8@linux.intel.com>
+References: <tencent_EF85BF6D0EE7D05E10D527FD335467508106@qq.com> <57adb092639743f2619c4765379b3ec7@208suo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH 10/10] serial: drivers: switch ch and flag to u8
-Content-Language: fr-FR
-To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Hammer Hsieh <hammerh0314@gmail.com>
-References: <20230712081811.29004-1-jirislaby@kernel.org>
- <20230712081811.29004-11-jirislaby@kernel.org>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <20230712081811.29004-11-jirislaby@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 12/07/2023 à 10:18, Jiri Slaby (SUSE) a écrit :
->   drivers/tty/serial/atmel_serial.c    | 2 +-
+On Fri, 14 Jul 2023, liubin001@208suo.com wrote:
 
-Acked-by: Richard GENOUD <richard.genoud@gmail.com>
+> 
+> tty/serial:Insert clk_put before return (clk) to release memory
+> Signed-off-by: Liu Bin <liubin001@08suo.com>
+> ---
+>  drivers/tty/serial/bcm63xx_uart.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/bcm63xx_uart.c
+> b/drivers/tty/serial/bcm63xx_uart.c
+> index 55e82d0bf92d..7353b683952d 100644
+> --- a/drivers/tty/serial/bcm63xx_uart.c
+> +++ b/drivers/tty/serial/bcm63xx_uart.c
+> @@ -851,6 +851,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
+>          clk = of_clk_get(pdev->dev.of_node, 0);
+> 
+>      if (IS_ERR(clk))
+> +        clk_put(clk);
+>          return -ENODEV;
 
-Thanks !
+Braces missing... Didn't checkpatch complain about this?
+
+-- 
+ i.
+
