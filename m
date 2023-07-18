@@ -2,83 +2,77 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CFEEB64DD
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 03:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3AEC00528
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 04:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230264AbjGRDkq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jul 2023 23:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
+        id S230219AbjGREiA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jul 2023 00:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbjGRDkp (ORCPT
+        with ESMTP id S230355AbjGREh6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jul 2023 23:40:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D41F3;
-        Mon, 17 Jul 2023 20:40:44 -0700 (PDT)
+        Tue, 18 Jul 2023 00:37:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A02E55;
+        Mon, 17 Jul 2023 21:37:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC7386125A;
-        Tue, 18 Jul 2023 03:40:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39A1C433C8;
-        Tue, 18 Jul 2023 03:40:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8792061447;
+        Tue, 18 Jul 2023 04:37:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F5FC433C8;
+        Tue, 18 Jul 2023 04:37:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689651643;
-        bh=ApO+HLWK+YRX5/x1OY3KALNgxip6sEEWcklUBcK2dYM=;
+        s=k20201202; t=1689655076;
+        bh=6wZPMKCBagUOFTDmVauFkFIPJOAzlX+PQYJ+0aOInqA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IpjAJl7cE9YX/FgD3Qh0WLHhtOwqD0/Gn4c/ivj8bZTh3T1kPEafiV3qq9Wq3FzKF
-         IVBmFohrNBRkdk0+5223mmf4t/htenZOAtQCBHJKM6sl2f9S8TNubRocOW7Cn1pGaM
-         eDXu9pjNPVUeXbhexFh4qJbtETmNu/k8XR3dKIzz7QN0Ys/0G3PP/IMhWzjjfscU/n
-         fzDk7tcYopm8+++sMyRgBbl7EiPgPTvRPmAGlSxe6GtMXsqM5sil8oX7UfNZEpbf1S
-         CAUELQFsWpbKkMzd9CpnNYyGh1NLnFrnw9gvzQn2kdZKD2+CIJ0ltPtY/wfh+oNDqD
-         /p/hquxEiuW2Q==
-Date:   Tue, 18 Jul 2023 11:40:31 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        conor+dt@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        shenwei.wang@nxp.com, gregkh@linuxfoundation.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel@pengutronix.de, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com
-Subject: Re: [PATCH V4 0/3] correct the lpuart compatible for imx8dxl and
- imx93
-Message-ID: <20230718034031.GH9559@dragon>
-References: <20230705015602.29569-1-sherry.sun@nxp.com>
+        b=qK7EBTOFgzQxyna+0gJbjwtrE/V91mTwbqEQXxcuyLr4nVrQgq7BhwrrF8RWlurLO
+         zcPPJ8qbACQsOlBZ8cvAw1vFp1FHpOkCr9KD8EWj6HUTLSm0bhnbIMOSVipieEbUmG
+         39Tu/xUBhzGWOdz8zjqVih769M7Kqb9oEf0Y9vE3ywvbLw80yS+Va1KG4p3M7gX71M
+         nPJ/5FORi0UP8Y6ZJtErSo/Dd6t4trFQNR3zybgr83wS+GVDgCCOJArSGXyuSFvWBJ
+         fYWR8CFQmSGmLCTxv10kZjd7scXp1f3se+0H9tJACaWJIEFinE3C2ZY8NNlRN7exJq
+         ArBoi/e+wP23g==
+Date:   Mon, 17 Jul 2023 21:41:20 -0700
+From:   Bjorn Andersson <andersson@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andi Shyti <andi.shyti@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] interconnect: qcom: sm8250: Fix QUP0 nodes
+Message-ID: <xnekcag622zywfat6zljhwt5q2boc3k2akr7uu7rezy2vkwsm7@slzdu4hm6im4>
+References: <20230703-topic-8250_qup_icc-v2-0-9ba0a9460be2@linaro.org>
+ <20230703-topic-8250_qup_icc-v2-3-9ba0a9460be2@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230705015602.29569-1-sherry.sun@nxp.com>
+In-Reply-To: <20230703-topic-8250_qup_icc-v2-3-9ba0a9460be2@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 05, 2023 at 09:55:59AM +0800, Sherry Sun wrote:
-> This patch set corrects the lpuart compatible for imx8dxl and imx93 platforms,
-> also correct the corresponding fsl-lpuart dt-binding doc. 
+On Mon, Jul 03, 2023 at 10:15:27PM +0200, Konrad Dybcio wrote:
+> The QUP0 BCM relates to some internal property of the QUPs, and should
+> be configured independently of the path to the QUP. In line with other
+> platforms expose QUP_CORE endpoints in order allow this configuration.
 > 
-> ---
-> Changes in V4
-> 1. add Reviewed-by tag for patch#3
-> 
-> Changes in V3
-> 1. remove the redundant fsl,imx8ulp-lpuart entry in patch#3
-> 2. change const to enum for better readability in patch#3
-> 
-> Changes in V2
-> 1. drop the imx8ulp dts changes in last version patch set
-> 2. add both "fsl,imx8ulp-lpuart" and "fsl,imx7ulp-lpuart" for imx93
-> 3. correct the dt-bindings for imx93 lpuart compatible
-> ---
-> 
-> Sherry Sun (3):
->   arm64: dts: imx8dxl: remove "fsl,imx7ulp-lpuart" compatible for
->     imx8dxl
->   arm64: dts: imx93: add "fsl,imx8ulp-lpuart" compatible for imx93
->   dt-bindings: serial: fsl-lpuart: correct imx93-lpuart dt-binding item
+> Fixes: 6df5b349491e ("interconnect: qcom: Add SM8250 interconnect provider driver")
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
-I've already picked up two DTS patches from v3.  The dt-bindings one
-needs to go via serial subsystem tree.
+Reviewed-by: Bjorn Andersson <andersson@kernel.org>
 
-Shawn
+Regards,
+Bjorn
