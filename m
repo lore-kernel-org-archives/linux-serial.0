@@ -2,77 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3AEC00528
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 04:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 913E3EB64DC
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 06:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230219AbjGREiA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jul 2023 00:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55200 "EHLO
+        id S231487AbjGRG56 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jul 2023 02:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbjGREh6 (ORCPT
+        with ESMTP id S229705AbjGRG5y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jul 2023 00:37:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A02E55;
-        Mon, 17 Jul 2023 21:37:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8792061447;
-        Tue, 18 Jul 2023 04:37:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F5FC433C8;
-        Tue, 18 Jul 2023 04:37:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689655076;
-        bh=6wZPMKCBagUOFTDmVauFkFIPJOAzlX+PQYJ+0aOInqA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qK7EBTOFgzQxyna+0gJbjwtrE/V91mTwbqEQXxcuyLr4nVrQgq7BhwrrF8RWlurLO
-         zcPPJ8qbACQsOlBZ8cvAw1vFp1FHpOkCr9KD8EWj6HUTLSm0bhnbIMOSVipieEbUmG
-         39Tu/xUBhzGWOdz8zjqVih769M7Kqb9oEf0Y9vE3ywvbLw80yS+Va1KG4p3M7gX71M
-         nPJ/5FORi0UP8Y6ZJtErSo/Dd6t4trFQNR3zybgr83wS+GVDgCCOJArSGXyuSFvWBJ
-         fYWR8CFQmSGmLCTxv10kZjd7scXp1f3se+0H9tJACaWJIEFinE3C2ZY8NNlRN7exJq
-         ArBoi/e+wP23g==
-Date:   Mon, 17 Jul 2023 21:41:20 -0700
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andi Shyti <andi.shyti@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] interconnect: qcom: sm8250: Fix QUP0 nodes
-Message-ID: <xnekcag622zywfat6zljhwt5q2boc3k2akr7uu7rezy2vkwsm7@slzdu4hm6im4>
-References: <20230703-topic-8250_qup_icc-v2-0-9ba0a9460be2@linaro.org>
- <20230703-topic-8250_qup_icc-v2-3-9ba0a9460be2@linaro.org>
+        Tue, 18 Jul 2023 02:57:54 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54B21A2;
+        Mon, 17 Jul 2023 23:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1689663473; x=1721199473;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KB6wQi2fSkHzaNEB8uUFd6EhlNuh6Xp2A6Y58nxMss0=;
+  b=D80q7/QZ3vJvftcynOekJbUHbFnM4XFUETdqyjpD17eusU/ZJA2v3RBj
+   MlB2pBWGIQjEbsiANHjJ1F1l8AQNk6R1axDHOTr/zFOMigebJmcyjCCOR
+   pBJnhI3OniJhQM6ooti4CCehcthToPKfcNYP/D52sfU9vfAoStDOw7GxK
+   BMvBYTWSTJJ+ADyeBU8BVpW/j4AUdmPDWovEbKh6Xt3M/OQFIpCV7agf1
+   cXAREcYSPXTn2DU75v844koz3Wmd19noZrpQj3SBt9K6gnhDKOpddypqr
+   pD/iwx/NuQ7lX12eHz9sBeaNyOaGYnKZGueL9I21Aw2bQ3GBRCGmnFeov
+   g==;
+X-IronPort-AV: E=Sophos;i="6.01,213,1684825200"; 
+   d="scan'208";a="224388338"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jul 2023 23:57:52 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 17 Jul 2023 23:57:50 -0700
+Received: from che-lt-i66125lx.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Mon, 17 Jul 2023 23:57:39 -0700
+From:   Durai Manickam KR <durai.manickamkr@microchip.com>
+To:     <Hari.PrasathGE@microchip.com>,
+        <balamanikandan.gunasundar@microchip.com>,
+        <manikandan.m@microchip.com>, <varshini.rajendran@microchip.com>,
+        <dharma.b@microchip.com>, <nayabbasha.sayed@microchip.com>,
+        <balakrishnan.s@microchip.com>, <cristian.birsan@microchip.com>,
+        <nicolas.ferre@microchip.com>, <krzysztof.kozlowski@linaro.org>,
+        <alexandre.belloni@bootlin.com>, <davem@davemloft.net>,
+        <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <Kavyasree.Kotagiri@microchip.com>,
+        <Horatiu.Vultur@microchip.com>, <robh+dt@kernel.org>,
+        <andrew@lunn.ch>, <michael@walle.cc>, <jerry.ray@microchip.com>,
+        <conor+dt@kernel.org>, <jesper.nilsson@axis.com>,
+        <andre.przywara@arm.com>, <ada@thorsis.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <gregkh@linuxfoundation.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>
+CC:     Durai Manickam KR <durai.manickamkr@microchip.com>
+Subject: [PATCHv3 0/2] update at91 usart compatible for sam9x60
+Date:   Tue, 18 Jul 2023 12:27:33 +0530
+Message-ID: <20230718065735.10187-1-durai.manickamkr@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230703-topic-8250_qup_icc-v2-3-9ba0a9460be2@linaro.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 03, 2023 at 10:15:27PM +0200, Konrad Dybcio wrote:
-> The QUP0 BCM relates to some internal property of the QUPs, and should
-> be configured independently of the path to the QUP. In line with other
-> platforms expose QUP_CORE endpoints in order allow this configuration.
-> 
-> Fixes: 6df5b349491e ("interconnect: qcom: Add SM8250 interconnect provider driver")
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+There is only one debug unit in the sam9x60 SOC and it has the chipid 
+register. So defining these dbgu compatible strings to the flexcom usart
+is not correct and causes the SOC detection failure. So removing these 
+dbgu compatible strings defined under the flexcom usart and updating 
+the yaml file accordingly.
+---
+v2 changes:
+1. Updating the dt-bindings documentation and send one more patch for
+the yaml file.
+---
+v3 change:
+1. Explained the issue in the commit message rather than in the cover
+letter. Added the detailed commit message for the changes done.
+---
+Durai Manickam KR (2):
+  dt-bindings: serial: atmel,at91-usart: update compatible for sam9x60
+  ARM: dts: at91: sam9x60: fix the SOC detection
 
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+ .../bindings/serial/atmel,at91-usart.yaml     |  4 ++-
+ arch/arm/boot/dts/microchip/sam9x60.dtsi      | 26 +++++++++----------
+ 2 files changed, 16 insertions(+), 14 deletions(-)
 
-Regards,
-Bjorn
+-- 
+2.25.1
+
