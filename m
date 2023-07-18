@@ -2,88 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A42EB64DA
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 13:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8334EB64DC
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 17:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231587AbjGRNZc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jul 2023 09:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58828 "EHLO
+        id S230268AbjGRRqO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jul 2023 13:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232266AbjGRNZY (ORCPT
+        with ESMTP id S232053AbjGRRqN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jul 2023 09:25:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F177318E;
-        Tue, 18 Jul 2023 06:25:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1E06157F;
-        Tue, 18 Jul 2023 13:25:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C6FC433C8;
-        Tue, 18 Jul 2023 13:25:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1689686719;
-        bh=MKqbN3b2rv/J1xMVTMwrvaZB7Tc3AJ+NAm9r4fkKzTY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=x4yR6Xc/nyqMRzveJsq42U+veA7gOWFvU/wA10gUsKOYuunIQ2ZUGcaUxmnDOyPg9
-         JOjv0Ip3Cj8efbzgdlpe1sUUZejrL6LsuJw9VHC573Bdc7gigSC/Ew8/UxNgH960/i
-         N6cN8IR0liVljLuGmng894OPNi5kTg0uns2EKtEg=
-Date:   Tue, 18 Jul 2023 15:25:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     sunran001@208suo.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: add missing clk_put()
-Message-ID: <2023071845-playable-snippet-278a@gregkh>
-References: <20230718075401.16668-1-xujianghui@cdjrlc.com>
- <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
+        Tue, 18 Jul 2023 13:46:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964FB173A;
+        Tue, 18 Jul 2023 10:46:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689702371; x=1721238371;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FUVD4hJBO5IxMDmFyymfYBCztnS3mXGJcBnU4SZwflA=;
+  b=A1OdLG73ALT+ieC9TD5wz6zlpD79usRG4fSq5gwCJ974em3U8LpVtcYm
+   yE1fsZWnxSBnprlHJkevNRMKGqfDstF1pl9A2eaGHM6n4dJvzAISOuH/G
+   v2puhmtU9PuKu3J+BVguETZJKcrbOSUFLTWSFGOojyc6ZAbcALSXjwTGs
+   F7jhhNmphfIoBTikcSCD8s8aI8o+o50qTx/srtIIQijS1NCfULeCPIrGx
+   theaYmPu//o2EIO3W2WyfIBYTLucaCcJDWgcCchvgSZvhjWcbN1BUOeLj
+   dMRQE0pIsGjap3y+DfF3nmWU5vpTPHPALt2DOcm+PVvnpBtBKkHKyUFNv
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10775"; a="432452364"
+X-IronPort-AV: E=Sophos;i="6.01,214,1684825200"; 
+   d="scan'208";a="432452364"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2023 10:46:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10775"; a="727034132"
+X-IronPort-AV: E=Sophos;i="6.01,214,1684825200"; 
+   d="scan'208";a="727034132"
+Received: from unknown (HELO jiaqingz-acrn-container.sh.intel.com) ([10.239.138.235])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2023 10:46:01 -0700
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Subject: [PATCH 0/4] add support for ASIX AX99100
+Date:   Tue, 18 Jul 2023 17:41:56 +0000
+Message-Id: <20230718174200.2862849-1-jiaqing.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 18, 2023 at 03:55:23PM +0800, sunran001@208suo.com wrote:
-> This patch fixes the following Coccinelle error:
-> 
-> ./drivers/tty/serial/bcm63xx_uart.c:854:2-8: ERROR: missing clk_put;
-> clk_get on line 849 and execution via conditional on line 853
-> 
-> Signed-off-by: Ran Sun <sunran001@208suo.com>
-> ---
->  drivers/tty/serial/bcm63xx_uart.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/bcm63xx_uart.c
-> b/drivers/tty/serial/bcm63xx_uart.c
-> index 55e82d0bf92d..7353b683952d 100644
-> --- a/drivers/tty/serial/bcm63xx_uart.c
-> +++ b/drivers/tty/serial/bcm63xx_uart.c
-> @@ -851,6 +851,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
->          clk = of_clk_get(pdev->dev.of_node, 0);
-> 
->      if (IS_ERR(clk))
-> +        clk_put(clk);
->          return -ENODEV;
-> 
->      port->iotype = UPIO_MEM;
+This patch adds kernel inbox driver support for the serial port and
+parallel port mode controller of ASIX AX99100 PCIe to Multi I/O
+Controller. This device has 4 separate PCI functions and each functions
+can be configured to operate in different modes.
 
-Ran, as was pointed out before, you obviously didn't even test this
-patch, nor any of the other submissions you made.
+This patchset is tested with ASIX AX99100 in following modes:
+* 4 x Serial Port
+* 2 x Serial Port
+* 2 x Serial Port + 1 x Parallel Port
+* 1 x Parallel Port
 
-Please take the time to learn C a bit better, and then start out in a
-part of the kernel where basic changes are accepted, like
-drivers/staging/ so that you can learn how to properly send patches
-(this was incorrectly sent as well.)
+Jiaqing Zhao (4):
+  can: ems_pci: remove PCI_SUBVENDOR_ID_ASIX definition
+  can: ems_pci: move ASIX AX99100 ids to pci_ids.h
+  serial: 8250_pci: add support for ASIX AX99100
+  parport_pc: add support for ASIX AX99100
 
-Then you can work up to attempting to fix other changes like this, if
-they are correct, and you will know how to properly test your changes
-instead of just making rote changes like this without understanding the
-implications of them.
+ drivers/net/can/sja1000/ems_pci.c  |  7 +------
+ drivers/parport/parport_pc.c       |  5 +++++
+ drivers/tty/serial/8250/8250_pci.c | 10 ++++++++++
+ include/linux/pci_ids.h            |  4 ++++
+ 4 files changed, 20 insertions(+), 6 deletions(-)
 
-best of luck!
+-- 
+2.39.2
 
-greg k-h
