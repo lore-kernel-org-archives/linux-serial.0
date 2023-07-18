@@ -2,81 +2,113 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B25EB64DA
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 07:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45549EB64DD
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 08:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbjGRHzc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jul 2023 03:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S230126AbjGRIkG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jul 2023 04:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbjGRHzb (ORCPT
+        with ESMTP id S231942AbjGRIkF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jul 2023 03:55:31 -0400
-Received: from mail.208.org (unknown [183.242.55.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB50D8E
-        for <linux-serial@vger.kernel.org>; Tue, 18 Jul 2023 00:55:27 -0700 (PDT)
-Received: from mail.208.org (email.208.org [127.0.0.1])
-        by mail.208.org (Postfix) with ESMTP id 4R4rpg5652zBQslH
-        for <linux-serial@vger.kernel.org>; Tue, 18 Jul 2023 15:55:23 +0800 (CST)
-Authentication-Results: mail.208.org (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)" header.d=208.org
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=208.org; h=
-        content-transfer-encoding:content-type:message-id:user-agent
-        :references:in-reply-to:subject:to:from:date:mime-version; s=
-        dkim; t=1689666923; x=1692258924; bh=n941bsO1050Sy4x8o1CeSfhHj64
-        suA3ZJc6fKjpS3K4=; b=XZWNtzOpvIrl3nMBaw+wVal0chvmvovmr9DOaYhlEa7
-        35OTuqeb+YyqctOlgy7o3+GfTDfUtkW3Z0rWFMqwVCXNw0IB1E/JVbpfNw+bPAoP
-        32CfwNzbDmutQV8ZssLPVqxSmweGQTk07YpjvDTswSvt3mF+hRWLi5ymkXU0ANh8
-        PwHurBwkO/pYkiSNZ/qaCO/+KXTWFYG2gXm56hExtTkX7DJRg0J6dZrj0htZP6DI
-        tCnzHRGckxQeO8zj4w5zRCgEoA0k80fyCpGgawP/EoiciaI5rdVHv1JN3PrAq1jY
-        YXSQMr6mpVCQs9TedrNzNjipAuJacS1zXdK41AMdwHg==
-X-Virus-Scanned: amavisd-new at mail.208.org
-Received: from mail.208.org ([127.0.0.1])
-        by mail.208.org (mail.208.org [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id lZ59kyN8XAwV for <linux-serial@vger.kernel.org>;
-        Tue, 18 Jul 2023 15:55:23 +0800 (CST)
-Received: from localhost (email.208.org [127.0.0.1])
-        by mail.208.org (Postfix) with ESMTPSA id 4R4rpg3KgpzBJDj9;
-        Tue, 18 Jul 2023 15:55:23 +0800 (CST)
+        Tue, 18 Jul 2023 04:40:05 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BED2135
+        for <linux-serial@vger.kernel.org>; Tue, 18 Jul 2023 01:40:04 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2b701e1ca63so82448421fa.1
+        for <linux-serial@vger.kernel.org>; Tue, 18 Jul 2023 01:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1689669602; x=1690274402;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=woIb3SjHXD99MqsCp0i8NLJW/epsC4Wb4octK3c74H8=;
+        b=CyPEb8cUR13YpK+EGscbjkqWOOcir6/Stq/pc/Gk4qj30CPyvIwDeob9p9VIBi7i9L
+         c/LBwxL94QikRpPDzurawrSuIgaO3nGKiQk/dHaye+8Rbv/1Ey0GCFCL35x4YDSUNqKj
+         AkWKAUTKukjyVUJqhGHYNdDh+KUyux9DI/EiBqcnmA8QyAQQuGlDCqXSAO0Q8iBx21L2
+         CRBdmuyBwSvWl4hEtZAzThC84JoGN95JvIDeGlGdSqwBCMBM5fcZFaP2TiaLJJ28ByQU
+         5DFenuqQp7J2fQ2WEdd4BelTkrFNA/Q0p1u+OVqJDVus9uUPbfX4nhZLTd7sYUztGQoe
+         Dhzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1689669602; x=1690274402;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=woIb3SjHXD99MqsCp0i8NLJW/epsC4Wb4octK3c74H8=;
+        b=JI8yJ4nfkFiM8AsPblC7joXumr8n+80/wVsXMTgh40xYPaZC2dF0+Vgzug59xRvSm6
+         5JS7Ey/YHOFx7Yb3HYKlvH6Kghbjl3+MAqMFNpAuy6v+wYqJT8sESLW25AiMbDRGIYBM
+         hQ0LSKgHRbUebQGxcXxqKsg4HX/vAieT31TyccwFTvSHoz7gCp/AdifVJXk3xALydnHe
+         w2vVQs9Y5lrGbb7E1B6ZdeQdQIxyGGTQKW2ClIclDtp6FFLe0R7BHS711DpBh1lZ7f9k
+         kJAIt0TdCYLznxC1oU4BHMz9jw5OhFb+EGDXckG/gZtknSVpJREj2Y7P6H6THASGE0EO
+         b5lw==
+X-Gm-Message-State: ABy/qLZb5/QMOfvRu2YK1NIL8bkSS8eOvdQ+VRKjemS/lW8Q+RdFV2Gs
+        jfwEf0qkQIxllDE4Yh5WCtmOZg==
+X-Google-Smtp-Source: APBJJlEXMa6a/aCnbA/M/4W2DhmsQJGnLpxBUTBmwq6Wr4WMSsGoZSD9nmG2ddD54+XPSSm7jCv99w==
+X-Received: by 2002:a2e:980a:0:b0:2b6:dd85:1206 with SMTP id a10-20020a2e980a000000b002b6dd851206mr9880471ljj.49.1689669602433;
+        Tue, 18 Jul 2023 01:40:02 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
+        by smtp.gmail.com with ESMTPSA id q17-20020a2e9691000000b002b6ee1e8893sm359746lji.95.2023.07.18.01.40.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Jul 2023 01:40:02 -0700 (PDT)
+Message-ID: <02cc38f9-d742-9695-eb0f-0a5fca096c3a@linaro.org>
+Date:   Tue, 18 Jul 2023 11:40:01 +0300
 MIME-Version: 1.0
-Date:   Tue, 18 Jul 2023 15:55:23 +0800
-From:   sunran001@208suo.com
-To:     gregkh@linuxfoundation.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH] tty: serial: add missing clk_put()
+Content-Language: en-GB
+To:     sunran001@208suo.com, gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: add missing clk_put()
-In-Reply-To: <20230718075401.16668-1-xujianghui@cdjrlc.com>
 References: <20230718075401.16668-1-xujianghui@cdjrlc.com>
-User-Agent: Roundcube Webmail
-Message-ID: <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
-X-Sender: sunran001@208suo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+ <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch fixes the following Coccinelle error:
+On 18/07/2023 10:55, sunran001@208suo.com wrote:
+> This patch fixes the following Coccinelle error:
+> 
+> ./drivers/tty/serial/bcm63xx_uart.c:854:2-8: ERROR: missing clk_put;
+> clk_get on line 849 and execution via conditional on line 853
+> 
+> Signed-off-by: Ran Sun <sunran001@208suo.com>
+> ---
+>   drivers/tty/serial/bcm63xx_uart.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/bcm63xx_uart.c 
+> b/drivers/tty/serial/bcm63xx_uart.c
+> index 55e82d0bf92d..7353b683952d 100644
+> --- a/drivers/tty/serial/bcm63xx_uart.c
+> +++ b/drivers/tty/serial/bcm63xx_uart.c
+> @@ -851,6 +851,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
+>           clk = of_clk_get(pdev->dev.of_node, 0);
+> 
+>       if (IS_ERR(clk))
+> +        clk_put(clk);
 
-./drivers/tty/serial/bcm63xx_uart.c:854:2-8: ERROR: missing clk_put;
-clk_get on line 849 and execution via conditional on line 853
+No!
 
-Signed-off-by: Ran Sun <sunran001@208suo.com>
----
-  drivers/tty/serial/bcm63xx_uart.c | 1 +
-  1 file changed, 1 insertion(+)
+First, calling clk_put() on the error pointer is incorrect. This will 
+throw a warning in __clk_put(), but generally passing an error pointer 
+to another function can cause different kinds of breakage.
 
-diff --git a/drivers/tty/serial/bcm63xx_uart.c 
-b/drivers/tty/serial/bcm63xx_uart.c
-index 55e82d0bf92d..7353b683952d 100644
---- a/drivers/tty/serial/bcm63xx_uart.c
-+++ b/drivers/tty/serial/bcm63xx_uart.c
-@@ -851,6 +851,7 @@ static int bcm_uart_probe(struct platform_device 
-*pdev)
-          clk = of_clk_get(pdev->dev.of_node, 0);
+Second, you have added the line, but this also moved the return 
+statement out of the if condition. This way all bcm_uart_probe() calls 
+will end up with -ENODEV return value.
 
-      if (IS_ERR(clk))
-+        clk_put(clk);
-          return -ENODEV;
+Please stop blindly fixing the coccinelle warnings. Take care to read 
+and understand the code.
 
-      port->iotype = UPIO_MEM;
+>           return -ENODEV;
+> 
+>       port->iotype = UPIO_MEM;
+
+-- 
+With best wishes
+Dmitry
+
