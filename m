@@ -2,71 +2,74 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 731F4C0015E
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Jul 2023 14:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF91EB64DA
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 03:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbjGQOsM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jul 2023 10:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        id S230130AbjGRDiW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Jul 2023 23:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230189AbjGQOsH (ORCPT
+        with ESMTP id S229633AbjGRDiV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jul 2023 10:48:07 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.216])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFCAEB2
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jul 2023 07:48:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=c8oC1V1juyr3GQA6Yo
-        2ZJi8sFjuk33j2LQqlIl28Vwg=; b=Ac0xhUvWEjp6P00oumzyrvjo6ZFYyNy41s
-        +4Pj3HojVEP3HvOojoWtIkJ14pCRV2ZFOchLLaJiJtr1CToDq8iYaa3VgUMG1ypu
-        wZQ+mGUgGfFTg8I7KilWOtBDMPbovl8HIBj+NrjTSUAqH3HfOSBrI7Vzn03MFolY
-        tnabNE7Kc=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by zwqz-smtp-mta-g1-0 (Coremail) with SMTP id _____wBHo5yGVLVkiyIkAg--.44640S4;
-        Mon, 17 Jul 2023 22:47:39 +0800 (CST)
-From:   Yuanjun Gong <ruc_gongyuanjun@163.com>
-To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH 1/1] drivers:tty: fix return value check in asc_init_port
-Date:   Mon, 17 Jul 2023 22:47:33 +0800
-Message-Id: <20230717144733.24194-1-ruc_gongyuanjun@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: _____wBHo5yGVLVkiyIkAg--.44640S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Wr1rur45XF1UGr48CFW5Awb_yoWfZwcE93
-        WDWws3Zrn8ursrtw1DC3429r90kF4kZF4rW34FvFy3trW7JayfWrykZanxCws3Aw4DXr97
-        KF4Uu3y7AF1q9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRtqXd5UUUUU==
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: 5uxfsw5rqj53pdqm30i6rwjhhfrp/xtbBSQ+v5VaEH4VBNAAAsx
+        Mon, 17 Jul 2023 23:38:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E90F4;
+        Mon, 17 Jul 2023 20:38:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D4B061405;
+        Tue, 18 Jul 2023 03:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6996AC433C8;
+        Tue, 18 Jul 2023 03:38:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1689651499;
+        bh=IXlI0Jr3i6MrXrSjeX+OjQHDZdhIEQLfE6pP5F3f+qM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BH1XuqHI15FpYeJgy1SI3T+I86ZdQ7KSSpoBToR8lvyKCodZsWX8/jVWYSsPq62a4
+         rK54WtZWLritXhAZV7eQX71GlCJ+hYSnchrjWMOO3goqmChx7p7B7Jtb2JsBMlLxaQ
+         8I2DD/tNvVs5FyldD5Nr5+Qy60wxk0OVDwQZpmGEcSnYWReSky4QIU6jrBb44sSdpJ
+         EonxMUSlPjX18TI+JM2WTN+MjtiAzpoCu992Hu6rbkMxmDG3As/SUwNMu/AVRbtYaC
+         96jpKNvnPc0OzjKb9nz4oIU5rJyW7zUULHg3YfBznoxWSMREPoiMsdx5GOhA1Ht4bF
+         nu/M5sudu/bjQ==
+Date:   Tue, 18 Jul 2023 11:38:08 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor+dt@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        shenwei.wang@nxp.com, gregkh@linuxfoundation.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kernel@pengutronix.de, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com
+Subject: Re: [PATCH V3 1/3] arm64: dts: imx8dxl: remove "fsl,imx7ulp-lpuart"
+ compatible for imx8dxl
+Message-ID: <20230718033808.GF9559@dragon>
+References: <20230627025332.11133-1-sherry.sun@nxp.com>
+ <20230627025332.11133-2-sherry.sun@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230627025332.11133-2-sherry.sun@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-in asc_init_port, clk_prepare_enable may fail, therefore, the
-return value of clk_prepare_enable should be checked.
+On Tue, Jun 27, 2023 at 10:53:30AM +0800, Sherry Sun wrote:
+> Drop the i.MX8DXL backwards compatibility with i.MX7ULP since they
+> differ from clocks handling point of view.
+> 
+> dtbs_check has the following warnings:
+> linux-next/arch/arm64/boot/dts/freescale/imx8dxl-evk.dtb: serial@5a060000: compatible: 'oneOf' conditional failed, one must be fixed:
+>         ['fsl,imx8qxp-lpuart', 'fsl,imx7ulp-lpuart'] is too long
+>         'fsl,imx93-lpuart' was expected
+>         'fsl,imx8qxp-lpuart' is not one of ['fsl,imx8qm-lpuart', 'fsl,imx8dxl-lpuart']
+>         'fsl,imxrt1050-lpuart' was expected
+>         'fsl,imx8ulp-lpuart' was expected
+>         'fsl,imx8qxp-lpuart' was expected
+>         'fsl,imxrt1170-lpuart' was expected
+>         From schema: linux-next/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> 
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 
-Signed-off-by: Yuanjun Gong <ruc_gongyuanjun@163.com>
----
- drivers/tty/serial/st-asc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index aa471c9c24d9..1c28014aa903 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -704,7 +704,9 @@ static int asc_init_port(struct asc_port *ascport,
- 	if (WARN_ON(IS_ERR(ascport->clk)))
- 		return -EINVAL;
- 	/* ensure that clk rate is correct by enabling the clk */
--	clk_prepare_enable(ascport->clk);
-+	ret = clk_prepare_enable(ascport->clk);
-+	if (ret)
-+		return ret;
- 	ascport->port.uartclk = clk_get_rate(ascport->clk);
- 	WARN_ON(ascport->port.uartclk == 0);
- 	clk_disable_unprepare(ascport->clk);
--- 
-2.17.1
-
+Applied, thanks!
