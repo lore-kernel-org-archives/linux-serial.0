@@ -2,101 +2,109 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CCCEB64DA
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 09:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B121EB64DA
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 09:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231946AbjGRJdd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jul 2023 05:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
+        id S232459AbjGRJ5i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jul 2023 05:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232326AbjGRJd0 (ORCPT
+        with ESMTP id S232462AbjGRJ5G (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jul 2023 05:33:26 -0400
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29902E55;
-        Tue, 18 Jul 2023 02:33:25 -0700 (PDT)
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2b8390003e2so67063441fa.0;
-        Tue, 18 Jul 2023 02:33:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689672803; x=1692264803;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QKSX+1IEj9WwpflsadgWtRaqKWW0KmmUlzdN9e1GQrk=;
-        b=Iqy+vV1SMp9QzpFIlypJEnJcM+7w5vjLpYr+rJsnlMuMOCQrP9/OMRdS2Tu+Po4UNX
-         j4fH5JJKZXpq9nJwHyfeukrryNDB7426uIPow3Ym65CT+ZHiKs70gQnBHa+PoWlSnzXp
-         YGFB20cDNDTdBzsoLBY3B2xfMpIvmzXgI/Z6jmW3/IYlUEhQKjMAmwBhW9WhsRwAdOXo
-         TrnVoX5qQrM36B95QSZy7KDJVyEk0rspaADCUxqUrB+wg4Hllvz4t18myo+COwCLIjF3
-         yIK6PX0YG4mkyojhn5AM7Jj6DVrKYvr7A5GalAbhYj4d4nq3ew5CQwKtqyxzhY8Cjctz
-         /CVg==
-X-Gm-Message-State: ABy/qLarbJUdrKbpI2Xp2GYbxXVDZG1UUlHIgQNQEeKzTEz+EkuLuoiT
-        EV5ksGQiCyx+rbVj2+ap0lU=
-X-Google-Smtp-Source: APBJJlFQKnqZLiX/Zeb73TCKFBNgH+1uPlUO4uXcJWeY/VksFe+ZdTOUXc/jaJeaE0FpwSNyPcVRRA==
-X-Received: by 2002:a2e:9c4d:0:b0:2b6:fcd0:2aa1 with SMTP id t13-20020a2e9c4d000000b002b6fcd02aa1mr1448253ljj.43.1689672803097;
-        Tue, 18 Jul 2023 02:33:23 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id gy11-20020a170906f24b00b009737b8d47b6sm755938ejb.203.2023.07.18.02.33.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jul 2023 02:33:22 -0700 (PDT)
-Message-ID: <3652da4b-8ccf-34a8-bdb7-757a3109ac54@kernel.org>
-Date:   Tue, 18 Jul 2023 11:33:21 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Content-Language: en-US
-To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
-        ilpo.jarvinen@linux.intel.com, shenwei.wang@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-References: <20230718065645.6588-1-sherry.sun@nxp.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
+        Tue, 18 Jul 2023 05:57:06 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99261735;
+        Tue, 18 Jul 2023 02:56:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689674189; x=1721210189;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=kT+WCGrXIntkSsi5bhLytk40kQrUFODgYPeYw5k0HEc=;
+  b=auZQ3noyM/lkFfLBiUNfkzT7eHLN9LlLp+5leHYFqSltEVgUj+nO9Lw6
+   hj3WVDCVbxM3vzQv7R5EO0etMgu/Lt7y88eQgRbfbUWfm1qByW15sfReG
+   wdNeDWLTygCEgMi6ar7rpmjEEyMaReYHuKEU7VgUGux5i3pVt2tQW3gT8
+   Gs9ahjb8jYvrhNCUWFCv1jv8mTKynBx3cgHuEhIXm/IZQnoVP7tD7TapX
+   W4e8yU1accLGmkKruBVSw+sMbnV3zVCW66UMdhSejbHmA5JYfdjgn8RHc
+   fkZY56Sa0KHgWQL5MHNLRy4kDd6I5gEk5C10xBOjpT7C9oTEtYAh+mV5X
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10774"; a="368804780"
+X-IronPort-AV: E=Sophos;i="6.01,213,1684825200"; 
+   d="scan'208";a="368804780"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2023 02:56:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10774"; a="673847895"
+X-IronPort-AV: E=Sophos;i="6.01,213,1684825200"; 
+   d="scan'208";a="673847895"
+Received: from ijarvine-mobl2.ger.corp.intel.com ([10.252.47.53])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2023 02:56:26 -0700
+Date:   Tue, 18 Jul 2023 12:56:20 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        shenwei.wang@nxp.com, linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-imx@nxp.com,
+        Jiri Slaby <jirislaby@kernel.org>
 Subject: Re: [PATCH] tty: serial: fsl_lpuart: Fix possible integer overflow
-In-Reply-To: <20230718065645.6588-1-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <3652da4b-8ccf-34a8-bdb7-757a3109ac54@kernel.org>
+Message-ID: <e0fe2036-e22-3bb4-a5a-afab1a5869e@linux.intel.com>
+References: <20230718065645.6588-1-sherry.sun@nxp.com> <3652da4b-8ccf-34a8-bdb7-757a3109ac54@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 07. 23, 8:56, Sherry Sun wrote:
-> This patch addresses the following Coverity report, fix it by casting
-> sport->port.frame_time to type u64.
+On Tue, 18 Jul 2023, Jiri Slaby wrote:
+
+> On 18. 07. 23, 8:56, Sherry Sun wrote:
+> > This patch addresses the following Coverity report, fix it by casting
+> > sport->port.frame_time to type u64.
+> > 
+> > CID 32305660: Unintentional integer overflow (OVERFLOW_BEFORE_WIDEN)
+> > Potentially overflowing expression sport->port.frame_time * 8U with type
+> > unsigned int (32 bits, unsigned) is evaluated using 32-bit arithmetic,
+> > and then used in a context that expects an expression of type u64 (64
+> > bits, unsigned).
+> > 
+> > Fixes: cf9aa72d2f91 ("tty: serial: fsl_lpuart: optimize the timer based EOP
+> > logic")
+> > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> > ---
+> >   drivers/tty/serial/fsl_lpuart.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/fsl_lpuart.c
+> > b/drivers/tty/serial/fsl_lpuart.c
+> > index c1980ea52666..07b3b26732db 100644
+> > --- a/drivers/tty/serial/fsl_lpuart.c
+> > +++ b/drivers/tty/serial/fsl_lpuart.c
+> > @@ -1373,7 +1373,7 @@ static inline int lpuart_start_rx_dma(struct
+> > lpuart_port *sport)
+> >     	sport->last_residue = 0;
+> >   	sport->dma_rx_timeout = max(nsecs_to_jiffies(
+> > -		sport->port.frame_time * DMA_RX_IDLE_CHARS), 1UL);
+> > +		(u64)sport->port.frame_time * DMA_RX_IDLE_CHARS), 1UL);
 > 
-> CID 32305660: Unintentional integer overflow (OVERFLOW_BEFORE_WIDEN)
-> Potentially overflowing expression sport->port.frame_time * 8U with type
-> unsigned int (32 bits, unsigned) is evaluated using 32-bit arithmetic,
-> and then used in a context that expects an expression of type u64 (64
-> bits, unsigned).
+> Can you explain how that can overflow? In the worst case (1 start bit, 8 data
+> bits, 2 stop bits, parity bit, address bit, 50 bauds), frame_time would
+> contain:
+> 13*1e9/50 = 260,000,000. (260 ms)
 > 
-> Fixes: cf9aa72d2f91 ("tty: serial: fsl_lpuart: optimize the timer based EOP logic")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->   drivers/tty/serial/fsl_lpuart.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Then the multiplication above is:
+> 260,000,000*8 = 2,080,000,000. (2 seconds)
 > 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index c1980ea52666..07b3b26732db 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -1373,7 +1373,7 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
->   
->   	sport->last_residue = 0;
->   	sport->dma_rx_timeout = max(nsecs_to_jiffies(
-> -		sport->port.frame_time * DMA_RX_IDLE_CHARS), 1UL);
-> +		(u64)sport->port.frame_time * DMA_RX_IDLE_CHARS), 1UL);
+> which is still less than 2^32-1.
 
-Can you explain how that can overflow? In the worst case (1 start bit, 8 
-data bits, 2 stop bits, parity bit, address bit, 50 bauds), frame_time 
-would contain:
-13*1e9/50 = 260,000,000. (260 ms)
+I was wondering the same thing.
 
-Then the multiplication above is:
-260,000,000*8 = 2,080,000,000. (2 seconds)
+This isn't a real bug. All findings from code analysis tools must be 
+carefully evaluated to filter wheat out of chaff and this falls into the 
+latter category. Please make sure next time you understand and explain 
+also in the changelog how the problem can be manifested for real before 
+sending this kind of patches.
 
-which is still less than 2^32-1.
 
-thanks,
 -- 
-js
-suse labs
-
+ i.
