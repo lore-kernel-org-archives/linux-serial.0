@@ -2,113 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45549EB64DD
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 08:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CCCEB64DA
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 09:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbjGRIkG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jul 2023 04:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
+        id S231946AbjGRJdd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jul 2023 05:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbjGRIkF (ORCPT
+        with ESMTP id S232326AbjGRJd0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jul 2023 04:40:05 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BED2135
-        for <linux-serial@vger.kernel.org>; Tue, 18 Jul 2023 01:40:04 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 38308e7fff4ca-2b701e1ca63so82448421fa.1
-        for <linux-serial@vger.kernel.org>; Tue, 18 Jul 2023 01:40:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1689669602; x=1690274402;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=woIb3SjHXD99MqsCp0i8NLJW/epsC4Wb4octK3c74H8=;
-        b=CyPEb8cUR13YpK+EGscbjkqWOOcir6/Stq/pc/Gk4qj30CPyvIwDeob9p9VIBi7i9L
-         c/LBwxL94QikRpPDzurawrSuIgaO3nGKiQk/dHaye+8Rbv/1Ey0GCFCL35x4YDSUNqKj
-         AkWKAUTKukjyVUJqhGHYNdDh+KUyux9DI/EiBqcnmA8QyAQQuGlDCqXSAO0Q8iBx21L2
-         CRBdmuyBwSvWl4hEtZAzThC84JoGN95JvIDeGlGdSqwBCMBM5fcZFaP2TiaLJJ28ByQU
-         5DFenuqQp7J2fQ2WEdd4BelTkrFNA/Q0p1u+OVqJDVus9uUPbfX4nhZLTd7sYUztGQoe
-         Dhzg==
+        Tue, 18 Jul 2023 05:33:26 -0400
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29902E55;
+        Tue, 18 Jul 2023 02:33:25 -0700 (PDT)
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2b8390003e2so67063441fa.0;
+        Tue, 18 Jul 2023 02:33:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689669602; x=1690274402;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20221208; t=1689672803; x=1692264803;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=woIb3SjHXD99MqsCp0i8NLJW/epsC4Wb4octK3c74H8=;
-        b=JI8yJ4nfkFiM8AsPblC7joXumr8n+80/wVsXMTgh40xYPaZC2dF0+Vgzug59xRvSm6
-         5JS7Ey/YHOFx7Yb3HYKlvH6Kghbjl3+MAqMFNpAuy6v+wYqJT8sESLW25AiMbDRGIYBM
-         hQ0LSKgHRbUebQGxcXxqKsg4HX/vAieT31TyccwFTvSHoz7gCp/AdifVJXk3xALydnHe
-         w2vVQs9Y5lrGbb7E1B6ZdeQdQIxyGGTQKW2ClIclDtp6FFLe0R7BHS711DpBh1lZ7f9k
-         kJAIt0TdCYLznxC1oU4BHMz9jw5OhFb+EGDXckG/gZtknSVpJREj2Y7P6H6THASGE0EO
-         b5lw==
-X-Gm-Message-State: ABy/qLZb5/QMOfvRu2YK1NIL8bkSS8eOvdQ+VRKjemS/lW8Q+RdFV2Gs
-        jfwEf0qkQIxllDE4Yh5WCtmOZg==
-X-Google-Smtp-Source: APBJJlEXMa6a/aCnbA/M/4W2DhmsQJGnLpxBUTBmwq6Wr4WMSsGoZSD9nmG2ddD54+XPSSm7jCv99w==
-X-Received: by 2002:a2e:980a:0:b0:2b6:dd85:1206 with SMTP id a10-20020a2e980a000000b002b6dd851206mr9880471ljj.49.1689669602433;
-        Tue, 18 Jul 2023 01:40:02 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:a0db:1f00::8a5? (dzdqv0yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::8a5])
-        by smtp.gmail.com with ESMTPSA id q17-20020a2e9691000000b002b6ee1e8893sm359746lji.95.2023.07.18.01.40.01
+        bh=QKSX+1IEj9WwpflsadgWtRaqKWW0KmmUlzdN9e1GQrk=;
+        b=Iqy+vV1SMp9QzpFIlypJEnJcM+7w5vjLpYr+rJsnlMuMOCQrP9/OMRdS2Tu+Po4UNX
+         j4fH5JJKZXpq9nJwHyfeukrryNDB7426uIPow3Ym65CT+ZHiKs70gQnBHa+PoWlSnzXp
+         YGFB20cDNDTdBzsoLBY3B2xfMpIvmzXgI/Z6jmW3/IYlUEhQKjMAmwBhW9WhsRwAdOXo
+         TrnVoX5qQrM36B95QSZy7KDJVyEk0rspaADCUxqUrB+wg4Hllvz4t18myo+COwCLIjF3
+         yIK6PX0YG4mkyojhn5AM7Jj6DVrKYvr7A5GalAbhYj4d4nq3ew5CQwKtqyxzhY8Cjctz
+         /CVg==
+X-Gm-Message-State: ABy/qLarbJUdrKbpI2Xp2GYbxXVDZG1UUlHIgQNQEeKzTEz+EkuLuoiT
+        EV5ksGQiCyx+rbVj2+ap0lU=
+X-Google-Smtp-Source: APBJJlFQKnqZLiX/Zeb73TCKFBNgH+1uPlUO4uXcJWeY/VksFe+ZdTOUXc/jaJeaE0FpwSNyPcVRRA==
+X-Received: by 2002:a2e:9c4d:0:b0:2b6:fcd0:2aa1 with SMTP id t13-20020a2e9c4d000000b002b6fcd02aa1mr1448253ljj.43.1689672803097;
+        Tue, 18 Jul 2023 02:33:23 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id gy11-20020a170906f24b00b009737b8d47b6sm755938ejb.203.2023.07.18.02.33.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jul 2023 01:40:02 -0700 (PDT)
-Message-ID: <02cc38f9-d742-9695-eb0f-0a5fca096c3a@linaro.org>
-Date:   Tue, 18 Jul 2023 11:40:01 +0300
+        Tue, 18 Jul 2023 02:33:22 -0700 (PDT)
+Message-ID: <3652da4b-8ccf-34a8-bdb7-757a3109ac54@kernel.org>
+Date:   Tue, 18 Jul 2023 11:33:21 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Subject: Re: [PATCH] tty: serial: add missing clk_put()
-Content-Language: en-GB
-To:     sunran001@208suo.com, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230718075401.16668-1-xujianghui@cdjrlc.com>
- <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <047273ae4e4c25eb7b81fd69d761161e@208suo.com>
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
+        ilpo.jarvinen@linux.intel.com, shenwei.wang@nxp.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+References: <20230718065645.6588-1-sherry.sun@nxp.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH] tty: serial: fsl_lpuart: Fix possible integer overflow
+In-Reply-To: <20230718065645.6588-1-sherry.sun@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18/07/2023 10:55, sunran001@208suo.com wrote:
-> This patch fixes the following Coccinelle error:
+On 18. 07. 23, 8:56, Sherry Sun wrote:
+> This patch addresses the following Coverity report, fix it by casting
+> sport->port.frame_time to type u64.
 > 
-> ./drivers/tty/serial/bcm63xx_uart.c:854:2-8: ERROR: missing clk_put;
-> clk_get on line 849 and execution via conditional on line 853
+> CID 32305660: Unintentional integer overflow (OVERFLOW_BEFORE_WIDEN)
+> Potentially overflowing expression sport->port.frame_time * 8U with type
+> unsigned int (32 bits, unsigned) is evaluated using 32-bit arithmetic,
+> and then used in a context that expects an expression of type u64 (64
+> bits, unsigned).
 > 
-> Signed-off-by: Ran Sun <sunran001@208suo.com>
+> Fixes: cf9aa72d2f91 ("tty: serial: fsl_lpuart: optimize the timer based EOP logic")
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 > ---
->   drivers/tty/serial/bcm63xx_uart.c | 1 +
->   1 file changed, 1 insertion(+)
+>   drivers/tty/serial/fsl_lpuart.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/bcm63xx_uart.c 
-> b/drivers/tty/serial/bcm63xx_uart.c
-> index 55e82d0bf92d..7353b683952d 100644
-> --- a/drivers/tty/serial/bcm63xx_uart.c
-> +++ b/drivers/tty/serial/bcm63xx_uart.c
-> @@ -851,6 +851,7 @@ static int bcm_uart_probe(struct platform_device *pdev)
->           clk = of_clk_get(pdev->dev.of_node, 0);
-> 
->       if (IS_ERR(clk))
-> +        clk_put(clk);
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index c1980ea52666..07b3b26732db 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1373,7 +1373,7 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+>   
+>   	sport->last_residue = 0;
+>   	sport->dma_rx_timeout = max(nsecs_to_jiffies(
+> -		sport->port.frame_time * DMA_RX_IDLE_CHARS), 1UL);
+> +		(u64)sport->port.frame_time * DMA_RX_IDLE_CHARS), 1UL);
 
-No!
+Can you explain how that can overflow? In the worst case (1 start bit, 8 
+data bits, 2 stop bits, parity bit, address bit, 50 bauds), frame_time 
+would contain:
+13*1e9/50 = 260,000,000. (260 ms)
 
-First, calling clk_put() on the error pointer is incorrect. This will 
-throw a warning in __clk_put(), but generally passing an error pointer 
-to another function can cause different kinds of breakage.
+Then the multiplication above is:
+260,000,000*8 = 2,080,000,000. (2 seconds)
 
-Second, you have added the line, but this also moved the return 
-statement out of the if condition. This way all bcm_uart_probe() calls 
-will end up with -ENODEV return value.
+which is still less than 2^32-1.
 
-Please stop blindly fixing the coccinelle warnings. Take care to read 
-and understand the code.
-
->           return -ENODEV;
-> 
->       port->iotype = UPIO_MEM;
-
+thanks,
 -- 
-With best wishes
-Dmitry
+js
+suse labs
 
