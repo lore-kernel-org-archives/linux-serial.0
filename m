@@ -2,132 +2,93 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1860BC0015E
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jul 2023 19:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDBDEC0015E
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jul 2023 23:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbjGSTOb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jul 2023 15:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
+        id S229642AbjGSXMg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Jul 2023 19:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbjGSTOa (ORCPT
+        with ESMTP id S229571AbjGSXMf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jul 2023 15:14:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9F5199A;
-        Wed, 19 Jul 2023 12:14:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 868EB6165E;
-        Wed, 19 Jul 2023 19:14:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65C5EC433C7;
-        Wed, 19 Jul 2023 19:14:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1689794069;
-        bh=wsv1tKsKI/r0aK7P/4S5R96HckL7ImIbYbQ2Pdek0XI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sSAMFAGCYwsk3SFgVFaR5zR2zX0pm28l+yPSpsFt+hrKk5xpsQBs4wB7d9qNADuuo
-         tIJhvkzhxGX1uwgx9WwL8wOJClQZq2ku8EpM6nFWAlKiXwRv1DQCbaEFIP2c+tBnOy
-         N42TsZEd3vNi70wU66uNG485nU2t+12/hTqS5QCE=
-Date:   Wed, 19 Jul 2023 21:14:23 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO
- configuration
-Message-ID: <2023071922-rigor-collage-804e@gregkh>
-References: <20230604134459.3c3844012e9714fa2a61e642@hugovil.com>
- <CAHp75VeWFPBmsD8zsSAaQGNNXtfgLtQuM9AMGfLPk-6p0VW=Pg@mail.gmail.com>
- <20230620100846.d58436efc061fb91074fa7e5@hugovil.com>
- <CAHp75VcWSVgA8LFLo0-b5TfKWdHb2GfLpXV-V3PZvthTv1Xc4A@mail.gmail.com>
- <20230620113312.882d8f0c7d5603b1c93f33fb@hugovil.com>
- <CAHp75VfGm6=ULW6kMjsg2OgB1z1T0YdmzvCTa3DFXXX-q_RnfA@mail.gmail.com>
- <20230620114209.fb5272ad8cf5c5e2895d68b1@hugovil.com>
- <CAHp75VcieuYqxWrO7rknx2ROYz=rnWnKV6s9eXZ5Zd1BKc6YMg@mail.gmail.com>
- <20230620121645.512b31a872306b43a276bbac@hugovil.com>
- <20230719144048.4f340b8aa0a29ab65a274273@hugovil.com>
+        Wed, 19 Jul 2023 19:12:35 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC401701;
+        Wed, 19 Jul 2023 16:12:34 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1qMGL1-0003Yx-B2; Thu, 20 Jul 2023 01:12:07 +0200
+Date:   Thu, 20 Jul 2023 01:12:07 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Aleksandr Nogikh <nogikh@google.com>
+Cc:     syzbot <syzbot+9bbbacfbf1e04d5221f7@syzkaller.appspotmail.com>,
+        dsterba@suse.cz, bakmitopiacibubur@boga.indosterling.com,
+        clm@fb.com, davem@davemloft.net, dsahern@kernel.org,
+        dsterba@suse.com, fw@strlen.de, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, josef@toxicpanda.com, kadlec@netfilter.org,
+        kuba@kernel.org, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Subject: Re: [syzbot] [btrfs?] [netfilter?] BUG: MAX_LOCKDEP_CHAIN_HLOCKS too
+ low! (2)
+Message-ID: <20230719231207.GF32192@breakpoint.cc>
+References: <20230719170446.GR20457@twin.jikos.cz>
+ <00000000000042a3ac0600da1f69@google.com>
+ <CANp29Y4Dx3puutrowfZBzkHy1VpWHhQ6tZboBrwq_qNcFRrFGw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230719144048.4f340b8aa0a29ab65a274273@hugovil.com>
+In-Reply-To: <CANp29Y4Dx3puutrowfZBzkHy1VpWHhQ6tZboBrwq_qNcFRrFGw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 19, 2023 at 02:40:48PM -0400, Hugo Villeneuve wrote:
-> On Tue, 20 Jun 2023 12:16:45 -0400
-> Hugo Villeneuve <hugo@hugovil.com> wrote:
+Aleksandr Nogikh <nogikh@google.com> wrote:
+> On Wed, Jul 19, 2023 at 7:11 PM syzbot
+> <syzbot+9bbbacfbf1e04d5221f7@syzkaller.appspotmail.com> wrote:
+> >
+> > > On Wed, Jul 19, 2023 at 02:32:51AM -0700, syzbot wrote:
+> > >> syzbot has found a reproducer for the following issue on:
+> > >>
+> > >> HEAD commit:    e40939bbfc68 Merge branch 'for-next/core' into for-kernelci
+> > >> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+> > >> console output: https://syzkaller.appspot.com/x/log.txt?x=15d92aaaa80000
+> > >> kernel config:  https://syzkaller.appspot.com/x/.config?x=c4a2640e4213bc2f
+> > >> dashboard link: https://syzkaller.appspot.com/bug?extid=9bbbacfbf1e04d5221f7
+> > >> compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+> > >> userspace arch: arm64
+> > >> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=149b2d66a80000
+> > >> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1214348aa80000
+> > >>
+> > >> Downloadable assets:
+> > >> disk image: https://storage.googleapis.com/syzbot-assets/9d87aa312c0e/disk-e40939bb.raw.xz
+> > >> vmlinux: https://storage.googleapis.com/syzbot-assets/22a11d32a8b2/vmlinux-e40939bb.xz
+> > >> kernel image: https://storage.googleapis.com/syzbot-assets/0978b5788b52/Image-e40939bb.gz.xz
+> > >
+> > > #syz unset btrfs
+> >
+> > The following labels did not exist: btrfs
 > 
-> > On Tue, 20 Jun 2023 18:45:51 +0300
-> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > 
-> > > On Tue, Jun 20, 2023 at 6:42 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > On Tue, 20 Jun 2023 18:35:48 +0300
-> > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > On Tue, Jun 20, 2023 at 6:33 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > On Tue, 20 Jun 2023 18:18:12 +0300
-> > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > > On Tue, Jun 20, 2023 at 5:08 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > > On Sun, 4 Jun 2023 22:31:04 +0300
-> > > > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > 
-> > > ...
-> > > 
-> > > > > > > > did you have a chance to look at V8 (sent two weks ago) which fixed all
-> > > > > > > > of what we discussed?
-> > > > > > >
-> > > > > > > The patch 6 already has my tag, anything specific you want me to do?
-> > > > > >
-> > > > > > Hi Andy,
-> > > > > > I forgot to remove your "Reviewed-by: Andy..." tag before sending V8
-> > > > > > since there were some changes involved in patch 6 and I wanted you to
-> > > > > > review them. Can you confirm if the changes are correct?
-> > > > > >
-> > > > > > I also added a new patch "remove obsolete out_thread label". It has no
-> > > > > > real impact on the code generation itself, but maybe you can review and
-> > > > > > confirm if tags are ok or not, based on commit message and also
-> > > > > > additional commit message.
-> > > > >
-> > > > > Both are fine to me.
-> > > >
-> > > > Hi,
-> > > > Ok, thank you for reviewing this.
-> > > >
-> > > > I guess now we are good to go with this series if the stable tags and
-> > > > patches order are good after Greg's review?
-> > > 
-> > > Taking into account that we are at rc7, and even with Fixes tags in
-> > > your series I think Greg might take this after v6.5-0rc1 is out. It's
-> > > up to him how to proceed with that. Note, he usually has thousands of
-> > > patches in backlog, you might need to respin it after the above
-> > > mentioned rc1.
-> > 
-> > Ok, understood.
-> > 
-> > Let's wait then.
-> 
-> Hi Andy/Greg,
-> we are now at v6.5-rc2 and I still do not see any of our patches in
-> linus or gregkh_tty repos.
-> 
-> Is there something missing from my part (or someone else) to go forward
-> with integrating these patches (v8) for v6.5?
+> #syz set subsystems: netfilter
 
-My queue is huge right now, please be patient, I want to have them all
-handled by the end of next week...
+I don't see any netfilter involvement here.
 
-You can always help out by reviewing other patches on the mailing list
-to reduce my review load.
+The repro just creates a massive amount of team devices.
 
-thanks,
+At the time it hits the LOCKDEP limits on my test vm it has
+created ~2k team devices, system load is at +14 because udev
+is also busy spawing hotplug scripts for the new devices.
 
-greg k-h
+After reboot and suspending the running reproducer after about 1500
+devices (before hitting lockdep limits), followed by 'ip link del' for
+the team devices gets the lockdep entries down to ~8k (from 40k),
+which is in the range that it has on this VM after a fresh boot.
+
+So as far as I can see this workload is just pushing lockdep
+past what it can handle with the configured settings and is
+not triggering any actual bug.
