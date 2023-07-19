@@ -2,62 +2,107 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B504EB64DC
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jul 2023 18:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DCBEB64DA
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jul 2023 05:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbjGRSuk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jul 2023 14:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41334 "EHLO
+        id S229475AbjGSFMo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Jul 2023 01:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjGRSuk (ORCPT
+        with ESMTP id S229454AbjGSFMn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jul 2023 14:50:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85425B6;
-        Tue, 18 Jul 2023 11:50:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21B3A61557;
-        Tue, 18 Jul 2023 18:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F5C3C433C7;
-        Tue, 18 Jul 2023 18:50:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689706238;
-        bh=+Ztf5XNR4bTtwwMVzSPNnXQ0BLNTXZTZ2cnwAqRAI+Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=lwH6/dG2em/bQ6KJ/zJMGFesTMnfKzSyeHFEJmLpMlzEHUziz3PjXbhQngfk7f3i7
-         91sNQ+VPrfbnv2CQb2X2DlFvgNfpFqnO6Fr6o2tUdkdWP2kXNGK8zhfjGJJ27o2j/c
-         wlCG5HeBZ1YZuRkxxjjbNQWp3cb4sA0soaiqvvBLfcaZN0MJqebi60m7hTareH0ZgH
-         Yeh0TjaOchrhhgsq8hzugHRfMktA9MT/R2D04ASQWn17+hoVumm9v3iNQi63bxxl19
-         ttVgwZ1t4NUNwl9NqvsmVM4PGB4Ji8TqMyJ1i9PJgf1DKJL0ewjzdik7J1pZRblvw/
-         javDydkrWoeFg==
-Date:   Tue, 18 Jul 2023 13:50:36 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] serial: 8250_pci: add support for ASIX AX99100
-Message-ID: <20230718185036.GA489221@bhelgaas>
+        Wed, 19 Jul 2023 01:12:43 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C8DA1BF5;
+        Tue, 18 Jul 2023 22:12:42 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 2346880AA;
+        Wed, 19 Jul 2023 05:12:38 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Dhruva Gole <d-gole@ti.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: core: Fix serial core port id to not use port->line
+Date:   Wed, 19 Jul 2023 08:12:33 +0300
+Message-ID: <20230719051235.46396-1-tony@atomide.com>
+X-Mailer: git-send-email 2.41.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230718174200.2862849-4-jiaqing.zhao@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 18, 2023 at 05:41:59PM +0000, Jiaqing Zhao wrote:
-> All 4 PCI functions on ASIX AX99100 PCIe to Multi I/O Controller can be
+The serial core port id should be serial core controller specific port
+instance, which is not always the port->line index.
 
-Maybe clearer to say "Each of the four PCI functions ... can be
-configured as a serial port controller"?
+For example, 8250 driver maps a number of legacy ports, and when a
+hardware specific device driver takes over, we typically have one
+driver instance for each port. Let's instead add port->port_id to
+keep track serial ports mapped to each serial core controller instance.
 
-> configured as a single-port serial port controller. The subvendor id is
-> 0x1000 when configured as serial port and MSI interrupts are supported.
+Currently this is only a cosmetic issue for the serial core port device
+names. The issue can be noticed looking at /sys/bus/serial-base/devices
+for example though. Let's fix the issue to avoid port addressing issues
+later on.
+
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/serial/8250/8250_core.c  | 2 ++
+ drivers/tty/serial/serial_base_bus.c | 2 +-
+ include/linux/serial_core.h          | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -497,6 +497,7 @@ static struct uart_8250_port *serial8250_setup_port(int index)
+ 
+ 	up = &serial8250_ports[index];
+ 	up->port.line = index;
++	up->port.port_id = index;
+ 
+ 	serial8250_init_port(up);
+ 	if (!base_ops)
+@@ -1040,6 +1041,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 			uart_remove_one_port(&serial8250_reg, &uart->port);
+ 
+ 		uart->port.ctrl_id	= up->port.ctrl_id;
++		uart->port.port_id	= up->port.port_id;
+ 		uart->port.iobase       = up->port.iobase;
+ 		uart->port.membase      = up->port.membase;
+ 		uart->port.irq          = up->port.irq;
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -136,7 +136,7 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
+ 	err = serial_base_device_init(port, &port_dev->dev,
+ 				      &ctrl_dev->dev, &serial_port_type,
+ 				      serial_base_port_release,
+-				      port->line);
++				      port->port_id);
+ 	if (err)
+ 		goto err_put_device;
+ 
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -460,6 +460,7 @@ struct uart_port {
+ 	int			(*iso7816_config)(struct uart_port *,
+ 						  struct serial_iso7816 *iso7816);
+ 	int			ctrl_id;		/* optional serial core controller id */
++	int			port_id;		/* optional serial core port id */
+ 	unsigned int		irq;			/* irq number */
+ 	unsigned long		irqflags;		/* irq flags  */
+ 	unsigned int		uartclk;		/* base uart clock */
+-- 
+2.41.0
