@@ -2,153 +2,99 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A11C0015E
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jul 2023 15:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D54C0015E
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jul 2023 17:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbjGSPiy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jul 2023 11:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        id S230521AbjGSRLb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Jul 2023 13:11:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbjGSPix (ORCPT
+        with ESMTP id S230256AbjGSRL3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jul 2023 11:38:53 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48290B7;
-        Wed, 19 Jul 2023 08:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689781132; x=1721317132;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7Ov7681vkWQmGXJ8qz/HV+aSvOi5QL9idK+76+29III=;
-  b=LMRD8eBrSkXDE+MzC1p69mW3aAoM4g1gFiQJBw8l0sXZCSeM2+MN4+cU
-   UBfSecO8sXJDE0zZOWBvcTOAInNVDLKVX+fNJZ18l0VwQx5HEkuaTeP1f
-   crDynJ3NDGcpu18mAzkHOy3fs8JVW9/DOUkvR8acwuND3N2J31MPvoCvh
-   XPBOy0hlDK4Z0qvxlAPrS2B7N78O4SBV7Q/twQCDmpvJ6xcdosW+ktOIL
-   ao3CJBHMmVmftDQ7QHNiXb52TvdrGqr5TEwU8dI5GgSyy7b+e9uVCsd3y
-   QNLsJvn/J0BjY1bGF+Gq7VHcF+xeGPKlnFEv1i2/AhRJ8RN5YZiXDkMNt
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="452874358"
-X-IronPort-AV: E=Sophos;i="6.01,216,1684825200"; 
-   d="scan'208";a="452874358"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2023 08:38:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10776"; a="718022098"
-X-IronPort-AV: E=Sophos;i="6.01,216,1684825200"; 
-   d="scan'208";a="718022098"
-Received: from lkp-server02.sh.intel.com (HELO 36946fcf73d7) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 19 Jul 2023 08:38:47 -0700
-Received: from kbuild by 36946fcf73d7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1qM9G1-00054P-15;
-        Wed, 19 Jul 2023 15:38:30 +0000
-Date:   Wed, 19 Jul 2023 23:38:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: core: Add support for dev_name:0.0 naming for
- kernel console
-Message-ID: <202307192334.nrgSDnfu-lkp@intel.com>
-References: <20230719051525.46494-1-tony@atomide.com>
+        Wed, 19 Jul 2023 13:11:29 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7569B7;
+        Wed, 19 Jul 2023 10:11:27 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 883F821F0A;
+        Wed, 19 Jul 2023 17:11:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1689786686;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mfLGzypO41q2AnbyNUD6HDkv4PbvHAEefgIPqN/Q2zs=;
+        b=raP72Lpxh7qGJWXM3itms65FExUoex6SktQl4E90imoUr1UGyqhzDSGXYBklmCH2N38hns
+        2/TUiRjdw3ZcZF+7GPs0cMOwA0TNSE58DqmOUwGL3xM4+fCh+QSTbDAtsj5N4iCXEMknD3
+        nlxSy2rLD1DWfW4zja0s1TpkupYJNiM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1689786686;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mfLGzypO41q2AnbyNUD6HDkv4PbvHAEefgIPqN/Q2zs=;
+        b=pKbaLihWcZxCvRx9YVlSv+2P+QaucoG4ip6h7g+TejsnVpOHUV+x9mDC7GjElDQjyt7YJq
+        5Y4zwlB6vg/EI/Dg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2C1C613460;
+        Wed, 19 Jul 2023 17:11:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id fMcnCj4ZuGSwIQAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Wed, 19 Jul 2023 17:11:26 +0000
+Date:   Wed, 19 Jul 2023 19:04:46 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     syzbot <syzbot+9bbbacfbf1e04d5221f7@syzkaller.appspotmail.com>
+Cc:     bakmitopiacibubur@boga.indosterling.com, clm@fb.com,
+        davem@davemloft.net, dsahern@kernel.org, dsterba@suse.com,
+        fw@strlen.de, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        josef@toxicpanda.com, kadlec@netfilter.org, kuba@kernel.org,
+        linux-btrfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Subject: Re: [syzbot] [btrfs?] [netfilter?] BUG: MAX_LOCKDEP_CHAIN_HLOCKS too
+ low! (2)
+Message-ID: <20230719170446.GR20457@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+References: <000000000000a054ee05bc4b2009@google.com>
+ <0000000000002b2f180600d3b79e@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230719051525.46494-1-tony@atomide.com>
+In-Reply-To: <0000000000002b2f180600d3b79e@google.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Tony,
+On Wed, Jul 19, 2023 at 02:32:51AM -0700, syzbot wrote:
+> syzbot has found a reproducer for the following issue on:
+> 
+> HEAD commit:    e40939bbfc68 Merge branch 'for-next/core' into for-kernelci
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15d92aaaa80000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=c4a2640e4213bc2f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=9bbbacfbf1e04d5221f7
+> compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+> userspace arch: arm64
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=149b2d66a80000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1214348aa80000
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/9d87aa312c0e/disk-e40939bb.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/22a11d32a8b2/vmlinux-e40939bb.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/0978b5788b52/Image-e40939bb.gz.xz
 
-kernel test robot noticed the following build errors:
+#syz unset btrfs
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next linus/master v6.5-rc2 next-20230719]
-[cannot apply to tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-core-Add-support-for-dev_name-0-0-naming-for-kernel-console/20230719-131657
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20230719051525.46494-1-tony%40atomide.com
-patch subject: [PATCH] serial: core: Add support for dev_name:0.0 naming for kernel console
-config: x86_64-randconfig-r013-20230718 (https://download.01.org/0day-ci/archive/20230719/202307192334.nrgSDnfu-lkp@intel.com/config)
-compiler: clang version 15.0.7 (https://github.com/llvm/llvm-project.git 8dfdcc7b7bf66834a761bd8de445840ef68e4d1a)
-reproduce: (https://download.01.org/0day-ci/archive/20230719/202307192334.nrgSDnfu-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202307192334.nrgSDnfu-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/serial_core.c:3337:17: error: no member named 'port_id' in 'struct uart_port'
-                                  port->port_id);
-                                  ~~~~  ^
-   1 error generated.
-
-
-vim +3337 drivers/tty/serial/serial_core.c
-
-  3324	
-  3325	/*
-  3326	 * Add preferred console if configured on kernel command line with naming
-  3327	 * "console=dev_name:0.0".
-  3328	 */
-  3329	static int serial_core_add_preferred_console(struct uart_driver *drv,
-  3330						     struct uart_port *port)
-  3331	{
-  3332		char *port_match, *opt, *name;
-  3333		int len, ret = 0;
-  3334	
-  3335		port_match = kasprintf(GFP_KERNEL, "console=%s:%i.%i",
-  3336				       dev_name(port->dev), port->ctrl_id,
-> 3337				       port->port_id);
-  3338		if (!port_match)
-  3339			return -ENOMEM;
-  3340	
-  3341		opt = strstr(saved_command_line, port_match);
-  3342		if (!opt)
-  3343			goto free_port_match;
-  3344	
-  3345		len = strlen(port_match);
-  3346	
-  3347		if (strlen(opt) > len + 1 && opt[len] == ',')
-  3348			opt += len + 1;
-  3349		else
-  3350			opt = NULL;
-  3351	
-  3352		name = kstrdup(drv->dev_name, GFP_KERNEL);
-  3353		if (!name) {
-  3354			ret = -ENOMEM;
-  3355			goto free_port_match;
-  3356		}
-  3357	
-  3358		add_preferred_console(name, port->line, opt);
-  3359	
-  3360		kfree(name);
-  3361	
-  3362	free_port_match:
-  3363		kfree(port_match);
-  3364	
-  3365		return ret;
-  3366	}
-  3367	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+The MAX_LOCKDEP_CHAIN_HLOCKS bugs/warnings can be worked around by
+configuration, otherwise are considered invalid. This report has also
+'netfilter' label so I'm not closing it right away.
