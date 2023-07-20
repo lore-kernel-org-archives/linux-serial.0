@@ -2,138 +2,123 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3ABEB64DD
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Jul 2023 05:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E12BEB64DC
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Jul 2023 06:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbjGTFK7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Jul 2023 01:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36142 "EHLO
+        id S229566AbjGTGQZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Jul 2023 02:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbjGTFK4 (ORCPT
+        with ESMTP id S229561AbjGTGQY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Jul 2023 01:10:56 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83EFB269E;
-        Wed, 19 Jul 2023 22:10:50 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 3CF7D80F7;
-        Thu, 20 Jul 2023 05:10:47 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] serial: core: Fix serial core controller port name to show controller id
-Date:   Thu, 20 Jul 2023 08:10:16 +0300
-Message-ID: <20230720051021.14961-4-tony@atomide.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230720051021.14961-1-tony@atomide.com>
-References: <20230720051021.14961-1-tony@atomide.com>
+        Thu, 20 Jul 2023 02:16:24 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F8E1734;
+        Wed, 19 Jul 2023 23:16:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de;
+ s=s31663417; t=1689833774; x=1690438574; i=deller@gmx.de;
+ bh=Kjw2irROZgblodT7GrAJHMiu+Athn4WIlCQc+MmBJFk=;
+ h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+ b=Khj07uLafxC6/VVXXkBDAjAu7oB2EGZcI3RZB5LLkQ1wruAOXcLmV2/e+D4BSxfOFTIHc2Q
+ +j+2DZOExBgmFygHcj+X1Bx/hLP2JH8wpr+UMh0rN6yWZBDtKFhtSFC5GkK95xC1v1oUmB4yN
+ 1/JQhBFPKq1E+ukuWhZMtjPrBIkeHfX2y9EIe6sLPzKduhJ5c1y0+hbleJhh30vYPX7cIFekx
+ O4D8yjCBUchNyS+A0gMCANQeDW1NfDYTYxgQm8BJamxlLCSK6eRTraa/JIQYt7UvW7HT1vPHp
+ HOFQSLdWY7He6YBL8uLFWtdvjR6KBT38uiE1lMZZTjvGQoXOzr3w==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.20.60] ([94.134.153.9]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N9MpY-1psUGY0o0i-015MvO; Thu, 20
+ Jul 2023 08:16:14 +0200
+Message-ID: <1d045caf-2d83-047d-654b-03609dd91226@gmx.de>
+Date:   Thu, 20 Jul 2023 08:16:13 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.12.0
+Subject: Re: [PATCH 1/7] vgacon: switch vgacon_scrolldelta() and
+ vgacon_restore_screen()
+Content-Language: en-US
+To:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+References: <20230712085942.5064-1-jirislaby@kernel.org>
+ <20230712085942.5064-2-jirislaby@kernel.org>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20230712085942.5064-2-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:/YaYnmNmwmNBiWSeAkIditEiEjLVWWmnI18FP3ynD9r/fckEMQI
+ 4b/nP4E1xU52qYKfV8mXxZucwJGyJ1CO0/TqG59roNw7gJmnzD/+lxXMeJQQISqccF8u3Mo
+ Egq3e3eUY4/E8WhLyXOa58UDopMmHgsHgYy1ZRhuRx02tkB2eNUUqe0VkWgw0Cp8xEz1f/7
+ uQwASgZY4DUa4br5GrfIg==
+UI-OutboundReport: notjunk:1;M01:P0:veCzuI3kDCg=;fnRmKSxZXEjl/taCOx7paUHzly4
+ 6XIDPwcabiiLuhF8P9PH0QhJ2joy9vduzgs2TBQiObO6tMDmEpeyxoMK+3D0xNJisj9uzOPKy
+ nIpe0/ks4u5epwpY/INb08DS3by66ee73PqhUdzjtlX5giddyP8YE8AfvhcCTzGj8N2nwsLm0
+ Q34prT4RT9+z0tIVHsR32na/yCLqeFtIqXs4eO5/DBpCz21+FSOxjBlFssyVkTHcPRgKwXYPO
+ bd1YBu9PQL9oTrlUUVejFwtNv6TAIt+joOo9ANKe7wsfoq7CHHCu39Qna5whFwStbjCCwj2Ow
+ bKh33Vs/e/Va+/hBq8jN31WV7YhCu9vPWnaMdRp9xDTfvdyjwRRBvxkrnEHTlBzhkqOHn2N5A
+ 41Lm2fM0DbqgFBoeygWj7X2fPzmtNkYzRQuwNbl0q0lbQsYnVgd0GCM6vz8jFcr5egJ9TD0pV
+ d36IDEvKmbDcxauweuklHaoZeTPWkYBBpaY2rSpwXPAjFUEg/JZhPDhyY4Hzq1Gxh+g6zpYq9
+ BaXIdm1yhhEz/vcr+DAipEITQB6J5NPlpKJtWIAHhnKbr0FonuqZ8P05BsYZYTIQ1j+v8aho9
+ cULpRquSsxNDzjbtWvTv7qr9El2WO1qyiFAfrxOSXz5I2aWY9HPgNZJVKRYSpIcNPjxPTagXl
+ ZdPwWX5cOwJDBMVEkdsSvBZPSVHhy7MTJpCk3HyoQzTsVkZTBiqUrQR5J6hlOb+yBDViILNvt
+ YvgcU3kMNL1wyZIaRpjbKu+cKrOjVJuFUxeJIsssT1SifMuhrCCBAVh0A3ww+pVf5w3wN+iQd
+ KkN9/K4qyJZq8Mqfhl+Iol92FIb5qJRdAG2DQu0Mse7eaPKybkMLsXK6YbzOYHcUAIOmzMFMQ
+ SREHPu5bhH181wkGmmLEIP/6ZBSdKB4MBgix/EwCT5eAvoT4VfIYulomX40JHvAgKFPiYNx+3
+ XHk2ZA==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We are missing the serial core controller id for the serial core port
-name. Let's fix the issue for sane /sys/bus/serial-core/devices, and to
-avoid issues addressing serial ports later on.
+On 7/12/23 10:59, Jiri Slaby (SUSE) wrote:
+> Switch vgacon_scrolldelta() and vgacon_restore_screen() positions, so
+> that the former is not needed to be forward-declared.
+>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Helge Deller <deller@gmx.de>
+> Cc: linux-fbdev@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Closes: https://lore.kernel.org/linux-serial/20230719051613.46569-1-tony@atomide.com/T/#m0f358e91262f7f56198ba9d0a7100809e9e35cc5
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/serial_base_bus.c | 33 ++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 12 deletions(-)
+Thanks Jiri !
+I've applied this series to the fbdev git tree.
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -19,6 +19,14 @@
- 
- static bool serial_base_initialized;
- 
-+static const struct device_type serial_ctrl_type = {
-+	.name = "ctrl",
-+};
-+
-+static const struct device_type serial_port_type = {
-+	.name = "port",
-+};
-+
- static int serial_base_match(struct device *dev, struct device_driver *drv)
- {
- 	int len = strlen(drv->name);
-@@ -48,7 +56,8 @@ static int serial_base_device_init(struct uart_port *port,
- 				   struct device *parent_dev,
- 				   const struct device_type *type,
- 				   void (*release)(struct device *dev),
--				   int id)
-+				   unsigned int ctrl_id,
-+				   unsigned int port_id)
- {
- 	device_initialize(dev);
- 	dev->type = type;
-@@ -61,13 +70,17 @@ static int serial_base_device_init(struct uart_port *port,
- 		return -EPROBE_DEFER;
- 	}
- 
--	return dev_set_name(dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
-+	if (type == &serial_ctrl_type)
-+		return dev_set_name(dev, "%s.%s.%d", type->name,
-+				    dev_name(port->dev), ctrl_id);
-+	else if (type == &serial_port_type)
-+		return dev_set_name(dev, "%s.%s.%d.%d", type->name,
-+				    dev_name(port->dev), ctrl_id,
-+				    port_id);
-+	else
-+		return -EINVAL;
- }
- 
--static const struct device_type serial_ctrl_type = {
--	.name = "ctrl",
--};
--
- static void serial_base_ctrl_release(struct device *dev)
- {
- 	struct serial_ctrl_device *ctrl_dev = to_serial_base_ctrl_device(dev);
-@@ -96,7 +109,7 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &ctrl_dev->dev,
- 				      parent, &serial_ctrl_type,
- 				      serial_base_ctrl_release,
--				      port->ctrl_id);
-+				      port->ctrl_id, 0);
- 	if (err)
- 		goto err_put_device;
- 
-@@ -112,10 +125,6 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	return ERR_PTR(err);
- }
- 
--static const struct device_type serial_port_type = {
--	.name = "port",
--};
--
- static void serial_base_port_release(struct device *dev)
- {
- 	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
-@@ -136,7 +145,7 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &port_dev->dev,
- 				      &ctrl_dev->dev, &serial_port_type,
- 				      serial_base_port_release,
--				      port->port_id);
-+				      port->ctrl_id, port->port_id);
- 	if (err)
- 		goto err_put_device;
- 
--- 
-2.41.0
+Helge
+
+> ---
+>   drivers/video/console/vgacon.c | 12 ++++++------
+>   1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgac=
+on.c
+> index e25ba523892e..fbed2862c317 100644
+> --- a/drivers/video/console/vgacon.c
+> +++ b/drivers/video/console/vgacon.c
+> @@ -142,12 +142,6 @@ static inline void vga_set_mem_top(struct vc_data *=
+c)
+>   	write_vga(12, (c->vc_visible_origin - vga_vram_base) / 2);
+>   }
+>
+> -static void vgacon_restore_screen(struct vc_data *c)
+> -{
+> -	if (c->vc_origin !=3D c->vc_visible_origin)
+> -		vgacon_scrolldelta(c, 0);
+> -}
+> -
+>   static void vgacon_scrolldelta(struct vc_data *c, int lines)
+>   {
+>   	vc_scrolldelta_helper(c, lines, vga_rolled_over, (void *)vga_vram_bas=
+e,
+> @@ -155,6 +149,12 @@ static void vgacon_scrolldelta(struct vc_data *c, i=
+nt lines)
+>   	vga_set_mem_top(c);
+>   }
+>
+> +static void vgacon_restore_screen(struct vc_data *c)
+> +{
+> +	if (c->vc_origin !=3D c->vc_visible_origin)
+> +		vgacon_scrolldelta(c, 0);
+> +}
+> +
+>   static const char *vgacon_startup(void)
+>   {
+>   	const char *display_desc =3D NULL;
+
