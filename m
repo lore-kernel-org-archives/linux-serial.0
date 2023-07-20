@@ -2,84 +2,104 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE17EB64DC
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Jul 2023 03:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27AFAEB64DC
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Jul 2023 04:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbjGTDaf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jul 2023 23:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44682 "EHLO
+        id S229566AbjGTENY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 20 Jul 2023 00:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjGTDae (ORCPT
+        with ESMTP id S229555AbjGTENX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jul 2023 23:30:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CB41B9;
-        Wed, 19 Jul 2023 20:30:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B222F6126D;
-        Thu, 20 Jul 2023 03:30:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F35FC433C8;
-        Thu, 20 Jul 2023 03:30:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689823832;
-        bh=OnSRL/M/dbuk991nGBrfC0/pCCMwx2qMx5t/Th8WDY4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DLP0S+lHKonruVV95NGNwFLFr5aWNx45vINgAd1CVjDbI/PxvcmUv57niu5feAGkY
-         AWElUA7x+ISFrYGq/jkvkfn4q6t04zKRia/WReyo9T88T6CNd+m2heMlul2896iWth
-         JguL4emjfN7RreQNklhpOSKt4TGwUgNqssc7rhrAOqGdUy0Ixax1p0M54pRFVuyGwE
-         i7dgQlwm0YcCQHmSiMSik+TgPhgoWfrExGhO4xVhNqw1sBDlfaokr/47tixTw3D+mM
-         IrJc2AQzdNVRpO4QDu4TdwbOA4T2hESliP6LNvOgpqRdMk7YriQ3UqnC9d8w085jmB
-         EIvkZAqeEpKSg==
-Date:   Wed, 19 Jul 2023 20:30:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        syzbot <syzbot+9bbbacfbf1e04d5221f7@syzkaller.appspotmail.com>,
-        dsterba@suse.cz, bakmitopiacibubur@boga.indosterling.com,
-        clm@fb.com, davem@davemloft.net, dsahern@kernel.org,
-        dsterba@suse.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        josef@toxicpanda.com, kadlec@netfilter.org,
-        linux-btrfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux@armlinux.org.uk, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [btrfs?] [netfilter?] BUG: MAX_LOCKDEP_CHAIN_HLOCKS
- too low! (2)
-Message-ID: <20230719203030.1296596a@kernel.org>
-In-Reply-To: <20230719231207.GF32192@breakpoint.cc>
-References: <20230719170446.GR20457@twin.jikos.cz>
-        <00000000000042a3ac0600da1f69@google.com>
-        <CANp29Y4Dx3puutrowfZBzkHy1VpWHhQ6tZboBrwq_qNcFRrFGw@mail.gmail.com>
-        <20230719231207.GF32192@breakpoint.cc>
+        Thu, 20 Jul 2023 00:13:23 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 783C6172A;
+        Wed, 19 Jul 2023 21:13:21 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 6319B80F7;
+        Thu, 20 Jul 2023 04:13:20 +0000 (UTC)
+Date:   Thu, 20 Jul 2023 07:13:19 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: core: Add sysfs links for serial core port
+ instances for ttys
+Message-ID: <20230720041319.GM5194@atomide.com>
+References: <20230719051613.46569-1-tony@atomide.com>
+ <ZLd1uCKoGMBruwiN@smile.fi.intel.com>
+ <20230719054321.GJ5194@atomide.com>
+ <ZLfsVU7uiA3IReHU@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZLfsVU7uiA3IReHU@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 20 Jul 2023 01:12:07 +0200 Florian Westphal wrote:
-> I don't see any netfilter involvement here.
+* Andy Shevchenko <andriy.shevchenko@intel.com> [230719 13:59]:
+> On Wed, Jul 19, 2023 at 08:43:21AM +0300, Tony Lindgren wrote:
+> > * Andy Shevchenko <andriy.shevchenko@intel.com> [230719 05:34]:
+> > > On Wed, Jul 19, 2023 at 08:16:11AM +0300, Tony Lindgren wrote:
+> > > > Let's allow the userspace to find out the tty name for a serial core
+> > > > controller id if a tty exists. This can be done with:
+> > > > 
+> > > > $ grep DEVNAME /sys/bus/serial-base/devices/port*/tty/uevent
+> > > > /sys/bus/serial-base/devices/port.00:04.0/tty/uevent:DEVNAME=ttyS0
+> > > > /sys/bus/serial-base/devices/port.serial8250.1/tty/uevent:DEVNAME=ttyS1
+> > > > /sys/bus/serial-base/devices/port.serial8250.2/tty/uevent:DEVNAME=ttyS2
+> > > > /sys/bus/serial-base/devices/port.serial8250.3/tty/uevent:DEVNAME=ttyS3
+> > > 
+> > > What part is the controller ID here?
+> > 
+> > Oh looks like controller id it's missing in the name, I'll send a fix
+> > for that.
+> > 
+> > > We also have something in procfs (I don't remember what info exactly is there).
+> > 
+> > Do you mean /proc/devices?
 > 
-> The repro just creates a massive amount of team devices.
-> 
-> At the time it hits the LOCKDEP limits on my test vm it has
-> created ~2k team devices, system load is at +14 because udev
-> is also busy spawing hotplug scripts for the new devices.
-> 
-> After reboot and suspending the running reproducer after about 1500
-> devices (before hitting lockdep limits), followed by 'ip link del' for
-> the team devices gets the lockdep entries down to ~8k (from 40k),
-> which is in the range that it has on this VM after a fresh boot.
-> 
-> So as far as I can see this workload is just pushing lockdep
-> past what it can handle with the configured settings and is
-> not triggering any actual bug.
+> Something tty specific, /proc/tty/, but I had a look and it seems for another
+> stuff.
 
-The lockdep splat because of netdevice stacking is one of our top
-reports from syzbot. Is anyone else feeling like we should add 
-an artificial but very high limit on netdev stacking? :(
+OK
+
+> > > > And with this, we can add /dev/serial/by-id symlinks to the serial port
+> > > > device instances so we can start using serial core port addressing in
+> > > > addition to the legacy ttyS naming.
+> > > > 
+> > > > The naming we can use is dev_name:0.0 where 0.0 are the serial core
+> > > > controller id and port id, so for the ttyS0 example above the naming
+> > > > would be 00:04.0:0.0.
+> > > 
+> > > This is interesting idea. But any hint why it can be useful?
+> > 
+> > If you have lots of serial ports and we are stuck with adding aliases
+> > for the ports in the dts files where the ttyS naming and ordering does
+> > not really help or may not necessarily make sense if the ports are on
+> > different buses or domains. With CONFIG_SERIAL_8250_RUNTIME_UARTS=4,
+> > the ttyS naming is only needed for the legacy ports really.
+> 
+> I see. Does it fix the long standing issue with ttyS enumeration (on x86
+> at least) when depending on the presence of the legacy ports the HSUART
+> (high speed) can preempt the legacy placeholders (ttyS0..ttyS3)?
+>
+> To me sounds like it may very well do fix it and I would be glad to see that
+> in the commit message (as selling point) and in documentation.
+
+It won't affect how ttyS0..ttyS3 get assigned, but it helps finding your
+HSUART instance with DEVNAME:0.0 style addressing. So you don't need to
+care what ttyS number the port has. If you have such a test case maybe give
+it a try.
+
+Regards,
+
+Tony
