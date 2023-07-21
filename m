@@ -2,26 +2,25 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC30EB64DC
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 07:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBE7EB64DD
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 07:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbjGUHWp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Jul 2023 03:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52652 "EHLO
+        id S229885AbjGUHXu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Jul 2023 03:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230208AbjGUHWd (ORCPT
+        with ESMTP id S229902AbjGUHXu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Jul 2023 03:22:33 -0400
+        Fri, 21 Jul 2023 03:23:50 -0400
 Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B3E730D2;
-        Fri, 21 Jul 2023 00:22:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3855EE53;
+        Fri, 21 Jul 2023 00:23:49 -0700 (PDT)
 Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id E612D807E;
-        Fri, 21 Jul 2023 07:22:22 +0000 (UTC)
+        by muru.com (Postfix) with ESMTP id 2ABE1807E;
+        Fri, 21 Jul 2023 07:23:47 +0000 (UTC)
 From:   Tony Lindgren <tony@atomide.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>
 Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
         Dhruva Gole <d-gole@ti.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
@@ -29,110 +28,46 @@ Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-omap@vger.kernel.org
-Subject: [PATCH v3 3/3] serial: core: Fix serial core controller port name to show controller id
-Date:   Fri, 21 Jul 2023 10:21:42 +0300
-Message-ID: <20230721072147.59121-4-tony@atomide.com>
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: Update TTY layer for lists and recently added files
+Date:   Fri, 21 Jul 2023 10:23:32 +0300
+Message-ID: <20230721072334.59272-1-tony@atomide.com>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230721072147.59121-1-tony@atomide.com>
-References: <20230721072147.59121-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We are missing the serial core controller id for the serial core port
-name. Let's fix the issue for sane /sys/bus/serial-core/devices, and to
-avoid issues addressing serial ports later on.
+Add mailing lists for linux-serial and lkml for the TTY layer. And let's
+list the recently added files. This makes it easier for get_maintainer.pl
+to include linux-serial for patches.
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/tty/serial/serial_base_bus.c | 33 ++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 12 deletions(-)
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -19,6 +19,14 @@
- 
- static bool serial_base_initialized;
- 
-+static const struct device_type serial_ctrl_type = {
-+	.name = "ctrl",
-+};
-+
-+static const struct device_type serial_port_type = {
-+	.name = "port",
-+};
-+
- static int serial_base_match(struct device *dev, struct device_driver *drv)
- {
- 	int len = strlen(drv->name);
-@@ -48,7 +56,8 @@ static int serial_base_device_init(struct uart_port *port,
- 				   struct device *parent_dev,
- 				   const struct device_type *type,
- 				   void (*release)(struct device *dev),
--				   int id)
-+				   unsigned int ctrl_id,
-+				   unsigned int port_id)
- {
- 	device_initialize(dev);
- 	dev->type = type;
-@@ -61,13 +70,17 @@ static int serial_base_device_init(struct uart_port *port,
- 		return -EPROBE_DEFER;
- 	}
- 
--	return dev_set_name(dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
-+	if (type == &serial_ctrl_type)
-+		return dev_set_name(dev, "%s.%s.%d", type->name,
-+				    dev_name(port->dev), ctrl_id);
-+	else if (type == &serial_port_type)
-+		return dev_set_name(dev, "%s.%s.%d.%d", type->name,
-+				    dev_name(port->dev), ctrl_id,
-+				    port_id);
-+	else
-+		return -EINVAL;
- }
- 
--static const struct device_type serial_ctrl_type = {
--	.name = "ctrl",
--};
--
- static void serial_base_ctrl_release(struct device *dev)
- {
- 	struct serial_ctrl_device *ctrl_dev = to_serial_base_ctrl_device(dev);
-@@ -96,7 +109,7 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &ctrl_dev->dev,
- 				      parent, &serial_ctrl_type,
- 				      serial_base_ctrl_release,
--				      port->ctrl_id);
-+				      port->ctrl_id, 0);
- 	if (err)
- 		goto err_put_device;
- 
-@@ -112,10 +125,6 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	return ERR_PTR(err);
- }
- 
--static const struct device_type serial_port_type = {
--	.name = "port",
--};
--
- static void serial_base_port_release(struct device *dev)
- {
- 	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
-@@ -136,7 +145,7 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &port_dev->dev,
- 				      &ctrl_dev->dev, &serial_port_type,
- 				      serial_base_port_release,
--				      port->port_id);
-+				      port->ctrl_id, port->port_id);
- 	if (err)
- 		goto err_put_device;
- 
+diff --git a/MAINTAINERS b/MAINTAINERS
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21628,11 +21628,17 @@ F:	Documentation/translations/zh_TW/
+ TTY LAYER
+ M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ M:	Jiri Slaby <jirislaby@kernel.org>
++L:	linux-kernel@vger.kernel.org
++L:	linux-serial@vger.kernel.org
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+ F:	Documentation/driver-api/serial/
+ F:	drivers/tty/
++F:	drivers/tty/serial/serial_base.h
++F:	drivers/tty/serial/serial_base_bus.c
+ F:	drivers/tty/serial/serial_core.c
++F:	drivers/tty/serial/serial_ctrl.c
++F:	drivers/tty/serial/serial_port.c
+ F:	include/linux/selection.h
+ F:	include/linux/serial.h
+ F:	include/linux/serial_core.h
 -- 
 2.41.0
