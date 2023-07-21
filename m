@@ -2,138 +2,199 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FDF2C0015E
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Jul 2023 19:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F11EB64DC
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 05:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230397AbjGTTib (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Jul 2023 15:38:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45272 "EHLO
+        id S229531AbjGUFyJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Jul 2023 01:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjGTTia (ORCPT
+        with ESMTP id S229500AbjGUFyB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Jul 2023 15:38:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E191733;
-        Thu, 20 Jul 2023 12:38:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D97461C2C;
-        Thu, 20 Jul 2023 19:38:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20640C433C8;
-        Thu, 20 Jul 2023 19:38:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1689881908;
-        bh=By0NPw7H/C/+dXpxiKt2BsETcxwIAwyz076qNq493fs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KkXrnUFkxGKR1VycaaU+e/LHj6F4FdnNy7lB+dNSK9Q61ZsVz0CREEYQ5CPAbtr3z
-         vE7NT0zo6qbfN0kKA8mL9nnBVaeRM2SzBl8Qd6DYp5q/9kcjyKBsMD1DzB46LsvuYb
-         zp9905JKe/0jYGhatoJCvet6ORCSWtNZkqq7pwic=
-Date:   Thu, 20 Jul 2023 21:38:21 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO
- configuration
-Message-ID: <2023072040-clock-waltz-a5f2@gregkh>
-References: <CAHp75VeWFPBmsD8zsSAaQGNNXtfgLtQuM9AMGfLPk-6p0VW=Pg@mail.gmail.com>
- <20230620100846.d58436efc061fb91074fa7e5@hugovil.com>
- <CAHp75VcWSVgA8LFLo0-b5TfKWdHb2GfLpXV-V3PZvthTv1Xc4A@mail.gmail.com>
- <20230620113312.882d8f0c7d5603b1c93f33fb@hugovil.com>
- <CAHp75VfGm6=ULW6kMjsg2OgB1z1T0YdmzvCTa3DFXXX-q_RnfA@mail.gmail.com>
- <20230620114209.fb5272ad8cf5c5e2895d68b1@hugovil.com>
- <CAHp75VcieuYqxWrO7rknx2ROYz=rnWnKV6s9eXZ5Zd1BKc6YMg@mail.gmail.com>
- <20230620121645.512b31a872306b43a276bbac@hugovil.com>
- <20230719144048.4f340b8aa0a29ab65a274273@hugovil.com>
- <2023071922-rigor-collage-804e@gregkh>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2023071922-rigor-collage-804e@gregkh>
+        Fri, 21 Jul 2023 01:54:01 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FFD10E5
+        for <linux-serial@vger.kernel.org>; Thu, 20 Jul 2023 22:54:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1689918840; x=1721454840;
+  h=date:from:to:cc:subject:message-id;
+  bh=oHszbNaz3uX6ji90NUPSCVBi6hYn/ZzSPELwDnlLXpc=;
+  b=U5XtKTPrUpJBDPuoUMyKHA5FeRhwOy87ia51uX6IqcRIcdqt0kmScBNM
+   X9/9pBDSd8BczK+CeZ/rN8M7Vy5IDg11fHhYWmIzpbZUPaUtVbdkiufeX
+   Wroy9zuLNOzozC7yI0PQvKubhSXFZ2Y7GOaLPahZ97SVZx2c/w6mto5QW
+   zt5T0tIetCoPxc6zzdGGJ5jMC7w0xGql5ySVJwuDejAkWCF/+cWhYz0TW
+   zwc5wZ45IwZOS+8Uv4Sxcu9JTGTNanR9+GU/U7EAPTz9c3SrtU4GbJHB5
+   Bf7IPOlqyM8brk6JseXfV1zjU2F/5b0G7q73uV/OX1vGN3JhjZjTCS+1B
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="370544095"
+X-IronPort-AV: E=Sophos;i="6.01,220,1684825200"; 
+   d="scan'208";a="370544095"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2023 22:53:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="754326022"
+X-IronPort-AV: E=Sophos;i="6.01,220,1684825200"; 
+   d="scan'208";a="754326022"
+Received: from lkp-server02.sh.intel.com (HELO 36946fcf73d7) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 20 Jul 2023 22:53:58 -0700
+Received: from kbuild by 36946fcf73d7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1qMj5S-0006vy-0g;
+        Fri, 21 Jul 2023 05:53:58 +0000
+Date:   Fri, 21 Jul 2023 13:53:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 690c8b804ad2eafbd35da5d3c95ad325ca7d5061
+Message-ID: <202307211320.FJl9rNwh-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 19, 2023 at 09:14:23PM +0200, Greg KH wrote:
-> On Wed, Jul 19, 2023 at 02:40:48PM -0400, Hugo Villeneuve wrote:
-> > On Tue, 20 Jun 2023 12:16:45 -0400
-> > Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > 
-> > > On Tue, 20 Jun 2023 18:45:51 +0300
-> > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > 
-> > > > On Tue, Jun 20, 2023 at 6:42 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > On Tue, 20 Jun 2023 18:35:48 +0300
-> > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > On Tue, Jun 20, 2023 at 6:33 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > On Tue, 20 Jun 2023 18:18:12 +0300
-> > > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > > > On Tue, Jun 20, 2023 at 5:08 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > > > On Sun, 4 Jun 2023 22:31:04 +0300
-> > > > > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > 
-> > > > ...
-> > > > 
-> > > > > > > > > did you have a chance to look at V8 (sent two weks ago) which fixed all
-> > > > > > > > > of what we discussed?
-> > > > > > > >
-> > > > > > > > The patch 6 already has my tag, anything specific you want me to do?
-> > > > > > >
-> > > > > > > Hi Andy,
-> > > > > > > I forgot to remove your "Reviewed-by: Andy..." tag before sending V8
-> > > > > > > since there were some changes involved in patch 6 and I wanted you to
-> > > > > > > review them. Can you confirm if the changes are correct?
-> > > > > > >
-> > > > > > > I also added a new patch "remove obsolete out_thread label". It has no
-> > > > > > > real impact on the code generation itself, but maybe you can review and
-> > > > > > > confirm if tags are ok or not, based on commit message and also
-> > > > > > > additional commit message.
-> > > > > >
-> > > > > > Both are fine to me.
-> > > > >
-> > > > > Hi,
-> > > > > Ok, thank you for reviewing this.
-> > > > >
-> > > > > I guess now we are good to go with this series if the stable tags and
-> > > > > patches order are good after Greg's review?
-> > > > 
-> > > > Taking into account that we are at rc7, and even with Fixes tags in
-> > > > your series I think Greg might take this after v6.5-0rc1 is out. It's
-> > > > up to him how to proceed with that. Note, he usually has thousands of
-> > > > patches in backlog, you might need to respin it after the above
-> > > > mentioned rc1.
-> > > 
-> > > Ok, understood.
-> > > 
-> > > Let's wait then.
-> > 
-> > Hi Andy/Greg,
-> > we are now at v6.5-rc2 and I still do not see any of our patches in
-> > linus or gregkh_tty repos.
-> > 
-> > Is there something missing from my part (or someone else) to go forward
-> > with integrating these patches (v8) for v6.5?
-> 
-> My queue is huge right now, please be patient, I want to have them all
-> handled by the end of next week...
-> 
-> You can always help out by reviewing other patches on the mailing list
-> to reduce my review load.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 690c8b804ad2eafbd35da5d3c95ad325ca7d5061  TIOCSTI: always enable for CAP_SYS_ADMIN
 
-Wait, no, this series was superseeded by v8, and in there you said you
-were going to send a new series.  So please, fix it up and send the
-updated version of the series, this one isn't going to be applied for
-obvious reasons.
+elapsed time: 723m
 
-thanks,
+configs tested: 128
+configs skipped: 8
 
-greg k-h
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r023-20230720   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                        nsim_700_defconfig   gcc  
+arc                  randconfig-r004-20230720   gcc  
+arc                  randconfig-r032-20230720   gcc  
+arc                  randconfig-r043-20230720   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm                  randconfig-r035-20230720   clang
+arm                  randconfig-r046-20230720   gcc  
+arm                         s3c6400_defconfig   gcc  
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                randconfig-r006-20230720   gcc  
+arm64                randconfig-r012-20230720   clang
+arm64                randconfig-r023-20230720   clang
+arm64                randconfig-r026-20230720   clang
+csky                                defconfig   gcc  
+hexagon              randconfig-r022-20230720   clang
+hexagon              randconfig-r036-20230720   clang
+hexagon              randconfig-r041-20230720   clang
+hexagon              randconfig-r045-20230720   clang
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-r004-20230720   gcc  
+i386         buildonly-randconfig-r005-20230720   gcc  
+i386         buildonly-randconfig-r006-20230720   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-i001-20230720   gcc  
+i386                 randconfig-i002-20230720   gcc  
+i386                 randconfig-i003-20230720   gcc  
+i386                 randconfig-i004-20230720   gcc  
+i386                 randconfig-i005-20230720   gcc  
+i386                 randconfig-i006-20230720   gcc  
+i386                 randconfig-i011-20230720   clang
+i386                 randconfig-i012-20230720   clang
+i386                 randconfig-i013-20230720   clang
+i386                 randconfig-i014-20230720   clang
+i386                 randconfig-i015-20230720   clang
+i386                 randconfig-i016-20230720   clang
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch            randconfig-r033-20230720   gcc  
+m68k                             allmodconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                          amiga_defconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                 randconfig-r006-20230720   gcc  
+microblaze                      mmu_defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                            gpr_defconfig   gcc  
+mips                 randconfig-r024-20230720   gcc  
+mips                 randconfig-r025-20230720   gcc  
+nios2                               defconfig   gcc  
+nios2                randconfig-r002-20230720   gcc  
+nios2                randconfig-r015-20230720   gcc  
+openrisc             randconfig-r034-20230720   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc               randconfig-r004-20230720   gcc  
+parisc               randconfig-r005-20230720   gcc  
+parisc               randconfig-r031-20230720   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                    klondike_defconfig   gcc  
+powerpc                      ppc40x_defconfig   gcc  
+powerpc              randconfig-r024-20230720   clang
+powerpc                         wii_defconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                randconfig-r002-20230720   gcc  
+riscv                randconfig-r042-20230720   clang
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r003-20230720   gcc  
+s390                 randconfig-r013-20230720   clang
+s390                 randconfig-r035-20230720   gcc  
+s390                 randconfig-r044-20230720   clang
+sh                               allmodconfig   gcc  
+sh                 kfr2r09-romimage_defconfig   gcc  
+sh                     magicpanelr2_defconfig   gcc  
+sh                   randconfig-r003-20230720   gcc  
+sh                   randconfig-r013-20230720   gcc  
+sh                          rsk7201_defconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64              randconfig-r016-20230720   gcc  
+sparc64              randconfig-r036-20230720   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   clang
+um                                  defconfig   gcc  
+um                             i386_defconfig   gcc  
+um                   randconfig-r021-20230720   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64       buildonly-randconfig-r001-20230720   gcc  
+x86_64       buildonly-randconfig-r002-20230720   gcc  
+x86_64       buildonly-randconfig-r003-20230720   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-r011-20230720   clang
+x86_64               randconfig-r016-20230720   clang
+x86_64               randconfig-x001-20230720   clang
+x86_64               randconfig-x002-20230720   clang
+x86_64               randconfig-x003-20230720   clang
+x86_64               randconfig-x004-20230720   clang
+x86_64               randconfig-x005-20230720   clang
+x86_64               randconfig-x006-20230720   clang
+x86_64               randconfig-x011-20230720   gcc  
+x86_64               randconfig-x012-20230720   gcc  
+x86_64               randconfig-x013-20230720   gcc  
+x86_64               randconfig-x014-20230720   gcc  
+x86_64               randconfig-x015-20230720   gcc  
+x86_64               randconfig-x016-20230720   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
