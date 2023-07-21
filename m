@@ -2,170 +2,161 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DB6C001DF
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 15:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233F4EB64DD
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 16:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbjGUPq1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Jul 2023 11:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
+        id S232659AbjGUQU1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Jul 2023 12:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232203AbjGUPq0 (ORCPT
+        with ESMTP id S232530AbjGUQUH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Jul 2023 11:46:26 -0400
+        Fri, 21 Jul 2023 12:20:07 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCA719A1;
-        Fri, 21 Jul 2023 08:46:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7B44494;
+        Fri, 21 Jul 2023 09:18:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:MIME-Version:
+        Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=caZK6tlKMYDjoChjRf3/YaaMhrXB3cGT2x0pWytJ9sA=; b=o9FFDc2yKHFeISWdWqyCokcLZ2
-        bCCUlg0EsXpHj1uDWCUvVKG9caQqncWHkwq83P8u+Yb/pieL8aWi7cEPOB/9GOIXPgFMc3vnR2zIb
-        CgNXI06O8QAH1LiS7BEKxx4MGT5vruKUXuVEl76olNxD01fiKGfaJohZNRYIxfzWNzWQ=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:54554 helo=pettiford)
+        bh=+XtTH7lvM1xV2QyzpHvYM3XBz5FZv43ELfjy84Ab7VI=; b=YX2KKiqCL+MHy2cZUR/gJmFV1k
+        OJUQXkFqu4fw5S6XeP+yRbnsBaxItHEwpkYgNIyBLGBNoFUiGPf+whRIgHiX0fgsdGIV+ADv8GVGN
+        1uhjhq+eL9++1vDQq4qhPb7vLdvx+uPqzzbR4wlrnfzgdSPztoaM5f3eL6rand8MDC8s=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:50368 helo=localhost.localdomain)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qMsKb-0002l2-OU; Fri, 21 Jul 2023 11:46:15 -0400
-Date:   Fri, 21 Jul 2023 11:46:12 -0400
+        id 1qMsq7-0003IO-JO; Fri, 21 Jul 2023 12:18:48 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>, robh+dt@kernel.org,
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
         jirislaby@kernel.org, jringle@gridpoint.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org
-Message-Id: <20230721114612.e1b4fa2398f2915aef08c0b1@hugovil.com>
-In-Reply-To: <2023072152-traffic-skype-8765@gregkh>
-References: <CAHp75VcWSVgA8LFLo0-b5TfKWdHb2GfLpXV-V3PZvthTv1Xc4A@mail.gmail.com>
-        <20230620113312.882d8f0c7d5603b1c93f33fb@hugovil.com>
-        <CAHp75VfGm6=ULW6kMjsg2OgB1z1T0YdmzvCTa3DFXXX-q_RnfA@mail.gmail.com>
-        <20230620114209.fb5272ad8cf5c5e2895d68b1@hugovil.com>
-        <CAHp75VcieuYqxWrO7rknx2ROYz=rnWnKV6s9eXZ5Zd1BKc6YMg@mail.gmail.com>
-        <20230620121645.512b31a872306b43a276bbac@hugovil.com>
-        <20230719144048.4f340b8aa0a29ab65a274273@hugovil.com>
-        <2023071922-rigor-collage-804e@gregkh>
-        <2023072040-clock-waltz-a5f2@gregkh>
-        <20230721112517.38ab9a40cdf6a0eddf074615@hugovil.com>
-        <2023072152-traffic-skype-8765@gregkh>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
+        isaac.true@canonical.com, jesse.sung@canonical.com,
+        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hugo@hugovil.com,
+        linux-gpio@vger.kernel.org,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Date:   Fri, 21 Jul 2023 12:18:30 -0400
+Message-Id: <20230721161840.1393996-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 184.161.19.61
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH v7 5/9] serial: sc16is7xx: fix regression with GPIO
- configuration
+Subject: [RESEND PATCH v8 00/10] serial: sc16is7xx: fix GPIO regression and rs485 improvements
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 21 Jul 2023 17:40:18 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-> On Fri, Jul 21, 2023 at 11:25:17AM -0400, Hugo Villeneuve wrote:
-> > On Thu, 20 Jul 2023 21:38:21 +0200
-> > Greg KH <gregkh@linuxfoundation.org> wrote:
-> > 
-> > > On Wed, Jul 19, 2023 at 09:14:23PM +0200, Greg KH wrote:
-> > > > On Wed, Jul 19, 2023 at 02:40:48PM -0400, Hugo Villeneuve wrote:
-> > > > > On Tue, 20 Jun 2023 12:16:45 -0400
-> > > > > Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > 
-> > > > > > On Tue, 20 Jun 2023 18:45:51 +0300
-> > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > 
-> > > > > > > On Tue, Jun 20, 2023 at 6:42 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > > On Tue, 20 Jun 2023 18:35:48 +0300
-> > > > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > > > > On Tue, Jun 20, 2023 at 6:33 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > > > > On Tue, 20 Jun 2023 18:18:12 +0300
-> > > > > > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > > > > > > On Tue, Jun 20, 2023 at 5:08 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > > > > > > > > > > On Sun, 4 Jun 2023 22:31:04 +0300
-> > > > > > > > > > > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > > > > > 
-> > > > > > > ...
-> > > > > > > 
-> > > > > > > > > > > > did you have a chance to look at V8 (sent two weks ago) which fixed all
-> > > > > > > > > > > > of what we discussed?
-> > > > > > > > > > >
-> > > > > > > > > > > The patch 6 already has my tag, anything specific you want me to do?
-> > > > > > > > > >
-> > > > > > > > > > Hi Andy,
-> > > > > > > > > > I forgot to remove your "Reviewed-by: Andy..." tag before sending V8
-> > > > > > > > > > since there were some changes involved in patch 6 and I wanted you to
-> > > > > > > > > > review them. Can you confirm if the changes are correct?
-> > > > > > > > > >
-> > > > > > > > > > I also added a new patch "remove obsolete out_thread label". It has no
-> > > > > > > > > > real impact on the code generation itself, but maybe you can review and
-> > > > > > > > > > confirm if tags are ok or not, based on commit message and also
-> > > > > > > > > > additional commit message.
-> > > > > > > > >
-> > > > > > > > > Both are fine to me.
-> > > > > > > >
-> > > > > > > > Hi,
-> > > > > > > > Ok, thank you for reviewing this.
-> > > > > > > >
-> > > > > > > > I guess now we are good to go with this series if the stable tags and
-> > > > > > > > patches order are good after Greg's review?
-> > > > > > > 
-> > > > > > > Taking into account that we are at rc7, and even with Fixes tags in
-> > > > > > > your series I think Greg might take this after v6.5-0rc1 is out. It's
-> > > > > > > up to him how to proceed with that. Note, he usually has thousands of
-> > > > > > > patches in backlog, you might need to respin it after the above
-> > > > > > > mentioned rc1.
-> > > > > > 
-> > > > > > Ok, understood.
-> > > > > > 
-> > > > > > Let's wait then.
-> > > > > 
-> > > > > Hi Andy/Greg,
-> > > > > we are now at v6.5-rc2 and I still do not see any of our patches in
-> > > > > linus or gregkh_tty repos.
-> > > > > 
-> > > > > Is there something missing from my part (or someone else) to go forward
-> > > > > with integrating these patches (v8) for v6.5?
-> > > > 
-> > > > My queue is huge right now, please be patient, I want to have them all
-> > > > handled by the end of next week...
-> > > > 
-> > > > You can always help out by reviewing other patches on the mailing list
-> > > > to reduce my review load.
-> > > 
-> > > Wait, no, this series was superseeded by v8, and in there you said you
-> > > were going to send a new series.  So please, fix it up and send the
-> > > updated version of the series, this one isn't going to be applied for
-> > > obvious reasons.
-> > 
-> > Hi Greg,
-> > I never said that I would resend another update for this current
-> > serie (unless of course if it was to address a new comment). Re-reading
-> > that email made me realise that it was maybe not perfectly clear the
-> > way I wrote it.
-> > 
-> > What I said was that, once V8 was finally applied and
-> > incorporated in the kernel, then I would send a completely new and
-> > different serie to address issues/concerns/improvements/suggestions
-> > noted during the review of this serie (example: conversion of bindings
-> > to YAML and improve DTS node names, etc). We already agreed with some
-> > maintainers (ex: Conor Dooley) that it was reasonnable to do so.
-> > 
-> > That is why I asked Andy if we were good to go with V8 and he
-> > confirmed that, and that it was now up to you to integrate it if your
-> > review was satisfactory.
-> > 
-> > Hope this clears things and we can integrate it soon.
-> 
-> I don't have any of your series in my review queue at all, so please
-> resend them.
+Hello,
+this patch series mainly fixes a GPIO regression and improve RS485 flags and
+properties detection from DT.
 
-OK, I will resend V8 then.
+It now also includes various small fixes and improvements that were previously
+sent as separate patches, but that made testing everything difficult.
 
-Hugo.
+Patch 1 fixes an issue with init of first port during probing.
+
+Patch 2 fixes an issue when debugging IOcontrol register, but it is also
+necessary for patch "fix regression with GPIO configuration" to work.
+
+Patch 3 fixes an incorrect label in sc16is7xx_probe() cleanup code.
+
+Patch 4 is a refactor of GPIO registration code in preparation for patch 5.
+
+Patches 5 and 6 fix a GPIO regression by (re)allowing to choose GPIO function
+for GPIO pins shared with modem status lines.
+
+Patch 7 fixes a bug with the output value when first setting the GPIO direction.
+
+Patch 8 allows to read common rs485 device-tree flags and properties.
+
+Patch 9 introduces a delay after a reset operation to respect datasheet
+timing recommandations.
+
+Patch 10 improves comments about chip variants.
+
+I have tested the changes on a custom board with two SC16IS752 DUART using a
+Variscite IMX8MN NANO SOM.
+
+Thank you.
+
+Link: [v1] https://lkml.org/lkml/2023/5/17/967
+      [v1] https://lkml.org/lkml/2023/5/17/777
+      [v1] https://lkml.org/lkml/2023/5/17/780
+      [v1] https://lkml.org/lkml/2023/5/17/785
+      [v1] https://lkml.org/lkml/2023/5/17/1311
+      [v2] https://lkml.org/lkml/2023/5/18/516
+      [v3] https://lkml.org/lkml/2023/5/25/7
+      [v4] https://lkml.org/lkml/2023/5/29/656
+      [v5] https://lkml.org/lkml/2023/6/1/1046
+      [v6] https://lkml.org/lkml/2023/6/1/1328
+      [v7] https://lkml.org/lkml/2023/6/2/861
+
+Changes for V3:
+- Integrated all patches into single serie to facilitate debugging and tests.
+- Reduce number of exported GPIOs depending on new property
+  nxp,modem-control-line-ports
+- Added additional example in DT bindings
+
+Changes for V4:
+- Increase reset post delay to relax scheduler.
+- Put comments patches at the end.
+- Remove Fixes tag for patch "mark IOCONTROL register as volatile".
+- Improve commit messages after reviews.
+- Fix coding style issues after reviews.
+- Change GPIO registration to always register the maximum number of GPIOs
+  supported by the chip, but maks-out GPIOs declared as modem control lines.
+- Add patch to refactor GPIO registration.
+- Remove patch "serial: sc16is7xx: fix syntax error in comments".
+- Remove patch "add dump registers function"
+
+Changes for V5:
+- Change patch order to facilitate stable backport(s).
+- Change duplicate device addresses in DT binding examples.
+- Use GENMASK for bit masks.
+- Replace of_property_for_each_u32() with device_property_read_u32_array
+- Add "Cc: stable..." tags
+
+Changes for V6:
+- Fix compilation bug introduced by patch 3
+
+Changes for V7:
+- Minor changes and coding style fixes after review for
+  patch 5 "fix regression with GPIO configuration".
+
+Changes for V8:
+- Move mctrl_mask to "struct sc16is7xx_port" to avoid compiler warning when
+  CONFIG_GPIOLIB is undefined.
+- Add "struct device" member to "struct sc16is7xx_port", in order to avoid
+  passing a raw "struct device" to called functions from sc16is7xx_probe().
+- Add new patch "serial: sc16is7xx: remove obsolete out_thread label"
+
+Hugo Villeneuve (10):
+  serial: sc16is7xx: fix broken port 0 uart init
+  serial: sc16is7xx: mark IOCONTROL register as volatile
+  serial: sc16is7xx: remove obsolete out_thread label
+  serial: sc16is7xx: refactor GPIO controller registration
+  dt-bindings: sc16is7xx: Add property to change GPIO function
+  serial: sc16is7xx: fix regression with GPIO configuration
+  serial: sc16is7xx: fix bug when first setting GPIO direction
+  serial: sc16is7xx: add call to get rs485 DT flags and properties
+  serial: sc16is7xx: add post reset delay
+  serial: sc16is7xx: improve comments about variants
+
+ .../bindings/serial/nxp,sc16is7xx.txt         |  46 +++++
+ drivers/tty/serial/sc16is7xx.c                | 177 +++++++++++++-----
+ 2 files changed, 181 insertions(+), 42 deletions(-)
+
+
+base-commit: f7e3a1bafdea735050dfde00523cf505dc7fd309
+-- 
+2.30.2
+
