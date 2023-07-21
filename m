@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE741EB64DC
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 10:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B13DEB64DC
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 10:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbjGUKGF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Jul 2023 06:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45684 "EHLO
+        id S231338AbjGUKUS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 21 Jul 2023 06:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbjGUKGE (ORCPT
+        with ESMTP id S231462AbjGUKUB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Jul 2023 06:06:04 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149DAB7;
-        Fri, 21 Jul 2023 03:06:03 -0700 (PDT)
+        Fri, 21 Jul 2023 06:20:01 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EC926BB;
+        Fri, 21 Jul 2023 03:19:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1689933963; x=1721469963;
+  t=1689934757; x=1721470757;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=xwcGg3ySjrKkjK/u5gq0+w18B/u62vuaII+nleYZ4b0=;
-  b=WdNWkxprAR9xjQof60ZCiP+YMEegrL7XQe8jmSLNvRgSitDO7a8N4wqC
-   BLUngPJ4NOkPeaWc+uaIStX+wXoWR+qpgvDw3tcoSjdVF46jtPywlq6lI
-   Ea9u5ERdj/ysjUk/aQwnWUm9n7wI+uUaGFS65DO+NwfeGJpWmCefQhJRN
-   oBiXnxWkpFkXmvMMSRONSSMOeZnYlcyIr6n++4cAcbWHV8plgyFSoB5yH
-   PqZ5upaw7gc5iLWQ+BiQjJ3usgMI9Im+ZNrwZW7TLZN/uLgMRTFxd+cvs
-   W8VMPue5bk730uxlYOtdjm0F9Au0KEzTTZAaOvfaMl4uF61GYGZ1Dj0ni
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="367025011"
+  bh=I+9uKkW1652pdDtSIzAM6usspcByNon/2FVbDBvuETk=;
+  b=L6WrUTEC40UXzZkXTiXcH9E8mA4o26x/IP+qxYK9/bfb0qNuDc6rP5vy
+   YG2n0OK1K63VqGRW2Bx9+HzRbGXIta5zRmKQ+nbOfcmJuNnZFsjl6h4zY
+   RvXlCVexGNnWJGybIy3p7DK534KS2a5gczsRW1/XhFs7+IGCZhloNHUd3
+   4MqYUGD+02U+owklNlPqiJ0lsdll+3bGQyfZnrAM3uT9TklMz5+JfADq0
+   SmEoMbCd4ISFua4pS86LT+mMQBeSB94vkdM5S7H1Js26Zahw/W0IAcifW
+   Lae3QEHJjVvVU15sGw7MW8i5NVh/4p9SHRgHXnV/zvmymK7q68fDOCvRr
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="433219852"
 X-IronPort-AV: E=Sophos;i="6.01,220,1684825200"; 
-   d="scan'208";a="367025011"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2023 03:06:02 -0700
+   d="scan'208";a="433219852"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2023 03:19:17 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="718767951"
+X-IronPort-AV: E=McAfee;i="6600,9927,10777"; a="848786377"
 X-IronPort-AV: E=Sophos;i="6.01,220,1684825200"; 
-   d="scan'208";a="718767951"
+   d="scan'208";a="848786377"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007.jf.intel.com with ESMTP; 21 Jul 2023 03:05:55 -0700
+  by orsmga004.jf.intel.com with ESMTP; 21 Jul 2023 03:19:15 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@intel.com>)
-        id 1qMn1B-00GqHL-1x;
-        Fri, 21 Jul 2023 13:05:49 +0300
-Date:   Fri, 21 Jul 2023 13:05:49 +0300
+        id 1qMnE9-00HJWD-2u;
+        Fri, 21 Jul 2023 13:19:13 +0300
+Date:   Fri, 21 Jul 2023 13:19:13 +0300
 From:   Andy Shevchenko <andriy.shevchenko@intel.com>
 To:     Tony Lindgren <tony@atomide.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -53,67 +53,26 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: core: Add sysfs links for serial core port
- instances for ttys
-Message-ID: <ZLpYfZDplupNQHnb@smile.fi.intel.com>
-References: <20230719051613.46569-1-tony@atomide.com>
- <ZLd1uCKoGMBruwiN@smile.fi.intel.com>
- <20230719054321.GJ5194@atomide.com>
- <ZLfsVU7uiA3IReHU@smile.fi.intel.com>
- <20230720041319.GM5194@atomide.com>
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
+ added files
+Message-ID: <ZLpboaXKVOOjeGJ+@smile.fi.intel.com>
+References: <20230721072334.59272-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230720041319.GM5194@atomide.com>
+In-Reply-To: <20230721072334.59272-1-tony@atomide.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 20, 2023 at 07:13:19AM +0300, Tony Lindgren wrote:
-> * Andy Shevchenko <andriy.shevchenko@intel.com> [230719 13:59]:
-> > On Wed, Jul 19, 2023 at 08:43:21AM +0300, Tony Lindgren wrote:
-> > > * Andy Shevchenko <andriy.shevchenko@intel.com> [230719 05:34]:
-> > > > On Wed, Jul 19, 2023 at 08:16:11AM +0300, Tony Lindgren wrote:
+On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
+> Add mailing lists for linux-serial and lkml for the TTY layer. And let's
+> list the recently added files. This makes it easier for get_maintainer.pl
+> to include linux-serial for patches.
 
-...
-
-> > > > > And with this, we can add /dev/serial/by-id symlinks to the serial port
-> > > > > device instances so we can start using serial core port addressing in
-> > > > > addition to the legacy ttyS naming.
-> > > > > 
-> > > > > The naming we can use is dev_name:0.0 where 0.0 are the serial core
-> > > > > controller id and port id, so for the ttyS0 example above the naming
-> > > > > would be 00:04.0:0.0.
-> > > > 
-> > > > This is interesting idea. But any hint why it can be useful?
-> > > 
-> > > If you have lots of serial ports and we are stuck with adding aliases
-> > > for the ports in the dts files where the ttyS naming and ordering does
-> > > not really help or may not necessarily make sense if the ports are on
-> > > different buses or domains. With CONFIG_SERIAL_8250_RUNTIME_UARTS=4,
-> > > the ttyS naming is only needed for the legacy ports really.
-> > 
-> > I see. Does it fix the long standing issue with ttyS enumeration (on x86
-> > at least) when depending on the presence of the legacy ports the HSUART
-> > (high speed) can preempt the legacy placeholders (ttyS0..ttyS3)?
-> >
-> > To me sounds like it may very well do fix it and I would be glad to see that
-> > in the commit message (as selling point) and in documentation.
-> 
-> It won't affect how ttyS0..ttyS3 get assigned, but it helps finding your
-> HSUART instance with DEVNAME:0.0 style addressing. So you don't need to
-> care what ttyS number the port has. If you have such a test case maybe give
-> it a try.
-
-Exactly, the problem (currently) is, that depending on the BIOS settings
-the kernel can't use the same command line and this is quite a PITA for
-our customers!
-
-As far as we can specify hardware (path) to the console, it will be so
-cool and hopefully solves this very long standing issue.
+Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
 
 -- 
 With Best Regards,
