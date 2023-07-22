@@ -2,65 +2,148 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B04C001DE
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Jul 2023 21:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BFDEB64DA
+	for <linux-serial@archiver.kernel.org>; Sat, 22 Jul 2023 12:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbjGUVMD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Jul 2023 17:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
+        id S230060AbjGVMQY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 22 Jul 2023 08:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbjGUVMD (ORCPT
+        with ESMTP id S229553AbjGVMQX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Jul 2023 17:12:03 -0400
-X-Greylist: delayed 344 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 21 Jul 2023 14:11:57 PDT
-Received: from mx.skole.hr (mx1.hosting.skole.hr [161.53.165.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D39E359D;
-        Fri, 21 Jul 2023 14:11:57 -0700 (PDT)
-Received: from mx1.hosting.skole.hr (localhost.localdomain [127.0.0.1])
-        by mx.skole.hr (mx.skole.hr) with ESMTP id 80C4986D18;
-        Fri, 21 Jul 2023 23:06:10 +0200 (CEST)
-From:   =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        afaerber@suse.com,
-        =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje.mihanovic@skole.hr>
-Subject: [PATCH 01/10] tty: serial: 8250: Define earlycon for mrvl,mmp-uart
-Date:   Fri, 21 Jul 2023 22:37:43 +0200
-Message-ID: <20230721210042.21535-2-duje.mihanovic@skole.hr>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230721210042.21535-1-duje.mihanovic@skole.hr>
-References: <20230721210042.21535-1-duje.mihanovic@skole.hr>
+        Sat, 22 Jul 2023 08:16:23 -0400
+Received: from mail-oi1-f205.google.com (mail-oi1-f205.google.com [209.85.167.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C01E9B
+        for <linux-serial@vger.kernel.org>; Sat, 22 Jul 2023 05:16:22 -0700 (PDT)
+Received: by mail-oi1-f205.google.com with SMTP id 5614622812f47-3a3df1e1f38so6412866b6e.2
+        for <linux-serial@vger.kernel.org>; Sat, 22 Jul 2023 05:16:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690028181; x=1690632981;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=e71TWKKKeEQL3eVs2hsHyD+BVvXX/WdE+2bGmEBTckI=;
+        b=RjCS8C7/cIApvgPYsfFlb8jMgsFt+c5Q6lodJoinhOecmHPJHjyrfMtHZzbgqVnyJm
+         SSoXzA0+cUtztDhy8PjH50ubX+yT8BiJ9WqS8JZw2UfIQcPik9pkW4Z88Ks5t8Qqzv5z
+         9iEH66Gv2UfsV/Vjtv74o2w89Dh0vfsw/b87VwEo6wPdjGZDideiq+2OfoHBYmab8e+0
+         beoMiVUJe308lVePMxINVkrs4TeDNck9VrHkUT7WnSrs3r/iXewTn9L1LNW9SnM4IQLc
+         iDGza45V5PJG/2XaBPLLtCgx0KRB9lijh6uls0hZzL+gfx0kd6feGZRNVKz6wQ8nKM7S
+         Gxiw==
+X-Gm-Message-State: ABy/qLbKC4/zzqPsgUwKsJpS2WodCF0LEIee1ucNXWiJVBrSuDfdeyOI
+        Ut2oxgXXruKhJmd+ZJR6arcr5shybG9DM5cEcMO/p5QG7wUy
+X-Google-Smtp-Source: APBJJlG1R3hDExLlzsxptSTu+v0O7K35Oa77mibaOC+L/oYvDjuMFamgrzVTa1l8uATnrGSCOefFNQ3ufbupdZT9diyCfRHEFfbw
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6808:1817:b0:3a4:18d1:1638 with SMTP id
+ bh23-20020a056808181700b003a418d11638mr9751640oib.5.1690028181841; Sat, 22
+ Jul 2023 05:16:21 -0700 (PDT)
+Date:   Sat, 22 Jul 2023 05:16:21 -0700
+In-Reply-To: <0000000000009e2dd805ffc595a3@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000706b5c0601125945@google.com>
+Subject: Re: [syzbot] [serial?] general protection fault in serial8250_tx_chars
+From:   syzbot <syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-mrvl,pxa-uart already supports earlycon and both compatible strings use
-the same driver, so there's no reason for mmp-uart to not have earlycon
-as well.
+syzbot has found a reproducer for the following issue on:
 
-Signed-off-by: Duje Mihanović <duje.mihanovic@skole.hr>
+HEAD commit:    d192f5382581 Merge tag 'arm64-fixes' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12d03ff4a80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a4507c291b5ab5d4
+dashboard link: https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e4fe52a80000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/517e5a5be15c/disk-d192f538.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/59d41b43c30c/vmlinux-d192f538.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/99ed26179ccf/bzImage-d192f538.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 5137 Comm: kworker/0:4 Not tainted 6.5.0-rc2-syzkaller-00307-gd192f5382581 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/12/2023
+Workqueue: pm pm_runtime_work
+RIP: 0010:serial8250_tx_chars+0x299/0x8b0 drivers/tty/serial/8250/8250_port.c:1813
+Code: 8d cc 25 fd 48 8b 2b 48 8b 44 24 20 42 0f b6 04 38 84 c0 0f 85 8f 02 00 00 48 8b 04 24 48 63 00 48 01 c5 48 89 e8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 91 02 00 00 0f b6 6d 00 48 8b 44 24 60
+RSP: 0018:ffffc9000432f8b0 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff88801f490fd0 RCX: 1ffffffff246641b
+RDX: 1ffffffff2466465 RSI: 0000000000000000 RDI: ffffffff92332330
+RBP: 0000000000000000 R08: ffffffff84bef450 R09: fffff52000865f10
+R10: dffffc0000000000 R11: fffff52000865f10 R12: 0000000000000010
+R13: ffffffff92332180 R14: ffffffff92332080 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000555555c2f938 CR3: 000000002b259000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __start_tx+0x312/0x450 drivers/tty/serial/8250/8250_port.c:1547
+ serial_port_runtime_resume+0x1ec/0x2a0 drivers/tty/serial/serial_port.c:40
+ __rpm_callback+0x2b9/0x7a0 drivers/base/power/runtime.c:392
+ rpm_callback drivers/base/power/runtime.c:446 [inline]
+ rpm_resume+0x10b1/0x1af0 drivers/base/power/runtime.c:912
+ pm_runtime_work+0x147/0x210 drivers/base/power/runtime.c:977
+ process_one_work+0x92c/0x12c0 kernel/workqueue.c:2597
+ worker_thread+0xa63/0x1210 kernel/workqueue.c:2748
+ kthread+0x2b8/0x350 kernel/kthread.c:389
+ ret_from_fork+0x2e/0x60 arch/x86/kernel/process.c:145
+ ret_from_fork_asm+0x11/0x20 arch/x86/entry/entry_64.S:296
+RIP: 0000:0x0
+Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+RSP: 0000:0000000000000000 EFLAGS: 00000000 ORIG_RAX: 0000000000000000
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:serial8250_tx_chars+0x299/0x8b0 drivers/tty/serial/8250/8250_port.c:1813
+Code: 8d cc 25 fd 48 8b 2b 48 8b 44 24 20 42 0f b6 04 38 84 c0 0f 85 8f 02 00 00 48 8b 04 24 48 63 00 48 01 c5 48 89 e8 48 c1 e8 03 <42> 0f b6 04 38 84 c0 0f 85 91 02 00 00 0f b6 6d 00 48 8b 44 24 60
+RSP: 0018:ffffc9000432f8b0 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff88801f490fd0 RCX: 1ffffffff246641b
+RDX: 1ffffffff2466465 RSI: 0000000000000000 RDI: ffffffff92332330
+RBP: 0000000000000000 R08: ffffffff84bef450 R09: fffff52000865f10
+R10: dffffc0000000000 R11: fffff52000865f10 R12: 0000000000000010
+R13: ffffffff92332180 R14: ffffffff92332080 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 000000002b259000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess), 1 bytes skipped:
+   0:	cc                   	int3
+   1:	25 fd 48 8b 2b       	and    $0x2b8b48fd,%eax
+   6:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+   b:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax
+  10:	84 c0                	test   %al,%al
+  12:	0f 85 8f 02 00 00    	jne    0x2a7
+  18:	48 8b 04 24          	mov    (%rsp),%rax
+  1c:	48 63 00             	movslq (%rax),%rax
+  1f:	48 01 c5             	add    %rax,%rbp
+  22:	48 89 e8             	mov    %rbp,%rax
+  25:	48 c1 e8 03          	shr    $0x3,%rax
+* 29:	42 0f b6 04 38       	movzbl (%rax,%r15,1),%eax <-- trapping instruction
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 91 02 00 00    	jne    0x2c7
+  36:	0f b6 6d 00          	movzbl 0x0(%rbp),%ebp
+  3a:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+
+
 ---
- drivers/tty/serial/8250/8250_pxa.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
-index 28b341f602c6..a5b3ea27fc90 100644
---- a/drivers/tty/serial/8250/8250_pxa.c
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -183,6 +183,7 @@ static int __init early_serial_pxa_setup(struct earlycon_device *device,
- 	return early_serial8250_setup(device, NULL);
- }
- OF_EARLYCON_DECLARE(early_pxa, "mrvl,pxa-uart", early_serial_pxa_setup);
-+OF_EARLYCON_DECLARE(mmp, "mrvl,mmp-uart", early_serial_pxa_setup);
- #endif
- 
- MODULE_AUTHOR("Sergei Ianovich");
--- 
-2.41.0
-
-
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
