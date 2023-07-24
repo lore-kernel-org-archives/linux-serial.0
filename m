@@ -2,96 +2,88 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBB1C0015E
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 06:33:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09C9C0015E
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 06:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbjGXGdv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 02:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58528 "EHLO
+        id S230441AbjGXGjq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 02:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbjGXGdu (ORCPT
+        with ESMTP id S230444AbjGXGjn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 02:33:50 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D439ED2;
-        Sun, 23 Jul 2023 23:33:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=xi02gFW93Id0bT7Sh+4wBXdpqlJzFPayUdH3m+EHzPM=; b=BSdcx4WoALDgeHupsuSnOLc1rn
-        gERe7ONSyqR4QdO2pdzHlgtJabW3mHKBgo9gz+fGGpRUX+vnDhZJ5AOedAXhwikUVAL0+SmhjwbxN
-        /N0VWSoe1u1O8qFlW0Q/15iF3i1+4nL3KQEXy6vAxvUZONFG/WTS+I9t67a82XbLG7OfvoNZTxlTI
-        kjMZrhFr7XVvcCGYfNtO/vTmnvsfUi39W5AF55O0z+mC8Pv0FcqpRQ7u2UZsTkfqp6YEEL95yW2ps
-        /w1IpB+gf6iGr6PMeyaMEROi7+ys87t30fRl2tQhbDcxqjeRIsrAXvlidl94WCiUtoYWe74OlVV2m
-        HuQe1YPw==;
-Received: from [2601:1c2:980:9ec0::2764] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-        id 1qNp8c-002ySv-17;
-        Mon, 24 Jul 2023 06:33:46 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Timur Tabi <timur@kernel.org>,
-        Kumar Gala <galak@kernel.crashing.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-Subject: [PATCH] Documentation: devices.txt: reconcile serial/ucc_uart minor numers
-Date:   Sun, 23 Jul 2023 23:33:41 -0700
-Message-ID: <20230724063341.28198-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.41.0
+        Mon, 24 Jul 2023 02:39:43 -0400
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34BCE5C;
+        Sun, 23 Jul 2023 23:39:17 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-3175f17a7baso329005f8f.0;
+        Sun, 23 Jul 2023 23:39:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690180734; x=1690785534;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nBFPtNUr5zfQpCgu0uRJ8hgMdYMycg/Xxc747XVGWkA=;
+        b=I2he+yw5UCaSK16Llg2Jj1ZS2y6/MuCAluMR/qE3darHFx1fIM4dwcaXcCPK4ipCwc
+         ehmgEv4TbLzUma2B0bwh+29VuYBRNojZbmdYAixXc3mha3Xj0BPKdnGPitbdn5DzGP3w
+         7++BUWkJ1v+7KYLUx/YTqGXS3h2Oleb9ONJNdDKuwtYTN0zoKnwSEPHstP/AKwWE4DgC
+         PJCoJBM174n5c51mLa8FKR+OCfdiKdY7Hc/DuyvoDqcP0tNqHzqH5DXrtXAiFuJrVCpq
+         9GwXiN0TxWnsSFV2cDbMm955CUbBxVQOnL/8orpBh2YKnCQQo0rJM48FLlQLOK8mGTAP
+         CLoQ==
+X-Gm-Message-State: ABy/qLYyUKvKFyA/q6eF1w2n5wtcWkRB0e+vAO162yfkB7riIF6f5EI8
+        vGzcbSchgGl+z0Bw2ZDFms0=
+X-Google-Smtp-Source: APBJJlGSUmRKzqjC/Uqd0tfK/mlDP8ww9QDg5376q0LqdGrJd79508IrFYaOBR6hTASFTeZL5KjIpw==
+X-Received: by 2002:adf:f8ca:0:b0:314:1d7b:5b86 with SMTP id f10-20020adff8ca000000b003141d7b5b86mr5433796wrq.21.1690180733790;
+        Sun, 23 Jul 2023 23:38:53 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id a15-20020adfeecf000000b00311d8c2561bsm11722892wrp.60.2023.07.23.23.38.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 23 Jul 2023 23:38:53 -0700 (PDT)
+Message-ID: <c1f2f55e-bd1b-957e-c4d9-6a326f7e19fd@kernel.org>
+Date:   Mon, 24 Jul 2023 08:38:51 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v2 1/1] drm/i915: Move abs_diff() to math.h
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Helge Deller <deller@gmx.de>, Stephen Boyd <sboyd@kernel.org>,
+        Nikita Shubin <nikita.shubin@maquefel.me>,
+        Nikita Shubin via B4 Relay 
+        <devnull+nikita.shubin.maquefel.me@kernel.org>
+References: <20230721135318.17603-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20230721135318.17603-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Reconcile devices.txt with serial/ucc_uart.c regarding device number
-assignments. ucc_uart.c supports 4 ports and uses minor devnums
-46-49, so update devices.txt with that info.
-Then update ucc_uart.c's reference to the location of the devices.txt
-list in the kernel source tree.
+On 21. 07. 23, 15:53, Andy Shevchenko wrote:
+> abs_diff() belongs to math.h. Move it there.
+> This will allow others to use it.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Fixes: d7584ed2b994 ("[POWERPC] qe-uart: add support for Freescale QUICCEngine UART")
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Timur Tabi <timur@kernel.org>
-Cc: Kumar Gala <galak@kernel.crashing.org>
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
----
- Documentation/admin-guide/devices.txt |    2 +-
- drivers/tty/serial/ucc_uart.c         |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org> # tty/serial
 
-diff -- a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -59,7 +59,7 @@ static int firmware_loaded;
- /* #define LOOPBACK */
- 
- /* The major and minor device numbers are defined in
-- * http://www.lanana.org/docs/device-list/devices-2.6+.txt.  For the QE
-+ * Documentation/admin-guide/devices.txt.  For the QE
-  * UART, we have major number 204 and minor numbers 46 - 49, which are the
-  * same as for the CPM2.  This decision was made because no Freescale part
-  * has both a CPM and a QE.
-diff -- a/Documentation/admin-guide/devices.txt b/Documentation/admin-guide/devices.txt
---- a/Documentation/admin-guide/devices.txt
-+++ b/Documentation/admin-guide/devices.txt
-@@ -2691,7 +2691,7 @@
- 		 45 = /dev/ttyMM1		Marvell MPSC - port 1 (obsolete unused)
- 		 46 = /dev/ttyCPM0		PPC CPM (SCC or SMC) - port 0
- 		    ...
--		 47 = /dev/ttyCPM5		PPC CPM (SCC or SMC) - port 5
-+		 49 = /dev/ttyCPM5		PPC CPM (SCC or SMC) - port 3
- 		 50 = /dev/ttyIOC0		Altix serial card
- 		    ...
- 		 81 = /dev/ttyIOC31		Altix serial card
+-- 
+-- 
+js
+suse labs
+
