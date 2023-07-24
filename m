@@ -2,47 +2,48 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6394AC001DE
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42914C001B0
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbjGXIxV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 04:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50436 "EHLO
+        id S232012AbjGXI4j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 04:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232065AbjGXIxQ (ORCPT
+        with ESMTP id S231982AbjGXI4f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 04:53:16 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099F4E7;
-        Mon, 24 Jul 2023 01:53:15 -0700 (PDT)
+        Mon, 24 Jul 2023 04:56:35 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8659AE77;
+        Mon, 24 Jul 2023 01:56:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690188795; x=1721724795;
+  t=1690188994; x=1721724994;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=LcRTXW7A98A1iH6wH475L2ndJh4dAaJUqJWpj/zpQZ8=;
-  b=EtRdQvbfhF+roVoOP8fJfn0HTmRtcKFVklDmXO7/2p8LnQphb/gFRlkp
-   1akFkyOSs7dXjH85pMKiZm19JMZRX3ziktTpMgo1jDmhIbQ8kvFX2TzVm
-   vjZlkwE3TxkhWUXWgTr6pQUA9kCBXkaD+Cx2byUVuX24dPeC/+Uz4Rvu5
-   f2PcQxgkZj3y+9823HExsFVz5nF/EmGjiRFW9s/cEgnZT4C2Ex3CB5kGx
-   elnznVeEVSHbluOec5cHLCSrBmIdjljsKq9P4yCDDPcjkD2ZcOaKk2Bc2
-   Fxp3Car/LJCfxIq76OF3tzs7G2yFodlXnVII2FXrKsnv3DLiN6h6dhK+P
+  bh=/Sanj8x3txkk1MfhvdUrm4JxfTPXk0pxg4AntIVUl48=;
+  b=A97+HbW4kBEW+rsL2KD3F1RVeLHc6Jw3lsQPXO1Z1ulH8AYfG9u8/e/V
+   DO1F6d6m3M96Mysj9DiMHQOVa3kOD9jheQ6HM5rMrvd78R4IFFDdPpWfZ
+   eJozOCzJ3HXSRldixJNpLeAsl6gDIiygrhSIBuzWdn4givzEmaYMBv+i9
+   pqVpuAKIefyYkK2YMImalPdLArXHkTQDxGMpdjUYrzA6NO3S80Lr4z04n
+   MIHnylYO0DGW4wedzC/cy5E2LuAhBDIUkJU2IBYJsFYTPZVTugF5mMIwZ
+   Yjhryhdkk55Vp06xoOT3jfjc0QnXSMmti4eHhussw+1DVZOwAMRUEDSTj
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="366279758"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="370989162"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="366279758"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:53:14 -0700
+   d="scan'208";a="370989162"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:55:58 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
-   d="scan'208";a="869003822"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="790889249"
+X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
+   d="scan'208";a="790889249"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Jul 2023 01:53:13 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 24 Jul 2023 01:55:55 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.96)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1qNrJV-005Hoz-2y;
-        Mon, 24 Jul 2023 11:53:09 +0300
-Date:   Mon, 24 Jul 2023 11:53:09 +0300
+        id 1qNrM9-005Npy-1t;
+        Mon, 24 Jul 2023 11:55:53 +0300
+Date:   Mon, 24 Jul 2023 11:55:53 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Tony Lindgren <tony@atomide.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -53,34 +54,37 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] serial: core: Controller id cannot be negative
-Message-ID: <ZL479clNYW4YG1mE@smile.fi.intel.com>
+Subject: Re: [PATCH v4 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <ZL48mdJbBXPdcf25@smile.fi.intel.com>
 References: <20230724050709.17544-1-tony@atomide.com>
- <20230724050709.17544-2-tony@atomide.com>
- <ZL471yzIKu1xG/PF@smile.fi.intel.com>
+ <20230724050709.17544-4-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZL471yzIKu1xG/PF@smile.fi.intel.com>
+In-Reply-To: <20230724050709.17544-4-tony@atomide.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 24, 2023 at 11:52:39AM +0300, Andy Shevchenko wrote:
-> On Mon, Jul 24, 2023 at 08:07:03AM +0300, Tony Lindgren wrote:
-> > The controller id cannot be negative. Let's fix the ctrl_id in preparation
-> > for adding port_id to fix the device name.
-> > 
-> > Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-> > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> ???
-> Missing Reviewed-by: I suppose?
+On Mon, Jul 24, 2023 at 08:07:05AM +0300, Tony Lindgren wrote:
+> We are missing the serial core controller id for the serial core port
+> name. Let's fix the issue for sane /sys/bus/serial-core/devices, and to
+> avoid issues addressing serial ports later on.
 
-Seems like it wen in all patches... :-(
+...
+
+> -	return dev_set_name(dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
+> -}
+> +	if (type == &serial_ctrl_type)
+
+	...
+
+> +}
+
+While at it, have you tried to use --patience when forming patches? Does it
+make any (better) difference?
 
 -- 
 With Best Regards,
