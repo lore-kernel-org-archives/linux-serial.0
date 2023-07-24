@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C29C001DC
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 01:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3ABEC001B0
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 01:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231148AbjGXBgt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Jul 2023 21:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
+        id S232075AbjGXBkY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 23 Jul 2023 21:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbjGXBgR (ORCPT
+        with ESMTP id S231418AbjGXBj5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Jul 2023 21:36:17 -0400
+        Sun, 23 Jul 2023 21:39:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E4C1994;
-        Sun, 23 Jul 2023 18:32:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BC24ECF;
+        Sun, 23 Jul 2023 18:35:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1355060F5A;
-        Mon, 24 Jul 2023 01:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D1DC433C9;
-        Mon, 24 Jul 2023 01:31:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4045E60F40;
+        Mon, 24 Jul 2023 01:32:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B41FBC433C8;
+        Mon, 24 Jul 2023 01:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690162303;
-        bh=ajbydh6J7RiNdqCXQT3mKx9KBNV0cMbI9Ija70sq5+g=;
+        s=k20201202; t=1690162360;
+        bh=HQTTneSDXkMPZFwnoY3GDd1oN7ilbC+fHo+7+HZkhCU=;
         h=From:To:Cc:Subject:Date:From;
-        b=OLl6ozcZiKMZ8Qn5ZfnINaAd4ktJznJ2LUCTYgb6Z7CHwUZepdlMcQnu1B5N20O+E
-         6pz1ZDCmt5iGzGMZmLO1qL08SX+7HMLgBVH4nSzjrM0XdqlFGfhccz43z3cwVKPzmK
-         o5PiTf4iBxAu01Lbdu/wmztImaYcfCucT4ZiP4WdpV+LVm1qxhNMhZkUvTna9Pmplm
-         c6RxgBbiVttgMQYzRRLXzFQs+DDvNCRzId2QkMU3guRhCgMFZauYFw9HvvYJMU1Zm0
-         /i7g6AXIuAAipOkWDeorRGCCbFQl8UpdtOh+nimgzmqivScQ1V8fXIbRaw1eRPIxnj
-         Es6uqc4/KFl8A==
+        b=KZlHfuiyvLSmWrXjKbxbYNZoRAfSbbzHmq5rSWdyLUlXdjXjvkpPqkfQpFekaWuT0
+         e0tW8TP+jeaLl7GcEVhalhwFvZGwUdnqReSTXyY+km3YfWJj9xwJ73cTJ978Tbpkfd
+         Gs8ud0eGXyOLraHi1V8uLcfIdqk3AsYtFBlAg0/8lYUdQV1KAjXMR2xbOdaGfSqOxl
+         1iNuiwwVbL3CNYf+rgjD5k7zmbmcpRBD8B6ebsvUNvovZXcojGC5qskMynDSruBE34
+         rEpHBm6I19CcHS5PWg6uDCxdQHiOd1R3rWmpZYaPEWx2Z45uQhzc7iWiPgmr+QJPOU
+         kysl7N+f37DGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
@@ -41,15 +41,15 @@ Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
         Sasha Levin <sashal@kernel.org>, jslaby@suse.com,
         mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.4 01/40] serial: stm32: Ignore return value of uart_remove_one_port() in .remove()
-Date:   Sun, 23 Jul 2023 21:31:01 -0400
-Message-Id: <20230724013140.2327815-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 01/34] serial: stm32: Ignore return value of uart_remove_one_port() in .remove()
+Date:   Sun, 23 Jul 2023 21:32:04 -0400
+Message-Id: <20230724013238.2329166-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.4.5
+X-stable-base: Linux 6.1.40
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -81,10 +81,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 1e38fc9b10c11..e9e11a2596211 100644
+index 28edbaf7bb329..2a9c4058824a8 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -1755,13 +1755,10 @@ static int stm32_usart_serial_remove(struct platform_device *pdev)
+@@ -1753,13 +1753,10 @@ static int stm32_usart_serial_remove(struct platform_device *pdev)
  	struct uart_port *port = platform_get_drvdata(pdev);
  	struct stm32_port *stm32_port = to_stm32_port(port);
  	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
