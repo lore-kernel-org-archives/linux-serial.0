@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F81C04E69
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7546CC05052
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:40:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbjGXIkT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 04:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S231732AbjGXIkW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 04:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231727AbjGXIkF (ORCPT
+        with ESMTP id S231792AbjGXIkP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 04:40:05 -0400
+        Mon, 24 Jul 2023 04:40:15 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1383E10EF;
-        Mon, 24 Jul 2023 01:39:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D16E1A1;
+        Mon, 24 Jul 2023 01:40:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690187999; x=1721723999;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=x12lrtGBZQsSW3ujLW9h0V/KCIjM8IrYlUp2GSyhMfI=;
-  b=VfFns614YrMCCoRGXSr6KX3PaxCRzFKdZPYhw/v56M6WiIwV51B/aPxO
-   GbEFmIoBLAbPYnaqQzq4OHxyoTYQRGoinrwqmH0Md78nfnWG09Cvl1Mk2
-   vFHEdRbzj0NsCsrO3yYfMO4vNqPnaAN9A3r2gXPUBDKZubV6r9X0MssfR
-   dDN1oLBIoB+WF4nKNcbViw+a78KDu1IefriSL+CBCCqEQR1i5U7oBI0Rx
-   U+A471Fq6vBIiXgAHOCKE3uQtpudHIkPhvQsbhAKGeQs3s+KStydXWKsf
-   i7RdmbSNd32AYX8ZUxu8q2lT8GaEw0/JXc3NPJHbKTjVLpY1Db4D22NrR
+  t=1690188011; x=1721724011;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ACtwk6q0osdWK/LRY8lcrJv/gU2GjAAIEZNi8CD+KKM=;
+  b=dPpx5aVju3ej9PX4u7K7zKzQViO7AN1G5Wb2VRVEqbiIVBJd3HDdGZF8
+   Msi036d57dOHW/ZdOLMOubqMqYj6FjKoNJZjz789kvod+znaUCMYDXCDY
+   W6++miZdpCpQQFKEnoCOsF9xy8WuMRA8pn7TcYaIjqQ96sZXCbXvy7ChF
+   0LGEcTylfTXKmMlIvzngSbaPrw0/Fuz2FtIFYcxJLCjIvqcIIjsLk1dFL
+   o172C2re2RnL5CA6aeU473YnO+JGJ8IpniMV4stqmt5YgcoeBSeF8mZdA
+   UNApLqJ7av3+NXupfqFcv7nCYdMZlodCKND8zJcY9Ep5a5LwcsZTuOjAg
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="433627611"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="433627685"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="433627611"
+   d="scan'208";a="433627685"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:39:58 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:40:11 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="675749431"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="675749521"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="675749431"
+   d="scan'208";a="675749521"
 Received: from unknown (HELO jiaqingz-acrn-container.sh.intel.com) ([10.239.138.235])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:39:55 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:40:08 -0700
 From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sudip Mukherjee <sudipm.mukherjee@gmail.com>
@@ -50,48 +50,59 @@ Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-pci@vger.kernel.org, linux-can@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Subject: [PATCH v3 0/4] add support for ASIX AX99100
-Date:   Mon, 24 Jul 2023 08:39:29 +0000
-Message-Id: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
+Subject: [PATCH v3 4/4] parport_pc: add support for ASIX AX99100
+Date:   Mon, 24 Jul 2023 08:39:33 +0000
+Message-Id: <20230724083933.3173513-5-jiaqing.zhao@linux.intel.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
+References: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch adds kernel inbox driver support for the serial port and
-parallel port mode controller of ASIX AX99100 PCIe to Multi I/O
-Controller. This device has 4 separate PCI functions and each functions
-can be configured to operate in different modes.
+The PCI function 2 on ASIX AX99100 PCIe to Multi I/O Controller can be
+configured as a single-port parallel port controller. The subvendor id
+is 0x2000 when configured as parallel port. It supports IEEE-1284 EPP /
+ECP with its ECR on BAR1.
 
-This patchset is tested with ASIX AX99100 in following modes:
-* 4 x Serial Port
-* 2 x Serial Port
-* 2 x Serial Port + 1 x Parallel Port
-* 1 x Parallel Port
+Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/parport/parport_pc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Changes in v3:
-* Keep all changes in a single patchset.
-* Update commit message of patch 3.
-* Get Acked-By from maintainers for patch 1 & 2.
-
-Changes in v2:
-* Split changes into 2 patchsets.
-Link: https://lore.kernel.org/all/20230720102859.2985655-1-jiaqing.zhao@linux.intel.com/
-
-Jiaqing Zhao (4):
-  can: ems_pci: remove PCI_SUBVENDOR_ID_ASIX definition
-  can: ems_pci: move ASIX AX99100 ids to pci_ids.h
-  serial: 8250_pci: add support for ASIX AX99100
-  parport_pc: add support for ASIX AX99100
-
- drivers/net/can/sja1000/ems_pci.c  |  7 +------
- drivers/parport/parport_pc.c       |  5 +++++
- drivers/tty/serial/8250/8250_pci.c | 10 ++++++++++
- include/linux/pci_ids.h            |  4 ++++
- 4 files changed, 20 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/parport/parport_pc.c b/drivers/parport/parport_pc.c
+index 3bacbaf16f42..1f236aaf7867 100644
+--- a/drivers/parport/parport_pc.c
++++ b/drivers/parport/parport_pc.c
+@@ -2655,6 +2655,7 @@ enum parport_pc_pci_cards {
+ 	netmos_9815,
+ 	netmos_9901,
+ 	netmos_9865,
++	asix_ax99100,
+ 	quatech_sppxp100,
+ 	wch_ch382l,
+ };
+@@ -2733,6 +2734,7 @@ static struct parport_pc_pci {
+ 	/* netmos_9815 */		{ 2, { { 0, 1 }, { 2, 3 }, } },
+ 	/* netmos_9901 */               { 1, { { 0, -1 }, } },
+ 	/* netmos_9865 */               { 1, { { 0, -1 }, } },
++	/* asix_ax99100 */		{ 1, { { 0, 1 }, } },
+ 	/* quatech_sppxp100 */		{ 1, { { 0, 1 }, } },
+ 	/* wch_ch382l */		{ 1, { { 2, -1 }, } },
+ };
+@@ -2823,6 +2825,9 @@ static const struct pci_device_id parport_pc_pci_tbl[] = {
+ 	  0xA000, 0x1000, 0, 0, netmos_9865 },
+ 	{ PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
+ 	  0xA000, 0x2000, 0, 0, netmos_9865 },
++	/* ASIX AX99100 PCIe to Multi I/O Controller */
++	{ PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_ASIX_AX99100,
++	  0xA000, 0x2000, 0, 0, asix_ax99100 },
+ 	/* Quatech SPPXP-100 Parallel port PCI ExpressCard */
+ 	{ PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_SPPXP_100,
+ 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, quatech_sppxp100 },
 -- 
 2.39.2
 
