@@ -2,137 +2,97 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE07C001B0
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 05:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAABEB64DD
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 05:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbjGXFIB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 01:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
+        id S229737AbjGXF0v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 01:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbjGXFHj (ORCPT
+        with ESMTP id S229456AbjGXF0v (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 01:07:39 -0400
+        Mon, 24 Jul 2023 01:26:51 -0400
 Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC85CE59;
-        Sun, 23 Jul 2023 22:07:34 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 3BE3982CF;
-        Mon, 24 Jul 2023 05:07:32 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34396100;
+        Sun, 23 Jul 2023 22:26:50 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 79D8B809F;
+        Mon, 24 Jul 2023 05:26:49 +0000 (UTC)
+Date:   Mon, 24 Jul 2023 08:26:48 +0300
 From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         John Ogness <john.ogness@linutronix.de>,
         Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v4 3/3] serial: core: Fix serial core controller port name to show controller id
-Date:   Mon, 24 Jul 2023 08:07:05 +0300
-Message-ID: <20230724050709.17544-4-tony@atomide.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230724050709.17544-1-tony@atomide.com>
-References: <20230724050709.17544-1-tony@atomide.com>
+        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: core: Add sysfs links for serial core port
+ instances for ttys
+Message-ID: <20230724052648.GW5194@atomide.com>
+References: <20230719051613.46569-1-tony@atomide.com>
+ <ZLd1uCKoGMBruwiN@smile.fi.intel.com>
+ <20230719054321.GJ5194@atomide.com>
+ <ZLfsVU7uiA3IReHU@smile.fi.intel.com>
+ <20230720041319.GM5194@atomide.com>
+ <ZLpYfZDplupNQHnb@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZLpYfZDplupNQHnb@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We are missing the serial core controller id for the serial core port
-name. Let's fix the issue for sane /sys/bus/serial-core/devices, and to
-avoid issues addressing serial ports later on.
+* Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:06]:
+> On Thu, Jul 20, 2023 at 07:13:19AM +0300, Tony Lindgren wrote:
+> > * Andy Shevchenko <andriy.shevchenko@intel.com> [230719 13:59]:
+> > > On Wed, Jul 19, 2023 at 08:43:21AM +0300, Tony Lindgren wrote:
+> > > > * Andy Shevchenko <andriy.shevchenko@intel.com> [230719 05:34]:
+> > > > > On Wed, Jul 19, 2023 at 08:16:11AM +0300, Tony Lindgren wrote:
+> 
+> ...
+> 
+> > > > > > And with this, we can add /dev/serial/by-id symlinks to the serial port
+> > > > > > device instances so we can start using serial core port addressing in
+> > > > > > addition to the legacy ttyS naming.
+> > > > > > 
+> > > > > > The naming we can use is dev_name:0.0 where 0.0 are the serial core
+> > > > > > controller id and port id, so for the ttyS0 example above the naming
+> > > > > > would be 00:04.0:0.0.
+> > > > > 
+> > > > > This is interesting idea. But any hint why it can be useful?
+> > > > 
+> > > > If you have lots of serial ports and we are stuck with adding aliases
+> > > > for the ports in the dts files where the ttyS naming and ordering does
+> > > > not really help or may not necessarily make sense if the ports are on
+> > > > different buses or domains. With CONFIG_SERIAL_8250_RUNTIME_UARTS=4,
+> > > > the ttyS naming is only needed for the legacy ports really.
+> > > 
+> > > I see. Does it fix the long standing issue with ttyS enumeration (on x86
+> > > at least) when depending on the presence of the legacy ports the HSUART
+> > > (high speed) can preempt the legacy placeholders (ttyS0..ttyS3)?
+> > >
+> > > To me sounds like it may very well do fix it and I would be glad to see that
+> > > in the commit message (as selling point) and in documentation.
+> > 
+> > It won't affect how ttyS0..ttyS3 get assigned, but it helps finding your
+> > HSUART instance with DEVNAME:0.0 style addressing. So you don't need to
+> > care what ttyS number the port has. If you have such a test case maybe give
+> > it a try.
+> 
+> Exactly, the problem (currently) is, that depending on the BIOS settings
+> the kernel can't use the same command line and this is quite a PITA for
+> our customers!
+> 
+> As far as we can specify hardware (path) to the console, it will be so
+> cool and hopefully solves this very long standing issue.
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/serial_base_bus.c | 34 ++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 12 deletions(-)
+OK great, I'll update the patch description for next revision.
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -19,6 +19,14 @@
- 
- static bool serial_base_initialized;
- 
-+static const struct device_type serial_ctrl_type = {
-+	.name = "ctrl",
-+};
-+
-+static const struct device_type serial_port_type = {
-+	.name = "port",
-+};
-+
- static int serial_base_match(struct device *dev, struct device_driver *drv)
- {
- 	int len = strlen(drv->name);
-@@ -48,7 +56,8 @@ static int serial_base_device_init(struct uart_port *port,
- 				   struct device *parent_dev,
- 				   const struct device_type *type,
- 				   void (*release)(struct device *dev),
--				   int id)
-+				   unsigned int ctrl_id,
-+				   unsigned int port_id)
- {
- 	device_initialize(dev);
- 	dev->type = type;
-@@ -61,12 +70,17 @@ static int serial_base_device_init(struct uart_port *port,
- 		return -EPROBE_DEFER;
- 	}
- 
--	return dev_set_name(dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
--}
-+	if (type == &serial_ctrl_type)
-+		return dev_set_name(dev, "%s.%s.%d", type->name,
-+				    dev_name(port->dev), ctrl_id);
- 
--static const struct device_type serial_ctrl_type = {
--	.name = "ctrl",
--};
-+	if (type == &serial_port_type)
-+		return dev_set_name(dev, "%s.%s.%d.%d", type->name,
-+				    dev_name(port->dev), ctrl_id,
-+				    port_id);
-+
-+	return -EINVAL;
-+}
- 
- static void serial_base_ctrl_release(struct device *dev)
- {
-@@ -96,7 +110,7 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &ctrl_dev->dev,
- 				      parent, &serial_ctrl_type,
- 				      serial_base_ctrl_release,
--				      port->ctrl_id);
-+				      port->ctrl_id, 0);
- 	if (err)
- 		goto err_put_device;
- 
-@@ -112,10 +126,6 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	return ERR_PTR(err);
- }
- 
--static const struct device_type serial_port_type = {
--	.name = "port",
--};
--
- static void serial_base_port_release(struct device *dev)
- {
- 	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
-@@ -136,7 +146,7 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &port_dev->dev,
- 				      &ctrl_dev->dev, &serial_port_type,
- 				      serial_base_port_release,
--				      port->port_id);
-+				      port->ctrl_id, port->port_id);
- 	if (err)
- 		goto err_put_device;
- 
--- 
-2.41.0
+Regards,
+
+Tony
