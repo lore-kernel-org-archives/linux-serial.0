@@ -2,93 +2,103 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D55F9C001DE
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Jul 2023 04:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C29C001DC
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 01:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbjGWE71 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Jul 2023 00:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59540 "EHLO
+        id S231148AbjGXBgt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 23 Jul 2023 21:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjGWE71 (ORCPT
+        with ESMTP id S230472AbjGXBgR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Jul 2023 00:59:27 -0400
-X-Greylist: delayed 1033 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 22 Jul 2023 21:59:25 PDT
-Received: from out203-205-221-231.mail.qq.com (out203-205-221-231.mail.qq.com [203.205.221.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA6E10D7
-        for <linux-serial@vger.kernel.org>; Sat, 22 Jul 2023 21:59:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1690088363;
-        bh=Qd3OAKENIQCpMIhvJEwafrb3xdlGY1wPslvTONjFmls=;
-        h=From:To:Cc:Subject:Date;
-        b=AAcxRDKM9un9rXQpRWgAIe6SHWzfsliwrZL7lf+lN1+WenpsVYwm7w022+pj8sovh
-         HyeWUEhDpLvzvsqMn0txphkpImnsJGqZx0iet+i/MQfA3K+zKaq5hllW2OmDr635Kz
-         VTjeLGDsmD+bgr1nG4WQ4z1f5Yi9/DgSeiKdMbOM=
-Received: from localhost.ust.hk ([175.159.123.184])
-        by newxmesmtplogicsvrszc2-1.qq.com (NewEsmtp) with SMTP
-        id 730804DB; Sun, 23 Jul 2023 12:28:48 +0800
-X-QQ-mid: xmsmtpt1690086528tfmkjhssd
-Message-ID: <tencent_1FBC566A2B186CCC634D4109F54D62F2C605@qq.com>
-X-QQ-XMAILINFO: MSZT09KmLkNURS+7xz5rhECr2KH1qN+Phc+3NUrsPmAGF3/6xxEh5XqOYZDOjl
-         atNHPdUnfXMxyTF3hr1xdWBwEfO4exSjq30CFBH97djUy4v8KOv6yymSgn7yTr73xtvN9ktLdKRz
-         quszvJ6L96kbTxKJHZ4E3XlTa1WnV5dE32inSn4YSQeoILMGsuDKDBTT5/EtmZDDJnJ6yuHxm4ul
-         O2mJAXq/Fjcd+0/N+4BA4Qnmn38flOyeIC4xvJWRKhDLR8Ti6KfBAFUJOA5AgMtGEd1O624SEyYy
-         lz9KjTIXwobAdl4hX3K11P0Ytc0/0vQAHsn9CDuATjMG04VvJt+QnCdlzoLgr3Ro+ljotx/kOHVk
-         jvZqA3iitHXqkdrqYALs1L9yZU7n9GoPLwDZAlcqU1fpN4473Yu/hwNO/Y7+5vmAZ5Af/yN5Sek3
-         sKE5qVqFHF0Pnh2QHbw4LttMDf8nY5sdrJgjC8k8WF2HiFqadTSgU+ZVPMOKJ4mnphLWPycDiaP2
-         o++yBbWr8+OP39AzoOyYQ60zOu/vWfP8B6lBma0+/+sMmvmiXd4MWIQpIzDyKsXd4MYJKmSkLWJu
-         SoXLXXEKsPm+sxEq1b1et8TaPZr3qK4myyzT0YlsNetarZ2Ov4vjV4+/B/1N/WujgUh9zz2ecvHn
-         IR4yDUY6sQlGkMkYqYmKt082jApYGBcMMqW1Yf+0dR12VY93KrHI4HIhYZnSF9YO34mpcXsjyd/v
-         g2EJhyAqaEe+E54R2rSQ+k74wvo+HqnoD7rzS84/Ph9yyBXUvwuzVQxxviyoT/MjXZ7HKCjgB4f7
-         mmPQATLpQ9rHZy1iJ5SjzK3eEY8Htp49zDiKkIkbOd06Q9qR0bDxnJ/IAqvxaKWHc2hxK3FEEMex
-         1etAW2UDVvNsAZRVKCKjTt0EVwtsTm91q0VUIdaYzrmUvcUvquNa3cpoRKLP+jAli9nC3DdHJSRt
-         Nxas59d3bUHP0lFm6WUXIS0wdqugNC
-X-QQ-XMRINFO: NS+P29fieYNw95Bth2bWPxk=
-From:   Zhang Shurong <zhang_shurong@foxmail.com>
-To:     patrice.chotard@foss.st.com
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Zhang Shurong <zhang_shurong@foxmail.com>
-Subject: [PATCH] serial: st-asc: Fix to check return value of platform_get_irq() in asc_init_port()
-Date:   Sun, 23 Jul 2023 12:28:47 +0800
-X-OQ-MSGID: <20230723042847.6169-1-zhang_shurong@foxmail.com>
-X-Mailer: git-send-email 2.41.0
+        Sun, 23 Jul 2023 21:36:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E4C1994;
+        Sun, 23 Jul 2023 18:32:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1355060F5A;
+        Mon, 24 Jul 2023 01:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D1DC433C9;
+        Mon, 24 Jul 2023 01:31:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690162303;
+        bh=ajbydh6J7RiNdqCXQT3mKx9KBNV0cMbI9Ija70sq5+g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OLl6ozcZiKMZ8Qn5ZfnINaAd4ktJznJ2LUCTYgb6Z7CHwUZepdlMcQnu1B5N20O+E
+         6pz1ZDCmt5iGzGMZmLO1qL08SX+7HMLgBVH4nSzjrM0XdqlFGfhccz43z3cwVKPzmK
+         o5PiTf4iBxAu01Lbdu/wmztImaYcfCucT4ZiP4WdpV+LVm1qxhNMhZkUvTna9Pmplm
+         c6RxgBbiVttgMQYzRRLXzFQs+DDvNCRzId2QkMU3guRhCgMFZauYFw9HvvYJMU1Zm0
+         /i7g6AXIuAAipOkWDeorRGCCbFQl8UpdtOh+nimgzmqivScQ1V8fXIbRaw1eRPIxnj
+         Es6uqc4/KFl8A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jslaby@suse.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.4 01/40] serial: stm32: Ignore return value of uart_remove_one_port() in .remove()
+Date:   Sun, 23 Jul 2023 21:31:01 -0400
+Message-Id: <20230724013140.2327815-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.4.5
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The platform_get_irq might be failed and return a negative result. So
-there should have an error handling code.
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Fixed this by adding an error handling code.
+[ Upstream commit 6bd6cd29c92401a101993290051fa55078238a52 ]
 
-Fixes: c4b058560762 ("serial:st-asc: Add ST ASC driver.")
-Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
+Returning early from stm32_usart_serial_remove() results in a resource
+leak as several cleanup functions are not called. The driver core ignores
+the return value and there is no possibility to clean up later.
+
+uart_remove_one_port() only returns non-zero if there is some
+inconsistency (i.e. stm32_usart_driver.state[port->line].uart_port == NULL).
+This should never happen, and even if it does it's a bad idea to exit
+early in the remove callback without cleaning up.
+
+This prepares changing the prototype of struct platform_driver::remove to
+return void. See commit 5c5a7680e67b ("platform: Provide a remove callback
+that returns no value") for further details about this quest.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20230512173810.131447-2-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/st-asc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/stm32-usart.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index aa471c9c24d9..2f1807fa9bdb 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -688,9 +688,13 @@ static int asc_init_port(struct asc_port *ascport,
- 	port->ops	= &asc_uart_ops;
- 	port->fifosize	= ASC_FIFO_SIZE;
- 	port->dev	= &pdev->dev;
--	port->irq	= platform_get_irq(pdev, 0);
- 	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_ST_ASC_CONSOLE);
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 1e38fc9b10c11..e9e11a2596211 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1755,13 +1755,10 @@ static int stm32_usart_serial_remove(struct platform_device *pdev)
+ 	struct uart_port *port = platform_get_drvdata(pdev);
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+-	int err;
+ 	u32 cr3;
  
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
-+	port->irq = ret;
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	port->membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(port->membase))
+ 	pm_runtime_get_sync(&pdev->dev);
+-	err = uart_remove_one_port(&stm32_usart_driver, port);
+-	if (err)
+-		return(err);
++	uart_remove_one_port(&stm32_usart_driver, port);
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_set_suspended(&pdev->dev);
 -- 
-2.41.0
+2.39.2
 
