@@ -2,80 +2,119 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6100C0015E
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6913BC001DE
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbjGXIet convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 04:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
+        id S231697AbjGXIkR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 04:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbjGXIer (ORCPT
+        with ESMTP id S231774AbjGXIkL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 04:34:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6406D99
-        for <linux-serial@vger.kernel.org>; Mon, 24 Jul 2023 01:34:46 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1qNr1d-0008D2-KF; Mon, 24 Jul 2023 10:34:41 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1qNr1a-001iLG-LE; Mon, 24 Jul 2023 10:34:38 +0200
-Received: from pza by lupine with local (Exim 4.96)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1qNr1a-000NGv-0X;
-        Mon, 24 Jul 2023 10:34:38 +0200
-Message-ID: <3edf59510eda9806e254479cde3e1c8a3670f2d1.camel@pengutronix.de>
-Subject: Re: [PATCH v3 1/1] drm/i915: Move abs_diff() to math.h
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nikita Shubin <nikita.shubin@maquefel.me>,
-        Nikita Shubin via B4 Relay 
-        <devnull+nikita.shubin.maquefel.me@kernel.org>,
-        Andi Shyti <andi.shyti@kernel.org>
-Date:   Mon, 24 Jul 2023 10:34:38 +0200
-In-Reply-To: <20230724082511.3225-1-andriy.shevchenko@linux.intel.com>
-References: <20230724082511.3225-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.46.4-2 
+        Mon, 24 Jul 2023 04:40:11 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4FE1B3;
+        Mon, 24 Jul 2023 01:40:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690188005; x=1721724005;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GXGUXOyWj2acYIZwp5hVh/iVe3ctKxu2VHDl+PPjxxo=;
+  b=bcKyLyTkbTUL7Xs1PJHNV/oTBJb/SyXSE5LTgyRldmq1FnSpPoKlANl/
+   ziAzrLmnVWw95D6E/OuxWjLhz1ECabRqkJd8e3isns/d9Bgggf/Dvqrze
+   cwMZHZ9KjDSYMVaG7WpeNylYtJA6Kiz4fb+Ew9PUN4N38mTlP+e0BUs3N
+   jYx+I+oJUtkxrXnXdlQ+numTd/uBjX/FXAhb3J+8SJY2zWROj2RvKo+V6
+   B6xaFhtjX69sXLmVTdX6TKXJTK6Tzx5pb6CkKypgfY1RNpR5pAx0i6Grq
+   zikG9YYKbWjfmhxysCtWmVPxmWK6CB71zA+L0HCvqoB8p9tzC7Ty4Y/Rc
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="433627651"
+X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
+   d="scan'208";a="433627651"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:40:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="675749464"
+X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
+   d="scan'208";a="675749464"
+Received: from unknown (HELO jiaqingz-acrn-container.sh.intel.com) ([10.239.138.235])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:40:01 -0700
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
+        support@ems-wuensche.com, linux-serial@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v3 2/4] can: ems_pci: move ASIX AX99100 ids to pci_ids.h
+Date:   Mon, 24 Jul 2023 08:39:31 +0000
+Message-Id: <20230724083933.3173513-3-jiaqing.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
+References: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mo, 2023-07-24 at 11:25 +0300, Andy Shevchenko wrote:
-> abs_diff() belongs to math.h. Move it there.
-> This will allow others to use it.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org> # tty/serial
+Move PCI Vendor and Device ID of ASIX AX99100 PCIe to Multi I/O
+Controller to pci_ids.h for its serial and parallel port driver
+support in subsequent patches.
 
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de> # gpu/ipu-v3
+Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+---
+ drivers/net/can/sja1000/ems_pci.c | 6 +-----
+ include/linux/pci_ids.h           | 4 ++++
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-regards
-Philipp
+diff --git a/drivers/net/can/sja1000/ems_pci.c b/drivers/net/can/sja1000/ems_pci.c
+index 3e18c63a982c..1aaedaf866f1 100644
+--- a/drivers/net/can/sja1000/ems_pci.c
++++ b/drivers/net/can/sja1000/ems_pci.c
+@@ -108,10 +108,6 @@ struct ems_pci_card {
+ 
+ #define EMS_PCI_BASE_SIZE  4096 /* size of controller area */
+ 
+-#ifndef PCI_VENDOR_ID_ASIX
+-#define PCI_VENDOR_ID_ASIX 0x125b
+-#define PCI_DEVICE_ID_ASIX_9110 0x9110
+-#endif
+ #define PCI_SUBDEVICE_ID_EMS 0x4010
+ 
+ static const struct pci_device_id ems_pci_tbl[] = {
+@@ -122,7 +118,7 @@ static const struct pci_device_id ems_pci_tbl[] = {
+ 	/* CPC-104P v2 */
+ 	{PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030, PCI_VENDOR_ID_PLX, 0x4002},
+ 	/* CPC-PCIe v3 */
+-	{PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_ASIX_9110, 0xa000, PCI_SUBDEVICE_ID_EMS},
++	{PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_ASIX_AX99100_LB, 0xa000, PCI_SUBDEVICE_ID_EMS},
+ 	{0,}
+ };
+ MODULE_DEVICE_TABLE(pci, ems_pci_tbl);
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 2dc75df1437f..16608ce4fd0f 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -1760,6 +1760,10 @@
+ #define PCI_SUBDEVICE_ID_AT_2700FX	0x2701
+ #define PCI_SUBDEVICE_ID_AT_2701FX	0x2703
+ 
++#define PCI_VENDOR_ID_ASIX		0x125b
++#define PCI_DEVICE_ID_ASIX_AX99100	0x9100
++#define PCI_DEVICE_ID_ASIX_AX99100_LB	0x9110
++
+ #define PCI_VENDOR_ID_ESS		0x125d
+ #define PCI_DEVICE_ID_ESS_ESS1968	0x1968
+ #define PCI_DEVICE_ID_ESS_ESS1978	0x1978
+-- 
+2.39.2
+
