@@ -2,108 +2,531 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454BCC04A6A
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 15:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E3DC0015E
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 20:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbjGXPys (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 11:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
+        id S230216AbjGXUy7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 16:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjGXPyr (ORCPT
+        with ESMTP id S229532AbjGXUy6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 11:54:47 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5608E;
-        Mon, 24 Jul 2023 08:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/T4b5niEyR4mZCuDGPl+hY4So/AXh1+NSpM5MAWjNig=; b=gCon4PPrmEX9pjBv2vCF5E6wIx
-        G4VxmIoK7qcAD7irGRI09CzsImpbHHCYK3aB8orBat7+pD28XdP5MM6vlBva8Xvhgp2pLYkmerMGU
-        66Yt6tpqo/ZK0GPzslXbKxoXHLtlBUxvJzYXAdzZdgMty9wWXDPu6Jmei3CxF3X+t/Mk=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:57608 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1qNxtG-0007Li-Ix; Mon, 24 Jul 2023 11:54:31 -0400
-Date:   Mon, 24 Jul 2023 11:54:28 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-        jirislaby@kernel.org, jringle@gridpoint.com,
-        isaac.true@canonical.com, jesse.sung@canonical.com,
-        tomasz.mon@camlingroup.com, l.perczak@camlintechnologies.com,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Message-Id: <20230724115428.d191186852c0bd0ee0d78398@hugovil.com>
-In-Reply-To: <2023072240-supremacy-shallot-a77f@gregkh>
-References: <20230721161840.1393996-1-hugo@hugovil.com>
-        <20230721161840.1393996-7-hugo@hugovil.com>
-        <CAL_JsqJpdhtnZ8FcM7kGWnM+iuDs1fWiCVgf413evbw-o8TZGQ@mail.gmail.com>
-        <20230722104724.ef0c5896c239e721794b9fe9@hugovil.com>
-        <2023072240-supremacy-shallot-a77f@gregkh>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Mon, 24 Jul 2023 16:54:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B27B10FA;
+        Mon, 24 Jul 2023 13:54:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B21C261388;
+        Mon, 24 Jul 2023 20:54:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5CBC433C8;
+        Mon, 24 Jul 2023 20:54:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690232094;
+        bh=PqG02llCgZ9VpiulkAw9SbHjsMZyptESkJfDPu8r0sk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KEYlKVgE0KEik1UotnBrnE59qDZIx0wRSmhMIeTDYJcZwzm/i/ecXS86J0fVu62+8
+         ee8Xm0h01OX+iWmD+nrxlnyeaaaBKZEP1KPZcZ/yUYs8Fxu1z6vEeCX2Zy3zDGtslO
+         kVO3No53mMujdHB2CeJMg26IhI3UyuLCZRbcADCopxFAUVxRJ4ltIbM1sbgP62lUCV
+         Nnc/GRqvyqpfwIB/6rMqxMbhCulyRq8FqHuUCUmKIdUTnuhiudmkGfZuUrdBO26Kzd
+         2es0AVEHcYEm2Ce4u7/1vuIrzvHek+MNTkOuU310+nKmhUYTZfjHbjlNp/h4E/GR+6
+         OqRhWrQXfBNjA==
+Received: (nullmailer pid 767331 invoked by uid 1000);
+        Mon, 24 Jul 2023 20:54:50 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jacky Huang <ychuang3@nuvoton.com>,
+        Shan-Chun Hung <schung@nuvoton.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-tegra@vger.kernel.org,
+        sparclinux@vger.kernel.org
+Subject: [PATCH v2] tty: Explicitly include correct DT includes
+Date:   Mon, 24 Jul 2023 14:54:38 -0600
+Message-Id: <20230724205440.767071-1-robh@kernel.org>
+X-Mailer: git-send-email 2.40.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [RESEND PATCH v8 06/10] serial: sc16is7xx: fix regression with
- GPIO configuration
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 22 Jul 2023 17:15:26 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+The DT of_device.h and of_platform.h date back to the separate
+of_platform_bus_type before it as merged into the regular platform bus.
+As part of that merge prepping Arm DT support 13 years ago, they
+"temporarily" include each other. They also include platform_device.h
+and of.h. As a result, there's a pretty much random mix of those include
+files used throughout the tree. In order to detangle these headers and
+replace the implicit includes with struct declarations, users need to
+explicitly include the correct includes.
 
-> On Sat, Jul 22, 2023 at 10:47:24AM -0400, Hugo Villeneuve wrote:
-> > On Fri, 21 Jul 2023 13:24:19 -0600
-> > Rob Herring <robh+dt@kernel.org> wrote:
-> > 
-> > > On Fri, Jul 21, 2023 at 10:19 AM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > > >
-> > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > >
-> > > > Commit 679875d1d880 ("sc16is7xx: Separate GPIOs from modem control lines")
-> > > > and commit 21144bab4f11 ("sc16is7xx: Handle modem status lines")
-> > > > changed the function of the GPIOs pins to act as modem control
-> > > > lines without any possibility of selecting GPIO function.
-> > > 
-> > > Requiring a new DT property is not fixing a kernel regression. You
-> > > should be returning the kernel to original behavior and then have a
-> > > new DT property for new behavior.
-> > 
-> > Hi Rob,
-> > please read the entire patch history starting from V1
-> >  and you will understand why this course of action was
-> >  not selected.
-> 
-> That's not going to happen, sorry, you need to explain it here, in this
-> patch series, why a specific action is being taken over another one, as
-> no one has time to go dig through past history, sorry.
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+v2:
+ - Add mpc52xx_uart
+---
+ drivers/tty/hvc/hvc_opal.c             | 2 +-
+ drivers/tty/serial/8250/8250_early.c   | 1 -
+ drivers/tty/serial/8250/8250_ingenic.c | 1 -
+ drivers/tty/serial/8250/8250_omap.c    | 1 -
+ drivers/tty/serial/amba-pl011.c        | 2 +-
+ drivers/tty/serial/apbuart.c           | 3 ---
+ drivers/tty/serial/atmel_serial.c      | 1 -
+ drivers/tty/serial/fsl_linflexuart.c   | 2 +-
+ drivers/tty/serial/fsl_lpuart.c        | 2 +-
+ drivers/tty/serial/imx.c               | 1 -
+ drivers/tty/serial/lantiq.c            | 3 ++-
+ drivers/tty/serial/liteuart.c          | 3 +--
+ drivers/tty/serial/ma35d1_serial.c     | 2 +-
+ drivers/tty/serial/mpc52xx_uart.c      | 2 +-
+ drivers/tty/serial/mps2-uart.c         | 1 -
+ drivers/tty/serial/mxs-auart.c         | 2 +-
+ drivers/tty/serial/pic32_uart.c        | 1 -
+ drivers/tty/serial/qcom_geni_serial.c  | 1 -
+ drivers/tty/serial/serial-tegra.c      | 1 -
+ drivers/tty/serial/sh-sci.c            | 1 -
+ drivers/tty/serial/sunhv.c             | 4 ++--
+ drivers/tty/serial/sunsab.c            | 3 ++-
+ drivers/tty/serial/sunsu.c             | 4 ++--
+ drivers/tty/serial/sunzilog.c          | 4 ++--
+ drivers/tty/serial/tegra-tcu.c         | 1 -
+ drivers/tty/serial/uartlite.c          | 3 ---
+ drivers/tty/serial/ucc_uart.c          | 3 ++-
+ drivers/tty/serial/vt8500_serial.c     | 2 +-
+ 28 files changed, 21 insertions(+), 36 deletions(-)
 
-Hi Rob,
-I initially submitted a patch to revert the kernel to original
-behavior, but it created more problems because the patch was
-unfortunately split in two separate patches, and mixed with other non
-closely-related changes. It was also noted to me that reverting to the
-old behavior would break things for some users.
+diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
+index 794c7b18aa06..992e199e0ea8 100644
+--- a/drivers/tty/hvc/hvc_opal.c
++++ b/drivers/tty/hvc/hvc_opal.c
+@@ -14,7 +14,7 @@
+ #include <linux/console.h>
+ #include <linux/of.h>
+ #include <linux/of_irq.h>
+-#include <linux/of_platform.h>
++#include <linux/platform_device.h>
+ #include <linux/export.h>
+ #include <linux/interrupt.h>
+ 
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 4299a8bd83d9..9837a27739fd 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -27,7 +27,6 @@
+ #include <linux/init.h>
+ #include <linux/console.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/serial_reg.h>
+ #include <linux/serial.h>
+ #include <linux/serial_8250.h>
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index 617b8ce60d6b..4c4c4da73ad0 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -13,7 +13,6 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_fdt.h>
+-#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_8250.h>
+ #include <linux/serial_core.h>
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index d48a82f1634e..26dd089d8e82 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -18,7 +18,6 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/of_gpio.h>
+ #include <linux/of_irq.h>
+ #include <linux/delay.h>
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index c5c3f4674459..a1e594b79890 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -20,6 +20,7 @@
+ #include <linux/ioport.h>
+ #include <linux/init.h>
+ #include <linux/console.h>
++#include <linux/platform_device.h>
+ #include <linux/sysrq.h>
+ #include <linux/device.h>
+ #include <linux/tty.h>
+@@ -36,7 +37,6 @@
+ #include <linux/delay.h>
+ #include <linux/types.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/sizes.h>
+ #include <linux/io.h>
+diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
+index 915ee4b0d594..f3defc6da3df 100644
+--- a/drivers/tty/serial/apbuart.c
++++ b/drivers/tty/serial/apbuart.c
+@@ -22,9 +22,6 @@
+ #include <linux/kthread.h>
+ #include <linux/device.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+-#include <linux/of_platform.h>
+-#include <linux/of_irq.h>
+ #include <linux/platform_device.h>
+ #include <linux/io.h>
+ #include <linux/serial_core.h>
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 3467a875641a..7ac477344aa3 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -21,7 +21,6 @@
+ #include <linux/tty_flip.h>
+ #include <linux/platform_device.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+ #include <linux/atmel_pdc.h>
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 6fc21b6684e6..f697751c2ad5 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -11,7 +11,7 @@
+ #include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
++#include <linux/platform_device.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+ #include <linux/tty_flip.h>
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 4d80fae20177..e1a8d5415718 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -18,9 +18,9 @@
+ #include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/of_dma.h>
+ #include <linux/pinctrl/consumer.h>
++#include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 7341d060f85c..3ed5083a7108 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -25,7 +25,6 @@
+ #include <linux/rational.h>
+ #include <linux/slab.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/io.h>
+ #include <linux/dma-mapping.h>
+ 
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index bcaa479608d8..3adb60c683f7 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -17,7 +17,8 @@
+ #include <linux/ioport.h>
+ #include <linux/lantiq.h>
+ #include <linux/module.h>
+-#include <linux/of_platform.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index 80de3a42b67b..d881cdd2a58f 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -11,8 +11,7 @@
+ #include <linux/litex.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+-#include <linux/of_address.h>
+-#include <linux/of_platform.h>
++#include <linux/platform_device.h>
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 2604b4d9fb78..789593495a80 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -8,7 +8,7 @@
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/of.h>
+-#include <linux/of_platform.h>
++#include <linux/platform_device.h>
+ #include <linux/iopoll.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 384ca195e3d5..916507b8f31d 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -40,7 +40,7 @@
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+-#include <linux/of_platform.h>
++#include <linux/platform_device.h>
+ #include <linux/clk.h>
+ 
+ #include <asm/mpc52xx.h>
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+index 860d161fa594..5da88cbeec73 100644
+--- a/drivers/tty/serial/mps2-uart.c
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -16,7 +16,6 @@
+ #include <linux/console.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
+-#include <linux/of_device.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_core.h>
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index a368f4293967..3974ca6ad86c 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -30,7 +30,7 @@
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/io.h>
+-#include <linux/of_device.h>
++#include <linux/of.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+ 
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index 196a4e678451..e308d5022b3f 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -11,7 +11,6 @@
+ #include <linux/kernel.h>
+ #include <linux/platform_device.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_gpio.h>
+ #include <linux/init.h>
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 444c74eeab7d..5607b668588b 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -11,7 +11,6 @@
+ #include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/pm_opp.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 1cf08b33456c..cbe641727f2a 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -20,7 +20,6 @@
+ #include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/pagemap.h>
+ #include <linux/platform_device.h>
+ #include <linux/reset.h>
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7c9457962a3d..115271d2f82d 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -35,7 +35,6 @@
+ #include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/reset.h>
+diff --git a/drivers/tty/serial/sunhv.c b/drivers/tty/serial/sunhv.c
+index 7d38c33ef506..c671d674bce4 100644
+--- a/drivers/tty/serial/sunhv.c
++++ b/drivers/tty/serial/sunhv.c
+@@ -17,11 +17,11 @@
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+ #include <linux/init.h>
+-#include <linux/of_device.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
+ 
+ #include <asm/hypervisor.h>
+ #include <asm/spitfire.h>
+-#include <asm/prom.h>
+ #include <asm/irq.h>
+ #include <asm/setup.h>
+ 
+diff --git a/drivers/tty/serial/sunsab.c b/drivers/tty/serial/sunsab.c
+index 48b39fdb0397..40eeaf835bba 100644
+--- a/drivers/tty/serial/sunsab.c
++++ b/drivers/tty/serial/sunsab.c
+@@ -33,7 +33,8 @@
+ #include <linux/slab.h>
+ #include <linux/delay.h>
+ #include <linux/init.h>
+-#include <linux/of_device.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
+ 
+ #include <linux/io.h>
+ #include <asm/irq.h>
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index fed052a0b931..58a4342ad0f9 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -37,11 +37,11 @@
+ #include <linux/serial_reg.h>
+ #include <linux/init.h>
+ #include <linux/delay.h>
+-#include <linux/of_device.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
+ 
+ #include <linux/io.h>
+ #include <asm/irq.h>
+-#include <asm/prom.h>
+ #include <asm/setup.h>
+ 
+ #include <linux/serial_core.h>
+diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
+index 0fbeb3dbd843..c8c71c56264c 100644
+--- a/drivers/tty/serial/sunzilog.c
++++ b/drivers/tty/serial/sunzilog.c
+@@ -33,11 +33,11 @@
+ #include <linux/serio.h>
+ #endif
+ #include <linux/init.h>
+-#include <linux/of_device.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
+ 
+ #include <linux/io.h>
+ #include <asm/irq.h>
+-#include <asm/prom.h>
+ #include <asm/setup.h>
+ 
+ #include <linux/serial_core.h>
+diff --git a/drivers/tty/serial/tegra-tcu.c b/drivers/tty/serial/tegra-tcu.c
+index 23500b342da7..65069daf36ec 100644
+--- a/drivers/tty/serial/tegra-tcu.c
++++ b/drivers/tty/serial/tegra-tcu.c
+@@ -7,7 +7,6 @@
+ #include <linux/mailbox_client.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 679574893ebe..b225a78f6175 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -20,9 +20,6 @@
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/of.h>
+-#include <linux/of_address.h>
+-#include <linux/of_device.h>
+-#include <linux/of_platform.h>
+ #include <linux/clk.h>
+ #include <linux/pm_runtime.h>
+ 
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index 404230c1ebb2..284b293fade6 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -17,15 +17,16 @@
+  */
+ 
+ #include <linux/module.h>
++#include <linux/platform_device.h>
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+ #include <linux/slab.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ #include <linux/io.h>
++#include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+-#include <linux/of_platform.h>
+ #include <linux/dma-mapping.h>
+ 
+ #include <linux/fs_uart_pd.h>
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index cc9157df732f..32433e9b3e5f 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -14,6 +14,7 @@
+ #include <linux/irq.h>
+ #include <linux/init.h>
+ #include <linux/console.h>
++#include <linux/platform_device.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
+ #include <linux/serial_core.h>
+@@ -21,7 +22,6 @@
+ #include <linux/slab.h>
+ #include <linux/clk.h>
+ #include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/err.h>
+ 
+ /*
+-- 
+2.40.1
 
-It was suggested to me by a more experienced kernel developer to
-"suggest a fix, instead of hurrying a revert":
-
-    https://lkml.org/lkml/2023/5/17/758
-
-That is what we decided to do in the end, and it worked quite well.
-
-Hugo.
