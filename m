@@ -2,103 +2,76 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3ABEC001B0
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 01:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BCCEB64DD
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 03:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232075AbjGXBkY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Jul 2023 21:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
+        id S229468AbjGXDrl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 23 Jul 2023 23:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbjGXBj5 (ORCPT
+        with ESMTP id S229896AbjGXDrj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Jul 2023 21:39:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BC24ECF;
-        Sun, 23 Jul 2023 18:35:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Sun, 23 Jul 2023 23:47:39 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319CFD7
+        for <linux-serial@vger.kernel.org>; Sun, 23 Jul 2023 20:47:38 -0700 (PDT)
+Received: from hwang4-ThinkPad-T14s-Gen-2a.conference (unknown [114.249.186.86])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4045E60F40;
-        Mon, 24 Jul 2023 01:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B41FBC433C8;
-        Mon, 24 Jul 2023 01:32:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1690162360;
-        bh=HQTTneSDXkMPZFwnoY3GDd1oN7ilbC+fHo+7+HZkhCU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KZlHfuiyvLSmWrXjKbxbYNZoRAfSbbzHmq5rSWdyLUlXdjXjvkpPqkfQpFekaWuT0
-         e0tW8TP+jeaLl7GcEVhalhwFvZGwUdnqReSTXyY+km3YfWJj9xwJ73cTJ978Tbpkfd
-         Gs8ud0eGXyOLraHi1V8uLcfIdqk3AsYtFBlAg0/8lYUdQV1KAjXMR2xbOdaGfSqOxl
-         1iNuiwwVbL3CNYf+rgjD5k7zmbmcpRBD8B6ebsvUNvovZXcojGC5qskMynDSruBE34
-         rEpHBm6I19CcHS5PWg6uDCxdQHiOd1R3rWmpZYaPEWx2Z45uQhzc7iWiPgmr+QJPOU
-         kysl7N+f37DGw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jslaby@suse.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.1 01/34] serial: stm32: Ignore return value of uart_remove_one_port() in .remove()
-Date:   Sun, 23 Jul 2023 21:32:04 -0400
-Message-Id: <20230724013238.2329166-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 729D53F2F7;
+        Mon, 24 Jul 2023 03:47:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1690170454;
+        bh=bS94gwxJCTkxEUiXXMT2jlT0I8BOfRaTP+3ZVtBhd2o=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=BXQlhlpY1z3ejlVxaNfNzw97MOs/jZ7gNl0zm3umaJoY+Ae+wI5ylBLjalsMgMKFU
+         R6fll6oYTl7iTPBBt6uIlqq6wAW/urPj+HlZB/5UfMULzlSYTeccgQyZGHgvqDkaxR
+         /jtRqR5EwMDM5glRmbrYQLNTmAbJqIovKqGQtCRUcjQ+JGaS2qcz+qfy1KWO+zokLF
+         1PNbm8M1D45qLouTAaXzCXj9ZL+elW+2vE6bRdAuRgy/q9TYPrEPsqDM1gqH79itRE
+         NBp3E6p9fM749S1y4ml71Fq+OimR9skh37pDVkbB4mVQNTC+NAOoCXL015FKh+x00+
+         ETmPCKvlSLwBw==
+From:   Hui Wang <hui.wang@canonical.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     jringle@gridpoint.com, u.kleine-koenig@pengutronix.de,
+        hui.wang@canonical.com
+Subject: [PATCH] serial: sc16is7xx: Put IOControl register into regmap_volatile
+Date:   Mon, 24 Jul 2023 11:47:27 +0800
+Message-Id: <20230724034727.17335-1-hui.wang@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.40
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+According to the IOControl register bits description in the page 31 of
+the product datasheet, we know the bit 3 of IOControl register is
+softreset, this bit will self-clearing once the reset finish.
 
-[ Upstream commit 6bd6cd29c92401a101993290051fa55078238a52 ]
+In the probe, the softreset bit is set, and when we read this register
+from debugfs/regmap interface, we found the softreset bit is still
+setting, this confused us for a while. Finally we found this register
+is cached, to read the real value from register, we could put it
+into the regmap_volatile().
 
-Returning early from stm32_usart_serial_remove() results in a resource
-leak as several cleanup functions are not called. The driver core ignores
-the return value and there is no possibility to clean up later.
-
-uart_remove_one_port() only returns non-zero if there is some
-inconsistency (i.e. stm32_usart_driver.state[port->line].uart_port == NULL).
-This should never happen, and even if it does it's a bad idea to exit
-early in the remove callback without cleaning up.
-
-This prepares changing the prototype of struct platform_driver::remove to
-return void. See commit 5c5a7680e67b ("platform: Provide a remove callback
-that returns no value") for further details about this quest.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20230512173810.131447-2-u.kleine-koenig@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
 ---
- drivers/tty/serial/stm32-usart.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 28edbaf7bb329..2a9c4058824a8 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1753,13 +1753,10 @@ static int stm32_usart_serial_remove(struct platform_device *pdev)
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
--	int err;
- 	u32 cr3;
- 
- 	pm_runtime_get_sync(&pdev->dev);
--	err = uart_remove_one_port(&stm32_usart_driver, port);
--	if (err)
--		return(err);
-+	uart_remove_one_port(&stm32_usart_driver, port);
- 
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_set_suspended(&pdev->dev);
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 2e7e7c409cf2..bc2b204d63af 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -488,6 +488,7 @@ static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+ 	case SC16IS7XX_TXLVL_REG:
+ 	case SC16IS7XX_RXLVL_REG:
+ 	case SC16IS7XX_IOSTATE_REG:
++	case SC16IS7XX_IOCONTROL_REG:
+ 		return true;
+ 	default:
+ 		break;
 -- 
-2.39.2
+2.34.1
 
