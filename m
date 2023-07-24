@@ -2,105 +2,85 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB83C04FE2
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE73C0015E
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jul 2023 08:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbjGXIkU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jul 2023 04:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S231925AbjGXIwr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jul 2023 04:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231777AbjGXIkL (ORCPT
+        with ESMTP id S231917AbjGXIwq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jul 2023 04:40:11 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428B9E73;
-        Mon, 24 Jul 2023 01:40:08 -0700 (PDT)
+        Mon, 24 Jul 2023 04:52:46 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24FFFB;
+        Mon, 24 Jul 2023 01:52:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690188008; x=1721724008;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dB65KYAnPw+sNmlSCdKHMTxaILoR7JZ35XDU87KFMkQ=;
-  b=SmlsB+tw8Noal+1XL/3RZP3cnNoJ+IFkNJJgj4o6aflpCEFmvymX1TXn
-   f7zg8ZTggaJ+FTzdFmeBA4ttHvkx08t/HZMB7tA+wHZ990ipHzysE0lWT
-   lUKOnBZX/J1wi4gSy9NSAmZG89eccw/GKaOFY/REZ5aoCRFMcgNjdhhRk
-   NJ753lC3wOLCmRBLXPhQx6xXQ5MbyINWDbzp3ot+7Oe1V+v2gUIOOKy34
-   f1N4CvaoeUb7zflrn4Y1sSZuOO7P45QCHtrMnYXO9BjwFYWK5HGV7AMAk
-   kFrZHWMfqDAN88a2G8OAmJXGqxFi6XiB9LI6l9E1xquNdsEKq7RId7sNE
+  t=1690188764; x=1721724764;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AFK87Oy7ijOEjIfPgqTKmw5kmr9MTaaez0cnQ9KaiPk=;
+  b=E9ltUVdfCeVw77AuoXWmkZPDA7VYUlSofBtZ/nnkLD/3RBKgmGsBKQXU
+   IGlPOv7uSVmyf+7dbFkbnakI+WKRem6yyyULybPsoBenn+j1NkbyKwoVc
+   7naGuNj2jSzO1BiWAMFNCrKyorbyU4/KsD8Qme+FIwUgiCBBgh6MD+m2K
+   ySK9zQE5Z7m6Hmqt+5nkUTgzXxoT9FSSXjGRbRwGIRtY5X5e5o/y0mnNm
+   GCaEJu3YsDj7Yjrg8GjBXyEbVxgGsJwbrW5FAhH/7kWtJsUgaZXrgwmlN
+   Cv7B+ukThpsUokg3dHm4j0aPKU4GC0SlSffJDv7FWl+dkZHIYdRyODlms
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="433627671"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="398288419"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="433627671"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:40:08 -0700
+   d="scan'208";a="398288419"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:52:44 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="675749498"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="728833974"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="scan'208";a="675749498"
-Received: from unknown (HELO jiaqingz-acrn-container.sh.intel.com) ([10.239.138.235])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 01:40:05 -0700
-From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Gerhard Uttenthaler <uttenthaler@ems-wuensche.com>,
-        support@ems-wuensche.com, linux-serial@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Subject: [PATCH v3 3/4] serial: 8250_pci: add support for ASIX AX99100
-Date:   Mon, 24 Jul 2023 08:39:32 +0000
-Message-Id: <20230724083933.3173513-4-jiaqing.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
-References: <20230724083933.3173513-1-jiaqing.zhao@linux.intel.com>
+   d="scan'208";a="728833974"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga007.fm.intel.com with ESMTP; 24 Jul 2023 01:52:41 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1qNrJ1-005GiM-2f;
+        Mon, 24 Jul 2023 11:52:39 +0300
+Date:   Mon, 24 Jul 2023 11:52:39 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] serial: core: Controller id cannot be negative
+Message-ID: <ZL471yzIKu1xG/PF@smile.fi.intel.com>
+References: <20230724050709.17544-1-tony@atomide.com>
+ <20230724050709.17544-2-tony@atomide.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230724050709.17544-2-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Each of the 4 PCI functions on ASIX AX99100 PCIe to Multi I/O
-Controller can be configured as a single-port serial port controller.
-The subvendor id is 0x1000 when configured as serial port and MSI
-interrupts are supported.
+On Mon, Jul 24, 2023 at 08:07:03AM +0300, Tony Lindgren wrote:
+> The controller id cannot be negative. Let's fix the ctrl_id in preparation
+> for adding port_id to fix the device name.
+> 
+> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_pci.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index d2d547b5da95..62a9bd30b4db 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -67,6 +67,8 @@ static const struct pci_device_id pci_use_msi[] = {
- 			 0xA000, 0x1000) },
- 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9922,
- 			 0xA000, 0x1000) },
-+	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_ASIX_AX99100,
-+			 0xA000, 0x1000) },
- 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_HP_3PAR, PCI_DEVICE_ID_HPE_PCI_SERIAL,
- 			 PCI_ANY_ID, PCI_ANY_ID) },
- 	{ }
-@@ -5557,6 +5559,14 @@ static const struct pci_device_id serial_pci_tbl[] = {
- 	{	PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
- 		0xA000, 0x3004,
- 		0, 0, pbn_b0_bt_4_115200 },
-+
-+	/*
-+	 * ASIX AX99100 PCIe to Multi I/O Controller
-+	 */
-+	{	PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_ASIX_AX99100,
-+		0xA000, 0x1000,
-+		0, 0, pbn_b0_1_115200 },
-+
- 	/* Intel CE4100 */
- 	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CE4100_UART,
- 		PCI_ANY_ID,  PCI_ANY_ID, 0, 0,
+???
+Missing Reviewed-by: I suppose?
+
 -- 
-2.39.2
+With Best Regards,
+Andy Shevchenko
+
 
