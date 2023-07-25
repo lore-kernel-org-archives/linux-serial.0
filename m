@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D362C04FE2
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 14:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57DEC0015E
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 14:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233109AbjGYOYj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 10:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36352 "EHLO
+        id S233038AbjGYOYi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 10:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbjGYOYN (ORCPT
+        with ESMTP id S232434AbjGYOYN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 25 Jul 2023 10:24:13 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584D31FD0;
-        Tue, 25 Jul 2023 07:24:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1262E26A2;
+        Tue, 25 Jul 2023 07:24:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
         ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
         In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=g0IqX97ybKTf/1b9IfX3fw+nZZPbUPYVvGhnzhAVJ8Y=; b=pVcCfG1AwTomWwXVPD7r4jxRGU
-        B/5S7VPHwaXRCk/ZVjqQ2SNREx5scDcbFadla50G56j3/2qnYuN4di0p1Xd2QR/Gmmssgu2hN4+nQ
-        TfhxAkQeRMdwp61/l82tavR3r5rve126tdTSxdeXh5aKK5vuVSIPcyRMYehKF1IFqDLw=;
+        bh=SuJQI5JxUPzY+H5j7N6gL+Df0hCmvZbTgQvKUtpTEpg=; b=wFVtBv+hn8BNR5Xvw1O0BcIusj
+        BmUhUEALl0odI4YnMG8edK+EvS3gWS9QB2bH4Scz7jCtEdoKX0P0Wb0i11f1+LYKCYkQTk56JDiOj
+        SDsHInDR3d2AGH9P/6YnvRZGaFonQkKLhj19YG+7ejrXx92jCagIWWpfCLmWRd0fPXX4=;
 Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:34256 helo=localhost.localdomain)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qOIxF-0003Kt-VE; Tue, 25 Jul 2023 10:24:02 -0400
+        id 1qOIxB-0003Kt-TO; Tue, 25 Jul 2023 10:23:58 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
@@ -38,9 +38,10 @@ Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, hugo@hugovil.com,
         linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org, Lech Perczak <lech.perczak@camlingroup.com>
-Date:   Tue, 25 Jul 2023 10:23:39 -0400
-Message-Id: <20230725142343.1724130-8-hugo@hugovil.com>
+        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
+        Lech Perczak <lech.perczak@camlingroup.com>
+Date:   Tue, 25 Jul 2023 10:23:37 -0400
+Message-Id: <20230725142343.1724130-6-hugo@hugovil.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230725142343.1724130-1-hugo@hugovil.com>
 References: <20230725142343.1724130-1-hugo@hugovil.com>
@@ -48,7 +49,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 184.161.19.61
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v9 07/10] serial: sc16is7xx: fix bug when first setting GPIO direction
+Subject: [PATCH v9 05/10] dt-bindings: sc16is7xx: Add property to change GPIO function
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -57,56 +58,98 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-When configuring a pin as an output pin with a value of logic 0, we
-end up as having a value of logic 1 on the output pin. Setting a
-logic 0 a second time (or more) after that will correctly output a
-logic 0 on the output pin.
+Some variants in this series of UART controllers have GPIO pins that
+are shared between GPIO and modem control lines.
 
-By default, all GPIO pins are configured as inputs. When we enter
-sc16is7xx_gpio_direction_output() for the first time, we first set the
-desired value in IOSTATE, and then we configure the pin as an output.
-The datasheet states that writing to IOSTATE register will trigger a
-transfer of the value to the I/O pin configured as output, so if the
-pin is configured as an input, nothing will be transferred.
+The pin mux mode (GPIO or modem control lines) can be set for each
+ports (channels) supported by the variant.
 
-Therefore, set the direction first in IODIR, and then set the desired
-value in IOSTATE.
+This adds a property to the device tree to set the GPIO pin mux to
+modem control lines on selected ports if needed.
 
-This is what is done in NXP application note AN10587.
-
-Fixes: dfeae619d781 ("serial: sc16is7xx")
-Cc: <stable@vger.kernel.org>
+Cc: <stable@vger.kernel.org> # 6.1.x
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ .../bindings/serial/nxp,sc16is7xx.txt         | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index bc0a288f258d..07ae889db296 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1342,9 +1342,18 @@ static int sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
- 		state |= BIT(offset);
- 	else
- 		state &= ~BIT(offset);
--	sc16is7xx_port_write(port, SC16IS7XX_IOSTATE_REG, state);
-+
-+	/*
-+	 * If we write IOSTATE first, and then IODIR, the output value is not
-+	 * transferred to the corresponding I/O pin.
-+	 * The datasheet states that each register bit will be transferred to
-+	 * the corresponding I/O pin programmed as output when writing to
-+	 * IOSTATE. Therefore, configure direction first with IODIR, and then
-+	 * set value after with IOSTATE.
-+	 */
- 	sc16is7xx_port_update(port, SC16IS7XX_IODIR_REG, BIT(offset),
- 			      BIT(offset));
-+	sc16is7xx_port_write(port, SC16IS7XX_IOSTATE_REG, state);
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+index 0fa8e3e43bf8..1a7e4bff0456 100644
+--- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+@@ -23,6 +23,9 @@ Optional properties:
+     1 = active low.
+ - irda-mode-ports: An array that lists the indices of the port that
+ 		   should operate in IrDA mode.
++- nxp,modem-control-line-ports: An array that lists the indices of the port that
++				should have shared GPIO lines configured as
++				modem control lines.
  
- 	return 0;
- }
+ Example:
+         sc16is750: sc16is750@51 {
+@@ -35,6 +38,26 @@ Example:
+                 #gpio-cells = <2>;
+         };
+ 
++	sc16is752: sc16is752@53 {
++		compatible = "nxp,sc16is752";
++		reg = <0x53>;
++		clocks = <&clk20m>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++		nxp,modem-control-line-ports = <1>; /* Port 1 as modem control lines */
++		gpio-controller; /* Port 0 as GPIOs */
++		#gpio-cells = <2>;
++	};
++
++	sc16is752: sc16is752@54 {
++		compatible = "nxp,sc16is752";
++		reg = <0x54>;
++		clocks = <&clk20m>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++		nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
++	};
++
+ * spi as bus
+ 
+ Required properties:
+@@ -59,6 +82,9 @@ Optional properties:
+     1 = active low.
+ - irda-mode-ports: An array that lists the indices of the port that
+ 		   should operate in IrDA mode.
++- nxp,modem-control-line-ports: An array that lists the indices of the port that
++				should have shared GPIO lines configured as
++				modem control lines.
+ 
+ Example:
+ 	sc16is750: sc16is750@0 {
+@@ -70,3 +96,23 @@ Example:
+ 		gpio-controller;
+ 		#gpio-cells = <2>;
+ 	};
++
++	sc16is752: sc16is752@1 {
++		compatible = "nxp,sc16is752";
++		reg = <1>;
++		clocks = <&clk20m>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++		nxp,modem-control-line-ports = <1>; /* Port 1 as modem control lines */
++		gpio-controller; /* Port 0 as GPIOs */
++		#gpio-cells = <2>;
++	};
++
++	sc16is752: sc16is752@2 {
++		compatible = "nxp,sc16is752";
++		reg = <2>;
++		clocks = <&clk20m>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++		nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
++	};
 -- 
 2.30.2
 
