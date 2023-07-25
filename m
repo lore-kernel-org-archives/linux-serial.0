@@ -2,35 +2,35 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A91EC001DE
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 17:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF8EC001DE
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 17:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231560AbjGYR2v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 13:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        id S231206AbjGYR36 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 13:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbjGYR2v (ORCPT
+        with ESMTP id S229479AbjGYR36 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 13:28:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC891A8;
-        Tue, 25 Jul 2023 10:28:50 -0700 (PDT)
+        Tue, 25 Jul 2023 13:29:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4C319B4;
+        Tue, 25 Jul 2023 10:29:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46FD5617DC;
-        Tue, 25 Jul 2023 17:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26615C433C8;
-        Tue, 25 Jul 2023 17:28:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E68617EF;
+        Tue, 25 Jul 2023 17:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3329C433C9;
+        Tue, 25 Jul 2023 17:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690306129;
-        bh=ugZBXR+dGc8RsbowbvegiPdEddSvJSt6gxUH3f9NzDU=;
+        s=korg; t=1690306196;
+        bh=TfpCv+i5rtY7RVy/weOVjUhYO1z2fnvqOS/4UZwcLOc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zK5TeEj54h7i5n8d9dHfNieK+yZDYUVEkt5fnbU6xH2yLPrDxo3PiZYZS7toNUV1q
-         LJXqCO+ZVuNonygypBHiPU5gwtbNE9xpET6XcVvtTM1EudhVugU+NgpS4/saHP/U8i
-         3XgtfKA0KNl7rJHp54RYvl03cKqBt5kxPDuDfCLM=
-Date:   Tue, 25 Jul 2023 19:28:46 +0200
+        b=nvfdk29umM+ZEQFb+vtQ/PP/yjDnfxIlwP1hHzZibxKdCjvBcghsA+YqrHL+FBnT8
+         6H8ylJWIiODSP+nmo1M6OiNXfh066OUz0qfzPAWsM7HNk93wbOM5z85e92a4hNt7JF
+         t0cYs5b7n91J4RJyJxnjUShggiMWSUYX0yQ7xxYU=
+Date:   Tue, 25 Jul 2023 19:29:53 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Tony Lindgren <tony@atomide.com>
 Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
@@ -43,32 +43,37 @@ Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
  added files
-Message-ID: <2023072517-onward-payment-569d@gregkh>
+Message-ID: <2023072530-wired-chaps-c1e3@gregkh>
 References: <20230721072334.59272-1-tony@atomide.com>
  <ZLpboaXKVOOjeGJ+@smile.fi.intel.com>
  <20230724045327.GV5194@atomide.com>
+ <2023072517-onward-payment-569d@gregkh>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230724045327.GV5194@atomide.com>
+In-Reply-To: <2023072517-onward-payment-569d@gregkh>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
-> * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
-> > On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
-> > > Add mailing lists for linux-serial and lkml for the TTY layer. And let's
-> > > list the recently added files. This makes it easier for get_maintainer.pl
-> > > to include linux-serial for patches.
+On Tue, Jul 25, 2023 at 07:28:46PM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
+> > * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
+> > > On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
+> > > > Add mailing lists for linux-serial and lkml for the TTY layer. And let's
+> > > > list the recently added files. This makes it easier for get_maintainer.pl
+> > > > to include linux-serial for patches.
+> > > 
+> > > Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
 > > 
-> > Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
+> > Not sure if there's some reason we have "TTY LAYER" with serial_core
+> > files. If not, yeah let's move the serial files.
 > 
-> Not sure if there's some reason we have "TTY LAYER" with serial_core
-> files. If not, yeah let's move the serial files.
+> I'll take this patch, can you send a new one that removes the serial
+> files from this entry as I don't think they are needed in here anymore.
 
-I'll take this patch, can you send a new one that removes the serial
-files from this entry as I don't think they are needed in here anymore.
+Better yet, they should be merged probably.  Although I don't know if
+Jiri wants to be responsible for serial stuff, that's his call...
 
 thanks,
 
