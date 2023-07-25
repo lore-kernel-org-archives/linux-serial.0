@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36194C0015E
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 14:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D514C04A6A
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 14:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbjGYOYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 10:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S232098AbjGYOYN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 10:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232478AbjGYOYH (ORCPT
+        with ESMTP id S232040AbjGYOYI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 10:24:07 -0400
+        Tue, 25 Jul 2023 10:24:08 -0400
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9310D2697;
-        Tue, 25 Jul 2023 07:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BB9136;
+        Tue, 25 Jul 2023 07:24:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=5nJGAa1uU81DK4gB/PIFJUn37k+YUGRc051pFa/OAlQ=; b=xsFBO3i1TLHsOEqAFt17vLy3Ch
-        LB0vgbhT6rKkFx0AZYV7s/uTCXXC3iUigoqqtaMyHHnV1B49aQ7rOPZnZxECfaej+AqImnN0rQDSq
-        HIvnwa8s6ZU74SzHwbDe6I0lE7+YMPTQpgDA/ImGNAVCaj1nt5mx+0nuNqSh92sQqU0U=;
+        ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3cFxvmO7sr+2mXLVwLsYIFte9IVFO4PRYte249nYxi0=; b=xXkDTr7Dl+mL1rrAzE1nbtT4V2
+        3IaRkderAgNLBt8DNoqgbZh2K/EsO1vfOgPJxad1j+d4B7Njqz2bfmoJermebm81vkSJcggDkfOST
+        AllvGuolvFhziGIi9kPLVN9Q7uclLtonVK6LyOWxw+iHSiQeSqNdY5z6SbCQqGHnxFMU=;
 Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:34256 helo=localhost.localdomain)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1qOIx3-0003Kt-17; Tue, 25 Jul 2023 10:23:49 -0400
+        id 1qOIx8-0003Kt-IW; Tue, 25 Jul 2023 10:23:55 -0400
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
@@ -38,20 +38,18 @@ Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, hugo@hugovil.com,
         linux-gpio@vger.kernel.org,
         Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lech Perczak <lech.perczak@camlingroup.com>
-Date:   Tue, 25 Jul 2023 10:23:33 -0400
-Message-Id: <20230725142343.1724130-2-hugo@hugovil.com>
+        Lech Perczak <lech.perczak@camlingroup.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 25 Jul 2023 10:23:35 -0400
+Message-Id: <20230725142343.1724130-4-hugo@hugovil.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230725142343.1724130-1-hugo@hugovil.com>
 References: <20230725142343.1724130-1-hugo@hugovil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 184.161.19.61
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH v9 01/10] serial: sc16is7xx: fix broken port 0 uart init
+Subject: [PATCH v9 03/10] serial: sc16is7xx: remove obsolete out_thread label
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -60,56 +58,48 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-The sc16is7xx_config_rs485() function is called only for the second
-port (index 1, channel B), causing initialization problems for the
-first port.
+Commit c8f71b49ee4d ("serial: sc16is7xx: setup GPIO controller later
+in probe") moved GPIO setup code later in probe function. Doing so
+also required to move ports cleanup code (out_ports label) after the
+GPIO cleanup code.
 
-For the sc16is7xx driver, port->membase and port->mapbase are not set,
-and their default values are 0. And we set port->iobase to the device
-index. This means that when the first device is registered using the
-uart_add_one_port() function, the following values will be in the port
-structure:
-    port->membase = 0
-    port->mapbase = 0
-    port->iobase  = 0
+After these moves, the out_thread label becomes misplaced and makes
+part of the cleanup code illogical.
 
-Therefore, the function uart_configure_port() in serial_core.c will
-exit early because of the following check:
-	/*
-	 * If there isn't a port here, don't do anything further.
-	 */
-	if (!port->iobase && !port->mapbase && !port->membase)
-		return;
+This patch remove the now obsolete out_thread label and make GPIO
+setup code jump to out_ports label if it fails.
 
-Typically, I2C and SPI drivers do not set port->membase and
-port->mapbase.
-
-The max310x driver sets port->membase to ~0 (all ones). By
-implementing the same change in this driver, uart_configure_port() is
-now correctly executed for all ports.
-
-Fixes: dfeae619d781 ("serial: sc16is7xx")
-Cc: <stable@vger.kernel.org> # 6.1.x
+Fixes: c8f71b49ee4d ("serial: sc16is7xx: setup GPIO controller later in probe")
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
 Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/sc16is7xx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 2e7e7c409cf2..8ae2afc76a9b 100644
+index 306ae512b38a..32d43d00a583 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1436,6 +1436,7 @@ static int sc16is7xx_probe(struct device *dev,
- 		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
- 		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
- 		s->p[i].port.iobase	= i;
-+		s->p[i].port.membase	= (void __iomem *)~0;
- 		s->p[i].port.iotype	= UPIO_PORT;
- 		s->p[i].port.uartclk	= freq;
- 		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+@@ -1516,7 +1516,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 		s->gpio.can_sleep	 = 1;
+ 		ret = gpiochip_add_data(&s->gpio, s);
+ 		if (ret)
+-			goto out_thread;
++			goto out_ports;
+ 	}
+ #endif
+ 
+@@ -1542,8 +1542,6 @@ static int sc16is7xx_probe(struct device *dev,
+ #ifdef CONFIG_GPIOLIB
+ 	if (devtype->nr_gpio)
+ 		gpiochip_remove(&s->gpio);
+-
+-out_thread:
+ #endif
+ 
+ out_ports:
 -- 
 2.30.2
 
