@@ -2,79 +2,91 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF8EC001DE
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 17:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50D2C001DE
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 17:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbjGYR36 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 13:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35938 "EHLO
+        id S231773AbjGYRcS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 13:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbjGYR36 (ORCPT
+        with ESMTP id S232591AbjGYRcE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 13:29:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4C319B4;
-        Tue, 25 Jul 2023 10:29:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4E68617EF;
-        Tue, 25 Jul 2023 17:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3329C433C9;
-        Tue, 25 Jul 2023 17:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690306196;
-        bh=TfpCv+i5rtY7RVy/weOVjUhYO1z2fnvqOS/4UZwcLOc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nvfdk29umM+ZEQFb+vtQ/PP/yjDnfxIlwP1hHzZibxKdCjvBcghsA+YqrHL+FBnT8
-         6H8ylJWIiODSP+nmo1M6OiNXfh066OUz0qfzPAWsM7HNk93wbOM5z85e92a4hNt7JF
-         t0cYs5b7n91J4RJyJxnjUShggiMWSUYX0yQ7xxYU=
-Date:   Tue, 25 Jul 2023 19:29:53 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>, Dhruva Gole <d-gole@ti.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Update TTY layer for lists and recently
- added files
-Message-ID: <2023072530-wired-chaps-c1e3@gregkh>
-References: <20230721072334.59272-1-tony@atomide.com>
- <ZLpboaXKVOOjeGJ+@smile.fi.intel.com>
- <20230724045327.GV5194@atomide.com>
- <2023072517-onward-payment-569d@gregkh>
+        Tue, 25 Jul 2023 13:32:04 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8247026A2;
+        Tue, 25 Jul 2023 10:31:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=huYoQw/VsEdrryOXoPwzfkMHdWCe1iNxFEa9sxkfcOM=; b=XGd4cWPy+ck0qamKi1HoaQ3V4J
+        cAg8PCJdLaOAS8I1hdDZlIms71DvfnTT2+K0iXzmhCE8z1d3x6xAalmEOG2NLbjOmoEQCf3LVg/Br
+        qhkqDMeC7h6og0JHEzpU79ZvSSSQJXBRpKHCXC81i7DrB9yCaTYJRl7dn4Y/GMQ7068cbKfAMOsU5
+        jCG4WDwx9ZQEg6JHiRy9Wu1fw2LSs86Gnc+UYHa16LcDk9ybV9kY0aI3va9Ab7JTrP5uLJWAEEOyf
+        8aY5DVnk7YcRgJ5V8hTRugrH9D1/HSsOS2GLeyny/sxp+cTkpNAo8qxEloL9KJe0fax+soT4WDnbz
+        S0hNStOw==;
+Received: from [2601:1c2:980:9ec0::2764]
+        by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1qOLt2-008AIf-0R;
+        Tue, 25 Jul 2023 17:31:52 +0000
+Message-ID: <5da2379c-4ec1-9bbf-bc94-2e1dbb7344f2@infradead.org>
+Date:   Tue, 25 Jul 2023 10:31:48 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023072517-onward-payment-569d@gregkh>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH] Documentation: devices.txt: reconcile serial/ucc_uart
+ minor numers
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Timur Tabi <timur@kernel.org>,
+        Kumar Gala <galak@kernel.crashing.org>,
+        linuxppc-dev@lists.ozlabs.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org
+References: <20230724063341.28198-1-rdunlap@infradead.org>
+ <2023072544-cloning-footsie-65e0@gregkh>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <2023072544-cloning-footsie-65e0@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 25, 2023 at 07:28:46PM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Jul 24, 2023 at 07:53:27AM +0300, Tony Lindgren wrote:
-> > * Andy Shevchenko <andriy.shevchenko@intel.com> [230721 10:19]:
-> > > On Fri, Jul 21, 2023 at 10:23:32AM +0300, Tony Lindgren wrote:
-> > > > Add mailing lists for linux-serial and lkml for the TTY layer. And let's
-> > > > list the recently added files. This makes it easier for get_maintainer.pl
-> > > > to include linux-serial for patches.
-> > > 
-> > > Shouldn't serial_* stuff go to the "SERIAL DRIVERS" section?
-> > 
-> > Not sure if there's some reason we have "TTY LAYER" with serial_core
-> > files. If not, yeah let's move the serial files.
+
+
+On 7/25/23 10:27, Greg Kroah-Hartman wrote:
+> On Sun, Jul 23, 2023 at 11:33:41PM -0700, Randy Dunlap wrote:
+>> Reconcile devices.txt with serial/ucc_uart.c regarding device number
+>> assignments. ucc_uart.c supports 4 ports and uses minor devnums
+>> 46-49, so update devices.txt with that info.
+>> Then update ucc_uart.c's reference to the location of the devices.txt
+>> list in the kernel source tree.
+>>
+>> Fixes: d7584ed2b994 ("[POWERPC] qe-uart: add support for Freescale QUICCEngine UART")
+>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Cc: Timur Tabi <timur@kernel.org>
+>> Cc: Kumar Gala <galak@kernel.crashing.org>
+>> Cc: linuxppc-dev@lists.ozlabs.org
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Jiri Slaby <jirislaby@kernel.org>
+>> Cc: linux-serial@vger.kernel.org
+>> Cc: Jonathan Corbet <corbet@lwn.net>
+>> Cc: linux-doc@vger.kernel.org
+>> ---
+>>  Documentation/admin-guide/devices.txt |    2 +-
+>>  drivers/tty/serial/ucc_uart.c         |    2 +-
+>>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> I'll take this patch, can you send a new one that removes the serial
-> files from this entry as I don't think they are needed in here anymore.
+> Very nice, thanks for catching this, I'll go queue it up.
+> 
+> Actually, how did you notice this?  I don't think the devices.txt file
+> is up to date at all anymore, and odds are, other things are wrong in it
+> too.
 
-Better yet, they should be merged probably.  Although I don't know if
-Jiri wants to be responsible for serial stuff, that's his call...
+I accidentally! saw some reference to lanana.org in the kernel source code
+and just grepped for that and saw this...
 
-thanks,
-
-greg k-h
+-- 
+~Randy
