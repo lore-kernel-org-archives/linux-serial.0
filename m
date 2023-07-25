@@ -2,129 +2,58 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A434CC0015E
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 07:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D95C0015E
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 07:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232798AbjGYHt5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 03:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34616 "EHLO
+        id S231477AbjGYHvK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 03:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbjGYHt4 (ORCPT
+        with ESMTP id S230092AbjGYHvJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 03:49:56 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03873D3;
-        Tue, 25 Jul 2023 00:49:55 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id 2adb3069b0e04-4fdd31bf179so7873928e87.2;
-        Tue, 25 Jul 2023 00:49:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690271393; x=1690876193;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=hz9CNO+vqPPbwZdw+qv1emEqR9EXaSPi9lk5lY3h5XE=;
-        b=NTqbqIzHD24Vz71930+dc7E8JY/mINXjsO8xggdLkJ1AJSLfOh0n8kIKasGkL7tC5U
-         7JWxVC2x9fj0SN/TdjDQCwOChcwx4gHdRwjmstwFg/S+kwdqRe8aMW98F3nD0TbRpb/0
-         VxgSIQuFGuKg2p8fGqRTEAInaGCos/cBuviNTvK8naMAVoYOmMbDLM0xUIBSvFxp0lPp
-         ZkD2f7tXsg5WFM8fdC/eXPF77eRAXCec0IpZnGwb2vF4dLKPOGnVqMp+vxHEjYy77u2b
-         j/bx+GiByeq/wxqx9UlbnvkNfRTBr12jojrWNTkvxWuGS6ISo931sbwDgDZIGeDxXWvF
-         K9AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690271393; x=1690876193;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hz9CNO+vqPPbwZdw+qv1emEqR9EXaSPi9lk5lY3h5XE=;
-        b=eMzZaGEz1y5z3Mkdkk9FtKoLCOwIsm4U6eHTsiLRG86qHxc+vAv3gTrqHJqBt2+BI7
-         qVfhr/8yZBZxdIdTjrKsBfQOAlJ2XvCpZlaZEsn4zbzpoa+WgHl3WFBDsJxBgQIPQXi+
-         awzOsJNRORf3c05aWxHtke6AjGNb4nx8cX88HdhfbeUxz68t+W5fpkDq1in2/QGjOOYY
-         Q/0sVhbF4q3U/VwUFM3zHfNWch4H1+iFRH1sSIWsdv0r8JpNo/GKARMk0C7XgApISVRF
-         GKLPdBshdGLqrxFKZL7AtLOw7M0VmTrTXO1XyL833CwCZy+kw6BcJaWXLnqon0O8QL55
-         5mpg==
-X-Gm-Message-State: ABy/qLaIZrnHPkFCELbUckcfIUb1uEyKldJlwqQRt8gVachVADtYDaJm
-        8GJJBI63He8jIMUOjVZ8FGVzQGdtALNGX1b97Xo=
-X-Google-Smtp-Source: APBJJlGTu/kXoLlkJjXTRkUdfBcDj3PtAuEm8+yc+pfPrgSIpDZ76qZhMmOndQJ9+w84HH49ROGS3sODoImQJaK/ODQ=
-X-Received: by 2002:ac2:5e24:0:b0:4fe:958:88ac with SMTP id
- o4-20020ac25e24000000b004fe095888acmr194768lfg.6.1690271392924; Tue, 25 Jul
- 2023 00:49:52 -0700 (PDT)
+        Tue, 25 Jul 2023 03:51:09 -0400
+Received: from mail.strategicvision.pl (mail.strategicvision.pl [217.61.105.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89D197
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jul 2023 00:51:02 -0700 (PDT)
+Received: by mail.strategicvision.pl (Postfix, from userid 1002)
+        id 099C282F7A; Tue, 25 Jul 2023 09:50:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=strategicvision.pl;
+        s=mail; t=1690271459;
+        bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
+        h=Date:From:To:Subject:From;
+        b=fjnyFSIXeGgXG8nFFtaVryR8YSHeWMD8LCbIQhQ6lEj90JdincgvCkaoC3oAHYm4x
+         Umf6cefZwv4DAfuBfqcpMMlipw9WEVEycW8RBlhHfLFReVVgw0kDZiNFIVg/TeCWsY
+         TdAtttI+RrOJwbLHgCh8Q5WJPSCsTqjGfoy5llR6uZpJG66PyM9vXdR9PRfnmBKBNJ
+         lbIRJUby/rPgVdxTZmouvQ3VCGrL8GGce5yNlJONm0Eqc2ZdskDtYbSmzon2vjHYXM
+         xxxsC4bgeFpCf404klt5c32b1OSb9pVxudajODK5QFH/BCF07uniNvT+PdyhBA0DwV
+         48b2s4dhCC73g==
+Received: by mail.strategicvision.pl for <linux-serial@vger.kernel.org>; Tue, 25 Jul 2023 07:50:58 GMT
+Message-ID: <20230725084500-0.1.j.8fos.0.qfl21dpcg1@strategicvision.pl>
+Date:   Tue, 25 Jul 2023 07:50:58 GMT
+From:   "Adam Charachuta" <adam.charachuta@strategicvision.pl>
+To:     <linux-serial@vger.kernel.org>
+Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
+X-Mailer: mail.strategicvision.pl
 MIME-Version: 1.0
-References: <20230725064053.235448-1-chunyan.zhang@unisoc.com> <2023072548-jolliness-unbolted-621c@gregkh>
-In-Reply-To: <2023072548-jolliness-unbolted-621c@gregkh>
-From:   Chunyan Zhang <zhang.lyra@gmail.com>
-Date:   Tue, 25 Jul 2023 15:49:15 +0800
-Message-ID: <CAAfSe-ugFQZqNzuukghJHot71v=GoueamooFGzAdEUoPvEgh8g@mail.gmail.com>
-Subject: Re: [PATCH V3 1/2] serial: sprd: Assign sprd_port after initialized
- to avoid wrong access
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 25 Jul 2023 at 14:50, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Jul 25, 2023 at 02:40:52PM +0800, Chunyan Zhang wrote:
-> > The global pointer 'sprd_port' may not zero when sprd_probe returns
-> > failure, that is a risk for sprd_port to be accessed afterward, and
-> > may lead to unexpected errors.
-> >
-> > For example:
-> >
-> > There are two UART ports, UART1 is used for console and configured in
-> > kernel command line, i.e. "console=";
-> >
-> > The UART1 probe failed and the memory allocated to sprd_port[1] was
-> > released, but sprd_port[1] was not set to NULL;
-> >
-> > In UART2 probe, the same virtual address was allocated to sprd_port[2],
-> > and UART2 probe process finally will go into sprd_console_setup() to
-> > register UART1 as console since it is configured as preferred console
-> > (filled to console_cmdline[]), but the console parameters (sprd_port[1])
-> > belong to UART2.
-> >
-> > So move the sprd_port[] assignment to where the port already initialized
-> > can avoid the above issue.
-> >
-> > Fixes: b7396a38fb28 ("tty/serial: Add Spreadtrum sc9836-uart driver support")
-> > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > ---
-> > V3:
-> > - Call uart_unregister_driver() only when the 'sprd_ports_num' decreases to 0;
-> > - Add calling sprd_rx_free_buf() instread of sprd_remove() under clean_up lable.
-> >
-> > V2:
-> > - Leave sprd_remove() to keep the unrelated code logic the same.
-> > ---
-> >  drivers/tty/serial/sprd_serial.c | 25 +++++++++++++++++--------
-> >  1 file changed, 17 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> > index b58f51296ace..fc1377029021 100644
-> > --- a/drivers/tty/serial/sprd_serial.c
-> > +++ b/drivers/tty/serial/sprd_serial.c
-> > @@ -1106,7 +1106,7 @@ static bool sprd_uart_is_console(struct uart_port *uport)
-> >  static int sprd_clk_init(struct uart_port *uport)
-> >  {
-> >       struct clk *clk_uart, *clk_parent;
-> > -     struct sprd_uart_port *u = sprd_port[uport->line];
-> > +     struct sprd_uart_port *u = container_of(uport, struct sprd_uart_port, port);
->
-> Now that you are not allocaing the sprd_port[] pointers, shouldn't you
-> also remove that variable entirely?
+Dzie=C5=84 dobry,
 
-sprd_console_write() and sprd_console_setup() [1] also need sprd_port[].
+zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
+=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
+o dalszych rozm=C3=B3w.=20
 
-So, this driver still needs to allocate the buffer for sprd_port[],
-the change is using a local variable instead of allocating directly to
-the global pointer.
+Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
+=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
+=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
+strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
 
-[1] https://elixir.bootlin.com/linux/v6.5-rc1/source/drivers/tty/serial/sprd_serial.c#L1000
+Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
 
-Thanks,
-Chunyan
+
+Pozdrawiam
+Adam Charachuta
