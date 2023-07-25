@@ -2,123 +2,116 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6BEC001DE
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 17:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E99C04FE0
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 17:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjGYRdl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 13:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38676 "EHLO
+        id S231693AbjGYRte (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 13:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjGYRdl (ORCPT
+        with ESMTP id S230408AbjGYRtc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 13:33:41 -0400
+        Tue, 25 Jul 2023 13:49:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584CAA6;
-        Tue, 25 Jul 2023 10:33:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA79CF7;
+        Tue, 25 Jul 2023 10:49:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1EE561839;
-        Tue, 25 Jul 2023 17:33:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFF8C433C8;
-        Tue, 25 Jul 2023 17:33:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1690306419;
-        bh=W2bYqQuaVMZ/wZjaKxCd2Tdu6cVEZXTe5IXAu3PvR+w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yg9Es6XWE4Bo/8JKnt60txUTkQl0JRQUI4uswwHVwEB3upOVVO4xDsRJKLDT6gBg0
-         3tAuVPbKVZ0+gahmOyTEgoLM53esIdlo5LyHYjylgx6AT9Xg+kcCEwS2Wg8BM9L7LZ
-         NtrseQYGXpgVUsiwT9EAZ/zj2DO8pLmo4n/EK/P0=
-Date:   Tue, 25 Jul 2023 19:33:36 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Chunyan Zhang <zhang.lyra@gmail.com>
-Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V3 1/2] serial: sprd: Assign sprd_port after initialized
- to avoid wrong access
-Message-ID: <2023072551-surrogate-reproach-3634@gregkh>
-References: <20230725064053.235448-1-chunyan.zhang@unisoc.com>
- <2023072548-jolliness-unbolted-621c@gregkh>
- <CAAfSe-ugFQZqNzuukghJHot71v=GoueamooFGzAdEUoPvEgh8g@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BDA761852;
+        Tue, 25 Jul 2023 17:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C4F6C433C8;
+        Tue, 25 Jul 2023 17:49:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690307369;
+        bh=w7dbONTIy2Co3mAFj/AcsnLbCERRs5c4tblF0g/VRPU=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=qRmvy9rHWcDnpixwhpi8DTuQcPdUyIZr5ZNx9ydG3F5boc73mSyEcLxTRGyRsCrB3
+         vClccnArnxXoaiGAgIdoaS2+TOFRAoqZK63Wk0bXfrXFknhfb+CydSPKk0rOsuu3hH
+         TLEWzXb38mM81F0bbsLAvvpzt0taCiE7A8213w6F+7Ut1V3wYK9UY5byb1RK9gdLLH
+         A8/Iy7F8eWp47Q1Fq/3T9a96ynyIDqiSA2oI0PcsUAwZGhiXzTUnrxDNnd0AH129MP
+         pymfYyEwQoff+K9nqQse31QUqBocLgoqy3MvVJHBF8sdscLUh2TInqE0lKi9416xVB
+         K25mir6FU0ktQ==
+Received: (nullmailer pid 3497934 invoked by uid 1000);
+        Tue, 25 Jul 2023 17:49:25 -0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAfSe-ugFQZqNzuukghJHot71v=GoueamooFGzAdEUoPvEgh8g@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+To:     Gatien Chevallier <gatien.chevallier@foss.st.com>
+Cc:     kuba@kernel.org, will@kernel.org, linux-serial@vger.kernel.org,
+        linux-phy@lists.infradead.org,
+        Oleksii Moisieiev <oleksii_moisieiev@epam.com>,
+        linux-spi@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        lee@kernel.org, robh+dt@kernel.org, linux-usb@vger.kernel.org,
+        gregkh@linuxfoundation.org, arnaud.pouliquen@foss.st.com,
+        Oleksii_Moisieiev@epam.com, arnd@kernel.org,
+        hugues.fruchet@foss.st.com, ulf.hansson@linaro.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, alexandre.torgue@foss.st.com, pabeni@redhat.com,
+        andi.shyti@kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        edumazet@google.com, vkoul@kernel.org, dmaengine@vger.kernel.org,
+        catalin.marinas@arm.com, herbert@gondor.apana.org.au,
+        fabrice.gasnier@foss.st.com, mchehab@kernel.org,
+        linux-iio@vger.kernel.org, richardcochran@gmail.com,
+        davem@davemloft.net, conor+dt@kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org,
+        linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, olivier.moysan@foss.st.com
+In-Reply-To: <20230725164104.273965-2-gatien.chevallier@foss.st.com>
+References: <20230725164104.273965-1-gatien.chevallier@foss.st.com>
+ <20230725164104.273965-2-gatien.chevallier@foss.st.com>
+Message-Id: <169030736341.3497818.1740404012211043486.robh@kernel.org>
+Subject: Re: [IGNORE][PATCH v2 01/11] dt-bindings: Document common device
+ controller bindings
+Date:   Tue, 25 Jul 2023 11:49:25 -0600
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 25, 2023 at 03:49:15PM +0800, Chunyan Zhang wrote:
-> On Tue, 25 Jul 2023 at 14:50, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Tue, Jul 25, 2023 at 02:40:52PM +0800, Chunyan Zhang wrote:
-> > > The global pointer 'sprd_port' may not zero when sprd_probe returns
-> > > failure, that is a risk for sprd_port to be accessed afterward, and
-> > > may lead to unexpected errors.
-> > >
-> > > For example:
-> > >
-> > > There are two UART ports, UART1 is used for console and configured in
-> > > kernel command line, i.e. "console=";
-> > >
-> > > The UART1 probe failed and the memory allocated to sprd_port[1] was
-> > > released, but sprd_port[1] was not set to NULL;
-> > >
-> > > In UART2 probe, the same virtual address was allocated to sprd_port[2],
-> > > and UART2 probe process finally will go into sprd_console_setup() to
-> > > register UART1 as console since it is configured as preferred console
-> > > (filled to console_cmdline[]), but the console parameters (sprd_port[1])
-> > > belong to UART2.
-> > >
-> > > So move the sprd_port[] assignment to where the port already initialized
-> > > can avoid the above issue.
-> > >
-> > > Fixes: b7396a38fb28 ("tty/serial: Add Spreadtrum sc9836-uart driver support")
-> > > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > ---
-> > > V3:
-> > > - Call uart_unregister_driver() only when the 'sprd_ports_num' decreases to 0;
-> > > - Add calling sprd_rx_free_buf() instread of sprd_remove() under clean_up lable.
-> > >
-> > > V2:
-> > > - Leave sprd_remove() to keep the unrelated code logic the same.
-> > > ---
-> > >  drivers/tty/serial/sprd_serial.c | 25 +++++++++++++++++--------
-> > >  1 file changed, 17 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> > > index b58f51296ace..fc1377029021 100644
-> > > --- a/drivers/tty/serial/sprd_serial.c
-> > > +++ b/drivers/tty/serial/sprd_serial.c
-> > > @@ -1106,7 +1106,7 @@ static bool sprd_uart_is_console(struct uart_port *uport)
-> > >  static int sprd_clk_init(struct uart_port *uport)
-> > >  {
-> > >       struct clk *clk_uart, *clk_parent;
-> > > -     struct sprd_uart_port *u = sprd_port[uport->line];
-> > > +     struct sprd_uart_port *u = container_of(uport, struct sprd_uart_port, port);
-> >
-> > Now that you are not allocaing the sprd_port[] pointers, shouldn't you
-> > also remove that variable entirely?
+
+On Tue, 25 Jul 2023 18:40:54 +0200, Gatien Chevallier wrote:
+> From: Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
 > 
-> sprd_console_write() and sprd_console_setup() [1] also need sprd_port[].
+> Introducing of the common device controller bindings for the controller
+> provider and consumer devices. Those bindings are intended to allow
+> divided system on chip into muliple domains, that can be used to
+> configure hardware permissions.
+> 
+> Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
+> ---
+>  .../feature-domain-controller.yaml            | 84 +++++++++++++++++++
+>  1 file changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml
+> 
 
-Why?  Can't they also use the structure passed to them instead?
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> So, this driver still needs to allocate the buffer for sprd_port[],
-> the change is using a local variable instead of allocating directly to
-> the global pointer.
+yamllint warnings/errors:
 
-Ah, I missed that you were saving the pointer off.
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/feature-controllers/feature-domain-controller.yaml: title: 'Generic Domain Controller bindings' should not be valid under {'pattern': '([Bb]inding| [Ss]chema)'}
+	hint: Everything is a binding/schema, no need to say it. Describe what hardware the binding is for.
+	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
 
-I think it would be better if you could just remove the static array
-entirely, that's a sign of a very old driver that should be fixed up.
+doc reference errors (make refcheckdocs):
 
-thanks,
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230725164104.273965-2-gatien.chevallier@foss.st.com
 
-greg k-h
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
