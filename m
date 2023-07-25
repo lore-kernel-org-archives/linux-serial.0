@@ -2,152 +2,101 @@ Return-Path: <linux-serial-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE715C0015E
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 05:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DB6C00528
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jul 2023 06:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230482AbjGYFnL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jul 2023 01:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
+        id S231372AbjGYGl7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jul 2023 02:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231670AbjGYFmx (ORCPT
+        with ESMTP id S230018AbjGYGl5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jul 2023 01:42:53 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DF301FC1;
-        Mon, 24 Jul 2023 22:42:45 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 841038176;
-        Tue, 25 Jul 2023 05:42:42 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
+        Tue, 25 Jul 2023 02:41:57 -0400
+Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED721B0;
+        Mon, 24 Jul 2023 23:41:55 -0700 (PDT)
+Received: from dlp.unisoc.com ([10.29.3.86])
+        by SHSQR01.spreadtrum.com with ESMTP id 36P6f9i2071443;
+        Tue, 25 Jul 2023 14:41:09 +0800 (+08)
+        (envelope-from Chunyan.Zhang@unisoc.com)
+Received: from SHDLP.spreadtrum.com (bjmbx02.spreadtrum.com [10.0.64.8])
+        by dlp.unisoc.com (SkyGuard) with ESMTPS id 4R96p65DM4z2K4D5v;
+        Tue, 25 Jul 2023 14:39:42 +0800 (CST)
+Received: from ubt.spreadtrum.com (10.0.73.70) by BJMBX02.spreadtrum.com
+ (10.0.64.8) with Microsoft SMTP Server (TLS) id 15.0.1497.23; Tue, 25 Jul
+ 2023 14:41:07 +0800
+From:   Chunyan Zhang <chunyan.zhang@unisoc.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Dhruva Gole <d-gole@ti.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v5 3/3] serial: core: Fix serial core controller port name to show controller id
-Date:   Tue, 25 Jul 2023 08:42:12 +0300
-Message-ID: <20230725054216.45696-4-tony@atomide.com>
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-serial@vger.kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH V3 2/2] serial: sprd: Fix DMA buffer leak issue
+Date:   Tue, 25 Jul 2023 14:40:53 +0800
+Message-ID: <20230725064053.235448-2-chunyan.zhang@unisoc.com>
 X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20230725054216.45696-1-tony@atomide.com>
-References: <20230725054216.45696-1-tony@atomide.com>
+In-Reply-To: <20230725064053.235448-1-chunyan.zhang@unisoc.com>
+References: <20230725064053.235448-1-chunyan.zhang@unisoc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.0.73.70]
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX02.spreadtrum.com (10.0.64.8)
+X-MAIL: SHSQR01.spreadtrum.com 36P6f9i2071443
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We are missing the serial core controller id for the serial core port
-name. Let's fix the issue for sane sysfs output, and to avoid issues
-addressing serial ports later on.
+Release DMA buffer when _probe() returns failure to avoid memory leak.
 
-And as we're now showing the controller id, the "ctrl" and "port" prefix
-for the DEVNAME become useless, we can just drop them. Let's standardize on
-DEVNAME:0 for controller name, where 0 is the controller id. And
-DEVNAME:0.0 for port name, where 0.0 are the controller id and port id.
-
-This makes the sysfs output nicer, on qemu for example:
-
-$ ls /sys/bus/serial-base/devices
-00:04:0         serial8250:0    serial8250:0.2
-00:04:0.0       serial8250:0.1  serial8250:0.3
-
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: f4487db58eb7 ("serial: sprd: Add DMA mode support")
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
 ---
+V3:
+- Corresponding changes based on patch-1.
 
-Andy, I kept your Reviewed-by although I updated the device naming and
-description, does the patch still look OK to you?
-
+V2:
+- Added Baolin's Reviewed-by;
+- Add setting rx_dma.virt to NULL after being freed.
 ---
- drivers/tty/serial/serial_base_bus.c | 32 +++++++++++++++++-----------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ drivers/tty/serial/sprd_serial.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -19,6 +19,14 @@
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index fc1377029021..99da964e8bd4 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -364,7 +364,7 @@ static void sprd_rx_free_buf(struct sprd_uart_port *sp)
+ 	if (sp->rx_dma.virt)
+ 		dma_free_coherent(sp->port.dev, SPRD_UART_RX_SIZE,
+ 				  sp->rx_dma.virt, sp->rx_dma.phys_addr);
+-
++	sp->rx_dma.virt = NULL;
+ }
  
- static bool serial_base_initialized;
- 
-+static const struct device_type serial_ctrl_type = {
-+	.name = "ctrl",
-+};
-+
-+static const struct device_type serial_port_type = {
-+	.name = "port",
-+};
-+
- static int serial_base_match(struct device *dev, struct device_driver *drv)
- {
- 	int len = strlen(drv->name);
-@@ -48,7 +56,8 @@ static int serial_base_device_init(struct uart_port *port,
- 				   struct device *parent_dev,
- 				   const struct device_type *type,
- 				   void (*release)(struct device *dev),
--				   int id)
-+				   unsigned int ctrl_id,
-+				   unsigned int port_id)
- {
- 	device_initialize(dev);
- 	dev->type = type;
-@@ -61,13 +70,16 @@ static int serial_base_device_init(struct uart_port *port,
- 		return -EPROBE_DEFER;
+ static int sprd_rx_dma_config(struct uart_port *port, u32 burst)
+@@ -1203,7 +1203,7 @@ static int sprd_probe(struct platform_device *pdev)
+ 		ret = uart_register_driver(&sprd_uart_driver);
+ 		if (ret < 0) {
+ 			pr_err("Failed to register SPRD-UART driver\n");
+-			return ret;
++			goto free_rx_buf;
+ 		}
  	}
  
--	return dev_set_name(dev, "%s.%s.%d", type->name, dev_name(port->dev), id);
-+	if (type == &serial_ctrl_type)
-+		return dev_set_name(dev, "%s:%d", dev_name(port->dev), ctrl_id);
-+
-+	if (type == &serial_port_type)
-+		return dev_set_name(dev, "%s:%d.%d", dev_name(port->dev),
-+				    ctrl_id, port_id);
-+
-+	return -EINVAL;
+@@ -1222,6 +1222,7 @@ static int sprd_probe(struct platform_device *pdev)
+ 	sprd_port[index] = NULL;
+ 	if (--sprd_ports_num == 0)
+ 		uart_unregister_driver(&sprd_uart_driver);
++free_rx_buf:
+ 	sprd_rx_free_buf(sport);
+ 	return ret;
  }
- 
--static const struct device_type serial_ctrl_type = {
--	.name = "ctrl",
--};
--
- static void serial_base_ctrl_release(struct device *dev)
- {
- 	struct serial_ctrl_device *ctrl_dev = to_serial_base_ctrl_device(dev);
-@@ -96,7 +108,7 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &ctrl_dev->dev,
- 				      parent, &serial_ctrl_type,
- 				      serial_base_ctrl_release,
--				      port->ctrl_id);
-+				      port->ctrl_id, 0);
- 	if (err)
- 		goto err_put_device;
- 
-@@ -112,10 +124,6 @@ struct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,
- 	return ERR_PTR(err);
- }
- 
--static const struct device_type serial_port_type = {
--	.name = "port",
--};
--
- static void serial_base_port_release(struct device *dev)
- {
- 	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
-@@ -136,7 +144,7 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
- 	err = serial_base_device_init(port, &port_dev->dev,
- 				      &ctrl_dev->dev, &serial_port_type,
- 				      serial_base_port_release,
--				      port->port_id);
-+				      port->ctrl_id, port->port_id);
- 	if (err)
- 		goto err_put_device;
- 
 -- 
 2.41.0
+
